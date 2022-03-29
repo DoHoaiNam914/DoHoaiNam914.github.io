@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html class="hltr">
+  <head>
+    <meta charset="UTF-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=0,initial-scale=1">
+    <title>Máy dịch (Google Dịch) - DoHoaiNam Pages</title>
+    <link href="style/bookwalker-jp-style.css" rel="stylesheet" type="text/css"/>
+  </head>
+  <body>
+    <form style="bottom: 40px; position: fixed; right: 40px;"><input type="button" value="Xong"></form>
+    <div style="text-align: center;"><textarea name="textarea" style="background-color: transparent; border: 0; border-style: none; color: #d2d2d2; font-family: serif; height: 80vh; margin: 0; padding: 0; width: 100%;">Write something here</textarea></div>
+    <section class="p-text">
+      <div class="main" style="display: none;"></div>
+    </section>
+    <section>
+      <div id="google_translate_element" style="position: fixed; right: 40px; top: 40px;"></div>
+      <script type="text/javascript">
+        function googleTranslateElementInit() {
+          new google.translate.TranslateElement({
+            includedLanguages: 'vi,en,ja,zh-CN,zh-TW',
+            layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+            autoDisplay: false
+          }, 'google_translate_element');
+        }
+      </script>
+      <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+    </section>
+    <script type="text/javascript">
+      const button = document.querySelector('input');
+      const textarea = document.querySelector('textarea');
+      const text = document.querySelector('div.main');
+
+      button.addEventListener('click', updateButton);
+
+      function updateButton() {
+        if (button.value === 'Chỉnh sửa') {
+          button.value = 'Xong';
+
+          if (text.innerHTML === '<p></p>' || text.innerHTML === '<p><br></p>') {
+            text.style.display = 'none';
+            textarea.style.display = 'inline-block';
+          } else if (textarea.style.display === 'none') {
+            text.contentEditable = 'true';
+          }
+        } else {
+          button.value = 'Chỉnh sửa';
+
+          if (textarea.style.display === 'none') {
+            text.contentEditable = 'false';
+          } else {
+            var words = textarea.value.split('\n');
+
+            for (let i = 0; i < words.length; i++) {
+              words[i] = '<p>' + words[i] + '</p>';
+              text.innerHTML = words.join('\n');
+            }
+
+            textarea.style.display = 'none';
+            text.style.display = 'block';
+          }
+        }
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,165 @@
+* {
+    margin: 0;
+    padding: 0;
+    border-style: none;
+    border: 0;
+}
+
+h1 {
+    font-weight: 400;
+}
+
+li {
+    list-style: none outside;
+}
+
+section, article, nav, aside,
+header, footer,
+figure, figcaption { 
+    display: block;
+}
+
+.main {
+    font-weight: normal;
+    letter-spacing: 0;
+    orphans: 1;
+    widows: 1;
+    word-spacing: 0;
+    word-wrap: break-word;
+
+    letter-spacing: 0;
+    break-after: column;
+    -webkit-column-break-after: column;
+}
+
+blockquote {
+    margin-top: 1em;
+    margin-bottom: 1em;
+    margin-left: 1em;
+    margin-right: 1em;
+}
+
+blockquote p {
+    margin-left: 0;
+    margin-right: 0;
+}
+
+li {
+    font-size: 1em;
+}
+
+li p {
+    text-indent: 0em;
+}
+
+ul {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+ol {
+    margin-top: 1em;
+    margin-bottom: 1em;
+    text-align: left;
+}
+
+h1 {
+    font-size: 1.55em;
+    margin-top: 2em;
+    margin-bottom: 1em;
+    line-height: 1.2em;
+    text-indent: 20pt;
+}
+
+h2 {
+    font-size: 1.15em;
+    margin-top: 1.5em;
+    margin-bottom: .5em;
+    line-height: 1.2em;
+    text-indent: 20pt;
+}
+
+table {
+    margin-top: 1.5em;
+    margin-bottom: 1.5em;
+    font-size: 0.9em;
+    border-collapse: collapse;
+}
+
+tr td {
+    vertical-align: top;
+    padding: 0.2em;
+}
+
+sup {
+    vertical-align: super;
+    font-size: 0.9em;
+    line-height: 100% !important;
+}
+
+sub {
+    vertical-align: sub;
+    font-size: 0.9em;
+    line-height: 100% !important;
+}
+
+img {
+    max-width: 100%;
+    width: initial;
+    display: block;
+    margin: 0px auto;
+}
+
+h1,
+h2,
+h3 {
+    page-break-after: avoid;
+    text-align: center;
+}
+
+hr {
+    margin-top: 0.2em;
+    margin-bottom: 0.2em;
+    width: 100%;
+    page-break-after: always;
+}
+
+p {
+    display: block;
+    margin-top: 0em;
+    margin-bottom: 0em;
+    margin-left: 0em;
+    margin-right: 0em;
+    text-indent: 20pt;
+}
+
+p.noindent {
+    text-indent: 0;
+}
+
+p.centerp {
+    text-align: center;
+}
+
+p.signature {
+    text-align: right;
+}
+
+p.diamond {
+    text-align: center;
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+p.section-marking {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+p.section-marking img {
+    height: 1em;
+}
+
+p.section-break {
+    margin-top: 1em;
+}

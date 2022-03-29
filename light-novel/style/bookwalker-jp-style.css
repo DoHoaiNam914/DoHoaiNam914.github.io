@@ -1,0 +1,7 @@
+@import "ebpaj/book-style.css";
+@import "bookwalker-style.css";
+@import "../fonts/Hiragino-Serif.css";
+
+.main {
+  font-family: 'Hiragino Serif', serif;
+}

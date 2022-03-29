@@ -1,0 +1,10 @@
+@font-face {
+  font-family: 'Hiragino Serif';
+  src: url('https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Hiragino-Serif-ProN-W3.otf') format('opentype');
+}
+
+@font-face {
+  font-family: 'Hiragino Serif';
+  src: url('https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Hiragino-Serif-ProN-W6.otf') format('opentype');
+  font-weight: bold;
+}

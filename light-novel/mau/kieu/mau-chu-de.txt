@@ -1,0 +1,97 @@
+BookWalker
+Màu trắng:
+- Hậu cảnh: #FFFFFF
+- Cận cảnh: #000000
+- Siêu liên kết: #0000FF
+Màu đen:
+- Hậu cảnh: #000000
+- Cận cảnh: #D2D2D2
+- Siêu liên kết: #EBEBEB
+Màu xêpia:
+- Hậu cảnh: #EBD2A5
+- Cận cảnh: #5A4114
+- Siêu liên kết: #50320C
+Màu kem:
+- Hậu cảnh: #FFFFE0
+- Cận cảnh: #000000
+- Siêu liên kết: #32327D
+
+Kindle
+Màu trắng:
+- Hậu cảnh: #FFFFFF
+- Cận cảnh: #000000
+- Siêu liên kết: #0000FF
+Màu xêpia:
+- Hậu cảnh: #FBF0D9
+- Cận cảnh: #5F4B32
+- Siêu liên kết: #0055AA
+Màu xanh nhạt
+- Hậu cảnh: #C5E7CE
+- Cận cảnh: #3A4B43
+- Siêu liên kết: #0055AA
+Màu đen:
+- Hậu cảnh: #000000
+- Cận cảnh: #ACACAC
+- Siêu liên kết: #8FC0E9
+
+Kindle Japanese
+Màu trắng:
+- Hậu cảnh: #FFFFFF
+- Cận cảnh: #000000
+Màu xêpia:
+- Hậu cảnh: #FBF0D9
+- Cận cảnh: #5F4B32
+Màu xanh nhạt
+- Hậu cảnh: #C5E7CE
+- Cận cảnh: #3A4B43
+> Siêu liên kết: #0000FF
+Màu đen:
+- Hậu cảnh: #000000
+- Cận cảnh: #ACACAC
+- Siêu liên kết: #8787FF
+
+iBook
+Màu trắng:
+- Hậu cảnh: #FFFFFF
+- Cận cảnh: #000000
+- Siêu liên kết: #007AFF
+Màu xêpia:
+- Hậu cảnh: #F7F1E4
+- Cận cảnh: #000000
+- Siêu liên kết: #B98A2B
+Màu xám:
+- Hậu cảnh: #48484A
+- Cận cảnh: #D5D5D5
+- Siêu liên kết: #2E7CB8
+Màu đen:
+- Hậu cảnh: #000000
+- Cận cảnh: #ABABAB
+- Siêu liên kết: #2E7CB8
+
+J-Novel Club
+Màu trắng:
+- Hậu cảnh: #FFFFFF
+- Cận cảnh: #000000
+Màu xêpia:
+- Hậu cảnh: #FAF4E8
+- Cận Cảnh: #121212
+Màu xám:
+- Hậu cảnh: #303030
+- Cận Cảnh: #C1C1C1
+Màu đen:
+- Hậu cảnh: #000000
+- Cận Cảnh: #FFFFFF
+
+xbreader
+Màu trắng:
+- Hậu cảnh: #FFFFFF
+- Cận cảnh: #000000
+Màu xêpia:
+- Hậu cảnh: #FAF4E8
+- Cận Cảnh: #000000
+Màu xám:
+- Hậu cảnh: #303030
+- Cận Cảnh: #FFFFFF
+Màu đen:
+- Hậu cảnh: #000000
+- Cận Cảnh: #FFFFFF

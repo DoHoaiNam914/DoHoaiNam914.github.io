@@ -1,0 +1,31 @@
+body {
+  background-color: black;
+  color: #d2d2d2;
+  margin: 0;
+  padding: 0;
+}
+
+svg {
+  margin: 0;
+  padding: 0;
+}
+
+@media only screen and (min-width: 751px) {
+  section.p-image div.main, section.p-cover div.main {
+    margin-left: 80px;
+    margin-right: 80px;
+  }
+
+  section.p-toc div.main, section.p-text div.main {
+    margin-left: 60px;
+    margin-right: 60px;
+  }
+
+  svg {
+    max-height: 100vh;
+  }
+}
+
+a:link, a:visited, a:hover, a:focus, a:active {
+  color: #ebebeb;
+}
