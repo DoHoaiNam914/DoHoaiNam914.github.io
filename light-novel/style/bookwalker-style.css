@@ -1,8 +1,14 @@
-body {
+@charset "UTF-8";
+
+html {
   background-color: black;
   color: #d2d2d2;
+}
+
+section.p-image {
   margin: 0;
   padding: 0;
+  font-size: 0;
 }
 
 svg {

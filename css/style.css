@@ -1,3 +1,6 @@
+@charset "UTF-8";
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
 /* 
 html5doctor.com Reset Stylesheet
 v1.6.1
@@ -101,20 +104,18 @@ input, select {
     vertical-align:middle;
 }
 
-@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,400;0,700;1,400;1,700&display=swap');
-
 body {
   font-family: 'Roboto', sans-serif;
   text-align: center;
 }
 
-div.main {
+div.container {
   width: 100vw;
   height: 100vh
   position: relative;
 }
 
-img.pc_main {
+img.pc {
   width: 100%;
   height: 100%;
 }
@@ -137,7 +138,7 @@ p.copyright {
 }
 
 @media only screen and (min-width: 751px) {
-  div.main {
+  div.container {
     min-width: 1280px;
   }
 
@@ -154,7 +155,7 @@ p.copyright {
 }
 
 @media only screen and (max-width: 750px) {
-  div.main {
+  div.container {
     min-height: 100vh;
     background: url('../img/background.jpg') no-repeat center top;
     -webkit-background-size: cover;
@@ -162,7 +163,7 @@ p.copyright {
     background-size: cover;
   }
 
-  img.pc_main {
+  img.pc {
     display: none;
   }
 
