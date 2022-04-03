@@ -1,8 +1,8 @@
 @charset "UTF-8";
 @import "ebpaj/book-style.css";
 @import "bookwalker-style.css";
-@import "../fonts/Hiragino-Serif.css";
+@import "../fonts/Hiragino-Mincho-ProN.css";
 
 .main {
-  font-family: 'Hiragino Serif', serif;
+  font-family: 'Hiragino Mincho ProN', serif;
 }
