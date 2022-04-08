@@ -11,25 +11,25 @@ section.p-image {
   font-size: 0;
 }
 
-svg {
-  margin: 0;
+.main {
+  --margin: 40px;
+  width: calc(100% - var(--margin) * 2);
+  padding: var(--margin);
+}
+
+section.cover .main {
+  width: 100%;
   padding: 0;
 }
 
-@media only screen and (min-width: 751px) {
-  section.p-image div.main, section.p-cover div.main {
-    margin-left: 80px;
-    margin-right: 80px;
-  }
+svg {
+  margin: 0;
+  padding: 0;
+  max-height: calc(100vh - var(--margin) * 2);
+}
 
-  section.p-toc div.main, section.p-text div.main {
-    margin-left: 60px;
-    margin-right: 60px;
-  }
-
-  svg {
-    max-height: 100vh;
-  }
+section.p-cover svg {
+  max-height: 100vh;
 }
 
 a:link, a:visited, a:hover, a:focus, a:active {

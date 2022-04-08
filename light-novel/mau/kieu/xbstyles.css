@@ -39,38 +39,38 @@ figure, figcaption {
     text-align: var(--xb-text-align);
 }
 
-blockquote {
+.main blockquote {
     margin-top: 1em;
     margin-bottom: 1em;
     margin-left: 1em;
     margin-right: 1em;
 }
 
-blockquote p {
+.main blockquote p {
     margin-left: 0;
     margin-right: 0;
 }
 
-li {
+.main li {
     font-size: 1em;
 }
 
-li p {
+.main li p {
     text-indent: 0em;
 }
 
-ul {
+.main ul {
     margin-top: 1em;
     margin-bottom: 1em;
 }
 
-ol {
+.main ol {
     margin-top: 1em;
     margin-bottom: 1em;
     text-align: left;
 }
 
-h1 {
+.main h1 {
     font-size: 1.55em;
     margin-top: 2em;
     margin-bottom: 1em;
@@ -78,7 +78,7 @@ h1 {
     text-indent: 20pt;
 }
 
-h2 {
+.main h2 {
     font-size: 1.15em;
     margin-top: 1.5em;
     margin-bottom: .5em;
@@ -86,31 +86,31 @@ h2 {
     text-indent: 20pt;
 }
 
-table {
+.main table {
     margin-top: 1.5em;
     margin-bottom: 1.5em;
     font-size: 0.9em;
     border-collapse: collapse;
 }
 
-tr td {
+.main tr td {
     vertical-align: top;
     padding: 0.2em;
 }
 
-sup {
+.main sup {
     vertical-align: super;
     font-size: 0.9em;
     line-height: 100% !important;
 }
 
-sub {
+.main sub {
     vertical-align: sub;
     font-size: 0.9em;
     line-height: 100% !important;
 }
 
-img {
+.main img {
     max-height: calc(100vh - var(--xb-margin) * 2);
     max-width: 100%;
     width: initial;
@@ -118,14 +118,14 @@ img {
     margin: 0px auto;
 }
 
-h1,
-h2,
-h3 {
+.main h1,
+.main h2,
+.main h3 {
     page-break-after: avoid;
     text-align: center;
 }
 
-hr {
+.main hr {
     margin-top: 0.2em;
     margin-bottom: 0.2em;
     border-top: 1px solid var(--xb-color);
@@ -133,7 +133,7 @@ hr {
     page-break-after: always;
 }
 
-p {
+.main p {
     display: block;
     margin-top: 0em;
     margin-bottom: 0em;
@@ -142,33 +142,33 @@ p {
     text-indent: 20pt;
 }
 
-p.noindent {
+.main p.noindent {
     text-indent: 0;
 }
 
-p.centerp {
+.main p.centerp {
     text-align: center;
 }
 
-p.signature {
+.main p.signature {
     text-align: right;
 }
 
-p.diamond {
+.main p.diamond {
     text-align: center;
     margin-top: 1em;
     margin-bottom: 1em;
 }
 
-p.section-marking {
+.main p.section-marking {
     margin-top: 1em;
     margin-bottom: 1em;
 }
 
-p.section-marking img {
+.main p.section-marking img {
     height: 1em;
 }
 
-p.section-break {
+.main p.section-break {
     margin-top: 1em;
 }

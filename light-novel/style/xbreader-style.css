@@ -1,9 +1,9 @@
 @import "xbstyles.css";
 @import url(https://fonts.googleapis.com/css2?family=Andika&family=Arbutus+Slab&family=Lato:ital,wght@0,400;0,700;1,400;1,700&family=Literata:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=Noto+Sans+JP:wght@300;400;500;700&family=Noto+Sans:ital,wght@0,400;0,700;1,400;1,700&family=Roboto:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&family=Vollkorn:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&display=swap);
 
-html {
-  background-color: #303030;
-  color: white;
+body {
+  background-color: rgb(48, 48, 48);
+  color: rgb(255, 255, 255);
 }
 
 div.nomargin {
@@ -15,25 +15,26 @@ div.center {
   text-align: center;
 }
 
+section {
+  --default-margin: 40px;
+  --margin: var(--default-margin);
+}
+
+div.nomargin section, div.center section {
+  width: calc(100% - var(--margin) * 2);
+  padding: var(--margin);
+}
+
 .main {
   break-after: column;
   -webkit-column-break-after: column;
-  font-size: 110%;
-  font-family: "Crimson Text";
-  line-height: 1.3em;
-  text-align: start;
-}
-
-@media only screen and (min-width: 751px) {
-  .main {
-    margin: 80px;
-  }
-
-  img {
-    max-height: calc(100vh - 80px);
-  }
-}
-
-hr {
-  border-top: 1px solid #fff;
+  width: calc(100% - var(--margin) * 2);
+  --xb-margin: var(--default-margin);
+  --xb-font-size: 110%;
+  --xb-font-family: "Crimson Text";
+  --xb-line-height: 1.3em;
+  --xb-text-align: start;
+  --xb-color: #fff;
+  --xb-background: #303030;
+  padding: var(--margin);
 }
