@@ -144,6 +144,10 @@ span.navcenter h1 {
   margin-top: 10%;
 }
 
+span.navcenter hr {
+  width: 100%;
+}
+
 span.navcenter ol {
   list-style-type: none;
   margin: 0px;
@@ -173,10 +177,6 @@ p.copyright {
     min-width: 1280px;
   }
 
-  span.navcenter hr {
-    width: 100%;
-  }
-
   p.copyright {
     bottom: 40px;
     font-size: 10px;
@@ -196,10 +196,6 @@ p.copyright {
 
   img.pc {
     display: none;
-  }
-
-  span.navcenter hr {
-    width: 100%;
   }
 
   p.copyright {
