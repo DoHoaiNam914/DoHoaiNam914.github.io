@@ -189,7 +189,7 @@ p.copyright {
   div.container {
     -o-background-size: cover;
     -webkit-background-size: cover;
-    background: url('../img/background.jpg') no-repeat center top;
+    background: url('../img/background.jpeg') no-repeat center top;
     background-size: cover;
     min-height: 100vh;
   }
