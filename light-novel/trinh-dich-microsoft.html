@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Trình dịch Microsoft cho Light Novel - DoHoaiNam Pages</title>
+    <link href="style/bookwalker-jp-style.css" rel="stylesheet" type="text/css">
+  </head>
+  <body>
+    <form style="position: fixed; right: 40px; top: 40px;">
+      <input id="edit_button" type="button" value="Xong">
+    </form>
+    <form style="bottom: 40px; position: fixed; right: 40px;">
+      <input id="microsoft_translator_button" type="button" value="Dịch">
+    </form>
+    <section class="p-text">
+      <div class="main" style="display: none;"></div>
+    </section>
+    <div style="text-align: center;"><textarea name="textarea" style="background-color: transparent; border: 0; border-style: none; color: #d2d2d2; font-family: serif; height: 80vh; margin: 0; padding: 0; width: 100%;">Viết gì đó tại đây</textarea></div>
+    <script type="text/javascript">
+      const editButton = document.getElementById('edit_button');
+      const microsoftTranslatorButton = document.getElementById('microsoft_translator_button');
+      const textarea = document.querySelector('textarea');
+      const text = document.querySelector('div.main');
+
+      var orignalTextElement;
+
+      editButton.addEventListener('click', updateEditButton);
+      microsoftTranslatorButton.addEventListener('click', updateMicrosoftTranslatorButton);
+
+      function updateEditButton() {
+        if (editButton.value === 'Chỉnh sửa') {
+          editButton.value = 'Xong';
+
+          if (text.innerHTML === '<p></p>' || text.innerHTML === '<p><br></p>') {
+            text.style.display = 'none';
+            textarea.style.display = 'inline-block';
+          } else if (textarea.style.display === 'none') {
+            text.contentEditable = 'true';
+          }
+        } else {
+          editButton.value = 'Chỉnh sửa';
+
+          if (textarea.style.display === 'none') {
+            text.contentEditable = 'false';
+
+            if (microsoftTranslatorButton.value === 'Dịch') {
+              textarea.value = text.innerHTML.replaceAll('<p>', '').replaceAll('</p>', '');
+            }
+          } else {
+            var words = textarea.value.split('\n');
+
+            for (let i = 0; i < words.length; i++) {
+              text.innerHTML = '<p>' + words[i] + '</p>\n';
+            }
+
+            textarea.style.display = 'none';
+            text.style.display = 'block';
+          }
+        }
+      }
+
+      function updateMicrosoftTranslatorButton() {
+        if (text.innerHTML != "" && text.innerHTML != '<p></p>' && text.innerHTML != '<p><br></p>') {
+          if (microsoftTranslatorButton.value === 'Dịch') {
+            let fromLang = prompt('Dịch từ ngôn ngữ?\n*Ghi chú: vi=Tiếng Việt, en=Tiếng Anh, ja=Tiếng Nhật, zh-CHS=Tiếng Trung (Giản thể), zh-CHT=Tiêng Trung (Phổn thể)');
+            let toLang = prompt('Dịch đến ngôn ngữ?\n*Ghi chú: vi=Tiếng Việt, en=Tiếng Anh, ja=Tiếng Nhật, zh-CHS=Tiếng Trung (Giản thể), zh-CHT=Tiếng Trung (Phổn thể)');
+            let availableLanguage = ['vi', 'en', 'ja', 'zh-CHS', 'zh-CHT'];
+
+            if (availableLanguage.includes(fromLang) && availableLanguage.includes(toLang) && toLang != fromLang) {
+              let xhr = new XMLHttpRequest();
+              let accessToken = getMicrosoftTranslatorAccessToken();
+
+              if (accessToken != null) {
+                xhr.onload = function() {
+                  let json = JSON.parse(xhr.responseText.replaceAll('[{', '{').replaceAll('}]', '}'));
+                  orignalTextElement = text.innerHTML;
+                  text.innerHTML = '<p>' + json.translations.text + '</p>\n';
+                };
+
+                xhr.open("POST", "https://api.cognitive.microsofttranslator.com/translate?from=" + fromLang + "&to=" + toLang + "&api-version=3.0&includeSentenceLength=true", false);
+                xhr.setRequestHeader("Authorization", "Bearer " + accessToken);
+                xhr.setRequestHeader("Content-Type", "application/json");
+
+                let words = textarea.value.split('\n');
+
+                for (let i = 0; i < words.length; i++) {
+                  xhr.send('[{"Text":"' + words[i] + '"}]');
+                }
+
+                microsoftTranslatorButton.value = 'Hiển thị văn bản gốc';
+              }
+            }
+          } else {
+            microsoftTranslatorButton.value = 'Dịch';
+            text.innerHTML = orignalTextElement;
+          }
+        }
+      }
+
+      function getMicrosoftTranslatorAccessToken() {
+        let accessToken;
+        let xhr = new XMLHttpRequest();
+
+        xhr.onload = () => accessToken = xhr.responseText;
+        xhr.open("GET", "https://edge.microsoft.com/translate/auth", false);
+        xhr.send();
+
+        return accessToken;
+      }
+    </script>
+  </body>
+</html>
