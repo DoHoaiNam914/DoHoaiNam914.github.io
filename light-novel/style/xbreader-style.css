@@ -6,21 +6,20 @@ body {
   color: rgb(255, 255, 255);
 }
 
+div {
+  background-color: rgb(48, 48, 48);
+  color: rgb(255, 255, 255);
+}
+
 div.nomargin {
   margin: 0em;
   padding: 0em;
 }
 
-div.center {
-  text-align: center;
-}
-
 section {
   --default-margin: 40px;
   --margin: var(--default-margin);
-}
 
-div.nomargin section, div.center section {
   width: calc(100% - var(--margin) * 2);
   padding: var(--margin);
 }
@@ -28,7 +27,6 @@ div.nomargin section, div.center section {
 .main {
   break-after: column;
   -webkit-column-break-after: column;
-  width: calc(100% - var(--margin) * 2);
   --xb-margin: var(--default-margin);
   --xb-font-size: 110%;
   --xb-font-family: "Crimson Text";
@@ -36,5 +34,4 @@ div.nomargin section, div.center section {
   --xb-text-align: start;
   --xb-color: #fff;
   --xb-background: #303030;
-  padding: var(--margin);
 }

@@ -74,7 +74,7 @@
 
               if (accessToken != null) {
                 xhr.onload = function() {
-                  let json = JSON.parse(xhr.responseText.replaceAll('[{', '{').replaceAll('}]', '}'));
+                  let json = JSON.parse(xhr.responseText.toString().replaceAll('[{', '{').replaceAll('}]', '}'));
                   orignalTextElement = text.innerHTML;
                   text.innerHTML = '<p>' + json.translations.text + '</p>\n';
                 };
