@@ -43,7 +43,7 @@
           if (textarea.style.display === 'none') {
             text.contentEditable = 'false';
 
-            if (text.innerHTML === '<p></p>' || text.innerHTML === '<p><br></p>') {
+            if (text.innerHTML === '<p></p>\n' || text.innerHTML === '<p><br></p>\n') {
               text.innerHTML = null;
             }
           } else {
@@ -76,7 +76,7 @@
 
                 if (accessToken != null) {
                   orignalTextElement = text.innerHTML;
-                  let words = text.innerHTML.replaceAll('<p>', '').replaceAll('</p>', '').split('\n');
+                  let words = text.innerHTML.toString().replaceAll('<p>', '').replaceAll('</p>', '').split('\n');
                   text.innerHTML = null;
 
                   for (let i = 0; i < words.length; i++) {
