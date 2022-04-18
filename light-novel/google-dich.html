@@ -50,9 +50,10 @@
             textarea.value = text.innerHTML.replaceAll('<p>', '').replaceAll('</p>', '');
           } else {
             var words = textarea.value.split('\n');
+            text.innerHTML = null;
 
             for (let i = 0; i < words.length; i++) {
-              text.innerHTML = '<p>' + words[i] + '</p>\n';
+              text.innerHTML += '<p>' + words[i] + '</p>\n';
             }
 
             textarea.style.display = 'none';
