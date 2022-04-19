@@ -20,7 +20,7 @@ section, nav {
   padding: var(--margin);
 }
 
-img {
+img.cover, img.insert {
   max-height: calc(98vh - var(--default-margin) * 2);
   max-width: 100%;
 }
