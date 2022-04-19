@@ -8,10 +8,9 @@
     <link href="style/bookwalker-jp-style.css" rel="stylesheet" type="text/css">
   </head>
   <body>
-    <form style="position: fixed; right: 40px; top: 40px;"><input type="button" value="Xong"></form>
-    <section class="p-text">
-      <div class="main" style="display: none;"></div>
-    </section>
+    <form style="position: fixed; right: 40px; top: 40px;">
+      <input id="edit_button" type="button" value="Xong">
+    </form>
     <section>
       <div id="google_translate_element" style="bottom: 40px; position: fixed; right: 40px;"></div>
       <script type="text/javascript">
@@ -25,29 +24,34 @@
       </script>
       <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
     </section>
+    <section class="p-text">
+      <div class="main" style="display: none;"></div>
+    </section>
     <div style="text-align: center;"><textarea name="textarea" style="background-color: transparent; border: 0; border-style: none; color: #d2d2d2; font-family: serif; height: 80vh; margin: 0; padding: 0; width: 100%;">Viết gì đó tại đây</textarea></div>
     <script type="text/javascript">
-      const button = document.querySelector('input');
+      const editButton = document.getElementById('edit_button');
       const textarea = document.querySelector('textarea');
       const text = document.querySelector('div.main');
 
-      button.addEventListener('click', updateButton);
+      editButton.addEventListener('click', updateEditButton);
 
-      function updateButton() {
-        if (button.value === 'Chỉnh sửa') {
-          button.value = 'Xong';
-
-          if (text.innerHTML === '<p></p>' || text.innerHTML === '<p><br></p>') {
+      function updateEditButton() {
+        if (editButton.value === 'Chỉnh sửa' && textarea.style.display === 'none') {
+          if (text.innerHTML === '') {
             text.style.display = 'none';
             textarea.style.display = 'inline-block';
-          } else if (textarea.style.display === 'none') {
+          } else {
             text.contentEditable = 'true';
           }
-        } else {
 
+          editButton.value = 'Xong';
+        } else {
           if (textarea.style.display === 'none') {
             text.contentEditable = 'false';
-            textarea.value = text.innerHTML.replaceAll('<p>', '').replaceAll('</p>', '');
+
+            if (text.innerHTML === '<p></p>\n' || text.innerHTML === '<p><br></p>\n') {
+              text.innerHTML = null;
+            }
           } else {
             var words = textarea.value.split('\n');
             text.innerHTML = null;
@@ -60,7 +64,7 @@
             text.style.display = 'block';
           }
 
-          button.value = 'Chỉnh sửa';
+          editButton.value = 'Chỉnh sửa';
         }
       }
     </script>

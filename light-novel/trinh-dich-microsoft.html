@@ -48,6 +48,7 @@
             }
           } else {
             var words = textarea.value.split('\n');
+            text.innerHTML = null;
 
             for (let i = 0; i < words.length; i++) {
               text.innerHTML += '<p>' + words[i] + '</p>\n';
@@ -88,7 +89,7 @@
                     xhr.open("POST", "https://api.cognitive.microsofttranslator.com/translate?from=" + fromLang + "&to=" + toLang + "&api-version=3.0&includeSentenceLength=true", false);
                     xhr.setRequestHeader("Authorization", "Bearer " + accessToken);
                     xhr.setRequestHeader("Content-Type", "application/json");
-                    xhr.send('[{"Text":"' + words[i] + '"}]');
+                    xhr.send(JSON.stringify([{"Text":words[i]}]));
                   }
 
                   microsoftTranslatorButton.value = 'Hiển thị văn bản gốc';
