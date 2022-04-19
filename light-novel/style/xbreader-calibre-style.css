@@ -7,17 +7,17 @@
     border: 0;
 }
 
-h1 {
+h1.* {
     font-weight: 400;
 }
 
-li {
+li.* {
     list-style: none outside;
 }
 
-section, article, nav, aside,
-header, footer,
-figure, figcaption { 
+section.*, article.*, nav.*, aside.*,
+header.*, footer.*,
+figure.*, figcaption.* { 
     display: block;
 }
 
@@ -41,7 +41,7 @@ section, nav {
   padding: var(--margin);
 }
 
-img.cover, img.insert {
+img.* {
   max-height: calc(98vh - var(--default-margin) * 2);
   max-width: 100%;
 }
