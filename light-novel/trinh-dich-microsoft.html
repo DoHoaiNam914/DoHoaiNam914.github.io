@@ -77,12 +77,12 @@
 
                 if (accessToken != null) {
                   orignalTextElement = text.innerHTML;
-                  let words = text.innerHTML.toString().replaceAll('<p>', '').replaceAll('</p>', '').split('\n');
+                  let words = text.innerHTML.replace(/<p>/g, '').replace(/<\/p>/g, '').split('\n');
                   text.innerHTML = null;
 
                   for (let i = 0; i < words.length; i++) {
                     xhr.onload = function() {
-                      let json = JSON.parse(xhr.responseText.toString().replaceAll('[{', '{').replaceAll('}]', '}'));
+                      let json = JSON.parse(xhr.responseText.replace(/\[\{/g, '{').replace(/\}\]/g, '}'));
                       text.innerHTML += '<p>' + json.translations.text + '</p>\n';
                     };
 
