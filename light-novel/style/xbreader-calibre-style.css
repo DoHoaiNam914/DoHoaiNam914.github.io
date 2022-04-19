@@ -1,20 +1,20 @@
 @import url(https://fonts.googleapis.com/css2?family=Andika&family=Arbutus+Slab&family=Lato:ital,wght@0,400;0,700;1,400;1,700&family=Literata:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=Noto+Sans+JP:wght@300;400;500;700&family=Noto+Sans:ital,wght@0,400;0,700;1,400;1,700&family=Roboto:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&family=Vollkorn:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&display=swap);
 
 * {
-    border-style: none !important;
-    border: 0 !important;
+  border-style: none;
+  border: 0;
 }
 
 h1 {
-    font-weight: 400 !important;
+  font-weight: 400 !important;
 }
 
 li {
-    list-style: none outside !important;
+  list-style: none outside;
 }
 
 section, article, nav, aside, header, footer, figure, figcaption { 
-    display: block !important;
+  display: block;
 }
 
 body {
@@ -23,18 +23,29 @@ body {
 }
 
 div {
+  --default-margin: 40px;
   font-family: 'Crimson Text', serif;
   color: #fff;
   background: #303030;
   text-align: start;
 }
 
-section, nav {
-  --default-margin: 40px;
-  --margin: var(--default-margin);
+@media only screen and (min-width: 751px) {
+  section, nav {
+    --margin: 180px;
+    padding: var(--default-margin) var(--margin);
+  }
+}
 
+@media only screen and (max-width: 750px) {
+  section, nav {
+    --margin: var(--default-margin);
+    padding: var(--margin);
+  }
+}
+
+section, nav {
   width: calc(100% - var(--margin) * 2);
-  padding: var(--margin);
 }
 
 img {

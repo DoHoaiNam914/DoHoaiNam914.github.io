@@ -154,6 +154,10 @@ span.navcenter ol {
   padding: 0px;
 }
 
+li {
+  margin-top: 16px;
+}
+
 span.navcenter a {
   color: #fff;
 }

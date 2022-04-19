@@ -13,7 +13,6 @@ section {
 
 .main {
   --default-margin: 40px;
-  --margin: var(--default-margin);
 
   break-after: column;
   -webkit-column-break-after: column;
@@ -25,5 +24,22 @@ section {
   --xb-text-align: start;
   --xb-color: #fff;
   --xb-background: #303030;
-  padding: var(--margin);
+}
+
+@media only screen and (min-width: 751px) {
+  .main {
+    --margin: 180px;
+    padding: var(--default-margin) var(--margin);
+  }
+}
+
+@media only screen and (max-width: 750px) {
+  .main {
+    --margin: var(--default-margin);
+    padding: var(--margin);
+  }
+}
+
+section, nav {
+  width: calc(100% - var(--margin) * 2);
 }
