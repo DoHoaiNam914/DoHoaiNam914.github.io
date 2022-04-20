@@ -39,7 +39,3 @@ section {
     padding: var(--margin);
   }
 }
-
-section, nav {
-  width: calc(100% - var(--margin) * 2);
-}
