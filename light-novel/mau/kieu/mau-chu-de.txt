@@ -1,3 +1,36 @@
+Amazon
+Màu trắng:
+- Hậu cảnh: #FFFFFF
+- Cận cảnh: #000000
+- Siêu liên kết: #0000FF
+Màu xêpia:
+- Hậu cảnh: #FBF0D9
+- Cận cảnh: #5F4B32
+- Siêu liên kết: #0055AA
+Màu xanh táo:
+- Hậu cảnh: #C5E7CE
+- Cận cảnh: #3A4B43
+- Siêu liên kết: #0055AA
+Màu đen:
+- Hậu cảnh: #000000
+- Cận cảnh: #ACACAC
+- Siêu liên kết: #8FC0E9
+Tiếng Nhật
+Màu trắng:
+- Hậu cảnh: #FFFFFF
+- Cận cảnh: #000000
+Màu xêpia:
+- Hậu cảnh: #FBF0D9
+- Cận cảnh: #5F4B32
+Màu xanh táo:
+- Hậu cảnh: #C5E7CE
+- Cận cảnh: #3A4B43
+> Siêu liên kết: #0000FF
+Màu đen:
+- Hậu cảnh: #000000
+- Cận cảnh: #ACACAC
+- Siêu liên kết: #8787FF
+
 BookWalker
 Màu trắng:
 - Hậu cảnh: #FFFFFF
@@ -16,41 +49,7 @@ Màu kem:
 - Cận cảnh: #000000
 - Siêu liên kết: #32327D
 
-Kindle
-Màu trắng:
-- Hậu cảnh: #FFFFFF
-- Cận cảnh: #000000
-- Siêu liên kết: #0000FF
-Màu xêpia:
-- Hậu cảnh: #FBF0D9
-- Cận cảnh: #5F4B32
-- Siêu liên kết: #0055AA
-Màu xanh nhạt
-- Hậu cảnh: #C5E7CE
-- Cận cảnh: #3A4B43
-- Siêu liên kết: #0055AA
-Màu đen:
-- Hậu cảnh: #000000
-- Cận cảnh: #ACACAC
-- Siêu liên kết: #8FC0E9
-
-Kindle Japanese
-Màu trắng:
-- Hậu cảnh: #FFFFFF
-- Cận cảnh: #000000
-Màu xêpia:
-- Hậu cảnh: #FBF0D9
-- Cận cảnh: #5F4B32
-Màu xanh nhạt
-- Hậu cảnh: #C5E7CE
-- Cận cảnh: #3A4B43
-> Siêu liên kết: #0000FF
-Màu đen:
-- Hậu cảnh: #000000
-- Cận cảnh: #ACACAC
-- Siêu liên kết: #8787FF
-
-iBook
+Apple iBooks
 Màu trắng:
 - Hậu cảnh: #FFFFFF
 - Cận cảnh: #000000
@@ -68,6 +67,17 @@ Màu đen:
 - Cận cảnh: #ABABAB
 - Siêu liên kết: #2E7CB8
 
+Google Play
+Màu trắng:
+- Hậu cảnh: #FFFFFF
+- Cận cảnh: #000000
+Màu đen:
+- Hậu cảnh: #000000
+- Cận Cảnh: #CCCCCC
+Màu xêpia:
+- Hậu cảnh: #FFFCED
+- Cận Cảnh: #2B0D00
+
 J-Novel Club
 Màu trắng:
 - Hậu cảnh: #FFFFFF
@@ -81,7 +91,6 @@ Màu xám:
 Màu đen:
 - Hậu cảnh: #000000
 - Cận Cảnh: #FFFFFF
-
 xbreader
 Màu trắng:
 - Hậu cảnh: #FFFFFF
