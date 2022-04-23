@@ -8,7 +8,7 @@
   <script src ="../../../js/bo-doc.js"></script>
   <link href="../../style/jnovelclub-style.css" rel="stylesheet" type="text/css"/>
   <script>
-    let spines = ['cover.xhtml',
+    addEventListener('load', () => loadJNovelClubSpinesContent(['cover.xhtml',
       'frontmatter1.xhtml',
       'frontmatter2.xhtml',
       'frontmatter3.xhtml',
@@ -49,9 +49,7 @@
       'bonus1.xhtml',
       'toc.xhtml',
       'signup.xhtml',
-      'copyright.xhtml'];
-
-    addEventListener('load', jnovelclubLoader(spines));
+      'copyright.xhtml']));
   </script>
 </head>
 </html>
