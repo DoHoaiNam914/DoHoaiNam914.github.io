@@ -1,4 +1,4 @@
-function loadJNovelClubSpinesContent(spines[]) {
+function loadJNovelClubSpinesContent(spines) {
   let xhr = new XMLHttpRequest();
   let parser = new DOMParser();
   var spine = '';
