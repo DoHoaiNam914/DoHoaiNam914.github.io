@@ -13,7 +13,7 @@ li {
   list-style: none outside;
 }
 
-section, article, nav, aside, header, footer, figure, figcaption { 
+section, article, nav, aside, header, footer, figure, figcaption {
   display: block;
 }
 
@@ -24,30 +24,37 @@ body {
 
 div {
   --default-margin: 40px;
+  --margin: var(--default-margin);
+
+  background-color: rgb(48, 48, 48);
+  color: rgb(255, 255, 255);
+}
+
+div.main, nav {
+  width: calc(100% - var(--margin) * 2);
   font-family: 'Crimson Text', serif;
-  color: #fff;
+  color: white;
   background: #303030;
   text-align: start;
 }
 
 @media only screen and (min-width: 751px) {
-  section, nav {
+  div {
     --margin: 180px;
+  }
+
+  div.main, nav, img {
     padding: var(--default-margin) var(--margin);
   }
 }
 
 @media only screen and (max-width: 750px) {
-  section, nav {
-    --margin: var(--default-margin);
+  div.main, nav, img {
     padding: var(--margin);
   }
 }
 
-section, nav {
-  width: calc(100% - var(--margin) * 2);
-}
-
 img {
+  max-width: calc(100vw - var(--margin) * 2) !important;
   max-height: calc(98vh - var(--default-margin) * 2) !important;
 }

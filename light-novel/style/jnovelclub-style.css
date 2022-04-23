@@ -1,0 +1,51 @@
+@import 'jnovelclub-stylesheet.css';
+@import url('https://fonts.googleapis.com/css2?family=Literata:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  border-style: none;
+  border: 0;
+}
+
+body {
+  background-color: rgb(48, 48, 48);
+  color: rgb(193, 193, 193);
+}
+
+div {
+  --default-margin: 8px;
+  --margin: var(--default-margin);
+
+  background-color: rgb(48, 48, 48);
+  color: rgb(193, 193, 193);
+}
+
+div.main, nav {
+  width: calc(100% - var(--margin) * 2);
+  font-family: 'Literata', serif;
+  color: #c1c1c1;
+  background: #303030;
+  text-align: start;
+}
+
+@media only screen and (min-width: 751px) {
+  div {
+    --margin: 36px;
+  }
+
+  div.main, nav, img {
+    padding: var(--default-margin) var(--margin);
+  }
+}
+
+@media only screen and (max-width: 750px) {
+  div.main, nav, img {
+    padding: var(--margin);
+  }
+}
+
+img {
+  max-width: calc(100vw - var(--margin) * 2);
+  max-height: calc(98vh - var(--default-margin) * 2);
+}
