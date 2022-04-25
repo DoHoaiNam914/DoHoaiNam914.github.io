@@ -47,5 +47,5 @@ div.main, nav {
 
 img {
   max-width: calc(100vw - var(--margin) * 2);
-  max-height: calc(98vh - var(--default-margin) * 2);
+  max-height: calc(98vh - var(--default-margin) * 2) !important;
 }
