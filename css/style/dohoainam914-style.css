@@ -1,6 +1,5 @@
-@charset "UTF-8";
-@import "../fonts/YuGoth_R.css";
-@import "../fonts/Yumin.css";
+@import '../fonts/YuGothic-Regular.css';
+@import '../fonts/Yumin.css';
 
 body, div {
   --font-size: 12;
