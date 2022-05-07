@@ -1,14 +1,10 @@
-@import 'jnovelclub-stylesheet.css';
-@import 'dohoainam914-style.css';
-
 div {
   --default-margin: 8px;
   --margin: var(--default-margin);
 }
 
-div.nomargin, div.main, nav {
+div.nomargin, div section div.main, div nav {
   max-width: calc(100vw - var(--margin) * 2);
-  width: calc(100vw - var(--margin) * 2);
 }
 
 @media only screen and (min-width: 751px) {
@@ -16,17 +12,17 @@ div.nomargin, div.main, nav {
     --margin: 36px;
   }
 
-  div.nomargin, div.main, nav {
+  div.nomargin, div section div.main, div nav {
     padding: var(--default-margin) var(--margin);
   }
 }
 
 @media only screen and (max-width: 750px) {
-  div.nomargin, div.main, nav {
+  div.nomargin, div section div.main, div nav {
     padding: var(--margin);
   }
 }
 
-img.cover, img.insert {
+div section img.cover, div section div img.insert {
   max-height: calc(98vh - var(--default-margin) * 2) !important;
 }
