@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta content="text/html; charset=UTF-8" http-equiv="content-type"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1,maximum-scale=1,minimum-scale=1">
+    <title>J-Novel Club</title>
+    <link rel="stylesheet" href="/css/app.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.0.0/css/all.css">
+    <link href="/js/style/jnovelclub-style.css" rel="stylesheet" type="text/css"/>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="/js/app.js"></script>
+    <script src="https://github.com/js-cookie/js-cookie/releases/download/v3.0.1/js.cookie.js"></script>
+  </head>
+  <body>
+    <span class="controller">
+      <a class="button" href=".."><i class="fas fa-backward"></i></a>
+      <a class="button" href=".."><i class="fas fa-home"></i></a>
+      <a class="button" id="settings-button"><i class="fas fa-font"></i></a>
+      <a class="button" href="."><i class="fas fa-forward"></i></a>
+    </span>
+    <section id="settings" class="toggle">
+      <div class="settings-body toggle_body">
+        <header class="settings-header">Thiết lập</header>
+        <main class="setting-body">
+          <div class="setting" id="font-size">
+            <label>Kích cỡ phông chữ</label>
+            <div class="font-size-body">
+              <span class="font-size-button" id="shrink"><i class="fas fa-chevron-left"></i></span>
+              <input class="font-size-input" disabled="" value="12px" type="text">
+              <span class="font-size-button" id="enlarge"><i class="fas fa-chevron-right"></i></span>
+            </div>
+          </div>
+          <div class="setting" id="change-background">
+            <label>Thay đổi màu nền</label>
+            <div class="change-background-body">
+              <span class="change-background-button" id="white" data-color="#fff" style="background-color: #fff"></span>
+              <span class="change-background-button" id="sepia" data-color="#faf4e8" style="background-color: #faf4e8"></span>
+              <span class="change-background-button" id="gray" data-color="#303030" style="background-color: #303030"></span>
+              <span class="change-background-button" id="black" data-color="#000" style="background-color: #000"></span>
+            </div>
+          </div>
+        </main>
+      </div>
+    </section>
+    <script>
+      $(document).ready(function() {
+        var fontSize = Cookies.get('fontSize') || 12;
+        var background = Cookies.get('background') || '#fff';
+        var BG_TO_FG = new Map([
+          ['#fff', '#000'],
+          ['#faf4e8', '#121212'],
+          ['#303030', '#c1c1c1'],
+          ['#000', '#fff']
+        ]);
+
+        setFontSize();
+        setBackground();
+
+        $("#settings-button").on("click", () => toggle('#settings', 'fade-in-down'));
+        $("#shrink").on("click", function() {
+          fontSize = fontSize > 6 ? fontSize - 1 : (fontSize < 6 ? 12 : fontSize);
+          setFontSize();
+          Cookies.set('fontSize', fontSize, { expires: 365 });
+        });
+
+        $("#enlarge").on("click", function() {
+          fontSize = fontSize < 35 ? fontSize + 1 : (fontSize > 35 ? 12 : fontSize);
+          setFontSize();
+          Cookies.set('fontSize', fontSize, { expires: 365 });
+        });
+
+        $("span.change-background-button").on("click", function() {
+          $("span.change-background-button").removeClass("selected");
+          background = $(this).data("color");
+          setBackground();
+          Cookies.set('background', background, { expires: 365 });
+        });
+
+        function toggle(classicon, effect) {
+          if ($(classicon).hasClass("enabled")) {
+            setAllDisabled();
+          } else {
+            setAllDisabled();
+            $(classicon).addClass("enabled");
+            $("html").addClass("overflow-hidden");
+            $(classicon + " .toggle_body").addClass("animation " + effect);
+          }
+        }
+
+        function setFontSize() {
+          $("input.font-size-input").val(fontSize + "px"); 
+          $("div.main, nav").css("font-size", fontSize * 10 + "%");
+          $("div.main, nav").css("line-height", (fontSize / 10) + 0.2 + "em");
+        }
+
+        function setBackground() {
+          $("span.change-background-button[data-color=\"" + background + "\"]").addClass("selected");
+          $(document.body).css("color", BG_TO_FG.get(background));
+          $(document.body).css("background-color", background);
+        }
+
+        function setAllDisabled() {
+          $(".toggle").removeClass("enabled");
+          $(".toggle_body").removeClass("animation fade-in-left-big fade-in-down");
+          $("html").removeClass("overflow-hidden");
+        }
+      });
+    </script>
+  </body>
+</html>

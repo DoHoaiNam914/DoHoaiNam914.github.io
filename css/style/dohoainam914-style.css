@@ -1,0 +1,16 @@
+@charset "UTF-8";
+@import "../fonts/YuGoth_R.css";
+@import "../fonts/Yumin.css";
+
+body, div {
+  --font-size: 12;
+  background-color: black;
+  color: #d2d2d2;
+  font-family: 'Yu Mincho Regular', serif, 'Yu Gothic Regular', sans-serif !important;
+  font-size: calc(var(--font-size) * 10 * 100%);
+  line-height: calc(var(--font-size) / 10 + 0.2em);
+}
+
+a:link, a:visited, a:hover, a:focus, a:active {
+  color: #32327d;
+}

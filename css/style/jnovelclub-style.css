@@ -1,0 +1,32 @@
+@import 'jnovelclub-stylesheet.css';
+@import 'dohoainam914-style.css';
+
+div {
+  --default-margin: 8px;
+  --margin: var(--default-margin);
+}
+
+div.nomargin, div.main, nav {
+  max-width: calc(100vw - var(--margin) * 2);
+  width: calc(100vw - var(--margin) * 2);
+}
+
+@media only screen and (min-width: 751px) {
+  div {
+    --margin: 36px;
+  }
+
+  div.nomargin, div.main, nav {
+    padding: var(--default-margin) var(--margin);
+  }
+}
+
+@media only screen and (max-width: 750px) {
+  div.nomargin, div.main, nav {
+    padding: var(--margin);
+  }
+}
+
+img.cover, img.insert {
+  max-height: calc(98vh - var(--default-margin) * 2) !important;
+}

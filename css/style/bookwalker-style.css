@@ -1,0 +1,52 @@
+@charset "UTF-8";
+
+body {
+  background-color: white;
+  color: black;
+}
+
+section.p-image {
+  margin: 0;
+  padding: 0;
+  font-size: 0;
+}
+
+div.main {
+  --default-margin: 40px;
+  --margin: var(--default-margin);
+
+  width: calc(100% - var(--margin) * 2);
+}
+
+@media only screen and (min-width: 751px) {
+  div.main {
+    --margin: 180px;
+
+    padding: var(--default-margin) var(--margin);
+  }
+}
+
+@media only screen and (max-width: 750px) {
+  div.main {
+    padding: var(--margin);
+  }
+}
+
+section.cover div.main {
+  width: 100%;
+  padding: 0;
+}
+
+section div.main svg {
+  margin: 0;
+  padding: 0;
+  max-height: calc(100vh - var(--default-margin) * 2);
+}
+
+section.p-cover svg {
+  max-height: 100vh;
+}
+
+a:link, a:visited, a:hover, a:focus, a:active {
+  color: blue;
+}
