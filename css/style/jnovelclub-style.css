@@ -1,10 +1,18 @@
+body {
+  margin: 0;
+}
+
 div {
   --default-margin: 8px;
   --margin: var(--default-margin);
 }
 
-div.nomargin, div section div.main, div nav {
+div.nomargin {
   max-width: calc(100vw - var(--margin) * 2);
+}
+
+div section div.main, div nav {
+  width: calc(100vw - var(--margin) * 2);
 }
 
 @media only screen and (min-width: 751px) {
