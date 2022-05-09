@@ -1,19 +1,15 @@
-@import '../fonts/YuGothic-Medium.css';
-@import '../fonts/Yumin.css';
+@import '../fonts/TBMinchoMedium_213.css';
+@import '../fonts/TBGothicMed_213.css';
 
-body, div {
+body {
   background-color: black;
   color: #d2d2d2;
-  font-family: 'Yu Mincho Regular', serif-ja, serif;
+  font-family: 'TBMincho Medium', serif-ja, serif;
   font-size: 12px;
 }
 
-.mfont {
-  font-family: 'Yu Mincho Regular', serif-ja, serif;
-}
-
 .gfont {
-  font-family: 'Yu Gothic Medium', sans-serif-ja, sans-serif;
+  font-family: 'TBGothic Medium', sans-serif-ja, sans-serif;
 }
 
 a:link, a:visited, a:hover, a:focus, a:active {
