@@ -7,24 +7,24 @@
   overflow: hidden;
 }
 
-span.controller {
+span.navigator {
   background-color: #303030;
   border: 0.5px solid #c1c1c1;
   bottom: 0;
   box-sizing: border-box;
-  height: 10vw;
+  height: 48px;
   position: fixed;
   width: 100%;
   z-index: 9999;
 }
 
-span.controller a.button {
+span.navigator a.button {
   color: #c1c1c1;
   float: left;
-  padding: 24px 8px;
+  padding: 12px 10.3vw;
   text-align: center;
   text-decoration: none;
-  width: 20vw;
+  width: 16px;
 }
 
 #settings {
@@ -70,13 +70,13 @@ span.controller a.button {
   vertical-align: middle;
 }
 
-#settings div.settings-body main.setting-body div.setting div span.font-size-button {
+#font-size div.font-size-body span.font-size-button {
   color: #c1c1c1;
   padding: 10px;
 }
 
-#settings div.settings-body main.setting-body div.setting div input.font-size-input {
-  font-size: 12px;
+#font-size div.font-size-body input.font-size-input {
+  font-size: 100%;
   text-align: center;
 }
 
@@ -87,10 +87,10 @@ span.controller a.button {
   width: 32px;
 }
 
-#change-background div.change-background-body span.selected#white, #change-background div.change-background-body span.selected#sepia {
+#white, #sepia {
   border: 1px solid black;
 }
 
-#change-background div.change-background-body span.selected#gray, #change-background div.change-background-body span.selected#black {
+#gray, #black {
   border: 1px solid white;
 }
