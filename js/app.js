@@ -6,7 +6,7 @@ $(document).ready(function () {
   console.log(searchParams.get('tap'));
 
   if (searchParams.has('trang')) {
-    $.get("trang" + searchParams.has('trang').concat('.html'), function(data) {
+    $.get("trang" + searchParams.get('trang').concat('.html'), function(data) {
       data = parser.parseFromString(data, 'text/html');
       $(document.head).html(data.head.innerHTML);
       $(document.body).html(data.body.innerHTML);
