@@ -1,4 +1,4 @@
-* {
+body {
   margin: 0;
   padding: 0;
 }
@@ -8,27 +8,28 @@
 }
 
 span.navigator {
-  background-color: #303030;
-  border: 0.5px solid #c1c1c1;
+  background-color: white;
+  border: 0.5px solid black;
   bottom: 0;
   box-sizing: border-box;
   height: 48px;
   position: fixed;
+  text-align: center;
   width: 100%;
   z-index: 9999;
 }
 
 span.navigator a.button {
-  color: #c1c1c1;
+  color: black;
   float: left;
-  padding: 12px 10.3vw;
+  padding: 16px 10.3vw;
   text-align: center;
   text-decoration: none;
   width: 16px;
 }
 
 #settings {
-  color: #c1c1c1;
+  color: black;
   height: 100%;
   opacity: 0;
   padding-top: 60%;
@@ -43,19 +44,19 @@ span.navigator a.button {
 }
 
 #settings div.settings-body {
-  border: 0.5px solid #c1c1c1;
+  border: 0.5px solid black;
   margin: auto;
   width: 390px;
 }
 
 #settings div.settings-body header.settings-header {
-  background-color: black;
-  border: 0.5px solid #c1c1c1;
+  background-color: white;
+  border: 0.5px solid black;
   text-align: center;
 }
 
 #settings div.settings-body main.setting-body {
-  background-color: #303030;
+  background-color: white;
   text-align: center;
 }
 
@@ -71,7 +72,7 @@ span.navigator a.button {
 }
 
 #font-size div.font-size-body span.font-size-button {
-  color: #c1c1c1;
+  color: black;
   padding: 10px;
 }
 
@@ -87,10 +88,10 @@ span.navigator a.button {
   width: 32px;
 }
 
-#white, #sepia {
+#white, #cream {
   border: 1px solid black;
 }
 
-#gray, #black {
+#black, #sepia {
   border: 1px solid white;
 }

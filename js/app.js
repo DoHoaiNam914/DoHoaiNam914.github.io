@@ -1,21 +1,27 @@
 const xhr = new XMLHttpRequest();
 const parser = new DOMParser();
 
-function load(volume) {
-  $(document.head).load(volume.concat('/content.html'));
-  $.get(volume.concat('/content.html'), function(data) {
-    data = (new DOMParser()).parseFromString(data, 'text/html');
-    $(document.body).html('');
-  });
-}
+$(document).ready(function () {
+  let searchParams = new URLSearchParams(window.location.search);
+  console.log(searchParams.get('tap'));
 
-function navigate(page) {
-  $.get(page.concat(".html"), function(data) {
-    data = (new DOMParser()).parseFromString(data, 'text/html')
-    $(document.head).html(data.head.innerHTML);
-    $(document.body).html(data.body.innerHTML);
-  });
-}
+  if (searchParams.has('trang')) {
+    $.get("trang" + searchParams.has('trang').concat('.html'), function(data) {
+      data = parser.parseFromString(data, 'text/html');
+      $(document.head).html(data.head.innerHTML);
+      $(document.body).html(data.body.innerHTML);
+    });
+  } else if (searchParams.has('tap')) {
+    $(document.body).html('');
+    $(document.head).load(searchParams.get('tap').concat('/content.html'));
+  } else {
+    $.get("trang1.html", function(data) {
+      data = parser.parseFromString(data, 'text/html')
+      $(document.head).html(data.head.innerHTML);
+      $(document.body).html(data.body.innerHTML);
+    });
+  }
+});
 
 function loadJNovelClubSpinesContent(book, volume, spineList) {
   var spines = '';
