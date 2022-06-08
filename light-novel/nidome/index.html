@@ -1,31 +1,19 @@
 <!DOCTYPE html>
-<html lang="vi-VN">
+<html>
   <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Nidome no Yuusha wa Fukushuu no Michi wo Warai Ayumu - DoHoaiNam Light Novel Pages</title>
-    <meta property="og:title" content="Nidome no Yuusha wa Fukushuu no Michi wo Warai Ayumu - DoHoaiNam Light Novel Pages" />
-    <link rel="canonical" href="https://dohoainam914.github.io/" />
-    <meta property="og:url" content="https://dohoainam914.github.io/" />
-    <meta property="og:site_name" content="DoHoaiNam Light Novel Pages" />
-    <meta property="og:type" content="website" />
-    <meta name="twitter:card" content="summary" />
-    <meta property="twitter:title" content="DoHoaiNam914.github.io" />
-    <link rel="stylesheet" href="../../css/style.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script>
+      $(document).ready(function() {
+        $.get("trang1.html", function(data) {
+          data = (new DOMParser()).parseFromString(data, 'text/html')
+          $(document.head).html(data.head.innerHTML);
+          $(document.body).html(data.body.innerHTML);
+        });
+      });
+    </script>
   </head>
-  <body>
-    <div class="container">
-      <p><img class="pc" src="/img/background.jpeg" alt=""></p>
-      <span class="navcenter">
-        <h1><a href="..">Danh sách tập</a></h1>
-        <hr>
-        <ol>
-          <li><a href="vol-1-the-traitorous-princess">Vol. 1: The Traitorous Princess</a></li>
-          <li><a href="vol-2-the-mad-spellcaster">Vol. 2: The Mad Spellcaster</a></li>
-        </ol>
-      </span>
-      <p class="copyright">&copy; 2022 Đỗ Hoài Nam</p>
-    </div>
-  </body>
 </html>

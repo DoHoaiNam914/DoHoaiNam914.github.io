@@ -1,15 +1,8 @@
-@import '../fonts/TBMinchoMedium_213.css';
-@import '../fonts/TBGothicMed_213.css';
-
 body {
   background-color: black;
   color: #d2d2d2;
-  font-family: 'TBMincho Medium', serif-ja, serif;
+  font-family: serif-ja, serif;
   font-size: 12px;
-}
-
-.gfont {
-  font-family: 'TBGothic Medium', sans-serif-ja, sans-serif;
 }
 
 a:link, a:visited, a:hover, a:focus, a:active {
