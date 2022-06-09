@@ -1,13 +1,13 @@
-body {
-  margin: 0;
-}
-
 div {
   --default-margin: 8px;
   --margin: var(--default-margin);
 }
 
-div div.galley-rw section, #toc, #nav {
+div section div.cover_image img, div section div.image_full img {
+  max-height: calc(95vh - var(--default-margin) * 2);
+}
+
+div div.galley-rw section, #toc, #nav nav, #nav nav ol {
   width: calc(100vw - var(--margin) * 2);
 }
 
@@ -16,17 +16,13 @@ div div.galley-rw section, #toc, #nav {
     --margin: 36px;
   }
 
-  div section div.cover_image img, div section div.image_full img, div div.galley-rw section, #toc, #nav {
+  div section div.cover_image img, div section div.image_full img, div div.galley-rw section, #toc, #nav nav, #nav nav ol {
     padding: var(--default-margin) var(--margin);
   }
 }
 
 @media only screen and (max-width: 750px) {
-  div section div.cover_image, div section div.image_full, div div.galley-rw section, #toc, #nav {
+  div section div.cover_image img, div section div.image_full, div div.galley-rw section, #toc, #nav nav, #nav nav ol {
     padding: var(--margin);
   }
-}
-
-div section div.cover_image img, div section div.image_full img {
-  max-height: calc(95vh - var(--default-margin) * 2);
 }

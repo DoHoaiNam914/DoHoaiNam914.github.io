@@ -3,7 +3,6 @@ const parser = new DOMParser();
 
 $(document).ready(function () {
   let searchParams = new URLSearchParams(window.location.search);
-  console.log(searchParams.get('tap'));
 
   if (searchParams.has('trang')) {
     $.get("trang" + searchParams.get('trang').concat('.html'), function(data) {
@@ -23,29 +22,6 @@ $(document).ready(function () {
   }
 });
 
-function loadJNovelClubSpinesContent(book, volume, spineList) {
-  var spines = '';
-
-  for (let i = 0; i < spineList.length; i++) {
-    let spineName = spineList[i].replace('.xhtml', '').toString();
-    xhr.open("GET", volume.concat('/OEBPS/Text/' + spineName.concat('.xhtml')), false);
-    xhr.onload = function() {
-      let html = parser.parseFromString(xhr.responseText, 'application/xhtml+xml');
-
-      if (i === 0) {
-        $(document.head).html(html.head.innerHTML.replace('../Styles', volume.concat('/OEBPS/Styles')));
-      }
-
-      spines += '<div' + (xhr.responseText.includes('<img') ? ' class="nomargin center"' : '') + (!xhr.responseText.includes('id="' + spineName + '"') ? ' id="' + spineName + '"' : '') + '>' + parser.parseFromString(xhr.responseText, 'application/xhtml+xml').body.innerHTML.replace(new RegExp('../Images', 'g'), 'https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/light-novel/' + book.concat('/' + volume.concat('/OEBPS/Images'))).replace(new RegExp('../Text/', 'g'), '#').replace(/.xhtml/g, '').replace(/\n$/, '').replace(/#toc#/g, '#').replace(new RegExp('xmlns="http://www.w3.org/1999" xmlns:epub="http://www.idpf.org/2007/ops" epub:', 'g'), '') + '</div>\n\n\n';
-    }
-
-    xhr.send();
-  }
-
-  $(document.head).append('\n<link rel="stylesheet" href="../../css/style/dohoainam914-jnovelclub-style.css">');
-  $(document.body).append(spines);
-}
-
 function loadYenPressSpinesContent(book, volume, spineList) {
   var spines = '';
 
@@ -56,20 +32,20 @@ function loadYenPressSpinesContent(book, volume, spineList) {
       let html = parser.parseFromString(xhr.responseText, 'application/xhtml+xml');
 
       if (i === 0) {
-        $(document.head).html(html.head.innerHTML.replace('../Styles', volume.concat('/OEBPS/Styles')));
+        $(document.head).html(html.head.innerHTML.replace(new RegExp(' xmlns="http://www.w3.org/1999/xhtml"', 'g'), ''));
+        $("link[href=\"../Styles/stylesheet.css\"]").replaceWith('<link rel="stylesheet" href="../../css/style/reset-stylesheet.css">\n' + $("link[href=\"../Styles/stylesheet.css\"]").prop('outerHTML').replace('..', volume.concat('/OEBPS')) + '\n<link rel="stylesheet" href="../../css/style/dohoainam914-yenpress-style.css">');
       }
 
-      spines += '<div' + (!xhr.responseText.includes('id="' + spineName + '"') ? ' id="' + spineName + '"' : '') + '>' + html.body.innerHTML.replace(new RegExp('../Images', 'g'), 'https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/light-novel/' + book.concat('/' + volume.concat('/OEBPS/Images'))).replace(new RegExp('../Text/', 'g'), '#').replace(/.xhtml/g, '').replace(/\n$/, '').replace(/#cover#/g, '#').replace(/#toc#/g, '#').replace(new RegExp('xmlns="http://www.w3.org/1999" epub:', 'g'), '').replace(new RegExp(' xmlns:epub="http://www.idpf.org/2007/ops"', 'g'), '') + '</div>\n\n\n';
+      spines += '\n<div' + (!xhr.responseText.includes('id="' + spineName + '"') ? ' id="' + spineName + '"' : '') + '>' + html.body.innerHTML.replace(new RegExp(' xmlns="http://www.w3.org/1999/xhtml"', 'g'), '').replace(new RegExp(' xmlns:epub="http://www.idpf.org/2007/ops"', 'g'), '').replace(new RegExp('epub:', 'g'), '').replace(new RegExp('../Images', 'g'), 'https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/light-novel/' + book.concat('/' + volume.concat('/OEBPS/Images'))).replace(new RegExp('../Text/', 'g'), '#').replace(/.xhtml/g, '').replace(/#cover#/g, '#').replace(/#toc#/g, '#') + '</div>\n\n\n';
     }
 
     xhr.send();
   }
 
-  $(document.head).append('\n<link rel="stylesheet" href="../../css/style/dohoainam914-yenpress-style.css">');
   $(document.body).append(spines);
 }
 
-function loadJNovelClubSpinesContentOld(book, volume, spineList) {
+function loadJNovelClubSpinesContent(book, volume, spineList) {
   var spines = '';
 
   for (let i = 0; i < spineList.length; i++) {
@@ -79,16 +55,16 @@ function loadJNovelClubSpinesContentOld(book, volume, spineList) {
       let html = parser.parseFromString(xhr.responseText, 'application/xhtml+xml');
 
       if (i === 0) {
-        $(document.head).html(html.head.innerHTML.replace('../Styles', volume.concat('/OEBPS/Styles')));
+        $(document.head).html(html.head.innerHTML.replace(new RegExp(' xmlns="http://www.w3.org/1999/xhtml"', 'g'), ''));
+        $("link[href=\"../Styles/stylesheet.css\"]").replaceWith('<link rel="stylesheet" href="../../css/style/reset-stylesheet.css">\n  ' + $("link[href=\"../Styles/stylesheet.css\"]").prop('outerHTML').replace('..', volume.concat('/OEBPS')) + '\n  <link rel="stylesheet" href="../../css/style/dohoainam914-yenpress-style.css">');
       }
 
-      spines += '<div' + (xhr.responseText.includes('<img') ? ' class="nomargin center"' : '') + (!xhr.responseText.includes('id="' + spineName + '"') ? ' id="' + spineName + '"' : '') + '>' + parser.parseFromString(xhr.responseText, 'application/xhtml+xml').body.innerHTML.replace(new RegExp('../Images/jnovelclub', 'g'), 'https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/tranh-minh-hoa/jnovelclub').replace(new RegExp('../Images', 'g'), 'https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/tranh-minh-hoa/' + book +'/' + volume).replace(new RegExp('../Text/', 'g'), '#').replace(/.xhtml/g, '').replace(/\n$/, '').replace(/#toc#/g, '#').replace(new RegExp('xmlns="http://www.w3.org/1999" xmlns:epub="http://www.idpf.org/2007/ops" epub:', 'g'), '') + '</div>\n\n\n';
+      spines += '\n<div' + (xhr.responseText.includes('<img') ? ' class="nomargin center"' : '') + (!xhr.responseText.includes('id="' + spineName + '"') ? ' id="' + spineName + '"' : '') + '>' + parser.parseFromString(xhr.responseText, 'application/xhtml+xml').body.innerHTML.replace(new RegExp('xmlns="http://www.w3.org/1999" xmlns:epub="http://www.idpf.org/2007/ops" epub:', 'g'), '').replace(new RegExp('../Images', 'g'), 'https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/light-novel/' + book.concat('/' + volume.concat('/OEBPS/Images'))).replace(new RegExp('../Text/', 'g'), '#').replace(/.xhtml/g, '').replace(/#toc#/g, '#') + '</div>\n\n\n';
     }
 
     xhr.send();
   }
 
-  $(document.head).append('\n<link rel="stylesheet" href="../../css/style/dohoainam914-jnovelclub-style.css">');
   $(document.body).append(spines);
 }
 
@@ -102,15 +78,38 @@ function loadYenPressSpinesContentOld(book, volume, spineList) {
       let html = parser.parseFromString(xhr.responseText, 'application/xhtml+xml');
 
       if (i === 0) {
-        $(document.head).html(html.head.innerHTML.replace('../Styles', volume.concat('/OEBPS/Styles')));
+        $(document.head).html(html.head.innerHTML.replace(new RegExp(' xmlns="http://www.w3.org/1999/xhtml"', 'g'), ''));
+        $("link[href=\"../Styles/stylesheet.css\"]").replaceWith('<link rel="stylesheet" href="../../css/style/reset-stylesheet.css">\n' + $("link[href=\"../Styles/stylesheet.css\"]").prop('outerHTML').replace('..', volume.concat('/OEBPS')) + '\n<link rel="stylesheet" href="../../css/style/dohoainam914-yenpress-style.css">');
       }
 
-      spines += '<div' + (!xhr.responseText.includes('id="' + spineName + '"') ? ' id="' + spineName + '"' : '') + '>' + parser.parseFromString(xhr.responseText, 'application/xhtml+xml').body.innerHTML.replace(new RegExp('../Images', 'g'), 'https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/tranh-minh-hoa/' + book +'/' + volume).replace(new RegExp('../Text/', 'g'), '#').replace(/.xhtml/g, '').replace(/\n$/, '').replace(/#cover#/g, '#').replace(/#toc#/g, '#').replace(new RegExp('xmlns="http://www.w3.org/1999" epub:', 'g'), '').replace(new RegExp(' xmlns:epub="http://www.idpf.org/2007/ops"', 'g'), '') + '</div>\n\n\n';
+      spines += '\n<div' + (!xhr.responseText.includes('id="' + spineName + '"') ? ' id="' + spineName + '"' : '') + '>' + parser.parseFromString(xhr.responseText, 'application/xhtml+xml').body.innerHTML.replace(new RegExp(' xmlns="http://www.w3.org/1999/xhtml"', 'g'), '').replace(new RegExp(' xmlns:epub="http://www.idpf.org/2007/ops"', 'g'), '').replace(new RegExp('epub:', 'g'), '').replace(new RegExp('../Images', 'g'), 'https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/tranh-minh-hoa/' + book +'/' + volume).replace(new RegExp('../Text/', 'g'), '#').replace(/.xhtml/g, '').replace(/#cover#/g, '#').replace(/#toc#/g, '#') + '</div>\n\n\n';
     }
 
     xhr.send();
   }
 
-  $(document.head).append('\n<link rel="stylesheet" href="../../css/style/dohoainam914-yenpress-style.css">');
+  $(document.body).append(spines);
+}
+
+function loadJNovelClubSpinesContentOld(book, volume, spineList) {
+  var spines = '';
+
+  for (let i = 0; i < spineList.length; i++) {
+    let spineName = spineList[i].replace('.xhtml', '').toString();
+    xhr.open("GET", volume.concat('/OEBPS/Text/' + spineName.concat('.xhtml')), false);
+    xhr.onload = function() {
+      let html = parser.parseFromString(xhr.responseText, 'application/xhtml+xml');
+
+      if (i === 0) {
+        $(document.head).html(html.head.innerHTML.replace(new RegExp(' xmlns="http://www.w3.org/1999/xhtml"', 'g'), ''));
+        $("link[href=\"../Styles/stylesheet.css\"]").replaceWith('<link rel="stylesheet" href="../../css/style/reset-stylesheet.css">\n  ' + $("link[href=\"../Styles/stylesheet.css\"]").prop('outerHTML').replace('..', volume.concat('/OEBPS')) + '\n  <link rel="stylesheet" href="../../css/style/dohoainam914-yenpress-style.css">');
+      }
+
+      spines += '\n<div' + (xhr.responseText.includes('<img') ? ' class="nomargin center"' : '') + (!xhr.responseText.includes('id="' + spineName + '"') ? ' id="' + spineName + '"' : '') + '>' + parser.parseFromString(xhr.responseText, 'application/xhtml+xml').body.innerHTML.replace(new RegExp('xmlns="http://www.w3.org/1999" xmlns:epub="http://www.idpf.org/2007/ops" epub:', 'g'), '').replace(new RegExp('../Images/jnovelclub', 'g'), 'https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/tranh-minh-hoa/jnovelclub').replace(new RegExp('../Images', 'g'), 'https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/tranh-minh-hoa/' + book +'/' + volume).replace(new RegExp('../Text/', 'g'), '#').replace(/.xhtml/g, '').replace(/#toc#/g, '#') + '</div>\n\n\n';
+    }
+
+    xhr.send();
+  }
+
   $(document.body).append(spines);
 }

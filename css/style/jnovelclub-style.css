@@ -1,7 +1,3 @@
-body {
-  margin: 0;
-}
-
 div {
   --default-margin: 8px;
   --margin: var(--default-margin);
@@ -9,6 +5,10 @@ div {
 
 div.nomargin {
   max-width: calc(100vw - var(--margin) * 2);
+}
+
+div section img.cover, div section div img.insert {
+  max-height: calc(98vh - var(--default-margin) * 2) !important;
 }
 
 div section div.main, div nav {
@@ -29,8 +29,4 @@ div section div.main, div nav {
   div.nomargin, div section div.main, div nav {
     padding: var(--margin);
   }
-}
-
-div section img.cover, div section div img.insert {
-  max-height: calc(98vh - var(--default-margin) * 2) !important;
 }
