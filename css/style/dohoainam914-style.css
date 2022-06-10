@@ -1,10 +1,41 @@
 body {
-  background-color: black;
-  color: #d2d2d2;
-  font-size: 12px;
+  line-height: 1.2em;
+}
+
+@media only screen and (min-width: 751px) {
+  body {
+    font-size: 12px;
+  }
+}
+
+@media only screen and (max-width: 750px) {
+  body {
+    font-size: 18px;
+  }
 }
 
 a:link, a:visited, a:hover, a:focus, a:active {
-  color: #ebebeb;
   text-decoration: underline;
+}
+
+@media (prefers-color-scheme: light) {
+  body {
+    background-color: white;
+    color: black;
+  }
+
+  a:link, a:visited, a:hover, a:focus, a:active {
+    color: blue;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: black;
+    color: #d2d2d2;
+  }
+
+  a:link, a:visited, a:hover, a:focus, a:active {
+    color: #ebebeb;
+  }
 }
