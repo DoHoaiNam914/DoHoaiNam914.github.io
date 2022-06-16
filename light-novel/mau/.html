@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>DoHoaiNam Reader</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1, IE=edge">
+    <meta name="viewport" content="initial-scale=1, user-scalable=0, maximum-scale=1">
+    <link rel="stylesheet" type="text/css" href="../css/common.css">
+    <!--[if lte IE 9]><link rel="stylesheet" type="text/css" href="css/common_ie.css"><![endif]-->
+    <script type="text/javascript" src="../js/viewer.js"></script>
+<style>
+html, *, div, table {
+  outline: 0 !important;
+  touch-action: none !important;
+}
+
+html, body, #viewer {
+  height: 100%;
+  width: 100%;
+}
+
+body {
+  background-color: rgba(255, 255, 255, 0);
+  margin: 0;
+}
+
+div.viewer {
+  position: relative;
+}
+
+.hidden {
+  display: none;
+}
+
+#menu {
+  background-color: #d2d2d2;
+  border-style: none;
+  box-sizing: border-box;
+  position: absolute;
+  height: 44px;
+  left: 0;
+  letter-spacing: -0.4em;
+  opacity: 0.01;
+  padding: 3px 6px;
+  top: 0;
+  width: 100%;
+  z-index: -1;
+}
+
+#viewer #menu.show{
+  display: block;
+  opacity: 1;
+  z-index: 1500;
+}
+
+#menu div.menuField {
+  display: inline-block;
+  height: 100%;
+  margin: 0 20px 0 0;
+  position: relative;
+  width: 40px;
+  z-index: 1510;
+}
+
+body.mobile #menu div.menuField {
+  background-image: none;
+  height: 38px;
+  left: 0;
+  margin-left: 0;
+  margin-top: 0;
+  top: 0;
+  width: 38px;
+}
+
+#menu div.menuField button {
+  background: 0 0;
+  background-image: url(../img/icons.png);
+  border-style: none;
+  font-size: 20px;
+  position: absolute;
+  height: 32px;
+  left: 50%;
+  margin-left: -19px;
+  margin-top: -14px;
+  opacity: 0.9;
+  overflow: visible
+  padding: 0;
+  top: 50%;
+  width: 32px;
+}
+
+#closeViewer{
+  background-position: -64px 0;
+}
+
+#menu div.menuField #closeViewer div {
+  height: 75%;
+  left: 10%;
+  top: 16%;
+  width: 75%;
+}
+
+#menu div.submenu {
+  display: inline-block;
+  height: 100%;
+  margin: 0 0 0 20px;
+}
+
+.mobile #menu div.submenu {
+  float: right;
+  margin: 0 0 0 10px;
+}
+
+body.mobile #showTableOfContents {
+  margin-right: 0;
+}
+
+#showTableOfContents {
+  background-position: -128px -32px;
+}
+
+#showSettingPanel {
+  background-position: 0 -96px;
+}
+
+div.menuDialog {
+  background: rgba(0, 0, 0, 0.5);
+  border: 0;
+  box-sizing: border-box;
+  height: 100%;
+  left: 0;
+  padding:60px 0 60px 10px;
+  top: 0;
+  width: 100%;
+  z-index: 2000 !important;
+}
+
+.mobile div.menuDialog {
+  background: rgba(0, 0, 0, 0.5);
+  height: 100%;
+  padding: 30px 20px 80px;
+  width: 100%;
+  z-index: 2000 !important;
+}
+
+.ui-dialog {
+  -webkit-user-select: none;
+  overflow: hidden;
+  position: absolute;
+  padding: 0.2em;
+  width: 300px;
+}
+
+.ui-widget {
+  font-family: Verdana, Arial, sans-serif;
+  font-size: 1.1em;
+}
+
+#settingPanel {
+  background-color: #fff;
+  border: 1px solid #aaa;
+  border-style: none solid;
+  height: auto;
+  max-height: 100%;
+  overflow: hidden
+  padding: 0 15px;
+  width: 200px;
+}
+
+.mobile #settingPanel .mobile .menuDialog .padding {
+  box-sizing: border-box;
+  width: 100% !important;
+}
+</style>
+  </head>
+  <body>
+    <div class="viewer" id="viewer">
+      <div id="renderer" class="renderer">
+        <div id="viewport">
+          <div></div>
+        </div>
+      </div>
+      <div id="menu" class="hidden">
+        <div class="menuField separator"><button id="closeViewer"></button></div>
+        <div class="submenu">
+          <div class="menuField" id="showTableOfContentsMenuField"><button id="showTableOfContents"></button></div>
+          <div class="menuField" id="showSettingPanelMenuField"><button id="showSettingPanel"></button></div>
+        </div>
+      </div>
+    </div>
+    <div class="menuDialog">
+      <div id="settingPanel" class="hidden ui-dialog-content ui-widget-content">
+        <div class="item">
+          <div id="settingFontSizeLabel" class="menuLabel">Cỡ Phông</div>
+          <span id="settingFontSize" class="selector ui-buttonset">
+            <input type="radio" id="fontSize_normal" name="fontSize" value="normal" checked="checked" class="ui-helper-hidden-accessible">
+            <label for="fontSize_normal" class="ui-state-active ui-button ui-widget ui-state-default ui-button-text-only ui-corner-left ui-corner-right disable" role="button" aria-disabled="false">
+              <span class="ui-button-text">
+            </label>
+          </span>
+        </div>
+        <div class="item">
+          <div id="settingFontFaceLabel" class="menuLabel"></div><span id="settingFontFace" class="selector"></span>
+        </div>
+        <div class="padding ui-corner-bottom">
+      </div>
+    </div>
+  </body>
+</html>
