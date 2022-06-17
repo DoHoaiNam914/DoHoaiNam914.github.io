@@ -224,13 +224,13 @@ body {
 /* CONFIG */
 
 :root[style*="dohoainam-sepia-theme"] {
-  --RS__backgroundColor: #ebd2a5;
-  --RS__textColor: #5a4114;
+  --DHN__backgroundColor: #ebd2a5;
+  --DHN__textColor: #5a4114;
 
-  --RS__linkColor: #50320c;
-  --RS__visitedColor: #50320c;
+  --DHN__linkColor: #50320c;
+  --DHN__visitedColor: #50320c;
 
-  --RS__maxLineLength: 40.01rem; /* Forcing a reflow in Blink/Webkit so that blend mode can work */
+  --DHN__maxLineLength: 40.01rem; /* Forcing a reflow in Blink/Webkit so that blend mode can work */
 }
 
 /* we don’t need to redeclare bg-color and color for :root since we will inherit and update from day/default mode */
@@ -242,12 +242,12 @@ body {
 
 :root[style*="dohoainam-sepia-theme"] a:link,
 :root[style*="dohoainam-sepia-theme"] a:link * {
-  color: var(--RS__linkColor);
+  color: var(--DHN__linkColor);
 }
 
 :root[style*="dohoainam-sepia-theme"] a:visited,
 :root[style*="dohoainam-sepia-theme"] a:visited * {
-  color: var(--RS__visitedColor);
+  color: var(--DHN__visitedColor);
 }
 
 /* Columns number pref
@@ -274,14 +274,14 @@ body {
   /* If one column, make sure we limit line-length */
   :root[style*="--USER__colCount: 1"],
   :root[style*="--USER__colCount:1"] {
-    --RS__maxLineLength: 40rem !important; /* This is the only way for the user setting to work in webkit… */
-    --RS__colWidth: 100vw;
+    --DHN__maxLineLength: 40rem !important; /* This is the only way for the user setting to work in webkit… */
+    --DHN__colWidth: 100vw;
   }
 
   /* If smartphone landscape, and 2 columns, col width the same as iPad landscape + desktop */
   :root[style*="--USER__colCount: 2"],
   :root[style*="--USER__colCount:2"] {
-    --RS__colWidth: auto; /* User explicitely tells he/she wants 2 columns, we reset floor value */
+    --DHN__colWidth: auto; /* User explicitely tells he/she wants 2 columns, we reset floor value */
   }
 }
 
@@ -293,7 +293,7 @@ body {
 /* Page Margins: the user margin is a factor of the page gutter e.g. 0.5, 0.75, 1, 1.25, 1.5, etc. */
 
 :root[style*="--USER__pageMargins"] body {
-  padding: 0 calc(var(--RS__pageGutter) * var(--USER__pageMargins)) !important;
+  padding: 0 calc(var(--DHN__pageGutter) * var(--USER__pageMargins)) !important;
 }
 
 /* Text align pref
