@@ -25,14 +25,7 @@
   --DHN__maxLineLength: 40rem;
 
   /* Default page horizontal margins (in pixels so that it won’t resize with font-size) */
-  --DHN__pageGutter: 60px; /* See if colGap and pageGutter can be the same var */
-}
-
-@media only screen and (max-width: 750px) {
-  :root {
-    /* Default page horizontal margins (in pixels so that it won’t resize with font-size) */
-    --DHN__pageGutter: 8px; /* See if colGap and pageGutter can be the same var */
-  }
+  --DHN__pageGutter: 8px; /* See if colGap and pageGutter can be the same var */
 }
 
 /* Reset page margins for Forward compatibility */
@@ -77,7 +70,7 @@
   margin: 0 !important;
 
   /* Column size will depend on this if we want to make it responsive */
-  font-size: 12px !important;
+  font-size: 18px !important;
 
   -webkit-text-size-adjust: 100%;
 
@@ -90,10 +83,9 @@
   -webkit-touch-callout: none;
 }
 
-@media only screen and (max-width: 750px) {
+@media only screen and (min-width: 75em) {
   :root {
-    /* Column size will depend on this if we want to make it responsive */
-    font-size: 18px !important;
+    font-size: 12px !important;
   }
 }
 
