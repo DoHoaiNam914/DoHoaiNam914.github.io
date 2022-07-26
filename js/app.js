@@ -11,6 +11,7 @@ $(document).ready(function () {
       $(document.body).html(data.body.innerHTML);
     });
   } else if (searchParams.has('tap')) {
+    window.location.href = window.location.href.split("#")[0];
     $(document.body).html('');
     $(document.head).load(searchParams.get('tap').concat('/content.html'));
   } else {
