@@ -42,6 +42,7 @@
 
   /* Column size will depend on this if we want to make it responsive */
   font-size: 18px !important;
+  overflow-wrap: break-word;
 
   -webkit-text-size-adjust: 100%;
 
