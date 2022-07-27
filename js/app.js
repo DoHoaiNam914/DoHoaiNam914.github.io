@@ -12,7 +12,7 @@ $(document).ready(function () {
     });
   } else if (searchParams.has('tap')) {
     if (window.location.hash != '') {
-      window.location.hash = '';
+      window.location.href = window.location.href.split('#')[0];
     }
 
     $(document.body).html('');
