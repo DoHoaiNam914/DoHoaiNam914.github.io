@@ -11,7 +11,10 @@ $(document).ready(function () {
       $(document.body).html(data.body.innerHTML);
     });
   } else if (searchParams.has('tap')) {
-    window.location.href = window.location.href.split("#")[0];
+    if (window.location.href.contain('#')) {
+      window.history.pushState('', document.title, window.location.pathname + window.location.search);
+    }
+
     $(document.body).html('');
     $(document.head).load(searchParams.get('tap').concat('/content.html'));
   } else {
@@ -29,9 +32,9 @@ function loadYenPressSpinesContent(book, volume, spineList) {
     xhr.open("GET", volume.concat('/OEBPS/Text/' + spineName.concat('.xhtml')), false);
     xhr.onload = function() {
       let html = parser.parseFromString(xhr.responseText, 'application/xhtml+xml');
-      $(document.documentElement).attr("lang", html.documentElement.getAttribute('lang'));
 
       if (i === 0) {
+        $(document.documentElement).attr("lang", html.documentElement.getAttribute('lang'));
         $(document.head).html(html.head.innerHTML.replace(new RegExp(' xmlns="http://www.w3.org/1999/xhtml"', 'g'), ''));
         $("link[href=\"../Styles/stylesheet.css\"]").replaceWith('<link rel="stylesheet" href="../../css/style/DoHoaiNamStyle-before.css">\n<link rel="stylesheet" href="../../css/style/DoHoaiNamStyle-ebpaj_fonts_patch.css">\n' + $("link[href=\"../Styles/stylesheet.css\"]").prop('outerHTML').replace('..', volume.concat('/OEBPS')) + '\n<link rel="stylesheet" href="../../css/style/DoHoaiNamStyle-after.css">');
       }
@@ -51,9 +54,9 @@ function loadJNovelClubSpinesContent(book, volume, spineList) {
     xhr.open("GET", volume.concat('/OEBPS/Text/' + spineName.concat('.xhtml')), false);
     xhr.onload = function() {
       let html = parser.parseFromString(xhr.responseText, 'application/xhtml+xml');
-      $(document.documentElement).attr("lang", html.documentElement.getAttribute('lang'));
 
       if (i === 0) {
+        $(document.documentElement).attr("lang", html.documentElement.getAttribute('lang'));
         $(document.head).html(html.head.innerHTML.replace(new RegExp(' xmlns="http://www.w3.org/1999/xhtml"', 'g'), ''));
         $("link[href=\"../Styles/stylesheet.css\"]").replaceWith('<link rel="stylesheet" href="../../css/style/DoHoaiNamStyle-before.css">\n  <link rel="stylesheet" href="../../css/style/DoHoaiNamStyle-ebpaj_fonts_patch.css">\n  ' + $("link[href=\"../Styles/stylesheet.css\"]").prop('outerHTML').replace('..', volume.concat('/OEBPS')) + '\n  <link rel="stylesheet" href="../../css/style/DoHoaiNamStyle-after.css">');
       }
@@ -73,9 +76,9 @@ function loadYenPressSpinesContentOld(book, volume, spineList) {
     xhr.open("GET", volume.concat('/OEBPS/Text/' + spineName.concat('.xhtml')), false);
     xhr.onload = function() {
       let html = parser.parseFromString(xhr.responseText, 'application/xhtml+xml');
-      $(document.documentElement).attr("lang", html.documentElement.getAttribute('lang'));
 
       if (i === 0) {
+        $(document.documentElement).attr("lang", html.documentElement.getAttribute('lang'));
         $(document.head).html(html.head.innerHTML.replace(new RegExp(' xmlns="http://www.w3.org/1999/xhtml"', 'g'), ''));
         $("link[href=\"../Styles/stylesheet.css\"]").replaceWith('<link rel="stylesheet" href="../../css/style/DoHoaiNamStyle-before.css">\n<link rel="stylesheet" href="../../css/style/DoHoaiNamStyle-ebpaj_fonts_patch.css">\n' + $("link[href=\"../Styles/stylesheet.css\"]").prop('outerHTML').replace('..', volume.concat('/OEBPS')) + '\n<link rel="stylesheet" href="../../css/style/DoHoaiNamStyle-after.css">');
       }
@@ -97,9 +100,9 @@ function loadJNovelClubSpinesContentOld(book, volume, spineList) {
     xhr.open("GET", volume.concat('/OEBPS/Text/' + spineName.concat('.xhtml')), false);
     xhr.onload = function() {
       let html = parser.parseFromString(xhr.responseText, 'application/xhtml+xml');
-      $(document.documentElement).attr("lang", html.documentElement.getAttribute('lang'));
 
       if (i === 0) {
+        $(document.documentElement).attr("lang", html.documentElement.getAttribute('lang'));
         $(document.head).html(html.head.innerHTML.replace(new RegExp(' xmlns="http://www.w3.org/1999/xhtml"', 'g'), ''));
         $("link[href=\"../Styles/stylesheet.css\"]").replaceWith('<link rel="stylesheet" href="../../css/style/DoHoaiNamStyle-before.css">\n  <link rel="stylesheet" href="../../css/style/DoHoaiNamStyle-ebpaj_fonts_patch.css">\n  ' + $("link[href=\"../Styles/stylesheet.css\"]").prop('outerHTML').replace('..', volume.concat('/OEBPS')) + '\n  <link rel="stylesheet" href="../../css/style/DoHoaiNamStyle-after.css">');
       }
