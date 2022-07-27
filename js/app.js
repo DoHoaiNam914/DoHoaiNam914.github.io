@@ -11,8 +11,8 @@ $(document).ready(function () {
       $(document.body).html(data.body.innerHTML);
     });
   } else if (searchParams.has('tap')) {
-    if (window.location.href.contain('#')) {
-      window.history.pushState('', document.title, window.location.pathname + window.location.search);
+    if (window.location.href.contains('#')) {
+      window.location.href = window.location.href.split('#')[0];
     }
 
     $(document.body).html('');
