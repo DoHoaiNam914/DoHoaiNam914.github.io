@@ -4,12 +4,12 @@ body {
  overflow-wrap: break-word;
 }
 
-div.nomargin {
+body.nomargin {
  margin: 0em;
  padding: 0em;
 }
 
-div.center {
+body.center {
  text-align: center;
 }
 
