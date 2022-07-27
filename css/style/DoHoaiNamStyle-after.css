@@ -4,12 +4,9 @@
 
 /* Config */
 
-/* Columns are responsive by default, even if column-width is set in pixels,
-   which means two-page spread will switch to single page depending on current font-size. */
-
 :root {
   /* Optimal line-length (rem will take :root font-size into account, whatever the body’s font-size) */
-  --DHN__maxLineLength: 40rem !important;
+  --DHN__maxLineLength: 40rem;
 
   /* Default page horizontal margins (in pixels so that it won’t resize with font-size) */
   --DHN__pageGutter: 8px;
@@ -47,6 +44,9 @@
 
   -webkit-text-size-adjust: 100%;
 
+  /* Switch to newer box model (not inherited by authors’ styles) */
+  box-sizing: border-box;
+
   /* Fix bug for older Chrome */
   -webkit-perspective: 1;
   /* Prevents options pop-up when long tap in webkit */
@@ -54,6 +54,8 @@
 }
 
 body {
+  --DHN__maxLineLength: 40rem !important;
+
   /*  overflow: hidden; bugfix: contents won’t paginate in Firefox and one sample in Safari */
   width: 100%;
 
@@ -62,8 +64,11 @@ body {
      which is what would be expected in terms of typography. */
   max-width: var(--DHN__maxLineLength) !important;
   padding: 0 var(--DHN__pageGutter) !important;
-  margin: 0 auto !important;
 
+  /* We need a minimum padding on body so that descandants/ascendants in italic/script are not cut-off.
+     Drawback: we have to use border-box so that it doesn’t screw the box model,
+     which means it impacts colWidth and max-width */
+  box-sizing: border-box;
 }
 
 /* Sepia theme
