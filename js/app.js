@@ -44,8 +44,6 @@ function loadYenPressSpinesContent(book, volume, spineList) {
 
     xhr.send();
   }
-
-  $(document.documentElement).attr("style", "dohoainam-scroll-view;");
 }
 
 function loadJNovelClubSpinesContent(book, volume, spineList) {
@@ -66,8 +64,6 @@ function loadJNovelClubSpinesContent(book, volume, spineList) {
 
     xhr.send();
   }
-
-  $(document.documentElement).attr("style", "dohoainam-scroll-view;");
 }
 
 function loadYenPressSpinesContentOld(book, volume, spineList) {
@@ -88,8 +84,6 @@ function loadYenPressSpinesContentOld(book, volume, spineList) {
 
     xhr.send();
   }
-
-  $(document.documentElement).attr("style", "dohoainam-scroll-view;");
 }
 
 function loadJNovelClubSpinesContentOld(book, volume, spineList) {
@@ -112,6 +106,4 @@ function loadJNovelClubSpinesContentOld(book, volume, spineList) {
 
     xhr.send();
   }
-
-  $(document.documentElement).attr("style", "dohoainam-scroll-view;");
 }
