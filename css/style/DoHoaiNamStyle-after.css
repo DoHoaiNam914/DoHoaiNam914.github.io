@@ -5,14 +5,8 @@
 /* Config */
 
 :root {
-  /* Your columns’ width floor */
-  --RS__colWidth: 70.5em;
-
-  /* Gap between columns (in pixels so that it won’t resize with font-size) */
-  --RS__colGap: 0;
-
   /* Optimal line-length (rem will take :root font-size into account, whatever the body’s font-size) */
-  --DHN__maxLineLength: 40rem;
+  --DHN__maxLineLength: 40.4375rem;
 
   /* Default page horizontal margins (in pixels so that it won’t resize with font-size) */
   --DHN__pageGutter: 8px;
@@ -37,20 +31,6 @@
   -moz-columns: auto auto !important;
   columns: auto auto !important;
 
-  -webkit-column-width: var(--RS__colWidth);
-  -moz-column-width: var(--RS__colWidth);
-  column-width: var(--RS__colWidth);
-
-  -webkit-column-count: 1;
-  -moz-column-count: 1;
-  column-count: 1;
-
-  -webkit-column-gap: var(--RS__colGap);
-  -moz-column-gap: var(--RS__colGap);
-  column-gap: var(--RS__colGap);
-
-  /* Default is balance and we want columns to be filled entirely (100vh) */
-  -moz-column-fill: auto;
   width: auto !important;
   height: auto !important;
   max-width: none !important;
@@ -61,7 +41,7 @@
   margin: 0 !important;
 
   /* Column size will depend on this if we want to make it responsive */
-  font-size: 18px !important;
+  font-size: 112.5% !important;
   overflow-wrap: break-word;
 
   -webkit-text-size-adjust: 100%;
@@ -83,7 +63,6 @@ body {
   /* Limit line-length but we have to reset when 2 columns and control the viewport.
      By using max-width + margin auto, margins will shrink when font-size increases,
      which is what would be expected in terms of typography. */
-  --DHN__maxLineLength: 40rem !important;
   max-width: var(--DHN__maxLineLength) !important;
   padding: 0 var(--DHN__pageGutter) !important;
   margin: 0 !important;
