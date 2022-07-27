@@ -5,27 +5,14 @@
 /* Config */
 
 /* Columns are responsive by default, even if column-width is set in pixels,
-   which means two-page spread will switch to single page depending on current font-size.
-   If you want more control, I’m afraid you’ll have to update colWidth/colGap dynamically,
-   which is how a significant amount of DHN do at the moment. */
-
-/* Default for smartphone portrait (small screens) */
+   which means two-page spread will switch to single page depending on current font-size. */
 
 :root {
-  /* Your columns’ width floor */
-  --DHN__colWidth: 45em; /* The width at which we’ll switch to 2 columns by default. PS: you can’t set it in rem */
-
-  /* Ideal number of columns (depending on columns’ width floor) */
-  --DHN__colCount: 1;
-
-  /* Gap between columns (in pixels so that it won’t resize with font-size) */
-  --DHN__colGap: 0;
-
   /* Optimal line-length (rem will take :root font-size into account, whatever the body’s font-size) */
-  --DHN__maxLineLength: 40rem;
+  --DHN__maxLineLength: 40rem !important;
 
   /* Default page horizontal margins (in pixels so that it won’t resize with font-size) */
-  --DHN__pageGutter: 8px; /* See if colGap and pageGutter can be the same var */
+  --DHN__pageGutter: 8px;
 }
 
 /* Reset page margins for Forward compatibility */
@@ -43,29 +30,15 @@
   /* In case you use left position to scroll, can be removed if using transform: translateX() */
   position: relative;
 
-  -webkit-column-width: var(--DHN__colWidth);
-  -moz-column-width: var(--DHN__colWidth);
-  column-width: var(--DHN__colWidth);
-
-  /* Init pagination */
-  /* TODO: document columns’ logic cos it might feel weird at first */
-  -webkit-column-count: var(--DHN__colCount);
-  -moz-column-count: var(--DHN__colCount);
-  column-count: var(--DHN__colCount);
-
-  -webkit-column-gap: var(--DHN__colGap);
-  -moz-column-gap: var(--DHN__colGap);
-  column-gap: var(--DHN__colGap);
-
-  /* Default is balance and we want columns to be filled entirely (100vh) */
-  -moz-column-fill: auto;
-  column-fill: auto;
-  width: 100%;
-  height: 100vh;
-  max-width: 100%;
-  max-height: 100vh;
-  min-width: 100%;
-  min-height: 100vh;
+  -webkit-columns: auto auto !important;
+  -moz-columns: auto auto !important;
+  columns: auto auto !important;
+  width: auto !important;
+  height: auto !important;
+  max-width: none !important;
+  max-height: none !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
   padding: 0 !important;
   margin: 0 !important;
 
@@ -73,9 +46,6 @@
   font-size: 18px !important;
 
   -webkit-text-size-adjust: 100%;
-
-  /* Switch to newer box model (not inherited by authors’ styles) */
-  box-sizing: border-box;
 
   /* Fix bug for older Chrome */
   -webkit-perspective: 1;
@@ -94,79 +64,39 @@ body {
   padding: 0 var(--DHN__pageGutter) !important;
   margin: 0 auto !important;
 
-  /* We need a minimum padding on body so that descandants/ascendants in italic/script are not cut-off.
-     Drawback: we have to use border-box so that it doesn’t screw the box model,
-     which means it impacts colWidth and max-width */
-  box-sizing: border-box;
 }
 
-/* We’ll now redefine margins and columns depending on the minimum width available
-   The goal is having the simplest model possible and avoid targeting devices */
+/* Sepia theme
 
-/* Smartphone landscape */
+   A preset theme for sepia */
 
-@media screen and (min-width: 35em) {
-  :root {
-    --DHN__pageGutter: 30px;
-  }
+/* CONFIG */
+
+:root[style*="dohoainam-sepia-theme"] {
+  --DHN__backgroundColor: #ebd2a5;
+  --DHN__textColor: #5a4114;
+
+  --DHN__linkColor: #50320c;
+  --DHN__visitedColor: #50320c;
+
+  --DHN__maxLineLength: 40.01rem; /* Forcing a reflow in Blink/Webkit so that blend mode can work */
 }
 
-/* Tablet portrait */
+/* we don’t need to redeclare bg-color and color for :root since we will inherit and update from day/default mode */
 
-@media screen and (min-width: 45em) {
-  :root {
-    --DHN__pageGutter: 40px;
-  }
+:root[style*="dohoainam-sepia-theme"] *:not(a) {
+  color: inherit !important;
+  background-color: transparent !important;
 }
 
-/* Desktop + tablet large */
-
-/* We get the previous settings, we just change the margins */
-
-@media screen and (min-width: 75em) {
-  :root {
-    --DHN__pageGutter: 50px;
-  }
+:root[style*="dohoainam-sepia-theme"] a:link,
+:root[style*="dohoainam-sepia-theme"] a:link * {
+  color: var(--DHN__linkColor);
 }
 
-/* At this point (80em or so), constraining line length must be done at the web view/iframe level, or by limiting the size of :root itself */
-
-/* Responsive columns */
-
-@media screen and (min-width: 60em), screen and (min-device-width: 36em) and (max-device-width: 47em) and (orientation: landscape) {
-  :root {
-    /* The size at which we want 2 columns to switch to 1 (depending on font-size) */
-    --DHN__colWidth: 20em; /* 20 * 16 = 320px but 20 * 28 = 560px so it will switch to 1 col @ 175% font-size (user-setting) on an iPad */
-    /* We constrain to 2 columns so that we can never get 3 or 4, etc. */
-    --DHN__colCount: 2;
-    --DHN__maxLineLength: 39.99rem; /* If we don’t use this, colNumber user setting won’t work in Safari… */
-  }
-}
-
-/* Scroll module
-
-   A set of styles to scroll ePublications
-   This module overrides pagination */
-
-:root[style*="dohoainam-scroll-view"] {
-
-  /* Reset columns, auto + auto = columns can’t be created */
-  -webkit-columns: auto auto !important;
-  -moz-columns: auto auto !important;
-  columns: auto auto !important;
-  width: auto !important;
-  height: auto !important;
-  max-width: none !important;
-  max-height: none !important;
-  /* Reset html size so that the user can scroll */
-  min-width: 0 !important;
-  min-height: 0 !important;
-}
-
-/* Make sure line-length is limited in all configs */
-
-:root[style*="dohoainam-scroll-view"] body {
-  --DHN__maxLineLength: 40rem !important;
+:root[style*="dohoainam-sepia-theme"] a:visited,
+:root[style*="dohoainam-sepia-theme"] a:visited * {
+  color: var(--DHN__visitedColor);
 }
 
 /* Black theme
@@ -203,74 +133,6 @@ body {
   color: var(--DHN__visitedColor) !important;
 }
 
-/* Sepia theme
-
-   A preset theme for sepia */
-
-/* CONFIG */
-
-:root[style*="dohoainam-sepia-theme"] {
-  --DHN__backgroundColor: #ebd2a5;
-  --DHN__textColor: #5a4114;
-
-  --DHN__linkColor: #50320c;
-  --DHN__visitedColor: #50320c;
-
-  --DHN__maxLineLength: 40.01rem; /* Forcing a reflow in Blink/Webkit so that blend mode can work */
-}
-
-/* we don’t need to redeclare bg-color and color for :root since we will inherit and update from day/default mode */
-
-:root[style*="dohoainam-sepia-theme"] *:not(a) {
-  color: inherit !important;
-  background-color: transparent !important;
-}
-
-:root[style*="dohoainam-sepia-theme"] a:link,
-:root[style*="dohoainam-sepia-theme"] a:link * {
-  color: var(--DHN__linkColor);
-}
-
-:root[style*="dohoainam-sepia-theme"] a:visited,
-:root[style*="dohoainam-sepia-theme"] a:visited * {
-  color: var(--DHN__visitedColor);
-}
-
-/* Columns number pref
-
-   A submodule managing columns number for user settings
-   Part of “Chrome Advanced” class – no flag required. */
-
-/* Number of columns = 1 | 2 */
-
-/* We still need to see if we allow users to force number of columns for all configs, currently it behaves as an "auto" setting */
-
-/* apply col setting except for mobile portrait */
-
-@media screen and (min-width: 60em), screen and (min-device-width: 36em) and (max-device-width: 47em) and (orientation: landscape) {
-  :root[style*="--USER__colCount: 1"],
-  :root[style*="--USER__colCount:1"],
-  :root[style*="--USER__colCount: 2"],
-  :root[style*="--USER__colCount:2"] {
-    -webkit-column-count: var(--USER__colCount);
-    -moz-column-count: var(--USER__colCount);
-    column-count: var(--USER__colCount);
-  }
-
-  /* If one column, make sure we limit line-length */
-  :root[style*="--USER__colCount: 1"],
-  :root[style*="--USER__colCount:1"] {
-    --DHN__maxLineLength: 40rem !important; /* This is the only way for the user setting to work in webkit… */
-    --DHN__colWidth: 100vw;
-  }
-
-  /* If smartphone landscape, and 2 columns, col width the same as iPad landscape + desktop */
-  :root[style*="--USER__colCount: 2"],
-  :root[style*="--USER__colCount:2"] {
-    --DHN__colWidth: auto; /* User explicitely tells he/she wants 2 columns, we reset floor value */
-  }
-}
-
 /* Page margins pref
 
    A submodule managing page margins for user settings
@@ -298,22 +160,6 @@ body {
   -moz-text-align-last: auto !important;
   -epub-text-align-last: auto !important;
   text-align-last: auto !important;
-}
-
-/* In case something goes wrong at the programmatic level + rtl for body + rtl in ltr */
-
-:root[dir="rtl"][style*="--USER__textAlign: left"],
-:root[dir="rtl"][style*="--USER__textAlign:left"],
-:root[style*="--USER__textAlign: left"] *[dir="rtl"],
-:root[style*="--USER__textAlign:left"] *[dir="rtl"] {
-  text-align: right;
-}
-
-/* Edge, if logical value is used, think of it as a polyfill. For LTR, it will fall back to the default, which is left */
-
-:root[dir="rtl"][style*="--USER__textAlign: start"],
-:root[dir="rtl"][style*="--USER__textAlign:start"] {
-  text-align: right;
 }
 
 /* Managing hyphenation automatically for text-align values */
