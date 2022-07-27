@@ -65,7 +65,7 @@ body {
      which is what would be expected in terms of typography. */
   max-width: var(--DHN__maxLineLength) !important;
   padding: 0 var(--DHN__pageGutter) !important;
-  margin: 0 !important;
+  margin: 0 auto !important;
 
   /* We need a minimum padding on body so that descandants/ascendants in italic/script are not cut-off.
      Drawback: we have to use border-box so that it doesn’t screw the box model,
