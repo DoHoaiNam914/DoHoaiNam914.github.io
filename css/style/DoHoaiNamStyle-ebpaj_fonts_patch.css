@@ -20,58 +20,22 @@
 
 @font-face {
   font-family: "serif-ja";
-  src: local("ＭＳ Ｐ明朝"),
-       local("MS PMincho"),
-       local("Hiragino Mincho Pro"),
-       local("ヒラギノ明朝 Pro W3"),
-       local("游明朝"),
-       local("YuMincho"),
-       local("ＭＳ 明朝"),
-       local("MS Mincho"),
-       local("Hiragino Mincho ProN");
+  src: "Yu Mincho Pr6N";
 }
 
 @font-face {
   font-family: "sans-serif-ja";
-  src: local("ＭＳ Ｐゴシック"),
-       local("MS PGothic"),
-       local("Hiragino Kaku Gothic Pro W3"),
-       local("ヒラギノ角ゴ Pro W3"),
-       local("Hiragino Sans GB"),
-       local("ヒラギノ角ゴシック W3"),
-       local("游ゴシック"),
-       local("YuGothic"),
-       local("ＭＳ ゴシック"),
-       local("MS Gothic"),
-       local("Hiragino Sans");
+  src: "Yu Gothic Pr6N";
 }
 
 /* 縦組み用 (vertical writing) */
 
 @font-face {
   font-family: "serif-ja-v";
-  src: local("ＭＳ 明朝"),
-       local("MS Mincho"),
-       local("Hiragino Mincho Pro"),
-       local("ヒラギノ明朝 Pro W3"),
-       local("游明朝"),
-       local("YuMincho"),
-       local("ＭＳ Ｐ明朝"),
-       local("MS PMincho"),
-       local("Hiragino Mincho ProN");
+  src: "Yu Mincho Pr6N";
 }
 
 @font-face {
   font-family: "sans-serif-ja-v";
-  src: local("ＭＳ ゴシック"),
-       local("MS Gothic"),
-       local("Hiragino Kaku Gothic Pro W3"),
-       local("ヒラギノ角ゴ Pro W3"),
-       local("Hiragino Sans GB"),
-       local("ヒラギノ角ゴシック W3"),
-       local("游ゴシック"),
-       local("YuGothic"),
-       local("ＭＳ Ｐゴシック"),
-       local("MS PGothic"),
-       local("Hiragino Sans");
+  src: "Yu Gothic Pr6N";
 }

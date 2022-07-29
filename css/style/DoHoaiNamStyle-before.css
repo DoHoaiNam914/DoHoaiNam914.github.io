@@ -1,3 +1,6 @@
+@import '/css/fonts/YuGoPr6N.css';
+@import '/css/fonts/YuMinPr6N.css';
+
 /* Base module
 
    A minimal stylesheet for all ebooks */
@@ -34,7 +37,7 @@
 /* Set default font for the html doc, so that it can be overridden by the authors’s stylesheet */
 
 html {
-  font-family: var(--DHN__baseFontFamily);
+  font-family: "Yu Mincho Pr6N", serif-ja, serif;
   /* Fallback line-height */
   line-height: 1.6; /* Fits a little bit better for all languages than 1.5 */
   line-height: var(--DHN__baseLineHeight);
