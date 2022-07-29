@@ -1,4 +1,23 @@
 @font-face {
-  font-family: "Yu Gothic Pr6N";
-  src: url("https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/YuGoPr6N-M.otf") format("otf");
+  font-family: "Iowan Old Style";
+  src: url("https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/IowanOldStBTRoman.tff") format("truetype");
+}
+
+@font-face {
+  font-family: "Iowan Old Style";
+  src: url("https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/IowanOldStBTItalic.tff") format("truetype");
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "Iowan Old Style";
+  src: url("https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/IowanOldStBTBold.tff") format("truetype");
+  font-weight: bold;
+}
+
+@font-face {
+  font-family: "Iowan Old Style";
+  src: url("https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/IowanOldStBTBoldItalic.tff") format("truetype");
+  font-style: italic;
+  font-weight: bold;
 }
