@@ -65,6 +65,7 @@
               $(document.documentElement).attr("lang", html.documentElement.getAttribute('lang'));
               $(document.head).html(html.head.innerHTML.replace(new RegExp(' xmlns="http://www.w3.org/1999/xhtml"', 'g'), ''));
               $("link[href=\"../stylesheet.css\"]").replaceWith('<link rel="stylesheet" href="../../css/styles/DoHoaiNamStyle-ebpaj_fonts_patch.css">\n<link rel="stylesheet" href="../../css/style/DoHoaiNamStyle-before.css">\n' + $("link[href=\"../stylesheet.css\"]").prop('outerHTML').replace('..', volume) + '\n<link rel="stylesheet" href="../../css/style/DoHoaiNamStyle-after.css">');
+              $("link[href=\"../page_styles.css\"]").replaceWith($("link[href=\"../page_styles.css\"]").prop('outerHTML').replace('..', volume));
             }
       
             $(document.body).append("\n<div>" + html.body.innerHTML.toString().replace(new RegExp(' xmlns="http://www.w3.org/1999/xhtml"', 'g'), '').replace(new RegExp(' xmlns:epub="http://www.idpf.org/2007/ops"', 'g'), '').replace(new RegExp('epub:', 'g'), '').replace(/cover.jpeg/g, 'https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/light-novel/' + book.concat('/' + volume.concat('/cover.jpeg'))).replace(new RegExp('../images', 'g'), 'https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/light-novel/' + book.concat('/' + volume.concat('/images'))) + "</div>\n\n");
