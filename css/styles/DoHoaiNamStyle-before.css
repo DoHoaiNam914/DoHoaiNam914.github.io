@@ -1,6 +1,8 @@
 /* Base module
 
-   A minimal stylesheet for all ebooks */
+   A minimal stylesheet for all ebooks
+
+   Repo: https://github.com/readium/readium-css */
 
 /* Define viewport, HTML5-style */
 
@@ -210,13 +212,13 @@ math {
 
 /* White/Default theme
 
-   A preset theme for day mode, which is the default */
+   A preset theme for white theme, which is the default */
 
 /* CONFIG */
 
 :root {
-  --DHN__backgroundColor: white;
-  --DHN__textColor: black;
+  --DHN__backgroundColor: #FFFFFF;
+  --DHN__textColor: #000000;
 }
 
 :root {
