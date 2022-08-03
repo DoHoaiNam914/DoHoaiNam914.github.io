@@ -7,7 +7,7 @@ html, body {
 }
 
 div.container {
-  height: 100vh
+  height: 100vh;
   position: relative;
   width: 100vw;
 }
