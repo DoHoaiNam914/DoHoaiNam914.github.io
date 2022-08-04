@@ -2,6 +2,8 @@
 @import "style-reset.css";
 @import "style-standard.css";
 @import "style-advance.css";
+@import "style-karc.css";
+@import "style-kadokawa.css";
 
 /* -------------------------------------------------------------
 Windows でチェックするときは以下の指定を利用
