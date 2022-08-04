@@ -219,11 +219,20 @@ math {
 :root {
   --DHN__backgroundColor: #FFFFFF;
   --DHN__textColor: #000000;
+
+  --DHN__linkColor: #0000FF
 }
 
 :root {
   color: var(--DHN__textColor) !important;
   background-color: var(--DHN__backgroundColor) !important;
+}
+
+:root a:link,
+:root a:link *,
+:root a:visited,
+:root a:visited * {
+  color: var(--DHN__linkColor);
 }
 
 /* HTML5 SR Patch stylesheet

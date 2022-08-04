@@ -80,30 +80,6 @@ math {
   --DHN__sans-serif-ja-v: "ＭＳ ゴシック", "MS Gothic", "Hiragino Kaku Gothic Pro W3", "ヒラギノ角ゴ Pro W3", "Hiragino Sans GB", "ヒラギノ角ゴシック W3", "游ゴシック", "YuGothic", "ＭＳ Ｐゴシック", "MS PGothic", "Hiragino Sans", sans-serif;
 }
 
-/* The following will also work for zh-Hans */
-
-:lang(zh) {
-  --DHN__baseFontFamily: "方体", "PingFang SC", "黑体", "Heiti SC", "Microsoft JhengHei UI", "Microsoft JhengHei", Roboto, Noto, "Noto Sans CJK SC", sans-serif;
-
-  /* For CJK, the line-height is usually 15–20% more than for Latin */
-  --DHN__lineHeightCompensation: 1.167;
-}
-
-:lang(zh-Hant),
-:lang(zh-TW) {
-  --DHN__baseFontFamily: "方體", "PingFang TC", "黑體", "Heiti TC", "Microsoft JhengHei UI", "Microsoft JhengHei", Roboto, Noto, "Noto Sans CJK TC", sans-serif;
-
-  /* For CJK, the line-height is usually 15–20% more than for Latin */
-  --DHN__lineHeightCompensation: 1.167;
-}
-
-:lang(zh-HK) {
-  --DHN__baseFontFamily: "方體", "PingFang HK", "方體", "PingFang TC", "黑體", "Heiti TC", "Microsoft JhengHei UI", "Microsoft JhengHei", Roboto, Noto, "Noto Sans CJK TC", sans-serif;
-
-  /* For CJK, the line-height is usually 15–20% more than for Latin */
-  --DHN__lineHeightCompensation: 1.167;
-}
-
 /* White/Default theme
 
    A preset theme for white theme, which is the default */
@@ -113,11 +89,20 @@ math {
 :root {
   --DHN__backgroundColor: #FFFFFF;
   --DHN__textColor: #000000;
+
+  --DHN__linkColor: #0000FF
 }
 
 :root {
   color: var(--DHN__textColor) !important;
   background-color: var(--DHN__backgroundColor) !important;
+}
+
+:root a:link,
+:root a:link *,
+:root a:visited,
+:root a:visited * {
+  color: var(--DHN__linkColor);
 }
 
 /* HTML5 SR Patch stylesheet

@@ -84,7 +84,6 @@ body {
   --DHN__textColor: #5a4114;
 
   --DHN__linkColor: #50320c;
-  --DHN__visitedColor: #50320c;
 
   --DHN__maxLineLength: 40.01rem; /* Forcing a reflow in Blink/Webkit so that blend mode can work */
 }
@@ -97,13 +96,10 @@ body {
 }
 
 :root[style*="dohoainam-sepia-theme"] a:link,
-:root[style*="dohoainam-sepia-theme"] a:link * {
-  color: var(--DHN__linkColor);
-}
-
+:root[style*="dohoainam-sepia-theme"] a:link *,
 :root[style*="dohoainam-sepia-theme"] a:visited,
 :root[style*="dohoainam-sepia-theme"] a:visited * {
-  color: var(--DHN__visitedColor);
+  color: var(--DHN__linkColor);
 }
 
 /* Black theme
@@ -119,7 +115,6 @@ body {
   --DHN__textColor: #d2d2d2;
 
   --DHN__linkColor: #ebebeb;
-  --DHN__visitedColor: #ebebeb;
 }
 
 /* we don’t need to redeclare bg-color and color for :root since we will inherit and update from day/default mode */
@@ -131,13 +126,10 @@ body {
 }
 
 :root[style*="dohoainam-black-theme"] a:link,
-:root[style*="dohoainam-black-theme"] a:link * {
-  color: var(--DHN__linkColor) !important;
-}
-
+:root[style*="dohoainam-black-theme"] a:link *,
 :root[style*="dohoainam-black-theme"] a:visited,
 :root[style*="dohoainam-black-theme"] a:visited * {
-  color: var(--DHN__visitedColor) !important;
+  color: var(--DHN__linkColor) !important;
 }
 
 /* Page margins pref
