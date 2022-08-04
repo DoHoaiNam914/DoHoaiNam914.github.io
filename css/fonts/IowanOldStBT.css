@@ -1,23 +1,23 @@
 @font-face {
   font-family: "Iowan Old Style";
-  src: url("https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/IowanOldStBTRoman.tff") format("truetype");
+  src: url("https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/IowanOldStBTRoman.ttf") format("truetype");
 }
 
 @font-face {
   font-family: "Iowan Old Style";
-  src: url("https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/IowanOldStBTItalic.tff") format("truetype");
+  src: url("https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/IowanOldStBTItalic.ttf") format("truetype");
   font-style: italic;
 }
 
 @font-face {
   font-family: "Iowan Old Style";
-  src: url("https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/IowanOldStBTBold.tff") format("truetype");
+  src: url("https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/IowanOldStBTBold.ttf") format("truetype");
   font-weight: bold;
 }
 
 @font-face {
   font-family: "Iowan Old Style";
-  src: url("https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/IowanOldStBTBoldItalic.tff") format("truetype");
+  src: url("https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/IowanOldStBTBoldItalic.ttf") format("truetype");
   font-style: italic;
   font-weight: bold;
 }

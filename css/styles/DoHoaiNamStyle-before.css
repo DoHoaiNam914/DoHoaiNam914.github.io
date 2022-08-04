@@ -68,7 +68,7 @@ math {
    That will only work if either html or body have a (xml:)lang attribute, not for inline overrides */
 
 :lang(ja) {
-  --DHN__baseFontFamily: "游明朝体", YuMincho, "Hiragino Mincho ProN", "MS Mincho", "Iowan Old Style", Noto, "Noto Serif CJK JP", serif;
+  --DHN__baseFontFamily: "游明朝体", YuMincho, "Hiragino Mincho ProN", "MS Mincho", var(--DHN__oldStyleTf), "Noto Serif CJK JP", serif;
 
   /* For CJK, the line-height is usually 15–20% more than for Latin */
   --DHN__lineHeightCompensation: 1.167;
