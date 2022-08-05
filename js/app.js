@@ -11,10 +11,6 @@ $(document).ready(function () {
       $(document.body).html(data.body.innerHTML);
     });
   } else if (searchParams.has('tap')) {
-    if (window.location.hash != '') {
-      window.location.hash = '';
-    }
-
     $(document.body).html('');
     $(document.head).load(searchParams.get('tap').concat('/content.html'));
   } else {
@@ -44,6 +40,10 @@ function loadYenPressSpinesContent(book, volume, spineList) {
 
     xhr.send();
   }
+
+  if (!window.location.include('#') || window.location.hash != '') {
+    window.location.hash = '';
+  }
 }
 
 function loadJNovelClubSpinesContent(book, volume, spineList) {
@@ -63,5 +63,9 @@ function loadJNovelClubSpinesContent(book, volume, spineList) {
     }
 
     xhr.send();
+  }
+
+  if (!window.location.include('#') || window.location.hash != '') {
+    window.location.hash = '';
   }
 }

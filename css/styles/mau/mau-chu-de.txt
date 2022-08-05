@@ -1,3 +1,4 @@
+Màu chủ đề
 Amazon
 Màu trắng:
 - Hậu cảnh: #FFFFFF
@@ -82,7 +83,7 @@ J-Novel Club
 Màu trắng:
 - Hậu cảnh: #FFFFFF
 - Cận cảnh: #000000
-Màu xêpia:
+Màu xêpia: 
 - Hậu cảnh: #FAF4E8
 - Cận Cảnh: #121212
 Màu xám:
@@ -104,3 +105,40 @@ Màu xám:
 Màu đen:
 - Hậu cảnh: #000000
 - Cận Cảnh: #FFFFFF
+
+Waka
+Phông chữ: 
+- Bookerly
+- Minion
+- > Noto Serif
+- Roboto
+- Times New Roman
+- Quicksand
+- iCiel Domaine
+- P22 Typewriter
+- Helvetica Neue
+- Trixi Pro
+Màu trắng:
+- Hậu cảnh: #FFFFFF
+- Cận cảnh: #000000
+Màu trắng:
+- Hậu cảnh: #FBFBFB
+- Cận cảnh: #221F20
+Màu xêpia:
+- Hậu cảnh: #D4C69F
+- Cận Cảnh: #4E331C
+Màu xêpia:
+- Hậu cảnh: #F4ECD8
+- Cận Cảnh: #5B4636
+Màu xám:
+- Hậu cảnh: #5A5A5C
+- Cận Cảnh: #F9F9F9
+Màu xám:
+- Hậu cảnh: #505253
+- Cận Cảnh: #CED0D2
+Màu đen:
+- Hậu cảnh: #1C1F2B
+- Cận Cảnh: #BDCADB
+Màu đen:
+- Hậu cảnh: #221E1F
+- Cận Cảnh: #EEEFEF
