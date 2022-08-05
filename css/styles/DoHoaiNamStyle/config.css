@@ -7,5 +7,5 @@
    Syntax: @custom-media --variable (prop: value) */
 
 /* Reading Modes */
-@custom-selector :--sepia-theme [style*="sepia"];
-@custom-selector :--black-theme [style*="black"];
+@custom-selector :--sepia-theme [style*="sepia-theme"];
+@custom-selector :--black-theme [style*="black-theme"];

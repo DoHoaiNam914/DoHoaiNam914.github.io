@@ -1,6 +1,6 @@
-@import 'DoHoaiNamStyle/config.css';
-@import 'DoHoaiNamStyle/before/base.css';
-@import 'DoHoaiNamStyle/before/white_theme.css';
+@import "DoHoaiNamStyle/config.css";
+@import "DoHoaiNamStyle/before/base.css";
+@import "DoHoaiNamStyle/before/white_theme.css";
 @import '../fonts/IowanOldStBT.css';
-@import 'DoHoaiNamStyle/before/html5patch.css';
-@import 'DoHoaiNamStyle/before/safeguards.css';
+@import "DoHoaiNamStyle/before/html5patch.css";
+@import "DoHoaiNamStyle/before/safeguards.css";
