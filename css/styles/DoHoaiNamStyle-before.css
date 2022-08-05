@@ -49,9 +49,7 @@ h1, h2, h3 {
   line-height: normal;
 }
 
-:lang(ja),
-:lang(zh),
-:lang(ko) {
+:lang(ja) {
   word-wrap: break-word;
   -webkit-line-break: strict;
   -epub-line-break: strict;
@@ -68,7 +66,7 @@ math {
    That will only work if either html or body have a (xml:)lang attribute, not for inline overrides */
 
 :lang(ja) {
-  --DHN__baseFontFamily: "游明朝体", YuMincho, "Hiragino Mincho ProN", "MS Mincho", var(--DHN__oldStyleTf), "Noto Serif CJK JP", serif;
+  --DHN__baseFontFamily: var(--DHN__oldStyleTf), "游明朝体", YuMincho, "Hiragino Mincho ProN", "MS Mincho", "Noto Serif CJK JP", serif;
 
   /* For CJK, the line-height is usually 15–20% more than for Latin */
   --DHN__lineHeightCompensation: 1.167;
@@ -90,7 +88,7 @@ math {
   --DHN__backgroundColor: #FFFFFF;
   --DHN__textColor: #000000;
 
-  --DHN__linkColor: #0000FF
+  --DHN__linkColor: #0000FF;
 }
 
 :root {
@@ -187,9 +185,7 @@ body {
   font-variant-numeric: oldstyle-nums proportional-nums;
 }
 
-:lang(ja) body,
-:lang(zh) body,
-:lang(ko) body {
+:lang(ja) body {
   font-variant-numeric: lining-nums proportional-nums;
 }
 
@@ -210,15 +206,7 @@ rt {
   font-variant-east-asian: ruby;
 }
 
-:lang(ar) {
-  font-variant-ligatures: common-ligatures;
-}
-
-:lang(ko) {
-  font-kerning: normal;
-}
-
-/* Night mode */
+/* Black theme */
 
 hr {
   color: inherit;
@@ -237,10 +225,7 @@ figure, blockquote {
 
 /*
 
-:lang(ja) figure, :lang(ja) blockquote,
-:lang(zh-Hant) figure, :lang(zh-Hant) blockquote,
-:lang(zh-TW) figure, :lang(zh-TW) blockquote,
-:lang(mn) figure, :lang(mn) blockquote {
+:lang(ja) figure, :lang(ja) blockquote {
   margin: 5% 1em;
 }
 
@@ -252,10 +237,7 @@ ul, ol {
 
 /*
 
-:lang(ja) ul, :lang(ja) ol,
-:lang(zh-Hant) ul, :lang(zh-Hant) ol,
-:lang(zh-TW) ul, :lang(zh-TW) ol,
-:lang(mn) ul, :lang(mn) ol   {
+:lang(ja) ul, :lang(ja) ol   {
   padding-top: 5%;
 }
 
@@ -267,10 +249,7 @@ dd {
 
 /*
 
-:lang(ja) dd,
-:lang(zh-Hant) dd,
-:lang(zh-TW) dd,
-:lang(mn) dd {
+:lang(ja) dd {
   margin-top: 5%;
 }
 
@@ -306,26 +285,14 @@ ruby > rt, ruby > rp {
 /* Internationalization */
 
 *:lang(ja),
-*:lang(zh),
-*:lang(ko),
 :lang(ja) cite,
 :lang(ja) dfn,
 :lang(ja) em,
-:lang(ja) i,
-:lang(zh) cite,
-:lang(zh) dfn,
-:lang(zh) em,
-:lang(zh) i,
-:lang(ko) cite,
-:lang(ko) dfn,
-:lang(ko) em,
-:lang(ko) i {
+:lang(ja) i {
   font-style: normal;
 }
 
-:lang(ja) a,
-:lang(zh) a,
-:lang(ko) a {
+:lang(ja) a {
   text-decoration: none;
 }
 
