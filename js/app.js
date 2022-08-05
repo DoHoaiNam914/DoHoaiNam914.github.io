@@ -41,7 +41,7 @@ function loadYenPressSpinesContent(book, volume, spineList) {
     xhr.send();
   }
 
-  if (!window.location.include('#') || window.location.hash != '') {
+  if (!window.location.includes('#') || window.location.hash != '') {
     window.location.hash = '';
   }
 }
@@ -65,7 +65,7 @@ function loadJNovelClubSpinesContent(book, volume, spineList) {
     xhr.send();
   }
 
-  if (!window.location.include('#') || window.location.hash != '') {
+  if (!window.location.includes('#') || window.location.hash != '') {
     window.location.hash = '';
   }
 }
