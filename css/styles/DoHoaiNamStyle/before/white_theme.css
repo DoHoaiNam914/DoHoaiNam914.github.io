@@ -1,0 +1,25 @@
+/* White/Default theme
+
+   A preset theme for day mode, which is the default */
+
+
+/* CONFIG */
+
+:root {
+  --backgroundColor: #ffffff;
+  --textColor: #000000;
+
+  --linkColor: #0000ff;
+}
+
+:root {
+  background-color: var(--backgroundColor) !important;
+  color: var(--textColor) !important;
+}
+
+:root:--sepia-theme a:link,
+:root:--sepia-theme a:link *,
+:root:--sepia-theme a:visited,
+:root:--sepia-theme a:visited * {
+  color: var(--linkColor);
+}

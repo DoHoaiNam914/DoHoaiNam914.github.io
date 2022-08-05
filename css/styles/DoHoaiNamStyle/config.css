@@ -1,0 +1,11 @@
+/* Config module
+
+   A file allowing implementers to customize flags for reading modes,
+   user settings, etc. */
+
+/* Custom medias
+   Syntax: @custom-media --variable (prop: value) */
+
+/* Reading Modes */
+@custom-selector :--sepia-theme [style*="sepia"];
+@custom-selector :--black-theme [style*="black"];

@@ -1,0 +1,72 @@
+/* Reader module
+
+   A set of styles for ePublications */
+
+:root {
+  /* Optimal line-length (rem will take :root font-size into account, whatever the body’s font-size) */
+  --RS__maxLineLength: 40.4375rem;
+
+  /* Default page horizontal margins (in pixels so that it won’t resize with font-size) */
+  --RS__pageGutter: 8px;
+}
+
+/* Reset page margins for Forward compatibility */
+@page {
+  margin: 0 !important;
+}
+
+:root {
+  /* Prevents options pop-up when long tap in webkit */
+  -webkit-touch-callout: none;
+
+  /* Fix bug for older Chrome */
+  -webkit-perspective: 1;
+
+  /* Column size will depend on this if we want to make it responsive */
+  font-size: 100% !important;
+
+  /* In case you use left position to scroll, can be removed if using transform: translateX() */
+  position: relative;
+
+  /* Switch to newer box model (not inherited by authors’ styles) */
+  box-sizing: border-box;
+
+  /* Reset html size so that the user can scroll */
+  min-width: 0 !important;
+  width: auto !important;
+  max-width: none !important;
+  min-height: 0 !important;
+  height: auto !important;
+  max-height: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+
+  /* Reset columns, auto + auto = columns can’t be created */
+  -webkit-columns: auto auto !important;
+  -moz-columns: auto auto !important;
+  columns: auto auto !important;
+
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  /*  overflow: hidden; bugfix: contents won’t paginate in Firefox and one sample in Safari */
+  width: 100%;
+
+  /* Limit line-length but we have to reset when 2 columns and control the viewport.
+     By using max-width + margin auto, margins will shrink when font-size increases,
+     which is what would be expected in terms of typography. */
+  max-width: var(--RS__maxLineLength) !important;
+  margin: 0 auto !important;
+
+  /* We need a minimum padding on body so that descandants/ascendants in italic/script are not cut-off.
+     Drawback: we have to use border-box so that it doesn’t screw the box model,
+     which means it impacts colWidth and max-width */
+  box-sizing: border-box;
+  padding: 0 var(--RS__pageGutter) !important;
+}
+
+/* Make sure line-length is limited in all configs */
+:root body {
+  --maxLineLength: 40.4375rem !important;
+}

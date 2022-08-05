@@ -1,0 +1,29 @@
+/* Black theme
+
+   A preset theme for black theme */
+
+
+/* CONFIG */
+
+/* [style*="--USER__appearance"] can be used to increase specificity but performance hit */
+:root:--black-theme {
+  --backgroundColor: #000000;
+  --textColor: #FEFEFE;
+
+  --linkColor: #63caff;
+}
+
+/* we don’t need to redeclare bg-color and color for :root since we will inherit and update from white/default theme */
+
+:root:--black-theme *:not(a) {
+  background-color: transparent !important;
+  color: inherit !important;
+  border-color: currentColor !important;
+}
+
+:root:--black-theme a:link,
+:root:--black-theme a:link *,
+:root:--black-theme a:visited,
+:root:--black-theme a:visited * {
+  color: var(--linkColor) !important;
+}

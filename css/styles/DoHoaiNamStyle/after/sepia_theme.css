@@ -1,0 +1,29 @@
+/* Sepia theme
+
+   A preset theme for sepia theme */
+
+
+/* CONFIG */
+
+:root:--sepia-theme {
+  --backgroundColor: #faf4e8;
+  --textColor: #121212;
+
+  --linkColor: #0000EE;
+
+  --maxLineLength: 40.4476rem; /* Forcing a reflow in Blink/Webkit so that blend mode can work */
+}
+
+/* we don’t need to redeclare bg-color and color for :root since we will inherit and update from white/default mode */
+
+:root:--sepia-theme *:not(a) {
+  background-color: transparent !important;
+  color: inherit !important;
+}
+
+:root:--sepia-theme a:link,
+:root:--sepia-theme a:link *,
+:root:--sepia-theme a:visited,
+:root:--sepia-theme a:visited * {
+  color: var(--linkColor);
+}
