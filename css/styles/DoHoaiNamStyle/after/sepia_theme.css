@@ -6,10 +6,10 @@
 /* CONFIG */
 
 :root[style*="sepia-theme"] {
-  --backgroundColor: #faf4e8;
-  --textColor: #121212;
+  --backgroundColor: #ebd2a5;
+  --textColor: #5a4114;
 
-  --linkColor: #0000EE;
+  --linkColor: #50320c;
 
   --maxLineLength: 40.4476rem; /* Forcing a reflow in Blink/Webkit so that blend mode can work */
 }

@@ -7,9 +7,9 @@
 
 :root[style*="black-theme"] {
   --backgroundColor: #000000;
-  --textColor: #FEFEFE;
+  --textColor: #d2d2d2;
 
-  --linkColor: #63caff;
+  --linkColor: #ebebee;
 }
 
 /* we don’t need to redeclare bg-color and color for :root since we will inherit and update from white/default theme */
