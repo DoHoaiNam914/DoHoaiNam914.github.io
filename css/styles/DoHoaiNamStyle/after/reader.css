@@ -22,8 +22,7 @@
   /* Fix bug for older Chrome */
   -webkit-perspective: 1;
 
-  /* Column size will depend on this if we want to make it responsive */
-  font-size: 100% !important;
+  font-size: 1.125em !important;
 
   /* In case you use left position to scroll, can be removed if using transform: translateX() */
   position: relative;
