@@ -5,7 +5,7 @@
 
 /* CONFIG */
 
-:root:--sepia-theme {
+:root[style*="sepia-theme"] {
   --backgroundColor: #faf4e8;
   --textColor: #121212;
 
@@ -16,14 +16,14 @@
 
 /* we don’t need to redeclare bg-color and color for :root since we will inherit and update from white/default mode */
 
-:root:--sepia-theme *:not(a) {
+:root[style*="sepia-theme"] *:not(a) {
   background-color: transparent !important;
   color: inherit !important;
 }
 
-:root:--sepia-theme a:link,
-:root:--sepia-theme a:link *,
-:root:--sepia-theme a:visited,
-:root:--sepia-theme a:visited * {
+:root[style*="sepia-theme"] a:link,
+:root[style*="sepia-theme"] a:link *,
+:root[style*="sepia-theme"] a:visited,
+:root[style*="sepia-theme"] a:visited * {
   color: var(--linkColor);
 }

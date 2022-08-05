@@ -17,9 +17,9 @@
   color: var(--textColor) !important;
 }
 
-:root:--sepia-theme a:link,
-:root:--sepia-theme a:link *,
-:root:--sepia-theme a:visited,
-:root:--sepia-theme a:visited * {
+:root a:link,
+:root a:link *,
+:root a:visited,
+:root a:visited * {
   color: var(--linkColor);
 }
