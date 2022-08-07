@@ -62,7 +62,7 @@
             let html = parser.parseFromString(xhr.responseText.replace(/<ruby>/g, '').replace(/<\/ruby>/g, '').replace(new RegExp('<rb>([一-龠]*)</rb><rt>[ぁ-ゔ]*</rt>', 'g'), '$1').replace(new RegExp('<rb>([一-龠]*)</rb><rt>([ァ-ヴー・]*)</rt>', 'g'), ' $1（$2）').toString(), 'application/xhtml+xml');
       
             if (i === 5) {
-              $(document.documentElement).attr("lang", html.documentElement.getAttribute('xml:lang'));
+              $(document.documentElement).attr("class", "hltr");
               $(document.head).html(html.head.innerHTML.replace(new RegExp(' xmlns="http://www.w3.org/1999/xhtml"', 'g'), '').toString());
               $("link[href=\"../stylesheet.css\"]").replaceWith('<link rel="stylesheet" href="../../css/styles/DoHoaiNamStyle/ebpaj_fonts_patch.css">\n<link rel="stylesheet" href="../../css/styles/DoHoaiNamStyle-before.css">\n' + $("link[href=\"../stylesheet.css\"]").prop("outerHTML").replace('..', volume));
               $("link[href=\"../page_styles.css\"]").replaceWith($("link[href=\"../page_styles.css\"]").prop("outerHTML").replace('..', volume) + '\n<link rel="stylesheet" href="../../css/styles/DoHoaiNamStyle-after.css">');
