@@ -22,7 +22,7 @@
   /* Fix bug for older Chrome */
   -webkit-perspective: 1;
 
-  font-size: 100% !important;
+  font-size: 18px !important;
 
   /* In case you use left position to scroll, can be removed if using transform: translateX() */
   position: relative;
