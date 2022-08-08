@@ -7,14 +7,10 @@ html, body {
 }
 
 div.container {
+  background: url('../img/background.jpeg') no-repeat center top;
   height: 100vh;
   position: relative;
   width: 100vw;
-}
-
-img.pc {
-  height: 100%;
-  width: 100%;
 }
 
 span.navcenter {
@@ -75,7 +71,9 @@ p.copyright {
 
 @media only screen and (min-width: 751px) {
   div.container {
+    height: 100%;
     min-width: 1280px;
+    width: 100%;
   }
 
   p.copyright {
@@ -90,7 +88,6 @@ p.copyright {
   div.container {
     -o-background-size: cover;
     -webkit-background-size: cover;
-    background: url('../img/background.jpeg') no-repeat center top;
     background-size: cover;
     min-height: 100vh;
   }

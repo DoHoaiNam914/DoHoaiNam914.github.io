@@ -32,7 +32,9 @@ function loadYenPressSpinesContent(book, volume, spineList) {
       if (i === 0) {
         $(document.documentElement).attr("lang", html.documentElement.getAttribute('lang'));
         $(document.head).html(html.head.innerHTML.replace(new RegExp(' xmlns="http://www.w3.org/1999/xhtml"', 'g'), '').toString());
-        $("link[href=\"../Styles/stylesheet.css\"]").replaceWith('<link rel="stylesheet" href="../../css/styles/DoHoaiNamStyle-before.css">\n' + $("link[href=\"../Styles/stylesheet.css\"]").prop('outerHTML').replace('..', volume.concat('/OEBPS')) + '\n<link rel="stylesheet" href="../../css/styles/DoHoaiNamStyle-after.css">');
+        $("meta[content=\"text/html; charset=UTF-8\"]").replaceWith("<meta charset=\"UTF-8\">\n<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">\n<meta name=\"viewport\" content=\"initial-scale=1, user-scalable=0, maximum-scale=1\">");
+        $("link[href=\"../Styles/stylesheet.css\"]").replaceWith("<link rel=\"stylesheet\" href=\"../../css/styles/DoHoaiNamStyle-before.css\">\n" + $("link[href=\"../Styles/stylesheet.css\"]").prop("outerHTML").replace('..', volume.concat('/OEBPS')) + "\n<link rel=\"stylesheet\" href=\"../../css/styles/DoHoaiNamStyle-after.css\">");
+        $(document.head).append("\n<script src=\"https://code.jquery.com/jquery-3.6.0.min.js\" integrity=\"sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=\" crossorigin=\"anonymous\"></script>");
       }
 
       $(document.body).append("\n<div" + (!xhr.responseText.includes('id="' + spineName + '"') ? " id=\"" + spineName + "\"" : "") + ">" + html.body.innerHTML.toString().replace(new RegExp(' xmlns="http://www.w3.org/1999/xhtml"', 'g'), '').replace(/epub:/g, '').replace(new RegExp(' xmlns:epub="http://www.idpf.org/2007/ops"', 'g'), '').replace(new RegExp('../Images', 'g'), 'https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/light-novel/' + book.concat('/' + volume.concat('/OEBPS/Images'))).replace(new RegExp('../Text/', 'g'), '#').replace(/.xhtml/g, '').replace(/#cover#/g, '#').replace(/#toc#/g, '#') + "</div>\n\n");
@@ -41,7 +43,7 @@ function loadYenPressSpinesContent(book, volume, spineList) {
     xhr.send();
   }
 
-  if (!window.location.includes('#') || window.location.hash != '') {
+  if (!window.location.href.includes('#') || window.location.hash != '') {
     window.location.hash = '';
   }
 }
@@ -56,7 +58,9 @@ function loadJNovelClubSpinesContent(book, volume, spineList) {
       if (i === 0) {
         $(document.documentElement).attr("lang", html.documentElement.getAttribute('lang'));
         $(document.head).html(html.head.innerHTML.replace(new RegExp(' xmlns="http://www.w3.org/1999/xhtml"', 'g'), '').toString());
-        $("link[href=\"../Styles/stylesheet.css\"]").replaceWith('<link rel="stylesheet" href="../../css/styles/DoHoaiNamStyle-before.css">\n    ' + $("link[href=\"../Styles/stylesheet.css\"]").prop('outerHTML').replace('..', volume.concat('/OEBPS')) + '\n  <link rel="stylesheet" href="../../css/styles/DoHoaiNamStyle-after.css">');
+        $("meta[content=\"text/html; charset=UTF-8\"]").replaceWith("<meta charset=\"UTF-8\">\n<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">\n<meta name=\"viewport\" content=\"initial-scale=1, user-scalable=0, maximum-scale=1\">");
+        $("link[href=\"../Styles/stylesheet.css\"]").replaceWith("<link rel=\"stylesheet\" href=\"../../css/styles/DoHoaiNamStyle-before.css\">\n" + $("link[href=\"../Styles/stylesheet.css\"]").prop("outerHTML").replace('..', volume.concat('/OEBPS')) + "\n  <link rel=\"stylesheet\" href=\"../../css/styles/DoHoaiNamStyle-after.css\">");
+        $(document.head).append("\n<script src=\"https://code.jquery.com/jquery-3.6.0.min.js\" integrity=\"sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=\" crossorigin=\"anonymous\"></script>");
       }
 
       $(document.body).append("\n<div" + (xhr.responseText.includes('<img') ? " class=\"nomargin center\"" : "") + (!xhr.responseText.includes('id="' + spineName + '"') ? " id=\"" + spineName + "\"" : "") + ">" + html.body.innerHTML.toString().replace(new RegExp(' xmlns="http://www.w3.org/1999/xhtml"', 'g'), '').replace(/epub:/g, '').replace(new RegExp(' xmlns:epub="http://www.idpf.org/2007/ops"', 'g'), '').replace(new RegExp('../Images', 'g'), 'https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/light-novel/' + book.concat('/' + volume.concat('/OEBPS/Images'))).replace(new RegExp('../Text/', 'g'), '').replace(/.xhtml/g, '').replace(/#toc#/g, '#') + "</div>\n\n");
@@ -65,7 +69,7 @@ function loadJNovelClubSpinesContent(book, volume, spineList) {
     xhr.send();
   }
 
-  if (!window.location.includes('#') || window.location.hash != '') {
+  if (!window.location.href.includes('#') || window.location.hash != '') {
     window.location.hash = '';
   }
 }
