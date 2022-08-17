@@ -27,7 +27,7 @@
     <section class="p-text">
       <div class="main" style="display: none;"></div>
     </section>
-    <div style="text-align: center;"><textarea name="textarea" style="background-color: transparent; border: 0; border-style: none; color: inherit; font-family: inherit; height: 90vh; margin: 0; padding: 0; width: 100%;">Viết gì đó tại đây</textarea></div>
+    <div style="text-align: center;"><textarea name="textarea" style="background: transparent; border: 0; border-style: none; color: inherit; font-family: inherit; font-size: inherit; height: 100%; margin: 0; padding: 0; width: 100%;">Viết gì đó tại đây</textarea></div>
     <script type="text/javascript">
       const editButton = document.getElementById('edit_button');
       const textarea = document.querySelector('textarea');
@@ -57,7 +57,7 @@
             text.innerHTML = null;
 
             for (let i = 0; i < words.length; i++) {
-              text.innerHTML += '<p>' + words[i] + '</p>\n';
+              text.innerHTML += '<p>' + (words[i] != '' ? words[i] : '<br>') + '</p>\n';
             }
 
             textarea.style.display = 'none';
