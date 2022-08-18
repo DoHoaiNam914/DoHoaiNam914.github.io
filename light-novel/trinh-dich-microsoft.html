@@ -25,6 +25,8 @@
       const text = document.querySelector('div.main');
 
       var orignalTextElement;
+      var preTranslationText;
+      var translationTextElement;
 
       editButton.addEventListener('click', updateEditButton);
       microsoftTranslatorButton.addEventListener('click', updateMicrosoftTranslatorButton);
@@ -44,6 +46,7 @@
             text.contentEditable = 'false';
 
             if (text.innerHTML === '<p></p>\n' || text.innerHTML === '<p><br></p>\n') {
+              microsoftTranslatorButton.value = 'Dịch';
               text.innerHTML = null;
             }
           } else {
@@ -73,26 +76,34 @@
 
               if (availableLanguage.includes(toLang) && toLang != fromLang) {
                 let xhr = new XMLHttpRequest();
-                let accessToken = getMicrosoftTranslatorAccessToken();
+                var preTranslationWords = preTranslationTextElement.split('\n');
+                let words = text.innerHTML.replace(/<p>/g, '').replace(/<\/p>/g, '').split('\n');
 
-                if (accessToken != null) {
+                if (words === preTranslationWords) {
+                  text.innerHTML = translationTextElement;
+                } else {
+                  preTranslateTextElement = '';
                   orignalTextElement = text.innerHTML;
-                  let words = text.innerHTML.replace(/<p>/g, '').replace(/<\/p>/g, '').split('\n');
                   text.innerHTML = null;
+                  let accessToken = getMicrosoftTranslatorAccessToken();
 
-                  for (let i = 0; i < words.length; i++) {
-                    xhr.onload = function() {
-                      let json = JSON.parse(xhr.responseText.replace(/\[\{/g, '{').replace(/\}\]/g, '}'));
-                      text.innerHTML += '<p>' + json.translations.text + '</p>\n';
-                    };
+                  if (accessToken != null) {
+                    for (let i = 0; i < words.length; i++) {
+                      xhr.onload = function() {
+                        let json = JSON.parse(xhr.responseText.replace(/\[\{/g, '{').replace(/\}\]/g, '}'));
+                        preTranslateText += words[i] + '\n';
+                        text.innerHTML += '<p>' + json.translations.text + '</p>\n';
+                      };
 
-                    xhr.open("POST", "https://api.cognitive.microsofttranslator.com/translate?from=" + fromLang + "&to=" + toLang + "&api-version=3.0&includeSentenceLength=true", false);
-                    xhr.setRequestHeader("Authorization", "Bearer " + accessToken);
-                    xhr.setRequestHeader("Content-Type", "application/json");
-                    xhr.send(JSON.stringify([{"Text":words[i]}]));
+                      xhr.open("POST", "https://api.cognitive.microsofttranslator.com/translate?from=" + fromLang + "&to=" + toLang + "&api-version=3.0&includeSentenceLength=true", false);
+                      xhr.setRequestHeader("Authorization", "Bearer " + accessToken);
+                      xhr.setRequestHeader("Content-Type", "application/json");
+                      xhr.send(JSON.stringify([{"Text":words[i]}]));
+                    }
+
+                    translationTextElement = text.innerHTML;
+                    microsoftTranslatorButton.value = 'Hiển thị văn bản gốc';
                   }
-
-                  microsoftTranslatorButton.value = 'Hiển thị văn bản gốc';
                 }
               }
             }
