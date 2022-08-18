@@ -24,6 +24,9 @@
       const textarea = document.querySelector('textarea');
       const text = document.querySelector('div.main');
 
+      var prevFromLang;
+      var prevToLang;
+
       var orignalTextElement;
       var preTranslationText;
       var translationTextElement;
@@ -76,18 +79,18 @@
 
               if (availableLanguage.includes(toLang) && toLang != fromLang) {
                 let xhr = new XMLHttpRequest();
-                var preTranslationWords = preTranslationTextElement.split('\n');
                 let words = text.innerHTML.replace(/<p>/g, '').replace(/<\/p>/g, '').split('\n');
 
-                if (words === preTranslationWords) {
+                if (fromLang === prevFromLang & toLang === prevToLang && words === preTranslateText) {
                   text.innerHTML = translationTextElement;
                 } else {
-                  preTranslateTextElement = '';
-                  orignalTextElement = text.innerHTML;
-                  text.innerHTML = null;
                   let accessToken = getMicrosoftTranslatorAccessToken();
 
                   if (accessToken != null) {
+                    preTranslateText = '';
+                    orignalTextElement = text.innerHTML;
+                    text.innerHTML = null;
+
                     for (let i = 0; i < words.length; i++) {
                       xhr.onload = function() {
                         let json = JSON.parse(xhr.responseText.replace(/\[\{/g, '{').replace(/\}\]/g, '}'));
@@ -101,10 +104,13 @@
                       xhr.send(JSON.stringify([{"Text":words[i]}]));
                     }
 
+                    prevFromLang = fromLang;
+                    prevToLang = toLang;
                     translationTextElement = text.innerHTML;
-                    microsoftTranslatorButton.value = 'Hiển thị văn bản gốc';
                   }
                 }
+
+                microsoftTranslatorButton.value = 'Hiển thị văn bản gốc';
               }
             }
           } else {
