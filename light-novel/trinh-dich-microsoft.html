@@ -1,124 +1,100 @@
-<!DOCTYPE html>
-<html class="hltr">
-  <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="initial-scale=1, user-scalable=0, maximum-scale=1">
-    <title>Trình dịch Microsoft cho Light Novel - DoHoaiNam Pages</title>
-    <link rel="stylesheet" href="../css/styles/dohoainam-kadokawa-style.css">
-  </head>
-  <body>
-    <form style="opacity: 0.5; position: fixed; right: 40px; top: 40px;">
-      <input id="edit_button" type="button" value="Xong">
-    </form>
-    <form style="bottom: 40px; opacity: 0.5; position: fixed; right: 40px;">
-      <input id="microsoft_translator_button" type="button" value="Dịch">
-    </form>
-    <section class="p-text">
-      <div class="main" style="display: none;"></div>
-    </section>
-    <div style="text-align: center;"><textarea name="textarea" style="background: transparent; border: 0; border-style: none; color: inherit; font-family: inherit; font-size: inherit; height: 100vh; margin: 0; padding: 0; width: 100%;">Viết gì đó tại đây</textarea></div>
-    <script type="text/javascript">
-      const editButton = document.getElementById('edit_button');
-      const microsoftTranslatorButton = document.getElementById('microsoft_translator_button');
-      const textarea = document.querySelector('textarea');
-      const text = document.querySelector('div.main');
-
+<!DOCTYPE html><html class="hltr">  <head>    <meta charset="UTF-8">    <meta http-equiv="X-UA-Compatible" content="IE=edge">    <meta name="viewport" content="initial-scale=1, user-scalable=0, maximum-scale=1">    <title>Trình dịch Microsoft cho Light Novel - DoHoaiNam Pages</title>    <link rel="stylesheet" href="../css/styles/dohoainam-kadokawa-style.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>  </head>  <body>    <form style="position: fixed; right: 40px; top: 40px;">      <input id="edit_button" type="button" value="Xong">    </form>    <form style="bottom: 40px; position: fixed; right: 40px;">      <input id="microsoft_translator_button" type="button" value="Dịch">    </form>    <section class="p-text">      <div class="main" style="display: none;"></div>    </section>    <div style="text-align: center;"><textarea name="textarea" style="background: transparent; border: 0; border-style: none; color: inherit; font-family: inherit; font-size: inherit; height: 100vh; margin: 0; padding: 0; width: 100%;">Viết gì đó tại đây</textarea></div>    <script type="text/javascript">
       var prevFromLang;
       var prevToLang;
 
       var orignalTextElement;
+
       var preTranslationText;
       var translationTextElement;
-
-      editButton.addEventListener('click', updateEditButton);
-      microsoftTranslatorButton.addEventListener('click', updateMicrosoftTranslatorButton);
-
-      function updateEditButton() {
-        if (editButton.value === 'Chỉnh sửa' && textarea.style.display === 'none') {
-          if (text.innerHTML === '') {
-            text.style.display = 'none';
-            textarea.style.display = 'inline-block';
+      $("#edit_button").click(function() {
+        if ($("#edit_button").val() == 'Chỉnh sửa' && $("textarea").css("display") == 'none') {
+          if ($("div.main").html() == '') {
+            $("div.main").css("display", "none");
+            $("textarea").css("display", "inline-block");
           } else {
-            text.contentEditable = 'true';
+            $("div.main").attr("contentEditable", "true");
           }
 
-          editButton.value = 'Xong';
+          $("#edit_button").val("Xong");
         } else {
-          if (textarea.style.display === 'none') {
-            text.contentEditable = 'false';
+          if ($("textarea").css("display") == 'none') {
+            $("div.main").attr("contentEditable", "false");
 
-            if (text.innerHTML === '<p></p>\n' || text.innerHTML === '<p><br></p>\n') {
-              microsoftTranslatorButton.value = 'Dịch';
-              text.innerHTML = null;
+            if ($("div.main").html() == '<p></p>\n' || $("div.main").html() == '<p><br></p>\n') {
+              if ($("#microsoft_translator_button").val() != 'Dịch') {
+                $("#microsoft_translator_button").val("Dịch");
+              }
+
+              $("div.main").html(null);
             }
           } else {
-            var words = textarea.value.split('\n');
-            text.innerHTML = null;
+            var words = document.querySelector('textarea').value.split('\n');
+            $("div.main").html(null);
 
             for (let i = 0; i < words.length; i++) {
-              text.innerHTML += '<p>' + (words[i] != '' ? words[i] : '<br>') + '</p>\n';
+              document.querySelector('div.main').innerHTML += '<p>' + (words[i] != '' ? words[i] : '<br>') + '</p>' + (i + 1 < words.length ? '\n' : '');
             }
 
-            textarea.style.display = 'none';
-            text.style.display = 'block';
+            $("textarea").css("display", "none");
+            $("div.main").css("display", "block");
           }
 
-          editButton.value = 'Chỉnh sửa';
+          $("#edit_button").val("Chỉnh sửa");
         }
-      }
+      });
 
-      function updateMicrosoftTranslatorButton() {
-        if (editButton.value != 'Xong') {
-          if (microsoftTranslatorButton.value === 'Dịch') {
-            let availableLanguage = ['vi', 'en', 'ja', 'zh-CHS', 'zh-CHT'];
-            let fromLang = prompt('Dịch từ ngôn ngữ?\n*Ghi chú: vi=Tiếng Việt, en=Tiếng Anh, ja=Tiếng Nhật, zh-CHS=Tiếng Trung (Giản thể), zh-CHT=Tiêng Trung (Phổn thể)');
+      $("#microsoft_translator_button").click(function() {
+        if ($("#edit_button").val() != 'Xong') {
+          if ($("#microsoft_translator_button").val() == 'Dịch') {            let availableLanguage = ['vi', 'en', 'ja', 'zh-CHS', 'zh-CHT'];            let fromLang = prompt('Dịch từ ngôn ngữ?\n*Ghi chú: vi=Tiếng Việt, en=Tiếng Anh, ja=Tiếng Nhật, zh-CHS=Tiếng Trung (Giản thể), zh-CHT=Tiêng Trung (Phổn thể)');
 
             if (availableLanguage.includes(fromLang)) {
               let toLang = prompt('Dịch đến ngôn ngữ?\n*Ghi chú: vi=Tiếng Việt, en=Tiếng Anh, ja=Tiếng Nhật, zh-CHS=Tiếng Trung (Giản thể), zh-CHT=Tiếng Trung (Phổn thể)');
 
               if (availableLanguage.includes(toLang) && toLang != fromLang) {
-                let xhr = new XMLHttpRequest();
-                let words = text.innerHTML.replace(/<p>/g, '').replace(/<\/p>/g, '').split('\n');
+                let words = document.querySelector('div.main').innerHTML.replace(/<p>/g, '').replace(/<\/p>/g, '');
 
-                if (fromLang === prevFromLang & toLang === prevToLang && words === preTranslateText) {
-                  text.innerHTML = translationTextElement;
+                if (fromLang == prevFromLang && toLang == prevToLang && words.replace(/<br/g, '') == preTranslateText) {
+                  $("div.main").html(translationTextElement);
                 } else {
                   let accessToken = getMicrosoftTranslatorAccessToken();
 
                   if (accessToken != null) {
-                    preTranslateText = '';
-                    orignalTextElement = text.innerHTML;
-                    text.innerHTML = null;
+                    let xhr = new XMLHttpRequest();
 
-                    for (let i = 0; i < words.length; i++) {
-                      xhr.onload = function() {
-                        let json = JSON.parse(xhr.responseText.replace(/\[\{/g, '{').replace(/\}\]/g, '}'));
-                        preTranslateText += words[i] + '\n';
-                        text.innerHTML += '<p>' + json.translations.text + '</p>\n';
-                      };
+                    orignalTextElement = $('div.main').html();
+                    $('div.main').html(null);
 
-                      xhr.open("POST", "https://api.cognitive.microsofttranslator.com/translate?from=" + fromLang + "&to=" + toLang + "&api-version=3.0&includeSentenceLength=true", false);
+                    for (let i = 0; i < words.split('\n').length; i++) {
+                      const data = JSON.stringify([
+                        {
+                          "Text": words.split('\n')[i]
+                        }
+                      ]);
+                      xhr.addEventListener("readystatechange", function () {
+                        if (this.readyState === this.DONE) {                          document.querySelector('div.main').innerHTML += '<p>' + JSON.parse(xhr.responseText.replace(/\[\{/g, '{').replace(/\}\]/g, '}')).translations.text + '</p>' + (i + 1 < words.split('\n').length ? '\n' : '');                        }
+                      });
+
+                      xhr.open("POST", "https://api.cognitive.microsofttranslator.com/translate?from=" + fromLang + "&to=" + toLang + "&api-version=3.0&includeSentenceLength=true");                      xhr.setRequestHeader("Content-Type", "application/json");
                       xhr.setRequestHeader("Authorization", "Bearer " + accessToken);
-                      xhr.setRequestHeader("Content-Type", "application/json");
-                      xhr.send(JSON.stringify([{"Text":words[i]}]));
+
+                      xhr.send(data);
                     }
 
+                    preTranslateText = words.replace(/<br/g, '');
+                    translationTextElement = $("div.main").html();
                     prevFromLang = fromLang;
                     prevToLang = toLang;
-                    translationTextElement = text.innerHTML;
                   }
                 }
 
-                microsoftTranslatorButton.value = 'Hiển thị văn bản gốc';
-              }
+                $("#microsoft_translator_button").val("Hiển thị văn bản gốc");              }
             }
           } else {
-            microsoftTranslatorButton.value = 'Dịch';
-            text.innerHTML = orignalTextElement;
+            $("#microsoft_translator_button").val("Dịch");            $('div.main').html(orignalTextElement);
           }
         }
-      }
+      });
 
       function getMicrosoftTranslatorAccessToken() {
         let accessToken;
@@ -130,6 +106,4 @@
 
         return accessToken;
       }
-    </script>
-  </body>
-</html>
+    </script>  </body></html>
