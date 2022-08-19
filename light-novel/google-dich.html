@@ -12,17 +12,16 @@
       <input id="edit_button" type="button" value="Xong">
     </form>
     <section>
-      <div id="google_translate_element" style="bottom: 40px; position: fixed; right: 40px;"></div>
-      <script type="text/javascript">
-        function googleTranslateElementInit() {
-          new google.translate.TranslateElement({
-            includedLanguages: 'vi,en,ja,zh-CN,zh-TW',
-            layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
-            autoDisplay: false
-          }, 'google_translate_element');
-        }
-      </script>
-      <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+      <div id="google_translate_element" style="bottom: 40px; position: fixed; right: 40px;"></div><script>
+      function googleTranslateElementInit() {
+        new google.translate.TranslateElement({
+          pageLanguage: 'auto',
+          includedLanguages: 'zh-CN,zh-TW,en,ja,vi',
+          autoDisplay: false,
+          layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+        }, 'google_translate_element');
+      }
+      </script><script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
     </section>
     <section class="p-text">
       <div class="main" style="display: none;"></div>
