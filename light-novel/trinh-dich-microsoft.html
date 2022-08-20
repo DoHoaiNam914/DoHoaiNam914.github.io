@@ -68,7 +68,7 @@
             let availableLanguage = ['vi', 'en', 'ja', 'zh-CHS', 'zh-CHT'];
             let toLang = prompt('Dịch đến ngôn ngữ?\n*Ghi chú: vi=Tiếng Việt, en=Tiếng Anh, ja=Tiếng Nhật, zh-CHS=Tiếng Trung (Giản thể), zh-CHT=Tiếng Trung (Phổn thể)');
 
-            if (availableLanguage.includes(toLang) && toLang != fromLang) {
+            if (availableLanguage.includes(toLang)) {
               if (toLang === prevToLang && $("div.main").html() === orignalTextElement) {
                 $("div.main").html(translationTextElement);
               } else {
