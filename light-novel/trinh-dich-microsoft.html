@@ -4,57 +4,52 @@
       var prevToLang;
 
       var orignalTextElement;
-
-      var preTranslationText;
       var translationTextElement;
       $("#edit_button").click(function() {
-        if ($("#edit_button").val() == 'Chỉnh sửa' && $("textarea").css("display") == 'none') {
-          if ($("div.main").html() == '') {
-            $("div.main").css("display", "none");
-            $("textarea").css("display", "inline-block");
+        if ($("#edit_button").val() === 'Chỉnh sửa' && $("textarea").css("display") === 'none') {
+          if ($("div.main").html() === '') {
+            $("div.main").hide();
+            $("textarea").show();
           } else {
             $("div.main").attr("contentEditable", "true");
           }
 
           $("#edit_button").val("Xong");
         } else {
-          if ($("textarea").css("display") == 'none') {
+          if ($("textarea").css("display") === 'none') {
             $("div.main").attr("contentEditable", "false");
-
-            if ($("div.main").html() == '<p></p>\n' || $("div.main").html() == '<p><br></p>\n') {
-              if ($("#microsoft_translator_button").val() != 'Dịch') {
-                $("#microsoft_translator_button").val("Dịch");
-              }
-
-              $("div.main").html(null);
-            }
           } else {
             var words = document.querySelector('textarea').value.split('\n');
             $("div.main").html(null);
 
             for (let i = 0; i < words.length; i++) {
-              document.querySelector('div.main').innerHTML += '<p>' + (words[i] != '' ? words[i] : '<br>') + '</p>' + (i + 1 < words.length ? '\n' : '');
+              $("div.main").append('<p>' + (words[i] != '' ? words[i] : '<br>') + '</p>' + (i + 1 < words.length ? '\n' : ''));
             }
 
-            $("textarea").css("display", "none");
-            $("div.main").css("display", "block");
+            $("textarea").hide();
+            $("div.main").show();
           }
 
           $("#edit_button").val("Chỉnh sửa");
+        }
+
+        if ($("div.main").html() === '<p></p>' || $("div.main").html() === '<p><br></p>') {
+          if ($("#microsoft_translator_button").val() != 'Dịch') {
+            $("#microsoft_translator_button").val("Dịch");
+          }
+        
+          $("div.main").html(null);
         }
       });
 
       $("#microsoft_translator_button").click(function() {
         if ($("#edit_button").val() != 'Xong') {
-          if ($("#microsoft_translator_button").val() == 'Dịch') {            let availableLanguage = ['vi', 'en', 'ja', 'zh-CHS', 'zh-CHT'];            let fromLang = prompt('Dịch từ ngôn ngữ?\n*Ghi chú: vi=Tiếng Việt, en=Tiếng Anh, ja=Tiếng Nhật, zh-CHS=Tiếng Trung (Giản thể), zh-CHT=Tiêng Trung (Phổn thể)');
+          if ($("#microsoft_translator_button").val() === 'Dịch') {            let availableLanguage = ['vi', 'en', 'ja', 'zh-CHS', 'zh-CHT'];            let fromLang = prompt('Dịch từ ngôn ngữ?\n*Ghi chú: vi=Tiếng Việt, en=Tiếng Anh, ja=Tiếng Nhật, zh-CHS=Tiếng Trung (Giản thể), zh-CHT=Tiêng Trung (Phổn thể)');
 
             if (availableLanguage.includes(fromLang)) {
               let toLang = prompt('Dịch đến ngôn ngữ?\n*Ghi chú: vi=Tiếng Việt, en=Tiếng Anh, ja=Tiếng Nhật, zh-CHS=Tiếng Trung (Giản thể), zh-CHT=Tiếng Trung (Phổn thể)');
 
-              if (availableLanguage.includes(toLang) && toLang != fromLang) {
-                let words = document.querySelector('div.main').innerHTML.replace(/<p>/g, '').replace(/<\/p>/g, '');
-
-                if (fromLang == prevFromLang && toLang == prevToLang && words.replace(/<br/g, '') == preTranslateText) {
+              if (availableLanguage.includes(toLang) && toLang != fromLang) {                if (fromLang === prevFromLang && toLang === prevToLang && $("div.main").html() === orignalTextElement) {
                   $("div.main").html(translationTextElement);
                 } else {
                   let accessToken = getMicrosoftTranslatorAccessToken();
@@ -62,48 +57,50 @@
                   if (accessToken != null) {
                     let xhr = new XMLHttpRequest();
 
-                    orignalTextElement = $('div.main').html();
-                    $('div.main').html(null);
+                    let words = document.querySelector('div.main').innerHTML.replace(/<p>/g, '').replace(/<\/p>/g, '').split('\n');
+                    orignalTextElement = $("div.main").html();
+                    $("div.main").html(null);
 
-                    for (let i = 0; i < words.split('\n').length; i++) {
+                    for (let i = 0; i < words.length; i++) {
                       const data = JSON.stringify([
                         {
-                          "Text": words.split('\n')[i]
+                          "Text": words[i]
                         }
                       ]);
-                      xhr.addEventListener("readystatechange", function () {
-                        if (this.readyState === this.DONE) {                          document.querySelector('div.main').innerHTML += '<p>' + JSON.parse(xhr.responseText.replace(/\[\{/g, '{').replace(/\}\]/g, '}')).translations.text + '</p>' + (i + 1 < words.split('\n').length ? '\n' : '');                        }
-                      });
 
-                      xhr.open("POST", "https://api.cognitive.microsofttranslator.com/translate?from=" + fromLang + "&to=" + toLang + "&api-version=3.0&includeSentenceLength=true");                      xhr.setRequestHeader("Content-Type", "application/json");
+                      xhr.onreadystatechange = function() {
+                        if (this.readyState === this.DONE) {
+                          $("div.main").append('<p>' + JSON.parse(this.responseText.replace(/\[\{/g, '{').replace(/\}\]/g, '}')).translations.text + '</p>' + (i + 1 < words.length ? '\n' : ''));
+                        }
+                      };
+                      xhr.open("POST", "https://api.cognitive.microsofttranslator.com/translate?from=" + fromLang + "&to=" + toLang + "&api-version=3.0&includeSentenceLength=true", false);
                       xhr.setRequestHeader("Authorization", "Bearer " + accessToken);
+                      xhr.setRequestHeader("Content-Type", "application/json");
 
                       xhr.send(data);
                     }
 
-                    preTranslateText = words.replace(/<br/g, '');
-                    translationTextElement = $("div.main").html();
                     prevFromLang = fromLang;
                     prevToLang = toLang;
+                    $("#microsoft_translator_button").val("Hiển thị văn bản gốc");
                   }
-                }
-
-                $("#microsoft_translator_button").val("Hiển thị văn bản gốc");              }
+                }              }
             }
           } else {
-            $("#microsoft_translator_button").val("Dịch");            $('div.main').html(orignalTextElement);
+            translationTextElement = $("div.main").html();            $("div.main").html(orignalTextElement);
+            $("#microsoft_translator_button").val("Dịch");
           }
         }
       });
 
       function getMicrosoftTranslatorAccessToken() {
         let accessToken;
-        let xhr = new XMLHttpRequest();
-
-        xhr.onload = () => accessToken = xhr.responseText;
-        xhr.open("GET", "https://edge.microsoft.com/translate/auth", false);
-        xhr.send();
-
+        let settings = {
+          async: false,
+          url: 'https://edge.microsoft.com/translate/auth',
+          method: 'GET'
+        };
+        $.ajax(settings).done(response => accessToken = response);
         return accessToken;
       }
     </script>  </body></html>

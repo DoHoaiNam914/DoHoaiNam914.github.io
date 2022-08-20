@@ -6,6 +6,7 @@
     <meta name="viewport" content="initial-scale=1, user-scalable=0, maximum-scale=1">
     <title>Google Dịch cho Light Novel - DoHoaiNam Pages</title>
     <link rel="stylesheet" href="../css/styles/dohoainam-kadokawa-style.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
   </head>
   <body>
     <form style="position: fixed; right: 40px; top: 40px;">
@@ -28,44 +29,38 @@
     </section>
     <div style="text-align: center;"><textarea name="textarea" style="background: transparent; border: 0; border-style: none; color: inherit; font-family: inherit; font-size: inherit; height: 100vh; margin: 0; padding: 0; width: 100%;">Viết gì đó tại đây</textarea></div>
     <script type="text/javascript">
-      const editButton = document.getElementById('edit_button');
-      const textarea = document.querySelector('textarea');
-      const text = document.querySelector('div.main');
-
-      editButton.addEventListener('click', updateEditButton);
-
-      function updateEditButton() {
-        if (editButton.value === 'Chỉnh sửa' && textarea.style.display === 'none') {
-          if (text.innerHTML === '') {
-            text.style.display = 'none';
-            textarea.style.display = 'inline-block';
+      $("#edit_button").click(function() {
+        if ($("#edit_button").val() === 'Chỉnh sửa' && $("textarea").css("display") === 'none') {
+          if ($("div.main").html() === '') {
+            $("div.main").hide();
+            $("textarea").show();
           } else {
-            text.contentEditable = 'true';
+            $("div.main").attr("contentEditable", "true");
           }
 
-          editButton.value = 'Xong';
+          $("#edit_button").val("Xong");
         } else {
-          if (textarea.style.display === 'none') {
-            text.contentEditable = 'false';
-
-            if (text.innerHTML === '<p></p>\n' || text.innerHTML === '<p><br></p>\n') {
-              text.innerHTML = null;
-            }
+          if ($("textarea").css("display") === 'none') {
+            $("div.main").attr("contentEditable", "false");
           } else {
-            var words = textarea.value.split('\n');
-            text.innerHTML = null;
+            var words = document.querySelector('textarea').value.split('\n');
+            $("div.main").html(null);
 
             for (let i = 0; i < words.length; i++) {
-              text.innerHTML += '<p>' + (words[i] != '' ? words[i] : '<br>') + '</p>\n';
+              $("div.main").append('<p>' + (words[i] != '' ? words[i] : '<br>') + '</p>' + (i + 1 < words.length ? '\n' : ''));
             }
 
-            textarea.style.display = 'none';
-            text.style.display = 'block';
+            $("textarea").hide();
+            $("div.main").show();
           }
 
-          editButton.value = 'Chỉnh sửa';
+          $("#edit_button").val("Chỉnh sửa");
         }
-      }
+
+        if ($("div.main").html() === '<p></p>' || $("div.main").html() === '<p><br></p>') {
+          $("div.main").html(null);
+        }
+      });
     </script>
   </body>
 </html>
