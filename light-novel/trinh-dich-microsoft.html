@@ -1,11 +1,32 @@
-<!DOCTYPE html><html class="hltr">  <head>    <meta charset="UTF-8">    <meta http-equiv="X-UA-Compatible" content="IE=edge">    <meta name="viewport" content="initial-scale=1, user-scalable=0, maximum-scale=1">    <title>Trình dịch Microsoft cho Light Novel - DoHoaiNam Pages</title>    <link rel="stylesheet" href="../css/styles/dohoainam-kadokawa-style.css">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>  </head>  <body>    <form style="position: fixed; right: 40px; top: 40px;">      <input id="edit_button" type="button" value="Xong">    </form>    <form style="bottom: 40px; position: fixed; right: 40px;">      <input id="microsoft_translator_button" type="button" value="Dịch">    </form>    <section class="p-text">      <div class="main" style="display: none;"></div>    </section>    <div style="text-align: center;"><textarea name="textarea" style="background: transparent; border: 0; border-style: none; color: inherit; font-family: inherit; font-size: inherit; height: 100vh; margin: 0; padding: 0; width: 100%;">Viết gì đó tại đây</textarea></div>    <script type="text/javascript">
+<!DOCTYPE html>
+<html class="hltr">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1, user-scalable=0, maximum-scale=1">
+    <title>Trình dịch Microsoft cho Light Novel - DoHoaiNam Pages</title>
+    <link rel="stylesheet" href="../css/styles/dohoainam-kadokawa-style.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+  </head>
+  <body>
+    <form style="position: fixed; right: 40px; top: 40px;">
+      <input id="edit_button" type="button" value="Xong">
+    </form>
+    <form style="bottom: 40px; position: fixed; right: 40px;">
+      <input id="microsoft_translator_button" type="button" value="Dịch">
+    </form>
+    <section class="p-text">
+      <div class="main" style="display: none;"></div>
+    </section>
+    <div style="text-align: center;"><textarea name="textarea" style="background: transparent; border: 0; border-style: none; color: inherit; font-family: inherit; font-size: inherit; height: 100vh; margin: 0; padding: 0; width: 100%;">Viết gì đó tại đây</textarea></div>
+    <script type="text/javascript">
       var prevFromLang;
       var prevToLang;
 
       var orignalTextElement;
       var translationTextElement;
-      $("#edit_button").click(function() {
+
+      $("#edit_button").click(function() {
         if ($("#edit_button").val() === 'Chỉnh sửa' && $("textarea").css("display") === 'none') {
           if ($("div.main").html() === '') {
             $("div.main").hide();
@@ -44,12 +65,15 @@
 
       $("#microsoft_translator_button").click(function() {
         if ($("#edit_button").val() != 'Xong') {
-          if ($("#microsoft_translator_button").val() === 'Dịch') {            let availableLanguage = ['vi', 'en', 'ja', 'zh-CHS', 'zh-CHT'];            let fromLang = prompt('Dịch từ ngôn ngữ?\n*Ghi chú: vi=Tiếng Việt, en=Tiếng Anh, ja=Tiếng Nhật, zh-CHS=Tiếng Trung (Giản thể), zh-CHT=Tiêng Trung (Phổn thể)');
+          if ($("#microsoft_translator_button").val() === 'Dịch') {
+            let availableLanguage = ['vi', 'en', 'ja', 'zh-CHS', 'zh-CHT'];
+            let fromLang = prompt('Dịch từ ngôn ngữ?\n*Ghi chú: vi=Tiếng Việt, en=Tiếng Anh, ja=Tiếng Nhật, zh-CHS=Tiếng Trung (Giản thể), zh-CHT=Tiêng Trung (Phổn thể)');
 
             if (availableLanguage.includes(fromLang)) {
               let toLang = prompt('Dịch đến ngôn ngữ?\n*Ghi chú: vi=Tiếng Việt, en=Tiếng Anh, ja=Tiếng Nhật, zh-CHS=Tiếng Trung (Giản thể), zh-CHT=Tiếng Trung (Phổn thể)');
 
-              if (availableLanguage.includes(toLang) && toLang != fromLang) {                if (fromLang === prevFromLang && toLang === prevToLang && $("div.main").html() === orignalTextElement) {
+              if (availableLanguage.includes(toLang) && toLang != fromLang) {
+                if (fromLang === prevFromLang && toLang === prevToLang && $("div.main").html() === orignalTextElement) {
                   $("div.main").html(translationTextElement);
                 } else {
                   let accessToken = getMicrosoftTranslatorAccessToken();
@@ -73,7 +97,8 @@
                           $("div.main").append('<p>' + JSON.parse(this.responseText.replace(/\[\{/g, '{').replace(/\}\]/g, '}')).translations.text + '</p>' + (i + 1 < words.length ? '\n' : ''));
                         }
                       };
-                      xhr.open("POST", "https://api.cognitive.microsofttranslator.com/translate?from=" + fromLang + "&to=" + toLang + "&api-version=3.0&includeSentenceLength=true", false);
+
+                      xhr.open("POST", "https://api.cognitive.microsofttranslator.com/translate?from=" + fromLang + "&to=" + toLang + "&api-version=3.0&includeSentenceLength=true", false);
                       xhr.setRequestHeader("Authorization", "Bearer " + accessToken);
                       xhr.setRequestHeader("Content-Type", "application/json");
 
@@ -84,10 +109,12 @@
                     prevToLang = toLang;
                     $("#microsoft_translator_button").val("Hiển thị văn bản gốc");
                   }
-                }              }
+                }
+              }
             }
           } else {
-            translationTextElement = $("div.main").html();            $("div.main").html(orignalTextElement);
+            translationTextElement = $("div.main").html();
+            $("div.main").html(orignalTextElement);
             $("#microsoft_translator_button").val("Dịch");
           }
         }
@@ -100,7 +127,10 @@
           url: 'https://edge.microsoft.com/translate/auth',
           method: 'GET'
         };
+
         $.ajax(settings).done(response => accessToken = response);
         return accessToken;
       }
-    </script>  </body></html>
+    </script>
+  </body>
+</html>
