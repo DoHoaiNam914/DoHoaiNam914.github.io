@@ -9,21 +9,20 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
   </head>
   <body>
-    <form style="bottom: 1vh; position: fixed; right: 4px;">
+    <section style="bottom: 1vh; position: fixed; right: 8px;">
       <input id="edit_button" type="button" value="Xong">
-    </form>
-    <section style="bottom: 1vh; position: fixed; right: 85px;">
+    </section> 
+    <section style="bottom: 1vh; left: 8px; position: fixed;">
       <div id="google_translate_element"></div><script>
       function googleTranslateElementInit() {
         new google.translate.TranslateElement({
           pageLanguage: 'auto',
           includedLanguages: 'zh-CN,zh-TW,en,ja,vi',
-          autoDisplay: false,
-          layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+          autoDisplay: false
         }, 'google_translate_element');
       }
       </script><script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
-    </section>
+    </section> 
     <section class="p-text">
       <div class="main" style="display: none;"></div>
     </section>
