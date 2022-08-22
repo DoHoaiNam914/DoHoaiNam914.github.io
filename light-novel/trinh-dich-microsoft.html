@@ -9,16 +9,16 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
   </head>
   <body>
-    <form style="position: fixed; right: 40px; top: 40px;">
+    <form style="bottom: 1vh; position: fixed; right: 0;">
       <input id="edit_button" type="button" value="Xong">
     </form>
-    <form style="bottom: 40px; position: fixed; right: 40px;">
+    <form style="bottom: 1vh; position: fixed; right: 60px;">
       <input id="microsoft_translator_button" type="button" value="Dịch">
     </form>
     <section class="p-text">
       <div class="main" style="display: none;"></div>
     </section>
-    <div style="text-align: center;"><textarea name="textarea" style="background: transparent; border: 0; border-style: none; color: inherit; font-family: inherit; font-size: inherit; height: 100vh; margin: 0; padding: 0; width: 100%;">Viết gì đó tại đây</textarea></div>
+    <div style="text-align: center;"><textarea name="textarea" style="background: transparent; border: 0; border-style: none; color: inherit; font-family: inherit; font-size: inherit; height: 80vh; margin: 0; padding: 0; width: 100%;">Viết gì đó tại đây</textarea></div>
     <script type="text/javascript">
       var prevToLang;
 
@@ -53,7 +53,7 @@
           $("#edit_button").val("Chỉnh sửa");
         }
 
-        if ($("div.main").html() === null ||$("div.main").html() === '<p></p>' || $("div.main").html() === '<p><br></p>') {
+        if ($("div.main").html() === null || $("div.main").html() === '<p></p>' || $("div.main").html() === '<p><br></p>') {
           if ($("#microsoft_translator_button").val() != 'Dịch') {
             $("#microsoft_translator_button").val("Dịch");
           }

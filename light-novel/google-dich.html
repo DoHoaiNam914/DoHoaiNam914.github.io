@@ -9,11 +9,11 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
   </head>
   <body>
-    <form style="position: fixed; right: 40px; top: 40px;">
+    <form style="bottom: 1vh; position: fixed; right: 0;">
       <input id="edit_button" type="button" value="Xong">
     </form>
-    <section>
-      <div id="google_translate_element" style="bottom: 40px; position: fixed; right: 40px;"></div><script>
+    <section style="bottom: 1vh; position: fixed; right: 60px;">
+      <div id="google_translate_element"></div><script>
       function googleTranslateElementInit() {
         new google.translate.TranslateElement({
           pageLanguage: 'auto',
@@ -57,7 +57,7 @@
           $("#edit_button").val("Chỉnh sửa");
         }
 
-        if ($("div.main").html() === '<p></p>' || $("div.main").html() === '<p><br></p>') {
+        if ($("div.main").html() === null || $("div.main").html() === '<p></p>' || $("div.main").html() === '<p><br></p>') {
           $("div.main").html(null);
         }
       });
