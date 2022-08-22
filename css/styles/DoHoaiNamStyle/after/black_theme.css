@@ -12,6 +12,14 @@
   --linkColor: #ebebee;
 }
 
+/* we don’t need to redeclare bg-color and color for :root since we will inherit and update from white/default theme */
+
+:root[style*="black-theme"] *:not(a) {
+  background-color: inherit !important;
+  color: inherit !important;
+  border-color: currentColor !important;
+}
+
 :root[style*="black-theme"] a:link,
 :root[style*="black-theme"] a:link *,
 :root[style*="black-theme"] a:visited,
