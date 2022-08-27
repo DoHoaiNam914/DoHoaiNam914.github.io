@@ -13,15 +13,8 @@
 }
 
 :root {
-  /* Default font-stacks */
-  --oldStyleTf: "Iowan Old Style", "Sitka Text", Palatino, "Book Antiqua", serif;
-  --modernTf: Athelas, Constantia, Georgia, serif;
-  --sansTf: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --humanistTf: Seravek, Calibri, Roboto, Arial, sans-serif;
-  --monospaceTf: "Andale Mono", Consolas, monospace;
-
   /* Config */
-  --baseFontFamily: var(--oldStyleTf);
+  --baseFontFamily: serif;
 
   /* For square-ish fonts (CJK, Indic, etc.), we must apply some compensation in dynamic leading. Default is 1 i.e. no compensation */
   --lineHeightCompensation: 1;
@@ -61,14 +54,8 @@ math {
    That will only work if either html or body have a (xml:)lang attribute, not for inline overrides */
 
 :lang(ja) {
-  --baseFontFamily: "游ゴシック体", YuGothic, "ヒラギノ丸ゴ", "Hiragino Sans", "Yu Gothic UI", "Meiryo UI", "MS Gothic", Roboto, Noto, "Noto Sans CJK JP", sans-serif;
+  --baseFontFamily: serif-ja;
 
   /* For CJK, the line-height is usually 15–20% more than for Latin */
   --lineHeightCompensation: 1.167;
-
-  /* Extra variables for Japanese font-stacks as we may want to reuse them for user settings + default */
-  --serif-ja: "ＭＳ Ｐ明朝", "MS PMincho", "Hiragino Mincho Pro", "ヒラギノ明朝 Pro W3", "游明朝", "YuMincho", "ＭＳ 明朝", "MS Mincho", "Hiragino Mincho ProN", serif;
-  --sans-serif-ja: "ＭＳ Ｐゴシック", "MS PGothic", "Hiragino Kaku Gothic Pro W3", "ヒラギノ角ゴ Pro W3", "Hiragino Sans GB", "ヒラギノ角ゴシック W3", "游ゴシック", "YuGothic", "ＭＳ ゴシック", "MS Gothic", "Hiragino Sans", sans-serif;
-  --serif-ja-v: "ＭＳ 明朝", "MS Mincho", "Hiragino Mincho Pro", "ヒラギノ明朝 Pro W3", "游明朝", "YuMincho", "ＭＳ Ｐ明朝", "MS PMincho", "Hiragino Mincho ProN", serif;
-  --sans-serif-ja-v: "ＭＳ ゴシック", "MS Gothic", "Hiragino Kaku Gothic Pro W3", "ヒラギノ角ゴ Pro W3", "Hiragino Sans GB", "ヒラギノ角ゴシック W3", "游ゴシック", "YuGothic", "ＭＳ Ｐゴシック", "MS PGothic", "Hiragino Sans", sans-serif;
 }
