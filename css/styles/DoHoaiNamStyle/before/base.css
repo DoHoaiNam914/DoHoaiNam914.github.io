@@ -14,7 +14,7 @@
 
 :root {
   /* Config */
-  --baseFontFamily: serif;
+  --baseFontFamily: "Iowan Old Style", serif;
 
   /* For square-ish fonts (CJK, Indic, etc.), we must apply some compensation in dynamic leading. Default is 1 i.e. no compensation */
   --lineHeightCompensation: 1;
