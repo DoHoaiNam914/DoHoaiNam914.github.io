@@ -65,7 +65,7 @@
               $(document.documentElement).attr("class", "hltr");
               $(document.head).html(html.head.innerHTML.replace(new RegExp(' xmlns="http://www.w3.org/1999/xhtml"', 'g'), '').toString());
               $("meta[content=\"text/html; charset=utf-8\"]").replaceWith("<meta charset=\"UTF-8\">\n<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">\n<meta name=\"viewport\" content=\"initial-scale=1, user-scalable=0, maximum-scale=1\">");
-              $("link[href=\"../stylesheet.css\"]").replaceWith("<link rel=\"stylesheet\" href=\"../../css/styles/DoHoaiNamStyle/ebpaj_fonts_patch.css\">\n<link rel=\"stylesheet\" href=\"../../css/styles/DoHoaiNamStyle-before.css\">\n" + $("link[href=\"../stylesheet.css\"]").prop("outerHTML").replace('..', volume));
+              $("link[href=\"../stylesheet.css\"]").replaceWith("<link rel=\"stylesheet\" href=\"../../css/styles/DoHoaiNamStyle/fonts_patch.css\">\n<link rel=\"stylesheet\" href=\"../../css/styles/DoHoaiNamStyle-before.css\">\n" + $("link[href=\"../stylesheet.css\"]").prop("outerHTML").replace('..', volume));
               $("link[href=\"../page_styles.css\"]").replaceWith($("link[href=\"../page_styles.css\"]").prop("outerHTML").replace('..', volume) + "\n<link rel=\"stylesheet\" href=\"../../css/styles/DoHoaiNamStyle-after.css\">");
         $(document.head).append("\n<script src=\"https://code.jquery.com/jquery-3.6.0.min.js\" integrity=\"sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=\" crossorigin=\"anonymous\"><\/script>");
             }
