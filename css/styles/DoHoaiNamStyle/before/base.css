@@ -54,7 +54,7 @@ math {
    That will only work if either html or body have a (xml:)lang attribute, not for inline overrides */
 
 :lang(ja) {
-  --baseFontFamily: serif-ja, serif;
+  --baseFontFamily: serif-ja, "Iowan Old Style", serif;
 
   /* For CJK, the line-height is usually 15–20% more than for Latin */
   --lineHeightCompensation: 1.167;
