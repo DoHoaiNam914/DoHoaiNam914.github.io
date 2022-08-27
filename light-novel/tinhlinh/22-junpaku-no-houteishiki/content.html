@@ -62,7 +62,7 @@
             let html = parser.parseFromString(xhr.responseText.replace(/<ruby>/g, '').replace(/<\/ruby>/g, '').replace(new RegExp('<rb>([一-龠]*)</rb><rt>[ぁ-ゔ]*</rt>', 'g'), '$1').replace(new RegExp('<rb>([一-龠]*)</rb><rt>([ァ-ヴー・]*)</rt>', 'g'), ' $1（$2）').toString(), 'application/xhtml+xml');
       
             if (i === 5) {
-              $(document.documentElement).attr("class", "hltr");
+              $(document.documentElement).attr("class", "hltr1");
               $(document.head).html(html.head.innerHTML.replace(new RegExp(' xmlns="http://www.w3.org/1999/xhtml"', 'g'), '').toString());
               $("meta[content=\"text/html; charset=utf-8\"]").replaceWith("<meta charset=\"UTF-8\">\n<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">\n<meta name=\"viewport\" content=\"initial-scale=1, user-scalable=0, maximum-scale=1\">");
               $("link[href=\"../stylesheet.css\"]").replaceWith("<link rel=\"stylesheet\" href=\"../../css/styles/DoHoaiNamStyle/fonts_patch.css\">\n<link rel=\"stylesheet\" href=\"../../css/styles/DoHoaiNamStyle-before.css\">\n" + $("link[href=\"../stylesheet.css\"]").prop("outerHTML").replace('..', volume));
