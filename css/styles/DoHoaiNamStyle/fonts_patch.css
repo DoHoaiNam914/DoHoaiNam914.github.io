@@ -3,49 +3,25 @@
    A stylesheet improving @font-face declarations to cover all platforms */
 
 @font-face {
-  font-family: "serif";
+  font-family: "Iowan Old Style";
   src: url("https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/IowanOldStBTRoman.ttf") format("truetype");
 }
 
 @font-face {
-  font-family: "sans-serif";
-  src: url("https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/SFProText-Regular.ttf") format("truetype");
-}
-
-@font-face {
-  font-family: "serif";
+  font-family: "Iowan Old Style";
   src: url("https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/IowanOldStBTItalic.ttf") format("truetype");
   font-style: italic;
 }
 
 @font-face {
-  font-family: "sans-serif";
-  src: url("https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/SFProText-RegularItalic.ttf") format("truetype");
-  font-style: italic;
-}
-
-@font-face {
-  font-family: "serif";
+  font-family: "Iowan Old Style";
   src: url("https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/IowanOldStBTBold.ttf") format("truetype");
   font-weight: bold;
 }
 
 @font-face {
-  font-family: "sans-serif";
-  src: url("https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/SFProText-Bold.ttf") format("truetype");
-  font-weight: bold;
-}
-
-@font-face {
-  font-family: "serif";
+  font-family: "Iowan Old Style";
   src: url("https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/IowanOldStBTBoldItalic.ttf") format("truetype");
-  font-style: italic;
-  font-weight: bold;
-}
-
-@font-face {
-  font-family: "sans-serif";
-  src: url("https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/SFProText-BoldItalic.ttf") format("truetype");
   font-style: italic;
   font-weight: bold;
 }
