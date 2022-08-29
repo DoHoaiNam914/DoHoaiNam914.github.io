@@ -22,7 +22,6 @@
   /* Fix bug for older Chrome */
   -webkit-perspective: 1;
 
-
   font-family: var(--fontFamily) !important;
   font-size: 18px !important;
 
@@ -36,9 +35,6 @@
 }
 
 body {
-  /*  overflow: hidden; bugfix: contents won’t paginate in Firefox and one sample in Safari */
-  width: 100%;
-
   /* Limit line-length.
      By using max-width + margin auto, margins will shrink when font-size increases,
      which is what would be expected in terms of typography. */
