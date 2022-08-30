@@ -1,4 +1,5 @@
 <!DOCTYPE html><html lang="ja" class="hltr">  <head>    <meta charset="UTF-8">    <meta http-equiv="X-UA-Compatible" content="IE=edge">    <meta name="viewport" content="initial-scale=1, user-scalable=0, maximum-scale=1">    <title>Google Dịch cho Light Novel - DoHoaiNam Pages</title>    <link rel="stylesheet" href="../css/styles/dohoainam-kadokawa-style.css">    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="../js/js.cookie.js"></script>
     <style>      #google_translate_element * {
         color: revert !important;
       }
@@ -26,7 +27,6 @@
       <div class="main" style="display: none;"></div>
     <div style="text-align: center;"><textarea name="textarea" style="background: transparent; border: 0; border-style: none; color: inherit; font-family: inherit; font-size: inherit; height: 80vh; margin: 0; padding: 0; width: 100%;">Viết gì đó tại đây</textarea></div>
     </section>
-    <script src="../js/js.cookie.js"></script>
     <script type="text/javascript">
       $(document).ready(() => $("#background_select").val(Cookies.get("background") || "white").change());
       $("#background_select").on("change", function () {
