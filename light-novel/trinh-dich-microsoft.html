@@ -1,15 +1,17 @@
-<!DOCTYPE html><html lang="ja" class="hltr">  <head>    <meta charset="UTF-8">    <meta http-equiv="X-UA-Compatible" content="IE=edge">    <meta name="viewport" content="initial-scale=1, user-scalable=0, maximum-scale=1">    <title>Trình dịch Microsoft cho Light Novel - DoHoaiNam Pages</title>    <link rel="stylesheet" href="../css/styles/dohoainam-kadokawa-style.css">    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+<!DOCTYPE html><html class="hltr">  <head>    <meta charset="UTF-8">    <meta http-equiv="X-UA-Compatible" content="IE=edge">    <meta name="viewport" content="initial-scale=1, user-scalable=0, maximum-scale=1">    <title>Trình dịch Microsoft cho Light Novel - DoHoaiNam Pages</title>    <link rel="stylesheet" href="../css/styles/dohoainam-kadokawa-style.css">    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
     <script src="../js/js.cookie.js"></script>
-  </head>  <body>
-    <section>      <select name="backgrounds" id="background_select" style="position: fixed; right: 8px; top: 8px;">
-        <option value="white">Trắng</option>
-        <option value="black">Đen</option>
-        <option value="sepia">Xêpia</option>
-      </select>
-      <input id="edit_button" type="button" style="bottom: 8px; position: fixed; left: 8px;" value="Xong">
-      <input id="microsoft_translator_button" type="button" style="bottom: 8px; position: fixed; right: 8px;" value="Dịch">
-    </section>
-    <section class="p-text">
+  </head>  <body>    <form>
+      <div style="position: fixed; right: 8px; top: 8px;">        <select id="background_select">
+          <option value="white">Trắng</option>
+          <option value="black">Đen</option>
+          <option value="sepia">Xêpia</option>
+        </select>
+      </div>    </form>    <form>
+      <div style="bottom: 8px; position: fixed; left: 8px;">
+        <input id="edit_button" type="button" value="Xong">
+      </div>      <div style="bottom: 8px; position: fixed; right: 8px;">        <input id="microsoft_translator_button" type="button" value="Dịch">
+      </div>
+    </form>    <section class="p-text">
       <div class="main" style="display: none;"></div>
     <div style="text-align: center;"><textarea name="textarea" style="background: transparent; border: 0; border-style: none; color: inherit; font-family: inherit; font-size: inherit; height: 80vh; margin: 0; padding: 0; width: 100%;">Viết gì đó tại đây</textarea></div>
     </section>
@@ -30,7 +32,7 @@
         }
       });
 
-      $("#edit_button").click(function() {
+      $("#edit_button").click(function () {
         if ($("#edit_button").val() === 'Chỉnh sửa' && $("textarea").css("display") === 'none') {
           if ($("div.main").html() === '') {
             $("div.main").hide();
@@ -67,7 +69,7 @@
         }
       });
 
-      $("#microsoft_translator_button").click(function() {
+      $("#microsoft_translator_button").click(function () {
         if ($("#edit_button").val() != 'Xong') {
           if ($("#microsoft_translator_button").val() === 'Dịch') {
             let availableLanguage = ['vi', 'en', 'ja', 'zh-CHS', 'zh-CHT'];
@@ -93,7 +95,7 @@
                       }
                     ]);
 
-                    xhr.onreadystatechange = function() {
+                    xhr.onreadystatechange = function () {
                       if (this.readyState === this.DONE) {
                         $("div.main").append('<p>' + JSON.parse(this.responseText.replace(/\[\{/g, '{').replace(/\}\]/g, '}')).translations.text + '</p>' + (i + 1 < words.length ? '\n' : ''));
                       }

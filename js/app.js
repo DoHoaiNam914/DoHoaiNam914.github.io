@@ -11,11 +11,13 @@ $(document).ready(function () {
       $(document.body).html(data.body.innerHTML);
     });
   } else if (searchParams.has('tap')) {
-    $(document.body).html(`<select name="backgrounds" id="background_select" style="position: fixed; right: 8px; top: 8px">
-  <option value="white">Trắng</option>
-  <option value="black">Đen</option>
-  <option value="sepia">Xêpia</option>
-</select>
+    $(document.body).html(`<form>
+  <div style="position: fixed; right: 8px; top: 8px;">    <select id="background_select">
+      <option value="white">Trắng</option>
+      <option value="black">Đen</option>
+      <option value="sepia">Xêpia</option>
+    </select>
+  </div></form>
 <script type="text/javascript">
   $("#background_select").on("change", function () {
     if ($("#background_select").val() != 'white') {
@@ -29,7 +31,7 @@ $(document).ready(function () {
 </script>`);
     $(document.head).load(searchParams.get('tap').concat('/content.html'));
   } else {
-    $.get("trang1.html").done(function(data) {
+    $.get("trang1.html").done(function (data) {
       data = parser.parseFromString(data, 'text/html');
       $(document.head).html(data.head.innerHTML);
       $(document.body).html(data.body.innerHTML);
@@ -40,7 +42,7 @@ $(document).ready(function () {
 function loadYenPressSpinesContent(book, volume, spineList) {
   for (let i = 0; i < spineList.length; i++) {
     let spineName = spineList[i];
-    xhr.onreadystatechange = function() {
+    xhr.onreadystatechange = function () {
       if (this.readyState === this.DONE) {
         let html = parser.parseFromString(this.responseText, 'application/xhtml+xml');
 
@@ -67,7 +69,7 @@ function loadYenPressSpinesContent(book, volume, spineList) {
 function loadJNovelClubSpinesContent(book, volume, spineList) {
   for (let i = 0; i < spineList.length; i++) {
     let spineName = spineList[i].replace('.xhtml', '').toString();
-    xhr.onreadystatechange = function() {
+    xhr.onreadystatechange = function () {
       if (this.readyState === this.DONE) {
         let html = parser.parseFromString(spineName === 'toc' ? this.responseText.replace(new RegExp('<a href="', 'g'), '<a href="#') : this.responseText, 'application/xhtml+xml');
 
