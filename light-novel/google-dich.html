@@ -1,13 +1,5 @@
-<!DOCTYPE html>
-<html lang="ja" class="hltr">
-  <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="initial-scale=1, user-scalable=0, maximum-scale=1">
-    <title>Google Dịch cho Light Novel - DoHoaiNam Pages</title>
-    <link rel="stylesheet" href="../css/styles/dohoainam-kadokawa-style.css">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
-    <style>
+<!DOCTYPE html><html lang="ja" class="hltr">  <head>    <meta charset="UTF-8">    <meta http-equiv="X-UA-Compatible" content="IE=edge">    <meta name="viewport" content="initial-scale=1, user-scalable=0, maximum-scale=1">    <title>Google Dịch cho Light Novel - DoHoaiNam Pages</title>    <link rel="stylesheet" href="../css/styles/dohoainam-kadokawa-style.css">    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="../js/js.cookie.js"></script>    <style>
       #google_translate_element * {
         color: revert !important;
       }
@@ -15,7 +7,12 @@
   </head>
   <body>
     <section>
-      <input id="edit_button" type="button" style="bottom: 8px; left: 8px; position: fixed;" value="Xong">
+      <select name="backgrounds" id="background_select" style="bottom: 8px; left: 8px; position: fixed;">
+        <option value="white">Trắng</option>
+        <option value="black">Đen</option>
+        <option value="sepia">Xêpia</option>
+      </select>
+      <input id="edit_button" type="button" style="bottom: 8px; left: 64px; position: fixed;" value="Xong">
       <div id="google_translate_element" style="bottom: 8px; position: fixed; right: 8px;"></div><script>
       function googleTranslateElementInit() {
         new google.translate.TranslateElement({
@@ -31,6 +28,16 @@
     <div style="text-align: center;"><textarea name="textarea" style="background: transparent; border: 0; border-style: none; color: inherit; font-family: inherit; font-size: inherit; height: 80vh; margin: 0; padding: 0; width: 100%;">Viết gì đó tại đây</textarea></div>
     </section>
     <script type="text/javascript">
+      $(document).ready(() => $("#background_select").val(Cookies.get("background") || "white"));
+      $("#background_select").on("change", function () {
+        if ($("#background_select").val() != 'white') {
+          $(document.documentElement).attr("style", $(document.documentElement).attr("style") != null ? document.documentElement.getAttribute('style').replace(/ black-theme;/g, '').replace(/black-theme;/g, '').replace(/ sepia-theme;/g, '').replace(/sepia-theme;/g, '').concat(' ' + $("#background_select").val() + '-theme') : $("#background_select").val() + '-theme');
+          Cookies.set("background", $("#background_select").val(), { expires: 365 });
+        } else {
+          Cookies.remove("background");
+        }
+      });
+
       $("#edit_button").click(function() {
         if ($("#edit_button").val() === 'Chỉnh sửa' && $("textarea").css("display") === 'none') {
           if ($("div.main").html() === '') {
