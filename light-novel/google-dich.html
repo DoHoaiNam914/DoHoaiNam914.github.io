@@ -28,7 +28,7 @@
     <div style="text-align: center;"><textarea name="textarea" style="background: transparent; border: 0; border-style: none; color: inherit; font-family: inherit; font-size: inherit; height: 80vh; margin: 0; padding: 0; width: 100%;">Viết gì đó tại đây</textarea></div>
     </section>
     <script type="text/javascript">
-      $(document).ready(() => $("#background_select").val(Cookies.get("background") || "white"));
+      $(document).ready(() => $("#background_select").val(Cookies.get("background") || "white").change());
       $("#background_select").on("change", function () {
         if ($("#background_select").val() != 'white') {
           $(document.documentElement).attr("style", $(document.documentElement).attr("style") != null ? document.documentElement.getAttribute('style').replace(/ black-theme;/g, '').replace(/black-theme;/g, '').replace(/ sepia-theme;/g, '').replace(/sepia-theme;/g, '').concat(' ' + $("#background_select").val() + '-theme') : $("#background_select").val() + '-theme');
