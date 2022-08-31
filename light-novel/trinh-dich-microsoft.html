@@ -1,40 +1,17 @@
-<!DOCTYPE html>
-<html class="hltr">
-  <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="initial-scale=1, user-scalable=0, maximum-scale=1">
-    <title>Trình dịch Microsoft cho Light Novel - DoHoaiNam Pages</title>
-    <link rel="stylesheet" href="../css/styles/dohoainam-kadokawa-style.css">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+<!DOCTYPE html><html class="hltr">  <head>    <meta charset="UTF-8">    <meta http-equiv="X-UA-Compatible" content="IE=edge">    <meta name="viewport" content="initial-scale=1, user-scalable=0, maximum-scale=1">    <title>Trình dịch Microsoft cho Light Novel - DoHoaiNam Pages</title>    <link rel="stylesheet" href="../css/styles/dohoainam-kadokawa-style.css">    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
     <script src="../js/js.cookie.js"></script>
-  </head>
-  <body>
-    <form>
-      <div style="position: fixed; right: 8px; top: 8px;">
-        <select id="background_select">
+  </head>  <body>    <form>
+      <div style="position: fixed; right: 8px; top: 8px;">        <select id="background_select">
           <option value="white">Trắng</option>
           <option value="black">Đen</option>
           <option value="sepia">Xêpia</option>
         </select>
-      </div>
-    </form>
-    <form>
+      </div>    </form>    <form>
       <div style="bottom: 8px; position: fixed; left: 8px;">
         <input id="edit_button" type="button" value="Xong">
+      </div>      <div style="bottom: 8px; position: fixed; right: 8px;">        <input id="microsoft_translator_button" type="button" value="Dịch">
       </div>
-      <div style="bottom: 8px; position: fixed; right: 8px;">
-        <select id="language_select">
-          <option value="">Translate</option>
-          <option value="zh-CHS">Chinese Simplified</option>
-          <option value="zh-CHT">Chinese Traditional</option>
-          <option value="en">English</option>
-          <option value="ja">Japanese</option>
-          <option value="vi">Vietnamese</option>
-        </select>
-      </div>
-    </form>
-    <section class="p-text">
+    </form>    <section class="p-text">
       <div class="main" style="display: none;"></div>
     <div style="text-align: center;"><textarea name="textarea" style="background: transparent; border: 0; border-style: none; color: inherit; font-family: inherit; font-size: inherit; height: 80vh; margin: 0; padding: 0; width: 100%;">Viết gì đó tại đây</textarea></div>
     </section>
@@ -42,15 +19,13 @@
       var orignalTextElement;
       var translationTextElement;
 
-      var prevLang;
-
       $(document).ready(() => $("#background_select").val(Cookies.get("background") || "white").change());
       $("#background_select").on("change", function () {
         if ($("#background_select").val() !== 'white') {
-      $(document.documentElement).attr("style", $(document.documentElement).attr("style") != null ? document.documentElement.getAttribute('style').replace(/ black-theme;/g, '').replace(/black-theme;/g, '').replace(/ sepia-theme;/g, '').replace(/sepia-theme;/g, '').concat(' ' + $("#background_select").val() + '-theme;') : $("#background_select").val() + "-theme;");
+          $(document.documentElement).attr("style", $(document.documentElement).attr("style") != null ? document.documentElement.getAttribute('style').replace(/ black-theme;/g, '').replace(/black-theme;/g, '').replace(/ sepia-theme;/g, '').replace(/sepia-theme;/g, '').concat(' ' + $("#background_select").val() + '-theme;') : $("#background_select").val() + "-theme;");
           Cookies.set("background", $("#background_select").val(), { expires: 365 });
         } else {
-      $(document.documentElement).attr("style", $(document.documentElement).attr("style") != null ? document.documentElement.getAttribute('style').replace(/ black-theme;/g, '').replace(/black-theme;/g, '').replace(/ sepia-theme;/g, '').replace(/sepia-theme;/g, '');
+          $(document.documentElement).attr("style", $(document.documentElement).attr("style") != null ? document.documentElement.getAttribute('style').replace(/ black-theme;/g, '').replace(/black-theme;/g, '').replace(/ sepia-theme;/g, '').replace(/sepia-theme;/g, '') : "");
           Cookies.remove("background");
         }
       });
@@ -68,11 +43,6 @@
         } else {
           if ($("textarea").css("display") === 'none') {
             $("div.main").attr("contentEditable", "false");
-
-            if ($("div.main").html() === null || $("div.main").html() === '<p></p>' || $("div.main").html() === '<p><br></p>') {
-              $("#language_select").val("");
-              $("div.main").html(null);
-            }
           } else {
             var words = document.querySelector('textarea').value.split('\n');
             $("div.main").html(null);
@@ -87,54 +57,64 @@
 
           $("#edit_button").val("Chỉnh sửa");
         }
+
+        if ($("div.main").html() === null || $("div.main").html() === '<p></p>' || $("div.main").html() === '<p><br></p>') {
+          if ($("#microsoft_translator_button").val() !== 'Dịch') {
+            $("#microsoft_translator_button").val("Dịch");
+          }
+        
+          $("div.main").html(null);
+        }
       });
 
-      $("#language_select").on("change", function () {
+      $("#microsoft_translator_button").click(function () {
         if ($("#edit_button").val() !== 'Xong') {
-          if ($("#language_select").val() !== '') {
-            let toLang = $("#language_select").val();
+          if ($("#microsoft_translator_button").val() === 'Dịch') {
+            let availableLanguage = ['vi', 'en', 'ja', 'zh-CHS', 'zh-CHT'];
+            let toLang = prompt('Dịch đến ngôn ngữ?\n*Ghi chú: vi=Tiếng Việt, en=Tiếng Anh, ja=Tiếng Nhật, zh-CHS=Tiếng Trung (Giản thể), zh-CHT=Tiếng Trung (Phổn thể)');
 
-            if (toLang.includes(prevLang) && $("div.main").html() === orignalTextElement) {
-              $("div.main").html(translationTextElement);
-            } else {
-              let accessToken = getMicrosoftTranslatorAccessToken();
+            if (availableLanguage.includes(toLang)) {
+              if (toLang === '' && $("div.main").html() === orignalTextElement) {
+                $("div.main").html(translationTextElement);
+              } else {
+                let accessToken = getMicrosoftTranslatorAccessToken();
 
-              if (accessToken !== null) {
-                let xhr = new XMLHttpRequest();
+                if (accessToken != null) {
+                  let xhr = new XMLHttpRequest();
 
-                let words = document.querySelector('div.main').innerHTML.replace(/<p>/g, '').replace(/<\/p>/g, '').split('\n');
-                orignalTextElement = $("div.main").html();
-                $("div.main").html(null);
+                  let words = document.querySelector('div.main').innerHTML.replace(/<p>/g, '').replace(/<\/p>/g, '').split('\n');
+                  orignalTextElement = $("div.main").html();
+                  $("div.main").html(null);
 
-                for (let i = 0; i < words.length; i++) {
-                  const data = JSON.stringify([
-                    {
-                      "Text": words[i]
-                    }
-                  ]);
+                  for (let i = 0; i < words.length; i++) {
+                    const data = JSON.stringify([
+                      {
+                        "Text": words[i]
+                      }
+                    ]);
 
-                  xhr.onreadystatechange = function () {
-                    if (this.readyState === this.DONE) {
-                      $("div.main").append('<p>' + JSON.parse(this.responseText.replace(/\[\{/g, '{').replace(/\}\]/g, '}')).translations.text + '</p>' + (i + 1 < words.length ? '\n' : ''));
-                    }
-                  };
+                    xhr.onreadystatechange = function () {
+                      if (this.readyState === this.DONE) {
+                        $("div.main").append('<p>' + JSON.parse(this.responseText.replace(/\[\{/g, '{').replace(/\}\]/g, '}')).translations.text + '</p>' + (i + 1 < words.length ? '\n' : ''));
+                      }
+                    };
 
-                  xhr.open("POST", "https://api.cognitive.microsofttranslator.com/translate?to=" + toLang + "&api-version=3.0&includeSentenceLength=true", false);
-                  xhr.setRequestHeader("Authorization", "Bearer " + accessToken);
-                  xhr.setRequestHeader("Content-Type", "application/json");
+                    xhr.open("POST", "https://api.cognitive.microsofttranslator.com/translate?to=" + toLang + "&api-version=3.0&includeSentenceLength=true", false);
+                    xhr.setRequestHeader("Authorization", "Bearer " + accessToken);
+                    xhr.setRequestHeader("Content-Type", "application/json");
 
-                  xhr.send(data);
+                    xhr.send(data);
+                  }
                 }
-
-                prevLang = toLang;
               }
+
+              $("#microsoft_translator_button").val("Hiển thị văn bản gốc");
             }
           } else {
             translationTextElement = $("div.main").html();
             $("div.main").html(orignalTextElement);
+            $("#microsoft_translator_button").val("Dịch");
           }
-        } else {
-          $("#language_select").val("");
         }
       });
 
