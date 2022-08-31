@@ -16,8 +16,6 @@
     <div style="text-align: center;"><textarea name="textarea" style="background: transparent; border: 0; border-style: none; color: inherit; font-family: inherit; font-size: inherit; height: 80vh; margin: 0; padding: 0; width: 100%;">Viết gì đó tại đây</textarea></div>
     </section>
     <script type="text/javascript">
-      var prevToLang;
-
       var orignalTextElement;
       var translationTextElement;
 
@@ -76,7 +74,7 @@
             let toLang = prompt('Dịch đến ngôn ngữ?\n*Ghi chú: vi=Tiếng Việt, en=Tiếng Anh, ja=Tiếng Nhật, zh-CHS=Tiếng Trung (Giản thể), zh-CHT=Tiếng Trung (Phổn thể)');
 
             if (availableLanguage.includes(toLang)) {
-              if (toLang === prevToLang && $("div.main").html() === orignalTextElement) {
+              if (toLang === '' && $("div.main").html() === orignalTextElement) {
                 $("div.main").html(translationTextElement);
               } else {
                 let accessToken = getMicrosoftTranslatorAccessToken();
@@ -107,8 +105,6 @@
 
                     xhr.send(data);
                   }
-
-                  prevToLang = toLang;
                 }
               }
 
