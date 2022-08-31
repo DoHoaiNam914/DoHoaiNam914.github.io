@@ -12,19 +12,21 @@ $(document).ready(function () {
     });
   } else if (searchParams.has('tap')) {
     $(document.body).html(`<form>
-  <div style="position: fixed; right: 8px; top: 8px;">    <select id="background_select">
+  <div style="position: fixed; right: 8px; top: 8px;">
+    <select id="background_select">
       <option value="white">Trắng</option>
       <option value="black">Đen</option>
       <option value="sepia">Xêpia</option>
     </select>
-  </div></form>
+  </div>
+</form>
 <script type="text/javascript">
   $("#background_select").on("change", function () {
     if ($("#background_select").val() != 'white') {
       document.documentElement.setAttribute('style', document.documentElement.getAttribute('style') != null ? document.documentElement.getAttribute('style').replace(/ black-theme;/g, '').replace(/black-theme;/g, '').replace(/ sepia-theme;/g, '').replace(/sepia-theme;/g, '').concat(' ' + $("#background_select").val() + '-theme;') : $("#background_select").val() + '-theme;');
       Cookies.set("background", $("#background_select").val(), { expires: 365 });
     } else {
-      document.documentElement.setAttribute('style', document.documentElement.getAttribute('style') != null ? document.documentElement.getAttribute('style').replace(/ black-theme;/g, '').replace(/black-theme;/g, '').replace(/ sepia-theme;/g, '').replace(/sepia-theme;/g, '') : '');
+      $(document.documentElement).attr("style", $(document.documentElement).attr("style") != null ? document.documentElement.getAttribute('style').replace(/ black-theme;/g, '').replace(/black-theme;/g, '').replace(/ sepia-theme;/g, '').replace(/sepia-theme;/g, '').concat(' ' + $("#background_select").val() + '-theme;') : $("#background_select").val() + "-theme;");
       Cookies.remove("background");
     }
   });
