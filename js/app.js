@@ -16,17 +16,18 @@ $(document).ready(function () {
     <select id="background_select">
       <option value="white">Trắng</option>
       <option value="black">Đen</option>
-      <option value="sepia">Xêpia</option>
+      <option value="sepia">Sepia</option>
+      <option value="cream">Kem</option>
     </select>
   </div>
 </form>
 <script type="text/javascript">
   $("#background_select").on("change", function () {
     if ($("#background_select").val() != 'white') {
-      $(document.documentElement).attr("style", $(document.documentElement).attr("style") != null ? document.documentElement.getAttribute('style').replace(/ black-theme;/g, '').replace(/black-theme;/g, '').replace(/ sepia-theme;/g, '').replace(/sepia-theme;/g, '').concat(' ' + $("#background_select").val() + '-theme;') : $("#background_select").val() + "-theme;");
+      $(document.documentElement).attr("style", $(document.documentElement).attr("style") != null ? document.documentElement.getAttribute('style').replace(/ black;/g, '').replace(/black;/g, '').replace(/ sepia;/g, '').replace(/sepia;/g, '').replace(/ cream;/g, '').replace(/cream;/g, '').concat(' ' + $("#background_select").val() + ';') : $("#background_select").val() + ";");
       Cookies.set("background", $("#background_select").val(), { expires: 365 });
     } else {
-      $(document.documentElement).attr("style", $(document.documentElement).attr("style") != null ? document.documentElement.getAttribute('style').replace(/ black-theme;/g, '').replace(/black-theme;/g, '').replace(/ sepia-theme;/g, '').replace(/sepia-theme;/g, '') : "");
+      $(document.documentElement).attr("style", $(document.documentElement).attr("style") != null ? document.documentElement.getAttribute('style').replace(/ black;/g, '').replace(/black;/g, '').replace(/ sepia;/g, '').replace(/sepia;/g, '').replace(/ cream;/g, '').replace(/cream;/g, '') : "");
       Cookies.remove("background");
     }
   });

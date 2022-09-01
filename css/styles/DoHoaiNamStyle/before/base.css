@@ -14,7 +14,7 @@
 
 :root {
   /* Config */
-  --fontFamily: "Iowan Old Style", serif;
+  --fontFamily: "Bookerly", serif;
 
   /* For square-ish fonts (CJK, Indic, etc.), we must apply some compensation in dynamic leading. Default is 1 i.e. no compensation */
   --lineHeightCompensation: 1;
@@ -53,7 +53,7 @@ math {
    That will only work if either html or body have a (xml:)lang attribute, not for inline overrides */
 
 :lang(ja) {
-  --fontFamily: "Iowan Old Style", serif-ja, serif;
+  --fontFamily: serif-ja, serif;
 
   /* For CJK, the line-height is usually 15–20% more than for Latin */
   --lineHeightCompensation: 1.167;

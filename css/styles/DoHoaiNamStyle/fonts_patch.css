@@ -3,25 +3,25 @@
    A stylesheet improving @font-face declarations to cover all platforms */
 
 @font-face {
-  font-family: "Iowan Old Style";
-  src: url("https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/IowanOldStBTRoman.ttf") format("truetype");
+  font-family: "Bookerly";
+  src: url("https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Bookerly_Rg.woff2") format("woff2");
 }
 
 @font-face {
-  font-family: "Iowan Old Style";
-  src: url("https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/IowanOldStBTItalic.ttf") format("truetype");
+  font-family: "Bookerly";
+  src: url("https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Bookerly_It.woff2") format("woff2");
   font-style: italic;
 }
 
 @font-face {
-  font-family: "Iowan Old Style";
-  src: url("https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/IowanOldStBTBold.ttf") format("truetype");
+  font-family: "Bookerly";
+  src: url("https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Bookerly_Bd.woff2") format("woff2");
   font-weight: bold;
 }
 
 @font-face {
-  font-family: "Iowan Old Style";
-  src: url("https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/IowanOldStBTBoldItalic.ttf") format("truetype");
+  font-family: "Bookerly";
+  src: url("https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Bookerly_BdIt.woff2") format("woff2");
   font-style: italic;
   font-weight: bold;
 }
@@ -30,22 +30,46 @@
 
 @font-face {
   font-family: "serif-ja";
-  src: url("https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Hiragino%20Mincho%20ProN%20W3.otf") format("opentype");
+  src: url("https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/TBMinchoMedium_213.woff2") format("woff2");
 }
 
 @font-face {
   font-family: "sans-serif-ja";
-  src: url("https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Hiragino%20Maru%20Gothic%20ProN%20W4.otf") format("opentype");
+  src: url("https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/TBGothicMed_213.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "serif-ja";
+  src: url("https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/TBMinchoBold_213.woff2") format("woff2");
+  font-weight: bold;
+}
+
+@font-face {
+  font-family: "sans-serif-ja";
+  src: url("https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/TBGothicBold_213.woff2") format("woff2");
+  font-weight: bold;
 }
 
 /* 縦組み用 (vertical writing) */
 
 @font-face {
   font-family: "serif-ja-v";
-  src: url("https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Hiragino%20Mincho%20ProN%20W3.otf") format("opentype");
+  src: url("https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/TBMinchoMedium_213.woff2") format("woff2");
 }
 
 @font-face {
   font-family: "sans-serif-ja-v";
-  src: url("https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Hiragino%20Maru%20Gothic%20ProN%20W4.otf") format("opentype");
+  src: url("https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/TBGothicMed_213.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "serif-ja-v";
+  src: url("https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/TBMinchoBold_213.woff2") format("woff2");
+  font-weight: bold;
+}
+
+@font-face {
+  font-family: "sans-serif-ja-v";
+  src: url("https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/TBGothicBold_213.woff2") format("woff2");
+  font-weight: bold;
 }

@@ -1,0 +1,22 @@
+/* Cream
+
+   A preset color for cream background */
+
+
+/* CONFIG */
+
+:root[style*="cream"] {
+  --backgroundColor: #ffffe0;
+  --textColor: #000000;
+
+  --linkColor: #32327d;
+
+  --maxLineLength: 40.4476rem; /* Forcing a reflow in Blink/Webkit so that blend mode can work */
+}
+
+:root[style*="cream"] a:link,
+:root[style*="cream"] a:link *,
+:root[style*="cream"] a:visited,
+:root[style*="cream"] a:visited * {
+  color: var(--linkColor);
+}

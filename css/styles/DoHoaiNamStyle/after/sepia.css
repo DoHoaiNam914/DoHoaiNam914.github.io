@@ -1,0 +1,22 @@
+/* Sepia
+
+   A preset color for sepia background */
+
+
+/* CONFIG */
+
+:root[style*="sepia"] {
+  --backgroundColor: #ebd2a5;
+  --textColor: #5a4114;
+
+  --linkColor: #50320c;
+
+  --maxLineLength: 40.4476rem; /* Forcing a reflow in Blink/Webkit so that blend mode can work */
+}
+
+:root[style*="sepia"] a:link,
+:root[style*="sepia"] a:link *,
+:root[style*="sepia"] a:visited,
+:root[style*="sepia"] a:visited * {
+  color: var(--linkColor);
+}

@@ -1,0 +1,20 @@
+/* Black
+
+   A preset color for black background */
+
+
+/* CONFIG */
+
+:root[style*="black"] {
+  --backgroundColor: #000000;
+  --textColor: #d2d2d2;
+
+  --linkColor: #ebebee;
+}
+
+:root[style*="black"] a:link,
+:root[style*="black"] a:link *,
+:root[style*="black"] a:visited,
+:root[style*="black"] a:visited * {
+  color: var(--linkColor) !important;
+}
