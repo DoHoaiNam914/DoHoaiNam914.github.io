@@ -50,7 +50,7 @@
           $(document.documentElement).attr("style", $(document.documentElement).attr("style") != null ? document.documentElement.getAttribute('style').replace(/ black;/g, '').replace(/black;/g, '').replace(/ sepia;/g, '').replace(/sepia;/g, '').replace(/ cream;/g, '').replace(/cream;/g, '').concat(' ' + $("#background_select").val() + ';') : $("#background_select").val() + ";");
           Cookies.set("background", $("#background_select").val(), { expires: 365 });
         } else {
-          $(document.documentElement).attr("style", $(document.documentElement).attr("style") != null ? document.documentElement.getAttribute('style').replace(/ black;/g, '').replace(/black;/g, '').replace(/ sepia;/g, '').replace(/sepia;/g, '') : "").replace(/ cream;/g, '').replace(/cream;/g, '');
+          $(document.documentElement).attr("style", $(document.documentElement).attr("style") != null ? document.documentElement.getAttribute('style').replace(/ black;/g, '').replace(/black;/g, '').replace(/ sepia;/g, '').replace(/sepia;/g, '').replace(/ cream;/g, '').replace(/cream;/g, '') : "");
           Cookies.remove("background");
         }
       });
