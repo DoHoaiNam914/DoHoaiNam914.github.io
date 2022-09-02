@@ -23,9 +23,9 @@ $(document).ready(function () {
 </form>
 <script type="text/javascript">
   $("#background_select").on("change", function () {
-    if ($("#background_select").val() != 'white') {
-      $(document.documentElement).attr("style", $(document.documentElement).attr("style") != null ? document.documentElement.getAttribute('style').replace(/ black;/g, '').replace(/black;/g, '').replace(/ sepia;/g, '').replace(/sepia;/g, '').replace(/ cream;/g, '').replace(/cream;/g, '').concat(' ' + $("#background_select").val() + ';') : $("#background_select").val() + ";");
-      Cookies.set("background", $("#background_select").val(), { expires: 365 });
+    if (this.value != 'white') {
+      $(document.documentElement).attr("style", $(document.documentElement).attr("style") != null ? document.documentElement.getAttribute('style').replace(/ black;/g, '').replace(/black;/g, '').replace(/ sepia;/g, '').replace(/sepia;/g, '').replace(/ cream;/g, '').replace(/cream;/g, '').concat(' ' + this.value.concat(';')) : this.value.concat(';'));
+      Cookies.set("background", this.value, { expires: 365 });
     } else {
       $(document.documentElement).attr("style", $(document.documentElement).attr("style") != null ? document.documentElement.getAttribute('style').replace(/ black;/g, '').replace(/black;/g, '').replace(/ sepia;/g, '').replace(/sepia;/g, '').replace(/ cream;/g, '').replace(/cream;/g, '') : "");
       Cookies.remove("background");
