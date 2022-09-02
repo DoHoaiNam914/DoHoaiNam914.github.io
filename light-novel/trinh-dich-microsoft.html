@@ -45,7 +45,6 @@
 
       var prevLang;
 
-      $(document).ready(() => $("#background_select").val(Cookies.get("background") || "white").change());
       $("#background_select").on("change", function () {
         if ($("#background_select").val() !== 'white') {
           $(document.documentElement).attr("style", $(document.documentElement).attr("style") != null ? document.documentElement.getAttribute('style').replace(/ black;/g, '').replace(/black;/g, '').replace(/ sepia;/g, '').replace(/sepia;/g, '').replace(/ cream;/g, '').replace(/cream;/g, '').concat(' ' + $("#background_select").val() + ';') : $("#background_select").val() + ";");
@@ -55,6 +54,8 @@
           Cookies.remove("background");
         }
       });
+
+      $(document).ready(() => $("#background_select").val(Cookies.get("background") || "white").change());
 
       $("#edit_button").click(function () {
         if ($("#edit_button").val() === 'Chỉnh sửa' && $("textarea").css("display") === 'none') {
