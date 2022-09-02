@@ -50,33 +50,6 @@ center, code, var {
   hyphens: none;
 }
 
-/* OTF */
-
-body {
-  font-variant-numeric: oldstyle-nums proportional-nums;
-}
-
-:lang(ja) body {
-  font-variant-numeric: lining-nums proportional-nums;
-}
-
-h1, h2, h3, h4, h5, h6, dt {
-  font-variant-numeric: lining-nums proportional-nums;
-}
-
-table {
-  font-variant-numeric: lining-nums tabular-nums;
-}
-
-code, var {
-  font-variant-ligatures: none;
-  font-variant-numeric: lining-nums tabular-nums slashed-zero;
-}
-
-rt {
-  font-variant-east-asian: ruby;
-}
-
 /* Black theme */
 
 hr {
