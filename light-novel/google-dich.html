@@ -45,17 +45,15 @@
         }
       });
 
-      $(document).ready(function () {
-        function googleTranslateElementInit() {
-          new google.translate.TranslateElement({
-            pageLanguage: 'auto',
-            includedLanguages: 'zh-CN,zh-TW,en,ja,vi',
-            autoDisplay: false
-          }, 'google_translate_element');
-        }
+      function googleTranslateElementInit() {
+        new google.translate.TranslateElement({
+          pageLanguage: 'auto',
+          includedLanguages: 'zh-CN,zh-TW,en,ja,vi',
+          autoDisplay: false
+        }, 'google_translate_element');
 
         $("#background_select").val(Cookies.get("background") || "white").change();
-      });
+      }
 
       $("#edit_button").click(function () {
         if ($("#edit_button").val() === 'Chỉnh sửa' && $("textarea").css("display") === 'none') {
