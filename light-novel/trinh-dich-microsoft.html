@@ -71,7 +71,7 @@
           if ($("textarea").css("display") === 'none') {
             $("ol.main").attr("contentEditable", "false");
 
-            if ($("ol.main").html() === null || $("ol.main").html() === '<li></li>' || $("ol.main").html() === '<li><br></li>') {
+            if ($("ol.main").html() === null || $("ol.main").html() === '<li><div class="main"></div></li>' || $("ol.main").html() === '<li><div class="main"><br></div></li>') {
               $("#language_select").val("");
               $("ol.main").html(null);
             }
@@ -80,7 +80,7 @@
             $("ol.main").html(null);
 
             for (let i = 0; i < words.length; i++) {
-              $("ol.main").append('<li>' + (words[i] !== '' ? words[i] : '<br>') + '</li>' + (i + 1 < words.length ? '\n' : ''));
+              $("ol.main").append('<li><div class="main">' + (words[i] !== '' ? words[i] : '<br>') + '</div></li>' + (i + 1 < words.length ? '\n' : ''));
             }
 
             $("textarea").hide();
