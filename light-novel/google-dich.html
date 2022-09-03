@@ -40,7 +40,7 @@
     }
     </script><script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
     <section class="p-text">
-      <div class="main" style="display: none;"></div>
+      <ol class="main" style="display: none;"></ol>
       <div style="text-align: center;"><textarea name="textarea" style="background: transparent; border: 0; border-style: none; color: inherit; font-family: inherit; font-size: inherit; height: 80vh; margin: 0; padding: 0; width: 100%;">Viết gì đó tại đây</textarea></div>
     </section>
     <script type="text/javascript">
@@ -60,31 +60,31 @@
 
       $("#edit_button").click(function () {
         if ($("#edit_button").val() === 'Chỉnh sửa' && $("textarea").css("display") === 'none') {
-          if ($("div.main").html() === '') {
-            $("div.main").hide();
+          if ($("ol.main").html() === '') {
+            $("ol.main").hide();
             $("textarea").show();
           } else {
-            $("div.main").attr("contentEditable", "true");
+            $("ol.main").attr("contentEditable", "true");
           }
 
           $("#edit_button").val("Xong");
         } else {
           if ($("textarea").css("display") === 'none') {
-            $("div.main").attr("contentEditable", "false");
+            $("ol.main").attr("contentEditable", "false");
 
-            if ($("div.main").html() === null || $("div.main").html() === '<p></p>' || $("div.main").html() === '<p><br></p>') {
-              $("div.main").html(null);
+            if ($("ol.main").html() === null || $("ol.main").html() === '<li></li>' || $("ol.main").html() === '<li><br></li>') {
+              $("ol.main").html(null);
             }
           } else {
             var words = document.querySelector('textarea').value.split('\n');
-            $("div.main").html(null);
+            $("ol.main").html(null);
 
             for (let i = 0; i < words.length; i++) {
-              $("div.main").append('<p>' + (words[i] !== '' ? words[i] : '<br>') + '</p>' + (i + 1 < words.length ? '\n' : ''));
+              $("ol.main").append('<li>' + (words[i] !== '' ? words[i] : '<br>') + '</li>' + (i + 1 < words.length ? '\n' : ''));
             }
 
             $("textarea").hide();
-            $("div.main").show();
+            $("ol.main").show();
           }
 
           $("#edit_button").val("Chỉnh sửa");
