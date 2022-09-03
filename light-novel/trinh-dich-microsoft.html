@@ -45,19 +45,17 @@
 
       var prevLang;
 
-      $(document).ready(function () {
-        $("#background_select").change(function () {
-          if (this.value !== 'white') {
-            $(document.documentElement).attr("style", $(document.documentElement).attr("style") != null ? document.documentElement.getAttribute('style').replace(/ black;/g, '').replace(/black;/g, '').replace(/ sepia;/g, '').replace(/sepia;/g, '').replace(/ cream;/g, '').replace(/cream;/g, '').concat(' ' + this.value.concat(';')) : this.value.concat(';'));
-            Cookies.set("background", this.value, { expires: 365 });
-          } else {
-            $(document.documentElement).attr("style", $(document.documentElement).attr("style") != null ? document.documentElement.getAttribute('style').replace(/ black;/g, '').replace(/black;/g, '').replace(/ sepia;/g, '').replace(/sepia;/g, '').replace(/ cream;/g, '').replace(/cream;/g, '') : "");
-            Cookies.remove("background");
-          }
-        });
-
-        $("#background_select").val(Cookies.get("background") || "white").change();
+      $("#background_select").change(function () {
+        if (this.value !== 'white') {
+          $(document.documentElement).attr("style", $(document.documentElement).attr("style") != null ? document.documentElement.getAttribute('style').replace(/ black;/g, '').replace(/black;/g, '').replace(/ sepia;/g, '').replace(/sepia;/g, '').replace(/ cream;/g, '').replace(/cream;/g, '').concat(' ' + this.value.concat(';')) : this.value.concat(';'));
+          Cookies.set("background", this.value, { expires: 365 });
+        } else {
+          $(document.documentElement).attr("style", $(document.documentElement).attr("style") != null ? document.documentElement.getAttribute('style').replace(/ black;/g, '').replace(/black;/g, '').replace(/ sepia;/g, '').replace(/sepia;/g, '').replace(/ cream;/g, '').replace(/cream;/g, '') : "");
+          Cookies.remove("background");
+        }
       });
+
+      $(document).ready(() => $("#background_select").val(Cookies.get("background") || "white").change());
 
       $("#edit_button").click(function () {
         if ($("#edit_button").val() === 'Chỉnh sửa' && $("textarea").css("display") === 'none') {
