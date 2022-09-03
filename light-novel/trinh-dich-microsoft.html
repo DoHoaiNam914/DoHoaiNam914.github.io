@@ -8,15 +8,6 @@
     <link rel="stylesheet" href="../css/styles/dohoainam-kadokawa-style.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
     <script src="../js/js.cookie.js"></script>
-    <style>
-      section.p-text {
-        margin-bottom: 2em;
-      }
-
-      ol.main {
-        padding-left: 30px;
-      }
-    </style>
   </head>
   <body>
     <form>
@@ -65,8 +56,8 @@
       });
 
       $(document).ready(() => $("#background_select").val(Cookies.get("background") || "white").change());
-
-      $("#edit_button").click(function () {
+      $("ol.main").on("input", () => $("ol.main").css("padding-left", 24 + 8 * words.length.toString().length + "px"));
+      $("#edit_button").on("click", function () {
         if ($("#edit_button").val() === 'Chỉnh sửa' && $("textarea").css("display") === 'none') {
           if ($("ol.main").html() === '') {
             $("ol.main").hide();
@@ -93,6 +84,7 @@
             }
 
             $("textarea").hide();
+            $("ol.main").css("padding-left", 24 + 8 * words.length.toString().length + "px");
             $("ol.main").show();
           }
 

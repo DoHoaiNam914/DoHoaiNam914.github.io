@@ -12,14 +12,6 @@
       #google_translate_element * {
         color: revert !important;
       }
-
-      section.p-text {
-        margin-bottom: 2em;
-      }
-
-      ol.main {
-        padding-left: 30px;
-      }
     </style>
   </head>
   <body>
@@ -63,6 +55,7 @@
         $("#background_select").val(Cookies.get("background") || "white").change();
       }
 
+      $("ol.main").on("input", () => $("ol.main").css("padding-left", 24 + 8 * words.length.toString().length + "px"));
       $("#edit_button").click(function () {
         if ($("#edit_button").val() === 'Chỉnh sửa' && $("textarea").css("display") === 'none') {
           if ($("ol.main").html() === '') {
@@ -89,6 +82,7 @@
             }
 
             $("textarea").hide();
+            $("ol.main").css("padding-left", 24 + 8 * words.length.toString().length + "px");
             $("ol.main").show();
           }
 
