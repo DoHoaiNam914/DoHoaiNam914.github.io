@@ -44,7 +44,8 @@
       var translationTextElement;
 
       var prevLang;
-      $(document).ready(function () {
+
+      $(document).ready(function () {
         $("#background_select").change(function () {
           if (this.value !== 'white') {
             $(document.documentElement).attr("style", $(document.documentElement).attr("style") != null ? document.documentElement.getAttribute('style').replace(/ black;/g, '').replace(/black;/g, '').replace(/ sepia;/g, '').replace(/sepia;/g, '').replace(/ cream;/g, '').replace(/cream;/g, '').concat(' ' + this.value.concat(';')) : this.value.concat(';'));
