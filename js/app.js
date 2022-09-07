@@ -4,13 +4,7 @@ const parser = new DOMParser();
 $(document).ready(function () {
   let searchParams = new URLSearchParams(window.location.search);
 
-  if (searchParams.has('trang')) {
-    $.get("trang" + searchParams.get('trang').concat('.html')).done(function(data) {
-      data = parser.parseFromString(data, 'text/html');
-      $(document.head).html(data.head.innerHTML);
-      $(document.body).html(data.body.innerHTML);
-    });
-  } else if (searchParams.has('tap')) {
+  if (searchParams.has('tap')) {
     $(document.body).html(`<form>
   <div style="position: fixed; right: 8px; top: 8px;">
     <select id="background_select">
@@ -33,12 +27,6 @@ $(document).ready(function () {
   });
 </script>`);
     $(document.head).load(searchParams.get('tap').concat('/content.html'));
-  } else {
-    $.get("trang1.html").done(function (data) {
-      data = parser.parseFromString(data, 'text/html');
-      $(document.head).html(data.head.innerHTML);
-      $(document.body).html(data.body.innerHTML);
-    });
   }
 });
 
