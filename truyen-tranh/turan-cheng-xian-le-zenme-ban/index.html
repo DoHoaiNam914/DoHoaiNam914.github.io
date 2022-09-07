@@ -52,28 +52,7 @@
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
-        width: calc(100% - 56px);
-      }
-
-      @media (max-width: 991.98px) {
-        .offcanvas-collapse {
-          position: fixed;
-          top: 56px; /* Height of navbar */
-          bottom: 0;
-          left: 100%;
-          width: 100%;
-          padding-right: 1rem;
-          padding-left: 1rem;
-          overflow-y: auto;
-          visibility: hidden;
-          background-color: #343a40;
-          transition: transform .3s ease-in-out, visibility .3s ease-in-out;
-        }
- 
-        .offcanvas-collapse.open {
-          visibility: visible;
-          transform: translateX(-100%);
-        }
+        width: calc(100% - 72px);
       }
 
       .nav-scroller .nav {
@@ -105,22 +84,22 @@
     </style>
   </head>
   <body class="bg-light">
-    <nav class="navbar navbar-expand-lg fixed-top navbar-dark bg-dark" aria-label="Main navigation">
+    <nav class="navbar navbar-expand-lg fixed-top navbar-dark bg-dark">
       <div class="container-fluid">
-        <a class="navbar-brand" href="#">Turan Cheng Xian Le Zenme Ban</a>
-        <button class="navbar-toggler p-0 border-0" type="button" id="navbarSideCollapse" aria-label="Toggle navigation">
+        <a class="navbar-brand" href="#">Danh sách Light Novel</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="navbar-collapse offcanvas-collapse" id="navbarsExampleDefault">
+        <div class="collapse navbar-collapse" id="navbar">
           <ul class="navbar-nav me-auto mb-2 mb-lg-0">
             <li class="nav-item">
-              <a class="nav-link" href="../..">Trang chủ</a>
+              <a class="nav-link" href="/">Trang chủ</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="../../light-novel">Light Novel</a>
+              <a class="nav-link" href="/light-novel">Light Novel</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link active" href="..">Truyện tranh</a>
+              <a class="nav-link active" aria-current="page" href="/truyen-tranh">Truyện tranh</a>
             </li>
           </ul>
         </div>
@@ -128,9 +107,9 @@
     </nav>
     <div class="nav-scroller bg-body shadow-sm">
       <nav class="nav" aria-label="Secondary navigation">
-        <a class="nav-link" href="../..">Trang chủ</a>
-        <a class="nav-link" href="../../light-novel">Light Novel</a>
-        <a class="nav-link active" href="../..">Truyện tranh</a>
+        <a class="nav-link" href="/">Trang chủ</a>
+        <a class="nav-link" href="/light-novel">Light Novel</a>
+        <a class="nav-link active" aria-current="page" href="/truyen-tranh">Truyện tranh</a>
       </nav>
     </div>
     <main class="container">
@@ -155,13 +134,12 @@
     </main>
     <footer class="py-3 my-4">
       <ul class="nav justify-content-center border-bottom pb-3 mb-3">
-        <li class="nav-item"><a href="../.." class="nav-link px-2 text-muted">Trang chủ</a></li>
-        <li class="nav-item"><a href="../../light-novel" class="nav-link px-2 text-muted">Light Novel</a></li>
-        <li class="nav-item"><a href=".." class="nav-link px-2 text-muted">Truyện tranh</a></li>
+        <li class="nav-item"><a href="/" class="nav-link px-2 text-muted">Trang chủ</a></li>
+        <li class="nav-item"><a href="/light-novel" class="nav-link px-2 text-muted">Light Novel</a></li>
+        <li class="nav-item"><a href="/truyen-tranh" class="nav-link px-2 text-muted">Truyện tranh</a></li>
       </ul>
       <p class="text-center text-muted">&copy; 2022 Đỗ Hoài Nam</p>
     </footer>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" crossorigin="anonymous"></script>
-    <script src="../../js/navbar.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.min.js" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" crossorigin="anonymous"></script>
   </body>
 </html>

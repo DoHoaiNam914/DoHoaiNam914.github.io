@@ -5,9 +5,9 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="initial-scale=1, user-scalable=0, maximum-scale=1">
     <title>Trình dịch Microsoft cho Light Novel - DoHoaiNam Pages</title>
-    <link rel="stylesheet" href="../css/styles/dohoainam-kadokawa-style.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
-    <script src="../js/js.cookie.js"></script>
+    <script src="../js/jquery.cookie.js"></script>
+    <link rel="stylesheet" href="../css/styles/dohoainam-kadokawa-style.css">
   </head>
   <body>
     <form>
@@ -48,14 +48,14 @@
       $("#background_select").change(function () {
         if (this.value !== 'white') {
           $(document.documentElement).attr("style", $(document.documentElement).attr("style") != null ? document.documentElement.getAttribute('style').replace(/ black;/g, '').replace(/black;/g, '').replace(/ sepia;/g, '').replace(/sepia;/g, '').replace(/ cream;/g, '').replace(/cream;/g, '').concat(' ' + this.value.concat(';')) : this.value.concat(';'));
-          Cookies.set("background", this.value, { expires: 365 });
+          $.cookie('background', this.value, { expires: 365 });
         } else {
           $(document.documentElement).attr("style", $(document.documentElement).attr("style") != null ? document.documentElement.getAttribute('style').replace(/ black;/g, '').replace(/black;/g, '').replace(/ sepia;/g, '').replace(/sepia;/g, '').replace(/ cream;/g, '').replace(/cream;/g, '') : "");
-          Cookies.remove("background");
+          $.removeCookie('background');
         }
       });
 
-      $(document).ready(() => $("#background_select").val(Cookies.get("background") || "white").change());
+      $(document).ready(() => $("#background_select").val($.cookie('background') || "white").change());
       $("ol.main").on("input", () => $("ol.main").css("padding-left", 24 + 8 * words.length.toString().length + "px"));
       $("#edit_button").on("click", function () {
         if ($("#edit_button").val() === 'Chỉnh sửa' && $("textarea").css("display") === 'none') {

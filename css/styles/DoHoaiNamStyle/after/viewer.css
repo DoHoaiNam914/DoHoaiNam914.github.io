@@ -1,4 +1,4 @@
-/* Reader module
+/* Viewer module
 
    A set of styles for ePublications */
 
@@ -45,7 +45,7 @@ body {
      Drawback: we have to use border-box so that it doesn’t screw the box model,
      which means it impacts max-width */
   box-sizing: border-box;
-  padding: 0 var(--pageGutter) !important;
+  padding: 0 var(--pageGutter) 72px !important;
 }
 
 /* Make sure line-length is limited in all configs */
