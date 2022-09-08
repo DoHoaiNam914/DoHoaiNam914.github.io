@@ -29,20 +29,12 @@ margin-bottom: 1.5em;
 
 span.special
 {
-font-family: sans-serif;
 font-weight:bold;
 font-size: 0.85em;
 }
 
-span.special1
-{
-font-family: sans-serif;
-}
-
-
 span.special2
 {
-font-family: sans-serif;
 font-size:1.1em;
 }
 
@@ -757,7 +749,6 @@ text-indent: 20pt;
 
 .galley-rw
 {
-font-family: serif;
 font-size: 1em;
 font-weight: normal;
 letter-spacing: 0em;

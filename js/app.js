@@ -5,7 +5,8 @@ $(document).ready(function () {
   let searchParams = new URLSearchParams(window.location.search);
 
   if (searchParams.has('tap')) {
-    $(document.body).html(`<form>
+    $(document.body).html(null);
+    $(document.body).append(`<form>
   <div style="position: fixed; right: 8px; top: 8px;">
     <select id="background_select">
       <option value="white">Trắng</option>
@@ -15,7 +16,7 @@ $(document).ready(function () {
     </select>
   </div>
 </form>
-<script type="text/javascript">
+<script>
   $("#background_select").on("change", function () {
     if (this.value != 'white') {
       $(document.documentElement).attr("style", $(document.documentElement).attr("style") != null ? document.documentElement.getAttribute('style').replace(/ black;/g, '').replace(/black;/g, '').replace(/ sepia;/g, '').replace(/sepia;/g, '').replace(/ cream;/g, '').replace(/cream;/g, '').concat(' ' + this.value.concat(';')) : this.value.concat(';'));
@@ -26,7 +27,8 @@ $(document).ready(function () {
     }
   });
 </script>`);
-    $(document.head).load(searchParams.get('tap').concat('/content.html'));
+    $(document.head).html(null);
+    $.get(searchParams.get('tap').concat('/content.html')).done((data) => $(document.head).append(parser.parseFromString(data, 'text/html').head.innerHTML));
   }
 });
 
@@ -43,7 +45,7 @@ function loadYenPressSpinesContent(book, volume, spineList) {
           $("meta[content=\"text/html; charset=UTF-8\"]").replaceWith(`<meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="initial-scale=1, user-scalable=0, maximum-scale=1">`);
-          $(document.head).append(`<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous" script>
+          $(document.head).append(`<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 <script src="../../js/jquery.cookie.js"></script>`);
           $(document.head).append("<link rel=\"stylesheet\" href=\"../../css/styles/DoHoaiNamStyle-before.css\">\n" + $("link[href=\"../Styles/stylesheet.css\"]").prop("outerHTML").replace('..', volume.concat('/OEBPS')) + "\n<link rel=\"stylesheet\" href=\"../../css/styles/DoHoaiNamStyle-after.css\">");
           $("link[href=\"../Styles/stylesheet.css\"]").remove();
@@ -78,7 +80,7 @@ function loadJNovelClubSpinesContent(book, volume, spineList) {
           $("meta[content=\"text/html; charset=UTF-8\"]").replaceWith(`<meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="initial-scale=1, user-scalable=0, maximum-scale=1">`);
-          $(document.head).append(`<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous" script>
+          $(document.head).append(`<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 <script src="../../js/jquery.cookie.js"></script>`);
           $(document.head).append("<link rel=\"stylesheet\" href=\"../../css/styles/DoHoaiNamStyle-before.css\">\n" + $("link[href=\"../Styles/stylesheet.css\"]").prop("outerHTML").replace('..', volume.concat('/OEBPS')) + "\n  <link rel=\"stylesheet\" href=\"../../css/styles/DoHoaiNamStyle-after.css\">");
           $("link[href=\"../Styles/stylesheet.css\"]").remove();

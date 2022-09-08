@@ -25,11 +25,6 @@ margin-top: 1.5em;
 margin-bottom: 1.5em;
 }
 
-span.special
-{
-font-family: sans-serif;
-}
-
 p.img
 {
 margin-top: 1em;
@@ -289,7 +284,6 @@ margin-bottom: 0em;
 text-align: center;
 text-indent: 0em;
 line-height: 1.2em;
-font-family: sans-serif;
 }
 
 h1.chapter-title {
@@ -317,7 +311,6 @@ margin-bottom: 2em;
 text-align: center;
 text-indent: 0em;
 line-height: 1.2em;
-font-family: sans-serif;
 }
 
 
@@ -765,7 +758,6 @@ text-indent: 20pt;
 
 .galley-rw
 {
-font-family: serif;
 font-size: 1em;
 font-weight: normal;
 letter-spacing: 0em;
@@ -1289,11 +1281,6 @@ margin-top: 45%;
 }
 
 
-span.roman
-{
-font-family: sans-serif;
-}
-
 span.roman1
 {
 font-style: normal;
@@ -1369,7 +1356,6 @@ height: 3em; width: 1.3em;
 
 div.ecom_a
 {
-font-family: sans-serif;
 	margin-top: 1.5em;
 	margin-bottom: 1.5em;
 }
