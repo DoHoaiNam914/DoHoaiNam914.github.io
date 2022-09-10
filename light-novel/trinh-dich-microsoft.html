@@ -105,7 +105,7 @@
               if (accessToken !== null) {
                 let xhr = new XMLHttpRequest();
 
-                let words = document.querySelector('ol.main').innerHTML.replace(/<li>/g, '').replace(/<\/li>/g, '').split('\n');
+                let words = document.querySelector('ol.main').innerHTML.replace(/<li><div class="main">/g, '').replace(/<\/div><\/li>/g, '').split('\n');
                 orignalTextElement = $("ol.main").html();
                 $("ol.main").html(null);
 
@@ -118,7 +118,7 @@
 
                   xhr.onreadystatechange = function () {
                     if (this.readyState === this.DONE) {
-                      $("ol.main").append('<li>' + JSON.parse(this.responseText.replace(/\[\{/g, '{').replace(/\}\]/g, '}')).translations.text + '</li>' + (i + 1 < words.length ? '\n' : ''));
+                      $("ol.main").append('<li><div class="main">' + JSON.parse(this.responseText.replace(/\[\{/g, '{').replace(/\}\]/g, '}')).translations.text + '</div></li>' + (i + 1 < words.length ? '\n' : ''));
                     }
                   };
 
