@@ -7,7 +7,7 @@ $(document).ready(function () {
   if (searchParams.has('tap')) {
     $.get(searchParams.get('tap').concat('/content.html')).done((data) => $(document.head).html(parser.parseFromString(data, 'text/html').head.innerHTML));
     $(document.body).html(`<form>
-  <div style="position: fixed; right: 8px; top: 8px;">
+  <div class="notranslate" style="position: fixed; right: 8px; top: 8px;">
     <select id="background_select">
       <option value="white">Trắng</option>
       <option value="black">Đen</option>
