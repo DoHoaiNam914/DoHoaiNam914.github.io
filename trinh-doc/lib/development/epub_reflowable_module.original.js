@@ -1758,8 +1758,6 @@ EpubReflowable.Trigger.prototype.execute = function(dom) {
             <iframe scrolling='no' \
                     frameborder='0' \
                     height='100%' \
-                    referrerpolicy='same-origin' \
-                    sandbox='allow-same-origin' \
                     class='readium-flowing-content'> \
             </iframe> \
           </div>",
