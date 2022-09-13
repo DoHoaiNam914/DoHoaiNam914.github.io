@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ncx xmlns="http://www.daisy.org/z3986/2005/ncx/" version="2005-1">
+  <head>
+    <meta name="dtb:uid" content="9781718328396" />
+    <meta name="dtb:depth" content="1" />
+    <meta name="dtb:totalPageCount" content="0" />
+    <meta name="dtb:maxPageNumber" content="0" />
+  </head>
+<docTitle>
+  <text>Seirei Gensouki: Spirit Chronicles Volume 20</text>
+</docTitle>
+<navMap>
+  <navPoint id="navPoint1">
+    <navLabel>
+      <text>Cover</text>
+    </navLabel>
+    <content src="Text/cover.xhtml" />
+  </navPoint>
+  <navPoint id="navPoint2">
+    <navLabel>
+      <text>Color Illustrations</text>
+    </navLabel>
+    <content src="Text/frontmatter1.xhtml" />
+  </navPoint>
+  <navPoint id="navPoint3">
+    <navLabel>
+      <text>Character Introduction</text>
+    </navLabel>
+    <content src="Text/frontmatter5.xhtml" />
+  </navPoint>
+  <navPoint id="navPoint4">
+    <navLabel>
+      <text>Prologue: Wish</text>
+    </navLabel>
+    <content src="Text/prologue.xhtml" />
+  </navPoint>
+  <navPoint id="navPoint5">
+    <navLabel>
+      <text>Chapter 1: After Return, Before Return</text>
+    </navLabel>
+    <content src="Text/chapter1.xhtml" />
+  </navPoint>
+  <navPoint id="navPoint6">
+    <navLabel>
+      <text>Interlude: Pandora’s Box</text>
+    </navLabel>
+    <content src="Text/interlude.xhtml" />
+  </navPoint>
+  <navPoint id="navPoint7">
+    <navLabel>
+      <text>Chapter 2: Amakawa Haruto</text>
+    </navLabel>
+    <content src="Text/chapter2.xhtml" />
+  </navPoint>
+  <navPoint id="navPoint8">
+    <navLabel>
+      <text>Chapter 3: Report</text>
+    </navLabel>
+    <content src="Text/chapter3.xhtml" />
+  </navPoint>
+  <navPoint id="navPoint9">
+    <navLabel>
+      <text>Chapter 4: Training and Investigation Begins</text>
+    </navLabel>
+    <content src="Text/chapter4.xhtml" />
+  </navPoint>
+  <navPoint id="navPoint10">
+    <navLabel>
+      <text>Chapter 5: A New Match</text>
+    </navLabel>
+    <content src="Text/chapter5.xhtml" />
+  </navPoint>
+  <navPoint id="navPoint11">
+    <navLabel>
+      <text>Chapter 6: Quiet Invasion</text>
+    </navLabel>
+    <content src="Text/chapter6.xhtml" />
+  </navPoint>
+  <navPoint id="navPoint12">
+    <navLabel>
+      <text>Chapter 7: Signs of More Trouble</text>
+    </navLabel>
+    <content src="Text/chapter7.xhtml" />
+  </navPoint>
+  <navPoint id="navPoint13">
+    <navLabel>
+      <text>Chapter 8: Assassination</text>
+    </navLabel>
+    <content src="Text/chapter8.xhtml" />
+  </navPoint>
+  <navPoint id="navPoint14">
+    <navLabel>
+      <text>Chapter 9: Crusade</text>
+    </navLabel>
+    <content src="Text/chapter9.xhtml" />
+  </navPoint>
+  <navPoint id="navPoint15">
+    <navLabel>
+      <text>Chapter 10: For Whom Is the Crusade</text>
+    </navLabel>
+    <content src="Text/chapter10.xhtml" />
+  </navPoint>
+  <navPoint id="navPoint16">
+    <navLabel>
+      <text>Epilogue: The Transcendent Ones</text>
+    </navLabel>
+    <content src="Text/epilogue.xhtml" />
+  </navPoint>
+  <navPoint id="navPoint17">
+    <navLabel>
+      <text>Afterword</text>
+    </navLabel>
+    <content src="Text/afterword.xhtml" />
+  </navPoint>
+  <navPoint id="navPoint18">
+    <navLabel>
+      <text>Bonus Short Stories</text>
+    </navLabel>
+    <content src="Text/bonus.xhtml" />
+  </navPoint>
+  <navPoint id="navPoint19">
+    <navLabel>
+      <text>Bonus Illustration</text>
+    </navLabel>
+    <content src="Text/bonus1.xhtml" />
+  </navPoint>
+  <navPoint id="navPoint20">
+    <navLabel>
+      <text>About J-Novel Club</text>
+    </navLabel>
+    <content src="Text/signup.xhtml" />
+  </navPoint>
+  <navPoint id="navPoint21">
+    <navLabel>
+      <text>Copyright</text>
+    </navLabel>
+    <content src="Text/copyright.xhtml" />
+  </navPoint>
+</navMap>
+</ncx>
