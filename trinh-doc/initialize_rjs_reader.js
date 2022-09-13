@@ -34,11 +34,11 @@ DoHoaiNamReaderApp.loadAndRenderEpub = function (packageDocumentURL, viewerPrefe
 
       DoHoaiNamReaderApp.setModuleContainerHeight();
       DoHoaiNamReaderApp.epubViewer.on("epubLoaded", function () {
-        DoHoaiNamReaderApp.epubViewer.showSpineItem(7, function () { });
-
-        if (DoHoaiNamReaderApp.isSmartPhone()) {
-          DoHoaiNamReaderApp.epubViewer.setSyntheticLayout(false);
-        }
+        DoHoaiNamReaderApp.epubViewer.showSpineItem(7, function () {
+          if (DoHoaiNamReaderApp.isSmartPhone()) {
+            DoHoaiNamReaderApp.epubViewer.setSyntheticLayout(false);
+          }
+        });
 
         $(window).on("resize", function () {
           DoHoaiNamReaderApp.setModuleContainerHeight();
