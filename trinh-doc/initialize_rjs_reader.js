@@ -1,4 +1,4 @@
-DoHoaiNamReaderApp = {};
+DoHoaiNamReaderApp = { };
 
 DoHoaiNamReaderApp.setModuleContainerHeight = function () {
   $("#reader").css("width", $(window).innerWidth() + "px");
