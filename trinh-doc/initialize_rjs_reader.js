@@ -34,7 +34,7 @@ DoHoaiNamReaderApp.loadAndRenderEpub = function (packageDocumentURL, viewerPrefe
 
       DoHoaiNamReaderApp.setModuleContainerHeight();
       DoHoaiNamReaderApp.epubViewer.on("epubLoaded", function () {
-        DoHoaiNamReaderApp.epubViewer.showSpineItem(0, function () { });
+        DoHoaiNamReaderApp.epubViewer.showSpineItem(7, function () { });
 
         if (DoHoaiNamReaderApp.isSmartPhone()) {
           DoHoaiNamReaderApp.epubViewer.setSyntheticLayout(false);
