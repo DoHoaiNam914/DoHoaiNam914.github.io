@@ -14,7 +14,7 @@
 
 :root {
   /* Config */
-  --fontFamily: "Bookerly", serif;
+  --fontFamily: serif-ja, serif;
 
   /* For square-ish fonts (CJK, Indic, etc.), we must apply some compensation in dynamic leading. Default is 1 i.e. no compensation */
   --lineHeightCompensation: 1;
@@ -25,6 +25,7 @@
 
 /* Set default font for the html doc, so that it can be overridden by the authors’s stylesheet */
 html {
+  font-family: var(--fontFamily);
   /* Fallback line-height */
   line-height: 1.6; /* Fits a little bit better for all languages than 1.5 */
   line-height: var(--baseLineHeight);
@@ -53,7 +54,7 @@ math {
    That will only work if either html or body have a (xml:)lang attribute, not for inline overrides */
 
 :lang(ja) {
-  --fontFamily: serif-ja, serif;
+  --fontFamily: serif-ja-v, serif-ja, serif;
 
   /* For CJK, the line-height is usually 15–20% more than for Latin */
   --lineHeightCompensation: 1.167;
