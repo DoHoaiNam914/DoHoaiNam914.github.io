@@ -3,9 +3,12 @@ const parser = new DOMParser();
 
 $(document).ready(function () {
   let searchParams = new URLSearchParams(window.location.search);
+  let href = window.location.href.toString().split('/');
+  let book = href[4];
+  
 
   if (searchParams.has('tap')) {
-    $.get(searchParams.get('tap').concat('/' + (window.location.href.includes('tenseislime').includes('vol-3').includes('vol-4').includes('vol-7').includes('vol-9').includes('vol-13') ? 'package.html' : 'content.html'))).done((data) => $(document.head).html(parser.parseFromString(data, 'text/html').head.innerHTML));
+    $.get(searchParams.get('tap').concat('/' + (book.includes('tenseislime') && (searchParams.get('tap').includes('vol-3') || searchParams.get('tap').includes('vol-4') || searchParams.get('tap').includes('vol-7') || searchParams.get('tap').includes('vol-9') || searchParams.get('tap').includes('vol-13')) ? 'package.html' : 'content.html'))).done((data) => $(document.head).html(parser.parseFromString(data, 'text/html').head.innerHTML));
     $(document.body).html(`<form>
   <div class="notranslate" style="position: fixed; right: 8px; top: 8px;">
     <select id="background_select">
@@ -65,12 +68,12 @@ function loadYenPressSpinesContent(book, volume, spineList) {
   }
 }
 
-function loadYenPressSpinesContent2(book, volume, spineList) {console.log("2");
+function loadYenPressSpinesContent2(book, volume, spineList) {
   for (let i = 0; i < spineList.length; i++) {
     let spineName = spineList[i].replace('id_cover_xhtml', 'cover').toString();
     xhr.onreadystatechange = function () {
       if (this.readyState === this.DONE) {
-        let html = parser.parseFromString(this.responseText, 'application/xhtml+xml');
+        let html = parser.parseFromString(spineName === 'toc' ? this.responseText.replace(new RegExp('"><a href="', 'g'), '"><a href="#') : this.responseText, 'application/xhtml+xml');
 
         if (i === 0) {
           $(document.documentElement).attr("lang", html.documentElement.getAttribute('lang'));
@@ -80,12 +83,12 @@ function loadYenPressSpinesContent2(book, volume, spineList) {console.log("2");
 <meta name="viewport" content="initial-scale=1, user-scalable=0, maximum-scale=1">`);
           $(document.head).append(`<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 <script src="../../js/js.cookie.js"></script>`);
-          $(document.head).append("<link rel=\"stylesheet\" href=\"../../css/styles/DoHoaiNamStyle-before.css\">\n" + $("link[href=\"../css/stylesheet.css\"]").prop("outerHTML").replace('..', volume.concat('/OEBPS')).concat('\n<link rel="stylesheet" href="../../css/styles/DoHoaiNamStyle-after.css">'));
-          $("link[href=\"../css/stylesheet.css\"]").remove();
+          $(document.head).append("<link rel=\"stylesheet\" href=\"../../css/styles/DoHoaiNamStyle-before.css\">\n" + $("link[href=\"css/stylesheet.css\"]").prop("outerHTML").replace('css/stylesheet', volume.concat('/OEBPS/css/stylesheet')).concat('\n<link rel="stylesheet" href="../../css/styles/DoHoaiNamStyle-after.css">'));
+          $("link[href=\"css/stylesheet.css\"]").remove();
           $("#background_select").val(Cookies.get('background') || "white").change();
         }
 
-        $(document.body).append("\n<div" + (!this.responseText.includes('id="' + spineName + '"') ? " id=\"" + spineName + "\"" : "") + ">" + html.body.innerHTML.toString().replace(new RegExp(' xmlns="http://www.w3.org/1999/xhtml"', 'g'), '').replace(/epub:/g, '').replace(new RegExp(' xmlns:epub="http://www.idpf.org/2007/ops"', 'g'), '').replace(new RegExp('../Images', 'g'), 'https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/light-novel/' + book.concat('/' + volume.concat('/OEBPS/images'))).replace(new RegExp('"><a href="', 'g'), '"><a href="#').replace(/.xhtml/g, '').replace(/#cover#/g, '#').replace(/#toc#/g, '#') + "</div>\n\n");
+        $(document.body).append("\n<div" + (!this.responseText.includes('id="' + spineName + '"') ? " id=\"" + spineName + "\"" : "") + ">" + html.body.innerHTML.toString().replace(new RegExp(' xmlns="http://www.w3.org/1999/xhtml"', 'g'), '').replace(/epub:/g, '').replace(new RegExp(' xmlns:epub="http://www.idpf.org/2007/ops"', 'g'), '').replace(new RegExp('../Images', 'g'), 'https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/light-novel/' + book.concat('/' + volume.concat('/OEBPS/images'))).replace(/.xhtml/g, '').replace(/#cover#/g, '#').replace(/#toc#/g, '#') + "</div>\n\n");
       }
     };
 
