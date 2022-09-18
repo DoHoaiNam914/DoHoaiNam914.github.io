@@ -1,8 +1,8 @@
 const xhr = new XMLHttpRequest();
 const parser = new DOMParser();
 
-const book;
-const volume;
+var book;
+var volume;
 
 $(document).ready(function () {
   let searchParams = new URLSearchParams(window.location.search);
