@@ -1,0 +1,14 @@
+.body {
+ line-height: 1.2em;
+ font-size: 1em;
+ overflow-wrap: break-word;
+}
+
+.body.nomargin {
+ margin: 0em;
+ padding: 0em;
+}
+
+.body.center {
+ text-align: center;
+}

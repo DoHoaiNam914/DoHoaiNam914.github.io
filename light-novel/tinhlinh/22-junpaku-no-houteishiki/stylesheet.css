@@ -1,0 +1,168 @@
+.align-end {
+    display: block;
+    height: auto;
+    text-align: right;
+    text-indent: inherit;
+    width: auto;
+    margin: 0;
+    padding: 0
+    }
+.calibre {
+    display: block;
+    font-size: 2em;
+    line-height: 1.2;
+    margin: 0 5pt;
+    padding: 0
+    }
+.calibre1 {
+    display: block;
+    height: auto;
+    text-indent: inherit;
+    width: auto;
+    margin: 0;
+    padding: 0
+    }
+.calibre2 {
+    background: transparent;
+    color: inherit;
+    font-style: inherit;
+    font-weight: inherit;
+    text-decoration: underline
+    }
+.calibre3 {
+    background: transparent;
+    display: block;
+    font-family: serif-ja-v, serif-ja, serif;
+    font-size: 1em;
+    font-weight: inherit;
+    margin: 0;
+    padding: 0
+    }
+.em-sesame {
+    -webkit-text-emphasis-style: filled sesame
+    }
+.fit {
+    background: transparent;
+    display: inline-block;
+    height: auto;
+    page-break-inside: avoid;
+    vertical-align: top;
+    width: auto;
+    margin: 0;
+    padding: 0;
+    border: currentColor none medium
+    }
+.font-1em {
+    font-size: 1.29167em
+    }
+.gfont {
+    font-family: sans-serif-ja, sans-serif
+    }
+.hltr {
+    font-size: 2em;
+    line-height: 1.2;
+    margin: 0;
+    padding: 0
+    }
+.hltr1 {
+    -webkit-writing-mode: horizontal-tb;
+    font-family: serif-ja, serif
+    }
+.main {
+    display: block
+    }
+.main1 {
+    display: block;
+    height: auto;
+    text-indent: 0;
+    width: auto;
+    margin: 0;
+    padding: 0
+    }
+.main2 {
+    display: block;
+    height: auto;
+    text-align: center;
+    text-indent: 0;
+    width: auto;
+    margin: 0;
+    padding: 0
+    }
+.p-image {
+    -epub-hyphens: auto;
+    -epub-line-break: normal;
+    -epub-text-underline-position: under left;
+    -epub-word-break: normal;
+    -webkit-hyphens: auto;
+    -webkit-line-break: normal;
+    -webkit-text-underline-position: under left;
+    -webkit-word-break: normal;
+    background: transparent;
+    display: block;
+    font-size: 1em;
+    letter-spacing: normal;
+    line-height: 1.75;
+    text-align: center;
+    text-indent: 0;
+    vertical-align: baseline;
+    white-space: normal;
+    word-spacing: normal;
+    word-wrap: break-word;
+    margin: 0 5pt;
+    padding: 0
+    }
+.p-text {
+    -epub-hyphens: auto;
+    -epub-line-break: normal;
+    -epub-text-underline-position: under left;
+    -epub-word-break: normal;
+    -webkit-hyphens: auto;
+    -webkit-line-break: normal;
+    -webkit-text-underline-position: under left;
+    -webkit-word-break: normal;
+    background: transparent;
+    display: block;
+    font-size: 1em;
+    letter-spacing: normal;
+    line-height: 1.75;
+    text-align: justify;
+    text-indent: 0;
+    vertical-align: baseline;
+    white-space: normal;
+    word-spacing: normal;
+    word-wrap: break-word;
+    margin: 0 5pt;
+    padding: 0
+    }
+.start-3em {
+    display: block;
+    height: auto;
+    text-indent: inherit;
+    width: auto;
+    margin: 3em 0 0;
+    padding: 0
+    }
+.tcy {
+    -webkit-text-combine: horizontal;
+    -webkit-text-combine-upright: all;
+    text-combine-upright: all
+    }
+.vrtl {
+    -webkit-writing-mode: vertical-rl;
+    font-family: serif-ja, serif
+    }
+.pcalibre:link {
+    color: #00f
+    }
+.pcalibre1:visited {
+    color: #00f
+    }
+.pcalibre3:focus {
+    color: #00f
+    }
+.pcalibre2:hover {
+    color: #00f
+    }
+.pcalibre4:active {
+    color: #00f
+    }

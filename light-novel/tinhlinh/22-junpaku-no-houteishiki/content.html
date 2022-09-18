@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1,maximum-scale=1,minimum-scale=1">
+    <title>精霊幻想記 22.純白の方程式 (HJ文庫)</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="../../js/app.js"></script>
+    <script>
+      $(document).ready(function () {
+        let spineList = ['titlepage.xhtml',
+          'text/part0000.html',
+          'text/part0001.html',
+          'text/part0002.html',
+          'text/part0003.html',
+          'text/part0004.html',
+          'text/part0005.html',
+          'text/part0006.html',
+          'text/part0007.html',
+          'text/part0008.html',
+          'text/part0009.html',
+          'text/part0010.html',
+          'text/part0011.html',
+          'text/part0012.html',
+          'text/part0013.html',
+          'text/part0014.html',
+          'text/part0015.html',
+          'text/part0016.html',
+          'text/part0017.html',
+          'text/part0018.html',
+          'text/part0019.html',
+          'text/part0020.html',
+          'text/part0021.html',
+          'text/part0022.html',
+          'text/part0023.html',
+          'text/part0024.html',
+          'text/part0025.html',
+          'text/part0026.html',
+          'text/part0027.html',
+          'text/part0028.html',
+          'text/part0029.html',
+          'text/part0030.html',
+          'text/part0031.html',
+          'text/part0032.html',
+          'text/part0033.html',
+          'text/part0034.html',
+          'text/part0035.html',
+          'text/part0036.html',
+          'text/part0037.html',
+          'text/part0038.html',
+          'text/part0039.html',
+          'text/part0040.html',
+          'text/part0041.html'];
+
+        $(document.documentElement).attr("lang", "ja");
+        $(document.documentElement).attr("class", "hltr1");
+
+        for (let i = 0; i < spineList.length; i++) {
+          let spineName = spineList[i];
+          xhr.onreadystatechange = function () {
+            if (this.readyState === this.DONE) {
+              let html = parser.parseFromString(xhr.responseText.replace(/<ruby>/g, '').replace(/<\/ruby>/g, '').replace(new RegExp('<rb>([一-龠]*)</rb><rt>[ぁ-ゔ]*</rt>', 'g'), '$1').replace(new RegExp('<rb>([一-龠]*)</rb><rt>([ァ-ヴー・]*)</rt>', 'g'), ' $1（$2）').toString(), 'application/xhtml+xml');
+      
+            if (i === 5) {
+                $(document.head).html(html.head.innerHTML.replace(new RegExp(' xmlns="http://www.w3.org/1999/xhtml"', 'g'), '').toString());
+                $("meta[content=\"text/html; charset=utf-8\"]").replaceWith(`<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="initial-scale=1, user-scalable=0, maximum-scale=1">`);
+                let stylesheet = $("link[href=\"../stylesheet.css\"]").prop("outerHTML").replace('..', volume).concat('\n' + $("link[href=\"../page_styles.css\"]").prop("outerHTML").replace('..', volume))
+                $("link[href=\"../stylesheet.css\"]").remove();
+                $("link[href=\"../page_styles.css\"]").remove();
+                $(document.head).append(`<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"><\/script>
+  <script src="../../js/js.cookie.js"><\/script>`);
+                $(document.head).append("<link rel=\"stylesheet\" href=\"../../css/styles/DoHoaiNamStyle/fonts_patch.css\">\n<link rel=\"stylesheet\" href=\"../../css/styles/DoHoaiNamStyle-before.css\">\n" + stylesheet.concat('\n<link rel="stylesheet" href="../../css/styles/DoHoaiNamStyle-after.css">'));
+                $("#background_select").val(Cookies.get('background') || "white").change();
+              }
+
+              $(document.body).append("\n<div>" + html.body.innerHTML.toString().replace(new RegExp(' xmlns="http://www.w3.org/1999/xhtml"', 'g'), '').
+                replace(/cover.jpeg/g, 'https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/light-novel/' + book.concat('/' + volume.concat('/cover.jpeg'))).
+                replace(new RegExp('../images', 'g'), 'https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/light-novel/' + book.concat('/' + volume.concat('/images'))) + "</div>\n\n");
+            }
+          }
+
+          xhr.open("GET", volume.concat('/' + spineName), false);
+          xhr.send();
+        }
+      });
+    </script>
+  </head>
+</html>
