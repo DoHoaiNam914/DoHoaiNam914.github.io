@@ -3,12 +3,17 @@ const parser = new DOMParser();
 
 $(document).ready(function () {
   let searchParams = new URLSearchParams(window.location.search);
-  let href = window.location.href.toString().split('/');
-  let book = href[4];
-  
+  let book = window.location.href.toString().split('/')[4];
+  let volume = searchParams.get('tap');
+
+  let tenseislime = book.includes('tenseislime') && (volume.includes('vol-3') ||
+                      volume.includes('vol-4') ||
+                      volume.includes('vol-7') ||
+                      volume.includes('vol-9') ||
+                      volume.includes('vol-13'));
 
   if (searchParams.has('tap')) {
-    $.get(searchParams.get('tap').concat('/' + (book.includes('tenseislime') && (searchParams.get('tap').includes('vol-3') || searchParams.get('tap').includes('vol-4') || searchParams.get('tap').includes('vol-7') || searchParams.get('tap').includes('vol-9') || searchParams.get('tap').includes('vol-13')) ? 'package.html' : 'content.html'))).done((data) => $(document.head).html(parser.parseFromString(data, 'text/html').head.innerHTML));
+    $.get(volume.concat('/' + (tenseislime ? 'package.html' : 'content.html'))).done((data) => $(document.head).html(parser.parseFromString(data, 'text/html').head.innerHTML));
     $(document.body).html(`<form>
   <div class="notranslate" style="position: fixed; right: 8px; top: 8px;">
     <select id="background_select">
@@ -53,7 +58,14 @@ function loadYenPressSpinesContent(book, volume, spineList) {
           $("#background_select").val(Cookies.get('background') || "white").change();
         }
 
-        $(document.body).append("\n<div" + (!this.responseText.includes('id="' + spineName + '"') ? " id=\"" + spineName + "\"" : "") + ">" + html.body.innerHTML.toString().replace(new RegExp(' xmlns="http://www.w3.org/1999/xhtml"', 'g'), '').replace(/epub:/g, '').replace(new RegExp(' xmlns:epub="http://www.idpf.org/2007/ops"', 'g'), '').replace(new RegExp('../Images', 'g'), 'https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/light-novel/' + book.concat('/' + volume.concat('/OEBPS/Images'))).replace(new RegExp('../Text/', 'g'), '#').replace(/.xhtml/g, '').replace(/#cover#/g, '#').replace(/#toc#/g, '#') + "</div>\n\n");
+        $(document.body).append("\n<div class=\"body\"" + (!this.responseText.includes('id="' + spineName + '"') ? " id=\"" + spineName + "\"" : "") + ">" +
+          html.body.innerHTML.toString().replace(new RegExp(' xmlns="http://www.w3.org/1999/xhtml"', 'g'), '').
+            replace(/epub:/g, '').replace(new RegExp(' xmlns:epub="http://www.idpf.org/2007/ops"', 'g'), '').
+            replace(new RegExp('../Images', 'g'), 'https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/light-novel/' + book.concat('/' + volume.concat('/OEBPS/Images'))).
+            replace(new RegExp('../Text/', 'g'), '#').
+            replace(/.xhtml/g, '').
+            replace(/#cover#/g, '#').
+            replace(/#toc#/g, '#') + "</div>\n\n");
       }
     };
 
@@ -61,7 +73,7 @@ function loadYenPressSpinesContent(book, volume, spineList) {
     xhr.send();
   }
 
-  if (window.location.hash != null) {
+  if (performance.navigation.type === performance.navigation.TYPE_RELOAD && window.location.hash != null) {
     window.location.hash = '';
   } else {
     window.location.href = '#';
@@ -73,7 +85,7 @@ function loadYenPressSpinesContent2(book, volume, spineList) {
     let spineName = spineList[i].replace('id_cover_xhtml', 'cover').toString();
     xhr.onreadystatechange = function () {
       if (this.readyState === this.DONE) {
-        let html = parser.parseFromString(spineName === 'toc' ? this.responseText.replace(new RegExp('"><a href="', 'g'), '"><a href="#') : this.responseText, 'application/xhtml+xml');
+        let html = parser.parseFromString(spineName.includes('toc') ? this.responseText.replace(new RegExp('"><a href="', 'g'), '"><a href="#') : this.responseText, 'application/xhtml+xml');
 
         if (i === 0) {
           $(document.documentElement).attr("lang", html.documentElement.getAttribute('lang'));
@@ -88,7 +100,14 @@ function loadYenPressSpinesContent2(book, volume, spineList) {
           $("#background_select").val(Cookies.get('background') || "white").change();
         }
 
-        $(document.body).append("\n<div" + (!this.responseText.includes('id="' + spineName + '"') ? " id=\"" + spineName + "\"" : "") + ">" + html.body.innerHTML.toString().replace(new RegExp(' xmlns="http://www.w3.org/1999/xhtml"', 'g'), '').replace(/epub:/g, '').replace(new RegExp(' xmlns:epub="http://www.idpf.org/2007/ops"', 'g'), '').replace(new RegExp('../Images', 'g'), 'https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/light-novel/' + book.concat('/' + volume.concat('/OEBPS/images'))).replace(/.xhtml/g, '').replace(/#cover#/g, '#').replace(/#toc#/g, '#') + "</div>\n\n");
+        $(document.body).append("\n<div" + (!this.responseText.includes('id="' + spineName + '"') ? " id=\"" + spineName + "\"" : "") + ">" +
+          html.body.innerHTML.toString().replace(new RegExp(' xmlns="http://www.w3.org/1999/xhtml"', 'g'), '').
+            replace(/epub:/g, '').
+            replace(new RegExp(' xmlns:epub="http://www.idpf.org/2007/ops"', 'g'), '').
+            replace(new RegExp('images', 'g'), 'https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/light-novel/' + book.concat('/' + volume.concat('/OEBPS/images'))).
+            replace(/.xhtml/g, '').
+            replace(/#cover#/g, '#').
+            replace(/#toc#/g, '#') + "</div>\n\n");
       }
     };
 
@@ -96,9 +115,7 @@ function loadYenPressSpinesContent2(book, volume, spineList) {
     xhr.send();
   }
 
-  if (window.location.hash != null) {
-    window.location.hash = '';
-  } else {
+  if (performance.navigation.type !== performance.navigation.TYPE_RELOAD) {
     window.location.href = '#';
   }
 }
@@ -108,7 +125,7 @@ function loadJNovelClubSpinesContent(book, volume, spineList) {
     let spineName = spineList[i].replace('.xhtml', '').toString();
     xhr.onreadystatechange = function () {
       if (this.readyState === this.DONE) {
-        let html = parser.parseFromString(spineName === 'toc' ? this.responseText.replace(new RegExp('<a href="', 'g'), '<a href="#') : this.responseText, 'application/xhtml+xml');
+        let html = parser.parseFromString(spineName.includes('toc') ? this.responseText.replace(new RegExp('<a href="', 'g'), '<a href="#') : this.responseText, 'application/xhtml+xml');
 
         if (i === 0) {
           $(document.documentElement).attr("lang", html.documentElement.getAttribute('lang'));
@@ -123,7 +140,14 @@ function loadJNovelClubSpinesContent(book, volume, spineList) {
           $("#background_select").val(Cookies.get('background') || "white").change();
         }
 
-        $(document.body).append("\n<div" + (this.responseText.includes('<img') ? " class=\"nomargin center\"" : "") + (!this.responseText.includes('id="' + spineName + '"') ? " id=\"" + spineName + "\"" : "") + ">" + html.body.innerHTML.toString().replace(new RegExp(' xmlns="http://www.w3.org/1999/xhtml"', 'g'), '').replace(/epub:/g, '').replace(new RegExp(' xmlns:epub="http://www.idpf.org/2007/ops"', 'g'), '').replace(new RegExp('../Images', 'g'), 'https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/light-novel/' + book.concat('/' + volume.concat('/OEBPS/Images'))).replace(new RegExp('../Text/', 'g'), '').replace(/.xhtml/g, '').replace(/#toc#/g, '#') + "</div>\n\n");
+        $(document.body).append("\n<div" + (this.responseText.includes('<img') ? " class=\"nomargin center\"" : "") + (!this.responseText.includes('id="' + spineName + '"') ? " id=\"" + spineName + "\"" : "") + ">" +
+          html.body.innerHTML.toString().replace(new RegExp(' xmlns="http://www.w3.org/1999/xhtml"', 'g'), '').
+            replace(/epub:/g, '').
+            replace(new RegExp(' xmlns:epub="http://www.idpf.org/2007/ops"', 'g'), '').
+            replace(new RegExp('../Images', 'g'), 'https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/light-novel/' + book.concat('/' + volume.concat('/OEBPS/Images'))).
+            replace(new RegExp('../Text/', 'g'), '').
+            replace(/.xhtml/g, '').
+            replace(/#toc#/g, '#') + "</div>\n\n");
       }
     };
 
@@ -131,9 +155,7 @@ function loadJNovelClubSpinesContent(book, volume, spineList) {
     xhr.send();
   }
 
-  if (window.location.hash != null) {
-    window.location.hash = '';
-  } else {
+  if (performance.navigation.type !== performance.navigation.TYPE_RELOAD) {
     window.location.href = '#';
   }
 }
