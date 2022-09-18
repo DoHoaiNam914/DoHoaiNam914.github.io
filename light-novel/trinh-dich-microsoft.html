@@ -118,7 +118,7 @@
 
                   xhr.onreadystatechange = function () {
                     if (this.readyState === this.DONE) {
-                      $("ol.main").append('<li><div class="main">' + JSON.parse(this.responseText.replace(/\[\{/g, '{').replace(/\}\]/g, '}')).translations.text + '</div></li>' + (i + 1 < words.length ? '\n' : ''));
+                      $("ol.main").append('<li><div class="main">' + JSON.parse(this.responseText)[0].translations[0].text + '</div></li>' + (i + 1 < words.length ? '\n' : ''));
                     }
                   };
 

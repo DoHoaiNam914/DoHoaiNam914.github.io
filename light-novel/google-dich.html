@@ -8,15 +8,10 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
     <script src="../js/js.cookie-1.5.1.js"></script>
     <link rel="stylesheet" href="../css/styles/dohoainam-kadokawa-style.css">
-    <style>
-      #google_translate_element * {
-        color: revert !important;
-      }
-    </style>
   </head>
   <body>
     <form>
-      <div class="notranslate" style="position: fixed; right: 8px; top: 48px;">
+      <div class="notranslate" style="position: fixed; right: 8px; top: 8px;">
         <select id="background_select">
           <option value="white">Trắng</option>
           <option value="black">Đen</option>
@@ -26,15 +21,30 @@
       </div>
     </form>
     <form>
-      <div class="notranslate" style="bottom: 8px; left: 8px; position: fixed;">
+      <div class="notranslate" style="bottom: 8px; position: fixed; left: 8px;">
         <input id="edit_button" type="button" value="Xong">
+      </div>
+      <div class="notranslate" style="bottom: 8px; position: fixed; right: 8px;">
+        <select id="language_select">
+          <option value="">Chọn Ngôn ngữ</option>
+          <option value="vi">Việt</option>
+          <option value="en">Anh</option>
+          <option value="ja">Nhật</option>
+          <option value="zh-CN">Trung (Giản thể)</option>
+          <option value="zh-TW">Trung (Phổn thể)</option>
+        </select>
       </div>
     </form>
     <section class="p-text">
       <ol class="main" style="display: none;"></ol>
       <div style="text-align: center;"><textarea name="textarea" style="background: transparent; border: 0; border-style: none; color: inherit; font-family: inherit; font-size: inherit; height: 80vh; margin: 0; padding: 0; width: 100%;">Viết gì đó tại đây</textarea></div>
     </section>
-    <div id="google_translate_element" style="bottom: 8px; position: fixed; right: 8px;"></div><script>
+    <script>
+      var orignalTextElement;
+      var translationTextElement;
+
+      var prevLang;
+
       $("#background_select").change(function () {
         if (this.value !== 'white') {
           $(document.documentElement).attr("style", $(document.documentElement).attr("style") != null ? document.documentElement.getAttribute('style').replace(/ black;/g, '').replace(/black;/g, '').replace(/ sepia;/g, '').replace(/sepia;/g, '').replace(/ cream;/g, '').replace(/cream;/g, '').concat(' ' + this.value.concat(';')) : this.value.concat(';'));
@@ -45,18 +55,9 @@
         }
       });
 
-      function googleTranslateElementInit() {
-        new google.translate.TranslateElement({
-          pageLanguage: 'auto',
-          includedLanguages: 'zh-CN,zh-TW,en,ja,vi',
-          autoDisplay: false
-        }, 'google_translate_element');
-
-        $("#background_select").val($.cookie('background') || "white").change();
-      }
-
+      $(document).ready(() => $("#background_select").val($.cookie('background') || "white").change());
       $("ol.main").on("input", () => $("ol.main").css("padding-left", 24 + 8 * words.length.toString().length + "px"));
-      $("#edit_button").click(function () {
+      $("#edit_button").on("click", function () {
         if ($("#edit_button").val() === 'Chỉnh sửa' && $("textarea").css("display") === 'none') {
           if ($("ol.main").html() === '') {
             $("ol.main").hide();
@@ -71,6 +72,7 @@
             $("ol.main").attr("contentEditable", "false");
 
             if ($("ol.main").html() === null || $("ol.main").html() === '<li><div class="main"></div></li>' || $("ol.main").html() === '<li><div class="main"><br></div></li>') {
+              $("#language_select").val("");
               $("ol.main").html(null);
             }
           } else {
@@ -89,6 +91,42 @@
           $("#edit_button").val("Chỉnh sửa");
         }
       });
-    </script><script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+      $("#language_select").on("change", function () {
+        if ($("#edit_button").val() !== 'Xong') {
+          if ($("#language_select").val() !== '') {
+            let toLang = $("#language_select").val();
+
+            if (toLang.includes(prevLang) && $("ol.main").html() === orignalTextElement) {
+              $("ol.main").html(translationTextElement);
+            } else {
+              let xhr = new XMLHttpRequest();
+
+              let words = document.querySelector('ol.main').innerHTML.replace(/<li><div class="main">/g, '').replace(/<\/div><\/li>/g, '').split('\n');
+              orignalTextElement = $("ol.main").html();
+              $("ol.main").html(null);
+
+              for (let i = 0; i < words.length; i++) {
+                xhr.onreadystatechange = function () {
+                  if (this.readyState === this.DONE) {
+                    $("ol.main").append('<li><div class="main">' + JSON.parse(this.responseText)[0][0][0].concat('</div></li>' + (i + 1 < words.length ? '\n' : '')));
+                  }
+                };
+
+                xhr.open("GET", "https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=" + toLang + "&dt=t&q=" + encodeURIComponent(words[i]), false);
+                xhr.send();
+              }
+
+              prevLang = toLang;
+            }
+          } else {
+            translationTextElement = $("ol.main").html();
+            $("ol.main").html(orignalTextElement);
+          }
+        } else {
+          $("#language_select").val("");
+        }
+      });
+    </script>
   </body>
 </html>
