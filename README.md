@@ -2,11 +2,7 @@
 
 This site was built using [GitHub Pages](https://pages.github.com/).
 
-## Máy dịch Light Novel
-
-- [Trình dịch Microsoft](https://dohoainam914.github.io/light-novel/trinh-dich-microsoft.html)
-
-- [Google Dịch](https://dohoainam914.github.io/light-novel/google-dich.html)
+## [Máy dịch Light Novel](https://dohoainam914.github.io/light-novel/trinh-dich-microsoft.html)
 
 ## [Light Novel](https://dohoainam914.github.io/light-novel/)
 
