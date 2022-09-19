@@ -4,14 +4,14 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="initial-scale=1, user-scalable=0, maximum-scale=1">
-    <title>Trình dịch Microsoft cho Light Novel - DoHoaiNam Pages</title>
+    <title>Máy dịch cho Light Novel - DoHoaiNam Pages</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
     <script src="../js/js.cookie-1.5.1.js"></script>
     <link rel="stylesheet" href="../css/styles/dohoainam-kadokawa-style.css">
   </head>
   <body>
     <form>
-      <div class="notranslate" style="position: fixed; right: 8px; top: 8px;">
+      <div class="notranslate" style="bottom: 8px; left: 8px; position: fixed;">
         <select id="background_select">
           <option value="white">Trắng</option>
           <option value="black">Đen</option>
@@ -21,18 +21,20 @@
       </div>
     </form>
     <form>
-      <div class="notranslate" style="bottom: 8px; position: fixed; left: 8px;">
-        <input id="edit_button" type="button" value="Xong">
-      </div>
       <div class="notranslate" style="bottom: 8px; position: fixed; right: 8px;">
-        <select id="language_select">
-          <option value="">Translate</option>
-          <option value="zh-CHS">Chinese Simplified</option>
-          <option value="zh-CHT">Chinese Traditional</option>
-          <option value="en">English</option>
-          <option value="ja">Japanese</option>
-          <option value="vi">Vietnamese</option>
+        <select id="service_select">
+          <option value="">Văn bản gốc</option>
+          <option value="google">Google Dịch</option>
+          <option value="microsoft">Trình dịch Microsoft</option>
         </select>
+        <select id="language_select">
+          <option value="vi">Việt</option>
+          <option value="en">Anh</option>
+          <option value="ja">Nhật</option>
+          <option value="zh-CN">Trung (Giản thể)</option>
+          <option value="zh-TW">Trung (Phổn thể)</option>
+        </select>
+        <input id="edit_button" type="button" value="Xong">
       </div>
     </form>
     <section class="p-text">
@@ -41,9 +43,12 @@
     </section>
     <script>
       var orignalTextElement;
+      var googleTranslationText;
+      var microsoftTranslationText;
       var translationTextElement;
 
-      var prevLang;
+      var service = $("#service_select").val();
+      var lang;
 
       $("#background_select").change(function () {
         if (this.value !== 'white') {
@@ -72,7 +77,7 @@
             $("ol.main").attr("contentEditable", "false");
 
             if ($("ol.main").html() === null || $("ol.main").html() === '<li><div class="main"></div></li>' || $("ol.main").html() === '<li><div class="main"><br></div></li>') {
-              $("#language_select").val("");
+              $("#service_select").val("");
               $("ol.main").html(null);
             }
           } else {
@@ -88,26 +93,49 @@
             $("ol.main").show();
           }
 
+          orignalTextElement = $("ol.main").html();
           $("#edit_button").val("Chỉnh sửa");
         }
       });
 
       $("#language_select").on("change", function () {
-        if ($("#edit_button").val() !== 'Xong') {
-          if ($("#language_select").val() !== '') {
-            let toLang = $("#language_select").val();
+        if ($("#service_select").val() !== '') {
+          $("#service_select").change();
+        }
+      }
 
-            if (toLang.includes(prevLang) && $("ol.main").html() === orignalTextElement) {
-              $("ol.main").html(translationTextElement);
+      $("#service_select").on("change", function () {
+        if ($("#edit_button").val() !== 'Xong') {
+          let xhr = new XMLHttpRequest();
+          let words = orignalTextElement.replace(/<li><div class="main">/g, '').replace(/<\/div><\/li>/g, '').split('\n');
+
+          if ($("#service_select").val() === 'google') {
+            if ($("#language_select").val() === lang && googleTranslationText != null) {
+              $("ol.main").html(googleTranslationText);
+            } else {
+              googleTranslationText = '';
+
+              for (let i = 0; i < words.length; i++) {
+                xhr.onreadystatechange = function () {
+                  if (this.readyState === this.DONE) {
+                    googleTranslationText += '<li><div class="main">' + JSON.parse(this.responseText)[0][0][0].concat('</div></li>' + (i + 1 < words.length ? '\n' : ''));
+                  }
+                };
+
+                translateGoogle(xhr, $("#language_select").val(), words[i]);
+              }
+
+              $("ol.main").html(googleTranslationText);
+              lang = $("#language_select").val();
+            }
+          } else if ($("#service_select").val() === 'microsoft') {
+            if ($("#language_select").val() === lang && microsoftTranslationText != null) {
+              $("ol.main").html(microsoftTranslationText);
             } else {
               let accessToken = getMicrosoftTranslatorAccessToken();
 
-              if (accessToken !== null) {
-                let xhr = new XMLHttpRequest();
-
-                let words = document.querySelector('ol.main').innerHTML.replace(/<li><div class="main">/g, '').replace(/<\/div><\/li>/g, '').split('\n');
-                orignalTextElement = $("ol.main").html();
-                $("ol.main").html(null);
+              if (accessToken != null) {
+                microsoftTranslationText = '';
 
                 for (let i = 0; i < words.length; i++) {
                   const data = JSON.stringify([
@@ -118,28 +146,51 @@
 
                   xhr.onreadystatechange = function () {
                     if (this.readyState === this.DONE) {
-                      $("ol.main").append('<li><div class="main">' + JSON.parse(this.responseText)[0].translations[0].text + '</div></li>' + (i + 1 < words.length ? '\n' : ''));
+                      microsoftTranslationText += '<li><div class="main">' + JSON.parse(this.responseText)[0].translations[0].text.concat('</div></li>' + (i + 1 < words.length ? '\n' : ''));
                     }
                   };
-
-                  xhr.open("POST", "https://api.cognitive.microsofttranslator.com/translate?to=" + toLang + "&api-version=3.0&includeSentenceLength=true", false);
-                  xhr.setRequestHeader("Authorization", "Bearer " + accessToken);
-                  xhr.setRequestHeader("Content-Type", "application/json");
-
-                  xhr.send(data);
+  
+                  translateMicrosoft(xhr, accessToken, document.getElementById('language_select').value.replace('CN', 'CHS').replace('TW', 'CHT'), data);
                 }
 
-                prevLang = toLang;
+                $("ol.main").html(microsoftTranslationText);
+                lang = $("#language_select").val();
               }
             }
           } else {
-            translationTextElement = $("ol.main").html();
+            if (service.includes('google')) {
+              googleTranslationText = $("ol.main").html();
+            } else if (service.includes('microsoft')) {
+              microsoftTranslationText = $("ol.main").html();
+            }
+
             $("ol.main").html(orignalTextElement);
           }
         } else {
-          $("#language_select").val("");
+          if (service.includes('google')) {
+            googleTranslationText = $("ol.main").html();
+          } else if (service.includes('microsoft')) {
+            microsoftTranslationText = $("ol.main").html();
+          }
+
+          $("#service_select").val("");
+          $("ol.main").html(orignalTextElement);
         }
+
+        service = $("#service_select").val();
       });
+
+      function translateMicrosoft(xhr, accessToken, toLang, data) {
+        xhr.open("POST", "https://api.cognitive.microsofttranslator.com/translate?to=" + toLang + "&api-version=3.0&includeSentenceLength=true", false);
+        xhr.setRequestHeader("Authorization", "Bearer " + accessToken);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.send(data);
+      }
+
+      function translateGoogle(xhr, targetLang, text) {
+        xhr.open("GET", "https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=" + targetLang + "&dt=t&q=" + text, false);
+        xhr.send();
+      }
 
       function getMicrosoftTranslatorAccessToken() {
         let accessToken;
