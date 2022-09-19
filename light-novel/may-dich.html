@@ -42,10 +42,10 @@
       <div style="text-align: center;"><textarea name="textarea" style="background: transparent; border: 0; border-style: none; color: inherit; font-family: inherit; font-size: inherit; height: 80vh; margin: 0; padding: 0; width: 100%;">Viết gì đó tại đây</textarea></div>
     </section>
     <script>
-      var orignalTextElement;
+      var orignalText;
+      var translateText;
       var googleTranslationText;
       var microsoftTranslationText;
-      var translationTextElement;
 
       var service = $("#service_select").val();
       var lang;
@@ -93,7 +93,7 @@
             $("ol.main").show();
           }
 
-          orignalTextElement = $("ol.main").html();
+          orignalText = $("ol.main").html();
           $("#edit_button").val("Chỉnh sửa");
         }
       });
@@ -107,10 +107,10 @@
       $("#service_select").on("change", function () {
         if ($("#edit_button").val() !== 'Xong') {
           let xhr = new XMLHttpRequest();
-          let words = orignalTextElement.replace(/<li><div class="main">/g, '').replace(/<\/div><\/li>/g, '').split('\n');
+          let words = orignalText.replace(/<li><div class="main">/g, '').replace(/<\/div><\/li>/g, '').split('\n');
 
           if ($("#service_select").val() === 'google') {
-            if ($("#language_select").val() === lang && googleTranslationText != null) {
+            if ($("#language_select").val() === lang && googleTranslationText != null && translateText === orignalText) {
               $("ol.main").html(googleTranslationText);
             } else {
               googleTranslationText = '';
@@ -127,9 +127,10 @@
 
               $("ol.main").html(googleTranslationText);
               lang = $("#language_select").val();
+              translateText = orignalText;
             }
           } else if ($("#service_select").val() === 'microsoft') {
-            if ($("#language_select").val() === lang && microsoftTranslationText != null) {
+            if ($("#language_select").val() === lang && microsoftTranslationText != null && translateText === orignalText) {
               $("ol.main").html(microsoftTranslationText);
             } else {
               let accessToken = getMicrosoftTranslatorAccessToken();
@@ -155,6 +156,7 @@
 
                 $("ol.main").html(microsoftTranslationText);
                 lang = $("#language_select").val();
+                translateText = orignalText;
               }
             }
           } else {
@@ -164,7 +166,7 @@
               microsoftTranslationText = $("ol.main").html();
             }
 
-            $("ol.main").html(orignalTextElement);
+            $("ol.main").html(orignalText);
           }
         } else {
           if (service.includes('google')) {
@@ -174,7 +176,7 @@
           }
 
           $("#service_select").val("");
-          $("ol.main").html(orignalTextElement);
+          $("ol.main").html(orignalText);
         }
 
         service = $("#service_select").val();
