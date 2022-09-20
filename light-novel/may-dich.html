@@ -56,7 +56,7 @@
       var microsoftTranslationText;
 
       $("#background_select").change(function () {
-        if (!this.value ==='white') {
+        if (this.value !=='white') {
           $(document.documentElement).attr("style", $(document.documentElement).attr("style") != null ? document.documentElement.getAttribute('style').replace(/ black;/g, '').replace(/black;/g, '').replace(/ sepia;/g, '').replace(/sepia;/g, '').replace(/ cream;/g, '').replace(/cream;/g, '').concat(' ' + this.value.concat(';')) : this.value.concat(';'));
           $.cookie('background', this.value, { expires: 365 });
         } else {
