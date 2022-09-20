@@ -110,7 +110,7 @@
         if ($("#edit_button").val() !== 'Xong') {
           let xhr = new XMLHttpRequest();
 
-          if (service.includes('') && !orignalText.includes(googleQueryText) && !orignalText.includes(microsoftQueryText)) {
+          if (service === '' && orignalText == null || (!orignalText.includes(googleQueryText) && !orignalText.includes(microsoftQueryText))) {
             orignalText = $("ol.main").html();
           }
 
