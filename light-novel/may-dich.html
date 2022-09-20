@@ -7,7 +7,7 @@
     <title>Máy dịch cho Light Novel - DoHoaiNam Pages</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
     <script src="../js/js.cookie-1.5.1.js"></script>
-    <link rel="stylesheet" href="../css/styles/dohoainam-kadokawa-style.css">
+    <link rel="stylesheet" href="../css/styles/dohoainam-ebpaj-style.css">
   </head>
   <body>
     <form>
@@ -22,17 +22,17 @@
     </form>
     <form>
       <div class="notranslate" style="bottom: 8px; position: fixed; right: 8px;">
-        <select id="service_select">
-          <option value="">Văn bản gốc</option>
-          <option value="google">Google Dịch</option>
-          <option value="microsoft">Trình dịch Microsoft</option>
-        </select>
         <select id="language_select">
           <option value="vi">Việt</option>
           <option value="en">Anh</option>
           <option value="ja">Nhật</option>
           <option value="zh-CN">Trung (Giản thể)</option>
           <option value="zh-TW">Trung (Phổn thể)</option>
+        </select>
+        <select id="service_select">
+          <option value="">Văn bản gốc</option>
+          <option value="google">Google Dịch</option>
+          <option value="microsoft">Trình dịch Microsoft</option>
         </select>
         <input id="edit_button" type="button" value="Xong">
       </div>
@@ -56,7 +56,7 @@
       var microsoftTranslationText;
 
       $("#background_select").change(function () {
-        if (!this.value.includes('white')) {
+        if (!this.value ==='white') {
           $(document.documentElement).attr("style", $(document.documentElement).attr("style") != null ? document.documentElement.getAttribute('style').replace(/ black;/g, '').replace(/black;/g, '').replace(/ sepia;/g, '').replace(/sepia;/g, '').replace(/ cream;/g, '').replace(/cream;/g, '').concat(' ' + this.value.concat(';')) : this.value.concat(';'));
           $.cookie('background', this.value, { expires: 365 });
         } else {
@@ -113,18 +113,18 @@
         if ($("#edit_button").val() !== 'Xong') {
           let xhr = new XMLHttpRequest();
 
-          if (service === '' && (orignalText == null || (!orignalText.includes(googleQueryText) || !orignalText.includes(microsoftQueryText)))) {
+          if (service === '' && (orignalText == null || (!orignalText === googleQueryText || !orignalText === microsoftQueryText))) {
             orignalText = $("ol.main").html();
           }
 
           let words = orignalText.replace(/<li><div class="main">/g, '').replace(/<\/div><\/li>/g, '').split('\n');
 
           if ($("#service_select").val() === 'google') {
-            if (service.includes('microsoft')) {
+            if (service === 'microsoft') {
               microsoftTranslationText = $("ol.main").html();
             }
 
-            if ($("#language_select").val() === googleLang && googleTranslationText != null && googleQueryText.includes(orignalText)) {
+            if ($("#language_select").val() === googleLang && googleTranslationText != null && googleQueryText === orignalText) {
               $("ol.main").html(googleTranslationText);
             } else {
               googleTranslationText = '';
@@ -136,7 +136,11 @@
                   }
                 };
 
-                translateGoogle(xhr, $("#language_select").val(), words[i]);
+                if (words[i] !== '<br>') {
+                  translateGoogle(xhr, $("#language_select").val(), words[i]);
+                } else {
+                  googleTranslationText += '<li><div class="main"><br></div></li>' + (i + 1 < words.length ? '\n' : '');
+                }
               }
 
               $("ol.main").html(googleTranslationText);
@@ -144,11 +148,11 @@
               googleQueryText = orignalText;
             }
           } else if ($("#service_select").val() === 'microsoft') {
-            if (service.includes('google')) {
+            if (service === 'google') {
               googleTranslationText = $("ol.main").html();
             }
 
-            if ($("#language_select").val() === microsoftLang && microsoftTranslationText != null && microsoftQueryText.includes(orignalText)) {
+            if ($("#language_select").val() === microsoftLang && microsoftTranslationText != null && microsoftQueryText === orignalText) {
               $("ol.main").html(microsoftTranslationText);
             } else {
               let accessToken = getMicrosoftTranslatorAccessToken();
@@ -168,8 +172,13 @@
                       microsoftTranslationText += '<li><div class="main">' + JSON.parse(this.responseText)[0].translations[0].text.concat('</div></li>' + (i + 1 < words.length ? '\n' : ''));
                     }
                   };
-  
-                  translateMicrosoft(xhr, accessToken, document.getElementById('language_select').value.replace('CN', 'CHS').replace('TW', 'CHT'), data);
+
+                  if (words[i] !== '<br>') {
+                    translateMicrosoft(xhr, accessToken, document.getElementById('language_select').value.replace('CN', 'CHS').replace('TW', 'CHT'), data);
+                  } else {
+                    microsoftTranslationText += '<li><div class="main"><br></div></li>' + (i + 1 < words.length ? '\n' : '');
+                  }
+
                 }
 
                 $("ol.main").html(microsoftTranslationText);
@@ -178,18 +187,18 @@
               }
             }
           } else {
-            if (service.includes('google')) {
+            if (service === 'google') {
               googleTranslationText = $("ol.main").html();
-            } else if (service.includes('microsoft')) {
+            } else if (service === 'microsoft') {
               microsoftTranslationText = $("ol.main").html();
             }
 
             $("ol.main").html(orignalText);
           }
         } else {
-          if (service.includes('google')) {
+          if (service === 'google') {
             googleTranslationText = $("ol.main").html();
-          } else if (service.includes('microsoft')) {
+          } else if (service === 'microsoft') {
             microsoftTranslationText = $("ol.main").html();
           }
 

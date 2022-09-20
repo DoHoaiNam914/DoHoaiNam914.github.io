@@ -47,7 +47,7 @@ h1, h2, h3 {
 /* Set default font for Math */
 
 math {
-  font-family: serif !important;
+  font-family: serif;
 }
 
 /* Language Overrides

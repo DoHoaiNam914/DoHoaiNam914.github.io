@@ -24,7 +24,7 @@ $(document).ready(function () {
 </form>
 <script>
   $("#background_select").on("change", function () {
-    if (this.value != 'white') {
+    if (this.value !== 'white') {
       $(document.documentElement).attr("style", $(document.documentElement).attr("style") != null ? document.documentElement.getAttribute('style').replace(/ black;/g, '').replace(/black;/g, '').replace(/ sepia;/g, '').replace(/sepia;/g, '').replace(/ cream;/g, '').replace(/cream;/g, '').concat(' ' + this.value.concat(';')) : this.value.concat(';'));
       Cookies.set('background', this.value, { expires: 365 });
     } else {
@@ -84,7 +84,7 @@ function loadYenPressSpinesContent2(spineList) {
     let spineName = spineList[i].replace('id_cover_xhtml', 'cover').toString();
     xhr.onreadystatechange = function () {
       if (this.readyState === this.DONE) {
-        let html = parser.parseFromString(spineName.includes('toc') ? this.responseText.replace(new RegExp('"><a href="', 'g'), '"><a href="#') : this.responseText, 'application/xhtml+xml');
+        let html = parser.parseFromString(spineName === 'toc' ? this.responseText.replace(new RegExp('"><a href="', 'g'), '"><a href="#') : this.responseText, 'application/xhtml+xml');
 
         if (i === 0) {
           $(document.documentElement).attr("lang", html.documentElement.getAttribute('lang'));
@@ -127,7 +127,7 @@ function loadJNovelClubSpinesContent(spineList) {
     let spineName = spineList[i].replace('.xhtml', '').toString();
     xhr.onreadystatechange = function () {
       if (this.readyState === this.DONE) {
-        let html = parser.parseFromString(spineName.includes('toc') ? this.responseText.replace(new RegExp('<a href="', 'g'), '<a href="#') : this.responseText, 'application/xhtml+xml');
+        let html = parser.parseFromString(spineName === 'toc' ? this.responseText.replace(new RegExp('<a href="', 'g'), '<a href="#') : this.responseText, 'application/xhtml+xml');
 
         if (i === 0) {
           $(document.documentElement).attr("lang", html.documentElement.getAttribute('lang'));
