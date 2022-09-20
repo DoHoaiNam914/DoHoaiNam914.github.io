@@ -66,7 +66,7 @@
       });
 
       $(document).ready(() => $("#background_select").val($.cookie('background') || "white").change());
-      $("ol.main").on("input", () => $("ol.main").css("padding-left", 24 + 8 * words.length.toString().length + "px"));
+      $("ol.main").on("input", () => $("ol.main").css("padding-left", 24 + 8 * document.querySelector('ol.main').innerHTML.split('\n').length.toString().length + "px"));
       $("#edit_button").on("click", function () {
         if ($("#edit_button").val() === 'Chỉnh sửa' && $("textarea").css("display") === 'none') {
           if ($("ol.main").html() === '') {
@@ -136,7 +136,7 @@
                   }
                 };
 
-                if (words[i] !== '<br>') {
+                if (words[i] !== '') {
                   translateGoogle(xhr, $("#language_select").val(), words[i]);
                 } else {
                   googleTranslationText += '<li><div class="main"><br></div></li>' + (i + 1 < words.length ? '\n' : '');
@@ -173,7 +173,7 @@
                     }
                   };
 
-                  if (words[i] !== '<br>') {
+                  if (words[i] !== '') {
                     translateMicrosoft(xhr, accessToken, document.getElementById('language_select').value.replace('CN', 'CHS').replace('TW', 'CHT'), data);
                   } else {
                     microsoftTranslationText += '<li><div class="main"><br></div></li>' + (i + 1 < words.length ? '\n' : '');
