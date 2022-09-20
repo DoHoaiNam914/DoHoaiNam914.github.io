@@ -54,7 +54,7 @@
       var microsoftTranslationText;
 
       $("#background_select").change(function () {
-        if (this.value !== 'white') {
+        if (!this.value.includes('white')) {
           $(document.documentElement).attr("style", $(document.documentElement).attr("style") != null ? document.documentElement.getAttribute('style').replace(/ black;/g, '').replace(/black;/g, '').replace(/ sepia;/g, '').replace(/sepia;/g, '').replace(/ cream;/g, '').replace(/cream;/g, '').concat(' ' + this.value.concat(';')) : this.value.concat(';'));
           $.cookie('background', this.value, { expires: 365 });
         } else {
@@ -79,7 +79,7 @@
           if ($("textarea").css("display") === 'none') {
             $("ol.main").attr("contentEditable", "false");
 
-            if ($("ol.main").html() === null || $("ol.main").html() === '<li><div class="main"></div></li>' || $("ol.main").html() === '<li><div class="main"><br></div></li>') {
+            if ($("ol.main").html() == null || $("ol.main").html() === '<li><div class="main"></div></li>' || $("ol.main").html() === '<li><div class="main"><br></div></li>') {
               $("#service_select").val("");
               $("ol.main").html(null);
             }
@@ -88,7 +88,7 @@
             $("ol.main").html(null);
 
             for (let i = 0; i < words.length; i++) {
-              $("ol.main").append('<li><div class="main">' + (words[i] !== '' ? words[i] : '<br>') + '</div></li>' + (i + 1 < words.length ? '\n' : ''));
+              $("ol.main").append('<li><div class="main">' + (!words[i].includes('') ? words[i] : '<br>') + '</div></li>' + (i + 1 < words.length ? '\n' : ''));
             }
 
             $("textarea").hide();
@@ -96,7 +96,6 @@
             $("ol.main").show();
           }
 
-          orignalText = $("ol.main").html();
           $("#edit_button").val("Chỉnh sửa");
         }
       });
@@ -110,10 +109,15 @@
       $("#service_select").on("change", function () {
         if ($("#edit_button").val() !== 'Xong') {
           let xhr = new XMLHttpRequest();
+
+          if (service.includes('') && !orignalText.includes(googleQueryText) && !orignalText.includes(microsoftQueryText)) {
+            orignalText = $("ol.main").html();
+          }
+
           let words = orignalText.replace(/<li><div class="main">/g, '').replace(/<\/div><\/li>/g, '').split('\n');
 
           if ($("#service_select").val() === 'google') {
-            if ($("#language_select").val() === lang && googleTranslationText != null && googleQueryText === orignalText) {
+            if ($("#language_select").val() === lang && googleTranslationText != null && googleQueryText.includes(orignalText)) {
               $("ol.main").html(googleTranslationText);
             } else {
               googleTranslationText = '';
@@ -133,7 +137,7 @@
               googleQueryText = orignalText;
             }
           } else if ($("#service_select").val() === 'microsoft') {
-            if ($("#language_select").val() === lang && microsoftTranslationText != null && microsoftQueryText === orignalText) {
+            if ($("#language_select").val() === lang && microsoftTranslationText != null && microsoftQueryText.includes(orignalText)) {
               $("ol.main").html(microsoftTranslationText);
             } else {
               let accessToken = getMicrosoftTranslatorAccessToken();
