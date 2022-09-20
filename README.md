@@ -12,6 +12,8 @@ This site was built using [GitHub Pages](https://pages.github.com/).
 
 - [Tinh linh huyễn tưởng ký](https://dohoainam914.github.io/light-novel/tinhlinh/)
 
+- [Về chuyện tôi chuyển sinh thành Slime](https://dohoainam914.github.io/light-novel/tenseislime/)
+
 ## [Truyện tranh](https://dohoainam914.github.io/truyen-tranh/)
 
 - [Turan Cheng Xian Le Zenme Ban](https://dohoainam914.github.io/truyen-tranh/turan-cheng-xian-le-zenme-ban/)
