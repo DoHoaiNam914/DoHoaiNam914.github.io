@@ -39,7 +39,7 @@
     </form>
     <section class="p-text">
       <ol class="main" style="display: none;"></ol>
-      <div style="text-align: center;"><textarea name="textarea" style="background: transparent; border: 0; border-style: none; color: inherit; font-family: inherit; font-size: inherit; height: 80vh; margin: 0; padding: 0; width: 100%;">Viết gì đó tại đây</textarea></div>
+      <div style="text-align: center;"><textarea name="textarea" style="background: transparent; border: 0; border-style: none; color: inherit; font-family: inherit; font-size: inherit; height: 50vh; margin: 0; padding: 0; width: 100%;">Viết gì đó tại đây</textarea></div>
     </section>
     <script>
       var orignalText;
@@ -132,7 +132,7 @@
               for (let i = 0; i < words.length; i++) {
                 xhr.onreadystatechange = function () {
                   if (this.readyState === this.DONE) {
-                    googleTranslationText += '<li><div class="main">' + JSON.parse(this.responseText)[0][0][0].concat('</div></li>' + (i + 1 < words.length ? '\n' : ''));
+                    googleTranslationText += '<li><div class="main">' + JSON.parse(this.responseText)[0][0][0] + '</div></li>' + (i + 1 < words.length ? '\n' : '');
                   }
                 };
 
@@ -169,7 +169,7 @@
 
                   xhr.onreadystatechange = function () {
                     if (this.readyState === this.DONE) {
-                      microsoftTranslationText += '<li><div class="main">' + JSON.parse(this.responseText)[0].translations[0].text.concat('</div></li>' + (i + 1 < words.length ? '\n' : ''));
+                      microsoftTranslationText += '<li><div class="main">' + JSON.parse(this.responseText)[0].translations[0].text + '</div></li>' + (i + 1 < words.length ? '\n' : '');
                     }
                   };
 
