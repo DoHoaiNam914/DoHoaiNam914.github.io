@@ -84,6 +84,7 @@
             if ($("ol.main").html() == null || $("ol.main").html() === '<li><div class="main"></div></li>' || $("ol.main").html() === '<li><div class="main"><br></div></li>') {
               $("#service_select").val("");
               $("ol.main").html(null);
+              orignalText = $("ol.main").html();
             }
           } else {
             var words = document.querySelector('textarea').value.split('\n');
@@ -112,7 +113,7 @@
         if ($("#edit_button").val() !== 'Xong') {
           let xhr = new XMLHttpRequest();
 
-          if (service === '' || (orignalText == null || (!orignalText.includes(googleQueryText) || !orignalText.includes(microsoftQueryText)))) {
+          if (orignalText == null || (service === '' && (!orignalText.includes(googleQueryText) || !orignalText.includes(microsoftQueryText)))) {
             orignalText = $("ol.main").html();
           }
 
