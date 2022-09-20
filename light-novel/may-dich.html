@@ -45,12 +45,14 @@
       var orignalText;
 
       var service = $("#service_select").val();
-      var lang;
 
+      var googleLang;
       var googleQueryText;
-      var googleTranslationText;
 
+      var microsoftLang;
       var microsoftQueryText;
+
+      var googleTranslationText;
       var microsoftTranslationText;
 
       $("#background_select").change(function () {
@@ -110,14 +112,18 @@
         if ($("#edit_button").val() !== 'Xong') {
           let xhr = new XMLHttpRequest();
 
-          if (service === '' && orignalText == null || (!orignalText.includes(googleQueryText) && !orignalText.includes(microsoftQueryText))) {
+          if (service === '' || (orignalText == null || (!orignalText.includes(googleQueryText) || !orignalText.includes(microsoftQueryText)))) {
             orignalText = $("ol.main").html();
           }
 
           let words = orignalText.replace(/<li><div class="main">/g, '').replace(/<\/div><\/li>/g, '').split('\n');
 
           if ($("#service_select").val() === 'google') {
-            if ($("#language_select").val() === lang && googleTranslationText != null && googleQueryText.includes(orignalText)) {
+            if (service.includes('microsoft')) {
+              microsoftTranslationText = $("ol.main").html();
+            }
+
+            if ($("#language_select").val() === googleLang && googleTranslationText != null && googleQueryText.includes(orignalText)) {
               $("ol.main").html(googleTranslationText);
             } else {
               googleTranslationText = '';
@@ -133,11 +139,15 @@
               }
 
               $("ol.main").html(googleTranslationText);
-              lang = $("#language_select").val();
+              googleLang = $("#language_select").val();
               googleQueryText = orignalText;
             }
           } else if ($("#service_select").val() === 'microsoft') {
-            if ($("#language_select").val() === lang && microsoftTranslationText != null && microsoftQueryText.includes(orignalText)) {
+            if (service.includes('google')) {
+              googleTranslationText = $("ol.main").html();
+            }
+
+            if ($("#language_select").val() === microsoftLang && microsoftTranslationText != null && microsoftQueryText.includes(orignalText)) {
               $("ol.main").html(microsoftTranslationText);
             } else {
               let accessToken = getMicrosoftTranslatorAccessToken();
@@ -162,7 +172,7 @@
                 }
 
                 $("ol.main").html(microsoftTranslationText);
-                lang = $("#language_select").val();
+                microsoftLang = $("#language_select").val();
                 microsoftQueryText = orignalText;
               }
             }
