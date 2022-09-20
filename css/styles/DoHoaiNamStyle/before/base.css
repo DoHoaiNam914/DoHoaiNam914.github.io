@@ -25,7 +25,7 @@
 
 /* Set default font for the html doc, so that it can be overridden by the authors’s stylesheet */
 html {
-  font-family: var(--fontFamily) !important;
+  font-family: var(--fontFamily);
   /* Fallback line-height */
   line-height: 1.6; /* Fits a little bit better for all languages than 1.5 */
   line-height: var(--baseLineHeight);
