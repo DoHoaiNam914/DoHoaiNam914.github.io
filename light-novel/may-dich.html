@@ -95,6 +95,7 @@
 
         if ($("ol.main").html() === '' || $("ol.main").html() === '<li><div class="main"></div></li>' || $("ol.main").html() === '<li><div class="main"><br></div></li>') {
           $("#service_select").val("");
+          service = $("#service_select").val();
           $("ol.main").html(null);
           originalText = $("ol.main").html();
           $("ol.main").hide();
@@ -237,8 +238,7 @@
 
           this.value = '';
         }
-
-        service = this.value;
+q
       });
 
       function translateMicrosoft(xhr, accessToken, toLang, data) {
