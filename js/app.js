@@ -13,7 +13,7 @@ $(document).ready(function () {
   if (searchParams.has('tap')) {
     $.get(volume + '/content.html').done((data) => $(document.head).html(parser.parseFromString(data, 'text/html').head.innerHTML));
     $(document.body).html(`<form>
-  <div class="notranslate" style="position: fixed; right: 8px; top: 8px;">
+  <div class="notranslate" style="bottom: 8px; left: 8px; position: fixed;">
     <select id="background_select">
       <option value="white">Trắng</option>
       <option value="black">Đen</option>
@@ -25,11 +25,26 @@ $(document).ready(function () {
 <script>
   $("#background_select").on("change", function () {
     if (this.value !== 'white') {
-      $(document.documentElement).attr("style", $(document.documentElement).attr("style") != null ? document.documentElement.getAttribute('style').replace(/ black;/g, '').replace(/black;/g, '').replace(/ sepia;/g, '').replace(/sepia;/g, '').replace(/ cream;/g, '').replace(/cream;/g, '').concat(' ' + this.value.concat(';')) : this.value.concat(';'));
+      $(document.documentElement).attr("style", $(document.documentElement).attr("style") != undefined ?
+        document.documentElement.getAttribute('style').replace(/ black;/g, '').
+          replace(/black;/g, '').
+          replace(/ sepia;/g, '').
+          replace(/sepia;/g, '').
+          replace(/ cream;/g, '').
+          replace(/cream;/g, '').
+        concat(' ' + this.value.concat(';')) :
+          this.value.concat(';'));
       Cookies.set('background', this.value, { expires: 365 });
-    } else {
-      $(document.documentElement).attr("style", $(document.documentElement).attr("style") != null ? document.documentElement.getAttribute('style').replace(/ black;/g, '').replace(/black;/g, '').replace(/ sepia;/g, '').replace(/sepia;/g, '').replace(/ cream;/g, '').replace(/cream;/g, '') : "");
+    } else if ($(document.documentElement).attr("style") != undefined) {
+      $(document.documentElement).attr("style", document.documentElement.getAttribute('style').replace(/ black;/g, '').
+        replace(/black;/g, '').
+        replace(/ sepia;/g, '').
+        replace(/sepia;/g, '').
+        replace(/ cream;/g, '').
+        replace(/cream;/g, ''));
       Cookies.remove('background');
+    } else {
+      $(document.documentElement).removeAttr("style");
     }
   });
 </script>`);
@@ -53,19 +68,19 @@ function loadYenPressSpinesContent(spineList) {
           $("link[href=\"../Styles/stylesheet.css\"]").remove();
           $(document.head).append(`<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 <script src="../../js/js.cookie.js"></script>`);
-          $(document.head).append("<link rel=\"stylesheet\" href=\"../../css/styles/DoHoaiNamStyle-before.css\">\n" + stylesheet + '\n<link rel="stylesheet" href="../../css/styles/DoHoaiNamStyle/' + book + '_patch.css">\n<link rel="stylesheet" href="../../css/styles/DoHoaiNamStyle-after.css">');
+          $(document.head).append("<link rel=\"stylesheet\" href=\"../../css/styles/DoHoaiNamStyle-before.css\">\n" + stylesheet + "\n<link rel=\"stylesheet\" href=\"../../css/styles/DoHoaiNamStyle/" + book + "_patch.css\">\n<link rel=\"stylesheet\" href=\"../../css/styles/DoHoaiNamStyle-after.css\">");
           $("#background_select").val(Cookies.get('background') || "white").change();
         }
 
         $(document.body).append("\n<div class=\"body\"" +
           (!this.responseText.includes('id="' + spineName + '"') ? " id=\"" + spineName + "\"" : "") + ">" +
           html.body.innerHTML.toString().replace(new RegExp(' xmlns="http://www.w3.org/1999/xhtml"', 'g'), '').
-          replace(/epub:/g, '').replace(new RegExp(' xmlns:epub="http://www.idpf.org/2007/ops"', 'g'), '').
-          replace(new RegExp('../Images', 'g'), 'https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/light-novel/' + book + '/' + volume.concat('/OEBPS/Images')).
-          replace(new RegExp('../Text/', 'g'), '#').
-          replace(/.xhtml/g, '').
-          replace(/#cover#/g, '#').
-          replace(/#toc#/g, '#') + "</div>\n\n");
+            replace(/epub:/g, '').replace(new RegExp(' xmlns:epub="http://www.idpf.org/2007/ops"', 'g'), '').
+            replace(new RegExp('../Images', 'g'), 'https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/light-novel/' + book + '/' + volume.concat('/OEBPS/Images')).
+            replace(new RegExp('../Text/', 'g'), '#').
+            replace(/.xhtml/g, '').
+            replace(/#cover#/g, '#').
+            replace(/#toc#/g, '#') + "</div>\n\n");
       }
     };
 
@@ -73,7 +88,7 @@ function loadYenPressSpinesContent(spineList) {
     xhr.send();
   }
 
-  if (performance.navigation.type === performance.navigation.TYPE_RELOAD && window.location.hash != null) {
+  if (performance.navigation.type === performance.navigation.TYPE_RELOAD && window.location.hash != undefined) {
     window.location.hash = '';
   } else {
     window.location.href = '#';
@@ -97,19 +112,19 @@ function loadYenPressSpinesContent2(spineList) {
           $("link[href=\"css/stylesheet.css\"]").remove();
           $(document.head).append(`<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 <script src="../../js/js.cookie.js"></script>`);
-          $(document.head).append("<link rel=\"stylesheet\" href=\"../../css/styles/DoHoaiNamStyle-before.css\">\n" + stylesheet + '\n<link rel="stylesheet" href="../../css/styles/DoHoaiNamStyle/' + book + '_patch.css">\n<link rel="stylesheet" href="../../css/styles/DoHoaiNamStyle-after.css">');
+          $(document.head).append("<link rel=\"stylesheet\" href=\"../../css/styles/DoHoaiNamStyle-before.css\">\n" + stylesheet + "\n<link rel=\"stylesheet\" href=\"../../css/styles/DoHoaiNamStyle/" + book + "_patch.css\">\n<link rel=\"stylesheet\" href=\"../../css/styles/DoHoaiNamStyle-after.css\">");
           $("#background_select").val(Cookies.get('background') || "white").change();
         }
 
         $(document.body).append("\n<div class=\"body\"" +
           (!this.responseText.includes('id="' + spineName + '"') ? " id=\"" + spineName + "\"" : "") + ">" +
           html.body.innerHTML.toString().replace(new RegExp(' xmlns="http://www.w3.org/1999/xhtml"', 'g'), '').
-          replace(/epub:/g, '').
-          replace(new RegExp(' xmlns:epub="http://www.idpf.org/2007/ops"', 'g'), '').
-          replace(new RegExp('images', 'g'), 'https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/light-novel/' + book.concat('/' + volume.concat('/OEBPS/images'))).
-          replace(/.xhtml/g, '').
-          replace(/#cover#/g, '#').
-          replace(/#toc#/g, '#') + "</div>\n\n");
+            replace(/epub:/g, '').
+            replace(new RegExp(' xmlns:epub="http://www.idpf.org/2007/ops"', 'g'), '').
+            replace(new RegExp('images', 'g'), 'https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/light-novel/' + book.concat('/' + volume.concat('/OEBPS/images'))).
+            replace(/.xhtml/g, '').
+            replace(/#cover#/g, '#').
+            replace(/#toc#/g, '#') + "</div>\n\n");
       }
     };
 
@@ -117,7 +132,7 @@ function loadYenPressSpinesContent2(spineList) {
     xhr.send();
   }
 
-  if (performance.navigation.type === performance.navigation.TYPE_RELOAD && window.location.hash != null) {
+  if (performance.navigation.type === performance.navigation.TYPE_RELOAD && window.location.hash != undefined) {
     window.location.hash = '';
   } else {
     window.location.href = '#';
@@ -141,19 +156,19 @@ function loadJNovelClubSpinesContent(spineList) {
           $("link[href=\"../Styles/stylesheet.css\"]").remove();
           $(document.head).append(`<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 <script src="../../js/js.cookie.js"></script>`);
-          $(document.head).append("<link rel=\"stylesheet\" href=\"../../css/styles/DoHoaiNamStyle-before.css\">\n" + stylesheet + '\n<link rel=\"stylesheet\" href=\"../../css/styles/DoHoaiNamStyle/j-novelclub_patch.css\">\n<link rel="stylesheet" href="../../css/styles/DoHoaiNamStyle-after.css">');
+          $(document.head).append("<link rel=\"stylesheet\" href=\"../../css/styles/DoHoaiNamStyle-before.css\">\n" + stylesheet + "\n<link rel=\"stylesheet\" href=\"../../css/styles/DoHoaiNamStyle/j-novelclub_patch.css\">\n<link rel=\"stylesheet\" href=\"../../css/styles/DoHoaiNamStyle-after.css\">");
           $("#background_select").val(Cookies.get('background') || "white").change();
         }
 
         $(document.body).append("\n<div class=\"body" + (this.responseText.includes('<img') ? " nomargin center\"" : "\"") +
           (!this.responseText.includes('id="' + spineName + '"') ? " id=\"" + spineName + "\"" : "") + ">" +
           html.body.innerHTML.toString().replace(new RegExp(' xmlns="http://www.w3.org/1999/xhtml"', 'g'), '').
-          replace(/epub:/g, '').
-          replace(new RegExp(' xmlns:epub="http://www.idpf.org/2007/ops"', 'g'), '').
-          replace(new RegExp('../Images', 'g'), 'https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/light-novel/' + book.concat('/' + volume.concat('/OEBPS/Images'))).
-          replace(new RegExp('../Text/', 'g'), '').
-          replace(/.xhtml/g, '').
-          replace(/#toc#/g, '#') + "</div>\n\n");
+            replace(/epub:/g, '').
+            replace(new RegExp(' xmlns:epub="http://www.idpf.org/2007/ops"', 'g'), '').
+            replace(new RegExp('../Images', 'g'), 'https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/light-novel/' + book.concat('/' + volume.concat('/OEBPS/Images'))).
+            replace(new RegExp('../Text/', 'g'), '').
+            replace(/.xhtml/g, '').
+            replace(/#toc#/g, '#') + "</div>\n\n");
       }
     };
 
@@ -161,7 +176,7 @@ function loadJNovelClubSpinesContent(spineList) {
     xhr.send();
   }
 
-  if (performance.navigation.type === performance.navigation.TYPE_RELOAD && window.location.hash != null) {
+  if (performance.navigation.type === performance.navigation.TYPE_RELOAD && window.location.hash != undefined) {
     window.location.hash = '';
   } else {
     window.location.href = '#';

@@ -9,10 +9,6 @@
     <script src="../js/js.cookie-1.5.1.js"></script>
     <link rel="stylesheet" href="../css/styles/dohoainam-ebpaj-style.css">
     <style>
-      div.main {
-        display: inline-block;
-      }
-
       textarea {
         resize: none;
       }
@@ -51,7 +47,7 @@
       <div style="text-align: center;"><textarea name="textarea" style="background: transparent; border: 0; border-style: none; color: inherit; font-family: inherit; font-size: inherit; height: 50vh; margin: 0; padding: 0; width: 100%;">Viết gì đó tại đây</textarea></div>
     </section>
     <script>
-      var orignalText;
+      var originalText;
 
       var service = $("#service_select").val();
 
@@ -64,13 +60,28 @@
       var googleTranslationText;
       var microsoftTranslationText;
 
-      $("#background_select").change(function () {
-        if (this.value !=='white') {
-          $(document.documentElement).attr("style", $(document.documentElement).attr("style") != null ? document.documentElement.getAttribute('style').replace(/ black;/g, '').replace(/black;/g, '').replace(/ sepia;/g, '').replace(/sepia;/g, '').replace(/ cream;/g, '').replace(/cream;/g, '').concat(' ' + this.value.concat(';')) : this.value.concat(';'));
-          $.cookie('background', this.value, { expires: 365 });
+      $("#background_select").on("change", function () {
+        if (this.value !== 'white') {
+          $(document.documentElement).attr("style", $(document.documentElement).attr("style") != undefined ?
+            document.documentElement.getAttribute('style').replace(/ black;/g, '').
+              replace(/black;/g, '').
+              replace(/ sepia;/g, '').
+              replace(/sepia;/g, '').
+              replace(/ cream;/g, '').
+              replace(/cream;/g, '').
+            concat(' ' + this.value.concat(';')) :
+              this.value.concat(';'));
+          Cookies.set('background', this.value, { expires: 365 });
+        } else if ($(document.documentElement).attr("style") != undefined) {
+          $(document.documentElement).attr("style", document.documentElement.getAttribute('style').replace(/ black;/g, '').
+            replace(/black;/g, '').
+            replace(/ sepia;/g, '').
+            replace(/sepia;/g, '').
+            replace(/ cream;/g, '').
+            replace(/cream;/g, ''));
+          Cookies.remove('background');
         } else {
-          $(document.documentElement).attr("style", $(document.documentElement).attr("style") != null ? document.documentElement.getAttribute('style').replace(/ black;/g, '').replace(/black;/g, '').replace(/ sepia;/g, '').replace(/sepia;/g, '').replace(/ cream;/g, '').replace(/cream;/g, '') : "");
-          $.removeCookie('background');
+          $(document.documentElement).removeAttr("style");
         }
       });
 
@@ -85,7 +96,7 @@
         if ($("ol.main").html() === '' || $("ol.main").html() === '<li><div class="main"></div></li>' || $("ol.main").html() === '<li><div class="main"><br></div></li>') {
           $("#service_select").val("");
           $("ol.main").html(null);
-          orignalText = $("ol.main").html();
+          originalText = $("ol.main").html();
           $("ol.main").hide();
           $("textarea").show();
         }
@@ -97,6 +108,7 @@
             $("ol.main").hide();
             $("textarea").show();
           } else {
+            $("div.main").css("display", "inline-block");
             $("ol.main").attr("contentEditable", "true");
           }
 
@@ -104,6 +116,7 @@
         } else {
           if ($("textarea").css("display") === 'none') {
             $("ol.main").attr("contentEditable", "false");
+            $("div.main").removeAttr("style");
           } else {
             var words = document.querySelector('textarea').value.split('\n');
             $("ol.main").html(null);
@@ -131,18 +144,18 @@
         if ($("#edit_button").val() === 'Chỉnh sửa') {
           let xhr = new XMLHttpRequest();
 
-          if (service === '' && (orignalText == null || orignalText == '' || orignalText !== googleQueryText || orignalText !== microsoftQueryText)) {
-            orignalText = $("ol.main").html();
+          if (service === '' && (originalText == undefined || originalText == '' || originalText !== googleQueryText || originalText !== microsoftQueryText)) {
+            originalText = $("ol.main").html();
           }
 
-          let words = orignalText.replace(/<li><div class="main">/g, '').replace(/<\/div><\/li>/g, '').split('\n');
+          let words = originalText.replace(/<li><div class="main">/g, '').replace(/<\/div><\/li>/g, '').split('\n');
 
           if (this.value === 'google') {
             if (service === 'microsoft') {
               microsoftTranslationText = $("ol.main").html();
             }
 
-            if ($("#language_select").val() === googleLang && googleTranslationText != null && googleQueryText === orignalText) {
+            if ($("#language_select").val() === googleLang && googleTranslationText != undefined && googleQueryText === originalText) {
               $("ol.main").html(googleTranslationText);
             } else {
               googleTranslationText = '';
@@ -163,46 +176,48 @@
 
               $("ol.main").html(googleTranslationText);
               googleLang = $("#language_select").val();
-              googleQueryText = orignalText;
+              googleQueryText = originalText;
             }
           } else if (this.value === 'microsoft') {
             if (service === 'google') {
               googleTranslationText = $("ol.main").html();
             }
 
-            if ($("#language_select").val() === microsoftLang && microsoftTranslationText != null && microsoftQueryText === orignalText) {
+            if ($("#language_select").val() === microsoftLang && microsoftTranslationText != undefined && microsoftQueryText === originalText) {
               $("ol.main").html(microsoftTranslationText);
             } else {
               let accessToken = getMicrosoftTranslatorAccessToken();
 
-              if (accessToken != null) {
-                microsoftTranslationText = '';
+              if (accessToken == undefined) {
+                throw new Error('Cannot get a Access Token from the server.');
+              }
 
-                for (let i = 0; i < words.length; i++) {
-                  const data = JSON.stringify([
-                    {
-                      "Text": words[i]
-                    }
-                  ]);
+              microsoftTranslationText = '';
 
-                  xhr.onreadystatechange = function () {
-                    if (this.readyState === this.DONE) {
-                      microsoftTranslationText += '<li><div class="main">' + JSON.parse(this.responseText)[0].translations[0].text + '</div></li>' + (i + 1 < words.length ? '\n' : '');
-                    }
-                  };
-
-                  if (words[i] !== '') {
-                    translateMicrosoft(xhr, accessToken, document.getElementById('language_select').value.replace('CN', 'CHS').replace('TW', 'CHT'), data);
-                  } else {
-                    microsoftTranslationText += '<li><div class="main"><br></div></li>' + (i + 1 < words.length ? '\n' : '');
+              for (let i = 0; i < words.length; i++) {
+                const data = JSON.stringify([
+                  {
+                    "Text": words[i]
                   }
+                ]);
 
+                xhr.onreadystatechange = function () {
+                  if (this.readyState === this.DONE) {
+                    microsoftTranslationText += '<li><div class="main">' + JSON.parse(this.responseText)[0].translations[0].text + '</div></li>' + (i + 1 < words.length ? '\n' : '');
+                  }
+                };
+
+                if (words[i] !== '') {
+                  translateMicrosoft(xhr, accessToken, document.getElementById('language_select').value.replace('CN', 'CHS').replace('TW', 'CHT'), data);
+                } else {
+                  microsoftTranslationText += '<li><div class="main"><br></div></li>' + (i + 1 < words.length ? '\n' : '');
                 }
 
-                $("ol.main").html(microsoftTranslationText);
-                microsoftLang = $("#language_select").val();
-                microsoftQueryText = orignalText;
               }
+
+              $("ol.main").html(microsoftTranslationText);
+              microsoftLang = $("#language_select").val();
+              microsoftQueryText = originalText;
             }
           } else {
             if (service === 'google') {
@@ -211,7 +226,7 @@
               microsoftTranslationText = $("ol.main").html();
             }
 
-            $("ol.main").html(orignalText);
+            $("ol.main").html(originalText);
           }
         } else {
           if (service === 'google') {

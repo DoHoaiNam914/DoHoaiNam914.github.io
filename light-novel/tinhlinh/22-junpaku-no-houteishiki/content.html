@@ -60,10 +60,10 @@
           let spineName = spineList[i];
           xhr.onreadystatechange = function () {
             if (this.readyState === this.DONE) {
-              let html = parser.parseFromString(xhr.responseText.replace(/<ruby>/g, '').replace(/<\/ruby>/g, '').replace(new RegExp('<rb>([一-龠]*)</rb><rt>[ぁ-ゔ]*</rt>', 'g'), '$1').replace(new RegExp('<rb>([一-龠]*)</rb><rt>([ァ-ヴー・]*)</rt>', 'g'), ' $1（$2）').toString(), 'application/xhtml+xml');
+              let html = parser.parseFromString(xhr.responseText.replace(/<ruby>/g, '').replace(/<\/ruby>/g, '').replace(new RegExp('<rb>([一-龠]*)</rb><rt>[ぁ-ゔ]*</rt>', 'g'), '$1').replace(new RegExp('<rb>([一-龠]*)</rb><rt>([ァ-ヴー・]*)</rt>', 'g'), ' $1（$2）'), 'application/xhtml+xml');
       
             if (i === 5) {
-                $(document.head).html(html.head.innerHTML.replace(new RegExp(' xmlns="http://www.w3.org/1999/xhtml"', 'g'), '').toString());
+                $(document.head).html(html.head.innerHTML.replace(new RegExp(' xmlns="http://www.w3.org/1999/xhtml"', 'g'), ''));
                 $("meta[content=\"text/html; charset=utf-8\"]").replaceWith(`<meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="initial-scale=1, user-scalable=0, maximum-scale=1">`);
@@ -72,7 +72,7 @@
                 $("link[href=\"../page_styles.css\"]").remove();
                 $(document.head).append(`<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"><\/script>
   <script src="../../js/js.cookie.js"><\/script>`);
-                $(document.head).append("<link rel=\"stylesheet\" href=\"../../css/styles/DoHoaiNamStyle/fonts_patch.css\">\n<link rel=\"stylesheet\" href=\"../../css/styles/DoHoaiNamStyle-before.css\">\n" + stylesheet.concat('\n<link rel="stylesheet" href="../../css/styles/DoHoaiNamStyle-after.css">'));
+                $(document.head).append("<link rel=\"stylesheet\" href=\"../../css/styles/DoHoaiNamStyle/fonts_patch.css\">\n<link rel=\"stylesheet\" href=\"../../css/styles/DoHoaiNamStyle-before.css\">\n" + "\n<link rel=\"stylesheet\" href=\"../../css/styles/DoHoaiNamStyle-after.css\">");
                 $("#background_select").val(Cookies.get('background') || "white").change();
               }
 
