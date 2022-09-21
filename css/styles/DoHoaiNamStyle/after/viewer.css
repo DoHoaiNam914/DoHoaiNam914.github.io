@@ -35,16 +35,16 @@ body {
      By using max-width + margin auto, margins will shrink when font-size increases,
      which is what would be expected in terms of typography. */
   max-width: var(--maxLineLength) !important;
-  margin: 0 auto !important;
+  margin: 0 auto 6.8125rem !important;
 
   /* We need a minimum padding on body so that descandants/ascendants in italic/script are not cut-off.
      Drawback: we have to use border-box so that it doesn’t screw the box model,
      which means it impacts max-width */
   box-sizing: border-box;
-  padding: 0 var(--pageGutter) 109px !important;
+  padding: 0 var(--pageGutter) !important;
 }
 
 /* Make sure line-length is limited in all configs */
 :root body {
-  --maxLineLength: 40.43746875rem !important;
+  --maxLineLength: 40.4375rem !important;
 }

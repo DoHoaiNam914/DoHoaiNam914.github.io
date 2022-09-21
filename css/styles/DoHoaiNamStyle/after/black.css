@@ -6,7 +6,7 @@
 /* CONFIG */
 
 :root[style*="black"] {
-  --backgroundColor: #000000;
+  --backgroundColor: #000;
   --textColor: #d2d2d2;
 
   --linkColor: #ebebee;

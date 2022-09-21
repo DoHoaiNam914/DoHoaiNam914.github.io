@@ -12,6 +12,10 @@
       div.main {
         display: inline-block;
       }
+
+      textarea {
+        resize: none;
+      }
     </style>
   </head>
   <body>
@@ -215,6 +219,8 @@
           } else if (service === 'microsoft') {
             microsoftTranslationText = $("ol.main").html();
           }
+
+          this.value = '';
         }
 
         service = this.value;

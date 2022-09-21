@@ -6,10 +6,10 @@
 /* CONFIG */
 
 :root {
-  --backgroundColor: #ffffff;
-  --textColor: #000000;
+  --backgroundColor: #fff;
+  --textColor: #000;
 
-  --linkColor: #0000ff;
+  --linkColor: #00f;
 }
 
 :root {
