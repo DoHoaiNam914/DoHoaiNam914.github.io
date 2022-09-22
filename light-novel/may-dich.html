@@ -158,7 +158,7 @@
               microsoftTranslationText = $("ol.main").html();
             }
 
-            if ($("#language_select").val() === googleLang && googleTranslationText != undefined && googleQueryText === originalText) {
+            if ($("#language_select").val() === googleLang && googleTranslationText !== '' && googleQueryText === originalText) {
               $("ol.main").html(googleTranslationText);
             } else {
               googleTranslationText = '';
@@ -191,7 +191,7 @@
               googleTranslationText = $("ol.main").html();
             }
 
-            if ($("#language_select").val() === microsoftLang && microsoftTranslationText != undefined && microsoftQueryText === originalText) {
+            if ($("#language_select").val() === microsoftLang && microsoftTranslationText !== '' && microsoftQueryText === originalText) {
               $("ol.main").html(microsoftTranslationText);
             } else {
               let accessToken = getMicrosoftTranslatorAccessToken();
