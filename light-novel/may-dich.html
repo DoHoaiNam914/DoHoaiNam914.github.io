@@ -98,6 +98,8 @@
           service = $("#service_select").val();
           $("ol.main").html(null);
           originalText = $("ol.main").html();
+          $("div.main").removeAttr("style");
+          $("ol.main").attr("contentEditable", "false");
           $("ol.main").hide();
           $("textarea").show();
         }

@@ -2,7 +2,7 @@
 
 This site was built using [GitHub Pages](https://pages.github.com/).
 
-- [Máy dịch Light Novel](https://dohoainam914.github.io/light-novel/trinh-dich-microsoft.html)
+- [Máy dịch Light Novel](https://dohoainam914.github.io/light-novel/may-dich.html)
 
 ## [Light Novel](https://dohoainam914.github.io/light-novel/)
 
