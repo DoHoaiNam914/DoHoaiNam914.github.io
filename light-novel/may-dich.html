@@ -47,7 +47,7 @@
       <div style="text-align: center;"><textarea name="textarea" style="background: transparent; border: 0; border-style: none; color: inherit; font-family: inherit; font-size: inherit; height: 50vh; margin: 0; padding: 0; width: 100%;">Viết gì đó tại đây</textarea></div>
     </section>
     <script>
-      var originalText;
+      var queryText;
 
       var service = $("#service_select").val();
 
@@ -97,7 +97,7 @@
           $("#service_select").val("");
           service = $("#service_select").val();
           $("ol.main").html(null);
-          originalText = $("ol.main").html();
+          queryText = $("ol.main").html();
           $("div.main").removeAttr("style");
           $("ol.main").attr("contentEditable", "false");
           $("ol.main").hide();
@@ -147,18 +147,18 @@
         if ($("#edit_button").val() === 'Chỉnh sửa') {
           let xhr = new XMLHttpRequest();
 
-          if (service === '' && (originalText == undefined || originalText === '' || originalText !== googleQueryText || originalText !== microsoftQueryText)) {
-            originalText = $("ol.main").html();
+          if (service === '' && (queryText == undefined || queryText === '' || queryText !== googleQueryText || queryText !== microsoftQueryText)) {
+            queryText = $("ol.main").html();
           }
 
-          let words = originalText.replace(/<li><div class="main">/g, '').replace(/<\/div><\/li>/g, '').split('\n');
+          let words = queryText.replace(/<li><div class="main">/g, '').replace(/<\/div><\/li>/g, '').split('\n');
 
           if (this.value === 'google') {
             if (service === 'microsoft') {
               microsoftTranslationText = $("ol.main").html();
             }
 
-            if ($("#language_select").val() === googleLang && googleTranslationText !== '' && googleQueryText === originalText) {
+            if ($("#language_select").val() === googleLang && googleTranslationText !== '' && googleQueryText === queryText) {
               $("ol.main").html(googleTranslationText);
             } else {
               googleTranslationText = '';
@@ -177,21 +177,16 @@
                 }
               }
 
-              if (googleTranslationText.split('\n').length !== words.length) {
-                throw new Error('Translation Failed');
-                googleTranslationText = '';
-              }
-
               $("ol.main").html(googleTranslationText);
               googleLang = $("#language_select").val();
-              googleQueryText = originalText;
+              googleQueryText = queryText;
             }
           } else if (this.value === 'microsoft') {
             if (service === 'google') {
               googleTranslationText = $("ol.main").html();
             }
 
-            if ($("#language_select").val() === microsoftLang && microsoftTranslationText !== '' && microsoftQueryText === originalText) {
+            if ($("#language_select").val() === microsoftLang && microsoftTranslationText !== '' && microsoftQueryText === queryText) {
               $("ol.main").html(microsoftTranslationText);
             } else {
               let accessToken = getMicrosoftTranslatorAccessToken();
@@ -223,14 +218,9 @@
                 }
               }
 
-              if (microsoftTranslationText.split('\n').length !== words.length) {
-                throw new Error('Translation Failed');
-                microsoftTranslationText = '';
-              }
-
               $("ol.main").html(microsoftTranslationText);
               microsoftLang = $("#language_select").val();
-              microsoftQueryText = originalText;
+              microsoftQueryText = queryText;
             }
           } else {
             if (service === 'google') {
@@ -239,7 +229,7 @@
               microsoftTranslationText = $("ol.main").html();
             }
 
-            $("ol.main").html(originalText);
+            $("ol.main").html(queryText);
           }
         } else {
           if (service === 'google') {
@@ -261,7 +251,7 @@
         xhr.send(data);
       }
 
-      function translateGoogle(xhr, targetLang, text) {
+      function translateGoogle(xhr, targetLang, queryText) {
         xhr.open("GET", "https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=" + targetLang + "&dt=t&q=" + text, false);
         xhr.send();
       }
