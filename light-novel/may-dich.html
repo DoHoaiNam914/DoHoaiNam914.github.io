@@ -252,7 +252,7 @@
       }
 
       function translateGoogle(xhr, targetLang, queryText) {
-        xhr.open("GET", "https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=" + targetLang + "&dt=t&q=" + text, false);
+        xhr.open("GET", "https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=" + targetLang + "&dt=t&q=" + queryText, false);
         xhr.send();
       }
 
