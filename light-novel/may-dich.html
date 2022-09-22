@@ -116,14 +116,14 @@
           $("#edit_button").val("Xong");
         } else {
           if ($("textarea").css("display") === 'none') {
-            $("ol.main").attr("contentEditable", "false");
             $("div.main").removeAttr("style");
+            $("ol.main").attr("contentEditable", "false");
           } else {
             var words = document.querySelector('textarea').value.split('\n');
             $("ol.main").html(null);
 
             for (let i = 0; i < words.length; i++) {
-              $("ol.main").append('<li><div class="main">' + (!words[i] !== '' ? words[i] : '<br>') + '</div></li>' + (i + 1 < words.length ? '\n' : ''));
+              $("ol.main").append('<li><div class="main">' + (words[i] !== '' ? words[i] : '<br>') + '</div></li>' + (i + 1 < words.length ? '\n' : ''));
             }
 
             $("textarea").hide();
@@ -145,7 +145,7 @@
         if ($("#edit_button").val() === 'Chỉnh sửa') {
           let xhr = new XMLHttpRequest();
 
-          if (service === '' && (originalText == undefined || originalText == '' || originalText !== googleQueryText || originalText !== microsoftQueryText)) {
+          if (service === '' && (originalText == undefined || originalText === '' || originalText !== googleQueryText || originalText !== microsoftQueryText)) {
             originalText = $("ol.main").html();
           }
 
@@ -175,6 +175,11 @@
                 }
               }
 
+              if (googleTranslationText.split('\n').length !== words.length) {
+                throw new Error('Translation Failed');
+                googleTranslationText = '';
+              }
+
               $("ol.main").html(googleTranslationText);
               googleLang = $("#language_select").val();
               googleQueryText = originalText;
@@ -191,6 +196,7 @@
 
               if (accessToken == undefined) {
                 throw new Error('Cannot get a Access Token from the server.');
+                this.value = '';
               }
 
               microsoftTranslationText = '';
@@ -213,7 +219,11 @@
                 } else {
                   microsoftTranslationText += '<li><div class="main"><br></div></li>' + (i + 1 < words.length ? '\n' : '');
                 }
+              }
 
+              if (microsoftTranslationText.split('\n').length !== words.length) {
+                throw new Error('Translation Failed');
+                microsoftTranslationText = '';
               }
 
               $("ol.main").html(microsoftTranslationText);
@@ -238,7 +248,6 @@
 
           this.value = '';
         }
-q
       });
 
       function translateMicrosoft(xhr, accessToken, toLang, data) {
