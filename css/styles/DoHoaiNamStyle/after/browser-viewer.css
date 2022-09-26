@@ -1,13 +1,13 @@
-/* Viewer module
+/* Browser Viewer module
 
    A set of styles for ePublications */
 
 :root {
-  /* Optimal line-length (rem will take :root font-size into account, whatever the body’s font-size) */
-  --maxLineLength: 40.4375rem;
+  /* Optimal line-length */
+  --maxLineLength: 1000px;
 
-  /* Default page horizontal margins (in pixels so that it won’t resize with font-size) */
-  --pageGutter: 8px;
+  /* Default page horizontal margins */
+  --marginHorizontal: 10px;
 }
 
 /* Reset page margins for Forward compatibility */
@@ -19,7 +19,7 @@
   /* Prevents options pop-up when long tap in webkit */
   -webkit-touch-callout: none;
 
-  font-size: 18px !important;
+  font-size: 12px !important;
 
   /* In case you use left position to scroll, can be removed if using transform: translateX() */
   position: relative;
@@ -30,21 +30,44 @@
   -webkit-text-size-adjust: 100%;
 }
 
+:lang(ja) {
+  font-size: 14px !important;
+}
+
 body {
   /* Limit line-length.
      By using max-width + margin auto, margins will shrink when font-size increases,
      which is what would be expected in terms of typography. */
   max-width: var(--maxLineLength) !important;
-  margin: 0 auto 6.8125rem !important;
+  margin: 0 auto 55.199999999999996px !important;
 
   /* We need a minimum padding on body so that descandants/ascendants in italic/script are not cut-off.
      Drawback: we have to use border-box so that it doesn’t screw the box model,
      which means it impacts max-width */
   box-sizing: border-box;
-  padding: 0 var(--pageGutter) !important;
+  padding: 0 var(--marginHorizontal) 21.000000000000007px !important;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --marginHorizontal: 8px;
+  }
+
+  :root {
+    font-size: 22px !important;
+  }
+
+  :lang(ja) {
+    font-size: 22px !important;
+  }
+
+  body {
+    margin: 0 auto 20.4px !important;
+    padding: 0 var(--marginHorizontal) 31.200000000000003px !important;
+  }
 }
 
 /* Make sure line-length is limited in all configs */
 :root body {
-  --maxLineLength: 40.4375rem !important;
+  --maxLineLength: 1000px !important;
 }
