@@ -14,6 +14,8 @@ This site was built using [GitHub Pages](https://pages.github.com/).
 
 - [Về chuyện tôi chuyển sinh thành Slime](https://dohoainam914.github.io/light-novel/tenseislime/)
 
+- [Wild Final Boss Appeared!](https://dohoainam914.github.io/light-novel/yaseilastboss/)
+
 ## [Truyện tranh](https://dohoainam914.github.io/truyen-tranh/)
 
 - [Turan Cheng Xian Le Zenme Ban](https://dohoainam914.github.io/truyen-tranh/turan-cheng-xian-le-zenme-ban/)
