@@ -7,7 +7,7 @@
   --maxLineLength: 1000px;
 
   /* Default page horizontal margins */
-  --marginHorizontal: 8px;
+  --marginHorizontal: 12px;
 }
 
 /* Reset page margins for Forward compatibility */
@@ -30,7 +30,9 @@
   -webkit-text-size-adjust: 100%;
 }
 
-:lang(ja) {
+:lang(ja)
+:not(input)
+:not(select) {
   font-size: 16px !important;
 }
 
@@ -39,23 +41,23 @@ body {
      By using max-width + margin auto, margins will shrink when font-size increases,
      which is what would be expected in terms of typography. */
   max-width: var(--maxLineLength) !important;
-  margin: 5.75px 0.5px 8.5px !important;
+  margin: 0 auto !important;
 
   /* We need a minimum padding on body so that descandants/ascendants in italic/script are not cut-off.
      Drawback: we have to use border-box so that it doesn’t screw the box model,
      which means it impacts max-width */
   box-sizing: border-box;
-  padding: 18.75px var(--marginHorizontal) 18.75px !important;
+  padding: 48px var(--marginHorizontal) 18px !important;
 }
 
-@media (min-width: 768px) {
+@media (max-width: 1000px) {
   :root {
-    --marginHorizontal: 12px;
+    --marginHorizontal: 8px;
   }
 
   body {
-    margin: 0 auto !important;
-    padding: 48px var(--marginHorizontal) 18px !important;
+    margin: 5.75px 0.5px 8.5px !important;
+    padding: 18.75px var(--marginHorizontal) 18.75px !important;
   }
 }
 
