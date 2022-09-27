@@ -30,9 +30,8 @@
   -webkit-text-size-adjust: 100%;
 }
 
-:lang(ja)
-:not(input)
-:not(select) {
+:lang(ja):not(select),
+:lang(ja):not(input) {
   font-size: 16px !important;
 }
 

@@ -53,9 +53,8 @@ body {
     font-size: 12px !important;
   }
 
-  :lang(ja)
-  :not(input)
-  :not(select) {
+  :lang(ja):not(select),
+  :lang(ja):not(input) {
     font-size: 14px !important;
   }
 
