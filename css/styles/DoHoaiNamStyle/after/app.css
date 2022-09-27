@@ -28,6 +28,11 @@ body {
     font-size: 16px !important;
   }
 
+  input:lang(ja),
+  select:lang(ja) {
+    font-size: revert !important;
+  }
+
   body {
     margin: 5.75px 0.5px 8.5px !important;
     padding: var(--marginTop) var(--marginHorizontal) var(--marginBottom) !important;

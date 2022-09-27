@@ -14,7 +14,7 @@ $(document).ready(function () {
     $.get(volume + '/content.html').done((data) => $(document.head).html(parser.parseFromString(data, 'text/html').head.innerHTML));
     $(document.body).html(`<form>
   <div class="notranslate" style="bottom: 8px; left: 8px; position: fixed;">
-    <select id="background_select" style="height: 21px; width: 79px;">
+    <select id="background_select">
       <option value="white">Trắng</option>
       <option value="black">Đen</option>
       <option value="sepia">Sepia</option>
