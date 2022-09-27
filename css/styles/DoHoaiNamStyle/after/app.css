@@ -1,0 +1,35 @@
+/* App module
+
+   A set of styles for ePublications */
+
+:root {
+  --marginTop: 15px;
+  --marginHorizontal: 20px;
+  --marginBottom: 20px;
+}
+
+:root {
+  font-size: 18px !important;
+}
+
+:lang(ja) {
+  font-size: 16px !important;
+}
+
+body {
+  margin: 10px auto 44px !important;
+  padding: var(--marginTop) var(--marginHorizontal) var(--marginBottom) !important;
+}
+
+@media (max-width: 1000px) {
+  :root {
+    --marginTop: 18.75px;
+    --marginHorizontal: 8px;
+    --marginBottom: 18.75px;
+  }
+
+  body {
+    margin: 5.75px 0.5px 8.5px !important;
+    padding: var(--marginTop) var(--marginHorizontal) var(--marginBottom) !important;
+  }
+}
