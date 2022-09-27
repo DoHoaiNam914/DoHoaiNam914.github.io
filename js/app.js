@@ -1,5 +1,5 @@
 var xhr = new XMLHttpRequest();
-const parser = new DOMParser();
+var parser = new DOMParser();
 
 var book;
 var volume;
