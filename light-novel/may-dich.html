@@ -96,7 +96,7 @@
       });
 
       $("ol.main").on("input", function () {
-        $("ol.main").css("padding-left", ($(document.documentElement).css("font-size") + 6) + 8 * document.querySelector('ol.main').innerHTML.split('\n').length.toString().concat('.').length + "px");
+        $("ol.main").css("padding-left", parseInt($(document.documentElement).css("font-size")) + 8 * document.querySelector('ol.main').innerHTML.split('\n').length.toString().concat('.').length + "px");
 
         if ($("ol.main").html() === '' || $("ol.main").html() === '<li><div class="main"></div></li>' || $("ol.main").html() === '<li><div class="main"><br></div></li>') {
           $("#service_select").val("");
@@ -134,7 +134,7 @@
             }
 
             $("textarea").hide();
-            $("ol.main").css("padding-left", ($(document.documentElement).css("font-size") + 6) + 8 * document.querySelector('ol.main').innerHTML.split('\n').length.toString().concat('.').length + "px");
+            $("ol.main").css("padding-left", parseInt($(document.documentElement).css("font-size")) + 8 * document.querySelector('ol.main').innerHTML.split('\n').length.toString().concat('.').length + "px");
             $("ol.main").show();
           }
 
