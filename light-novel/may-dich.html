@@ -156,7 +156,10 @@
           if (this.value === 'google') {
             if (service === 'microsoft') {
               microsoftTranslationText = $("ol.main").html();
-              $("#language_select").val(googleLang);
+
+              if (googleLang != null) {
+                $("#language_select").val(googleLang);
+              }
             }
 
             if ($("#language_select").val() === googleLang && googleTranslationText !== '' && googleQueryText === queryText) {
@@ -185,7 +188,10 @@
           } else if (this.value === 'microsoft') {
             if (service === 'google') {
               googleTranslationText = $("ol.main").html();
-              $("#language_select").val(microsoftLang);
+
+              if (microsoftLang != null) {
+                $("#language_select").val(microsoftLang);
+              }
             }
 
             if ($("#language_select").val() === microsoftLang && microsoftTranslationText !== '' && microsoftQueryText === queryText) {
