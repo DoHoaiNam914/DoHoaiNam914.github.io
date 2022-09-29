@@ -121,11 +121,11 @@
             $("div.main").removeAttr("style");
             $("ol.main").attr("contentEditable", "false");
           } else {
-            var words = document.querySelector('textarea').value.split('\n');
+            var sentences = document.querySelector('textarea').value.split('\n');
             $("ol.main").html(null);
 
-            for (let i = 0; i < words.length; i++) {
-              $("ol.main").append('<li><div class="main">' + (words[i] !== '' ? words[i] : '<br>') + '</div></li>' + (i + 1 < words.length ? '\n' : ''));
+            for (let i = 0; i < sentences.length; i++) {
+              $("ol.main").append('<li><div class="main">' + (sentences[i] !== '' ? sentences[i] : '<br>') + '</div></li>' + (i + 1 < sentences.length ? '\n' : ''));
             }
 
             $("textarea").hide();
@@ -151,7 +151,7 @@
             queryText = $("ol.main").html();
           }
 
-          let words = queryText.replace(/<li><div class="main">/g, '').replace(/<\/div><\/li>/g, '').split('\n');
+          let sentences = queryText.replace(/<li><div class="main">/g, '').replace(/<\/div><\/li>/g, '').split('\n');
 
           if (this.value === 'google') {
             if (service === 'microsoft') {
@@ -167,17 +167,21 @@
             } else {
               googleTranslationText = '';
 
-              for (let i = 0; i < words.length; i++) {
+              for (let i = 0; i < sentences.length; i++) {
                 xhr.onreadystatechange = function () {
                   if (this.readyState === this.DONE) {
-                    googleTranslationText += '<li><div class="main">' + JSON.parse(this.responseText)[0][0][0] + '</div></li>' + (i + 1 < words.length ? '\n' : '');
+                    googleTranslationText += '<li><div class="main">' + JSON.parse(this.responseText)[0][0][0] + '</div></li>' + (i + 1 < sentences.length ? '\n' : '');
+                  } else {
+                    googleTranslationText = '';
+                    $("ol.main").html(queryText);
+                    this.value = '';
                   }
                 };
 
-                if (words[i] !== '') {
-                  translateGoogle(xhr, $("#language_select").val(), words[i]);
+                if (sentences[i] !== '') {
+                  translateGoogle(xhr, $("#language_select").val(), sentences[i]);
                 } else {
-                  googleTranslationText += '<li><div class="main"><br></div></li>' + (i + 1 < words.length ? '\n' : '');
+                  googleTranslationText += '<li><div class="main"><br></div></li>' + (i + 1 < sentences.length ? '\n' : '');
                 }
               }
 
@@ -206,23 +210,27 @@
 
               microsoftTranslationText = '';
 
-              for (let i = 0; i < words.length; i++) {
+              for (let i = 0; i < sentences.length; i++) {
                 const data = JSON.stringify([
                   {
-                    "Text": words[i]
+                    "Text": sentences[i]
                   }
                 ]);
 
                 xhr.onreadystatechange = function () {
                   if (this.readyState === this.DONE) {
-                    microsoftTranslationText += '<li><div class="main">' + JSON.parse(this.responseText)[0].translations[0].text + '</div></li>' + (i + 1 < words.length ? '\n' : '');
+                    microsoftTranslationText += '<li><div class="main">' + JSON.parse(this.responseText)[0].translations[0].text + '</div></li>' + (i + 1 < sentences.length ? '\n' : '');
+                  } else {
+                    microsoftTranslationText = '';
+                    $("ol.main").html(queryText);
+                    this.value = '';
                   }
                 };
 
-                if (words[i] !== '') {
+                if (sentences[i] !== '') {
                   translateMicrosoft(xhr, accessToken, document.getElementById('language_select').value.replace('CN', 'CHS').replace('TW', 'CHT'), data);
                 } else {
-                  microsoftTranslationText += '<li><div class="main"><br></div></li>' + (i + 1 < words.length ? '\n' : '');
+                  microsoftTranslationText += '<li><div class="main"><br></div></li>' + (i + 1 < sentences.length ? '\n' : '');
                 }
               }
 
@@ -252,6 +260,12 @@
           service = this.value;
       });
 
+      function translateGoogle(xhr, targetLang, queryText) {
+        xhr.open("POST", "https://translate.googleapis.com/translate_a/single?anno=3&client=gtx&format=html&sl=auto&tl=" + targetLang + "&tc=1&dom=1&sr=1&mode=1&dt=t", false);
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        xhr.send("q=" + encodeURIComponent(queryText));
+      }
+
       function translateMicrosoft(xhr, accessToken, toLang, data) {
         xhr.open("POST", "https://api.cognitive.microsofttranslator.com/translate?to=" + toLang + "&api-version=3.0&includeSentenceLength=true", false);
         xhr.setRequestHeader("Authorization", "Bearer " + accessToken);
@@ -259,20 +273,13 @@
         xhr.send(data);
       }
 
-      function translateGoogle(xhr, targetLang, queryText) {
-        xhr.open("GET", "https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=" + targetLang + "&dt=t&q=" + queryText, false);
-        xhr.send();
-      }
-
       function getMicrosoftTranslatorAccessToken() {
         let accessToken;
-        let settings = {
+        $.ajax({
           async: false,
           url: 'https://edge.microsoft.com/translate/auth',
           method: 'GET'
-        };
-
-        $.ajax(settings).done(response => accessToken = response);
+        }).done(response => accessToken = response);
         return accessToken;
       }
     </script>
