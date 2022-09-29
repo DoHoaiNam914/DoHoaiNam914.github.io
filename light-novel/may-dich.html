@@ -171,7 +171,7 @@
                 xhr.onreadystatechange = function () {
                   if (this.readyState === this.DONE) {
                     googleTranslationText += '<li><div class="main">' + JSON.parse(this.responseText)[0][0][0] + '</div></li>' + (i + 1 < sentences.length ? '\n' : '');
-                  } else {
+                  } else if (this.readyState === this.UNSENT) {
                     googleTranslationText = '';
                     $("ol.main").html(queryText);
                     this.value = '';
@@ -211,16 +211,10 @@
               microsoftTranslationText = '';
 
               for (let i = 0; i < sentences.length; i++) {
-                const data = JSON.stringify([
-                  {
-                    "Text": sentences[i]
-                  }
-                ]);
-
                 xhr.onreadystatechange = function () {
                   if (this.readyState === this.DONE) {
                     microsoftTranslationText += '<li><div class="main">' + JSON.parse(this.responseText)[0].translations[0].text + '</div></li>' + (i + 1 < sentences.length ? '\n' : '');
-                  } else {
+                  } else if (this.readyState === this.UNSENT) {
                     microsoftTranslationText = '';
                     $("ol.main").html(queryText);
                     this.value = '';
@@ -228,7 +222,11 @@
                 };
 
                 if (sentences[i] !== '') {
-                  translateMicrosoft(xhr, accessToken, document.getElementById('language_select').value.replace('CN', 'CHS').replace('TW', 'CHT'), data);
+                  translateMicrosoft(xhr, accessToken, document.getElementById('language_select').value.replace('CN', 'CHS').replace('TW', 'CHT'), JSON.stringify([
+                  {
+                    "Text": sentences[i]
+                  }
+                ]));
                 } else {
                   microsoftTranslationText += '<li><div class="main"><br></div></li>' + (i + 1 < sentences.length ? '\n' : '');
                 }
