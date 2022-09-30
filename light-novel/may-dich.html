@@ -272,14 +272,14 @@
 
       function doGlossary(text) {
         for (let i = 0; glossary.length > 0 && i < glossary.length; i++) {
-          text = text.replace(new RegExp(glossary[i][0]), glossary[i][1]);
+          text = text.replace(new RegExp(glossary[i][0], 'g'), glossary[i][1]);
         }
 
         if ($("#glossary_file").prop("files").length > 0) {
           customGlossary = $.csv.toArrays($("#glossary_file").prop("files")[0]);
 
           for (let i = 0; i < customGlossary.length; i++) {
-            text = text.replace(new RegExp(glossary[i][0]), customGlossary[i][1]);
+            text = text.replace(new RegExp(glossary[i][0], 'g'), customGlossary[i][1]);
           }
         }
 
