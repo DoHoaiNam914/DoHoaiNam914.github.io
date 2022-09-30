@@ -63,22 +63,22 @@
       $("#background_select").on("change", function () {
         if (this.value !== 'white') {
           $(document.documentElement).attr("style", $(document.documentElement).attr("style") != undefined ?
-            document.documentElement.getAttribute('style').replace(/ black;/g, '')
-              .replace(/black;/g, '')
-              .replace(/ sepia;/g, '')
-              .replace(/sepia;/g, '')
-              .replace(/ cream;/g, '')
-              .replace(/cream;/g, '')
-              .concat(' ' + this.value.concat(';')) :
-            this.value.concat(';'));
+            document.documentElement.getAttribute('style').replace(/ black;/g, '').
+              replace(/black;/g, '').
+              replace(/ sepia;/g, '').
+              replace(/sepia;/g, '').
+              replace(/ cream;/g, '').
+              replace(/cream;/g, '').
+            concat(' ' + this.value.concat(';')) :
+              this.value.concat(';'));
           Cookies.set('background', this.value, { expires: 365 });
         } else if ($(document.documentElement).attr("style") != undefined) {
-          $(document.documentElement).attr("style", document.documentElement.getAttribute('style').replace(/ black;/g, '')
-            .replace(/black;/g, '')
-            .replace(/ sepia;/g, '')
-            .replace(/sepia;/g, '')
-            .replace(/ cream;/g, '')
-            .replace(/cream;/g, ''));
+          $(document.documentElement).attr("style", document.documentElement.getAttribute('style').replace(/ black;/g, '').
+            replace(/black;/g, '').
+            replace(/ sepia;/g, '').
+            replace(/sepia;/g, '').
+            replace(/ cream;/g, '').
+            replace(/cream;/g, ''));
           Cookies.remove('background');
         } else {
           $(document.documentElement).removeAttr("style");
@@ -149,22 +149,14 @@
 
           if (service === '' && (queryText == undefined || queryText === '' || queryText !== googleQueryText || queryText !== microsoftQueryText)) {
             queryText = $("ol.main").html();
+            googleQueryText = '';
+            microsoftQueryText = '';
           }
 
           let sentences = queryText.replace(/<li><div class="main">/g, '').replace(/<\/div><\/li>/g, '').split('\n');
 
-          if (this.value === 'google') {
-            if (service === 'microsoft') {
-              microsoftTranslationText = $("ol.main").html();
-
-              if (googleLang != null) {
-                $("#language_select").val(googleLang);
-              }
-            }
-
-            if ($("#language_select").val() === googleLang && googleTranslationText !== '' && googleQueryText === queryText) {
-              $("ol.main").html(googleTranslationText);
-            } else {
+          if (this.value !== '') {
+            if ($("#language_select").val() !== googleLang || googleTranslationText === '' || googleQueryText !== queryText) {
               googleTranslationText = '';
 
               for (let i = 0; i < sentences.length; i++) {
@@ -185,22 +177,15 @@
                 }
               }
 
-              $("ol.main").html(googleTranslationText);
               googleLang = $("#language_select").val();
               googleQueryText = queryText;
             }
-          } else if (this.value === 'microsoft') {
-            if (service === 'google') {
-              googleTranslationText = $("ol.main").html();
 
-              if (microsoftLang != null) {
-                $("#language_select").val(microsoftLang);
-              }
+            if (this.value === 'google') {
+              $("ol.main").html(googleTranslationText);
             }
 
-            if ($("#language_select").val() === microsoftLang && microsoftTranslationText !== '' && microsoftQueryText === queryText) {
-              $("ol.main").html(microsoftTranslationText);
-            } else {
+            if ($("#language_select").val() !== microsoftLang || microsoftTranslationText === '' || microsoftQueryText !== queryText) {
               let accessToken = getMicrosoftTranslatorAccessToken();
 
               if (accessToken == undefined) {
@@ -232,9 +217,12 @@
                 }
               }
 
-              $("ol.main").html(microsoftTranslationText);
               microsoftLang = $("#language_select").val();
               microsoftQueryText = queryText;
+            }
+
+            if (this.value === 'microsoft') {
+              $("ol.main").html(microsoftTranslationText);
             }
           } else {
             if (service === 'google') {
@@ -255,7 +243,7 @@
           this.value = '';
         }
 
-          service = this.value;
+        service = this.value;
       });
 
       function translateGoogle(xhr, targetLang, queryText) {

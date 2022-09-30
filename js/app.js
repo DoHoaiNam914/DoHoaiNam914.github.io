@@ -26,22 +26,22 @@ $(document).ready(function () {
   $("#background_select").on("change", function () {
     if (this.value !== 'white') {
       $(document.documentElement).attr("style", $(document.documentElement).attr("style") != undefined ?
-        document.documentElement.getAttribute('style').replace(/ black;/g, '').
-          replace(/black;/g, '').
-          replace(/ sepia;/g, '').
-          replace(/sepia;/g, '').
-          replace(/ cream;/g, '').
-          replace(/cream;/g, '').
-        concat(' ' + this.value.concat(';')) :
-          this.value.concat(';'));
+        document.documentElement.getAttribute('style').replace(/ black;/g, '')
+          .replace(/black;/g, '')
+          .replace(/ sepia;/g, '')
+          .replace(/sepia;/g, '')
+          .replace(/ cream;/g, '')
+          .replace(/cream;/g, '')
+          .concat(' ' + this.value.concat(';')) :
+        this.value.concat(';'));
       Cookies.set('background', this.value, { expires: 365 });
     } else if ($(document.documentElement).attr("style") != undefined) {
-      $(document.documentElement).attr("style", document.documentElement.getAttribute('style').replace(/ black;/g, '').
-        replace(/black;/g, '').
-        replace(/ sepia;/g, '').
-        replace(/sepia;/g, '').
-        replace(/ cream;/g, '').
-        replace(/cream;/g, ''));
+      $(document.documentElement).attr("style", document.documentElement.getAttribute('style').replace(/ black;/g, '')
+        .replace(/black;/g, '')
+        .replace(/ sepia;/g, '')
+        .replace(/sepia;/g, '')
+        .replace(/ cream;/g, '')
+        .replace(/cream;/g, ''));
       Cookies.remove('background');
     } else {
       $(document.documentElement).removeAttr("style");
@@ -74,13 +74,13 @@ function loadYenPressSpinesContent(spineList) {
 
         $(document.body).append("\n<div class=\"body\"" +
           (!this.responseText.includes('id="' + spineName + '"') ? " id=\"" + spineName + "\"" : "") + ">" +
-          html.body.innerHTML.toString().replace(new RegExp(' xmlns="http://www.w3.org/1999/xhtml"', 'g'), '').
-            replace(/epub:/g, '').replace(new RegExp(' xmlns:epub="http://www.idpf.org/2007/ops"', 'g'), '').
-            replace(new RegExp('../Images', 'g'), 'https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/light-novel/' + book + '/' + volume.concat('/OEBPS/Images')).
-            replace(new RegExp('../Text/', 'g'), '#').
-            replace(/.xhtml/g, '').
-            replace(/#cover#/g, '#').
-            replace(/#toc#/g, '#') + "</div>\n\n");
+          html.body.innerHTML.toString().replace(new RegExp(' xmlns="http://www.w3.org/1999/xhtml"', 'g'), '')
+            .replace(/epub:/g, '').replace(new RegExp(' xmlns:epub="http://www.idpf.org/2007/ops"', 'g'), '')
+            .replace(new RegExp('../Images', 'g'), 'https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/light-novel/' + book + '/' + volume.concat('/OEBPS/Images'))
+            .replace(new RegExp('../Text/', 'g'), '#')
+            .replace(/.xhtml/g, '')
+            .replace(/#cover#/g, '#')
+            .replace(/#toc#/g, '#') + "</div>\n\n");
       }
     };
 
@@ -118,13 +118,13 @@ function loadYenPressSpinesContent2(spineList) {
 
         $(document.body).append("\n<div class=\"body\"" +
           (!this.responseText.includes('id="' + spineName + '"') ? " id=\"" + spineName + "\"" : "") + ">" +
-          html.body.innerHTML.toString().replace(new RegExp(' xmlns="http://www.w3.org/1999/xhtml"', 'g'), '').
-            replace(/epub:/g, '').
-            replace(new RegExp(' xmlns:epub="http://www.idpf.org/2007/ops"', 'g'), '').
-            replace(new RegExp('images', 'g'), 'https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/light-novel/' + book.concat('/' + volume.concat('/OEBPS/images'))).
-            replace(/.xhtml/g, '').
-            replace(/#cover#/g, '#').
-            replace(/#toc#/g, '#') + "</div>\n\n");
+          html.body.innerHTML.toString().replace(new RegExp(' xmlns="http://www.w3.org/1999/xhtml"', 'g'), '')
+            .replace(/epub:/g, '')
+            .replace(new RegExp(' xmlns:epub="http://www.idpf.org/2007/ops"', 'g'), '')
+            .replace(new RegExp('images', 'g'), 'https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/light-novel/' + book.concat('/' + volume.concat('/OEBPS/images')))
+            .replace(/.xhtml/g, '')
+            .replace(/#cover#/g, '#')
+            .replace(/#toc#/g, '#') + "</div>\n\n");
       }
     };
 
@@ -162,13 +162,13 @@ function loadJNovelClubSpinesContent(spineList) {
 
         $(document.body).append("\n<div class=\"body" + (this.responseText.includes('<img') ? " nomargin center\"" : "\"") +
           (!this.responseText.includes('id="' + spineName + '"') ? " id=\"" + spineName + "\"" : "") + ">" +
-          html.body.innerHTML.toString().replace(new RegExp(' xmlns="http://www.w3.org/1999/xhtml"', 'g'), '').
-            replace(/epub:/g, '').
-            replace(new RegExp(' xmlns:epub="http://www.idpf.org/2007/ops"', 'g'), '').
-            replace(new RegExp('../Images', 'g'), 'https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/light-novel/' + book.concat('/' + volume.concat('/OEBPS/Images'))).
-            replace(new RegExp('../Text/', 'g'), '').
-            replace(/.xhtml/g, '').
-            replace(/#toc#/g, '#') + "</div>\n\n");
+          html.body.innerHTML.toString().replace(new RegExp(' xmlns="http://www.w3.org/1999/xhtml"', 'g'), '')
+            .replace(/epub:/g, '')
+            .replace(new RegExp(' xmlns:epub="http://www.idpf.org/2007/ops"', 'g'), '')
+            .replace(new RegExp('../Images', 'g'), 'https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/light-novel/' + book.concat('/' + volume.concat('/OEBPS/Images')))
+            .replace(new RegExp('../Text/', 'g'), '')
+            .replace(/.xhtml/g, '')
+            .replace(/#toc#/g, '#') + "</div>\n\n");
       }
     };
 
