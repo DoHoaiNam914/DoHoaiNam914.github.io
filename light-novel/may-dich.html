@@ -7,6 +7,7 @@
     <title>Máy dịch cho Light Novel - DoHoaiNam Pages</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
     <script src="../js/js.cookie-1.5.1.js"></script>
+    <script src="../js/jquery.csv.js"></script>
     <link rel="stylesheet" href="../css/styles/dohoainam-ebpaj-style.css">
     <style>
       textarea {
@@ -27,6 +28,8 @@
     </form>
     <form>
       <div class="notranslate" style="bottom: 8px; position: fixed; right: 8px;">
+        <label for="glossary_file">Chọn tệp từ vựng CSV:</label>
+        <input id="glossary_file" type="file" accept=".csv">
         <select id="language_select">
           <option value="vi">Việt</option>
           <option value="en">Anh</option>
@@ -48,6 +51,8 @@
     </section>
     <script>
       var queryText;
+      var glossary;
+      var customGlossary;
 
       var service = $("#service_select").val();
 
@@ -87,6 +92,13 @@
 
       $(document).ready(function () {
         $("#background_select").val($.cookie('background') || "white").change();
+        $.ajax({
+          async: false,
+          url: 'glossary.csv',
+          method: 'GET'
+        }).done(function (response) {
+          glossary = $.csv.toArrays(response)
+        });
         $("ol.main").hide();
       });
 
@@ -148,7 +160,7 @@
           let xhr = new XMLHttpRequest();
 
           if (service === '' && (queryText == undefined || queryText === '' || queryText !== googleQueryText || queryText !== microsoftQueryText)) {
-            queryText = $("ol.main").html();
+            queryText = $("ol.main").html()
           }
 
           let sentences = queryText.replace(/<li><div class="main">/g, '').replace(/<\/div><\/li>/g, '').split('\n');
@@ -179,7 +191,7 @@
                 };
 
                 if (sentences[i] !== '') {
-                  translateGoogle(xhr, $("#language_select").val(), sentences[i]);
+                  translateGoogle(xhr, $("#language_select").val(), doGlossary(sentences[i]));
                 } else {
                   googleTranslationText += '<li><div class="main"><br></div></li>' + (i + 1 < sentences.length ? '\n' : '');
                 }
@@ -224,7 +236,7 @@
                 if (sentences[i] !== '') {
                   translateMicrosoft(xhr, accessToken, document.getElementById('language_select').value.replace('CN', 'CHS').replace('TW', 'CHT'), JSON.stringify([
                   {
-                    "Text": sentences[i]
+                    "Text": doGlossary(sentences[i])
                   }
                 ]));
                 } else {
@@ -257,6 +269,22 @@
 
           service = this.value;
       });
+
+      function doGlossary(text) {
+        for (let i = 0; glossary.length > 0 && i < glossary.length; i++) {
+          text = text.replace(new RegExp(glossary[i][0]), glossary[i][1]);
+        }
+
+        if ($("#glossary_file").prop("files").length > 0) {
+          customGlossary = $.csv.toArrays($("#glossary_file").prop("files")[0]);
+
+          for (let i = 0; i < customGlossary.length; i++) {
+            text = text.replace(new RegExp(glossary[i][0]), customGlossary[i][1]);
+          }
+        }
+
+        return text;
+      }
 
       function translateGoogle(xhr, targetLang, queryText) {
         xhr.open("POST", "https://translate.googleapis.com/translate_a/single?anno=3&client=gtx&format=html&sl=auto&tl=" + targetLang + "&tc=1&dom=1&sr=1&mode=1&dt=t", false);
