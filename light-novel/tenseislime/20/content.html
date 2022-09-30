@@ -46,7 +46,7 @@
           let spineName = spineList[i];
           xhr.onreadystatechange = function () {
             if (this.readyState === this.DONE) {
-              let html = parser.parseFromString(xhr.responseText.replace(/<ruby>/g, '').replace(/<\/ruby>/g, '').replace(new RegExp('([一-龠]*)</span><rt>[ぁ-ゔ]*</rt>', 'g'), '$1</span>').replace(new RegExp('([一-龠]*)</span><rt>([ァ-ヴー・]*)</rt>', 'g'), ' $1（$2）</span>'), 'application/xhtml+xml');
+              let html = parser.parseFromString(xhr.responseText.replace(/<ruby>/g, '').replace(/<\/ruby>/g, '').replace(new RegExp('([⺀-⿕]*)</span><rt>[ぁ-ゟ]*</rt>', 'g'), '$1</span>').replace(new RegExp('([⺀-⿕]*)</span><rt>([゠-ヿ]*)</rt>', 'g'), ' $1（$2）</span>'), 'application/xhtml+xml');
 
             if (i === 4) {
                 $(document.documentElement).attr("class", $(html.documentElement).attr("class"));
