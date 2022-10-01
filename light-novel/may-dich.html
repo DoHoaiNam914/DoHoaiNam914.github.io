@@ -27,9 +27,11 @@
       </div>
     </form>
     <form>
-      <div class="notranslate" style="bottom: 8px; position: fixed; right: 8px;">
+      <div class="notranslate" style="margin-bottom: 8px; text-align: initial; top: 8px;">
         <label for="glossary_file">Chọn tệp từ vựng CSV:</label>
-        <input id="glossary_file" type="file" accept=".csv">
+        <input id="glossary_file" type="file" accept="text/csv">
+      </div>
+      <div class="notranslate" style="bottom: 8px; position: fixed; right: 8px;">
         <select id="language_select">
           <option value="vi">Việt</option>
           <option value="en">Anh</option>
@@ -39,7 +41,7 @@
         </select>
         <select id="service_select">
           <option value="">Văn bản gốc</option>
-          <option value="google">Google Dịch</option>
+          <option value="bug">Google Dịch</option>
           <option value="microsoft">Trình dịch Microsoft</option>
         </select>
         <input id="edit_button" type="button" value="Xong">
@@ -96,10 +98,16 @@
           async: false,
           url: 'glossary.csv',
           method: 'GET'
-        }).done(function (response) {
-          glossary = $.csv.toArrays(response)
-        });
+        }).done((response) => glossary = $.csv.toArrays(response));
         $("ol.main").hide();
+      });
+
+      $("#glossary_file").on("input", function () {
+        let reader = new FileReader();
+        reader.readAsText(this.files[0]);
+        reader.onload = function () {
+          customGlossary = $.csv.toArrays(this.result);
+        };
       });
 
       $("ol.main").on("input", function () {
@@ -159,8 +167,8 @@
         if ($("#edit_button").val() === 'Chỉnh sửa') {
           let xhr = new XMLHttpRequest();
 
-          if (service === '' && (queryText == undefined || queryText === '' || queryText !== googleQueryText || queryText !== microsoftQueryText)) {
-            queryText = $("ol.main").html()
+          if (service === '' && (queryText == undefined || queryText === '' || doGlossary(queryText) !== googleQueryText || doGlossary(queryText) !== microsoftQueryText)) {
+            queryText = $("ol.main").html();
           }
 
           let sentences = queryText.replace(/<li><div class="main">/g, '').replace(/<\/div><\/li>/g, '').split('\n');
@@ -174,7 +182,7 @@
               }
             }
 
-            if ($("#language_select").val() === googleLang && googleTranslationText !== '' && googleQueryText === queryText) {
+            if ($("#language_select").val() === googleLang && googleTranslationText !== '' && googleQueryText === doGlossary(queryText)) {
               $("ol.main").html(googleTranslationText);
             } else {
               googleTranslationText = '';
@@ -190,8 +198,8 @@
                   }
                 };
 
-                if (sentences[i] !== '') {
-                  translateGoogle(xhr, $("#language_select").val(), doGlossary(sentences[i]));
+                if (sentences[i] !== '<br>') {
+                  translateGoogle(xhr, $("#language_select").val(), "q=".concat(encodeURIComponent(doGlossary(sentences[i]))));
                 } else {
                   googleTranslationText += '<li><div class="main"><br></div></li>' + (i + 1 < sentences.length ? '\n' : '');
                 }
@@ -199,7 +207,7 @@
 
               $("ol.main").html(googleTranslationText);
               googleLang = $("#language_select").val();
-              googleQueryText = queryText;
+              googleQueryText = doGlossary(queryText);
             }
           } else if (this.value === 'microsoft') {
             if (service === 'google') {
@@ -210,7 +218,7 @@
               }
             }
 
-            if ($("#language_select").val() === microsoftLang && microsoftTranslationText !== '' && microsoftQueryText === queryText) {
+            if ($("#language_select").val() === microsoftLang && microsoftTranslationText !== '' && microsoftQueryText === doGlossary(queryText)) {
               $("ol.main").html(microsoftTranslationText);
             } else {
               let accessToken = getMicrosoftTranslatorAccessToken();
@@ -233,12 +241,13 @@
                   }
                 };
 
-                if (sentences[i] !== '') {
-                  translateMicrosoft(xhr, accessToken, document.getElementById('language_select').value.replace('CN', 'CHS').replace('TW', 'CHT'), JSON.stringify([
-                  {
-                    "Text": doGlossary(sentences[i])
-                  }
-                ]));
+                if (sentences[i] !== '<br>') {
+                  translateMicrosoft(xhr, accessToken, document.getElementById('language_select').value.replace('CN', 'CHS').replace('TW', 'CHT'),
+                    JSON.stringify([
+                      {
+                        "Text": doGlossary(sentences[i])
+                      }
+                  ]));
                 } else {
                   microsoftTranslationText += '<li><div class="main"><br></div></li>' + (i + 1 < sentences.length ? '\n' : '');
                 }
@@ -246,7 +255,7 @@
 
               $("ol.main").html(microsoftTranslationText);
               microsoftLang = $("#language_select").val();
-              microsoftQueryText = queryText;
+              microsoftQueryText = doGlossary(queryText);
             }
           } else {
             if (service === 'google') {
@@ -271,25 +280,23 @@
       });
 
       function doGlossary(text) {
-        for (let i = 0; glossary.length > 0 && i < glossary.length; i++) {
-          text = text.replace(new RegExp(glossary[i][0], 'g'), glossary[i][1]);
+        var glossaryText = text;
+
+        for (let i = 0; glossary != undefined && i < glossary.length; i++) {
+          glossaryText = glossaryText.replace(new RegExp(glossary[i][0], 'g'), glossary[i][1]);
         }
 
-        if ($("#glossary_file").prop("files").length > 0) {
-          customGlossary = $.csv.toArrays($("#glossary_file").prop("files")[0]);
-
-          for (let i = 0; i < customGlossary.length; i++) {
-            text = text.replace(new RegExp(glossary[i][0], 'g'), customGlossary[i][1]);
-          }
+        for (let i = 0; customGlossary != undefined && i < customGlossary.length; i++) {
+          glossaryText = glossaryText.replace(new RegExp(customGlossary[i][0], 'g'), customGlossary[i][1]);
         }
 
-        return text;
+        return glossaryText;
       }
 
-      function translateGoogle(xhr, targetLang, queryText) {
+      function translateGoogle(xhr, targetLang, query) {
         xhr.open("POST", "https://translate.googleapis.com/translate_a/single?anno=3&client=gtx&format=html&sl=auto&tl=" + targetLang + "&tc=1&dom=1&sr=1&mode=1&dt=t", false);
         xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-        xhr.send("q=" + encodeURIComponent(queryText));
+        xhr.send(query);
       }
 
       function translateMicrosoft(xhr, accessToken, toLang, data) {
