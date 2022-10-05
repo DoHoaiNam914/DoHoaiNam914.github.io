@@ -167,7 +167,7 @@
         if ($("#edit_button").val() === 'Chỉnh sửa') {
           let xhr = new XMLHttpRequest();
 
-          if (service === '' && (queryText == undefined || queryText === '' || doGlossary(queryText) !== googleQueryText || doGlossary(queryText) !== microsoftQueryText)) {
+          if (service === '' && (queryText == undefined || queryText === '' || getGlossaryText(queryText) !== googleQueryText || getGlossaryText(queryText) !== microsoftQueryText)) {
             queryText = $("ol.main").html();
           }
 
@@ -182,7 +182,7 @@
               }
             }
 
-            if ($("#language_select").val() === googleLang && googleTranslationText !== '' && googleQueryText === doGlossary(queryText)) {
+            if ($("#language_select").val() === googleLang && googleTranslationText !== '' && googleQueryText === getGlossaryText(queryText)) {
               $("ol.main").html(googleTranslationText);
             } else {
               googleTranslationText = '';
@@ -199,7 +199,7 @@
                 };
 
                 if (sentences[i] !== '<br>') {
-                  translateGoogle(xhr, $("#language_select").val(), "q=".concat(encodeURIComponent(doGlossary(sentences[i]))));
+                  translateGoogle(xhr, $("#language_select").val(), "q=".concat(encodeURIComponent(getGlossaryText(sentences[i]))));
                 } else {
                   googleTranslationText += '<li><div class="main"><br></div></li>' + (i + 1 < sentences.length ? '\n' : '');
                 }
@@ -207,7 +207,7 @@
 
               $("ol.main").html(googleTranslationText);
               googleLang = $("#language_select").val();
-              googleQueryText = doGlossary(queryText);
+              googleQueryText = getGlossaryText(queryText);
             }
           } else if (this.value === 'microsoft') {
             if (service === 'google') {
@@ -218,7 +218,7 @@
               }
             }
 
-            if ($("#language_select").val() === microsoftLang && microsoftTranslationText !== '' && microsoftQueryText === doGlossary(queryText)) {
+            if ($("#language_select").val() === microsoftLang && microsoftTranslationText !== '' && microsoftQueryText === getGlossaryText(queryText)) {
               $("ol.main").html(microsoftTranslationText);
             } else {
               let accessToken = getMicrosoftTranslatorAccessToken();
@@ -245,7 +245,7 @@
                   translateMicrosoft(xhr, accessToken, document.getElementById('language_select').value.replace('CN', 'CHS').replace('TW', 'CHT'),
                     JSON.stringify([
                       {
-                        "Text": doGlossary(sentences[i])
+                        "Text": getGlossaryText(sentences[i])
                       }
                   ]));
                 } else {
@@ -255,7 +255,7 @@
 
               $("ol.main").html(microsoftTranslationText);
               microsoftLang = $("#language_select").val();
-              microsoftQueryText = doGlossary(queryText);
+              microsoftQueryText = getGlossaryText(queryText);
             }
           } else {
             if (service === 'google') {
@@ -279,11 +279,11 @@
           service = this.value;
       });
 
-      function doGlossary(text) {
-        var glossaryText = text;
+      function getGlossaryText(text) {
+        var glossaryText;
 
         for (let i = 0; glossary != undefined && i < glossary.length; i++) {
-          glossaryText = glossaryText.replace(new RegExp(glossary[i][0], 'g'), glossary[i][1]);
+          glossaryText = text.replace(new RegExp(glossary[i][0], 'g'), glossary[i][1]);
         }
 
         for (let i = 0; customGlossary != undefined && i < customGlossary.length; i++) {
