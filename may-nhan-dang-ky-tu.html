@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ja" class="hltr">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1, user-scalable=0, maximum-scale=1">
+    <title>Máy nhận dạng ký tự - DoHoaiNam Pages</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="js/js.cookie-1.5.1.js"></script>
+    <script src="https://unpkg.com/tesseract.js@3.0.3/dist/tesseract.min.js"></script>
+    <link rel="stylesheet" href="css/styles/dohoainam-ebpaj-style.css">
+    <style>
+      textarea {
+        resize: none;
+      }
+    </style>
+  </head>
+  <body>
+    <form>
+      <div class="notranslate" style="bottom: 8px; left: 8px; position: fixed;">
+        <select id="background_select">
+          <option value="white">Trắng</option>
+          <option value="black">Đen</option>
+          <option value="sepia">Sepia</option>
+          <option value="cream">Kem</option>
+        </select>
+      </div>
+    </form>
+    <form>
+      <div class="notranslate" style="margin-bottom: 8px; text-align: initial; top: 8px;">
+        <label for="image_file">Chọn tệp hình ảnh</label>
+        <input id="image_file" type="file" accept="image/*">
+      </div>
+      <div class="notranslate" style="bottom: 8px; position: fixed; right: 8px;">
+        <select id="language_select">
+          <option value="chi_sim">Tiếng Trung (Giản thể)</option>
+          <option value="chi_sim_vert">Tiếng Trung (Giản thể) - Dọc</option>
+          <option value="chi_tra">Tiếng Trung (Phổn thể)</option>
+          <option value="chi_tra_vert">Tiếng Trung (Phổn thể) - Dọc</option>
+          <option value="eng">Tiếng Anh</option>
+          <option value="jpn">Tiếng Nhật</option>
+          <option value="jpn_vert">Tiếng Nhật - Dọc</option>
+          <option value="vie">Tiếng Việt</option>
+        </select>
+        <input id="ocr_button" type="button" value="Nhận diện ký tự">
+      </div>
+    </form>
+    <section class="p-text">
+      <ol class="main"></ol>
+      <div style="text-align: center;"><textarea name="textarea" style="background: transparent; border: 0; border-style: none; color: inherit; font-family: inherit; font-size: inherit; height: 30vh; margin: 0; padding: 0; width: 100%;">Địa chỉ liên kết</textarea></div>
+    </section>
+    <script>
+      const { createWorker, OEM, PSM } = Tesseract;
+      const worker = createWorker({
+        langPath: 'lang-data',
+        logger: m => console.log(m),
+        errorHandler: function () {
+          $("#language_select").prop("disabled", false);
+          $("#ocr_button").prop("disabled", false);
+        }
+      });
+
+      $("#background_select").on("change", function () {
+        if (this.value !== 'white') {
+          $(document.documentElement).attr("style", $(document.documentElement).attr("style") != undefined ?
+            document.documentElement.getAttribute('style').replace(/ black;/g, '')
+              .replace(/black;/g, '')
+              .replace(/ sepia;/g, '')
+              .replace(/sepia;/g, '')
+              .replace(/ cream;/g, '')
+              .replace(/cream;/g, '')
+              .concat(' ' + this.value.concat(';')) :
+            this.value.concat(';'));
+          Cookies.set('background', this.value, { expires: 365 });
+        } else if ($(document.documentElement).attr("style") != undefined) {
+          $(document.documentElement).attr("style", document.documentElement.getAttribute('style').replace(/ black;/g, '')
+            .replace(/black;/g, '')
+            .replace(/ sepia;/g, '')
+            .replace(/sepia;/g, '')
+            .replace(/ cream;/g, '')
+            .replace(/cream;/g, ''));
+          Cookies.remove('background');
+        } else {
+          $(document.documentElement).removeAttr("style");
+        }
+      });
+
+      $(document).ready(function () {
+        $("#background_select").val($.cookie('background') || "white").change();
+        $("ol.main").hide();
+      });
+
+      $("#image_file").on("input", function () {
+        $("textarea").val("Địa chỉ liên kết");
+
+        if ($("#edit_button").val() === 'Xong') {
+          $("#ocr_button").click();
+        }
+      });
+
+      $("#language_select").on("change", function () {
+        if ($("#edit_button").val() === 'Xong') {
+          $("#ocr_button").click();
+        }
+      });
+
+      $("#ocr_button").on("click", function () {
+        if ($("#image_file").prop("files").length > 0 || $("textarea").val().length > 0) {
+          if (this.value === 'Xong' && $("textarea").css("display") === 'none') {
+            $("ol.main").attr("contentEditable", "true");
+            $("ol.main").hide();
+            $("textarea").show();
+            $("#ocr_button").val("Nhận diện ký tự");
+          } else {
+            if ($("#image_file").prop("files").length > 0) {
+              ocr($("#language_select").val(), $("#image_file").prop("files")[0]);
+            } else {
+              ocr($("#language_select").val(), $("textarea").val());
+            }
+          }
+        }
+      });
+
+      $("textarea").on("input", function () {
+        $("#image_file").val(null);
+
+        if ($("#edit_button").val() === 'Xong') {
+          $("#ocr_button").click();
+        }
+      });
+
+      async function ocr(lang, input) {
+        await worker.load();
+        await worker.loadLanguage(lang);
+        await worker.initialize(lang);
+        await worker.setParameters({
+          tessedit_pageseg_mode: PSM.AUTO,
+          tessedit_ocr_engine_mode: OEM.LSTM_ONLY
+        });
+
+        $("textarea").hide();
+        $("#language_select").prop("disabled", true);
+        $("#ocr_button").prop("disabled", true);
+        const { data: { text } } = await worker.recognize(input);
+        $("#language_select").prop("disabled", false);
+        $("#ocr_button").prop("disabled", false);
+        var sentences = text.split('\n');
+        $("ol.main").html(null);
+
+        for (let i = 0; i < sentences.length; i++) {
+          $("ol.main").append('<li><div class="main">' + (sentences[i] !== '' ? (lang === 'eng' || lang === 'vie' ? sentences[i] : sentences[i].replace(/ /g, '')) : '<br>') + '</div></li>' + (i + 1 < sentences.length ? '\n' : ''));
+        }
+
+        $("ol.main").css("padding-left", parseInt($(document.documentElement).css("font-size")) + 8 * $("ol.main").html().split('\n').length.toString().concat('.').length + "px");
+        $("ol.main").show();
+        $("div.main").css("display", "inline-block");
+        $("ol.main").attr("contentEditable", "true");
+        $("#ocr_button").val("Xong");
+      }
+    </script>
+  </body>
+</html>
