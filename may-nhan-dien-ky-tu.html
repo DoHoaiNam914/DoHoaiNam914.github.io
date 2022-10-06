@@ -68,7 +68,6 @@
     <script>
       const { createWorker, PSM, OEM } = Tesseract;
       const worker = createWorker({
-        langPath: 'lang-data',
         logger: m => console.log(m),
         errorHandler: function () {
           $("#language_select").prop("disabled", false);
