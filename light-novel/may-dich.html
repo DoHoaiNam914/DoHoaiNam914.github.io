@@ -41,7 +41,7 @@
         </select>
         <select id="service_select">
           <option value="">Văn bản gốc</option>
-          <option value="bug">Google Dịch</option>
+          <option value="google">Google Dịch</option>
           <option value="microsoft">Trình dịch Microsoft</option>
         </select>
         <input id="edit_button" type="button" value="Xong">
@@ -110,53 +110,6 @@
         };
       });
 
-      $("ol.main").on("input", function () {
-        $("ol.main").css("padding-left", parseInt($(document.documentElement).css("font-size")) + 8 * document.querySelector('ol.main').innerHTML.split('\n').length.toString().concat('.').length + "px");
-
-        if ($("ol.main").html() === '' || $("ol.main").html() === '<li><div class="main"></div></li>' || $("ol.main").html() === '<li><div class="main"><br></div></li>') {
-          $("#service_select").val("");
-          service = $("#service_select").val();
-          $("ol.main").html(null);
-          queryText = $("ol.main").html();
-          $("div.main").removeAttr("style");
-          $("ol.main").attr("contentEditable", "false");
-          $("ol.main").hide();
-          $("textarea").show();
-        }
-      });
-
-      $("#edit_button").on("click", function () {
-        if (this.value === 'Chỉnh sửa' && $("textarea").css("display") === 'none') {
-          if ($("ol.main").html() === '') {
-            $("ol.main").hide();
-            $("textarea").show();
-          } else {
-            $("div.main").css("display", "inline-block");
-            $("ol.main").attr("contentEditable", "true");
-          }
-
-          $("#edit_button").val("Xong");
-        } else {
-          if ($("textarea").css("display") === 'none') {
-            $("div.main").removeAttr("style");
-            $("ol.main").attr("contentEditable", "false");
-          } else {
-            var sentences = document.querySelector('textarea').value.split('\n');
-            $("ol.main").html(null);
-
-            for (let i = 0; i < sentences.length; i++) {
-              $("ol.main").append('<li><div class="main">' + (sentences[i] !== '' ? sentences[i] : '<br>') + '</div></li>' + (i + 1 < sentences.length ? '\n' : ''));
-            }
-
-            $("textarea").hide();
-            $("ol.main").css("padding-left", parseInt($(document.documentElement).css("font-size")) + 8 * document.querySelector('ol.main').innerHTML.split('\n').length.toString().concat('.').length + "px");
-            $("ol.main").show();
-          }
-
-          $("#edit_button").val("Chỉnh sửa");
-        }
-      });
-
       $("#language_select").on("change", function () {
         if ($("#service_select").val() !== '') {
           $("#service_select").change();
@@ -172,6 +125,7 @@
           }
 
           let sentences = queryText.replace(/<li><div class="main">/g, '').replace(/<\/div><\/li>/g, '').split('\n');
+          var sessionTranslate = [];
 
           if (this.value === 'google') {
             if (service === 'microsoft') {
@@ -186,22 +140,35 @@
               $("ol.main").html(googleTranslationText);
             } else {
               googleTranslationText = '';
+              var session = '';
 
               for (let i = 0; i < sentences.length; i++) {
-                xhr.onreadystatechange = function () {
-                  if (this.readyState === this.DONE) {
-                    googleTranslationText += '<li><div class="main">' + JSON.parse(this.responseText)[0][0][0] + '</div></li>' + (i + 1 < sentences.length ? '\n' : '');
-                  } else if (this.readyState === this.UNSENT) {
-                    googleTranslationText = '';
-                    $("ol.main").html(queryText);
-                    this.value = '';
-                  }
-                };
+                sessionTranslate.push(getGlossaryText(sentences[i]));
 
-                if (sentences[i] !== '<br>') {
-                  translateGoogle(xhr, $("#language_select").val(), "q=".concat(encodeURIComponent(getGlossaryText(sentences[i]))));
-                } else {
-                  googleTranslationText += '<li><div class="main"><br></div></li>' + (i + 1 < sentences.length ? '\n' : '');
+                if ((sentences.length > 50 && sessionTranslate.length === 50) || sessionTranslate.length === sentences.length) {
+                  for (let j = 0; j < sessionTranslate.length; j++) {
+                    session += "q=" + encodeURIComponent(sessionTranslate[j]) + (j + 1 < sessionTranslate.length ? '&' : '');
+                  }
+
+                  xhr.onreadystatechange = function () {
+                    if (this.readyState === this.DONE) {
+                      for (let j = 0; j < sessionTranslate.length; j++) {
+                        if (sessionTranslate[j] !== '<br>') {
+                          googleTranslationText += '<li><div class="main">' + JSON.parse(this.responseText)[0][j] + '</div></li>' + (i + 1 < sentences.length && sessionTranslate[j] === sentences[i] ? '\n' : '');
+                        } else {
+                          googleTranslationText += '<li><div class="main"><br></div></li>' + (i + 1 < sentences.length && sessionTranslate[j] === sentences[i] ? '\n' : '');
+                        }
+                      }
+                    } else if (this.readyState === this.UNSENT) {
+                      googleTranslationText = '';
+                      $("ol.main").html(queryText);
+                      this.value = '';
+                    }
+                  };
+
+                  translateGoogle(xhr, $("#language_select").val(), session);
+                  session = '';
+                  sessionTranslate = [];
                 }
               }
 
@@ -229,27 +196,37 @@
               }
 
               microsoftTranslationText = '';
+              var session = [];
 
               for (let i = 0; i < sentences.length; i++) {
-                xhr.onreadystatechange = function () {
-                  if (this.readyState === this.DONE) {
-                    microsoftTranslationText += '<li><div class="main">' + JSON.parse(this.responseText)[0].translations[0].text + '</div></li>' + (i + 1 < sentences.length ? '\n' : '');
-                  } else if (this.readyState === this.UNSENT) {
-                    microsoftTranslationText = '';
-                    $("ol.main").html(queryText);
-                    this.value = '';
-                  }
-                };
+                sessionTranslate.push(getGlossaryText(sentences[i]));
 
-                if (sentences[i] !== '<br>') {
-                  translateMicrosoft(xhr, accessToken, document.getElementById('language_select').value.replace('CN', 'CHS').replace('TW', 'CHT'),
-                    JSON.stringify([
-                      {
-                        "Text": getGlossaryText(sentences[i])
+                if ((sentences.length > 50 && sessionTranslate.length === 50) || sessionTranslate.length === sentences.length) {
+                  for (let j = 0; j < sessionTranslate.length; j++) {
+                    session.push({
+                      "Text":sessionTranslate[j]
+                    });
+                  }
+
+                  xhr.onreadystatechange = function () {
+                    if (this.readyState === this.DONE) {
+                      for (let j = 0; j < sessionTranslate.length; j++) {
+                        if (sessionTranslate[j] !== '<br>') {
+                          microsoftTranslationText += '<li><div class="main">' + JSON.parse(this.responseText)[j].translations[0].text + '</div></li>' + (i + 1 < sentences.length && sessionTranslate[j] === sentences[i] ? '\n' : '');
+                        } else {
+                          microsoftTranslationText += '<li><div class="main"><br></div></li>' + (i + 1 < sentences.length && sessionTranslate[j] === sentences[i] ? '\n' : '');
+                        }
                       }
-                  ]));
-                } else {
-                  microsoftTranslationText += '<li><div class="main"><br></div></li>' + (i + 1 < sentences.length ? '\n' : '');
+                    } else if (this.readyState === this.UNSENT) {
+                      microsoftTranslationText = '';
+                      $("ol.main").html(queryText);
+                      this.value = '';
+                    }
+                  };
+
+                  translateMicrosoft(xhr, accessToken, document.getElementById('language_select').value.replace('CN', 'CHS').replace('TW', 'CHT'), JSON.stringify(session));
+                  session = [];
+                  sessionTranslate = [];
                 }
               }
 
@@ -276,7 +253,54 @@
           this.value = '';
         }
 
-          service = this.value;
+        service = this.value;
+      });
+
+      $("#edit_button").on("click", function () {
+        if (this.value === 'Chỉnh sửa' && $("textarea").css("display") === 'none') {
+          if ($("ol.main").html() === '') {
+            $("ol.main").hide();
+            $("textarea").show();
+          } else {
+            $("div.main").css("display", "inline-block");
+            $("ol.main").attr("contentEditable", "true");
+          }
+
+          $("#edit_button").val("Xong");
+        } else {
+          if ($("textarea").css("display") === 'none') {
+            $("div.main").removeAttr("style");
+            $("ol.main").removeAttr("contentEditable");
+          } else {
+            var sentences = document.querySelector('textarea').value.split('\n');
+            $("ol.main").html(null);
+
+            for (let i = 0; i < sentences.length; i++) {
+              $("ol.main").append('<li><div class="main">' + (sentences[i] !== '' ? sentences[i] : '<br>') + '</div></li>' + (i + 1 < sentences.length ? '\n' : ''));
+            }
+
+            $("textarea").hide();
+            $("ol.main").css("padding-left", parseInt($(document.documentElement).css("font-size")) + 8 * document.querySelector('ol.main').innerHTML.split('\n').length.toString().concat('.').length + "px");
+            $("ol.main").show();
+          }
+
+          $("#edit_button").val("Chỉnh sửa");
+        }
+      });
+
+      $("ol.main").on("input", function () {
+        $("ol.main").css("padding-left", parseInt($(document.documentElement).css("font-size")) + 8 * document.querySelector('ol.main').innerHTML.split('\n').length.toString().concat('.').length + "px");
+
+        if ($("ol.main").html() === '' || $("ol.main").html() === '<li><div class="main"></div></li>' || $("ol.main").html() === '<li><div class="main"><br></div></li>') {
+          $("#service_select").val("");
+          service = $("#service_select").val();
+          $("ol.main").html(null);
+          queryText = $("ol.main").html();
+          $("div.main").removeAttr("style");
+          $("ol.main").attr("contentEditable", "false");
+          $("ol.main").hide();
+          $("textarea").show();
+        }
       });
 
       function getGlossaryText(text) {
@@ -294,7 +318,7 @@
       }
 
       function translateGoogle(xhr, targetLang, query) {
-        xhr.open("POST", "https://translate.googleapis.com/translate_a/single?anno=3&client=gtx&format=html&sl=auto&tl=" + targetLang + "&tc=1&dom=1&sr=1&mode=1&dt=t", false);
+        xhr.open("POST", "https://translate.googleapis.com/translate_a/t?anno=3&client=gtx&format=html&v=1.0&key&sl=auto&tl=" + targetLang + "&sr=1&mode=1", false);
         xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
         xhr.send(query);
       }

@@ -5,6 +5,7 @@ var book;
 var volume;
 
 $(document).ready(function () {
+  $(document.body).removeAttr("class");
   let searchParams = new URLSearchParams(window.location.search);
 
   book = window.location.href.toString().split('/')[4];
