@@ -7,12 +7,19 @@
     <title>Máy nhận dạng ký tự - DoHoaiNam Pages</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
     <script src="js/js.cookie-1.5.1.js"></script>
-    <script src="https://unpkg.com/tesseract.js@3.0.3/dist/tesseract.min.js"></script>
+    <script src="https://unpkg.com/tesseract.js/dist/tesseract.min.js"></script>
     <link rel="stylesheet" href="css/styles/dohoainam-ebpaj-style.css">
     <style>
       #page_segmentation_select,
       #language_select {
         width: 90px;
+      }
+
+      section.p-image {
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -webkit-user-drag: none;
+        user-select: none;
       }
     </style>
   </head>
@@ -33,7 +40,7 @@
         <input id="image_file" type="file" accept="image/*">
       </div>
       <div style="text-align: center;">
-        <input id="url" type="text" onclick="this.select()" value="Địa chỉ liên kết">
+        <input id="url" type="text" onclick="this.value = ''" value="Địa chỉ liên kết">
       </div>
       <div class="notranslate" style="bottom: 8px; position: fixed; right: 8px;">
         <select id="language_select">
@@ -63,7 +70,10 @@
       </div>
     </form>
     <section class="p-image">
-      <div class="main"></div>
+      <div class="main" style="padding: 0 40px;">
+        <div id="crop" style="border: thin dashed red; position: absolute;"></div>
+        <img id="preview">
+      </div>
     </section>
     <section class="p-text">
       <ol class="main"></ol>
@@ -71,7 +81,8 @@
     <script>
       const { createWorker, PSM, OEM } = Tesseract;
       const worker = createWorker({
-        langPath: 'https://raw.githubusercontent.com/tesseract-ocr/tessdata_best/main'
+        langPath: 'https://raw.githubusercontent.com/tesseract-ocr/tessdata_best/main',
+        gzip: false,
         errorHandler: function () {
           $("#page_segmentation_select").prop("disabled", false);
           $("#language_select").prop("disabled", false);
@@ -81,7 +92,20 @@
         }
       });
 
-      const imageReader = new FileReader();
+      var recognizeImage;
+
+      var cropLeft;
+      var cropTop;
+      var cropRight;
+      var cropBottom;
+
+      var isCroping;
+
+      $(document).ready(function () {
+        $("#background_select").val($.cookie('background') || "white").change();
+        $("ol.main").hide();
+        $("#crop").hide();
+      });
 
       $("#background_select").on("change", function () {
         if (this.value !== 'white') {
@@ -108,90 +132,109 @@
         }
       });
 
-      $(document).ready(function () {
-        $("#background_select").val($.cookie('background') || "white").change();
-        $("ol.main").hide();
-      });
-
       $("#image_file").on("input", function () {
         $("#url").val("Địa chỉ liên kết");
-        $("img").remove();
+        $("#preview").removeAttr("src");
+        $("#crop").hide();
 
-        imageReader.readAsDataURL(this.files[0]);
+        if (this.files.length > 0) {
+          let reader = new FileReader();
+
+          reader.onload = function () {
+            $("#preview").attr("src", this.result);
+            recognizeImage = $("#preview").attr("src");
+          };
+
+          reader.readAsDataURL(this.files[0]);
+
+          if ($("#ocr_button").val() === 'Xong') {
+            $("ol.main").removeAttr("contentEditable");
+            $("ol.main").hide();
+            $("#ocr_button").val("Nhận dạng ký tự");
+          }
+        }
+      });
+
+      $("#url").on("input", function () {
+        $("#image_file").val(null);
+        $("#preview").removeAttr("src");
+        $("#crop").hide();
+
+        if (this.value !== 'Địa chỉ liên kết' && $("#url").val().length > 0) {
+          $("#preview").attr("src", this.value);
+          recognizeImage = $("#preview").attr("src");
+        }
 
         if ($("#ocr_button").val() === 'Xong') {
-          if ($("#image_file").prop("files").length > 0) {
-            recognize($("#language_select").val(), $("#page_segmentation_select").val(), $("#image_file").prop("files")[0]);
-          } else {
-            recognize($("#language_select").val(), $("#page_segmentation_select").val(), $("#url").val());
-          }
+          $("ol.main").removeAttr("contentEditable");
+          $("ol.main").hide();
+          $("#ocr_button").val("Nhận dạng ký tự");
         }
       });
 
       $("#language_select").on("change", function () {
         if ($("#ocr_button").val() === 'Xong') {
-          if ($("#image_file").prop("files").length > 0) {
-            recognize($("#language_select").val(), $("#page_segmentation_select").val(), $("#image_file").prop("files")[0]);
-          } else {
-            recognize($("#language_select").val(), $("#page_segmentation_select").val(), $("#url").val());
-          }
+          recognize($("#language_select").val(), $("#page_segmentation_select").val(), recognizeImage);
         }
       });
 
       $("#page_segmentation_select").on("change", function () {
         if ($("#ocr_button").val() === 'Xong') {
-          if ($("#image_file").prop("files").length > 0) {
-            recognize($("#language_select").val(), $("#page_segmentation_select").val(), $("#image_file").prop("files")[0]);
-          } else {
-            recognize($("#language_select").val(), $("#page_segmentation_select").val(), $("#url").val());
-          }
+          recognize($("#language_select").val(), $("#page_segmentation_select").val(), recognizeImage);
         }
       });
 
       $("#ocr_button").click(function () {
         if ($("#image_file").prop("files").length > 0 || ($("#url").val() !== 'Địa chỉ liên kết' && $("#url").val().length > 0)) {
           if (this.value === 'Nhận dạng ký tự') {
-            $("#url").hide();
-
-            if ($("#image_file").prop("files").length > 0) {
-              recognize($("#language_select").val(), $("#page_segmentation_select").val(), $("#image_file").prop("files")[0]);
-            } else {
-              recognize($("#language_select").val(), $("#page_segmentation_select").val(), $("#url").val());
-            }
+            recognize($("#language_select").val(), $("#page_segmentation_select").val(), recognizeImage);
 
             $("ol.main").show();
           } else {
-            $("img").remove();
             $("ol.main").removeAttr("contentEditable");
             $("ol.main").hide();
-            $("#url").show();
             this.value = 'Nhận dạng ký tự';
           }
         }
       });
 
-      $("ol.main").on("input", function () {
-        $("ol.main").css("padding-left", parseInt($(document.documentElement).css("font-size")) + 8 * document.querySelector('ol.main').innerHTML.split('\n').length.toString().concat('.').length + "px");
+      $("#preview").on("mousedown", function(event) {
+        if (isHoverOnPreview(event) && $("#ocr_button").val() === 'Nhận dạng ký tự') {
+          cropImage('start', event);
+        }
       });
 
-      $("#url").on("input", function () {
-        $("#image_file").val(null);
-        $("img").remove();
-
-        if ($("#ocr_button").val() === 'Xong') {
-          $("#ocr_button").val("Nhận dạng ký tự");
+      $("#preview").on("touchstart", function(event) {
+        if (isHoverOnPreview(event) && $("#ocr_button").val() === 'Nhận dạng ký tự') {
+          cropImage('start', event);
         }
+      });
+
+      $("#preview").on("mousemove", function(event) {
+        if (isHoverOnPreview(event)) {
+          cropImage('move', event);
+        }
+      });
+
+      $("#preview").on("touchmove", function(event) {
+        if (isHoverOnPreview(event)) {
+          cropImage('move', event);
+        }
+      });
+
+      $("#preview").on("mouseup", function(event) {
+        cropImage('end', event);
+      });
+
+      $("#preview").on("touchend", function(event) {
+        cropImage('end', event);
+      });
+
+      $("ol.main").on("input", function () {
+        $("ol.main").css("padding-left", parseInt($(document.documentElement).css("font-size")) + 8 * $("ol.main").html().split('\n').length.toString().concat('.').length + "px");
       });
 
       async function recognize(lang, pageseg_mode, input) {
-        $("img").remove();
-
-        if ($("#image_file").prop("files").length > 0) {
-          $("div.main").append("<img src=\"" + imageReader.result + "\">");
-        } else {
-          $("div.main").append("<img src=\"" + $("#url").val() + "\">");
-        }
-
         $("#ocr_button").prop("disabled", true);
         $("#image_file").prop("disabled", true);
         $("#language_select").prop("disabled", true);
@@ -211,6 +254,7 @@
         $("#language_select").prop("disabled", false);
         $("#image_file").prop("disabled", false);
         $("#ocr_button").prop("disabled", false);
+        $("#ocr_button").val("Xong");
 
         var sentences = text.split('\n');
 
@@ -219,9 +263,86 @@
         }
 
         $("ol.main").css("padding-left", parseInt($(document.documentElement).css("font-size")) + 8 * $("ol.main").html().split('\n').length.toString().concat('.').length + "px");
-        $("#ocr_button").val("Xong");
         $("section.p-text div.main").css("display", "inline-block");
         $("ol.main").attr("contentEditable", "true");
+      }
+
+      function isHoverOnPreview(mouseEvent) {
+        return mouseEvent.pageX >= $("#preview").offset().left && mouseEvent.pageY >= $("#preview").offset().top && mouseEvent.pageX <= $("#preview").offset().left + $("#preview").width() && mouseEvent.pageY <= $("#preview").offset().top + $("#preview").height();
+      }
+
+      function cropImage(place, event) {
+        let imageOffsetLeft = $("#preview").offset().left;
+        let imageOffsetTop = $("#preview").offset().top;
+
+        switch (place) {
+          case 'start':
+            $(document.body).css("overflow", "hidden");
+            isCroping = true;
+            cropLeft = event.pageX - imageOffsetLeft;
+            cropTop = event.pageY - imageOffsetTop;
+            break;
+          case 'move':
+            if (isCroping) {
+              cropRight = event.pageX - imageOffsetLeft;
+              cropBottom = event.pageY - imageOffsetTop;
+
+              let cropX = cropRight > cropLeft ? cropLeft : cropRight;
+              let cropY = cropBottom > cropTop ? cropTop : cropBottom;
+              let cropWidth = cropRight > cropLeft ? cropRight - cropLeft : cropLeft - cropRight;
+              let cropHeight = cropBottom > cropTop ? cropBottom - cropTop : cropTop - cropBottom;
+
+              $("#crop").css({
+                left: (cropX + imageOffsetLeft) + 'px',
+                top: (cropY + imageOffsetTop) + 'px',
+                height: (cropHeight - parseInt($("#crop").css("border-width")) * 2) + 'px',
+                width: (cropWidth - parseInt($("#crop").css("border-width")) * 2) + 'px'
+              });
+
+              $("#crop").show();
+            }
+
+            break;
+          case 'end':
+            if ($("#ocr_button").val() !== 'Nhận dạng ký tự' || !isCroping || (cropRight > cropLeft ? cropRight - cropLeft : cropLeft - cropRight) < 12 || (cropBottom > cropTop ? cropBottom - cropTop : cropTop - cropBottom) < 12) {
+              $("#crop").hide();
+              cropLeft = $("#preview").offset().left;
+              cropTop = $("#preview").offset().top;
+              cropRight = $("#preview").offset().right;
+              cropBottom = $("#preview").offset().bottom;
+              $(document.body).removeAttr("style");
+              recognizeImage = $("#preview").attr("src");
+              break;
+            }
+
+            if (isCroping) {
+              let cropX = cropRight > cropLeft ? cropLeft : cropRight;
+              let cropY = cropBottom > cropTop ? cropTop : cropBottom;
+              let cropWidth = cropRight > cropLeft ? cropRight - cropLeft : cropLeft - cropRight;
+              let cropHeight = cropBottom > cropTop ? cropBottom - cropTop : cropTop - cropBottom;
+
+              let img = new Image();
+
+              img.crossOrigin = 'Anonymous';
+              img.onload = function () {
+                let canvas = document.createElement('canvas');
+                let ctx = canvas.getContext('2d');
+
+                let xOffset = this.width / $("#preview").width();
+                let yOffset = this.height / $("#preview").height();
+
+                ctx.drawImage(this, cropX * xOffset, cropY * yOffset, cropWidth * xOffset, cropHeight * yOffset, 0, 0, cropWidth * xOffset, cropHeight * yOffset);
+
+                recognizeImage = canvas.toDataURL();
+              };
+
+              img.src = $("#preview").attr("src");
+              isCroping = false;
+              $(document.body).removeAttr("style");
+            }
+
+            break;
+        }
       }
     </script>
   </body>
