@@ -44,7 +44,7 @@
           <option value="google">Google Dịch</option>
           <option value="microsoft">Trình dịch Microsoft</option>
           <option value="han-viet">Hán Việt</option>
-          <option value="vietphrase">Vietphrase</option>
+          <option value="vietphrase">VietPhrase</option>
         </select>
         <input id="edit_button" type="button" value="Xong">
       </div>
@@ -74,7 +74,6 @@
       var VietPhrase;
       var ChinesePhienAmWords;
       var ChinesePhienAmEnglishWords;
-      var Babylon;
       var Pronouns;
 
       var SourceVietPhrase;
@@ -291,11 +290,6 @@
               convertText = convertText.replace(new RegExp(ChinesePhienAmEnglishWords[i][0], 'g'), ChinesePhienAmEnglishWords[i][1]);
             }
 
-            for (let i = 0; this.value === 'vietphrase' && Babylon != undefined && i < Babylon.length; i++) {
-              SourceBabylon = Babylon[i];
-              convertText = convertText.replace(new RegExp(Babylon[i][0], 'g'), Babylon[i][1]);
-            }
-
             for (let i = 0; Pronouns != undefined && i < Pronouns.length; i++) {
               convertText = convertText.replace(new RegExp(Pronouns[i][0], 'g'), Pronouns[i][1]);
             }
@@ -461,14 +455,6 @@
             url: '../vietphrase/ChinesePhienAmEnglishWords.csv',
             method: 'GET'
           }).done((response) => ChinesePhienAmEnglishWords = $.csv.toArrays(response));
-        }
-
-        if (Babylon === undefined) {
-          $.ajax({
-            async: false,
-            url: '../vietphrase/Babylon.csv',
-            method: 'GET'
-          }).done((response) => Babylon = $.csv.toArrays(response));
         }
 
         if (Pronouns === undefined) {
