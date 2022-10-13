@@ -267,40 +267,40 @@
             }
 
             loadVietphrase();
-            var convertText = getGlossaryText(sentences);
 
-            for (let i = 0; this.value === 'vietphrase' && Names != undefined && i < Names.length; i++) {
-              convertText = convertText.replace(new RegExp(Names[i][0], 'g'), Names[i][1]);
-            }
+            for (let i = 0; i < sentences.length; i++) {
+              var convertText = getGlossaryText(sentences[i]);
 
-            for (let i = 0; this.value === 'vietphrase' && NamesPhu != undefined && i < NamesPhu.length; i++) {
-              convertText = convertText.replace(new RegExp(NamesPhu[i][0], 'g'), NamesPhu[i][1]);
-            }
+              for (let i = 0; this.value === 'vietphrase' && Names != undefined && i < Names.length; i++) {
+                convertText = convertText.replace(new RegExp(Names[i][0], 'g'), Names[i][1]);
+              }
 
-            for (let i = 0; this.value === 'vietphrase' && VietPhrase != undefined && i < VietPhrase.length; i++) {
-              SourceVietPhrase = VietPhrase[i];
-              convertText = convertText.replace(new RegExp(SourceVietPhrase, 'g'), VietPhrase[i][1]);
-            }
+              for (let i = 0; this.value === 'vietphrase' && NamesPhu != undefined && i < NamesPhu.length; i++) {
+                convertText = convertText.replace(new RegExp(NamesPhu[i][0], 'g'), NamesPhu[i][1]);
+              }
 
-            for (let i = 0; this.value === 'vietphrase' && ChinesePhienAmWords != undefined && i < ChinesePhienAmWords.length; i++) {
-              convertText = convertText.replace(new RegExp(ChinesePhienAmWords[i][0], 'g'), ChinesePhienAmWords[i][1]);
-            }
+              for (let i = 0; this.value === 'vietphrase' && VietPhrase != undefined && i < VietPhrase.length; i++) {
+                SourceVietPhrase = VietPhrase[i];
+                convertText = convertText.replace(new RegExp(SourceVietPhrase, 'g'), VietPhrase[i][1]);
+              }
 
-            for (let i = 0; this.value === 'vietphrase' && ChinesePhienAmEnglishWords != undefined && i < ChinesePhienAmEnglishWords.length; i++) {
-              convertText = convertText.replace(new RegExp(ChinesePhienAmEnglishWords[i][0], 'g'), ChinesePhienAmEnglishWords[i][1]);
-            }
+              for (let i = 0; ChinesePhienAmWords != undefined && i < ChinesePhienAmWords.length; i++) {
+                convertText = convertText.replace(new RegExp(ChinesePhienAmWords[i][0], 'g'), ChinesePhienAmWords[i][1]);
+              }
 
-            for (let i = 0; Pronouns != undefined && i < Pronouns.length; i++) {
-              convertText = convertText.replace(new RegExp(Pronouns[i][0], 'g'), Pronouns[i][1]);
-            }
+              for (let i = 0; this.value === 'vietphrase' && ChinesePhienAmEnglishWords != undefined && i < ChinesePhienAmEnglishWords.length; i++) {
+                convertText = convertText.replace(new RegExp(ChinesePhienAmEnglishWords[i][0], 'g'), ChinesePhienAmEnglishWords[i][1]);
+              }
 
-            $("ol.main").html(null);
+              for (let i = 0; this.value === 'vietphrase' && Pronouns != undefined && i < Pronouns.length; i++) {
+                convertText = convertText.replace(new RegExp(Pronouns[i][0], 'g'), Pronouns[i][1]);
+              }
 
-            for (let i = 0; i < convertText.length; i++) {
-              if (convertText[i] !== '<br>') {
-                $("ol.main").append("<li><div class=\"main\">" + convertText[i] + "</div></li>" + (i + 1 < sentences.length ? "\n" : ""));
+              $("ol.main").html(null);
+
+              if (convertText !== '<br>') {
+                $("ol.main").append("<li><div class=\"main\">" + convertText.trim([' ', '.', ':', ';', '?', '!', '"', '\'', ',', '\n', '\t']) + "</div></li>" + (i + 1 < sentences.length ? "\n" : ""));
               } else {
-                microsoftTranslationText += '<li><div class="main"><br></div></li>' + (i + 1 < sentences.length && counter === 0 ? '\n' : '');
                 $("ol.main").append("<li><div class=\"main\"><br></div></li>" + (i + 1 < sentences.length ? "\n" : ""));
               }
             }
