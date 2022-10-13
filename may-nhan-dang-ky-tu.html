@@ -389,7 +389,7 @@
 
         $("ol.main").css("padding-left", parseInt($(document.documentElement).css("font-size")) + 8 * $("ol.main").html().split('\n').length.toString().concat('.').length + "px");
         $("section.p-text div.main").css("display", "inline-block");
-        $("ol.main").attr("contentEditable", "true");
+        $("ol.main").attr("contentEditable", true);
       }
 
       function isHoverOnPreview(mouseEvent) {

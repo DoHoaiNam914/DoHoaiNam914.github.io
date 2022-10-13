@@ -43,7 +43,6 @@
           <option value="">Văn bản gốc</option>
           <option value="google">Google Dịch</option>
           <option value="microsoft">Trình dịch Microsoft</option>
-          <option value="han-viet">Hán Việt</option>
           <option value="vietphrase">VietPhrase</option>
         </select>
         <input id="edit_button" type="button" value="Xong">
@@ -68,6 +67,8 @@
 
       var googleTranslationText;
       var microsoftTranslationText;
+
+      var vietphraseLang;
 
       var Names;
       var NamesPhu;
@@ -129,6 +130,17 @@
 
       $("#service_select").change(function () {
         if ($("#edit_button").val() === 'Chỉnh sửa') {
+          if (this.value === 'vietphrase' && service !== this.value) {
+            $("#language_select").html(`<option value="vietphrase">VietPhrase<\/option>
+<option value="han-viet">Hán Việt<\/option>`);
+          } else if (this.value !== 'vietphrase' && service === 'vietphrase') {
+            $("#language_select").html(`<option value="vi">Việt<\/option>
+<option value="en">Anh<\/option>
+<option value="ja">Nhật<\/option>
+<option value="zh-CN">Trung (Giản thể)<\/option>
+<option value="zh-TW">Trung (Phổn thể)<\/option>`);
+          }
+
           let xhr = new XMLHttpRequest();
 
           if (service === '' && (queryText == undefined || queryText === '' || getGlossaryText(queryText) !== googleQueryText || getGlossaryText(queryText) !== microsoftQueryText)) {
@@ -250,67 +262,81 @@
               microsoftLang = $("#language_select").val();
               microsoftQueryText = getGlossaryText(queryText);
             }
-          } else if (this.value === 'han-viet' || this.value === 'vietphrase') {
+          } else if (this.value === 'vietphrase') {
             if (service === 'google') {
               googleTranslationText = $("ol.main").html();
 
-              if (microsoftLang != null) {
-                $("#language_select").val(microsoftLang);
+              if (vietphraseLang != null) {
+                $("#language_select").val(vietphraseLang);
               }
             } else if (service === 'microsoft') {
               microsoftTranslationText = $("ol.main").html();
 
-              if (googleLang != null) {
-                $("#language_select").val(googleLang);
+              if (vietphraseLang != null) {
+                $("#language_select").val(vietphraseLang);
               }
             }
 
             loadVietphrase();
+            $("ol.main").html(null);
 
             for (let i = 0; i < sentences.length; i++) {
               var convertText = sentences[i];
 
-              for (let i = 0; glossary != undefined && i < glossary.length; i++) {
-                convertText = convertText.replace(new RegExp(glossary[i][0], 'g'), glossary[i][1].concat(' '));
-              }
-
-              for (let i = 0; customGlossary != undefined && i < customGlossary.length; i++) {
-                convertText = convertText.replace(new RegExp(customGlossary[i][0], 'g'), customGlossary[i][1].concat(' '));
-              }
-
-              for (let i = 0; this.value === 'vietphrase' && Names != undefined && i < Names.length; i++) {
-                convertText = convertText.replace(new RegExp(Names[i][0], 'g'), Names[i][1].concat(' '));
-              }
-
-              for (let i = 0; this.value === 'vietphrase' && NamesPhu != undefined && i < NamesPhu.length; i++) {
-                convertText = convertText.replace(new RegExp(NamesPhu[i][0], 'g'), NamesPhu[i][1].concat(' '));
-              }
-
-              for (let i = 0; this.value === 'vietphrase' && VietPhrase != undefined && i < VietPhrase.length; i++) {
-                SourceVietPhrase = VietPhrase[i];
-                convertText = convertText.replace(new RegExp(SourceVietPhrase[0], 'g'), VietPhrase[1].concat(' '));
-              }
-
-              for (let i = 0; ChinesePhienAmWords != undefined && i < ChinesePhienAmWords.length; i++) {
-                convertText = convertText.replace(new RegExp(ChinesePhienAmWords[i][0], 'g'), ChinesePhienAmWords[i][1].concat(' '));
-              }
-
-              for (let i = 0; this.value === 'vietphrase' && ChinesePhienAmEnglishWords != undefined && i < ChinesePhienAmEnglishWords.length; i++) {
-                convertText = convertText.replace(new RegExp(ChinesePhienAmEnglishWords[i][0], 'g'), ChinesePhienAmEnglishWords[i][1].concat(' '));
-              }
-
-              for (let i = 0; this.value === 'vietphrase' && Pronouns != undefined && i < Pronouns.length; i++) {
-                convertText = convertText.replace(new RegExp(Pronouns[i][0], 'g'), Pronouns[i][1].concat(' '));
-              }
-
-              $("ol.main").html(null);
-
               if (sentences[i] !== '<br>') {
-                $("ol.main").append("<li><div class=\"main\">" + convertText.trimEnd() + "</div></li>" + (i + 1 < sentences.length ? "\n" : ""));
+                for (let j = 0; glossary != undefined && j < glossary.length; j++) {
+                  convertText = convertText.replace(new RegExp(glossary[j][0], 'g'), glossary[j][1].concat(' '));
+                }
+
+                for (let j = 0; $("#language_select").val() === 'vietphrase' && customGlossary != undefined && j < customGlossary.length; j++) {
+                  convertText = convertText.replace(new RegExp(customGlossary[j][0], 'g'), customGlossary[j][1].concat(' '));
+                }
+
+                for (let j = 0; $("#language_select").val() === 'vietphrase' && Names != undefined && j < Names.length; j++) {
+                  convertText = convertText.replace(new RegExp(Names[j][0], 'g'), Names[j][1].concat(' '));
+                }
+
+                for (let j = 0; $("#language_select").val() === 'vietphrase' && NamesPhu != undefined && j < NamesPhu.length; j++) {
+                  convertText = convertText.replace(new RegExp(NamesPhu[j][0], 'g'), NamesPhu[j][1].concat(' '));
+                }
+
+                for (let j = 0; $("#language_select").val() === 'vietphrase' && VietPhrase != undefined && j < VietPhrase.length; j++) {
+                  SourceVietPhrase = VietPhrase[j];
+                  convertText = convertText.replace(new RegExp(SourceVietPhrase[0], 'g'), SourceVietPhrase[1].concat(' '));
+                }
+
+                for (let j = 0; $("#language_select").val() === 'han-viet' && ChinesePhienAmWords != undefined && j < ChinesePhienAmWords.length; j++) {
+                  convertText = convertText.replace(new RegExp(ChinesePhienAmWords[j][0], 'g'), ChinesePhienAmWords[j][1].concat(' '));
+                }
+
+                for (let j = 0; $("#language_select").val() === 'han-viet' && ChinesePhienAmEnglishWords != undefined && j < ChinesePhienAmEnglishWords.length; j++) {
+                  convertText = convertText.replace(new RegExp(ChinesePhienAmEnglishWords[j][0], 'g'), ChinesePhienAmEnglishWords[j][1].concat(' '));
+                }
+
+                for (let j = 0; $("#language_select").val() === 'vietphrase' && Pronouns != undefined && j < Pronouns.length; j++) {
+                  convertText = convertText.replace(new RegExp(Pronouns[j][0], 'g'), Pronouns[j][1].concat(' '));
+                }
+
+                let replace = new Map([
+                  [' 。', '. '],
+                  [' ，', ', '],
+                  [' 、', ', '],
+                  [' ？', '? '],
+                  [' ！', '! '],
+                  [' ．', '. '],
+                  [' ・', ' '],
+                  [' 　', ' ']
+                ]);
+
+                replace.forEach((value, key) => convertText = convertText.trim().replace(new RegExp(key, 'g'), value));
+                convertText = convertText.replace(/(^|[.?!:“’(\[⟨] *)([a-z])/g, function (match, separator, char) { return separator + char.toUpperCase(); });
+                $("ol.main").append("<li><div class=\"main\">" + convertText.trim() + "</div></li>" + (i + 1 < sentences.length ? "\n" : ""));
               } else {
                 $("ol.main").append("<li><div class=\"main\"><br></div></li>" + (i + 1 < sentences.length ? "\n" : ""));
               }
             }
+
+            vietphraseLang = $("#language_select").val();
           } else {
             if (service === 'google') {
               googleTranslationText = $("ol.main").html();
@@ -320,20 +346,6 @@
 
             $("ol.main").html(queryText);
           }
-
-          if (service === 'google' || service === 'microsoft') {
-            $("#language_select").show();
-          } else if (service === 'vietphrase') {
-            $("#language_select").hide();
-          }
-        } else {
-          if (service === 'google') {
-            googleTranslationText = $("ol.main").html();
-          } else if (service === 'microsoft') {
-            microsoftTranslationText = $("ol.main").html();
-          }
-
-          this.value = '';
         }
 
         service = this.value;
@@ -346,14 +358,16 @@
             $("textarea").show();
           } else {
             $("div.main").css("display", "inline-block");
-            $("ol.main").attr("contentEditable", "true");
+            $("ol.main").attr("contentEditable", true);
+            $("#service_select").prop("disabled", true);
           }
 
-          $("#edit_button").val("Xong");
+          this.value = 'Xong';
         } else {
           if ($("textarea").css("display") === 'none') {
             $("div.main").removeAttr("style");
             $("ol.main").removeAttr("contentEditable");
+            $("#service_select").prop("disabled", false);
           } else {
             var sentences = document.querySelector('textarea').value.split('\n');
             $("ol.main").html(null);
@@ -367,7 +381,7 @@
             $("ol.main").show();
           }
 
-          $("#edit_button").val("Chỉnh sửa");
+          this.value = 'Chỉnh sửa';
         }
       });
 
@@ -376,11 +390,17 @@
 
         if ($("ol.main").html() === '' || $("ol.main").html() === '<li><div class="main"></div></li>' || $("ol.main").html() === '<li><div class="main"><br></div></li>') {
           $("#service_select").val("");
+          $("#language_select").html(`<option value="vi">Việt<\/option>
+<option value="en">Anh<\/option>
+<option value="ja">Nhật<\/option>
+<option value="zh-CN">Trung (Giản thể)<\/option>
+<option value="zh-TW">Trung (Phổn thể)<\/option>`);
           service = $("#service_select").val();
           $("ol.main").html(null);
           queryText = $("ol.main").html();
           $("div.main").removeAttr("style");
-          $("ol.main").attr("contentEditable", "false");
+          $("ol.main").attr("contentEditable", false);
+          $("#service_select").prop("disabled", false);
           $("ol.main").hide();
           $("textarea").show();
         }
