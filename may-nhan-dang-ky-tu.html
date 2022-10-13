@@ -90,6 +90,7 @@
         errorHandler: function () {
           $("#page_segmentation_select").prop("disabled", false);
           $("#language_select").prop("disabled", false);
+          $("#preproccess_select").prop("disabled", false);
           $("#image_file").prop("disabled", false);
           $("#ocr_button").prop("disabled", false);
           $("#ocr_button").val("Nhận dạng ký tự");
@@ -153,6 +154,7 @@
             previewImage.crossOrigin = 'Anonymous';
             previewImage.onload = function () {
               sessionImage = new Image();
+              sessionImage.crossOrigin = 'Anonymous';
               let canvas = document.createElement('canvas');
               canvas.width = this.width;
               canvas.height = this.height;
@@ -214,6 +216,7 @@
           previewImage.crossOrigin = 'Anonymous';
           previewImage.onload = function () {
             sessionImage = new Image();
+            sessionImage.crossOrigin = 'Anonymous';
             let canvas = document.createElement('canvas');
             canvas.width = this.width;
             canvas.height = this.height;
