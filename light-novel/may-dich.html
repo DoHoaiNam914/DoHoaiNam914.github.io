@@ -268,6 +268,8 @@
             loadVietphrase();
 
             for (let i = 0; i < sentences.length; i++) {
+              var convertText;
+
               for (let i = 0; glossary != undefined && i < glossary.length; i++) {
                 convertText = sentences[i].replace(new RegExp(glossary[i][0], 'g'), glossary[i][1].concat(''));
               }
@@ -303,8 +305,8 @@
 
               $("ol.main").html(null);
 
-              if (convertText !== '<br>') {
-                $("ol.main").append("<li><div class=\"main\">" + convertText.trimEnd(' ') + "</div></li>" + (i + 1 < sentences.length ? "\n" : ""));
+              if (sentences[i] !== '<br>') {
+                $("ol.main").append("<li><div class=\"main\">" + convertText.trimEnd() + "</div></li>" + (i + 1 < sentences.length ? "\n" : ""));
               } else {
                 $("ol.main").append("<li><div class=\"main\"><br></div></li>" + (i + 1 < sentences.length ? "\n" : ""));
               }
