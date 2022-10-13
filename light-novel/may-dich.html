@@ -43,6 +43,8 @@
           <option value="">Văn bản gốc</option>
           <option value="google">Google Dịch</option>
           <option value="microsoft">Trình dịch Microsoft</option>
+          <option value="han-viet">Hán Việt</option>
+          <option value="vietphrase">VietPhrase</option>
         </select>
         <input id="edit_button" type="button" value="Xong">
       </div>
@@ -66,6 +68,15 @@
 
       var googleTranslationText;
       var microsoftTranslationText;
+
+      var Names;
+      var NamesPhu;
+      var VietPhrase;
+      var ChinesePhienAmWords;
+      var ChinesePhienAmEnglishWords;
+      var Pronouns;
+
+      var SourceVietPhrase;
 
       $(document).ready(function () {
         $("#background_select").val($.cookie('background') || "white").change();
@@ -239,6 +250,65 @@
               microsoftLang = $("#language_select").val();
               microsoftQueryText = getGlossaryText(queryText);
             }
+          } else if (this.value === 'han-viet' || this.value === 'vietphrase') {
+            if (service === 'google') {
+              googleTranslationText = $("ol.main").html();
+
+              if (microsoftLang != null) {
+                $("#language_select").val(microsoftLang);
+              }
+            } else if (service === 'microsoft') {
+              microsoftTranslationText = $("ol.main").html();
+
+              if (googleLang != null) {
+                $("#language_select").val(googleLang);
+              }
+            }
+
+            loadVietphrase();
+
+            for (let i = 0; i < sentences.length; i++) {
+              for (let i = 0; glossary != undefined && i < glossary.length; i++) {
+                convertText = sentences[i].replace(new RegExp(glossary[i][0], 'g'), glossary[i][1].concat(''));
+              }
+
+              for (let i = 0; customGlossary != undefined && i < customGlossary.length; i++) {
+                convertText = convertText.replace(new RegExp(customGlossary[i][0], 'g'), customGlossary[i][1].concat(''));
+              }
+
+              for (let i = 0; this.value === 'vietphrase' && Names != undefined && i < Names.length; i++) {
+                convertText = convertText.replace(new RegExp(Names[i][0], 'g'), Names[i][1].concat(''));
+              }
+
+              for (let i = 0; this.value === 'vietphrase' && NamesPhu != undefined && i < NamesPhu.length; i++) {
+                convertText = convertText.replace(new RegExp(NamesPhu[i][0], 'g'), NamesPhu[i][1].concat(''));
+              }
+
+              for (let i = 0; this.value === 'vietphrase' && VietPhrase != undefined && i < VietPhrase.length; i++) {
+                SourceVietPhrase = VietPhrase[i];
+                convertText = convertText.replace(new RegExp(SourceVietPhrase[0], 'g'), VietPhrase[i][1].concat(''));
+              }
+
+              for (let i = 0; ChinesePhienAmWords != undefined && i < ChinesePhienAmWords.length; i++) {
+                convertText = convertText.replace(new RegExp(ChinesePhienAmWords[i][0], 'g'), ChinesePhienAmWords[i][1].concat(''));
+              }
+
+              for (let i = 0; this.value === 'vietphrase' && ChinesePhienAmEnglishWords != undefined && i < ChinesePhienAmEnglishWords.length; i++) {
+                convertText = convertText.replace(new RegExp(ChinesePhienAmEnglishWords[i][0], 'g'), ChinesePhienAmEnglishWords[i][1].concat(''));
+              }
+
+              for (let i = 0; this.value === 'vietphrase' && Pronouns != undefined && i < Pronouns.length; i++) {
+                convertText = convertText.replace(new RegExp(Pronouns[i][0], 'g'), Pronouns[i][1].concat(''));
+              }
+
+              $("ol.main").html(null);
+
+              if (convertText !== '<br>') {
+                $("ol.main").append("<li><div class=\"main\">" + convertText.trimEnd(' ') + "</div></li>" + (i + 1 < sentences.length ? "\n" : ""));
+              } else {
+                $("ol.main").append("<li><div class=\"main\"><br></div></li>" + (i + 1 < sentences.length ? "\n" : ""));
+              }
+            }
           } else {
             if (service === 'google') {
               googleTranslationText = $("ol.main").html();
@@ -247,6 +317,12 @@
             }
 
             $("ol.main").html(queryText);
+          }
+
+          if (service === 'google' || service === 'microsoft') {
+            $("#language_select").show();
+          } else if (service === 'vietphrase') {
+            $("#language_select").hide();
           }
         } else {
           if (service === 'google') {
@@ -343,6 +419,56 @@
           method: 'GET'
         }).done(response => accessToken = response);
         return accessToken;
+      }
+
+      function loadVietphrase() {
+        if (Names === undefined) {
+          $.ajax({
+            async: false,
+            url: '../vietphrase/Names.csv',
+            method: 'GET'
+          }).done((response) => Names = $.csv.toArrays(response));
+        }
+
+        if (NamesPhu === undefined) {
+          $.ajax({
+            async: false,
+            url: '../vietphrase/Names2.csv',
+            method: 'GET'
+          }).done((response) => NamesPhu = $.csv.toArrays(response));
+        }
+
+        if (VietPhrase === undefined) {
+          $.ajax({
+            async: false,
+            url: '../vietphrase/VietPhrase.csv',
+            method: 'GET'
+          }).done((response) => VietPhrase = $.csv.toArrays(response));
+        }
+
+        if (ChinesePhienAmWords === undefined) {
+          $.ajax({
+            async: false,
+            url: '../vietphrase/ChinesePhienAmWords.csv',
+            method: 'GET'
+          }).done((response) => ChinesePhienAmWords = $.csv.toArrays(response));
+        }
+
+        if (ChinesePhienAmEnglishWords === undefined) {
+          $.ajax({
+            async: false,
+            url: '../vietphrase/ChinesePhienAmEnglishWords.csv',
+            method: 'GET'
+          }).done((response) => ChinesePhienAmEnglishWords = $.csv.toArrays(response));
+        }
+
+        if (Pronouns === undefined) {
+          $.ajax({
+            async: false,
+            url: '../vietphrase/Pronouns.csv',
+            method: 'GET'
+          }).done((response) => Pronouns = $.csv.toArrays(response));
+        }
       }
     </script>
   </body>
