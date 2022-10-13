@@ -268,10 +268,10 @@
             loadVietphrase();
 
             for (let i = 0; i < sentences.length; i++) {
-              var convertText;
+              var convertText = sentences[i];
 
               for (let i = 0; glossary != undefined && i < glossary.length; i++) {
-                convertText = sentences[i].replace(new RegExp(glossary[i][0], 'g'), glossary[i][1].concat(''));
+                convertText = convertText.replace(new RegExp(glossary[i][0], 'g'), glossary[i][1].concat(''));
               }
 
               for (let i = 0; customGlossary != undefined && i < customGlossary.length; i++) {
