@@ -85,8 +85,7 @@
     <script>
       const { createWorker, PSM, OEM } = Tesseract;
       const worker = createWorker({
-        langPath: 'https://raw.githubusercontent.com/tesseract-ocr/tessdata_best/main',
-        gzip: false,
+        langPath: 'https://tessdata.projectnaptha.com/4.0.0_best',
         errorHandler: function () {
           $("#page_segmentation_select").prop("disabled", false);
           $("#language_select").prop("disabled", false);
@@ -102,6 +101,9 @@
       var recognizeImage;
 
       var isCroping;
+
+      var imageOffsetLeft;
+      var imageOffsetTop;
 
       var cropLeft;
       var cropTop;
@@ -267,10 +269,33 @@
         }
       });
 
-      $("#preview").on("drag", function(event) {
-        if (isHoverOnPreview(event)) {
-          event.preventDefault();
-        }
+      $("#preview").on("resize", function(event) {
+        cropBottom += imageOffsetTop;
+        cropRight += imageOffsetLeft;
+        cropTop += imageOffsetTop;
+        cropLeft += imageOffsetLeft;
+
+        let xOffset = imageOffsetLeft / $("#preview").offset().left;
+        let yOffset = imageOffsetTop / $("#preview").offset().top;
+        imageOffsetLeft = $("#preview").offset().left;
+        imageOffsetTop = $("#preview").offset().top;
+
+        cropLeft = (cropLeft * xOffset) - imageOffsetLeft;
+        cropTop = (cropTop * yOffset) - imageOffsetLeft;
+        cropRight = (cropRight * xOffset) - imageOffsetLeft;
+        cropBottom = (cropBottom * yOffset) - imageOffsetLeft;
+
+        let cropX = cropRight > cropLeft ? cropLeft : cropRight;
+        let cropY = cropBottom > cropTop ? cropTop : cropBottom;
+        let cropWidth = cropRight > cropLeft ? cropRight - cropLeft : cropLeft - cropRight;
+        let cropHeight = cropBottom > cropTop ? cropBottom - cropTop : cropTop - cropBottom;
+
+        $("#crop").css({
+          left: (cropX + imageOffsetLeft) + 'px',
+          top: (cropY + imageOffsetTop) + 'px',
+          height: (cropHeight - parseInt($("#crop").css("border-width")) * 2) + 'px',
+          width: (cropWidth - parseInt($("#crop").css("border-width")) * 2) + 'px'
+        });
       });
 
       $("#preview").on("mousedown", function(event) {
@@ -286,7 +311,7 @@
         }
       });
 
-      $("#preview").on("mousemove", function(event) {
+      $("#preview").on("drag", function(event) {
         if (isHoverOnPreview(event)) {
           cropImage('move', event);
         }
@@ -397,8 +422,8 @@
       }
 
       function cropImage(place, event) {
-        let imageOffsetLeft = $("#preview").offset().left;
-        let imageOffsetTop = $("#preview").offset().top;
+        imageOffsetLeft = $("#preview").offset().left;
+        imageOffsetTop = $("#preview").offset().top;
 
         switch (place) {
           case 'start':

@@ -31,11 +31,11 @@
         <label for="glossary_file">Chọn tệp từ vựng CSV:</label>
         <input id="glossary_file" type="file" accept="text/csv">
         <label for="vietphrase_file">Chọn tệp VietPhrase CSV:</label>
-        <input id="vietphrase_file" type="file" accept="text/csv">
+        <input id="vietphrase_file" type="file" accept="text/plain">
       </div>
       <div class="notranslate" style="margin-bottom: 8px; right: 0; text-align: initial; top: 8px;">
-        <label for="name_file">Chọn tệp Name CSV:</label>
-        <input id="name_file" type="file" accept="text/csv">
+        <label for="name_file">Chọn tệp Names:</label>
+        <input id="name_file" type="file" accept="text/plain">
       </div>
       <div class="notranslate" style="bottom: 8px; position: fixed; right: 8px;">
         <select id="language_select">
@@ -83,7 +83,7 @@
       var ChinesePhienAmEnglishWords;
       var Pronouns;
 
-      var CustomName;
+      var CustomNames;
       var CustomVietPhrase;
 
       $(document).ready(function () {
@@ -94,6 +94,10 @@
           url: 'glossary.csv',
           method: 'GET'
         }).done((response) => glossary = $.csv.toArrays(response));
+        $("#vietphrase_file").hide();
+        $("label[for=\"vietphrase_file\"]").hide();
+        $("#name_file").hide();
+        $("label[for=\"name_file\"]").hide();
         $("ol.main").hide();
       });
 
@@ -134,7 +138,7 @@
         let reader = new FileReader();
         reader.readAsText(this.files[0]);
         reader.onload = function () {
-          CustomVietPhrase = $.csv.toArrays(this.result);
+          CustomVietPhrase = this.result.split(/\r?\n/);
         };
       });
 
@@ -142,7 +146,7 @@
         let reader = new FileReader();
         reader.readAsText(this.files[0]);
         reader.onload = function () {
-          CustomName = $.csv.toArrays(this.result);
+          CustomNames = this.result.split(/\r?\n/);
         };
       });
 
@@ -155,14 +159,22 @@
       $("#service_select").change(function () {
         if (this.value === 'vietphrase' && service !== this.value) {
           $("#glossary_file").hide();
+          $("label[for=\"glossary_file\"]").hide();
           $("#vietphrase_file").show();
+          $("label[for=\"vietphrase_file\"]").show();
           $("#name_file").show();
+          $("label[for=\"name_file\"]").show();
+
           $("#language_select").html(`<option value="vietphrase">VietPhrase<\/option>
 <option value="han-viet">Hán Việt<\/option>`);
         } else if (this.value !== 'vietphrase' && service === 'vietphrase') {
           $("#vietphrase_file").hide();
+          $("label[for=\"vietphrase_file\"]").hide();
           $("#name_file").hide();
+          $("label[for=\"name_file\"]").hide();
           $("#glossary_file").show();
+          $("label[for=\"glossary_file\"]").show();
+
           $("#language_select").html(`<option value="vi">Việt<\/option>
 <option value="en">Anh<\/option>
 <option value="ja">Nhật<\/option>
@@ -319,16 +331,12 @@
                   convertText = convertText.replace(new RegExp(glossary[j][0], 'g'), glossary[j][1].concat(' '));
                 }
 
-                for (let j = 0; CustomName != undefined && j < CustomName.length; j++) {
-                  convertText = convertText.replace(new RegExp(CustomName[j][0], 'g'), CustomName[j][1].concat(' '));
+                for (let j = 0; CustomNames != undefined && j < CustomNames.length; j++) {
+                  convertText = convertText.replace(new RegExp(CustomNames[j][0], 'g'), CustomNames[j][1].concat(' '));
                 }
 
                 for (let j = 0; $("#language_select").val() === 'vietphrase' && Names != undefined && j < Names.length; j++) {
                   convertText = convertText.replace(new RegExp(Names[j][0], 'g'), Names[j][1].concat(' '));
-                }
-
-                for (let j = 0; $("#language_select").val() === 'vietphrase' && NamesPhu != undefined && j < NamesPhu.length; j++) {
-                  convertText = convertText.replace(new RegExp(NamesPhu[j][0], 'g'), NamesPhu[j][1].concat(' '));
                 }
 
                 for (let j = 0; $("#language_select").val() === 'vietphrase' && CustomVietPhrase != undefined && j < CustomVietPhrase.length; j++) {
@@ -337,10 +345,6 @@
 
                 for (let j = 0; $("#language_select").val() === 'vietphrase' && VietPhrase != undefined && j < VietPhrase.length; j++) {
                   convertText = convertText.replace(new RegExp(VietPhrase[j][0], 'g'), VietPhrase[j][1].concat(' '));
-                }
-
-                for (let j = 0; $("#language_select").val() === 'vietphrase' && Pronouns != undefined && j < Pronouns.length; j++) {
-                  convertText = convertText.replace(new RegExp(Pronouns[j][0], 'g'), Pronouns[j][1].concat(' '));
                 }
 
                 for (let j = 0; ChinesePhienAmWords != undefined && j < ChinesePhienAmWords.length; j++) {
@@ -481,49 +485,33 @@
         if (Names === undefined) {
           $.ajax({
             async: false,
-            url: '../vietphrase/Names.csv',
+            url: '../vietphrase/Names.txt',
             method: 'GET'
-          }).done((response) => Names = $.csv.toArrays(response));
-        }
-
-        if (NamesPhu === undefined) {
-          $.ajax({
-            async: false,
-            url: '../vietphrase/Names2.csv',
-            method: 'GET'
-          }).done((response) => NamesPhu = $.csv.toArrays(response));
+          }).done((response) => Names = response.split(/\r?\n/));
         }
 
         if (VietPhrase === undefined) {
           $.ajax({
             async: false,
-            url: '../vietphrase/VietPhrase.csv',
+            url: '../vietphrase/VietPhrase.txt',
             method: 'GET'
-          }).done((response) => VietPhrase = $.csv.toArrays(response));
+          }).done((response) => VietPhrase = response.split(/\r?\n/));
         }
 
         if (ChinesePhienAmWords === undefined) {
           $.ajax({
             async: false,
-            url: '../vietphrase/ChinesePhienAmWords.csv',
+            url: '../vietphrase/ChinesePhienAmWords.txt',
             method: 'GET'
-          }).done((response) => ChinesePhienAmWords = $.csv.toArrays(response));
+          }).done((response) => ChinesePhienAmWords = response.split(/\r?\n/));
         }
 
         if (ChinesePhienAmEnglishWords === undefined) {
           $.ajax({
             async: false,
-            url: '../vietphrase/ChinesePhienAmEnglishWords.csv',
+            url: '../vietphrase/ChinesePhienAmEnglishWords.txt',
             method: 'GET'
-          }).done((response) => ChinesePhienAmEnglishWords = $.csv.toArrays(response));
-        }
-
-        if (Pronouns === undefined) {
-          $.ajax({
-            async: false,
-            url: '../vietphrase/Pronouns.csv',
-            method: 'GET'
-          }).done((response) => Pronouns = $.csv.toArrays(response));
+          }).done((response) => ChinesePhienAmEnglishWords = response.split(/\r?\n/));
         }
       }
     </script>
