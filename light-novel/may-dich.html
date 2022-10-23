@@ -49,7 +49,7 @@
           <option value="">Văn bản gốc</option>
           <option value="google">Google Dịch</option>
           <option value="microsoft">Trình dịch Microsoft</option>
-          <option value="vietphrase">VietPhrase</option>
+          <option value="bug">VietPhrase</option>
         </select>
         <input id="edit_button" type="button" value="Xong">
       </div>
@@ -323,57 +323,82 @@
             loadVietphrase();
             $("ol.main").html(null);
 
-            for (let i = 0; i < sentences.length; i++) {
-              var convertText = sentences[i];
+            var convertText = queryText;
 
-              if (sentences[i] !== '<br>') {
-                for (let j = 0; glossary != undefined && j < glossary.length; j++) {
-                  convertText = convertText.replace(new RegExp(glossary[j][0], 'g'), glossary[j][1].concat(' '));
-                }
+            for (let i = 0; $("#language_select").val() === 'vietphrase' && CustomNames != undefined && i < CustomNames.length; i++) {
+              let Name = CustomNames[i].split('=');
 
-                for (let j = 0; CustomNames != undefined && j < CustomNames.length; j++) {
-                  convertText = convertText.replace(new RegExp(CustomNames[j][0], 'g'), CustomNames[j][1].concat(' '));
-                }
-
-                for (let j = 0; $("#language_select").val() === 'vietphrase' && Names != undefined && j < Names.length; j++) {
-                  convertText = convertText.replace(new RegExp(Names[j][0], 'g'), Names[j][1].concat(' '));
-                }
-
-                for (let j = 0; $("#language_select").val() === 'vietphrase' && CustomVietPhrase != undefined && j < CustomVietPhrase.length; j++) {
-                  convertText = convertText.replace(new RegExp(CustomVietPhrase[j][0], 'g'), CustomVietPhrase[j][1].concat(' '));
-                }
-
-                for (let j = 0; $("#language_select").val() === 'vietphrase' && VietPhrase != undefined && j < VietPhrase.length; j++) {
-                  convertText = convertText.replace(new RegExp(VietPhrase[j][0], 'g'), VietPhrase[j][1].concat(' '));
-                }
-
-                for (let j = 0; ChinesePhienAmWords != undefined && j < ChinesePhienAmWords.length; j++) {
-                  convertText = convertText.replace(new RegExp(ChinesePhienAmWords[j][0], 'g'), ChinesePhienAmWords[j][1].concat(' '));
-                }
-
-                for (let j = 0; ChinesePhienAmEnglishWords != undefined && j < ChinesePhienAmEnglishWords.length; j++) {
-                  convertText = convertText.replace(new RegExp(ChinesePhienAmEnglishWords[j][0], 'g'), ChinesePhienAmEnglishWords[j][1].concat(' '));
-                }
-
-                let replace = new Map([
-                  [' 。', '. '],
-                  [' ，', ', '],
-                  [' 、', ', '],
-                  [' ？', '? '],
-                  [' ！', '! '],
-                  [' ．', '. '],
-                  [' ・', ' '],
-                  [' 　', ' ']
-                ]);
-
-                replace.forEach((value, key) => convertText = convertText.trim().replace(new RegExp(key, 'g'), value));
-                convertText = convertText.replace(/(^|[.?!:“’(\[⟨] *)([a-z])/g, function (match, separator, char) { return separator + char.toUpperCase(); });
-                $("ol.main").append("<li><div class=\"main\">" + convertText.trim() + "</div></li>" + (i + 1 < sentences.length ? "\n" : ""));
-              } else {
-                $("ol.main").append("<li><div class=\"main\"><br></div></li>" + (i + 1 < sentences.length ? "\n" : ""));
+              if (Name.length < 2 || Name[0].length < 1) {
+                continue;
               }
+
+              convertText = convertText.replace(new RegExp(Name[0].replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&'), 'g'), Name[1].split('/')[0].concat(' '));
             }
 
+            for (let i = 0; $("#language_select").val() === 'vietphrase' && Names != undefined && i < Names.length; i++) {
+              let Name = Names[i].split('=');
+
+              if (Name.length < 2 || Name[0].length < 1) {
+                continue;
+              }
+
+              convertText = convertText.replace(new RegExp(Name[0].replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&'), 'g'), Name[1].split('/')[0].concat(' '));
+            }
+
+            for (let i = 0; $("#language_select").val() === 'vietphrase' && CustomVietPhrase != undefined && i < CustomVietPhrase.length; i++) {
+              let VietPhrase = CustomVietPhrase[i].split('=');
+
+              if (VietPhrase.length < 2 || VietPhrase[0].length < 1) {
+                continue;
+              }
+
+              convertText = convertText.replace(new RegExp(VietPhrase[0].replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&'), 'g'), VietPhrase[1].split('/')[0].concat(' '));
+            }
+
+            for (let i = 0; $("#language_select").val() === 'vietphrase' && VietPhrase != undefined && i < VietPhrase.length; i++) {
+              let VP = VietPhrase[i].split('=');
+
+              if (VP.length < 2 || VP[0].length < 1) {
+                continue;
+              }
+
+              convertText = convertText.replace(new RegExp(VP[0].replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&'), 'g'), VP[1].split('/')[0].concat(' '));
+            }
+
+            for (let i = 0; ChinesePhienAmWords != undefined && i < ChinesePhienAmWords.length; i++) {
+              let ChinesePhienAmWord = ChinesePhienAmWords[i].split('=');
+
+              if (ChinesePhienAmWord.length < 2 || ChinesePhienAmWord[0].length < 1) {
+                continue;
+              }
+
+              convertText = convertText.replace(new RegExp(ChinesePhienAmWord[0].replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&'), 'g'), ChinesePhienAmWord[1].split('/')[0].concat(' '));
+            }
+
+            for (let i = 0; ChinesePhienAmEnglishWords != undefined && i < ChinesePhienAmEnglishWords.length; i++) {
+              let ChinesePhienAmEnglishWord = ChinesePhienAmEnglishWords[i].split('=');
+
+              if (ChinesePhienAmEnglishWord.length < 2 || ChinesePhienAmEnglishWord[0].length < 1) {
+                continue;
+              }
+
+              convertText = convertText.replace(new RegExp(ChinesePhienAmEnglishWord[0].replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&'), 'g'), ChinesePhienAmEnglishWord[1].split('/')[0].concat(' '));
+            }
+
+            let replace = new Map([
+              [' 。', '. '],
+              [' ，', ', '],
+              [' 、', ', '],
+              [' ？', '? '],
+              [' ！', '! '],
+              [' ．', '. '],
+              [' ・', ' '],
+              [' 　', ' ']
+            ]);
+
+            replace.forEach((value, key) => convertText = convertText.trim().replace(new RegExp(key, 'g'), value));
+            convertText = convertText.replace(/(^|[.?!:“’(\[⟨] *)([a-z])/g, function (match, separator, char) { return separator + char.toUpperCase(); });
+            $("ol.main").append(convertText.trim());
             vietphraseLang = $("#language_select").val();
           } else {
             if (service === 'google') {
@@ -448,11 +473,11 @@
         var glossaryText;
 
         for (let i = 0; glossary != undefined && i < glossary.length; i++) {
-          glossaryText = text.replace(new RegExp(glossary[i][0], 'g'), glossary[i][1]);
+          glossaryText = text.replace(new RegExp(glossary[i][0].replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&'), 'g'), glossary[i][1]);
         }
 
         for (let i = 0; customGlossary != undefined && i < customGlossary.length; i++) {
-          glossaryText = glossaryText.replace(new RegExp(customGlossary[i][0], 'g'), customGlossary[i][1]);
+          glossaryText = glossaryText.replace(new RegExp(customGlossary[i][0].replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&'), 'g'), customGlossary[i][1]);
         }
 
         return glossaryText;

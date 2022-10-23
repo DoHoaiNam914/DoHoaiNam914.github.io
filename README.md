@@ -4,6 +4,8 @@ This site was built using [GitHub Pages](https://pages.github.com/).
 
 - [Máy dịch Light Novel](https://dohoainam914.github.io/light-novel/may-dich.html)
 
+- [Máy nhận dạng ký tự](https://dohoainam914.github.io/may-nhan-dang-ky-tu.html)
+
 ## [Light Novel](https://dohoainam914.github.io/light-novel/)
 
 - [Demon's Sword Master of Excalibur School](https://dohoainam914.github.io/light-novel/seikengakuin/)

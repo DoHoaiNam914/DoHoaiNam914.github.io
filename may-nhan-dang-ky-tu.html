@@ -269,7 +269,7 @@
         }
       });
 
-      $("#preview").on("resize", function(event) {
+      $(window).on("resize", function(event) {
         cropBottom += imageOffsetTop;
         cropRight += imageOffsetLeft;
         cropTop += imageOffsetTop;
@@ -451,8 +451,6 @@
               $("#crop").show();
             }
 
-            break;
-          case 'end':
             if ($("#ocr_button").val() !== 'Nhận dạng ký tự' || (cropRight > cropLeft ? cropRight - cropLeft : cropLeft - cropRight) < 12 || (cropBottom > cropTop ? cropBottom - cropTop : cropTop - cropBottom) < 12) {
               if ($("#ocr_button").val() === 'Nhận dạng ký tự') {
                 $("#crop").hide();
@@ -461,12 +459,15 @@
                 cropRight = $("#preview").width();
                 cropBottom = $("#preview").height();
                 recognizeImage.src = sessionImage.src;
+                isCroping = false;
               }
 
               $(document.body).removeAttr("style");
               break;
             }
 
+            break;
+          case 'end':
             if (isCroping) {
               let cropX = cropRight > cropLeft ? cropLeft : cropRight;
               let cropY = cropBottom > cropTop ? cropTop : cropBottom;
