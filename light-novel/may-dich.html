@@ -30,6 +30,12 @@
       <div class="notranslate" style="margin-bottom: 8px; text-align: initial; top: 8px;">
         <label for="glossary_file">Chọn tệp từ vựng CSV:</label>
         <input id="glossary_file" type="file" accept="text/csv">
+        <label for="vietphrase_file">Chọn tệp VietPhrase CSV:</label>
+        <input id="vietphrase_file" type="file" accept="text/csv">
+      </div>
+      <div class="notranslate" style="margin-bottom: 8px; right: 0; text-align: initial; top: 8px;">
+        <label for="name_file">Chọn tệp Name CSV:</label>
+        <input id="name_file" type="file" accept="text/csv">
       </div>
       <div class="notranslate" style="bottom: 8px; position: fixed; right: 8px;">
         <select id="language_select">
@@ -57,7 +63,7 @@
       var glossary;
       var customGlossary;
 
-      var service = $("#service_select").val();
+      var service;
 
       var googleLang;
       var googleQueryText;
@@ -77,10 +83,12 @@
       var ChinesePhienAmEnglishWords;
       var Pronouns;
 
-      var SourceVietPhrase;
+      var CustomName;
+      var CustomVietPhrase;
 
       $(document).ready(function () {
         $("#background_select").val($.cookie('background') || "white").change();
+        service = $("#service_select").val();
         $.ajax({
           async: false,
           url: 'glossary.csv',
@@ -122,6 +130,22 @@
         };
       });
 
+      $("#vietphrase_file").on("input", function () {
+        let reader = new FileReader();
+        reader.readAsText(this.files[0]);
+        reader.onload = function () {
+          CustomVietPhrase = $.csv.toArrays(this.result);
+        };
+      });
+
+      $("#name_file").on("input", function () {
+        let reader = new FileReader();
+        reader.readAsText(this.files[0]);
+        reader.onload = function () {
+          CustomName = $.csv.toArrays(this.result);
+        };
+      });
+
       $("#language_select").on("change", function () {
         if ($("#service_select").val() !== '') {
           $("#service_select").change();
@@ -129,17 +153,24 @@
       });
 
       $("#service_select").change(function () {
-        if ($("#edit_button").val() === 'Chỉnh sửa') {
-          if (this.value === 'vietphrase' && service !== this.value) {
-            $("#language_select").html(`<option value="vietphrase">VietPhrase<\/option>
+        if (this.value === 'vietphrase' && service !== this.value) {
+          $("#glossary_file").hide();
+          $("#vietphrase_file").show();
+          $("#name_file").show();
+          $("#language_select").html(`<option value="vietphrase">VietPhrase<\/option>
 <option value="han-viet">Hán Việt<\/option>`);
-          } else if (this.value !== 'vietphrase' && service === 'vietphrase') {
-            $("#language_select").html(`<option value="vi">Việt<\/option>
+        } else if (this.value !== 'vietphrase' && service === 'vietphrase') {
+          $("#vietphrase_file").hide();
+          $("#name_file").hide();
+          $("#glossary_file").show();
+          $("#language_select").html(`<option value="vi">Việt<\/option>
 <option value="en">Anh<\/option>
 <option value="ja">Nhật<\/option>
 <option value="zh-CN">Trung (Giản thể)<\/option>
 <option value="zh-TW">Trung (Phổn thể)<\/option>`);
-          }
+        }
+
+        if ($("#edit_button").val() === 'Chỉnh sửa') {
 
           let xhr = new XMLHttpRequest();
 
@@ -288,8 +319,8 @@
                   convertText = convertText.replace(new RegExp(glossary[j][0], 'g'), glossary[j][1].concat(' '));
                 }
 
-                for (let j = 0; $("#language_select").val() === 'vietphrase' && customGlossary != undefined && j < customGlossary.length; j++) {
-                  convertText = convertText.replace(new RegExp(customGlossary[j][0], 'g'), customGlossary[j][1].concat(' '));
+                for (let j = 0; CustomName != undefined && j < CustomName.length; j++) {
+                  convertText = convertText.replace(new RegExp(CustomName[j][0], 'g'), CustomName[j][1].concat(' '));
                 }
 
                 for (let j = 0; $("#language_select").val() === 'vietphrase' && Names != undefined && j < Names.length; j++) {
@@ -300,21 +331,24 @@
                   convertText = convertText.replace(new RegExp(NamesPhu[j][0], 'g'), NamesPhu[j][1].concat(' '));
                 }
 
+                for (let j = 0; $("#language_select").val() === 'vietphrase' && CustomVietPhrase != undefined && j < CustomVietPhrase.length; j++) {
+                  convertText = convertText.replace(new RegExp(CustomVietPhrase[j][0], 'g'), CustomVietPhrase[j][1].concat(' '));
+                }
+
                 for (let j = 0; $("#language_select").val() === 'vietphrase' && VietPhrase != undefined && j < VietPhrase.length; j++) {
-                  SourceVietPhrase = VietPhrase[j];
-                  convertText = convertText.replace(new RegExp(SourceVietPhrase[0], 'g'), SourceVietPhrase[1].concat(' '));
-                }
-
-                for (let j = 0; $("#language_select").val() === 'han-viet' && ChinesePhienAmWords != undefined && j < ChinesePhienAmWords.length; j++) {
-                  convertText = convertText.replace(new RegExp(ChinesePhienAmWords[j][0], 'g'), ChinesePhienAmWords[j][1].concat(' '));
-                }
-
-                for (let j = 0; $("#language_select").val() === 'han-viet' && ChinesePhienAmEnglishWords != undefined && j < ChinesePhienAmEnglishWords.length; j++) {
-                  convertText = convertText.replace(new RegExp(ChinesePhienAmEnglishWords[j][0], 'g'), ChinesePhienAmEnglishWords[j][1].concat(' '));
+                  convertText = convertText.replace(new RegExp(VietPhrase[j][0], 'g'), VietPhrase[j][1].concat(' '));
                 }
 
                 for (let j = 0; $("#language_select").val() === 'vietphrase' && Pronouns != undefined && j < Pronouns.length; j++) {
                   convertText = convertText.replace(new RegExp(Pronouns[j][0], 'g'), Pronouns[j][1].concat(' '));
+                }
+
+                for (let j = 0; ChinesePhienAmWords != undefined && j < ChinesePhienAmWords.length; j++) {
+                  convertText = convertText.replace(new RegExp(ChinesePhienAmWords[j][0], 'g'), ChinesePhienAmWords[j][1].concat(' '));
+                }
+
+                for (let j = 0; ChinesePhienAmEnglishWords != undefined && j < ChinesePhienAmEnglishWords.length; j++) {
+                  convertText = convertText.replace(new RegExp(ChinesePhienAmEnglishWords[j][0], 'g'), ChinesePhienAmEnglishWords[j][1].concat(' '));
                 }
 
                 let replace = new Map([
@@ -439,7 +473,7 @@
           async: false,
           url: 'https://edge.microsoft.com/translate/auth',
           method: 'GET'
-        }).done(response => accessToken = response);
+        }).done((response) => accessToken = response);
         return accessToken;
       }
 
