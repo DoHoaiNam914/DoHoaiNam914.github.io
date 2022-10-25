@@ -27,7 +27,7 @@ $(document).ready(function () {
   $("#background_select").on("change", function () {
     if (this.value !== 'white') {
       $(document.documentElement).attr("style", $(document.documentElement).attr("style") != undefined ?
-        document.documentElement.getAttribute('style').replace(/ black;/g, '')
+        $(document.documentElement).attr("style").replace(/ black;/g, '')
           .replace(/black;/g, '')
           .replace(/ sepia;/g, '')
           .replace(/sepia;/g, '')
