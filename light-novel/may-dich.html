@@ -313,6 +313,12 @@
           $("textarea").show();
         }
       });
+      
+      $("textarea").on("click", function () {
+        if (this.value === 'Viết gì đó tại đây') {
+          this.value = '';
+        }
+      });
 
       function getGlossaryText(text) {
         var glossaryText;
