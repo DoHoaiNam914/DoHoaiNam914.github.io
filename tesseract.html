@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="ja" class="hltr">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1, user-scalable=0, maximum-scale=1">
+    <title>Tesseract OCR - DoHoaiNam Pages</title>
+    <script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
+    <script src="js/js.cookie-1.5.1.js"></script>
+    <script src="js/tesseract.min.js"></script>
+    <link rel="stylesheet" href="css/styles/dohoainam-ebpaj-style.css">
+    <style>
+      #page_segmentation_select,
+      #language_select {
+        width: 90px;
+      }
+
+      section.p-image {
+        text-align: center;
+      }
+
+      section.p-image * {
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -webkit-user-drag: none;
+        max-height: 95vh !important;
+        user-select: none;
+      }
+    </style>
+  </head>
+  <body>
+    <form>
+      <div class="notranslate" style="bottom: 8px; left: 8px; position: fixed;">
+        <select id="background_select">
+          <option value="white">Trắng</option>
+          <option value="black">Đen</option>
+          <option value="sepia">Sepia</option>
+          <option value="cream">Kem</option>
+        </select>
+      </div>
+    </form>
+    <form>
+      <div class="notranslate" style="margin-bottom: 8px; text-align: initial; top: 8px;">
+        <label for="image_file">Chọn tệp hình ảnh</label>
+        <input id="image_file" type="file" accept="image/*">
+        <select id="preproccess_select">
+          <option value="">Không</option>
+          <option value="threshold" selected>Threshold</option>
+        </select>
+      </div>
+      <div style="text-align: center;">
+        <input id="url" type="text" value="Địa chỉ liên kết">
+      </div>
+      <div class="notranslate" style="bottom: 8px; position: fixed; right: 8px;">
+        <select id="language_select">
+          <option value="chi_sim">Tiếng Trung</option>
+          <option value="chi_sim_vert">Tiếng Trung (Dọc)</option>
+          <option value="chi_tra">Tiếng Trung (Phổn thể)</option>
+          <option value="chi_tra_vert">Tiếng Trung (Phổn thể) (Dọc)</option>
+          <option value="eng">Tiếng Anh</option>
+          <option value="jpn">Tiếng Nhật</option>
+          <option value="jpn_vert">Tiếng Nhật (Dọc)</option>
+          <option value="vie">Tiếng Việt</option>
+        </select>
+        <select id="page_segmentation_select">
+          <option value="2">AUTO_ONLY</option>
+          <option value="3">AUTO</option>
+          <option value="4">SINGLE_COLUMN</option>
+          <option value="SINGLE_BLOCK" selected>SINGLE_BLOCK</option>
+          <option value="7">SINGLE_LINE</option>
+          <option value="8">SINGLE_WORD</option>
+          <option value="9">CIRCLE_WORD</option>
+          <option value="10">SINGLE_CHAR</option>
+          <option value="11">SPARSE_TEXT</option>
+          <option value="13">RAW_LINE</option>
+        </select>
+        <input id="ocr_button" type="button" value="Nhận dạng ký tự">
+      </div>
+    </form>
+    <section class="p-image">
+      <div class="main" style="padding: 0 40px;">
+        <div id="crop" style="border: thin dashed red; position: absolute;"></div>
+        <img id="preview">
+      </div>
+    </section>
+    <section class="p-text">
+      <ol class="main"></ol>
+    </section>
+    <script>
+      const { createWorker, PSM, OEM } = Tesseract;
+      const worker = createWorker({
+        workerPath: 'js/worker.min.js',
+        langPath: 'lang-data',
+        corePath: 'js/tesseract-core.wasm.js',
+        gzip: false,
+        logger: m => console.log(m),
+        errorHandler: function () {
+          $("#page_segmentation_select").prop("disabled", false);
+          $("#language_select").prop("disabled", false);
+          $("#preproccess_select").prop("disabled", false);
+          $("#image_file").prop("disabled", false);
+          $("#ocr_button").prop("disabled", false);
+          $("#ocr_button").val("Nhận dạng ký tự");
+        }
+      });
+
+      var previewImage;
+      var sessionImage;
+      var recognizeImage;
+
+      var isCroping;
+
+      var imageOffsetLeft;
+      var imageOffsetTop;
+
+      var cropLeft;
+      var cropTop;
+      var cropRight;
+      var cropBottom;
+
+      $(document).ready(function () {
+        $("#background_select").val($.cookie('background') || "white").change();
+        $("ol.main").hide();
+        $("#crop").hide();
+        $("#preview").hide();
+      });
+
+      $("#background_select").on("change", function () {
+        if (this.value !== 'white') {
+          $(document.documentElement).attr("style", $(document.documentElement).attr("style") != undefined ?
+            document.documentElement.getAttribute('style').replace(/ black;/g, '')
+              .replace(/black;/g, '')
+              .replace(/ sepia;/g, '')
+              .replace(/sepia;/g, '')
+              .replace(/ cream;/g, '')
+              .replace(/cream;/g, '')
+              .concat(' ' + this.value.concat(';')) :
+            this.value.concat(';'));
+          Cookies.set('background', this.value, { expires: 365 });
+        } else if ($(document.documentElement).attr("style") != undefined) {
+          $(document.documentElement).attr("style", document.documentElement.getAttribute('style').replace(/ black;/g, '')
+            .replace(/black;/g, '')
+            .replace(/ sepia;/g, '')
+            .replace(/sepia;/g, '')
+            .replace(/ cream;/g, '')
+            .replace(/cream;/g, ''));
+          Cookies.remove('background');
+        } else {
+          $(document.documentElement).removeAttr("style");
+        }
+      });
+
+      $("#image_file").on("input", function () {
+        $("#url").val("Địa chỉ liên kết");
+        $("#preview").hide();
+        previewImage = new Image();
+        recognizeImage = new Image();
+        $("#crop").hide();
+
+        if (this.files.length > 0) {
+          let reader = new FileReader();
+
+          reader.onload = function () {
+            previewImage.crossOrigin = 'Anonymous';
+            previewImage.onload = function () {
+              sessionImage = new Image();
+              sessionImage.crossOrigin = 'Anonymous';
+              let canvas = document.createElement('canvas');
+              canvas.width = this.width;
+              canvas.height = this.height;
+              let ctx = canvas.getContext('2d');
+              ctx.drawImage(this, 0, 0, this.width, this.height);
+              let imageData = ctx.getImageData(0, 0, this.width, this.height);
+              threshold(imageData.data, 0.5);
+              ctx.putImageData(imageData, 0, 0);
+              sessionImage.src = $("#preproccess_select").val() === 'threshold' ? canvas.toDataURL() : this.src;
+              recognizeImage.src = sessionImage.src;
+            };
+
+            previewImage.src = this.result;
+            $("#preview").attr("src", previewImage.src);
+            $("#preview").show();
+          };
+
+          reader.readAsDataURL(this.files[0]);
+        }
+
+        if ($("#ocr_button").val() === 'Xong') {
+          $("ol.main").removeAttr("contentEditable");
+          $("ol.main").hide();
+          $("#ocr_button").val("Nhận dạng ký tự");
+        }
+      });
+
+      $("#preproccess_select").on("change", function () {
+        $("#image_file").val(null);
+        $("#url").val("Địa chỉ liên kết");
+        $("#preview").hide();
+        previewImage = new Image();
+        recognizeImage = new Image();
+        $("#crop").hide();
+
+        if ($("#ocr_button").val() === 'Xong') {
+          $("ol.main").removeAttr("contentEditable");
+          $("ol.main").hide();
+          $("#ocr_button").val("Nhận dạng ký tự");
+        }
+      });
+
+      $("#url").on("click", function () {
+        if (this.value !== 'Địa chỉ liên kết') {
+          this.select();
+        } else {
+          this.value = '';
+        }
+      });
+
+      $("#url").on("input", function () {
+        $("#image_file").val(null);
+        $("#preview").hide();
+        previewImage = new Image();
+        recognizeImage = new Image();
+        $("#crop").hide();
+
+        if (this.value !== 'Địa chỉ liên kết' && $("#url").val().length > 0) {
+          previewImage.crossOrigin = 'Anonymous';
+          previewImage.onload = function () {
+            sessionImage = new Image();
+            sessionImage.crossOrigin = 'Anonymous';
+            let canvas = document.createElement('canvas');
+            canvas.width = this.width;
+            canvas.height = this.height;
+            let ctx = canvas.getContext('2d');
+            ctx.drawImage(this, 0, 0, this.width, this.height);
+            let imageData = ctx.getImageData(0, 0, this.width, this.height);
+            threshold(imageData.data, 0.5);
+            ctx.putImageData(imageData, 0, 0);
+            sessionImage.src = $("#preproccess_select").val() === 'threshold' ? canvas.toDataURL() : this.src;
+            recognizeImage.src = sessionImage.src;
+          };
+
+          previewImage.src = this.value;
+          $("#preview").attr("src", previewImage.src);
+          $("#preview").show();
+        }
+
+        if ($("#ocr_button").val() === 'Xong') {
+          $("ol.main").removeAttr("contentEditable");
+          $("ol.main").hide();
+          $("#ocr_button").val("Nhận dạng ký tự");
+        }
+      });
+
+      $("#language_select").on("change", function () {
+        if ($("#ocr_button").val() === 'Xong') {
+          recognize(this.value, $("#page_segmentation_select").val(), recognizeImage.src);
+        }
+      });
+
+      $("#page_segmentation_select").on("change", function () {
+        if ($("#ocr_button").val() === 'Xong') {
+          recognize($("#language_select").val(), this.value, recognizeImage.src);
+        }
+      });
+
+      $("#ocr_button").click(function () {
+        if ($("#image_file").prop("files").length > 0 || ($("#url").val() !== 'Địa chỉ liên kết' && $("#url").val().length > 0)) {
+          if (this.value === 'Nhận dạng ký tự') {
+            recognize($("#language_select").val(), $("#page_segmentation_select").val(), recognizeImage.src);
+
+            $("ol.main").show();
+          } else {
+            $("ol.main").removeAttr("contentEditable");
+            $("ol.main").hide();
+            this.value = 'Nhận dạng ký tự';
+          }
+        }
+      });
+
+      $(window).on("resize", function(event) {
+        cropBottom += imageOffsetTop;
+        cropRight += imageOffsetLeft;
+        cropTop += imageOffsetTop;
+        cropLeft += imageOffsetLeft;
+
+        let xOffset = imageOffsetLeft / $("#preview").offset().left;
+        let yOffset = imageOffsetTop / $("#preview").offset().top;
+        imageOffsetLeft = $("#preview").offset().left;
+        imageOffsetTop = $("#preview").offset().top;
+
+        cropLeft = (cropLeft * xOffset) - imageOffsetLeft;
+        cropTop = (cropTop * yOffset) - imageOffsetLeft;
+        cropRight = (cropRight * xOffset) - imageOffsetLeft;
+        cropBottom = (cropBottom * yOffset) - imageOffsetLeft;
+
+        let cropX = cropRight > cropLeft ? cropLeft : cropRight;
+        let cropY = cropBottom > cropTop ? cropTop : cropBottom;
+        let cropWidth = cropRight > cropLeft ? cropRight - cropLeft : cropLeft - cropRight;
+        let cropHeight = cropBottom > cropTop ? cropBottom - cropTop : cropTop - cropBottom;
+
+        $("#crop").css({
+          left: (cropX + imageOffsetLeft) + 'px',
+          top: (cropY + imageOffsetTop) + 'px',
+          height: (cropHeight - parseInt($("#crop").css("border-width")) * 2) + 'px',
+          width: (cropWidth - parseInt($("#crop").css("border-width")) * 2) + 'px'
+        });
+      });
+
+      $("#preview").on("click", function () {
+        if ($("#ocr_button").val() !== 'Nhận dạng ký tự') {
+          $("#crop").hide();
+          cropLeft = 0;
+          cropTop = 0;
+          cropRight = $("#preview").width();
+          cropBottom = $("#preview").height();
+          recognizeImage.src = sessionImage.src;
+        }
+      });
+
+      $("#preview").on("mousedown", function(event) {
+        cropImage('start', event);
+      });
+
+      $("#preview").on("touchstart", function(event) {
+        if (isHoverOnPreview(event) && $("#ocr_button").val() === 'Nhận dạng ký tự') {
+          $(document.body).css("overflow", "hidden");
+        }
+
+        cropImage('start', event);
+      });
+
+      $("#preview").on("drag", function(event) {
+        cropImage('move', event);
+      });
+
+      $("#preview").on("touchmove", function(event) {
+        cropImage('move', event);
+      });
+
+      $("#preview").on("mouseup", function(event) {
+        cropImage('end', event);
+      });
+
+      $("#preview").on("touchend", function(event) {
+        if ($("#ocr_button").val() !== 'Nhận dạng ký tự') {
+          $(document.body).removeAttr("style");
+        }
+
+        if ($("#ocr_button").val() !== 'Nhận dạng ký tự' || cropRight - cropLeft < 12 || cropBottom - cropTop < 12) {
+          $("#crop").hide();
+          cropLeft = 0;
+          cropTop = 0;
+          cropRight = $("#preview").width();
+          cropBottom = $("#preview").height();
+          recognizeImage.src = sessionImage.src;
+        }
+
+        cropImage('end', event);
+      });
+
+      $("#crop").on("click", function () {
+        if ($("#ocr_button").val() !== 'Nhận dạng ký tự') {
+          $("#crop").hide();
+          cropLeft = 0;
+          cropTop = 0;
+          cropRight = $("#preview").width();
+          cropBottom = $("#preview").height();
+          recognizeImage.src = sessionImage.src;
+        }
+      });
+
+      $("#crop").on("mousedown", function(event) {
+        cropImage('start', event);
+      });
+
+      $("#crop").on("touchstart", function(event) {
+        if (isHoverOnPreview(event) && $("#ocr_button").val() === 'Nhận dạng ký tự') {
+          $(document.body).css("overflow", "hidden");
+        }
+
+        cropImage('start', event);
+      });
+
+      $("#crop").on("drag", function(event) {
+        cropImage('move', event);
+      });
+
+      $("#crop").on("touchmove", function(event) {
+        cropImage('move', event);
+      });
+
+      $("#crop").on("mouseup", function(event) {
+        cropImage('end', event);
+      });
+
+      $("#crop").on("touchend", function(event) {
+        if ($("#ocr_button").val() !== 'Nhận dạng ký tự') {
+          $(document.body).removeAttr("style");
+        }
+
+        if ($("#ocr_button").val() !== 'Nhận dạng ký tự' || cropRight - cropLeft < 12 || cropBottom - cropTop < 12) {
+          $("#crop").hide();
+          cropLeft = 0;
+          cropTop = 0;
+          cropRight = $("#preview").width();
+          cropBottom = $("#preview").height();
+          recognizeImage.src = sessionImage.src;
+        }
+
+        cropImage('end', event);
+      });
+
+      $("ol.main").on("input", function () {
+        $("ol.main").css("padding-left", parseInt($(document.documentElement).css("font-size")) + 8 * $("ol.main").html().split('\n').length.toString().concat('.').length + "px");
+      });
+
+      function threshold(data, level) {
+        if (level === undefined) {
+          level = 0.5;
+        }
+
+        const thresh = Math.floor(level * 255);
+
+        for (let i = 0; i < data.length; i += 4) {
+          const r = data[i];
+          const g = data[i + 1];
+          const b = data[i + 2];
+          const gray = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+          let val;
+
+          if (gray >= thresh) {
+            val = 255;
+          } else {
+            val = 0;
+          }
+
+          data[i] = data[i + 1] = data[i + 2] = val;
+        }
+      }
+
+      async function recognize(lang, pageseg_mode, input) {
+        $("#ocr_button").prop("disabled", true);
+        $("#image_file").prop("disabled", true);
+        $("#preproccess_select").prop("disabled", true);
+        $("#language_select").prop("disabled", true);
+        $("#page_segmentation_select").prop("disabled", true);
+        $("ol.main").html(null);
+
+        await worker.load();
+        await worker.loadLanguage(lang);
+        await worker.initialize(lang);
+        await worker.setParameters({
+          tessedit_pageseg_mode: pageseg_mode.replace('SINGLE_BLOCK', lang.includes('_vert') ? PSM.SINGLE_BLOCK_VERT_TEXT : PSM.SINGLE_BLOCK),
+          tessedit_ocr_engine_mode: OEM.LSTM_ONLY
+        });
+
+        const { data: { text } } = await worker.recognize(input);
+        $("#page_segmentation_select").prop("disabled", false);
+        $("#language_select").prop("disabled", false);
+        $("#preproccess_select").prop("disabled", false);
+        $("#image_file").prop("disabled", false);
+        $("#ocr_button").prop("disabled", false);
+        $("#ocr_button").val("Xong");
+
+        var sentences = text.split('\n');
+
+        for (let i = 0; i < sentences.length; i++) {
+          $("ol.main").append('<li><div class="main">' + (sentences[i] !== '' ? (lang === 'eng' || lang === 'vie' ? sentences[i] : sentences[i].replace(/\s/g, '')) : '<br>') + '</div></li>' + (i + 1 < sentences.length ? '\n' : ''));
+        }
+
+        $("ol.main").css("padding-left", parseInt($(document.documentElement).css("font-size")) + 8 * $("ol.main").html().split('\n').length.toString().concat('.').length + "px");
+        $("section.p-text div.main").css("display", "inline-block");
+        $("ol.main").attr("contentEditable", true);
+      }
+
+      function isHoverOnPreview(event) {
+        return event.pageX >= $("#preview").offset().left && event.pageY >= $("#preview").offset().top && event.pageX <= $("#preview").offset().left + $("#preview").width() && event.pageY <= $("#preview").offset().top + $("#preview").height();
+      }
+
+      function cropImage(place, event) {
+        switch (place) {
+          case 'start':
+            imageOffsetLeft = $("#preview").offset().left;
+            imageOffsetTop = $("#preview").offset().top;
+
+            if (isHoverOnPreview(event) && $("#ocr_button").val() === 'Nhận dạng ký tự') {
+              isCroping = true;
+              cropLeft = event.pageX - imageOffsetLeft;
+              cropTop = event.pageY - imageOffsetTop;
+            }
+
+            break;
+          case 'move':
+            if (isCroping) {
+              if (event.pageX < imageOffsetLeft) {
+                cropRight = 0;
+              } else if (event.pageX > imageOffsetLeft + $("#preview").width()) {
+                cropRight = $("#preview").width();
+              } else {
+                cropRight = event.pageX - imageOffsetLeft;
+              }
+
+              if (event.pageY < imageOffsetTop) {
+                cropBottom = 0;
+              } else if (event.pageY > imageOffsetTop + $("#preview").height()) {
+                cropBottom = $("#preview").height();
+              } else {
+                cropBottom = event.pageY - imageOffsetTop;
+              }
+
+              let cropX = cropRight > cropLeft ? cropLeft : cropRight;
+              let cropY = cropBottom > cropTop ? cropTop : cropBottom;
+              let cropWidth = cropRight > cropLeft ? cropRight - cropLeft : cropLeft - cropRight;
+              let cropHeight = cropBottom > cropTop ? cropBottom - cropTop : cropTop - cropBottom;
+
+              $("#crop").css({
+                left: (cropX + imageOffsetLeft) + 'px',
+                top: (cropY + imageOffsetTop) + 'px',
+                height: (cropHeight - parseInt($("#crop").css("border-width")) * 2) + 'px',
+                width: (cropWidth - parseInt($("#crop").css("border-width")) * 2) + 'px'
+              });
+
+              $("#crop").show();
+            }
+
+            break;
+          case 'end':
+            if ($("#ocr_button").val() !== 'Nhận dạng ký tự') {
+              isCroping = false;
+              break;
+            }
+
+            if (isCroping) {
+              let cropX = cropRight > cropLeft ? cropLeft : cropRight;
+              let cropY = cropBottom > cropTop ? cropTop : cropBottom;
+              let cropWidth = cropRight > cropLeft ? cropRight - cropLeft : cropLeft - cropRight;
+              let cropHeight = cropBottom > cropTop ? cropBottom - cropTop : cropTop - cropBottom;
+
+              let canvas = document.createElement('canvas');
+
+              let xOffset = previewImage.width / $("#preview").width();
+              let yOffset = previewImage.height / $("#preview").height();
+
+              canvas.width = cropWidth * xOffset;
+              canvas.height = cropHeight * yOffset;
+
+              canvas.getContext('2d').drawImage(sessionImage, cropX * xOffset, cropY * yOffset, cropWidth * xOffset, cropHeight * yOffset, 0, 0, cropWidth * xOffset, cropHeight * yOffset);
+
+              recognizeImage.src = canvas.toDataURL();
+              $(document.body).removeAttr("style");
+              isCroping = false;
+            }
+
+            break;
+        }
+      }
+    </script>
+  </body>
+</html>

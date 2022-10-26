@@ -11,9 +11,8 @@ $(document).ready(function () {
   book = window.location.href.toString().split('/')[4];
   volume = searchParams.get('tap');
 
-  if (searchParams.has('tap')) {
-    $.get(volume + '/content.html').done((data) => $(document.head).html(parser.parseFromString(data, 'text/html').head.innerHTML));
-    $(document.body).html(`<form>
+  $.get(volume + '/content.html').done((data) => $(document.head).append($(parser.parseFromString(data, 'text/html').head).html()));
+  $(document.body).html(`<form>
   <div class="notranslate" style="bottom: 8px; left: 8px; position: fixed;">
     <select id="background_select">
       <option value="white">Trắng</option>
@@ -49,7 +48,6 @@ $(document).ready(function () {
     }
   });
 </script>`);
-  }
 });
 
 function loadYenPressSpinesContent(spineList) {

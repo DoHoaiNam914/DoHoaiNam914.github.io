@@ -1,0 +1,15 @@
+<script>
+var xhr = new XMLHttpRequest();
+xhr.onreadystatechange = function () {
+  if (this.readyState === this.DONE) {
+    console.log(this.responseText)
+  }
+}
+xhr.open("POST", "https://api.papago-chrome.com/v2/translate/openapi")
+xhr.setRequestHeader("content-type", "application/json; charset=UTF-8");
+xhr.send(JSON.stringify({
+  'source' : 'en',
+  'target' : 'vi',
+  'text' : 'Hello world!'
+}));
+</script>
