@@ -88,7 +88,7 @@
   <body class="bg-light">
     <nav class="navbar navbar-expand-lg fixed-top navbar-dark bg-dark">
       <div class="container-fluid">
-        <a class="navbar-brand" href="#">Danh sách Light Novel</a>
+        <a class="navbar-brand" href="#">Quản lý từ vựng cho Máy dịch</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
@@ -120,7 +120,7 @@
           <div class="col-lg-6 col-md-8 mx-auto">
             <h1 class="fw-light">Quản lý từ vựng</h1>
             <div class="input-group mb-3">
-              <input type="file" class="form-control" id="inputGlossary">
+              <input type="file" class="form-control" id="inputGlossary" accept="text/plain">
             </div>
             <div class="input-group mb-3">
               <span class="input-group-text">Thay thế:</span>
@@ -131,7 +131,7 @@
             </div>
             <div class="input-group mb-3">
               <select class="form-select" id="glossaryList">
-                <option value="">Chọn...</option>
+                <option value="" selected>Chọn...</option>
               </select>
               <button class="btn btn-outline-secondary" id="removeButton" type="button">Xóa</button>
             </div>
@@ -186,12 +186,16 @@
         }
       });
 
+      $("#preview").on("click", function () {
+        this.select();
+      });
+
       function loadGlossary() {
         if (glossary.length >= 2) {
           glossary.sort((a, b) => (b[0] === 'source' && b[1] === 'target') ||b[0].length - a[0].length);
         }
 
-        let glossaryList = '<option value="">Chọn...</option>';
+        let glossaryList = '<option value="" selected>Chọn...</option>';
         let preview = '';
         let csvData = 'data:text/csv;charset=utf-8,';
 
@@ -214,6 +218,10 @@
           $("#downloadButton").removeAttr("href",);
           $("#downloadButton").removeAttr("download");
         }
+
+        $("#inputGlossary").val(null);
+        $("#sourceText").val(null);
+        $("#targetText").val(null);
       }
     </script>
   </body>
