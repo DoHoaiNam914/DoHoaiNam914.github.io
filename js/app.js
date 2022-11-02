@@ -66,8 +66,8 @@ function loadYenPressSpinesContent(spineList) {
           let stylesheet = $("link[href=\"../Styles/stylesheet.css\"]").prop("outerHTML").replace('..', volume);
           $("link[href=\"../Styles/stylesheet.css\"]").remove();
           $(document.head).append(`<script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
-<script src="../../js/js.cookie.js"></script>`);
-          $(document.head).append("<link rel=\"stylesheet\" href=\"../../css/styles/DoHoaiNamStyle-before.css\">\n" + stylesheet + "\n<link rel=\"stylesheet\" href=\"../../css/styles/DoHoaiNamStyle/" + book + "_patch.css\">\n<link rel=\"stylesheet\" href=\"../../css/styles/DoHoaiNamStyle-after.css\">");
+<script src="/js/js.cookie.js"></script>`);
+          $(document.head).append("<link rel=\"stylesheet\" href=\"/css/styles/DoHoaiNamStyle-before.css\">\n" + stylesheet + "\n<link rel=\"stylesheet\" href=\"/css/styles/DoHoaiNamStyle/" + book + "_patch.css\">\n<link rel=\"stylesheet\" href=\"/css/styles/DoHoaiNamStyle-after.css\">");
           $("#background_select").val(Cookies.get('background') || "white").change();
         }
 
@@ -110,8 +110,8 @@ function loadYenPressSpinesContent2(spineList) {
           let stylesheet = $("link[href=\"css/stylesheet.css\"]").prop("outerHTML").replace('css/stylesheet', volume.concat('/css/stylesheet'));
           $("link[href=\"css/stylesheet.css\"]").remove();
           $(document.head).append(`<script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
-<script src="../../js/js.cookie.js"></script>`);
-          $(document.head).append("<link rel=\"stylesheet\" href=\"../../css/styles/DoHoaiNamStyle-before.css\">\n" + stylesheet + "\n<link rel=\"stylesheet\" href=\"../../css/styles/DoHoaiNamStyle/" + book + "_patch.css\">\n<link rel=\"stylesheet\" href=\"../../css/styles/DoHoaiNamStyle-after.css\">");
+<script src="/js/js.cookie.js"></script>`);
+          $(document.head).append("<link rel=\"stylesheet\" href=\"/css/styles/DoHoaiNamStyle-before.css\">\n" + stylesheet + "\n<link rel=\"stylesheet\" href=\"/css/styles/DoHoaiNamStyle/" + book + "_patch.css\">\n<link rel=\"stylesheet\" href=\"/css/styles/DoHoaiNamStyle-after.css\">");
           $("#background_select").val(Cookies.get('background') || "white").change();
         }
 
@@ -154,8 +154,8 @@ function loadJNovelClubSpinesContent(spineList) {
           let stylesheet = $("link[href=\"../Styles/stylesheet.css\"]").prop("outerHTML").replace('..', volume);
           $("link[href=\"../Styles/stylesheet.css\"]").remove();
           $(document.head).append(`<script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
-<script src="../../js/js.cookie.js"></script>`);
-          $(document.head).append("<link rel=\"stylesheet\" href=\"../../css/styles/DoHoaiNamStyle-before.css\">\n" + stylesheet + "\n<link rel=\"stylesheet\" href=\"../../css/styles/DoHoaiNamStyle/j-novelclub_patch.css\">\n<link rel=\"stylesheet\" href=\"../../css/styles/DoHoaiNamStyle-after.css\">");
+<script src="/js/js.cookie.js"></script>`);
+          $(document.head).append("<link rel=\"stylesheet\" href=\"/css/styles/DoHoaiNamStyle-before.css\">\n" + stylesheet + "\n<link rel=\"stylesheet\" href=\"/css/styles/DoHoaiNamStyle/j-novelclub_patch.css\">\n<link rel=\"stylesheet\" href=\"/css/styles/DoHoaiNamStyle-after.css\">");
           $("#background_select").val(Cookies.get('background') || "white").change();
         }
 

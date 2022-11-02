@@ -6,8 +6,8 @@
     <meta name="viewport" content="initial-scale=1, user-scalable=0, maximum-scale=1">
     <title>Máy dịch cho Light Novel - DoHoaiNam Pages</title>
     <script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
-    <script src="../js/js.cookie-1.5.1.js"></script>
-    <script src="../js/jquery.csv.js"></script>
+    <script src="/js/js.cookie-1.5.1.js"></script>
+    <script src="/js/jquery.csv.js"></script>
     <link rel="stylesheet" href="../css/styles/dohoainam-ebpaj-style.css">
     <style>
       textarea {
@@ -107,14 +107,33 @@
 
       $("#language_select").on("change", function () {
         if ($("#service_select").val() !== '') {
-          $("#service_select").change();
+          let value = $("#service_select").val();
+          $("#service_select").val("").change();
+          $("#service_select").val(value).change();
         }
       });
 
       $("#service_select").change(function () {
         if ($("#edit_button").val() === 'Chỉnh sửa') {
           let xhr = new XMLHttpRequest();
+          let quatationMarks = [
+            ['「', '“'],
+            ['」', '”'],
+            ['『', '‘'],
+            ['』', '’'],
+            ['〝', '“'],
+            ['〟', '”'],
+            ['（', '('],
+            ['）', ')'],
+            ['【', '['],
+            ['】', ']'],
+            ['〈', '⟨'],
+            ['〉', '⟩'],
+            ['《', '⟨'],
+            ['》', '⟩']
+          ];
 
+          var text;
           var sentences;
           var counter;
 
@@ -123,7 +142,13 @@
               queryText = $("ol.main").html();
             }
 
-            sentences = queryText.replace(/<li><div class="main">/g, '').replace(/<\/div><\/li>/g, '').split('\n');
+            text = queryText.replace(/<li><div class="main">/g, '').replace(/<\/div><\/li>/g, '');
+
+            for (let i = 0; i < quatationMarks.length; i++) {
+              text = text.replace(new RegExp(quatationMarks[i][0], 'g'), quatationMarks[i][1]);
+            }
+
+            sentences = text.split('\n');
             counter = sentences.length;
           }
 
@@ -315,27 +340,7 @@
       });
 
       function getPreproccessText(text) {
-        var glossaryText;
-        let bracket = [
-          ['「', '“'],
-          ['」', '”'],
-          ['『', '‘'],
-          ['』', '’'],
-          ['〝', '“'],
-          ['〟', '”'],
-          ['（', '('],
-          ['）', ')'],
-          ['【', '['],
-          ['】', ']'],
-          ['〈', '⟨'],
-          ['〉', '⟩'],
-          ['《', '⟨'],
-          ['》', '⟩']
-        ];
-
-        for (let i = 0; i < bracket.length; i++) {
-          glossaryText = text.replace(new RegExp(bracket[i][0], 'g'), bracket[i][1]);
-        }
+        var glossaryText = text;
 
         for (let i = 1; glossary != undefined && i < glossary.length; i++) {
           glossaryText = glossaryText.replace(new RegExp(glossary[i][0].replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&'), 'g'), glossary[i][1]);
