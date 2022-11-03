@@ -137,11 +137,11 @@
           var sentences;
           var counter;
 
-          if (service === '') {
-            if ((queryText == undefined || queryText === '' || getPreproccessText(queryText) !== googleQueryText || getPreproccessText(queryText) !== microsoftQueryText)) {
+          if (queryText == undefined || queryText === '' || getPreproccessText(queryText) !== googleQueryText || getPreproccessText(queryText) !== microsoftQueryText) {
               queryText = $("ol.main").html();
             }
 
+          if (this.value !== '') {
             text = queryText.replace(/<li><div class="main">/g, '').replace(/<\/div><\/li>/g, '');
 
             for (let i = 0; i < quatationMarks.length; i++) {
@@ -157,10 +157,10 @@
           if (this.value === 'google') {
             if (service === 'microsoft') {
               microsoftTranslationText = $("ol.main").html();
+            }
 
-              if (googleLang != null) {
-                $("#language_select").val(googleLang);
-              }
+            if (googleLang != null) {
+              $("#language_select").val(googleLang);
             }
 
             if ($("#language_select").val() === googleLang && googleTranslationText !== '' && googleQueryText === getPreproccessText(queryText)) {
@@ -208,10 +208,10 @@
           } else if (this.value === 'microsoft') {
             if (service === 'google') {
               googleTranslationText = $("ol.main").html();
+            }
 
-              if (microsoftLang != null) {
-                $("#language_select").val(microsoftLang);
-              }
+            if (microsoftLang != null) {
+              $("#language_select").val(microsoftLang);
             }
 
             if ($("#language_select").val() === microsoftLang && microsoftTranslationText !== '' && microsoftQueryText === getPreproccessText(queryText)) {
