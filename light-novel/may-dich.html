@@ -137,7 +137,7 @@
           var sentences;
           var counter;
 
-          if (queryText == undefined || queryText === '' || getPreproccessText(queryText) !== googleQueryText || getPreproccessText(queryText) !== microsoftQueryText) {
+          if ((queryText == undefined || queryText === '') && getPreproccessText(queryText) !== googleQueryText || getPreproccessText(queryText) !== microsoftQueryText) {
               queryText = $("ol.main").html();
             }
 
