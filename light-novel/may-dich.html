@@ -28,8 +28,8 @@
     </form>
     <form>
       <div class="notranslate" style="margin-bottom: 8px; text-align: initial; top: 8px;">
-        <label for="glossary_file">Chọn tệp từ vựng (CSV):</label>
-        <input id="glossary_file" type="file" accept="text/csv">
+        <label for="glossary_file">Chọn tệp từ vựng:</label>
+        <input id="glossary_file" type="file" accept="text/tab-separated-values,text/csv">
       </div>
       <div class="notranslate" style="bottom: 8px; position: fixed; right: 8px;">
         <select id="language_select">
@@ -101,7 +101,15 @@
         let reader = new FileReader();
         reader.readAsText(this.files[0]);
         reader.onload = function () {
-          glossary = $.csv.toArrays(this.result);
+          switch ($("#glossary_file").prop("files")[0].type) {
+            case 'text/tab-separated-values':
+              glossary = new Array();
+              this.result.split(/\r?\n/).forEach((element) => glossary.push(element.split('\t')));
+              break;
+            case 'text/csv':
+              glossary = $.csv.toArrays(this.result);
+              break;
+          }
         };
       });
 
@@ -137,7 +145,7 @@
           var sentences;
           var counter;
 
-          if ((queryText == undefined || queryText === '') && getPreproccessText(queryText) !== googleQueryText || getPreproccessText(queryText) !== microsoftQueryText) {
+          if (service === '' && (queryText == undefined || queryText === '' || getPreproccessText(queryText) !== googleQueryText || getPreproccessText(queryText) !== microsoftQueryText)) {
               queryText = $("ol.main").html();
             }
 
@@ -159,7 +167,7 @@
               microsoftTranslationText = $("ol.main").html();
             }
 
-            if (googleLang != null) {
+            if (service !== '' && googleLang != null) {
               $("#language_select").val(googleLang);
             }
 
@@ -210,7 +218,7 @@
               googleTranslationText = $("ol.main").html();
             }
 
-            if (microsoftLang != null) {
+            if (service !== '' && microsoftLang != null) {
               $("#language_select").val(microsoftLang);
             }
 

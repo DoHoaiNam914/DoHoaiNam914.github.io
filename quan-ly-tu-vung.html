@@ -105,7 +105,11 @@
         <div class="row py-lg-5">
           <div class="col-lg-6 col-md-8 mx-auto">
             <h1 class="fw-light">Quản lý từ vựng</h1>
-            <input type="file" class="form-control mb-3" id="inputGlossary" accept="text/plain">
+            <input type="file" class="form-control mb-3" id="inputGlossary" accept="text/tab-separated-values,text/csv">
+            <select class="form-select mb-3" id="glossaryType">
+              <option value="text/tab-separated-values" selected>TSV</option>
+              <option value="text/csv">CSV</option>
+            </select>
             <div class="input-group mb-3">
               <span class="input-group-text">Thay thế:</span>
               <input type="text" placeholder="Nguồn" aria-label="Văn bản nguồn" class="form-control" id="sourceText">
@@ -142,14 +146,29 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
     <script>
       var glossary = new Array();
+      var glossaryType = $("#glossaryType").val();
 
       $("#inputGlossary").on("input", function () {
         let reader = new FileReader();
         reader.readAsText(this.files[0]);
         reader.onload = function () {
-          glossary = $.csv.toArrays(this.result);
-          loadGlossary();
+          switch ($("#inputGlossary").prop("files")[0].type) {
+            case 'text/tab-separated-values':
+              glossary = new Array();
+              this.result.split(/\r?\n/).forEach((element) => glossary.push(element.split('\t')));
+              $("#glossaryType").val($("#inputGlossary").prop("files")[0].type).change();
+              break;
+            case 'text/csv':
+              glossary = $.csv.toArrays(this.result);
+              $("#glossaryType").val($("#inputGlossary").prop("files")[0].type).change();
+              break;
+          }
         };
+      });
+
+      $("#glossaryType").change(function () {
+        glossaryType = this.value;
+        loadGlossary()
       });
 
       $("#addButton").on("click", function () {
@@ -184,19 +203,19 @@
         }
 
         let glossaryList = '<option value="" selected>Chọn...</option>';
-        let csvData = 'source,target';
+        let data = $("#glossaryType").val() === 'text/csv' ? 'source,target' : 'source\ttarget';
 
         for (let i = 1; glossary.length >= 2 && i < glossary.length; i++) {
           glossaryList += `\n<option value="${i}">${glossary[i][0]}=${glossary[i][1]}</option>`;
-          csvData += `\r\n${glossary[i][0].includes(',') ? '"' + glossary[i][0].replace(/"/g, '""') + '"' : glossary[i][0].replace(/"/g, '"""')},${glossary[i][1].includes(',') ? '"' + glossary[i][1].replace(/"/g, '""') + '"' : glossary[i][1].replace(/"/g, '"""')}`;
+          data += `\r\n${$("#glossaryType").val() === 'text/csv' && glossary[i][0].includes(',') ? '"' + glossary[i][0].replace(/"/g, '""') + '"' : ($("#glossaryType").val() === 'text/csv' ? glossary[i][0].replace(/"/g, '"""') : glossary[i][0])}${$("#glossaryType").val() === 'text/csv' ? ',' : '\t'}${$("#glossaryType").val() === 'text/csv' && glossary[i][1].includes(',') ? '"' + glossary[i][1].replace(/"/g, '""') + '"' : ($("#glossaryType").val() === 'text/csv' ? glossary[i][1].replace(/"/g, '"""') : glossary[i][1])}`;
         }
 
         $("#glossaryList").html(glossaryList);
-        $("#preview").val(csvData);
+        $("#preview").val(data);
 
         if (glossary.length >= 2) {
-          $("#downloadButton").attr("href", "data:text/csv;charset=utf-8," + encodeURIComponent(csvData));
-          $("#downloadButton").attr("download", "Từ vựng.csv");
+          $("#downloadButton").attr("href", `data:${$("#glossaryType").val()};charset=utf-8,` + encodeURIComponent(data));
+          $("#downloadButton").attr("download", `Từ vựng.${$("#glossaryType").val() === 'text/csv' ? 'csv' : 'tsv'}`);
         } else {
           $("#downloadButton").removeAttr("href");
           $("#downloadButton").removeAttr("download");
