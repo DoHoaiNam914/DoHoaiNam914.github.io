@@ -49,7 +49,7 @@
     </form>
     <section class="p-text">
       <ol class="main"></ol>
-      <div style="text-align: center;"><textarea name="textarea" style="background: transparent; border: 0; border-style: none; color: inherit; font-family: inherit; font-size: inherit; height: 50vh; margin: 0; padding: 0; width: 100%;">Viết gì đó tại đây</textarea></div>
+      <div style="text-align: center;"><textarea name="textarea" style="background: transparent; border: 0; border-style: none; color: inherit; font-family: inherit; font-size: inherit; height: 50vh; margin: 0; padding: 0; width: 100%;">Write something here</textarea></div>
     </section>
     <script>
       var queryText;
@@ -103,8 +103,7 @@
         reader.onload = function () {
           switch ($("#glossary_file").prop("files")[0].type) {
             case 'text/tab-separated-values':
-              glossary = new Array();
-              this.result.split(/\r?\n/).forEach((element) => glossary.push(element.split('\t')));
+              glossary = this.result.split(/\r?\n/).map((element) => element.split('\t')).filter((element) => element.length === 2);
               break;
             case 'text/csv':
               glossary = $.csv.toArrays(this.result);
@@ -146,8 +145,8 @@
           var counter;
 
           if (service === '' && (queryText == undefined || queryText === '' || getPreproccessText(queryText) !== googleQueryText || getPreproccessText(queryText) !== microsoftQueryText)) {
-              queryText = $("ol.main").html();
-            }
+            queryText = $("ol.main").html();
+          }
 
           if (this.value !== '') {
             text = queryText.replace(/<li><div class="main">/g, '').replace(/<\/div><\/li>/g, '');

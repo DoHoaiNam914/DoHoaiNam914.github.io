@@ -154,15 +154,14 @@
         reader.onload = function () {
           switch ($("#inputGlossary").prop("files")[0].type) {
             case 'text/tab-separated-values':
-              glossary = new Array();
-              this.result.split(/\r?\n/).forEach((element) => glossary.push(element.split('\t')));
-              $("#glossaryType").val($("#inputGlossary").prop("files")[0].type).change();
+              glossary = this.result.split(/\r?\n/).map((element) => element.split('\t')).filter((element) => element.length === 2);
               break;
             case 'text/csv':
               glossary = $.csv.toArrays(this.result);
-              $("#glossaryType").val($("#inputGlossary").prop("files")[0].type).change();
               break;
           }
+
+          $("#glossaryType").val($("#inputGlossary").prop("files")[0].type).change();
         };
       });
 
