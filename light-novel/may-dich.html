@@ -8,7 +8,7 @@
     <script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
     <script src="/js/js.cookie-1.5.1.js"></script>
     <script src="/js/jquery.csv.js"></script>
-    <link rel="stylesheet" href="../css/styles/dohoainam-ebpaj-style.css">
+    <link rel="stylesheet" href="/css/styles/dohoainam-ebpaj-style.css">
     <style>
       textarea {
         resize: none;
@@ -27,7 +27,7 @@
       </div>
     </form>
     <form>
-      <div class="notranslate" style="margin-bottom: 8px; text-align: initial; top: 8px;">
+      <div class="notranslate" style="margin-bottom: 8px; position: fixed; text-align: initial; top: 0;">
         <label for="glossary_file">Chọn tệp từ vựng:</label>
         <input id="glossary_file" type="file" accept="text/tab-separated-values,text/csv">
       </div>
@@ -47,7 +47,7 @@
         <input id="edit_button" type="button" value="Xong">
       </div>
     </form>
-    <section class="p-text">
+    <section class="p-text" style="margin: 16px 0 0 0;">
       <ol class="main"></ol>
       <div style="text-align: center;"><textarea name="textarea" style="background: transparent; border: 0; border-style: none; color: inherit; font-family: inherit; font-size: inherit; height: 50vh; margin: 0; padding: 0; width: 100%;">Write something here</textarea></div>
     </section>
@@ -144,7 +144,7 @@
           var sentences;
           var counter;
 
-          if (service === '' && (queryText == undefined || queryText === '' || getPreproccessText(queryText) !== googleQueryText || getPreproccessText(queryText) !== microsoftQueryText)) {
+          if (service === '' && (queryText == undefined || queryText === '' || getPreproccessText(queryText, true) !== googleQueryText || getPreproccessText(queryText, true) !== microsoftQueryText)) {
             queryText = $("ol.main").html();
           }
 
@@ -170,13 +170,32 @@
               $("#language_select").val(googleLang);
             }
 
-            if ($("#language_select").val() === googleLang && googleTranslationText !== '' && googleQueryText === getPreproccessText(queryText)) {
-              $("ol.main").html(googleTranslationText);
+            if ($("#language_select").val() === googleLang && googleTranslationText !== '' && googleQueryText === getPreproccessText(queryText, true)) {
+              $("ol.main").html(getPostproccessText(googleTranslationText));
             } else {
               googleTranslationText = '';
               var session = '';
 
               for (let i = 0; i < sentences.length; i++) {
+                if (i < sentences.length) {
+                session = `q=${encodeURIComponent(getPreproccessText(sentences[i]))}`;
+
+                xhr.onreadystatechange = function () {
+                  if (this.readyState === this.DONE) {
+                    if (sentences[i] !== '<br>') {
+                        googleTranslationText += '<li><div class="main">' + JSON.parse(this.responseText).sentences[0].trans + '</div></li>' + (i + 1 < sentences.length && counter === 0 ? '\n' : '');
+                    } else {
+                        googleTranslationText += '<li><div class="main"><br></div></li>' + (i + 1 < sentences.length && counter === 0 ? '\n' : '');
+                    }
+                  } else if (this.status === this.UNSENT) {
+                    microsoftTranslationText = '';
+                    $("ol.main").html(queryText);
+                    this.value = '';
+                  }
+                };
+
+                translateGoogle(xhr, $("#language_select").val(), session);
+                } else if (i >= sentences.length) { //TODO: renturn false
                 sessionTranslate.push(getPreproccessText(sentences[i]));
 
                 if ((counter >= 50 && sessionTranslate.length === 50) || (counter < 50 && sessionTranslate.length === counter)) {
@@ -195,7 +214,7 @@
 
                         counter -= 1;
                       }
-                    } else if (this.readyState === this.UNSENT) {
+                    } else if (this.status === this.UNSENT) {
                       googleTranslationText = '';
                       $("ol.main").html(queryText);
                       this.value = '';
@@ -206,11 +225,12 @@
                   session = '';
                   sessionTranslate = [];
                 }
+                }
               }
 
-              $("ol.main").html(googleTranslationText);
+              $("ol.main").html(getPostproccessText(googleTranslationText));
               googleLang = $("#language_select").val();
-              googleQueryText = getPreproccessText(queryText);
+              googleQueryText = getPreproccessText(queryText, true);
             }
           } else if (this.value === 'microsoft') {
             if (service === 'google') {
@@ -221,8 +241,8 @@
               $("#language_select").val(microsoftLang);
             }
 
-            if ($("#language_select").val() === microsoftLang && microsoftTranslationText !== '' && microsoftQueryText === getPreproccessText(queryText)) {
-              $("ol.main").html(microsoftTranslationText);
+            if ($("#language_select").val() === microsoftLang && microsoftTranslationText !== '' && microsoftQueryText === getPreproccessText(queryText, true)) {
+              $("ol.main").html(getPostproccessText(microsoftTranslationText));
             } else {
               let accessToken = getMicrosoftTranslatorAccessToken();
 
@@ -255,7 +275,7 @@
 
                         counter -= 1;
                       }
-                    } else if (this.readyState === this.UNSENT) {
+                    } else if (this.status === this.UNSENT) {
                       microsoftTranslationText = '';
                       $("ol.main").html(queryText);
                       this.value = '';
@@ -268,9 +288,9 @@
                 }
               }
 
-              $("ol.main").html(microsoftTranslationText);
+              $("ol.main").html(getPostproccessText(microsoftTranslationText));
               microsoftLang = $("#language_select").val();
-              microsoftQueryText = getPreproccessText(queryText);
+              microsoftQueryText = getPreproccessText(queryText, true);
             }
           } else {
             if (service === 'google') {
@@ -346,20 +366,32 @@
         }
       });
 
-      function getPreproccessText(text) {
+      function getPreproccessText(text, isChecking = false) {
         var glossaryText = text;
 
         for (let i = 1; glossary != undefined && i < glossary.length; i++) {
-          glossaryText = glossaryText.replace(new RegExp(glossary[i][0].replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&'), 'g'), glossary[i][1]);
+          glossaryText = glossaryText.replace(new RegExp(glossary[i][0], 'g'), `GLOSSARY_INDEX_${i}`);
+        }
+
+        return isChecking ? getPostproccessText(glossaryText) : glossaryText;
+      }
+
+      function getPostproccessText(text) {
+        var glossaryText = text;
+
+        for (let i = glossary.length - 1; glossary != undefined && i >= 1; i--) {
+          glossaryText = glossaryText.replace(new RegExp(`GLOSSARY_INDEX_(${i})`, 'g'), `${glossary[i][1]}`);
         }
 
         return glossaryText;
       }
 
       function translateGoogle(xhr, targetLang, query) {
-        xhr.open("POST", "https://translate.googleapis.com/translate_a/t?anno=3&client=gtx&format=json&v=1.0&key&sl=auto&tl=" + targetLang + "&sr=1&mode=1", false);
-        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-        xhr.send(query);
+        //`https://translate.googleapis.com/translate_a/t?anno=3&client=te&format=html&v=1.0&key&sl=auto&tl=${targetLang}&sr=1&mode=1`
+        //`https://clients5.google.com/translate_a/single?dj=1&dt=t&dt=sp&dt=ld&dt=bd&client=dict-chrome-ex&sl=auto&tl=${targetLang}&${query}`
+        //`https://translate.google.com/translate_t?source=dict-chrome-ex&sl=auto&tl=${targetLang}&${query}`
+        xhr.open("GET", `https://clients5.google.com/translate_a/single?dj=1&dt=t&dt=sp&dt=ld&dt=bd&client=gtx&sl=auto&tl=${targetLang}&${query}`, false);
+        xhr.send();
       }
 
       function translateMicrosoft(xhr, accessToken, toLang, data) {
