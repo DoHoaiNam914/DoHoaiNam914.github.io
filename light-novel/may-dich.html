@@ -177,25 +177,6 @@
               var session = '';
 
               for (let i = 0; i < sentences.length; i++) {
-                if (i < sentences.length) {
-                session = `q=${encodeURIComponent(getPreproccessText(sentences[i]))}`;
-
-                xhr.onreadystatechange = function () {
-                  if (this.readyState === this.DONE) {
-                    if (sentences[i] !== '<br>') {
-                        googleTranslationText += '<li><div class="main">' + JSON.parse(this.responseText).sentences[0].trans + '</div></li>' + (i + 1 < sentences.length && counter === 0 ? '\n' : '');
-                    } else {
-                        googleTranslationText += '<li><div class="main"><br></div></li>' + (i + 1 < sentences.length && counter === 0 ? '\n' : '');
-                    }
-                  } else if (this.status === this.UNSENT) {
-                    microsoftTranslationText = '';
-                    $("ol.main").html(queryText);
-                    this.value = '';
-                  }
-                };
-
-                translateGoogle(xhr, $("#language_select").val(), session);
-                } else if (i >= sentences.length) { //TODO: renturn false
                 sessionTranslate.push(getPreproccessText(sentences[i]));
 
                 if ((counter >= 50 && sessionTranslate.length === 50) || (counter < 50 && sessionTranslate.length === counter)) {
@@ -224,7 +205,6 @@
                   translateGoogle(xhr, $("#language_select").val(), session);
                   session = '';
                   sessionTranslate = [];
-                }
                 }
               }
 
@@ -379,19 +359,23 @@
       function getPostproccessText(text) {
         var glossaryText = text;
 
-        for (let i = glossary.length - 1; glossary != undefined && i >= 1; i--) {
-          glossaryText = glossaryText.replace(new RegExp(`GLOSSARY_INDEX_(${i})`, 'g'), `${glossary[i][1]}`);
+        if (glossary != undefined) {
+          for (let i = glossary.length - 1; i >= 1; i--) {
+            glossaryText = glossaryText.replace(new RegExp(`GLOSSARY_INDEX_(${i})`, 'g'), `${glossary[i][1]}`);
+          }
         }
 
         return glossaryText;
       }
 
       function translateGoogle(xhr, targetLang, query) {
-        //`https://translate.googleapis.com/translate_a/t?anno=3&client=te&format=html&v=1.0&key&sl=auto&tl=${targetLang}&sr=1&mode=1`
-        //`https://clients5.google.com/translate_a/single?dj=1&dt=t&dt=sp&dt=ld&dt=bd&client=dict-chrome-ex&sl=auto&tl=${targetLang}&${query}`
-        //`https://translate.google.com/translate_t?source=dict-chrome-ex&sl=auto&tl=${targetLang}&${query}`
-        xhr.open("GET", `https://clients5.google.com/translate_a/single?dj=1&dt=t&dt=sp&dt=ld&dt=bd&client=gtx&sl=auto&tl=${targetLang}&${query}`, false);
-        xhr.send();
+        //https://translate.googleapis.com/translate_a/t?anno=3&client=te&format=html&v=1.0&key&sl=auto&tl=${targetLang}&sr=1&mode=1 setRequestHeader(Content-Type: application/x-www-form-urlencoded) send(query)
+        //https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${targetLang}&hl=vi&dt=t&dt=bd&dj=1${query}
+        //https://clients5.google.com/translate_a/single?dj=1&dt=t&dt=sp&dt=ld&dt=bd&client=dict-chrome-ex&sl=auto&tl=${targetLang}${query}
+        //https://translate.google.com/translate_t?source=dict-chrome-ex&sl=auto&tl=${targetLang}${query}
+        xhr.open("POST", `https://translate.googleapis.com/translate_a/t?anno=3&client=dict-chrome-ex&format=html&v=1.0&key&sl=auto&tl=${targetLang}&sr=1&mode=1`, false);
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        xhr.send(query);
       }
 
       function translateMicrosoft(xhr, accessToken, toLang, data) {
