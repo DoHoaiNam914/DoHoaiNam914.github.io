@@ -198,7 +198,7 @@
 
       function loadGlossary() {
         if (glossary.length >= 2) {
-          glossary.sort((a, b) => (b[0] === 'source' && b[1] === 'target') ||b[0].length - a[0].length);
+          glossary.sort((a, b) => (b[0] === 'source' && b[1] === 'target') || b[0].length - a[0].length || b[1].length - a[1].length);
         }
 
         let glossaryList = '<option value="" selected>Chọn...</option>';

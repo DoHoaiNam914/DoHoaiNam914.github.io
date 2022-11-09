@@ -360,9 +360,9 @@
 
         for (let i = 1; glossary != undefined && i < glossary.length; i++) {
           glossaryText = glossaryText.replace(/<span class="notranslate">/g, '').replace(/<\/span>/g, '')
-            .replace(new RegExp(`(\\d|[A-zÀ-ÖØ-öø-ſ]|\\W)${glossary[i][0]}([A-zÀ-ÖØ-öø-ſ])`, 'g'), `$1 ${glossary[i][1]} $2`)
-            .replace(new RegExp(`(\\d|[A-zÀ-ÖØ-öø-ſ]|\\W)${glossary[i][0]}`, 'g'), `$1 ${glossary[i][1]}`)
-            .replace(new RegExp(`${glossary[i][0]}([A-zÀ-ÖØ-öø-ſ])`, 'g'), `${glossary[i][1]} $2`)
+            .replace(new RegExp(`(\\d|[A-Za-zÀ-ÖØ-öø-ɏḀ-ỿ!),.:;?\]}’”…—])${glossary[i][0]}([A-Za-zÀ-ÖØ-öø-ɏḀ-ỿ])`, 'g'), `$1 ${glossary[i][1]} $2`)
+            .replace(new RegExp(`(\\d|[A-Za-zÀ-ÖØ-öø-ɏḀ-ỿ!),.:;?\]}’”…—])${glossary[i][0]}`, 'g'), `$1 ${glossary[i][1]}`)
+            .replace(new RegExp(`${glossary[i][0]}([A-Za-zÀ-ÖØ-öø-ɏḀ-ỿ])`, 'g'), `${glossary[i][1]} $2`)
             .replace(new RegExp(glossary[i][0], 'g'), glossary[i][1]).trim();
         }
 
