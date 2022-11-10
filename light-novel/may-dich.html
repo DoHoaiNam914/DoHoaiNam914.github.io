@@ -338,7 +338,7 @@
 
         if (glossary != undefined) {
           for (let i = 1; i < glossary.length; i++) {
-            glossaryText = pre ? glossaryText.replace(new RegExp(glossary[i][0], 'g'), glossary[i][1]) : glossaryText.replace(new RegExp(glossary[i][0], 'g'), `<span class="notranslate">GLOSSARY_INDEX_${i}</span>`);
+            glossaryText = pre ? glossaryText.replace(new RegExp(glossary[i][0], 'g'), glossary[i][1]) : glossaryText.replace(new RegExp(glossary[i][0], 'g'), `<${$("#service_select").val() === 'microsoft' ? 'div' : 'span'} class="notranslate">GLOSSARY_INDEX_${i}</${$("#service_select").val() === 'microsoft' ? 'div' : 'span'}>`);
           }
 
           for (let i = glossary.length - 1; pre === false && i >= 1; i--) {
@@ -353,7 +353,7 @@
         var glossaryText = text;
 
         for (let i = 1; glossary != undefined && i < glossary.length; i++) {
-          glossaryText = glossaryText.replace(/<span class="notranslate">/g, '').replace(/<\/span>/g, '')
+          glossaryText = glossaryText.replace(new RegExp(`<${$("#service_select").val() === 'microsoft' ? 'div' : 'span'} class="notranslate">`, 'g'), '').replace(new RegExp(`<\/${$("#service_select").val() === 'microsoft' ? 'div' : 'span'}>`, 'g'), '')
             .replace(new RegExp(`(\\d|[A-Za-zÀ-ÖØ-öø-ɏḀ-ỿ]|[!),.:;?\\]}’”…—])${glossary[i][0]}(\\d|[A-Za-zÀ-ÖØ-öø-ɏḀ-ỿ]|[(\\[{‘“])`, 'g'), `$1 ${glossary[i][1]} $2`)
             .replace(new RegExp(`(\\d|[A-Za-zÀ-ÖØ-öø-ɏḀ-ỿ]|[!),.:;?\\]}’”…—])${glossary[i][0]}`, 'g'), `$1 ${glossary[i][1]}`)
             .replace(new RegExp(`${glossary[i][0]}(\\d|[A-Za-zÀ-ÖØ-öø-ɏḀ-ỿ]|[(\\[{‘“])`, 'g'), `${glossary[i][1]} $1`)
