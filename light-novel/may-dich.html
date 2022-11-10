@@ -177,7 +177,7 @@
               var session = '';
 
               for (let i = 0; i < sentences.length; i++) {
-                sessionTranslate.push(getPreproccessText(sentences[i]));
+                sessionTranslate.push(getPreproccessText(sentences[i], false));
 
                 if ((counter >= 50 && sessionTranslate.length === 50) || (counter < 50 && sessionTranslate.length === counter)) {
                   for (let j = 0; j < sessionTranslate.length; j++) {
@@ -231,7 +231,7 @@
               var session = [];
 
               for (let i = 0; i < sentences.length; i++) {
-                sessionTranslate.push(getPreproccessText(sentences[i]));
+                sessionTranslate.push(getPreproccessText(sentences[i], false));
 
                 if ((counter >= 50 && sessionTranslate.length === 50) || (counter < 50 && sessionTranslate.length === counter)) {
                   for (let j = 0; j < sessionTranslate.length; j++) {
@@ -333,12 +333,18 @@
         }
       });
 
-      function getPreproccessText(text, pre = false) {
+      function getPreproccessText(text, pre) {
         var glossaryText = text;
 
         if (glossary != undefined) {
           for (let i = 1; i < glossary.length; i++) {
-            glossaryText = pre ? glossaryText.replace(new RegExp(glossary[i][0], 'g'), glossary[i][1]) : glossaryText.replace(new RegExp(glossary[i][0], 'g'), `<${$("#service_select").val() === 'microsoft' ? 'div' : 'span'} class="notranslate">GLOSSARY_INDEX_${i}</${$("#service_select").val() === 'microsoft' ? 'div' : 'span'}>`);
+            if (pre) {
+              glossaryText = glossaryText.replace(new RegExp(glossary[i][0], 'g'), glossary[i][1]);
+            } else if ($("#service_select").val() === 'microsoft') {
+              glossaryText = glossaryText.replace(new RegExp(glossary[i][0], 'g'), `<mstrans:dictionary translation="${glossary[i][1]}">GLOSSARY_INDEX_${i}</mstrans:dictionary>`)
+            } else {
+              glossaryText = glossaryText.replace(new RegExp(glossary[i][0], 'g'), `<span class="notranslate">GLOSSARY_INDEX_${i}</span>`);
+            }
           }
 
           for (let i = glossary.length - 1; pre === false && i >= 1; i--) {
@@ -352,8 +358,8 @@
       function getPostproccessText(text) {
         var glossaryText = text;
 
-        for (let i = 1; glossary != undefined && i < glossary.length; i++) {
-          glossaryText = glossaryText.replace(new RegExp(`<${$("#service_select").val() === 'microsoft' ? 'div' : 'span'} class="notranslate">`, 'g'), '').replace(new RegExp(`<\/${$("#service_select").val() === 'microsoft' ? 'div' : 'span'}>`, 'g'), '')
+        for (let i = 1; glossary != undefined && $("#service_select").val() !== 'microsoft' && i < glossary.length; i++) {
+          glossaryText = glossaryText.replace(/<span class="notranslate">/g, '').replace(/<\/span>/g, '')
             .replace(new RegExp(`(\\d|[A-Za-zÀ-ÖØ-öø-ɏḀ-ỿ]|[!),.:;?\\]}’”…—])${glossary[i][0]}(\\d|[A-Za-zÀ-ÖØ-öø-ɏḀ-ỿ]|[(\\[{‘“])`, 'g'), `$1 ${glossary[i][1]} $2`)
             .replace(new RegExp(`(\\d|[A-Za-zÀ-ÖØ-öø-ɏḀ-ỿ]|[!),.:;?\\]}’”…—])${glossary[i][0]}`, 'g'), `$1 ${glossary[i][1]}`)
             .replace(new RegExp(`${glossary[i][0]}(\\d|[A-Za-zÀ-ÖØ-öø-ɏḀ-ỿ]|[(\\[{‘“])`, 'g'), `${glossary[i][1]} $1`)
