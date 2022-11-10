@@ -14,8 +14,8 @@ $(document).ready(function () {
   $.get(volume + '/content.html').done((data) => $(document.head).append($(parser.parseFromString(data, 'text/html').head).html()));
   $(document.body).html(`<form>
   <div class="notranslate" style="bottom: 8px; left: 8px; position: fixed;">
-    <select id="background_select">
-      <option value="white">Trắng</option>
+    <select id="backgroundSelect">
+      <option value="white" selected>Trắng</option>
       <option value="black">Đen</option>
       <option value="sepia">Sepia</option>
       <option value="cream">Kem</option>
@@ -23,7 +23,7 @@ $(document).ready(function () {
   </div>
 </form>
 <script>
-  $("#background_select").on("change", function () {
+  $("#backgroundSelect").on("change", function () {
     if (this.value !== 'white') {
       $(document.documentElement).attr("style", $(document.documentElement).attr("style") != undefined ?
         $(document.documentElement).attr("style").replace(/ black;/g, '')
@@ -68,7 +68,7 @@ function loadYenPressSpinesContent(spineList) {
           $(document.head).append(`<script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
 <script src="/js/js.cookie.js"></script>`);
           $(document.head).append("<link rel=\"stylesheet\" href=\"/css/styles/DoHoaiNamStyle-before.css\">\n" + stylesheet + "\n<link rel=\"stylesheet\" href=\"/css/styles/DoHoaiNamStyle/" + book + "_patch.css\">\n<link rel=\"stylesheet\" href=\"/css/styles/DoHoaiNamStyle-after.css\">");
-          $("#background_select").val(Cookies.get('background') || "white").change();
+          $("#backgroundSelect").val(Cookies.get('background') || "white").change();
         }
 
         $(document.body).append("\n<div class=\"body\"" +
@@ -112,7 +112,7 @@ function loadYenPressSpinesContent2(spineList) {
           $(document.head).append(`<script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
 <script src="/js/js.cookie.js"></script>`);
           $(document.head).append("<link rel=\"stylesheet\" href=\"/css/styles/DoHoaiNamStyle-before.css\">\n" + stylesheet + "\n<link rel=\"stylesheet\" href=\"/css/styles/DoHoaiNamStyle/" + book + "_patch.css\">\n<link rel=\"stylesheet\" href=\"/css/styles/DoHoaiNamStyle-after.css\">");
-          $("#background_select").val(Cookies.get('background') || "white").change();
+          $("#backgroundSelect").val(Cookies.get('background') || "white").change();
         }
 
         $(document.body).append("\n<div class=\"body\"" +
@@ -156,7 +156,7 @@ function loadJNovelClubSpinesContent(spineList) {
           $(document.head).append(`<script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
 <script src="/js/js.cookie.js"></script>`);
           $(document.head).append("<link rel=\"stylesheet\" href=\"/css/styles/DoHoaiNamStyle-before.css\">\n" + stylesheet + "\n<link rel=\"stylesheet\" href=\"/css/styles/DoHoaiNamStyle/j-novelclub_patch.css\">\n<link rel=\"stylesheet\" href=\"/css/styles/DoHoaiNamStyle-after.css\">");
-          $("#background_select").val(Cookies.get('background') || "white").change();
+          $("#backgroundSelect").val(Cookies.get('background') || "white").change();
         }
 
         $(document.body).append("\n<div class=\"body" + (this.responseText.includes('<img') ? " nomargin center\"" : "\"") +

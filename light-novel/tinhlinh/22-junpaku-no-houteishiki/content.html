@@ -67,7 +67,7 @@
                 $(document.head).append(`  <script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"><\/script>
 <script src="../../js/js.cookie.js"><\/script>`);
                 $(document.head).append("<link rel=\"stylesheet\" href=\"../../css/styles/DoHoaiNamStyle/fonts_patch.css\">\n<link rel=\"stylesheet\" href=\"../../css/styles/DoHoaiNamStyle-before.css\">\n" + stylesheet + "\n<link rel=\"stylesheet\" href=\"../../css/styles/DoHoaiNamStyle-after.css\">");
-                $("#background_select").val(Cookies.get('background') || "white").change();
+                $("#backgroundSelect").val(Cookies.get('background') || "white").change();
               }
 
               $(document.body).append("\n<div>" + html.body.innerHTML.toString().replace(new RegExp(' xmlns="http://www.w3.org/1999/xhtml"', 'g'), '')
