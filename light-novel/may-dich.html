@@ -49,7 +49,7 @@
     </form>
     <section class="p-text" style="margin: 16px 0 0 0;">
       <ol class="main"></ol>
-      <div style="text-align: center;"><textarea name="textarea" style="background: transparent; border: 0; border-style: none; color: inherit; font-family: inherit; font-size: inherit; height: 50vh; margin: 0; padding: 0; width: 100%;">Write something here</textarea></div>
+      <div style="text-align: center;"><textarea name="textarea" placeholder="Viết gì đó tại đây" style="background: transparent; border: 0; border-style: none; color: inherit; font-family: inherit; font-size: inherit; height: 50vh; margin: 0; padding: 0; width: 100%;"></textarea></div>
     </section>
     <script>
       var queryText;
@@ -295,25 +295,25 @@
             $("div.main").removeAttr("style");
             $("ol.main").removeAttr("contentEditable");
             $("#service_select").prop("disabled", false);
-          } else {
+            this.value = 'Chỉnh sửa';
+          } else if ($("textarea").val().length > 0) {
             var sentences = $("textarea").val().split('\n');
             $("ol.main").html(null);
 
             for (let i = 0; i < sentences.length; i++) {
-              $("ol.main").append('<li><div class="main">' + (sentences[i] !== '' || sentences[i].trim().length !== 0 ? sentences[i] : '<br>') + '</div></li>' + (i + 1 < sentences.length ? '\n' : ''));
+              $("ol.main").append('<li><div class="main">' + (sentences[i] !== '' && sentences[i].trim().length !== 0 ? sentences[i] : '<br>') + '</div></li>' + (i + 1 < sentences.length ? '\n' : ''));
             }
 
             $("textarea").hide();
             $("ol.main").css("padding-left", parseInt($(document.documentElement).css("font-size")) + 8 * $("ol.main").html().split('\n').length.toString().concat('.').length + "px");
             $("ol.main").show();
-          }
+            this.value = 'Chỉnh sửa';
 
-          this.value = 'Chỉnh sửa';
-
-          if ($("#service_select").val() !== '') {
-            let value = $("#service_select").val();
-            $("#service_select").val("").change();
-            $("#service_select").val(value).change();
+            if ($("#service_select").val() !== '') {
+              let value = $("#service_select").val();
+              $("#service_select").val("").change();
+              $("#service_select").val(value).change();
+            }
           }
         }
       });
@@ -332,12 +332,6 @@
           $("textarea").show();
         }
       });
-      
-      $("textarea").on("click", function () {
-        if (this.value === 'Write something here') {
-          this.value = '';
-        }
-      });
 
       function getPreproccessText(text, pre = false) {
         var glossaryText = text;
@@ -347,7 +341,7 @@
             glossaryText = pre ? glossaryText.replace(new RegExp(glossary[i][0], 'g'), glossary[i][1]) : glossaryText.replace(new RegExp(glossary[i][0], 'g'), `<span class="notranslate">GLOSSARY_INDEX_${i}</span>`);
           }
 
-          for (let i = glossary.length - 1; pre == false && i >= 1; i--) {
+          for (let i = glossary.length - 1; pre === false && i >= 1; i--) {
             glossaryText = glossaryText.replace(new RegExp(`GLOSSARY_INDEX_${i}`, 'g'), glossary[i][0]);
           }
         }
@@ -360,9 +354,9 @@
 
         for (let i = 1; glossary != undefined && i < glossary.length; i++) {
           glossaryText = glossaryText.replace(/<span class="notranslate">/g, '').replace(/<\/span>/g, '')
-            .replace(new RegExp(`(\\d|[A-Za-zÀ-ÖØ-öø-ɏḀ-ỿ!),.:;?\]}’”…—])${glossary[i][0]}([A-Za-zÀ-ÖØ-öø-ɏḀ-ỿ])`, 'g'), `$1 ${glossary[i][1]} $2`)
-            .replace(new RegExp(`(\\d|[A-Za-zÀ-ÖØ-öø-ɏḀ-ỿ!),.:;?\]}’”…—])${glossary[i][0]}`, 'g'), `$1 ${glossary[i][1]}`)
-            .replace(new RegExp(`${glossary[i][0]}([A-Za-zÀ-ÖØ-öø-ɏḀ-ỿ])`, 'g'), `${glossary[i][1]} $2`)
+            .replace(new RegExp(`(\\d|[A-Za-zÀ-ÖØ-öø-ɏḀ-ỿ]|[!),.:;?\\]}’”…—])${glossary[i][0]}(\\d|[A-Za-zÀ-ÖØ-öø-ɏḀ-ỿ]|[(\\[{‘“])`, 'g'), `$1 ${glossary[i][1]} $2`)
+            .replace(new RegExp(`(\\d|[A-Za-zÀ-ÖØ-öø-ɏḀ-ỿ]|[!),.:;?\\]}’”…—])${glossary[i][0]}`, 'g'), `$1 ${glossary[i][1]}`)
+            .replace(new RegExp(`${glossary[i][0]}(\\d|[A-Za-zÀ-ÖØ-öø-ɏḀ-ỿ]|[(\\[{‘“])`, 'g'), `${glossary[i][1]} $1`)
             .replace(new RegExp(glossary[i][0], 'g'), glossary[i][1]).trim();
         }
 
@@ -370,7 +364,7 @@
       }
 
       function translateGoogle(xhr, targetLang, query) {
-        //POST https://translate.googleapis.com/translate_a/t?anno=3&client=te&format=html&v=1.0&key&sl=auto&tl=${targetLang}&sr=1&mode=1 setRequestHeader(Content-Type: application/x-www-form-urlencoded) send(query)
+        //POST https://translate.googleapis.com/translate_a/t?anno=3&client=te&format=html&v=1.0&key&sl=auto&tl=${targetLang}&sr=1&mode=1 Content-Type: application/x-www-form-urlencoded - send(query)
         //GET https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${targetLang}&hl=vi&dt=t&dt=bd&dj=1${query}
         //GET https://clients5.google.com/translate_a/single?dj=1&dt=t&dt=sp&dt=ld&dt=bd&client=dict-chrome-ex&sl=auto&tl=${targetLang}${query}
         //GET https://translate.google.com/translate_t?source=dict-chrome-ex&sl=auto&tl=${targetLang}${query}
@@ -380,9 +374,9 @@
       }
 
       function translateMicrosoft(xhr, accessToken, toLang, data) {
-        //POST https://api.cognitive.microsofttranslator.com/translate?to=${toLang}&api-version=3.0&includeSentenceLength=true
+        //POST https://api.cognitive.microsofttranslator.com/translate?to=${toLang}&api-version=3.0&includeSentenceLength=true Authorization: Bearer ${accessToken} - Content-Type: application/json - send(data)
         xhr.open("POST", `https://api.cognitive.microsofttranslator.com/translate?to=${toLang}&api-version=3.0&textType=html&includeSentenceLength=true`, false);
-        xhr.setRequestHeader("Authorization", "Bearer " + accessToken);
+        xhr.setRequestHeader("Authorization", `Bearer ${accessToken}`);
         xhr.setRequestHeader("Content-Type", "application/json");
         xhr.send(data);
       }
