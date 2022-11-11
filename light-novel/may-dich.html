@@ -28,8 +28,8 @@
     </form>
     <form>
       <div class="notranslate" style="margin-bottom: 8px; position: fixed; text-align: initial; top: 0;">
-        <input id="inputGlossary" type="file" accept="text/tab-separated-values,text/csv">
         <label for="inputGlossary">Chọn tệp từ vựng:</label>
+        <input id="inputGlossary" type="file" accept="text/tab-separated-values,text/csv">
       </div>
       <div class="notranslate" style="bottom: 8px; position: fixed; right: 8px;">
         <select id="languageSelect">
@@ -49,7 +49,9 @@
     </form>
     <section class="p-text" style="margin: 16px 0 0 0;">
       <ol class="main"></ol>
-      <div style="text-align: center;"><textarea name="textarea" placeholder="Viết gì đó tại đây" style="background: transparent; border: 0; border-style: none; color: inherit; font-family: inherit; font-size: inherit; height: 50vh; margin: 0; padding: 0; width: 100%;"></textarea></div>
+      <div style="text-align: center;">
+        <textarea name="textarea" placeholder="Viết gì đó tại đây" style="background: transparent; border: 0; border-style: none; color: inherit; font-family: inherit; font-size: inherit; height: 50vh; margin: 0; padding: 0; width: 100%;"></textarea>
+      </div>
     </section>
     <script>
       var queryText;
@@ -133,7 +135,7 @@
           }
 
           if (this.value !== '') {
-            text = queryText.replace(/<li><div class="main">/g, '').replace(/<\/div><\/li>/g, '');
+            text = queryText.replace(/<li>/g, '').replace(/<\/li>/g, '');
             sentences = text.split('\n');
             counter = sentences.length;
           }
@@ -167,9 +169,9 @@
                     if (this.readyState === this.DONE) {
                       for (let j = 0; j < sessionTranslate.length; j++) {
                         if (sessionTranslate[j] !== '<br>') {
-                          googleTranslationText += `<li><div class="main">${JSON.parse(this.responseText)[j][0]}</div></li>${i + 1 < sentences.length && counter === 0 ? '\n' : ''}`;
+                          googleTranslationText += `<li>${JSON.parse(this.responseText)[j][0]}</li>${i + 1 < sentences.length && counter === 0 ? '\n' : ''}`;
                         } else {
-                          googleTranslationText += `<li><div class="main"><br></div></li>${i + 1 < sentences.length && counter === 0 ? '\n' : ''}`;
+                          googleTranslationText += `<li><br></li>${i + 1 < sentences.length && counter === 0 ? '\n' : ''}`;
                         }
 
                         counter -= 1;
@@ -223,9 +225,9 @@
                     if (this.readyState === this.DONE) {
                       for (let j = 0; j < sessionTranslate.length; j++) {
                         if (sessionTranslate[j] !== '<br>') {
-                          microsoftTranslationText += `<li><div class="main">${JSON.parse(this.responseText)[j].translations[0].text}</div></li>${i + 1 < sentences.length && counter === 0 ? '\n' : ''}`;
+                          microsoftTranslationText += `<li>${JSON.parse(this.responseText)[j].translations[0].text}</li>${i + 1 < sentences.length && counter === 0 ? '\n' : ''}`;
                         } else {
-                          microsoftTranslationText += `<li><div class="main"><br></div></li>${i + 1 < sentences.length && counter === 0 ? '\n' : ''}`;
+                          microsoftTranslationText += `<li><br></li>${i + 1 < sentences.length && counter === 0 ? '\n' : ''}`;
                         }
 
                         counter -= 1;
@@ -263,7 +265,6 @@
             $("ol.main").hide();
             $("textarea").show();
           } else {
-            $("div.main").css("display", "inline-block");
             $("ol.main").attr("contentEditable", true);
             $("#serviceSelect").prop("disabled", true);
           }
@@ -271,7 +272,6 @@
           this.value = 'Xong';
         } else {
           if ($("textarea").css("display") === 'none') {
-            $("div.main").removeAttr("style");
             $("ol.main").removeAttr("contentEditable");
             $("#serviceSelect").prop("disabled", false);
             this.value = 'Chỉnh sửa';
@@ -280,7 +280,7 @@
             $("ol.main").html(null);
 
             for (let i = 0; i < sentences.length; i++) {
-              $("ol.main").append('<li><div class="main">' + (sentences[i] !== '' && sentences[i].trim().length !== 0 ? sentences[i] : '<br>') + '</div></li>' + (i + 1 < sentences.length ? '\n' : ''));
+              $("ol.main").append(`<li>${sentences[i] !== '' && sentences[i].trim().length !== 0 ? sentences[i] : '<br>'}</li>${i + 1 < sentences.length ? '\n' : ''}`);
             }
 
             $("textarea").hide();
@@ -300,11 +300,10 @@
       $("ol.main").on("input", function () {
         $("ol.main").css("padding-left", parseInt($(document.documentElement).css("font-size")) + 8 * $("ol.main").html().split('\n').length.toString().concat('.').length + "px");
 
-        if ($("ol.main").html() === '' || $("ol.main").html() === '<li><div class="main"></div></li>' || $("ol.main").html() === '<li><div class="main"><br></div></li>') {
+        if ($("ol.main").html() === '' || $("ol.main").html() === '<li></li>' || $("ol.main").html() === '<li><br></li>') {
           $("#serviceSelect").val("").change();
           queryText = '';
           $("ol.main").html(null);
-          $("div.main").removeAttr("style");
           $("ol.main").attr("contentEditable", false);
           $("#serviceSelect").prop("disabled", false);
           $("ol.main").hide();
