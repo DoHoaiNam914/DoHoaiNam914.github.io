@@ -91,11 +91,11 @@
       const worker = createWorker({
         langPath: 'https://tessdata.projectnaptha.com/4.0.0_best',
         errorHandler: function () {
-          $("#page_segmentation_select").prop("disabled", false);
-          $("#language_select").prop("disabled", false);
-          $("#preproccess_select").prop("disabled", false);
-          $("#image_file").prop("disabled", false);
-          $("#ocr_button").prop("disabled", false);
+          $("#page_segmentation_select").removeAttr("disabled");
+          $("#language_select").removeAttr("disabled");
+          $("#preproccess_select").removeAttr("disabled");
+          $("#image_file").removeAttr("disabled");
+          $("#ocr_button").removeAttr("disabled");
           $("#ocr_button").val("Nhận dạng ký tự");
         }
       });
@@ -435,11 +435,11 @@
       }
 
       async function recognize(lang, pageseg_mode, input) {
-        $("#ocr_button").prop("disabled", true);
-        $("#image_file").prop("disabled", true);
-        $("#preproccess_select").prop("disabled", true);
-        $("#language_select").prop("disabled", true);
-        $("#page_segmentation_select").prop("disabled", true);
+        $("#ocr_button").attr("disabled", true);
+        $("#image_file").attr("disabled", true);
+        $("#preproccess_select").attr("disabled", true);
+        $("#language_select").attr("disabled", true);
+        $("#page_segmentation_select").attr("disabled", true);
         $("ol.main").html(null);
 
         await worker.load();
@@ -451,11 +451,11 @@
         });
 
         const { data: { text } } = await worker.recognize(input);
-        $("#page_segmentation_select").prop("disabled", false);
-        $("#language_select").prop("disabled", false);
-        $("#preproccess_select").prop("disabled", false);
-        $("#image_file").prop("disabled", false);
-        $("#ocr_button").prop("disabled", false);
+        $("#page_segmentation_select").removeAttr("disabled");
+        $("#language_select").removeAttr("disabled");
+        $("#preproccess_select").removeAttr("disabled");
+        $("#image_file").removeAttr("disabled");
+        $("#ocr_button").removeAttr("disabled");
         $("#ocr_button").val("Xong");
 
         var sentences = text.split('\n');
