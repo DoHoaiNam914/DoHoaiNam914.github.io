@@ -81,7 +81,7 @@ async function translate(service, sourceLang, targetLang, sentences, translation
           var translations = new Array();
           data.forEach((element) => translations.push(element.translations[0].text));
 
-          translation += `<div>${translations.join('</div>\n<div>')}</div>`.replace(/<div><\/div>/g, '<div><br></div>');
+          translation += `<p>${translations.join('</p>\n<p>')}</p>`.replace(/<p><\/p>/g, '<p><br></p>');
 
           if (count - query.length === 0) {
             $("#translatedText").html(textPostProcess(translation, service));
@@ -118,9 +118,9 @@ async function translate(service, sourceLang, targetLang, sentences, translation
             var translations = new Array();
             data.forEach((element) => translations.push(element[0]));
 
-            translation += `<div>${translations.join('</div>\n<div>')}</div>`.replace(/<div><\/div>/g, '<div><br></div>');
+            translation += `<p>${translations.join('</p>\n<p>')}</p>`.replace(/<p><\/p>/g, '<p><br></p>');
           } else {
-            translation += `<div>${data.join('</p>\n<p>')}</div>`.replace(/<div><\/div>/g, '<div><br></div>');
+            translation += `<p>${data.join('</p>\n<p>')}</p>`.replace(/<p><\/p>/g, '<p><br></p>');
           }
 
           if (count - query.length === 0) {
