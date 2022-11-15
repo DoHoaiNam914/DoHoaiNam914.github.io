@@ -14,8 +14,19 @@
         .script("/lib/jquery.csv.js");
     </script>
     <style>
-      body {
-        padding-bottom: 5rem;
+      main.container {
+        font-size: 22px !important;
+        margin-bottom: 5rem;
+      }
+
+      @media (max-width: 1000px) {
+        main.container {
+          font-size: 12px !important;
+        }
+
+        :lang(ja) main.container {
+          font-size: 14px !important;
+        }
       }
 
       select.form-select-lang {
@@ -28,8 +39,8 @@
         text-align: justify;
       }
 
-      .textarea p {
-        margin-bottom: 0;
+      .textarea * {
+        margin: 0;
       }
     </style>
   </head>
