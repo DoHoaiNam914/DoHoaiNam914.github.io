@@ -150,7 +150,7 @@ async function translate(service, sourceLang, targetLang, sentences, translation
       for (let i = 1; i < glossary.length; i++) {
         if (pre) {
           glossaryText = glossaryText.replace(new RegExp(glossary[i][0], 'g'), glossary[i][1]);
-        } else if ($("#serviceSelect").val() === 'microsoft') {
+        } else if (service === 'microsoft') {
           glossaryText = glossaryText.replace(new RegExp(glossary[i][0], 'g'), `<mstrans:dictionary translation="${glossary[i][1]}">GLOSSARY_INDEX_${i}</mstrans:dictionary>`)
         } else {
           glossaryText = glossaryText.replace(new RegExp(glossary[i][0], 'g'), `<span class="notranslate">GLOSSARY_INDEX_${i}</span>`);
@@ -168,7 +168,7 @@ async function translate(service, sourceLang, targetLang, sentences, translation
   function textPostProcess(text, service) {
     var glossaryText = text;
 
-    for (let i = 1; glossary != undefined && $("#serviceSelect").val() !== 'microsoft' && i < glossary.length; i++) {
+    for (let i = 1; glossary != undefined && service !== MICROSOFT && i < glossary.length; i++) {
       glossaryText = glossaryText.replace(/<span class="notranslate">/g, '').replace(/<\/span>/g, '')
         .replace(new RegExp(`(\\d|[A-Za-zÀ-ÖØ-öø-ɏḀ-ỿ]|[!),.:;?\\]}’”…—])${glossary[i][0]}(\\d|[A-Za-zÀ-ÖØ-öø-ɏḀ-ỿ]|[(\\[{‘“])`, 'g'), `$1 ${glossary[i][1]} $2`)
         .replace(new RegExp(`(\\d|[A-Za-zÀ-ÖØ-öø-ɏḀ-ỿ]|[!),.:;?\\]}’”…—])${glossary[i][0]}`, 'g'), `$1 ${glossary[i][1]}`)
