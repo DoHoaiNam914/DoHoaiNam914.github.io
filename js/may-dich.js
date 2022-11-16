@@ -159,7 +159,8 @@ async function translate(service, sourceLang, targetLang, sentences, translation
           };
 
           $.ajax(settings).done(function (data) {
-            var translations = data.translatedText.split('\n');
+            var translations = new Array();
+            data.forEach((element) => translations.push(element.translations[0].text));
 
             translation += `<p>${translations.join('</p>\n<p>')}</p>`.replace(/<p><\/p>/g, '<p><br></p>');
 
