@@ -107,8 +107,8 @@ async function translate(service, sourceLang, targetLang, sentences, translation
             },
             processData: false,
             data: JSON.stringify({
-              'source' : 'en',
-              'target' : 'vi',
+              'source' : sourceLang,
+              'target' : targetLang,
               'text' : query.join('\n')
             })
           };
