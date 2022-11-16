@@ -14,18 +14,14 @@
         .script("/lib/jquery.csv.js");
     </script>
     <style>
-      main.container {
-        font-size: 22px !important;
-        margin-bottom: 5rem;
+      main.container * {
+        font-size: 18px !important;
+        margin-bottom: 15rem;
       }
 
       @media (max-width: 1000px) {
-        main.container {
-          font-size: 12px !important;
-        }
-
-        :lang(ja) main.container {
-          font-size: 14px !important;
+        :lang(ja) main.container * {
+          font-size: 16px !important;
         }
       }
 
@@ -34,8 +30,13 @@
       }
 
       .textarea {
+        margin-top: 5rem;
         min-height: 300px !important;
         overflow: hidden;
+      }
+
+      textarea {
+        resize: none;
       }
 
       .textarea * {

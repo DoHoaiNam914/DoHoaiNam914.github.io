@@ -8,8 +8,8 @@ var volume;
 $(document).ready(function () {
   let searchParams = new URLSearchParams(window.location.search);
 
-  book = searchParams.get('sach');
-  volume = searchParams.get('tap');
+  book = searchParams.get('sach') || 'tinhlinh';
+  volume = searchParams.get('tap') || 'volume-10';
 
   $.getJSON('/light-novel/data.json', function (data) {
     _.each(data.library[0][book], function (currentVolume) {

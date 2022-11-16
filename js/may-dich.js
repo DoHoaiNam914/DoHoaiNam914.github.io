@@ -21,22 +21,33 @@ var papagoTranslation;
 
 $("#translateButton").on("click", function () {
   let service = $(".service.active").attr("id");
+  let sourceLang = service === MICROSOFT ? $("#sourceLangSelect").val().replace('auto', '').replace('CN', 'CHS').replace('TW', 'CHT') : $("#sourceLangSelect").val();
+  let targetLang = service === MICROSOFT ? $("#targetLangSelect").val().replace('CN', 'CHS').replace('TW', 'CHT') : $("#targetLangSelect").val();
   let sentences = $("#sourceText").val().split('\n');
 
-  if (googleQuery != undefined && $(".service.active").attr("id") === GOOGLE && $("#targetLangSelect").val() === googleLang && textPreProcess(sentences.join('\n'), $(".service.active").attr("id"), true) === googleQuery) {
+  if (googleQuery != undefined && service === GOOGLE && sourceLang === googleLang[0] && targetLang === googleLang[1] && textPreProcess(sentences.join('\n'), service, true) === googleQuery) {
     $("#translatedText").html(googleTranslation);
-  } if (microsoftQuery != undefined && $(".service.active").attr("id") === MICROSOFT && $("#targetLangSelect").val() === microsoftLang && textPreProcess(sentences.join('\n'), $(".service.active").attr("id"), true) === microsoftQuery) {
-    $("#translatedText").html(microsoftTranslation);
-  } if (papagoQuery != undefined && $(".service.active").attr("id") === PAPAGO && $("#targetLangSelect").val() === papagoLang && textPreProcess(sentences.join('\n'), $(".service.active").attr("id"), true) === papagoQuery) {
-    $("#translatedText").html(papagoTranslation);
-  } else {
-    translate($(".service.active").attr("id"), $("#sourceLangSelect").val(), $("#targetLangSelect").val(), sentences, '', new Array(), 0, sentences.length);
-  }
-});
 
-$(".textarea").on("input", function () {
-  let height = ($("#sourceText").prop("scrollHeight") >= $("#translatedText").prop("scrollHeight") ? $("#sourceText") : $("#translatedText")).prop("scrollHeight");
-  $("textarea").css("height", height > 300 ? height.toString().concat('px') : "auto");
+    let height = ($("#translatedText").prop("scrollHeight") >= $("#sourceText").prop("scrollHeight") ? $("#translatedText") : $("#sourceText")).prop("scrollHeight");
+
+    $(".textarea").css("height", height > 300 ? height.toString().concat('px') : "auto");
+  } if (microsoftQuery != undefined && service === MICROSOFT && sourceLang === microsoftLang[0] && targetLang === microsoftLang[1] && textPreProcess(sentences.join('\n'), service, true) === microsoftQuery) {
+    $("#translatedText").html(microsoftTranslation);
+
+    let height = ($("#translatedText").prop("scrollHeight") >= $("#sourceText").prop("scrollHeight") ? $("#translatedText") : $("#sourceText")).prop("scrollHeight");
+
+    $(".textarea").css("height", height > 300 ? height.toString().concat('px') : "auto");
+  } if (papagoQuery != undefined && service === PAPAGO && sourceLang === papagoLang[0] && targetLang === papagoLang[1] && textPreProcess(sentences.join('\n'), service, true) === papagoQuery) {
+    $("#translatedText").html(papagoTranslation);
+
+    let height = ($("#translatedText").prop("scrollHeight") >= $("#sourceText").prop("scrollHeight") ? $("#translatedText") : $("#sourceText")).prop("scrollHeight");
+
+    $(".textarea").css("height", height > 300 ? height.toString().concat('px') : "auto");
+  } else {
+    $(this).attr("disabled", true);
+    $("#inputGlossary").attr("disabled", true);
+    translate(service, sourceLang, targetLang, sentences, '', new Array(), 0, sentences.length);
+  }
 });
 
 $(".service").on("click", function () {
@@ -69,7 +80,12 @@ $("#inputGlossary").on("input", function () {
   };
 });
 
-$("div.textarea").on("paste", function (e) {
+$(".textarea").on("input", function () {
+  let height = ($("#sourceText").prop("scrollHeight") >= $("#translatedText").prop("scrollHeight") ? $("#sourceText") : $("#translatedText")).prop("scrollHeight");
+  $(".textarea").css("height", height > 300 ? height.toString().concat('px') : "auto");
+});
+
+$("#translatedText").on("paste", function (e) {
   e.preventDefault();
   var text = e.clipboardData.getData('text/plain');
   document.execCommand('insertText', false, text);
@@ -77,9 +93,12 @@ $("div.textarea").on("paste", function (e) {
 
 async function translate(service, sourceLang, targetLang, sentences, translation, query, index, count) {
   if (index < sentences.length) {
+    var queryLength = 50;
+
     switch (service) {
       case PAPAGO:
         query.push(textPreProcess(sentences[index], service, false));
+        queryLength = 10;
         break;
       case MICROSOFT:
         query.push({
@@ -88,12 +107,11 @@ async function translate(service, sourceLang, targetLang, sentences, translation
 
         break;
       case GOOGLE:
-      default:
         query.push(encodeURIComponent(textPreProcess(sentences[index], service, false)));
         break;
     }
 
-    if ((count >= 50 && query.length === 50) || (count < 50 && query.length === count)) {
+    if ((count >= queryLength && query.length === queryLength) || (count < queryLength && query.length === count)) {
       let settings;
 
       switch (service) {
@@ -118,13 +136,16 @@ async function translate(service, sourceLang, targetLang, sentences, translation
 
             if (count - query.length === 0) {
               $("#translatedText").html(textPostProcess(translation, service));
-              papagoQuery = textPreProcess(sentences, service, true);
-              papagoLang = targetLang;
+              papagoQuery = textPreProcess(sentences.join('\n'), service, true);
+              papagoLang = [sourceLang, targetLang];
               papagoTranslation = $("#translatedText").html();
 
               let height = ($("#translatedText").prop("scrollHeight") >= $("#sourceText").prop("scrollHeight") ? $("#translatedText") : $("#sourceText")).prop("scrollHeight");
 
-              $("textarea").css("height", height > 300 ? height.toString().concat('px') : "auto");
+              $(".textarea").css("height", height > 300 ? height.toString().concat('px') : "auto");
+
+              $("#translateButton").removeAttr("disabled");
+              $("#inputGlossary").removeAttr("disabled");
             } else {
               translate(service, sourceLang, targetLang, sentences, translation, new Array(), index + 1, count - query.length);
             }
@@ -133,7 +154,10 @@ async function translate(service, sourceLang, targetLang, sentences, translation
 
             let height = ($("#translatedText").prop("scrollHeight") >= $("#sourceText").prop("scrollHeight") ? $("#translatedText") : $("#sourceText")).prop("scrollHeight");
 
-            $("textarea").css("height", height > 300 ? height.toString().concat('px') : "auto");
+            $(".textarea").css("height", height > 300 ? height.toString().concat('px') : "auto");
+
+            $("#translateButton").removeAttr("disabled");
+            $("#inputGlossary").removeAttr("disabled");
           });
 
           break;
@@ -142,7 +166,15 @@ async function translate(service, sourceLang, targetLang, sentences, translation
             .then((response) => response.text());
 
           if (accessToken == undefined) {
-            throw new Error('Cannot get a Access Token from the server.');
+            $("#translatedText").html('Không thể lấy được Access Token từ máy chủ.');
+
+            let height = ($("#translatedText").prop("scrollHeight") >= $("#sourceText").prop("scrollHeight") ? $("#translatedText") : $("#sourceText")).prop("scrollHeight");
+
+            $(".textarea").css("height", height > 300 ? height.toString().concat('px') : "auto");
+
+            $("#translateButton").removeAttr("disabled");
+            $("#inputGlossary").removeAttr("disabled");
+            break;
           }
 
           //POST https://api.cognitive.microsofttranslator.com/translate?to=${toLang}&api-version=3.0&includeSentenceLength=true Authorization: Bearer ${accessToken} - Content-Type: application/json - send(data)
@@ -166,13 +198,16 @@ async function translate(service, sourceLang, targetLang, sentences, translation
 
             if (count - query.length === 0) {
               $("#translatedText").html(textPostProcess(translation, service));
-              microsoftQuery = textPreProcess(sentences, service, true);
-              microsoftLang = targetLang;
+              microsoftQuery = textPreProcess(sentences.join('\n'), service, true);
+              microsoftLang = [sourceLang.replace('auto', '').replace('CN', 'CHS').replace('TW', 'CHT'), targetLang.replace('CN', 'CHS').replace('TW', 'CHT')];
               microsoftTranslation = $("#translatedText").html();
 
               let height = ($("#translatedText").prop("scrollHeight") >= $("#sourceText").prop("scrollHeight") ? $("#translatedText") : $("#sourceText")).prop("scrollHeight");
 
-              $("textarea").css("height", height > 300 ? height.toString().concat('px') : "auto");
+              $(".textarea").css("height", height > 300 ? height.toString().concat('px') : "auto");
+
+              $("#translateButton").removeAttr("disabled");
+              $("#inputGlossary").removeAttr("disabled");
             } else {
               translate(service, sourceLang, targetLang, sentences, translation, new Array(), index + 1, count - query.length);
             }
@@ -181,12 +216,15 @@ async function translate(service, sourceLang, targetLang, sentences, translation
 
             let height = ($("#translatedText").prop("scrollHeight") >= $("#sourceText").prop("scrollHeight") ? $("#translatedText") : $("#sourceText")).prop("scrollHeight");
 
-            $("textarea").css("height", height > 300 ? height.toString().concat('px') : "auto");
+            $(".textarea").css("height", height > 300 ? height.toString().concat('px') : "auto");
+
+            $("#translateButton").removeAttr("disabled");
+            $("#inputGlossary").removeAttr("disabled");
           });
 
           break;
         case GOOGLE:
-        default:
+          //GET https://translate.googleapis.com/translate_a/t?anno=3&client=wt_lib&format=html&v=1.0&key&sl=auto&tl=${targetLang}&tc=4&sr=1&mode=1 Content-Type	application/x-www-form-urlencoded - send(query)
           //POST https://translate.googleapis.com/translate_a/t?anno=3&client=te&format=html&v=1.0&key&sl=auto&tl=${targetLang}&sr=1&mode=1 Content-Type: application/x-www-form-urlencoded - send(query)
           //GET https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${targetLang}&hl=vi&dt=t&dt=bd&dj=1${query}
           //GET https://clients5.google.com/translate_a/single?dj=1&dt=t&dt=sp&dt=ld&dt=bd&client=dict-chrome-ex&sl=auto&tl=${targetLang}${query}
@@ -214,13 +252,16 @@ async function translate(service, sourceLang, targetLang, sentences, translation
 
             if (count - query.length === 0) {
               $("#translatedText").html(textPostProcess(translation, service));
-              googleQuery = textPreProcess(sentences, service, true);
-              googleLang = targetLang;
+              googleQuery = textPreProcess(sentences.join('\n'), service, true);
+              googleLang = [sourceLang, targetLang];
               googleTranslation = $("#translatedText").html();
 
               let height = ($("#translatedText").prop("scrollHeight") >= $("#sourceText").prop("scrollHeight") ? $("#translatedText") : $("#sourceText")).prop("scrollHeight");
 
-              $("textarea").css("height", height > 300 ? height.toString().concat('px') : "auto");
+              $(".textarea").css("height", height > 300 ? height.toString().concat('px') : "auto");
+
+              $("#translateButton").removeAttr("disabled");
+              $("#inputGlossary").removeAttr("disabled");
             } else {
               translate(service, sourceLang, targetLang, sentences, translation, new Array(), index + 1, count - query.length);
             }
@@ -229,7 +270,10 @@ async function translate(service, sourceLang, targetLang, sentences, translation
 
             let height = ($("#translatedText").prop("scrollHeight") >= $("#sourceText").prop("scrollHeight") ? $("#translatedText") : $("#sourceText")).prop("scrollHeight");
 
-            $("textarea").css("height", height > 300 ? height.toString().concat('px') : "auto");
+            $(".textarea").css("height", height > 300 ? height.toString().concat('px') : "auto");
+
+            $("#translateButton").removeAttr("disabled");
+            $("#inputGlossary").removeAttr("disabled");
           });
 
           break;
@@ -238,40 +282,40 @@ async function translate(service, sourceLang, targetLang, sentences, translation
       translate(service, sourceLang, targetLang, sentences, translation, query, index + 1, count);
     }
   }
+}
 
-  function textPreProcess(text, service, pre) {
-    var glossaryText = text;
+function textPreProcess(text, service, pre) {
+  var glossaryText = text;
 
-    if (glossary != undefined) {
-      for (let i = 1; i < glossary.length; i++) {
-        if (pre) {
-          glossaryText = glossaryText.replace(new RegExp(glossary[i][0], 'g'), glossary[i][1]);
-        } else if (service === 'microsoft') {
-          glossaryText = glossaryText.replace(new RegExp(glossary[i][0], 'g'), `<mstrans:dictionary translation="${glossary[i][1]}">GLOSSARY_INDEX_${i}</mstrans:dictionary>`)
-        } else {
-          glossaryText = glossaryText.replace(new RegExp(glossary[i][0], 'g'), `<span class="notranslate">GLOSSARY_INDEX_${i}</span>`);
-        }
-      }
-
-      for (let i = glossary.length - 1; pre === false && i >= 1; i--) {
-        glossaryText = glossaryText.replace(new RegExp(`GLOSSARY_INDEX_${i}`, 'g'), glossary[i][0]);
+  if (glossary != undefined) {
+    for (let i = 1; i < glossary.length; i++) {
+      if (pre) {
+        glossaryText = glossaryText.replace(new RegExp(glossary[i][0], 'g'), glossary[i][1]);
+      } else if (service === 'microsoft') {
+        glossaryText = glossaryText.replace(new RegExp(glossary[i][0], 'g'), `<mstrans:dictionary translation="${glossary[i][1]}">GLOSSARY_INDEX_${i}</mstrans:dictionary>`)
+      } else {
+        glossaryText = glossaryText.replace(new RegExp(glossary[i][0], 'g'), `<span class="notranslate">GLOSSARY_INDEX_${i}</span>`);
       }
     }
 
-    return glossaryText;
-  }
-
-  function textPostProcess(text, service) {
-    var glossaryText = text;
-
-    for (let i = 1; glossary != undefined && service !== MICROSOFT && i < glossary.length; i++) {
-      glossaryText = glossaryText.replace(/<span class="notranslate">/g, '').replace(/<\/span>/g, '')
-        .replace(new RegExp(`(\\d|[A-Za-zÀ-ÖØ-öø-ɏḀ-ỿ]|[!),.:;?\\]}’”…—])${glossary[i][0]}(\\d|[A-Za-zÀ-ÖØ-öø-ɏḀ-ỿ]|[(\\[{‘“])`, 'g'), `$1 ${glossary[i][1]} $2`)
-        .replace(new RegExp(`(\\d|[A-Za-zÀ-ÖØ-öø-ɏḀ-ỿ]|[!),.:;?\\]}’”…—])${glossary[i][0]}`, 'g'), `$1 ${glossary[i][1]}`)
-        .replace(new RegExp(`${glossary[i][0]}(\\d|[A-Za-zÀ-ÖØ-öø-ɏḀ-ỿ]|[(\\[{‘“])`, 'g'), `${glossary[i][1]} $1`)
-        .replace(new RegExp(glossary[i][0], 'g'), glossary[i][1]).trim();
+    for (let i = glossary.length - 1; pre === false && i >= 1; i--) {
+      glossaryText = glossaryText.replace(new RegExp(`GLOSSARY_INDEX_${i}`, 'g'), glossary[i][0]);
     }
-
-    return glossaryText;
   }
+
+  return glossaryText;
+}
+
+function textPostProcess(text, service) {
+  var glossaryText = text;
+
+  for (let i = 1; glossary != undefined && service !== MICROSOFT && i < glossary.length; i++) {
+    glossaryText = glossaryText.replace(/<span class="notranslate">/g, '').replace(/<\/span>/g, '')
+      .replace(new RegExp(`(\\d|[A-Za-zÀ-ÖØ-öø-ɏḀ-ỿ]|[!),.:;?\\]}’”…—])${glossary[i][0]}(\\d|[A-Za-zÀ-ÖØ-öø-ɏḀ-ỿ]|[(\\[{‘“])`, 'g'), `$1 ${glossary[i][1]} $2`)
+      .replace(new RegExp(`(\\d|[A-Za-zÀ-ÖØ-öø-ɏḀ-ỿ]|[!),.:;?\\]}’”…—])${glossary[i][0]}`, 'g'), `$1 ${glossary[i][1]}`)
+      .replace(new RegExp(`${glossary[i][0]}(\\d|[A-Za-zÀ-ÖØ-öø-ɏḀ-ỿ]|[(\\[{‘“])`, 'g'), `${glossary[i][1]} $1`)
+      .replace(new RegExp(glossary[i][0], 'g'), glossary[i][1]).trim();
+  }
+
+  return glossaryText;
 }
