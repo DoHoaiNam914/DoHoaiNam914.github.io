@@ -10,9 +10,11 @@ This site was built using [GitHub Pages](https://pages.github.com/).
 
 ## [Light Novel](https://dohoainam914.github.io/light-novel/)
 
+- [Clear the world like a game with The Zero Believer Goddess](https://dohoainam914.github.io/light-novel/shinjyazero/)
+
 - [Demon's Sword Master of Excalibur School](https://dohoainam914.github.io/light-novel/seikengakuin/)
 
-- [The Eminence in Shadow](https://dohoainam914.github.io/light-novel/kage-no-jitsuryokusha-naritakute_/)
+- [The Eminence in Shadow](https://dohoainam914.github.io/light-novel/kagenojitsuryokusya/)
 
 - [Tinh linh huyễn tưởng ký](https://dohoainam914.github.io/light-novel/tinhlinh/)
 
