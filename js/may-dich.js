@@ -225,15 +225,15 @@ async function translate(service, sourceLang, targetLang, sentences, translation
 
           break;
         case GOOGLE:
-          //GET https://translate.googleapis.com/translate_a/t?anno=3&client=wt_lib&format=html&v=1.0&key&sl=auto&tl=${targetLang}&tc=4&sr=1&mode=1 Content-Type	application/x-www-form-urlencoded - send(query)
-          //POST https://translate.googleapis.com/translate_a/t?anno=3&client=te&format=html&v=1.0&key&sl=auto&tl=${targetLang}&sr=1&mode=1 Content-Type: application/x-www-form-urlencoded - send(query)
+          //GET https://translate.googleapis.com/translate_a/t?anno=3&client=wt_lib&format=html&v=1.0&key&logId=vTE_2021115&sl=auto&tl=${targetLang}&tc=1&sr=1&tk=463587.741203892&mode=1 Content-Type	application/x-www-form-urlencoded - send(query)
+          //POST https://translate.googleapis.com/translate_a/t?anno=3&client=te&format=html&v=1.0&key&logId=vTE_2021115&sl=auto&tl=${targetLang}&tc=1&ctt=1&dom=1&sr=1&tk=463587.741203892&mode=1 Content-Type: application/x-www-form-urlencoded - send(query)
           //GET https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${targetLang}&hl=vi&dt=t&dt=bd&dj=1${query}
           //GET https://clients5.google.com/translate_a/single?dj=1&dt=t&dt=sp&dt=ld&dt=bd&client=dict-chrome-ex&sl=auto&tl=${targetLang}${query}
           //GET https://translate.google.com/translate_t?source=dict-chrome-ex&sl=auto&tl=${targetLang}${query}
           settings = {
             crossDomain: true,
-            url: `https://translate.googleapis.com/translate_a/t?anno=3&client=dict-chrome-ex&format=html&v=1.0&key&sl=${sourceLang}&tl=${targetLang}&sr=1&mode=1`,
-            method: 'POST',
+            url: `https://translate.googleapis.com/translate_a/t?anno=3&client=gtx&format=html&v=1.0&key&logId=vTE_2021115&sl=${sourceLang}&tl=${targetLang}&tc=1&sr=1&mode=1`,
+            method: 'GET',
             headers: {
               'Content-Type': 'application/x-www-form-urlencoded'
             },
@@ -244,7 +244,7 @@ async function translate(service, sourceLang, targetLang, sentences, translation
           $.ajax(settings).done(function (data) {
             if (sourceLang === 'auto') {
               var translations = new Array();
-              data.forEach((element) => translations.push(element[0]));
+              data.forEach((element) => translations.push(element[0].replace(/<b><i>/g, '[').replace(/<\/i><\/b>/g, ']')));
 
               translation += `<p>${translations.join('</p>\n<p>')}</p>`.replace(/<p><\/p>/g, '<p><br></p>');
             } else {
