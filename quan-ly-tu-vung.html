@@ -11,7 +11,7 @@
     <script>
       $LAB.setOptions({AlwaysPreserveOrder:true})
         .script("/lib/jquery-3.6.1.js")
-        .script("/js/js.cookie-1.5.1.js")
+        .script("/lib/js.cookie.js")
         .script("/lib/jquery.csv.js");
     </script>
     <style>
@@ -118,10 +118,11 @@
         <div class="row py-lg-5">
           <div class="col-lg-6 col-md-8 mx-auto">
             <h1 class="fw-light">Quản lý từ vựng</h1>
-            <input type="file" class="form-control mb-3" id="inputGlossary" accept="text/tab-separated-values,text/csv">
+            <input type="file" class="form-control mb-3" id="inputGlossary" accept="text/plain">
             <select class="form-select mb-3" id="glossaryType">
               <option value="text/tab-separated-values" selected>TSV</option>
               <option value="text/csv">CSV</option>
+              <option value="text/plain">Vietphrase</option>
             </select>
             <div class="input-group mb-3">
               <span class="input-group-text">Thay thế:</span>
@@ -136,17 +137,16 @@
               </select>
               <button class="btn btn-outline-secondary" id="removeButton" type="button">Xóa</button>
             </div>
-            <div class="form-floating">
-              <textarea class="form-control mb-3" id="preview" aria-label="Bản xem trước" readonly></textarea>
-              <label id="counter" for="preview">0</label>
-            </div>
-            <a class="btn btn-primary" id="downloadButton" role="button">
+            <label for="preview">Bản xem trước (<span id="counter">0</span>):</label>
+            <textarea class="form-control mb-3" id="preview" readonly></textarea>
+            <a class="btn btn-primary" id="downloadButton">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-download" viewBox="0 0 16 16">
                 <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
                 <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
               </svg>
               Tải xuống
             </a>
+            <button class="btn btn-secondary" id="clearButton" type="button">Dọn sạch</button>
           </div>
         </div>
       </section>
@@ -162,8 +162,10 @@
     <script>
       $LAB
         .script("/lib/bootstrap.bundle.min.js")
-        .script("/js/nen.js")
-        .script("/js/quan-ly-tu-vung.js");
+        .script("/js/quan-ly-tu-vung.js").wait(function () {
+          glossary = Object.entries(JSON.parse($.cookie('glossary')));
+          loadGlossary();
+        });
     </script>
   </body>
 </html>

@@ -11,6 +11,7 @@
     <script>
       $LAB.setOptions({AlwaysPreserveOrder:true})
         .script("/lib/jquery-3.6.1.js")
+        .script("/lib/js.cookie.js")
         .script("/lib/jquery.csv.js");
     </script>
     <style>
@@ -73,7 +74,7 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <button class="btn btn-primary btn-sm d-block mt-2 mt-lg-0 me-auto mb-2 mb-lg-0" id="translateButton" type="submit">Dịch</button>
           <ul class="navbar-nav mt-2 mt-lg-0 me-auto mb-2 mb-lg-0">
-            <li class="nav-item dropdown">
+            <li class="nav-item dropup">
               <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false">Máy dịch</a>
               <ul class="dropdown-menu">
                 <li><a class="dropdown-item service active" id="google">Google Dịch</a></li>
@@ -82,7 +83,8 @@
               </ul>
             </li>
           </ul>
-          <input type="file" class="form-control form-control-sm d-flex" id="inputGlossary" accept="text/tab-separated-values,text/csv">
+          <input type="file" class="form-control form-control-sm" id="inputGlossary" accept="text/plain">
+          <button class="btn btn-secondary btn-sm d-block mt-2" id="clearButton" type="button">Dọn sạch từ vựng (<span id="counter">0</span>)</button>
         </div>
       </div>
     </nav>
@@ -95,6 +97,10 @@
     <script>
       $LAB
         .script("/lib/bootstrap.bundle.min.js")
+        .script("/js/quan-ly-tu-vung.js").wait(function () {
+          glossary = Object.entries(JSON.parse($.cookie('glossary')));
+          loadGlossary();
+        })
         .script("/js/may-dich.js");
     </script>
   </body>

@@ -2,14 +2,11 @@ const GOOGLE = 'google';
 const MICROSOFT = 'microsoft';
 const PAPAGO = 'papago';
 
-const TSV = 'text/tab-separated-values';
-const CSV = 'text/csv';
-
-var glossary;
-
 var googleQuery;
 var googleLang;
 var googleTranslation;
+
+var translateCount;
 
 var microsoftQuery;
 var microsoftLang;
@@ -46,6 +43,7 @@ $("#translateButton").on("click", function () {
   } else {
     $(this).attr("disabled", true);
     $("#inputGlossary").attr("disabled", true);
+    translateCount = 0;
     translate(service, sourceLang, targetLang, sentences, '', new Array(), 0, sentences.length);
   }
 });
@@ -63,21 +61,6 @@ $(".service").on("click", function () {
   } else {
     $("option[value=\"auto\"").removeAttr("disabled");
   }
-});
-
-$("#inputGlossary").on("input", function () {
-  let reader = new FileReader();
-  reader.readAsText(this.files[0]);
-  reader.onload = function () {
-    switch ($("#inputGlossary").prop("files")[0].type) {
-      case TSV:
-        glossary = this.result.split(/\r?\n/).map((element) => element.split('\t')).filter((element) => element.length === 2);
-        break;
-      case CSV:
-        glossary = $.csv.toArrays(this.result);
-        break;
-    }
-  };
 });
 
 $(".textarea").on("input", function () {
@@ -225,6 +208,7 @@ async function translate(service, sourceLang, targetLang, sentences, translation
 
           break;
         case GOOGLE:
+          translateCount += 1;
           //GET https://translate.googleapis.com/translate_a/t?anno=3&client=wt_lib&format=html&v=1.0&key&logId=vTE_2021115&sl=auto&tl=${targetLang}&tc=1&sr=1&tk=463587.741203892&mode=1 Content-Type	application/x-www-form-urlencoded - send(query)
           //POST https://translate.googleapis.com/translate_a/t?anno=3&client=te&format=html&v=1.0&key&logId=vTE_2021115&sl=auto&tl=${targetLang}&tc=1&ctt=1&dom=1&sr=1&tk=463587.741203892&mode=1 Content-Type: application/x-www-form-urlencoded - send(query)
           //GET https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${targetLang}&hl=vi&dt=t&dt=bd&dj=1${query}
@@ -232,7 +216,7 @@ async function translate(service, sourceLang, targetLang, sentences, translation
           //GET https://translate.google.com/translate_t?source=dict-chrome-ex&sl=auto&tl=${targetLang}${query}
           settings = {
             crossDomain: true,
-            url: `https://translate.googleapis.com/translate_a/t?anno=3&client=gtx&format=html&v=1.0&key&logId=vTE_2021115&sl=${sourceLang}&tl=${targetLang}&tc=1&sr=1&mode=1`,
+            url: `https://translate.googleapis.com/translate_a/t?anno=3&client=gtx&format=html&v=1.0&key&logId=vTE_2021115&sl=${sourceLang}&tl=${targetLang}&tc=${translateCount}&sr=1&mode=1`,
             method: 'GET',
             headers: {
               'Content-Type': 'application/x-www-form-urlencoded'
