@@ -62,7 +62,7 @@ function loadGlossary() {
   var glossaryList = '<option value="" selected>Chọn...</option>';
 
   if (glossary.length >= 1) {
-    glossary.sort((a, b) => b[0].length - a[0].length || b[1].length - a[1].length);
+    glossary.sort((a, b) => b[0].length - a[0].length || b[1].length - a[1].length || a[0] - b[0] || a[1] - b[1]);
 
     let glossaryType = $("#glossaryType").val();
     var values = new Array();
