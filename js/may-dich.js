@@ -20,25 +20,25 @@ $("#translateButton").on("click", function () {
   let service = $(".service.active").attr("id");
   let sourceLang = service === MICROSOFT ? $("#sourceLangSelect").val().replace('auto', '').replace('CN', 'CHS').replace('TW', 'CHT') : $("#sourceLangSelect").val();
   let targetLang = service === MICROSOFT ? $("#targetLangSelect").val().replace('CN', 'CHS').replace('TW', 'CHT') : $("#targetLangSelect").val();
-  let sentences = $("#sourceText").val().split('\n');
+  let sentences = $("#queryText").val().split('\n');
 
   if (googleQuery != undefined && service === GOOGLE && sourceLang === googleLang[0] && targetLang === googleLang[1] && textPreProcess(sentences.join('\n'), service, true) === googleQuery) {
     $("#translatedText").html(googleTranslation);
 
     $(".textarea").css("height", "auto");
-    let height = (new Array($("#sourceText").prop("scrollHeight"), $("#translatedText").prop("scrollHeight")).sort((a, b) => b - a))[0];
+    let height = (new Array($("#queryText").prop("scrollHeight"), $("#translatedText").prop("scrollHeight")).sort((a, b) => b - a))[0];
     $(".textarea").css("height", height > 300 ? height.toString().concat('px') : "auto");
   } else if (microsoftQuery != undefined && service === MICROSOFT && sourceLang === microsoftLang[0] && targetLang === microsoftLang[1] && textPreProcess(sentences.join('\n'), service, true) === microsoftQuery) {
     $("#translatedText").html(microsoftTranslation);
 
     $(".textarea").css("height", "auto");
-    let height = (new Array($("#sourceText").prop("scrollHeight"), $("#translatedText").prop("scrollHeight")).sort((a, b) => b - a))[0];
+    let height = (new Array($("#queryText").prop("scrollHeight"), $("#translatedText").prop("scrollHeight")).sort((a, b) => b - a))[0];
     $(".textarea").css("height", height > 300 ? height.toString().concat('px') : "auto");
   } else if (papagoQuery != undefined && service === PAPAGO && sourceLang === papagoLang[0] && targetLang === papagoLang[1] && textPreProcess(sentences.join('\n'), service, true) === papagoQuery) {
     $("#translatedText").html(papagoTranslation);
 
     $(".textarea").css("height", "auto");
-    let height = (new Array($("#sourceText").prop("scrollHeight"), $("#translatedText").prop("scrollHeight")).sort((a, b) => b - a))[0];
+    let height = (new Array($("#queryText").prop("scrollHeight"), $("#translatedText").prop("scrollHeight")).sort((a, b) => b - a))[0];
     $(".textarea").css("height", height > 300 ? height.toString().concat('px') : "auto");
   } else {
     $(this).attr("disabled", true);
@@ -65,7 +65,7 @@ $(".service").on("click", function () {
 
 $(".textarea").on("input", function () {
   $(".textarea").css("height", "auto");
-  let height = (new Array($("#sourceText").prop("scrollHeight"), $("#translatedText").prop("scrollHeight")).sort((a, b) => b - a))[0];
+  let height = (new Array($("#queryText").prop("scrollHeight"), $("#translatedText").prop("scrollHeight")).sort((a, b) => b - a))[0];
   $(".textarea").css("height", height > 300 ? height.toString().concat('px') : "auto");
 });
 
@@ -125,7 +125,7 @@ async function translate(service, sourceLang, targetLang, sentences, translation
               papagoTranslation = $("#translatedText").html();
 
               $(".textarea").css("height", "auto");
-              let height = (new Array($("#sourceText").prop("scrollHeight"), $("#translatedText").prop("scrollHeight")).sort((a, b) => b - a))[0];
+              let height = (new Array($("#queryText").prop("scrollHeight"), $("#translatedText").prop("scrollHeight")).sort((a, b) => b - a))[0];
               $(".textarea").css("height", height > 300 ? height.toString().concat('px') : "auto");
 
               $("#translateButton").removeAttr("disabled");
@@ -137,7 +137,7 @@ async function translate(service, sourceLang, targetLang, sentences, translation
             $("#translatedText").html(errorThrown);
 
             $(".textarea").css("height", "auto");
-            let height = (new Array($("#sourceText").prop("scrollHeight"), $("#translatedText").prop("scrollHeight")).sort((a, b) => b - a))[0];
+            let height = (new Array($("#queryText").prop("scrollHeight"), $("#translatedText").prop("scrollHeight")).sort((a, b) => b - a))[0];
             $(".textarea").css("height", height > 300 ? height.toString().concat('px') : "auto");
 
             $("#translateButton").removeAttr("disabled");
@@ -153,7 +153,7 @@ async function translate(service, sourceLang, targetLang, sentences, translation
             $("#translatedText").html('Không thể lấy được Access Token từ máy chủ.');
 
             $(".textarea").css("height", "auto");
-            let height = (new Array($("#sourceText").prop("scrollHeight"), $("#translatedText").prop("scrollHeight")).sort((a, b) => b - a))[0];
+            let height = (new Array($("#queryText").prop("scrollHeight"), $("#translatedText").prop("scrollHeight")).sort((a, b) => b - a))[0];
             $(".textarea").css("height", height > 300 ? height.toString().concat('px') : "auto");
 
             $("#translateButton").removeAttr("disabled");
@@ -187,7 +187,7 @@ async function translate(service, sourceLang, targetLang, sentences, translation
               microsoftTranslation = $("#translatedText").html();
 
               $(".textarea").css("height", "auto");
-              let height = (new Array($("#sourceText").prop("scrollHeight"), $("#translatedText").prop("scrollHeight")).sort((a, b) => b - a))[0];
+              let height = (new Array($("#queryText").prop("scrollHeight"), $("#translatedText").prop("scrollHeight")).sort((a, b) => b - a))[0];
               $(".textarea").css("height", height > 300 ? height.toString().concat('px') : "auto");
 
               $("#translateButton").removeAttr("disabled");
@@ -199,7 +199,7 @@ async function translate(service, sourceLang, targetLang, sentences, translation
             $("#translatedText").html(errorThrown);
 
             $(".textarea").css("height", "auto");
-            let height = (new Array($("#sourceText").prop("scrollHeight"), $("#translatedText").prop("scrollHeight")).sort((a, b) => b - a))[0];
+            let height = (new Array($("#queryText").prop("scrollHeight"), $("#translatedText").prop("scrollHeight")).sort((a, b) => b - a))[0];
             $(".textarea").css("height", height > 300 ? height.toString().concat('px') : "auto");
 
             $("#translateButton").removeAttr("disabled");
@@ -242,7 +242,7 @@ async function translate(service, sourceLang, targetLang, sentences, translation
               googleTranslation = $("#translatedText").html();
 
               $(".textarea").css("height", "auto");
-              let height = (new Array($("#sourceText").prop("scrollHeight"), $("#translatedText").prop("scrollHeight")).sort((a, b) => b - a))[0];
+              let height = (new Array($("#queryText").prop("scrollHeight"), $("#translatedText").prop("scrollHeight")).sort((a, b) => b - a))[0];
               $(".textarea").css("height", height > 300 ? height.toString().concat('px') : "auto");
 
               $("#translateButton").removeAttr("disabled");
@@ -254,7 +254,7 @@ async function translate(service, sourceLang, targetLang, sentences, translation
             $("#translatedText").html(errorThrown);
 
             $(".textarea").css("height", "auto");
-            let height = (new Array($("#sourceText").prop("scrollHeight"), $("#translatedText").prop("scrollHeight")).sort((a, b) => b - a))[0];
+            let height = (new Array($("#queryText").prop("scrollHeight"), $("#translatedText").prop("scrollHeight")).sort((a, b) => b - a))[0];
             $(".textarea").css("height", height > 300 ? height.toString().concat('px') : "auto");
 
             $("#translateButton").removeAttr("disabled");
