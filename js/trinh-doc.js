@@ -2,9 +2,6 @@ const J_NOVEL = 'j_novel';
 const YENPRESS = 'yenpress';
 const CUSTOM = 'custom';
 
-var book;
-var volume;
-
 $(document).ready(function () {
   let searchParams = new URLSearchParams(window.location.search);
 
@@ -16,13 +13,13 @@ $(document).ready(function () {
       if (currentVolume.id === volume) {
         switch (currentVolume.loader) {
           case J_NOVEL:
-            j_novelLoader(currentVolume.spine);
+            j_novelLoader(book, volume, currentVolume.spine);
             break;
           case YENPRESS:
-            yenpressLoader(currentVolume.spine);
+            yenpressLoader(book, volume, currentVolume.spine);
             break;
           case CUSTOM:
-            customLoader(currentVolume.spine);
+            customLoader(book, volume, currentVolume.spine);
             break;
         }
       }
@@ -32,7 +29,7 @@ $(document).ready(function () {
   });
 });
 
-function j_novelLoader(spine) {
+function j_novelLoader(book, volume, spine) {
   for (let i = 0; i < spine.length; i++) {
     let spineName = spine[i].replace('.xhtml', '');
     let settings = {
@@ -49,7 +46,7 @@ function j_novelLoader(spine) {
         $("meta[content=\"text/html; charset=UTF-8\"]").replaceWith(`<meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="initial-scale=1, user-scalable=0, maximum-scale=1">`);
-        let stylesheet = $("link[rel=\"stylesheet\"]").prop("outerHTML").replace('..', `${book}/${volume}`);
+        let stylesheet = $("link[rel=\"stylesheet\"]").prop("outerHTML").replace('..', `./${book}/${volume}`);
         $("link[rel=\"stylesheet\"]").remove();
         $(document.head).append(`<link rel="stylesheet" href="/css/styles/DoHoaiNamStyle-before.css">\n${stylesheet}\n<link rel="stylesheet" href="/css/styles/DoHoaiNamStyle/j-novelclub_patch.css">\n<link rel="stylesheet" href="/css/styles/DoHoaiNamStyle-after.css">`);
         $(document.head).append(`<script src="/lib/LAB.js"></script>
@@ -70,7 +67,7 @@ function j_novelLoader(spine) {
 </form>
 <script>
   $LAB
-    .script("/js/nen.js").wait(() => $("#backgroundSelect").val($.cookie('background') || "white").change());
+    .script("/js/nen.js").wait(() => $("#backgroundSelect").val(localStorage.getItem("background") || "white").change());
 </script>`);
       }
 
@@ -94,7 +91,7 @@ function j_novelLoader(spine) {
   }
 }
 
-function yenpressLoader(spine) {
+function yenpressLoader(book, volume, spine) {
   for (let i = 0; i < spine.length; i++) {
     let spineName = spine[i].replace('id_cover_xhtml', 'cover').replace('.xhtml', '');
     let settings = {
@@ -111,7 +108,7 @@ function yenpressLoader(spine) {
         $("meta[content=\"text/html; charset=UTF-8\"]").replaceWith(`<meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="initial-scale=1, user-scalable=0, maximum-scale=1">`);
-        let stylesheet = $("link[rel=\"stylesheet\"]").prop("outerHTML").replace('..', `${book}/${volume}`);
+        let stylesheet = $("link[rel=\"stylesheet\"]").prop("outerHTML").replace('..', `./${book}/${volume}`);
         $("link[rel=\"stylesheet\"]").remove();
         $(document.head).append(`<link rel="stylesheet" href="/css/styles/DoHoaiNamStyle-before.css">\n${stylesheet}\n<link rel="stylesheet" href="/css/styles/DoHoaiNamStyle/${book}_patch.css">\n<link rel="stylesheet" href="/css/styles/DoHoaiNamStyle-after.css">`);
         $(document.head).append(`<script src="/lib/LAB.js"></script>
@@ -132,7 +129,7 @@ function yenpressLoader(spine) {
 </form>
 <script>
   $LAB
-    .script("/js/nen.js").wait(() => $("#backgroundSelect").val($.cookie('background') || "white").change());
+    .script("/js/nen.js").wait(() => $("#backgroundSelect").val(localStorage.getItem("background") || "white").change());
 </script>`);
       }
 
@@ -156,7 +153,7 @@ function yenpressLoader(spine) {
   }
 }
 
-function customLoader(spine) {
+function customLoader(book, volume, spine) {
   switch (`${book}_${volume}`) {
     case 'tinhlinh_22-junpaku-no-houteishiki':
       for (let i = 0; i < spine.length; i++) {
@@ -170,7 +167,7 @@ function customLoader(spine) {
 
         $.get(settings).done(function (data) {
           let html = !spineName.includes('xhtml') ? (new DOMParser()).parseFromString(data, 'application/xhtml+xml') : undefined;
-console.log(html);
+
           if (i === 5) {
             $(document.documentElement).attr("lang", $(html.documentElement).attr("xml:lang"));
             $(document.documentElement).addClass("hltr1");
@@ -178,7 +175,7 @@ console.log(html);
             $("meta[content=\"text/html; charset=UTF-8\"]").replaceWith(`<meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="initial-scale=1, user-scalable=0, maximum-scale=1">`);
-            let stylesheet = `${$("link[href=\"../stylesheet.css\"]").prop("outerHTML").replace('..', `${book}/${volume}`)}\n${$("link[href=\"../page_styles.css\"]").prop("outerHTML").replace('..', `${book}/${volume}`)}`;
+            let stylesheet = `${$("link[href=\"../stylesheet.css\"]").prop("outerHTML").replace('..', `./${book}/${volume}`)}\n${$("link[href=\"../page_styles.css\"]").prop("outerHTML").replace('..', `./${book}/${volume}`)}`;
             $("link[href=\"../stylesheet.css\"]").remove();
             $("link[href=\"../page_styles.css\"]").remove();
             $(document.head).append(`<link rel="stylesheet" href="/css/styles/DoHoaiNamStyle-before.css">\n${stylesheet}\n<link rel="stylesheet" href="/css/styles/DoHoaiNamStyle-after.css">`);
@@ -200,11 +197,11 @@ console.log(html);
 </form>
 <script>
   $LAB
-    .script("/js/nen.js").wait(() => $("#backgroundSelect").val($.cookie('background') || "white").change());
+    .script("/js/nen.js").wait(() => $("#backgroundSelect").val(localStorage.getItem("background") || "white").change());
 </script>`);
           }
 
-          $(document.body).append(`\n<div class="body">${(html != undefined ? $(html.body).html() : $(data).find("body").html()).replace(/<ruby>/g, '').replace(/<\/ruby>/g, '').replace(new RegExp('<rb>([⺀-⿕]*)</rb><rt>[ぁ-ゟ]*</rt>', 'g'), '$1').replace(new RegExp('<rb>([⺀-⿕]*)</rb><rt>([゠-ヿ]*)</rt>', 'g'), ' $1（$2）')}</div>\n\n`);
+          $(document.body).append(`\n<div class="body">${(html != undefined ? $(html.body).html() : $(data).find("body").html()).replace(new RegExp('<ruby><rb>(\\p{scx=Hani}+)</rb><rt>\\p{sc=Hira}+</rt></ruby>', 'gu'), '$1').replace(/<rt>/g, '（<rtc>').replace(/<\/rt>/g, '</rtc>）')}</div>\n\n`);
           $("div.body").last().addClass((html != undefined ? $(html.body) : $(data).find("body")).attr("class"));
         });
       }
@@ -246,7 +243,7 @@ console.log(html);
             $("meta[content=\"text/html; charset=UTF-8\"]").replaceWith(`<meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="initial-scale=1, user-scalable=0, maximum-scale=1">`);
-            let stylesheet = $("link[rel=\"stylesheet\"]").prop("outerHTML").replace('..', `${book}/${volume}`);
+            let stylesheet = $("link[rel=\"stylesheet\"]").prop("outerHTML").replace('..', `./${book}/${volume}`);
             $("link[rel=\"stylesheet\"]").remove();
             $("style[id=\"koboSpanStyle\"]").remove();
             $(document.head).append(`<link rel="stylesheet" href="/css/styles/DoHoaiNamStyle-before.css">\n${stylesheet}\n<link rel="stylesheet" href="/css/styles/DoHoaiNamStyle-after.css">`);
@@ -268,11 +265,11 @@ console.log(html);
 </form>
 <script>
   $LAB
-    .script("/js/nen.js").wait(() => $("#backgroundSelect").val($.cookie('background') || "white").change());
+    .script("/js/nen.js").wait(() => $("#backgroundSelect").val(localStorage.getItem("background") || "white").change());
 </script>`);
           }
 
-          $(document.body).append(`\n<div class="body">${$(data).find("body").html().replace(/<ruby>/g, '').replace(/<\/ruby>/g, '').replace(new RegExp('([⺀-⿕]*)</span><rt>[ぁ-ゟ]*</rt>', 'g'), '$1</span>').replace(new RegExp('([⺀-⿕]*)</span><rt>([゠-ヿ]*)</rt>', 'g'), ' $1（$2）</span>')}</div>\n\n`);
+          $(document.body).append(`\n<div class="body">${$(data).find("body").html().replace(new RegExp('<ruby>(<span xmlns="http://www.w3.org/1999/xhtml" class="koboSpan" id="kobo.\\d+.1">\\p{scx=Hani}+</span>)<rt>\\p{sc=Hira}+</rt></ruby>', 'gu'), '$1').replace(/<rt>/g, '（<rtc>').replace(/<\/rt>/g, '</rtc>）')}</div>\n\n`);
           $("div.body").last().addClass($(data).find("body").attr("class"));
         });
       }

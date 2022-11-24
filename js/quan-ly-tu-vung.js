@@ -30,11 +30,10 @@ $("#glossaryType").change(() => loadGlossary());
 $("#addButton").on("click", function () {
   if ($("#sourceText").val() === '') {
     glossary = glossary.filter(element => element[0] !== $("#sourceText").val());
+    glossary.push(new Array($("#sourceText").val(), $("#targetText").val()));
+    loadGlossary();
+    $("#inputGlossary").val(null);
   }
-
-  glossary.push(new Array($("#sourceText").val(), $("#targetText").val()));
-  loadGlossary();
-  $("#inputGlossary").val(null);
 });
 
 $("#removeButton").on("click", function () {
@@ -52,7 +51,6 @@ $("#preview").on("click", function () {
 });
 
 $("#clearButton").on("click", function () {
-  $.removeCookie('glossary');
   glossary = new Array();
   loadGlossary()
   $("#inputGlossary").val(null);
@@ -90,11 +88,11 @@ function loadGlossary() {
 
     $("#downloadButton").attr("href", `data:${glossaryType};charset=utf-8,` + encodeURIComponent(data));
     $("#downloadButton").attr("download", `Từ vựng.${dataExtension}`);
-    $.cookie('glossary', JSON.stringify(glossary.reduce((accumulator, currentValue) => ({...accumulator, [currentValue[0]]: currentValue[1] }), {})), { expires: 365 });
+    localStorage.setItem("glossary", JSON.stringify(glossary.reduce((accumulator, currentValue) => ({...accumulator, [currentValue[0]]: currentValue[1] }), {})));
   } else {
     $("#downloadButton").removeAttr("href");
     $("#downloadButton").removeAttr("download");
-    $.removeCookie('glossary');
+    localStorage.removeItem("glossary");
   }
 
   $("#glossaryList").html(glossaryList);

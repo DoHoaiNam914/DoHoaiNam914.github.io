@@ -11,7 +11,6 @@
     <script>
       $LAB.setOptions({AlwaysPreserveOrder:true})
         .script("/lib/jquery-3.6.1.js")
-        .script("/lib/js.cookie.js")
         .script("/lib/jquery.csv.js");
     </script>
     <style>
@@ -163,7 +162,7 @@
       $LAB
         .script("/lib/bootstrap.bundle.min.js")
         .script("/js/quan-ly-tu-vung.js").wait(function () {
-          glossary = Object.entries(JSON.parse($.cookie('glossary')));
+          glossary = Object.entries(JSON.parse(localStorage.getItem("glossary")));
           loadGlossary();
         });
     </script>

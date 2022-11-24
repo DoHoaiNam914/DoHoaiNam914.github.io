@@ -4,12 +4,12 @@ $("#backgroundSelect").on("change", function () {
         .replace(/ ?sepia;/g, '')
         .replace(/ ?cream;/g, '')
         .concat(' ' + this.value.concat(';')) : this.value.concat(';'));
-    $.cookie('background', this.value, { expires: 365 });
+    localStorage.setItem("background", this.value);
   } else if ($(document.documentElement).attr("style") != undefined) {
     $(document.documentElement).attr("style", document.documentElement.getAttribute('style').replace(/ ?black;/g, '')
       .replace(/ ?sepia;/g, '')
       .replace(/ ?cream;/g, ''));
-    $.removeCookie('background');
+    localStorage.removeItem("background");
   } else {
     $(document.documentElement).removeAttr("style");
   }
