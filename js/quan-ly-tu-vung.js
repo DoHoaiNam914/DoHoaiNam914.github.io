@@ -28,7 +28,7 @@ $("#inputGlossary").on("input", function () {
 $("#glossaryType").change(() => loadGlossary());
 
 $("#addButton").on("click", function () {
-  if ($("#sourceText").val() === '') {
+  if ($("#sourceText").val().length > 0) {
     glossary = glossary.filter(element => element[0] !== $("#sourceText").val());
     glossary.push(new Array($("#sourceText").val(), $("#targetText").val()));
     loadGlossary();
@@ -37,7 +37,7 @@ $("#addButton").on("click", function () {
 });
 
 $("#removeButton").on("click", function () {
-  if ($("#glossaryList").val() !== '') {
+  if ($("#glossaryList").val().length > 0) {
     glossary.splice(parseInt($("#glossaryList").val()), 1);
     loadGlossary();
     $("#inputGlossary").val(null);
@@ -62,9 +62,14 @@ function loadGlossary() {
   var glossaryList = '<option value="" selected>Chọn...</option>';
 
   if (glossary.length >= 1) {
-    glossary.sort((a, b) => b[0].length - a[0].length || b[1].length - a[1].length || a[0] - b[0] || a[1] - b[1]);
-
     let glossaryType = $("#glossaryType").val();
+
+    if (glossaryType === VIETPHRASE) {
+      glossary.sort((a, b) => a[0].length - b[0].length || a[1].length - b[1].length || a[0].localeCompare(b[0]) || a[1].localeCompare(b[1]));
+    } else {
+      glossary.sort((a, b) => b[0].length - a[0].length || b[1].length - a[1].length || a[0].localeCompare(b[0]) || a[1].localeCompare(b[1]));
+    }
+
     var values = new Array();
     var dataExtension = 'txt';
 
