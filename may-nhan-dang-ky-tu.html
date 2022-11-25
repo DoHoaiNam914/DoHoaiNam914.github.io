@@ -6,7 +6,6 @@
     <meta name="viewport" content="initial-scale=1, user-scalable=0, maximum-scale=1">
     <title>Máy nhận dạng ký tự - DoHoaiNam Pages</title>
     <script src="/lib/jquery-3.6.1.js"></script>
-    <script src="/lib/js.cookie.js"></script>
     <script src="https://unpkg.com/tesseract.js/dist/tesseract.min.js"></script>
     <link rel="stylesheet" href="/css/styles/dohoainam-ebpaj-style.css">
     <style>
@@ -115,7 +114,7 @@
       var cropBottom;
 
       $(document).ready(function () {
-        $("#background_select").val($.cookie('background') || "white").change();
+        $("#background_select").val(localStorage.getItem("background") || "white").change();
         $("ol.main").hide();
         $("#crop").hide();
         $("#preview").hide();
