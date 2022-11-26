@@ -1,5 +1,7 @@
-const HAN_VIET = 'han_viet';
-const VIETPHRASE = 'vietphrase';
+const Methods = {
+  HAN_VIET: 'han_viet',
+  VIETPHRASE: 'vietphrase',
+};
 
 var chinesephienamwords = new Array();
 var names = new Array();
@@ -81,7 +83,7 @@ $("#translateButton").on("click", function () {
 
   switch (service) {
     case HAN_VIET:
-    case VIETPHRASE:
+    case Methods.VIETPHRASE:
       if ($("#removeDeLeZhao").val() === true) {
         sentences = sentences.map((sentence) => sentence.replace(/[的了着]/g, ''));
       }

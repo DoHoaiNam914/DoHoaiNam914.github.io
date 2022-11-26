@@ -1,31 +1,72 @@
-const TSV = 'text/tab-separated-values';
-const CSV = 'text/csv';
-const VIETPHRASE = 'text/plain';
+const GlossaryType = {
+  TSV: 'text/tab-separated-values',
+  CSV: 'text/csv',
+  VIETPHRASE: 'text/plain',
+};
 
-var glossary;
+var vietnameseHanPhonetics = new Map();
+
+var glossary = [];
+
+$(document).ready(function () {
+  let settings = {
+    crossDomain: false,
+    url: "/datasource/ChinesePhienAmWords.txt",
+    method: "GET",
+    processData: false
+  };
+
+  $.ajax(settings).done(function (data) {
+    vietnameseHanPhonetics = new
+        Map(data.split(/\r?\n/).map((phonetic) =>
+        phonetic.split('=')).filter((phonetic) =>
+        phonetic.length === 2));
+  }).fail((jqXHR, textStatus, errorThrown) => window.location.reload());
+});
 
 $("#inputGlossary").on("input", function () {
   let reader = new FileReader();
-  reader.readAsText($(this).prop("files")[0]);
+
   reader.onload = function () {
     switch ($("#inputGlossary").prop("files")[0].type) {
-      case TSV:
-        glossary = this.result.split(/\r?\n/).map((element) => element.split('\t')).filter((element) => element.length === 2);
+      case GlossaryType.TSV:
+        glossary =
+            this.result.split(/\r?\n/).map((element) =>
+            element.split(/\t/)).filter((element) =>
+            element.length === 2);
         break;
-      case CSV:
+
+      case GlossaryType.CSV:
         glossary = $.csv.toArrays(this.result);
         break;
-      case VIETPHRASE:
-        glossary = this.result.split(/\r?\n/).map((element) => element.split('=')).filter((element) => element.length === 2);
+
+      case GlossaryType.VIETPHRASE:
+        glossary =
+            this.result.split(/\r?\n/).map((element) =>
+            element.split('=')).filter((element) =>
+            element.length === 2);
         break;
     }
 
-    $("#glossaryType").val($("#inputGlossary").prop("files")[0].type);
-    loadGlossary()
+    $("#glossaryType").val($("#inputGlossary").prop("files")[0].type).change();
   };
+
+  reader.readAsText($(this).prop("files")[0]);
 });
 
 $("#glossaryType").change(() => loadGlossary());
+
+$("#sourceText").on("input", function () {
+  if (parseInt($("#glossaryList").val()) < 0 && this.value.length > 0) {
+    let targetText = [];
+    this.value.split('').forEach((char) =>
+        targetText.push(vietnameseHanPhonetics.get(char).charAt(0).toUpperCase() +
+        vietnameseHanPhonetics.get(char).substring(1)));
+    $("#targetText").val(targetText.join(' '));
+  } else if (parseInt($("#glossaryList").val()) < 0) {
+    $("#targetText").val(null);
+  }
+});
 
 $("#addButton").on("click", function () {
   if ($("#sourceText").val().length > 0) {
@@ -36,8 +77,16 @@ $("#addButton").on("click", function () {
   }
 });
 
+$("#glossaryList").on("change", function () {
+  if (parseInt(this.value) > -1) {
+    let data = $(this).text().split('=');
+    $("#sourceText").val(data[0]);
+    $("#targetText").val(data[1]);
+  }
+});
+
 $("#removeButton").on("click", function () {
-  if ($("#glossaryList").val().length > 0) {
+  if (parseInt($("#glossaryList").val()) > -1) {
     glossary.splice(parseInt($("#glossaryList").val()), 1);
     loadGlossary();
     $("#inputGlossary").val(null);
@@ -51,7 +100,7 @@ $("#preview").on("click", function () {
 });
 
 $("#clearButton").on("click", function () {
-  glossary = new Array();
+  glossary = [];
   loadGlossary()
   $("#inputGlossary").val(null);
 });
@@ -59,41 +108,54 @@ $("#clearButton").on("click", function () {
 function loadGlossary() {
   var data = '';
 
-  var glossaryList = '<option value="" selected>Chọn...</option>';
+  var glossaryList = '<option value="-1" selected>Chọn...</option>';
 
-  if (glossary.length >= 1) {
+  if (glossary.length > 0) {
     let glossaryType = $("#glossaryType").val();
 
-    if (glossaryType === VIETPHRASE) {
-      glossary.sort((a, b) => a[0].length - b[0].length || a[1].length - b[1].length || a[0].localeCompare(b[0]) || a[1].localeCompare(b[1]));
+    if (glossaryType === GlossaryType.VIETPHRASE) {
+      glossary.sort((a, b) =>
+          a[0].length - b[0].length ||
+          a[1].length - b[1].length ||
+          a[0].localeCompare(b[0]) ||
+          a[1].localeCompare(b[1]));
     } else {
-      glossary.sort((a, b) => b[0].length - a[0].length || b[1].length - a[1].length || a[0].localeCompare(b[0]) || a[1].localeCompare(b[1]));
+      glossary.sort((a, b) =>
+          b[0].length - a[0].length ||
+          b[1].length - a[1].length ||
+          a[0].localeCompare(b[0]) ||
+          a[1].localeCompare(b[1]));
     }
 
-    var values = new Array();
+    glossary.forEach((element, index) => glossaryList += `\n<option value="${index}>${element[0]}\t${element[1]}</option>`);
+
     var dataExtension = 'txt';
 
     switch (glossaryType) {
-      case TSV:
+      case GlossaryType.TSV:
         data = glossary.map((element) => element.join('\t')).join('\r\n');
         dataExtension = 'tsv';
         break;
-      case CSV:
-        data = glossary.map((element) => `${element[0].includes(',') ? '"' + element[0].replace(/"/g, '""') + '"' : element[0].replace(/"/g, '"""')},${element[1].includes(',') ? '"' + element[1].replace(/"/g, '""') + '"' : element[1].replace(/"/g, '"""')}`).join('\r\n');
+      case GlossaryType.CSV:
+        data = glossary.map((element) =>
+            `${element[0].includes(',') ? '"' +
+            element[0].replace(/"/g, '""') + '"' :
+            element[0].replace(/"/g,
+            '"""')},${element[1].includes(',') ? '"' +
+            element[1].replace(/"/g, '""') + '"' :
+            element[1].replace(/"/g, '"""')}`).join('\r\n');
         dataExtension = 'csv';
         break;
-      case VIETPHRASE:
+      case GlossaryType.VIETPHRASE:
         data = glossary.map((element) => element.join('=')).join('\r\n')
         break;
     }
 
-    for (let i = 0; i < glossary.length; i++) {
-      glossaryList += `\n<option value="${i}">${glossary[i][0]}=${glossary[i][1]}</option>`;
-    }
-
-    $("#downloadButton").attr("href", `data:${glossaryType};charset=utf-8,` + encodeURIComponent(data));
+    $("#downloadButton").attr("href",
+        `data:${glossaryType};charset=utf-8,` +
+        encodeURIComponent(data));
     $("#downloadButton").attr("download", `Từ vựng.${dataExtension}`);
-    localStorage.setItem("glossary", JSON.stringify(glossary.reduce((accumulator, currentValue) => ({...accumulator, [currentValue[0]]: currentValue[1] }), {})));
+    localStorage.setItem("glossary", JSON.stringify(Object.fromEntries(new Map(glossary))));
   } else {
     $("#downloadButton").removeAttr("href");
     $("#downloadButton").removeAttr("download");
