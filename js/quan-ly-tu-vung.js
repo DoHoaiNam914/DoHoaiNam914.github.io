@@ -57,31 +57,54 @@ $("#inputGlossary").on("input", function () {
 $("#glossaryType").change(() => loadGlossary());
 
 $("#sourceText").on("input", function () {
-  if (parseInt($("#glossaryList").val()) < 0 && this.value.length > 0) {
-    let targetText = [];
-    this.value.split('').forEach((char) =>
-        targetText.push(vietnameseHanPhonetics.get(char).charAt(0).toUpperCase() +
-        vietnameseHanPhonetics.get(char).substring(1)));
-    $("#targetText").val(targetText.join(' '));
-  } else if (parseInt($("#glossaryList").val()) < 0) {
-    $("#targetText").val(null);
+  let glossaryMap = new Map(glossary);
+
+  if (this.value.length > 0) {
+    if (glossaryMap.has(this.value)) {
+      $("#glossaryList").val(Array.from(glossaryMap.keys()).indexOf(this.value)).change();
+    } else if (parseInt($("#glossaryList").val()) < 0) {
+      let chars = this.value.split('');
+      var targetText = '';
+
+      for (let i = 0; i < chars.length; i++) {
+        if (/\p{sc=Han}/u.test(chars[i])) {
+          targetText +=
+            vietnameseHanPhonetics.get(chars[i]).charAt(0).toUpperCase() +
+            vietnameseHanPhonetics.get(chars[i]).substring(1) +
+            (/\p{sc=Han}/u.test(chars[i + 1]) ? ' ' : '');
+        } else {
+          targetText += chars[i];
+        }
+      }
+
+      $("#targetText").val(targetText);
+    } else {
+      $("#glossaryList").val(-1);
+    }
+  } else {
+    $("#glossaryList").val(-1).change();
   }
 });
 
 $("#addButton").on("click", function () {
   if ($("#sourceText").val().length > 0) {
-    glossary = glossary.filter(element => element[0] !== $("#sourceText").val());
-    glossary.push(new Array($("#sourceText").val(), $("#targetText").val()));
+    let glossaryMap = new Map(glossary);
+    glossaryMap.delete($("#sourceText").val());
+    glossaryMap.set($("#sourceText").val(), $("#targetText").val());
+    glossary = Array.from(glossaryMap);
     loadGlossary();
     $("#inputGlossary").val(null);
   }
 });
 
-$("#glossaryList").on("change", function () {
+$("#glossaryList").change(function () {
   if (parseInt(this.value) > -1) {
-    let data = $(this).text().split('=');
+    let data = $("#glossaryList option:selected").text().split(/\t/);
     $("#sourceText").val(data[0]);
     $("#targetText").val(data[1]);
+  } else {
+    $("#sourceText").val(null);
+    $("#targetText").val(null);
   }
 });
 
@@ -127,7 +150,8 @@ function loadGlossary() {
           a[1].localeCompare(b[1]));
     }
 
-    glossary.forEach((element, index) => glossaryList += `\n<option value="${index}>${element[0]}\t${element[1]}</option>`);
+    glossary.forEach((element, index) => glossaryList +=
+        `\n<option value="${index}">${element[0]}\t${element[1]}</option>`);
 
     var dataExtension = 'txt';
 
