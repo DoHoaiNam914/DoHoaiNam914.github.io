@@ -48,7 +48,8 @@ $("#inputGlossary").on("input", function () {
         break;
     }
 
-    $("#glossaryType").val($("#inputGlossary").prop("files")[0].type).change();
+    $("#glossaryType").val($("#inputGlossary").prop("files")[0].type);
+    loadGlossary();
   };
 
   reader.readAsText($(this).prop("files")[0]);
@@ -187,7 +188,7 @@ function loadGlossary() {
   }
 
   $("#glossaryList").html(glossaryList);
-  $("#preview").text(data);
+  $("#preview").val(data);
   $("#counter").text(glossary.length);
   $("#sourceText").val(null);
   $("#targetText").val(null);

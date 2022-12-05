@@ -1,0 +1,11 @@
+.body.cover {
+	margin-top: 0px;
+	margin-left: 0px;
+	margin-right: 0px;
+	margin-bottom: 0px;
+	text-align: center;
+}
+
+.body {
+	line-height: 1.25;
+}

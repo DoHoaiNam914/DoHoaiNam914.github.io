@@ -1,0 +1,104 @@
+<textarea id="result" readonly onclick="this.select()"></textarea>
+<script>
+let manifest = `[
+    <item id="cover" href="Text/cover.xhtml" media-type="application/xhtml+xml"/>
+    <item id="style" href="Styles/stylesheet.css" media-type="text/css"/>
+    <item id="ncx" href="toc.ncx" media-type="application/x-dtbncx+xml"/>
+    <item id="toc" href="Text/toc.xhtml" media-type="application/xhtml+xml" properties="nav"/>
+    <item id="Color1.xhtml" href="Text/Color1.xhtml" media-type="application/xhtml+xml"/>
+    <item id="Color2.xhtml" href="Text/Color2.xhtml" media-type="application/xhtml+xml"/>
+    <item id="signup.xhtml" href="Text/signup.xhtml" media-type="application/xhtml+xml"/>
+    <item id="copyright.xhtml" href="Text/copyright.xhtml" media-type="application/xhtml+xml"/>
+    <item id="insert6.xhtml" href="Text/insert6.xhtml" media-type="application/xhtml+xml"/>
+    <item id="insert1.xhtml" href="Text/insert1.xhtml" media-type="application/xhtml+xml"/>
+    <item id="insert2.xhtml" href="Text/insert2.xhtml" media-type="application/xhtml+xml"/>
+    <item id="insert3.xhtml" href="Text/insert3.xhtml" media-type="application/xhtml+xml"/>
+    <item id="insert4.xhtml" href="Text/insert4.xhtml" media-type="application/xhtml+xml"/>
+    <item id="insert5.xhtml" href="Text/insert5.xhtml" media-type="application/xhtml+xml"/>
+    <item id="jnovelclubCMYK.png" href="Images/jnovelclubCMYK.png" media-type="image/png"/>
+    <item id="afterword.xhtml" href="Text/afterword.xhtml" media-type="application/xhtml+xml"/>
+    <item id="bonus.xhtml" href="Text/bonus.xhtml" media-type="application/xhtml+xml"/>
+    <item id="Color1.jpg" href="Images/Color1.jpg" media-type="image/jpeg"/>
+    <item id="Color2.jpg" href="Images/Color2.jpg" media-type="image/jpeg"/>
+    <item id="Cover.jpg" href="Images/Cover.jpg" media-type="image/jpeg" properties="cover-image"/>
+    <item id="Insert1.jpg" href="Images/Insert1.jpg" media-type="image/jpeg"/>
+    <item id="Insert2.jpg" href="Images/Insert2.jpg" media-type="image/jpeg"/>
+    <item id="Insert3.jpg" href="Images/Insert3.jpg" media-type="image/jpeg"/>
+    <item id="Insert4.jpg" href="Images/Insert4.jpg" media-type="image/jpeg"/>
+    <item id="Insert5.jpg" href="Images/Insert5.jpg" media-type="image/jpeg"/>
+    <item id="Insert6.jpg" href="Images/Insert6.jpg" media-type="image/jpeg"/>
+    <item id="TOC.jpg" href="Images/TOC.jpg" media-type="image/jpeg"/>
+    <item id="prologue.xhtml" href="Text/prologue.xhtml" media-type="application/xhtml+xml"/>
+    <item id="chapter1_2.xhtml" href="Text/chapter1_2.xhtml" media-type="application/xhtml+xml"/>
+    <item id="chapter2.xhtml" href="Text/chapter2.xhtml" media-type="application/xhtml+xml"/>
+    <item id="chapter4_1.xhtml" href="Text/chapter4_1.xhtml" media-type="application/xhtml+xml"/>
+    <item id="chapter5_1.xhtml" href="Text/chapter5_1.xhtml" media-type="application/xhtml+xml"/>
+    <item id="epilogue.xhtml" href="Text/epilogue.xhtml" media-type="application/xhtml+xml"/>
+    <item id="chapter1.xhtml" href="Text/chapter1.xhtml" media-type="application/xhtml+xml"/>
+    <item id="chapter1_1.xhtml" href="Text/chapter1_1.xhtml" media-type="application/xhtml+xml"/>
+    <item id="chapter3.xhtml" href="Text/chapter3.xhtml" media-type="application/xhtml+xml"/>
+    <item id="chapter3_1.xhtml" href="Text/chapter3_1.xhtml" media-type="application/xhtml+xml"/>
+    <item id="chapter4.xhtml" href="Text/chapter4.xhtml" media-type="application/xhtml+xml"/>
+    <item id="chapter5.xhtml" href="Text/chapter5.xhtml" media-type="application/xhtml+xml"/>
+    <item id="tocimg.xhtml" href="Text/tocimg.xhtml" media-type="application/xhtml+xml"/>
+]`
+.replace(new RegExp('<item media-type=".+" id=(".+") href=(".+") properties=".+"/>', 'g'), '[$1, $2],')
+.replace(new RegExp('<item media-type=".+" id=(".+") href=(".+")/>', 'g'), '[$1, $2],')
+.replace(new RegExp('  <item id=(".+") href=(".+") media-type=".+" properties=".+"/>', 'g'), '[$1, $2],')
+.replace(new RegExp('  <item id=(".+") href=(".+") media-type=".+"/>', 'g'), '[$1, $2],')
+.replace(/,(\n])/, '$1');
+
+let spine = `[
+    <itemref idref="cover"/>
+    <itemref idref="tocimg.xhtml"/>
+    <itemref idref="prologue.xhtml"/>
+    <itemref idref="chapter1.xhtml"/>
+    <itemref idref="insert1.xhtml"/>
+    <itemref idref="chapter1_1.xhtml"/>
+    <itemref idref="insert2.xhtml"/>
+    <itemref idref="chapter1_2.xhtml"/>
+    <itemref idref="chapter2.xhtml"/>
+    <itemref idref="chapter3.xhtml"/>
+    <itemref idref="insert3.xhtml"/>
+    <itemref idref="chapter3_1.xhtml"/>
+    <itemref idref="insert4.xhtml"/>
+    <itemref idref="chapter4.xhtml"/>
+    <itemref idref="insert5.xhtml"/>
+    <itemref idref="chapter4_1.xhtml"/>
+    <itemref idref="chapter5.xhtml"/>
+    <itemref idref="insert6.xhtml"/>
+    <itemref idref="chapter5_1.xhtml"/>
+    <itemref idref="epilogue.xhtml"/>
+    <itemref idref="afterword.xhtml"/>
+    <itemref idref="Color1.xhtml"/>
+    <itemref idref="Color2.xhtml"/>
+    <itemref idref="bonus.xhtml"/>
+    <itemref idref="toc" linear="yes"/>
+    <itemref idref="signup.xhtml"/>
+    <itemref idref="copyright.xhtml"/>
+      ]`
+.replace(new RegExp('<itemref linear=".+" idref=(".+") properties=".+"/>', 'g'), '        $1,')
+.replace(new RegExp('<itemref linear=".+" idref=(".+")/>', 'g'), '        $1,')
+.replace(new RegExp('<itemref idref=(".+") linear=".+"/>', 'g'), '    $1,')
+.replace(new RegExp('<itemref idref=(".+")/>', 'g'), '    $1,')
+.replace(/,(\n\s+])/, '$1');
+
+var curr;
+var result = [];
+
+spine.split(/\n/).forEach(function (line) {
+  JSON.parse(manifest)
+  .filter((element) => spine.includes(element[0]))
+  .sort((a, b) => b[0].length - a[0].length || a[1].length - b[1].length)
+  .forEach(function (element) {
+    if (line.trim().replace(/",?/g, '') === element[0]) {
+      curr = line.replace(element[0], element[1]);
+    }
+  });
+
+  result.push(curr != undefined ? curr : line);
+  curr = undefined;
+});
+
+document.querySelector('#result').value = result.join('\n');
+</script>

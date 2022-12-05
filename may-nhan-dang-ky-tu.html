@@ -7,7 +7,7 @@
     <title>Máy nhận dạng ký tự - DoHoaiNam Pages</title>
     <script src="./lib/jquery-3.6.1.js"></script>
     <script src="./lib/tesseract.min.js"></script>
-    <link rel="stylesheet" href="./css/styles/dohoainam-ebpaj-style.css">
+    <link rel="stylesheet" href="./css/styles/ebpaj-style-viewer.css">
     <style>
       #page_segmentation_select,
       #language_select {
@@ -30,11 +30,11 @@
   <body>
     <form>
       <div class="notranslate" style="bottom: 8px; left: 8px; position: fixed;">
-        <select id="backgroundSelect">
-          <option value="white" selected>Trắng</option>
+        <select id="background-select">
+          <option value="white">Trắng</option>
+          <option value="sepia" selected>Sepia</option>
+          <option value="gray">Xám</option>
           <option value="black">Đen</option>
-          <option value="sepia">Sepia</option>
-          <option value="cream">Kem</option>
         </select>
       </div>
     </form>
@@ -117,7 +117,7 @@
       var cropBottom;
 
       $(document).ready(function () {
-        $("#backgroundSelect").val(localStorage.getItem("background") || "white").change();
+        $("#background-select").val(localStorage.getItem("background") || "sepia").change();
         $("ol.main").hide();
         $("#crop").hide();
         $("#preview").hide();

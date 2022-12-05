@@ -1,0 +1,52 @@
+{
+  "propose": [
+    {
+      "id": "vol-1",
+      "title": "King’s Proposal, Vol. 1: The Witch of Resplendent Color",
+      "cover": "https://yenpress-us.imgix.net/covers/9781975351502.jpg",
+      "description": "Two Bodies in One With looks to die for, Saika Kuozaki is the most powerful mage in existence and the only one who can thwart the annihilation factors that attempt to destroy the world once every three hundred hours. When Saika is mortally wounded, however, she bequeaths both her powers and body to the normal high school boy who happens to find her, Mushiki Kuga. Just because Mushiki inherits her abilities, though, doesn’t mean he can control them. To stand a chance of saving the world, Mushiki will have to attend an academy for mages as Saika—while trying to keep his true identity under wraps!",
+      "loader": "yenpress",
+      "spine": [
+        "Text/cover.xhtml",
+        "Text/insert001.xhtml",
+        "Text/insert002.xhtml",
+        "Text/insert003.xhtml",
+        "Text/insert004.xhtml",
+        "Text/insert005.xhtml",
+        "Text/title.xhtml",
+        "Text/copyright.xhtml",
+        "Text/front.xhtml",
+        "Text/contents.xhtml",
+        "Text/prologue.xhtml",
+        "Text/prologue1.xhtml",
+        "Text/prologue2.xhtml",
+        "Text/chapter1.xhtml",
+        "Text/chapter1a.xhtml",
+        "Text/chapter1b.xhtml",
+        "Text/chapter2.xhtml",
+        "Text/chapter2a.xhtml",
+        "Text/chapter2b.xhtml",
+        "Text/chapter2c.xhtml",
+        "Text/chapter2d.xhtml",
+        "Text/chapter3.xhtml",
+        "Text/chapter3a.xhtml",
+        "Text/chapter3b.xhtml",
+        "Text/chapter3c.xhtml",
+        "Text/chapter3d.xhtml",
+        "Text/chapter4.xhtml",
+        "Text/chapter4a.xhtml",
+        "Text/chapter4b.xhtml",
+        "Text/chapter4c.xhtml",
+        "Text/chapter4d.xhtml",
+        "Text/chapter5.xhtml",
+        "Text/chapter5a.xhtml",
+        "Text/chapter5b.xhtml",
+        "Text/chapter5c.xhtml",
+        "Text/chapter5d.xhtml",
+        "Text/chapter6.xhtml",
+        "Text/afterword.xhtml",
+        "Text/newsletter.xhtml"
+      ]
+    }
+  ]
+}

@@ -1,18 +1,38 @@
-$("#backgroundSelect").change(function () {
+const colors = [
+  'white',
+  'sepia',
+  'cream',
+  'gray',
+  'black',
+];
+
+$("#background-select").change(function () {
   if (this.value !== 'white') {
-    $(document.documentElement).attr("style",
-        $(document.documentElement).attr("style") != undefined ?
-        $(document.documentElement).attr("style").replace(/\s?black;/g,
-        '').replace(/\s?sepia;/g, '').replace(/\s?cream;/g,
-        '').concat(' ' + this.value.concat(';')) :
-        this.value.concat(';'));
-    localStorage.setItem("background", this.value);
+    if ($(document.documentElement).attr("style") != undefined) {
+      colors.forEach(function (code) {
+        if ($(document.documentElement).attr("style").includes(code)) {
+          $(document.documentElement).attr("style",
+              $(document.documentElement).attr("style").replace(new RegExp(`\s?${code}-background;`), ''));
+        }
+      });
+
+      $(document.documentElement).attr("style",
+          $(document.documentElement).attr("style").concat(` ${this.value}-background;`));
+    } else {
+      $(document.documentElement).attr("style", `${this.value}-background;`);
+    }
   } else if ($(document.documentElement).attr("style") != undefined) {
-    $(document.documentElement).attr("style", 
-        document.documentElement.getAttribute('style').replace(/\s?black;/g,
-        '').replace(/\s?sepia;/g, '').replace(/\s?cream;/g, ''));
-    localStorage.removeItem("background");
-  } else {
-    $(document.documentElement).removeAttr("style");
+    colors.forEach(function (code) {
+      if ($(document.documentElement).attr("style").includes(code)) {
+        $(document.documentElement).attr("style",
+            $(document.documentElement).attr("style").replace(new RegExp(`\s?${code}-background;`, 'g'), ''));
+      }
+    });
+
+    if ($(document.documentElement).attr("style") == '') {
+      $(document.documentElement).removeAttr("style")
+    }
   }
+
+  localStorage.setItem("background", this.value);
 });

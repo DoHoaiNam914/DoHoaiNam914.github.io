@@ -1,0 +1,380 @@
+/* 
+   Base
+ */
+
+@-ms-viewport {
+  width: device-width;
+}
+
+@viewport {
+  width: device-width;
+  zoom: 1;
+}
+
+:root {
+  --baseFontFamily: "Iowan Old Style", serif;
+
+  --lineHeightCompensation: 1;
+
+  --baseLineHeight: calc((1em + (2ex - 1ch) - ((1rem - 16px) * 0.1667)) * var(--lineHeightCompensation));
+}
+
+.body * { /*html*/
+  font-family: var(--baseFontFamily);
+  line-height: 1.6;
+  line-height: var(--baseLineHeight);
+  text-rendering: optimizeLegibility;
+}
+
+.body h1,
+.body h2,
+.body h3 { /*root*/
+  line-height: normal;
+}
+
+:lang(ja) .body *,
+:lang(zh) .body * { /*root*/
+  word-wrap: break-word;
+  -webkit-line-break: strict;
+  -epub-line-break: strict;
+  line-break: strict;
+}
+
+.body math { /*root*/
+  font-family: "Latin Modern Math", "STIX Two Math", "XITS Math", "STIX Math", "Libertinus Math", "TeX Gyre Termes Math", "TeX Gyre Bonum Math", "TeX Gyre Schola", "DejaVu Math TeX Gyre", "TeX Gyre Pagella Math", "Asana Math", "Cambria Math", "Lucida Bright Math", "Minion Math", STIXGeneral, STIXSizeOneSym, Symbol, "Times New Roman", serif;
+}
+
+/* Language Overrides */
+
+:lang(ja) {
+  --baseFontFamily: "游ゴシック体", YuGothic, "ヒラギノ丸ゴ", "Hiragino Sans", "Yu Gothic UI", "Meiryo UI", "MS Gothic", Roboto, Noto, "Noto Sans CJK JP", sans-serif;
+
+  --lineHeightCompensation: 1.167;
+
+  --serif-ja: "ＭＳ Ｐ明朝", "MS PMincho", "Hiragino Mincho Pro", "ヒラギノ明朝 Pro W3", "游明朝", "YuMincho", "ＭＳ 明朝", "MS Mincho", "Hiragino Mincho ProN", serif;
+  --sans-serif-ja: "ＭＳ Ｐゴシック", "MS PGothic", "Hiragino Kaku Gothic Pro W3", "ヒラギノ角ゴ Pro W3", "Hiragino Sans GB", "ヒラギノ角ゴシック W3", "游ゴシック", "YuGothic", "ＭＳ ゴシック", "MS Gothic", "Hiragino Sans", sans-serif;
+  --serif-ja-v: "ＭＳ 明朝", "MS Mincho", "Hiragino Mincho Pro", "ヒラギノ明朝 Pro W3", "游明朝", "YuMincho", "ＭＳ Ｐ明朝", "MS PMincho", "Hiragino Mincho ProN", serif;
+  --sans-serif-ja-v: "ＭＳ ゴシック", "MS Gothic", "Hiragino Kaku Gothic Pro W3", "ヒラギノ角ゴ Pro W3", "Hiragino Sans GB", "ヒラギノ角ゴシック W3", "游ゴシック", "YuGothic", "ＭＳ Ｐゴシック", "MS PGothic", "Hiragino Sans", sans-serif;
+}
+
+:lang(zh) {
+  --baseFontFamily: "方体", "PingFang SC", "黑体", "Heiti SC", "Microsoft JhengHei UI", "Microsoft JhengHei", Roboto, Noto, "Noto Sans CJK SC", sans-serif;
+
+  --lineHeightCompensation: 1.167;
+}
+
+:lang(zh-Hant),
+:lang(zh-TW) {
+  --baseFontFamily: "方體", "PingFang TC", "黑體", "Heiti TC", "Microsoft JhengHei UI", "Microsoft JhengHei", Roboto, Noto, "Noto Sans CJK TC", sans-serif;
+
+  --lineHeightCompensation: 1.167;
+}
+
+:lang(zh-HK) {
+  --baseFontFamily: "方體", "PingFang HK", "方體", "PingFang TC", "黑體", "Heiti TC", "Microsoft JhengHei UI", "Microsoft JhengHei", Roboto, Noto, "Noto Sans CJK TC", sans-serif;
+
+  --lineHeightCompensation: 1.167;
+}
+
+/* 
+   White Background
+ */
+
+:root {
+  --backgroundColor: #fff;
+  --textColor: #000;
+
+  --linkColor: #007aff;
+}
+
+:root {
+  color: var(--textColor) !important;
+  background-color: var(--backgroundColor) !important;
+}
+
+.body a:link,
+.body a:link *,
+.body a:visited,
+.body a:visited * { /*root*/
+  color: var(--linkColor) !important;
+}
+
+/* 
+   Fonts
+ */
+
+@font-face {
+  font-family: 'Iowan Old Style';
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/IowanOldStBTRoman.ttf) format(truetype);
+}
+
+@font-face {
+  font-family: 'Iowan Old Style';
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/IowanOldStBTItalic.ttf) format(truetype);
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'Iowan Old Style';
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/IowanOldStBTBold.ttf) format(truetype);
+  font-weight: bold;
+}
+
+@font-face {
+  font-family: 'Iowan Old Style';
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/IowanOldStBTBoldItalic.ttf) format(truetype);
+  font-weight: bold;
+  font-style: italic;
+}
+
+/* 
+   HTML5 SR Patch
+ */
+
+/* Fragmentation */
+
+.body {
+  widows: 2;
+  orphans: 2;
+}
+
+.body figcaption,
+.body th,
+.body td { /*root*/
+  widows: 1;
+  orphans: 1;
+}
+
+.body h2,
+.body h3,
+.body h4,
+.body h5,
+.body h6,
+.body dt,
+.body hr,
+.body caption { /*root*/
+  -webkit-column-break-after: avoid;
+  page-break-after: avoid;
+  break-after: avoid;
+}
+
+.body h1,
+.body h2,
+.body h3,
+.body h4,
+.body h5,
+.body h6,
+.body dt,
+.body figure,
+.body tr { /*root*/
+  -webkit-column-break-inside: avoid;
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+/* Hyphenation */
+
+.body * { /*body*/
+  -webkit-hyphenate-character: "\002D";
+  -moz-hyphenate-character: "\002D";
+  -ms-hyphenate-character: "\002D";
+  hyphenate-character: "\002D";
+  -webkit-hyphenate-limit-lines: 3;
+  -ms-hyphenate-limit-lines: 3;
+  hyphenate-limit-lines: 3;
+}
+
+.body h1,
+.body h2,
+.body h3,
+.body h4,
+.body h5,
+.body h6,
+.body dt,
+.body figcaption,
+.body pre,
+.body caption,
+.body address,
+.body center,
+.body code,
+.body var { /*root*/
+  -ms-hyphens: none;
+  -moz-hyphens: none;
+  -webkit-hyphens: none;
+  -epub-hyphens: none;
+  hyphens: none;
+}
+
+/* OTF */
+
+.body * { /*body*/
+  font-variant-numeric: oldstyle-nums proportional-nums;
+}
+
+:lang(ja) .body *,
+:lang(zh) .body * { /*body*/
+  font-variant-numeric: lining-nums proportional-nums;
+}
+
+.body h1,
+.body h2,
+.body h3,
+.body h4,
+.body h5,
+.body h6,
+.body dt { /*root*/
+  font-variant-numeric: lining-nums proportional-nums;
+}
+
+.body table { /*root*/
+  font-variant-numeric: lining-nums tabular-nums;
+}
+
+.body code,
+.body var { /*root*/
+  font-variant-ligatures: none;
+  font-variant-numeric: lining-nums tabular-nums slashed-zero;
+}
+
+.body rt { /*root*/
+  font-variant-east-asian: ruby;
+}
+
+/* Black background */
+
+.body hr { /*root*/
+  color: inherit;
+  border-color: currentColor;
+}
+
+.body table,
+.body th,
+.body td { /*root*/
+  border-color: currentColor;
+}
+
+/* Horizontal Spacing */
+
+.body figure,
+.body blockquote { /*root*/
+  margin: 1em 5%;
+}
+
+.body ul,
+.body ol { /*root*/
+  padding-left: 5%;
+}
+
+.body dd { /*root*/
+  margin-left: 5%;
+}
+
+.body pre { /*root*/
+  white-space: pre-wrap;
+  -ms-tab-size: 2;
+  -moz-tab-size: 2;
+  -webkit-tab-size: 2;
+  tab-size: 2;
+}
+
+/* Normalization */
+
+.body abbr[title],
+.body acronym[title] { /*root*/
+  text-decoration: dotted underline;
+}
+
+.body nobr wbr { /*root*/
+  white-space: normal;
+}
+
+.body ruby > rt,
+.body ruby > rp { /*root*/
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Internationalization */
+
+.body *:lang(ja),
+.body *:lang(zh),
+:lang(ja) .body cite,
+:lang(ja) .body dfn,
+:lang(ja) .body em,
+:lang(ja) .body i,
+:lang(zh) .body cite,
+:lang(zh) .body dfn,
+:lang(zh) .body em,
+:lang(zh) .body i { /*root *, root*/
+  font-style: normal;
+}
+
+:lang(ja) .body a,
+:lang(zh) .body a { /*root*/
+  text-decoration: none;
+}
+
+/*
+   Safeguards
+ */
+
+:root {
+  --maxMediaWidth: 100%;
+
+  --maxMediaHeight: 95vh;
+
+  --boxSizingMedia: border-box;
+
+  --boxSizingTable: border-box;
+}
+
+.body * { /*html*/
+  -webkit-line-box-contain: block glyphs replaced;
+}
+
+:lang(ja) .body * { /*root*/
+  -webkit-line-box-contain: block inline replaced;
+}
+
+.body a,
+.body h1,
+.body h2,
+.body h3,
+.body h4,
+.body h5,
+.body h6 { /*root*/
+  word-wrap: break-word;
+}
+
+.body div { /*root*/
+  max-width: var(--maxMediaWidth);
+}
+
+/* Size medias */
+
+.body img,
+.body svg,
+.body audio,
+.body video { /*root*/
+
+  object-fit: contain;
+
+  width: auto;
+  height: auto;
+
+  max-width: var(--maxMediaWidth);
+
+  max-height: var(--maxMediaHeight) !important;
+  box-sizing: var(--boxSizingMedia);
+
+  -webkit-column-break-inside: avoid;
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+.body table { /*root*/
+  max-width: var(--maxMediaWidth);
+  box-sizing: var(--boxSizingTable);
+}

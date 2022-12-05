@@ -14,85 +14,144 @@
         .script("/lib/jquery.csv.js");
     </script>
     <style>
-      main.container {
-        margin-bottom: 15rem;
-      }
-
-      main.container * {
-        font-size: 18px !important;
-      }
-
-      @media (max-width: 1000px) {
-        main.container * {
-          font-size: 16px !important;
-        }
+      html,
+      body {
+        padding-bottom: 56px;
       }
 
       select.form-select-lang {
         width: 150px;
       }
 
-      .textarea {
-        margin-top: 5rem;
-        min-height: 300px !important;
+      #settingsButton {
+        bottom: 4rem;
+        right: 1rem;
+      }
+
+      .py-8 {
+        padding-bottom: 2rem;
+        padding-top: 2rem;
+      }
+
+      #preview {
+        height: 16rem;
+      }
+
+      main.container textarea {
+        font-size: 18px;
+        min-height: 300px;
         overflow: hidden;
       }
 
-      textarea {
-        resize: none;
-      }
-
-      .textarea * {
-        margin: 0;
+      @media (max-width: 1000px) {
+        main.container textarea {
+          font-size: 16px;
+        }
       }
     </style>
   </head>
-  <body class="bg-dark text-light">
-    <nav class="navbar fixed-bottom navbar-expand-sm bg-light">
-      <div class="container-fluid">
-        <div class="d-flex">
-          <select class="form-select form-select-sm form-select-lang me-2" id="sourceLangSelect" aria-label="Chọn ngôn ngữ gốc của văn bản">
-            <option value="auto" selected>Tự động</option>
-            <option value="en">Tiếng Anh</option>
-            <option value="ja">Tiếng Nhật</option>
-            <option value="zh-CN">Tiếng Trung (Giản thể)</option>
-            <option value="zh-TW">Tiếng Trung (Phổn thể)</option>
-            <option value="vi">Tiếng Việt</option>
-          </select>
-          <select class="form-select form-select-sm form-select-lang ms-2" id="targetLangSelect" aria-label="Chọn ngôn ngữ gốc để dịch">
-            <option value="en">Tiếng Anh</option>
-            <option value="ja">Tiếng Nhật</option>
-            <option value="zh-CN">Tiếng Trung (Giản thể)</option>
-            <option value="zh-TW">Tiếng Trung (Phổn thể)</option>
-            <option value="vi" selected>Tiếng Việt</option>
-          </select>
+  <body class="bg-dark">
+    <main class="container">
+      <div class="py-8">
+        <div class="input-group">
+          <textarea class="form-control" id="queryText" placeholder="Viết gì đó tại đây"></textarea>
+          <textarea class="form-control" id="translatedText"></textarea>
         </div>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <button class="btn btn-primary btn-sm d-block mt-2 mt-lg-0 me-auto mb-2 mb-lg-0" id="translateButton" type="submit">Dịch</button>
-          <ul class="navbar-nav mt-2 mt-lg-0 me-auto mb-2 mb-lg-0">
-            <li class="nav-item dropup">
-              <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false">Máy dịch</a>
+      </div>
+    </main>
+    <nav class="navbar fixed-bottom bg-light">
+      <div class="container-fluid">
+        <select class="form-select form-select-sm form-select-lang me-2" id="sourceLangSelect" aria-label="Chọn ngôn ngữ gốc của văn bản">
+          <option value="auto" selected>Tự động</option>
+          <option value="en">Tiếng Anh</option>
+          <option value="ja">Tiếng Nhật</option>
+          <option value="zh-CN">Tiếng Trung (Giản thể)</option>
+          <option value="zh-TW">Tiếng Trung (Phổn thể)</option>
+          <option value="vi">Tiếng Việt</option>
+        </select>
+        <select class="form-select form-select-sm form-select-lang ms-2" id="targetLangSelect" aria-label="Chọn ngôn ngữ gốc để dịch">
+          <option value="en">Tiếng Anh</option>
+          <option value="ja">Tiếng Nhật</option>
+          <option value="zh-CN">Tiếng Trung (Giản thể)</option>
+          <option value="zh-TW">Tiếng Trung (Phổn thể)</option>
+          <option value="vi" selected>Tiếng Việt</option>
+        </select>
+        <button class="btn btn-primary" id="translateButton" type="submit">Dịch</button>
+      </div>
+    </nav>
+    <button type="button" class="btn btn-outline-secondary position-fixed" id="settingsButton" data-bs-toggle="modal" data-bs-target="#settings">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-gear" viewBox="0 0 16 16">
+        <path d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492zM5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0z"/>
+        <path d="M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0l-.094.319a.873.873 0 0 1-1.255.52l-.292-.16c-1.64-.892-3.433.902-2.54 2.541l.159.292a.873.873 0 0 1-.52 1.255l-.319.094c-1.79.527-1.79 3.065 0 3.592l.319.094a.873.873 0 0 1 .52 1.255l-.16.292c-.892 1.64.901 3.434 2.541 2.54l.292-.159a.873.873 0 0 1 1.255.52l.094.319c.527 1.79 3.065 1.79 3.592 0l.094-.319a.873.873 0 0 1 1.255-.52l.292.16c1.64.893 3.434-.902 2.54-2.541l-.159-.292a.873.873 0 0 1 .52-1.255l.319-.094c1.79-.527 1.79-3.065 0-3.592l-.319-.094a.873.873 0 0 1-.52-1.255l.16-.292c.893-1.64-.902-3.433-2.541-2.54l-.292.159a.873.873 0 0 1-1.255-.52l-.094-.319zm-2.633.283c.246-.835 1.428-.835 1.674 0l.094.319a1.873 1.873 0 0 0 2.693 1.115l.291-.16c.764-.415 1.6.42 1.184 1.185l-.159.292a1.873 1.873 0 0 0 1.116 2.692l.318.094c.835.246.835 1.428 0 1.674l-.319.094a1.873 1.873 0 0 0-1.115 2.693l.16.291c.415.764-.42 1.6-1.185 1.184l-.291-.159a1.873 1.873 0 0 0-2.693 1.116l-.094.318c-.246.835-1.428.835-1.674 0l-.094-.319a1.873 1.873 0 0 0-2.692-1.115l-.292.16c-.764.415-1.6-.42-1.184-1.185l.159-.291A1.873 1.873 0 0 0 1.945 8.93l-.319-.094c-.835-.246-.835-1.428 0-1.674l.319-.094A1.873 1.873 0 0 0 3.06 4.377l-.16-.292c-.415-.764.42-1.6 1.185-1.184l.292.159a1.873 1.873 0 0 0 2.692-1.115l.094-.319z"/>
+      </svg>
+    </button>
+    <div class="modal fade" id="settings" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="settingsLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="settingsLabel">Thiết lập</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+          </div>
+          <div class="modal-body">
+            <div class="dropdown">
+              <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Máy dịch</button>
               <ul class="dropdown-menu">
                 <li><a class="dropdown-item service active" id="google">Google Dịch</a></li>
                 <li><a class="dropdown-item service" id="microsoft">Trình dịch Microsoft</a></li>
                 <li><a class="dropdown-item service" id="papago">Papago</a></li>
               </ul>
-            </li>
-          </ul>
-          <input type="file" class="form-control form-control-sm" id="inputGlossary" accept="text/plain">
-          <button class="btn btn-secondary btn-sm d-block mt-2" id="clearButton" type="button">Dọn sạch từ vựng (<span id="counter">0</span>)</button>
+            </div>
+            <hr>
+            <h2 class="fs-5">Từ vựng</h2>
+            <div class="input-group input-group-sm mb-3">
+              <input type="file" class="form-control" id="inputGlossary" accept="text/plain">
+              <button class="btn btn-outline-danger position-relative" id="clearButton" type="button">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                  <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+                  <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+                </svg>
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-info" id="counter">0</span>
+              </button>
+            </div>
+            <select class="form-select form-select-sm mb-3" id="glossaryType">
+              <option value="text/tab-separated-values" selected>TSV</option>
+              <option value="text/csv">CSV</option>
+              <option value="text/plain">VietPhrase</option>
+            </select>
+            <div class="input-group input-group-sm mb-3">
+              <span class="input-group-text">Thay thế:</span>
+              <input type="text" placeholder="Nguồn" aria-label="Văn bản nguồn" class="form-control" id="sourceText">
+              <span class="input-group-text">với:</span>
+              <input type="text" placeholder="Đích" aria-label="Văn bản đích" class="form-control" id="targetText">
+              <button class="btn btn-outline-secondary" id="addButton" type="button">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pen" viewBox="0 0 16 16">
+                  <path d="m13.498.795.149-.149a1.207 1.207 0 1 1 1.707 1.708l-.149.148a1.5 1.5 0 0 1-.059 2.059L4.854 14.854a.5.5 0 0 1-.233.131l-4 1a.5.5 0 0 1-.606-.606l1-4a.5.5 0 0 1 .131-.232l9.642-9.642a.5.5 0 0 0-.642.056L6.854 4.854a.5.5 0 1 1-.708-.708L9.44.854A1.5 1.5 0 0 1 11.5.796a1.5 1.5 0 0 1 1.998-.001zm-.644.766a.5.5 0 0 0-.707 0L1.95 11.756l-.764 3.057 3.057-.764L14.44 3.854a.5.5 0 0 0 0-.708l-1.585-1.585z"/>
+                </svg>
+              </button>
+            </div>
+            <div class="input-group input-group-sm mb-4">
+              <select class="form-select" id="glossaryList">
+                <option value="-1" selected>Chọn...</option>
+              </select>
+              <button class="btn btn-outline-secondary" id="removeButton" type="button">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eraser" viewBox="0 0 16 16">
+                  <path d="M8.086 2.207a2 2 0 0 1 2.828 0l3.879 3.879a2 2 0 0 1 0 2.828l-5.5 5.5A2 2 0 0 1 7.879 15H5.12a2 2 0 0 1-1.414-.586l-2.5-2.5a2 2 0 0 1 0-2.828l6.879-6.879zm2.121.707a1 1 0 0 0-1.414 0L4.16 7.547l5.293 5.293 4.633-4.633a1 1 0 0 0 0-1.414l-3.879-3.879zM8.746 13.547 3.453 8.254 1.914 9.793a1 1 0 0 0 0 1.414l2.5 2.5a1 1 0 0 0 .707.293H7.88a1 1 0 0 0 .707-.293l.16-.16z"/>
+                </svg>
+              </button>
+            </div>
+            <label for="preview">Bản xem trước:</label>
+            <textarea class="form-control mb-3" id="preview" readonly></textarea>
+            <a class="btn btn-primary btn-sm" id="downloadButton">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-download" viewBox="0 0 16 16">
+                <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+              </svg>
+              Tải xuống
+            </a>
+          </div>
         </div>
       </div>
-    </nav>
-    <main class="container">
-      <div class="input-group">
-        <textarea class="form-control text-wrap textarea" id="queryText" placeholder="Viết gì đó tại đây"></textarea>
-        <div class="form-control text-wrap textarea" id="translatedText" contentEditable></div>
-      </div>
-    </main>
+    </div>
     <script>
       $LAB
         .script("/lib/bootstrap.bundle.min.js")

@@ -1,3 +1,7 @@
 body {
   box-sizing: content-box;
 }
+
+textarea {
+  resize: none;
+}
