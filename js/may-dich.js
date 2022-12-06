@@ -4,11 +4,12 @@ const Services = {
   PAPAGO: 'papago',
 };
 
+var glossaryTypeVietPhrase;
+
+var queryIndex;
 var googleQuery;
 var googleLang;
 var googleTranslation;
-
-var queryIndex;
 
 var microsoftQuery;
 var microsoftLang;
@@ -30,6 +31,11 @@ $("#translateButton").on("click", function () {
   }
 
   let sentences = $("#queryText").val().split(/\r?\n/);
+
+  if ($("#glossaryType").val() === GlossaryType.VIETPHRASE) {
+    glossaryTypeVietPhrase = $("#glossaryType").val();
+    $("#glossaryType").val(GlossaryType.TSV).change();
+  }
 
   if (googleQuery != undefined &&
       service === Services.GOOGLE &&
@@ -138,6 +144,12 @@ async function translate(service, sourceLang, targetLang, sentences, translation
               ];
 
               papagoTranslation = $("#translatedText").val();
+
+              if (glossaryTypeVietPhrase != undefined) {
+                $("#glossaryType").val(glossaryTypeVietPhrase).change();
+                glossaryTypeVietPhrase = undefined;
+              }
+
               resize();
               $("#translateButton").removeAttr("disabled");
               $("#inputGlossary").removeAttr("disabled");
@@ -147,6 +159,12 @@ async function translate(service, sourceLang, targetLang, sentences, translation
             }
           }).fail(function (jqXHR, textStatus, errorThrown) {
             $("#translatedText").val(errorThrown);
+
+            if (glossaryTypeVietPhrase != undefined) {
+              $("#glossaryType").val(glossaryTypeVietPhrase).change();
+              glossaryTypeVietPhrase = undefined;
+            }
+
             resize();
             $("#translateButton").removeAttr("disabled");
             $("#inputGlossary").removeAttr("disabled");
@@ -160,6 +178,12 @@ async function translate(service, sourceLang, targetLang, sentences, translation
 
           if (accessToken == undefined) {
             $("#translatedText").val('Không thể lấy được Access Token từ máy chủ.');
+
+            if (glossaryTypeVietPhrase != undefined) {
+              $("#glossaryType").val(glossaryTypeVietPhrase).change();
+              glossaryTypeVietPhrase = undefined;
+            }
+
             resize();
             $("#translateButton").removeAttr("disabled");
             $("#inputGlossary").removeAttr("disabled");
@@ -195,6 +219,12 @@ async function translate(service, sourceLang, targetLang, sentences, translation
               ];
 
               microsoftTranslation = $("#translatedText").val();
+
+              if (glossaryTypeVietPhrase != undefined) {
+                $("#glossaryType").val(glossaryTypeVietPhrase).change();
+                glossaryTypeVietPhrase = undefined;
+              }
+
               resize();
               $("#translateButton").removeAttr("disabled");
               $("#inputGlossary").removeAttr("disabled");
@@ -204,6 +234,12 @@ async function translate(service, sourceLang, targetLang, sentences, translation
             }
           }).fail(function (jqXHR, textStatus, errorThrown) {
             $("#translatedText").val(errorThrown);
+
+            if (glossaryTypeVietPhrase != undefined) {
+              $("#glossaryType").val(glossaryTypeVietPhrase).change();
+              glossaryTypeVietPhrase = undefined;
+            }
+
             resize();
             $("#translateButton").removeAttr("disabled");
             $("#inputGlossary").removeAttr("disabled");
@@ -251,6 +287,12 @@ async function translate(service, sourceLang, targetLang, sentences, translation
               ];
 
               googleTranslation = $("#translatedText").val();
+
+              if (glossaryTypeVietPhrase != undefined) {
+                $("#glossaryType").val(glossaryTypeVietPhrase).change();
+                glossaryTypeVietPhrase = undefined;
+              }
+
               resize();
               $("#translateButton").removeAttr("disabled");
               $("#inputGlossary").removeAttr("disabled");
@@ -260,6 +302,12 @@ async function translate(service, sourceLang, targetLang, sentences, translation
             }
           }).fail(function (jqXHR, textStatus, errorThrown) {
             $("#translatedText").val(errorThrown);
+
+            if (glossaryTypeVietPhrase != undefined) {
+              $("#glossaryType").val(glossaryTypeVietPhrase).change();
+              glossaryTypeVietPhrase = undefined;
+            }
+
             resize();
             $("#translateButton").removeAttr("disabled");
             $("#inputGlossary").removeAttr("disabled");
