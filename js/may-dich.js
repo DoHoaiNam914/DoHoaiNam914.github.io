@@ -88,19 +88,18 @@ async function translate(service, sourceLang, targetLang, sentences, translation
 
     switch (service) {
       case Services.PAPAGO:
-        query.push(sentences[index]);
-        queryLength = 10;
+        query.push(textPreProcess(sentences[index], service, false));
         break;
 
       case Services.MICROSOFT:
         query.push({
-            "Text":sentences[index]
+            "Text":textPreProcess(sentences[index], service, false)
         });
 
         break;
 
       case Services.GOOGLE:
-        query.push(sentences[index]);
+        query.push(encodeURIComponent(textPreProcess(sentences[index], service, false)));
         break;
     }
 
@@ -121,7 +120,7 @@ async function translate(service, sourceLang, targetLang, sentences, translation
             data: JSON.stringify({
               'source' : sourceLang,
               'target' : targetLang,
-              'text' : textPreProcess(query.join('\r\n'), service, false)
+              'text' : query.join('\r\n')
             })
           };
 
@@ -176,7 +175,7 @@ async function translate(service, sourceLang, targetLang, sentences, translation
               "Content-Type": "application/json"
             },
             processData: false,
-            data: JSON.stringify(textPreProcess(query, service, false))
+            data: JSON.stringify(query)
           };
 
           $.ajax(settings).done(function (data) {
@@ -226,20 +225,18 @@ async function translate(service, sourceLang, targetLang, sentences, translation
               'Content-Type': 'application/x-www-form-urlencoded'
             },
             processData: false,
-            data: encodeURI(textPreProcess(`q=${query.join('&q=')}`, service, false))
+            data: 'q=' + query.join('&q=')
           };
 
           $.ajax(settings).done(function (data) {
-            if (sourceLang === 'auto') {
-              var translations = new Array();
-              data.forEach((element) =>
-                  translations.push(element[0].replace(/<b><i>/g,
-                  '[').replace(/<\/i><\/b>/g, ']')));
+            var translations = new Array();
 
-              translation += translations.join('\r\n');
-            } else {
-              translation += data.join('\r\n');
-            }
+            data.forEach((element) =>
+                translations.push((sourceLang === 'auto' ? element[0] :
+                element).replace(/<\/b><i>/g, '[').replace(/<i>/g,
+                '[').replace(/<\/i> <b>/g, '] ').replace(/<\/b>/g, '')));
+
+            translation += translations.join('\r\n');
 
             if (count - query.length === 0) {
               $("#translatedText").val(textPostProcess(translation, service));
@@ -287,7 +284,7 @@ function textPreProcess(text, service, pre) {
       if (pre) {
         glossaryText =
             glossaryText.replace(new RegExp(glossaryList[i][0], 'g'), glossaryList[i][1]);
-      } else if (service === 'microsoft') {
+      } else if (service === Services.MICROSOFT) {
         glossaryText =
             glossaryText.replace(new RegExp(glossaryList[i][0], 'g'),
             `<mstrans:dictionary translation="${glossaryList[i][1]}">GLOSSARY_INDEX_${i}</mstrans:dictionary>`);
