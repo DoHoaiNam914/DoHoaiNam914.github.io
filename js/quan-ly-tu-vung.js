@@ -9,14 +9,11 @@ var vietnameseHanPhonetics = new Map();
 var glossary = [];
 
 $(document).ready(function () {
-  let settings = {
+  $.get({
     crossDomain: false,
     url: "/datasource/ChinesePhienAmWords.txt",
-    method: "GET",
     processData: false
-  };
-
-  $.ajax(settings).done(function (data) {
+  }).done(function (data) {
     vietnameseHanPhonetics = new
         Map(data.split(/\r?\n/).map((phonetic) =>
         phonetic.split('=')).filter((phonetic) =>
@@ -68,11 +65,11 @@ $("#sourceText").on("input", function () {
       var targetText = '';
 
       for (let i = 0; i < chars.length; i++) {
-        if (/\p{sc=Han}/u.test(chars[i])) {
+        if (/\p{sc=Hani}/u.test(chars[i])) {
           targetText +=
             vietnameseHanPhonetics.get(chars[i]).charAt(0).toUpperCase() +
             vietnameseHanPhonetics.get(chars[i]).substring(1) +
-            (/\p{sc=Han}/u.test(chars[i + 1]) ? ' ' : '');
+            (/\p{sc=Hani}/u.test(chars[i + 1]) ? ' ' : '');
         } else {
           targetText += chars[i];
         }
@@ -136,20 +133,11 @@ function loadGlossary() {
 
   if (glossary.length > 0) {
     let glossaryType = $("#glossaryType").val();
-
-    if (glossaryType === GlossaryType.VIETPHRASE) {
-      glossary.sort((a, b) =>
-          a[0].length - b[0].length ||
-          a[1].length - b[1].length ||
-          a[0].localeCompare(b[0]) ||
-          a[1].localeCompare(b[1]));
-    } else {
-      glossary.sort((a, b) =>
-          b[0].length - a[0].length ||
-          b[1].length - a[1].length ||
-          a[0].localeCompare(b[0]) ||
-          a[1].localeCompare(b[1]));
-    }
+    glossary.sort((a, b) =>
+        b[0].length - a[0].length ||
+        b[1].length - a[1].length ||
+        a[0].localeCompare(b[0]) ||
+        a[1].localeCompare(b[1]));
 
     glossary.forEach((element, index) => glossaryList +=
         `\n<option value="${index}">${element[0]}\t${element[1]}</option>`);
@@ -180,16 +168,17 @@ function loadGlossary() {
         `data:${glossaryType};charset=utf-8,` +
         encodeURIComponent(data));
     $("#downloadButton").attr("download", `Từ vựng.${dataExtension}`);
-    localStorage.setItem("glossary", JSON.stringify(Object.fromEntries(new Map(glossary))));
   } else {
     $("#downloadButton").removeAttr("href");
     $("#downloadButton").removeAttr("download");
-    localStorage.removeItem("glossary");
   }
 
   $("#glossaryList").html(glossaryList);
   $("#preview").val(data);
   $("#counter").text(glossary.length);
+
+  localStorage.setItem("glossary", JSON.stringify(Object.fromEntries(new Map(glossary))));
+
   $("#sourceText").val(null);
   $("#targetText").val(null);
 }

@@ -37,6 +37,10 @@
         height: 16rem;
       }
 
+      .modal-body {
+        overflow-x: hidden;
+      }
+
       main.container textarea {
         font-size: 18px;
         min-height: 300px;
@@ -156,7 +160,7 @@
       $LAB
         .script("/lib/bootstrap.bundle.min.js")
         .script("/js/quan-ly-tu-vung.js").wait(function () {
-          glossary = Object.entries(JSON.parse(localStorage.getItem("glossary")));
+          glossary = Object.entries(JSON.parse(localStorage.getItem("glossary"))) || [];
           loadGlossary();
         })
         .script("/js/may-dich.js");
