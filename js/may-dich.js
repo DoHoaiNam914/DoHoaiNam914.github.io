@@ -234,7 +234,7 @@ async function translate(service, sourceLang, targetLang, sentences, translation
             data.forEach((element) =>
                 translations.push((sourceLang === 'auto' ? element[0] :
                 element).replace(/<\/b><i>/g, '[').replace(/<i>/g,
-                '[').replace(/<\/i> <b>/g, '] ').replace(/<\/b>/g, '')));
+                '[').replace(/<\/i>(\s*)<b>/g, ']$1').replace(/<\/b>/g, '')));
 
             translation += translations.join('\r\n');
 
