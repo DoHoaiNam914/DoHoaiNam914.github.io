@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ja" class="hltr">
+<html lang="ja" class="hltr" style="vertical-view;">
   <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -25,6 +25,11 @@
         max-height: 95vh !important;
         user-select: none;
       }
+
+      #crop {
+        border: thin dashed red !important;
+        position: absolute;
+      }
     </style>
   </head>
   <body>
@@ -48,7 +53,7 @@
         </select>
       </div>
       <div style="text-align: center;">
-        <input id="url" type="text" value="Địa chỉ liên kết">
+        <input id="url" type="text" placeholder="Địa chỉ liên kết">
       </div>
       <div class="notranslate" style="bottom: 8px; position: fixed; right: 8px;">
         <select id="language_select">
@@ -76,15 +81,17 @@
         <input id="ocr_button" type="button" value="Nhận dạng ký tự">
       </div>
     </form>
-    <section class="p-image">
-      <div class="main" style="padding: 0 40px;">
-        <div id="crop" style="border: thin dashed red; position: absolute;"></div>
-        <img id="preview">
-      </div>
-    </section>
-    <section class="p-text">
-      <ol class="main"></ol>
-    </section>
+    <div class="body">
+      <section class="p-image">
+        <div class="main" style="padding: 0 40px;">
+          <div id="crop"></div>
+          <img id="preview">
+        </div>
+      </section>
+      <section class="p-text">
+        <ol class="main"></ol>
+      </section>
+    </div>
     <script src="./js/nen.js"></script>
     <script>
       const { createWorker, PSM, OEM } = Tesseract;
@@ -124,7 +131,7 @@
       });
 
       $("#image_file").on("input", function () {
-        $("#url").val("Địa chỉ liên kết");
+        $("#url").val(null);
         $("#preview").hide();
         previewImage = new Image();
         recognizeImage = new Image();
@@ -167,7 +174,7 @@
 
       $("#preproccess_select").on("change", function () {
         $("#image_file").val(null);
-        $("#url").val("Địa chỉ liên kết");
+        $("#url").val(null);
         $("#preview").hide();
         previewImage = new Image();
         recognizeImage = new Image();
@@ -180,14 +187,6 @@
         }
       });
 
-      $("#url").on("click", function () {
-        if (this.value !== 'Địa chỉ liên kết') {
-          this.select();
-        } else {
-          this.value = '';
-        }
-      });
-
       $("#url").on("input", function () {
         $("#image_file").val(null);
         $("#preview").hide();
@@ -195,7 +194,7 @@
         recognizeImage = new Image();
         $("#crop").hide();
 
-        if (this.value !== 'Địa chỉ liên kết' && $("#url").val().length > 0) {
+        if (this.value !== '' && $("#url").val().length > 0) {
           previewImage.crossOrigin = 'Anonymous';
           previewImage.onload = function () {
             sessionImage = new Image();
@@ -237,7 +236,7 @@
       });
 
       $("#ocr_button").click(function () {
-        if ($("#image_file").prop("files").length > 0 || ($("#url").val() !== 'Địa chỉ liên kết' && $("#url").val().length > 0)) {
+        if ($("#image_file").prop("files").length > 0 || ($("#url").val() !== '' && $("#url").val().length > 0)) {
           if (this.value === 'Nhận dạng ký tự') {
             recognize($("#language_select").val(), $("#page_segmentation_select").val(), recognizeImage.src);
 
