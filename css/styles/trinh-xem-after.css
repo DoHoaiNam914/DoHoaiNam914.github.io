@@ -69,9 +69,11 @@
 /* Smartphone landscape */
 
 @media screen and (min-width: 35em) {
+
   :root {
     --pageGutter: 30px;
   }
+
 }
 
 /* Tablet portrait */

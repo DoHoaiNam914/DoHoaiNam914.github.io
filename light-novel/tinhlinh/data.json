@@ -927,18 +927,46 @@
       "title": "Seirei Gensouki: Spirit Chronicles Volume 21",
       "cover": "https://d2dq7ifhe7bu0f.cloudfront.net/Part-630fc258d1586c831ff155c8/seirei21-cvr-860.jpg",
       "description": "After Rio becomes a transcendent one, the cruelty of the world erases him from the memories of the people he loves most. Having suffered the same fate as Rio, Aishia helps him see to Erica’s demise before the two of them set off to find out more about what has happened. Those who have forgotten Rio and Aishia grapple with an overwhelming sense of frustration over this mysterious phenomenon, while something else may be on the horizon... Will the ties of fate that have lasted over a thousand years spark a new wave of war?",
-      "href": "https://j-novel.club/read/seirei-gensouki-spirit-chronicles-volume-21-part-1",
       "loader": "j_novel",
-      "spine": []
-    },
-    {
-      "id": "volume-22",
-      "title": "Seirei Gensouki: Spirit Chronicles Volume 22",
-      "cover": "https://d2dq7ifhe7bu0f.cloudfront.net/Part-639a3d642fc3dae07605fcd5/seirei22-cvr-860.jpg",
-      "description": "After Rio becomes a transcendent one, the cruelty of the world erases him from the memories of the people he loves most. Having suffered the same fate as Rio, Aishia helps him see to Erica’s demise before the two of them set off to find out more about what has happened. Those who have forgotten Rio and Aishia grapple with an overwhelming sense of frustration over this mysterious phenomenon, while something else may be on the horizon... Will the ties of fate that have lasted over a thousand years spark a new wave of war?",
-      "href": "https://j-novel.club/read/seirei-gensouki-spirit-chronicles-volume-22-part-1",
-      "loader": "j_novel",
-      "spine": []
+      "spine": [
+        "Text/cover.xhtml",
+        "Text/frontmatter1.xhtml",
+        "Text/frontmatter2.xhtml",
+        "Text/frontmatter3.xhtml",
+        "Text/frontmatter4.xhtml",
+        "Text/prologue.xhtml",
+        "Text/chapter1.xhtml",
+        "Text/insert1.xhtml",
+        "Text/chapter1_1.xhtml",
+        "Text/chapter2.xhtml",
+        "Text/insert2.xhtml",
+        "Text/chapter2_1.xhtml",
+        "Text/insert3.xhtml",
+        "Text/chapter3.xhtml",
+        "Text/insert4.xhtml",
+        "Text/chapter4.xhtml",
+        "Text/insert5.xhtml",
+        "Text/chapter5.xhtml",
+        "Text/insert6.xhtml",
+        "Text/chapter5_1.xhtml",
+        "Text/chapter6.xhtml",
+        "Text/chapter7.xhtml",
+        "Text/chapter8.xhtml",
+        "Text/insert7.xhtml",
+        "Text/chapter8_1.xhtml",
+        "Text/insert8.xhtml",
+        "Text/chapter8_2.xhtml",
+        "Text/insert9.xhtml",
+        "Text/chapter8_3.xhtml",
+        "Text/epilogue.xhtml",
+        "Text/insert10.xhtml",
+        "Text/afterword.xhtml",
+        "Text/bonus.xhtml",
+        "Text/bonus1.xhtml",
+        "Text/toc.xhtml",
+        "Text/signup.xhtml",
+        "Text/copyright.xhtml"
+      ]
     },
     {
       "id": "22-junpaku-no-houteishiki",
@@ -991,6 +1019,15 @@
         "text/part0040.html",
         "text/part0041.html"
       ]
+    },
+    {
+      "id": "volume-22",
+      "title": "Seirei Gensouki: Spirit Chronicles Volume 22",
+      "cover": "https://d2dq7ifhe7bu0f.cloudfront.net/Part-639a3d642fc3dae07605fcd5/seirei22-cvr-860.jpg",
+      "description": "After Rio becomes a transcendent one, the cruelty of the world erases him from the memories of the people he loves most. Having suffered the same fate as Rio, Aishia helps him see to Erica’s demise before the two of them set off to find out more about what has happened. Those who have forgotten Rio and Aishia grapple with an overwhelming sense of frustration over this mysterious phenomenon, while something else may be on the horizon... Will the ties of fate that have lasted over a thousand years spark a new wave of war?",
+      "href": "https://j-novel.club/read/seirei-gensouki-spirit-chronicles-volume-22-part-1",
+      "loader": "j_novel",
+      "spine": []
     }
   ]
 }
