@@ -208,7 +208,7 @@
 /* OTF */
 
 .body * { /*body*/
-  font-variant-numeric: oldstyle-nums proportional-nums;
+  font-variant-numeric: lining-nums proportional-nums;
 }
 
 :lang(ja) .body *,
