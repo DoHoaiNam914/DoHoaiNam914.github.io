@@ -121,6 +121,7 @@ function j_novelLoader(book, volume, spine) {
   $("a[href]").each(function () {
     $(this).attr("href",
         $(this).attr("href").replace(new RegExp('../Text/(.+).xhtml', 'g'),
+        '#$1').replace(new RegExp('(.+).xhtml', 'g'),
         '#$1').replace(/toc#/g, ''));
   });
 
