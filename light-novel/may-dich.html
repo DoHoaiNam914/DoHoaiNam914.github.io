@@ -41,14 +41,18 @@
         overflow-x: hidden;
       }
 
-      main.container textarea {
+      main.container .textarea {
         font-size: 18px;
         min-height: 300px;
         overflow: hidden;
       }
 
+      .textarea > p {
+        margin-bottom: 0;
+      }
+
       @media (max-width: 1000px) {
-        main.container textarea {
+        main.container .textarea {
           font-size: 16px;
         }
       }
@@ -58,8 +62,8 @@
     <main class="container">
       <div class="py-8">
         <div class="input-group">
-          <textarea class="form-control" id="queryText" placeholder="Viết gì đó tại đây"></textarea>
-          <textarea class="form-control" id="translatedText"></textarea>
+          <textarea class="form-control textarea" id="queryText" placeholder="Viết gì đó tại đây"></textarea>
+          <div class="form-control textarea" id="translatedText"></div>
         </div>
       </div>
     </main>

@@ -19,28 +19,39 @@
   --baseLineHeight: calc((1em + (2ex - 1ch) - ((1rem - 16px) * 0.1667)) * var(--lineHeightCompensation));
 }
 
-.body * { /*html*/
+/* html */
+.body * {
   font-family: var(--baseFontFamily);
   line-height: 1.6;
   line-height: var(--baseLineHeight);
   text-rendering: optimizeLegibility;
 }
 
+/*
+   h1,
+   h2,
+   h3
+ */
 .body h1,
 .body h2,
-.body h3 { /*root*/
+.body h3 {
   line-height: normal;
 }
 
+/*
+   :lang(ja)
+   :lang(zh)
+ */
 :lang(ja) .body *,
-:lang(zh) .body * { /*root*/
+:lang(zh) .body * {
   word-wrap: break-word;
   -webkit-line-break: strict;
   -epub-line-break: strict;
   line-break: strict;
 }
 
-.body math { /*root*/
+/* math */
+.body math {
   font-family: "Latin Modern Math", "STIX Two Math", "XITS Math", "STIX Math", "Libertinus Math", "TeX Gyre Termes Math", "TeX Gyre Bonum Math", "TeX Gyre Schola", "DejaVu Math TeX Gyre", "TeX Gyre Pagella Math", "Asana Math", "Cambria Math", "Lucida Bright Math", "Minion Math", STIXGeneral, STIXSizeOneSym, Symbol, "Times New Roman", serif;
 }
 
@@ -133,18 +144,34 @@
 
 /* Fragmentation */
 
+/* body */
 .body {
   widows: 2;
   orphans: 2;
 }
 
+/*
+   figcaption,
+   th,
+   td
+ */
 .body figcaption,
 .body th,
-.body td { /*root*/
+.body td {
   widows: 1;
   orphans: 1;
 }
 
+/*
+   h2,
+   h3,
+   h4,
+   h5,
+   h6,
+   dt,
+   hr,
+   caption
+ */
 .body h2,
 .body h3,
 .body h4,
@@ -152,12 +179,23 @@
 .body h6,
 .body dt,
 .body hr,
-.body caption { /*root*/
+.body caption {
   -webkit-column-break-after: avoid;
   page-break-after: avoid;
   break-after: avoid;
 }
 
+/*
+   h1,
+   h2,
+   h3,
+   h4,
+   h5,
+   h6,
+   dt,
+   figure,
+   tr
+ */
 .body h1,
 .body h2,
 .body h3,
@@ -166,7 +204,7 @@
 .body h6,
 .body dt,
 .body figure,
-.body tr { /*root*/
+.body tr {
   -webkit-column-break-inside: avoid;
   page-break-inside: avoid;
   break-inside: avoid;
@@ -174,7 +212,8 @@
 
 /* Hyphenation */
 
-.body * { /*body*/
+/* body */
+.body * {
   -webkit-hyphenate-character: "\002D";
   -moz-hyphenate-character: "\002D";
   -ms-hyphenate-character: "\002D";
@@ -184,6 +223,22 @@
   hyphenate-limit-lines: 3;
 }
 
+/*
+   h1,
+   h2,
+   h3,
+   h4,
+   h5,
+   h6,
+   dt,
+   figcaption,
+   pre,
+   caption,
+   address,
+   center,
+   code,
+   var
+ */
 .body h1,
 .body h2,
 .body h3,
@@ -197,7 +252,7 @@
 .body address,
 .body center,
 .body code,
-.body var { /*root*/
+.body var {
   -ms-hyphens: none;
   -moz-hyphens: none;
   -webkit-hyphens: none;
@@ -207,69 +262,105 @@
 
 /* OTF */
 
-.body * { /*body*/
+/* body */
+.body * {
   font-variant-numeric: lining-nums proportional-nums;
 }
 
+/*
+   :lang(ja) body,
+   :lang(zh) body
+ */
 :lang(ja) .body *,
-:lang(zh) .body * { /*body*/
+:lang(zh) .body * {
   font-variant-numeric: lining-nums proportional-nums;
 }
 
+/*
+   h1,
+   h2,
+   h3,
+   h4,
+   h5,
+   h6,
+   dt
+ */
 .body h1,
 .body h2,
 .body h3,
 .body h4,
 .body h5,
 .body h6,
-.body dt { /*root*/
+.body dt {
   font-variant-numeric: lining-nums proportional-nums;
 }
 
-.body table { /*root*/
+/* table */
+.body table {
   font-variant-numeric: lining-nums tabular-nums;
 }
 
+/*
+   code,
+   var
+ */
 .body code,
-.body var { /*root*/
+.body var {
   font-variant-ligatures: none;
   font-variant-numeric: lining-nums tabular-nums slashed-zero;
 }
 
-.body rt { /*root*/
+/* rt */
+.body rt {
   font-variant-east-asian: ruby;
 }
 
 /* Black background */
 
-.body hr { /*root*/
+/* hr */
+.body hr {
   color: inherit;
   border-color: currentColor;
 }
 
+/*
+   table,
+   th,
+   td
+ */
 .body table,
 .body th,
-.body td { /*root*/
+.body td {
   border-color: currentColor;
 }
 
 /* Horizontal Spacing */
 
+/*
+   figure,
+   blockquote
+ */
 .body figure,
-.body blockquote { /*root*/
+.body blockquote {
   margin: 1em 5%;
 }
 
+/*
+   ul,
+   ol
+ */
 .body ul,
-.body ol { /*root*/
+.body ol {
   padding-left: 5%;
 }
 
-.body dd { /*root*/
+/* dd */
+.body dd {
   margin-left: 5%;
 }
 
-.body pre { /*root*/
+/* pre */
+.body pre {
   white-space: pre-wrap;
   -ms-tab-size: 2;
   -moz-tab-size: 2;
@@ -279,17 +370,26 @@
 
 /* Normalization */
 
+/*
+   abbr[title],
+   acronym[title]
+ */
 .body abbr[title],
-.body acronym[title] { /*root*/
+.body acronym[title] {
   text-decoration: dotted underline;
 }
 
-.body nobr wbr { /*root*/
+/* nobr wbr */
+.body nobr wbr {
   white-space: normal;
 }
 
+/*
+   ruby > rt,
+   ruby > rp
+ */
 .body ruby > rt,
-.body ruby > rp { /*root*/
+.body ruby > rp {
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
@@ -298,6 +398,18 @@
 
 /* Internationalization */
 
+/*
+   *:lang(ja),
+   *:lang(zh),
+   :lang(ja) cite,
+   :lang(ja) dfn,
+   :lang(ja) em,
+   :lang(ja) i,
+   :lang(zh) cite,
+   :lang(zh) dfn,
+   :lang(zh) em,
+   :lang(zh) i
+ */
 .body *:lang(ja),
 .body *:lang(zh),
 :lang(ja) .body cite,
@@ -307,12 +419,16 @@
 :lang(zh) .body cite,
 :lang(zh) .body dfn,
 :lang(zh) .body em,
-:lang(zh) .body i { /*root *, root*/
+:lang(zh) .body i {
   font-style: normal;
 }
 
+/*
+   :lang(ja) a,
+   :lang(zh) a
+ */
 :lang(ja) .body a,
-:lang(zh) .body a { /*root*/
+:lang(zh) .body a {
   text-decoration: none;
 }
 
@@ -330,34 +446,52 @@
   --boxSizingTable: border-box;
 }
 
-.body * { /*html*/
+/* html */
+.body * {
   -webkit-line-box-contain: block glyphs replaced;
 }
 
-:lang(ja) .body * { /*root*/
+/* :lang(ja) */
+:lang(ja) .body * {
   -webkit-line-box-contain: block inline replaced;
 }
 
+/*
+   a,
+   h1,
+   h2,
+   h3,
+   h4,
+   h5,
+   h6
+ */
 .body a,
 .body h1,
 .body h2,
 .body h3,
 .body h4,
 .body h5,
-.body h6 { /*root*/
+.body h6 {
   word-wrap: break-word;
 }
 
-.body div { /*root*/
+/* div */
+.body div {
   max-width: var(--maxMediaWidth);
 }
 
 /* Size medias */
 
+/*
+   img,
+   svg,
+   audio,
+   video
+ */
 .body img,
 .body svg,
 .body audio,
-.body video { /*root*/
+.body video {
 
   object-fit: contain;
 
@@ -374,7 +508,8 @@
   break-inside: avoid;
 }
 
-.body table { /*root*/
+/* table */
+.body table {
   max-width: var(--maxMediaWidth);
   box-sizing: var(--boxSizingTable);
 }

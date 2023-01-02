@@ -4,6 +4,8 @@ const Services = {
   PAPAGO: 'papago',
 };
 
+var queryLength;
+
 var queryIndex;
 var googleQuery;
 var googleLang;
@@ -36,7 +38,7 @@ $("#translateButton").on("click", function () {
       targetLang === googleLang[1] &&
       textPreProcess(sentences.join('\r\n'), service, true) ===
       googleQuery) {
-    $("#translatedText").val(googleTranslation);
+    $("#translatedText").html(googleTranslation);
     resize();
   } else if (microsoftQuery != undefined &&
       service === Services.MICROSOFT &&
@@ -44,7 +46,7 @@ $("#translateButton").on("click", function () {
       targetLang === microsoftLang[1] &&
       textPreProcess(sentences.join('\r\n'), service, true) ===
       microsoftQuery) {
-    $("#translatedText").val(microsoftTranslation);
+    $("#translatedText").html(microsoftTranslation);
     resize();
   } else if (papagoQuery != undefined &&
       service === Services.PAPAGO &&
@@ -52,11 +54,12 @@ $("#translateButton").on("click", function () {
       targetLang === papagoLang[1] &&
       textPreProcess(sentences.join('\r\n'), service, true) ===
       papagoQuery) {
-    $("#translatedText").val(papagoTranslation);
+    $("#translatedText").html(papagoTranslation);
     resize();
   } else {
     $(this).attr("disabled", true);
     $("#inputGlossary").attr("disabled", true);
+    queryLength = 0;
     queryIndex = 0;
     translate(service, sourceLang, targetLang, sentences,
         '', new Array(), 0, sentences.length);
@@ -78,20 +81,20 @@ $(".service").on("click", function () {
   }
 });
 
-$("main.container textarea").on("input", function () {
+$("main.container .textarea").on("input", function () {
   resize();
 });
 
 async function translate(service, sourceLang, targetLang, sentences, translation, query, index, count) {
   if (index < sentences.length) {
-    var queryLength = 50;
-
     switch (service) {
       case Services.PAPAGO:
+        queryLength = 50;
         query.push(textPreProcess(sentences[index], service, false));
         break;
 
       case Services.MICROSOFT:
+        queryLength = 50;
         query.push({
             "Text":textPreProcess(sentences[index], service, false)
         });
@@ -99,6 +102,7 @@ async function translate(service, sourceLang, targetLang, sentences, translation
         break;
 
       case Services.GOOGLE:
+        queryLength = 50;
         query.push(encodeURIComponent(textPreProcess(sentences[index], service, false)));
         break;
     }
@@ -125,17 +129,19 @@ async function translate(service, sourceLang, targetLang, sentences, translation
           };
 
           $.ajax(settings).done(function (data) {
-            translation += data.translatedText;
+            translation +=
+                ('<p>' + data.translatedText.replace(/\r?\n/g, '</p>\r\n<p>') +
+                '</p>').replace(/(<p>)(<\/p>)/g, '$1<br>$2');
 
             if (count - query.length === 0) {
-              $("#translatedText").val(textPostProcess(translation, service));
+              $("#translatedText").html(textPostProcess(translation, service));
               papagoQuery = textPreProcess(sentences.join('\r\n'), service, true);
               papagoLang = [
                 sourceLang,
                 targetLang,
               ];
 
-              papagoTranslation = $("#translatedText").val();
+              papagoTranslation = $("#translatedText").html();
               resize();
               $("#translateButton").removeAttr("disabled");
               $("#inputGlossary").removeAttr("disabled");
@@ -144,7 +150,7 @@ async function translate(service, sourceLang, targetLang, sentences, translation
                   new Array(), index + 1, count - query.length);
             }
           }).fail(function (jqXHR, textStatus, errorThrown) {
-            $("#translatedText").val(errorThrown);
+            $("#translatedText").html(errorThrown);
             resize();
             $("#translateButton").removeAttr("disabled");
             $("#inputGlossary").removeAttr("disabled");
@@ -157,7 +163,7 @@ async function translate(service, sourceLang, targetLang, sentences, translation
               .then((response) => response.text());
 
           if (accessToken == undefined) {
-            $("#translatedText").val('Không thể lấy được Access Token từ máy chủ.');
+            $("#translatedText").html('Không thể lấy được Access Token từ máy chủ.');
             resize();
             $("#translateButton").removeAttr("disabled");
             $("#inputGlossary").removeAttr("disabled");
@@ -182,17 +188,19 @@ async function translate(service, sourceLang, targetLang, sentences, translation
             let translations = new Array();
 
             data.forEach((element) => translations.push(element.translations[0].text));
-            translation += translations.join('\r\n');
+            translation +=
+                ('<p>' + translations.join('</p>\r\n<p>') +
+                '</p>').replace(/(<p>)(<\/p>)/g, '$1<br>$2');
 
             if (count - query.length === 0) {
-              $("#translatedText").val(textPostProcess(translation, service));
+              $("#translatedText").html(textPostProcess(translation, service));
               microsoftQuery = textPreProcess(sentences.join('\r\n'), service, true);
               microsoftLang = [
                 sourceLang,
                 targetLang,
               ];
 
-              microsoftTranslation = $("#translatedText").val();
+              microsoftTranslation = $("#translatedText").html();
               resize();
               $("#translateButton").removeAttr("disabled");
               $("#inputGlossary").removeAttr("disabled");
@@ -201,7 +209,7 @@ async function translate(service, sourceLang, targetLang, sentences, translation
                   new Array(), index + 1, count - query.length);
             }
           }).fail(function (jqXHR, textStatus, errorThrown) {
-            $("#translatedText").val(errorThrown);
+            $("#translatedText").html(errorThrown);
             resize();
             $("#translateButton").removeAttr("disabled");
             $("#inputGlossary").removeAttr("disabled");
@@ -232,21 +240,21 @@ async function translate(service, sourceLang, targetLang, sentences, translation
             var translations = new Array();
 
             data.forEach((element) =>
-                translations.push((sourceLang === 'auto' ? element[0] :
-                element).replace(/<\/b><i>/g, '[').replace(/<i>/g,
-                '[').replace(/<\/i>(\s*)<b>/g, ']$1').replace(/<\/b>/g, '')));
+                translations.push((sourceLang === 'auto' ? element[0] : element)));
 
-            translation += translations.join('\r\n');
+            translation +=
+                ('<p>' + translations.join('</p>\r\n<p>') +
+                '</p>').replace(/(<p>)(<\/p>)/g, '$1<br>$2');
 
             if (count - query.length === 0) {
-              $("#translatedText").val(textPostProcess(translation, service));
+              $("#translatedText").html(textPostProcess(translation, service));
               googleQuery = textPreProcess(sentences.join('\r\n'), service, true);
               googleLang = [
                 sourceLang,
                 targetLang,
               ];
 
-              googleTranslation = $("#translatedText").val();
+              googleTranslation = $("#translatedText").html();
               resize();
               $("#translateButton").removeAttr("disabled");
               $("#inputGlossary").removeAttr("disabled");
@@ -255,7 +263,7 @@ async function translate(service, sourceLang, targetLang, sentences, translation
                   new Array(), index + 1, count - query.length);
             }
           }).fail(function (jqXHR, textStatus, errorThrown) {
-            $("#translatedText").val(errorThrown);
+            $("#translatedText").html(errorThrown);
             resize();
             $("#translateButton").removeAttr("disabled");
             $("#inputGlossary").removeAttr("disabled");
@@ -321,7 +329,7 @@ function textPostProcess(text, service) {
 }
 
 function resize() {
-  $("main.container textarea").css("height", "auto");
+  $("main.container .textarea").css("height", "auto");
 
   let height = [
     $("#queryText").prop("scrollHeight"),
@@ -329,6 +337,6 @@ function resize() {
   ].sort((a, b) => b - a)[0];
 
   if (height > 300) {
-    $("main.container textarea").css("height", height.toString().concat('px'));
+    $("main.container .textarea").css("height", height.toString().concat('px'));
   }
 }

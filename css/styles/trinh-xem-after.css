@@ -3,15 +3,17 @@
  */
 
 :root {
-  --colWidth: 45em;
+  --colWidth: 62.5em;
 
   --colCount: 1;
 
   --colGap: 0;
 
-  --maxLineLength: 40rem;
+  --maxLineLength: 61.5rem;
 
-  --pageGutter: 20px;
+  --marginTop: 0;
+  --marginHorizontal: 20px;
+  --marginBottom: 0;
 }
 
 @page {
@@ -56,11 +58,12 @@
   -webkit-touch-callout: none;
 }
 
+/* body */
 .body {
   width: 100%;
 
   max-width: var(--maxLineLength) !important;
-  padding: 0 var(--pageGutter) !important;
+  padding: var(--marginTop) var(--marginHorizontal) var(--marginBottom) !important;
   margin: 0 auto !important;
 
   box-sizing: border-box;
@@ -103,7 +106,7 @@
   :root {
     --colWidth: 20em;
     --colCount: 2;
-    --maxLineLength: 39.99rem;
+    --maxLineLength: 30.75rem;
   }
 
 }
@@ -123,7 +126,7 @@
   min-height: 0 !important;
 }
 
-
+/* :root[style*="vertical-view"] body */
 :root[style*="vertical-view"] .body {
   --maxLineLength: 40rem !important;
 }
@@ -139,13 +142,15 @@
   --linkColor: #2e7cb8;
 }
 
-:root[style*="black-background"] .body *:not(a) { /*root*/
+/* :root[style*="black-background"] *:not(a) */
+:root[style*="black-background"] .body *:not(a) {
   color: inherit !important;
   background-color: transparent !important;
   border-color: currentColor !important;
 }
 
-:root[style*="black-background"] .body svg text { /*root*/
+/* :root[style*="black-background"] svg text */
+:root[style*="black-background"] .body svg text {
   fill: currentColor !important;
   stroke: none !important;
 }
@@ -163,6 +168,7 @@
   --maxLineLength: 40.01rem;
 }
 
+/* :root[style*="sepia-background"] *:not(a) */
 :root[style*="sepia-background"] .body *:not(a) { /*root*/
   color: inherit !important;
   background-color: transparent !important;
@@ -181,12 +187,14 @@
   --maxLineLength: 40.01rem;
 }
 
+/* :root[style*="gray-background"] *:not(a) */
 :root[style*="gray-background"] .body *:not(a) { /*root*/
   color: inherit !important;
   background-color: transparent !important;
   border-color: currentColor !important;
 }
 
+/* :root[style*="gray-background"] svg text */
 :root[style*="gray-background"] .body svg text { /*root*/
   fill: currentColor !important;
   stroke: none !important;
