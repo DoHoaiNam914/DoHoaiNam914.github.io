@@ -135,7 +135,6 @@ function loadGlossary() {
     let glossaryType = $("#glossaryType").val();
     glossary.sort((a, b) =>
         b[0].length - a[0].length ||
-        b[1].length - a[1].length ||
         a[0].localeCompare(b[0]) ||
         a[1].localeCompare(b[1]));
 
