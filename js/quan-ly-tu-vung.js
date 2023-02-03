@@ -67,8 +67,7 @@ $("#sourceText").on("input", function () {
       for (let i = 0; i < chars.length; i++) {
         if (/\p{sc=Hani}/u.test(chars[i])) {
           targetText +=
-            vietnameseHanPhonetics.get(chars[i]).charAt(0).toUpperCase() +
-            vietnameseHanPhonetics.get(chars[i]).substring(1) +
+            vietnameseHanPhonetics.get(chars[i]) +
             (/\p{sc=Hani}/u.test(chars[i + 1]) ? ' ' : '');
         } else {
           targetText += chars[i];
