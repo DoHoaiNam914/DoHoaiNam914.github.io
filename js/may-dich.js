@@ -186,9 +186,14 @@ async function translate(service, sourceLang, targetLang, sentences) {
       };
 
       $.ajax(settings).done(function (data) {
-        $("#translatedText").html(textPostProcess(('<p>' +
-            data.sentences[0].trans.replace(/<br>/g, '</p>\n<p>') +
-            '</p>').replace(/(<p>)(<\/p>)/g, '$1<br>$2'), service));
+        $("#translatedText").html(null);
+ 
+        data.sentences.forEach(function (sentence) {
+          $("#translatedText").append(textPostProcess(('<p>' +
+              sentence.trans.replace(/<br>/g, '</p>\n<p>') +
+              '</p>').replace(/(<p>)(<\/p>)/g, '$1<br>$2'), service));
+        });
+  
         googleQuery = textPreProcess(sentences.join('\n'), service, true);
         googleLang = [
           sourceLang,
