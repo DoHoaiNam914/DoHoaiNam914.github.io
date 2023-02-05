@@ -4,9 +4,6 @@ const Services = {
   PAPAGO: 'papago',
 };
 
-var queryLength;
-
-var queryIndex;
 var googleQuery;
 var googleLang;
 var googleTranslation;
@@ -59,10 +56,7 @@ $("#translateButton").on("click", function () {
   } else {
     $(this).attr("disabled", true);
     $("#inputGlossary").attr("disabled", true);
-    queryLength = 0;
-    queryIndex = 0;
-    translate(service, sourceLang, targetLang, sentences,
-        '', new Array(), 0, sentences.length);
+    translate(service, sourceLang, targetLang, sentences);
   }
 });
 
@@ -85,196 +79,135 @@ $("main.container .textarea").on("input", function () {
   resize();
 });
 
-async function translate(service, sourceLang, targetLang, sentences, translation, query, index, count) {
-  if (index < sentences.length) {
-    switch (service) {
-      case Services.PAPAGO:
-        queryLength = 50;
-        query.push(textPreProcess(sentences[index], service, false));
+async function translate(service, sourceLang, targetLang, sentences) {
+  let settings;
+
+  switch (service) {
+    case Services.PAPAGO:
+      settings = {
+        crossDomain: true,
+        url: "https://api.papago-chrome.com/v2/translate/openapi",
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json; charset=UTF-8"
+        },
+        processData: false,
+        data: JSON.stringify({
+          'source': sourceLang,
+          'target': targetLang,
+          'text': textPreProcess(sentences.join('\n'), service, false)
+        })
+      };
+
+      $.ajax(settings).done(function (data) {
+        $("#translatedText").html(textPostProcess(('<p>' +
+            data.translatedText.replace(/(\n)/g, '</p>$1<p>') +
+            '</p>').replace(/(<p>)(<\/p>)/g, '$1<br>$2'), service));
+        papagoQuery = textPreProcess(sentences.join('\n'), service, true);
+        papagoLang = [
+          sourceLang,
+          targetLang,
+        ];
+
+        papagoTranslation = $("#translatedText").html();
+        resize();
+        $("#translateButton").removeAttr("disabled");
+        $("#inputGlossary").removeAttr("disabled");
+      }).fail(function (jqXHR, textStatus, errorThrown) {
+        $("#translatedText").html(`<p>${jqXHR}</p><p>${errorThrown}</p>`);
+        resize();
+        $("#translateButton").removeAttr("disabled");
+        $("#inputGlossary").removeAttr("disabled");
+      });
+
+      break;
+
+    case Services.MICROSOFT:
+      let accessToken = await fetch('https://edge.microsoft.com/translate/auth')
+          .then((response) => response.text());
+
+      if (accessToken == undefined) {
+        $("#translatedText").html('Không thể lấy được Access Token từ máy chủ.');
+        resize();
+        $("#translateButton").removeAttr("disabled");
+        $("#inputGlossary").removeAttr("disabled");
         break;
-
-      case Services.MICROSOFT:
-        queryLength = 50;
-        query.push({
-            "Text":textPreProcess(sentences[index], service, false)
-        });
-
-        break;
-
-      case Services.GOOGLE:
-        queryLength = 50;
-        query.push(encodeURIComponent(textPreProcess(sentences[index], service, false)));
-        break;
-    }
-
-    if ((count >= queryLength && query.length === queryLength) ||
-        (count < queryLength && query.length === count)) {
-      let settings;
-
-      switch (service) {
-        case Services.PAPAGO:
-          settings = {
-            crossDomain: true,
-            url: "https://api.papago-chrome.com/v2/translate/openapi",
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json; charset=UTF-8"
-            },
-            processData: false,
-            data: JSON.stringify({
-              'source' : sourceLang,
-              'target' : targetLang,
-              'text' : query.join('\r\n')
-            })
-          };
-
-          $.ajax(settings).done(function (data) {
-            translation +=
-                ('<p>' + data.translatedText.replace(/\r?\n/g, '</p>\r\n<p>') +
-                '</p>').replace(/(<p>)(<\/p>)/g, '$1<br>$2');
-
-            if (count - query.length === 0) {
-              $("#translatedText").html(textPostProcess(translation, service));
-              papagoQuery = textPreProcess(sentences.join('\r\n'), service, true);
-              papagoLang = [
-                sourceLang,
-                targetLang,
-              ];
-
-              papagoTranslation = $("#translatedText").html();
-              resize();
-              $("#translateButton").removeAttr("disabled");
-              $("#inputGlossary").removeAttr("disabled");
-            } else {
-              translate(service, sourceLang, targetLang, sentences, translation,
-                  new Array(), index + 1, count - query.length);
-            }
-          }).fail(function (jqXHR, textStatus, errorThrown) {
-            $("#translatedText").html(errorThrown);
-            resize();
-            $("#translateButton").removeAttr("disabled");
-            $("#inputGlossary").removeAttr("disabled");
-          });
-
-          break;
-
-        case Services.MICROSOFT:
-          let accessToken = await fetch('https://edge.microsoft.com/translate/auth')
-              .then((response) => response.text());
-
-          if (accessToken == undefined) {
-            $("#translatedText").html('Không thể lấy được Access Token từ máy chủ.');
-            resize();
-            $("#translateButton").removeAttr("disabled");
-            $("#inputGlossary").removeAttr("disabled");
-            break;
-          }
-
-          //POST https://api.cognitive.microsofttranslator.com/translate?to=${toLang}&api-version=3.0&includeSentenceLength=true Authorization: Bearer ${accessToken} - Content-Type: application/json - send(data)
-          settings = {
-            crossDomain: true,
-            url:
-                `https://api.cognitive.microsofttranslator.com/translate?from=${sourceLang}&to=${targetLang}&api-version=3.0&textType=html&includeSentenceLength=true`,
-            method: "POST",
-            headers: {
-              "Authorization": `Bearer ${accessToken}`,
-              "Content-Type": "application/json"
-            },
-            processData: false,
-            data: JSON.stringify(query)
-          };
-
-          $.ajax(settings).done(function (data) {
-            let translations = new Array();
-
-            data.forEach((element) => translations.push(element.translations[0].text));
-            translation +=
-                ('<p>' + translations.join('</p>\r\n<p>') +
-                '</p>').replace(/(<p>)(<\/p>)/g, '$1<br>$2');
-
-            if (count - query.length === 0) {
-              $("#translatedText").html(textPostProcess(translation, service));
-              microsoftQuery = textPreProcess(sentences.join('\r\n'), service, true);
-              microsoftLang = [
-                sourceLang,
-                targetLang,
-              ];
-
-              microsoftTranslation = $("#translatedText").html();
-              resize();
-              $("#translateButton").removeAttr("disabled");
-              $("#inputGlossary").removeAttr("disabled");
-            } else {
-              translate(service, sourceLang, targetLang, sentences, translation,
-                  new Array(), index + 1, count - query.length);
-            }
-          }).fail(function (jqXHR, textStatus, errorThrown) {
-            $("#translatedText").html(errorThrown);
-            resize();
-            $("#translateButton").removeAttr("disabled");
-            $("#inputGlossary").removeAttr("disabled");
-          });
-
-          break;
-
-        case Services.GOOGLE:
-          queryIndex += 1;
-          //GET https://translate.googleapis.com/translate_a/t?anno=3&client=wt_lib&format=html&v=1.0&key&logId=vTE_2021115&sl=auto&tl=${targetLang}&tc=1&sr=1&tk=463587.741203892&mode=1 Content-Type	application/x-www-form-urlencoded - send(query)
-          //POST https://translate.googleapis.com/translate_a/t?anno=3&client=te&format=html&v=1.0&key&logId=vTE_2021115&sl=auto&tl=${targetLang}&tc=1&ctt=1&dom=1&sr=1&tk=463587.741203892&mode=1 Content-Type: application/x-www-form-urlencoded - send(query)
-          //GET https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${targetLang}&hl=vi&dt=t&dt=bd&dj=1${query}
-          //GET https://clients5.google.com/translate_a/single?dj=1&dt=t&dt=sp&dt=ld&dt=bd&client=dict-chrome-ex&sl=auto&tl=${targetLang}${query}
-          //GET https://translate.google.com/translate_t?source=dict-chrome-ex&sl=auto&tl=${targetLang}${query}
-          settings = {
-            crossDomain: true,
-            url:
-                `https://translate.googleapis.com/translate_a/t?anno=3&client=gtx&format=html&v=1.0&key&logId=vTE_2021115&sl=${sourceLang}&tl=${targetLang}&tc=${queryIndex}&sr=1&mode=1`,
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            processData: false,
-            data: 'q=' + query.join('&q=')
-          };
-
-          $.ajax(settings).done(function (data) {
-            var translations = new Array();
-
-            data.forEach((element) =>
-                translations.push((sourceLang === 'auto' ? element[0] : element)));
-
-            translation +=
-                ('<p>' + translations.join('</p>\r\n<p>') +
-                '</p>').replace(/(<p>)(<\/p>)/g, '$1<br>$2');
-
-            if (count - query.length === 0) {
-              $("#translatedText").html(textPostProcess(translation, service));
-              googleQuery = textPreProcess(sentences.join('\r\n'), service, true);
-              googleLang = [
-                sourceLang,
-                targetLang,
-              ];
-
-              googleTranslation = $("#translatedText").html();
-              resize();
-              $("#translateButton").removeAttr("disabled");
-              $("#inputGlossary").removeAttr("disabled");
-            } else {
-              translate(service, sourceLang, targetLang, sentences, translation,
-                  new Array(), index + 1, count - query.length);
-            }
-          }).fail(function (jqXHR, textStatus, errorThrown) {
-            $("#translatedText").html(errorThrown);
-            resize();
-            $("#translateButton").removeAttr("disabled");
-            $("#inputGlossary").removeAttr("disabled");
-          });
-
-          break;
       }
-    } else {
-      translate(service, sourceLang, targetLang, sentences, translation, query,
-          index + 1, count);
-    }
+
+      //POST https://api.cognitive.microsofttranslator.com/translate?to=${toLang}&api-version=3.0&includeSentenceLength=true Authorization: Bearer ${accessToken} - Content-Type: application/json - send(data)
+      settings = {
+        crossDomain: true,
+        url: `https://api.cognitive.microsofttranslator.com/translate?from=${sourceLang}&to=${targetLang}&api-version=3.0&textType=html&includeSentenceLength=true`,
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${accessToken}`,
+          "Content-Type": "application/json"
+        },
+        processData: false,
+        data: JSON.stringify([{
+              "Text":textPreProcess(sentences.join('\n'), service, false)
+        }])
+      };
+
+      $.ajax(settings).done(function (data) {
+        $("#translatedText").html(textPostProcess(('<p>' +
+            data.translations[0].text.replace(/(\n)/g, '</p>$1<p>') +
+            '</p>').replace(/(<p>)(<\/p>)/g, '$1<br>$2'), service));
+        microsoftQuery = textPreProcess(sentences.join('\n'), service, true);
+        microsoftLang = [
+          sourceLang,
+          targetLang,
+        ];
+
+        microsoftTranslation = $("#translatedText").html();
+        resize();
+        $("#translateButton").removeAttr("disabled");
+        $("#inputGlossary").removeAttr("disabled");
+      }).fail(function (jqXHR, textStatus, errorThrown) {
+        $("#translatedText").html(`<p>${jqXHR}</p><p>${errorThrown}</p>`);
+        resize();
+        $("#translateButton").removeAttr("disabled");
+        $("#inputGlossary").removeAttr("disabled");
+      });
+
+      break;
+
+    case Services.GOOGLE:
+      //GET https://translate.googleapis.com/translate_a/t?anno=3&client=wt_lib&format=html&v=1.0&key&logId=vTE_2021115&sl=auto&tl=${targetLang}&tc=1&sr=1&tk=463587.741203892&mode=1 Content-Type	application/x-www-form-urlencoded - send(query)
+      //POST https://translate.googleapis.com/translate_a/t?anno=3&client=te&format=html&v=1.0&key&logId=vTE_2021115&sl=auto&tl=${targetLang}&tc=1&ctt=1&dom=1&sr=1&tk=463587.741203892&mode=1 Content-Type: application/x-www-form-urlencoded - send(query)
+      //GET https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${targetLang}&hl=vi&dt=t&dt=bd&dj=1${query}
+      //GET https://clients5.google.com/translate_a/single?dj=1&dt=t&dt=sp&dt=ld&dt=bd&client=dict-chrome-ex&sl=auto&tl=${targetLang}${query}
+      //GET https://translate.google.com/translate_t?source=dict-chrome-ex&sl=auto&tl=${targetLang}${query}
+      settings = {
+        crossDomain: true,
+        url: `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${targetLang}&hl=${targetLang}&dt=t&dt=bd&dj=1&q=${encodeURIComponent(textPreProcess(sentences.join('<br>'), service, false))}`,
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        processData: false
+      };
+
+      $.ajax(settings).done(function (data) {
+        $("#translatedText").html(textPostProcess(('<p>' +
+            data.sentences[0].trans.replace(/<br>/g, '</p>\n<p>') +
+            '</p>').replace(/(<p>)(<\/p>)/g, '$1<br>$2'), service));
+        googleQuery = textPreProcess(sentences.join('\n'), service, true);
+        googleLang = [
+          sourceLang,
+          targetLang,
+        ];
+
+        googleTranslation = $("#translatedText").html();
+        resize();
+        $("#translateButton").removeAttr("disabled");
+        $("#inputGlossary").removeAttr("disabled");
+      }).fail(function (jqXHR, textStatus, errorThrown) {
+        $("#translatedText").html(`<p>${jqXHR}</p><p>${errorThrown}</p>`);
+        resize();
+        $("#translateButton").removeAttr("disabled");
+        $("#inputGlossary").removeAttr("disabled");
+      });
   }
 }
 
