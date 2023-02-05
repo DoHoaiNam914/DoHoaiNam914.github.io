@@ -151,7 +151,7 @@ async function translate(service, sourceLang, targetLang, sentences) {
 
       $.ajax(settings).done(function (data) {
         $("#translatedText").html(textPostProcess(('<p>' +
-            data.translations[0].text.replace(/(\n)/g, '</p>$1<p>') +
+            data[0].translations[0].text.replace(/(\n)/g, '</p>$1<p>') +
             '</p>').replace(/(<p>)(<\/p>)/g, '$1<br>$2'), service));
         microsoftQuery = textPreProcess(sentences.join('\n'), service, true);
         microsoftLang = [
@@ -182,9 +182,6 @@ async function translate(service, sourceLang, targetLang, sentences) {
         crossDomain: true,
         url: `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${targetLang}&hl=${targetLang}&dt=t&dt=bd&dj=1&q=${encodeURIComponent(textPreProcess(sentences.join('<br>'), service, false))}`,
         method: 'GET',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
-        },
         processData: false
       };
 
