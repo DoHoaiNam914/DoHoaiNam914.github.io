@@ -1,7 +1,7 @@
 const Loader = {
   J_NOVEL: 'j_novel',
   YENPRESS: 'yenpress',
-  CUSTOM: 'custom',
+  CUSTOM: 'custom'
 };
 
 $(document).ready(function () {

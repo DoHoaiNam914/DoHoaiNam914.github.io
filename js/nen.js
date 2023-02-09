@@ -3,7 +3,7 @@ const colors = [
   'sepia',
   'cream',
   'gray',
-  'black',
+  'black'
 ];
 
 $("#background-select").change(function () {

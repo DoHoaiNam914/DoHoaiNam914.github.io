@@ -1,7 +1,7 @@
 const GlossaryType = {
   TSV: 'text/tab-separated-values',
   CSV: 'text/csv',
-  VIETPHRASE: 'text/plain',
+  VIETPHRASE: 'text/plain'
 };
 
 var vietnameseHanPhonetics = new Map();
@@ -173,7 +173,7 @@ function loadGlossary() {
 
   $("#glossaryList").html(glossaryList);
   $("#preview").val(data);
-  $("#counter").text(glossary.length);
+  $("#glossaryCounter").text(glossary.length);
 
   localStorage.setItem("glossary", JSON.stringify(Object.fromEntries(new Map(glossary))));
 

@@ -1,6 +1,6 @@
 const Methods = {
   HAN_VIET: 'han_viet',
-  VIETPHRASE: 'vietphrase',
+  VIETPHRASE: 'vietphrase'
 };
 
 var chinesephienamwords = new Array();

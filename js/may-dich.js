@@ -1,21 +1,12 @@
 const Services = {
   GOOGLE: 'google',
   MICROSOFT: 'microsoft',
-  PAPAGO: 'papago',
+  PAPAGO: 'papago'
 };
 
-var googleQuery;
-var googleLang;
-var googleTranslation;
-
-var microsoftQuery;
-var microsoftLang;
-var microsoftTranslation;
-
-var papagoQuery;
-var papagoLang;
-var papagoTranslation;
-
+$("#queryText").on("input", function () {
+  $("#queryTextCounter").text($("#queryText").val().length);
+});
 $("#translateButton").on("click", function () {
   let service = $(".service.active").attr("id");
 
@@ -29,33 +20,10 @@ $("#translateButton").on("click", function () {
 
   let sentences = $("#queryText").val().split(/\r?\n/);
 
-  if (googleQuery != undefined &&
-      service === Services.GOOGLE &&
-      sourceLang === googleLang[0] &&
-      targetLang === googleLang[1] &&
-      textPreProcess(sentences.join('\r\n'), service, true) ===
-      googleQuery) {
-    $("#translatedText").html(googleTranslation);
-    resize();
-  } else if (microsoftQuery != undefined &&
-      service === Services.MICROSOFT &&
-      sourceLang === microsoftLang[0] &&
-      targetLang === microsoftLang[1] &&
-      textPreProcess(sentences.join('\r\n'), service, true) ===
-      microsoftQuery) {
-    $("#translatedText").html(microsoftTranslation);
-    resize();
-  } else if (papagoQuery != undefined &&
-      service === Services.PAPAGO &&
-      sourceLang === papagoLang[0] &&
-      targetLang === papagoLang[1] &&
-      textPreProcess(sentences.join('\r\n'), service, true) ===
-      papagoQuery) {
-    $("#translatedText").html(papagoTranslation);
-    resize();
-  } else {
+  if ($("#queryText").val().length > 0) {
     $(this).attr("disabled", true);
     $("#inputGlossary").attr("disabled", true);
+    $("#translatedText").html(null);
     translate(service, sourceLang, targetLang, sentences);
   }
 });
@@ -95,7 +63,7 @@ async function translate(service, sourceLang, targetLang, sentences) {
         data: JSON.stringify({
           'source': sourceLang,
           'target': targetLang,
-          'text': textPreProcess(sentences.join('\n'), service, false)
+          'text': textPreProcess(sentences.join('\n'), service)
         })
       };
 
@@ -103,18 +71,11 @@ async function translate(service, sourceLang, targetLang, sentences) {
         $("#translatedText").html(textPostProcess(('<p>' +
             data.translatedText.replace(/(\n)/g, '</p>$1<p>') +
             '</p>').replace(/(<p>)(<\/p>)/g, '$1<br>$2'), service));
-        papagoQuery = textPreProcess(sentences.join('\n'), service, true);
-        papagoLang = [
-          sourceLang,
-          targetLang,
-        ];
-
-        papagoTranslation = $("#translatedText").html();
         resize();
         $("#translateButton").removeAttr("disabled");
         $("#inputGlossary").removeAttr("disabled");
       }).fail(function (jqXHR, textStatus, errorThrown) {
-        $("#translatedText").html(`<p>${jqXHR}</p><p>${errorThrown}</p>`);
+        $("#translatedText").html(`<p>${jqXHR}</p>\n<p>${errorThrown}</p>`);
         resize();
         $("#translateButton").removeAttr("disabled");
         $("#inputGlossary").removeAttr("disabled");
@@ -145,7 +106,7 @@ async function translate(service, sourceLang, targetLang, sentences) {
         },
         processData: false,
         data: JSON.stringify([{
-              "Text":textPreProcess(sentences.join('\n'), service, false)
+              "Text":textPreProcess(sentences.join('\n'), service)
         }])
       };
 
@@ -153,18 +114,11 @@ async function translate(service, sourceLang, targetLang, sentences) {
         $("#translatedText").html(textPostProcess(('<p>' +
             data[0].translations[0].text.replace(/(\n)/g, '</p>$1<p>') +
             '</p>').replace(/(<p>)(<\/p>)/g, '$1<br>$2'), service));
-        microsoftQuery = textPreProcess(sentences.join('\n'), service, true);
-        microsoftLang = [
-          sourceLang,
-          targetLang,
-        ];
-
-        microsoftTranslation = $("#translatedText").html();
         resize();
         $("#translateButton").removeAttr("disabled");
         $("#inputGlossary").removeAttr("disabled");
       }).fail(function (jqXHR, textStatus, errorThrown) {
-        $("#translatedText").html(`<p>${jqXHR}</p><p>${errorThrown}</p>`);
+        $("#translatedText").html(`<p>${jqXHR}</p>\n<p>${errorThrown}</p>`);
         resize();
         $("#translateButton").removeAttr("disabled");
         $("#inputGlossary").removeAttr("disabled");
@@ -173,43 +127,43 @@ async function translate(service, sourceLang, targetLang, sentences) {
       break;
 
     case Services.GOOGLE:
-      //GET https://translate.googleapis.com/translate_a/t?anno=3&client=wt_lib&format=html&v=1.0&key&logId=vTE_2021115&sl=auto&tl=${targetLang}&tc=1&sr=1&tk=463587.741203892&mode=1 Content-Type	application/x-www-form-urlencoded - send(query)
-      //POST https://translate.googleapis.com/translate_a/t?anno=3&client=te&format=html&v=1.0&key&logId=vTE_2021115&sl=auto&tl=${targetLang}&tc=1&ctt=1&dom=1&sr=1&tk=463587.741203892&mode=1 Content-Type: application/x-www-form-urlencoded - send(query)
+      //GET https://translate.googleapis.com/translate_a/t?anno=3&client=wt_lib&format=html&v=1.0&key&logId=vTE_20230206&sl=auto&tl=${targetLang}&tc=1&sr=1&tk=419495.97493&mode=1 Content-Type: application/x-www-form-urlencoded - send(query)
+      //POST https://translate.googleapis.com/translate_a/t?anno=3&client=te&format=html&v=1.0&key&logId=vTE_20230206&sl=auto&tl=${targetLang}&tc=1&ctt=1&dom=1&sr=1&tk=895688.700602&mode=1 Content-Type: application/x-www-form-urlencoded - send(query)
       //GET https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${targetLang}&hl=vi&dt=t&dt=bd&dj=1${query}
       //GET https://clients5.google.com/translate_a/single?dj=1&dt=t&dt=sp&dt=ld&dt=bd&client=dict-chrome-ex&sl=auto&tl=${targetLang}${query}
       //GET https://translate.google.com/translate_t?source=dict-chrome-ex&sl=auto&tl=${targetLang}${query}
       settings = {
         crossDomain: true,
-        url: `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${targetLang}&hl=${targetLang}&dt=t&dt=bd&dj=1&q=${encodeURIComponent(textPreProcess(sentences.join('<br>'), service, false))}`,
+        url: `https://translate.googleapis.com/translate_a/t?anno=3&client=gtx&format=html&v=1.0&key&logId=vTE_20230206&sl=${sourceLang}&tl=${targetLang}&tc=1&sr=1&tk=419495.97493&mode=1`,
         method: 'GET',
-        processData: false
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        processData: false,
+        data: 'q=' + encodeURI(textPreProcess(sentences.join('&q='), service))
       };
 
       $.ajax(settings).done(function (data) {
-        $("#translatedText").html(null);
- 
-        data.sentences.forEach(function (sentence) {
-          $("#translatedText").append(textPostProcess(('<p>' +
-              sentence.trans.replace(/<br>/g, '</p>\n<p>') +
-              '</p>').replace(/(<p>)(<\/p>)/g, '$1<br>$2'), service));
+        data.forEach(function (sentencesTrans) {
+          $("#translatedText").append(textPostProcess(('<p>' + (sourceLang === 'auto' ? sentencesTrans[0] : sentencesTrans) + '</p>').replace(/(<p>)(<\/p>)/g, '$1<br>$2'), service));
         });
   
-        googleQuery = textPreProcess(sentences.join('\n'), service, true);
-        googleLang = [
-          sourceLang,
-          targetLang,
-        ];
-
-        googleTranslation = $("#translatedText").html();
         resize();
         $("#translateButton").removeAttr("disabled");
         $("#inputGlossary").removeAttr("disabled");
       }).fail(function (jqXHR, textStatus, errorThrown) {
-        $("#translatedText").html(`<p>${jqXHR}</p><p>${errorThrown}</p>`);
+        if (textPreProcess($("#queryText").val(), service).length > 2000) {
+          $("#translatedText").html('Độ dài văn bản tối đa là 2000 ký tự. Lưu ý: Khi dùng từ vựng thì độ dài văn bản tối đa sẽ ngắn hơn bình thường!');
+        } else {
+          $("#translatedText").html(`<p>${jqXHR}</p>\n<p>${errorThrown}</p>`);
+        }
+
         resize();
         $("#translateButton").removeAttr("disabled");
         $("#inputGlossary").removeAttr("disabled");
       });
+
+      break;
   }
 }
 
@@ -217,50 +171,47 @@ function getMicrosoftLanguageCode(languageCode) {
   return languageCode.replace('auto', '').replace('CN', 'CHS').replace('TW', 'CHT');
 }
 
-function textPreProcess(text, service, pre) {
-  var glossaryText = text;
+function textPreProcess(text, service) {
+  var newText = text;
 
   if (glossary != undefined) {
-    let glossaryList = glossary.filter((element) => glossaryText.includes(element[0]));
+    let glossaryList = glossary.filter((element) => newText.includes(element[0]));
 
     for (let i = 0; i < glossaryList.length; i++) {
-      if (pre) {
-        glossaryText =
-            glossaryText.replace(new RegExp(glossaryList[i][0], 'g'), glossaryList[i][1]);
-      } else if (service === Services.MICROSOFT) {
-        glossaryText =
-            glossaryText.replace(new RegExp(glossaryList[i][0], 'g'),
+      if (service === Services.MICROSOFT) {
+        newText =
+            newText.replace(new RegExp(glossaryList[i][0], 'g'),
             `<mstrans:dictionary translation="${glossaryList[i][1]}">GLOSSARY_INDEX_${i}</mstrans:dictionary>`);
       } else {
-        glossaryText =
-            glossaryText.replace(new RegExp(glossaryList[i][0], 'g'),
+        newText =
+            newText.replace(new RegExp(glossaryList[i][0], 'g'),
             `<span class="notranslate">GLOSSARY_INDEX_${i}</span>`);
       }
     }
 
-    for (let i = glossaryList.length - 1; pre === false && i >= 0; i--) {
-      glossaryText =
-          glossaryText.replace(new RegExp(`GLOSSARY_INDEX_${i}`, 'g'), glossaryList[i][0]);
+    for (let i = glossaryList.length - 1; i >= 0; i--) {
+      newText =
+          newText.replace(new RegExp(`GLOSSARY_INDEX_${i}`, 'g'), glossaryList[i][0]);
     }
   }
 
-  return glossaryText;
+  return newText;
 }
 
 function textPostProcess(text, service) {
-  var glossaryText = text;
+  var newText = text;
 
   if (glossary != undefined && service !== Services.MICROSOFT) {
-    let glossaryMap = new Map(glossary.filter((element) => glossaryText.includes(element[0])));
+    let glossaryMap = new Map(glossary.filter((element) => newText.includes(element[0])));
 
     for (let [key, value] of glossaryMap.entries()) {
-      glossaryText =
-          glossaryText.replace(/<span class="notranslate">/g, ' ').replace(/<\/span>/g,
-          ' ').replace(/(\s)\s/g, '$1').replace(new RegExp(key, 'g'), value).trim();
+      newText =
+          newText.replace(/\s*<span class="notranslate">/g, ' ').replace(/<\/span>\s*/g,
+          ' ').replace(new RegExp(key, 'g'), value);
     }
   }
 
-  return glossaryText;
+  return newText;
 }
 
 function resize() {
@@ -268,7 +219,7 @@ function resize() {
 
   let height = [
     $("#queryText").prop("scrollHeight"),
-    $("#translatedText").prop("scrollHeight"),
+    $("#translatedText").prop("scrollHeight")
   ].sort((a, b) => b - a)[0];
 
   if (height > 300) {
