@@ -4,7 +4,7 @@ const GlossaryType = {
   VIETPHRASE: 'text/plain'
 };
 
-var vietnameseHanPhonetics = new Map();
+var sinoVietnameses = new Map();
 
 var glossary = [];
 
@@ -14,10 +14,9 @@ $(document).ready(function () {
     url: "/datasource/ChinesePhienAmWords.txt",
     processData: false
   }).done(function (data) {
-    vietnameseHanPhonetics = new
-        Map(data.split(/\r?\n/).map((phonetic) =>
-        phonetic.split('=')).filter((phonetic) =>
-        phonetic.length === 2));
+    sinoVietnameses =
+        new Map(data.split(/\r?\n/).map((word) =>
+        word.split('=')).filter((word) => word.length === 2));
   }).fail((jqXHR, textStatus, errorThrown) => window.location.reload());
 });
 
@@ -30,18 +29,22 @@ $("#inputGlossary").on("input", function () {
         glossary =
             this.result.split(/\r?\n/).map((element) =>
             element.split(/\t/)).filter((element) =>
-            element.length === 2);
+            element.length === 2).filter((element, index, array) => 
+            array.indexOf(element) === index);
         break;
 
       case GlossaryType.CSV:
-        glossary = $.csv.toArrays(this.result);
+        glossary =
+            $.csv.toArrays(this.result).filter((element, index, array) => 
+            array.indexOf(element) === index);
         break;
 
       case GlossaryType.VIETPHRASE:
         glossary =
             this.result.split(/\r?\n/).map((element) =>
             element.split('=')).filter((element) =>
-            element.length === 2);
+            element.length >== 2).filter((element, index, array) => 
+            array.indexOf(element) === index);
         break;
     }
 
@@ -61,14 +64,13 @@ $("#sourceText").on("input", function () {
     if (glossaryMap.has(this.value)) {
       $("#glossaryList").val(Array.from(glossaryMap.keys()).indexOf(this.value)).change();
     } else if (parseInt($("#glossaryList").val()) < 0) {
-      let chars = this.value.split('');
-      var targetText = '';
+      var result = '';
 
-      for (let i = 0; i < chars.length; i++) {
-        if (/\p{sc=Hani}/u.test(chars[i])) {
+      for (let i = 0; i < this.value.length; i++) {
+        if (/\p{sc=Hani}/u.test(this.value[i])) {
           targetText +=
-            vietnameseHanPhonetics.get(chars[i]) +
-            (/\p{sc=Hani}/u.test(chars[i + 1]) ? ' ' : '');
+            sinoVietnameses.get(this.value[i]) +
+            (/\p{sc=Hani}/u.test(this.value[i + 1]) ? ' ' : '');
         } else {
           targetText += chars[i];
         }
@@ -132,20 +134,21 @@ function loadGlossary() {
 
   if (glossary.length > 0) {
     let glossaryType = $("#glossaryType").val();
+
     glossary.sort((a, b) =>
-        b[0].length - a[0].length ||
+        a[0].length - b[0].length ||
         a[0].localeCompare(b[0]) ||
         a[1].localeCompare(b[1]));
 
     glossary.forEach((element, index) => glossaryList +=
         `\n<option value="${index}">${element[0]}\t${element[1]}</option>`);
 
-    var dataExtension = 'txt';
+    var fileExtension = 'txt';
 
     switch (glossaryType) {
       case GlossaryType.TSV:
         data = glossary.map((element) => element.join('\t')).join('\r\n');
-        dataExtension = 'tsv';
+        fileExtension = 'tsv';
         break;
       case GlossaryType.CSV:
         data = glossary.map((element) =>
@@ -155,7 +158,7 @@ function loadGlossary() {
             '"""')},${element[1].includes(',') ? '"' +
             element[1].replace(/"/g, '""') + '"' :
             element[1].replace(/"/g, '"""')}`).join('\r\n');
-        dataExtension = 'csv';
+        fileExtension = 'csv';
         break;
       case GlossaryType.VIETPHRASE:
         data = glossary.map((element) => element.join('=')).join('\r\n')
@@ -163,9 +166,8 @@ function loadGlossary() {
     }
 
     $("#downloadButton").attr("href",
-        `data:${glossaryType};charset=utf-8,` +
-        encodeURIComponent(data));
-    $("#downloadButton").attr("download", `Từ vựng.${dataExtension}`);
+        `data:${glossaryType};charset=utf-8,${encodeURIComponent(data)}`);
+    $("#downloadButton").attr("download", `Từ vựng.${fileExtension}`);
   } else {
     $("#downloadButton").removeAttr("href");
     $("#downloadButton").removeAttr("download");

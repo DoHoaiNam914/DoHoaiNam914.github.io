@@ -4,16 +4,18 @@ const Methods = {
   VIETPHRASE: 'vietphrase'
 };
 
-var chinesephienamwords = new Array();
-var vietphrase = new Array();
-var names = new Array();
-var names2 = new Array();
+var chinesephienamwords = new Map();
+var vietphrase = new Map();
+var names = new Map();
+var names2 = new Map();
+
+var result = [];
 
 $(document).ready(function () {
   loadChinesePhienAmWords();
 
-  vietphrase = Object.entries(JSON.parse(localStorage.getItem("quicktranslate.vietphrase")));
-  names = Object.entries(JSON.parse(localStorage.getItem("quicktranslate.names")));
+  //vietphrase = new Map(Object.entries(JSON.parse(localStorage.getItem("quicktranslator.vietphrase"))));
+  //names = new Map(Object.entries(JSON.parse(localStorage.getItem("quicktranslator.names"))));
 
   if (vietphrase.length === 0) {
     loadVietPhrase();
@@ -25,43 +27,88 @@ $(document).ready(function () {
 });
 
 $("#translateButton").on("click", function () {
-  let service = $(".service.active").attr("id");
-  let sourceLang = $("#sourceLangSelect").val();
-  let targetLang = $("#targetLangSelect").val();
-  let sentences = $("#queryText").val();
+  let method = $(".method.active").attr("id");
+  let text = $("#queryText").val();
 
-  var result;
+  let data;
+  result = [];
+  var tempText = text;
+  var tempWord = '';
 
-  switch (service) {
-    case Methods.HAN_VIET:
-      chinesephienamwords.forEach(function (word) {
-        result =
-            sentences.replace(new RegExp(word[0], 'g'), word[1]);
-      }
-
-      $("#translatedText").html(result);
-      break;
-
+  switch (method) {
     case Methods.VIETPHRASE:
-      if ($("#removeDeLeZhao").val() === true) {
-        sentences =
-            sentences.map((sentence) =>
-            sentence.replace(/[的了着]/g, ''));
+      data = Object.entries(names2).sort((a, b) => b[0].length - a[0].length);
+
+      for (let i = 0; i < data.length; i++) {
+        tempText = tempText.replace(new RegExp(data[i][0], 'g'), data[i][1]);
       }
 
-      chinesephienamwords.forEach(function (word) {
-        result =
-            sentences.replace(new RegExp(word[0], 'g'), word[1]);
+      data = Object.entries(names).sort((a, b) => b[0].length - a[0].length);
+
+      for (let i = 0; i < data.length; i++) {
+        tempText = tempText.replace(new RegExp(data[i][0], 'g'), data[i][1]);
       }
 
-      $("#translatedText").html(result);
+      data = vietphrase.sort((a, b) => b[0].length - a[0].length);
+
+      for (let i = 0; i < tempText.length; i++) {
+        phrase:
+          for (let j = data[0].length; j >= 1; j--) {
+            if (/\p{sc=Hani}/u.test(tempText.substring(i, i + j))) {
+              result.push(data.get(tempText[i]));
+              break phrase;
+            } else {
+              tempWord += tempText[i];
+              
+              if (tempWord.length > 0 && /\p{sc=Hani}/u.test(tempText[i + 1]) {
+                result.push(tempWord);
+                tempWord = '';
+              }
+
+              break phrase;
+            }
+          }
+      }
+
+      tempText = result.join(' ');
+      result = [];
+
+    case Methods.HAN_VIET:
+      data = chinesephienamwords.sort((a, b) => b[0].length - a[0].length);
+
+      for (let i = 0; i < tempText.length; i++) {
+        phrase:
+          for (let j = data[0].length; j >= 1; j--) {
+            if ((service === Methods.VIETPHRASE &&$("#removeDeLeZhao").val() === false) ||
+                j > 1 || !/[的了着]/.test(tempText[i])) {
+              if (/\p{sc=Hani}/u.test(tempText.substring(i, i + j))) {
+                result.push(data.get(tempText[i]));
+                break phrase;
+              } else {
+                tempWord += tempText[i];
+
+                if (tempWord.length > 0 && /\p{sc=Hani}/u.test(tempText[i + 1]) {
+                  result.push(tempWord);
+                  tempWord = '';
+                }
+
+                break phrase;
+              }
+            }
+          }
+        }
+      }
+
+      $("#translatedText").html(result.join(' '));
       break;
   }
 });
 
 $(".textarea").on("input", function () {
   $(".textarea").css("height", "auto");
-  let height = (new Array($("#queryText").prop("scrollHeight"), $("#translatedText").prop("scrollHeight")).sort((a, b) => b - a))[0];
+  let height =
+      (new Array($("#queryText").prop("scrollHeight"),
+      $("#translatedText").prop("scrollHeight")).sort((a, b) => b - a))[0];
   $(".textarea").css("height", height > 300 ? height.toString().concat('px') : "auto");
 });
 
@@ -83,7 +130,10 @@ function loadChinesePhienAmWords() {
     let reader = new FileReader();
     reader.readAsText();
     reader.onload = function (data) {
-      chinesephienamwords = this.data.split(/\r?\n/).map((chinesephienamword) => chinesephienamword.split('=')).filter((chinesephienamword) => chinesephienamword.length === 2);
+      chinesephienamwords =
+          new Map(this.data.split(/\r?\n/).map((chinesephienamword) =>
+          chinesephienamword.split('=')).filter((chinesephienamword) =>
+          chinesephienamword.length === 2));
   });
 }
 
@@ -124,7 +174,7 @@ function loadNames() {
 }
 
 function onload() {
-  localStorage.setItem("quicktranslate.vietphrase", JSON.stringify(vietphrase.reduce((accumulator, currentValue) => ({...accumulator, [currentValue[0]]: currentValue[1] }), {})));
-  localStorage.setItem("quicktranslate.names", JSON.stringify(names.reduce((accumulator, currentValue) => ({...accumulator, [currentValue[0]]: currentValue[1] }), {})));
-  localStorage.setItem("quicktranslate.names2", JSON.stringify(names2.reduce((accumulator, currentValue) => ({...accumulator, [currentValue[0]]: currentValue[1] }), {})));
+  //localStorage.setItem("quicktranslator.vietphrase", JSON.stringify(vietphrase.reduce((accumulator, currentValue) => ({...accumulator, [currentValue[0]]: currentValue[1] }), {})));
+  //localStorage.setItem("quicktranslator.names", JSON.stringify(names.reduce((accumulator, currentValue) => ({...accumulator, [currentValue[0]]: currentValue[1] }), {})));
+  localStorage.setItem("quicktranslator.names2", JSON.stringify(names2.reduce((accumulator, currentValue) => ({...accumulator, [currentValue[0]]: currentValue[1] }), {})));
 }
