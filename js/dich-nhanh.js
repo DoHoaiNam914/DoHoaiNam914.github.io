@@ -1,86 +1,119 @@
-const Methods = {
-  PINYIN: 'pinyin',
-  HAN_VIET: 'han_viet',
-  VIETPHRASE: 'vietphrase'
-};
+class QuickTranslator {
+  var chinesephienamwords = new Map();
+  var vietphrase = new Map();
+  var names = new Map();
+  var names2 = new Map();
 
-var chinesephienamwords = new Map();
-var vietphrase = new Map();
-var names = new Map();
-var names2 = new Map();
+  var result = [];
 
-var result = [];
+  constructor() {
+    loadChinesePhienAmWords();
 
-$(document).ready(function () {
-  loadChinesePhienAmWords();
+    //vietphrase = new Map(Object.entries(JSON.parse(localStorage.getItem("quicktranslator.vietphrase"))));
+    //names = new Map(Object.entries(JSON.parse(localStorage.getItem("quicktranslator.names"))));
 
-  //vietphrase = new Map(Object.entries(JSON.parse(localStorage.getItem("quicktranslator.vietphrase"))));
-  //names = new Map(Object.entries(JSON.parse(localStorage.getItem("quicktranslator.names"))));
+    if (vietphrase.length === 0) {
+      loadVietPhrase();
+    }
 
-  if (vietphrase.length === 0) {
-    loadVietPhrase();
+    if (names.length === 0) {
+      loadNames();
+    }
   }
 
-  if (names.length === 0) {
-    loadNames();
+
+  loadChinesePhienAmWords() {
+    let settings = {
+      crossDomain: false,
+      url: "/datasource/ChinesePhienAmWords.txt",
+      method: "GET",
+      processData: false
+    };
+
+    $.ajax(settings).done(function () {
+      let reader = new FileReader();
+      reader.readAsText();
+      reader.onload = function (data) {
+        chinesephienamwords =
+            new Map(this.data.split(/\r?\n/).map((element) =>
+            element.split('=')).filter((element) => element.length >= 2));
+    });
   }
-});
 
-$("#translateButton").on("click", function () {
-  let method = $(".method.active").attr("id");
-  let text = $("#queryText").val();
+  loadVietPhrase() {
+    let settings = {
+      crossDomain: false,
+      url: "/datasource/VietPhrase.txt",
+      method: "GET",
+      processData: false
+    };
 
-  let data;
-  result = [];
-  var tempText = text;
-  var tempWord = '';
+    $.ajax(settings).done(function () {
+      let reader = new FileReader();
+      reader.readAsText();
+      reader.onload = function (data) {
+        vietphrase =
+            new Map(this.data.split(/\r?\n/).map((element) =>
+            element.split('=')).filter((element) => element.length >= 2));
+    });
 
-  switch (method) {
-    case Methods.VIETPHRASE:
-      data = Object.entries(names2).sort((a, b) => b[0].length - a[0].length);
+    save();
+  }
 
-      for (let i = 0; i < data.length; i++) {
-        tempText = tempText.replace(new RegExp(data[i][0], 'g'), data[i][1]);
-      }
+  loadNames() {
+    let settings = {
+      crossDomain: false,
+      url: "/datasource/Names.txt",
+      method: "GET",
+      processData: false
+    };
 
-      data = Object.entries(names).sort((a, b) => b[0].length - a[0].length);
+    $.ajax(settings).done(function () {
+      let reader = new FileReader();
+      reader.readAsText();
+      reader.onload = function (data) {
+        names =
+            new Map(this.data.split(/\r?\n/).map((element) =>
+            element.split('=')).filter((element) => element.length >= 2));
+    });
 
-      for (let i = 0; i < data.length; i++) {
-        tempText = tempText.replace(new RegExp(data[i][0], 'g'), data[i][1]);
-      }
+    save();
+  }
 
-      data = vietphrase.sort((a, b) => b[0].length - a[0].length);
+  save() {
+    //localStorage.setItem("quicktranslator.vietphrase", JSON.stringify(vietphrase.reduce((accumulator, currentValue) => ({...accumulator, [currentValue[0]]: currentValue[1] }), {})));
+    //localStorage.setItem("quicktranslator.names", JSON.stringify(names.reduce((accumulator, currentValue) => ({...accumulator, [currentValue[0]]: currentValue[1] }), {})));
+    localStorage.setItem("quicktranslator.names2", JSON.stringify(names2.reduce((accumulator, currentValue) => ({...accumulator, [currentValue[0]]: currentValue[1] }), {})));
+  }
 
-      for (let i = 0; i < tempText.length; i++) {
-        phrase:
-          for (let j = data[0].length; j >= 1; j--) {
-            if (/\p{sc=Hani}/u.test(tempText.substring(i, i + j))) {
-              result.push(data.get(tempText[i]));
-              break phrase;
-            } else {
-              tempWord += tempText[i];
-              
-              if (tempWord.length > 0 && /\p{sc=Hani}/u.test(tempText[i + 1]) {
-                result.push(tempWord);
-                tempWord = '';
-              }
+  translate() {
+    let method = $(".method.active").attr("id");
+    let text = $("#queryText").val();
 
-              break phrase;
-            }
-          }
-      }
+    let data;
+    result = [];
+    var tempText = text;
+    var tempWord = '';
 
-      tempText = result.join(' ');
-      result = [];
+    switch (method) {
+      case Methods.VIETPHRASE:
+        data = Object.entries(names2).sort((a, b) => b[0].length - a[0].length);
 
-    case Methods.HAN_VIET:
-      data = chinesephienamwords.sort((a, b) => b[0].length - a[0].length);
+        for (let i = 0; i < data.length; i++) {
+          tempText = tempText.replace(new RegExp(data[i][0], 'g'), data[i][1]);
+        }
 
-      for (let i = 0; i < tempText.length; i++) {
-        phrase:
-          for (let j = data[0].length; j >= 1; j--) {
-            if ((service === Methods.VIETPHRASE &&$("#removeDeLeZhao").val() === false) ||
-                j > 1 || !/[的了着]/.test(tempText[i])) {
+        data = Object.entries(names).sort((a, b) => b[0].length - a[0].length);
+
+        for (let i = 0; i < data.length; i++) {
+          tempText = tempText.replace(new RegExp(data[i][0], 'g'), data[i][1]);
+        }
+
+        data = vietphrase.sort((a, b) => b[0].length - a[0].length);
+
+        for (let i = 0; i < tempText.length; i++) {
+          phrase:
+            for (let j = data[0].length; j >= 1; j--) {
               if (/\p{sc=Hani}/u.test(tempText.substring(i, i + j))) {
                 result.push(data.get(tempText[i]));
                 break phrase;
@@ -95,14 +128,49 @@ $("#translateButton").on("click", function () {
                 break phrase;
               }
             }
-          }
         }
-      }
 
-      $("#translatedText").html(result.join(' '));
-      break;
+        tempText = result.join(' ');
+        result = [];
+
+      case Methods.HAN_VIET:
+        data = chinesephienamwords.sort((a, b) => b[0].length - a[0].length);
+
+        for (let i = 0; i < tempText.length; i++) {
+          phrase:
+            for (let j = data[0].length; j >= 1; j--) {
+              if ((service === Methods.VIETPHRASE &&$("#removeDeLeZhao").val() === false) ||
+                  j > 1 || !/[的了着]/.test(tempText[i])) {
+                if (/\p{sc=Hani}/u.test(tempText.substring(i, i + j))) {
+                  result.push(data.get(tempText[i]));
+                  break phrase;
+                } else {
+                  tempWord += tempText[i];
+
+                  if (tempWord.length > 0 && /\p{sc=Hani}/u.test(tempText[i + 1]) {
+                    result.push(tempWord);
+                    tempWord = '';
+                  }
+
+                  break phrase;
+                }
+              }
+            }
+        }
+
+        $("#translatedText").html(result.join(' '));
+        break;
+    }
   }
-});
+
+  Method = {
+    GOOGLE: 'google',
+    MICROSOFT: 'microsoft',
+    PINYIN: 'pinyin',
+    HAN_VIET: 'han_viet',
+    VIETPHRASE: 'vietphrase'
+  };
+}
 
 $(".textarea").on("input", function () {
   $(".textarea").css("height", "auto");
@@ -117,64 +185,3 @@ $("#translatedText").on("paste", function (e) {
   var text = e.clipboardData.getData('text/plain');
   document.execCommand('insertText', false, text);
 });
-
-function loadChinesePhienAmWords() {
-  let settings = {
-    crossDomain: false,
-    url: "/datasource/ChinesePhienAmWords.txt",
-    method: "GET",
-    processData: false
-  };
-
-  $.ajax(settings).done(function () {
-    let reader = new FileReader();
-    reader.readAsText();
-    reader.onload = function (data) {
-      chinesephienamwords =
-          new Map(this.data.split(/\r?\n/).map((chinesephienamword) =>
-          chinesephienamword.split('=')).filter((chinesephienamword) =>
-          chinesephienamword.length === 2));
-  });
-}
-
-function loadVietPhrase() {
-  let settings = {
-    crossDomain: false,
-    url: "/datasource/VietPhrase.txt",
-    method: "GET",
-    processData: false
-  };
-
-  $.ajax(settings).done(function () {
-    let reader = new FileReader();
-    reader.readAsText();
-    reader.onload = function (data) {
-      vietphrase = this.data.split(/\r?\n/).map((vp) => vp.split('=')).filter((vp) => vp.length === 2);
-  });
-
-  onload();
-}
-
-function loadNames() {
-  let settings = {
-    crossDomain: false,
-    url: "/datasource/Names.txt",
-    method: "GET",
-    processData: false
-  };
-
-  $.ajax(settings).done(function () {
-    let reader = new FileReader();
-    reader.readAsText();
-    reader.onload = function (data) {
-      names = this.data.split(/\r?\n/).map((name) => name.split('=')).filter((name) => name.length === 2);
-  });
-
-  onload();
-}
-
-function onload() {
-  //localStorage.setItem("quicktranslator.vietphrase", JSON.stringify(vietphrase.reduce((accumulator, currentValue) => ({...accumulator, [currentValue[0]]: currentValue[1] }), {})));
-  //localStorage.setItem("quicktranslator.names", JSON.stringify(names.reduce((accumulator, currentValue) => ({...accumulator, [currentValue[0]]: currentValue[1] }), {})));
-  localStorage.setItem("quicktranslator.names2", JSON.stringify(names2.reduce((accumulator, currentValue) => ({...accumulator, [currentValue[0]]: currentValue[1] }), {})));
-}

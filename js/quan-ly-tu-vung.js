@@ -21,42 +21,30 @@ $(document).ready(function () {
 });
 
 $("#inputGlossary").on("input", function () {
-  glossary = [];
   let reader = new FileReader();
-  let CHUNK_SIZE = 1024 * 1024;
-  var offset = 0;
 
   reader.onload = function () {
     switch ($("#inputGlossary").prop("files")[0].type) {
       case GlossaryType.TSV:
-        this.result.split(/\r?\n/).map((element) => element.split(/\t/)).filter((element) =>
-            element.length >= 2).forEach((element) => glossary.push(element));
+        glossary = this.result.split(/\r?\n/).map((element) =>
+            element.split(/\t/)).filter((element) => element.length >= 2);
         break;
 
       case GlossaryType.CSV:
-        $.csv.toArrays(this.result).forEach((element) => glossary.push(element));
+        glossary = $.csv.toArrays(this.result);
         break;
 
       case GlossaryType.VIETPHRASE:
-        this.result.split(/\r?\n/).map((element) => element.split('=')).filter((element) =>
-            element.length >= 2).forEach((element) => glossary.push(element));
+        glossary = this.result.split(/\r?\n/).map((element) =>
+            element.split('=')).filter((element) => element.length >= 2);
         break;
     }
 
-
-    offset += CHUNK_SIZE;
-
-    if (offset >= $("#inputGlossary").prop("files")[0].size) {
-      offset = $("#inputGlossary").prop("files")[0].size;
-      $("#glossaryType").val($("#inputGlossary").prop("files")[0].type);
-      loadGlossary();
-      return;
-    }
-
-    reader.readAsText($("#inputGlossary").prop("files")[0].slice(offset, offset + CHUNK_SIZE));
+    $("#glossaryType").val($("#inputGlossary").prop("files")[0].type);
+    loadGlossary();
   };
 
-  reader.readAsText($(this).prop("files")[0].slice(offset, offset + CHUNK_SIZE));
+  reader.readAsText($(this).prop("files")[0]);
 });
 
 $("#glossaryType").change(() => loadGlossary());
@@ -68,19 +56,32 @@ $("#sourceText").on("input", function () {
     if (glossaryMap.has(this.value)) {
       $("#glossaryList").val(Array.from(glossaryMap.keys()).indexOf(this.value)).change();
     } else if (parseInt($("#glossaryList").val()) < 0) {
-      var result = '';
+      var result = [];
 
       for (let i = 0; i < this.value.length; i++) {
-        if (/\p{sc=Hani}/u.test(this.value[i])) {
-          targetText +=
-            sinoVietnameses.get(this.value[i]) +
-            (/\p{sc=Hani}/u.test(this.value[i + 1]) ? ' ' : '');
-        } else {
-          targetText += chars[i];
-        }
+        phrase:
+          for (let j = data[0].length; j >= 1; j--) {
+            if ((service === Methods.VIETPHRASE &&$("#removeDeLeZhao").val() === false) ||
+                j > 1 || !/[的了着]/.test(this.value[i])) {
+              if (/\p{sc=Hani}/u.test(this.value.substring(i, i + j))) {
+                result.push(data.get(this.value[i]));
+                break phrase;
+              } else {
+                tempWord += this.value[i];
+
+                if ((tempWord.length > 0 && /\p{sc=Hani}/u.test(this.value[i + 1])) ||
+                    i === this.value.length - 1) {
+                  result.push(tempWord);
+                  tempWord = '';
+                }
+
+                break phrase;
+              }
+            }
+          }
       }
 
-      $("#targetText").val(targetText);
+      $("#targetText").val(result.join(' ');
     } else {
       $("#glossaryList").val(-1);
     }
@@ -153,7 +154,9 @@ function loadGlossary() {
 
     switch (glossaryType) {
       case GlossaryType.TSV:
-        data = glossary.map((element) => element.join('\t')).join('\r\n');
+        data = glossary.map((element) =>
+            (element.length > 2 ? element.splice(2, glossary.length - 2) :
+            element).join('\t')).join('\r\n');
         fileExtension = 'tsv';
         break;
       case GlossaryType.CSV:
@@ -167,7 +170,9 @@ function loadGlossary() {
         fileExtension = 'csv';
         break;
       case GlossaryType.VIETPHRASE:
-        data = glossary.map((element) => element.join('=')).join('\r\n')
+        data = glossary.map((element) =>
+            (element.length > 2 ? element.splice(2, glossary.length - 2) :
+            element).join('=')).join('\r\n')
         break;
     }
 
@@ -179,8 +184,11 @@ function loadGlossary() {
     $("#downloadButton").removeAttr("download");
   }
 
-  $("#glossaryList").html(glossaryList);
-  $("#preview").val(data);
+  if (glossary.length <= 20000) {
+    $("#glossaryList").html(glossaryList);
+    $("#preview").val(data);
+  }
+
   $("#glossaryCounter").text(glossary.length);
 
   localStorage.setItem("glossary", JSON.stringify(Object.fromEntries(new Map(glossary))));
