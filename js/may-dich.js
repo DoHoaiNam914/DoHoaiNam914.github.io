@@ -4,28 +4,41 @@ const Services = {
   PAPAGO: 'papago'
 };
 
+$(document).ready(function () {
+  $("#translatedText").hide();
+});
+
 $("#queryText").on("input", function () {
   $("#queryTextCounter").text($("#queryText").val().length);
 });
+
 $("#translateButton").on("click", function () {
-  let service = $(".service.active").attr("id");
+  if ($("#translateButton").text() === 'Dịch') {
+    let service = $(".service.active").attr("id");
 
-  var sourceLang = $("#sourceLangSelect").val();
-  var targetLang = $("#targetLangSelect").val();
+    var sourceLang = $("#sourceLangSelect").val();
+    var targetLang = $("#targetLangSelect").val();
 
-  if (service === Services.MICROSOFT) {
-    sourceLang = getMicrosoftLanguageCode(sourceLang);
-    targetLang = getMicrosoftLanguageCode(targetLang);
-  }
+    if (service === Services.MICROSOFT) {
+      sourceLang = getMicrosoftLanguageCode(sourceLang);
+      targetLang = getMicrosoftLanguageCode(targetLang);
+    }
 
-  let sentences = $("#queryText").val().split(/\r?\n/);
+    let sentences = $("#queryText").val().split(/\r?\n/);
 
-  if ($("#queryText").val().length > 0) {
-    $(this).attr("disabled", true);
-    $("#inputGlossary").attr("disabled", true);
-    $("#translatedText").html(null);
-    translate(service, sourceLang, targetLang, sentences);
-  }
+    if ($("#queryText").val().length > 0) {
+      $(this).attr("disabled", true);
+      $("#inputGlossary").attr("disabled", true);
+      $("#translatedText").html(null);
+      translate(service, sourceLang, targetLang, sentences);
+      $("#queryText").hide();
+      $("#translatedText").show();
+    }
+  } else if ($("#translateButton").text() === 'Sửa') {
+    $("#translatedText").hide();
+    $("#queryText").show();
+    $("#translateButton").text("Dịch");
+  } 
 });
 
 $(".service").on("click", function () {
@@ -68,17 +81,25 @@ async function translate(service, sourceLang, targetLang, sentences) {
       };
 
       $.ajax(settings).done(function (data) {
+        var combine = [];
+        
+        for (let i = 0; i < sentences.length; i++) {
+          combine.push([sentences[i], data.translatedText.split(/\n/)[i]]);
+        }
+
         $("#translatedText").html(textPostProcess(('<p>' +
-            data.translatedText.replace(/(\n)/g, '</p>$1<p>') +
+            combine.map((sentence) => sentence[0] == sentence[1] ? sentence[0] : sentence.join('\n')).join('\n').replace(/(\n)/g, '</p>$1<p>') +
             '</p>').replace(/(<p>)(<\/p>)/g, '$1<br>$2'), service));
         resize();
         $("#translateButton").removeAttr("disabled");
         $("#inputGlossary").removeAttr("disabled");
+        $("#translateButton").text("Sửa");
       }).fail(function (jqXHR, textStatus, errorThrown) {
         $("#translatedText").html(`<p>${jqXHR}</p>\n<p>${errorThrown}</p>`);
         resize();
         $("#translateButton").removeAttr("disabled");
         $("#inputGlossary").removeAttr("disabled");
+        $("#translateButton").text("Sửa");
       });
 
       break;
@@ -92,6 +113,7 @@ async function translate(service, sourceLang, targetLang, sentences) {
         resize();
         $("#translateButton").removeAttr("disabled");
         $("#inputGlossary").removeAttr("disabled");
+        $("#translateButton").text("Sửa");
         break;
       }
 
@@ -111,17 +133,25 @@ async function translate(service, sourceLang, targetLang, sentences) {
       };
 
       $.ajax(settings).done(function (data) {
+        var combine = [];
+        
+        for (let i = 0; i < sentences.length; i++) {
+          combine.push([sentences[i], data[0].translations[0].text.split(/\n/)[i]]);
+        }
+
         $("#translatedText").html(textPostProcess(('<p>' +
-            data[0].translations[0].text.replace(/(\n)/g, '</p>$1<p>') +
+            combine.map((sentence) => sentence[0] == sentence[1] ? sentence[0] : sentence.join('\n')).join('\n').replace(/(\n)/g, '</p>$1<p>') +
             '</p>').replace(/(<p>)(<\/p>)/g, '$1<br>$2'), service));
         resize();
         $("#translateButton").removeAttr("disabled");
         $("#inputGlossary").removeAttr("disabled");
+        $("#translateButton").text("Sửa");
       }).fail(function (jqXHR, textStatus, errorThrown) {
         $("#translatedText").html(`<p>${jqXHR}</p>\n<p>${errorThrown}</p>`);
         resize();
         $("#translateButton").removeAttr("disabled");
         $("#inputGlossary").removeAttr("disabled");
+        $("#translateButton").text("Sửa");
       });
 
       break;
@@ -144,13 +174,16 @@ async function translate(service, sourceLang, targetLang, sentences) {
       };
 
       $.ajax(settings).done(function (data) {
-        data.forEach(function (sentencesTrans) {
-          $("#translatedText").append(textPostProcess(('<p>' + (sourceLang === 'auto' ? sentencesTrans[0] : sentencesTrans) + '</p>').replace(/(<p>)(<\/p>)/g, '$1<br>$2'), service));
+        var combine = [];
+
+        data.forEach(function (sentencesTrans, index) {
+          $("#translatedText").append(textPostProcess(('<p>' + sentences[index] + '</p><p>' + (sourceLang === 'auto' ? sentencesTrans[0] : sentencesTrans) + '</p>').replace(/(<p>)(<\/p>)/g, '$1<br>$2'), service));
         });
   
         resize();
         $("#translateButton").removeAttr("disabled");
         $("#inputGlossary").removeAttr("disabled");
+        $("#translateButton").text("Sửa");
       }).fail(function (jqXHR, textStatus, errorThrown) {
         if (textPreProcess($("#queryText").val(), service).length > 2000) {
           $("#translatedText").html('Độ dài văn bản tối đa là 2000 ký tự. Lưu ý: Khi dùng từ vựng thì độ dài văn bản tối đa sẽ ngắn hơn bình thường!');
@@ -161,6 +194,7 @@ async function translate(service, sourceLang, targetLang, sentences) {
         resize();
         $("#translateButton").removeAttr("disabled");
         $("#inputGlossary").removeAttr("disabled");
+        $("#translateButton").text("Sửa");
       });
 
       break;
