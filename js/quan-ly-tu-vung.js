@@ -15,8 +15,10 @@ $(document).ready(function () {
     processData: false
   }).done(function (data) {
     sinoVietnameses =
-        new Map(data.split(/\r?\n/).map((word) =>
-        word.split('=')).filter((word) => word.length === 2));
+        data.split(/\r?\n/).map((word) =>
+        word.split('=')).filter((word) => word.length === 2);
+        $("#sourceText").val("国城");
+    console.log('Đã tải xong bộ dữ liệu hán việt!');
   }).fail((jqXHR, textStatus, errorThrown) => window.location.reload());
 });
 
@@ -51,37 +53,46 @@ $("#glossaryType").change(() => loadGlossary());
 
 $("#sourceText").on("input", function () {
   let glossaryMap = new Map(glossary);
+  let data = new Map(sinoVietnameses.sort((a, b) =>
+      b[0].length - a[0].length ||
+      a[0].localeCompare(b[0]) ||
+      a[1].localeCompare(b[1])));
 
   if (this.value.length > 0) {
     if (glossaryMap.has(this.value)) {
       $("#glossaryList").val(Array.from(glossaryMap.keys()).indexOf(this.value)).change();
     } else if (parseInt($("#glossaryList").val()) < 0) {
-      var result = [];
+      var result = []; 
+      var tempWord = '';
 
-      for (let i = 0; i < this.value.length; i++) {
+      for (let i = 0; i < this.value.length;) {
         phrase:
-          for (let j = data[0].length; j >= 1; j--) {
-            if ((service === Methods.VIETPHRASE &&$("#removeDeLeZhao").val() === false) ||
-                j > 1 || !/[的了着]/.test(this.value[i])) {
-              if (/\p{sc=Hani}/u.test(this.value.substring(i, i + j))) {
-                result.push(data.get(this.value[i]));
-                break phrase;
-              } else {
-                tempWord += this.value[i];
+          if (/\p{sc=Hani}/u.test(this.value[i])) {
+            if (tempWord.length > 0 && i + 1 === this.value.length) {
+              result.push(tempWord);
+              tempWord = '';
+            }
 
-                if ((tempWord.length > 0 && /\p{sc=Hani}/u.test(this.value[i + 1])) ||
-                    i === this.value.length - 1) {
-                  result.push(tempWord);
-                  tempWord = '';
-                }
-
+            for (let j = Array.from(data)[0][0].length; j >= 1; j--) {
+              if (data.get(this.value.substring(i, i + j)) != undefined) {
+                result.push(data.get(this.value.substring(i, i + j)) || this.value.substring(i, i + j));
+                i += j;
                 break phrase;
               }
             }
-          }
+          } else {
+            tempWord += this.value[i];
+
+            if (tempWord.length > 0 && (/\p{sc=Hani}/u.test(this.value[i + 1]) || i + 1 === this.value.length)) {
+              tempWord.split(/\s/).forEach((word) => result.push(word));
+              tempWord = '';
+            }
+
+          i++;
+        }
       }
 
-      $("#targetText").val(result.join(' ');
+      $("#targetText").val(result.join(' '));
     } else {
       $("#glossaryList").val(-1);
     }
