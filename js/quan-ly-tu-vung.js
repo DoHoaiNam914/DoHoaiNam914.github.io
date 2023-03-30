@@ -17,7 +17,6 @@ $(document).ready(function () {
     sinoVietnameses =
         data.split(/\r?\n/).map((word) =>
         word.split('=')).filter((word) => word.length === 2);
-        $("#sourceText").val("国城");
     console.log('Đã tải xong bộ dữ liệu hán việt!');
   }).fail((jqXHR, textStatus, errorThrown) => window.location.reload());
 });
