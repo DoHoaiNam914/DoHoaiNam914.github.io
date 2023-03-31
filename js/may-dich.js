@@ -201,7 +201,7 @@ function textPreProcess(text, service) {
   var newText = text;
 
   if (glossary != undefined) {
-    let glossaryList = glossary.sort((a, b) => b[0].length - a[0].length).filter((phrase) => newText.includes(phrase[0]));
+    let glossaryList = [...glossary].reverse().filter((phrase) => newText.includes(phrase[0]));
 
     for (let i = 0; i < glossaryList.length; i++) {
       if (service === Services.MICROSOFT) {
@@ -225,7 +225,7 @@ function textPostProcess(text, service) {
   var newText = text;
 
   if (glossary != undefined && service !== Services.MICROSOFT) {
-    let glossaryMap = new Map(glossary.sort((a, b) => b[0].length - a[0].length).filter((phrase) => newText.includes(phrase[0])));
+    let glossaryMap = new Map([...glossary].reverse().filter((phrase) => newText.includes(phrase[0])));
 
     for (let [key, value] of glossaryMap.entries()) {
       newText = newText.replace(/<span class="notranslate">/g, '').replace(/<\/span>/g, '').replace(new RegExp(key, 'g'), value);
