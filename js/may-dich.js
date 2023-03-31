@@ -4,10 +4,6 @@ const Services = {
   PAPAGO: 'papago'
 };
 
-$(document).ready(function () {
-  $("#translatedText").hide();
-});
-
 $("#queryText").on("input", function () {
   $("#queryTextCounter").text($("#queryText").val().length);
 });
@@ -87,9 +83,7 @@ async function translate(service, sourceLang, targetLang, sentences) {
           combine.push([sentences[i], data.translatedText.split(/\n/)[i]]);
         }
 
-        $("#translatedText").html(textPostProcess(('<p>' +
-            combine.map((sentence) => sentence[0] == sentence[1] ? sentence[0] : sentence.join('\n')).join('\n').replace(/(\n)/g, '</p>$1<p>') +
-            '</p>').replace(/(<p>)(<\/p>)/g, '$1<br>$2'), service));
+        $("#translatedText").html(textPostProcess(('<p>' + combine.map((sentence) => sentence[0] == sentence[1] ? sentence[0] : sentence.join('\n')).join('\n').replace(/(\n)/g, '</p>$1<p>') + '</p>').replace(/(<p>)(<\/p>)/g, '$1<br>$2'), service));
         resize();
         $("#translateButton").removeAttr("disabled");
         $("#inputGlossary").removeAttr("disabled");
@@ -139,9 +133,7 @@ async function translate(service, sourceLang, targetLang, sentences) {
           combine.push([sentences[i], data[0].translations[0].text.split(/\n/)[i]]);
         }
 
-        $("#translatedText").html(textPostProcess(('<p>' +
-            combine.map((sentence) => sentence[0] == sentence[1] ? sentence[0] : sentence.join('\n')).join('\n').replace(/(\n)/g, '</p>$1<p>') +
-            '</p>').replace(/(<p>)(<\/p>)/g, '$1<br>$2'), service));
+        $("#translatedText").html(textPostProcess(('<p>' + combine.map((sentence) => sentence[0] == sentence[1] ? sentence[0] : sentence.join('\n')).join('\n').replace(/(\n)/g, '</p>$1<p>') + '</p>').replace(/(<p>)(<\/p>)/g, '$1<br>$2'), service));
         resize();
         $("#translateButton").removeAttr("disabled");
         $("#inputGlossary").removeAttr("disabled");
@@ -209,23 +201,20 @@ function textPreProcess(text, service) {
   var newText = text;
 
   if (glossary != undefined) {
-    let glossaryList = glossary.filter((element) => newText.includes(element[0]));
+    let glossaryList = glossary.sort((a, b) => b[0].length - a[0].length).filter((phrase) => newText.includes(phrase[0]));
 
     for (let i = 0; i < glossaryList.length; i++) {
       if (service === Services.MICROSOFT) {
-        newText =
-            newText.replace(new RegExp(glossaryList[i][0], 'g'),
-            `<mstrans:dictionary translation="${glossaryList[i][1]}">GLOSSARY_INDEX_${i}</mstrans:dictionary>`);
+        newText = newText.replace(new RegExp(glossaryList[i][0], 'g'), `<mstrans:dictionary translation="${glossaryList[i][1]}">GLOSSARY_INDEX_${i}</mstrans:dictionary>`);
+        newText = /\p{sc=Latin}/u.test(glossaryList[i][1]) ? newText.replace(/(mstrans:dictionary>)(<mstrans:dictionary)/g, '$1 $2') : newText;
       } else {
-        newText =
-            newText.replace(new RegExp(glossaryList[i][0], 'g'),
-            `<span class="notranslate">GLOSSARY_INDEX_${i}</span>`);
+        newText = newText.replace(new RegExp(glossaryList[i][0], 'g'), `<span class="notranslate">GLOSSARY_INDEX_${i}</span>`);
+        newText = /\p{sc=Latin}/u.test(glossaryList[i][1]) ? newText.replace(/(span>)(<span class="notranslate")/g, '$1 $2') : newText;
       }
     }
 
     for (let i = glossaryList.length - 1; i >= 0; i--) {
-      newText =
-          newText.replace(new RegExp(`GLOSSARY_INDEX_${i}`, 'g'), glossaryList[i][0]);
+      newText = newText.replace(new RegExp(`GLOSSARY_INDEX_${i}`, 'g'), glossaryList[i][0]);
     }
   }
 
@@ -236,12 +225,10 @@ function textPostProcess(text, service) {
   var newText = text;
 
   if (glossary != undefined && service !== Services.MICROSOFT) {
-    let glossaryMap = new Map(glossary.filter((element) => newText.includes(element[0])));
+    let glossaryMap = new Map(glossary.sort((a, b) => b[0].length - a[0].length).filter((phrase) => newText.includes(phrase[0])));
 
     for (let [key, value] of glossaryMap.entries()) {
-      newText =
-          newText.replace(/\s*<span class="notranslate">/g, ' ').replace(/<\/span>\s*/g,
-          ' ').replace(new RegExp(key, 'g'), value);
+      newText = newText.replace(/<span class="notranslate">/g, '').replace(/<\/span>/g, '').replace(new RegExp(key, 'g'), value);
     }
   }
 
