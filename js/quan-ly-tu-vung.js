@@ -85,8 +85,7 @@ $(document).ready(function () {
 });
 
 $("#settingsButton").on("click", function () {
-  $("#sourceText").val(null);
-  $("#targetText").val(null);
+  $("#glossaryList").val(-1).change();
 });
 
 $("#inputGlossary").on("input", function () {

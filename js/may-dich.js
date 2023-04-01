@@ -4,6 +4,8 @@ const Services = {
   PAPAGO: 'papago'
 };
 
+const QUERY_LENGTH = 10;
+
 $("#queryText").on("input", function () {
   $("#queryTextCounter").text($("#queryText").val().length);
 });
@@ -26,9 +28,7 @@ $("#translateButton").on("click", function () {
       $(this).attr("disabled", true);
       $("#inputGlossary").attr("disabled", true);
       $("#translatedText").html(null);
-      translate(service, sourceLang, targetLang, sentences);
-      $("#queryText").hide();
-      $("#translatedText").show();
+      translate(service, 1, sourceLang, targetLang, sentences, sentences.length > QUERY_LENGTH ? sentences.slice(0, QUERY_LENGTH) : sentences, '');
     }
   } else if ($("#translateButton").text() === 'Sửa') {
     $("#translatedText").hide();
@@ -56,7 +56,7 @@ $("main.container .textarea").on("input", function () {
   resize();
 });
 
-async function translate(service, sourceLang, targetLang, sentences) {
+async function translate(service, sessionIndex, sourceLang, targetLang, sentences, query, result) {
   let settings;
 
   switch (service) {
@@ -78,19 +78,26 @@ async function translate(service, sourceLang, targetLang, sentences) {
 
       $.ajax(settings).done(function (data) {
         var combine = [];
-        
+
         for (let i = 0; i < sentences.length; i++) {
-          combine.push([sentences[i], data.translatedText.split(/\n/)[i]]);
+          combine.push([
+            sentences[i],
+            textPostProcess(data.translatedText.split(/\n/)[i], service)
+          ]);
         }
 
-        $("#translatedText").html(textPostProcess(('<p>' + combine.map((sentence) => sentence[0] == sentence[1] ? sentence[0] : sentence.join('\n')).join('\n').replace(/(\n)/g, '</p>$1<p>') + '</p>').replace(/(<p>)(<\/p>)/g, '$1<br>$2'), service));
+        $("#translatedText").html(('<p>' + combine.map((sentence) => sentence[1] !== sentence[0] ? '<i>' + sentence.join('</i><br>') : sentence[0]).join('</p><p>') + '</p>').replace(/(<p>)(<\/p>)/g, '$1<br>$2'));
+        $("#queryText").hide();
+        $("#translatedText").show();
         resize();
         $("#translateButton").removeAttr("disabled");
         $("#inputGlossary").removeAttr("disabled");
         $("#translateButton").text("Sửa");
       }).fail(function (jqXHR, textStatus, errorThrown) {
-        $("#translatedText").html(`<p>${jqXHR}</p>\n<p>${errorThrown}</p>`);
+        $("#translatedText").html(`<p>${jqXHR}</p><br><p>${errorThrown}</p>`);
         resize();
+        $("#queryText").hide();
+        $("#translatedText").show();
         $("#translateButton").removeAttr("disabled");
         $("#inputGlossary").removeAttr("disabled");
         $("#translateButton").text("Sửa");
@@ -105,6 +112,8 @@ async function translate(service, sourceLang, targetLang, sentences) {
       if (accessToken == undefined) {
         $("#translatedText").html('Không thể lấy được Access Token từ máy chủ.');
         resize();
+        $("#queryText").hide();
+        $("#translatedText").show();
         $("#translateButton").removeAttr("disabled");
         $("#inputGlossary").removeAttr("disabled");
         $("#translateButton").text("Sửa");
@@ -128,19 +137,26 @@ async function translate(service, sourceLang, targetLang, sentences) {
 
       $.ajax(settings).done(function (data) {
         var combine = [];
-        
+
         for (let i = 0; i < sentences.length; i++) {
-          combine.push([sentences[i], data[0].translations[0].text.split(/\n/)[i]]);
+          combine.push([
+            sentences[i],
+            textPostProcess(data[0].translations[0].text.split(/\n/)[i], service)
+          ]);
         }
 
-        $("#translatedText").html(textPostProcess(('<p>' + combine.map((sentence) => sentence[0] == sentence[1] ? sentence[0] : sentence.join('\n')).join('\n').replace(/(\n)/g, '</p>$1<p>') + '</p>').replace(/(<p>)(<\/p>)/g, '$1<br>$2'), service));
+        $("#translatedText").html(('<p>' + combine.map((sentence) => sentence[1] !== sentence[0] ? '<i>' + sentence.join('</i><br>') : sentence[0]).join('</p><p>') + '</p>').replace(/(<p>)(<\/p>)/g, '$1<br>$2'));
+        $("#queryText").hide();
+        $("#translatedText").show();
         resize();
         $("#translateButton").removeAttr("disabled");
         $("#inputGlossary").removeAttr("disabled");
         $("#translateButton").text("Sửa");
       }).fail(function (jqXHR, textStatus, errorThrown) {
-        $("#translatedText").html(`<p>${jqXHR}</p>\n<p>${errorThrown}</p>`);
+        $("#translatedText").html(`<p>${jqXHR}</p><br><p>${errorThrown}</p>`);
         resize();
+        $("#queryText").hide();
+        $("#translatedText").show();
         $("#translateButton").removeAttr("disabled");
         $("#inputGlossary").removeAttr("disabled");
         $("#translateButton").text("Sửa");
@@ -149,52 +165,108 @@ async function translate(service, sourceLang, targetLang, sentences) {
       break;
 
     case Services.GOOGLE:
-      //GET https://translate.googleapis.com/translate_a/t?anno=3&client=wt_lib&format=html&v=1.0&key&logId=vTE_20230206&sl=auto&tl=${targetLang}&tc=1&sr=1&tk=419495.97493&mode=1 Content-Type: application/x-www-form-urlencoded - send(query)
-      //POST https://translate.googleapis.com/translate_a/t?anno=3&client=te&format=html&v=1.0&key&logId=vTE_20230206&sl=auto&tl=${targetLang}&tc=1&ctt=1&dom=1&sr=1&tk=895688.700602&mode=1 Content-Type: application/x-www-form-urlencoded - send(query)
+      //GET https://translate.googleapis.com/translate_a/t?anno=3&client=wt_lib&format=html&v=1.0&key&logId=vTE_20230329&sl=auto&tl=${targetLang}&tc=1&sr=1&tk=419495.97493&mode=1 Content-Type: application/x-www-form-urlencoded - send(query)
+      //POST https://translate.googleapis.com/translate_a/t?anno=3&client=te&format=html&v=1.0&key&logId=vTE_20230329&sl=auto&tl=${targetLang}&tc=1&ctt=1&dom=1&sr=1&tk=895688.700602&mode=1 Content-Type: application/x-www-form-urlencoded - send(query)
       //GET https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${targetLang}&hl=vi&dt=t&dt=bd&dj=1${query}
       //GET https://clients5.google.com/translate_a/single?dj=1&dt=t&dt=sp&dt=ld&dt=bd&client=dict-chrome-ex&sl=auto&tl=${targetLang}${query}
       //GET https://translate.google.com/translate_t?source=dict-chrome-ex&sl=auto&tl=${targetLang}${query}
       settings = {
         crossDomain: true,
-        url: `https://translate.googleapis.com/translate_a/t?anno=3&client=gtx&format=html&v=1.0&key&logId=vTE_20230206&sl=${sourceLang}&tl=${targetLang}&tc=1&sr=1&tk=419495.97493&mode=1`,
+        url: `https://translate.googleapis.com/translate_a/t?anno=3&client=gtx&format=html&v=1.0&key&logId=vTE_20230329&sl=${sourceLang}&tl=${targetLang}&tc=${sessionIndex}&sr=1&tk=${zr(query.join('\n')).replace('&tk=', '')}&mode=1`,
         method: 'GET',
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         },
         processData: false,
-        data: 'q=' + encodeURI(textPreProcess(sentences.join('&q='), service))
+        data: 'q=' + encodeURI(textPreProcess(query.join('&q='), service))
       };
 
       $.ajax(settings).done(function (data) {
-        var combine = [];
-
-        data.forEach(function (sentencesTrans, index) {
-          $("#translatedText").append(textPostProcess(('<p>' + sentences[index] + '</p><p>' + (sourceLang === 'auto' ? sentencesTrans[0] : sentencesTrans) + '</p>').replace(/(<p>)(<\/p>)/g, '$1<br>$2'), service));
-        });
-  
-        resize();
-        $("#translateButton").removeAttr("disabled");
-        $("#inputGlossary").removeAttr("disabled");
-        $("#translateButton").text("Sửa");
-      }).fail(function (jqXHR, textStatus, errorThrown) {
-        if (textPreProcess($("#queryText").val(), service).length > 2000) {
-          $("#translatedText").html('Độ dài văn bản tối đa là 2000 ký tự. Lưu ý: Khi dùng từ vựng thì độ dài văn bản tối đa sẽ ngắn hơn bình thường!');
-        } else {
-          $("#translatedText").html(`<p>${jqXHR}</p>\n<p>${errorThrown}</p>`);
+        for (let i = 0; i < data.length; i++) {
+          let sentence = textPostProcess(sourceLang === 'auto' ? data[i][0] : data[i], service);
+          result += ('<p>' + (sentence !== query[i] ? '<i>' + query[i] + '</i><br>' : '') + sentence.split('</b><i>').map((element) => element.split('</i>')[1] ?? element).join('</b>').trimStart().replace(/<i>.*<\/i> /g, '') + '</p>').replace(/(<p>)(<\/p>)/g, '$1<br>$2');
         }
 
+        if ([...sentences].slice(QUERY_LENGTH * (sessionIndex - 1)).every((element, index) => query[index] === element)) {
+          $("#translatedText").html(result);
+          $("#queryText").hide();
+          $("#translatedText").show();
+          resize();
+          $("#translateButton").removeAttr("disabled");
+          $("#inputGlossary").removeAttr("disabled");
+          $("#translateButton").text("Sửa");
+        } else {
+          translate(service, sessionIndex + 1, sourceLang, targetLang, sentences, (QUERY_LENGTH * sessionIndex) + QUERY_LENGTH < sentences.length ? sentences.slice(QUERY_LENGTH * sessionIndex, (QUERY_LENGTH * sessionIndex) + QUERY_LENGTH) : sentences.slice(QUERY_LENGTH * sessionIndex), result);
+        }
+      }).fail(function (jqXHR, textStatus, errorThrown) {
+        $("#translatedText").html(`<p>${jqXHR}</p>\n<p>${errorThrown}</p>`);
         resize();
+        $("#queryText").hide();
+        $("#translatedText").show();
         $("#translateButton").removeAttr("disabled");
         $("#inputGlossary").removeAttr("disabled");
         $("#translateButton").text("Sửa");
       });
-
       break;
   }
 }
 
 function getMicrosoftLanguageCode(languageCode) {
   return languageCode.replace('auto', '').replace('CN', 'CHS').replace('TW', 'CHT');
+}
+
+var yr = null;
+
+var wr = function(a) {
+    return function() {
+        return a
+    }
+}
+    , xr = function(a, b) {
+    for (var c = 0; c < b.length - 2; c += 3) {
+        var d = b.charAt(c + 2)
+            , d = "a" <= d ? d.charCodeAt(0) - 87 : Number(d)
+            , d = "+" == b.charAt(c + 1) ? a >>> d : a << d;
+        a = "+" == b.charAt(c) ? a + d & 4294967295 : a ^ d
+    }
+    return a
+};
+
+var zr = function (a) {
+    var b;
+    if (null !== yr)
+        b = yr;
+    else {
+        b = wr(String.fromCharCode(84));
+        var c = wr(String.fromCharCode(75));
+        b = [b(), b()];
+        b[1] = c();
+        b = (yr = window[b.join(c())] || "") || ""
+    }
+    var d = wr(String.fromCharCode(116))
+        , c = wr(String.fromCharCode(107))
+        , d = [d(), d()];
+    d[1] = c();
+    c = "&" + d.join("") + "=";
+    d = b.split(".");
+    b = Number(d[0]) || 0;
+    for (var e = [], f = 0, g = 0; g < a.length; g++) {
+        var l = a.charCodeAt(g);
+        128 > l ? e[f++] = l : (2048 > l ? e[f++] = l >> 6 | 192 : (55296 == (l & 64512) && g + 1 < a.length && 56320 == (a.charCodeAt(g + 1) & 64512) ? (l = 65536 + ((l & 1023) << 10) + (a.charCodeAt(++g) & 1023),
+            e[f++] = l >> 18 | 240,
+            e[f++] = l >> 12 & 63 | 128) : e[f++] = l >> 12 | 224,
+            e[f++] = l >> 6 & 63 | 128),
+            e[f++] = l & 63 | 128)
+    }
+    a = b;
+    for (f = 0; f < e.length; f++)
+        a += e[f],
+            a = xr(a, "+-a^+6");
+    a = xr(a, "+-3^+b+-f");
+    a ^= Number(d[1]) || 0;
+    0 > a && (a = (a & 2147483647) + 2147483648);
+    a %= 1E6;
+    return c + (a.toString() + "." + (a ^ b))
 }
 
 function textPreProcess(text, service) {
@@ -228,7 +300,7 @@ function textPostProcess(text, service) {
     let glossaryMap = new Map([...glossary].reverse().filter((phrase) => newText.includes(phrase[0])));
 
     for (let [key, value] of glossaryMap.entries()) {
-      newText = newText.replace(/<span class="notranslate">/g, '').replace(/<\/span>/g, '').replace(new RegExp(key, 'g'), value);
+      newText = newText.replace(/<span class="notranslate">/g, ' ').replace(/<\/span>/g, ' ').replace(new RegExp(key, 'g'), value);
     }
   }
 
