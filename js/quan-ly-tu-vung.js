@@ -14,11 +14,14 @@ $(document).ready(function () {
     url: "/datasource/ChinesePhienAmWords.txt",
     processData: false
   }).done(function (data) {
-    sinoVietnameses =
-        data.split(/\r?\n/).map((word) =>
-        word.split('=')).filter((word) => word.length === 2);
+    sinoVietnameses = data.split(/\r?\n/).map((character) => character.split('=')).filter((character) => character.length >= 2);
     console.log('Đã tải xong bộ dữ liệu hán việt!');
   }).fail((jqXHR, textStatus, errorThrown) => window.location.reload());
+});
+
+$("#settingsButton").on("click", function () {
+  $("#sourceText").val(null);
+  $("#targetText").val(null);
 });
 
 $("#inputGlossary").on("input", function () {
@@ -27,8 +30,7 @@ $("#inputGlossary").on("input", function () {
   reader.onload = function () {
     switch ($("#inputGlossary").prop("files")[0].type) {
       case GlossaryType.TSV:
-        glossary = this.result.split(/\r?\n/).map((element) =>
-            element.split(/\t/)).filter((element) => element.length >= 2);
+        glossary = this.result.split(/\r?\n/).map((phrase) => phrase.split(/\t/)).filter((phrase) => phrase.length >= 2);
         break;
 
       case GlossaryType.CSV:
@@ -36,8 +38,7 @@ $("#inputGlossary").on("input", function () {
         break;
 
       case GlossaryType.VIETPHRASE:
-        glossary = this.result.split(/\r?\n/).map((element) =>
-            element.split('=')).filter((element) => element.length >= 2);
+        glossary = this.result.split(/\r?\n/).map((phrase) => phrase.split('=')).filter((phrase) => phrase.length >= 2);
         break;
     }
 
@@ -52,10 +53,7 @@ $("#glossaryType").change(() => loadGlossary());
 
 $("#sourceText").on("input", function () {
   let glossaryMap = new Map(glossary);
-  let data = new Map(sinoVietnameses.sort((a, b) =>
-      b[0].length - a[0].length ||
-      a[0].localeCompare(b[0]) ||
-      a[1].localeCompare(b[1])));
+  let data = new Map(sinoVietnameses.sort((a, b) => b[0].length - a[0].length || a[0].localeCompare(b[0]) || a[1].localeCompare(b[1])));
 
   if (this.value.length > 0) {
     if (glossaryMap.has(this.value)) {
@@ -64,30 +62,27 @@ $("#sourceText").on("input", function () {
       var result = []; 
       var tempWord = '';
 
-      for (let i = 0; i < this.value.length;) {
-        phrase:
-          if (/\p{sc=Hani}/u.test(this.value[i])) {
-            if (tempWord.length > 0 && i + 1 === this.value.length) {
-              result.push(tempWord);
-              tempWord = '';
-            }
+      for (let i = 0; i < this.value.length; i++) {
+        if (/\p{sc=Hani}/u.test(this.value[i])) {
+          if (tempWord.length > 0 && i + 1 === this.value.length) {
+            result.push(tempWord);
+            tempWord = '';
+          }
 
-            for (let j = Array.from(data)[0][0].length; j >= 1; j--) {
-              if (data.get(this.value.substring(i, i + j)) != undefined) {
-                result.push(data.get(this.value.substring(i, i + j)) || this.value.substring(i, i + j));
-                i += j;
-                break phrase;
-              }
+          for (let j = Array.from(data)[0][0].length; j >= 1; j--) {
+            if (data.get(this.value.substring(i, i + j)) != undefined) {
+              result.push(data.get(this.value.substring(i, i + j)) || this.value.substring(i, i + j));
+              i += j;
+              break;
             }
-          } else {
-            tempWord += this.value[i];
+          }
+        } else {
+          tempWord += this.value[i];
 
-            if (tempWord.length > 0 && (/\p{sc=Hani}/u.test(this.value[i + 1]) || i + 1 === this.value.length)) {
-              tempWord.split(/\s/).forEach((word) => result.push(word));
-              tempWord = '';
-            }
-
-          i++;
+          if (tempWord.length > 0 && (/\p{sc=Hani}/u.test(this.value[i + 1]) || i + 1 === this.value.length)) {
+            tempWord.split(/\s/).forEach((word) => result.push(word));
+            tempWord = '';
+          }
         }
       }
 
