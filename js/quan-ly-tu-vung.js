@@ -5,6 +5,71 @@ const GlossaryType = {
 };
 
 var sinoVietnameses = new Map();
+const mark = new Map([
+  ['　', ''],
+  ['_', '_'],
+  ['＿', '_'],
+  ['-', '-'],
+  ['—', '—'],
+  [',', ','],
+  ['，', ','],
+  ['、', ','],
+  [';', ';'],
+  ['；', ';'],
+  [':', ':'],
+  ['：', ':'],
+  ['!', '!'],
+  ['！', '!'],
+  ['?', '?'],
+  ['？', '?'],
+  ['.', '.'],
+  ['．', '.'],
+  ['…', '…'],
+  ['。', '.'],
+  ['·', '•'],
+  ['\'', '\''],
+  ['＇', '\''],
+  ['‘', '‘'],
+  ['’', '’'],
+  ['"', '"'],
+  ['＂', '"'],
+  ['“', '“'],
+  ['”', '”'],
+  ['„', '„'],
+  ['(', '('],
+  ['（', '('],
+  [')', ')'],
+  ['）', ')'],
+  ['[', '['],
+  ['［', '['],
+  [']', ']'],
+  ['］', ']'],
+  ['｛', '{'],
+  ['｝', '}'],
+  ['〈', '<'],
+  ['〉', '>'],
+  ['《', '«'],
+  ['》', '»'],
+  ['「', '“'],
+  ['」', '”'],
+  ['『', '‘'],
+  ['』', '’'],
+  ['【', '['],
+  ['】', ']'],
+  ['*', '*'],
+  ['＊', '*'],
+  ['／', '/'],
+  ['&', '&'],
+  ['＆', '&'],
+  ['#', '#'],
+  ['＃', '#'],
+  ['%', '%'],
+  ['％', '%'],
+  ['+', '+'],
+  ['＋', '+'],
+  ['~', '~'],
+  ['～', '~']
+]);
 
 var glossary = [];
 
@@ -53,7 +118,7 @@ $("#glossaryType").change(() => loadGlossary());
 
 $("#sourceText").on("input", function () {
   let glossaryMap = new Map(glossary);
-  let data = new Map(sinoVietnameses.sort((a, b) => b[0].length - a[0].length || a[0].localeCompare(b[0]) || a[1].localeCompare(b[1])));
+  let data = new Map([...sinoVietnameses].sort((a, b) => b[0].length - a[0].length || a[0].localeCompare(b[0]) ||  a[1].localeCompare(b[1])));
 
   if (this.value.length > 0) {
     if (glossaryMap.has(this.value)) {
@@ -63,7 +128,14 @@ $("#sourceText").on("input", function () {
       var tempWord = '';
 
       for (let i = 0; i < this.value.length; i++) {
-        if (/\p{sc=Hani}/u.test(this.value[i])) {
+        if (mark.has(this.value[i])) {
+          tempWord += mark.get(this.value[i]);
+
+          if (tempWord.length > 0 && (/\p{sc=Hani}/u.test(this.value[i + 1]) || i + 1 === this.value.length)) {
+            tempWord.split(/\s/).forEach((word) => result.push(word));
+            tempWord = '';
+          }
+        } else if (/\p{sc=Hani}/u.test(this.value[i])) {
           if (tempWord.length > 0 && i + 1 === this.value.length) {
             result.push(tempWord);
             tempWord = '';
@@ -72,7 +144,7 @@ $("#sourceText").on("input", function () {
           for (let j = Array.from(data)[0][0].length; j >= 1; j--) {
             if (data.get(this.value.substring(i, i + j)) != undefined) {
               result.push(data.get(this.value.substring(i, i + j)) || this.value.substring(i, i + j));
-              i += j;
+              i += j - 1;
               break;
             }
           }
