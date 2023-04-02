@@ -7,11 +7,11 @@ const Services = {
 
 const QUERY_LENGTH = 10;
 
-$(document).ready(() => $(`#${localStorage.getItem("service") || 'google'}`).click());
+$(".textarea").on("input", () => resize());
 
-$("#queryText").on("input", function () {
-  $("#queryTextCounter").text($("#queryText").val().length);
-});
+$("#queryText").on("input", () => $("#queryTextCounter").text($("#queryText").val().length));
+
+$("select.form-select-lang").change(() => localStorage.setItem("translator", JSON.stringify({service: $(".service.active").attr("id"), source: $("#sourceLangSelect").val(), target: $("#targetLangSelect").val()})));
 
 $("#translateButton").on("click", function () {
   if ($("#translateButton").text() === 'Dịch') {
@@ -43,11 +43,7 @@ $("#translateButton").on("click", function () {
 $(".service").click(function () {
   $(".service").removeClass("active");
   $(this).addClass("active");
-  localStorage.setItem("service", $(".service.active").attr("id"));
-});
-
-$("main.container .textarea").on("input", function () {
-  resize();
+  $("select.form-select-lang").change()
 });
 
 async function translate(service, sessionIndex, sourceLang, targetLang, sentences, query, result) {

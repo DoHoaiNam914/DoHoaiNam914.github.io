@@ -107,6 +107,7 @@ $("#inputGlossary").on("input", function () {
     }
 
     $("#glossaryType").val($("#inputGlossary").prop("files")[0].type);
+    $("#glossaryName").val($("#inputGlossary").prop("files")[0].name.split('.').slice(0, $("#inputGlossary").prop("files")[0].name.split('.').length - 1).join('.'));
     loadGlossary();
   };
 
@@ -209,12 +210,13 @@ $("#clearButton").on("click", function () {
 });
 
 function loadGlossary() {
-  var data = '';
-
+  var data = ''; 
   var glossaryList = '<option value="-1" selected>Chọn...</option>';
+  let glossaryType = $("#glossaryType").val();
+
+  $("#fileExtension").text(glossaryType === GlossaryType.TSV ? ".tsv" : (glossaryType === GlossaryType.CSV ? ".csv" : ".txt"));
 
   if (glossary.length > 0) {
-    let glossaryType = $("#glossaryType").val();
 
     glossary = glossary.filter(function ([key]) {
       if (!this[key]) return this[key] = 1;
@@ -226,14 +228,11 @@ function loadGlossary() {
     glossary.forEach((element, index) => glossaryList +=
         `\n<option value="${index}">${element[0]}\t${element[1]}</option>`);
 
-    var fileExtension = 'txt';
-
     switch (glossaryType) {
       case GlossaryType.TSV:
         data = glossary.map((element) =>
             (element.length > 2 ? element.splice(2, glossary.length - 2) :
             element).join('\t')).join('\r\n');
-        fileExtension = 'tsv';
         break;
       case GlossaryType.CSV:
         data = glossary.map((element) =>
@@ -243,21 +242,21 @@ function loadGlossary() {
             '"""')},${element[1].includes(',') ? '"' +
             element[1].replace(/"/g, '""') + '"' :
             element[1].replace(/"/g, '"""')}`).join('\r\n');
-        fileExtension = 'csv';
         break;
       case GlossaryType.VIETPHRASE:
         data = glossary.map((element) =>
             (element.length > 2 ? element.splice(2, glossary.length - 2) :
-            element).join('=')).join('\r\n')
+            element).join('=')).join('\r\n');
         break;
     }
 
     $("#downloadButton").attr("href",
         `data:${glossaryType};charset=utf-8,${encodeURIComponent(data)}`);
-    $("#downloadButton").attr("download", `Từ vựng.${fileExtension}`);
+    $("#downloadButton").attr("download", ($("#glossaryName").val().length > 0 ? $("#glossaryName").val() : 'Từ vựng') + $("#fileExtension").text());
   } else {
     $("#downloadButton").removeAttr("href");
     $("#downloadButton").removeAttr("download");
+    $("#glossaryName").val(null);
   }
 
   if (glossary.length <= 20000) {
@@ -267,7 +266,7 @@ function loadGlossary() {
 
   $("#glossaryCounter").text(glossary.length);
 
-  localStorage.setItem("glossary", JSON.stringify(Object.fromEntries(new Map(glossary))));
+  localStorage.setItem("glossary", JSON.stringify({type: glossaryType, data: Object.fromEntries(new Map(glossary))}));
 
   $("#sourceText").val(null);
   $("#targetText").val(null);
