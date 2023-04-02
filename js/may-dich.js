@@ -1,10 +1,13 @@
 const Services = {
   GOOGLE: 'google',
   MICROSOFT: 'microsoft',
-  PAPAGO: 'papago'
+  PAPAGO: 'papago',
+  DEEPL: 'deepl',
 };
 
 const QUERY_LENGTH = 10;
+
+$(document).ready(() => $(`#${localStorage.getItem("service") || 'google'}`).click());
 
 $("#queryText").on("input", function () {
   $("#queryTextCounter").text($("#queryText").val().length);
@@ -37,19 +40,10 @@ $("#translateButton").on("click", function () {
   } 
 });
 
-$(".service").on("click", function () {
+$(".service").click(function () {
   $(".service").removeClass("active");
   $(this).addClass("active");
-
-  if ($(".service.active").attr("id") === Services.PAPAGO) {
-    if ($("#sourceLangSelect").val() === 'auto') {
-      $("#sourceLangSelect").val("en");
-    }
-
-    $("option[value=\"auto\"").attr("disabled", true);
-  } else {
-    $("option[value=\"auto\"").removeAttr("disabled");
-  }
+  localStorage.setItem("service", $(".service.active").attr("id"));
 });
 
 $("main.container .textarea").on("input", function () {
@@ -60,6 +54,43 @@ async function translate(service, sessionIndex, sourceLang, targetLang, sentence
   let settings;
 
   switch (service) {
+    case Services.DEEPL:
+      settings = {
+        crossDomain: true,
+        url: "https://api-free.deepl.com/v2/translate",
+        method: "POST",
+        processData: false,
+        data: `auth_key=0c9649a5-e8f6-632a-9c42-a9eee160c330:fx&text=${encodeURI(sentences.join('&text='))}${sourceLang !== 'auto' ? '&source_lang=' + getDeepLFormat(sourceLang) : ''}&target_lang=${getDeepLFormat(targetLang, true)}`
+      };
+
+      $.ajax(settings).done(function (data) {console.log(data);
+        var combine = [];
+
+        for (let i = 0; i < sentences.length; i++) {
+          combine.push([
+            sentences[i],
+            data.translations[i].text.split(/\n/)[i]
+          ]);
+        }
+
+        $("#translatedText").html(('<p>' + combine.map((sentence) => sentence[1] !== sentence[0] ? '<i>' + sentence.join('</i><br>') : sentence[0]).join('</p><p>') + '</p>').replace(/(<p>)(<\/p>)/g, '$1<br>$2'));
+        $("#queryText").hide();
+        $("#translatedText").show();
+        resize();
+        $("#translateButton").removeAttr("disabled");
+        $("#inputGlossary").removeAttr("disabled");
+        $("#translateButton").text("Sửa");
+      }).fail(function (jqXHR, textStatus, errorThrown) {
+        $("#translatedText").html(`<p>${jqXHR}</p><br><p>${errorThrown}</p>`);
+        resize();
+        $("#queryText").hide();
+        $("#translatedText").show();
+        $("#translateButton").removeAttr("disabled");
+        $("#inputGlossary").removeAttr("disabled");
+        $("#translateButton").text("Sửa");
+      });
+
+      break;
     case Services.PAPAGO:
       settings = {
         crossDomain: true,
@@ -130,9 +161,9 @@ async function translate(service, sessionIndex, sourceLang, targetLang, sentence
           "Content-Type": "application/json"
         },
         processData: false,
-        data: JSON.stringify([{
-              "Text":textPreProcess(sentences.join('\n'), service)
-        }])
+        data: JSON.stringify(sentences.map((sentence) => ({
+            "Text":textPreProcess(sentence, service)
+        })))
       };
 
       $.ajax(settings).done(function (data) {
@@ -141,7 +172,7 @@ async function translate(service, sessionIndex, sourceLang, targetLang, sentence
         for (let i = 0; i < sentences.length; i++) {
           combine.push([
             sentences[i],
-            textPostProcess(data[0].translations[0].text.split(/\n/)[i], service)
+            textPostProcess(data[i].translations[0].text, service)
           ]);
         }
 
@@ -165,11 +196,11 @@ async function translate(service, sessionIndex, sourceLang, targetLang, sentence
       break;
 
     case Services.GOOGLE:
-      //GET https://translate.googleapis.com/translate_a/t?anno=3&client=wt_lib&format=html&v=1.0&key&logId=vTE_20230329&sl=auto&tl=${targetLang}&tc=1&sr=1&tk=419495.97493&mode=1 Content-Type: application/x-www-form-urlencoded - send(query)
-      //POST https://translate.googleapis.com/translate_a/t?anno=3&client=te&format=html&v=1.0&key&logId=vTE_20230329&sl=auto&tl=${targetLang}&tc=1&ctt=1&dom=1&sr=1&tk=895688.700602&mode=1 Content-Type: application/x-www-form-urlencoded - send(query)
-      //GET https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${targetLang}&hl=vi&dt=t&dt=bd&dj=1${query}
-      //GET https://clients5.google.com/translate_a/single?dj=1&dt=t&dt=sp&dt=ld&dt=bd&client=dict-chrome-ex&sl=auto&tl=${targetLang}${query}
-      //GET https://translate.google.com/translate_t?source=dict-chrome-ex&sl=auto&tl=${targetLang}${query}
+      //GET https://translate.googleapis.com/translate_a/t?anno=3&client=wt_lib&format=html&v=1.0&key&logId=vTE_20230329&sl=${sourceLang}&tl=${targetLang}&tc=1&sr=1&tk=419495.97493&mode=1 Content-Type: application/x-www-form-urlencoded - send(query)
+      //POST https://translate.googleapis.com/translate_a/t?anno=3&client=te&format=html&v=1.0&key&logId=vTE_20230329&sl=${sourceLang}&tl=${targetLang}&tc=1&ctt=1&dom=1&sr=1&tk=895688.700602&mode=1 Content-Type: application/x-www-form-urlencoded - send(query)
+      //GET https://translate.googleapis.com/translate_a/single?client=gtx&sl=${sourceLang}&tl=${targetLang}&hl=vi&dt=t&dt=bd&dj=1${query}
+      //GET https://clients5.google.com/translate_a/single?dj=1&dt=t&dt=sp&dt=ld&dt=bd&client=dict-chrome-ex&sl=${sourceLang}&tl=${targetLang}${query}
+      //GET https://translate.google.com/translate_t?source=dict-chrome-ex&sl=${sourceLang}&tl=${targetLang}${query}
       settings = {
         crossDomain: true,
         url: `https://translate.googleapis.com/translate_a/t?anno=3&client=gtx&format=html&v=1.0&key&logId=vTE_20230329&sl=${sourceLang}&tl=${targetLang}&tc=${sessionIndex}&sr=1&tk=${zr(query.join('\n')).replace('&tk=', '')}&mode=1`,
@@ -178,11 +209,11 @@ async function translate(service, sessionIndex, sourceLang, targetLang, sentence
           "Content-Type": "application/x-www-form-urlencoded"
         },
         processData: false,
-        data: 'q=' + encodeURI(textPreProcess(query.join('&q='), service))
+        data: "q=" + encodeURI(textPreProcess(query.join('&q='), service))
       };
 
       $.ajax(settings).done(function (data) {
-        for (let i = 0; i < data.length; i++) {
+        for (let i = 0; i < query.length; i++) {
           let sentence = textPostProcess(sourceLang === 'auto' ? data[i][0] : data[i], service);
           result += ('<p>' + (sentence !== query[i] ? '<i>' + query[i] + '</i><br>' : '') + sentence.split('</b><i>').map((element) => element.split('</i>')[1] ?? element).join('</b>').trimStart().replace(/<i>.*<\/i> /g, '') + '</p>').replace(/(<p>)(<\/p>)/g, '$1<br>$2');
         }
@@ -213,6 +244,10 @@ async function translate(service, sessionIndex, sourceLang, targetLang, sentence
 
 function getMicrosoftLanguageCode(languageCode) {
   return languageCode.replace('auto', '').replace('CN', 'CHS').replace('TW', 'CHT');
+}
+
+function getDeepLFormat(languageCode, targetLang = false) {
+  return languageCode.replace('en', `EN${targetLang ? '-US' : ''}`).replace('ja', 'JA').replace(/zh-\w+/, 'ZH');
 }
 
 var yr = null;
