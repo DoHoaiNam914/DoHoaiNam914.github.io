@@ -63,13 +63,13 @@ async function translate(service, sessionIndex, sourceLang, targetLang, sentence
         data: `auth_key=0c9649a5-e8f6-632a-9c42-a9eee160c330:fx&text=${encodeURI(sentences.join('&text='))}${sourceLang !== 'auto' ? '&source_lang=' + getDeepLFormat(sourceLang) : ''}&target_lang=${getDeepLFormat(targetLang, true)}`
       };
 
-      $.ajax(settings).done(function (data) {console.log(data);
+      $.ajax(settings).done(function (data) {
         var combine = [];
 
         for (let i = 0; i < sentences.length; i++) {
           combine.push([
             sentences[i],
-            data.translations[i].text.split(/\n/)[i]
+            data.translations[i].text
           ]);
         }
 
