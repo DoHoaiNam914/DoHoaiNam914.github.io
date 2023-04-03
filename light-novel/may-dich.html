@@ -19,6 +19,11 @@
         padding-bottom: 56px;
       }
 
+      #copyButton {
+        float: left;
+        padding-top: 0.1rem;
+      }
+
       #queryTextCounter {
         float: right;
         padding-top: 0.1rem;
@@ -68,7 +73,8 @@
   </head>
   <body class="bg-dark text-light">
     <main class="container">
-      <div class="">
+      <div>
+        <a class="link-light link-underline-opacity-0" id="copyButton" href="#">Sao chép</a>
         <span id="queryTextCounter">0</span>
         <textarea class="form-control textarea" id="queryText" placeholder="Viết gì đó tại đây"></textarea>
         <div class="form-control textarea" id="translatedText" style="display: none;"></div>

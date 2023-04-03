@@ -7,6 +7,10 @@ const Services = {
 
 const QUERY_LENGTH = 10;
 
+var translation = '';
+
+$("#copyButton").on("click", () => navigator.clipboard.writeText(translation));
+
 $(".textarea").on("input", () => resize());
 
 $("#queryText").on("input", () => $("#queryTextCounter").text($("#queryText").val().length));
@@ -37,6 +41,7 @@ $("#translateButton").on("click", function () {
     $("#translatedText").hide();
     $("#queryText").show();
     $("#translateButton").text("Dịch");
+    translation = '';
   } 
 });
 
@@ -70,6 +75,7 @@ async function translate(service, sessionIndex, sourceLang, targetLang, sentence
         }
 
         $("#translatedText").html(('<p>' + combine.map((sentence) => sentence[1] !== sentence[0] ? '<i>' + sentence.join('</i><br>') : sentence[0]).join('</p><p>') + '</p>').replace(/(<p>)(<\/p>)/g, '$1<br>$2'));
+        translation = combine.map((element) => element[1]).join('\n');
         $("#queryText").hide();
         $("#translatedText").show();
         resize();
@@ -114,6 +120,7 @@ async function translate(service, sessionIndex, sourceLang, targetLang, sentence
         }
 
         $("#translatedText").html(('<p>' + combine.map((sentence) => sentence[1] !== sentence[0] ? '<i>' + sentence.join('</i><br>') : sentence[0]).join('</p><p>') + '</p>').replace(/(<p>)(<\/p>)/g, '$1<br>$2'));
+        translation = combine.map((element) => element[1]).join('\n');
         $("#queryText").hide();
         $("#translatedText").show();
         resize();
@@ -173,6 +180,7 @@ async function translate(service, sessionIndex, sourceLang, targetLang, sentence
         }
 
         $("#translatedText").html(('<p>' + combine.map((sentence) => sentence[1] !== sentence[0] ? '<i>' + sentence.join('</i><br>') : sentence[0]).join('</p><p>') + '</p>').replace(/(<p>)(<\/p>)/g, '$1<br>$2'));
+        translation = combine.map((element) => element[1]).join('\n');
         $("#queryText").hide();
         $("#translatedText").show();
         resize();
@@ -212,6 +220,7 @@ async function translate(service, sessionIndex, sourceLang, targetLang, sentence
         for (let i = 0; i < query.length; i++) {
           let sentence = textPostProcess(sourceLang === 'auto' ? data[i][0] : data[i], service);
           result += ('<p>' + (sentence !== query[i] ? '<i>' + query[i] + '</i><br>' : '') + sentence.split('</b><i>').map((element) => element.split('</i>')[1] ?? element).join('</b>').trimStart().replace(/<i>.*<\/i> /g, '') + '</p>').replace(/(<p>)(<\/p>)/g, '$1<br>$2');
+        translation += data.map((element) => textPostProcess(sourceLang === 'auto' ? element[0] : element, service)).join('\n');
         }
 
         if ([...sentences].slice(QUERY_LENGTH * (sessionIndex - 1)).every((element, index) => query[index] === element)) {
