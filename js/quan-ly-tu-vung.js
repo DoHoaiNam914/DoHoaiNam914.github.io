@@ -209,6 +209,8 @@ $("#clearButton").on("click", function () {
   $("#inputGlossary").val(null);
 });
 
+$("#glossaryName").on("input", () => loadGlossary());
+
 function loadGlossary() {
   var data = ''; 
   var glossaryList = '<option value="-1" selected>Chọn...</option>';
