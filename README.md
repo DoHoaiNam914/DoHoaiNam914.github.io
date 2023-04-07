@@ -2,7 +2,7 @@
 
 This site was built using [GitHub Pages](https://pages.github.com/).
 
-- [Dịch nhanh](https://dohoainam914.github.io/light-novel/may-dich.html)
+- [Dịch nhanh](https://dohoainam914.github.io/light-novel/dich-nhanh.html)
 
 ## [Light Novel](https://dohoainam914.github.io/light-novel/)
 
