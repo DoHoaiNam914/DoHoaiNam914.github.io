@@ -20,9 +20,10 @@
     </style>
     <script src="/lib/LAB.js"></script>
     <script>
-      $LAB.setOptions({AlwaysPreserveOrder:true})
+      $LAB
         .script("/lib/jquery-3.6.1.js")
-        .script("/lib/underscore-umd-min.js")
+        .script("/lib/bootstrap.bundle.min.js")
+        .script("/lib/underscore-umd-min.js").wait()
         .script("/js/thu-vien.js").wait(() => (new URLSearchParams(window.location.search)).has('thu-vien') ? volumeLibraryLoader() : bookLibraryLoader());
     </script>
   </head>
@@ -78,9 +79,5 @@
       </ul>
       <p class="text-center text-muted">&copy; 2022 Đỗ Hoài Nam</p>
     </footer>
-    <script>
-      $LAB
-        .script("/lib/bootstrap.bundle.min.js");
-    </script>
   </body>
 </html>

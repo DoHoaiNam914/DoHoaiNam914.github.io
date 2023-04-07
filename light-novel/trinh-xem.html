@@ -7,9 +7,10 @@
     <title>Trình xem Light Novel</title>
     <script src="/lib/LAB.js"></script>
     <script>
-      $LAB.setOptions({AlwaysPreserveOrder:true})
+      $LAB
         .script("/lib/jquery-3.6.1.js")
-        .script("/lib/underscore-umd-min.js")
+        .script("/lib/bootstrap.bundle.min.js")
+        .script("/lib/underscore-umd-min.js").wait()
         .script("/js/trinh-xem.js");
     </script>
   </head>

@@ -1,3 +1,5 @@
+'use strict';
+
 function bookLibraryLoader() {
   $.getJSON('./library.json', function (data) {
     if (data.library.length > 0) {

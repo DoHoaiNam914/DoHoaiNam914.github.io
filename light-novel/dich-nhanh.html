@@ -9,9 +9,21 @@
     <meta name="theme-color" content="#000">
     <script src="/lib/LAB.js"></script>
     <script>
-      $LAB.setOptions({AlwaysPreserveOrder:true})
-        .script("/lib/jquery-3.6.1.js")
-        .script("/lib/jquery.csv.js");
+      $LAB
+        .script("/lib/jquery-3.6.1.js").wait()
+        .script("/lib/jquery.csv.js")
+        .script("/lib/bootstrap.bundle.min.js").wait()
+        .script("/js/quan-ly-tu-vung.js").wait(function () {
+          let obj = JSON.parse(localStorage.getItem("glossary")) ?? {type: 'text/tab-separated-values', data: {}};
+          glossary = Object.entries(obj.data);
+          $("#glossaryType").val(obj.type).change();
+        }).wait()
+        .script("/js/dich-nhanh.js").wait(function () {
+          let translator = JSON.parse(localStorage.getItem("translator")) ?? {service: 'google', source: 'auto', target: 'vi'};
+          $("#sourceLangSelect").val(translator.source);
+          $("#targetLangSelect").val(translator.target);
+          $(`#${translator.service}`).click();
+        });
     </script>
     <style>
       html,
@@ -178,20 +190,5 @@
         </div>
       </div>
     </div>
-    <script>
-      $LAB
-        .script("/lib/bootstrap.bundle.min.js")
-        .script("/js/quan-ly-tu-vung.js").wait(function () {
-          let obj = JSON.parse(localStorage.getItem("glossary")) ?? {type: 'text/tab-separated-values', data: {}};
-          glossary = Object.entries(obj.data);
-          $("#glossaryType").val(obj.type).change();
-        })
-        .script("/js/may-dich.js").wait(function () {
-          let translator = JSON.parse(localStorage.getItem("translator")) ?? {service: 'google', source: 'auto', target: 'vi'};
-          $("#sourceLangSelect").val(translator.source);
-          $("#targetLangSelect").val(translator.target);
-          $(`#${translator.service}`).click();
-        });
-    </script>
   </body>
 </html>

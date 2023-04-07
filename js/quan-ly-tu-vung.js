@@ -84,10 +84,6 @@ $(document).ready(function () {
   }).fail((jqXHR, textStatus, errorThrown) => window.location.reload());
 });
 
-$("#settingsButton").on("click", function () {
-  $("#glossaryList").val(-1).change();
-});
-
 $("#inputGlossary").on("input", function () {
   let reader = new FileReader();
 
