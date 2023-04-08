@@ -84,7 +84,7 @@ $(document).ready(function () {
   }).fail((jqXHR, textStatus, errorThrown) => window.location.reload());
 });
 
-$("#inputGlossary").on("input", function () {
+$("#inputGlossary").on("change", function () {
   let reader = new FileReader();
 
   reader.onload = function () {
@@ -199,7 +199,7 @@ $("#preview").on("click", function () {
   }
 });
 
-$("#clearButton").on("click", function () {
+$("#clearGlossaryButton").on("click", function () {
   glossary = [];
   loadGlossary()
   $("#inputGlossary").val(null);

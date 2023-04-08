@@ -12,8 +12,8 @@ const QUERY_LENGTH = 10;
 var translation = '';
 
 $("#copyButton").on("click", () => navigator.clipboard.writeText(translation));
-$(".textarea").on("input", () => resize());
-$("#queryText").on("input", () => $("#queryTextCounter").text($("#queryText").val().length));
+$(".textarea").change(() => resize());
+$("#queryText").change(() => $("#queryTextCounter").text($("#queryText").val().length));
 $("#settingsButton").on("click", () => $("#glossaryList").val(-1).change());
 $("select.form-select-lang").change(() => localStorage.setItem("translator", JSON.stringify({service: $(".service.active").attr("id"), source: $("#sourceLangSelect").val(), target: $("#targetLangSelect").val()})));
 

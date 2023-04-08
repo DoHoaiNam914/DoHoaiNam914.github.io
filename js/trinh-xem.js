@@ -9,8 +9,8 @@ const Loader = {
 $(document).ready(function () {
   let searchParams = new URLSearchParams(window.location.search);
 
-  let book = searchParams.get('sach') || 'propose';
-  let volume = searchParams.get('tap') || 'vol-1';
+  let book = searchParams.get('sach') ?? 'propose';
+  let volume = searchParams.get('tap') ?? 'vol-1';
 
   $.getJSON(`./${book}/data.json`, function (data) {
     _.each(data[book], function (currentVolume) {
