@@ -1,42 +1,78 @@
 'use strict';
 
-const LANG_FORMAT = new Map([
-  ['auto', 'vie+eng+jpn_vert+jpn+chi_tra+chi_tra_vert+chi_sim+chi_sim_vert'],
-  ['en', 'eng'],
-  ['ja', 'jpn+jpn_vert'],
-  ['zh-CN', 'chi_sim+chi_sim_vert'],
-  ['zh-TW', 'chi_tra+chi_tra_vert'],
-  ['vi', 'vie']
-]);
-
 const { createWorker, PSM, OEM } = Tesseract;
-const recognize = async (image, langs, options) => {
+
+const options = {
+  langPath: 'https://tessdata.projectnaptha.com/4.0.0_best',
+  errorHandler: function (m) {
+    $("#recognizeImage").hide();
+    $("#clearImageButton").removeAttr("disabled");
+    
+    $("#imageFile").removeAttr("disabled");
+    console.log(m);
+  },
+};
+
+$("#imageFile").on("change", function () {
+  $(this).attr("disabled", true);
+  $("#clearImageButton").attr("disabled", true);
+
+  let img = new Image();
+
+  img.onload = function () {
+    let input = cv.imread(this);
+      if ($("#flexCheckGrayscale").prop("checked")) {
+      cv.cvtColor(input, input, cv.COLOR_RGBA2GRAY, 0);
+    }
+
+    if ($("#flexCheckThreshold").prop("checked")) {
+      cv.threshold(input, input, 127, 255, $("#flexCheckGrayscale").prop("checked") ? cv.THRESH_BINARY_INV : cv.THRESH_BINARY);
+    }
+
+    cv.imshow('recognizeImage', input); 
+    $("#recognizeImage").show();
+    input.delete();
+
+    recognize(
+        document.querySelector('#recognizeImage').toDataURL(),
+        $("#recognizeLangsSelect").val().join('+'),
+        {
+          tessedit_pageseg_mode: $("#recognizeLangsSelect").val().join('+').includes('_vert') ? PSM.AUTO : PSM.SINGLE_BLOCK,
+          tessedit_ocr_engine_mode: OEM.LSTM_ONLY,
+        }).then(function ({ data: { blocks, text } }) {
+          cv.imshow('recognizeImage', cv.imread(img));
+
+          if (blocks.length > 0) {
+            _.each(blocks[0].paragraphs[0].lines, function (line) {
+              let output = cv.imread('recognizeImage');
+              cv.rectangle(output, new cv.Point(line.bbox.x0, line.bbox.y0), new cv.Point(line.bbox.x1, line.bbox.y1), new cv.Scalar(255, 0, 0, 255), 2);
+              cv.imshow('recognizeImage', output);
+              output.delete();
+            });
+          }
+
+          $("#queryText").val(text).change();
+      
+          $("#clearImageButton").removeAttr("disabled");
+          $("#imageFile").removeAttr("disabled");
+        });
+  };
+
+  img.src = URL.createObjectURL(this.files[0]);
+});
+
+$("#clearImageButton").on("click", function () {
+  $("#recognizeImage").hide();
+  $("#imageFile").val(null);
+});
+
+$(".option").on("change", () => localStorage.setItem("recognizer", JSON.stringify({langs: $("#recognizeLangsSelect").val(), grayscale: $("#flexCheckGrayscale").prop("checked"), threshold: $("#flexCheckThreshold").prop("checked")})));
+
+async function recognize(image, langs, parameters) {
   const worker = await createWorker(options);
   await worker.loadLanguage(langs);
   await worker.initialize(langs);
-  await worker.setParameters({
-      tessedit_pageseg_mode: /*$("#pagesegMode").val().replace('SINGLE_BLOCK', lang.includes('_vert') ? PSM.SINGLE_BLOCK_VERT_TEXT : */PSM.SINGLE_BLOCK/*)*/,
-      tessedit_ocr_engine_mode: OEM.LSTM_ONLY
-    });
+  await worker.setParameters(parameters);
   return worker.recognize(image)
-    .finally(async () => {
-      await worker.terminate();
-    });
-};
-
-$("#imageFile").on("change", async function () {
-  $("#clearImageButton").attr("disabled", true);
-
-  let recognization = await recognize(this.files[0], LANG_FORMAT.get($("#sourceLangSelect").val()), {
-    workerPath: '/lib/worker.min.js',
-    langPath: 'https://tessdata.projectnaptha.com/4.0.0_best',
-    corePath: '/lib/tesseract-core.wasm.js',
-    logger: (m) => console.log(m),
-    errorHandler: () => $("#clearImageButton").removeAttr("disabled")
-  });
-
-  $("#queryText").val(recognization.data.text).change();
-  $("#clearImageButton").removeAttr("disabled");
-});
-
-$("#clearImageButton").on("click", () => $("#imageFile").val(null));
+    .finally(async () => await worker.terminate());
+}

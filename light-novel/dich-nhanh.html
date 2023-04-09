@@ -12,16 +12,23 @@
       $LAB
         .script("/lib/jquery-3.6.1.js").wait()
         .script("/lib/jquery.csv.js")
+        .script("/lib/underscore-umd-min.js")
         .script("/lib/bootstrap.bundle.min.js")
-        .script("/lib/tesseract.min.js").wait()
+        .script("/lib/tesseract.min.js")
+        .script("/lib/opencv.js").wait()
         .script("/js/quan-ly-tu-vung.js").wait(function () {
-          let obj = JSON.parse(localStorage.getItem("glossary")) ?? {type: 'text/tab-separated-values', data: {}};
+          let obj = JSON.parse(localStorage.getItem("glossary")) ?? { type: 'text/tab-separated-values', data: {} };
           glossary = Object.entries(obj.data);
           $("#glossaryType").val(obj.type).change();
         }).wait()
-        .script("/js/trich-xuat-van-ban.js")
+        .script("/js/trich-xuat-van-ban.js").wait(function () {
+          let recognizer = JSON.parse(localStorage.getItem("recognizer")) ?? { langs: ['vie'], threshold: false };
+          $("#recognizeLangsSelect").val(recognizer.langs);
+          $("#flexCheckGrayscale").prop("checked", recognizer.threshold);
+          $("#flexCheckThreshold").prop("checked", recognizer.threshold);
+        })
         .script("/js/dich-nhanh.js").wait(function () {
-          let translator = JSON.parse(localStorage.getItem("translator")) ?? {service: 'google', source: 'auto', target: 'vi'};
+          let translator = JSON.parse(localStorage.getItem("translator")) ?? { service: 'google', source: 'auto', target: 'vi' };
           $("#sourceLangSelect").val(translator.source);
           $("#targetLangSelect").val(translator.target);
           $(`#${translator.service}`).click();
@@ -31,6 +38,12 @@
       html,
       body {
         padding-bottom: 56px;
+      }
+
+      #recognizeImage {
+        float: center;
+        max-height: 300px;
+        max-width: 100%;
       }
 
       #copyButton {
@@ -87,7 +100,8 @@
   </head>
   <body class="bg-dark text-light">
     <main class="container">
-      <label for="imageFile" class="form-label">Trích xuất vắn bản</label>
+      <label for="imageFile" class="form-label">Trích xuất văn bản</label>
+      <canvas id="recognizeImage" style="display: none;"></canvas>
       <div class="input-group input-group-sm">
         <input class="form-control form-control-sm" type="file" id="imageFile" accept="image/*">
         <button class="btn btn-sm btn-danger position-relative" id="clearImageButton" type="button">
@@ -104,7 +118,7 @@
     </main>
     <nav class="navbar fixed-bottom bg-light text-dark">
       <div class="container-fluid">
-        <select class="form-select form-select-sm form-select-lang" id="sourceLangSelect" aria-label="Chọn ngôn ngữ gốc của văn bản">
+        <select class="form-select form-select-sm form-select-lang option" id="sourceLangSelect" aria-label="Chọn ngôn ngữ gốc của văn bản">
           <option value="auto" selected>Tự động</option>
           <option value="en">Tiếng Anh</option>
           <option value="ja">Tiếng Nhật</option>
@@ -112,7 +126,7 @@
           <option value="zh-TW">Tiếng Trung (Phổn thể)</option>
           <option value="vi">Tiếng Việt</option>
         </select>
-        <select class="form-select form-select-sm form-select-lang" id="targetLangSelect" aria-label="Chọn ngôn ngữ gốc để dịch">
+        <select class="form-select form-select-sm form-select-lang option" id="targetLangSelect" aria-label="Chọn ngôn ngữ gốc để dịch">
           <option value="en">Tiếng Anh</option>
           <option value="ja">Tiếng Nhật</option>
           <option value="zh-CN">Tiếng Trung (Giản thể)</option>
@@ -144,6 +158,30 @@
                 <li><a class="dropdown-item service" id="papago">Papago</a></li>
                 <li><a class="dropdown-item service" id="deepl">DeepL</a></li>
               </ul>
+            </div>
+            <hr>
+            <h2 class="fs-5">Trích xuất văn bản</h2>
+            <select class="form-select form-select-sm option" id="recognizeLangsSelect" multiple aria-label="ocr language select">
+              <option value="vie" selected>Tiếng Việt</option>
+              <option value="eng">Tiếng Anh</option>
+              <option value="jpn_vert">Tiếng Nhật (Dọc)</option>
+              <option value="jpn">Tiếng Nhật</option>
+              <option value="chi_tra">Tiếng Trung (Phổn thể)</option>
+              <option value="chi_tra_vert">Tiếng Trung (Phổn thể) (Dọc)</option>
+              <option value="chi_sim">Tiếng Trung (Giản thể)</option>
+              <option value="chi_sim_vert">Tiếng Trung (Giản thể) (Dọc)</option>
+            </select>
+            <div class="form-check">
+              <input class="form-check-input option" type="checkbox" value="" id="flexCheckGrayscale">
+              <label class="form-check-label" for="flexCheckGrayscale">
+                Grayscale
+              </label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input option" type="checkbox" value="" id="flexCheckThreshold">
+              <label class="form-check-label" for="flexCheckThreshold">
+                Threshold
+              </label>
             </div>
             <hr>
             <h2 class="fs-5">Từ vựng</h2>
