@@ -13,9 +13,9 @@ var translation = '';
 
 $("#copyButton").on("click", () => navigator.clipboard.writeText(translation));
 
-$(".textarea").change(() => resize());
+$(".textarea").on("input", () => resize());
 
-$("#queryText").change(() => $("#queryTextCounter").text($("#queryText").val().length));
+$("#queryText").on("change", () => $("#queryTextCounter").text($("#queryText").val().length));
 
 $("#settingsButton").on("click", () => $("#glossaryList").val(-1).change());
 
@@ -324,7 +324,7 @@ function textPostProcess(text, service) {
 }
 
 function resize() {
-  $("main.container .textarea").css("height", "auto");
+  $(".textarea").css("height", "auto");
 
   let height = [
     $("#queryText").prop("scrollHeight"),
@@ -332,6 +332,6 @@ function resize() {
   ].sort((a, b) => b - a)[0];
 
   if (height > 300) {
-    $("main.container .textarea").css("height", height.toString().concat('px'));
+    $(".textarea").css("height", height.toString().concat('px'));
   }
 }
