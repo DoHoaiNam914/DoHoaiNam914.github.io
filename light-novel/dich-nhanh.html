@@ -17,18 +17,18 @@
         .script("/lib/tesseract.min.js")
         .script("/lib/opencv.js").wait()
         .script("/js/quan-ly-tu-vung.js").wait(function () {
-          let obj = JSON.parse(localStorage.getItem("glossary")) ?? { type: 'text/tab-separated-values', data: {} };
+          let obj = JSON.parse(localStorage.getItem("glossary")) ?? { type: $("#glossaryType").val, data: {} };
           glossary = Object.entries(obj.data);
           $("#glossaryType").val(obj.type).change();
         }).wait()
         .script("/js/trich-xuat-van-ban.js").wait(function () {
-          let recognizer = JSON.parse(localStorage.getItem("recognizer")) ?? { langs: ['vie'], threshold: false };
+          let recognizer = JSON.parse(localStorage.getItem("recognizer")) ?? { langs: $("#recognizeLangsSelect").val(), grayscale: $("#flexCheckGrayscale").prop("checked"), threshold: $("#flexCheckThreshold").prop("checked") };
           $("#recognizeLangsSelect").val(recognizer.langs);
           $("#flexCheckGrayscale").prop("checked", recognizer.threshold);
           $("#flexCheckThreshold").prop("checked", recognizer.threshold);
         })
         .script("/js/dich-nhanh.js").wait(function () {
-          let translator = JSON.parse(localStorage.getItem("translator")) ?? { service: 'google', source: 'auto', target: 'vi' };
+          let translator = JSON.parse(localStorage.getItem("translator")) ?? { service: $(".service.active").attr("id"), source: $("#sourceLangSelect").val(), target: $("#targetLangSelect").val() };
           $("#sourceLangSelect").val(translator.source);
           $("#targetLangSelect").val(translator.target);
           $(`#${translator.service}`).click();
@@ -42,7 +42,7 @@
 
       #recognizeImage {
         float: center;
-        max-height: 300px;
+        max-height: 20%;
         max-width: 100%;
       }
 
@@ -103,7 +103,21 @@
       <label for="imageFile" class="form-label">Trích xuất văn bản</label>
       <canvas id="recognizeImage" style="display: none;"></canvas>
       <div class="input-group input-group-sm">
-        <input class="form-control form-control-sm" type="file" id="imageFile" accept="image/*">
+        <button type="button" class="btn btn-sm btn-light dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+          <span class="visually-hidden">Toggle Dropdown</span>
+        </button>
+        <ul class="dropdown-menu">
+          <li><a class="dropdown-item inputType active" id="local">Local</a></li>
+          <li><a class="dropdown-item inputType" id="url">URL</a></li>
+        </ul>
+        <input class="form-control form-control-sm image-input" type="file" id="imageFile" accept="image/*">
+        <input class="form-control form-control-sm image-input" type="url" id="imageURL" placeholder="https://example.com" readOnly style="display: none;">
+        <button class="btn btn-sm btn-secondary position-relative" id="pasteUrlButton" type="button" style="display: none;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clipboard" viewBox="0 0 16 16">
+            <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/>
+            <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/>
+          </svg>
+        </button>
         <button class="btn btn-sm btn-danger position-relative" id="clearImageButton" type="button">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
             <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
@@ -161,15 +175,15 @@
             </div>
             <hr>
             <h2 class="fs-5">Trích xuất văn bản</h2>
-            <select class="form-select form-select-sm option" id="recognizeLangsSelect" multiple aria-label="ocr language select">
-              <option value="vie" selected>Tiếng Việt</option>
-              <option value="eng">Tiếng Anh</option>
+            <select class="form-select form-select-sm mb-3 option" id="recognizeLangsSelect" multiple aria-label="ocr language select">
               <option value="jpn_vert">Tiếng Nhật (Dọc)</option>
               <option value="jpn">Tiếng Nhật</option>
               <option value="chi_tra">Tiếng Trung (Phổn thể)</option>
               <option value="chi_tra_vert">Tiếng Trung (Phổn thể) (Dọc)</option>
               <option value="chi_sim">Tiếng Trung (Giản thể)</option>
               <option value="chi_sim_vert">Tiếng Trung (Giản thể) (Dọc)</option>
+              <option value="vie">Tiếng Việt</option>
+              <option value="eng" selected>Tiếng Anh</option>
             </select>
             <div class="form-check">
               <input class="form-check-input option" type="checkbox" value="" id="flexCheckGrayscale">

@@ -4,20 +4,40 @@ const { createWorker, PSM, OEM } = Tesseract;
 
 const options = {
   langPath: 'https://tessdata.projectnaptha.com/4.0.0_best',
+  logger: (m) => console.log(m),
   errorHandler: function (m) {
     $("#recognizeImage").hide();
-    $("#clearImageButton").removeAttr("disabled");
     
-    $("#imageFile").removeAttr("disabled");
-    console.log(m);
+    $(".image-input").removeAttr("disabled");
+    console.error(m);
   },
 };
 
-$("#imageFile").on("change", function () {
-  $(this).attr("disabled", true);
-  $("#clearImageButton").attr("disabled", true);
+$(".inputType").click(function () {
+  $(".inputType").removeClass("active");
+  $(this).addClass("active");
+
+  switch ($(this).attr("id")) {
+    case 'url':
+      $("#imageFile").hide();
+      $("#imageURL").show();
+      $("#pasteUrlButton").show()
+      break;
+    case 'local':
+      $("#imageURL").hide();
+      $("#pasteUrlButton").hide();
+      $("#imageFile").show(); 
+      break;
+  }
+});
+
+$("#imageFile").on("change", () => $("#imageURL").val(URL.createObjectURL($("#imageFile").prop("files")[0])).change());
+
+$("#imageURL").change(function () {
+  $(".image-input").attr("disabled", true);
 
   let img = new Image();
+  img.crossOrigin = 'Anonymous';
 
   img.onload = function () {
     let input = cv.imread(this);
@@ -52,18 +72,25 @@ $("#imageFile").on("change", function () {
           }
 
           $("#queryText").val(text).change();
-      
-          $("#clearImageButton").removeAttr("disabled");
-          $("#imageFile").removeAttr("disabled");
+          $(".image-input").removeAttr("disabled");
         });
   };
 
-  img.src = URL.createObjectURL(this.files[0]);
+  img.src = $(this).val();
 });
 
+$("#imageURL").on("dragend", (event) => event.dataTransfer != null && $(this).val(event.dataTransfer.getData('text/plain')).change());
+
+$("#imageURL").on("moveend", (event) => event.dataTransfer != null && $(this).val(event.dataTransfer.getData('text/plain')).change());
+
+$("#pasteUrlButton").on("click", () => navigator.clipboard.readText().then((text) => $("#imageURL").val(text).change()));
+
 $("#clearImageButton").on("click", function () {
+  worker.terminate();
+    $("#recognizeImage").hide();
+    $(".image-input").removeAttr("disabled");
   $("#recognizeImage").hide();
-  $("#imageFile").val(null);
+  $(".image-input").val(null); 
 });
 
 $(".option").on("change", () => localStorage.setItem("recognizer", JSON.stringify({langs: $("#recognizeLangsSelect").val(), grayscale: $("#flexCheckGrayscale").prop("checked"), threshold: $("#flexCheckThreshold").prop("checked")})));
