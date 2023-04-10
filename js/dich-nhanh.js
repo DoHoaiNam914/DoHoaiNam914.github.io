@@ -19,10 +19,10 @@ $("#queryText").on("change", () => $("#queryTextCounter").text($("#queryText").v
 
 $("#settingsButton").on("click", () => $("#glossaryList").val(-1).change());
 
-$(".option").change(() => localStorage.setItem("translator", JSON.stringify({service: $(".service.active").attr("id"), source: $("#sourceLangSelect").val(), target: $("#targetLangSelect").val()})));
+$(".option").change(() => localStorage.setItem("translator", JSON.stringify({ service: $(".service.active").attr("id"), source: $("#sourceLangSelect").val(), target: $("#targetLangSelect").val() })));
 
 $("#translateButton").on("click", function () {
-  if ($("#translateButton").text() === 'Dịch') {
+  if ($(this).text() === 'Dịch') {
     let service = $(".service.active").attr("id");
 
     var sourceLang = $("#sourceLangSelect").val();
@@ -39,20 +39,21 @@ $("#translateButton").on("click", function () {
       preRequest();
       translate(service, 1, sourceLang, targetLang, sentences, sentences.length > QUERY_LENGTH ? sentences.slice(0, QUERY_LENGTH) : sentences, '');
     }
-  } else if ($("#translateButton").text() === 'Sửa') {
+  } else if ($(this).text() === 'Sửa') {
     $("#translatedText").hide();
-    $("#queryText").show();
-    $("#translateButton").text("Dịch");
-  $("#clearImageButton").removeAttr("disabled");
-  $("#imageFile").removeAttr("disabled");
+    $("#queryText").show(); 
+    $("#clearImageButton").removeAttr("disabled");
+    $("#pasteUrlButton").removeAttr("disabled");
+    $("#imageFile").removeAttr("disabled");
     translation = '';
+    $(this).text("Dịch");
   } 
 });
 
 $(".service").click(function () {
   $(".service").removeClass("active");
   $(this).addClass("active");
-  localStorage.setItem("translator", JSON.stringify({service: $(".service.active").attr("id"), source: $("#sourceLangSelect").val(), target: $("#targetLangSelect").val()}))
+  localStorage.setItem("translator", JSON.stringify({ service: $(".service.active").attr("id"), source: $("#sourceLangSelect").val(), target: $("#targetLangSelect").val() }))
 });
 
 async function translate(service, sessionIndex, sourceLang, targetLang, sentences, query, result) {
@@ -217,6 +218,7 @@ function getDeepLFormat(languageCode, targetLang = false) {
 function preRequest() {
   $("#translateButton").attr("disabled", true);
   $("#imageFile").attr("disabled", true);
+  $("#pasteUrlButton").attr("disabled", true);
   $("#clearImageButton").attr("disabled", true);
   $("#inputGlossary").attr("disabled", true);
   $("#translatedText").html(null);
@@ -224,11 +226,62 @@ function preRequest() {
 
 function postRequest() {
   $("#queryText").hide();
-  resize();
   $("#translatedText").show();
+  resize();
   $("#inputGlossary").removeAttr("disabled");
   $("#translateButton").removeAttr("disabled");
   $("#translateButton").text("Sửa");
+}
+
+function textPreProcess(text, service) {
+  var newText = text;
+
+  if (glossary != null) {
+    let glossaryList = [...glossary].reverse().filter((phrase) => newText.includes(phrase[0]));
+
+    for (let i = 0; i < glossaryList.length; i++) {
+      if (service === Services.MICROSOFT) {
+        newText = newText.replace(new RegExp(glossaryList[i][0], 'g'), `<mstrans:dictionary translation="${glossaryList[i][1]}">GLOSSARY_INDEX_${i}</mstrans:dictionary>`);
+        newText = /\p{sc=Latin}/u.test(glossaryList[i][1]) ? newText.replace(/(mstrans:dictionary>)(<mstrans:dictionary)/g, '$1 $2') : newText;
+      } else {
+        newText = newText.replace(new RegExp(glossaryList[i][0], 'g'), `<span class="notranslate">GLOSSARY_INDEX_${i}</span>`);
+        newText = /\p{sc=Latin}/u.test(glossaryList[i][1]) ? newText.replace(/(span>)(<span class="notranslate")/g, '$1 $2') : newText;
+      }
+    }
+
+    for (let i = glossaryList.length - 1; i >= 0; i--) {
+      newText = newText.replace(new RegExp(`GLOSSARY_INDEX_${i}`, 'g'), glossaryList[i][0]);
+    }
+  }
+
+  return newText;
+}
+
+function textPostProcess(text, service) {
+  var newText = text;
+
+  if (glossary != undefined && service !== Services.MICROSOFT) {
+    let glossaryMap = new Map([...glossary].reverse().filter((phrase) => newText.includes(phrase[0])));
+
+    for (let [key, value] of glossaryMap.entries()) {
+      newText = newText.replace(/<span class="notranslate">/g, ' ').replace(/<\/span>/g, ' ').replace(new RegExp(key, 'g'), value);
+    }
+  }
+
+  return newText;
+}
+
+function resize() {
+  $("main.container .textarea").css("height", "auto");
+
+  let height = [
+    $("#queryText").prop("scrollHeight"),
+    $("#translatedText").prop("scrollHeight"),
+  ].sort((a, b) => b - a)[0];
+
+  if (height > 300) {
+    $("main.container .textarea").css("height", height + "px");
+  }
 }
 
 var yr = null;
@@ -283,55 +336,4 @@ var zr = function (a) {
     0 > a && (a = (a & 2147483647) + 2147483648);
     a %= 1E6;
     return c + (a.toString() + "." + (a ^ b))
-}
-
-function textPreProcess(text, service) {
-  var newText = text;
-
-  if (glossary != undefined) {
-    let glossaryList = [...glossary].reverse().filter((phrase) => newText.includes(phrase[0]));
-
-    for (let i = 0; i < glossaryList.length; i++) {
-      if (service === Services.MICROSOFT) {
-        newText = newText.replace(new RegExp(glossaryList[i][0], 'g'), `<mstrans:dictionary translation="${glossaryList[i][1]}">GLOSSARY_INDEX_${i}</mstrans:dictionary>`);
-        newText = /\p{sc=Latin}/u.test(glossaryList[i][1]) ? newText.replace(/(mstrans:dictionary>)(<mstrans:dictionary)/g, '$1 $2') : newText;
-      } else {
-        newText = newText.replace(new RegExp(glossaryList[i][0], 'g'), `<span class="notranslate">GLOSSARY_INDEX_${i}</span>`);
-        newText = /\p{sc=Latin}/u.test(glossaryList[i][1]) ? newText.replace(/(span>)(<span class="notranslate")/g, '$1 $2') : newText;
-      }
-    }
-
-    for (let i = glossaryList.length - 1; i >= 0; i--) {
-      newText = newText.replace(new RegExp(`GLOSSARY_INDEX_${i}`, 'g'), glossaryList[i][0]);
-    }
-  }
-
-  return newText;
-}
-
-function textPostProcess(text, service) {
-  var newText = text;
-
-  if (glossary != undefined && service !== Services.MICROSOFT) {
-    let glossaryMap = new Map([...glossary].reverse().filter((phrase) => newText.includes(phrase[0])));
-
-    for (let [key, value] of glossaryMap.entries()) {
-      newText = newText.replace(/<span class="notranslate">/g, ' ').replace(/<\/span>/g, ' ').replace(new RegExp(key, 'g'), value);
-    }
-  }
-
-  return newText;
-}
-
-function resize() {
-  $(".textarea").css("height", "auto");
-
-  let height = [
-    $("#queryText").prop("scrollHeight"),
-    $("#translatedText").prop("scrollHeight")
-  ].sort((a, b) => b - a)[0];
-
-  if (height > 300) {
-    $(".textarea").css("height", height.toString().concat('px'));
-  }
 }
