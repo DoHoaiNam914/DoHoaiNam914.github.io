@@ -13,9 +13,9 @@ var translation = '';
 
 $("#copyButton").on("click", () => navigator.clipboard.writeText(translation));
 
-$(".textarea").on("input", () => resize());
+$(".textarea").change(() => resize());
 
-$("#queryText").on("change", () => $("#queryTextCounter").text($("#queryText").val().length));
+$("#queryText").change(() => $("#queryTextCounter").text($("#queryText").val().length));
 
 $("#settingsButton").on("click", () => $("#glossaryList").val(-1).change());
 

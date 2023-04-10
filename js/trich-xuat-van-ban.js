@@ -3,11 +3,13 @@
 const { createWorker, PSM, OEM } = Tesseract;
 
 const options = {
+  corePath: '/lib/tesseract-core.wasm.js',
   langPath: 'https://tessdata.projectnaptha.com/4.0.0_best',
+  workerPath: '/lib/worker.min.js',
   logger: (m) => console.log(m),
   errorHandler: function (m) {
     $("#recognizeImage").hide();
-    
+    $("#clearImageButton").removeAttr("disabled");
     $(".image-input").removeAttr("disabled");
     console.error(m);
   },
@@ -34,7 +36,10 @@ $(".inputType").click(function () {
 $("#imageFile").on("change", () => $("#imageURL").val(URL.createObjectURL($("#imageFile").prop("files")[0])).change());
 
 $("#imageURL").change(function () {
+  if (!$(this).val().includes('http')) return;
+
   $(".image-input").attr("disabled", true);
+  $("#clearImageButton").attr("disabled", true);
 
   let img = new Image();
   img.crossOrigin = 'Anonymous';
@@ -73,6 +78,7 @@ $("#imageURL").change(function () {
 
           $("#queryText").val(text).change();
           $(".image-input").removeAttr("disabled");
+          $("#clearImageButton").removeAttr("disabled");
         });
   };
 
@@ -86,9 +92,8 @@ $("#imageURL").on("moveend", (event) => event.dataTransfer != null && $(this).va
 $("#pasteUrlButton").on("click", () => navigator.clipboard.readText().then((text) => $("#imageURL").val(text).change()));
 
 $("#clearImageButton").on("click", function () {
-  worker.terminate();
-    $("#recognizeImage").hide();
-    $(".image-input").removeAttr("disabled");
+  $("#recognizeImage").hide();
+  $(".image-input").removeAttr("disabled");
   $("#recognizeImage").hide();
   $(".image-input").val(null); 
 });
