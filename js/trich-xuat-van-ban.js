@@ -7,11 +7,11 @@ const options = {
   langPath: 'https://tessdata.projectnaptha.com/4.0.0_best',
   workerPath: '/lib/worker.min.js',
   logger: (m) => console.log(m),
-  errorHandler: function (m) {
+  errorHandler: function (err) {
     $("#recognizeImage").hide();
     $("#clearImageButton").removeAttr("disabled");
     $(".image-input").removeAttr("disabled");
-    console.error(m);
+    console.error(err);
   },
 };
 

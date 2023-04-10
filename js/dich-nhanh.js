@@ -13,9 +13,12 @@ var translation = '';
 
 $("#copyButton").on("click", () => navigator.clipboard.writeText(translation));
 
-$(".textarea").change(() => resize());
+$(".textarea").on("input", () => resize());
 
-$("#queryText").change(() => $("#queryTextCounter").text($("#queryText").val().length));
+$("#queryText").change(function () {
+  resize();
+  $("#queryTextCounter").text($("#queryText").val().length);
+});
 
 $("#settingsButton").on("click", () => $("#glossaryList").val(-1).change());
 
