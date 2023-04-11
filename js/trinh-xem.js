@@ -9,24 +9,28 @@ const Loader = {
 $(document).ready(function () {
   let searchParams = new URLSearchParams(window.location.search);
 
-  let book = searchParams.get('sach') ?? 'propose';
-  let volume = searchParams.get('tap') ?? 'vol-1';
+  let book = searchParams.get('sach') ?? 'tinhlinh';
+  let volume = searchParams.get('tap') ?? 'volume-22';
 
   $.getJSON(`./${book}/data.json`, function (data) {
     _.each(data[book], function (currentVolume) {
       if (currentVolume.id === volume) {
-        switch (currentVolume.loader) {
-          case Loader.J_NOVEL:
-            j_novelLoader(book, volume, currentVolume.spine);
-            break;
+        if (currentVolume.spine.length > 0) {
+          switch (currentVolume.loader) {
+            case Loader.J_NOVEL:
+              j_novelLoader(book, volume, currentVolume.spine);
+              break;
 
-          case Loader.YENPRESS:
-            yenpressLoader(book, volume, currentVolume.spine);
-            break;
+            case Loader.YENPRESS:
+              yenpressLoader(book, volume, currentVolume.spine);
+              break;
 
-          case Loader.CUSTOM:
-            customLoader(book, volume, currentVolume.spine);
-            break;
+            case Loader.CUSTOM:
+              customLoader(book, volume, currentVolume.spine);
+              break;
+          }
+        } else {
+          window.location.href = currentVolume.href;
         }
       }
     });
