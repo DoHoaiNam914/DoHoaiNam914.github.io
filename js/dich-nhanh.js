@@ -11,6 +11,15 @@ const QUERY_LENGTH = 10;
 
 var translation = '';
 
+$(document).ready(function () {
+  const searchParams = new URLSearchParams(window.location.search);
+
+  if (searchParams.get('q') != null) {
+    $("#queryText").val(decodeURIComponent(searchParams.get('q'))).change();
+    $("#translateButton").click();
+  }
+});
+
 $("#copyButton").on("click", () => navigator.clipboard.writeText(translation));
 
 $(".textarea").on("input", () => resize());
@@ -24,7 +33,7 @@ $("#settingsButton").on("click", () => $("#glossaryList").val(-1).change());
 
 $(".option").change(() => localStorage.setItem("translator", JSON.stringify({ service: $(".service.active").attr("id"), source: $("#sourceLangSelect").val(), target: $("#targetLangSelect").val() })));
 
-$("#translateButton").on("click", function () {
+$("#translateButton").click(function () {
   if ($(this).text() === 'Dịch') {
     let service = $(".service.active").attr("id");
 
