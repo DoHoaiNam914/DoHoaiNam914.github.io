@@ -85,9 +85,9 @@ $("#imageURL").change(function () {
   img.src = $(this).val();
 });
 
-$("#imageURL").on("dragend", (event) => event.dataTransfer != null && $(this).val(event.dataTransfer.getData('text/plain')).change());
+$(".image-input").on("dragend", (event) => event.dataTransfer != null && $(this).val(event.dataTransfer.getData('text/plain')).change());
 
-$("#imageURL").on("moveend", (event) => event.dataTransfer != null && $(this).val(event.dataTransfer.getData('text/plain')).change());
+$(".image-input").on("moveend", (event) => event.dataTransfer != null && $(this).val(event.dataTransfer.getData('text/plain')).change());
 
 $("#pasteUrlButton").on("click", () => navigator.clipboard.readText().then((text) => $("#imageURL").val(text).change()));
 
