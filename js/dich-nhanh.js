@@ -7,7 +7,7 @@ const Services = {
   DEEPL: 'deepl',
 };
 
-const QUERY_LENGTH = 10;
+const QUERY_LENGTH = 20;
 
 var translation = '';
 
@@ -35,7 +35,7 @@ $(".option").change(() => localStorage.setItem("translator", JSON.stringify({ se
 
 $("#translateButton").click(function () {
   if ($(this).text() === 'Dịch') {
-    let service = $(".service.active").attr("id");
+    const service = $(".service.active").attr("id");
 
     var sourceLang = $("#sourceLangSelect").val();
     var targetLang = $("#targetLangSelect").val();
@@ -45,7 +45,7 @@ $("#translateButton").click(function () {
       targetLang = getMicrosoftFormat(targetLang);
     }
 
-    let sentences = $("#queryText").val().split(/\r?\n/);
+    const sentences = $("#queryText").val().split(/\r?\n/);
 
     if ($("#queryText").val().length > 0) {
       preRequest();
@@ -147,6 +147,7 @@ async function translate(service, sessionIndex, sourceLang, targetLang, sentence
       }
 
       //POST https://api.cognitive.microsofttranslator.com/translate?to=${toLang}&api-version=3.0&includeSentenceLength=true Authorization: Bearer ${accessToken} - Content-Type: application/json - send(data)
+      //POST https://api-edge.cognitive.microsofttranslator.com/translate?to=${toLang}&api-version=3.0&includeSentenceLength=true Authorization: Bearer ${accessToken} - Content-Type: application/json - send(data)
       settings = {
         crossDomain: true,
         url: `https://api.cognitive.microsofttranslator.com/translate?from=${sourceLang}&to=${targetLang}&api-version=3.0&textType=html&includeSentenceLength=true`,
@@ -156,29 +157,27 @@ async function translate(service, sessionIndex, sourceLang, targetLang, sentence
           "Content-Type": "application/json"
         },
         processData: false,
-        data: JSON.stringify(sentences.map((sentence) => ({
+        data: JSON.stringify(query.map((sentence) => ({
             "Text":textPreProcess(sentence, service)
         })))
       };
 
       $.ajax(settings).done(function (data) {
-        var combine = [];
-
-        for (let i = 0; i < sentences.length; i++) {
-          combine.push([
-            sentences[i],
-            textPostProcess(data[i].translations[0].text, service)
-          ]);
+        for (let i = 0; i < query.length; i++) {
+          result += ('<p>' + textPostProcess(data[i].translations[0].text, service) !== query[i] ? '<i>' + query[i] + '</i><br>' + textPostProcess(data[i].translations[0].text, service) : query[i] + '</p>').replace(/(<p>)(<\/p>)/g, '$1<br>$2');
+          translation += textPostProcess(data[i].translations[0].text, service) + '\n';
         }
 
-        $("#translatedText").html(('<p>' + combine.map((sentence) => sentence[1] !== sentence[0] ? '<i>' + sentence.join('</i><br>') : sentence[0]).join('</p><p>') + '</p>').replace(/(<p>)(<\/p>)/g, '$1<br>$2'));
-        translation = combine.map((element) => element[1]).join('\n');
-        postRequest();
+        if ([...sentences].slice(QUERY_LENGTH * (sessionIndex - 1)).every((element, index) => query[index] === element)) {
+          $("#translatedText").html(result);
+          postRequest();
+        } else {
+          translate(service, sessionIndex + 1, sourceLang, targetLang, sentences, (QUERY_LENGTH * sessionIndex) + QUERY_LENGTH < sentences.length ? sentences.slice(QUERY_LENGTH * sessionIndex, (QUERY_LENGTH * sessionIndex) + QUERY_LENGTH) : sentences.slice(QUERY_LENGTH * sessionIndex), result);
+        }
       }).fail(function (jqXHR, textStatus, errorThrown) {
         $("#translatedText").html(`<p>${jqXHR}</p><br><p>${errorThrown}</p>`);
         postRequest();
       });
-
       break;
 
     case Services.GOOGLE:
@@ -200,9 +199,9 @@ async function translate(service, sessionIndex, sourceLang, targetLang, sentence
 
       $.ajax(settings).done(function (data) {
         for (let i = 0; i < query.length; i++) {
-          let sentence = textPostProcess(sourceLang === 'auto' ? data[i][0] : data[i], service);
-          result += ('<p>' + (sentence !== query[i] ? '<i>' + query[i] + '</i><br>' : '') + sentence.split('</b><i>').map((element) => element.split('</i>')[1] ?? element).join('</b>').trimStart().replace(/<i>.*<\/i> /g, '') + '</p>').replace(/(<p>)(<\/p>)/g, '$1<br>$2');
-        translation += data.map((element) => textPostProcess(sourceLang === 'auto' ? element[0] : element, service)).join('\n');
+          const sentence = textPostProcess(sourceLang === 'auto' ? data[i][0] : data[i], service);
+          result += ('<p>' + (sentence !== query[i] ? (!/<\/?(i|b)>/.test(sentence) ? '<i>' + query[i] + '</i><br>' + sentence : sentence) : query[i]) + '</p>').replace(/(<p>)(<\/p>)/g, '$1<br>$2');
+          translation += data.map((element) => textPostProcess(sourceLang === 'auto' ? element[0] : element, service)).join('\n');
         }
 
         if ([...sentences].slice(QUERY_LENGTH * (sessionIndex - 1)).every((element, index) => query[index] === element)) {

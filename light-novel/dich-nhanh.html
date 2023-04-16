@@ -60,12 +60,10 @@
       main.container .textarea {
         font-size: 18px;
         min-height: 300px;
+        line-height: 1.2em;
         overflow: hidden;
+        overflow-wrap: break-word;
         width: 100%;
-      }
-
-      .textarea > p {
-        margin-bottom: 0;
       }
 
       @media (max-width: 1000px) {
@@ -129,7 +127,7 @@
       <a class="link-light link-underline-opacity-0" id="copyButton">Sao chép</a>
       <span id="queryTextCounter">0</span>
       <textarea class="form-control textarea" id="queryText" placeholder="Viết gì đó tại đây"></textarea>
-      <div class="form-control  textarea" id="translatedText" style="display: none;"></div>
+      <div class="form-control textarea" id="translatedText" style="display: none;"></div>
     </main>
     <nav class="navbar fixed-bottom bg-light text-dark">
       <div class="container-fluid">
