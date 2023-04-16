@@ -7,10 +7,10 @@ const Loader = {
 };
 
 $(document).ready(function () {
-  let searchParams = new URLSearchParams(window.location.search);
+  const searchParams = new URLSearchParams(window.location.search);
 
-  let book = searchParams.get('sach') ?? 'tinhlinh';
-  let volume = searchParams.get('tap') ?? 'volume-22';
+  const book = searchParams.get('sach') ?? 'tinhlinh';
+  const volume = searchParams.get('tap') ?? 'volume-22';
 
   $.getJSON(`./${book}/data.json`, function (data) {
     _.each(data[book], function (currentVolume) {
@@ -61,8 +61,8 @@ $("#view-select").change(function () {
 
 function j_novelLoader(book, volume, spine) {
   for (let i = 0; i < spine.length; i++) {
-    let spineHref = spine[i];
-    let spineId = spineHref.replace(/Text\/(.+)\.xhtml/, '$1');
+    const spineHref = spine[i];
+    const spineId = spineHref.replace(/Text\/(.+)\.xhtml/, '$1');
 
     $.get({
       async: false,
@@ -76,12 +76,10 @@ function j_novelLoader(book, volume, spine) {
         $("meta[content=\"text/html; charset=UTF-8\"]").replaceWith(`<meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="initial-scale=1, user-scalable=0, maximum-scale=1">`);
-
-        let stylesheetHref = 
+        const stylesheetHref = 
             $("link[rel=\"stylesheet\"]").attr("href").replace('..',
             `./${book}/${volume}`);
         $("link[rel=\"stylesheet\"]").remove();
-
         $(document.head).append("<link rel=\"stylesheet\" href=\"/css/styles/trinh-xem-before.css\">");
         $.get({
           async: false,
@@ -89,23 +87,21 @@ function j_novelLoader(book, volume, spine) {
           url: stylesheetHref,
           processData: false
         }).done(function (data) {
-          let stylesheet = document.createElement('style');
+          const stylesheet = document.createElement('style');
 
           stylesheet.type = 'text/css';
           stylesheet.innerText = data.replace(/(:\s*?.*)serif/g, '$1var(--baseFontFamily)');
 
           $(document.head).append(stylesheet);
         });
-
         $(document.head).append("<link rel=\"stylesheet\" href=\"/css/styles/patches/j-novelclub_patch.css\">");
         $(document.head).append("<link rel=\"stylesheet\" href=\"/css/styles/trinh-xem-after.css\">");
 
-        $("#view-select").val(localStorage.getItem("view") || "vertical").change()
+        $("#view-select").val(localStorage.getItem("view") ?? "vertical").change()
         $LAB.setOptions({AlwaysPreserveOrder:true})
           .script("/lib/jquery-3.6.1.js")
           .script("/js/nen.js").wait(() =>
-              $("#background-select").val(localStorage.getItem("background") ||
-              "sepia").change());
+              $("#background-select").val(localStorage.getItem("background") || Colors.SEPIA).change());
       }
 
       $(document.body).append(`\n<div class="body${
@@ -141,8 +137,8 @@ spineId + '"') ? ` id="${spineId}"` :
 
 function yenpressLoader(book, volume, spine) {
   for (let i = 0; i < spine.length; i++) {
-    let spineHref = spine[i];
-    let spineId = spineHref.replace(/Text\/(.+)\.xhtml/, '$1');
+    const spineHref = spine[i];
+    const spineId = spineHref.replace(/Text\/(.+)\.xhtml/, '$1');
 
     $.get({
       async: false,
@@ -156,12 +152,10 @@ function yenpressLoader(book, volume, spine) {
         $("meta[content=\"text/html; charset=UTF-8\"]").replaceWith(`<meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="initial-scale=1, user-scalable=0, maximum-scale=1">`);
-
-        let stylesheetHref = 
+        const stylesheetHref = 
             $("link[rel=\"stylesheet\"]").attr("href").replace('..',
             `./${book}/${volume}`);
         $("link[rel=\"stylesheet\"]").remove();
-
         $(document.head).append("<link rel=\"stylesheet\" href=\"/css/styles/trinh-xem-before.css\">");
         $.get({
           async: false,
@@ -169,23 +163,21 @@ function yenpressLoader(book, volume, spine) {
           url: stylesheetHref,
           processData: false
         }).done(function (data) {
-          let stylesheet = document.createElement('style');
+          const stylesheet = document.createElement('style');
 
           stylesheet.type = 'text/css';
           stylesheet.innerText = data.replace(/(:\s*?.*)serif/g, '$1var(--baseFontFamily)');
 
           $(document.head).append(stylesheet);
         });
-
         $(document.head).append(`<link rel="stylesheet" href="/css/styles/patches/${book}_patch.css">`);
         $(document.head).append("<link rel=\"stylesheet\" href=\"/css/styles/trinh-xem-after.css\">");
 
-        $("#view-select").val(localStorage.getItem("view") || "vertical").change()
+        $("#view-select").val(localStorage.getItem("view") ?? "vertical").change()
         $LAB.setOptions({AlwaysPreserveOrder:true})
           .script("/lib/jquery-3.6.1.js")
           .script("/js/nen.js").wait(() =>
-              $("#background-select").val(localStorage.getItem("background") ||
-              "sepia").change());
+              $("#background-select").val(localStorage.getItem("background") ?? Colors.SEPIA).change());
       }
 
       $(document.body).append(`\n<div class="body"${!data.toString().includes('id="' +
@@ -219,17 +211,14 @@ function customLoader(book, volume, spine) {
   switch (`${book}_${volume}`) {
     case 'tenseislime_20':
       for (let i = 0; i < spine.length; i++) {
-        let spineHref = spine[i];
-        let spineId = spineHref.replace(/xhtml\/(.+)\.xhtml/, '$1');
+        const spineHref = spine[i];
+        const spineId = spineHref.replace(/xhtml\/(.+)\.xhtml/, '$1');
 
-        let settings = {
+        $.get({
           async: false,
           crossDomain: false,
-          url: `./${book}/${volume}/${spineHref}`,
-          processData: false
-        };
-
-        $.get(settings).done(function (data) {
+          url: `./${book}/${volume}/${spineHref}`
+        }).done(function (data) {
           if (i === 4) {
             $(document.documentElement).addClass("hltr");
             $(document.documentElement).attr("lang", $(data).find("html").attr("xml:lang"));
@@ -237,22 +226,19 @@ function customLoader(book, volume, spine) {
             $("meta[content=\"text/html; charset=UTF-8\"]").replaceWith(`<meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="initial-scale=1, user-scalable=0, maximum-scale=1">`);
-
-            let stylesheet =
+            const stylesheet =
                 $("link[rel=\"stylesheet\"]").prop("outerHTML").replace('..',
                 `./${book}/${volume}`);
             $("link[rel=\"stylesheet\"]").remove();
-
             $(document.head).append("<link rel=\"stylesheet\" href=\"/css/styles/trinh-xem-before.css\">");
             $(document.head).append(stylesheet);
             $(document.head).append("<link rel=\"stylesheet\" href=\"/css/styles/trinh-xem-after.css\">");
 
-            $("#view-select").val(localStorage.getItem("view") || "vertical").change()
+            $("#view-select").val(localStorage.getItem("view") ?? "vertical").change()
             $LAB.setOptions({AlwaysPreserveOrder:true})
               .script("/lib/jquery-3.6.1.js")
               .script("/js/nen.js").wait(() =>
-                  $("#background-select").val(localStorage.getItem("background") ||
-                  "sepia").change());
+                  $("#background-select").val(localStorage.getItem("background") || Colors.SEPIA).change());
           }
 
           $(document.body).append(`\n<div class="body">${$(data).find("body").html().replace(new

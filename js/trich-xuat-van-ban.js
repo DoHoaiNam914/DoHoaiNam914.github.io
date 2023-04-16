@@ -12,7 +12,7 @@ const options = {
     $("#clearImageButton").removeAttr("disabled");
     $(".image-input").removeAttr("disabled");
     console.error(err);
-  },
+  }
 };
 
 $(".inputType").click(function () {
@@ -41,7 +41,7 @@ $("#imageURL").change(function () {
   $(".image-input").attr("disabled", true);
   $("#clearImageButton").attr("disabled", true);
 
-  let img = new Image();
+  const img = new Image();
   img.crossOrigin = 'Anonymous';
 
   img.onload = function () {

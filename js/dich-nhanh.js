@@ -4,7 +4,7 @@ const Services = {
   GOOGLE: 'google',
   MICROSOFT: 'microsoft',
   PAPAGO: 'papago',
-  DEEPL: 'deepl',
+  DEEPL: 'deepl'
 };
 
 const QUERY_LENGTH = 20;
@@ -40,9 +40,16 @@ $("#translateButton").click(function () {
     var sourceLang = $("#sourceLangSelect").val();
     var targetLang = $("#targetLangSelect").val();
 
-    if (service === Services.MICROSOFT) {
-      sourceLang = getMicrosoftFormat(sourceLang);
-      targetLang = getMicrosoftFormat(targetLang);
+    switch (service) {
+      case Services.DEEPL:
+        sourceLang = getDeepLFormatSource(sourceLang);
+        targetLang = getDeepLFormatTarget(targetLang);
+        break;
+        
+      case Services.MICROSOFT:
+        sourceLang = getMicrosoftFormat(sourceLang);
+        targetLang = getMicrosoftFormat(targetLang);
+        break;
     }
 
     const sentences = $("#queryText").val().split(/\r?\n/);
@@ -78,11 +85,11 @@ async function translate(service, sessionIndex, sourceLang, targetLang, sentence
         url: "https://api-free.deepl.com/v2/translate",
         method: "POST",
         processData: false,
-        data: `auth_key=0c9649a5-e8f6-632a-9c42-a9eee160c330:fx&text=${encodeURI(sentences.join('&text='))}${sourceLang !== 'auto' ? '&source_lang=' + getDeepLFormat(sourceLang) : ''}&target_lang=${getDeepLFormat(targetLang, true)}`
+        data: `auth_key=0c9649a5-e8f6-632a-9c42-a9eee160c330:fx&text=${encodeURI(sentences.join('&text='))}${sourceLang !== 'auto' ? '&source_lang=' + sourceLang : ''}&target_lang=${targetLang, true}`
       };
 
       $.ajax(settings).done(function (data) {
-        var combine = [];
+        const combine = [];
 
         for (let i = 0; i < sentences.length; i++) {
           combine.push([
@@ -91,7 +98,7 @@ async function translate(service, sessionIndex, sourceLang, targetLang, sentence
           ]);
         }
 
-        $("#translatedText").html(('<p>' + combine.map((sentence) => sentence[1] !== sentence[0] ? '<i>' + sentence.join('</i><br>') : sentence[0]).join('</p><p>') + '</p>').replace(/(<p>)(<\/p>)/g, '$1<br>$2'));
+        $("#translatedText").html(('<p>' + combine.map((sentence) => sentence[1].trim() !== sentence[0].trim() ? '<i>' + sentence.join('</i><br>') : sentence[0]).join('</p><p>') + '</p>').replace(/(<p>)(<\/p>)/g, '$1<br>$2'));
         translation = combine.map((element) => element[1]).join('\n');
         postRequest();
       }).fail(function (jqXHR, textStatus, errorThrown) {
@@ -117,7 +124,7 @@ async function translate(service, sessionIndex, sourceLang, targetLang, sentence
       };
 
       $.ajax(settings).done(function (data) {
-        var combine = [];
+        const combine = [];
 
         for (let i = 0; i < sentences.length; i++) {
           combine.push([
@@ -126,7 +133,7 @@ async function translate(service, sessionIndex, sourceLang, targetLang, sentence
           ]);
         }
 
-        $("#translatedText").html(('<p>' + combine.map((sentence) => sentence[1] !== sentence[0] ? '<i>' + sentence.join('</i><br>') : sentence[0]).join('</p><p>') + '</p>').replace(/(<p>)(<\/p>)/g, '$1<br>$2'));
+        $("#translatedText").html(('<p>' + combine.map((sentence) => sentence[1].trim() !== sentence[0].trim() ? '<i>' + sentence.join('</i><br>') : sentence[0]).join('</p><p>') + '</p>').replace(/(<p>)(<\/p>)/g, '$1<br>$2'));
         translation = combine.map((element) => element[1]).join('\n');
         postRequest();
       }).fail(function (jqXHR, textStatus, errorThrown) {
@@ -137,7 +144,7 @@ async function translate(service, sessionIndex, sourceLang, targetLang, sentence
       break;
 
     case Services.MICROSOFT:
-      let accessToken = await fetch('https://edge.microsoft.com/translate/auth')
+      const accessToken = await fetch('https://edge.microsoft.com/translate/auth')
           .then((response) => response.text());
 
       if (accessToken == undefined) {
@@ -164,7 +171,9 @@ async function translate(service, sessionIndex, sourceLang, targetLang, sentence
 
       $.ajax(settings).done(function (data) {
         for (let i = 0; i < query.length; i++) {
-          result += ('<p>' + textPostProcess(data[i].translations[0].text, service) !== query[i] ? '<i>' + query[i] + '</i><br>' + textPostProcess(data[i].translations[0].text, service) : query[i] + '</p>').replace(/(<p>)(<\/p>)/g, '$1<br>$2');
+          const processedTranslation = textPostProcess(data[i].translations[0].text, service);
+
+          result += ('<p>' + (processedTranslation.trim() !== query[i].trim() ? '<i>' + query[i] + '</i><br>' + processedTranslation : query[i]) + '</p>').replace(/(<p>)(<\/p>)/g, '$1<br>$2');
           translation += textPostProcess(data[i].translations[0].text, service) + '\n';
         }
 
@@ -200,7 +209,7 @@ async function translate(service, sessionIndex, sourceLang, targetLang, sentence
       $.ajax(settings).done(function (data) {
         for (let i = 0; i < query.length; i++) {
           const sentence = textPostProcess(sourceLang === 'auto' ? data[i][0] : data[i], service);
-          result += ('<p>' + (sentence !== query[i] ? (!/<\/?(i|b)>/.test(sentence) ? '<i>' + query[i] + '</i><br>' + sentence : sentence) : query[i]) + '</p>').replace(/(<p>)(<\/p>)/g, '$1<br>$2');
+          result += ('<p>' + (sentence.trim() !== query[i].trim() ? (!/<\/?(i|b)>/.test(sentence) ? '<i>' + query[i] + '</i><br>' + sentence : sentence) : query[i]) + '</p>').replace(/(<p>)(<\/p>)/g, '$1<br>$2');
           translation += data.map((element) => textPostProcess(sourceLang === 'auto' ? element[0] : element, service)).join('\n');
         }
 
@@ -222,8 +231,12 @@ function getMicrosoftFormat(languageCode) {
   return languageCode.replace('auto', '').replace('-CN', '-CHS').replace('-TW', '-CHT');
 }
 
-function getDeepLFormat(languageCode, targetLang = false) {
-  return languageCode.split('-')[0].replace('en', `EN${targetLang ? '-US' : ''}`).toUpperCase();
+function getDeepLFormatSource(languageCode) {
+  return languageCode.split('-')[0].toUpperCase();
+}
+
+function getDeepLFormatTarget(languageCode) {
+  return languageCode.replace(/(zh)-[A-Z]{2,2}/, '$1').toUpperCase();
 }
 
 function preRequest() {
@@ -248,7 +261,7 @@ function textPreProcess(text, service) {
   var newText = text;
 
   if (glossary != null) {
-    let glossaryList = [...glossary].reverse().filter((phrase) => newText.includes(phrase[0]));
+    const glossaryList = [...glossary].reverse().filter((phrase) => newText.includes(phrase[0]));
 
     for (let i = 0; i < glossaryList.length; i++) {
       if (service === Services.MICROSOFT) {
@@ -272,7 +285,7 @@ function textPostProcess(text, service) {
   var newText = text;
 
   if (glossary != undefined && service !== Services.MICROSOFT) {
-    let glossaryMap = new Map([...glossary].reverse().filter((phrase) => newText.includes(phrase[0])));
+    const glossaryMap = new Map([...glossary].reverse().filter((phrase) => newText.includes(phrase[0])));
 
     for (let [key, value] of glossaryMap.entries()) {
       newText = newText.replace(/<span class="notranslate">/g, ' ').replace(/<\/span>/g, ' ').replace(new RegExp(key, 'g'), value);
@@ -285,7 +298,7 @@ function textPostProcess(text, service) {
 function resize() {
   $("main.container .textarea").css("height", "auto");
 
-  let height = [
+  const height = [
     $("#queryText").prop("scrollHeight"),
     $("#translatedText").prop("scrollHeight"),
   ].sort((a, b) => b - a)[0];

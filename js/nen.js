@@ -1,17 +1,17 @@
 'use strict';
 
-const colors = [
-  'white',
-  'sepia',
-  'cream',
-  'gray',
-  'black'
-];
+const Colors = {
+  WHITE: 'white',
+  SEPIA: 'sepia',
+  CREAM: 'cream',
+  GRAY: 'gray',
+  BLACK: 'black'
+};
 
 $("#background-select").change(function () {
-  if (this.value !== 'white') {
+  if (this.value !== Colors.WHITE) {
     if ($(document.documentElement).attr("style") != undefined) {
-      colors.forEach(function (code) {
+      Object.values(Colors).forEach(function (code) {
         if ($(document.documentElement).attr("style").includes(code)) {
           $(document.documentElement).attr("style",
               $(document.documentElement).attr("style").replace(new RegExp(`\s?${code}-background;`), ''));
@@ -24,7 +24,7 @@ $("#background-select").change(function () {
       $(document.documentElement).attr("style", `${this.value}-background;`);
     }
   } else if ($(document.documentElement).attr("style") != undefined) {
-    colors.forEach(function (code) {
+    Object.values(Colors).forEach(function (code) {
       if ($(document.documentElement).attr("style").includes(code)) {
         $(document.documentElement).attr("style",
             $(document.documentElement).attr("style").replace(new RegExp(`\s?${code}-background;`, 'g'), ''));

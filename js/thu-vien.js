@@ -25,7 +25,7 @@ function bookLibraryLoader() {
 }
 
 function volumeLibraryLoader() {
-  let book = (new URLSearchParams(window.location.search)).get('thu-vien');
+  const book = (new URLSearchParams(window.location.search)).get('thu-vien');
 
   $.getJSON(`./${book}/data.json`, function (data) {
     if (data[book].length > 0) {

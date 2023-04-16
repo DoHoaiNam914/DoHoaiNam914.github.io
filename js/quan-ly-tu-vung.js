@@ -85,7 +85,7 @@ $(document).ready(function () {
 });
 
 $("#inputGlossary").on("change", function () {
-  let reader = new FileReader();
+  const reader = new FileReader();
 
   reader.onload = function () {
     switch ($("#inputGlossary").prop("files")[0].type) {
@@ -113,8 +113,8 @@ $("#inputGlossary").on("change", function () {
 $("#glossaryType").change(() => loadGlossary());
 
 $("#sourceText").on("input", function () {
-  let glossaryMap = new Map(glossary);
-  let data = new Map([...sinoVietnameses].sort((a, b) => b[0].length - a[0].length || a[0].localeCompare(b[0]) ||  a[1].localeCompare(b[1])));
+  const glossaryMap = new Map(glossary);
+  const data = new Map([...sinoVietnameses].sort((a, b) => b[0].length - a[0].length || a[0].localeCompare(b[0]) ||  a[1].localeCompare(b[1])));
 
   if (this.value.length > 0) {
     if (glossaryMap.has(this.value)) {
@@ -165,7 +165,7 @@ $("#sourceText").on("input", function () {
 
 $("#addButton").on("click", function () {
   if ($("#sourceText").val().length > 0) {
-    let glossaryMap = new Map(glossary);
+    const glossaryMap = new Map(glossary);
     glossaryMap.delete($("#sourceText").val());
     glossaryMap.set($("#sourceText").val(), $("#targetText").val());
     glossary = Array.from(glossaryMap);
@@ -176,7 +176,7 @@ $("#addButton").on("click", function () {
 
 $("#glossaryList").change(function () {
   if (parseInt(this.value) > -1) {
-    let data = $("#glossaryList option:selected").text().split(/\t/);
+    const data = $("#glossaryList option:selected").text().split(/\t/);
     $("#sourceText").val(data[0]);
     $("#targetText").val(data[1]);
   } else {
@@ -210,7 +210,7 @@ $("#glossaryName").on("input", () => loadGlossary());
 function loadGlossary() {
   var data = ''; 
   var glossaryList = '<option value="-1" selected>Chọn...</option>';
-  let glossaryType = $("#glossaryType").val();
+  const glossaryType = $("#glossaryType").val();
 
   $("#fileExtension").text(glossaryType === GlossaryType.TSV ? ".tsv" : (glossaryType === GlossaryType.CSV ? ".csv" : ".txt"));
 
