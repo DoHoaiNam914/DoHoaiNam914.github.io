@@ -112,7 +112,7 @@ async function translate(service, sessionIndex, sourceLang, targetLang, sentence
         url: "https://api-free.deepl.com/v2/translate",
         method: "POST",
         processData: false,
-        data: `auth_key=0c9649a5-e8f6-632a-9c42-a9eee160c330:fx&text=${encodeURI(sentences.join('&text='))}${sourceLang !== 'auto' ? '&source_lang=' + sourceLang : ''}&target_lang=${targetLang, true}`
+        data: `auth_key=0c9649a5-e8f6-632a-9c42-a9eee160c330:fx&text=${encodeURI(sentences.join('&text='))}${sourceLang !== 'AUTO' ? '&source_lang=' + sourceLang : ''}&target_lang=${targetLang}`
       };
 
       $.ajax(settings).done(function (data) {
@@ -186,7 +186,7 @@ async function translate(service, sessionIndex, sourceLang, targetLang, sentence
         url: `https://api.cognitive.microsofttranslator.com/translate?from=${sourceLang}&to=${targetLang}&api-version=3.0&textType=html&includeSentenceLength=true`,
         method: "POST",
         headers: {
-          "Authorization": `Bearer ${accessToken}`,
+          "Authorization": "Bearer " + accessToken,
           "Content-Type": "application/json"
         },
         processData: false,
