@@ -70,8 +70,35 @@ $("#translateButton").click(function () {
 });
 
 $(".service").click(function () {
-  $(".service").removeClass("active");
-  $(this).addClass("active");
+  if (!$(this).hasClass("disabled")) {
+    $(".service").removeClass("active");
+    $(this).addClass("active");
+
+    switch ($(this).attr("id")) {
+      case Services.DEEPL:
+        $(".select-lang").each(function () {
+          if ($(this).val() === 'vi') {
+            switch ($(this).attr("id")) {
+              case 'sourceLangSelect':
+                $(this).val("auto").change();
+                break;
+
+              case 'targetLangSelect':
+                $(this).val("en").change();
+                break;
+            }
+          }
+        });
+
+        $(".select-lang option[value=\"vi\"]").attr("disabled", true);
+        break;
+
+      default:
+        $(".select-lang option[value=\"vi\"]").removeAttr("disabled");
+        break;
+    }
+  }
+
   localStorage.setItem("translator", JSON.stringify({ service: $(".service.active").attr("id"), source: $("#sourceLangSelect").val(), target: $("#targetLangSelect").val() }))
 });
 
@@ -105,8 +132,8 @@ async function translate(service, sessionIndex, sourceLang, targetLang, sentence
         $("#translatedText").html(`<p>${jqXHR}</p><br><p>${errorThrown}</p>`);
         postRequest();
       });
-
       break;
+
     case Services.PAPAGO:
       settings = {
         crossDomain: true,
@@ -119,17 +146,17 @@ async function translate(service, sessionIndex, sourceLang, targetLang, sentence
         data: JSON.stringify({
           'source': sourceLang,
           'target': targetLang,
-          'text': textPreProcess(sentences.join('\n'), service)
+          'text': textPreProcess(sentences.join('<br>'), service)
         })
       };
 
-      $.ajax(settings).done(function (data) {
+      $.ajax(settings).done(function (data) {console.log(data);
         const combine = [];
 
         for (let i = 0; i < sentences.length; i++) {
           combine.push([
             sentences[i],
-            textPostProcess(data.translatedText.split(/\n/)[i], service)
+            textPostProcess(data.translatedText.split(/<br>/)[i], service)
           ]);
         }
 
@@ -140,7 +167,6 @@ async function translate(service, sessionIndex, sourceLang, targetLang, sentence
         $("#translatedText").html(`<p>${jqXHR}</p><br><p>${errorThrown}</p>`);
         postRequest();
       });
-
       break;
 
     case Services.MICROSOFT:

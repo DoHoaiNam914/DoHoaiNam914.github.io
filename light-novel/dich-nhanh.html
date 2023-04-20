@@ -72,7 +72,11 @@
         }
       }
 
-      select.form-select-lang {
+      #translatedText > p {
+        margin-bottom: 0;
+      }
+
+      .select-lang {
         width: 150px;
       }
 
@@ -131,7 +135,7 @@
     </main>
     <nav class="navbar fixed-bottom bg-light text-dark">
       <div class="container-fluid">
-        <select class="form-select form-select-sm form-select-lang option" id="sourceLangSelect" aria-label="Chọn ngôn ngữ gốc của văn bản">
+        <select class="form-select form-select-sm option select-lang" id="sourceLangSelect" aria-label="Chọn ngôn ngữ gốc của văn bản">
           <option value="auto" selected>Tự động</option>
           <option value="en">Tiếng Anh</option>
           <option value="ja">Tiếng Nhật</option>
@@ -139,7 +143,7 @@
           <option value="zh-TW">Tiếng Trung (Phổn thể)</option>
           <option value="vi">Tiếng Việt</option>
         </select>
-        <select class="form-select form-select-sm form-select-lang option" id="targetLangSelect" aria-label="Chọn ngôn ngữ gốc để dịch">
+        <select class="form-select form-select-sm option select-lang" id="targetLangSelect" aria-label="Chọn ngôn ngữ gốc để dịch">
           <option value="en">Tiếng Anh</option>
           <option value="ja">Tiếng Nhật</option>
           <option value="zh-CN">Tiếng Trung (Giản thể)</option>
@@ -168,7 +172,7 @@
               <ul class="dropdown-menu">
                 <li><a class="dropdown-item service active" id="google">Google Dịch</a></li>
                 <li><a class="dropdown-item service" id="microsoft">Trình dịch Microsoft</a></li>
-                <li><a class="dropdown-item service" id="papago">Papago</a></li>
+                <li><a class="dropdown-item service disabled" id="papago">Papago (Chờ cập nhật)</a></li>
                 <li><a class="dropdown-item service" id="deepl">DeepL</a></li>
               </ul>
             </div>
