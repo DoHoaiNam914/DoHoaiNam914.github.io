@@ -25,7 +25,13 @@ $("#copyButton").on("click", () => navigator.clipboard.writeText(translation));
 $("#pasteButton").on("click", function () {
   navigator.clipboard
     .readText()
-    .then((clipText) => $("#queryText").val(clipText).change());
+    .then((clipText) => $("#queryText").val(clipText).change())
+    .finally(function () {
+      if ($("#translateButton").text() === 'Sửa') {
+        $("#translateButton").text("Dịch");
+        $("#translateButton").click();
+      }
+    });
 });
 
 $(".textarea").on("input", () => resize());

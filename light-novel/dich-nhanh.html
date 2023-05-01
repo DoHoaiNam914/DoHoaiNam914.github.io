@@ -79,32 +79,24 @@
       }
 
       .nav-scroller {
-        position: relative;
-        z-index: 2;
-        height: 2.75rem;
-        overflow-y: hidden;
-      }
-
-      .nav-scroller .nav {
+        -webkit-overflow-scrolling: touch;
         display: flex;
         flex-wrap: nowrap;
-        padding-bottom: 1rem;
+        height: 2.75rem;
         margin-top: -1px;
         overflow-x: auto;
+        overflow-y: hidden;
+        padding-bottom: 1rem;
+        position: relative;
         text-align: center;
         white-space: nowrap;
-        -webkit-overflow-scrolling: touch;
       }
 
-      .nav-scroller .nav {
-        color: rgba(255, 255, 255, .75);
-      }
-
-      .nav-scroller .nav-link {
-        padding-top: .75rem;
-        padding-bottom: .75rem;
-        font-size: .875rem;
+      .nav-scroller .nav-item {
         color: #6c757d;
+        font-size: .875rem;
+        padding-bottom: .75rem;
+        padding-top: .75rem;
       }
 
       .nav-scroller .nav-link:hover {
@@ -146,7 +138,7 @@
     </style>
   </head>
   <body class="bg-body-tertiary">
-    <main class="container">
+    <main class="container py-4">
       <!--label for="imageFile" class="form-label">Trích xuất văn bản</label>
       <canvas id="recognizeImage" style="display: none;"></canvas>
       <div class="input-group input-group-sm">
@@ -178,7 +170,7 @@
     <div class="fixed-bottom">
       <nav class="navbar bg-body shadow-sm fixed-bottom">
         <div class="container-fluid">
-          <select class="form-select option select-lang" id="sourceLangSelect" aria-label="Chọn ngôn ngữ gốc của văn bản">
+          <select class="form-select option select-lang" id="sourceLangSelect">
             <option value="auto" selected>Tự động</option>
             <option value="en">Tiếng Anh</option>
             <option value="ja">Tiếng Nhật</option>
@@ -186,7 +178,7 @@
             <option value="zh-TW">Tiếng Trung (Phổn thể)</option>
             <option value="vi">Tiếng Việt</option>
           </select>
-          <select class="form-select option select-lang" id="targetLangSelect" aria-label="Chọn ngôn ngữ gốc để dịch">
+          <select class="form-select option select-lang" id="targetLangSelect">
             <option value="en">Tiếng Anh</option>
             <option value="ja">Tiếng Nhật</option>
             <option value="zh-CN">Tiếng Trung (Giản thể)</option>
@@ -196,14 +188,11 @@
           <button class="btn btn-primary btn-sm" id="translateButton" type="submit">Dịch</button>
         </div>
       </nav>
-      <div class="nav-scroller bg-light-subtle mb-13">
-        <nav class="nav">
-          <a class="nav-link disabled">Số lượng ký tự: <span id="queryTextCounter">0</span></a>
-          <a class="nav-link disabled" id="copyButton">Sao chép</a>
-          <a class="nav-link" id="pasteButton">Dán</a>
-          <!--a class="nav-link" id="recognizationMenuButton">Nhận dạng ký tự</a-->
-        </nav>
-      </div>
+      <ul class="nav nav-scroller bg-light-subtle mb-13">
+        <li class="nav-item mx-3">Số lượng ký tự: <span id="queryTextCounter">0</span></li>
+        <li><a class="nav-item nav-link disabled" id="copyButton" href="#">Sao chép</a></li>
+        <li><a class="nav-item nav-link" id="pasteButton" href="#">Dán</a></li>
+      </ul>
     </div>
     <button type="button" class="btn position-fixed" id="settingsButton" data-bs-toggle="modal" data-bs-target="#settings">
       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-gear" viewBox="0 0 16 16">
@@ -216,21 +205,21 @@
         <div class="modal-content">
           <div class="modal-header">
             <h1 class="modal-title fs-5" id="settingsLabel">Thiết lập</h1>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
           </div>
           <div class="modal-body">
             <div class="dropdown">
               <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Máy dịch</button>
               <ul class="dropdown-menu">
-                <li><a class="dropdown-item service active" id="google">Google Dịch</a></li>
-                <li><a class="dropdown-item service" id="microsoft">Trình dịch Microsoft</a></li>
-                <li><a class="dropdown-item service disabled" id="papago">Papago (Chờ cập nhật)</a></li>
-                <li><a class="dropdown-item service" id="deepl">DeepL</a></li>
+                <li><a class="dropdown-item service active" id="google" href="#">Google Dịch</a></li>
+                <li><a class="dropdown-item service" id="microsoft" href="#">Trình dịch Microsoft</a></li>
+                <li><a class="dropdown-item service disabled" id="papago" href="#">Papago (Chờ cập nhật)</a></li>
+                <li><a class="dropdown-item service" id="deepl" href="#">DeepL</a></li>
               </ul>
             </div>
             <hr>
             <h2 class="fs-5">Trích xuất văn bản</h2>
-            <select class="form-select form-select-sm mb-3 option" id="recognizeLangsSelect" multiple aria-label="ocr language select">
+            <select class="form-select form-select-sm mb-3 option" id="recognizeLangsSelect" multiple>
               <option value="jpn_vert">Tiếng Nhật (Dọc)</option>
               <option value="jpn">Tiếng Nhật</option>
               <option value="chi_tra">Tiếng Trung (Phổn thể)</option>
@@ -271,9 +260,9 @@
             </select>
             <div class="input-group input-group-sm mb-3">
               <span class="input-group-text">Thay thế:</span>
-              <input type="text" placeholder="Nguồn" aria-label="Văn bản nguồn" class="form-control" id="sourceText">
+              <input type="text" placeholder="Nguồn" class="form-control" id="sourceText">
               <span class="input-group-text">với:</span>
-              <input type="text" placeholder="Đích" aria-label="Văn bản đích" class="form-control" id="targetText">
+              <input type="text" placeholder="Đích" class="form-control" id="targetText">
               <button class="btn btn-outline-secondary" id="addButton" type="button">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pen" viewBox="0 0 16 16">
                   <path d="m13.498.795.149-.149a1.207 1.207 0 1 1 1.707 1.708l-.149.148a1.5 1.5 0 0 1-.059 2.059L4.854 14.854a.5.5 0 0 1-.233.131l-4 1a.5.5 0 0 1-.606-.606l1-4a.5.5 0 0 1 .131-.232l9.642-9.642a.5.5 0 0 0-.642.056L6.854 4.854a.5.5 0 1 1-.708-.708L9.44.854A1.5 1.5 0 0 1 11.5.796a1.5 1.5 0 0 1 1.998-.001zm-.644.766a.5.5 0 0 0-.707 0L1.95 11.756l-.764 3.057 3.057-.764L14.44 3.854a.5.5 0 0 0 0-.708l-1.585-1.585z"/>
@@ -293,7 +282,7 @@
             <label for="preview">Bản xem trước:</label>
             <textarea class="form-control mb-3" id="preview" readonly></textarea>
             <div class="input-group input-group-sm">
-              <input type="text" placeholder="Từ vựng" aria-label="Tên tệp từ vựng" class="form-control" id="glossaryName">
+              <input type="text" placeholder="Từ vựng" class="form-control" id="glossaryName">
               <span class="input-group-text" id="fileExtension">.tsv</span>
               <a class="btn btn-primary btn-sm" id="downloadButton">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-download" viewBox="0 0 16 16">
