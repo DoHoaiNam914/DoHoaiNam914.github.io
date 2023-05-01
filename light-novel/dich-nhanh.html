@@ -9,11 +9,27 @@
     <meta name="theme-color" content="#000">
     <script src="/lib/LAB.js"></script>
     <script>
+      const getPreferredTheme = function () {
+        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      };
+
+      const setTheme = function (theme) {
+        if (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+          $(document.documentElement).attr("data-bs-theme", "dark");
+        } else {
+          $(document.documentElement).attr("data-bs-theme", theme);
+        }
+      };
+
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function () {
+        setTheme(getPreferredTheme());
+      });
+
       $LAB
         .script("/lib/jquery-3.6.1.js").wait()
         .script("/lib/jquery.csv.js")
         .script("/lib/underscore-umd-min.js")
-        .script("/lib/bootstrap.bundle.min.js")
+        .script("/lib/bootstrap.bundle.min.js").wait(() => setTheme(getPreferredTheme()))
         .script("/lib/tesseract.min.js")
         .script("/lib/opencv.js").wait()
         .script("/js/quan-ly-tu-vung.js").wait(function () {
@@ -99,16 +115,19 @@
         margin-bottom: 0;
       }
 
+      .mb-13 {
+        margin-bottom: 3.25rem;
+      }
+
       .select-lang {
         width: 40%;
-        min-width: 9vw;
-        max-width: unset;
+        max-width: 40vw;
       }
 
       #settingsButton {
-        --bs-bg-opacity: 0.3;
-        background-color: rgba(var(--bs-black-rgb), var(--bs-bg-opacity));
-        bottom: 6rem;
+        --bs-bg-opacity: 0.6;
+        background-color: rgba(var(--bs-body-bg-rgb), var(--bs-bg-opacity));
+        bottom: 7rem;
         right: 1rem;
       }
 
@@ -126,12 +145,12 @@
       }
     </style>
   </head>
-  <body class="bg-dark text-light">
+  <body class="bg-body-tertiary">
     <main class="container">
       <!--label for="imageFile" class="form-label">Trích xuất văn bản</label>
       <canvas id="recognizeImage" style="display: none;"></canvas>
       <div class="input-group input-group-sm">
-        <button type="button" class="btn btn-sm btn-light dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+        <button type="button" class="btn btn-sm dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
           <span class="visually-hidden">Toggle Dropdown</span>
         </button>
         <ul class="dropdown-menu">
@@ -157,15 +176,7 @@
       <div class="form-control textarea" id="translatedText" style="display: none;"></div>
     </main>
     <div class="fixed-bottom">
-      <div class="nav-scroller bg-body shadow-sm">
-        <nav class="nav">
-          <a class="nav-link"><span id="queryTextCounter">0</span></a>
-          <a class="nav-link disabled" id="copyButton">Sao chép</a>
-          <a class="nav-link" id="pasteButton">Dán</a>
-          <!-a class="nav-link" id="recognizationMenuButton">Nhận dạng ký tự</a>
-        </nav>
-      </div>
-      <nav class="navbar bg-light text-dark">
+      <nav class="navbar bg-body shadow-sm fixed-bottom">
         <div class="container-fluid">
           <select class="form-select option select-lang" id="sourceLangSelect" aria-label="Chọn ngôn ngữ gốc của văn bản">
             <option value="auto" selected>Tự động</option>
@@ -185,15 +196,23 @@
           <button class="btn btn-primary btn-sm" id="translateButton" type="submit">Dịch</button>
         </div>
       </nav>
+      <div class="nav-scroller bg-light-subtle mb-13">
+        <nav class="nav">
+          <a class="nav-link disabled">Số lượng ký tự: <span id="queryTextCounter">0</span></a>
+          <a class="nav-link disabled" id="copyButton">Sao chép</a>
+          <a class="nav-link" id="pasteButton">Dán</a>
+          <!--a class="nav-link" id="recognizationMenuButton">Nhận dạng ký tự</a-->
+        </nav>
+      </div>
     </div>
-    <button type="button" class="btn text-light position-fixed" id="settingsButton" data-bs-toggle="modal" data-bs-target="#settings">
+    <button type="button" class="btn position-fixed" id="settingsButton" data-bs-toggle="modal" data-bs-target="#settings">
       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-gear" viewBox="0 0 16 16">
         <path d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492zM5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0z"/>
         <path d="M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0l-.094.319a.873.873 0 0 1-1.255.52l-.292-.16c-1.64-.892-3.433.902-2.54 2.541l.159.292a.873.873 0 0 1-.52 1.255l-.319.094c-1.79.527-1.79 3.065 0 3.592l.319.094a.873.873 0 0 1 .52 1.255l-.16.292c-.892 1.64.901 3.434 2.541 2.54l.292-.159a.873.873 0 0 1 1.255.52l.094.319c.527 1.79 3.065 1.79 3.592 0l.094-.319a.873.873 0 0 1 1.255-.52l.292.16c1.64.893 3.434-.902 2.54-2.541l-.159-.292a.873.873 0 0 1 .52-1.255l.319-.094c1.79-.527 1.79-3.065 0-3.592l-.319-.094a.873.873 0 0 1-.52-1.255l.16-.292c.893-1.64-.902-3.433-2.541-2.54l-.292.159a.873.873 0 0 1-1.255-.52l-.094-.319zm-2.633.283c.246-.835 1.428-.835 1.674 0l.094.319a1.873 1.873 0 0 0 2.693 1.115l.291-.16c.764-.415 1.6.42 1.184 1.185l-.159.292a1.873 1.873 0 0 0 1.116 2.692l.318.094c.835.246.835 1.428 0 1.674l-.319.094a1.873 1.873 0 0 0-1.115 2.693l.16.291c.415.764-.42 1.6-1.185 1.184l-.291-.159a1.873 1.873 0 0 0-2.693 1.116l-.094.318c-.246.835-1.428.835-1.674 0l-.094-.319a1.873 1.873 0 0 0-2.692-1.115l-.292.16c-.764.415-1.6-.42-1.184-1.185l.159-.291A1.873 1.873 0 0 0 1.945 8.93l-.319-.094c-.835-.246-.835-1.428 0-1.674l.319-.094A1.873 1.873 0 0 0 3.06 4.377l-.16-.292c-.415-.764.42-1.6 1.185-1.184l.292.159a1.873 1.873 0 0 0 2.692-1.115l.094-.319z"/>
       </svg>
     </button>
     <div class="modal fade" id="settings" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="settingsLabel" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable text-dark">
+      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">
           <div class="modal-header">
             <h1 class="modal-title fs-5" id="settingsLabel">Thiết lập</h1>
