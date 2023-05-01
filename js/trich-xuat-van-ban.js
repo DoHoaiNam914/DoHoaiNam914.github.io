@@ -9,8 +9,8 @@ const options = {
   logger: (m) => console.log(m),
   errorHandler: function (err) {
     $("#recognizeImage").hide();
-    $("#clearImageButton").removeAttr("disabled");
-    $(".image-input").removeAttr("disabled");
+    $("#clearImageButton").removeClass("disabled");
+    $(".image-input").removeClass("disabled");
     console.error(err);
   }
 };
@@ -38,8 +38,8 @@ $("#imageFile").on("change", () => $("#imageURL").val(URL.createObjectURL($("#im
 $("#imageURL").change(function () {
   if (!$(this).val().includes('http')) return;
 
-  $(".image-input").attr("disabled", true);
-  $("#clearImageButton").attr("disabled", true);
+  $(".image-input").addClass("disabled");
+  $("#clearImageButton").addClass("disabled");
 
   const img = new Image();
   img.crossOrigin = 'Anonymous';
@@ -77,8 +77,8 @@ $("#imageURL").change(function () {
           }
 
           $("#queryText").val(text).change();
-          $(".image-input").removeAttr("disabled");
-          $("#clearImageButton").removeAttr("disabled");
+          $(".image-input").removeClass("disabled");
+          $("#clearImageButton").removeClass("disabled");
         });
   };
 
@@ -93,7 +93,7 @@ $("#pasteUrlButton").on("click", () => navigator.clipboard.readText().then((text
 
 $("#clearImageButton").on("click", function () {
   $("#recognizeImage").hide();
-  $(".image-input").removeAttr("disabled");
+  $(".image-input").removeClass("disabled");
   $("#recognizeImage").hide();
   $(".image-input").val(null); 
 });

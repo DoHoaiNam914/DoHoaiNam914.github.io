@@ -47,16 +47,6 @@
         max-width: 100%;
       }
 
-      #copyButton {
-        float: left;
-        padding-top: 0.1rem;
-      }
-
-      #queryTextCounter {
-        float: right;
-        padding-top: 0.1rem;
-      }
-
       main.container .textarea {
         font-size: 18px;
         min-height: 300px;
@@ -72,18 +62,53 @@
         }
       }
 
+      .nav-scroller {
+        position: relative;
+        z-index: 2;
+        height: 2.75rem;
+        overflow-y: hidden;
+      }
+
+      .nav-scroller .nav {
+        display: flex;
+        flex-wrap: nowrap;
+        padding-bottom: 1rem;
+        margin-top: -1px;
+        overflow-x: auto;
+        text-align: center;
+        white-space: nowrap;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .nav-scroller .nav {
+        color: rgba(255, 255, 255, .75);
+      }
+
+      .nav-scroller .nav-link {
+        padding-top: .75rem;
+        padding-bottom: .75rem;
+        font-size: .875rem;
+        color: #6c757d;
+      }
+
+      .nav-scroller .nav-link:hover {
+        color: black;
+      }
+
       #translatedText > p {
         margin-bottom: 0;
       }
 
       .select-lang {
-        width: 150px;
+        width: 40%;
+        min-width: 9vw;
+        max-width: unset;
       }
 
       #settingsButton {
         --bs-bg-opacity: 0.3;
         background-color: rgba(var(--bs-black-rgb), var(--bs-bg-opacity));
-        bottom: 4rem;
+        bottom: 6rem;
         right: 1rem;
       }
 
@@ -103,7 +128,7 @@
   </head>
   <body class="bg-dark text-light">
     <main class="container">
-      <label for="imageFile" class="form-label">Trích xuất văn bản</label>
+      <!--label for="imageFile" class="form-label">Trích xuất văn bản</label>
       <canvas id="recognizeImage" style="display: none;"></canvas>
       <div class="input-group input-group-sm">
         <button type="button" class="btn btn-sm btn-light dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
@@ -127,32 +152,40 @@
             <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
           </svg>
         </button>
-      </div>
-      <a class="link-light link-underline-opacity-0" id="copyButton">Sao chép</a>
-      <span id="queryTextCounter">0</span>
+      </div-->
       <textarea class="form-control textarea" id="queryText" placeholder="Viết gì đó tại đây"></textarea>
       <div class="form-control textarea" id="translatedText" style="display: none;"></div>
     </main>
-    <nav class="navbar fixed-bottom bg-light text-dark">
-      <div class="container-fluid">
-        <select class="form-select form-select-sm option select-lang" id="sourceLangSelect" aria-label="Chọn ngôn ngữ gốc của văn bản">
-          <option value="auto" selected>Tự động</option>
-          <option value="en">Tiếng Anh</option>
-          <option value="ja">Tiếng Nhật</option>
-          <option value="zh-CN">Tiếng Trung (Giản thể)</option>
-          <option value="zh-TW">Tiếng Trung (Phổn thể)</option>
-          <option value="vi">Tiếng Việt</option>
-        </select>
-        <select class="form-select form-select-sm option select-lang" id="targetLangSelect" aria-label="Chọn ngôn ngữ gốc để dịch">
-          <option value="en">Tiếng Anh</option>
-          <option value="ja">Tiếng Nhật</option>
-          <option value="zh-CN">Tiếng Trung (Giản thể)</option>
-          <option value="zh-TW">Tiếng Trung (Phổn thể)</option>
-          <option value="vi" selected>Tiếng Việt</option>
-        </select>
-        <button class="btn btn-primary btn-sm" id="translateButton" type="submit">Dịch</button>
+    <div class="fixed-bottom">
+      <div class="nav-scroller bg-body shadow-sm">
+        <nav class="nav">
+          <a class="nav-link"><span id="queryTextCounter">0</span></a>
+          <a class="nav-link disabled" id="copyButton">Sao chép</a>
+          <a class="nav-link" id="pasteButton">Dán</a>
+          <!-a class="nav-link" id="recognizationMenuButton">Nhận dạng ký tự</a>
+        </nav>
       </div>
-    </nav>
+      <nav class="navbar bg-light text-dark">
+        <div class="container-fluid">
+          <select class="form-select option select-lang" id="sourceLangSelect" aria-label="Chọn ngôn ngữ gốc của văn bản">
+            <option value="auto" selected>Tự động</option>
+            <option value="en">Tiếng Anh</option>
+            <option value="ja">Tiếng Nhật</option>
+            <option value="zh-CN">Tiếng Trung (Giản thể)</option>
+            <option value="zh-TW">Tiếng Trung (Phổn thể)</option>
+            <option value="vi">Tiếng Việt</option>
+          </select>
+          <select class="form-select option select-lang" id="targetLangSelect" aria-label="Chọn ngôn ngữ gốc để dịch">
+            <option value="en">Tiếng Anh</option>
+            <option value="ja">Tiếng Nhật</option>
+            <option value="zh-CN">Tiếng Trung (Giản thể)</option>
+            <option value="zh-TW">Tiếng Trung (Phổn thể)</option>
+            <option value="vi" selected>Tiếng Việt</option>
+          </select>
+          <button class="btn btn-primary btn-sm" id="translateButton" type="submit">Dịch</button>
+        </div>
+      </nav>
+    </div>
     <button type="button" class="btn text-light position-fixed" id="settingsButton" data-bs-toggle="modal" data-bs-target="#settings">
       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-gear" viewBox="0 0 16 16">
         <path d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492zM5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0z"/>

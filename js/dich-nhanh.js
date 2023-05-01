@@ -22,6 +22,12 @@ $(document).ready(function () {
 
 $("#copyButton").on("click", () => navigator.clipboard.writeText(translation));
 
+$("#pasteButton").on("click", function () {
+  navigator.clipboard
+    .readText()
+    .then((clipText) => $("#queryText").val(clipText).change());
+});
+
 $(".textarea").on("input", () => resize());
 
 $("#queryText").change(function () {
@@ -61,9 +67,10 @@ $("#translateButton").click(function () {
   } else if ($(this).text() === 'Sửa') {
     $("#translatedText").hide();
     $("#queryText").show(); 
-    $("#clearImageButton").removeAttr("disabled");
-    $("#pasteUrlButton").removeAttr("disabled");
-    $("#imageFile").removeAttr("disabled");
+    $("#clearImageButton").removeClass("disabled");
+    $("#pasteUrlButton").removeClass("disabled");
+    $("#imageFile").removeClass("disabled");
+    $("#copyButton").addClass("disabled");
     translation = '';
     $(this).text("Dịch");
   } 
@@ -90,11 +97,11 @@ $(".service").click(function () {
           }
         });
 
-        $(".select-lang option[value=\"vi\"]").attr("disabled", true);
+        $(".select-lang option[value=\"vi\"]").addClass("disabled");
         break;
 
       default:
-        $(".select-lang option[value=\"vi\"]").removeAttr("disabled");
+        $(".select-lang option[value=\"vi\"]").removeClass("disabled");
         break;
     }
   }
@@ -266,11 +273,11 @@ function getDeepLFormatTarget(languageCode) {
 }
 
 function preRequest() {
-  $("#translateButton").attr("disabled", true);
-  $("#imageFile").attr("disabled", true);
-  $("#pasteUrlButton").attr("disabled", true);
-  $("#clearImageButton").attr("disabled", true);
-  $("#inputGlossary").attr("disabled", true);
+  $("#translateButton").addClass("disabled");
+  $("#imageFile").addClass("disabled");
+  $("#pasteUrlButton").addClass("disabled");
+  $("#clearImageButton").addClass("disabled");
+  $("#inputGlossary").addClass("disabled");
   $("#translatedText").html(null);
 }
 
@@ -278,8 +285,9 @@ function postRequest() {
   $("#queryText").hide();
   $("#translatedText").show();
   resize();
-  $("#inputGlossary").removeAttr("disabled");
-  $("#translateButton").removeAttr("disabled");
+  $("#inputGlossary").removeClass("disabled");
+  $("#translateButton").removeClass("disabled");
+  $("#copyButton").removeClass("disabled");
   $("#translateButton").text("Sửa");
 }
 
