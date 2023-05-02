@@ -52,9 +52,12 @@
         });
     </script>
     <style>
-      html,
-      body {
-        padding-bottom: 56px;
+      .pb-32 {
+        padding-bottom: 8rem;
+      }
+
+      .pt-4 {
+        padding-top: 1rem;
       }
 
       #recognizeImage {
@@ -83,7 +86,7 @@
         display: flex;
         flex-wrap: nowrap;
         height: 2.75rem;
-        margin-top: -1px;
+        margin-bottom: calc(3.25rem - 1px);
         overflow-x: auto;
         overflow-y: hidden;
         padding-bottom: 1rem;
@@ -107,10 +110,6 @@
         margin-bottom: 0;
       }
 
-      .mb-13 {
-        margin-bottom: 3.25rem;
-      }
-
       .select-lang {
         width: 40%;
         max-width: 40vw;
@@ -123,11 +122,6 @@
         right: 1rem;
       }
 
-      .py-4 {
-        padding-bottom: 1rem;
-        padding-top: 1rem;
-      }
-
       #preview {
         height: 16rem;
       }
@@ -138,7 +132,7 @@
     </style>
   </head>
   <body class="bg-body-tertiary">
-    <main class="container py-4">
+    <main class="container pt-4 pb-32">
       <!--label for="imageFile" class="form-label">Trích xuất văn bản</label>
       <canvas id="recognizeImage" style="display: none;"></canvas>
       <div class="input-group input-group-sm">
@@ -146,8 +140,8 @@
           <span class="visually-hidden">Toggle Dropdown</span>
         </button>
         <ul class="dropdown-menu">
-          <li><a class="dropdown-item inputType active" id="local">Local</a></li>
-          <li><a class="dropdown-item inputType" id="url">URL</a></li>
+          <li><button class="dropdown-item inputType active" id="local" type="button">Local</button></li>
+          <li><button class="dropdown-item inputType" id="url" type="button">URL</button></li>
         </ul>
         <input class="form-control form-control-sm image-input" type="file" id="imageFile" accept="image/*">
         <input class="form-control form-control-sm image-input" type="url" id="imageURL" placeholder="https://example.com" readOnly style="display: none;">
@@ -170,7 +164,7 @@
     <div class="fixed-bottom">
       <nav class="navbar bg-body shadow-sm fixed-bottom">
         <div class="container-fluid">
-          <select class="form-select option select-lang" id="sourceLangSelect">
+          <select class="form-select select-lang option" id="sourceLangSelect">
             <option value="auto" selected>Tự động</option>
             <option value="en">Tiếng Anh</option>
             <option value="ja">Tiếng Nhật</option>
@@ -178,7 +172,7 @@
             <option value="zh-TW">Tiếng Trung (Phổn thể)</option>
             <option value="vi">Tiếng Việt</option>
           </select>
-          <select class="form-select option select-lang" id="targetLangSelect">
+          <select class="form-select select-lang option" id="targetLangSelect">
             <option value="en">Tiếng Anh</option>
             <option value="ja">Tiếng Nhật</option>
             <option value="zh-CN">Tiếng Trung (Giản thể)</option>
@@ -188,9 +182,9 @@
           <button class="btn btn-primary btn-sm" id="translateButton" type="submit">Dịch</button>
         </div>
       </nav>
-      <ul class="nav nav-scroller bg-light-subtle mb-13">
+      <ul class="nav nav-scroller bg-light-subtle">
         <li class="nav-item mx-3">Số lượng ký tự: <span id="queryTextCounter">0</span></li>
-        <li><a class="nav-item nav-link disabled" id="copyButton" href="#">Sao chép</a></li>
+        <li><button class="nav-item nav-link disabled" id="copyButton" type="button">Sao chép</button></li>
         <li><a class="nav-item nav-link" id="pasteButton" href="#">Dán</a></li>
       </ul>
     </div>
@@ -208,13 +202,13 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
           </div>
           <div class="modal-body">
-            <div class="dropdown">
-              <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Máy dịch</button>
+            <div class="dropdown-center">
+              <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Trình dịch</button>
               <ul class="dropdown-menu">
-                <li><a class="dropdown-item service active" id="google" href="#">Google Dịch</a></li>
-                <li><a class="dropdown-item service" id="microsoft" href="#">Trình dịch Microsoft</a></li>
-                <li><a class="dropdown-item service disabled" id="papago" href="#">Papago (Chờ cập nhật)</a></li>
-                <li><a class="dropdown-item service" id="deepl" href="#">DeepL</a></li>
+                <li><button class="dropdown-item service" id="deepl" type="button">DeepL Translator</button></li>
+                <li><button class="dropdown-item service active" id="google" type="button">Google Dịch</button></li>
+                <li><button class="dropdown-item service disabled" id="papago" type="button">Papago (Chờ cập nhật)</button></li>
+                <li><button class="dropdown-item service" id="microsoft" type="button">Trình dịch Microsoft</button></li>
               </ul>
             </div>
             <hr>
