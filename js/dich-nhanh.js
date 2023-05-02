@@ -129,11 +129,6 @@ $(".intermediary-service").click(function () {
     }
   }
 
-  if ($("#translateButton").text() === 'Sửa') {
-    $("#translateButton").click();
-    $("#translateButton").click();
-  }
-
   localStorage.setItem("translator", JSON.stringify({ service: $(".service.active").attr("id"), source: $("#sourceLangSelect").val(), target: $("#targetLangSelect").val(), intermediary: { enabled: $("#flexSwitchCheckIntermediary").prop("checked"), service: $(".intermediary-service.active").attr("id"), lang: $("#intermediaryLangSelect").val() } }));
 });
 
@@ -290,7 +285,7 @@ async function translate(service, sessionIndex, sourceLang, targetLang, sentence
         for (let i = 0; i < query.length; i++) {
           const processedTranslation = textPostProcess((sourceLang === 'auto' ? data[i][0] : data[i]).replace(/(<\/b>)( *<i>)/g, '$1PARABREAK$2').split('PARABREAK').map((element) => element.replace(/<i>.+<\/i>( *<b>.+<\/b>)/g, '$1')).join(''), service);
 
-          if (query[i].trim().length === 0 && processedTranslation.trim().length) {
+          if (query[i + lostLineCount].trim().length === 0 && processedTranslation.trim().length) {
             result += '<p><br></p>';
             lostLineCount++;
           }
