@@ -48,10 +48,10 @@
           const searchParams = new URLSearchParams(window.location.search);
           $("#sourceLangSelect").val(searchParams.get('sl') ?? translator.source);
           $("#targetLangSelect").val(searchParams.get('tl') ?? translator.target);
-          $(`#${translator.service}`).click();
+          $(`.service#${translator.service}`).click();
 
           $("#flexSwitchCheckIntermediary").prop("checked", translator.intermediary.enabled);
-          $(`#${translator.intermediary.service}`).click();
+          $(`.intermediary-service#${translator.intermediary.service}`).click();
           $("#intermediaryLangSelect").val(translator.intermediary.lang);
         });
     </script>

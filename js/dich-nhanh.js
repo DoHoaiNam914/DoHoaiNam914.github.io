@@ -53,18 +53,6 @@ $("#translateButton").click(function () {
     var sourceLang = $("#sourceLangSelect").val();
     var targetLang = $("#flexSwitchCheckIntermediary").prop("checked") ? $("#intermediaryLangSelect").val() : $("#targetLangSelect").val();
 
-    switch (service) {
-      case Services.DEEPL:
-        sourceLang = getDeepLFormatSource(sourceLang);
-        targetLang = getDeepLFormatTarget(targetLang);
-        break;
-        
-      case Services.MICROSOFT:
-        sourceLang = getMicrosoftFormat(sourceLang);
-        targetLang = getMicrosoftFormat(targetLang);
-        break;
-    }
-
     sourceSentences = $("#queryText").val().split(/\r?\n/);
 
     if ($("#queryText").val().length > 0) {
@@ -128,25 +116,15 @@ $(".intermediary-service").click(function () {
 
     switch ($(this).attr("id")) {
       case Services.DEEPL:
-        $(".select-lang").each(function () {
-          if ($(this).val() === 'vi') {
-            switch ($(this).attr("id")) {
-              case 'sourceLangSelect':
-                $(this).val("auto").change();
-                break;
+        if ($("#intermediaryLangSelect").val() === 'vi') {
+          $("#intermediaryLangSelect").val("en").change();
+        }
 
-              case 'targetLangSelect':
-                $(this).val("en").change();
-                break;
-            }
-          }
-        });
-
-        $(".select-lang option[value=\"vi\"]").addClass("disabled");
+        $("#intermediaryLangSelect option[value=\"vi\"]").addClass("disabled");
         break;
 
       default:
-        $(".select-lang option[value=\"vi\"]").removeClass("disabled");
+        $("# option[value=\"vi\"]").removeClass("disabled");
         break;
     }
   }
@@ -169,30 +147,31 @@ async function translate(service, sessionIndex, sourceLang, targetLang, sentence
         url: "https://api-free.deepl.com/v2/translate",
         method: "POST",
         processData: false,
-        data: `auth_key=0c9649a5-e8f6-632a-9c42-a9eee160c330:fx&text=${encodeURI(sentences.join('&text='))}${sourceLang !== 'AUTO' ? '&source_lang=' + sourceLang : ''}&target_lang=${targetLang}`
+        data: `auth_key=0c9649a5-e8f6-632a-9c42-a9eee160c330:fx&text=${encodeURI(textPreProcess(query.join('&text='),  $("#flexSwitchCheckIntermediary").prop("checked") && sourceLang !== $("#intermediaryLangSelect").val() ? 'intermediary' : service))}${sourceLang !== 'auto' ? '&source_lang=' + getDeepLFormatSource(sourceLang) : ''}&target_lang=${getDeepLFormatTarget(targetLang)}&tag_handling=html`
       };
 
       $.ajax(settings).done(function (data) {
-        const combine = [];
+        for (let i = 0; i < query.length; i++) {
+          const processedTranslation = textPostProcess(data.translations[i].text, service);
 
-        for (let i = 0; i < sentences.length; i++) {
-          combine.push([
-            sourceSentences[i],
-            data.translations[i].text
-          ]);
+          result += ('<p>' + (processedTranslation.trim() !== query[i].trim() ? '<i>' + [...sourceSentences].slice(QUERY_LENGTH * (sessionIndex - 1))[i] + '</i><br>' + processedTranslation : [...sourceSentences].slice(QUERY_LENGTH * (sessionIndex - 1))[i]) + '</p>').replace(/(<p>)(<\/p>)/g, '$1<br>$2');
         }
 
-        translation = combine.map((element) => element[1]).join('\n');
+        translation += data.translations.map((sentence) => textPostProcess(decodeHTMLEntity(sentence.text), $("#flexSwitchCheckIntermediary").prop("checked") && sourceLang !== $("#intermediaryLangSelect").val() ? 'intermediary' : service)).join('\n');
 
-        if ($("#flexSwitchCheckIntermediary").prop("checked") && sourceLang !== $("#intermediaryLangSelect").val()) {
-          sentences = translation.split(/\r?\n/);
+        if ([...sentences].slice(QUERY_LENGTH * (sessionIndex - 1)).every((element, index) => query[index] === element)) {
+          if ($("#flexSwitchCheckIntermediary").prop("checked") && sourceLang !== $("#intermediaryLangSelect").val()) {
+            sentences = translation.split(/\r?\n/);
 
-          translation = '';
-          preRequest();
-          translate($(".service.active").attr("id"), 1, targetLang, getDeepLFormatTarget($("#targetLangSelect").val()), sentences, sentences.length > QUERY_LENGTH ? sentences.slice(0, QUERY_LENGTH) : sentences, '');
+            translation = '';
+            preRequest();
+            translate($(".service.active").attr("id"), 1, targetLang, $("#targetLangSelect").val(), sentences, sentences.length > QUERY_LENGTH ? sentences.slice(0, QUERY_LENGTH) : sentences, '');
+          } else {
+            $("#translatedText").html(result);
+            postRequest();
+          }
         } else {
-          $("#translatedText").html(('<p>' + combine.map((sentence) => sentence[1].trim() !== sentence[0].trim() ? '<i>' + sentence.join('</i><br>') : sentence[0]).join('</p><p>') + '</p>').replace(/(<p>)(<\/p>)/g, '$1<br>$2'));
-          postRequest();
+          translate(Services.DEEPL, sessionIndex + 1, sourceLang, targetLang, sentences, (QUERY_LENGTH * sessionIndex) + QUERY_LENGTH < sentences.length ? sentences.slice(QUERY_LENGTH * sessionIndex, (QUERY_LENGTH * sessionIndex) + QUERY_LENGTH) : sentences.slice(QUERY_LENGTH * sessionIndex), result);
         }
       }).fail(function (jqXHR, textStatus, errorThrown) {
         $("#translatedText").html(`<p>${jqXHR}</p><br><p>${errorThrown}</p>`);
@@ -249,7 +228,7 @@ async function translate(service, sessionIndex, sourceLang, targetLang, sentence
       //POST https://api-edge.cognitive.microsofttranslator.com/translate?to=${toLang}&api-version=3.0&includeSentenceLength=true Authorization: Bearer ${accessToken} - Content-Type: application/json - send(data)
       settings = {
         crossDomain: true,
-        url: `https://api.cognitive.microsofttranslator.com/translate?from=${sourceLang}&to=${targetLang}&api-version=3.0&textType=html&includeSentenceLength=true`,
+        url: `https://api.cognitive.microsofttranslator.com/translate?from=${getMicrosoftFormat(sourceLang)}&to=${getMicrosoftFormat(targetLang)}&api-version=3.0&textType=html&includeSentenceLength=true`,
         method: "POST",
         headers: {
           "Authorization": "Bearer " + accessToken,
@@ -257,7 +236,7 @@ async function translate(service, sessionIndex, sourceLang, targetLang, sentence
         },
         processData: false,
         data: JSON.stringify(query.map((sentence) => ({
-            "Text":textPreProcess(sentence, !$("#flexSwitchCheckIntermediary").prop("checked") || sourceLang !== $("#intermediaryLangSelect").val() ? 'intermediary' : service)
+            "Text":textPreProcess(sentence, $("#flexSwitchCheckIntermediary").prop("checked") && sourceLang !== $("#intermediaryLangSelect").val() ? 'intermediary' : service)
         })))
       };
 
@@ -266,8 +245,9 @@ async function translate(service, sessionIndex, sourceLang, targetLang, sentence
           const processedTranslation = textPostProcess(data[i].translations[0].text, service);
 
           result += ('<p>' + (processedTranslation.trim() !== query[i].trim() ? '<i>' + [...sourceSentences].slice(QUERY_LENGTH * (sessionIndex - 1))[i] + '</i><br>' + processedTranslation : [...sourceSentences].slice(QUERY_LENGTH * (sessionIndex - 1))[i]) + '</p>').replace(/(<p>)(<\/p>)/g, '$1<br>$2');
-          translation += textPostProcess(data[i].translations[0].text, !$("#flexSwitchCheckIntermediary").prop("checked") || sourceLang !== $("#intermediaryLangSelect").val() ? 'intermediary' : service) + '\n';
         }
+
+        translation += data.map((sentence) => textPostProcess(decodeHTMLEntity(sentence.translations[0].text), $("#flexSwitchCheckIntermediary").prop("checked") && sourceLang !== $("#intermediaryLangSelect").val() ? 'intermediary' : service)).join('\n');
 
         if ([...sentences].slice(QUERY_LENGTH * (sessionIndex - 1)).every((element, index) => query[index] === element)) {
           if ($("#flexSwitchCheckIntermediary").prop("checked") && sourceLang !== $("#intermediaryLangSelect").val()) {
@@ -275,13 +255,13 @@ async function translate(service, sessionIndex, sourceLang, targetLang, sentence
 
             translation = '';
             preRequest();
-            translate($(".service.active").attr("id"), 1, targetLang, getMicrosoftFormat($("#targetLangSelect").val()), sentences, sentences.length > QUERY_LENGTH ? sentences.slice(0, QUERY_LENGTH) : sentences, '');
+            translate($(".service.active").attr("id"), 1, targetLang, $("#targetLangSelect").val(), sentences, sentences.length > QUERY_LENGTH ? sentences.slice(0, QUERY_LENGTH) : sentences, '');
           } else {
             $("#translatedText").html(result); 
             postRequest();
           }
         } else {
-          translate(service, sessionIndex + 1, sourceLang, targetLang, sentences, (QUERY_LENGTH * sessionIndex) + QUERY_LENGTH < sentences.length ? sentences.slice(QUERY_LENGTH * sessionIndex, (QUERY_LENGTH * sessionIndex) + QUERY_LENGTH) : sentences.slice(QUERY_LENGTH * sessionIndex), result);
+          translate(Services.MICROSOFT, sessionIndex + 1, sourceLang, targetLang, sentences, (QUERY_LENGTH * sessionIndex) + QUERY_LENGTH < sentences.length ? sentences.slice(QUERY_LENGTH * sessionIndex, (QUERY_LENGTH * sessionIndex) + QUERY_LENGTH) : sentences.slice(QUERY_LENGTH * sessionIndex), result);
         }
       }).fail(function (jqXHR, textStatus, errorThrown) {
         $("#translatedText").html(`<p>${jqXHR}</p><br><p>${errorThrown}</p>`);
@@ -308,11 +288,11 @@ async function translate(service, sessionIndex, sourceLang, targetLang, sentence
 
       $.ajax(settings).done(function (data) {
         for (let i = 0; i < query.length; i++) {
-          const sentence = textPostProcess((sourceLang === 'auto' ? data[i][0] : data[i]).replace(/(<\/b>)( *<i>)/g, '$1PARABREAK$2').split('PARABREAK').map((element) => element.replace(/<i>.+<\/i>( *<b>.+<\/b>)/g, '$1')).join(''), service);
-          result += ('<p>' + (sentence.trim() !== query[i].trim() ? '<i>' + [...sourceSentences].slice(QUERY_LENGTH * (sessionIndex - 1))[i] + '</i><br>' + sentence : [...sourceSentences].slice(QUERY_LENGTH * (sessionIndex - 1))[i]) + '</p>').replace(/(<p>)(<\/p>)/g, '$1<br>$2');
+          const processedTranslation = textPostProcess((sourceLang === 'auto' ? data[i][0] : data[i]).replace(/(<\/b>)( *<i>)/g, '$1PARABREAK$2').split('PARABREAK').map((element) => element.replace(/<i>.+<\/i>( *<b>.+<\/b>)/g, '$1')).join(''), service);
+          result += ('<p>' + (processedTranslation.trim() !== query[i].trim() ? '<i>' + [...sourceSentences].slice(QUERY_LENGTH * (sessionIndex - 1))[i] + '</i><br>' + processedTranslation : [...sourceSentences].slice(QUERY_LENGTH * (sessionIndex - 1))[i]) + '</p>').replace(/(<p>)(<\/p>)/g, '$1<br>$2');
         }
 
-        translation += data.map((sentence) => textPostProcess(decodeHTMLEntity((sourceLang === 'auto' ? sentence[0] : sentence).replace(/(<\/b>)( *<i>)/g, '$1PARABREAK$2').split('PARABREAK').map((element) => element.replace(/<i>.+<\/i>( *)<b>(.+)<\/b>/g, '$1$2')).join('')), !$("#flexSwitchCheckIntermediary").prop("checked") || sourceLang !== $("#intermediaryLangSelect").val() ? 'intermediary' : service)).join('\n');
+        translation += data.map((sentence) => textPostProcess(decodeHTMLEntity((sourceLang === 'auto' ? sentence[0] : sentence).replace(/(<\/b>)( *<i>)/g, '$1PARABREAK$2').split('PARABREAK').map((element) => element.replace(/<i>.+<\/i>( *)<b>(.+)<\/b>/g, '$1$2')).join('')), $("#flexSwitchCheckIntermediary").prop("checked") && sourceLang !== $("#intermediaryLangSelect").val() ? 'intermediary' : service)).join('\n');
 
         if ([...sentences].slice(QUERY_LENGTH * (sessionIndex - 1)).every((element, index) => query[index] === element)) {
           if ($("#flexSwitchCheckIntermediary").prop("checked") && sourceLang !== $("#intermediaryLangSelect").val()) {
@@ -326,7 +306,7 @@ async function translate(service, sessionIndex, sourceLang, targetLang, sentence
             postRequest();
           }
         } else {
-          translate(service, sessionIndex + 1, sourceLang, targetLang, sentences, (QUERY_LENGTH * sessionIndex) + QUERY_LENGTH < sentences.length ? sentences.slice(QUERY_LENGTH * sessionIndex, (QUERY_LENGTH * sessionIndex) + QUERY_LENGTH) : sentences.slice(QUERY_LENGTH * sessionIndex), result);
+          translate(Services.GOOGLE, sessionIndex + 1, sourceLang, targetLang, sentences, (QUERY_LENGTH * sessionIndex) + QUERY_LENGTH < sentences.length ? sentences.slice(QUERY_LENGTH * sessionIndex, (QUERY_LENGTH * sessionIndex) + QUERY_LENGTH) : sentences.slice(QUERY_LENGTH * sessionIndex), result);
         }
       }).fail(function (jqXHR, textStatus, errorThrown) {
         $("#translatedText").html(`<p>${jqXHR}</p>\n<p>${errorThrown}</p>`);
@@ -383,6 +363,9 @@ function textPreProcess(text, service) {
       if (service === Services.MICROSOFT) {
         newText = newText.replace(new RegExp(glossaryList[i][0], 'g'), `<mstrans:dictionary translation="${glossaryList[i][1]}">GLOSSARY_INDEX_${i}</mstrans:dictionary>`);
         newText = /\p{sc=Latin}/u.test(glossaryList[i][1]) ? newText.replace(/(mstrans:dictionary>)(<mstrans:dictionary)/g, '$1 $2') : newText;
+      } else if (service === Services.DEEPL) {
+        newText = newText.replace(new RegExp(glossaryList[i][0], 'g'), `<p translate="no">GLOSSARY_INDEX_${i}</p>`);
+        newText = /\p{sc=Latin}/u.test(glossaryList[i][1]) ? newText.replace(/(p>)(<p translate="no")/g, '$1 $2') : newText;
       } else {
         newText = newText.replace(new RegExp(glossaryList[i][0], 'g'), `<span class="notranslate">GLOSSARY_INDEX_${i}</span>`);
         newText = /\p{sc=Latin}/u.test(glossaryList[i][1]) ? newText.replace(/(span>)(<span class="notranslate")/g, '$1 $2') : newText;
@@ -404,7 +387,7 @@ function textPostProcess(text, service) {
     const glossaryMap = new Map([...glossary].reverse().filter((phrase) => newText.includes(phrase[0])));
 
     for (let [key, value] of glossaryMap.entries()) {
-      newText = newText.replace(/<span class="notranslate">/g, ' ').replace(/<\/span>/g, ' ').replace(new RegExp(key, 'g'), service === 'intermediary' ? key : value);
+      newText = newText.replace(service === Services.DEEPL ? /<p translate="no">/g : /<span class="notranslate">/g, ' ').replace(service === Services.DEEPL ? /<\/p>/g : /<\/span>/g, ' ').replace(new RegExp(key, 'g'), service === 'intermediary' ? key : value);
     }
   }
 
