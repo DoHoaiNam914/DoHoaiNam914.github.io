@@ -241,10 +241,17 @@ async function translate(service, sessionIndex, sourceLang, targetLang, sentence
       };
 
       $.ajax(settings).done(function (data) {
+        var lostLineCount = 0;
+
         for (let i = 0; i < query.length; i++) {
           const processedTranslation = textPostProcess(data[i].translations[0].text, service);
 
-          result += ('<p>' + (processedTranslation.trim() !== query[i].trim() ? '<i>' + [...sourceSentences].slice(QUERY_LENGTH * (sessionIndex - 1))[i] + '</i><br>' + processedTranslation : [...sourceSentences].slice(QUERY_LENGTH * (sessionIndex - 1))[i]) + '</p>').replace(/(<p>)(<\/p>)/g, '$1<br>$2');
+          if (query[i].trim().length === 0 && processedTranslation.trim().length) {
+            result += '<p><br></p>';
+            lostLineCount++;
+          }
+
+          result += ('<p>' + (processedTranslation.trim() !== query[i + lostLineCount].trim() ? '<i>' + [...sourceSentences].slice(QUERY_LENGTH * (sessionIndex - 1))[i + lostLineCount] + '</i><br>' + processedTranslation : [...sourceSentences].slice(QUERY_LENGTH * (sessionIndex - 1))[i + lostLineCount]) + '</p>').replace(/(<p>)(<\/p>)/g, '$1<br>$2');
         }
 
         translation += data.map((sentence) => textPostProcess(decodeHTMLEntity(sentence.translations[0].text), $("#flexSwitchCheckIntermediary").prop("checked") && sourceLang !== $("#intermediaryLangSelect").val() ? 'intermediary' : service)).join('\n');
