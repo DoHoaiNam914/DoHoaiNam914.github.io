@@ -44,14 +44,14 @@ $("#queryText").change(function () {
 
 $("#settingsButton").on("click", () => $("#glossaryList").val(-1).change());
 
-$(".option").change(() => localStorage.setItem("translator", JSON.stringify({ service: $(".service.active").attr("id"), source: $("#sourceLangSelect").val(), target: $("#targetLangSelect").val(), bridge: { enabled: $("#flexCheckBridge").prop("checked"), lang: $("#bridgeLangSelect").val() } })));
+$(".option").change(() => localStorage.setItem("translator", JSON.stringify({ service: $(".service.active").attr("id"), source: $("#sourceLangSelect").val(), target: $("#targetLangSelect").val(), intermediary: { enabled: $("#flexSwitchCheckIntermediary").prop("checked"), service: $(".intermediary-service.active").attr("id"), lang: $("#intermediaryLangSelect").val() } })));
 
 $("#translateButton").click(function () {
   if ($(this).text() === 'Dịch') {
-    const service = $(".service.active").attr("id");
+    const service = $("#flexSwitchCheckIntermediary").prop("checked") ? $(".intermediary-service.active").attr("id") : $(".service.active").attr("id");
 
     var sourceLang = $("#sourceLangSelect").val();
-    var targetLang = $("#flexCheckBridge").prop("checked") ? $("#bridgeLangSelect").val() : $("#targetLangSelect").val();
+    var targetLang = $("#flexSwitchCheckIntermediary").prop("checked") ? $("#intermediaryLangSelect").val() : $("#targetLangSelect").val();
 
     switch (service) {
       case Services.DEEPL:
@@ -118,7 +118,45 @@ $(".service").click(function () {
     $("#translateButton").click();
   }
 
-  localStorage.setItem("translator", JSON.stringify({ service: $(".service.active").attr("id"), source: $("#sourceLangSelect").val(), target: $("#targetLangSelect").val(), bridge: { enabled: $("#flexCheckBridge").prop("checked"), lang: $("#bridgeLangSelect").val() } }));
+  localStorage.setItem("translator", JSON.stringify({ service: $(".service.active").attr("id"), source: $("#sourceLangSelect").val(), target: $("#targetLangSelect").val(), intermediary: { enabled: $("#flexSwitchCheckIntermediary").prop("checked"), service: $(".intermediary-service.active").attr("id"), lang: $("#intermediaryLangSelect").val() } }));
+});
+
+$(".intermediary-service").click(function () {
+  if (!$(this).hasClass("disabled")) {
+    $(".intermediary-service").removeClass("active");
+    $(this).addClass("active");
+
+    switch ($(this).attr("id")) {
+      case Services.DEEPL:
+        $(".select-lang").each(function () {
+          if ($(this).val() === 'vi') {
+            switch ($(this).attr("id")) {
+              case 'sourceLangSelect':
+                $(this).val("auto").change();
+                break;
+
+              case 'targetLangSelect':
+                $(this).val("en").change();
+                break;
+            }
+          }
+        });
+
+        $(".select-lang option[value=\"vi\"]").addClass("disabled");
+        break;
+
+      default:
+        $(".select-lang option[value=\"vi\"]").removeClass("disabled");
+        break;
+    }
+  }
+
+  if ($("#translateButton").text() === 'Sửa') {
+    $("#translateButton").click();
+    $("#translateButton").click();
+  }
+
+  localStorage.setItem("translator", JSON.stringify({ service: $(".service.active").attr("id"), source: $("#sourceLangSelect").val(), target: $("#targetLangSelect").val(), intermediary: { enabled: $("#flexSwitchCheckIntermediary").prop("checked"), service: $(".intermediary-service.active").attr("id"), lang: $("#intermediaryLangSelect").val() } }));
 });
 
 async function translate(service, sessionIndex, sourceLang, targetLang, sentences, query, result) {
@@ -146,12 +184,12 @@ async function translate(service, sessionIndex, sourceLang, targetLang, sentence
 
         translation = combine.map((element) => element[1]).join('\n');
 
-        if ($("#flexCheckBridge").prop("checked") && sourceLang !== $("#bridgeLangSelect").val()) {
+        if ($("#flexSwitchCheckIntermediary").prop("checked") && sourceLang !== $("#intermediaryLangSelect").val()) {
           sentences = translation.split(/\r?\n/);
 
           translation = '';
           preRequest();
-          translate(Services.DEEPL, 1, targetLang, getDeepLFormatTarget($("#targetLangSelect").val()), sentences, sentences.length > QUERY_LENGTH ? sentences.slice(0, QUERY_LENGTH) : sentences, '');
+          translate($(".service.active").attr("id"), 1, targetLang, getDeepLFormatTarget($("#targetLangSelect").val()), sentences, sentences.length > QUERY_LENGTH ? sentences.slice(0, QUERY_LENGTH) : sentences, '');
         } else {
           $("#translatedText").html(('<p>' + combine.map((sentence) => sentence[1].trim() !== sentence[0].trim() ? '<i>' + sentence.join('</i><br>') : sentence[0]).join('</p><p>') + '</p>').replace(/(<p>)(<\/p>)/g, '$1<br>$2'));
           postRequest();
@@ -219,7 +257,7 @@ async function translate(service, sessionIndex, sourceLang, targetLang, sentence
         },
         processData: false,
         data: JSON.stringify(query.map((sentence) => ({
-            "Text":textPreProcess(sentence, !$("#flexCheckBridge").prop("checked") || sourceLang !== $("#bridgeLangSelect").val() ? 'bridge' : service)
+            "Text":textPreProcess(sentence, !$("#flexSwitchCheckIntermediary").prop("checked") || sourceLang !== $("#intermediaryLangSelect").val() ? 'intermediary' : service)
         })))
       };
 
@@ -228,16 +266,16 @@ async function translate(service, sessionIndex, sourceLang, targetLang, sentence
           const processedTranslation = textPostProcess(data[i].translations[0].text, service);
 
           result += ('<p>' + (processedTranslation.trim() !== query[i].trim() ? '<i>' + [...sourceSentences].slice(QUERY_LENGTH * (sessionIndex - 1))[i] + '</i><br>' + processedTranslation : [...sourceSentences].slice(QUERY_LENGTH * (sessionIndex - 1))[i]) + '</p>').replace(/(<p>)(<\/p>)/g, '$1<br>$2');
-          translation += textPostProcess(data[i].translations[0].text, !$("#flexCheckBridge").prop("checked") || sourceLang !== $("#bridgeLangSelect").val() ? 'bridge' : service) + '\n';
+          translation += textPostProcess(data[i].translations[0].text, !$("#flexSwitchCheckIntermediary").prop("checked") || sourceLang !== $("#intermediaryLangSelect").val() ? 'intermediary' : service) + '\n';
         }
 
         if ([...sentences].slice(QUERY_LENGTH * (sessionIndex - 1)).every((element, index) => query[index] === element)) {
-          if ($("#flexCheckBridge").prop("checked") && sourceLang !== $("#bridgeLangSelect").val()) {
+          if ($("#flexSwitchCheckIntermediary").prop("checked") && sourceLang !== $("#intermediaryLangSelect").val()) {
             sentences = translation.split(/\r?\n/);
 
             translation = '';
             preRequest();
-            translate(Services.MICROSOFT, 1, targetLang, getMicrosoftFormat($("#targetLangSelect").val()), sentences, sentences.length > QUERY_LENGTH ? sentences.slice(0, QUERY_LENGTH) : sentences, '');
+            translate($(".service.active").attr("id"), 1, targetLang, getMicrosoftFormat($("#targetLangSelect").val()), sentences, sentences.length > QUERY_LENGTH ? sentences.slice(0, QUERY_LENGTH) : sentences, '');
           } else {
             $("#translatedText").html(result); 
             postRequest();
@@ -274,15 +312,15 @@ async function translate(service, sessionIndex, sourceLang, targetLang, sentence
           result += ('<p>' + (sentence.trim() !== query[i].trim() ? '<i>' + [...sourceSentences].slice(QUERY_LENGTH * (sessionIndex - 1))[i] + '</i><br>' + sentence : [...sourceSentences].slice(QUERY_LENGTH * (sessionIndex - 1))[i]) + '</p>').replace(/(<p>)(<\/p>)/g, '$1<br>$2');
         }
 
-        translation += data.map((sentence) => textPostProcess(decodeHTMLEntity((sourceLang === 'auto' ? sentence[0] : sentence).replace(/(<\/b>)( *<i>)/g, '$1PARABREAK$2').split('PARABREAK').map((element) => element.replace(/<i>.+<\/i>( *)<b>(.+)<\/b>/g, '$1$2')).join('')), !$("#flexCheckBridge").prop("checked") || sourceLang !== $("#bridgeLangSelect").val() ? 'bridge' : service)).join('\n');
+        translation += data.map((sentence) => textPostProcess(decodeHTMLEntity((sourceLang === 'auto' ? sentence[0] : sentence).replace(/(<\/b>)( *<i>)/g, '$1PARABREAK$2').split('PARABREAK').map((element) => element.replace(/<i>.+<\/i>( *)<b>(.+)<\/b>/g, '$1$2')).join('')), !$("#flexSwitchCheckIntermediary").prop("checked") || sourceLang !== $("#intermediaryLangSelect").val() ? 'intermediary' : service)).join('\n');
 
         if ([...sentences].slice(QUERY_LENGTH * (sessionIndex - 1)).every((element, index) => query[index] === element)) {
-          if ($("#flexCheckBridge").prop("checked") && sourceLang !== $("#bridgeLangSelect").val()) {
+          if ($("#flexSwitchCheckIntermediary").prop("checked") && sourceLang !== $("#intermediaryLangSelect").val()) {
             sentences = translation.split(/\r?\n/);
 
             translation = '';
             preRequest();
-            translate(Services.GOOGLE, 1, targetLang, $("#targetLangSelect").val(), sentences, sentences.length > QUERY_LENGTH ? sentences.slice(0, QUERY_LENGTH) : sentences, '');
+            translate($(".service.active").attr("id"), 1, targetLang, $("#targetLangSelect").val(), sentences, sentences.length > QUERY_LENGTH ? sentences.slice(0, QUERY_LENGTH) : sentences, '');
           } else {
             $("#translatedText").html(result); 
             postRequest();
@@ -366,7 +404,7 @@ function textPostProcess(text, service) {
     const glossaryMap = new Map([...glossary].reverse().filter((phrase) => newText.includes(phrase[0])));
 
     for (let [key, value] of glossaryMap.entries()) {
-      newText = newText.replace(/<span class="notranslate">/g, ' ').replace(/<\/span>/g, ' ').replace(new RegExp(key, 'g'), service === 'bridge' ? key : value);
+      newText = newText.replace(/<span class="notranslate">/g, ' ').replace(/<\/span>/g, ' ').replace(new RegExp(key, 'g'), service === 'intermediary' ? key : value);
     }
   }
 

@@ -44,14 +44,15 @@
           $("#flexCheckThreshold").prop("checked", recognizer.threshold);
         }).wait()
         .script("/js/dich-nhanh.js").wait(function () {
-          const translator = JSON.parse(localStorage.getItem("translator")) ?? { service: $(".service.active").attr("id"), source: $("#sourceLangSelect").val(), target: $("#targetLangSelect").val(), bridge: { enabled: $("#flexCheckBridge").prop("checked"), lang: $("#bridgeLangSelect").val() } };
+          const translator = JSON.parse(localStorage.getItem("translator")) ?? { service: $(".service.active").attr("id"), source: $("#sourceLangSelect").val(), target: $("#targetLangSelect").val(), intermediary: { enabled: $("#flexSwitchCheckIntermediary").prop("checked"), service: $(".intermediary-service.active").attr("id"), lang: $("#intermediaryLangSelect").val() } };
           const searchParams = new URLSearchParams(window.location.search);
           $("#sourceLangSelect").val(searchParams.get('sl') ?? translator.source);
           $("#targetLangSelect").val(searchParams.get('tl') ?? translator.target);
           $(`#${translator.service}`).click();
 
-          $("#flexCheckBridge").prop("checked", translator.bridge.enabled);
-          $("#bridgeLangSelect").val(translator.bridge.lang);
+          $("#flexSwitchCheckIntermediary").prop("checked", translator.intermediary.enabled);
+          $(`#${translator.intermediary.service}`).click();
+          $("#intermediaryLangSelect").val(translator.intermediary.lang);
         });
     </script>
     <style>
@@ -206,7 +207,7 @@
           </div>
           <div class="modal-body">
             <div class="dropdown-center">
-              <button class="btn btn-secondary btn-sm dropdown-toggle mb-3" type="button" data-bs-toggle="dropdown" aria-expanded="false">Trình dịch</button>
+              <button class="btn btn-secondary btn-sm dropdown-toggle mt-3" type="button" data-bs-toggle="dropdown" aria-expanded="false">Trình dịch</button>
               <ul class="dropdown-menu">
                 <li><button class="dropdown-item service" id="deepl" type="button">DeepL Translator</button></li>
                 <li><button class="dropdown-item service active" id="google" type="button">Google Dịch</button></li>
@@ -214,19 +215,28 @@
                 <li><button class="dropdown-item service" id="microsoft" type="button">Trình dịch Microsoft</button></li>
               </ul>
             </div>
-            <label for="bridgeGroup">Dịch bắc cầu:</label>
-            <div class="input-group  mb-3" id="bridgeGroup">
-              <div class="input-group-text">
-                <input class="form-check-input option" type="checkbox" value="" id="flexCheckBridge">
-              </div>
-              <select class="form-select form-select-sm option" id="bridgeLangSelect">
-                <option value="en" selected>Tiếng Anh</option>
-                <option value="ja">Tiếng Nhật</option>
-                <option value="zh-CN">Tiếng Trung (Giản thể)</option>
-                <option value="zh-TW">Tiếng Trung (Phổn thể)</option>
-                <option value="vi">Tiếng Việt</option>
-              </select>
+            <hr>
+            <h2 class="fs-5">Dịch trung gian</h2>
+            <div class="form-check form-switch mb-3">
+              <input class="form-check-input option" type="checkbox" role="switch" id="flexSwitchCheckIntermediary">
+              <label class="form-check-label" for="flexSwitchCheckIntermediary">Bật</label>
             </div>
+            <div class="dropdown-center">
+              <button class="btn btn-secondary btn-sm dropdown-toggle mb-3" type="button" data-bs-toggle="dropdown" aria-expanded="false">Trình dịch trung gian</button>
+              <ul class="dropdown-menu">
+                <li><button class="dropdown-item intermediary-service" id="deepl" type="button">DeepL Translator</button></li>
+                <li><button class="dropdown-item intermediary-service active" id="google" type="button">Google Dịch</button></li>
+                <li><button class="dropdown-item intermediary-service disabled" id="papago" type="button">Papago (Chờ cập nhật)</button></li>
+                <li><button class="dropdown-item intermediary-service" id="microsoft" type="button">Trình dịch Microsoft</button></li>
+              </ul>
+            </div>
+            <select class="form-select form-select-sm option" id="intermediaryLangSelect">
+              <option value="en" selected>Tiếng Anh</option>
+              <option value="ja">Tiếng Nhật</option>
+              <option value="zh-CN">Tiếng Trung (Giản thể)</option>
+              <option value="zh-TW">Tiếng Trung (Phổn thể)</option>
+              <option value="vi">Tiếng Việt</option>
+            </select>
             <hr>
             <h2 class="fs-5">Trích xuất văn bản</h2>
             <select class="form-select form-select-sm mb-3 option" id="recognizeLangsSelect" multiple>
