@@ -249,11 +249,11 @@ async function translate(service, sessionIndex, sourceLang, targetLang, sentence
         for (let i = 0; i < query.length; i++) {
           const sentence = textPostProcess((sourceLang === 'auto' ? data[i][0] : data[i]).replace(/(<\/b>)( *<i>)/g, '$1PARABREAK$2').split('PARABREAK').map((element) => element.replace(/<i>.+<\/i> (<b>.+<\/b>)/g, '$1')).join(''), service);
           result += ('<p>' + (sentence.trim() !== query[i].trim() ? '<i>' + query[i] + '</i><br>' + sentence : query[i]) + '</p>').replace(/(<p>)(<\/p>)/g, '$1<br>$2');
-          translation += data.map((element) => textPostProcess(decodeHTMLEntities((sourceLang === 'auto' ? element[0] : element).replace(/(<\/b>)( *<i>)/g, '$1PARABREAK$2').split('PARABREAK').map((element) => element.replace(/<i>.+<\/i> <b>(.+)<\/b>/g, '$1')).join('')), service)).join('\n');
         }
 
         if ([...sentences].slice(QUERY_LENGTH * (sessionIndex - 1)).every((element, index) => query[index] === element)) {
-          $("#translatedText").html(result);
+          $("#translatedText").html(result); 
+          translation += data.map((sentence) => textPostProcess(decodeHTMLEntity((sourceLang === 'auto' ? sentence[0] : sentence).replace(/(<\/b>)( *<i>)/g, '$1PARABREAK$2').split('PARABREAK').map((element) => element.replace(/<i>.+<\/i> <b>(.+)<\/b>/g, '$1')).join('')), service)).join('\n');
           postRequest();
         } else {
           translate(service, sessionIndex + 1, sourceLang, targetLang, sentences, (QUERY_LENGTH * sessionIndex) + QUERY_LENGTH < sentences.length ? sentences.slice(QUERY_LENGTH * sessionIndex, (QUERY_LENGTH * sessionIndex) + QUERY_LENGTH) : sentences.slice(QUERY_LENGTH * sessionIndex), result);
@@ -266,7 +266,7 @@ async function translate(service, sessionIndex, sourceLang, targetLang, sentence
   }
 }
 
-function decodeHTMLEntities(text) {
+function decodeHTMLEntity(text) {
   const div = document.createElement('div');
   $(div).html(text); 
   return $(div).text();
