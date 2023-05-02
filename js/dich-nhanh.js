@@ -247,9 +247,9 @@ async function translate(service, sessionIndex, sourceLang, targetLang, sentence
 
       $.ajax(settings).done(function (data) {
         for (let i = 0; i < query.length; i++) {
-          const sentence = textPostProcess(sourceLang === 'auto' ? data[i][0] : data[i], service);
-          result += ('<p>' + (sentence.trim() !== query[i].trim() ? (!/<\/?(i|b)>/.test(sentence) ? '<i>' + query[i] + '</i><br>' + sentence : sentence) : query[i]) + '</p>').replace(/(<p>)(<\/p>)/g, '$1<br>$2');
-          translation += data.map((element) => textPostProcess(sourceLang === 'auto' ? element[0] : element, service)).join('\n');
+          const sentence = textPostProcess((sourceLang === 'auto' ? data[i][0] : data[i]).replace(/(<\/b>)( *<i>)/g, '$1PARABREAK$2').split('PARABREAK').map((element) => element.replace(/<i>.+<\/i> (<b>.+<\/b>)/g, '$1')).join(''), service);
+          result += ('<p>' + (sentence.trim() !== query[i].trim() ? '<i>' + query[i] + '</i><br>' + sentence : query[i]) + '</p>').replace(/(<p>)(<\/p>)/g, '$1<br>$2');
+          translation += data.map((element) => textPostProcess(decodeHTMLEntities((sourceLang === 'auto' ? element[0] : element).replace(/(<\/b>)( *<i>)/g, '$1PARABREAK$2').split('PARABREAK').map((element) => element.replace(/<i>.+<\/i> <b>(.+)<\/b>/g, '$1')).join('')), service)).join('\n');
         }
 
         if ([...sentences].slice(QUERY_LENGTH * (sessionIndex - 1)).every((element, index) => query[index] === element)) {
@@ -264,6 +264,12 @@ async function translate(service, sessionIndex, sourceLang, targetLang, sentence
       });
       break;
   }
+}
+
+function decodeHTMLEntities(text) {
+  const div = document.createElement('div');
+  $(div).html(text); 
+  return $(div).text();
 }
 
 function getMicrosoftFormat(languageCode) {
