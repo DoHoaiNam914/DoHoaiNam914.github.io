@@ -160,7 +160,14 @@ async function translate(service, sessionIndex, sourceLang, targetLang, sentence
 
         for (let i = 0; i < query.length; i++) {
           const processedTranslation = textPostProcess(data.translations[i].text, service);
-          result += ('<p>' + (processedTranslation.trim() !== sourceQuery[i].trim() ? '<i>' + sourceQuery[i] + '</i><br>' + processedTranslation : sourceQuery[i]) + '</p>').replace(/(<p>)(<\/p>)/g, '$1<br>$2');
+
+          if (sourceQuery[i + lostLineCount].trim() === '' && processedTranslation.trim() !== '') {
+            lostLineCount++;
+            i--;
+            continue;
+          }
+
+          result += ('<p>' + (processedTranslation.trim() !== sourceQuery[i + lostLineCount].trim() ? '<i>' + sourceQuery[i + lostLineCount] + '</i><br>' + processedTranslation : sourceQuery[i + lostLineCount]) + '</p>').replace(/(<p>)(<\/p>)/g, '$1<br>$2');
         }
 
         translation += data.translations.map((sentence) => textPostProcess(decodeHTMLEntity(sentence.text), $("#flexSwitchCheckIntermediary").prop("checked") && sourceLang !== $("#intermediaryLangSelect").val() ? 'intermediary' : service)).join('\n');
@@ -303,7 +310,6 @@ async function translate(service, sessionIndex, sourceLang, targetLang, sentence
             i--;
             continue;
           }
-          console.log(sessionIndex, i, lostLineCount);
 
           result += ('<p>' + (processedTranslation.trim() !== sourceQuery[i + lostLineCount].trim() ? '<i>' + sourceQuery[i + lostLineCount] + '</i><br>' + processedTranslation : sourceQuery[i + lostLineCount]) + '</p>').replace(/(<p>)(<\/p>)/g, '$1<br>$2');
         }
