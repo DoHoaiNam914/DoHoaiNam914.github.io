@@ -12,15 +12,6 @@ const QUERY_LENGTH = 20;
 var sourceSentences;
 var translation = '';
 
-$(document).ready(function () {
-  const searchParams = new URLSearchParams(window.location.search);
-
-  if (searchParams.get('q') != null) {
-    $("#queryText").val(decodeURIComponent(searchParams.get('q'))).change();
-    $("#translateButton").click();
-  }
-});
-
 $("#copyButton").on("click", () => navigator.clipboard.writeText(translation));
 
 $("#pasteButton").on("click", function () {
@@ -44,7 +35,14 @@ $("#queryText").change(function () {
 
 $("#settingsButton").on("click", () => $("#glossaryList").val(-1).change());
 
-$(".option").change(() => localStorage.setItem("translator", JSON.stringify({ service: $(".service.active").attr("id"), source: $("#sourceLangSelect").val(), target: $("#targetLangSelect").val(), intermediary: { enabled: $("#flexSwitchCheckIntermediary").prop("checked"), service: $(".intermediary-service.active").attr("id"), lang: $("#intermediaryLangSelect").val() } })));
+$(".option").change(function () {
+  if ($("#translateButton").text() === 'Sửa') {
+    $("#translateButton").click();
+    $("#translateButton").click();
+  }
+
+  localStorage.setItem("translator", JSON.stringify({ service: $(".service.active").attr("id"), source: $("#sourceLangSelect").val(), target: $("#targetLangSelect").val() })); 
+});
 
 $("#translateButton").click(function () {
   if ($(this).text() === 'Dịch') {
@@ -57,7 +55,7 @@ $("#translateButton").click(function () {
 
     if ($("#queryText").val().length > 0) {
       preRequest();
-      translate(service, 1, sourceLang, targetLang, sourceSentences, sourceSentences.length > QUERY_LENGTH ? sourceSentences.slice(0, QUERY_LENGTH) : sourceSentences, '');
+      translate(service, 1, sourceLang, targetLang, sourceSentences, sourceSentences.length > QUERY_LENGTH ? sourceSentences.slice(0, QUERY_LENGTH) : sourceSentences, '', 0);
     }
   } else if ($(this).text() === 'Sửa') {
     $("#translatedText").hide();
@@ -66,6 +64,7 @@ $("#translateButton").click(function () {
     $("#pasteUrlButton").removeClass("disabled");
     $("#imageFile").removeClass("disabled");
     $("#copyButton").addClass("disabled");
+    lostLineCount = 0;
     translation = '';
     $(this).text("Dịch");
   } 
@@ -106,7 +105,7 @@ $(".service").click(function () {
     $("#translateButton").click();
   }
 
-  localStorage.setItem("translator", JSON.stringify({ service: $(".service.active").attr("id"), source: $("#sourceLangSelect").val(), target: $("#targetLangSelect").val(), intermediary: { enabled: $("#flexSwitchCheckIntermediary").prop("checked"), service: $(".intermediary-service.active").attr("id"), lang: $("#intermediaryLangSelect").val() } }));
+  localStorage.setItem("translator", JSON.stringify({ service: $(".service.active").attr("id"), source: $("#sourceLangSelect").val(), target: $("#targetLangSelect").val() }));
 });
 
 $(".intermediary-service").click(function () {
@@ -124,15 +123,13 @@ $(".intermediary-service").click(function () {
         break;
 
       default:
-        $("# option[value=\"vi\"]").removeClass("disabled");
+        $("#intermediaryLangSelect option[value=\"vi\"]").removeClass("disabled");
         break;
     }
   }
-
-  localStorage.setItem("translator", JSON.stringify({ service: $(".service.active").attr("id"), source: $("#sourceLangSelect").val(), target: $("#targetLangSelect").val(), intermediary: { enabled: $("#flexSwitchCheckIntermediary").prop("checked"), service: $(".intermediary-service.active").attr("id"), lang: $("#intermediaryLangSelect").val() } }));
 });
 
-async function translate(service, sessionIndex, sourceLang, targetLang, sentences, query, result) {
+async function translate(service, sessionIndex, sourceLang, targetLang, sentences, query, result, lostLineCount) {
   let settings;
 
   switch (service) {
@@ -146,9 +143,11 @@ async function translate(service, sessionIndex, sourceLang, targetLang, sentence
       };
 
       $.ajax(settings).done(function (data) {
+        const sourceQuery = [...sourceSentences].slice(QUERY_LENGTH * (sessionIndex - 1));
+
         for (let i = 0; i < query.length; i++) {
           const processedTranslation = textPostProcess(data.translations[i].text, service);
-          result += ('<p>' + (processedTranslation.trim() !== query[i].trim() ? '<i>' + [...sourceSentences].slice(QUERY_LENGTH * (sessionIndex - 1))[i] + '</i><br>' + processedTranslation : [...sourceSentences].slice(QUERY_LENGTH * (sessionIndex - 1))[i]) + '</p>').replace(/(<p>)(<\/p>)/g, '$1<br>$2');
+          result += ('<p>' + (processedTranslation.trim() !== sourceQuery[i].trim() ? '<i>' + sourceQuery[i] + '</i><br>' + processedTranslation : sourceQuery[i]) + '</p>').replace(/(<p>)(<\/p>)/g, '$1<br>$2');
         }
 
         translation += data.translations.map((sentence) => textPostProcess(decodeHTMLEntity(sentence.text), $("#flexSwitchCheckIntermediary").prop("checked") && sourceLang !== $("#intermediaryLangSelect").val() ? 'intermediary' : service)).join('\n');
@@ -159,13 +158,13 @@ async function translate(service, sessionIndex, sourceLang, targetLang, sentence
 
             translation = '';
             preRequest();
-            translate($(".service.active").attr("id"), 1, targetLang, $("#targetLangSelect").val(), sentences, sentences.length > QUERY_LENGTH ? sentences.slice(0, QUERY_LENGTH) : sentences, '');
+            translate($(".service.active").attr("id"), 1, targetLang, $("#targetLangSelect").val(), sentences, sentences.length > QUERY_LENGTH ? sentences.slice(0, QUERY_LENGTH) : sentences, '', 0);
           } else {
             $("#translatedText").html(result);
             postRequest();
           }
         } else {
-          translate(Services.DEEPL, sessionIndex + 1, sourceLang, targetLang, sentences, (QUERY_LENGTH * sessionIndex) + QUERY_LENGTH < sentences.length ? sentences.slice(QUERY_LENGTH * sessionIndex, (QUERY_LENGTH * sessionIndex) + QUERY_LENGTH) : sentences.slice(QUERY_LENGTH * sessionIndex), result);
+          translate(Services.DEEPL, sessionIndex + 1, sourceLang, targetLang, sentences, (QUERY_LENGTH * sessionIndex) + QUERY_LENGTH < sentences.length ? sentences.slice(QUERY_LENGTH * sessionIndex, (QUERY_LENGTH * sessionIndex) + QUERY_LENGTH) : sentences.slice(QUERY_LENGTH * sessionIndex), result, lostLineCount);
         }
       }).fail(function (jqXHR, textStatus, errorThrown) {
         $("#translatedText").html(`<p>${jqXHR}</p><br><p>${errorThrown}</p>`);
@@ -235,9 +234,11 @@ async function translate(service, sessionIndex, sourceLang, targetLang, sentence
       };
 
       $.ajax(settings).done(function (data) {
+        const sourceQuery = [...sourceSentences].slice(QUERY_LENGTH * (sessionIndex - 1));
+
         for (let i = 0; i < query.length; i++) {
           const processedTranslation = textPostProcess(data[i].translations[0].text, service);
-          result += ('<p>' + (processedTranslation.trim() !== query[i].trim() ? '<i>' + [...sourceSentences].slice(QUERY_LENGTH * (sessionIndex - 1))[i] + '</i><br>' + processedTranslation : [...sourceSentences].slice(QUERY_LENGTH * (sessionIndex - 1))[i]) + '</p>').replace(/(<p>)(<\/p>)/g, '$1<br>$2');
+          result += ('<p>' + (processedTranslation.trim() !== sourceQuery[i].trim() ? '<i>' + sourceQuery[i] + '</i><br>' + processedTranslation : sourceQuery[i]) + '</p>').replace(/(<p>)(<\/p>)/g, '$1<br>$2');
         }
 
         translation += data.map((sentence) => textPostProcess(decodeHTMLEntity(sentence.translations[0].text), $("#flexSwitchCheckIntermediary").prop("checked") && sourceLang !== $("#intermediaryLangSelect").val() ? 'intermediary' : service)).join('\n');
@@ -248,13 +249,13 @@ async function translate(service, sessionIndex, sourceLang, targetLang, sentence
 
             translation = '';
             preRequest();
-            translate($(".service.active").attr("id"), 1, targetLang, $("#targetLangSelect").val(), sentences, sentences.length > QUERY_LENGTH ? sentences.slice(0, QUERY_LENGTH) : sentences, '');
+            translate($(".service.active").attr("id"), 1, targetLang, $("#targetLangSelect").val(), sentences, sentences.length > QUERY_LENGTH ? sentences.slice(0, QUERY_LENGTH) : sentences, '', 0);
           } else {
             $("#translatedText").html(result); 
             postRequest();
           }
         } else {
-          translate(Services.MICROSOFT, sessionIndex + 1, sourceLang, targetLang, sentences, (QUERY_LENGTH * sessionIndex) + QUERY_LENGTH < sentences.length ? sentences.slice(QUERY_LENGTH * sessionIndex, (QUERY_LENGTH * sessionIndex) + QUERY_LENGTH) : sentences.slice(QUERY_LENGTH * sessionIndex), result);
+          translate(Services.MICROSOFT, sessionIndex + 1, sourceLang, targetLang, sentences, (QUERY_LENGTH * sessionIndex) + QUERY_LENGTH < sentences.length ? sentences.slice(QUERY_LENGTH * sessionIndex, (QUERY_LENGTH * sessionIndex) + QUERY_LENGTH) : sentences.slice(QUERY_LENGTH * sessionIndex), result, lostLineCount);
         }
       }).fail(function (jqXHR, textStatus, errorThrown) {
         $("#translatedText").html(`<p>${jqXHR}</p><br><p>${errorThrown}</p>`);
@@ -280,17 +281,18 @@ async function translate(service, sessionIndex, sourceLang, targetLang, sentence
       };
 
       $.ajax(settings).done(function (data) {
-        var lostLineCount = 0;
-
+        const sourceQuery = [...sourceSentences].slice(QUERY_LENGTH * (sessionIndex - 1));
         for (let i = 0; i < query.length; i++) {
           const processedTranslation = textPostProcess((sourceLang === 'auto' ? data[i][0] : data[i]).replace(/(<\/b>)( *<i>)/g, '$1PARABREAK$2').split('PARABREAK').map((element) => element.replace(/<i>.+<\/i>( *<b>.+<\/b>)/g, '$1')).join(''), service);
 
-          if (query[i + lostLineCount].trim().length === 0 && processedTranslation.trim().length) {
-            result += '<p><br></p>';
+          if (sourceQuery[i + lostLineCount].trim() === '' && processedTranslation.trim() !== '') {
             lostLineCount++;
+            i--;
+            continue;
           }
+          console.log(sessionIndex, i, lostLineCount);
 
-          result += ('<p>' + (processedTranslation.trim() !== query[i + lostLineCount].trim() ? '<i>' + [...sourceSentences].slice(QUERY_LENGTH * (sessionIndex - 1))[i + lostLineCount] + '</i><br>' + processedTranslation : [...sourceSentences].slice(QUERY_LENGTH * (sessionIndex - 1))[i + lostLineCount]) + '</p>').replace(/(<p>)(<\/p>)/g, '$1<br>$2');
+          result += ('<p>' + (processedTranslation.trim() !== sourceQuery[i + lostLineCount].trim() ? '<i>' + sourceQuery[i + lostLineCount] + '</i><br>' + processedTranslation : sourceQuery[i + lostLineCount]) + '</p>').replace(/(<p>)(<\/p>)/g, '$1<br>$2');
         }
 
         translation += data.map((sentence) => textPostProcess(decodeHTMLEntity((sourceLang === 'auto' ? sentence[0] : sentence).replace(/(<\/b>)( *<i>)/g, '$1PARABREAK$2').split('PARABREAK').map((element) => element.replace(/<i>.+<\/i>( *)<b>(.+)<\/b>/g, '$1$2')).join('')), $("#flexSwitchCheckIntermediary").prop("checked") && sourceLang !== $("#intermediaryLangSelect").val() ? 'intermediary' : service)).join('\n');
@@ -299,15 +301,15 @@ async function translate(service, sessionIndex, sourceLang, targetLang, sentence
           if ($("#flexSwitchCheckIntermediary").prop("checked") && sourceLang !== $("#intermediaryLangSelect").val()) {
             sentences = translation.split(/\r?\n/);
 
-            translation = '';
+            lostLineCount = 0;translation = '';
             preRequest();
-            translate($(".service.active").attr("id"), 1, targetLang, $("#targetLangSelect").val(), sentences, sentences.length > QUERY_LENGTH ? sentences.slice(0, QUERY_LENGTH) : sentences, '');
+            translate($(".service.active").attr("id"), 1, targetLang, $("#targetLangSelect").val(), sentences, sentences.length > QUERY_LENGTH ? sentences.slice(0, QUERY_LENGTH) : sentences, '', 0);
           } else {
             $("#translatedText").html(result); 
             postRequest();
           }
         } else {
-          translate(Services.GOOGLE, sessionIndex + 1, sourceLang, targetLang, sentences, (QUERY_LENGTH * sessionIndex) + QUERY_LENGTH < sentences.length ? sentences.slice(QUERY_LENGTH * sessionIndex, (QUERY_LENGTH * sessionIndex) + QUERY_LENGTH) : sentences.slice(QUERY_LENGTH * sessionIndex), result);
+          translate(Services.GOOGLE, sessionIndex + 1, sourceLang, targetLang, sentences, (QUERY_LENGTH * sessionIndex) + QUERY_LENGTH < sentences.length ? sentences.slice(QUERY_LENGTH * sessionIndex, (QUERY_LENGTH * sessionIndex) + QUERY_LENGTH) : sentences.slice(QUERY_LENGTH * sessionIndex), result, lostLineCount);
         }
       }).fail(function (jqXHR, textStatus, errorThrown) {
         $("#translatedText").html(`<p>${jqXHR}</p>\n<p>${errorThrown}</p>`);
@@ -337,6 +339,7 @@ function getDeepLFormatTarget(languageCode) {
 
 function preRequest() {
   $("#translateButton").addClass("disabled");
+  $(".option").addClass("disabled");
   $("#imageFile").addClass("disabled");
   $("#pasteUrlButton").addClass("disabled");
   $("#clearImageButton").addClass("disabled");
@@ -350,6 +353,7 @@ function postRequest() {
   resize();
   $("#inputGlossary").removeClass("disabled");
   $("#translateButton").removeClass("disabled");
+  $(".option").removeClass("disabled");
   $("#copyButton").removeClass("disabled");
   $("#translateButton").text("Sửa");
 }

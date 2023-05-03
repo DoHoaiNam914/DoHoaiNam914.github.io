@@ -44,15 +44,17 @@
           $("#flexCheckThreshold").prop("checked", recognizer.threshold);
         }).wait()
         .script("/js/dich-nhanh.js").wait(function () {
-          const translator = JSON.parse(localStorage.getItem("translator")) ?? { service: $(".service.active").attr("id"), source: $("#sourceLangSelect").val(), target: $("#targetLangSelect").val(), intermediary: { enabled: $("#flexSwitchCheckIntermediary").prop("checked"), service: $(".intermediary-service.active").attr("id"), lang: $("#intermediaryLangSelect").val() } };
+          const translator = JSON.parse(localStorage.getItem("translator")) ?? { service: $(".service.active").attr("id"), source: $("#sourceLangSelect").val(), target: $("#targetLangSelect").val() };
           const searchParams = new URLSearchParams(window.location.search);
 
           $("#sourceLangSelect").val(searchParams.get('sl') ?? translator.source);
           $("#targetLangSelect").val(searchParams.get('tl') ?? translator.target);
-          $("#flexSwitchCheckIntermediary").prop("checked", translator.intermediary.enabled);
-          $("#intermediaryLangSelect").val(translator.intermediary.lang);
           $(`.service#${translator.service}`).click();
-          $(`.intermediary-service#${translator.intermediary.service}`).click();
+
+          if (searchParams.get('q') != null) {
+            $("#queryText").val(decodeURIComponent(searchParams.get('q'))).change();
+            $("#translateButton").click();
+          }
         });
     </script>
     <style>
