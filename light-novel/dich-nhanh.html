@@ -44,12 +44,19 @@
           $("#flexCheckThreshold").prop("checked", recognizer.threshold);
         }).wait()
         .script("/js/dich-nhanh.js").wait(function () {
-          const translator = JSON.parse(localStorage.getItem("translator")) ?? { service: $(".service.active").attr("id"), source: $("#sourceLangSelect").val(), target: $("#targetLangSelect").val() };
+          const translator = JSON.parse(localStorage.getItem("translator")) ?? { service: $(".service.active").attr("id"), source: $("#sourceLangSelect").val(), target: $("#targetLangSelect").val(), intermediaryTranslator: { enabled: $("#flexSwitchCheckIntermediary").prop("checked"), service: $(".intermediary-service.active").attr("id"), lang: $("#intermediaryLangSelect").val() } };
           const searchParams = new URLSearchParams(window.location.search);
+
+          $(".service.active").removeClass("active");
+          $(".intermediary-service.active").removeClass("active");
 
           $("#sourceLangSelect").val(searchParams.get('sl') ?? translator.source);
           $("#targetLangSelect").val(searchParams.get('tl') ?? translator.target);
-          $(`.service#${translator.service}`).click();
+          $(`.service#${translator.service}`).addClass("active");
+
+          $("#flexSwitchCheckIntermediary").prop("checked", translator.intermediaryTranslator.enabled);
+          $(`.intermediary-service#${translator.intermediaryTranslator.service}`).addClass("active");
+          $("#intermediaryLangSelect").val(translator.intermediaryTranslator.lang);
 
           if (searchParams.get('q') != null) {
             $("#queryText").val(decodeURIComponent(searchParams.get('q'))).change();
@@ -126,6 +133,14 @@
         background-color: rgba(var(--bs-body-bg-rgb), var(--bs-bg-opacity));
         bottom: 7rem;
         right: 1rem;
+      }
+
+      .dropdown-scroller {
+        -webkit-overflow-scrolling: touch;
+        height: 16rem;
+        overflow-x: hidden;
+        overflow-y: auto;
+        white-space: nowrap;
       }
 
       #preview {
@@ -218,7 +233,7 @@
               </ul>
             </div>
             <hr>
-            <h2 class="fs-5">Dịch trung gian</h2>
+            <h2 class="fs-5">Dịch qua trung gian</h2>
             <div class="form-check form-switch mb-3">
               <input class="form-check-input option" type="checkbox" role="switch" id="flexSwitchCheckIntermediary">
               <label class="form-check-label" for="flexSwitchCheckIntermediary">Bật</label>
@@ -276,16 +291,47 @@
               <option value="text/csv">CSV</option>
               <option value="text/plain">VietPhrase</option>
             </select>
-            <div class="input-group input-group-sm mb-3">
-              <span class="input-group-text">Thay thế:</span>
-              <input type="text" placeholder="Nguồn" class="form-control" id="sourceText">
-              <span class="input-group-text">với:</span>
-              <input type="text" placeholder="Đích" class="form-control" id="targetText">
+            <div class="input-group input-group-sm dropend mb-3">
+              <input type="text" placeholder="Thay thế" class="form-control" id="sourceText">
+              <button type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                <span class="visually-hidden">Toggle Dropdown</span>
+              </button>
+              <ul class="dropdown-menu dropdown-scroller">
+                <li><button class="dropdown-item" onclick="$('#sourceText').val().length > 0 && window.open(`http://mobile.coviet.vn/tratu.aspx?k=${$('#sourceText').val()}&t=ALL`)">Lạc Việt</button></li>
+                <li><button class="dropdown-item" onclick="$('#sourceText').val().length > 0 && window.open(`http://www.nomfoundation.org/nom-tools/Nom-Lookup-Tool/Nom-Lookup-Tool?uiLang=en&input_type=rqn_or_hn&inputText=${$('#sourceText').val()}`)">Nomfoundation</button></li>
+                <li><button class="dropdown-item" onclick="$('#sourceText').val().length > 0 && window.open(`https://www.google.com/search?q=${$('#sourceText').val()}`)">Google</button></li>
+                <hr>
+                <li><button class="dropdown-item convert deepl-convert" type="button" data-lang="ZH">DeepL Translator (Chinese)</button></li>
+                <li><button class="dropdown-item convert deepl-convert" type="button" data-lang="EN-US">DeepL Translator (English)</button></li>
+                <li><button class="dropdown-item convert deepl-convert" type="button" data-lang="JA">DeepL Translator (Japanese)</button></li>
+                <li><button class="dropdown-item convert google-convert" type="button" data-lang="en">Google Dịch (Anh)</button></li>
+                <li><button class="dropdown-item convert google-convert" type="button" data-lang="ja">Google Dịch (Nhật)</button></li>
+                <li><button class="dropdown-item convert google-convert" type="button" data-lang="zh-CN">Google Dịch (Trung (Giản thể))</button></li>
+                <li><button class="dropdown-item convert google-convert" type="button" data-lang="zh-TW">Google Dịch (Trung (Phồn thể))</button></li>
+                <li><button class="dropdown-item convert google-convert" type="button" data-lang="vi">Google Dịch (Việt)</button></li>
+                <li><button class="dropdown-item convert microsoft-convert" type="button" data-lang="en">Trình dịch Microsoft (Anh)</button></li>
+                <li><button class="dropdown-item convert microsoft-convert" type="button" data-lang="ja">Trình dịch Microsoft (Nhật)</button></li>
+                <li><button class="dropdown-item convert microsoft-convert" type="button" data-lang="zh-CHS">Trình dịch Microsoft (Trung (Giản thể))</button></li>
+                <li><button class="dropdown-item convert microsoft-convert" type="button" data-lang="zh-CHT">Trình dịch Microsoft (Trung (Phồn thể))</button></li>
+                <li><button class="dropdown-item convert microsoft-convert" type="button" data-lang="vi">Trình dịch Microsoft (Việt)</button></li>
+              </ul>
+            </div>
+            <div class="input-group input-group-sm dropend mb-3">
+              <input type="text" placeholder="Với" class="form-control" id="targetText">
               <button class="btn btn-outline-secondary" id="addButton" type="button">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pen" viewBox="0 0 16 16">
                   <path d="m13.498.795.149-.149a1.207 1.207 0 1 1 1.707 1.708l-.149.148a1.5 1.5 0 0 1-.059 2.059L4.854 14.854a.5.5 0 0 1-.233.131l-4 1a.5.5 0 0 1-.606-.606l1-4a.5.5 0 0 1 .131-.232l9.642-9.642a.5.5 0 0 0-.642.056L6.854 4.854a.5.5 0 1 1-.708-.708L9.44.854A1.5 1.5 0 0 1 11.5.796a1.5 1.5 0 0 1 1.998-.001zm-.644.766a.5.5 0 0 0-.707 0L1.95 11.756l-.764 3.057 3.057-.764L14.44 3.854a.5.5 0 0 0 0-.708l-1.585-1.585z"/>
                 </svg>
               </button>
+              <button type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                <span class="visually-hidden">Toggle Dropdown</span>
+              </button>
+              <ul class="dropdown-menu">
+                <li><button class="dropdown-item upperCaseFromAmountButton" data-amount="1" type="button">Viết hoa 1 từ đơn đầu</button></li>
+                <li><button class="dropdown-item upperCaseFromAmountButton" data-amount="2" type="button">Viết hoa 2 từ đơn đầu</button></li>
+                <li><button class="dropdown-item upperCaseFromAmountButton" data-amount="3" type="button">Viết hoa 3 từ đơn đầu</button></li>
+                <li><button class="dropdown-item upperCaseAllButton" type="button">Viết hoa tất cả</button></li>
+              </ul>
             </div>
             <div class="input-group input-group-sm mb-4">
               <select class="form-select" id="glossaryList">

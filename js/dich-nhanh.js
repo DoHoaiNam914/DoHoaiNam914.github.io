@@ -41,7 +41,7 @@ $(".option").change(function () {
     $("#translateButton").click();
   }
 
-  localStorage.setItem("translator", JSON.stringify({ service: $(".service.active").attr("id"), source: $("#sourceLangSelect").val(), target: $("#targetLangSelect").val() })); 
+  localStorage.setItem("translator", JSON.stringify({ service: $(".service.active").attr("id"), source: $("#sourceLangSelect").val(), target: $("#targetLangSelect").val(), intermediaryTranslator: { enabled: $("#flexSwitchCheckIntermediary").prop("checked"), service: $(".intermediary-service.active").attr("id"), lang: $("#intermediaryLangSelect").val() } }));
 });
 
 $("#translateButton").click(function () {
@@ -64,7 +64,6 @@ $("#translateButton").click(function () {
     $("#pasteUrlButton").removeClass("disabled");
     $("#imageFile").removeClass("disabled");
     $("#copyButton").addClass("disabled");
-    lostLineCount = 0;
     translation = '';
     $(this).text("Dịch");
   } 
@@ -105,7 +104,14 @@ $(".service").click(function () {
     $("#translateButton").click();
   }
 
-  localStorage.setItem("translator", JSON.stringify({ service: $(".service.active").attr("id"), source: $("#sourceLangSelect").val(), target: $("#targetLangSelect").val() }));
+  localStorage.setItem("translator", JSON.stringify({ service: $(".service.active").attr("id"), source: $("#sourceLangSelect").val(), target: $("#targetLangSelect").val(), intermediaryTranslator: { enabled: $("#flexSwitchCheckIntermediary").prop("checked"), service: $(".intermediary-service.active").attr("id"), lang: $("#intermediaryLangSelect").val() } }));
+});
+
+$("#flexSwitchCheckIntermediary").on("change", function () {
+  if ($("#translateButton").text() === 'Sửa') {
+    $("#translateButton").click();
+    $("#translateButton").click();
+  }
 });
 
 $(".intermediary-service").click(function () {
@@ -127,6 +133,13 @@ $(".intermediary-service").click(function () {
         break;
     }
   }
+
+  if ($("#flexSwitchCheckIntermediary").prop("checked") && $("#translateButton").text() === 'Sửa') {
+    $("#translateButton").click();
+    $("#translateButton").click();
+  }
+
+  localStorage.setItem("translator", JSON.stringify({ service: $(".service.active").attr("id"), source: $("#sourceLangSelect").val(), target: $("#targetLangSelect").val(), intermediaryTranslator: { enabled: $("#flexSwitchCheckIntermediary").prop("checked"), service: $(".intermediary-service.active").attr("id"), lang: $("#intermediaryLangSelect").val() } }));
 });
 
 async function translate(service, sessionIndex, sourceLang, targetLang, sentences, query, result, lostLineCount) {
@@ -301,7 +314,7 @@ async function translate(service, sessionIndex, sourceLang, targetLang, sentence
           if ($("#flexSwitchCheckIntermediary").prop("checked") && sourceLang !== $("#intermediaryLangSelect").val()) {
             sentences = translation.split(/\r?\n/);
 
-            lostLineCount = 0;translation = '';
+            translation = '';
             preRequest();
             translate($(".service.active").attr("id"), 1, targetLang, $("#targetLangSelect").val(), sentences, sentences.length > QUERY_LENGTH ? sentences.slice(0, QUERY_LENGTH) : sentences, '', 0);
           } else {
