@@ -12,7 +12,7 @@ const QUERY_LENGTH = 20;
 var sourceSentences;
 var translation = '';
 
-$("#copyButton").on("click", () => navigator.clipboard.writeText(translation));
+$("#copyButton").on("click", () => navigator.clipboard.writeText($("#translateButton").text() === 'Sửa' ? translation : $("#queryText").val()));
 
 $("#pasteButton").on("click", function () {
   navigator.clipboard
@@ -24,6 +24,11 @@ $("#pasteButton").on("click", function () {
         $("#translateButton").click();
       }
     });
+});
+
+$("#reTranslateButton").on("click", function () {
+  $("#translateButton").click();
+  $("#translateButton").click();
 });
 
 $(".textarea").on("input", () => resize());
@@ -63,10 +68,11 @@ $("#translateButton").click(function () {
     $("#clearImageButton").removeClass("disabled");
     $("#pasteUrlButton").removeClass("disabled");
     $("#imageFile").removeClass("disabled");
+    $("#reTranslateButton").addClass("disabled");
     $("#copyButton").addClass("disabled");
     translation = '';
     $(this).text("Dịch");
-  } 
+  }
 });
 
 $(".service").click(function () {
@@ -358,6 +364,7 @@ function getDeepLFormatTarget(languageCode) {
 
 function preRequest() {
   $("#translateButton").addClass("disabled");
+  $("#reTranslateButton").addClass("disabled");
   $(".option").addClass("disabled");
   $("#imageFile").addClass("disabled");
   $("#pasteUrlButton").addClass("disabled");
@@ -374,6 +381,7 @@ function postRequest() {
   $("#translateButton").removeClass("disabled");
   $(".option").removeClass("disabled");
   $("#copyButton").removeClass("disabled");
+  $("#reTranslateButton").removeClass("disabled");
   $("#translateButton").text("Sửa");
 }
 
