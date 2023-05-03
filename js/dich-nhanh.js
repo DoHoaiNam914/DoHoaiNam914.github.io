@@ -41,7 +41,7 @@ $("#queryText").change(function () {
 $("#settingsButton").on("click", () => $("#glossaryList").val(-1).change());
 
 $(".option").change(function () {
-  if ($("#translateButton").text() === 'Sửa') {
+  if ((($(this).attr("id") !== 'intermediaryLangSelect' && $(this).attr("id") !== 'flexSwitchCheckIntermediary') || $("#flexSwitchCheckIntermediary").prop("checked")) && $("#translateButton").text() === 'Sửa') {
     $("#translateButton").click();
     $("#translateButton").click();
   }
@@ -373,12 +373,14 @@ function preRequest() {
   $("#reTranslateButton").addClass("disabled");
   $(".service").addClass("disabled");
   $(".intermediary-service").addClass("disabled");
-  $(".option").addClass("disabled");
+  $("select.option").attr("disabled", true);
+  $("input.option").attr("disabled", true);
+  $(".option:not([disabled])").addClass("disabled");
   $("#copyButton").addClass("disabled");
+  $("#pasteButton").addClass("disabled");
   $("#imageFile").addClass("disabled");
   $("#pasteUrlButton").addClass("disabled");
   $("#clearImageButton").addClass("disabled");
-  $("#inputGlossary").addClass("disabled");
   $("#translatedText").html(null);
 }
 
@@ -386,9 +388,10 @@ function postRequest() {
   $("#queryText").hide();
   $("#translatedText").show();
   resize();
-  $("#inputGlossary").removeClass("disabled");
   $("#translateButton").removeClass("disabled");
+  $(".option").removeAttr("disabled");
   $(".option").removeClass("disabled");
+  $("#pasteButton").removeClass("disabled");
   $("#copyButton").removeClass("disabled");
   $(".service").removeClass("disabled");
   $(".intermediary-service").removeClass("disabled");
