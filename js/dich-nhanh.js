@@ -9,6 +9,8 @@ const Services = {
 
 const QUERY_LENGTH = 20;
 
+var accessToken;
+
 var sourceSentences;
 var translation = '';
 
@@ -233,8 +235,10 @@ async function translate(service, sessionIndex, sourceLang, targetLang, sentence
       break;
 
     case Services.MICROSOFT:
-      const accessToken = await fetch('https://edge.microsoft.com/translate/auth')
-          .then((response) => response.text());
+      if (accessToken == null) {
+        accessToken = await fetch('https://edge.microsoft.com/translate/auth')
+            .then((response) => response.text());
+      }
 
       if (accessToken == undefined) {
         $("#translatedText").html('<p>Không thể lấy được Access Token từ máy chủ.</p>');
@@ -396,6 +400,7 @@ function postRequest() {
   $(".service").removeClass("disabled");
   $(".intermediary-service").removeClass("disabled");
   $("#reTranslateButton").removeClass("disabled");
+  accessToken = null;
   $("#translateButton").text("Sửa");
 }
 
