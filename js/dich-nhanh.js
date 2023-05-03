@@ -69,7 +69,6 @@ $("#translateButton").click(function () {
     $("#pasteUrlButton").removeClass("disabled");
     $("#imageFile").removeClass("disabled");
     $("#reTranslateButton").addClass("disabled");
-    $("#copyButton").addClass("disabled");
     translation = '';
     $(this).text("Dịch");
   }
@@ -165,7 +164,7 @@ async function translate(service, sessionIndex, sourceLang, targetLang, sentence
         const sourceQuery = [...sourceSentences].slice(QUERY_LENGTH * (sessionIndex - 1));
 
         for (let i = 0; i < query.length; i++) {
-          const processedTranslation = textPostProcess(data.translations[i].text, service);console.log(sessionIndex, i, sourceQuery[i + lostLineFixedAmount], processedTranslation, lostLineFixedAmount);
+          const processedTranslation = textPostProcess(data.translations[i].text, service);
 
           if (sourceQuery[i + lostLineFixedAmount].trim().length === 0 && processedTranslation.trim().length > 0) {
             lostLineFixedAmount++;
@@ -263,7 +262,7 @@ async function translate(service, sessionIndex, sourceLang, targetLang, sentence
         const sourceQuery = [...sourceSentences].slice(QUERY_LENGTH * (sessionIndex - 1));
 
         for (let i = 0; i < query.length; i++) {
-          const processedTranslation = textPostProcess(data[i].translations[0].text, service);console.log(sessionIndex, i, sourceQuery[i + lostLineFixedAmount], processedTranslation, lostLineFixedAmount);
+          const processedTranslation = textPostProcess(data[i].translations[0].text, service);
 
           if (sourceQuery[i + lostLineFixedAmount].trim().length === 0 && processedTranslation.trim().length > 0) {
             lostLineFixedAmount++;
@@ -375,6 +374,7 @@ function preRequest() {
   $(".service").addClass("disabled");
   $(".intermediary-service").addClass("disabled");
   $(".option").addClass("disabled");
+  $("#copyButton").addClass("disabled");
   $("#imageFile").addClass("disabled");
   $("#pasteUrlButton").addClass("disabled");
   $("#clearImageButton").addClass("disabled");
