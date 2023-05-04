@@ -112,7 +112,7 @@ $("#inputGlossary").on("change", function () {
 
 $("#glossaryType").change(() => loadGlossary());
 
-$("#sourceText").on("input", function () {
+$("#sourceText").change(function () {
   const glossaryMap = new Map(glossary);
   const data = new Map([...sinoVietnameses].sort((a, b) => b[0].length - a[0].length || a[0].localeCompare(b[0]) ||  a[1].localeCompare(b[1])));
 
@@ -162,6 +162,8 @@ $("#sourceText").on("input", function () {
     $("#glossaryList").val(-1).change();
   }
 });
+
+$("#sourceText").on("input", () => $("#sourceText").change());
 
 $(".deepl-convert").on("click", function () {
   if ($("#sourceText").val().length > 0) {
