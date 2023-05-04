@@ -110,7 +110,7 @@ $("#inputGlossary").on("change", function () {
   reader.readAsText($(this).prop("files")[0]);
 });
 
-$("#glossaryType").change(() => loadGlossary());
+$("#glossaryType").on("input", () => loadGlossary());
 
 $("#sourceText").change(function () {
   const glossaryMap = new Map(glossary);
@@ -162,8 +162,6 @@ $("#sourceText").change(function () {
     $("#glossaryList").val(-1).change();
   }
 });
-
-$("#sourceText").on("input", () => $("#sourceText").change());
 
 $(".deepl-convert").on("click", function () {
   if ($("#sourceText").val().length > 0) {

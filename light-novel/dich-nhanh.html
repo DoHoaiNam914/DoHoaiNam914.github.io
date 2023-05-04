@@ -278,7 +278,7 @@
                 <span class="visually-hidden">Toggle Dropdown</span>
               </button>
               <ul class="dropdown-menu dropdown-scroller">
-                <li><button class="dropdown-item" onclick="navigator.clipboard.readText().then((clipText) => $('#sourceText').val(clipText).change())">Dán</button></li>
+                <li><button class="dropdown-item" onclick="navigator.clipboard.readText().then((clipText) => $('#sourceText').val(clipText).trigger('input'))">Dán</button></li>
                 <hr>
                 <li><button class="dropdown-item" onclick="$('#sourceText').val().length > 0 && window.open(`http://mobile.coviet.vn/tratu.aspx?k=${$('#sourceText').val()}&t=ALL`)">Từ điển Lạc Việt</button></li>
                 <li><button class="dropdown-item" onclick="$('#sourceText').val().length > 0 && window.open(`http://www.nomfoundation.org/nom-tools/Nom-Lookup-Tool/Nom-Lookup-Tool?uiLang=en&input_type=rqn_or_hn&inputText=${$('#sourceText').val()}`)">Nomfoundation</button></li>
