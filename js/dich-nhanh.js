@@ -313,7 +313,7 @@ async function translate(service, sessionIndex, sourceLang, targetLang, sentence
           "Content-Type": "application/x-www-form-urlencoded"
         },
         processData: false,
-        data: "q=" + encodeURI(textPreProcess(query.join('&q='), service))
+        data: "q=" + encodeURI(textPreProcess(query.join('&q='), $("#flexSwitchCheckIntermediary").prop("checked") && sourceLang !== $("#intermediaryLangSelect").val() ? 'intermediary' : service))
       };
 
       $.ajax(settings).done(function (data) {
@@ -413,18 +413,16 @@ function textPreProcess(text, service) {
     for (let i = 0; i < glossaryList.length; i++) {
       if (service === Services.MICROSOFT) {
         newText = newText.replace(new RegExp(glossaryList[i][0], 'g'), `<mstrans:dictionary translation="${glossaryList[i][1]}">GLOSSARY_INDEX_${i}</mstrans:dictionary>`);
-        newText = /\p{sc=Latin}/u.test(glossaryList[i][1]) ? newText.replace(/(mstrans:dictionary>)(<mstrans:dictionary)/g, '$1 $2') : newText;
-      } else if (service === Services.DEEPL) {
-        newText = newText.replace(new RegExp(glossaryList[i][0], 'g'), `<p translate="no">GLOSSARY_INDEX_${i}</p>`);
-        newText = /\p{sc=Latin}/u.test(glossaryList[i][1]) ? newText.replace(/(p>)(<p translate="no")/g, '$1 $2') : newText;
-      } else {
+      } else if (service === 'intermediary') {
         newText = newText.replace(new RegExp(glossaryList[i][0], 'g'), `<span class="notranslate">GLOSSARY_INDEX_${i}</span>`);
-        newText = /\p{sc=Latin}/u.test(glossaryList[i][1]) ? newText.replace(/(span>)(<span class="notranslate")/g, '$1 $2') : newText;
+        newText = /\p{sc=Latin}|\d/u.test(glossaryList[i][1]) ? newText.replace(/(span>)(<span class="notranslate")/g, '$1 $2') : newText;
+      } else {
+        newText = newText.replace(new RegExp(glossaryList[i][0], 'g'), `GLOSSARY_INDEX_${i}`);
       }
     }
 
     for (let i = glossaryList.length - 1; i >= 0; i--) {
-      newText = newText.replace(new RegExp(`GLOSSARY_INDEX_${i}`, 'g'), glossaryList[i][0]);
+      newText = newText.replace(new RegExp(`GLOSSARY_INDEX_${i}`, 'g'), service === Services.MICROSOFT || service === 'intermediary' ? glossaryList[i][0] : glossaryList[i][1]);
     }
   }
 
@@ -434,12 +432,8 @@ function textPreProcess(text, service) {
 function textPostProcess(text, service) {
   var newText = text;
 
-  if (glossary != undefined && service !== Services.MICROSOFT) {
-    const glossaryMap = new Map([...glossary].reverse().filter((phrase) => newText.includes(phrase[0])));
-
-    for (let [key, value] of glossaryMap.entries()) {
-      newText = newText.replace(service === Services.DEEPL ? /<p translate="no">/g : /<span class="notranslate">/g, ' ').replace(service === Services.DEEPL ? /<\/p>/g : /<\/span>/g, ' ').replace(new RegExp(key, 'g'), service === 'intermediary' ? key : value);
-    }
+  if (glossary != undefined && service === 'intermediary') {
+    newText = newText.replace(/<span class="notranslate">/g, ' ').replace(/<\/span>/g, ' ');
   }
 
   return newText;
