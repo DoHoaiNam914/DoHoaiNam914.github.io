@@ -283,9 +283,6 @@
                 <li><button class="dropdown-item" onclick="$('#sourceText').val().length > 0 && window.open(`http://mobile.coviet.vn/tratu.aspx?k=${$('#sourceText').val()}&t=ALL`)">Từ điển Lạc Việt</button></li>
                 <li><button class="dropdown-item" onclick="$('#sourceText').val().length > 0 && window.open(`http://www.nomfoundation.org/nom-tools/Nom-Lookup-Tool/Nom-Lookup-Tool?uiLang=en&input_type=rqn_or_hn&inputText=${$('#sourceText').val()}`)">Nomfoundation</button></li>
                 <li><button class="dropdown-item" onclick="$('#sourceText').val().length > 0 && window.open(`https://www.google.com/search?q=${$('#sourceText').val()}`)">Google</button></li>
-                <li><button class="dropdown-item" onclick="$('#sourceText').val().length > 0 && window.open(`https://www.deepl.com/translator#auto/en/${$('#sourceText').val()}`)">DeepL Translator</button></li>
-                <li><button class="dropdown-item" onclick="$('#sourceText').val().length > 0 && window.open(`https://translate.google.com/?sl=auto&tl=vi&text=${$('#sourceText').val()}&op=translate`)">Google Dịch</button></li>
-                <li><button class="dropdown-item" onclick="$('#sourceText').val().length > 0 && window.open(`https://www.bing.com/translator?from=&to=vi&text=${$('#sourceText').val()}`)">Trình dịch Microsoft Bing</button></li>
                 <hr>
                 <li><button class="dropdown-item convert deepl-convert" type="button" data-lang="ZH">DeepL Translator (Chinese)</button></li>
                 <li><button class="dropdown-item convert deepl-convert" type="button" data-lang="EN-US">DeepL Translator (English)</button></li>
@@ -300,6 +297,10 @@
                 <li><button class="dropdown-item convert microsoft-convert" type="button" data-lang="zh-CHS">Trình dịch Microsoft (Trung (Giản thể))</button></li>
                 <li><button class="dropdown-item convert microsoft-convert" type="button" data-lang="zh-CHT">Trình dịch Microsoft (Trung (Phồn thể))</button></li>
                 <li><button class="dropdown-item convert microsoft-convert" type="button" data-lang="vi">Trình dịch Microsoft (Việt)</button></li>
+                <hr>
+                <li><button class="dropdown-item" onclick="$('#sourceText').val().length > 0 && window.open(`https://www.deepl.com/translator#auto/en/${$('#sourceText').val()}`)">DeepL Translator</button></li>
+                <li><button class="dropdown-item" onclick="$('#sourceText').val().length > 0 && window.open(`https://translate.google.com/?sl=auto&tl=vi&text=${$('#sourceText').val()}&op=translate`)">Google Dịch</button></li>
+                <li><button class="dropdown-item" onclick="$('#sourceText').val().length > 0 && window.open(`https://www.bing.com/translator?from=&to=vi&text=${$('#sourceText').val()}`)">Trình dịch Microsoft Bing</button></li>
               </ul>
             </div>
             <div class="input-group input-group-sm mb-3">

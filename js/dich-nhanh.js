@@ -413,9 +413,10 @@ function textPreProcess(text, service) {
     for (let i = 0; i < glossaryList.length; i++) {
       if (service === Services.MICROSOFT) {
         newText = newText.replace(new RegExp(glossaryList[i][0], 'g'), `<mstrans:dictionary translation="${glossaryList[i][1]}">GLOSSARY_INDEX_${i}</mstrans:dictionary>`);
+        newText = /\p{sc=Latin}|\d/u.test(glossaryList[i][1]) ? newText.replace(/(mstrans:dictionary>)(<mstrans:dictionary)/g, '$1 $2') : newText;
       } else if (service === 'intermediary') {
         newText = newText.replace(new RegExp(glossaryList[i][0], 'g'), `<span class="notranslate">GLOSSARY_INDEX_${i}</span>`);
-        newText = /\p{sc=Latin}|\d/u.test(glossaryList[i][1]) ? newText.replace(/(span>)(<span class="notranslate")/g, '$1 $2') : newText;
+        newText = /\p{sc=Latin}|\d/u.test(glossaryList[i][1]) ? newText.replace(/(span>)(<span)/g, '$1 $2') : newText;
       } else {
         newText = newText.replace(new RegExp(glossaryList[i][0], 'g'), `GLOSSARY_INDEX_${i}`);
       }

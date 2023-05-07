@@ -1,3 +1,5 @@
+'use strict';
+
 const GlossaryType = {
   TSV: 'text/tab-separated-values',
   CSV: 'text/csv',
