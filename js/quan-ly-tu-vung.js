@@ -86,7 +86,10 @@ $(document).ready(function () {
   }).fail((jqXHR, textStatus, errorThrown) => window.location.reload());
 });
 
-$("#glossaryManagerButton").on("mousedown", () => $("#sourceText").val(window.getSelection().toString()).trigger("input"));
+$("#glossaryManagerButton").on("mousedown", function () {
+  $("#glossaryList").val(-1).change();
+  $("#sourceText").val(window.getSelection().toString()).trigger("input");
+});
 
 $("#inputGlossary").on("change", function () {
   const reader = new FileReader();

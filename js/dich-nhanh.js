@@ -40,8 +40,6 @@ $("#queryText").change(function () {
   $("#queryTextCounter").text($("#queryText").val().length);
 });
 
-$("#settingsButton").on("click", () => $("#glossaryList").val(-1).change());
-
 $(".option").change(function () {
   if ((($(this).attr("id") !== 'intermediaryLangSelect' && $(this).attr("id") !== 'flexSwitchCheckIntermediary') || $("#flexSwitchCheckIntermediary").prop("checked")) && $("#translateButton").text() === 'Sửa') {
     $("#translateButton").click();
