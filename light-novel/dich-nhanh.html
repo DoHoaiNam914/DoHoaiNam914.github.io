@@ -65,14 +65,6 @@
         });
     </script>
     <style>
-      .pb-32 {
-        padding-bottom: 8rem;
-      }
-
-      .pt-4 {
-        padding-top: 1rem;
-      }
-
       #recognizeImage {
         float: center;
         max-height: 20%;
@@ -119,7 +111,7 @@
         color: black;
       }
 
-      #translatedText > p {
+      .textarea > p {
         margin-bottom: 0;
       }
 
@@ -127,10 +119,18 @@
         width: 40%;
         max-width: 40vw;
       }
-
-      #settingsButton {
+      
+      .btn-float {
         --bs-bg-opacity: 0.6;
         background-color: rgba(var(--bs-body-bg-rgb), var(--bs-bg-opacity));
+      }
+
+      #glossaryManagerButton {
+        bottom: 7rem;
+        left: 1rem;
+      }
+
+      #settingsButton {
         bottom: 7rem;
         right: 1rem;
       }
@@ -210,54 +210,20 @@
         <li><button class="nav-item nav-link disabled" id="reTranslateButton" type="button">Dịch lại</button></li>
       </ul>
     </div>
-    <button type="button" class="btn position-fixed" id="settingsButton" data-bs-toggle="modal" data-bs-target="#settings">
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-gear" viewBox="0 0 16 16">
-        <path d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492zM5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0z"/>
-        <path d="M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0l-.094.319a.873.873 0 0 1-1.255.52l-.292-.16c-1.64-.892-3.433.902-2.54 2.541l.159.292a.873.873 0 0 1-.52 1.255l-.319.094c-1.79.527-1.79 3.065 0 3.592l.319.094a.873.873 0 0 1 .52 1.255l-.16.292c-.892 1.64.901 3.434 2.541 2.54l.292-.159a.873.873 0 0 1 1.255.52l.094.319c.527 1.79 3.065 1.79 3.592 0l.094-.319a.873.873 0 0 1 1.255-.52l.292.16c1.64.893 3.434-.902 2.54-2.541l-.159-.292a.873.873 0 0 1 .52-1.255l.319-.094c1.79-.527 1.79-3.065 0-3.592l-.319-.094a.873.873 0 0 1-.52-1.255l.16-.292c.893-1.64-.902-3.433-2.541-2.54l-.292.159a.873.873 0 0 1-1.255-.52l-.094-.319zm-2.633.283c.246-.835 1.428-.835 1.674 0l.094.319a1.873 1.873 0 0 0 2.693 1.115l.291-.16c.764-.415 1.6.42 1.184 1.185l-.159.292a1.873 1.873 0 0 0 1.116 2.692l.318.094c.835.246.835 1.428 0 1.674l-.319.094a1.873 1.873 0 0 0-1.115 2.693l.16.291c.415.764-.42 1.6-1.185 1.184l-.291-.159a1.873 1.873 0 0 0-2.693 1.116l-.094.318c-.246.835-1.428.835-1.674 0l-.094-.319a1.873 1.873 0 0 0-2.692-1.115l-.292.16c-.764.415-1.6-.42-1.184-1.185l.159-.291A1.873 1.873 0 0 0 1.945 8.93l-.319-.094c-.835-.246-.835-1.428 0-1.674l.319-.094A1.873 1.873 0 0 0 3.06 4.377l-.16-.292c-.415-.764.42-1.6 1.185-1.184l.292.159a1.873 1.873 0 0 0 2.692-1.115l.094-.319z"/>
+    <button type="button" class="btn btn-float position-fixed" id="glossaryManagerButton" data-bs-toggle="modal" data-bs-target="#glossaryManager">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left-right" viewBox="0 0 16 16">
+        <path fill-rule="evenodd" d="M1 11.5a.5.5 0 0 0 .5.5h11.793l-3.147 3.146a.5.5 0 0 0 .708.708l4-4a.5.5 0 0 0 0-.708l-4-4a.5.5 0 0 0-.708.708L13.293 11H1.5a.5.5 0 0 0-.5.5zm14-7a.5.5 0 0 1-.5.5H2.707l3.147 3.146a.5.5 0 1 1-.708.708l-4-4a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 4H14.5a.5.5 0 0 1 .5.5z"/>
       </svg>
     </button>
-    <div class="modal fade" id="settings" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="settingsLabel" aria-hidden="true">
+    <div class="modal fade" id="glossaryManager" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="glossaryManagerLabel" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">
           <div class="modal-header">
-            <h1 class="modal-title fs-5" id="settingsLabel">Thiết lập</h1>
+            <h1 class="modal-title fs-5" id="glossaryManagerLabel">Quản lý từ vựng</h1>
             <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
           </div>
           <div class="modal-body pb-5">
-            <div class="dropdown-center">
-              <button class="btn btn-secondary btn-sm dropdown-toggle mt-3" type="button" data-bs-toggle="dropdown" aria-expanded="false">Trình dịch</button>
-              <ul class="dropdown-menu">
-                <li><button class="dropdown-item service" id="deepl" type="button">DeepL Translator</button></li>
-                <li><button class="dropdown-item service active" id="google" type="button">Google Dịch</button></li>
-                <!--li><button class="dropdown-item service disabled" id="papago" type="button">Papago (Chờ cập nhật)</button></li-->
-                <li><button class="dropdown-item service" id="microsoft" type="button">Trình dịch Microsoft</button></li>
-              </ul>
-            </div>
-            <hr>
-            <h2 class="fs-5">Dịch qua trung gian</h2>
-            <div class="form-check form-switch mb-3">
-              <input class="form-check-input option" type="checkbox" role="switch" id="flexSwitchCheckIntermediary">
-              <label class="form-check-label" for="flexSwitchCheckIntermediary">Bật</label>
-            </div>
-            <div class="dropdown-center">
-              <button class="btn btn-secondary btn-sm dropdown-toggle mb-3" type="button" data-bs-toggle="dropdown" aria-expanded="false">Trình dịch trung gian</button>
-              <ul class="dropdown-menu">
-                <li><button class="dropdown-item intermediary-service" id="deepl" type="button">DeepL Translator</button></li>
-                <li><button class="dropdown-item intermediary-service active" id="google" type="button">Google Dịch</button></li>
-                <!--li><button class="dropdown-item intermediary-service disabled" id="papago" type="button">Papago (Chờ cập nhật)</button></li-->
-                <li><button class="dropdown-item intermediary-service" id="microsoft" type="button">Trình dịch Microsoft</button></li>
-              </ul>
-            </div>
-            <select class="form-select form-select-sm option" id="intermediaryLangSelect">
-              <option value="en" selected>Tiếng Anh</option>
-              <option value="ja">Tiếng Nhật</option>
-              <option value="zh-CN">Tiếng Trung (Giản thể)</option>
-              <option value="zh-TW">Tiếng Trung (Phổn thể)</option>
-              <option value="vi">Tiếng Việt</option>
-            </select>
-            <hr>
-            <h2 class="fs-5">Từ vựng</h2>
-            <div class="input-group input-group-sm mb-3">
+            <div class="input-group input-group-sm my-3">
               <input type="file" class="form-control" id="inputGlossary" accept="text/plain">
               <button class="btn btn-outline-danger position-relative" id="clearGlossaryButton" type="button">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
@@ -343,6 +309,56 @@
                 Tải xuống
               </a>
             </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <button type="button" class="btn btn-float position-fixed" id="settingsButton" data-bs-toggle="modal" data-bs-target="#settings">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-gear" viewBox="0 0 16 16">
+        <path d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492zM5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0z"/>
+        <path d="M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0l-.094.319a.873.873 0 0 1-1.255.52l-.292-.16c-1.64-.892-3.433.902-2.54 2.541l.159.292a.873.873 0 0 1-.52 1.255l-.319.094c-1.79.527-1.79 3.065 0 3.592l.319.094a.873.873 0 0 1 .52 1.255l-.16.292c-.892 1.64.901 3.434 2.541 2.54l.292-.159a.873.873 0 0 1 1.255.52l.094.319c.527 1.79 3.065 1.79 3.592 0l.094-.319a.873.873 0 0 1 1.255-.52l.292.16c1.64.893 3.434-.902 2.54-2.541l-.159-.292a.873.873 0 0 1 .52-1.255l.319-.094c1.79-.527 1.79-3.065 0-3.592l-.319-.094a.873.873 0 0 1-.52-1.255l.16-.292c.893-1.64-.902-3.433-2.541-2.54l-.292.159a.873.873 0 0 1-1.255-.52l-.094-.319zm-2.633.283c.246-.835 1.428-.835 1.674 0l.094.319a1.873 1.873 0 0 0 2.693 1.115l.291-.16c.764-.415 1.6.42 1.184 1.185l-.159.292a1.873 1.873 0 0 0 1.116 2.692l.318.094c.835.246.835 1.428 0 1.674l-.319.094a1.873 1.873 0 0 0-1.115 2.693l.16.291c.415.764-.42 1.6-1.185 1.184l-.291-.159a1.873 1.873 0 0 0-2.693 1.116l-.094.318c-.246.835-1.428.835-1.674 0l-.094-.319a1.873 1.873 0 0 0-2.692-1.115l-.292.16c-.764.415-1.6-.42-1.184-1.185l.159-.291A1.873 1.873 0 0 0 1.945 8.93l-.319-.094c-.835-.246-.835-1.428 0-1.674l.319-.094A1.873 1.873 0 0 0 3.06 4.377l-.16-.292c-.415-.764.42-1.6 1.185-1.184l.292.159a1.873 1.873 0 0 0 2.692-1.115l.094-.319z"/>
+      </svg>
+    </button>
+    <div class="modal fade" id="settings" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="settingsLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="settingsLabel">Thiết lập</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body pb-5">
+            <h2 class="fs-5">Chung</h2>
+            <div class="dropdown-center">
+              <button class="btn btn-secondary btn-sm dropdown-toggle mb-3" type="button" data-bs-toggle="dropdown" aria-expanded="false">Trình dịch</button>
+              <ul class="dropdown-menu">
+                <li><button class="dropdown-item service" id="deepl" type="button">DeepL Translator</button></li>
+                <li><button class="dropdown-item service active" id="google" type="button">Google Dịch</button></li>
+                <!--li><button class="dropdown-item service disabled" id="papago" type="button">Papago (Chờ cập nhật)</button></li-->
+                <li><button class="dropdown-item service" id="microsoft" type="button">Trình dịch Microsoft</button></li>
+              </ul>
+            </div>
+            <div class="form-check form-switch">
+              <input class="form-check-input option" type="checkbox" role="switch" id="flexSwitchCheckIntermediary">
+              <label class="form-check-label" for="flexSwitchCheckDefault">Bật dịch trung gian</label>
+            </div>
+            <hr>
+            <h2 class="fs-6">Dịch trung gian</h2>
+            <div class="dropdown-center">
+              <button class="btn btn-secondary btn-sm dropdown-toggle mb-3" type="button" data-bs-toggle="dropdown" aria-expanded="false">Trình dịch trung gian</button>
+              <ul class="dropdown-menu">
+                <li><button class="dropdown-item intermediary-service" id="deepl" type="button">DeepL Translator</button></li>
+                <li><button class="dropdown-item intermediary-service active" id="google" type="button">Google Dịch</button></li>
+                <!--li><button class="dropdown-item intermediary-service disabled" id="papago" type="button">Papago (Chờ cập nhật)</button></li-->
+                <li><button class="dropdown-item intermediary-service" id="microsoft" type="button">Trình dịch Microsoft</button></li>
+              </ul>
+            </div>
+            <select class="form-select form-select-sm option" id="intermediaryLangSelect">
+              <option value="en" selected>Tiếng Anh</option>
+              <option value="ja">Tiếng Nhật</option>
+              <option value="zh-CN">Tiếng Trung (Giản thể)</option>
+              <option value="zh-TW">Tiếng Trung (Phổn thể)</option>
+              <option value="vi">Tiếng Việt</option>
+            </select>
             <!--hr>
             <h2 class="fs-5">Trích xuất văn bản</h2>
             <select class="form-select form-select-sm mb-3 option" id="recognizeLangsSelect" multiple>
@@ -357,11 +373,11 @@
             </select>
             <div class="form-check">
               <input class="form-check-input option" type="checkbox" value="" id="flexCheckGrayscale">
-              <label class="form-check-label" for="flexCheckGrayscale">Grayscale</label>
+              <label class="form-check-label" for="flexCheckGrayscale">Bật Grayscale</label>
             </div>
             <div class="form-check">
               <input class="form-check-input option" type="checkbox" value="" id="flexCheckThreshold">
-              <label class="form-check-label" for="flexCheckThreshold">Threshold</label>
+              <label class="form-check-label" for="flexCheckThreshold">Bật Threshold</label>
             </div-->
           </div>
         </div>

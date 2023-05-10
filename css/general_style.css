@@ -5,3 +5,11 @@ body {
 textarea {
   resize: none;
 }
+
+.pb-32 {
+  padding-bottom: 8rem;
+}
+
+.pt-4 {
+  padding-top: 1rem;
+}

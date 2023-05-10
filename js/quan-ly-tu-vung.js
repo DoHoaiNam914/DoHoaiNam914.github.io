@@ -7,7 +7,7 @@ const GlossaryType = {
 };
 
 var sinoVietnameses = new Map();
-const mark = new Map([
+const markMap = new Map([
   ['　', ''],
   ['_', '_'],
   ['＿', '_'],
@@ -86,6 +86,8 @@ $(document).ready(function () {
   }).fail((jqXHR, textStatus, errorThrown) => window.location.reload());
 });
 
+$("#glossaryManagerButton").on("mousedown", () => $("#sourceText").val(window.getSelection().toString()).trigger("input"));
+
 $("#inputGlossary").on("change", function () {
   const reader = new FileReader();
 
@@ -118,38 +120,38 @@ $("#sourceText").on("input", function () {
   const glossaryMap = new Map(glossary);
   const data = new Map([...sinoVietnameses].sort((a, b) => b[0].length - a[0].length || a[0].localeCompare(b[0]) ||  a[1].localeCompare(b[1])));
 
-  if (this.value.length > 0) {
-    if (glossaryMap.has(this.value)) {
-      $("#glossaryList").val(Array.from(glossaryMap.keys()).indexOf(this.value)).change();
-    } else if (parseInt($("#glossaryList").val()) < 0) {
+  if ($(this).val().length > 0) {
+    if (glossaryMap.has($(this).val())) {
+      $("#glossaryList").val(Array.from(glossaryMap.keys()).indexOf($(this).val())).change();
+    } else if (parseInt($("#glossaryList").val()) === -1) {
       var result = []; 
       var tempWord = '';
 
-      for (let i = 0; i < this.value.length; i++) {
-        if (mark.has(this.value[i])) {
-          tempWord += mark.get(this.value[i]);
+      for (let i = 0; i < $(this).val().length; i++) {
+        if (markMap.has($(this).val()[i])) {
+          tempWord += markMap.get($(this).val()[i]);
 
-          if (tempWord.length > 0 && (/\p{sc=Hani}/u.test(this.value[i + 1]) || i + 1 === this.value.length)) {
+          if (tempWord.length > 0 && (/\p{sc=Hani}/u.test($(this).val()[i + 1]) || i + 1 === $(this).val().length)) {
             tempWord.split(/\s/).forEach((word) => result.push(word));
             tempWord = '';
           }
-        } else if (/\p{sc=Hani}/u.test(this.value[i])) {
-          if (tempWord.length > 0 && i + 1 === this.value.length) {
+        } else if (/\p{sc=Hani}/u.test($(this).val()[i])) {
+          if (tempWord.length > 0 && i + 1 === $(this).val().length) {
             result.push(tempWord);
             tempWord = '';
           }
 
           for (let j = Array.from(data)[0][0].length; j >= 1; j--) {
-            if (data.get(this.value.substring(i, i + j)) != undefined) {
-              result.push(data.get(this.value.substring(i, i + j)) || this.value.substring(i, i + j));
+            if (data.get($(this).val().substring(i, i + j)) != undefined) {
+              result.push(data.get($(this).val().substring(i, i + j)) || this.value.substring(i, i + j));
               i += j - 1;
               break;
             }
           }
         } else {
-          tempWord += this.value[i];
+          tempWord += $(this).val()[i];
 
-          if (tempWord.length > 0 && (/\p{sc=Hani}/u.test(this.value[i + 1]) || i + 1 === this.value.length)) {
+          if (tempWord.length > 0 && (/\p{sc=Hani}/u.test(this.value[i + 1]) || i + 1 === $(this).val().length)) {
             tempWord.split(/\s/).forEach((word) => result.push(word));
             tempWord = '';
           }
@@ -157,6 +159,7 @@ $("#sourceText").on("input", function () {
       }
 
       $("#targetText").val(result.join(' '));
+      markMap.forEach((mark) => $("#targetText").val($("#targetText").val().replace(' ' + mark + ' ', '')));
     } else {
       $("#glossaryList").val(-1);
     }
