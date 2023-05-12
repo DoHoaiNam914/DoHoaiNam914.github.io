@@ -9,68 +9,42 @@ const GlossaryType = {
 var sinoVietnameses = new Map();
 const markMap = new Map([
   ['　', ''],
-  ['_', '_'],
   ['＿', '_'],
-  ['-', '-'],
   ['—', '—'],
-  [',', ','],
-  ['，', ','],
-  ['、', ','],
-  [';', ';'],
-  ['；', ';'],
-  [':', ':'],
-  ['：', ':'],
-  ['!', '!'],
-  ['！', '!'],
-  ['?', '?'],
-  ['？', '?'],
-  ['.', '.'],
+  ['，', ', '],
+  ['、', ', '],
+  ['；', '; '],
+  ['：', ': '],
+  ['！', '! '],
+  ['？', '\\? '],
   ['．', '.'],
-  ['…', '…'],
-  ['。', '.'],
+  ['。', '. '],
   ['·', '•'],
-  ['\'', '\''],
-  ['＇', '\''],
-  ['‘', '‘'],
-  ['’', '’'],
-  ['"', '"'],
-  ['＂', '"'],
-  ['“', '“'],
-  ['”', '”'],
-  ['„', '„'],
-  ['(', '('],
-  ['（', '('],
-  [')', ')'],
-  ['）', ')'],
-  ['[', '['],
-  ['［', '['],
-  [']', ']'],
-  ['］', ']'],
-  ['｛', '{'],
-  ['｝', '}'],
-  ['〈', '<'],
-  ['〉', '>'],
-  ['《', '«'],
-  ['》', '»'],
-  ['「', '“'],
-  ['」', '”'],
-  ['『', '‘'],
-  ['』', '’'],
-  ['【', '['],
-  ['】', ']'],
-  ['*', '*'],
-  ['＊', '*'],
+  ['＇', ' \' '],
+  ['＂', ' " '],
+  ['（', ' \\('],
+  ['）', '\\) '],
+  ['［', ' \\['],
+  ['］', '\\] '],
+  ['｛', ' {'],
+  ['｝', '} '],
+  ['〈', ' <'],
+  ['〉', '> '],
+  ['《', ' «'],
+  ['》', '» '],
+  ['「', ' “'],
+  ['」', '” '],
+  ['『', ' ‘'],
+  ['』', '’ '],
+  ['【', ' \\['],
+  ['】', '\\] '],
+  ['＊', ' * '],
   ['／', '/'],
-  ['&', '&'],
-  ['＆', '&'],
-  ['#', '#'],
-  ['＃', '#'],
-  ['%', '%'],
-  ['％', '%'],
-  ['+', '+'],
-  ['＋', '+'],
-  ['~', '~'],
-  ['～', '~']
+  ['＆', ' & '],
+  ['＃', ' # '],
+  ['％', ' % '],
+  ['＋', ' + '],
+  ['～', ' ~ ']
 ]);
 
 var glossary = [];
@@ -131,14 +105,7 @@ $("#sourceText").on("input", function () {
       var tempWord = '';
 
       for (let i = 0; i < $(this).val().length; i++) {
-        if (markMap.has($(this).val()[i])) {
-          tempWord += markMap.get($(this).val()[i]);
-
-          if (tempWord.length > 0 && (/\p{sc=Hani}/u.test($(this).val()[i + 1]) || i + 1 === $(this).val().length)) {
-            tempWord.split(/\s/).forEach((word) => result.push(word));
-            tempWord = '';
-          }
-        } else if (/\p{sc=Hani}/u.test($(this).val()[i])) {
+        if (/\p{sc=Hani}/u.test($(this).val()[i]) && !markMap.has($(this).val()[i])) {
           if (tempWord.length > 0 && i + 1 === $(this).val().length) {
             result.push(tempWord);
             tempWord = '';
@@ -146,7 +113,7 @@ $("#sourceText").on("input", function () {
 
           for (let j = Array.from(data)[0][0].length; j >= 1; j--) {
             if (data.get($(this).val().substring(i, i + j)) != undefined) {
-              result.push(data.get($(this).val().substring(i, i + j)) || this.value.substring(i, i + j));
+              result.push(data.get($(this).val().substring(i, i + j)));
               i += j - 1;
               break;
             }
@@ -154,15 +121,16 @@ $("#sourceText").on("input", function () {
         } else {
           tempWord += $(this).val()[i];
 
-          if (tempWord.length > 0 && (/\p{sc=Hani}/u.test(this.value[i + 1]) || i + 1 === $(this).val().length)) {
+          if ((tempWord.length > 0 && (/\p{sc=Hani}/u.test($(this).val()[i + 1]) && !markMap.has($(this).val()[i + 1])) || i + 1 === $(this).val().length)) {
             tempWord.split(/\s/).forEach((word) => result.push(word));
             tempWord = '';
           }
         }
       }
 
-      $("#targetText").val(result.join(' '));
-      markMap.forEach((mark) => $("#targetText").val($("#targetText").val().replace(' ' + mark + ' ', '')));
+      var phrase = result.join(' ');
+      [...Array.from(markMap)].forEach((mark) => phrase = phrase.replace(new RegExp(` (${mark[0]}) `, 'g'), mark[1]).trim());
+      $("#targetText").val(phrase);
     } else {
       $("#glossaryList").val(-1);
     }
