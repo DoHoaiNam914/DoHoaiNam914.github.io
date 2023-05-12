@@ -406,7 +406,7 @@ function textPreProcess(text, service) {
   var newText = text;
 
   if (glossary != null) {
-    const glossaryList = [...glossary].reverse().filter((phrase) => newText.includes(phrase[0]));
+    const glossaryList = [...glossary].reverse().filter((phrase) => text.includes(phrase[0]));
 
     for (let i = 0; i < glossaryList.length; i++) {
       if (service === Services.MICROSOFT) {

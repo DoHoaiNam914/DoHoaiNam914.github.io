@@ -16,16 +16,16 @@ const markMap = new Map([
   ['；', '; '],
   ['：', ': '],
   ['！', '! '],
-  ['？', '\\? '],
+  ['？', '\? '],
   ['．', '.'],
   ['。', '. '],
   ['·', '•'],
   ['＇', ' \' '],
   ['＂', ' " '],
-  ['（', ' \\('],
-  ['）', '\\) '],
-  ['［', ' \\['],
-  ['］', '\\] '],
+  ['（', ' \('],
+  ['）', '\) '],
+  ['［', ' \['],
+  ['］', '\] '],
   ['｛', ' {'],
   ['｝', '} '],
   ['〈', ' <'],
@@ -36,8 +36,8 @@ const markMap = new Map([
   ['」', '” '],
   ['『', ' ‘'],
   ['』', '’ '],
-  ['【', ' \\['],
-  ['】', '\\] '],
+  ['【', ' \['],
+  ['】', '\] '],
   ['＊', ' * '],
   ['／', '/'],
   ['＆', ' & '],
@@ -129,7 +129,7 @@ $("#sourceText").on("input", function () {
       }
 
       var phrase = result.join(' ');
-      [...Array.from(markMap)].forEach((mark) => phrase = phrase.replace(new RegExp(` (${mark[0]}) `, 'g'), mark[1]).trim());
+      Array.from(markMap).forEach((mark) => phrase = phrase.replace(new RegExp(`\\s?(${mark[0]})\\s?`, 'g'), mark[1]).trim());
       $("#targetText").val(phrase);
     } else {
       $("#glossaryList").val(-1);
