@@ -95,7 +95,7 @@ $("#glossaryType").change(() => loadGlossary());
 
 $("#sourceText").on("input", function () {
   const glossaryMap = new Map(glossary);
-  const data = new Map([...sinoVietnameses].sort((a, b) => b[0].length - a[0].length || a[0].localeCompare(b[0]) ||  a[1].localeCompare(b[1])));
+  const data = new Map([...glossaryMap, ...sinoVietnameses].sort((a, b) => b[0].length - a[0].length || a[0].localeCompare(b[0]) || a[1].localeCompare(b[1])));
 
   if ($(this).val().length > 0) {
     if (glossaryMap.has($(this).val())) {
@@ -113,7 +113,7 @@ $("#sourceText").on("input", function () {
 
           for (let j = Array.from(data)[0][0].length; j >= 1; j--) {
             if (data.get($(this).val().substring(i, i + j)) != undefined) {
-              result.push(data.get($(this).val().substring(i, i + j)));
+              result.push(data.get($(this).val().substring(i, i + j)) ?? $(this).val().substring(i, i + j));
               i += j - 1;
               break;
             }
@@ -122,15 +122,14 @@ $("#sourceText").on("input", function () {
           tempWord += $(this).val()[i];
 
           if ((tempWord.length > 0 && (/\p{sc=Hani}/u.test($(this).val()[i + 1]) && !markMap.has($(this).val()[i + 1])) || i + 1 === $(this).val().length)) {
+            Array.from(markMap).forEach((mark) => tempWord = tempWord.replace(new RegExp(`\\s?(${mark[0]})\\s?`, 'g'), mark[1]).trim());
             tempWord.split(/\s/).forEach((word) => result.push(word));
             tempWord = '';
           }
         }
       }
 
-      var phrase = result.join(' ');
-      Array.from(markMap).forEach((mark) => phrase = phrase.replace(new RegExp(`\\s?(${mark[0]})\\s?`, 'g'), mark[1]).trim());
-      $("#targetText").val(phrase);
+      $("#targetText").val(result.join(' '));
     } else {
       $("#glossaryList").val(-1);
     }
@@ -292,7 +291,7 @@ function loadGlossary() {
     glossary = glossary.filter(function ([key]) {
       if (!this[key]) return this[key] = 1;
     }, {}).sort((a, b) =>
-        a[0].length - b[0].length ||
+        b[0].length - a[0].length ||
         a[0].localeCompare(b[0]) ||
         a[1].localeCompare(b[1]));
 
