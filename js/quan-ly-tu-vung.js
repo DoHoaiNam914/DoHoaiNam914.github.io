@@ -93,12 +93,16 @@ $("#glossaryType").change(() => loadGlossary());
 
 $("#sourceText").on("input", function () {
   const glossaryMap = new Map(glossary);
-  const data = new Map([...glossaryMap, ...sinoVietnameses].sort((a, b) => b[0].length - a[0].length || a[0].localeCompare(b[0]) || a[1].localeCompare(b[1])));
+  let data = new Map(Array.from(sinoVietnameses));
+
+  glossary.forEach((phrase) => data.set(phrase[0], phrase[1]));
+
+  data = new Map(Array.from(data).sort((a, b) => b[0].length - a[0].length));
 
   if ($(this).val().length > 0) {
     if (glossaryMap.has($(this).val())) {
       $("#glossaryList").val(Array.from(glossaryMap.keys()).indexOf($(this).val())).change();
-    } else if (parseInt($("#glossaryList").val()) === -1) {
+    } else {
       var result = []; 
       var tempWord = '';
 
@@ -136,7 +140,6 @@ $("#sourceText").on("input", function () {
 
       Array.from(markMap).forEach((mark) => phrase = phrase.replace(new RegExp(`\\s?(${mark[0]})\\s?`, 'g'), mark[1]).trim());
       $("#targetText").val(phrase);
-    } else {
       $("#glossaryList").val(-1);
     }
   } else {
