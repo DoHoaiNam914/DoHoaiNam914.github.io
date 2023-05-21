@@ -6,10 +6,14 @@
     <title>Dịch nhanh - DoHoaiNam Pages</title>
     <link href="/css/bootstrap.min.css" rel="stylesheet">
     <link href="/css/general_style.css" rel="stylesheet">
-    <meta name="theme-color" content="#000">
     <script src="/lib/LAB.js"></script>
     <script>
+      const storedTheme = localStorage.getItem("theme");
       const getPreferredTheme = function () {
+        if (storedTheme) {
+          return storedTheme
+        }
+
         return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
       };
 
@@ -21,15 +25,48 @@
         }
       };
 
+      const showActiveTheme = function (theme, focus = false) {
+        const themeSwitcher = $('#theme');
+
+        if (!themeSwitcher) {
+          return
+        }
+
+        const activeThemeIcon = $('.theme-icon-active');
+        const btnToActive = $(`[data-theme-value="${theme}"]`);
+        const svgOfActiveBtn = $(btnToActive).html();
+
+        $("[data-theme-value]").removeClass("active");
+        $(btnToActive).addClass("active");
+        $(activeThemeIcon).html(svgOfActiveBtn);
+
+        if (focus) {
+          themeSwitcher.focus()
+        }
+      };
+
       window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function () {
-        setTheme(getPreferredTheme());
+        if (storedTheme !== 'light' || storedTheme !== 'dark') {
+          setTheme(getPreferredTheme());
+        }
       });
 
       $LAB
         .script("/lib/jquery-3.6.1.js").wait()
         .script("/lib/jquery.csv.js")
         .script("/lib/underscore-umd-min.js")
-        .script("/lib/bootstrap.bundle.min.js").wait(() => setTheme(getPreferredTheme()))
+        .script("/lib/bootstrap.bundle.min.js").wait(function () {
+          setTheme(getPreferredTheme());
+          showActiveTheme(getPreferredTheme());
+          
+
+          $("[data-theme-value]").on("click", function () {
+            const theme = $(this).data("theme-value");
+            localStorage.setItem("theme", theme);
+            setTheme(theme);
+            showActiveTheme(theme, true);
+          });
+        })
         .script("/lib/tesseract.min.js")
         .script("/lib/opencv.js").wait()
         .script("/js/quan-ly-tu-vung.js").wait(function () {
@@ -157,9 +194,7 @@
       <!--label for="imageFile" class="form-label">Trích xuất văn bản</label>
       <canvas id="recognizeImage" style="display: none;"></canvas>
       <div class="input-group input-group-sm">
-        <button type="button" class="btn btn-sm dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
-          <span class="visually-hidden">Toggle Dropdown</span>
-        </button>
+        <button type="button" class="btn btn-sm dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false"></button>
         <ul class="dropdown-menu">
           <li><button class="dropdown-item inputType active" id="local" type="button">Local</button></li>
           <li><button class="dropdown-item inputType" id="url" type="button">URL</button></li>
@@ -240,9 +275,7 @@
             </select>
             <div class="input-group input-group-sm mb-3">
               <input type="text" placeholder="Thay thế" class="form-control" id="sourceText">
-              <button type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
-                <span class="visually-hidden">Toggle Dropdown</span>
-              </button>
+              <button type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false"></button>
               <ul class="dropdown-menu dropdown-scroller">
                 <li><button class="dropdown-item" onclick="navigator.clipboard.readText().then((clipText) => $('#sourceText').val(clipText).trigger('input'))">Dán</button></li>
                 <hr>
@@ -276,9 +309,7 @@
                   <path d="m13.498.795.149-.149a1.207 1.207 0 1 1 1.707 1.708l-.149.148a1.5 1.5 0 0 1-.059 2.059L4.854 14.854a.5.5 0 0 1-.233.131l-4 1a.5.5 0 0 1-.606-.606l1-4a.5.5 0 0 1 .131-.232l9.642-9.642a.5.5 0 0 0-.642.056L6.854 4.854a.5.5 0 1 1-.708-.708L9.44.854A1.5 1.5 0 0 1 11.5.796a1.5 1.5 0 0 1 1.998-.001zm-.644.766a.5.5 0 0 0-.707 0L1.95 11.756l-.764 3.057 3.057-.764L14.44 3.854a.5.5 0 0 0 0-.708l-1.585-1.585z"/>
                 </svg>
               </button>
-              <button type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
-                <span class="visually-hidden">Toggle Dropdown</span>
-              </button>
+              <button type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false"></button>
               <ul class="dropdown-menu">
                 <li><button class="dropdown-item upperCaseFromAmountButton" data-amount="1" type="button">Viết hoa 1 từ đơn đầu</button></li>
                 <li><button class="dropdown-item upperCaseFromAmountButton" data-amount="2" type="button">Viết hoa 2 từ đơn đầu</button></li>
@@ -328,8 +359,43 @@
           </div>
           <div class="modal-body pb-5">
             <h2 class="fs-5">Chung</h2>
-            <div class="dropdown-center">
-              <button class="btn btn-secondary btn-sm dropdown-toggle mb-3" type="button" data-bs-toggle="dropdown" aria-expanded="false">Trình dịch</button>
+            <div class="dropdown mb-3">
+              <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" class="bi bi-circle-half my-1 theme-icon-active" viewBox="0 0 16 16">
+                  <path d="M8 15A7 7 0 1 0 8 1v14zm0 1A8 8 0 1 1 8 0a8 8 0 0 1 0 16z"/>
+                </svg>
+                Thay đổi chủ đề
+              </button>
+              <ul class="dropdown-menu">
+                <li>
+                  <button type="button" class="dropdown-item active" data-theme-value="auto">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" class="bi bi-circle-half me-2 theme-icon" viewBox="0 0 16 16">
+                      <path d="M8 15A7 7 0 1 0 8 1v14zm0 1A8 8 0 1 1 8 0a8 8 0 0 1 0 16z"/>
+                    </svg>
+                    Tự động
+                  </button>
+                </li>
+                <li>
+                  <button type="button" class="dropdown-item" data-theme-value="light">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" class="bi bi-sun-fill me-2 theme-icon" viewBox="0 0 16 16">
+                      <path d="M8 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0zm0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13zm8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5zM3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8zm10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0zm-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0zm9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707zM4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .708z"/>
+                    </svg>
+                    Sáng
+                  </button>
+                </li>
+                <li>
+                  <button type="button" class="dropdown-item" data-theme-value="dark">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" class="bi bi-moon-stars-fill me-2 theme-icon" viewBox="0 0 16 16">
+                      <path d="M6 .278a.768.768 0 0 1 .08.858 7.208 7.208 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277.527 0 1.04-.055 1.533-.16a.787.787 0 0 1 .81.316.733.733 0 0 1-.031.893A8.349 8.349 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.752.752 0 0 1 6 .278z"/>
+  <path d="M10.794 3.148a.217.217 0 0 1 .412 0l.387 1.162c.173.518.579.924 1.097 1.097l1.162.387a.217.217 0 0 1 0 .412l-1.162.387a1.734 1.734 0 0 0-1.097 1.097l-.387 1.162a.217.217 0 0 1-.412 0l-.387-1.162A1.734 1.734 0 0 0 9.31 6.593l-1.162-.387a.217.217 0 0 1 0-.412l1.162-.387a1.734 1.734 0 0 0 1.097-1.097l.387-1.162zM13.863.099a.145.145 0 0 1 .274 0l.258.774c.115.346.386.617.732.732l.774.258a.145.145 0 0 1 0 .274l-.774.258a1.156 1.156 0 0 0-.732.732l-.258.774a.145.145 0 0 1-.274 0l-.258-.774a1.156 1.156 0 0 0-.732-.732l-.774-.258a.145.145 0 0 1 0-.274l.774-.258c.346-.115.617-.386.732-.732L13.863.1z"/>
+                    </svg>
+                    Tối
+                  </button>
+                </li>
+              </ul>
+            </div>
+            <div class="dropdown mb-3">
+              <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Trình dịch</button>
               <ul class="dropdown-menu">
                 <li><button class="dropdown-item service" id="deepl" type="button">DeepL Translator</button></li>
                 <li><button class="dropdown-item service active" id="google" type="button">Google Dịch</button></li>
@@ -343,7 +409,7 @@
             </div>
             <hr>
             <h2 class="fs-6">Dịch trung gian</h2>
-            <div class="dropdown-center">
+            <div class="dropdown">
               <button class="btn btn-secondary btn-sm dropdown-toggle mb-3" type="button" data-bs-toggle="dropdown" aria-expanded="false">Trình dịch trung gian</button>
               <ul class="dropdown-menu">
                 <li><button class="dropdown-item intermediary-service" id="deepl" type="button">DeepL Translator</button></li>
