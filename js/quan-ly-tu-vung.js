@@ -8,9 +8,7 @@ const GlossaryType = {
 
 var sinoVietnameses = new Map();
 const markMap = new Map([
-  ['　', ''],
-  ['＿', '_'],
-  ['—', '—'],
+  ['　', ' '],
   ['，', ', '],
   ['、', ', '],
   ['；', '; '],
@@ -119,17 +117,25 @@ $("#sourceText").on("input", function () {
             }
           }
         } else {
+          if ($(this).val()[i] === ' ') {
+            tempWord.split(/\s/).forEach((word) => result.push(word));
+            tempWord = '';
+            continue;
+          }
+
           tempWord += $(this).val()[i];
 
-          if ((tempWord.length > 0 && (/\p{sc=Hani}/u.test($(this).val()[i + 1]) && !markMap.has($(this).val()[i + 1])) || i + 1 === $(this).val().length)) {
-            Array.from(markMap).forEach((mark) => tempWord = tempWord.replace(new RegExp(`\\s?(${mark[0]})\\s?`, 'g'), mark[1]).trim());
+          if ((tempWord.length > 0 && /\p{sc=Hani}/u.test($(this).val()[i + 1]) && !markMap.has($(this).val()[i + 1])) || i + 1 === $(this).val().length) {
             tempWord.split(/\s/).forEach((word) => result.push(word));
             tempWord = '';
           }
         }
       }
 
-      $("#targetText").val(result.join(' '));
+      var phrase = result.join(' ');
+
+      Array.from(markMap).forEach((mark) => phrase = phrase.replace(new RegExp(`\\s?(${mark[0]})\\s?`, 'g'), mark[1]).trim());
+      $("#targetText").val(phrase);
     } else {
       $("#glossaryList").val(-1);
     }
