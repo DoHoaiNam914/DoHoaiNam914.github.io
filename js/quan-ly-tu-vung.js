@@ -50,7 +50,7 @@ var glossary = [];
 $(document).ready(function () {
   $.get({
     crossDomain: false,
-    url: "/datasource/ChinesePhienAmWords.txt",
+    url: "/datasource/Hán Việt.txt",
     processData: false
   }).done(function (data) {
     sinoVietnameses = data.split(/\r?\n/).map((character) => character.split('=')).filter((character) => character.length >= 2);
@@ -311,7 +311,7 @@ function loadGlossary() {
       case GlossaryType.TSV:
         data = glossary.map((element) =>
             (element.length > 2 ? element.splice(2, glossary.length - 2) :
-            element).join('\t')).join('\r\n');
+            element).join('\t')).join('\n');
         break;
       case GlossaryType.CSV:
         data = glossary.map((element) =>
@@ -320,12 +320,12 @@ function loadGlossary() {
             element[0].replace(/"/g,
             '"""')},${element[1].includes(',') ? '"' +
             element[1].replace(/"/g, '""') + '"' :
-            element[1].replace(/"/g, '"""')}`).join('\r\n');
+            element[1].replace(/"/g, '"""')}`).join('\n');
         break;
       case GlossaryType.VIETPHRASE:
         data = glossary.map((element) =>
             (element.length > 2 ? element.splice(2, glossary.length - 2) :
-            element).join('=')).join('\r\n');
+            element).join('=')).join('\n');
         break;
     }
 
