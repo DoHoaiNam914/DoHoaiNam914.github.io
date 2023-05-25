@@ -121,13 +121,21 @@ $("#sourceText").on("input", function () {
             }
           }
         } else {
-          if ($(this).val()[i] === ' ') {
+          if ($(this).val()[i] === ' ' && tempWord.length > 0 && !/ /.test(tempWord)) {
             tempWord.split(/\s/).forEach((word) => result.push(word));
             tempWord = '';
-            continue;
           }
 
           tempWord += $(this).val()[i];
+
+          if (/ /.test(tempWord)) {
+            if ($(this).val()[i + 1] !== ' ') {
+              result[result.length - 1] += tempWord.substring(0, tempWord.length - 1);
+              tempWord = '';
+            }
+
+            continue;
+          }
 
           if ((tempWord.length > 0 && /\p{sc=Hani}/u.test($(this).val()[i + 1]) && !markMap.has($(this).val()[i + 1])) || i + 1 === $(this).val().length) {
             tempWord.split(/\s/).forEach((word) => result.push(word));
