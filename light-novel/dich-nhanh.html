@@ -276,26 +276,13 @@
             <div class="input-group input-group-sm mb-3">
               <input type="text" placeholder="Thay thế" class="form-control" id="sourceText">
               <button type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false"></button>
-              <ul class="dropdown-menu dropdown-scroller">
+              <ul class="dropdown-menu">
+                <li><button class="dropdown-item" onclick="navigator.clipboard.writeText($('#sourceText').val())">Sao chép</button></li>
                 <li><button class="dropdown-item" onclick="navigator.clipboard.readText().then((clipText) => $('#sourceText').val(clipText).trigger('input'))">Dán</button></li>
                 <hr>
                 <li><button class="dropdown-item" onclick="$('#sourceText').val().length > 0 && window.open(`http://mobile.coviet.vn/tratu.aspx?k=${$('#sourceText').val()}&t=ALL`)">Từ điển Lạc Việt</button></li>
                 <li><button class="dropdown-item" onclick="$('#sourceText').val().length > 0 && window.open(`http://www.nomfoundation.org/nom-tools/Nom-Lookup-Tool/Nom-Lookup-Tool?uiLang=en&input_type=rqn_or_hn&inputText=${$('#sourceText').val()}`)">Nomfoundation</button></li>
                 <li><button class="dropdown-item" onclick="$('#sourceText').val().length > 0 && window.open(`https://www.google.com/search?q=${$('#sourceText').val()}`)">Google</button></li>
-                <hr>
-                <li><button class="dropdown-item convert deepl-convert" type="button" data-lang="ZH">DeepL Translator (Chinese)</button></li>
-                <li><button class="dropdown-item convert deepl-convert" type="button" data-lang="EN-US">DeepL Translator (English)</button></li>
-                <li><button class="dropdown-item convert deepl-convert" type="button" data-lang="JA">DeepL Translator (Japanese)</button></li>
-                <li><button class="dropdown-item convert google-convert" type="button" data-lang="en">Google Dịch (Anh)</button></li>
-                <li><button class="dropdown-item convert google-convert" type="button" data-lang="ja">Google Dịch (Nhật)</button></li>
-                <li><button class="dropdown-item convert google-convert" type="button" data-lang="zh-CN">Google Dịch (Trung (Giản thể))</button></li>
-                <li><button class="dropdown-item convert google-convert" type="button" data-lang="zh-TW">Google Dịch (Trung (Phồn thể))</button></li>
-                <li><button class="dropdown-item convert google-convert" type="button" data-lang="vi">Google Dịch (Việt)</button></li>
-                <li><button class="dropdown-item convert microsoft-convert" type="button" data-lang="en">Trình dịch Microsoft (Anh)</button></li>
-                <li><button class="dropdown-item convert microsoft-convert" type="button" data-lang="ja">Trình dịch Microsoft (Nhật)</button></li>
-                <li><button class="dropdown-item convert microsoft-convert" type="button" data-lang="zh-CHS">Trình dịch Microsoft (Trung (Giản thể))</button></li>
-                <li><button class="dropdown-item convert microsoft-convert" type="button" data-lang="zh-CHT">Trình dịch Microsoft (Trung (Phồn thể))</button></li>
-                <li><button class="dropdown-item convert microsoft-convert" type="button" data-lang="vi">Trình dịch Microsoft (Việt)</button></li>
                 <hr>
                 <li><button class="dropdown-item" onclick="$('#sourceText').val().length > 0 && window.open(`https://www.deepl.com/translator#auto/en/${$('#sourceText').val()}`)">DeepL Translator</button></li>
                 <li><button class="dropdown-item" onclick="$('#sourceText').val().length > 0 && window.open(`https://translate.google.com/?sl=auto&tl=vi&text=${$('#sourceText').val()}&op=translate`)">Google Dịch</button></li>
@@ -310,11 +297,29 @@
                 </svg>
               </button>
               <button type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false"></button>
-              <ul class="dropdown-menu">
+              <ul class="dropdown-menu dropdown-scroller">
+                <li><button class="dropdown-item" onclick="navigator.clipboard.writeText($('#targetText').val())">Sao chép</button></li>
+                <li><button class="dropdown-item" onclick="navigator.clipboard.readText().then((clipText) => $('#targetText').val(clipText))">Dán</button></li>
+                <hr>
                 <li><button class="dropdown-item upperCaseFromAmountButton" data-amount="1" type="button">Viết hoa 1 từ đơn đầu</button></li>
                 <li><button class="dropdown-item upperCaseFromAmountButton" data-amount="2" type="button">Viết hoa 2 từ đơn đầu</button></li>
                 <li><button class="dropdown-item upperCaseFromAmountButton" data-amount="3" type="button">Viết hoa 3 từ đơn đầu</button></li>
                 <li><button class="dropdown-item upperCaseAllButton" type="button">Viết hoa tất cả</button></li>
+                <hr>
+                <li><button class="dropdown-item" id="returnButton" type="button">Chuyển đổi sang Hán Việt</button></li>
+                <li><button class="dropdown-item convert deepl-convert" type="button" data-lang="ZH">DeepL Translator (Chinese)</button></li>
+                <li><button class="dropdown-item convert deepl-convert" type="button" data-lang="EN-US">DeepL Translator (English)</button></li>
+                <li><button class="dropdown-item convert deepl-convert" type="button" data-lang="JA">DeepL Translator (Japanese)</button></li>
+                <li><button class="dropdown-item convert google-convert" type="button" data-lang="en">Google Dịch (Anh)</button></li>
+                <li><button class="dropdown-item convert google-convert" type="button" data-lang="ja">Google Dịch (Nhật)</button></li>
+                <li><button class="dropdown-item convert google-convert" type="button" data-lang="zh-CN">Google Dịch (Trung (Giản thể))</button></li>
+                <li><button class="dropdown-item convert google-convert" type="button" data-lang="zh-TW">Google Dịch (Trung (Phồn thể))</button></li>
+                <li><button class="dropdown-item convert google-convert" type="button" data-lang="vi">Google Dịch (Việt)</button></li>
+                <li><button class="dropdown-item convert microsoft-convert" type="button" data-lang="en">Trình dịch Microsoft (Anh)</button></li>
+                <li><button class="dropdown-item convert microsoft-convert" type="button" data-lang="ja">Trình dịch Microsoft (Nhật)</button></li>
+                <li><button class="dropdown-item convert microsoft-convert" type="button" data-lang="zh-CHS">Trình dịch Microsoft (Trung (Giản thể))</button></li>
+                <li><button class="dropdown-item convert microsoft-convert" type="button" data-lang="zh-CHT">Trình dịch Microsoft (Trung (Phồn thể))</button></li>
+                <li><button class="dropdown-item convert microsoft-convert" type="button" data-lang="vi">Trình dịch Microsoft (Việt)</button></li>
               </ul>
             </div>
             <div class="input-group input-group-sm mb-4">
@@ -331,7 +336,7 @@
             <textarea class="form-control mb-3" id="preview" readonly></textarea>
             <div class="input-group input-group-sm">
               <input type="text" placeholder="Từ vựng" class="form-control" id="glossaryName">
-              <span class="input-group-text" id="fileExtension">.tsv</span>
+              <span class="input-group-text">.<span id="fileExtension">tsv</span></span>
               <a class="btn btn-primary btn-sm" id="downloadButton">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-download" viewBox="0 0 16 16">
                   <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>

@@ -83,7 +83,7 @@ $("#inputGlossary").on("change", function () {
 
     $("#glossaryType").val($("#inputGlossary").prop("files")[0].type);
     $("#glossaryName").val($("#inputGlossary").prop("files")[0].name.split('.').slice(0, $("#inputGlossary").prop("files")[0].name.split('.').length - 1).join('.'));
-    loadGlossary();
+    loadGlossary(); 
   };
 
   reader.readAsText($(this).prop("files")[0]);
@@ -93,65 +93,25 @@ $("#glossaryType").change(() => loadGlossary());
 
 $("#sourceText").on("input", function () {
   const glossaryMap = new Map(glossary);
-  let data = new Map(Array.from(sinoVietnameses));
-
-  glossary.forEach((phrase) => data.set(phrase[0], phrase[1]));
-
-  data = new Map(Array.from(data).sort((a, b) => b[0].length - a[0].length));
 
   if ($(this).val().length > 0) {
     if (glossaryMap.has($(this).val())) {
       $("#glossaryList").val(Array.from(glossaryMap.keys()).indexOf($(this).val())).change();
     } else {
-      var result = []; 
-      var tempWord = '';
+      const data = new Map([...Array.from(sinoVietnameses), glossary].sort((a, b) => b[0].length - a[0].length));
 
-      for (let i = 0; i < $(this).val().length; i++) {
-        if (/\p{sc=Hani}/u.test($(this).val()[i]) && !markMap.has($(this).val()[i])) {
-          if (tempWord.length > 0 && i + 1 === $(this).val().length) {
-            result.push(tempWord);
-            tempWord = '';
-          }
-
-          for (let j = Array.from(data)[0][0].length; j >= 1; j--) {
-            if (data.get($(this).val().substring(i, i + j)) != undefined) {
-              result.push(data.get($(this).val().substring(i, i + j)) ?? $(this).val().substring(i, i + j));
-              i += j - 1;
-              break;
-            }
-          }
-        } else {
-          if ($(this).val()[i] === ' ' && tempWord.length > 0 && !/ /.test(tempWord)) {
-            tempWord.split(/\s/).forEach((word) => result.push(word));
-            tempWord = '';
-          }
-
-          tempWord += $(this).val()[i];
-
-          if (/ /.test(tempWord)) {
-            if ($(this).val()[i + 1] !== ' ') {
-              result[result.length - 1] += tempWord.substring(0, tempWord.length - 1);
-              tempWord = '';
-            }
-
-            continue;
-          }
-
-          if ((tempWord.length > 0 && /\p{sc=Hani}/u.test($(this).val()[i + 1]) && !markMap.has($(this).val()[i + 1])) || i + 1 === $(this).val().length) {
-            tempWord.split(/\s/).forEach((word) => result.push(word));
-            tempWord = '';
-          }
-        }
-      }
-
-      var phrase = result.join(' ');
-
-      Array.from(markMap).forEach((mark) => phrase = phrase.replace(new RegExp(`\\s?(${mark[0]})\\s?`, 'g'), mark[1]).trim());
-      $("#targetText").val(phrase);
+      $("#targetText").val(getConvertedWords(data, $(this).val()));
       $("#glossaryList").val(-1);
     }
   } else {
     $("#glossaryList").val(-1).change();
+  }
+});
+
+$("#returnButton").on("click", function () {
+  if ($("#sourceText").val().length > 0) {
+    const data = new Map(Array.from(sinoVietnameses).sort((a, b) => b[0].length - a[0].length));
+    $("#targetText").val(getConvertedWords(data, $("#sourceText").val()));
   }
 });
 
@@ -278,6 +238,7 @@ $("#removeButton").on("click", function () {
   if (parseInt($("#glossaryList").val()) > -1) {
     glossary.splice(parseInt($("#glossaryList").val()), 1);
     loadGlossary();
+    $("#sourceText").trigger("input");
     $("#inputGlossary").val(null);
   }
 });
@@ -301,7 +262,7 @@ function loadGlossary() {
   var glossaryList = '<option value="-1" selected>Chọn...</option>';
   const glossaryType = $("#glossaryType").val();
 
-  $("#fileExtension").text(glossaryType === GlossaryType.TSV ? ".tsv" : (glossaryType === GlossaryType.CSV ? ".csv" : ".txt"));
+  $("#fileExtension").text(glossaryType === GlossaryType.TSV ? "tsv" : (glossaryType === GlossaryType.CSV ? "csv" : "txt"));
 
   if (glossary.length > 0) {
 
@@ -309,8 +270,8 @@ function loadGlossary() {
       if (!this[key]) return this[key] = 1;
     }, {}).sort((a, b) =>
         b[0].length - a[0].length ||
-        a[0].localeCompare(b[0]) ||
-        a[1].localeCompare(b[1]));
+        a[1].localeCompare(b[1]) ||
+        a[0].localeCompare(b[0]));
 
     glossary.forEach((element, index) => glossaryList +=
         `\n<option value="${index}">${element[0]}\t${element[1]}</option>`);
@@ -339,7 +300,7 @@ function loadGlossary() {
 
     $("#downloadButton").attr("href",
         `data:${glossaryType};charset=utf-8,${encodeURIComponent(data)}`);
-    $("#downloadButton").attr("download", ($("#glossaryName").val().length > 0 ? $("#glossaryName").val() : 'Từ vựng') + $("#fileExtension").text());
+    $("#downloadButton").attr("download", ($("#glossaryName").val().length > 0 ? $("#glossaryName").val() : 'Từ vựng') + '.' + $("#fileExtension").text());
   } else {
     $("#downloadButton").removeAttr("href");
     $("#downloadButton").removeAttr("download");
@@ -354,7 +315,51 @@ function loadGlossary() {
   $("#glossaryCounter").text(glossary.length);
 
   localStorage.setItem("glossary", JSON.stringify({type: glossaryType, data: Object.fromEntries(new Map(glossary))}));
+}
 
-  $("#sourceText").val(null);
-  $("#targetText").val(null);
+function getConvertedWords(data, text) {
+  var phrases = []; 
+  var tempWord = '';
+
+  for (let i = 0; i < text.length; i++) {
+    if (data.has(text[i]) && !markMap.has(text[i])) {
+      if (tempWord.length > 0 && i + 1 === text.length) {
+        phrases.push(tempWord);
+        tempWord = '';
+      }
+
+      for (let j = Array.from(data)[0][0].length; j >= 1; j--) {
+        if (data.get(text.substring(i, i + j)) != undefined) {
+          phrases.push(data.get(text.substring(i, i + j)) ?? text.substring(i, i + j));
+          i += j - 1;
+          break;
+        }
+      }
+    } else {
+      if (text[i] === ' ' && tempWord.length > 0 && !/ /.test(tempWord)) {
+        tempWord.split(/\s/).forEach((word) => phrases.push(word));
+        tempWord = '';
+      }
+
+      tempWord += text[i];
+
+      if (/ /.test(tempWord)) {
+        if (text[i + 1] !== ' ') {
+          phrases[phrases.length - 1] += tempWord.substring(0, tempWord.length - 1);
+          tempWord = '';
+        }
+
+        continue;
+      }
+
+      if ((tempWord.length > 0 && data.has(text[i + 1]) && !markMap.has(text[i + 1])) || i + 1 === text.length) {
+        tempWord.split(/\s/).forEach((word) => phrases.push(word));
+        tempWord = '';
+      }
+    }
+  }
+
+  var result = phrases.join(' ');
+  Array.from(markMap).forEach((mark) => result = result.replace(new RegExp(`\\s?(${mark[0]})\\s?`, 'g'), mark[1]).trim());
+  return result;
 }
