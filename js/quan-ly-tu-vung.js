@@ -108,6 +108,8 @@ $("#sourceText").on("input", function () {
   }
 });
 
+$("#sourceTextMenu").on("mousedown", (event) => event.preventDefault());
+
 $("#returnButton").on("click", function () {
   if ($("#sourceText").val().length > 0) {
     const data = new Map(Array.from(sinoVietnameses).sort((a, b) => b[0].length - a[0].length));
@@ -257,6 +259,53 @@ $("#clearGlossaryButton").on("click", function () {
 
 $("#glossaryName").on("input", () => loadGlossary());
 
+function getConvertedWords(data, text) {
+  var phrases = []; 
+  var tempWord = '';
+
+  for (let i = 0; i < text.length; i++) {
+    if (data.has(text[i]) && !markMap.has(text[i])) {
+      if (tempWord.length > 0 && i + 1 === text.length) {
+        phrases.push(tempWord);
+        tempWord = '';
+      }
+
+      for (let j = Array.from(data)[0][0].length; j >= 1; j--) {
+        if (data.get(text.substring(i, i + j)) != undefined) {
+          phrases.push(data.get(text.substring(i, i + j)) ?? text.substring(i, i + j));
+          i += j - 1;
+          break;
+        }
+      }
+    } else {
+      if (text[i] === ' ' && tempWord.length > 0 && !/ /.test(tempWord)) {
+        tempWord.split(/\s/).forEach((word) => phrases.push(word));
+        tempWord = '';
+      }
+
+      tempWord += text[i];
+
+      if (/ /.test(tempWord)) {
+        if (text[i + 1] !== ' ') {
+          phrases[phrases.length - 1] += tempWord.substring(0, tempWord.length - 1);
+          tempWord = '';
+        }
+
+        continue;
+      }
+
+      if ((tempWord.length > 0 && data.has(text[i + 1]) && !markMap.has(text[i + 1])) || i + 1 === text.length) {
+        tempWord.split(/\s/).forEach((word) => phrases.push(word));
+        tempWord = '';
+      }
+    }
+  }
+
+  var result = phrases.join(' ');
+  Array.from(markMap).forEach((mark) => result = result.replace(new RegExp(`\\s?(${mark[0]})\\s?`, 'g'), mark[1]).trim());
+  return result;
+}
+
 function loadGlossary() {
   var data = ''; 
   var glossaryList = '<option value="-1" selected>Chọn...</option>';
@@ -315,51 +364,4 @@ function loadGlossary() {
   $("#glossaryCounter").text(glossary.length);
 
   localStorage.setItem("glossary", JSON.stringify({type: glossaryType, data: Object.fromEntries(new Map(glossary))}));
-}
-
-function getConvertedWords(data, text) {
-  var phrases = []; 
-  var tempWord = '';
-
-  for (let i = 0; i < text.length; i++) {
-    if (data.has(text[i]) && !markMap.has(text[i])) {
-      if (tempWord.length > 0 && i + 1 === text.length) {
-        phrases.push(tempWord);
-        tempWord = '';
-      }
-
-      for (let j = Array.from(data)[0][0].length; j >= 1; j--) {
-        if (data.get(text.substring(i, i + j)) != undefined) {
-          phrases.push(data.get(text.substring(i, i + j)) ?? text.substring(i, i + j));
-          i += j - 1;
-          break;
-        }
-      }
-    } else {
-      if (text[i] === ' ' && tempWord.length > 0 && !/ /.test(tempWord)) {
-        tempWord.split(/\s/).forEach((word) => phrases.push(word));
-        tempWord = '';
-      }
-
-      tempWord += text[i];
-
-      if (/ /.test(tempWord)) {
-        if (text[i + 1] !== ' ') {
-          phrases[phrases.length - 1] += tempWord.substring(0, tempWord.length - 1);
-          tempWord = '';
-        }
-
-        continue;
-      }
-
-      if ((tempWord.length > 0 && data.has(text[i + 1]) && !markMap.has(text[i + 1])) || i + 1 === text.length) {
-        tempWord.split(/\s/).forEach((word) => phrases.push(word));
-        tempWord = '';
-      }
-    }
-  }
-
-  var result = phrases.join(' ');
-  Array.from(markMap).forEach((mark) => result = result.replace(new RegExp(`\\s?(${mark[0]})\\s?`, 'g'), mark[1]).trim());
-  return result;
 }
