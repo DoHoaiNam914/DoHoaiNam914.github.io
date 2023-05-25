@@ -98,9 +98,7 @@ $("#sourceText").on("input", function () {
     if (glossaryMap.has($(this).val())) {
       $("#glossaryList").val(Array.from(glossaryMap.keys()).indexOf($(this).val())).change();
     } else {
-      const data = new Map([...Array.from(sinoVietnameses), glossary].sort((a, b) => b[0].length - a[0].length));
-
-      $("#targetText").val(getConvertedWords(data, $(this).val()));
+      $("#targetText").val(getConvertedWords(new Map((glossary.length > 0 ?[...Array.from(sinoVietnameses), glossary] : Array.from(sinoVietnameses)).sort((a, b) => b[0].length - a[0].length)), $(this).val()));
       $("#glossaryList").val(-1);
     }
   } else {
@@ -109,13 +107,6 @@ $("#sourceText").on("input", function () {
 });
 
 $("#sourceTextMenu").on("mousedown", (event) => event.preventDefault());
-
-$("#returnButton").on("click", function () {
-  if ($("#sourceText").val().length > 0) {
-    const data = new Map(Array.from(sinoVietnameses).sort((a, b) => b[0].length - a[0].length));
-    $("#targetText").val(getConvertedWords(data, $("#sourceText").val()));
-  }
-});
 
 $(".deepl-convert").on("click", function () {
   if ($("#sourceText").val().length > 0) {
@@ -209,6 +200,8 @@ $("#addButton").on("click", function () {
     glossaryMap.set($("#sourceText").val(), $("#targetText").val());
     glossary = Array.from(glossaryMap);
     loadGlossary();
+    $("#sourceText").val(null);
+    $("#targetText").val(null);
     $("#inputGlossary").val(null);
   }
 });
@@ -222,6 +215,12 @@ $(".upperCaseFromAmountButton").on("click", function () {
 $(".upperCaseAllButton").on("click", function () {
   if ($("#targetText").val().length > 0) {
     $("#targetText").val($("#targetText").val().split(' ').map((word, index) => word = word.charAt(0).toUpperCase() + word.slice(1)).join(' '));
+  }
+});
+
+$("#returnButton").on("click", function () {
+  if ($("#sourceText").val().length > 0) {
+    $("#targetText").val(getConvertedWords(new Map(Array.from(sinoVietnameses).sort((a, b) => b[0].length - a[0].length)), $("#sourceText").val()));
   }
 });
 
