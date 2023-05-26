@@ -161,7 +161,7 @@ async function translate(service, sessionIndex, sourceLang, targetLang, sentence
       };
 
       $.ajax(settings).done(function (data) {
-        const sourceQuery = [...sourceSentences].slice(QUERY_LENGTH * (sessionIndex - 1));
+        const sourceQuery = Array.from(sourceSentences).slice(QUERY_LENGTH * (sessionIndex - 1));
 
         for (let i = 0; i < query.length; i++) {
           const processedTranslation = textPostProcess(data.translations[i].text, service);
@@ -177,7 +177,7 @@ async function translate(service, sessionIndex, sourceLang, targetLang, sentence
 
         translation += data.translations.map((sentence) => textPostProcess(decodeHTMLEntity(sentence.text), $("#flexSwitchCheckIntermediary").prop("checked") && sourceLang !== $("#intermediaryLangSelect").val() ? 'intermediary' : service)).join('\n');
 
-        if ([...sentences].slice(QUERY_LENGTH * (sessionIndex - 1)).every((element, index) => query[index] === element)) {
+        if (Array.from(sentences).slice(QUERY_LENGTH * (sessionIndex - 1)).every((element, index) => query[index] === element)) {
           if ($("#flexSwitchCheckIntermediary").prop("checked") && sourceLang !== $("#intermediaryLangSelect").val()) {
             sentences = translation.split(/\r?\n/);
 
@@ -261,7 +261,7 @@ async function translate(service, sessionIndex, sourceLang, targetLang, sentence
       };
 
       $.ajax(settings).done(function (data) {
-        const sourceQuery = [...sourceSentences].slice(QUERY_LENGTH * (sessionIndex - 1));
+        const sourceQuery = Array.from(sourceSentences).slice(QUERY_LENGTH * (sessionIndex - 1));
 
         for (let i = 0; i < query.length; i++) {
           const processedTranslation = textPostProcess(data[i].translations[0].text, service);
@@ -277,7 +277,7 @@ async function translate(service, sessionIndex, sourceLang, targetLang, sentence
 
         translation += data.map((sentence) => textPostProcess(decodeHTMLEntity(sentence.translations[0].text), $("#flexSwitchCheckIntermediary").prop("checked") && sourceLang !== $("#intermediaryLangSelect").val() ? 'intermediary' : service)).join('\n');
 
-        if ([...sentences].slice(QUERY_LENGTH * (sessionIndex - 1)).every((element, index) => query[index] === element)) {
+        if (Array.from(sentences).slice(QUERY_LENGTH * (sessionIndex - 1)).every((element, index) => query[index] === element)) {
           if ($("#flexSwitchCheckIntermediary").prop("checked") && sourceLang !== $("#intermediaryLangSelect").val()) {
             sentences = translation.split(/\r?\n/);
 
@@ -305,7 +305,7 @@ async function translate(service, sessionIndex, sourceLang, targetLang, sentence
       //GET https://translate.google.com/translate_t?source=dict-chrome-ex&sl=${sourceLang}&tl=${targetLang}${query}
       settings = {
         crossDomain: true,
-        url: `https://translate.googleapis.com/translate_a/t?anno=3&client=gtx&format=html&v=1.0&key&logId=vTE_20230329&sl=${sourceLang}&tl=${targetLang}&tc=${sessionIndex}&sr=1&tk=${zr(query.join('\n')).replace('&tk=', '')}&mode=1`,
+        url: `https://translate.googleapis.com/translate_a/t?anno=3&client=gtx&format=html&v=1.0&key&logId=vTE_20230329&sl=${sourceLang}&tl=${targetLang}&tc=${sessionIndex}&sr=1${zr(query.join('\n'))}&mode=1`,
         method: 'GET',
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
@@ -315,7 +315,7 @@ async function translate(service, sessionIndex, sourceLang, targetLang, sentence
       };
 
       $.ajax(settings).done(function (data) {
-        const sourceQuery = [...sourceSentences].slice(QUERY_LENGTH * (sessionIndex - 1));
+        const sourceQuery = Array.from(sourceSentences).slice(QUERY_LENGTH * (sessionIndex - 1));
         for (let i = 0; i < query.length; i++) {
           const processedTranslation = textPostProcess((sourceLang === 'auto' ? data[i][0] : data[i]).replace(/(<\/b>)( *<i>)/g, '$1PARABREAK$2').split('PARABREAK').map((element) => element.replace(/<i>.+<\/i>( *<b>.+<\/b>)/g, '$1')).join(''), service);
 
@@ -330,7 +330,7 @@ async function translate(service, sessionIndex, sourceLang, targetLang, sentence
 
         translation += data.map((sentence) => textPostProcess(decodeHTMLEntity((sourceLang === 'auto' ? sentence[0] : sentence).replace(/(<\/b>)( *<i>)/g, '$1PARABREAK$2').split('PARABREAK').map((element) => element.replace(/<i>.+<\/i>( *)<b>(.+)<\/b>/g, '$1$2')).join('')), $("#flexSwitchCheckIntermediary").prop("checked") && sourceLang !== $("#intermediaryLangSelect").val() ? 'intermediary' : service)).join('\n');
 
-        if ([...sentences].slice(QUERY_LENGTH * (sessionIndex - 1)).every((element, index) => query[index] === element)) {
+        if (Array.from(sentences).slice(QUERY_LENGTH * (sessionIndex - 1)).every((element, index) => query[index] === element)) {
           if ($("#flexSwitchCheckIntermediary").prop("checked") && sourceLang !== $("#intermediaryLangSelect").val()) {
             sentences = translation.split(/\r?\n/);
 
@@ -406,7 +406,7 @@ function textPreProcess(text, service) {
   var newText = text;
 
   if (glossary != null) {
-    const glossaryList = [...glossary].filter((phrase) => text.includes(phrase[0]));
+    const glossaryList = Array.from(glossary).filter((phrase) => text.includes(phrase[0]));
 
     for (let i = 0; i < glossaryList.length; i++) {
       if (service === Services.MICROSOFT) {

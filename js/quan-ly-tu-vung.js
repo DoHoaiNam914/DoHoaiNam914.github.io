@@ -95,10 +95,11 @@ $("#sourceText").on("input", function () {
   const glossaryMap = new Map(glossary);
 
   if ($(this).val().length > 0) {
+    $("#targetText").val(getConvertedWords(new Map((glossary.length > 0 ?glossary.concat(Array.from(sinoVietnameses)) : Array.from(sinoVietnameses)).sort((a, b) => b[0].length - a[0].length)), $(this).val()));
+
     if (glossaryMap.has($(this).val())) {
-      $("#glossaryList").val(Array.from(glossaryMap.keys()).indexOf($(this).val())).change();
+      $("#glossaryList").val(Array.from(glossaryMap.keys()).indexOf($(this).val()));
     } else {
-      $("#targetText").val(getConvertedWords(new Map((glossary.length > 0 ?[...Array.from(sinoVietnameses), glossary] : Array.from(sinoVietnameses)).sort((a, b) => b[0].length - a[0].length)), $(this).val()));
       $("#glossaryList").val(-1);
     }
   } else {
@@ -263,41 +264,37 @@ function getConvertedWords(data, text) {
   var tempWord = '';
 
   for (let i = 0; i < text.length; i++) {
-    if (data.has(text[i]) && !markMap.has(text[i])) {
-      if (tempWord.length > 0 && i + 1 === text.length) {
-        phrases.push(tempWord);
-        tempWord = '';
-      }
-
-      for (let j = Array.from(data)[0][0].length; j >= 1; j--) {
-        if (data.get(text.substring(i, i + j)) != undefined) {
-          phrases.push(data.get(text.substring(i, i + j)) ?? text.substring(i, i + j));
-          i += j - 1;
-          break;
-        }
-      }
-    } else {
-      if (text[i] === ' ' && tempWord.length > 0 && !/ /.test(tempWord)) {
-        tempWord.split(/\s/).forEach((word) => phrases.push(word));
-        tempWord = '';
-      }
-
-      tempWord += text[i];
-
-      if (/ /.test(tempWord)) {
-        if (text[i + 1] !== ' ') {
-          phrases[phrases.length - 1] += tempWord.substring(0, tempWord.length - 1);
+    for (let j = Array.from(data)[0][0].length; j >= 1; j--) {
+      if (data.has(text.substring(i, i + j)) && !markMap.has(text[i])) {
+        phrases.push(data.get(text.substring(i, i + j)));
+        i += j - 1;
+        break;
+      } else if (j === 1) {
+        if (text[i] === ' ' && tempWord.length > 0 && !/ /.test(tempWord)) {
+          tempWord.split(/\s/).forEach((word) => phrases.push(word));
           tempWord = '';
         }
 
-        continue;
-      }
+        tempWord += text[i];
 
-      if ((tempWord.length > 0 && data.has(text[i + 1]) && !markMap.has(text[i + 1])) || i + 1 === text.length) {
-        tempWord.split(/\s/).forEach((word) => phrases.push(word));
-        tempWord = '';
+        if (/ /.test(tempWord)) {
+          if (text[i + 1] !== ' ') {
+            phrases[phrases.length - 1] += tempWord.substring(0, tempWord.length - 1);
+            tempWord = '';
+          }
+
+          break;
+        }
+
+        if ((tempWord.length > 0 && data.has(text[i + 1]) && !markMap.has(text[i + 1])) || i + 1 === text.length) {
+          tempWord.split(/\s/).forEach((word) => phrases.push(word));
+          tempWord = '';
+        }
+
+        break;
       }
     }
+    continue;
   }
 
   var result = phrases.join(' ');
@@ -313,7 +310,6 @@ function loadGlossary() {
   $("#fileExtension").text(glossaryType === GlossaryType.TSV ? "tsv" : (glossaryType === GlossaryType.CSV ? "csv" : "txt"));
 
   if (glossary.length > 0) {
-
     glossary = glossary.filter(function ([key]) {
       if (!this[key]) return this[key] = 1;
     }, {}).sort((a, b) =>
