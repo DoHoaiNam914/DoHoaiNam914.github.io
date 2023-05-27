@@ -61,6 +61,18 @@ $("#sourceText").on("input", function () {
 
 $("#sourceTextMenu").on("mousedown", (event) => event.preventDefault());
 
+$("#pinyinConvertButton").on("click", function () {
+  if ($("#sourceText").val().length > 0) {
+    $("#targetText").val(getConvertedWords(new Map(Array.from(pinyins).sort((a, b) => b[0].length - a[0].length)), $("#sourceText").val()));
+  }
+});
+
+$("#sinoVietnamesesConvertButton").on("click", function () {
+  if ($("#sourceText").val().length > 0) {
+    $("#targetText").val(getConvertedWords(new Map(Array.from(sinoVietnameses).sort((a, b) => b[0].length - a[0].length)), $("#sourceText").val()));
+  }
+});
+
 $(".deepl-convert").on("click", function () {
   if ($("#sourceText").val().length > 0) {
     settings = {
@@ -168,12 +180,6 @@ $(".upperCaseFromAmountButton").on("click", function () {
 $(".upperCaseAllButton").on("click", function () {
   if ($("#targetText").val().length > 0) {
     $("#targetText").val($("#targetText").val().split(' ').map((word, index) => word = word.charAt(0).toUpperCase() + word.slice(1)).join(' '));
-  }
-});
-
-$("#returnButton").on("click", function () {
-  if ($("#sourceText").val().length > 0) {
-    $("#targetText").val(getConvertedWords(new Map(Array.from(sinoVietnameses).sort((a, b) => b[0].length - a[0].length)), $("#sourceText").val()));
   }
 });
 

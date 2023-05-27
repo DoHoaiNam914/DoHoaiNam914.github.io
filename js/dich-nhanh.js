@@ -440,7 +440,7 @@ function getConvertedWords(data, text) {
 
     for (let j = 0; j < line.length; j++) {
       for (let k = Array.from(data)[0][0].length; k >= 1; k--) {
-        if (data.has(line.substring(j, j + k)) && !markMap.has(line[i])) {
+        if (data.has(line.substring(j, j + k)) && !markMap.has(line[j])) {
           phrases.push(data.get(line.substring(j, j + k)));
           j += k - 1;
           break;
