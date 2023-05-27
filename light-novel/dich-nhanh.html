@@ -108,19 +108,13 @@
         max-width: 100%;
       }
 
-      main.container {
-        position: relative;
-      }
-
       main.container .textarea {
         font-size: 18px;
         min-height: 300px;
-        left: .75rem;
         line-height: 1.2em;
         overflow: hidden;
         overflow-wrap: break-word;
-        right: .75rem;
-        width: 94%;
+        width: 100%;
       }
 
       @media (max-width: 1000px) {
@@ -220,8 +214,8 @@
           </svg>
         </button>
       </div-->
-      <textarea class="form-control position-absolute textarea" id="queryText" placeholder="Viết gì đó tại đây"></textarea>
-      <div class="form-control position-absolute textarea" id="translatedText" style="display: none;"></div>
+      <textarea class="form-control textarea" id="queryText" placeholder="Viết gì đó tại đây"></textarea>
+      <div class="form-control textarea" id="translatedText" style="display: none;"></div>
     </main>
     <div class="fixed-bottom">
       <nav class="navbar bg-body shadow-sm fixed-bottom">
