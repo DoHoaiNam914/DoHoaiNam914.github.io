@@ -371,6 +371,7 @@ function getDeepLFormatTarget(languageCode) {
 }
 
 function preRequest() {
+  $("#translatedText").show();
   $("#queryText").hide();
   $("#translateButton").addClass("disabled");
   $("#reTranslateButton").addClass("disabled");
@@ -388,7 +389,6 @@ function preRequest() {
 }
 
 function postRequest() {
-  $("#translatedText").show();
   resize();
   $("#translateButton").removeClass("disabled");
   $(".option").removeAttr("disabled");
