@@ -7,12 +7,72 @@ const Services = {
   DEEPL: 'deepl'
 };
 
+var pinyins = new Map();
+var sinoVietnameses = new Map();
+const markMap = new Map([
+  ['　', ' '],
+  ['，', ', '],
+  ['、', ', '],
+  ['；', '; '],
+  ['：', ': '],
+  ['！', '! '],
+  ['？', '\? '],
+  ['．', '.'],
+  ['。', '. '],
+  ['·', '•'],
+  ['＇', ' \' '],
+  ['＂', ' " '],
+  ['（', ' \('],
+  ['）', '\) '],
+  ['［', ' \['],
+  ['］', '\] '],
+  ['｛', ' {'],
+  ['｝', '} '],
+  ['〈', ' <'],
+  ['〉', '> '],
+  ['《', ' «'],
+  ['》', '» '],
+  ['「', ' "'],
+  ['」', '" '],
+  ['『', ' ‘'],
+  ['』', '’ '],
+  ['【', ' \['],
+  ['】', '\] '],
+  ['＊', ' * '],
+  ['／', '/'],
+  ['＆', ' & '],
+  ['＃', ' # '],
+  ['％', ' % '],
+  ['＋', ' + '],
+  ['～', ' ~ ']
+]);
+
 const QUERY_LENGTH = 20;
 
 var accessToken;
 
 var sourceSentences;
 var translation = '';
+
+$(document).ready(function () {
+  $.get({
+    crossDomain: false,
+    url: "/datasource/Bính âm.txt",
+    processData: false
+  }).done(function (data) {
+    pinyins = new Map(data.split(/\r?\n/).map((character) => character.split('=')).filter((character) => character.length >= 2));
+    console.log('Đã tải xong bộ dữ liệu bính âm!');
+  }).fail((jqXHR, textStatus, errorThrown) => window.location.reload());
+
+  $.get({
+    crossDomain: false,
+    url: "/datasource/Hán việt.txt",
+    processData: false
+  }).done(function (data) {
+    sinoVietnameses = new Map(data.split(/\r?\n/).map((character) => character.split('=')).filter((character) => character.length >= 2));
+    console.log('Đã tải xong bộ dữ liệu hán việt!');
+  }).fail((jqXHR, textStatus, errorThrown) => window.location.reload());
+});
 
 $("#copyButton").on("click", () => navigator.clipboard.writeText($("#translateButton").text() === 'Sửa' ? translation : $("#queryText").val()));
 
@@ -56,11 +116,27 @@ $("#translateButton").click(function () {
     var sourceLang = $("#sourceLangSelect").val();
     var targetLang = $("#flexSwitchCheckIntermediary").prop("checked") ? $("#intermediaryLangSelect").val() : $("#targetLangSelect").val();
 
-    sourceSentences = $("#queryText").val().split(/\r?\n/);
+    sourceSentences = $("#queryText").val().split(/\n/);
 
     if ($("#queryText").val().length > 0) {
       preRequest();
-      translate(service, 1, sourceLang, targetLang, sourceSentences, sourceSentences.length > QUERY_LENGTH ? sourceSentences.slice(0, QUERY_LENGTH) : sourceSentences, '', 0);
+
+      if (targetLang === 'pinyin' || targetLang === 'sinovietnamese') {
+        var result = '';
+
+        translation = getConvertedWords(new Map(Array.from(targetLang === 'pinyin' ? pinyins : sinoVietnameses).sort((a, b) => b[0].length - a[0].length)), sourceSentences.join('\n'));
+
+        const lines = translation.split(/\n/);
+
+        for (let i = 0; i < sourceSentences.length; i++) {
+          result += ('<p>' + (lines[i].trim() !== sourceSentences[i].trim() ? '<i>' + sourceSentences[i] + '</i><br>' + lines[i] : sourceSentences[i]) + '</p>').replace(/(<p>)(<\/p>)/g, '$1<br>$2');
+        }
+
+        $("#translatedText").html(result);
+        postRequest();
+      } else {
+        translate(service, 1, sourceLang, targetLang, sourceSentences, sourceSentences.length > QUERY_LENGTH ? sourceSentences.slice(0, QUERY_LENGTH) : sourceSentences, '', 0);
+      }
     }
   } else if ($(this).text() === 'Sửa') {
     $("#translatedText").hide();
@@ -350,6 +426,58 @@ async function translate(service, sessionIndex, sourceLang, targetLang, sentence
       });
       break;
   }
+}
+
+function getConvertedWords(data, text) {
+  const lines = text.split(/\n/);
+  var result = [];
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+
+    var phrases = [];
+    var tempWord = '';
+
+    for (let j = 0; j < line.length; j++) {
+      for (let k = Array.from(data)[0][0].length; k >= 1; k--) {
+        if (data.has(line.substring(j, j + k)) && !markMap.has(line[i])) {
+          phrases.push(data.get(line.substring(j, j + k)));
+          j += k - 1;
+          break;
+        } else if (k === 1) {
+          if (tempWord.length > 0 && /\s/.test(line[j]) && !/\s/.test(tempWord)) {
+            tempWord.split(' ').forEach((word) => phrases.push(word));
+            tempWord = '';
+          }
+
+          tempWord += line[j];
+
+          if (/\s/.test(tempWord)) {
+            if (!/\s/.test(line[j + 1])) {
+              phrases[phrases.length - 1] += tempWord.substring(0, tempWord.length - 1);
+              tempWord = '';
+            }
+
+            break;
+          }
+
+          if ((tempWord.length > 0 && data.has(line[j + 1]) && !markMap.has(line[j + 1])) || j + 1 === line.length) {
+            tempWord.split(' ').forEach((word) => phrases.push(word));
+            tempWord = '';
+          }
+
+          break;
+        }
+      }
+
+      continue;
+    }
+
+    result.push(phrases.join(' '));
+  }
+
+  Array.from(markMap).forEach((mark) => result = result.map((line) => line.replace(new RegExp(` ?(${mark[0]}) ?`, 'g'), mark[1]).trim()));
+  return result.join('\n');
 }
 
 function decodeHTMLEntity(text) {

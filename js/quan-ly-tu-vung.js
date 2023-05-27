@@ -6,59 +6,11 @@ const GlossaryType = {
   VIETPHRASE: 'text/plain'
 };
 
-var sinoVietnameses = new Map();
-const markMap = new Map([
-  ['　', ' '],
-  ['，', ', '],
-  ['、', ', '],
-  ['；', '; '],
-  ['：', ': '],
-  ['！', '! '],
-  ['？', '\? '],
-  ['．', '.'],
-  ['。', '. '],
-  ['·', '•'],
-  ['＇', ' \' '],
-  ['＂', ' " '],
-  ['（', ' \('],
-  ['）', '\) '],
-  ['［', ' \['],
-  ['］', '\] '],
-  ['｛', ' {'],
-  ['｝', '} '],
-  ['〈', ' <'],
-  ['〉', '> '],
-  ['《', ' «'],
-  ['》', '» '],
-  ['「', ' “'],
-  ['」', '” '],
-  ['『', ' ‘'],
-  ['』', '’ '],
-  ['【', ' \['],
-  ['】', '\] '],
-  ['＊', ' * '],
-  ['／', '/'],
-  ['＆', ' & '],
-  ['＃', ' # '],
-  ['％', ' % '],
-  ['＋', ' + '],
-  ['～', ' ~ ']
-]);
-
 var glossary = [];
 
-$(document).ready(function () {
-  $.get({
-    crossDomain: false,
-    url: "/datasource/Hán Việt.txt",
-    processData: false
-  }).done(function (data) {
-    sinoVietnameses = data.split(/\r?\n/).map((character) => character.split('=')).filter((character) => character.length >= 2);
-    console.log('Đã tải xong bộ dữ liệu hán việt!');
-  }).fail((jqXHR, textStatus, errorThrown) => window.location.reload());
-});
+$("#glossaryManagerButton").on("mousedown", (event) => event.preventDefault());
 
-$("#glossaryManagerButton").on("mousedown", function () {
+$("#glossaryManagerButton").on("click", function () {
   $("#glossaryList").val(-1).change();
   $("#sourceText").val(window.getSelection().toString()).trigger("input");
 });
@@ -258,49 +210,6 @@ $("#clearGlossaryButton").on("click", function () {
 });
 
 $("#glossaryName").on("input", () => loadGlossary());
-
-function getConvertedWords(data, text) {
-  var phrases = []; 
-  var tempWord = '';
-
-  for (let i = 0; i < text.length; i++) {
-    for (let j = Array.from(data)[0][0].length; j >= 1; j--) {
-      if (data.has(text.substring(i, i + j)) && !markMap.has(text[i])) {
-        phrases.push(data.get(text.substring(i, i + j)));
-        i += j - 1;
-        break;
-      } else if (j === 1) {
-        if (text[i] === ' ' && tempWord.length > 0 && !/ /.test(tempWord)) {
-          tempWord.split(/\s/).forEach((word) => phrases.push(word));
-          tempWord = '';
-        }
-
-        tempWord += text[i];
-
-        if (/ /.test(tempWord)) {
-          if (text[i + 1] !== ' ') {
-            phrases[phrases.length - 1] += tempWord.substring(0, tempWord.length - 1);
-            tempWord = '';
-          }
-
-          break;
-        }
-
-        if ((tempWord.length > 0 && data.has(text[i + 1]) && !markMap.has(text[i + 1])) || i + 1 === text.length) {
-          tempWord.split(/\s/).forEach((word) => phrases.push(word));
-          tempWord = '';
-        }
-
-        break;
-      }
-    }
-    continue;
-  }
-
-  var result = phrases.join(' ');
-  Array.from(markMap).forEach((mark) => result = result.replace(new RegExp(`\\s?(${mark[0]})\\s?`, 'g'), mark[1]).trim());
-  return result;
-}
 
 function loadGlossary() {
   var data = ''; 
