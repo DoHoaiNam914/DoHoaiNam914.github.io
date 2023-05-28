@@ -278,7 +278,7 @@
             <div class="input-group input-group-sm mb-3">
               <input type="text" placeholder="Thay thế" class="form-control" id="sourceText">
               <button type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" id="sourceTextMenu" data-bs-toggle="dropdown" aria-expanded="false"></button>
-              <ul class="dropdown-menu">
+              <ul class="dropdown-menu dropdown-scroller">
                 <li><button class="dropdown-item" onclick="navigator.clipboard.writeText($('#sourceText').val())">Sao chép</button></li>
                 <li><button class="dropdown-item" onclick="navigator.clipboard.readText().then((clipText) => $('#sourceText').val(clipText).trigger('input'))">Dán</button></li>
                 <hr>
@@ -303,13 +303,14 @@
                 <li><button class="dropdown-item" onclick="navigator.clipboard.writeText($('#targetText').val())">Sao chép</button></li>
                 <li><button class="dropdown-item" onclick="navigator.clipboard.readText().then((clipText) => $('#targetText').val(clipText))">Dán</button></li>
                 <hr>
+                <li><button class="dropdown-item" id="pinyinConvertButton" type="button">Chuyển đổi sang Bính âm</button></li>
+                <li><button class="dropdown-item" id="sinoVietnameseConvertButton" type="button">Chuyển đổi sang Hán việt</button></li>
+                <hr>
                 <li><button class="dropdown-item upperCaseFromAmountButton" data-amount="1" type="button">Viết hoa 1 từ đơn đầu</button></li>
                 <li><button class="dropdown-item upperCaseFromAmountButton" data-amount="2" type="button">Viết hoa 2 từ đơn đầu</button></li>
                 <li><button class="dropdown-item upperCaseFromAmountButton" data-amount="3" type="button">Viết hoa 3 từ đơn đầu</button></li>
                 <li><button class="dropdown-item upperCaseAllButton" type="button">Viết hoa tất cả</button></li>
                 <hr>
-                <li><button class="dropdown-item" id="pinyinConvertButton" type="button">Chuyển đổi sang Bính âm</button></li>
-                <li><button class="dropdown-item" id="sinoVietnameseConvertButton" type="button">Chuyển đổi sang Hán việt</button></li>
                 <li><button class="dropdown-item convert deepl-convert" type="button" data-lang="ZH">DeepL Translator (Chinese)</button></li>
                 <li><button class="dropdown-item convert deepl-convert" type="button" data-lang="EN-US">DeepL Translator (English)</button></li>
                 <li><button class="dropdown-item convert deepl-convert" type="button" data-lang="JA">DeepL Translator (Japanese)</button></li>
