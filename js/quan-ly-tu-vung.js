@@ -8,9 +8,7 @@ const GlossaryType = {
 
 var glossary = [];
 
-$("#glossaryManagerButton").on("mousedown", (event) => event.preventDefault());
-
-$("#glossaryManagerButton").on("click", function () {
+$("#glossaryManagerButton").on("mousedown", function () {
   $("#glossaryList").val(-1).change();
   $("#sourceText").val(window.getSelection().toString()).trigger("input");
 });
@@ -41,6 +39,12 @@ $("#inputGlossary").on("change", function () {
   reader.readAsText($(this).prop("files")[0]);
 });
 
+$("#clearGlossaryButton").on("click", function () {
+  glossary = [];
+  loadGlossary()
+  $("#inputGlossary").val(null);
+});
+
 $("#glossaryType").change(() => loadGlossary());
 
 $("#sourceText").on("input", function () {
@@ -61,13 +65,38 @@ $("#sourceText").on("input", function () {
 
 $("#sourceTextMenu").on("mousedown", (event) => event.preventDefault());
 
+$("#addButton").on("click", function () {
+  if ($("#sourceText").val().length > 0) {
+    const glossaryMap = new Map(glossary);
+    glossaryMap.delete($("#sourceText").val());
+    glossaryMap.set($("#sourceText").val(), $("#targetText").val());
+    glossary = Array.from(glossaryMap);
+    loadGlossary();
+    $("#sourceText").val(null);
+    $("#targetText").val(null);
+    $("#inputGlossary").val(null);
+  }
+});
+
+$(".upperCaseFromAmountButton").on("click", function () {
+  if ($("#targetText").val().length > 0) {
+    $("#targetText").val($("#targetText").val().split(' ').map((word, index) => (index < $(this).data("amount") && word.charAt(0).toUpperCase() + word.slice(1)) || word.toLowerCase()).join(' '));
+  }
+});
+
+$(".upperCaseAllButton").on("click", function () {
+  if ($("#targetText").val().length > 0) {
+    $("#targetText").val($("#targetText").val().split(' ').map((word, index) => word = word.charAt(0).toUpperCase() + word.slice(1)).join(' '));
+  }
+});
+
 $("#pinyinConvertButton").on("click", function () {
   if ($("#sourceText").val().length > 0) {
     $("#targetText").val(getConvertedWords(new Map(Array.from(pinyins).sort((a, b) => b[0].length - a[0].length)), $("#sourceText").val()));
   }
 });
 
-$("#sinoVietnamesesConvertButton").on("click", function () {
+$("#sinoVietnameseConvertButton").click(function () {
   if ($("#sourceText").val().length > 0) {
     $("#targetText").val(getConvertedWords(new Map(Array.from(sinoVietnameses).sort((a, b) => b[0].length - a[0].length)), $("#sourceText").val()));
   }
@@ -158,31 +187,6 @@ $(".microsoft-convert").on("click", async function () {
   }
 });
 
-$("#addButton").on("click", function () {
-  if ($("#sourceText").val().length > 0) {
-    const glossaryMap = new Map(glossary);
-    glossaryMap.delete($("#sourceText").val());
-    glossaryMap.set($("#sourceText").val(), $("#targetText").val());
-    glossary = Array.from(glossaryMap);
-    loadGlossary();
-    $("#sourceText").val(null);
-    $("#targetText").val(null);
-    $("#inputGlossary").val(null);
-  }
-});
-
-$(".upperCaseFromAmountButton").on("click", function () {
-  if ($("#targetText").val().length > 0) {
-    $("#targetText").val($("#targetText").val().split(' ').map((word, index) => (index < $(this).data("amount") && word.charAt(0).toUpperCase() + word.slice(1)) || word.toLowerCase()).join(' '));
-  }
-});
-
-$(".upperCaseAllButton").on("click", function () {
-  if ($("#targetText").val().length > 0) {
-    $("#targetText").val($("#targetText").val().split(' ').map((word, index) => word = word.charAt(0).toUpperCase() + word.slice(1)).join(' '));
-  }
-});
-
 $("#glossaryList").change(function () {
   if (parseInt(this.value) > -1) {
     const data = $("#glossaryList option:selected").text().split(/\t/);
@@ -198,7 +202,7 @@ $("#removeButton").on("click", function () {
   if (parseInt($("#glossaryList").val()) > -1) {
     glossary.splice(parseInt($("#glossaryList").val()), 1);
     loadGlossary();
-    $("#sourceText").trigger("input");
+    $("#sinoVietnameseConvertButton").click();
     $("#inputGlossary").val(null);
   }
 });
@@ -207,12 +211,6 @@ $("#preview").on("click", function () {
   if (glossary.length > 0) {
     this.select();
   }
-});
-
-$("#clearGlossaryButton").on("click", function () {
-  glossary = [];
-  loadGlossary()
-  $("#inputGlossary").val(null);
 });
 
 $("#glossaryName").on("input", () => loadGlossary());
