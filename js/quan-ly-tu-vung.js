@@ -40,9 +40,11 @@ $("#inputGlossary").on("change", function () {
 });
 
 $("#clearGlossaryButton").on("click", function () {
-  glossary = [];
-  loadGlossary()
-  $("#inputGlossary").val(null);
+  if (window.confirm("Bạn có muốn xoá tập từ vựng chứ?")) {
+    glossary = [];
+    loadGlossary()
+    $("#inputGlossary").val(null);
+  }
 });
 
 $("#glossaryType").change(() => loadGlossary());
@@ -64,6 +66,8 @@ $("#sourceText").on("input", function () {
 });
 
 $("#sourceTextMenu").on("mousedown", (event) => event.preventDefault());
+
+$("#clearSourceTextButton").on("click", () => $("#sourceText").val(null).trigger("input"));
 
 $("#addButton").on("click", function () {
   if ($("#sourceText").val().length > 0) {
