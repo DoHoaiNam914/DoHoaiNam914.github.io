@@ -87,7 +87,7 @@ $("#nomfoundationButton").on("click", function () {
 
 $("#hvdicButton").on("click", function () {
   if ($("#sourceText").val().length > 0) {
-    window.open(`https://hvdic.thivien.net/hv/${$("#sourceText").val().substring($("#sourceText").prop("selectionStart"), $("#sourceText").prop("selectionEnd")) || $("#sourceText").val()}`);
+    window.open(`https://hvdic.thivien.net/whv/${$("#sourceText").val().substring($("#sourceText").prop("selectionStart"), $("#sourceText").prop("selectionEnd")) || $("#sourceText").val()}`);
   }
 });
 
