@@ -280,16 +280,18 @@
               <button type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" id="sourceTextMenu" data-bs-toggle="dropdown" aria-expanded="false"></button>
               <ul class="dropdown-menu dropdown-scroller">
                 <li><button class="dropdown-item" id="clearSourceTextButton" type="button">Xoá</button></li>
-                <li><button class="dropdown-item" type="button" onclick="navigator.clipboard.writeText($('#sourceText').val())">Sao chép</button></li>
-                <li><button class="dropdown-item" type="button" onclick="navigator.clipboard.readText().then((clipText) => $('#sourceText').val(clipText).trigger('input'))">Dán</button></li>
+                <li><button class="dropdown-item" id="copySourceTextButton" type="button">Sao chép</button></li>
+                <li><button class="dropdown-item" id="pasteSourceTextButton" type="button">Dán</button></li>
                 <hr>
-                <li><button class="dropdown-item" type="button" onclick="$('#sourceText').val().length > 0 && window.open(`http://mobile.coviet.vn/tratu.aspx?k=${$('#sourceText').val().substring($('#sourceText').prop('selectionStart'), $('#sourceText').prop('selectionEnd')) || $('#sourceText').val()}&t=ALL`)">Từ điển Lạc Việt</button></li>
-                <li><button class="dropdown-item" type="button" onclick="$('#sourceText').val().length > 0 && window.open(`http://www.nomfoundation.org/nom-tools/Nom-Lookup-Tool/Nom-Lookup-Tool?uiLang=en&input_type=rqn_or_hn&inputText=${$('#sourceText').val().substring($('#sourceText').prop('selectionStart'), $('#sourceText').prop('selectionEnd')) || $('#sourceText').val()}`)">Nomfoundation</button></li>
-                <li><button class="dropdown-item" type="button" onclick="$('#sourceText').val().length > 0 && window.open(`https://www.google.com/search?q=${$('#sourceText').val().substring($('#sourceText').prop('selectionStart'), $('#sourceText').prop('selectionEnd')) || $('#sourceText').val()}`)">Google</button></li>
+                <li><button class="dropdown-item" id="lacvietdictionaryButton" type="button">Từ điển Lạc Việt</button></li>
+                <li><button class="dropdown-item" id="nomfoundationButton" type="button">Nomfoundation</button></li>
+                <li><button class="dropdown-item" id="hvdicButton" type="button">Từ điển Hán Nôm</button></li>
+                <li><button class="dropdown-item" id="googleButton" type="button">Google</button></li>
+                <li><button class="dropdown-item" id="baiduButton" type="button">Baidu</button></li>
                 <hr>
-                <li><button class="dropdown-item" type="button" onclick="$('#sourceText').val().length > 0 && window.open(`https://www.deepl.com/translator#auto/en/${$('#sourceText').val()}`)">DeepL Translator</button></li>
-                <li><button class="dropdown-item" type="button" onclick="$('#sourceText').val().length > 0 && window.open(`https://translate.google.com/?sl=auto&tl=vi&text=${$('#sourceText').val()}&op=translate`)">Google Dịch</button></li>
-                <li><button class="dropdown-item" type="button" onclick="$('#sourceText').val().length > 0 && window.open(`https://www.bing.com/translator?from=&to=vi&text=${$('#sourceText').val()}`)">Trình dịch Microsoft Bing</button></li>
+                <li><button class="dropdown-item" id="deepltranslatorButton" type="button">DeepL Translator</button></li>
+                <li><button class="dropdown-item" id="googletranslateButton" type="button">Google Dịch</button></li>
+                <li><button class="dropdown-item" id="bingtranslatorButton" type="button">Trình dịch Microsoft Bing</button></li>
               </ul>
             </div>
             <div class="input-group input-group-sm mb-3">
@@ -301,8 +303,8 @@
               </button>
               <button type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false"></button>
               <ul class="dropdown-menu dropdown-scroller">
-                <li><button class="dropdown-item" type="button" onclick="navigator.clipboard.writeText($('#targetText').val())">Sao chép</button></li>
-                <li><button class="dropdown-item" type="button" onclick="navigator.clipboard.readText().then((clipText) => $('#targetText').val(clipText))">Dán</button></li>
+                <li><button class="dropdown-item" id="copyTargetTextButton" type="button">Sao chép</button></li>
+                <li><button class="dropdown-item" id="pasteTargetTextButton" type="button">Dán</button></li>
                 <hr>
                 <li><button class="dropdown-item" id="pinyinConvertButton" type="button">Chuyển đổi sang Bính âm</button></li>
                 <li><button class="dropdown-item" id="sinoVietnameseConvertButton" type="button">Chuyển đổi sang Hán việt</button></li>

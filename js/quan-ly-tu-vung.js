@@ -69,6 +69,58 @@ $("#sourceTextMenu").on("mousedown", (event) => event.preventDefault());
 
 $("#clearSourceTextButton").on("click", () => $("#sourceText").val(null).trigger("input"));
 
+$("#copySourceTextButton").on("click", () => navigator.clipboard.writeText($("#sourceText").val()));
+
+$("#pasteSourceTextButton").on("click", () => navigator.clipboard.readText().then((clipText) => $("#sourceText").val(clipText).trigger("input")));
+
+$("#lacvietdictionaryButton").on("click", function () {
+  if ($("#sourceText").val().length > 0) {
+    window.open(`http://mobile.coviet.vn/tratu.aspx?k=${$("#sourceText").val().substring($("#sourceText").prop("selectionStart"), $("#sourceText").prop("selectionEnd")) || $("#sourceText").val()}&t=ALL`);
+  }
+});
+
+$("#nomfoundationButton").on("click", function () {
+  if ($("#sourceText").val().length > 0) {
+    window.open(`http://www.nomfoundation.org/nom-tools/Nom-Lookup-Tool/Nom-Lookup-Tool?uiLang=en&input_type=rqn_or_hn&inputText=${$("#sourceText").val().substring($("#sourceText").prop("selectionStart"), $("#sourceText").prop("selectionEnd")) || $("#sourceText").val()}`);
+  }
+});
+
+$("#hvdicButton").on("click", function () {
+  if ($("#sourceText").val().length > 0) {
+    window.open(`https://hvdic.thivien.net/hv/${$("#sourceText").val().substring($("#sourceText").prop("selectionStart"), $("#sourceText").prop("selectionEnd")) || $("#sourceText").val()}`);
+  }
+});
+
+$("#googleButton").on("click", function () {
+  if ($("#sourceText").val().length > 0) {
+    window.open(`https://www.google.com/search?q=${$("#sourceText").val().substring($("#sourceText").prop("selectionStart"), $("#sourceText").prop("selectionEnd")) || $("#sourceText").val()}`);
+  }
+});
+
+$("#baiduButton").on("click", function () {
+  if ($("#sourceText").val().length > 0) {
+    window.open(`https://www.baidu.com/s?wd=${$("#sourceText").val().substring($("#sourceText").prop("selectionStart"), $("#sourceText").prop("selectionEnd")) || $("#sourceText").val()}`);
+  }
+});
+
+$("#deepltranslatorButton").on("click", function () {
+  if ($("#sourceText").val().length > 0) {
+    window.open(`https://www.deepl.com/translator#auto/en/${$("#sourceText").val()}`);
+  }
+});
+
+$("#googletranslateButton").on("click", function () {
+  if ($("#sourceText").val().length > 0) {
+    window.open(`https://translate.google.com/?sl=auto&tl=vi&text=${$("#sourceText").val()}&op=translate`);
+  }
+});
+
+$("#bingtranslatorButton").on("click", function () {
+  if ($("#sourceText").val().length > 0) {
+    window.open(`https://www.bing.com/translator?from=&to=vi&text=${$("#sourceText").val()}`);
+  }
+});
+
 $("#addButton").on("click", function () {
   if ($("#sourceText").val().length > 0) {
     const glossaryMap = new Map(glossary);
@@ -82,17 +134,9 @@ $("#addButton").on("click", function () {
   }
 });
 
-$(".upperCaseFromAmountButton").on("click", function () {
-  if ($("#targetText").val().length > 0) {
-    $("#targetText").val($("#targetText").val().split(' ').map((word, index) => (index < $(this).data("amount") && word.charAt(0).toUpperCase() + word.slice(1)) || word.toLowerCase()).join(' '));
-  }
-});
+$("#copyTargetTextButton").on("click", () => navigator.clipboard.writeText($("#targetText").val()));
 
-$(".upperCaseAllButton").on("click", function () {
-  if ($("#targetText").val().length > 0) {
-    $("#targetText").val($("#targetText").val().split(' ').map((word, index) => word = word.charAt(0).toUpperCase() + word.slice(1)).join(' '));
-  }
-});
+$("#pasteTargetTextButton").on("click", () => navigator.clipboard.readText().then((clipText) => $("#targetText").val(clipText).trigger("input")));
 
 $("#pinyinConvertButton").on("click", function () {
   if ($("#sourceText").val().length > 0) {
@@ -103,6 +147,18 @@ $("#pinyinConvertButton").on("click", function () {
 $("#sinoVietnameseConvertButton").click(function () {
   if ($("#sourceText").val().length > 0) {
     $("#targetText").val(getConvertedWords(new Map(Array.from(sinoVietnameses).sort((a, b) => b[0].length - a[0].length)), $("#sourceText").val()));
+  }
+});
+
+$(".upperCaseFromAmountButton").on("click", function () {
+  if ($("#targetText").val().length > 0) {
+    $("#targetText").val($("#targetText").val().split(' ').map((word, index) => (index < $(this).data("amount") && word.charAt(0).toUpperCase() + word.slice(1)) || word.toLowerCase()).join(' '));
+  }
+});
+
+$(".upperCaseAllButton").on("click", function () {
+  if ($("#targetText").val().length > 0) {
+    $("#targetText").val($("#targetText").val().split(' ').map((word, index) => word = word.charAt(0).toUpperCase() + word.slice(1)).join(' '));
   }
 });
 
@@ -203,7 +259,7 @@ $("#glossaryList").change(function () {
 });
 
 $("#removeButton").on("click", function () {
-  if (parseInt($("#glossaryList").val()) > -1) {
+  if (window.confirm('Bạn có muốn xoá từ này chứ?') && parseInt($("#glossaryList").val()) > -1) {
     glossary.splice(parseInt($("#glossaryList").val()), 1);
     loadGlossary();
     $("#sinoVietnameseConvertButton").click();
