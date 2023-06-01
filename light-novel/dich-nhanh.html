@@ -103,9 +103,9 @@
     </script>
     <style>
       #recognizeImage {
-        float: center;
         max-height: 20%;
         max-width: 100%;
+        text-align: center;
       }
 
       main.container .textarea {
@@ -282,17 +282,17 @@
                 <li><button class="dropdown-item" id="clearSourceTextButton" type="button">Xoá</button></li>
                 <li><button class="dropdown-item" id="copySourceTextButton" type="button">Sao chép</button></li>
                 <li><button class="dropdown-item" id="pasteSourceTextButton" type="button">Dán</button></li>
-                <hr>
+                <li><hr class="dropdown-divider"></li>
                 <li><button class="dropdown-item" id="lacvietdictionaryButton" type="button">Từ điển Lạc Việt</button></li>
                 <li><button class="dropdown-item" id="nomfoundationButton" type="button">Nomfoundation</button></li>
                 <li><button class="dropdown-item" id="hvdicButton" type="button">Từ điển Hán Nôm</button></li>
                 <li><button class="dropdown-item" id="googleButton" type="button">Google</button></li>
                 <li><button class="dropdown-item" id="baiduButton" type="button">Baidu</button></li>
-                <hr>
+                <li><hr class="dropdown-divider"></li>
                 <li><button class="dropdown-item" id="deepltranslatorButton" type="button">DeepL Translator</button></li>
                 <li><button class="dropdown-item" id="googletranslateButton" type="button">Google Dịch</button></li>
-                <li><button class="dropdown-item" id="bingtranslatorButton" type="button">Trình dịch Microsoft Bing</button></li>
                 <li><button class="dropdown-item" id="papagoButton" type="button">Papago</button></li>
+                <li><button class="dropdown-item" id="bingtranslatorButton" type="button">Trình dịch Microsoft Bing</button></li>
               </ul>
             </div>
             <div class="input-group input-group-sm mb-3">
@@ -306,15 +306,15 @@
               <ul class="dropdown-menu dropdown-scroller">
                 <li><button class="dropdown-item" id="copyTargetTextButton" type="button">Sao chép</button></li>
                 <li><button class="dropdown-item" id="pasteTargetTextButton" type="button">Dán</button></li>
-                <hr>
+                <li><hr class="dropdown-divider"></li>
                 <li><button class="dropdown-item" id="pinyinConvertButton" type="button">Chuyển đổi sang Bính âm</button></li>
                 <li><button class="dropdown-item" id="sinoVietnameseConvertButton" type="button">Chuyển đổi sang Hán việt</button></li>
-                <hr>
+                <li><hr class="dropdown-divider"></li>
                 <li><button class="dropdown-item upperCaseFromAmountButton" data-amount="1" type="button">Viết hoa 1 từ đơn đầu</button></li>
                 <li><button class="dropdown-item upperCaseFromAmountButton" data-amount="2" type="button">Viết hoa 2 từ đơn đầu</button></li>
                 <li><button class="dropdown-item upperCaseFromAmountButton" data-amount="3" type="button">Viết hoa 3 từ đơn đầu</button></li>
                 <li><button class="dropdown-item upperCaseAllButton" type="button">Viết hoa tất cả</button></li>
-                <hr>
+                <li><hr class="dropdown-divider"></li>
                 <li><button class="dropdown-item convert deepl-convert" type="button" data-lang="ZH">DeepL Translator (Chinese)</button></li>
                 <li><button class="dropdown-item convert deepl-convert" type="button" data-lang="EN-US">DeepL Translator (English)</button></li>
                 <li><button class="dropdown-item convert deepl-convert" type="button" data-lang="JA">DeepL Translator (Japanese)</button></li>
@@ -418,7 +418,7 @@
             </div>
             <div class="form-check form-switch">
               <input class="form-check-input option" type="checkbox" role="switch" id="flexSwitchCheckIntermediary">
-              <label class="form-check-label" for="flexSwitchCheckDefault">Bật dịch trung gian</label>
+              <label class="form-check-label" for="flexSwitchCheckIntermediary">Bật dịch trung gian</label>
             </div>
             <hr>
             <h2 class="fs-6">Dịch trung gian</h2>

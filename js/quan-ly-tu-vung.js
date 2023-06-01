@@ -115,15 +115,15 @@ $("#googletranslateButton").on("click", function () {
   }
 });
 
-$("#bingtranslatorButton").on("click", function () {
-  if ($("#sourceText").val().length > 0) {
-    window.open(`https://www.bing.com/translator?from=&to=vi&text=${encodeURIComponent($("#sourceText").val())}`);
-  }
-});
-
 $("#papagoButton").on("click", function () {
   if ($("#sourceText").val().length > 0) {
     window.open(`https://papago.naver.com/?sk=auto&tk=vi&st=${encodeURIComponent($("#sourceText").val())}`);
+  }
+});
+
+$("#bingtranslatorButton").on("click", function () {
+  if ($("#sourceText").val().length > 0) {
+    window.open(`https://www.bing.com/translator?from=&to=vi&text=${encodeURIComponent($("#sourceText").val())}`);
   }
 });
 
