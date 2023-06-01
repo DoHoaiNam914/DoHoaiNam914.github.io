@@ -292,8 +292,8 @@ function loadGlossary() {
     glossary = glossary.filter(function ([key]) {
       if (!this[key]) return this[key] = 1;
     }, {}).sort((a, b) =>
-        a[1].localeCompare(b[1]) ||
         b[0].length - a[0].length ||
+        a[1].localeCompare(b[1]) ||
         a[0].localeCompare(b[0]));
 
     glossary.forEach((element, index) => glossaryList +=
