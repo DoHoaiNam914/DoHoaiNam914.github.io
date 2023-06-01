@@ -114,7 +114,7 @@ $("#translateButton").click(function () {
     const service = $("#flexSwitchCheckIntermediary").prop("checked") ? $(".intermediary-service.active").attr("id") : $(".service.active").attr("id");
 
     var sourceLang = $("#sourceLangSelect").val();
-    var targetLang = $("#flexSwitchCheckIntermediary").prop("checked") ? $("#intermediaryLangSelect").val() : $("#targetLangSelect").val();
+    var targetLang = $("#flexSwitchCheckIntermediary").prop("checked") && $("#targetLangSelect").val() !== 'pinyin' && $("#targetLangSelect").val() !== 'sinovietnamese' ? $("#intermediaryLangSelect").val() : $("#targetLangSelect").val();
 
     sourceSentences = $("#queryText").val().split(/\n/);
 
