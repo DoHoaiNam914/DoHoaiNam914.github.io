@@ -79,17 +79,19 @@ $("#copyButton").on("click", () => navigator.clipboard.writeText($("#translateBu
 $("#pasteButton").on("click", function () {
   navigator.clipboard
     .readText()
-    .then((clipText) => $("#queryText").val(clipText).change())
+    .then((clipText) => navigator.clipboard.readText().length > 0 && $("#queryText").val(clipText).change())
     .finally(function () {
-      if ($("#translateButton").text() === 'Sửa') {
-        $("#translateButton").click();
+      if (navigator.clipboard.readText().length > 0 && $("#translateButton").text() === 'Sửa') {
+        translation = '';
+        $("#translateButton").text("Dịch");
         $("#translateButton").click();
       }
     });
 });
 
 $("#reTranslateButton").on("click", function () {
-  $("#translateButton").click();
+  translation = '';
+  $("#translateButton").text("Dịch");
   $("#translateButton").click();
 });
 
@@ -102,7 +104,8 @@ $("#queryText").change(function () {
 
 $(".option").change(function () {
   if ((($(this).attr("id") !== 'intermediaryLangSelect' && $(this).attr("id") !== 'flexSwitchCheckIntermediary') || $("#flexSwitchCheckIntermediary").prop("checked")) && $("#translateButton").text() === 'Sửa') {
-    $("#translateButton").click();
+    translation = '';
+    $("#translateButton").text("Dịch");
     $("#translateButton").click();
   }
 
@@ -181,7 +184,8 @@ $(".service").click(function () {
   }
 
   if ($("#translateButton").text() === 'Sửa') {
-    $("#translateButton").click();
+    translation = '';
+    $("#translateButton").text("Dịch");
     $("#translateButton").click();
   }
 
@@ -190,7 +194,8 @@ $(".service").click(function () {
 
 $("#flexSwitchCheckIntermediary").on("change", function () {
   if ($("#translateButton").text() === 'Sửa') {
-    $("#translateButton").click();
+    translation = '';
+    $("#translateButton").text("Dịch");
     $("#translateButton").click();
   }
 });
@@ -216,7 +221,8 @@ $(".intermediary-service").click(function () {
   }
 
   if ($("#flexSwitchCheckIntermediary").prop("checked") && $("#translateButton").text() === 'Sửa') {
-    $("#translateButton").click();
+    translation = '';
+    $("#translateButton").text("Dịch");
     $("#translateButton").click();
   }
 

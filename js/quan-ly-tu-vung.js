@@ -289,15 +289,17 @@ function loadGlossary() {
   $("#fileExtension").text(glossaryType === GlossaryType.TSV ? "tsv" : (glossaryType === GlossaryType.CSV ? "csv" : "txt"));
 
   if (glossary.length > 0) {
-    glossary = glossary.filter(function ([key]) {
-      if (!this[key]) return this[key] = 1;
-    }, {}).sort((a, b) =>
+    glossary = glossary.filter(([key]) => {
+      if (!this[key]) this[key] = 1
+    }, {}).sort((a, b) => 
         b[0].length - a[0].length ||
         a[1].localeCompare(b[1]) ||
         a[0].localeCompare(b[0]));
 
-    glossary.forEach((element, index) => glossaryList +=
-        `\n<option value="${index}">${element[0]}\t${element[1]}</option>`);
+    glossary.forEach((element, index) => {
+      glossaryList +=
+        `\n<option value="${index}">${element[0]}\t${element[1]}</option>`;
+    });
 
     switch (glossaryType) {
       case GlossaryType.TSV:
