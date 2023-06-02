@@ -265,7 +265,7 @@ $("#glossaryList").change(function () {
 });
 
 $("#removeButton").on("click", function () {
-  if (window.confirm('Bạn có muốn xoá từ này chứ?') && parseInt($("#glossaryList").val()) > -1) {
+  if (window.confirm('Bạn có muốn xoá từ (cụm từ) này chứ?') && parseInt($("#glossaryList").val()) > -1) {
     glossary.splice(parseInt($("#glossaryList").val()), 1);
     loadGlossary();
     $("#sinoVietnameseConvertButton").click();
@@ -289,9 +289,7 @@ function loadGlossary() {
   $("#fileExtension").text(glossaryType === GlossaryType.TSV ? "tsv" : (glossaryType === GlossaryType.CSV ? "csv" : "txt"));
 
   if (glossary.length > 0) {
-    glossary = glossary.filter(([key]) => {
-      if (!this[key]) this[key] = 1
-    }, {}).sort((a, b) => 
+    glossary = glossary.filter(([key])  => !glossary[key] && (glossary[key] = 1), {}).sort((a, b) =>
         b[0].length - a[0].length ||
         a[1].localeCompare(b[1]) ||
         a[0].localeCompare(b[0]));
