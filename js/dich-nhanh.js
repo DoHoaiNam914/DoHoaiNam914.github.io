@@ -79,9 +79,9 @@ $("#copyButton").on("click", () => navigator.clipboard.writeText($("#translateBu
 $("#pasteButton").on("click", function () {
   navigator.clipboard
     .readText()
-    .then((clipText) => navigator.clipboard.readText().length > 0 && $("#queryText").val(clipText).change())
+    .then((clipText) => clipText.length > 0 && $("#queryText").val(clipText).change())
     .finally(function () {
-      if (navigator.clipboard.readText().length > 0 && $("#translateButton").text() === 'Sửa') {
+      if ($("#translateButton").text() === 'Sửa') {
         translation = '';
         $("#translateButton").text("Dịch");
         $("#translateButton").click();
