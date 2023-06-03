@@ -239,14 +239,14 @@ async function translate(service, sessionIndex, sourceLang, targetLang, sentence
         url: "https://api-free.deepl.com/v2/translate",
         method: "POST",
         processData: false,
-        data: `auth_key=0c9649a5-e8f6-632a-9c42-a9eee160c330:fx&text=${encodeURI(textPreProcess(query.join('&text='),  $("#flexSwitchCheckIntermediary").prop("checked") && sourceLang !== $("#intermediaryLangSelect").val() ? 'intermediary' : service))}${sourceLang !== 'auto' ? '&source_lang=' + getDeepLFormatSource(sourceLang) : ''}&target_lang=${getDeepLFormatTarget(targetLang)}&tag_handling=html`
+        data: `auth_key=0c9649a5-e8f6-632a-9c42-a9eee160c330:fx&text=${encodeURI(textPreProcess(query.join('&text='), service))}${sourceLang !== 'auto' ? '&source_lang=' + getDeepLFormatSource(sourceLang) : ''}&target_lang=${getDeepLFormatTarget(targetLang)}&tag_handling=html`
       };
 
       $.ajax(settings).done(function (data) {
         const sourceQuery = Array.from(sourceSentences).slice(QUERY_LENGTH * (sessionIndex - 1));
 
         for (let i = 0; i < query.length; i++) {
-          const processedTranslation = textPostProcess(data.translations[i].text, service);
+          const processedTranslation = textPostProcess(data.translations[i].text, $("#flexSwitchCheckIntermediary").prop("checked") && sourceLang !== $("#intermediaryLangSelect").val() ? 'intermediary' : service);
 
           if (sourceQuery[i + lostLineFixedAmount].trim().length === 0 && processedTranslation.trim().length > 0) {
             lostLineFixedAmount++;
@@ -338,7 +338,7 @@ async function translate(service, sessionIndex, sourceLang, targetLang, sentence
         },
         processData: false,
         data: JSON.stringify(query.map((sentence) => ({
-            "Text":textPreProcess(sentence, $("#flexSwitchCheckIntermediary").prop("checked") && sourceLang !== $("#intermediaryLangSelect").val() ? 'intermediary' : service)
+            "Text":textPreProcess(sentence, service)
         })))
       };
 
@@ -346,7 +346,7 @@ async function translate(service, sessionIndex, sourceLang, targetLang, sentence
         const sourceQuery = Array.from(sourceSentences).slice(QUERY_LENGTH * (sessionIndex - 1));
 
         for (let i = 0; i < query.length; i++) {
-          const processedTranslation = textPostProcess(data[i].translations[0].text, service);
+          const processedTranslation = textPostProcess(data[i].translations[0].text, $("#flexSwitchCheckIntermediary").prop("checked") && sourceLang !== $("#intermediaryLangSelect").val() ? 'intermediary' : service);
 
           if (sourceQuery[i + lostLineFixedAmount].trim().length === 0 && processedTranslation.trim().length > 0) {
             lostLineFixedAmount++;
@@ -393,13 +393,13 @@ async function translate(service, sessionIndex, sourceLang, targetLang, sentence
           "Content-Type": "application/x-www-form-urlencoded"
         },
         processData: false,
-        data: "q=" + encodeURI(textPreProcess(query.join('&q='), $("#flexSwitchCheckIntermediary").prop("checked") && sourceLang !== $("#intermediaryLangSelect").val() ? 'intermediary' : service))
+        data: "q=" + encodeURI(textPreProcess(query.join('&q='), service))
       };
 
       $.ajax(settings).done(function (data) {
         const sourceQuery = Array.from(sourceSentences).slice(QUERY_LENGTH * (sessionIndex - 1));
         for (let i = 0; i < query.length; i++) {
-          const processedTranslation = textPostProcess((sourceLang === 'auto' ? data[i][0] : data[i]).replace(/(<\/b>)( *<i>)/g, '$1PARABREAK$2').split('PARABREAK').map((element) => element.replace(/<i>.+<\/i>( *<b>.+<\/b>)/g, '$1')).join(''), service);
+          const processedTranslation = textPostProcess((sourceLang === 'auto' ? data[i][0] : data[i]).replace(/(<\/b>)( *<i>)/g, '$1PARABREAK$2').split('PARABREAK').map((element) => element.replace(/<i>.+<\/i>( *<b>.+<\/b>)/g, '$1')).join(''), $("#flexSwitchCheckIntermediary").prop("checked") && sourceLang !== $("#intermediaryLangSelect").val() ? 'intermediary' : service);
 
           if (sourceQuery[i + lostLineFixedAmount].trim().length === 0 && processedTranslation.trim().length > 0) {
             lostLineFixedAmount++;
@@ -546,16 +546,13 @@ function textPreProcess(text, service) {
       if (service === Services.MICROSOFT) {
         newText = newText.replace(new RegExp(glossaryList[i][0], 'g'), `<mstrans:dictionary translation="${glossaryList[i][1]}">GLOSSARY_INDEX_${i}</mstrans:dictionary>`);
         newText = /\p{sc=Latin}|\d/u.test(glossaryList[i][1]) ? newText.replace(/(mstrans:dictionary>)(<mstrans:dictionary)/g, '$1 $2') : newText;
-      } else if (service === 'intermediary') {
-        newText = newText.replace(new RegExp(glossaryList[i][0], 'g'), `<span class="notranslate">GLOSSARY_INDEX_${i}</span>`);
-        newText = /\p{sc=Latin}|\d/u.test(glossaryList[i][1]) ? newText.replace(/(span>)(<span)/g, '$1 $2') : newText;
       } else {
         newText = newText.replace(new RegExp(glossaryList[i][0], 'g'), `GLOSSARY_INDEX_${i}`);
       }
     }
 
     for (let i = glossaryList.length - 1; i >= 0; i--) {
-      newText = newText.replace(new RegExp(`GLOSSARY_INDEX_${i}`, 'g'), service === Services.MICROSOFT || service === 'intermediary' ? glossaryList[i][0] : glossaryList[i][1]);
+      newText = newText.replace(new RegExp(`GLOSSARY_INDEX_${i}`, 'g'), service === Services.MICROSOFT ? glossaryList[i][0] : glossaryList[i][1]);
     }
   }
 
