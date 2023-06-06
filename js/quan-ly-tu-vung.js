@@ -3,7 +3,6 @@
 const GlossaryType = {
   TSV: 'text/tab-separated-values',
   CSV: 'text/csv',
-  VIETPHRASE: 'text/plain'
 };
 
 var glossary = [];
@@ -18,20 +17,20 @@ $("#inputGlossary").on("change", function () {
 
   reader.onload = function () {
     switch ($("#inputGlossary").prop("files")[0].type) {
-      case GlossaryType.TSV:
-        glossary = this.result.split(/\r?\n/).map((phrase) => phrase.split(/\t/)).filter((phrase) => phrase.length >= 2);
-        break;
-
       case GlossaryType.CSV:
         glossary = $.csv.toArrays(this.result);
         break;
 
-      case GlossaryType.VIETPHRASE:
+      case GlossaryType.TSV:
+        glossary = this.result.split(/\r?\n/).map((phrase) => phrase.split(/\t/)).filter((phrase) => phrase.length >= 2);
+        break;
+
+      case 'text/plain':
         glossary = this.result.split(/\r?\n/).map((phrase) => phrase.split('=')).filter((phrase) => phrase.length >= 2);
         break;
     }
 
-    $("#glossaryType").val($("#inputGlossary").prop("files")[0].type);
+    $("#glossaryType").val($("#inputGlossary").prop("files")[0].type.replace('text/plain', GlossaryType.TSV));
     $("#glossaryName").val($("#inputGlossary").prop("files")[0].name.split('.').slice(0, $("#inputGlossary").prop("files")[0].name.split('.').length - 1).join('.'));
     loadGlossary(); 
   };
@@ -40,7 +39,7 @@ $("#inputGlossary").on("change", function () {
 });
 
 $("#clearGlossaryButton").on("click", function () {
-  if (window.confirm("Bạn có muốn xoá tập từ vựng chứ?")) {
+  if (window.confirm("Bạn có muốn xoá tập từ vựng này chứ?")) {
     glossary = [];
     loadGlossary()
     $("#inputGlossary").val(null);
@@ -289,10 +288,7 @@ function loadGlossary() {
   $("#fileExtension").text(glossaryType === GlossaryType.TSV ? "tsv" : (glossaryType === GlossaryType.CSV ? "csv" : "txt"));
 
   if (glossary.length > 0) {
-    glossary = glossary.filter(([key])  => !glossary[key] && (glossary[key] = 1), {}).sort((a, b) =>
-        b[0].length - a[0].length ||
-        a[1].localeCompare(b[1]) ||
-        a[0].localeCompare(b[0]));
+    glossary = glossary.filter(([key])  => !glossary[key] && (glossary[key] = 1), {}).sort((a, b) => b[0].length - a[0].length || a[1].localeCompare(b[1]) || a[0].localeCompare(b[0]));
 
     glossary.forEach((element, index) => {
       glossaryList +=
@@ -300,24 +296,12 @@ function loadGlossary() {
     });
 
     switch (glossaryType) {
-      case GlossaryType.TSV:
-        data = glossary.map((element) =>
-            (element.length > 2 ? element.splice(2, glossary.length - 2) :
-            element).join('\t')).join('\n');
-        break;
       case GlossaryType.CSV:
-        data = glossary.map((element) =>
-            `${element[0].includes(',') ? '"' +
-            element[0].replace(/"/g, '""') + '"' :
-            element[0].replace(/"/g,
-            '"""')},${element[1].includes(',') ? '"' +
-            element[1].replace(/"/g, '""') + '"' :
-            element[1].replace(/"/g, '"""')}`).join('\n');
+        data = glossary.map((element) => `${element[0].includes(',') ? '"' + element[0].replace(/"/g, '""') + '"' : element[0].replace(/"/g, '"""')},${element[1].includes(',') ? '"' + element[1].replace(/"/g, '""') + '"' : element[1].replace(/"/g, '"""')}`).join('\n');
         break;
-      case GlossaryType.VIETPHRASE:
-        data = glossary.map((element) =>
-            (element.length > 2 ? element.splice(2, glossary.length - 2) :
-            element).join('=')).join('\n');
+
+      case GlossaryType.TSV:
+        data = glossary.map((element) => (element.length > 2 ? element.splice(2, glossary.length - 2) : element).join('\t')).join('\n');
         break;
     }
 

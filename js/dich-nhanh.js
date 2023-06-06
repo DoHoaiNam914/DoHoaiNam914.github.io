@@ -1,10 +1,10 @@
 'use strict';
 
 const Services = {
+  DEEPL: 'deepl',
   GOOGLE: 'google',
-  MICROSOFT: 'microsoft',
   PAPAGO: 'papago',
-  DEEPL: 'deepl'
+  MICROSOFT: 'microsoft',
 };
 
 var pinyins = new Map();
@@ -380,14 +380,14 @@ async function translate(service, sessionIndex, sourceLang, targetLang, sentence
       break;
 
     case Services.GOOGLE:
-      //GET https://translate.googleapis.com/translate_a/t?anno=3&client=wt_lib&format=html&v=1.0&key&logId=vTE_20230329&sl=${sourceLang}&tl=${targetLang}&tc=1&sr=1&tk=419495.97493&mode=1 Content-Type: application/x-www-form-urlencoded - send(query)
-      //POST https://translate.googleapis.com/translate_a/t?anno=3&client=te&format=html&v=1.0&key&logId=vTE_20230329&sl=${sourceLang}&tl=${targetLang}&tc=1&ctt=1&dom=1&sr=1&tk=895688.700602&mode=1 Content-Type: application/x-www-form-urlencoded - send(query)
+      //GET https://translate.googleapis.com/translate_a/t?anno=3&client=wt_lib&format=html&v=1.0&key&logId=vTE_20230604&sl=${sourceLang}&tl=${targetLang}&tc=1&sr=1&tk=419495.97493&mode=1 Content-Type: application/x-www-form-urlencoded - send(query)
+      //POST https://translate.googleapis.com/translate_a/t?anno=3&client=te&format=html&v=1.0&key&logId=vTE_20230604&sl=${sourceLang}&tl=${targetLang}&tc=1&ctt=1&dom=1&sr=1&tk=895688.700602&mode=1 Content-Type: application/x-www-form-urlencoded - send(query)
       //GET https://translate.googleapis.com/translate_a/single?client=gtx&sl=${sourceLang}&tl=${targetLang}&hl=vi&dt=t&dt=bd&dj=1${query}
       //GET https://clients5.google.com/translate_a/single?dj=1&dt=t&dt=sp&dt=ld&dt=bd&client=dict-chrome-ex&sl=${sourceLang}&tl=${targetLang}${query}
       //GET https://translate.google.com/translate_t?source=dict-chrome-ex&sl=${sourceLang}&tl=${targetLang}${query}
       settings = {
         crossDomain: true,
-        url: `https://translate.googleapis.com/translate_a/t?anno=3&client=gtx&format=html&v=1.0&key&logId=vTE_20230329&sl=${sourceLang}&tl=${targetLang}&tc=${sessionIndex}&sr=1${zr(query.join('\n'))}&mode=1`,
+        url: `https://translate.googleapis.com/translate_a/t?anno=3&client=gtx&format=html&v=1.0&key&logId=vTE_20230604&sl=${sourceLang}&tl=${targetLang}&tc=${sessionIndex}&sr=1${zr(query.join('\n'))}&mode=1`,
         method: 'GET',
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
