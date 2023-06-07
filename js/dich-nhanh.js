@@ -86,8 +86,8 @@ $("#pasteButton").on("click", function () {
           translation = '';
           $("#translateButton").text("Dịch");
           $("#translateButton").click();
-          $(document.body).prop("scrollTop", 0);
-          $(document.documentElement).prop("scrollTop", 0);
+          $(document.body).scrollTop(0);
+          $(document.documentElement).scrollTop(0);
         }
       }
     });

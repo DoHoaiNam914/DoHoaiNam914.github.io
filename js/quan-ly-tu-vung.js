@@ -64,6 +64,8 @@ $("#sourceText").on("input", function () {
   }
 });
 
+$(".dropdown-toggle").on("click", () => { $(".dropdown-scroller").scrollTop(0); });
+
 $("#sourceTextMenu").on("mousedown", (event) => event.preventDefault());
 
 $("#clearSourceTextButton").on("click", () => $("#sourceText").val(null).trigger("input"));
