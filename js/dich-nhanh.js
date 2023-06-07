@@ -79,12 +79,16 @@ $("#copyButton").on("click", () => navigator.clipboard.writeText($("#translateBu
 $("#pasteButton").on("click", function () {
   navigator.clipboard
     .readText()
-    .then((clipText) => clipText.length > 0 && $("#queryText").val(clipText).change())
-    .finally(function () {
-      if ($("#translateButton").text() === 'Sửa') {
-        translation = '';
-        $("#translateButton").text("Dịch");
-        $("#translateButton").click();
+    .then((clipText) => {
+      if (clipText.length > 0) {
+        $("#queryText").val(clipText).change();
+        if ($("#translateButton").text() === 'Sửa') {
+          translation = '';
+          $("#translateButton").text("Dịch");
+          $("#translateButton").click();
+          $(document.body).prop("scrollTop", 0);
+          $(document.documentElement).prop("scrollTop", 0);
+        }
       }
     });
 });

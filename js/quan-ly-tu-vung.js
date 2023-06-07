@@ -70,7 +70,13 @@ $("#clearSourceTextButton").on("click", () => $("#sourceText").val(null).trigger
 
 $("#copySourceTextButton").on("click", () => navigator.clipboard.writeText($("#sourceText").val()));
 
-$("#pasteSourceTextButton").on("click", () => navigator.clipboard.readText().then((clipText) => $("#sourceText").val(clipText).trigger("input")));
+$("#pasteSourceTextButton").on("click", () => {
+  navigator.clipboard
+    .readText()
+    .then((clipText) => {
+      $("#sourceText").val(clipText).trigger("input");
+    });
+});;
 
 $("#lacvietdictionaryButton").on("click", function () {
   if ($("#sourceText").val().length > 0) {
@@ -141,7 +147,13 @@ $("#addButton").on("click", function () {
 
 $("#copyTargetTextButton").on("click", () => navigator.clipboard.writeText($("#targetText").val()));
 
-$("#pasteTargetTextButton").on("click", () => navigator.clipboard.readText().then((clipText) => $("#targetText").val(clipText).trigger("input")));
+$("#pasteTargetTextButton").on("click", () => {
+  navigator.clipboard
+    .readText()
+    .then((clipText) => {
+      $("#targetText").val(clipText).trigger("input");
+    });
+});
 
 $("#pinyinConvertButton").on("click", function () {
   if ($("#sourceText").val().length > 0) {
