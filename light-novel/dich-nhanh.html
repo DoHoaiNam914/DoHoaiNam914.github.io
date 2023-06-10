@@ -81,24 +81,15 @@
           $("#flexCheckThreshold").prop("checked", recognizer.threshold);
         }).wait()
         .script("/js/dich-nhanh.js").wait(function () {
-          const translator = JSON.parse(localStorage.getItem("translator")) ?? { service: $(".service.active").attr("id"), source: $("#sourceLangSelect").val(), target: $("#targetLangSelect").val(), intermediaryTranslator: { enabled: $("#flexSwitchCheckIntermediary").prop("checked"), service: $(".intermediary-service.active").attr("id"), lang: $("#intermediaryLangSelect").val() } };
-          const searchParams = new URLSearchParams(window.location.search);
+          const translator = JSON.parse(localStorage.getItem("translator")) ?? { translator: $(".translator.active").data("id"), glossary: $("#flexSwitchCheckGlossary").attr("checked"), source: $("#sourceLangSelect").val(), target: $("#targetLangSelect").val() };
 
-          $(".service.active").removeClass("active");
-          $(".intermediary-service.active").removeClass("active");
+          $("#sourceLangSelect").val(translator.source);
+          $("#targetLangSelect").val(translator.target);
 
-          $("#sourceLangSelect").val(searchParams.get('sl') ?? translator.source);
-          $("#targetLangSelect").val(searchParams.get('tl') ?? translator.target);
-          $(`.service#${translator.service}`).addClass("active");
+          $("#flexSwitchCheckGlossary").prop("checked", translator.glossary);
 
-          $("#flexSwitchCheckIntermediary").prop("checked", translator.intermediaryTranslator.enabled);
-          $(`.intermediary-service#${translator.intermediaryTranslator.service}`).addClass("active");
-          $("#intermediaryLangSelect").val(translator.intermediaryTranslator.lang);
-
-          if (searchParams.get('q') != null) {
-            $("#queryText").val(decodeURIComponent(searchParams.get('q'))).change();
-            $("#translateButton").click();
-          }
+          $(".translator.active").removeClass("active");
+          $(`.translator[data-id="${translator.translator}"]`).click();
         });
     </script>
     <style>
@@ -185,6 +176,7 @@
       }
 
       .modal-body {
+        min-height: 300px; 
         overflow-x: hidden;
       }
     </style>
@@ -256,10 +248,14 @@
       <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">
           <div class="modal-header">
-            <h1 class="modal-title fs-5" id="glossaryManagerLabel">Quản lý từ vựng</h1>
+            <h1 class="modal-title fs-5" id="glossaryManagerLabel">Dynamic Dictionary của Trình dịch Microsoft</h1>
             <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
           </div>
           <div class="modal-body pb-5">
+            <div class="form-check form-switch">
+              <input class="form-check-input option" type="checkbox" role="switch" id="flexSwitchCheckGlossary" checked="true">
+              <label class="form-check-label" for="flexSwitchCheckGlossary">Bật</label>
+            </div>
             <div class="input-group input-group-sm my-3">
               <input type="file" class="form-control" id="inputGlossary" accept="text/plain">
               <button class="btn btn-outline-danger position-relative" id="clearGlossaryButton" type="button">
@@ -340,7 +336,7 @@
               </button>
             </div>
             <label for="preview">Bản xem trước:</label>
-            <textarea class="form-control mb-3" id="preview" readonly></textarea>
+            <textarea class="form-control mb-3" id="preview" readonly="true"></textarea>
             <div class="input-group input-group-sm">
               <input type="text" placeholder="Từ vựng" class="form-control" id="glossaryName">
               <span class="input-group-text">.<span id="fileExtension">tsv</span></span>
@@ -409,34 +405,12 @@
             <div class="dropdown mb-3">
               <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Trình dịch</button>
               <ul class="dropdown-menu">
-                <li><button class="dropdown-item service" id="deepl" type="button">DeepL Translator</button></li>
-                <li><button class="dropdown-item service active" id="google" type="button">Google Dịch</button></li>
-                <!--li><button class="dropdown-item service disabled" id="papago" type="button">Papago (Chờ cập nhật)</button></li-->
-                <li><button class="dropdown-item service" id="microsoft" type="button">Trình dịch Microsoft</button></li>
+                <li><button class="dropdown-item translator" data-id="deeplTranslator" type="button">DeepL Translator</button></li>
+                <li><button class="dropdown-item translator active" data-id="googleTranslate" type="button">Google Dịch</button></li>
+                <!--li><button class="dropdown-item translator disabled" data-id="papago" type="button">Papago (Chờ cập nhật)</button></li-->
+                <li><button class="dropdown-item translator" data-id="microsoftTranslator" type="button">Trình dịch Microsoft</button></li>
               </ul>
             </div>
-            <div class="form-check form-switch">
-              <input class="form-check-input option" type="checkbox" role="switch" id="flexSwitchCheckIntermediary">
-              <label class="form-check-label" for="flexSwitchCheckIntermediary">Bật dịch trung gian</label>
-            </div>
-            <hr>
-            <h2 class="fs-6">Dịch trung gian</h2>
-            <div class="dropdown">
-              <button class="btn btn-secondary btn-sm dropdown-toggle mb-3" type="button" data-bs-toggle="dropdown" aria-expanded="false">Trình dịch trung gian</button>
-              <ul class="dropdown-menu">
-                <li><button class="dropdown-item intermediary-service" id="deepl" type="button">DeepL Translator</button></li>
-                <li><button class="dropdown-item intermediary-service active" id="google" type="button">Google Dịch</button></li>
-                <!--li><button class="dropdown-item intermediary-service disabled" id="papago" type="button">Papago (Chờ cập nhật)</button></li-->
-                <li><button class="dropdown-item intermediary-service" id="microsoft" type="button">Trình dịch Microsoft</button></li>
-              </ul>
-            </div>
-            <select class="form-select form-select-sm option" id="intermediaryLangSelect">
-              <option value="en" selected>Tiếng Anh</option>
-              <option value="ja">Tiếng Nhật</option>
-              <option value="zh-CN">Tiếng Trung (Giản thể)</option>
-              <option value="zh-TW">Tiếng Trung (Phổn thể)</option>
-              <option value="vi">Tiếng Việt</option>
-            </select>
             <!--hr>
             <h2 class="fs-5">Trích xuất văn bản</h2>
             <select class="form-select form-select-sm mb-3 option" id="recognizeLangsSelect" multiple>

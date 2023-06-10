@@ -52,7 +52,7 @@ $("#sourceText").on("input", function () {
   const glossaryMap = new Map(glossary);
 
   if ($(this).val().length > 0) {
-    $("#targetText").val(getConvertedWords(new Map((glossary.length > 0 ?glossary.concat(Array.from(sinoVietnameses)) : Array.from(sinoVietnameses)).sort((a, b) => b[0].length - a[0].length)), $(this).val()));
+    $("#targetText").val(getConvertedChineseText(new Map((glossary.length > 0 ?glossary.concat(Array.from(sinoVietnameses)) : Array.from(sinoVietnameses)).sort((a, b) => b[0].length - a[0].length)), $(this).val()));
 
     if (glossaryMap.has($(this).val())) {
       $("#glossaryList").val(Array.from(glossaryMap.keys()).indexOf($(this).val()));
@@ -159,13 +159,13 @@ $("#pasteTargetTextButton").on("click", () => {
 
 $("#pinyinConvertButton").on("click", function () {
   if ($("#sourceText").val().length > 0) {
-    $("#targetText").val(getConvertedWords(new Map(Array.from(pinyins).sort((a, b) => b[0].length - a[0].length)), $("#sourceText").val()));
+    $("#targetText").val(getConvertedChineseText(new Map(Array.from(pinyins).sort((a, b) => b[0].length - a[0].length)), $("#sourceText").val()));
   }
 });
 
 $("#sinoVietnameseConvertButton").click(function () {
   if ($("#sourceText").val().length > 0) {
-    $("#targetText").val(getConvertedWords(new Map(Array.from(sinoVietnameses).sort((a, b) => b[0].length - a[0].length)), $("#sourceText").val()));
+    $("#targetText").val(getConvertedChineseText(new Map(Array.from(sinoVietnameses).sort((a, b) => b[0].length - a[0].length)), $("#sourceText").val()));
   }
 });
 
@@ -335,5 +335,5 @@ function loadGlossary() {
 
   $("#glossaryCounter").text(glossary.length);
 
-  localStorage.setItem("glossary", JSON.stringify({type: glossaryType, data: Object.fromEntries(new Map(glossary))}));
+  localStorage.setItem("glossary", JSON.stringify({ type: glossaryType, data: Object.fromEntries(new Map(glossary)) }));
 }
