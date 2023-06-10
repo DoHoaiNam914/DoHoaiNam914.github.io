@@ -40,7 +40,7 @@ const markMap = new Map([
   ['～', ' ~ ']
 ]);
 
-const MAX_LENGTH = 5000;
+const MAX_LENGTH = 1000;
 var translation = '';
 
 $(document).ready(() => {
@@ -180,16 +180,10 @@ async function translate() {
   var result = '';
   const results = [];
 
-  if ($("#targetLangSelect").val() == 'pinyin' || $("#targetLangSelect").val() == 'sinovietnamese') {
-    translation = getConvertedChineseText(new Map([...$("#targetLangSelect").val() == 'pinyin' ? pinyins : sinoVietnameses].sort((a, b) => b[0].length - a[0].length)), inputText);
-
-    const convertedLines = translation.split(/\n/);
-
-    for (let i = 0; i < textLines.length; i++) {
-      result += ('<p>' + (convertedLines[i].trim() !== textLines[i].trim() ? '<i>' + textLines[i] + '</i><br>' + convertedLines[i] : textLines[i]) + '</p>').replace(/(<p>)(<\/p>)/g, '$1<br>$2');
-    }
-  } else {
-    try {
+  try {
+    if ($("#targetLangSelect").val() == 'pinyin' || $("#targetLangSelect").val() == 'sinovietnamese') {
+      translation = getConvertedChineseText(new Map([...$("#targetLangSelect").val() == 'pinyin' ? pinyins : sinoVietnameses].sort((a, b) => b[0].length - a[0].length)), inputText);
+    } else {
       let canTranlate = false;
 
       const queryLines = [...textLines];
@@ -199,7 +193,7 @@ async function translate() {
       const accessToken = await fetch('https://edge.microsoft.com/translate/auth')
           .then((response) => response.text());
 
-      if (accessToken == undefined) {
+      if (translator === Translators.MICROSOFT_TRANSLATOR && accessToken == undefined) {
         $("#translatedText").html('<p>Không thể lấy được Access Token từ máy chủ.</p>');
         return;
       }
@@ -210,11 +204,10 @@ async function translate() {
         if (translateLines.join('\n').length >= MAX_LENGTH || queryLines.length == 0) {
           if (translateLines.join('\n').length > MAX_LENGTH) {
             queryLines.splice(0, 0, translateLines.pop());
+            i--;
           }
 
           canTranlate = true;
-        } else if (inputText.length > MAX_LENGTH && translateLines.join('\n').length < MAX_LENGTH) {
-          continue;
         }
 
         if (canTranlate) {
@@ -239,24 +232,24 @@ async function translate() {
           canTranlate = false;
         }
       }
-    } catch (error) {
-      $("#translatedText").html(`<p>Bản dịch thất bại: ${error}</p>`);
-      onPostTranslate();
+    }
+  } catch (error) {
+    $("#translatedText").html(`<p>Bản dịch thất bại: ${error}</p>`);
+    onPostTranslate();
+  }
+
+  translation = results.join('\n');
+  const resultLines = translation.split(/\n/);
+  var lostLineFixedAmount = 0;
+
+  for (let i = 0; i < textLines.length; i++) {
+    if (textLines[i + lostLineFixedAmount].trim().length == 0 && resultLines[i].trim().length > 0) {
+      lostLineFixedAmount++;
+      i--;
+      continue;
     }
 
-    translation = results.join('\n');
-    const resultLines = translation.split(/\n/);
-    var lostLineFixedAmount = 0;
-
-    for (let i = 0; i < textLines.length; i++) {
-      if (textLines[i + lostLineFixedAmount].trim().length == 0 && resultLines[i].trim().length > 0) {
-        lostLineFixedAmount++;
-        i--;
-        continue;
-      }
-
-      result += ('<p>' + (resultLines[i].trim() !== textLines[i + lostLineFixedAmount].trim() ? '<i>' + textLines[i + lostLineFixedAmount] + '</i><br>' + resultLines[i] : textLines[i + lostLineFixedAmount]) + '</p>').replace(/(<p>)(<\/p>)/g, '$1<br>$2');
-    }
+    result += ('<p>' + (resultLines[i].trim() !== textLines[i + lostLineFixedAmount].trim() ? '<i>' + textLines[i + lostLineFixedAmount] + '</i><br>' + resultLines[i] : textLines[i + lostLineFixedAmount]) + '</p>').replace(/(<p>)(<\/p>)/g, '$1<br>$2');
   }
 
   $("#translatedText").html(result);
