@@ -184,6 +184,12 @@ async function translate() {
     if ($("#targetLangSelect").val() == 'pinyin' || $("#targetLangSelect").val() == 'sinovietnamese') {
       translation = getConvertedChineseText(new Map([...$("#targetLangSelect").val() == 'pinyin' ? pinyins : sinoVietnameses].sort((a, b) => b[0].length - a[0].length)), inputText);
     } else {
+      if (inputText.split(/\n/).sort((a, b) => b[0].length - a[0].length)[0].length > MAX_LENGTH) {
+        $("#translatedText").html(`<p>Bản dịch thất bại: Số lượng từ trong một dòng quá dài</p>`);
+        onPostTranslate();
+        return;
+      }
+
       let canTranlate = false;
 
       const queryLines = [...textLines];
@@ -343,7 +349,7 @@ function onPreTranslate() {
   $("#queryText").hide();
   $("#translateButton").addClass("disabled");
   $("#reTranslateButton").addClass("disabled");
-  $(".service").addClass("disabled");
+  $(".translator").addClass("disabled");
   $("select.option").attr("disabled", true);
   $("input.option").attr("disabled", true);
   $(".option:not([disabled])").addClass("disabled");
@@ -362,7 +368,7 @@ function onPostTranslate() {
   $(".option").removeClass("disabled");
   $("#pasteButton").removeClass("disabled");
   $("#copyButton").removeClass("disabled");
-  $(".service").removeClass("disabled");
+  $(".translator").removeClass("disabled");
   $("#reTranslateButton").removeClass("disabled");
   $("#translateButton").text("Sửa");
 }
@@ -511,7 +517,7 @@ function getDynamicDictionaryText(text) {
 
       for (let i = 0; i < glossaryList.length; i++) {
         newText = newText.replace(new RegExp(glossaryList[i][0], 'g'), `<mstrans:dictionary translation="${glossaryList[i][1]}">GLOSSARY_INDEX_${i}</mstrans:dictionary>`);
-        newText = glossaryList[i][1].match(/^[\w&.\-]*$/) ? newText.replace(/(mstrans:dictionary>)(<mstrans:dictionary)/g, '$1 $2') : newText;
+        newText = glossaryList[i][1].match(/^[\w&.\-\s]*$/) ? newText.replace(/(mstrans:dictionary>)(<mstrans:dictionary)/g, '$1 $2') : newText;
       }
 
       for (let i = glossaryList.length - 1; i >= 0; i--) {
