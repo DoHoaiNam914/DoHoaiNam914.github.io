@@ -184,7 +184,7 @@ async function translate() {
     if ($("#targetLangSelect").val() == 'pinyin' || $("#targetLangSelect").val() == 'sinovietnamese') {
       translation = getConvertedChineseText(new Map([...$("#targetLangSelect").val() == 'pinyin' ? pinyins : sinoVietnameses].sort((a, b) => b[0].length - a[0].length)), inputText);
     } else {
-      if (inputText.split(/\n/).sort((a, b) => b[0].length - a[0].length)[0].length > MAX_LENGTH) {
+      if (inputText.split(/\n/).sort((a, b) => b.length - a.length)[0].length > MAX_LENGTH) {
         $("#translatedText").html(`<p>Bản dịch thất bại: Số lượng từ trong một dòng quá dài</p>`);
         onPostTranslate();
         return;
@@ -511,18 +511,15 @@ const MicrosoftTranslator = {
 function getDynamicDictionaryText(text) {
   var newText = text;
 
-  if ($("#flexSwitchCheckGlossary").prop("checked")) {
-    if (glossary != null) {
-      const glossaryList = Array.from(glossary).filter((phrase) => text.includes(phrase[0]));
+  if ($("#flexSwitchCheckGlossary").prop("checked") && glossary != null) {
+    const glossaryList = [...glossary].filter((phrase) => text.includes(phrase[0]));
 
-      for (let i = 0; i < glossaryList.length; i++) {
-        newText = newText.replace(new RegExp(glossaryList[i][0], 'g'), `<mstrans:dictionary translation="${glossaryList[i][1]}">GLOSSARY_INDEX_${i}</mstrans:dictionary>`);
-        newText = glossaryList[i][1].match(/^[\w&.\-\s]*$/) ? newText.replace(/(mstrans:dictionary>)(<mstrans:dictionary)/g, '$1 $2') : newText;
-      }
+    for (let i = 0; i < glossaryList.length; i++) {
+      newText = newText.replace(new RegExp(glossaryList[i][0], 'g'), `<mstrans:dictionary translation="${glossaryList[i][1]}">GLOSSARY_INDEX_${i}</mstrans:dictionary>`);
+    }
 
-      for (let i = glossaryList.length - 1; i >= 0; i--) {
-        newText = newText.replace(new RegExp(`GLOSSARY_INDEX_${i}`, 'g'), glossaryList[i][0]);
-      }
+    for (let i = glossaryList.length - 1; i >= 0; i--) {
+      newText = newText.replace(new RegExp(`GLOSSARY_INDEX_${i}`, 'g'), glossaryList[i][0]);
     }
   }
 
