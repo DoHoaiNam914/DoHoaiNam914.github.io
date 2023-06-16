@@ -490,9 +490,7 @@ const MicrosoftTranslator = {
           'Authorization': 'Bearer ' + accessToken,
           'Content-Type': 'application/json'
         },
-        data: JSON.stringify(getDynamicDictionaryText(inputText).split(/\n/).map((sentence) => ({
-            "Text":sentence
-        })))
+        data: JSON.stringify(getDynamicDictionaryText(inputText).split(/\n/).map((sentence) => ({ "Text":sentence })))
       });
 
       const translatedText = response.map((element) => element.translations[0].text.trim()).join('\n');
@@ -513,7 +511,7 @@ function getDynamicDictionaryText(text) {
 
       for (let i = 0; i < glossaryList.length; i++) {
         newText = newText.replace(new RegExp(glossaryList[i][0], 'g'), `<mstrans:dictionary translation="${glossaryList[i][1]}">GLOSSARY_INDEX_${i}</mstrans:dictionary>`);
-        newText = /\p{sc=Latin}|\d/u.test(glossaryList[i][1]) ? newText.replace(/(mstrans:dictionary>)(<mstrans:dictionary)/g, '$1 $2') : newText;
+        newText = glossaryList[i][1].match(/^[\w&.\-]*$/) ? newText.replace(/(mstrans:dictionary>)(<mstrans:dictionary)/g, '$1 $2') : newText;
       }
 
       for (let i = glossaryList.length - 1; i >= 0; i--) {
