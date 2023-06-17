@@ -40,7 +40,6 @@ const markMap = new Map([
   ['～', ' ~ ']
 ]);
 
-const MAX_LENGTH = 1000;
 var translation = '';
 
 $(document).ready(() => {
@@ -184,6 +183,8 @@ async function translate() {
     if ($("#targetLangSelect").val() == 'pinyin' || $("#targetLangSelect").val() == 'sinovietnamese') {
       translation = getConvertedChineseText(new Map([...$("#targetLangSelect").val() == 'pinyin' ? pinyins : sinoVietnameses].sort((a, b) => b[0].length - a[0].length)), inputText);
     } else {
+      const MAX_LENGTH = translator === Translators.GOOGLE_TRANSLATE ? 1000 : 5000;
+
       if (inputText.split(/\n/).sort((a, b) => b.length - a.length)[0].length > MAX_LENGTH) {
         $("#translatedText").html(`<p>Bản dịch thất bại: Số lượng từ trong một dòng quá dài</p>`);
         onPostTranslate();
