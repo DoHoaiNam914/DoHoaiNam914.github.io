@@ -224,13 +224,13 @@ async function translate() {
             case Translators.DEEPL_TRANSLATOR:
               translatedText = await DeepLTranslator.translateText(translateLines.join('\n'), sourceLanguage, targetLanguage);
               break;
-            case Translators.MICROSOFT_TRANSLATOR:
-              translatedText = await MicrosoftTranslator.translateText(accessToken, translateLines.join('\n'), sourceLanguage, targetLanguage);
-              break;
             case Translators.GOOGLE_TRANSLATE:
             default:
               translatedText = await GoogleTranslate.translateText(translateLines.join('\n'), tc, sourceLanguage, targetLanguage);
               tc++;
+              break;
+            case Translators.MICROSOFT_TRANSLATOR:
+              translatedText = await MicrosoftTranslator.translateText(accessToken, translateLines.join('\n'), sourceLanguage, targetLanguage);
               break;
           }
 
@@ -322,7 +322,7 @@ function getLanguageCode(translator, languageCode) {
 
   switch (translator) {
     case Translators.DEEPL_TRANSLATOR.concat('Source'):
-      newLanguageCode = languageCode.split('-')[0].toUpperCase();
+      newLanguageCode = languageCode.replace('auto', '').split('-')[0].toUpperCase();
       break;
     case Translators.DEEPL_TRANSLATOR.concat('Target'):
       newLanguageCode = languageCode.replace(/(zh)-[A-Z]{2, 2}/, '$1').toUpperCase();
@@ -378,12 +378,13 @@ function onPostTranslate() {
 }
 
 const DeepLTranslator = {
-  translateText: async function (inputText, sourceLanguage = 'AUTO', targetLanguage) {
+  translateText: async function (inputText, sourceLanguage, targetLanguage) {
     try {
       const response = await $.ajax({
-        url: 'https://api-free.deepl.com/v2/translate',
-        method: 'POST',
-        data: `auth_key=0c9649a5-e8f6-632a-9c42-a9eee160c330:fx&text=${inputText.split(/\n/).map((sentence) => encodeURIComponent(sentence)).join('&text=')}${sourceLanguage != 'AUTO' ? '&source_lang=' + sourceLanguage : ''}&target_lang=${targetLanguage}`
+        url: "https://api-free.deepl.com/v2/translate",
+        data: `auth_key=e5a36703-2001-1b8b-968c-a981fdca7036:fx&text=${inputText.split(/\n/).map((sentence) => encodeURIComponent(sentence)).join('&text=')}${sourceLanguage != '' ? '&source_lang=' + sourceLanguage : ''}&target_lang=${targetLanguage}`,
+        dataType: 'json',
+        method: "POST"
       });
 
       const translatedText = response.translations.map((element) => element.text.trim()).join('\n');
@@ -396,7 +397,7 @@ const DeepLTranslator = {
 };
 
 const GoogleTranslate = {
-  translateText: async function (inputText, tc = 1, sourceLanguage = 'auto', targetLanguage) {
+  translateText: async function (inputText, tc, sourceLanguage, targetLanguage) {
     try {
       /**
        * Method: GET 
@@ -412,11 +413,9 @@ const GoogleTranslate = {
        */
       const response = await $.ajax({
         url: `https://translate.googleapis.com/translate_a/t?anno=3&client=gtx&format=text&v=1.0&key&logId=vTE_20230604&sl=${sourceLanguage}&tl=${targetLanguage}&tc=${tc}&sr=1${zr(inputText)}&mode=1`,
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        data: 'q=' + inputText.split(/\n/).map((sentence) => encodeURIComponent(sentence)).join('&q=')
+        data: `q=${inputText.split(/\n/).map((sentence) => encodeURIComponent(sentence)).join('&q=')}`,
+        dataType: 'json',
+        method: "GET"
       });
 
       const translatedText = sourceLanguage == 'auto' ? response.map((element) => element[0].trim()).join('\n') : response.map((element) => element.trim()).join('\n');
@@ -482,7 +481,7 @@ var wr = function (a) {
   };
 
 const MicrosoftTranslator = {
-  translateText: async function (accessToken, inputText, sourceLanguage = '', targetLanguage) {
+  translateText: async function (accessToken, inputText, sourceLanguage, targetLanguage) {
     try {
       /**
        * Method: POST 
@@ -494,13 +493,14 @@ const MicrosoftTranslator = {
        * Content-Type: application/json - send(inputText)
        */
       const response = await $.ajax({
-        url: `https://api.cognitive.microsofttranslator.com/translate?from=${sourceLanguage}&to=${targetLanguage}&api-version=3.0&textType=html&includeSentenceLength=true`,
+        url: `https://api.cognitive.microsofttranslator.com/translate?${sourceLanguage != '' ? 'from=' + sourceLanguage + '&' : ''}to=${targetLanguage}&api-version=3.0&textType=html&includeSentenceLength=true`,
+        contentType: "application/json",
+        data: JSON.stringify(getDynamicDictionaryText(inputText).split(/\n/).map((sentence) => ({"Text": sentence}))),
+        dataType: 'json',
         method: 'POST',
         headers: {
-          'Authorization': 'Bearer ' + accessToken,
-          'Content-Type': 'application/json'
-        },
-        data: JSON.stringify(getDynamicDictionaryText(inputText).split(/\n/).map((sentence) => ({ "Text":sentence })))
+          "Authorization": `Bearer ${accessToken}`
+        }
       });
 
       const translatedText = response.map((element) => element.translations[0].text.trim()).join('\n');

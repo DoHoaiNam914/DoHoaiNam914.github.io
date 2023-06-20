@@ -69,11 +69,6 @@
         })
         .script("/lib/tesseract.min.js")
         .script("/lib/opencv.js").wait()
-        .script("/js/quan-ly-tu-vung.js").wait(function () {
-          const obj = JSON.parse(localStorage.getItem("glossary")) ?? { type: $("#glossaryType").val(), data: {} };
-          glossary = Object.entries(obj.data);
-          $("#glossaryType").val(obj.type).change();
-        })
         .script("/js/trich-xuat-van-ban.js").wait(function () {
           const recognizer = JSON.parse(localStorage.getItem("recognizer")) ?? { langs: $("#recognizeLangsSelect").val(), grayscale: $("#flexCheckGrayscale").prop("checked"), threshold: $("#flexCheckThreshold").prop("checked") };
           $("#recognizeLangsSelect").val(recognizer.langs);
@@ -90,6 +85,11 @@
 
           $(".translator.active").removeClass("active");
           $(`.translator[data-id="${translator.translator}"]`).click();
+        })
+        .script("/js/quan-ly-tu-vung.js").wait(function () {
+          const obj = JSON.parse(localStorage.getItem("glossary")) ?? { type: $("#glossaryType").val(), data: {} };
+          glossary = Object.entries(obj.data);
+          $("#glossaryType").val(obj.type).change();
         });
     </script>
     <style>

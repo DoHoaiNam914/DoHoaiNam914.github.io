@@ -181,88 +181,68 @@ $(".upperCaseAllButton").on("click", function () {
   }
 });
 
-$(".deepl-convert").on("click", function () {
+$(".deepl-convert").on("click", async function () {
   if ($("#sourceText").val().length > 0) {
-    settings = {
-      crossDomain: true,
-      url: "https://api-free.deepl.com/v2/translate",
-      method: "POST",
-      processData: false,
-      data: `auth_key=0c9649a5-e8f6-632a-9c42-a9eee160c330:fx&text=${$("#sourceText").val()}&target_lang=${$(this).data("lang")}`
-    };
-
     $("#sourceText").attr("readonly", true);
     $(".convert").addClass("disabled");
-    $.ajax(settings).done(function (data) {
-      $("#targetText").val(data.translations[0].text);
+
+    try {
+      const translatedText = await DeepLTranslator.translateText($("#sourceText").val(), '', $(this).data("lang"));
+
+      $("#targetText").val(translatedText);
       $(".convert").removeClass("disabled");
       $("#sourceText").removeAttr("readonly");
-    }).fail(function (jqXHR, textStatus, errorThrown) {
+    } catch (error) {
+      console.error(`Bản dịch thất bại: ${error}`);
       $(".convert").removeClass("disabled");
       $("#sourceText").removeAttr("readonly");
-      console.error(jqXHR, textStatus, errorThrown);
-    });
+    }
   }
 });
 
-$(".google-convert").on("click", function () {
+$(".google-convert").on("click", async function () {
   if ($("#sourceText").val().length > 0) {
-    settings = {
-      crossDomain: true,
-      url: `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${$(this).data("lang")}&hl=vi&dt=t&dt=bd&dj=1&q=${$("#sourceText").val()}`,
-      method: 'GET',
-      processData: false,
-    };
-
     $("#sourceText").attr("readonly", true);
     $(".convert").addClass("disabled");
-    $.ajax(settings).done(function (data) {
-      $("#targetText").val(data.sentences[0].trans);
+
+    try {
+      const translatedText = await GoogleTranslate.translateText($("#sourceText").val(), 1, 'auto', $(this).data("lang"));
+
+      $("#targetText").val(translatedText);
       $(".convert").removeClass("disabled");
       $("#sourceText").removeAttr("readonly");
-    }).fail(function (jqXHR, textStatus, errorThrown) {
+    } catch (error) {
+      console.error(`Bản dịch thất bại: ${error}`);
       $(".convert").removeClass("disabled");
       $("#sourceText").removeAttr("readonly");
-      console.error(jqXHR, textStatus, errorThrown);
-    });
+    }
   }
 });
 
 $(".microsoft-convert").on("click", async function () {
   if ($("#sourceText").val().length > 0) {
-    const accessToken = await fetch('https://edge.microsoft.com/translate/auth')
-      .then((response) => response.text());
-
-    if (accessToken == undefined) {
-      console.error('Không thể lấy được Access Token từ máy chủ.');
-      return;
-    }
-
-    settings = {
-      crossDomain: true,
-      url: `https://api.cognitive.microsofttranslator.com/translate?to=${$(this).data("lang")}&api-version=3.0&includeSentenceLength=true`,
-      method: "POST",
-      headers: {
-        "Authorization": "Bearer " + accessToken,
-        "Content-Type": "application/json"
-      },
-      processData: false,
-      data: JSON.stringify([{
-          "Text":$("#sourceText").val()
-      }])
-    };
-
     $("#sourceText").attr("readonly", true);
     $(".convert").addClass("disabled");
-    $.ajax(settings).done(function (data) {
-      $("#targetText").val(data[0].translations[0].text);
+
+    try {
+      const accessToken = await fetch('https://edge.microsoft.com/translate/auth')
+          .then((response) => response.text());
+
+      if (accessToken == undefined) {
+        console.error('Không thể lấy được Access Token từ máy chủ.');
+        return;
+      }
+
+      const translatedText = await MicrosoftTranslator.translateText(accessToken, $("#sourceText").val(), '', $(this).data("lang"));
+
+      $("#targetText").val(translatedText);
       $(".convert").removeClass("disabled");
       $("#sourceText").removeAttr("readonly");
-    }).fail(function (jqXHR, textStatus, errorThrown) {
+    } catch (error) {
+      console.error(`Bản dịch thất bại: ${error}`);
       $(".convert").removeClass("disabled");
       $("#sourceText").removeAttr("readonly");
-      console.error(jqXHR, textStatus, errorThrown);
-    });
+    }
   }
 });
 
