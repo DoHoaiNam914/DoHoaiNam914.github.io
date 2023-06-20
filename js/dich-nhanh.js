@@ -274,7 +274,7 @@ function getConvertedChineseText(data, text) {
 
     for (let j = 0; j < line.length; j++) {
       for (let k = [...data][0][0].length; k >= 1; k--) {
-        if (data.has(line.substring(j, j + k)) && !markMap.has(line[j])) {
+        if (data.has(line.substring(j, j + k))) {
           phrases.push(data.get(line.substring(j, j + k)));
           j += k - 1;
           break;
@@ -295,9 +295,12 @@ function getConvertedChineseText(data, text) {
             break;
           }
 
-          if ((tempWord.length > 0 && data.has(line[j + 1]) && !markMap.has(line[j + 1])) || j + 1 == line.length) {
-            tempWord.split(' ').forEach((word) => phrases.push(word));
-            tempWord = '';
+          for (let l = [...data][0][0].length; l >= 1; l--) {
+            if (tempWord.length > 0 && (data.has(line.substring(j + 1, j + 1 + l)) || j + 1 == line.length)) {
+              tempWord.split(' ').forEach((word) => phrases.push(word));
+              tempWord = '';
+              break;
+            }
           }
 
           break;
