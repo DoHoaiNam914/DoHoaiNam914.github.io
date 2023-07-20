@@ -149,11 +149,11 @@ $(".translator").click(function () {
           option.innerText = DeepLSourceLanguage[langCode];
           option.value = langCode;
 
-          if (prevSourceLanguage.replace(/[()]/g, '').includes(option.innerText.replace(/[()]/g, ''))) {
+          $("#sourceLangSelect").append(option);
+
+          if (prevSourceLanguage != undefined && prevSourceLanguage.replace(/[()]/g, '').includes(option.innerText.replace(/[()]/g, ''))) {
             sourceLanguage = option.value;
           }
-
-          $("#sourceLangSelect").append(option);
         }
 
         $("#sourceLangSelect").val(sourceLanguage || autoDetectOption.value);
@@ -167,11 +167,11 @@ $(".translator").click(function () {
             option.disabled = true;
           }
 
-          if (prevTargetLanguage.replace(/[()]/g, '').includes(option.innerText.replace(/[()]/g, ''))) {
+          $("#targetLangSelect").append(option);
+
+          if (prevTargetLanguage != undefined && prevTargetLanguage.replace(/[()]/g, '').includes(option.innerText.replace(/[()]/g, ''))) {
             targetLanguage = option.value;
           }
-
-          $("#targetLangSelect").append(option);
         }
 
         $("#targetLangSelect").val(targetLanguage || 'EN-US');
@@ -189,21 +189,21 @@ $(".translator").click(function () {
           sourceOption.innerText = GoogleLanguage[langCode];
           sourceOption.value = langCode;
 
-          if (prevSourceLanguage.replace(/[()]/g, '').includes(option.innerText.replace(/[()]/g, ''))) {
+          $("#sourceLangSelect").append(sourceOption);
+
+          if (prevSourceLanguage != undefined && prevSourceLanguage.replace(/[()]/g, '').includes(option.innerText.replace(/[()]/g, ''))) {
             sourceLanguage = option.value;
           }
-
-          $("#sourceLangSelect").append(sourceOption);
 
           const targetOption = document.createElement('option');
           targetOption.innerText = GoogleLanguage[langCode];
           targetOption.value = langCode;
 
-          if (prevTargetLanguage.replace(/[()]/g, '').includes(option.innerText.replace(/[()]/g, ''))) {
+          $("#targetLangSelect").append(targetOption);
+
+          if (prevTargetLanguage != undefined && prevTargetLanguage.replace(/[()]/g, '').includes(option.innerText.replace(/[()]/g, ''))) {
             targetLanguage = option.value;
           }
-
-          $("#targetLangSelect").append(targetOption);
         }
 
         $("#sourceLangSelect").val(sourceLanguage || autoDetectOption.value);
@@ -222,21 +222,21 @@ $(".translator").click(function () {
           sourceOption.innerText = MicrosoftLanguage[langCode];
           sourceOption.value = langCode;
 
-          if (prevSourceLanguage.replace(/[()]/g, '').includes(option.innerText.replace(/[()]/g, ''))) {
+          $("#sourceLangSelect").append(sourceOption);
+
+          if (prevSourceLanguage != undefined && prevSourceLanguage.replace(/[()]/g, '').includes(option.innerText.replace(/[()]/g, ''))) {
             sourceLanguage = option.value;
           }
-
-          $("#sourceLangSelect").append(sourceOption);
 
           const targetOption = document.createElement('option');
           targetOption.innerText = MicrosoftLanguage[langCode];
           targetOption.value = langCode;
 
-          if (prevTargetLanguage.replace(/[()]/g, '').includes(option.innerText.replace(/[()]/g, ''))) {
+          $("#targetLangSelect").append(targetOption);
+
+          if (prevTargetLanguage != undefined && prevTargetLanguage.replace(/[()]/g, '').includes(option.innerText.replace(/[()]/g, ''))) {
             targetLanguage = option.value;
           }
-
-          $("#targetLangSelect").append(targetOption);
         }
 
         $("#sourceLangSelect").val(sourceLanguage || autoDetectOption.value);
