@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=0">
     <title>Dịch nhanh - DoHoaiNam Pages</title>
-    <link href="css/bootstrap.min.css" rel="stylesheet">
-    <link href="css/general_style.css" rel="stylesheet">
-    <script src="lib/LAB.js"></script>
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/general_style.css" rel="stylesheet">
+    <script src="/lib/LAB.js"></script>
     <script>
       const storedTheme = localStorage.getItem("theme");
       const preferredTheme = storedTheme ?? 'auto';
@@ -46,10 +46,10 @@
       });
 
       $LAB
-        .script("lib/jquery-3.6.1.js").wait()
-        .script("lib/jquery.csv.js")
-        .script("lib/underscore-umd-min.js")
-        .script("lib/bootstrap.bundle.min.js").wait(function () {
+        .script("/lib/jquery-3.6.1.js").wait()
+        .script("/lib/jquery.csv.js")
+        .script("/lib/underscore-umd-min.js")
+        .script("/lib/bootstrap.bundle.min.js").wait(function () {
           setTheme(preferredTheme);
           showActiveTheme(preferredTheme);
           
@@ -61,15 +61,15 @@
             showActiveTheme(theme, true);
           });
         })
-        .script("lib/tesseract.min.js")
-        .script("lib/opencv.js").wait()
-        .script("js/trich-xuat-van-ban.js").wait(function () {
+        .script("/lib/tesseract.min.js")
+        .script("/lib/opencv.js").wait()
+        .script("/js/trich-xuat-van-ban.js").wait(function () {
           const recognizer = JSON.parse(localStorage.getItem("recognizer")) ?? {langs: $("#recognizeLangsSelect").val(), grayscale: $("#flexCheckGrayscale").prop("checked"), threshold: $("#flexCheckThreshold").prop("checked")};
           $("#recognizeLangsSelect").val(recognizer.langs);
           $("#flexCheckGrayscale").prop("checked", recognizer.grayscale);
           $("#flexCheckThreshold").prop("checked", recognizer.threshold);
         }).wait()
-        .script("js/dich-nhanh.js").wait(function () {
+        .script("/js/dich-nhanh.js").wait(function () {
           const translator = JSON.parse(localStorage.getItem("translator")) ?? {translator: $(".translator.active").data("id"), showOriginal: $("#flexSwitchCheckShowOriginal").prop("checked"), glossary: $("#flexSwitchCheckGlossary").prop("checked"), source: $("#sourceLangSelect").val(), target: $("#targetLangSelect").val()};
           const options = [translator.source, translator.target, translator.showOriginal, translator.glossary];
 
@@ -80,7 +80,7 @@
           $("#flexSwitchCheckShowOriginal").prop("checked", options[2]);
           $("#flexSwitchCheckGlossary").prop("checked", options[3]);
         })
-        .script("js/quan-ly-tu-vung.js").wait(function () {
+        .script("/js/quan-ly-tu-vung.js").wait(function () {
           const obj = JSON.parse(localStorage.getItem("glossary")) ?? {type: $("#glossaryType").val(), data: {}};
           glossary = Object.entries(obj.data);
           $("#glossaryType").val(obj.type).change();
