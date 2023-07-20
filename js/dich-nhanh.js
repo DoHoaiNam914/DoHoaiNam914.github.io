@@ -129,7 +129,7 @@ $(".translator").click(function () {
     $(this).addClass("active");
 
     const prevSourceLanguage = $("#sourceLangSelect").val() != '' && $("#sourceLangSelect").val() != 'auto' ? (prevTranslator === Translators.DEEPL_TRANSLATOR ? DeepLSourceLanguage[$("#sourceLangSelect").val()] : (prevTranslator === Translators.MICROSOFT_TRANSLATOR ? MicrosoftLanguage[$("#sourceLangSelect").val()] : GoogleLanguage[$("#sourceLangSelect").val()])) : '';
-    const prevTargetLanguage = prevTranslator === Translators.DEEPL_TRANSLATOR ? DeepLTargetLanguage[$("#targetLangSelect").val()] : (prevTranslator === Translators.MICROSOFT_TRANSLATOR ? MicrosoftLanguage[$("#targetLangSelect").val()] : GoogleLanguage[$("#targetLangSelect").val()]);
+    const prevTargetLanguage = (prevTranslator === Translators.DEEPL_TRANSLATOR ? DeepLTargetLanguage[$("#targetLangSelect").val()] : (prevTranslator === Translators.MICROSOFT_TRANSLATOR ? MicrosoftLanguage[$("#targetLangSelect").val()] : GoogleLanguage[$("#targetLangSelect").val()])) ?? '';
     var sourceLanguage = '';
     var targetLanguage = '';
 
@@ -151,8 +151,8 @@ $(".translator").click(function () {
 
           $("#sourceLangSelect").append(option);
 
-          if (prevSourceLanguage != '' && prevSourceLanguage.replace(/[()]/g, '').split(' ')[0].includes(option.innerText.replace(/[()]/g, '').split(' ')[0])) {
-            sourceLanguage = option.value;
+          if (sourceLanguage != '' && option.innerText.replace(/[()]/g, '').includes(prevSourceLanguage.replace(/[()]/g, '').split(' ')[0])) {
+            sourceLanguage = langCode;
           }
         }
 
@@ -169,8 +169,8 @@ $(".translator").click(function () {
 
           $("#targetLangSelect").append(option);
 
-          if (prevTargetLanguage != '' && prevTargetLanguage.replace(/[()]/g, '').split(' ')[0].includes(option.innerText.replace(/[()]/g, '').split(' ')[0])) {
-            targetLanguage = option.value;
+          if (targetLanguage != '' && option.innerText.replace(/[()]/g, '').includes(prevTargetLanguage.replace(/[()]/g, '').split(' ')[0])) {
+            targetLanguage = langCode;
           }
         }
 
@@ -191,8 +191,8 @@ $(".translator").click(function () {
 
           $("#sourceLangSelect").append(sourceOption);
 
-          if (prevSourceLanguage != '' && prevSourceLanguage.replace(/[()]/g, '').split(' ')[0].includes(sourceOption.innerText.replace(/[()]/g, '').split(' ')[0])) {
-            sourceLanguage = option.value;
+          if (sourceLanguage != '' && sourceOption.innerText.replace(/[()]/g, '').includes(prevSourceLanguage.replace(/[()]/g, '').split(' ')[0])) {
+            sourceLanguage = langCode;
           }
 
           const targetOption = document.createElement('option');
@@ -201,8 +201,8 @@ $(".translator").click(function () {
 
           $("#targetLangSelect").append(targetOption);
 
-          if (prevTargetLanguage != '' && prevTargetLanguage.replace(/[()]/g, '').split(' ')[0].includes(targetOption.innerText.replace(/[()]/g, '').split(' ')[0])) {
-            targetLanguage = option.value;
+          if (targetLanguage != '' && targetOption.innerText.replace(/[()]/g, '').includes(prevTargetLanguage.replace(/[()]/g, '').split(' ')[0])) {
+            targetLanguage = langCode;
           }
         }
 
@@ -224,8 +224,8 @@ $(".translator").click(function () {
 
           $("#sourceLangSelect").append(sourceOption);
 
-          if (prevSourceLanguage != '' && prevSourceLanguage.replace(/[()]/g, '').split(' ')[0].includes(sourceOption.innerText.replace(/[()]/g, '').split(' ')[0])) {
-            sourceLanguage = option.value;
+          if (sourceLanguage != '' && sourceOption.innerText.replace(/[()]/g, '').includes(prevSourceLanguage.replace(/[()]/g, '').split(' ')[0])) {
+            sourceLanguage = langCode;
           }
 
           const targetOption = document.createElement('option');
@@ -234,8 +234,8 @@ $(".translator").click(function () {
 
           $("#targetLangSelect").append(targetOption);
 
-          if (prevTargetLanguage != '' && prevTargetLanguage.replace(/[()]/g, '').split(' ')[0].includes(targetOption.innerText.replace(/[()]/g, '').split(' ')[0])) {
-            targetLanguage = option.value;
+          if (targetLanguage != '' && targetOption.innerText.replace(/[()]/g, '').includes(prevTargetLanguage.replace(/[()]/g, '').split(' ')[0])) {
+            targetLanguage = langCode;
           }
         }
 
@@ -891,7 +891,7 @@ const MicrosoftLanguage = {
   'hsb': 'Upper Sorbian',
   'ur': 'Urdu',
   'ug': 'Uyghur (Arabic)',
-  'uz': 'Uzbek (Latin',
+  'uz': 'Uzbek (Latin)',
   'vi': 'Vietnamese',
   'cy': 'Welsh',
   'yua': 'Yucatec Maya',
