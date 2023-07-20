@@ -191,7 +191,7 @@ $(".translator").click(function () {
 
           $("#sourceLangSelect").append(sourceOption);
 
-          if (prevSourceLanguage != '' && prevSourceLanguage.replace(/[()]/g, '').split(' ')[0].includes(option.innerText.replace(/[()]/g, '').split(' ')[0])) {
+          if (prevSourceLanguage != '' && prevSourceLanguage.replace(/[()]/g, '').split(' ')[0].includes(sourceOption.innerText.replace(/[()]/g, '').split(' ')[0])) {
             sourceLanguage = option.value;
           }
 
@@ -201,7 +201,7 @@ $(".translator").click(function () {
 
           $("#targetLangSelect").append(targetOption);
 
-          if (prevTargetLanguage != '' && prevTargetLanguage.replace(/[()]/g, '').split(' ')[0].includes(option.innerText.replace(/[()]/g, '').split(' ')[0])) {
+          if (prevTargetLanguage != '' && prevTargetLanguage.replace(/[()]/g, '').split(' ')[0].includes(targetOption.innerText.replace(/[()]/g, '').split(' ')[0])) {
             targetLanguage = option.value;
           }
         }
@@ -224,7 +224,7 @@ $(".translator").click(function () {
 
           $("#sourceLangSelect").append(sourceOption);
 
-          if (prevSourceLanguage != '' && prevSourceLanguage.replace(/[()]/g, '').split(' ')[0].includes(option.innerText.replace(/[()]/g, '').split(' ')[0])) {
+          if (prevSourceLanguage != '' && prevSourceLanguage.replace(/[()]/g, '').split(' ')[0].includes(sourceOption.innerText.replace(/[()]/g, '').split(' ')[0])) {
             sourceLanguage = option.value;
           }
 
@@ -234,7 +234,7 @@ $(".translator").click(function () {
 
           $("#targetLangSelect").append(targetOption);
 
-          if (prevTargetLanguage != '' && prevTargetLanguage.replace(/[()]/g, '').split(' ')[0].includes(option.innerText.replace(/[()]/g, '').split(' ')[0])) {
+          if (prevTargetLanguage != '' && prevTargetLanguage.replace(/[()]/g, '').split(' ')[0].includes(targetOption.innerText.replace(/[()]/g, '').split(' ')[0])) {
             targetLanguage = option.value;
           }
         }
