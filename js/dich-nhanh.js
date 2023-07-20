@@ -130,10 +130,10 @@ $(".translator").click(function () {
 
     localStorage.setItem("translator", JSON.stringify({translator: $(".translator.active").data("id"), showOriginal: $("#flexSwitchCheckShowOriginal").prop("checked"), glossary: $("#flexSwitchCheckGlossary").prop("checked"), source: $("#sourceLangSelect").val(), target: $("#targetLangSelect").val()}));
 
-    const prevSourceLanguage = (prevTranslator === Translators.DEEPL_TRANSLATOR ? DeepLSourceLanguage[$("#sourceLangSelect").val()] : (prevTranslator === Translators.MICROSOFT_TRANSLATOR ? MicrosoftLanguage[$("#sourceLangSelect").val()] : GoogleLanguage[$("#sourceLangSelect").val()])) ?? '';
-    const prevTargetLanguage = (prevTranslator === Translators.DEEPL_TRANSLATOR ? DeepLTargetLanguage[$("#targetLangSelect").val()] : (prevTranslator === Translators.MICROSOFT_TRANSLATOR ? MicrosoftLanguage[$("#targetLangSelect").val()] : GoogleLanguage[$("#targetLangSelect").val()])) ?? '';
-    var sourceLanguage = '';
-    var targetLanguage = '';
+    var prevSourceLanguage = $("#sourceLangSelect").val();
+    var prevTargetLanguage = $("#targetLangSelect").val();
+    const prevSourceLanguageName = (prevTranslator === Translators.DEEPL_TRANSLATOR ? DeepLSourceLanguage[prevSourceLanguage] : (prevTranslator === Translators.MICROSOFT_TRANSLATOR ? MicrosoftLanguage[prevSourceLanguage] : GoogleLanguage[prevSourceLanguage])) ?? '';
+    const prevTargetLanguageName = (prevTranslator === Translators.DEEPL_TRANSLATOR ? DeepLTargetLanguage[prevTargetLanguage] : (prevTranslator === Translators.MICROSOFT_TRANSLATOR ? MicrosoftLanguage[prevTargetLanguage] : GoogleLanguage[prevTargetLanguage])) ?? '';
 
     const autoDetectOption = document.createElement('option');
 
@@ -154,7 +154,7 @@ $(".translator").click(function () {
         }
 
         $("#sourceLangSelect > option").each(function () {
-          if ($(this).text().replace(/[()]/g, '').includes(prevSourceLanguage.replace(/[()]/g, '').split(' ')[0])) {
+          if (($(this).val().split('-')[0] == prevSourceLanguage.toUpperCase().split('-')[0] && $(this).val().split('-')[1] == prevSourceLanguage.toUpperCase().split('-')[1])  || ($(this).val().split('-')[0] == prevSourceLanguage.toUpperCase().split('-')[0] || $(this).text().replace(/[()]/g, '').includes(prevSourceLanguageName.replace(/[()]/g, '').split(' ')[0]))) {
             $("#sourceLangSelect").val($(this).val() || autoDetectOption.value).change();
             return false;
           }
@@ -173,7 +173,7 @@ $(".translator").click(function () {
         }
 
         $("#targetLangSelect > option").each(function () {
-          if ($(this).text().replace(/[()]/g, '').includes(prevTargetLanguage.replace(/[()]/g, '').split(' ')[0])) {
+          if (($(this).val().split('-')[0] == prevTargetLanguage.toUpperCase().split('-')[0] && $(this).val().split('-')[1] == prevTargetLanguage.toUpperCase().split('-')[1]) || ($(this).val().split('-')[0] == prevTargetLanguage.toUpperCase().split('-')[0] || $(this).text().replace(/[()]/g, '').includes(prevTargetLanguageName.replace(/[()]/g, '').split(' ')[0]))) {
             $("#targetLangSelect").val($(this).val() || 'EN-US').change();
             return false;
           }
@@ -191,23 +191,23 @@ $(".translator").click(function () {
           const sourceOption = document.createElement('option');
           sourceOption.innerText = GoogleLanguage[langCode];
           sourceOption.value = langCode;
-          $("#sourceLangSelect").append(sourceOption).change();
+          $("#sourceLangSelect").append(sourceOption);
 
           const targetOption = document.createElement('option');
           targetOption.innerText = GoogleLanguage[langCode];
           targetOption.value = langCode;
-          $("#targetLangSelect").append(targetOption).change();
+          $("#targetLangSelect").append(targetOption);
         }
 
         $("#sourceLangSelect > option").each(function () {
-          if ($(this).text().replace(/[()]/g, '').includes(prevSourceLanguage.replace(/[()]/g, '').split(' ')[0])) {
+          if (($(this).val().split('-')[0] == prevSourceLanguage.toLowerCase().split('-')[0] && $(this).val().split('-')[1] == prevSourceLanguage.toLowerCase().split('-')[1]) || ($(this).val().split('-')[0] == prevSourceLanguage.toLowerCase().split('-')[0] || $(this).text().replace(/[()]/g, '').includes(prevSourceLanguageName.replace(/[()]/g, '').split(' ')[0]))) {
             $("#sourceLangSelect").val($(this).val() || autoDetectOption.value).change();
             return false;
           }
         });
 
         $("#targetLangSelect > option").each(function () {
-          if ($(this).text().replace(/[()]/g, '').includes(prevTargetLanguage.replace(/[()]/g, '').split(' ')[0])) {
+          if (($(this).val().split('-')[0] == prevTargetLanguage.toLowerCase().split('-')[0] && $(this).val().split('-')[1] == prevTargetLanguage.toLowerCase().split('-')[1]) || ($(this).val().split('-')[0] == prevTargetLanguage.toLowerCase().split('-')[0] || $(this).text().replace(/[()]/g, '').includes(prevTargetLanguageName.replace(/[()]/g, '').split(' ')[0]))) {
             $("#targetLangSelect").val($(this).val() || 'vi').change();
             return false;
           }
@@ -234,14 +234,14 @@ $(".translator").click(function () {
         }
 
         $("#sourceLangSelect > option").each(function () {
-          if ($(this).text().replace(/[()]/g, '').includes(prevSourceLanguage.replace(/[()]/g, '').split(' ')[0])) {
+          if (($(this).val().split('-')[0] == prevSourceLanguage.toLowerCase().split('-')[0] && $(this).val().split('-')[1] == prevSourceLanguage.toLowerCase().split('-')[1]) || ($(this).val().split('-')[0] == prevSourceLanguage.toLowerCase().split('-')[0] || $(this).text().replace(/[()]/g, '').includes(prevSourceLanguageName.replace(/[()]/g, '').split(' ')[0]))) {
             $("#sourceLangSelect").val($(this).val() || autoDetectOption.value).change();
             return false;
           }
         });
 
         $("#targetLangSelect > option").each(function () {
-          if ($(this).text().replace(/[()]/g, '').includes(prevTargetLanguage.replace(/[()]/g, '').split(' ')[0])) {
+          if (($(this).val().split('-')[0] == prevTargetLanguage.toLowerCase().split('-')[0] && $(this).val().split('-')[1] == prevTargetLanguage.toLowerCase().split('-')[1]) || ($(this).val().split('-')[0] == prevTargetLanguage.toLowerCase().split('-')[0] || $(this).text().replace(/[()]/g, '').includes(prevTargetLanguageName.replace(/[()]/g, '').split(' ')[0]))) {
             $("#targetLangSelect").val($(this).val() || 'vi').change();
             return false;
           }
