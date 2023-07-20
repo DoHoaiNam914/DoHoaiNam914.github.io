@@ -153,10 +153,12 @@ $(".translator").click(function () {
           $("#sourceLangSelect").append(option);
         }
 
-        $("#sourceLangSelect > option").each(function () {
+        $("#sourceLangSelect > option").each(function (index) {
           if (($(this).val().split('-')[0] == prevSourceLanguage.toUpperCase().split('-')[0] && $(this).val().split('-')[1] == prevSourceLanguage.toUpperCase().split('-')[1])  || ($(this).val().split('-')[0] == prevSourceLanguage.toUpperCase().split('-')[0] || $(this).text().replace(/[()]/g, '').includes(prevSourceLanguageName.replace(/[()]/g, '').split(' ')[0]))) {
-            $("#sourceLangSelect").val($(this).val() || autoDetectOption.value).change();
+            $("#sourceLangSelect").val($(this).val()).change();
             return false;
+          } else if (index + 1 == $("#sourceLangSelect > option").length) {
+            $("#sourceLangSelect").val(autoDetectOption.value).change();
           }
         });
 
@@ -174,8 +176,10 @@ $(".translator").click(function () {
 
         $("#targetLangSelect > option").each(function () {
           if (($(this).val().split('-')[0] == prevTargetLanguage.toUpperCase().split('-')[0] && $(this).val().split('-')[1] == prevTargetLanguage.toUpperCase().split('-')[1]) || ($(this).val().split('-')[0] == prevTargetLanguage.toUpperCase().split('-')[0] || $(this).text().replace(/[()]/g, '').includes(prevTargetLanguageName.replace(/[()]/g, '').split(' ')[0]))) {
-            $("#targetLangSelect").val($(this).val() || 'EN-US').change();
+            $("#targetLangSelect").val($(this).val()).change();
             return false;
+          } else if (index + 1 == $("#targetLangSelect > option").length) {
+            $("#targetLangSelect").val('EN-US').change();
           }
         });
 
@@ -201,8 +205,10 @@ $(".translator").click(function () {
 
         $("#sourceLangSelect > option").each(function () {
           if (($(this).val().split('-')[0] == prevSourceLanguage.toLowerCase().split('-')[0] && $(this).val().split('-')[1] == prevSourceLanguage.toLowerCase().split('-')[1]) || ($(this).val().split('-')[0] == prevSourceLanguage.toLowerCase().split('-')[0] || $(this).text().replace(/[()]/g, '').includes(prevSourceLanguageName.replace(/[()]/g, '').split(' ')[0]))) {
-            $("#sourceLangSelect").val($(this).val() || autoDetectOption.value).change();
+            $("#sourceLangSelect").val($(this).val()).change();
             return false;
+          } else if (index + 1 == $("#sourceLangSelect > option").length) {
+            $("#sourceLangSelect").val(autoDetectOption.value).change();
           }
         });
 
@@ -210,6 +216,8 @@ $(".translator").click(function () {
           if (($(this).val().split('-')[0] == prevTargetLanguage.toLowerCase().split('-')[0] && $(this).val().split('-')[1] == prevTargetLanguage.toLowerCase().split('-')[1]) || ($(this).val().split('-')[0] == prevTargetLanguage.toLowerCase().split('-')[0] || $(this).text().replace(/[()]/g, '').includes(prevTargetLanguageName.replace(/[()]/g, '').split(' ')[0]))) {
             $("#targetLangSelect").val($(this).val() || 'vi').change();
             return false;
+          } else if (index + 1 == $("#targetLangSelect > option").length) {
+            $("#targetLangSelect").val('vi').change();
           }
         });
 
@@ -235,8 +243,10 @@ $(".translator").click(function () {
 
         $("#sourceLangSelect > option").each(function () {
           if (($(this).val().split('-')[0] == prevSourceLanguage.toLowerCase().split('-')[0] && $(this).val().split('-')[1] == prevSourceLanguage.toLowerCase().split('-')[1]) || ($(this).val().split('-')[0] == prevSourceLanguage.toLowerCase().split('-')[0] || $(this).text().replace(/[()]/g, '').includes(prevSourceLanguageName.replace(/[()]/g, '').split(' ')[0]))) {
-            $("#sourceLangSelect").val($(this).val() || autoDetectOption.value).change();
+            $("#sourceLangSelect").val($(this).val()).change();
             return false;
+          } else if (index + 1 == $("#sourceLangSelect > option").length) {
+            $("#sourceLangSelect").val(autoDetectOption.value).change();
           }
         });
 
@@ -244,6 +254,8 @@ $(".translator").click(function () {
           if (($(this).val().split('-')[0] == prevTargetLanguage.toLowerCase().split('-')[0] && $(this).val().split('-')[1] == prevTargetLanguage.toLowerCase().split('-')[1]) || ($(this).val().split('-')[0] == prevTargetLanguage.toLowerCase().split('-')[0] || $(this).text().replace(/[()]/g, '').includes(prevTargetLanguageName.replace(/[()]/g, '').split(' ')[0]))) {
             $("#targetLangSelect").val($(this).val() || 'vi').change();
             return false;
+          } else if (index + 1 == $("#targetLangSelect > option").length) {
+            $("#targetLangSelect").val('vi').change();
           }
         });
 
