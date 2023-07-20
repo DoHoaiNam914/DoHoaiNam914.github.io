@@ -150,15 +150,15 @@ $(".translator").click(function () {
           const option = document.createElement('option');
           option.innerText = DeepLSourceLanguage[langCode];
           option.value = langCode;
-
           $("#sourceLangSelect").append(option);
-
-          if (sourceLanguage == '' && option.innerText.replace(/[()]/g, '').includes(prevSourceLanguage.replace(/[()]/g, '').split(' ')[0])) {
-            sourceLanguage = langCode;
-          }
         }
 
-        $("#sourceLangSelect").val(sourceLanguage || autoDetectOption.value).change();
+        $("#sourceLangSelect > option").each(function () {
+          if ($(this).text().replace(/[()]/g, '').includes(prevSourceLanguage.replace(/[()]/g, '').split(' ')[0])) {
+            $("#sourceLangSelect").val($(this).val() || autoDetectOption.value).change();
+            return false;
+          }
+        });
 
         for (const langCode in DeepLTargetLanguage) {
           const option = document.createElement('option');
@@ -170,13 +170,14 @@ $(".translator").click(function () {
           }
 
           $("#targetLangSelect").append(option);
-
-          if (targetLanguage == '' && option.innerText.replace(/[()]/g, '').includes(prevTargetLanguage.replace(/[()]/g, '').split(' ')[0])) {
-            targetLanguage = langCode;
-          }
         }
 
-        $("#targetLangSelect").val(targetLanguage || 'EN-US').change();
+        $("#targetLangSelect > option").each(function () {
+          if ($(this).text().replace(/[()]/g, '').includes(prevTargetLanguage.replace(/[()]/g, '').split(' ')[0])) {
+            $("#targetLangSelect").val($(this).val() || 'EN-US').change();
+            return false;
+          }
+        });
 
         break;
 
@@ -190,26 +191,27 @@ $(".translator").click(function () {
           const sourceOption = document.createElement('option');
           sourceOption.innerText = GoogleLanguage[langCode];
           sourceOption.value = langCode;
-
           $("#sourceLangSelect").append(sourceOption).change();
-
-          if (sourceLanguage == '' && sourceOption.innerText.replace(/[()]/g, '').includes(prevSourceLanguage.replace(/[()]/g, '').split(' ')[0])) {
-            sourceLanguage = langCode;
-          }
 
           const targetOption = document.createElement('option');
           targetOption.innerText = GoogleLanguage[langCode];
           targetOption.value = langCode;
-
           $("#targetLangSelect").append(targetOption).change();
-
-          if (targetLanguage == '' && targetOption.innerText.replace(/[()]/g, '').includes(prevTargetLanguage.replace(/[()]/g, '').split(' ')[0])) {
-            targetLanguage = langCode;
-          }
         }
 
-        $("#sourceLangSelect").val(sourceLanguage || autoDetectOption.value);
-        $("#targetLangSelect").val(targetLanguage || 'vi').change();
+        $("#sourceLangSelect > option").each(function () {
+          if ($(this).text().replace(/[()]/g, '').includes(prevSourceLanguage.replace(/[()]/g, '').split(' ')[0])) {
+            $("#sourceLangSelect").val($(this).val() || autoDetectOption.value).change();
+            return false;
+          }
+        });
+
+        $("#targetLangSelect > option").each(function () {
+          if ($(this).text().replace(/[()]/g, '').includes(prevTargetLanguage.replace(/[()]/g, '').split(' ')[0])) {
+            $("#targetLangSelect").val($(this).val() || 'vi').change();
+            return false;
+          }
+        });
 
         break;
 
@@ -223,26 +225,27 @@ $(".translator").click(function () {
           const sourceOption = document.createElement('option');
           sourceOption.innerText = MicrosoftLanguage[langCode];
           sourceOption.value = langCode;
-
           $("#sourceLangSelect").append(sourceOption);
-
-          if (sourceLanguage == '' && sourceOption.innerText.replace(/[()]/g, '').includes(prevSourceLanguage.replace(/[()]/g, '').split(' ')[0])) {
-            sourceLanguage = langCode;
-          }
 
           const targetOption = document.createElement('option');
           targetOption.innerText = MicrosoftLanguage[langCode];
           targetOption.value = langCode;
-
           $("#targetLangSelect").append(targetOption).change();
-
-          if (targetLanguage == '' && targetOption.innerText.replace(/[()]/g, '').includes(prevTargetLanguage.replace(/[()]/g, '').split(' ')[0])) {
-            targetLanguage = langCode;
-          }
         }
 
-        $("#sourceLangSelect").val(sourceLanguage || autoDetectOption.value);
-        $("#targetLangSelect").val(targetLanguage || 'vi');
+        $("#sourceLangSelect > option").each(function () {
+          if ($(this).text().replace(/[()]/g, '').includes(prevSourceLanguage.replace(/[()]/g, '').split(' ')[0])) {
+            $("#sourceLangSelect").val($(this).val() || autoDetectOption.value).change();
+            return false;
+          }
+        });
+
+        $("#targetLangSelect > option").each(function () {
+          if ($(this).text().replace(/[()]/g, '').includes(prevTargetLanguage.replace(/[()]/g, '').split(' ')[0])) {
+            $("#targetLangSelect").val($(this).val() || 'vi').change();
+            return false;
+          }
+        });
 
         break;
     }
