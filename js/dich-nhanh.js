@@ -124,13 +124,14 @@ $(".option").change(() => {
 
 $(".translator").click(function () {
   if (!$(this).hasClass("disabled")) {
+    const prevTranslator = $(this).data("id");
     $(".translator").removeClass("active");
     $(this).addClass("active");
 
-    const prevSourceLanguage = $("#sourceLangSelect").val();
-    const prevTargetLanguage = $("#targetLangSelect").val();
-    const sourceLanguage = '';
-    const targetLanguage = '';
+    const prevSourceLanguage = prevTranslator === Translators.DEEPL_TRANSLATOR ? DeepLTargetLanguage[$("#sourceLangSelect").val()] : (prevTranslator === Translators.MICROSOFT_TRANSLATOR ? MicrosoftLanguage[$("#sourceLangSelect").val()] : GoogleLanguage[$("#sourceLangSelect").val()]);
+    const prevTargetLanguage = prevTranslator === Translators.DEEPL_TRANSLATOR ? DeepLTargetLanguage[$("#targetLangSelect").val()] : (prevTranslator === Translators.MICROSOFT_TRANSLATOR ? MicrosoftLanguage[$("#targetLangSelect").val()] : GoogleLanguage[$("#targetLangSelect").val()]);
+    var sourceLanguage = '';
+    var targetLanguage = '';
 
     const autoDetectOption = document.createElement('option');
 
