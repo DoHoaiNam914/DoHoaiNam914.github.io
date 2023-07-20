@@ -1,15 +1,10 @@
 'use strict';
 
-const GlossaryType = {
-  TSV: 'text/tab-separated-values',
-  CSV: 'text/csv',
-};
-
 var glossary = [];
 
 $("#glossaryManagerButton").on("mousedown", function () {
   $("#glossaryList").val(-1).change();
-  $("#sourceText").val(window.getSelection().toString()).trigger("input");
+  $("#sourceEntry").val(window.getSelection().toString()).trigger("input");
 });
 
 $("#inputGlossary").on("change", function () {
@@ -41,21 +36,21 @@ $("#inputGlossary").on("change", function () {
 $("#clearGlossaryButton").on("click", function () {
   if (window.confirm("Bạn có muốn xoá tập từ vựng này chứ?")) {
     glossary = [];
-    loadGlossary()
+    loadGlossary();
     $("#inputGlossary").val(null);
   }
 });
 
 $("#glossaryType").change(() => loadGlossary());
 
-$("#sourceText").on("input", function () {
+$("#sourceEntry").on("input", function () {
   const glossaryMap = new Map(glossary);
 
   if ($(this).val().length > 0) {
-    $("#targetText").val(getConvertedChineseText(new Map((glossary.length > 0 ?glossary.concat(Array.from(sinoVietnameses)) : Array.from(sinoVietnameses)).sort((a, b) => b[0].length - a[0].length)), $(this).val()));
+    $("#targetEntry").val(getConvertedChineseText(new Map([...glossary, ...[...sinoVietnameses].filter((character) => !glossaryMap.has(character[0]))].sort((a, b) => b[0].length - a[0].length)), $(this).val()));
 
     if (glossaryMap.has($(this).val())) {
-      $("#glossaryList").val(Array.from(glossaryMap.keys()).indexOf($(this).val()));
+      $("#glossaryList").val([...glossaryMap.keys()].indexOf($(this).val()));
     } else {
       $("#glossaryList").val(-1);
     }
@@ -66,182 +61,191 @@ $("#sourceText").on("input", function () {
 
 $(".dropdown-toggle").on("click", () => { $(".dropdown-scroller").scrollTop(0); });
 
-$("#sourceTextMenu").on("mousedown", (event) => event.preventDefault());
+$("#sourceEntryMenu").on("mousedown", (event) => event.preventDefault());
 
-$("#clearSourceTextButton").on("click", () => $("#sourceText").val(null).trigger("input"));
+$("#clearSourceTextButton").on("click", () => $("#sourceEntry").val(null).trigger("input"));
 
-$("#copySourceTextButton").on("click", () => navigator.clipboard.writeText($("#sourceText").val()));
+$("#copySourceTextButton").on("click", () => navigator.clipboard.writeText($("#sourceEntry").val()));
 
 $("#pasteSourceTextButton").on("click", () => {
   navigator.clipboard
     .readText()
     .then((clipText) => {
-      $("#sourceText").val(clipText).trigger("input");
+      $("#sourceEntry").val(clipText).trigger("input");
     });
 });;
 
 $("#lacvietdictionaryButton").on("click", function () {
-  if ($("#sourceText").val().length > 0) {
-    window.open(`http://mobile.coviet.vn/tratu.aspx?k=${encodeURIComponent($("#sourceText").val().substring($("#sourceText").prop("selectionStart"), $("#sourceText").prop("selectionEnd")) || $("#sourceText").val())}&t=ALL`);
-  }
-});
-
-$("#nomfoundationButton").on("click", function () {
-  if ($("#sourceText").val().length > 0) {
-    window.open(`http://www.nomfoundation.org/nom-tools/Nom-Lookup-Tool/Nom-Lookup-Tool?uiLang=en&input_type=rqn_or_hn&inputText=${encodeURIComponent($("#sourceText").val().substring($("#sourceText").prop("selectionStart"), $("#sourceText").prop("selectionEnd")) || $("#sourceText").val())}`);
+  if ($("#sourceEntry").val().length > 0) {
+    window.open(`http://mobile.coviet.vn/tratu.aspx?k=${encodeURIComponent(($("#sourceEntry").val().substring($("#sourceEntry").prop("selectionStart"), $("#sourceEntry").prop("selectionEnd")) || $("#sourceEntry").val()).substring(0, 30))}&t=ALL`);
   }
 });
 
 $("#hvdicButton").on("click", function () {
-  if ($("#sourceText").val().length > 0) {
-    window.open(`https://hvdic.thivien.net/whv/${encodeURIComponent($("#sourceText").val().substring($("#sourceText").prop("selectionStart"), $("#sourceText").prop("selectionEnd")) || $("#sourceText").val())}`);
+  if ($("#sourceEntry").val().length > 0) {
+    window.open(`https://hvdic.thivien.net/whv/${encodeURIComponent(($("#sourceEntry").val().substring($("#sourceEntry").prop("selectionStart"), $("#sourceEntry").prop("selectionEnd")) || $("#sourceEntry").val()).substring(0, 30))}`);
   }
 });
 
 $("#googleButton").on("click", function () {
-  if ($("#sourceText").val().length > 0) {
-    window.open(`https://www.google.com/search?q=${encodeURIComponent($("#sourceText").val().substring($("#sourceText").prop("selectionStart"), $("#sourceText").prop("selectionEnd")) || $("#sourceText").val())}`);
+  if ($("#sourceEntry").val().length > 0) {
+    window.open(`https://www.google.com.vn/search?q=${encodeURIComponent(($("#sourceEntry").val().substring($("#sourceEntry").prop("selectionStart"), $("#sourceEntry").prop("selectionEnd")) || $("#sourceEntry").val()).substring(0, 30))}`);
+  }
+});
+
+$("#wikipediaButton").on("click", function () {
+  if ($("#sourceEntry").val().length > 0) {
+    window.open(`https://vi.wikipedia.org/w/?search=${encodeURIComponent(($("#sourceEntry").val().substring($("#sourceEntry").prop("selectionStart"), $("#sourceEntry").prop("selectionEnd")) || $("#sourceEntry").val()).substring(0, 30))}&ns0=1`);
   }
 });
 
 $("#baiduButton").on("click", function () {
-  if ($("#sourceText").val().length > 0) {
-    window.open(`https://www.baidu.com/s?wd=${encodeURIComponent($("#sourceText").val().substring($("#sourceText").prop("selectionStart"), $("#sourceText").prop("selectionEnd")) || $("#sourceText").val())}`);
+  if ($("#sourceEntry").val().length > 0) {
+    window.open(`https://www.baidu.com/s?wd=${encodeURIComponent(($("#sourceEntry").val().substring($("#sourceEntry").prop("selectionStart"), $("#sourceEntry").prop("selectionEnd")) || $("#sourceEntry").val()).substring(0, 30))}`);
   }
 });
 
 $("#deepltranslatorButton").on("click", function () {
-  if ($("#sourceText").val().length > 0) {
-    window.open(`https://www.deepl.com/translator#auto/en/${encodeURIComponent($("#sourceText").val())}`);
+  if ($("#sourceEntry").val().length > 0) {
+    window.open(`https://www.deepl.com/translator#auto/en/${encodeURIComponent($("#sourceEntry").val())}`);
   }
 });
 
 $("#googletranslateButton").on("click", function () {
-  if ($("#sourceText").val().length > 0) {
-    window.open(`https://translate.google.com/?sl=auto&tl=vi&text=${encodeURIComponent($("#sourceText").val())}&op=translate`);
+  if ($("#sourceEntry").val().length > 0) {
+    window.open(`https://translate.google.com/?sl=auto&tl=vi&text=${encodeURIComponent($("#sourceEntry").val())}&op=translate`);
   }
 });
 
 $("#papagoButton").on("click", function () {
-  if ($("#sourceText").val().length > 0) {
-    window.open(`https://papago.naver.com/?sk=auto&tk=vi&st=${encodeURIComponent($("#sourceText").val())}`);
+  if ($("#sourceEntry").val().length > 0) {
+    window.open(`https://papago.naver.com/?sk=auto&tk=vi&st=${encodeURIComponent($("#sourceEntry").val())}`);
   }
 });
 
 $("#bingtranslatorButton").on("click", function () {
-  if ($("#sourceText").val().length > 0) {
-    window.open(`https://www.bing.com/translator?from=&to=vi&text=${encodeURIComponent($("#sourceText").val())}`);
+  if ($("#sourceEntry").val().length > 0) {
+    window.open(`https://www.bing.com/translator?from=auto-detect&to=vi&text=${encodeURIComponent($("#sourceEntry").val())}`);
   }
 });
 
 $("#addButton").on("click", function () {
-  if ($("#sourceText").val().length > 0) {
+  if ($("#sourceEntry").val().length > 0) {
     const glossaryMap = new Map(glossary);
-    glossaryMap.delete($("#sourceText").val());
-    glossaryMap.set($("#sourceText").val(), $("#targetText").val());
-    glossary = Array.from(glossaryMap);
+    glossaryMap.delete($("#sourceEntry").val().trim());
+    glossaryMap.set($("#sourceEntry").val().trim(), $("#targetEntry").val().trim());
+    glossary = [...glossaryMap];
     loadGlossary();
-    $("#sourceText").val(null);
-    $("#targetText").val(null);
+    $("#sourceEntry").val(null);
+    $("#targetEntry").val(null);
     $("#inputGlossary").val(null);
   }
 });
 
-$("#copyTargetTextButton").on("click", () => navigator.clipboard.writeText($("#targetText").val()));
+$("#copyTargetTextButton").on("click", () => navigator.clipboard.writeText($("#targetEntry").val()));
 
 $("#pasteTargetTextButton").on("click", () => {
   navigator.clipboard
     .readText()
     .then((clipText) => {
-      $("#targetText").val(clipText).trigger("input");
+      $("#targetEntry").val(clipText).trigger("input");
     });
 });
 
-$("#pinyinConvertButton").on("click", function () {
-  if ($("#sourceText").val().length > 0) {
-    $("#targetText").val(getConvertedChineseText(new Map(Array.from(pinyins).sort((a, b) => b[0].length - a[0].length)), $("#sourceText").val()));
-  }
-});
-
-$("#sinoVietnameseConvertButton").click(function () {
-  if ($("#sourceText").val().length > 0) {
-    $("#targetText").val(getConvertedChineseText(new Map(Array.from(sinoVietnameses).sort((a, b) => b[0].length - a[0].length)), $("#sourceText").val()));
-  }
-});
-
 $(".upperCaseFromAmountButton").on("click", function () {
-  if ($("#targetText").val().length > 0) {
-    $("#targetText").val($("#targetText").val().split(' ').map((word, index) => (index < $(this).data("amount") && word.charAt(0).toUpperCase() + word.slice(1)) || word.toLowerCase()).join(' '));
+  if ($("#targetEntry").val().length > 0) {
+    $("#targetEntry").val($("#targetEntry").val().split(' ').map((word, index) => (index < $(this).data("amount") && word.charAt(0).toUpperCase() + word.slice(1)) || word.toLowerCase()).join(' '));
   }
 });
 
 $(".upperCaseAllButton").on("click", function () {
-  if ($("#targetText").val().length > 0) {
-    $("#targetText").val($("#targetText").val().split(' ').map((word, index) => word = word.charAt(0).toUpperCase() + word.slice(1)).join(' '));
+  if ($("#targetEntry").val().length > 0) {
+    $("#targetEntry").val($("#targetEntry").val().split(' ').map((word, index) => word = word.charAt(0).toUpperCase() + word.slice(1)).join(' '));
+  }
+});
+
+$("#pinyinConvertButton").on("click", function () {
+  if ($("#sourceEntry").val().length > 0) {
+    $("#targetEntry").val(getConvertedChineseText(new Map([...pinyins].sort((a, b) => b[0].length - a[0].length)), $("#sourceEntry").val()));
+  }
+});
+
+$("#sinoVietnameseConvertButton").click(function () {
+  if ($("#sourceEntry").val().length > 0) {
+    $("#targetEntry").val(getConvertedChineseText(new Map([...sinoVietnameses].sort((a, b) => b[0].length - a[0].length)), $("#sourceEntry").val()));
   }
 });
 
 $(".deepl-convert").on("click", async function () {
-  if ($("#sourceText").val().length > 0) {
-    $("#sourceText").attr("readonly", true);
+  if ($("#sourceEntry").val().length > 0) {
+    $("#sourceEntry").attr("readonly", true);
     $(".convert").addClass("disabled");
 
     try {
-      const translatedText = await DeepLTranslator.translateText($("#sourceText").val(), '', $(this).data("lang"));
+      const translatedText = await DeepLTranslator.translateText(DEEPL_AUTH_KEY, $("#sourceEntry").val(), '', $(this).data("lang"));
 
-      $("#targetText").val(translatedText);
+      $("#targetEntry").val(translatedText);
       $(".convert").removeClass("disabled");
-      $("#sourceText").removeAttr("readonly");
+      $("#sourceEntry").removeAttr("readonly");
     } catch (error) {
-      console.error(`Bản dịch thất bại: ${error}`);
+      $("#targetEntry").val('Bản dịch thất bại: ' + JSON.stringify(error));
       $(".convert").removeClass("disabled");
-      $("#sourceText").removeAttr("readonly");
+      $("#sourceEntry").removeAttr("readonly");
     }
   }
 });
 
 $(".google-convert").on("click", async function () {
-  if ($("#sourceText").val().length > 0) {
-    $("#sourceText").attr("readonly", true);
+  if ($("#sourceEntry").val().length > 0) {
+    $("#sourceEntry").attr("readonly", true);
     $(".convert").addClass("disabled");
 
     try {
-      const translatedText = await GoogleTranslate.translateText($("#sourceText").val(), 1, 'auto', $(this).data("lang"));
+      const elementJs = await $.get("https://corsproxy.io/?https://translate.google.com/translate_a/element.js?hl=vi&client=wt");
 
-      $("#targetText").val(translatedText);
+      const version = elementJs != undefined ? elementJs.match(/_exportVersion\('(TE_\d+)'\)/)[1] : null;
+      const ctkk = elementJs != undefined ? elementJs.match(/c\._ctkk='(\d+\.\d+)'/)[1] : null;
+
+      if (version == undefined && ctkk == undefined) {
+        $("#targetEntry").val('Không thể lấy được Log ID hoặc Token từ máy chủ.');
+        return;
+      }
+
+      const translatedText = await GoogleTranslate.translateText($("#sourceEntry").val(), version, ctkk, 'auto', $(this).data("lang"));
+
+      $("#targetEntry").val(translatedText);
       $(".convert").removeClass("disabled");
-      $("#sourceText").removeAttr("readonly");
+      $("#sourceEntry").removeAttr("readonly");
     } catch (error) {
-      console.error(`Bản dịch thất bại: ${error}`);
+      $("#targetEntry").val('Bản dịch thất bại: ' + JSON.stringify(error));
       $(".convert").removeClass("disabled");
-      $("#sourceText").removeAttr("readonly");
+      $("#sourceEntry").removeAttr("readonly");
     }
   }
 });
 
 $(".microsoft-convert").on("click", async function () {
-  if ($("#sourceText").val().length > 0) {
-    $("#sourceText").attr("readonly", true);
+  if ($("#sourceEntry").val().length > 0) {
+    $("#sourceEntry").attr("readonly", true);
     $(".convert").addClass("disabled");
 
     try {
-      const accessToken = await fetch('https://edge.microsoft.com/translate/auth')
-          .then((response) => response.text());
+      const accessToken = await $.get("https://edge.microsoft.com/translate/auth");
 
       if (accessToken == undefined) {
-        console.error('Không thể lấy được Access Token từ máy chủ.');
+        $("#targetEntry").val('Không thể lấy được Access Token từ máy chủ.');
         return;
       }
 
-      const translatedText = await MicrosoftTranslator.translateText(accessToken, $("#sourceText").val(), '', $(this).data("lang"));
+      const translatedText = await MicrosoftTranslator.translateText(accessToken, $("#sourceEntry").val(), '', $(this).data("lang"));
 
-      $("#targetText").val(translatedText);
+      $("#targetEntry").val(translatedText);
       $(".convert").removeClass("disabled");
-      $("#sourceText").removeAttr("readonly");
+      $("#sourceEntry").removeAttr("readonly");
     } catch (error) {
-      console.error(`Bản dịch thất bại: ${error}`);
+      $("#targetEntry").val('Bản dịch thất bại: ' + JSON.stringify(error));
       $(".convert").removeClass("disabled");
-      $("#sourceText").removeAttr("readonly");
+      $("#sourceEntry").removeAttr("readonly");
     }
   }
 });
@@ -249,11 +253,10 @@ $(".microsoft-convert").on("click", async function () {
 $("#glossaryList").change(function () {
   if (parseInt(this.value) > -1) {
     const data = $("#glossaryList option:selected").text().split(/\t/);
-    $("#sourceText").val(data[0]);
-    $("#targetText").val(data[1]);
+    $("#sourceEntry").val(data[0]).trigger("input");
   } else {
-    $("#sourceText").val(null);
-    $("#targetText").val(null);
+    $("#sourceEntry").val("");
+    $("#targetEntry").val("");
   }
 });
 
@@ -299,8 +302,7 @@ function loadGlossary() {
         break;
     }
 
-    $("#downloadButton").attr("href",
-        `data:${glossaryType};charset=utf-8,${encodeURIComponent(data)}`);
+    $("#downloadButton").attr("href", URL.createObjectURL(new Blob([data], {type: glossaryType + ';charset=UTF-8'})));
     $("#downloadButton").attr("download", ($("#glossaryName").val().length > 0 ? $("#glossaryName").val() : 'Từ vựng') + '.' + $("#fileExtension").text());
   } else {
     $("#downloadButton").removeAttr("href");
@@ -308,12 +310,17 @@ function loadGlossary() {
     $("#glossaryName").val(null);
   }
 
-  if (glossary.length <= 20000) {
+  if (glossary.length <= 50000) {
     $("#glossaryList").html(glossaryList);
     $("#preview").val(data);
   }
 
   $("#glossaryCounter").text(glossary.length);
 
-  localStorage.setItem("glossary", JSON.stringify({ type: glossaryType, data: Object.fromEntries(new Map(glossary)) }));
+  localStorage.setItem("glossary", JSON.stringify({type: glossaryType, data: Object.fromEntries(new Map(glossary))}));
 }
+
+const GlossaryType = {
+  TSV: 'text/tab-separated-values',
+  CSV: 'text/csv',
+};

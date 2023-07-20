@@ -4,18 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=0">
     <title>Dịch nhanh - DoHoaiNam Pages</title>
-    <link href="/css/bootstrap.min.css" rel="stylesheet">
-    <link href="/css/general_style.css" rel="stylesheet">
-    <script src="/lib/LAB.js"></script>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/general_style.css" rel="stylesheet">
+    <script src="lib/LAB.js"></script>
     <script>
       const storedTheme = localStorage.getItem("theme");
-      const getPreferredTheme = function () {
-        if (storedTheme) {
-          return storedTheme
-        }
-
-        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-      };
+      const preferredTheme = storedTheme ?? 'auto';
 
       const setTheme = function (theme) {
         if (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches) {
@@ -47,17 +41,17 @@
 
       window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function () {
         if (storedTheme !== 'light' || storedTheme !== 'dark') {
-          setTheme(getPreferredTheme());
+          setTheme(preferredTheme);
         }
       });
 
       $LAB
-        .script("/lib/jquery-3.6.1.js").wait()
-        .script("/lib/jquery.csv.js")
-        .script("/lib/underscore-umd-min.js")
-        .script("/lib/bootstrap.bundle.min.js").wait(function () {
-          setTheme(getPreferredTheme());
-          showActiveTheme(getPreferredTheme());
+        .script("lib/jquery-3.6.1.js").wait()
+        .script("lib/jquery.csv.js")
+        .script("lib/underscore-umd-min.js")
+        .script("lib/bootstrap.bundle.min.js").wait(function () {
+          setTheme(preferredTheme);
+          showActiveTheme(preferredTheme);
           
 
           $("[data-theme-value]").on("click", function () {
@@ -67,27 +61,27 @@
             showActiveTheme(theme, true);
           });
         })
-        .script("/lib/tesseract.min.js")
-        .script("/lib/opencv.js").wait()
-        .script("/js/trich-xuat-van-ban.js").wait(function () {
-          const recognizer = JSON.parse(localStorage.getItem("recognizer")) ?? { langs: $("#recognizeLangsSelect").val(), grayscale: $("#flexCheckGrayscale").prop("checked"), threshold: $("#flexCheckThreshold").prop("checked") };
+        .script("lib/tesseract.min.js")
+        .script("lib/opencv.js").wait()
+        .script("js/trich-xuat-van-ban.js").wait(function () {
+          const recognizer = JSON.parse(localStorage.getItem("recognizer")) ?? {langs: $("#recognizeLangsSelect").val(), grayscale: $("#flexCheckGrayscale").prop("checked"), threshold: $("#flexCheckThreshold").prop("checked")};
           $("#recognizeLangsSelect").val(recognizer.langs);
           $("#flexCheckGrayscale").prop("checked", recognizer.grayscale);
           $("#flexCheckThreshold").prop("checked", recognizer.threshold);
         }).wait()
-        .script("/js/dich-nhanh.js").wait(function () {
-          const translator = JSON.parse(localStorage.getItem("translator")) ?? { translator: $(".translator.active").data("id"), glossary: $("#flexSwitchCheckGlossary").attr("checked"), source: $("#sourceLangSelect").val(), target: $("#targetLangSelect").val() };
+        .script("js/dich-nhanh.js").wait(function () {
+          const translator = JSON.parse(localStorage.getItem("translator")) ?? {translator: $(".translator.active").data("id"), showOriginal: $("#flexSwitchCheckShowOriginal").prop("checked"), glossary: $("#flexSwitchCheckGlossary").prop("checked"), source: $("#sourceLangSelect").val(), target: $("#targetLangSelect").val()};
+          const options = [translator.source, translator.target, translator.showOriginal, translator.glossary];
 
-          $("#sourceLangSelect").val(translator.source);
-          $("#targetLangSelect").val(translator.target);
-
-          $("#flexSwitchCheckGlossary").prop("checked", translator.glossary);
-
-          $(".translator.active").removeClass("active");
           $(`.translator[data-id="${translator.translator}"]`).click();
+
+          $("#sourceLangSelect").val(options[0]);
+          $("#targetLangSelect").val(options[1]);
+          $("#flexSwitchCheckShowOriginal").prop("checked", options[2]);
+          $("#flexSwitchCheckGlossary").prop("checked", options[3]);
         })
-        .script("/js/quan-ly-tu-vung.js").wait(function () {
-          const obj = JSON.parse(localStorage.getItem("glossary")) ?? { type: $("#glossaryType").val(), data: {} };
+        .script("js/quan-ly-tu-vung.js").wait(function () {
+          const obj = JSON.parse(localStorage.getItem("glossary")) ?? {type: $("#glossaryType").val(), data: {}};
           glossary = Object.entries(obj.data);
           $("#glossaryType").val(obj.type).change();
         });
@@ -100,6 +94,7 @@
       }
 
       main.container .textarea {
+        font-family: serif-ja, serif;
         font-size: 18px;
         min-height: 300px;
         line-height: 1.2em;
@@ -212,23 +207,8 @@
     <div class="fixed-bottom">
       <nav class="navbar bg-body shadow-sm fixed-bottom">
         <div class="container-fluid">
-          <select class="form-select select-lang option" id="sourceLangSelect">
-            <option value="auto" selected>Tự động</option>
-            <option value="en">Tiếng Anh</option>
-            <option value="ja">Tiếng Nhật</option>
-            <option value="zh-CN">Tiếng Trung (Giản thể)</option>
-            <option value="zh-TW">Tiếng Trung (Phổn thể)</option>
-            <option value="vi">Tiếng Việt</option>
-          </select>
-          <select class="form-select select-lang option" id="targetLangSelect">
-            <option value="en">Tiếng Anh</option>
-            <option value="pinyin">Bính âm</option>
-            <option value="ja">Tiếng Nhật</option>
-            <option value="zh-CN">Tiếng Trung (Giản thể)</option>
-            <option value="zh-TW">Tiếng Trung (Phổn thể)</option>
-            <option value="sinovietnamese">Hán việt</option>
-            <option value="vi" selected>Tiếng Việt</option>
-          </select>
+          <select class="form-select select-lang option" id="sourceLangSelect"></select>
+          <select class="form-select select-lang option" id="targetLangSelect"></select>
           <button class="btn btn-primary btn-sm" id="translateButton" type="submit">Dịch</button>
         </div>
       </nav>
@@ -256,6 +236,10 @@
               <input class="form-check-input option" type="checkbox" role="switch" id="flexSwitchCheckGlossary" checked="true">
               <label class="form-check-label" for="flexSwitchCheckGlossary">Bật</label>
             </div>
+            <div class="form-check form-switch my-3">
+              <input class="form-check-input option" type="checkbox" role="switch" id="flexSwitchCheckAllowAnothers">
+              <label class="form-check-label" for="flexSwitchCheckAllowAnothers">Cho phép các trình dịch khác</label>
+            </div>
             <div class="input-group input-group-sm my-3">
               <input type="file" class="form-control" id="inputGlossary" accept="text/plain">
               <button class="btn btn-outline-danger position-relative" id="clearGlossaryButton" type="button">
@@ -271,17 +255,17 @@
               <option value="text/csv">CSV</option>
             </select>
             <div class="input-group input-group-sm mb-3">
-              <input type="text" placeholder="Thay thế" class="form-control" id="sourceText">
-              <button type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" id="sourceTextMenu" data-bs-toggle="dropdown" aria-expanded="false"></button>
+              <input type="text" placeholder="Thay thế" class="form-control" id="sourceEntry">
+              <button type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" id="sourceEntryMenu" data-bs-toggle="dropdown" aria-expanded="false"></button>
               <ul class="dropdown-menu dropdown-scroller">
                 <li><button class="dropdown-item" id="clearSourceTextButton" type="button">Xoá</button></li>
                 <li><button class="dropdown-item" id="copySourceTextButton" type="button">Sao chép</button></li>
                 <li><button class="dropdown-item" id="pasteSourceTextButton" type="button">Dán</button></li>
                 <li><hr class="dropdown-divider"></li>
                 <li><button class="dropdown-item" id="lacvietdictionaryButton" type="button">Từ điển Lạc Việt</button></li>
-                <li><button class="dropdown-item" id="nomfoundationButton" type="button">Nomfoundation</button></li>
                 <li><button class="dropdown-item" id="hvdicButton" type="button">Từ điển Hán Nôm</button></li>
                 <li><button class="dropdown-item" id="googleButton" type="button">Google</button></li>
+                <li><button class="dropdown-item" id="wikipediaButton" type="button">Wikipedia</button></li>
                 <li><button class="dropdown-item" id="baiduButton" type="button">Baidu</button></li>
                 <li><hr class="dropdown-divider"></li>
                 <li><button class="dropdown-item" id="deepltranslatorButton" type="button">DeepL Translator</button></li>
@@ -291,7 +275,7 @@
               </ul>
             </div>
             <div class="input-group input-group-sm mb-3">
-              <input type="text" placeholder="Với" class="form-control" id="targetText">
+              <input type="text" placeholder="Với" class="form-control" id="targetEntry">
               <button class="btn btn-outline-secondary" id="addButton" type="button">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pen" viewBox="0 0 16 16">
                   <path d="m13.498.795.149-.149a1.207 1.207 0 1 1 1.707 1.708l-.149.148a1.5 1.5 0 0 1-.059 2.059L4.854 14.854a.5.5 0 0 1-.233.131l-4 1a.5.5 0 0 1-.606-.606l1-4a.5.5 0 0 1 .131-.232l9.642-9.642a.5.5 0 0 0-.642.056L6.854 4.854a.5.5 0 1 1-.708-.708L9.44.854A1.5 1.5 0 0 1 11.5.796a1.5 1.5 0 0 1 1.998-.001zm-.644.766a.5.5 0 0 0-.707 0L1.95 11.756l-.764 3.057 3.057-.764L14.44 3.854a.5.5 0 0 0 0-.708l-1.585-1.585z"/>
@@ -302,13 +286,13 @@
                 <li><button class="dropdown-item" id="copyTargetTextButton" type="button">Sao chép</button></li>
                 <li><button class="dropdown-item" id="pasteTargetTextButton" type="button">Dán</button></li>
                 <li><hr class="dropdown-divider"></li>
-                <li><button class="dropdown-item" id="pinyinConvertButton" type="button">Chuyển đổi sang Bính âm</button></li>
-                <li><button class="dropdown-item" id="sinoVietnameseConvertButton" type="button">Chuyển đổi sang Hán việt</button></li>
-                <li><hr class="dropdown-divider"></li>
                 <li><button class="dropdown-item upperCaseFromAmountButton" data-amount="1" type="button">Viết hoa 1 từ đơn đầu</button></li>
                 <li><button class="dropdown-item upperCaseFromAmountButton" data-amount="2" type="button">Viết hoa 2 từ đơn đầu</button></li>
                 <li><button class="dropdown-item upperCaseFromAmountButton" data-amount="3" type="button">Viết hoa 3 từ đơn đầu</button></li>
                 <li><button class="dropdown-item upperCaseAllButton" type="button">Viết hoa tất cả</button></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><button class="dropdown-item" id="pinyinConvertButton" type="button">Chuyển đổi sang Bính âm</button></li>
+                <li><button class="dropdown-item" id="sinoVietnameseConvertButton" type="button">Chuyển đổi sang Hán việt</button></li>
                 <li><hr class="dropdown-divider"></li>
                 <li><button class="dropdown-item convert deepl-convert" type="button" data-lang="ZH">DeepL Translator (Chinese)</button></li>
                 <li><button class="dropdown-item convert deepl-convert" type="button" data-lang="EN-US">DeepL Translator (English)</button></li>
@@ -411,6 +395,10 @@
                 <li><button class="dropdown-item translator" data-id="microsoftTranslator" type="button">Trình dịch Microsoft</button></li>
               </ul>
             </div>
+            <div class="form-check form-switch mb-3">
+              <input class="form-check-input option" type="checkbox" role="switch" id="flexSwitchCheckShowOriginal">
+              <label class="form-check-label" for="flexSwitchCheckShowOriginal">Hiển thị văn bản gốc</label>
+            </div>
             <!--hr>
             <h2 class="fs-5">Trích xuất văn bản</h2>
             <select class="form-select form-select-sm mb-3 option" id="recognizeLangsSelect" multiple>
@@ -436,4 +424,12 @@
       </div>
     </div>
   </body>
+  <script>
+    ;(function () {
+        var src = '//cdn.jsdelivr.net/npm/eruda';
+        if (!/eruda=true/.test(window.location) && localStorage.getItem('active-eruda') != 'true') return;
+        document.write('<scr' + 'ipt src="' + src + '"></scr' + 'ipt>');
+        document.write('<scr' + 'ipt>eruda.init();</scr' + 'ipt>');
+    })();
+  </script>
 </html>

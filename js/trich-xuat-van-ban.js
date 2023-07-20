@@ -3,9 +3,9 @@
 const { createWorker, PSM, OEM } = Tesseract;
 
 const options = {
-  corePath: '/lib/tesseract-core.wasm.js',
+  corePath: 'lib/tesseract-core.wasm.js',
   langPath: 'https://tessdata.projectnaptha.com/4.0.0_best',
-  workerPath: '/lib/worker.min.js',
+  workerPath: 'lib/worker.min.js',
   logger: (m) => console.log(m),
   errorHandler: function (err) {
     $("#recognizeImage").hide();
