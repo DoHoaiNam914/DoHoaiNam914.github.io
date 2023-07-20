@@ -128,7 +128,7 @@ $(".translator").click(function () {
     $(".translator").removeClass("active");
     $(this).addClass("active");
 
-    const prevSourceLanguage = prevTranslator === Translators.DEEPL_TRANSLATOR ? DeepLTargetLanguage[$("#sourceLangSelect").val()] : (prevTranslator === Translators.MICROSOFT_TRANSLATOR ? MicrosoftLanguage[$("#sourceLangSelect").val()] : GoogleLanguage[$("#sourceLangSelect").val()]);
+    const prevSourceLanguage = $("#sourceLangSelect").val() != '' && $("#sourceLangSelect").val() != '' ? (prevTranslator === Translators.DEEPL_TRANSLATOR ? DeepLSourceLanguage[$("#sourceLangSelect").val()] : (prevTranslator === Translators.MICROSOFT_TRANSLATOR ? MicrosoftLanguage[$("#sourceLangSelect").val()] : GoogleLanguage[$("#sourceLangSelect").val()])) : null;
     const prevTargetLanguage = prevTranslator === Translators.DEEPL_TRANSLATOR ? DeepLTargetLanguage[$("#targetLangSelect").val()] : (prevTranslator === Translators.MICROSOFT_TRANSLATOR ? MicrosoftLanguage[$("#targetLangSelect").val()] : GoogleLanguage[$("#targetLangSelect").val()]);
     var sourceLanguage = '';
     var targetLanguage = '';
