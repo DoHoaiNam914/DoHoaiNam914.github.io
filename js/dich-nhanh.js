@@ -128,7 +128,7 @@ $(".translator").click(function () {
     $(".translator").removeClass("active");
     $(this).addClass("active");
 
-    const prevSourceLanguage = $("#sourceLangSelect").val() != '' && $("#sourceLangSelect").val() != '' ? (prevTranslator === Translators.DEEPL_TRANSLATOR ? DeepLSourceLanguage[$("#sourceLangSelect").val()] : (prevTranslator === Translators.MICROSOFT_TRANSLATOR ? MicrosoftLanguage[$("#sourceLangSelect").val()] : GoogleLanguage[$("#sourceLangSelect").val()])) : null;
+    const prevSourceLanguage = $("#sourceLangSelect").val() != '' && $("#sourceLangSelect").val() != 'auto' ? (prevTranslator === Translators.DEEPL_TRANSLATOR ? DeepLSourceLanguage[$("#sourceLangSelect").val()] : (prevTranslator === Translators.MICROSOFT_TRANSLATOR ? MicrosoftLanguage[$("#sourceLangSelect").val()] : GoogleLanguage[$("#sourceLangSelect").val()])) : '';
     const prevTargetLanguage = prevTranslator === Translators.DEEPL_TRANSLATOR ? DeepLTargetLanguage[$("#targetLangSelect").val()] : (prevTranslator === Translators.MICROSOFT_TRANSLATOR ? MicrosoftLanguage[$("#targetLangSelect").val()] : GoogleLanguage[$("#targetLangSelect").val()]);
     var sourceLanguage = '';
     var targetLanguage = '';
@@ -151,7 +151,7 @@ $(".translator").click(function () {
 
           $("#sourceLangSelect").append(option);
 
-          if (prevSourceLanguage != undefined && prevSourceLanguage.replace(/[()]/g, '').split(' ')[0].includes(option.innerText.replace(/[()]/g, '').split(' ')[0])) {
+          if (prevSourceLanguage != '' && prevSourceLanguage.replace(/[()]/g, '').split(' ')[0].includes(option.innerText.replace(/[()]/g, '').split(' ')[0])) {
             sourceLanguage = option.value;
           }
         }
@@ -169,7 +169,7 @@ $(".translator").click(function () {
 
           $("#targetLangSelect").append(option);
 
-          if (prevTargetLanguage != undefined && prevTargetLanguage.replace(/[()]/g, '').split(' ')[0].includes(option.innerText.replace(/[()]/g, '').split(' ')[0])) {
+          if (prevTargetLanguage != '' && prevTargetLanguage.replace(/[()]/g, '').split(' ')[0].includes(option.innerText.replace(/[()]/g, '').split(' ')[0])) {
             targetLanguage = option.value;
           }
         }
@@ -191,7 +191,7 @@ $(".translator").click(function () {
 
           $("#sourceLangSelect").append(sourceOption);
 
-          if (prevSourceLanguage != undefined && prevSourceLanguage.replace(/[()]/g, '').split(' ')[0].includes(option.innerText.replace(/[()]/g, '').split(' ')[0])) {
+          if (prevSourceLanguage != '' && prevSourceLanguage.replace(/[()]/g, '').split(' ')[0].includes(option.innerText.replace(/[()]/g, '').split(' ')[0])) {
             sourceLanguage = option.value;
           }
 
@@ -201,7 +201,7 @@ $(".translator").click(function () {
 
           $("#targetLangSelect").append(targetOption);
 
-          if (prevTargetLanguage != undefined && prevTargetLanguage.replace(/[()]/g, '').split(' ')[0].includes(option.innerText.replace(/[()]/g, '').split(' ')[0])) {
+          if (prevTargetLanguage != '' && prevTargetLanguage.replace(/[()]/g, '').split(' ')[0].includes(option.innerText.replace(/[()]/g, '').split(' ')[0])) {
             targetLanguage = option.value;
           }
         }
@@ -224,7 +224,7 @@ $(".translator").click(function () {
 
           $("#sourceLangSelect").append(sourceOption);
 
-          if (prevSourceLanguage != undefined && prevSourceLanguage.replace(/[()]/g, '').split(' ')[0].includes(option.innerText.replace(/[()]/g, '').split(' ')[0])) {
+          if (prevSourceLanguage != '' && prevSourceLanguage.replace(/[()]/g, '').split(' ')[0].includes(option.innerText.replace(/[()]/g, '').split(' ')[0])) {
             sourceLanguage = option.value;
           }
 
@@ -234,7 +234,7 @@ $(".translator").click(function () {
 
           $("#targetLangSelect").append(targetOption);
 
-          if (prevTargetLanguage != undefined && prevTargetLanguage.replace(/[()]/g, '').split(' ')[0].includes(option.innerText.replace(/[()]/g, '').split(' ')[0])) {
+          if (prevTargetLanguage != '' && prevTargetLanguage.replace(/[()]/g, '').split(' ')[0].includes(option.innerText.replace(/[()]/g, '').split(' ')[0])) {
             targetLanguage = option.value;
           }
         }
