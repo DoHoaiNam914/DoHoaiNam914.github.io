@@ -136,6 +136,7 @@ $(".translator").click(function () {
     const prevTargetLanguageName = (prevTranslator === Translators.DEEPL_TRANSLATOR ? DeepLTargetLanguage[prevTargetLanguage] : (prevTranslator === Translators.MICROSOFT_TRANSLATOR ? MicrosoftLanguage[prevTargetLanguage] : GoogleLanguage[prevTargetLanguage])) ?? '';
 
     const autoDetectOption = document.createElement('option');
+    autoDetectOption.selected = true
 
     $("#targetLangSelect").html(null);
 
@@ -166,6 +167,10 @@ $(".translator").click(function () {
           const option = document.createElement('option');
           option.innerText = DeepLTargetLanguage[langCode];
           option.value = langCode;
+
+          if (option.value == 'EN-US') {
+            option.selected = true
+          }
 
           if (option.value == 'EN' || option.value == 'PT') {
             option.disabled = true;
@@ -200,6 +205,11 @@ $(".translator").click(function () {
           const targetOption = document.createElement('option');
           targetOption.innerText = GoogleLanguage[langCode];
           targetOption.value = langCode;
+
+          if (targetOption.value == 'vi') {
+            targetOption.selected = true
+          }
+
           $("#targetLangSelect").append(targetOption);
         }
 
@@ -214,7 +224,7 @@ $(".translator").click(function () {
 
         $("#targetLangSelect > option").each(function () {
           if (($(this).val().split('-')[0] == prevTargetLanguage.toLowerCase().split('-')[0] && $(this).val().split('-')[1] == prevTargetLanguage.toLowerCase().split('-')[1]) || ($(this).val().split('-')[0] == prevTargetLanguage.toLowerCase().split('-')[0] || $(this).text().replace(/[()]/g, '').includes(prevTargetLanguageName.replace(/[()]/g, '').split(' ')[0]))) {
-            $("#targetLangSelect").val($(this).val() || 'vi').change();
+            $("#targetLangSelect").val($(this).val()).change();
             return false;
           } else if (index + 1 == $("#targetLangSelect > option").length) {
             $("#targetLangSelect").val('vi').change();
@@ -238,7 +248,12 @@ $(".translator").click(function () {
           const targetOption = document.createElement('option');
           targetOption.innerText = MicrosoftLanguage[langCode];
           targetOption.value = langCode;
-          $("#targetLangSelect").append(targetOption).change();
+
+          if (targetOption.value == 'vi') {
+            targetOption.selected = true
+          }
+
+          $("#targetLangSelect").append(targetOption);
         }
 
         $("#sourceLangSelect > option").each(function () {
@@ -252,7 +267,7 @@ $(".translator").click(function () {
 
         $("#targetLangSelect > option").each(function () {
           if (($(this).val().split('-')[0] == prevTargetLanguage.toLowerCase().split('-')[0] && $(this).val().split('-')[1] == prevTargetLanguage.toLowerCase().split('-')[1]) || ($(this).val().split('-')[0] == prevTargetLanguage.toLowerCase().split('-')[0] || $(this).text().replace(/[()]/g, '').includes(prevTargetLanguageName.replace(/[()]/g, '').split(' ')[0]))) {
-            $("#targetLangSelect").val($(this).val() || 'vi').change();
+            $("#targetLangSelect").val($(this).val()).change();
             return false;
           } else if (index + 1 == $("#targetLangSelect > option").length) {
             $("#targetLangSelect").val('vi').change();
