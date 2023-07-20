@@ -151,7 +151,7 @@ $(".translator").click(function () {
 
           $("#sourceLangSelect").append(option);
 
-          if (prevSourceLanguage != undefined && prevSourceLanguage.replace(/[()]/g, '').includes(option.innerText.replace(/[()]/g, ''))) {
+          if (prevSourceLanguage != undefined && prevSourceLanguage.replace(/[()]/g, '').split(' ')[0].includes(option.innerText.replace(/[()]/g, '').split(' ')[0])) {
             sourceLanguage = option.value;
           }
         }
@@ -169,7 +169,7 @@ $(".translator").click(function () {
 
           $("#targetLangSelect").append(option);
 
-          if (prevTargetLanguage != undefined && prevTargetLanguage.replace(/[()]/g, '').includes(option.innerText.replace(/[()]/g, ''))) {
+          if (prevTargetLanguage != undefined && prevTargetLanguage.replace(/[()]/g, '').split(' ')[0].includes(option.innerText.replace(/[()]/g, '').split(' ')[0])) {
             targetLanguage = option.value;
           }
         }
@@ -191,7 +191,7 @@ $(".translator").click(function () {
 
           $("#sourceLangSelect").append(sourceOption);
 
-          if (prevSourceLanguage != undefined && prevSourceLanguage.replace(/[()]/g, '').includes(option.innerText.replace(/[()]/g, ''))) {
+          if (prevSourceLanguage != undefined && prevSourceLanguage.replace(/[()]/g, '').split(' ')[0].includes(option.innerText.replace(/[()]/g, '').split(' ')[0])) {
             sourceLanguage = option.value;
           }
 
@@ -201,7 +201,7 @@ $(".translator").click(function () {
 
           $("#targetLangSelect").append(targetOption);
 
-          if (prevTargetLanguage != undefined && prevTargetLanguage.replace(/[()]/g, '').includes(option.innerText.replace(/[()]/g, ''))) {
+          if (prevTargetLanguage != undefined && prevTargetLanguage.replace(/[()]/g, '').split(' ')[0].includes(option.innerText.replace(/[()]/g, '').split(' ')[0])) {
             targetLanguage = option.value;
           }
         }
@@ -224,7 +224,7 @@ $(".translator").click(function () {
 
           $("#sourceLangSelect").append(sourceOption);
 
-          if (prevSourceLanguage != undefined && prevSourceLanguage.replace(/[()]/g, '').includes(option.innerText.replace(/[()]/g, ''))) {
+          if (prevSourceLanguage != undefined && prevSourceLanguage.replace(/[()]/g, '').split(' ')[0].includes(option.innerText.replace(/[()]/g, '').split(' ')[0])) {
             sourceLanguage = option.value;
           }
 
@@ -234,7 +234,7 @@ $(".translator").click(function () {
 
           $("#targetLangSelect").append(targetOption);
 
-          if (prevTargetLanguage != undefined && prevTargetLanguage.replace(/[()]/g, '').includes(option.innerText.replace(/[()]/g, ''))) {
+          if (prevTargetLanguage != undefined && prevTargetLanguage.replace(/[()]/g, '').split(' ')[0].includes(option.innerText.replace(/[()]/g, '').split(' ')[0])) {
             targetLanguage = option.value;
           }
         }
