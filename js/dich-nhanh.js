@@ -124,7 +124,7 @@ $(".option").change(() => {
 
 $(".translator").click(function () {
   if (!$(this).hasClass("disabled")) {
-    const prevTranslator = $(this).data("id");
+    const prevTranslator = $(".translator.active").data("id");
 
     const prevSourceLanguage = $("#sourceLangSelect").val();
     const prevTargetLanguage = $("#targetLangSelect").val();
