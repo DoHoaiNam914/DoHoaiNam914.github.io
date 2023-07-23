@@ -40,7 +40,7 @@ const markMap = new Map([
   ['～', ' ~ ']
 ]);
 
-const DEEPL_AUTH_KEY = '47c6c989-9eaa-5b30-4ee6-b2e4f1ebd530:fx';
+const DEEPL_AUTH_KEY = '4e1e7179-4363-60ab-6c0e-343c617374ae:fx';
 
 var translation = '';
 
@@ -49,13 +49,13 @@ $(document).ready(() => {
     pinyins = new Map(data.split(/\r?\n/).map((character) => character.split('=')).filter((character) => character.length >= 2));
     console.log('Đã tải xong bộ dữ liệu bính âm!');
   }).fail((jqXHR, textStatus, errorThrown) => {
-    window.location.reload()
+    window.location.reload();
   });
   $.get("/datasource/Hán việt.txt").done((data) => {
     sinoVietnameses = new Map(data.split(/\r?\n/).map((character) => character.split('=')).filter((character) => character.length >= 2));
     console.log('Đã tải xong bộ dữ liệu hán việt!');
   }).fail((jqXHR, textStatus, errorThrown) => {
-    window.location.reload()
+    window.location.reload();
   });
 });
 
@@ -156,7 +156,7 @@ $(".translator").click(function () {
         }
 
         $("#sourceLangSelect > option").each(function (index) {
-          if (($(this).val().split('-')[0] == prevSourceLanguage.toUpperCase().split('-')[0] && $(this).val().split('-')[1] == prevSourceLanguage.toUpperCase().split('-')[1])  || ($(this).val().split('-')[0] == prevSourceLanguage.toUpperCase().split('-')[0] || $(this).text().replace(/[()]/g, '').includes(prevSourceLanguageName.replace(/[()]/g, '').split(' ')[0]))) {
+          if (($(this).val().split('-')[0] == prevSourceLanguage.toUpperCase().split('-')[0] && $(this).val().split('-')[1] == prevSourceLanguage.toUpperCase().split('-')[1])  || ($(this).val().split('-')[0] == prevSourceLanguage.toUpperCase().split('-')[0] && $(this).text().replace(/[()]/g, '').includes(prevSourceLanguageName.replace(/[()]/g, '').split(' ')[0]))) {
             $("#sourceLangSelect").val($(this).val()).change();
             return false;
           } else if (index + 1 == $("#sourceLangSelect > option").length) {
@@ -168,20 +168,11 @@ $(".translator").click(function () {
           const option = document.createElement('option');
           option.innerText = DeepLTargetLanguage[langCode];
           option.value = langCode;
-
-          if (option.value == 'EN-US') {
-            option.selected = true
-          }
-
-          if (option.value == 'EN' || option.value == 'PT') {
-            option.disabled = true;
-          }
-
           $("#targetLangSelect").append(option);
         }
 
-        $("#targetLangSelect > option").each(function () {
-          if (($(this).val().split('-')[0] == prevTargetLanguage.toUpperCase().split('-')[0] && $(this).val().split('-')[1] == prevTargetLanguage.toUpperCase().split('-')[1]) || ($(this).val().split('-')[0] == prevTargetLanguage.toUpperCase().split('-')[0] || $(this).text().replace(/[()]/g, '').includes(prevTargetLanguageName.replace(/[()]/g, '').split(' ')[0]))) {
+        $("#targetLangSelect > option").each(function (index) {
+          if (($(this).val().split('-')[0] == prevTargetLanguage.toUpperCase().split('-')[0] && $(this).val().split('-')[1] == prevTargetLanguage.toUpperCase().split('-')[1]) || ($(this).val().split('-')[0] == prevTargetLanguage.toUpperCase().split('-')[0] && $(this).text().replace(/[()]/g, '').includes(prevTargetLanguageName.replace(/[()]/g, '').split(' ')[0]))) {
             $("#targetLangSelect").val($(this).val()).change();
             return false;
           } else if (index + 1 == $("#targetLangSelect > option").length) {
@@ -214,8 +205,8 @@ $(".translator").click(function () {
           $("#targetLangSelect").append(targetOption);
         }
 
-        $("#sourceLangSelect > option").each(function () {
-          if (($(this).val().split('-')[0] == prevSourceLanguage.toLowerCase().split('-')[0] && $(this).val().split('-')[1] == prevSourceLanguage.toLowerCase().split('-')[1]) || ($(this).val().split('-')[0] == prevSourceLanguage.toLowerCase().split('-')[0] || $(this).text().replace(/[()]/g, '').includes(prevSourceLanguageName.replace(/[()]/g, '').split(' ')[0]))) {
+        $("#sourceLangSelect > option").each(function (index) {
+          if (($(this).val().split('-')[0] == prevSourceLanguage.toLowerCase().split('-')[0] && $(this).val().split('-')[1] == prevSourceLanguage.toLowerCase().split('-')[1]) || ($(this).val().split('-')[0] == prevSourceLanguage.toLowerCase().split('-')[0] && $(this).text().replace(/[()]/g, '').includes(prevSourceLanguageName.replace(/[()]/g, '').split(' ')[0]))) {
             $("#sourceLangSelect").val($(this).val()).change();
             return false;
           } else if (index + 1 == $("#sourceLangSelect > option").length) {
@@ -223,8 +214,8 @@ $(".translator").click(function () {
           }
         });
 
-        $("#targetLangSelect > option").each(function () {
-          if (($(this).val().split('-')[0] == prevTargetLanguage.toLowerCase().split('-')[0] && $(this).val().split('-')[1] == prevTargetLanguage.toLowerCase().split('-')[1]) || ($(this).val().split('-')[0] == prevTargetLanguage.toLowerCase().split('-')[0] || $(this).text().replace(/[()]/g, '').includes(prevTargetLanguageName.replace(/[()]/g, '').split(' ')[0]))) {
+        $("#targetLangSelect > option").each(function (index) {
+          if (($(this).val().split('-')[0] == prevTargetLanguage.toLowerCase().split('-')[0] && $(this).val().split('-')[1] == prevTargetLanguage.toLowerCase().split('-')[1]) || ($(this).val().split('-')[0] == prevTargetLanguage.toLowerCase().split('-')[0] && $(this).text().replace(/[()]/g, '').includes(prevTargetLanguageName.replace(/[()]/g, '').split(' ')[0]))) {
             $("#targetLangSelect").val($(this).val()).change();
             return false;
           } else if (index + 1 == $("#targetLangSelect > option").length) {
@@ -257,8 +248,8 @@ $(".translator").click(function () {
           $("#targetLangSelect").append(targetOption);
         }
 
-        $("#sourceLangSelect > option").each(function () {
-          if (($(this).val().split('-')[0] == prevSourceLanguage.toLowerCase().split('-')[0] && $(this).val().split('-')[1] == prevSourceLanguage.toLowerCase().split('-')[1]) || ($(this).val().split('-')[0] == prevSourceLanguage.toLowerCase().split('-')[0] || $(this).text().replace(/[()]/g, '').includes(prevSourceLanguageName.replace(/[()]/g, '').split(' ')[0]))) {
+        $("#sourceLangSelect > option").each(function (index) {
+          if (($(this).val().split('-')[0] == prevSourceLanguage.toLowerCase().split('-')[0] && $(this).val().split('-')[1] == prevSourceLanguage.toLowerCase().split('-')[1]) || ($(this).val().split('-')[0] == prevSourceLanguage.toLowerCase().split('-')[0] && $(this).text().replace(/[()]/g, '').includes(prevSourceLanguageName.replace(/[()]/g, '').split(' ')[0]))) {
             $("#sourceLangSelect").val($(this).val()).change();
             return false;
           } else if (index + 1 == $("#sourceLangSelect > option").length) {
@@ -266,8 +257,8 @@ $(".translator").click(function () {
           }
         });
 
-        $("#targetLangSelect > option").each(function () {
-          if (($(this).val().split('-')[0] == prevTargetLanguage.toLowerCase().split('-')[0] && $(this).val().split('-')[1] == prevTargetLanguage.toLowerCase().split('-')[1]) || ($(this).val().split('-')[0] == prevTargetLanguage.toLowerCase().split('-')[0] || $(this).text().replace(/[()]/g, '').includes(prevTargetLanguageName.replace(/[()]/g, '').split(' ')[0]))) {
+        $("#targetLangSelect > option").each(function (index) {
+          if (($(this).val().split('-')[0] == prevTargetLanguage.toLowerCase().split('-')[0] && $(this).val().split('-')[1] == prevTargetLanguage.toLowerCase().split('-')[1]) || ($(this).val().split('-')[0] == prevTargetLanguage.toLowerCase().split('-')[0] && $(this).text().replace(/[()]/g, '').includes(prevTargetLanguageName.replace(/[()]/g, '').split(' ')[0]))) {
             $("#targetLangSelect").val($(this).val()).change();
             return false;
           } else if (index + 1 == $("#targetLangSelect > option").length) {
@@ -546,7 +537,6 @@ const DeepLTargetLanguage = {
   'DA': 'Danish',
   'DE': 'German',
   'EL': 'Greek',
-  'EN': 'English',
   'EN-GB': 'English (British)',
   'EN-US': 'English (American)',
   'ES': 'Spanish',
@@ -563,7 +553,6 @@ const DeepLTargetLanguage = {
   'NB': 'Norwegian (Bokmål)',
   'NL': 'Dutch',
   'PL': 'Polish',
-  'PT': 'Portuguese',
   'PT-BR': 'Portuguese (Brazilian)',
   'PT-PT': 'Portuguese',
   'RO': 'Romanian',
@@ -628,7 +617,6 @@ const GoogleLanguage = {
   'ca': 'Catalan',
   'ceb': 'Cebuano',
   'zh-CN': 'Chinese (Simplified)',
-  'zh': 'Chinese (Simplified)',
   'zh-TW': 'Chinese (Traditional)',
   'co': 'Corsican',
   'hr': 'Croatian',
@@ -966,5 +954,4 @@ const Translators = {
   GOOGLE_TRANSLATE: 'googleTranslate',
   PAPAGO: 'papago',
   MICROSOFT_TRANSLATOR: 'microsoftTranslator',
-  OPENAI_TRANSLATOR: 'openaiTranslator',
 };
