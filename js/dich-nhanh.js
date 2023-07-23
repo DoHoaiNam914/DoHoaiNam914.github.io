@@ -125,15 +125,16 @@ $(".option").change(() => {
 $(".translator").click(function () {
   if (!$(this).hasClass("disabled")) {
     const prevTranslator = $(this).data("id");
+
+    const prevSourceLanguage = $("#sourceLangSelect").val();
+    const prevTargetLanguage = $("#targetLangSelect").val();
+    const prevSourceLanguageName = (prevTranslator === Translators.DEEPL_TRANSLATOR ? DeepLSourceLanguage[prevSourceLanguage] : (prevTranslator === Translators.MICROSOFT_TRANSLATOR ? MicrosoftLanguage[prevSourceLanguage] : GoogleLanguage[prevSourceLanguage])) ?? '';
+    const prevTargetLanguageName = (prevTranslator === Translators.DEEPL_TRANSLATOR ? DeepLTargetLanguage[prevTargetLanguage] : (prevTranslator === Translators.MICROSOFT_TRANSLATOR ? MicrosoftLanguage[prevTargetLanguage] : GoogleLanguage[prevTargetLanguage])) ?? '';
+
     $(".translator").removeClass("active");
     $(this).addClass("active");
 
     localStorage.setItem("translator", JSON.stringify({translator: $(".translator.active").data("id"), showOriginal: $("#flexSwitchCheckShowOriginal").prop("checked"), glossary: $("#flexSwitchCheckGlossary").prop("checked"), source: $("#sourceLangSelect").val(), target: $("#targetLangSelect").val()}));
-
-    var prevSourceLanguage = $("#sourceLangSelect").val();
-    var prevTargetLanguage = $("#targetLangSelect").val();
-    const prevSourceLanguageName = (prevTranslator === Translators.DEEPL_TRANSLATOR ? DeepLSourceLanguage[prevSourceLanguage] : (prevTranslator === Translators.MICROSOFT_TRANSLATOR ? MicrosoftLanguage[prevSourceLanguage] : GoogleLanguage[prevSourceLanguage])) ?? '';
-    const prevTargetLanguageName = (prevTranslator === Translators.DEEPL_TRANSLATOR ? DeepLTargetLanguage[prevTargetLanguage] : (prevTranslator === Translators.MICROSOFT_TRANSLATOR ? MicrosoftLanguage[prevTargetLanguage] : GoogleLanguage[prevTargetLanguage])) ?? '';
 
     const autoDetectOption = document.createElement('option');
     autoDetectOption.selected = true
