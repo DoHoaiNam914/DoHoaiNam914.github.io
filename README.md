@@ -6,14 +6,14 @@ This site was built using [GitHub Pages](https://pages.github.com/).
 
 ## [Light Novel](https://dohoainam914.github.io/light-novel/)
 
-- [Clear the world like a game with The Zero Believer Goddess](https://dohoainam914.github.io/light-novel/shinjyazero/)
+- [Clear the world like a game with The Zero Believer Goddess](https://dohoainam914.github.io/light-novel/?thu-vien=shinjyazero)
 
-- [Demon's Sword Master of Excalibur School](https://dohoainam914.github.io/light-novel/seikengakuin/)
+- [Demon's Sword Master of Excalibur School](https://dohoainam914.github.io/light-novel/?thu-vien=seikengakuin)
 
-- [The Eminence in Shadow](https://dohoainam914.github.io/light-novel/kagenojitsuryokusya/)
+- [The Eminence in Shadow](https://dohoainam914.github.io/light-novel/?thu-vien=kagenojitsuryokusya)
 
-- [Tinh linh huyễn tưởng ký](https://dohoainam914.github.io/light-novel/tinhlinh/)
+- [Tinh linh huyễn tưởng ký](https://dohoainam914.github.io/light-novel/?thu-vien=tinhlinh)
 
-- [Về chuyện tôi chuyển sinh thành Slime](https://dohoainam914.github.io/light-novel/tenseislime/)
+- [Về chuyện tôi chuyển sinh thành Slime](https://dohoainam914.github.io/light-novel/?thu-vien=tenseislime)
 
-- [Wild Final Boss Appeared!](https://dohoainam914.github.io/light-novel/yaseilastboss/)
+- [Wild Final Boss Appeared!](https://dohoainam914.github.io/light-novel/?thu-vien=yaseilastboss)
