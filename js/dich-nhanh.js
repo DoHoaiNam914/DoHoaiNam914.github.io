@@ -40,7 +40,7 @@ const markMap = new Map([
   ['～', ' ~ ']
 ]);
 
-const DEEPL_AUTH_KEY = '4e1e7179-4363-60ab-6c0e-343c617374ae:fx';
+const DEEPL_AUTH_KEY = '0c9649a5-e8f6-632a-9c42-a9eee160c330:fx';
 
 var translation = '';
 
