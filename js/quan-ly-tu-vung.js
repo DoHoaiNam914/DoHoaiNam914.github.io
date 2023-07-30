@@ -2,9 +2,10 @@
 
 var glossary = [];
 
-$("#glossaryManagerButton").on("mousedown", function () {
+$("#glossaryManagerButton").on("mousedown", () => {
   $("#glossaryList").val(-1).change();
-  $("#sourceEntry").val(window.getSelection().toString()).trigger("input");
+  $("#sourceEntry").val(window.getSelection().toString() || ((document.activeElement.tagName.toLowerCase() == 'textarea' || (document.activeElement.tagName.toLowerCase() == 'input' && /^(?:text|search|password|tel|url)$/i.test(document.activeElement.type)) && typeof document.activeElement.selectionStart == 'number') && document.activeElement.value.slice(document.activeElement.selectionStart, document.activeElement.selectionEnd))).trigger("input");
+  $("#sourceEntry").focus();
 });
 
 $("#inputGlossary").on("change", function () {
@@ -182,7 +183,7 @@ $(".deepl-convert").on("click", async function () {
     $(".convert").addClass("disabled");
 
     try {
-      const translatedText = await DeepLTranslator.translateText(DEEPL_AUTH_KEY, $("#sourceEntry").val(), '', $(this).data("lang"));
+      const translatedText = await DeepLTranslator.translateText(DEEPL_AUTH_KEY, $("#sourceEntry").val(), '', $(this).data("lang"), true);
 
       $("#targetEntry").val(translatedText);
       $(".convert").removeClass("disabled");
@@ -211,7 +212,7 @@ $(".google-convert").on("click", async function () {
         return;
       }
 
-      const translatedText = await GoogleTranslate.translateText($("#sourceEntry").val(), version, ctkk, 'auto', $(this).data("lang"));
+      const translatedText = await GoogleTranslate.translateText($("#sourceEntry").val(), version, ctkk, 'auto', $(this).data("lang"), true);
 
       $("#targetEntry").val(translatedText);
       $(".convert").removeClass("disabled");
@@ -237,7 +238,7 @@ $(".microsoft-convert").on("click", async function () {
         return;
       }
 
-      const translatedText = await MicrosoftTranslator.translateText(accessToken, $("#sourceEntry").val(), '', $(this).data("lang"));
+      const translatedText = await MicrosoftTranslator.translateText(accessToken, $("#sourceEntry").val(), '', $(this).data("lang"), true);
 
       $("#targetEntry").val(translatedText);
       $(".convert").removeClass("disabled");
