@@ -48,10 +48,14 @@ let translation = '';
 
 $(document).ready(() => {
   $.get("/datasource/Unihan_Readings.txt").done((data) => {
-    pinyins = new Map(data.split(/\r?\n/).filter((line) => line.match(/^U+/) && line.includes('kMandarin')).map((line) => [String.fromCodePoint(parseInt(line.split(/\t/)[0].replace('U+', ''), 16)), line.split(/\t/)[2]]).filter(([key], index, array)   => !array[key] && (array[key] = 1), {}));
+    const pinyinList = data.split(/\r?\n/).filter((line) => line.match(/^U+/) && line.includes('kMandarin')).map((line) => [String.fromCodePoint(parseInt(line.split(/\t/)[0].replace('U+', ''), 16)), line.split(/\t/)[2]]);
+    pinyinList.filter(([key]) => !pinyinList[key] && (pinyinList[key] = 1), {});
+    pinyins = new Map(pinyinList);
     console.log('Đã tải xong bộ dữ liệu bính âm!');
 
-    sinovietnameses = new Map([...hanvietData.map((line) => [line[0], line[1].split(',')[line[1].match(/^,/) ? 1 : 0]]), ...data.split(/\r?\n/).filter((line) => line.match(/^U+/) && line.includes('kVietnamese')).map((line) => [String.fromCodePoint(parseInt(line.split(/\t/)[0].replace('U+', ''), 16)), line.split(/\t/)[2]])].filter(([key], index, array)   => !array[key] && (array[key] = 1), {}));
+    const sinovietnameseList = [...hanvietData.map((line) => [line[0], line[1].split(',')[line[1].match(/^,/) ? 1 : 0]]), ...data.split(/\r?\n/).filter((line) => line.match(/^U+/) && line.includes('kVietnamese')).map((line) => [String.fromCodePoint(parseInt(line.split(/\t/)[0].replace('U+', ''), 16)), line.split(/\t/)[2]])];
+    sinovietnameseList.filter(([key]) => !sinovietnameseList[key] && (sinovietnameseList[key] = 1), {})
+    sinovietnameses = new Map(sinovietnameseList);
     console.log('Đã tải xong bộ dữ liệu hán việt!');
   }).fail((jqXHR, textStatus, errorThrown) => {
     window.location.reload();
