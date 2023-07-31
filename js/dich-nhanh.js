@@ -1,6 +1,6 @@
 'use strict';
 
-let translator = JSON.parse(localStorage.getItem('translator')) || {translator: $(".translator.active").data("id"), showOriginal: $("#flexSwitchCheckShowOriginal").prop("checked"), glossary: $("#flexSwitchCheckGlossary").prop("checked"), source: 'auto', target: 'vi'};
+var translator = JSON.parse(localStorage.getItem("translator"));
 
 var pinyins = new Map();
 var sinovietnameses = new Map();
@@ -51,13 +51,11 @@ $(document).ready(() => {
     pinyins = new Map(data.split(/\r?\n/).filter((line) => line.match(/^U+/) && line.includes('kMandarin')).map((line) => [String.fromCodePoint(parseInt(line.split(/\t/)[0].replace('U+', ''), 16)), line.split(/\t/)[2]]).filter(([key], index, array)   => !array[key] && (array[key] = 1), {}));
     console.log('Đã tải xong bộ dữ liệu bính âm!');
 
-    sinovietnameses = new Map([...data.split(/\r?\n/).filter((line) => line.match(/^U+/) && line.includes('kVietnamese')).map((line) => [String.fromCodePoint(parseInt(line.split(/\t/)[0].replace('U+', ''), 16)), line.split(/\t/)[2]]), ...hanvietData.map((line) => [line[0], line[1].split(',')[1]])].filter(([key], index, array)   => !array[key] && (array[key] = 1), {}));
+    sinovietnameses = new Map([...hanvietData.map((line) => [line[0], line[1].split(',')[line[1].match(/^,/) ? 1 : 0]]), ...data.split(/\r?\n/).filter((line) => line.match(/^U+/) && line.includes('kVietnamese')).map((line) => [String.fromCodePoint(parseInt(line.split(/\t/)[0].replace('U+', ''), 16)), line.split(/\t/)[2]])].filter(([key], index, array)   => !array[key] && (array[key] = 1), {}));
     console.log('Đã tải xong bộ dữ liệu hán việt!');
   }).fail((jqXHR, textStatus, errorThrown) => {
     window.location.reload();
   });
-
-  localStorage.setItem("translator", JSON.stringify(translator));
 });
 
 $("#translateButton").click(async function () {
@@ -139,7 +137,10 @@ $(".translator").click(function () {
     $("#sourceLangSelect").html(getSourceLanguageOptions($(this).data("id")));
 
     $("#sourceLangSelect > option").each(function (index) {
-      if (($(this).val().split('-')[0] == prevSourceLanguage.toUpperCase().split('-')[0] && $(this).val().split('-')[1] == prevSourceLanguage.toUpperCase().split('-')[1])  || ($(this).val().split('-')[0] == prevSourceLanguage.toUpperCase().split('-')[0] && $(this).text().replace(/[()]/g, '').includes(prevSourceLanguageName.replace(/[()]/g, '').split(' ')[0]))) {
+      if ($(".translator.active").data("id") === prevTranslator) {
+        $("#sourceLangSelect").val(prevSourceLanguage);
+        return false;
+      } else if (($(this).val().toLowerCase().split('-')[0] == prevSourceLanguage.toLowerCase().split('-')[0] && $(this).val().toLowerCase().split('-')[1] == prevSourceLanguage.toLowerCase().split('-')[1])  || ($(this).val().toLowerCase().split('-')[0] == prevSourceLanguage.toLowerCase().split('-')[0] && $(this).text().replace(/[()]/g, '').includes(prevSourceLanguageName.replace(/[()]/g, '').split(' ')[0]))) {
         $("#sourceLangSelect").val($(this).val()).change();
         return false;
       } else if (index + 1 == $("#sourceLangSelect > option").length) {
@@ -158,8 +159,15 @@ $(".translator").click(function () {
     $("#targetLangSelect").html(getTargetLanguageOptions($(this).data("id")));
 
     $("#targetLangSelect > option").each(function (index) {
-      if (($(this).val().split('-')[0] == prevTargetLanguage.toUpperCase().split('-')[0] && $(this).val().split('-')[1] == prevTargetLanguage.toUpperCase().split('-')[1])  || ($(this).val().split('-')[0] == prevTargetLanguage.toUpperCase().split('-')[0] && $(this).text().replace(/[()]/g, '').includes(prevTargetLanguageName.replace(/[()]/g, '').split(' ')[0]))) {
-        $("#targetLangSelect").val($(this).val()).change();
+      if ($(".translator.active").data("id") === prevTranslator) {
+        $("#targetLangSelect").val(prevTargetLanguage);
+        return false;
+      } else if (($(this).val().toLowerCase().split('-')[0] == prevTargetLanguage.toLowerCase().split('-')[0] && $(this).val().toLowerCase().split('-')[1] == prevTargetLanguage.toLowerCase().split('-')[1])  || ($(this).val().toLowerCase().split('-')[0] == prevTargetLanguage.toLowerCase().split('-')[0] && $(this).text().replace(/[()]/g, '').includes(prevTargetLanguageName.replace(/[()]/g, '').split(' ')[0]))) {
+        if ($(".translator.active").data("id") === Translators.DEEPL_TRANSLATOR && prevTargetLanguageName == 'English') {
+          $("#targetLangSelect").val("EN-US").change();
+        } else {
+          $("#targetLangSelect").val($(this).val()).change();
+        }
         return false;
       } else if (index + 1 == $("#targetLangSelect > option").length) {
         switch ($(".translator.active").data("id")) {
@@ -364,7 +372,7 @@ async function translate() {
     $("#translatedText").html(`<p>Bản dịch thất bại: ${JSON.stringify(error)}</p>`);
     onPostTranslate();
   }
-console.log(results);
+
   $("#translatedText").html(buildTranslatedResult(results.join('\n'), textLines, $("#flexSwitchCheckShowOriginal").prop("checked")));
 }
 
@@ -374,7 +382,7 @@ function buildTranslatedResult(translation, textLines, showOriginal) {
   if (showOriginal) {
     const resultLines = translation.split(/\n/);
     let lostLineFixedAmount = 0;
-console.log(resultLines.length, textLines.length);
+
     for (let i = 0; i < textLines.length; i++) {
       if (textLines[i + lostLineFixedAmount].trim().length == 0 && resultLines[i].trim().length > 0) {
         lostLineFixedAmount++;

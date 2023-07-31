@@ -1,6 +1,6 @@
 'use strict';
 
-let localGlossary =  JSON.parse(localStorage.getItem("glossary")) || {type: $("#glossaryType").val(), data: []};
+let localGlossary = JSON.parse(localStorage.getItem("glossary"));
 
 var glossary = [];
 
