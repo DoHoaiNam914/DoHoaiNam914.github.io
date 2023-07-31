@@ -1,6 +1,6 @@
 'use strict';
 
-var translator = JSON.parse(localStorage.getItem("translator"));
+let translator = JSON.parse(localStorage.getItem("translator"));
 
 var pinyins = new Map();
 var sinovietnameses = new Map();
@@ -44,7 +44,7 @@ const markMap = new Map([
 
 const DEEPL_AUTH_KEY = '0c9649a5-e8f6-632a-9c42-a9eee160c330:fx';
 
-var translation = '';
+let translation = '';
 
 $(document).ready(() => {
   $.get("/datasource/Unihan_Readings.txt").done((data) => {
@@ -87,10 +87,10 @@ $("#pasteButton").on("click", () => {
     .then((clipText) => {
       if (clipText.length > 0) {
         $("#queryText").val(clipText).change();
+
         if ($("#translateButton").text() == 'Sửa') {
           translation = '';
-          $("#translateButton").text("Dịch");
-          $("#translateButton").click();
+          $("#translateButton").text("Dịch").click();
           $(document.body).scrollTop(0);
           $(document.documentElement).scrollTop(0);
         }
@@ -100,8 +100,7 @@ $("#pasteButton").on("click", () => {
 
 $("#reTranslateButton").on("click", () => {
   translation = '';
-  $("#translateButton").text("Dịch");
-  $("#translateButton").click();
+  $("#translateButton").text("Dịch").click();
 });
 
 $(".textarea").on("input", onInput);
@@ -114,8 +113,7 @@ $("#queryText").change(() => {
 $(".option").change(() => {
   if ($("#translateButton").text() == 'Sửa') {
     translation = '';
-    $("#translateButton").text("Dịch");
-    $("#translateButton").click();
+    $("#translateButton").text("Dịch").click();
   }
 
   localStorage.setItem("translator", JSON.stringify({translator: $(".translator.active").data("id"), showOriginal: $("#flexSwitchCheckShowOriginal").prop("checked"), glossary: $("#flexSwitchCheckGlossary").prop("checked"), source: $("#sourceLangSelect").val(), target: $("#targetLangSelect").val()}));
@@ -140,12 +138,13 @@ $(".translator").click(function () {
       if ($(".translator.active").data("id") === prevTranslator) {
         $("#sourceLangSelect").val(prevSourceLanguage);
         return false;
-      } else if (($(this).val().toLowerCase().split('-')[0] == prevSourceLanguage.toLowerCase().split('-')[0] && $(this).val().toLowerCase().split('-')[1] == prevSourceLanguage.toLowerCase().split('-')[1])  || ($(this).val().toLowerCase().split('-')[0] == prevSourceLanguage.toLowerCase().split('-')[0] && $(this).text().replace(/[()]/g, '').includes(prevSourceLanguageName.replace(/[()]/g, '').split(' ')[0]))) {
+      } else if (($(this).val().toLowerCase().split('-')[0] == prevSourceLanguage.toLowerCase().split('-')[0] && $(this).val().toLowerCase().split('-')[1] == prevSourceLanguage.toLowerCase().split('-')[1])  || ($(this).val().toLowerCase().split('-')[0] == prevSourceLanguage.toLowerCase().split('-')[0] && $(this).text().replace(/[()]/g, '').includes(prevSourceLanguageName.includes('Tiếng') ? prevSourceLanguageName.replace(/[()]/g, '').replace('Tiếng ', '') : prevSourceLanguageName.replace(/[()]/g, '').split(' ')[0]))) {
         $("#sourceLangSelect").val($(this).val()).change();
         return false;
       } else if (index + 1 == $("#sourceLangSelect > option").length) {
         switch ($(".translator.active").data("id")) {
           case Translators.GOOGLE_TRANSLATE:
+          case Translators.PAPAGO:
             $("#sourceLangSelect").val("auto");
             break;
 
@@ -162,7 +161,7 @@ $(".translator").click(function () {
       if ($(".translator.active").data("id") === prevTranslator) {
         $("#targetLangSelect").val(prevTargetLanguage);
         return false;
-      } else if (($(this).val().toLowerCase().split('-')[0] == prevTargetLanguage.toLowerCase().split('-')[0] && $(this).val().toLowerCase().split('-')[1] == prevTargetLanguage.toLowerCase().split('-')[1])  || ($(this).val().toLowerCase().split('-')[0] == prevTargetLanguage.toLowerCase().split('-')[0] && $(this).text().replace(/[()]/g, '').includes(prevTargetLanguageName.replace(/[()]/g, '').split(' ')[0]))) {
+      } else if (($(this).val().toLowerCase().split('-')[0] == prevTargetLanguage.toLowerCase().split('-')[0] && $(this).val().toLowerCase().split('-')[1] == prevTargetLanguage.toLowerCase().split('-')[1])  || ($(this).val().toLowerCase().split('-')[0] == prevTargetLanguage.toLowerCase().split('-')[0] && $(this).text().replace(/[()]/g, '').includes(prevTargetLanguageName.includes('Tiếng') ? prevTargetLanguageName.replace(/[()]/g, '').replace('Tiếng ', '') : prevTargetLanguageName.replace(/[()]/g, '').split(' ')[0]))) {
         if ($(".translator.active").data("id") === Translators.DEEPL_TRANSLATOR && prevTargetLanguageName == 'English') {
           $("#targetLangSelect").val("EN-US").change();
         } else {
@@ -170,6 +169,8 @@ $(".translator").click(function () {
         }
         return false;
       } else if (index + 1 == $("#targetLangSelect > option").length) {
+
+        console.log($(this).text().replace(/[()]/g, ''), prevTargetLanguageName.replace(/[()]/g, '').split(' ').slice(1).join(' '));
         switch ($(".translator.active").data("id")) {
           case Translators.DEEPL_TRANSLATOR:
             $("#targetLangSelect").val("EN-US");
@@ -198,6 +199,9 @@ function getLanguageName(translator, languageCode) {
 
     case Translators.MICROSOFT_TRANSLATOR:
       return MicrosoftLanguage[languageCode] ?? '';
+
+    case Translators.PAPAGO:
+      return PapagoLanguage[languageCode] ?? '';
 
     case Translators.GOOGLE_TRANSLATE:
       return GoogleLanguage[languageCode] ?? '';
@@ -230,6 +234,19 @@ function getSourceLanguageOptions(translator) {
       for (const langCode in GoogleLanguage) {
         const option = document.createElement('option');
         option.innerText = GoogleLanguage[langCode];
+        option.value = langCode;
+        sourceLangSelect.appendChild(option);
+      }
+      break;
+
+    case Translators.PAPAGO:
+      autoDetectOption.innerText = 'Phát hiện ngôn ngữ';
+      autoDetectOption.value = 'auto';
+      sourceLangSelect.appendChild(autoDetectOption);
+
+      for (const langCode in PapagoLanguage) {
+        const option = document.createElement('option');
+        option.innerText = PapagoLanguage[langCode];
         option.value = langCode;
         sourceLangSelect.appendChild(option);
       }
@@ -274,6 +291,15 @@ function getTargetLanguageOptions(translator) {
       }
       break;
 
+    case Translators.PAPAGO:
+      for (const langCode in PapagoLanguage) {
+        const option = document.createElement('option');
+        option.innerText = PapagoLanguage[langCode];
+        option.value = langCode;
+        targetLangSelect.appendChild(option);
+      }
+      break;
+
     case Translators.MICROSOFT_TRANSLATOR:
       for (const langCode in MicrosoftLanguage) {
         const option = document.createElement('option');
@@ -301,79 +327,84 @@ async function translate() {
     /*if ($("#targetLangSelect").val() == 'pinyin' || $("#targetLangSelect").val() == 'sinovietnamese') {
       translation = getConvertedChineseText(new Map([...$("#targetLangSelect").val() == 'pinyin' ? pinyins : sinoVietnameses].sort((a, b) => b[0].length - a[0].length)), inputText);
     } else {*/
-      const MAX_LENGTH = translator === Translators.GOOGLE_TRANSLATE ? 1000 : 5000;
+    const MAX_LENGTH = translator === Translators.GOOGLE_TRANSLATE ? 1000 : 5000;
 
-      if (inputText.split(/\n/).sort((a, b) => b.length - a.length)[0].length > MAX_LENGTH) {
-        $("#translatedText").html(`<p>Bản dịch thất bại: Số lượng từ trong một dòng quá dài</p>`);
-        onPostTranslate();
-        return;
-      }
+    if (inputText.split(/\n/).sort((a, b) => b.length - a.length)[0].length > MAX_LENGTH) {
+      $("#translatedText").html(`<p>Bản dịch thất bại: Số lượng từ trong một dòng quá dài</p>`);
+      onPostTranslate();
+      return;
+    }
 
-      const elementJs = translator === Translators.GOOGLE_TRANSLATE ? await $.get("https://corsproxy.io/?https://translate.google.com/translate_a/element.js?hl=vi&client=wt") : null;
+    const elementJs = translator === Translators.GOOGLE_TRANSLATE ? await $.get("https://corsproxy.io/?https://translate.google.com/translate_a/element.js?hl=vi&client=wt") : null;
 
-      const version = elementJs != undefined ? elementJs.match(/_exportVersion\('(TE_\d+)'\)/)[1] : null;
-      const ctkk = elementJs != undefined ? elementJs.match(/c\._ctkk='(\d+\.\d+)'/)[1] : null;
+    const version = elementJs != undefined ? elementJs.match(/_exportVersion\('(TE_\d+)'\)/)[1] : null;
+    const ctkk = elementJs != undefined ? elementJs.match(/c\._ctkk='(\d+\.\d+)'/)[1] : null;
 
-      if (translator === Translators.GOOGLE_TRANSLATE && version == undefined && ctkk == undefined) {
-        $("#translatedText").html('<p>Không thể lấy được Log ID hoặc Token từ máy chủ.</p>');
-        return;
-      }
+    if (translator === Translators.GOOGLE_TRANSLATE && version == undefined && ctkk == undefined) {
+      $("#translatedText").html('<p>Không thể lấy được Log ID hoặc Token từ máy chủ.</p>');
+      return;
+    }
 
-      const accessToken = translator === Translators.MICROSOFT_TRANSLATOR ? await $.get("https://edge.microsoft.com/translate/auth") : null;
+    const accessToken = translator === Translators.MICROSOFT_TRANSLATOR ? await $.get("https://edge.microsoft.com/translate/auth") : null;
 
-      if (translator === Translators.MICROSOFT_TRANSLATOR && accessToken == undefined) {
-        $("#translatedText").html('<p>Không thể lấy được Access Token từ máy chủ.</p>');
-        return;
-      }
+    if (translator === Translators.MICROSOFT_TRANSLATOR && accessToken == undefined) {
+      $("#translatedText").html('<p>Không thể lấy được Access Token từ máy chủ.</p>');
+      return;
+    }
 
-      const queryLines = [...textLines];
-      let translateLines = [];
+    const queryLines = [...textLines];
+    let translateLines = [];
 
-      let canTranslate = false;
+    let canTranslate = false;
 
-      for (let i = 0; i < textLines.length; i++) {
-        translateLines.push(queryLines.shift());
+    for (let i = 0; i < textLines.length; i++) {
+      translateLines.push(queryLines.shift());
 
-        if (translateLines.join('\n').length >= MAX_LENGTH || queryLines.length == 0) {
-          if (translateLines.join('\n').length > MAX_LENGTH) {
-            queryLines.splice(0, 0, translateLines.pop());
-            i--;
-          }
-
-          canTranslate = true;
+      if (translateLines.join('\n').length >= MAX_LENGTH || queryLines.length == 0) {
+        if (translateLines.join('\n').length > MAX_LENGTH) {
+          queryLines.splice(0, 0, translateLines.pop());
+          i--;
         }
 
-        if (canTranslate) {
-          const translateText = translateLines.join('\n');
-          let translatedText;
-
-          switch (translator) {
-            case Translators.DEEPL_TRANSLATOR:
-              translatedText = await DeepLTranslator.translateText(DEEPL_AUTH_KEY, translateText, sourceLanguage, targetLanguage);
-              break;
-
-            case Translators.GOOGLE_TRANSLATE:
-            default:
-              translatedText = await GoogleTranslate.translateText(translateText, version, ctkk, sourceLanguage, targetLanguage);
-              break;
-
-            case Translators.MICROSOFT_TRANSLATOR:
-              translatedText = await MicrosoftTranslator.translateText(accessToken, translateText, sourceLanguage, targetLanguage);
-              break;
-          }
-
-          results.push(translatedText);
-          translateLines = [];
-          canTranslate = false;
-        }
+        canTranslate = true;
       }
+
+      if (canTranslate) {
+        const translateText = translateLines.join('\n');
+        let translatedText;
+
+        switch (translator) {
+          case Translators.DEEPL_TRANSLATOR:
+            translatedText = await DeepLTranslator.translateText(DEEPL_AUTH_KEY, translateText, sourceLanguage, targetLanguage);
+            break;
+
+          case Translators.GOOGLE_TRANSLATE:
+          default:
+            translatedText = await GoogleTranslate.translateText(translateText, version, ctkk, sourceLanguage, targetLanguage);
+            break;
+
+          case Translators.PAPAGO:
+            translatedText = await Papago.translateText(translateText, sourceLanguage, targetLanguage);
+            break;
+
+          case Translators.MICROSOFT_TRANSLATOR:
+            translatedText = await MicrosoftTranslator.translateText(accessToken, translateText, sourceLanguage, targetLanguage);
+            break;
+        }
+
+        results.push(translatedText);
+        translateLines = [];
+        canTranslate = false;
+      }
+    }
     // }
   } catch (error) {
     $("#translatedText").html(`<p>Bản dịch thất bại: ${JSON.stringify(error)}</p>`);
     onPostTranslate();
   }
 
-  $("#translatedText").html(buildTranslatedResult(results.join('\n'), textLines, $("#flexSwitchCheckShowOriginal").prop("checked")));
+  translation = results.join('\n');
+  $("#translatedText").html(buildTranslatedResult(translation, textLines, $("#flexSwitchCheckShowOriginal").prop("checked")));
 }
 
 function buildTranslatedResult(translation, textLines, showOriginal) {
@@ -401,13 +432,13 @@ function buildTranslatedResult(translation, textLines, showOriginal) {
 
 function getConvertedChineseText(data, text) {
   const lines = text.split(/\n/);
-  var result = [];
+  let result = [];
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
 
-    var phrases = [];
-    var tempWord = '';
+    const phrases = [];
+    let tempWord = '';
 
     for (let j = 0; j < line.length; j++) {
       for (let k = [...data][0][0].length; k >= 1; k--) {
@@ -443,8 +474,6 @@ function getConvertedChineseText(data, text) {
           break;
         }
       }
-
-      continue;
     }
 
     result.push(phrases.join(' '));
@@ -505,8 +534,7 @@ const DeepLTranslator = {
         method: "POST"
       });
 
-      const translatedText = response.translations.map((line) => line.text.trim()).join('\n');
-      return translatedText;
+      return response.translations.map((line) => line.text.trim()).join('\n');
     } catch (error) {
       console.error('Bản dịch lỗi:', error);
       throw error;
@@ -603,9 +631,7 @@ const GoogleTranslate = {
 
       const paragraph = document.createElement('p');
       $(paragraph).html(response.map((line) => ((sourceLanguage == 'auto' ? line[0] : line).includes('<i>') ? (sourceLanguage == 'auto' ? line[0] : line).split('</i> <b>').filter((element) => element.includes('</b>')).map((element) => ('<b>' + element.replace(/<i>.+/, ''))).join(' ') : (sourceLanguage == 'auto' ? line[0] : line)).trim()).join('\n'));
-
-      const translatedText = $(paragraph).text();
-      return translatedText;
+      return $(paragraph).text();
     } catch (error) {
       console.error('Bản dịch lỗi:', error);
       throw error;
@@ -779,6 +805,43 @@ function Bp(a, b) {
         "." + (c ^ b)
 }
 
+const Papago = {
+  translateText: async function (inputText, sourceLanguage, targetLanguage, isConvert = false) {
+    try {
+      const response = await $.ajax({
+        url: `https://corsproxy.io/?https://papago-extension.herokuapp.com/api/v1/translate?locale=vi&dict=true&dictDisplay=30&honorific=false&instant=false&paging=false&source=${sourceLanguage}&target=${targetLanguage}&text=${encodeURIComponent(isConvert ? inputText : getDynamicDictionaryTextForAnothers(inputText))}`,
+        method: 'GET'
+      });
+
+      return response.message.result.translatedText.split(/\n/).map((element) => element.trim()).join('\n');
+    } catch (error) {
+      console.error('Bản dịch lỗi:', error);
+      throw error;
+    }
+  }
+};
+
+const PapagoLanguage = {
+  'ko': 'Tiếng Hàn',
+  'ja': 'Tiếng Nhật',
+  'zh-CN': 'Tiếng Trung (Giản thể)',
+  'zh-TW': 'Tiếng Trung (Phổn thể)',
+  'hi': 'Tiếng Hindi',
+  'en': 'Tiếng Anh',
+  'es': 'Tiếng Tây Ban Nha',
+  'fr': 'Tiếng Pháp',
+  'de': 'Tiếng Đức',
+  'pt': 'Tiếng Bồ Đào Nha',
+  'vi': 'Tiếng Việt',
+  'id': 'Tiếng Indonesia',
+  'fa': 'Tiếng Ba Tư',
+  'ar': 'Tiếng Ả Rập',
+  'mm': 'Tiếng Myanmar',
+  'th': 'Tiếng Thái',
+  'ru': 'Tiếng Nga',
+  'it': 'Tiếng Ý'
+};
+
 const MicrosoftTranslator = {
   translateText: async function (accessToken, inputText, sourceLanguage, targetLanguage, isConvert = false) {
     try {
@@ -809,8 +872,7 @@ const MicrosoftTranslator = {
         }
       });
 
-      const translatedText = response.map((element) => element.translations[0].text.trim()).join('\n');
-      return translatedText;
+      return response.map((element) => element.translations[0].text.trim()).join('\n');
     } catch (error) {
       console.error('Bản dịch lỗi:', error);
       throw error;

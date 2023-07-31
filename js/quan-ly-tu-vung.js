@@ -226,6 +226,25 @@ $(".google-convert").on("click", async function () {
   }
 });
 
+$(".papago-convert").on("click", async function () {
+  if ($("#sourceEntry").val().length > 0) {
+    $("#sourceEntry").attr("readonly", true);
+    $(".convert").addClass("disabled");
+
+    try {
+      const translatedText = await Papago.translateText($("#sourceEntry").val(), auto, $(this).data("lang"), true);
+
+      $("#targetEntry").val(translatedText);
+      $(".convert").removeClass("disabled");
+      $("#sourceEntry").removeAttr("readonly");
+    } catch (error) {
+      $("#targetEntry").val('Bản dịch thất bại: ' + JSON.stringify(error));
+      $(".convert").removeClass("disabled");
+      $("#sourceEntry").removeAttr("readonly");
+    }
+  }
+});
+
 $(".microsoft-convert").on("click", async function () {
   if ($("#sourceEntry").val().length > 0) {
     $("#sourceEntry").attr("readonly", true);
