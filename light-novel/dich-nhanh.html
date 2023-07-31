@@ -71,13 +71,19 @@
           $("#flexCheckThreshold").prop("checked", recognizer.threshold);
         }).wait()
         .script("/js/dich-nhanh.js").wait(function () {
-          localStorage.setItem("translator", JSON.stringify(translator ?? {translator: $(".translator.active").data("id"), showOriginal: $("#flexSwitchCheckShowOriginal").prop("checked"), glossary: $("#flexSwitchCheckGlossary").prop("checked"), source: 'auto', target: 'vi'}));
-          translator = JSON.parse(localStorage.getItem("translator"));
+          if (translator == undefined) {
+	          localStorage.setItem("translator", JSON.stringify(translator ?? {translator: $(".translator.active").data("id"), showOriginal: $("#flexSwitchCheckShowOriginal").prop("checked"), glossary: $("#flexSwitchCheckGlossary").prop("checked"), source: 'auto', target: 'vi'}));
+	          translator = JSON.parse(localStorage.getItem("translator"));
+          }
+
           $(`.translator[data-id="${translator.translator}"]`).click();
         })
         .script("/js/quan-ly-tu-vung.js").wait(function () {
-          localStorage.setItem("glossary", JSON.stringify(localGlossary ?? {type: $("#glossaryType").val(), data: []}));
-          localGlossary = JSON.parse(localStorage.getItem("glossary"));
+          if (localGlossary == undefined) {
+            localStorage.setItem("glossary", JSON.stringify(localGlossary ?? {type: $("#glossaryType").val(), data: []}));
+            localGlossary = JSON.parse(localStorage.getItem("glossary"));
+          }
+
           glossary = Object.entries(localGlossary.data);
           $("#glossaryType").val(localGlossary.type).change();
         });
