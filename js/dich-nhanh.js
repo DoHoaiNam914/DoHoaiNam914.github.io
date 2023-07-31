@@ -124,159 +124,161 @@ $(".option").change(() => {
 
 $(".translator").click(function () {
   if (!$(this).hasClass("disabled")) {
-    const translator = JSON.parse(localStorage.getItem("translator")) ?? {translator: $(".translator.active").data("id"), showOriginal: $("#flexSwitchCheckShowOriginal").prop("checked"), glossary: $("#flexSwitchCheckGlossary").prop("checked"), source: $("#sourceLangSelect").val(), target: $("#targetLangSelect").val()};
+    const translator = JSON.parse(localStorage.getItem('translator')) ?? {translator: $(".translator.active").data("id"), showOriginal: $("#flexSwitchCheckShowOriginal").prop("checked"), glossary: $("#flexSwitchCheckGlossary").prop("checked"), source: $("#sourceLangSelect").val(), target: $("#targetLangSelect").val()};
     const prevTranslator = translator.translator;
 
     const prevSourceLanguage = translator.source;
     const prevTargetLanguage = translator.target;
-    const prevSourceLanguageName = (prevTranslator === Translators.DEEPL_TRANSLATOR ? DeepLSourceLanguage[prevSourceLanguage] : (prevTranslator === Translators.MICROSOFT_TRANSLATOR ? MicrosoftLanguage[prevSourceLanguage] : GoogleLanguage[prevSourceLanguage])) ?? '';
-    const prevTargetLanguageName = (prevTranslator === Translators.DEEPL_TRANSLATOR ? DeepLTargetLanguage[prevTargetLanguage] : (prevTranslator === Translators.MICROSOFT_TRANSLATOR ? MicrosoftLanguage[prevTargetLanguage] : GoogleLanguage[prevTargetLanguage])) ?? '';
+    const prevSourceLanguageName = getLanguageName(prevTranslator, prevSourceLanguage);
+    const prevTargetLanguageName = getLanguageName(prevTranslator, prevTargetLanguage);
 
     $(".translator").removeClass("active");
     $(this).addClass("active");
 
-    const autoDetectOption = document.createElement('option');
-    autoDetectOption.selected = true
+    $("#sourceLangSelect").html(getSourceLanguageOptions($(this).data("id")));
 
-    $("#targetLangSelect").html(null);
+    $("#sourceLangSelect > option").each(function (index) {
+      if (($(this).val().split('-')[0] == prevSourceLanguage.toUpperCase().split('-')[0] && $(this).val().split('-')[1] == prevSourceLanguage.toUpperCase().split('-')[1])  || ($(this).val().split('-')[0] == prevSourceLanguage.toUpperCase().split('-')[0] && $(this).text().replace(/[()]/g, '').includes(prevSourceLanguageName.replace(/[()]/g, '').split(' ')[0]))) {
+        $("#sourceLangSelect").val($(this).val()).change();
+        return false;
+      } else if (index + 1 == $("#sourceLangSelect > option").length) {
+        switch ($(".translator.active").data("id")) {
+          case Translators.GOOGLE_TRANSLATE:
+            $("#sourceLangSelect").val("auto").change();
+            break;
 
-    switch ($(this).data("id")) {
-      case Translators.DEEPL_TRANSLATOR:
-        autoDetectOption.innerText = 'Detect language';
-        autoDetectOption.value = '';
-
-        $("#sourceLangSelect").html(autoDetectOption);
-
-        for (const langCode in DeepLSourceLanguage) {
-          const option = document.createElement('option');
-          option.innerText = DeepLSourceLanguage[langCode];
-          option.value = langCode;
-          $("#sourceLangSelect").append(option);
+          default:
+            $("#sourceLangSelect").val("").change();
+            break;
         }
+      }
+    });
 
-        $("#sourceLangSelect > option").each(function (index) {
-          if (($(this).val().split('-')[0] == prevSourceLanguage.toUpperCase().split('-')[0] && $(this).val().split('-')[1] == prevSourceLanguage.toUpperCase().split('-')[1])  || ($(this).val().split('-')[0] == prevSourceLanguage.toUpperCase().split('-')[0] && $(this).text().replace(/[()]/g, '').includes(prevSourceLanguageName.replace(/[()]/g, '').split(' ')[0]))) {
-            $("#sourceLangSelect").val($(this).val()).change();
-            return false;
-          } else if (index + 1 == $("#sourceLangSelect > option").length) {
-            $("#sourceLangSelect").val(autoDetectOption.value).change();
-          }
-        });
+    $("#targetLangSelect").html(getTargetLanguageOptions($(this).data("id")));
 
-        for (const langCode in DeepLTargetLanguage) {
-          const option = document.createElement('option');
-          option.innerText = DeepLTargetLanguage[langCode];
-          option.value = langCode;
-          $("#targetLangSelect").append(option);
+    $("#targetLangSelect > option").each(function (index) {
+      if (($(this).val().split('-')[0] == prevTargetLanguage.toUpperCase().split('-')[0] && $(this).val().split('-')[1] == prevTargetLanguage.toUpperCase().split('-')[1])  || ($(this).val().split('-')[0] == prevTargetLanguage.toUpperCase().split('-')[0] && $(this).text().replace(/[()]/g, '').includes(prevTargetLanguageName.replace(/[()]/g, '').split(' ')[0]))) {
+        $("#targetLangSelect").val($(this).val()).change();
+        return false;
+      } else if (index + 1 == $("#targetLangSelect > option").length) {
+        switch ($(".translator.active").data("id")) {
+          case Translators.DEEPL_TRANSLATOR:
+            $("#targetLangSelect").val("EN-US").change();
+            break;
+
+          default:
+            $("#targetLangSelect").val("vi").change();
+            break;
         }
-
-        $("#targetLangSelect > option").each(function (index) {
-          if (($(this).val().split('-')[0] == prevTargetLanguage.toUpperCase().split('-')[0] && $(this).val().split('-')[1] == prevTargetLanguage.toUpperCase().split('-')[1]) || ($(this).val().split('-')[0] == prevTargetLanguage.toUpperCase().split('-')[0] && $(this).text().replace(/[()]/g, '').includes(prevTargetLanguageName.replace(/[()]/g, '').split(' ')[0]))) {
-            $("#targetLangSelect").val($(this).val()).change();
-            return false;
-          } else if (index + 1 == $("#targetLangSelect > option").length) {
-            $("#targetLangSelect").val('EN-US').change();
-          }
-        });
-
-        break;
-
-      case Translators.GOOGLE_TRANSLATE:
-        autoDetectOption.innerText = 'Phát hiện ngôn ngữ';
-        autoDetectOption.value = 'auto';
-
-        $("#sourceLangSelect").html(autoDetectOption);
-
-        for (const langCode in GoogleLanguage) {
-          const sourceOption = document.createElement('option');
-          sourceOption.innerText = GoogleLanguage[langCode];
-          sourceOption.value = langCode;
-          $("#sourceLangSelect").append(sourceOption);
-
-          const targetOption = document.createElement('option');
-          targetOption.innerText = GoogleLanguage[langCode];
-          targetOption.value = langCode;
-
-          if (targetOption.value == 'vi') {
-            targetOption.selected = true
-          }
-
-          $("#targetLangSelect").append(targetOption);
-        }
-
-        $("#sourceLangSelect > option").each(function (index) {
-          if (($(this).val().split('-')[0] == prevSourceLanguage.toLowerCase().split('-')[0] && $(this).val().split('-')[1] == prevSourceLanguage.toLowerCase().split('-')[1]) || ($(this).val().split('-')[0] == prevSourceLanguage.toLowerCase().split('-')[0] && $(this).text().replace(/[()]/g, '').includes(prevSourceLanguageName.replace(/[()]/g, '').split(' ')[0]))) {
-            $("#sourceLangSelect").val($(this).val()).change();
-            return false;
-          } else if (index + 1 == $("#sourceLangSelect > option").length) {
-            $("#sourceLangSelect").val(autoDetectOption.value).change();
-          }
-        });
-
-        $("#targetLangSelect > option").each(function (index) {
-          if (($(this).val().split('-')[0] == prevTargetLanguage.toLowerCase().split('-')[0] && $(this).val().split('-')[1] == prevTargetLanguage.toLowerCase().split('-')[1]) || ($(this).val().split('-')[0] == prevTargetLanguage.toLowerCase().split('-')[0] && $(this).text().replace(/[()]/g, '').includes(prevTargetLanguageName.replace(/[()]/g, '').split(' ')[0]))) {
-            $("#targetLangSelect").val($(this).val()).change();
-            return false;
-          } else if (index + 1 == $("#targetLangSelect > option").length) {
-            $("#targetLangSelect").val('vi').change();
-          }
-        });
-
-        break;
-
-      case Translators.MICROSOFT_TRANSLATOR:
-        autoDetectOption.innerText = 'Tự phát hiện';
-        autoDetectOption.value = '';
-
-        $("#sourceLangSelect").html(autoDetectOption);
-
-        for (const langCode in MicrosoftLanguage) {
-          const sourceOption = document.createElement('option');
-          sourceOption.innerText = MicrosoftLanguage[langCode];
-          sourceOption.value = langCode;
-          $("#sourceLangSelect").append(sourceOption);
-
-          const targetOption = document.createElement('option');
-          targetOption.innerText = MicrosoftLanguage[langCode];
-          targetOption.value = langCode;
-
-          if (targetOption.value == 'vi') {
-            targetOption.selected = true
-          }
-
-          $("#targetLangSelect").append(targetOption);
-        }
-
-        $("#sourceLangSelect > option").each(function (index) {
-          if (($(this).val().split('-')[0] == prevSourceLanguage.toLowerCase().split('-')[0] && $(this).val().split('-')[1] == prevSourceLanguage.toLowerCase().split('-')[1]) || ($(this).val().split('-')[0] == prevSourceLanguage.toLowerCase().split('-')[0] && $(this).text().replace(/[()]/g, '').includes(prevSourceLanguageName.replace(/[()]/g, '').split(' ')[0]))) {
-            $("#sourceLangSelect").val($(this).val()).change();
-            return false;
-          } else if (index + 1 == $("#sourceLangSelect > option").length) {
-            $("#sourceLangSelect").val(autoDetectOption.value).change();
-          }
-        });
-
-        $("#targetLangSelect > option").each(function (index) {
-          if (($(this).val().split('-')[0] == prevTargetLanguage.toLowerCase().split('-')[0] && $(this).val().split('-')[1] == prevTargetLanguage.toLowerCase().split('-')[1]) || ($(this).val().split('-')[0] == prevTargetLanguage.toLowerCase().split('-')[0] && $(this).text().replace(/[()]/g, '').includes(prevTargetLanguageName.replace(/[()]/g, '').split(' ')[0]))) {
-            $("#targetLangSelect").val($(this).val()).change();
-            return false;
-          } else if (index + 1 == $("#targetLangSelect > option").length) {
-            $("#targetLangSelect").val('vi').change();
-          }
-        });
-
-        break;
-    }
+      }
+    });
 
     localStorage.setItem("translator", JSON.stringify({translator: $(".translator.active").data("id"), showOriginal: translator.showOriginal, glossary: translator.glossary, source: translator.source, target: translator.target}));
   }
 
   if ($("#translateButton").text() == 'Sửa') {
     translation = '';
-    $("#translateButton").text("Dịch");
-    $("#translateButton").click();
+    $("#translateButton").text("Dịch").click();
   }
 });
+function getLanguageName(translator, languageCode) {
+  switch (translator) {
+    case Translators.DEEPL_TRANSLATOR:
+      return DeepLSourceLanguage[languageCode] ?? '';
+
+    case Translators.MICROSOFT_TRANSLATOR:
+      return MicrosoftLanguage[languageCode] ?? '';
+
+    case Translators.GOOGLE_TRANSLATE:
+      return GoogleLanguage[languageCode] ?? '';
+
+    default:
+      return '';
+  }
+}
+
+function getSourceLanguageOptions(translator) {
+  const sourceLangSelect = document.createElement('select');
+  const autoDetectOption = document.createElement('option');
+
+  switch (translator) {
+    case Translators.DEEPL_TRANSLATOR:
+      autoDetectOption.innerText = 'Detect language';
+      autoDetectOption.value = '';
+      sourceLangSelect.appendChild(autoDetectOption);
+
+      for (const langCode in DeepLSourceLanguage) {
+        const option = document.createElement('option');
+        option.innerText = DeepLSourceLanguage[langCode];
+        option.value = langCode;
+        sourceLangSelect.appendChild(option);
+      }
+      break;
+
+    case Translators.GOOGLE_TRANSLATE:
+      autoDetectOption.innerText = 'Phát hiện ngôn ngữ';
+      autoDetectOption.value = 'auto';
+      sourceLangSelect.appendChild(autoDetectOption);
+
+      for (const langCode in GoogleLanguage) {
+        const option = document.createElement('option');
+        option.innerText = GoogleLanguage[langCode];
+        option.value = langCode;
+        sourceLangSelect.appendChild(option);
+      }
+      break;
+
+    case Translators.MICROSOFT_TRANSLATOR:
+      autoDetectOption.innerText = 'Tự phát hiện';
+      autoDetectOption.value = '';
+      sourceLangSelect.appendChild(autoDetectOption);
+
+      for (const langCode in MicrosoftLanguage) {
+        const option = document.createElement('option');
+        option.innerText = MicrosoftLanguage[langCode];
+        option.value = langCode;
+        sourceLangSelect.appendChild(option);
+      }
+      break;
+  }
+
+  return sourceLangSelect.innerHTML;
+}
+
+function getTargetLanguageOptions(translator) {
+  const targetLangSelect = document.createElement('select');
+
+  switch (translator) {
+    case Translators.DEEPL_TRANSLATOR:
+      for (const langCode in DeepLTargetLanguage) {
+        const option = document.createElement('option');
+        option.innerText = DeepLTargetLanguage[langCode];
+        option.value = langCode;
+        targetLangSelect.appendChild(option);
+      }
+      break;
+
+    case Translators.GOOGLE_TRANSLATE:
+      for (const langCode in GoogleLanguage) {
+        const option = document.createElement('option');
+        option.innerText = GoogleLanguage[langCode];
+        option.value = langCode;
+        targetLangSelect.appendChild(option);
+      }
+      break;
+
+    case Translators.MICROSOFT_TRANSLATOR:
+      for (const langCode in MicrosoftLanguage) {
+        const option = document.createElement('option');
+        option.innerText = MicrosoftLanguage[langCode];
+        option.value = langCode;
+        targetLangSelect.appendChild(option);
+      }
+      break;
+  }
+
+  return targetLangSelect.innerHTML;
+}
 
 async function translate() {
   const translator = $(".translator.active").data("id");
@@ -286,13 +288,12 @@ async function translate() {
   const targetLanguage = $("#targetLangSelect").val();
 
   const textLines = inputText.split(/\n/);
-  var result = '';
   const results = [];
 
   try {
-    if ($("#targetLangSelect").val() == 'pinyin' || $("#targetLangSelect").val() == 'sinovietnamese') {
+    /*if ($("#targetLangSelect").val() == 'pinyin' || $("#targetLangSelect").val() == 'sinovietnamese') {
       translation = getConvertedChineseText(new Map([...$("#targetLangSelect").val() == 'pinyin' ? pinyins : sinoVietnameses].sort((a, b) => b[0].length - a[0].length)), inputText);
-    } else {
+    } else {*/
       const MAX_LENGTH = translator === Translators.GOOGLE_TRANSLATE ? 1000 : 5000;
 
       if (inputText.split(/\n/).sort((a, b) => b.length - a.length)[0].length > MAX_LENGTH) {
@@ -321,7 +322,7 @@ async function translate() {
       const queryLines = [...textLines];
       let translateLines = [];
 
-      let canTranlate = false;
+      let canTranslate = false;
 
       for (let i = 0; i < textLines.length; i++) {
         translateLines.push(queryLines.shift());
@@ -332,10 +333,10 @@ async function translate() {
             i--;
           }
 
-          canTranlate = true;
+          canTranslate = true;
         }
 
-        if (canTranlate) {
+        if (canTranslate) {
           const translateText = translateLines.join('\n');
           let translatedText;
 
@@ -343,10 +344,12 @@ async function translate() {
             case Translators.DEEPL_TRANSLATOR:
               translatedText = await DeepLTranslator.translateText(DEEPL_AUTH_KEY, translateText, sourceLanguage, targetLanguage);
               break;
+
             case Translators.GOOGLE_TRANSLATE:
             default:
               translatedText = await GoogleTranslate.translateText(translateText, version, ctkk, sourceLanguage, targetLanguage);
               break;
+
             case Translators.MICROSOFT_TRANSLATOR:
               translatedText = await MicrosoftTranslator.translateText(accessToken, translateText, sourceLanguage, targetLanguage);
               break;
@@ -354,35 +357,39 @@ async function translate() {
 
           results.push(translatedText);
           translateLines = [];
-          canTranlate = false;
+          canTranslate = false;
         }
       }
-    }
+    // }
   } catch (error) {
     $("#translatedText").html(`<p>Bản dịch thất bại: ${JSON.stringify(error)}</p>`);
     onPostTranslate();
   }
+console.log(results);
+  $("#translatedText").html(buildTranslatedResult(results.join('\n'), textLines, $("#flexSwitchCheckShowOriginal").prop("checked")));
+}
 
-  translation = results.join('\n');
+function buildTranslatedResult(translation, textLines, showOriginal) {
+  let result = '';
 
-  if ($("#flexSwitchCheckShowOriginal").prop("checked")) {
+  if (showOriginal) {
     const resultLines = translation.split(/\n/);
-    var lostLineFixedAmount = 0;
-  
+    let lostLineFixedAmount = 0;
+console.log(resultLines.length, textLines.length);
     for (let i = 0; i < textLines.length; i++) {
       if (textLines[i + lostLineFixedAmount].trim().length == 0 && resultLines[i].trim().length > 0) {
         lostLineFixedAmount++;
         i--;
         continue;
       }
-  
-      result += ('<p>' + (resultLines[i].trim() !== textLines[i + lostLineFixedAmount].trim() ? '<i>' + textLines[i + lostLineFixedAmount] + '</i><br>' + resultLines[i] : textLines[i + lostLineFixedAmount]) + '</p>').replace(/(<p>)(<\/p>)/g, '$1<br>$2');
+
+      result += ('<p>' + (resultLines[i].trim() !== textLines[i + lostLineFixedAmount].trim() ? '<i>' + textLines[i + lostLineFixedAmount] + '</i><br>' + resultLines[i] : textLines[i + lostLineFixedAmount]) + '</p>');
     }
   } else {
-    result = ('<p>' + translation.split(/\n/).join('</p><p>') + '</p>').replace(/(<p>)(<\/p>)/g, '$1<br>$2');
+    result = ('<p>' + translation.split(/\n/).join('</p><p>') + '</p>');
   }
 
-  $("#translatedText").html(result);
+  return result.replace(/(<p>)(<\/p>)/g, '$1<br>$2');
 }
 
 function getConvertedChineseText(data, text) {

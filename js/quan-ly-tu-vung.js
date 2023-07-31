@@ -4,8 +4,7 @@ var glossary = [];
 
 $("#glossaryManagerButton").on("mousedown", () => {
   $("#glossaryList").val(-1).change();
-  $("#sourceEntry").val(window.getSelection().toString() || ((document.activeElement.tagName.toLowerCase() == 'textarea' || (document.activeElement.tagName.toLowerCase() == 'input' && /^(?:text|search|password|tel|url)$/i.test(document.activeElement.type)) && typeof document.activeElement.selectionStart == 'number') && document.activeElement.value.slice(document.activeElement.selectionStart, document.activeElement.selectionEnd))).trigger("input");
-  $("#sourceEntry").focus();
+  $("#sourceEntry").val(getSelectedTextOrActiveElementText()).trigger("input");
 });
 
 $("#inputGlossary").on("change", function () {
@@ -278,6 +277,10 @@ $("#preview").on("click", function () {
 
 $("#glossaryName").on("input", () => loadGlossary());
 
+function getSelectedTextOrActiveElementText() {
+  return window.getSelection().toString() || (document.activeElement.tagName.toLowerCase() == 'textarea' || (document.activeElement.tagName.toLowerCase() == 'input' && /^(?:text|search|password|tel|url)$/i.test(document.activeElement.type) && typeof document.activeElement.selectionStart == 'number') && document.activeElement.value.slice(document.activeElement.selectionStart, document.activeElement.selectionEnd)) || '';
+}
+
 function loadGlossary() {
   var data = ''; 
   var glossaryList = '<option value="-1" selected>Chọn...</option>';
@@ -289,8 +292,7 @@ function loadGlossary() {
     glossary = glossary.filter(([key])  => !glossary[key] && (glossary[key] = 1), {}).sort((a, b) => b[0].length - a[0].length || a[1].localeCompare(b[1]) || a[0].localeCompare(b[0]));
 
     glossary.forEach((element, index) => {
-      glossaryList +=
-        `\n<option value="${index}">${element[0]}\t${element[1]}</option>`;
+      glossaryList += `\n<option value="${index}">${element[0]}\t${element[1]}</option>`;
     });
 
     switch (glossaryType) {
