@@ -3,7 +3,7 @@
 let translator = JSON.parse(localStorage.getItem('translator')) || {translator: $(".translator.active").data("id"), showOriginal: $("#flexSwitchCheckShowOriginal").prop("checked"), glossary: $("#flexSwitchCheckGlossary").prop("checked"), source: 'auto', target: 'vi'};
 
 var pinyins = new Map();
-var sinoVietnameses = new Map();
+var sinovietnameses = new Map();
 const markMap = new Map([
   ['　', ' '],
   ['，', ', '],
@@ -47,14 +47,11 @@ const DEEPL_AUTH_KEY = '0c9649a5-e8f6-632a-9c42-a9eee160c330:fx';
 var translation = '';
 
 $(document).ready(() => {
-  $.get("/datasource/Bính âm.txt").done((data) => {
-    pinyins = new Map(data.split(/\r?\n/).map((character) => character.split('=')).filter((character) => character.length >= 2));
+  $.get("/datasource/Unihan_Readings.txt").done((data) => {
+    pinyins = new Map(data.split(/\r?\n/).filter((line) => line.match(/^U+/) && line.includes('kMandarin')).map((line) => [String.fromCodePoint(parseInt(line.split(/\t/)[0].replace('U+', ''), 16)), line.split(/\t/)[2]]).filter(([key], index, array)   => !array[key] && (array[key] = 1), {}));
     console.log('Đã tải xong bộ dữ liệu bính âm!');
-  }).fail((jqXHR, textStatus, errorThrown) => {
-    window.location.reload();
-  });
-  $.get("/datasource/Hán việt.txt").done((data) => {
-    sinoVietnameses = new Map(data.split(/\r?\n/).map((character) => character.split('=')).filter((character) => character.length >= 2));
+
+    sinovietnameses = new Map([...data.split(/\r?\n/).filter((line) => line.match(/^U+/) && line.includes('kVietnamese')).map((line) => [String.fromCodePoint(parseInt(line.split(/\t/)[0].replace('U+', ''), 16)), line.split(/\t/)[2]]), ...hanvietData.map((line) => [line[0], line[1].split(',')[1]])].filter(([key], index, array)   => !array[key] && (array[key] = 1), {}));
     console.log('Đã tải xong bộ dữ liệu hán việt!');
   }).fail((jqXHR, textStatus, errorThrown) => {
     window.location.reload();

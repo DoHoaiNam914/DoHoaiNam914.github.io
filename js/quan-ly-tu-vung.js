@@ -49,7 +49,7 @@ $("#sourceEntry").on("input", function () {
   const glossaryMap = new Map(glossary);
 
   if ($(this).val().length > 0) {
-    $("#targetEntry").val(getConvertedChineseText(new Map([...glossary, ...[...sinoVietnameses].filter((character) => !glossaryMap.has(character[0]))].sort((a, b) => b[0].length - a[0].length)), $(this).val()));
+    $("#targetEntry").val(getConvertedChineseText(new Map([...glossary, ...[...sinovietnameses].filter((character) => !glossaryMap.has(character[0]))].sort((a, b) => b[0].length - a[0].length)), $(this).val()));
 
     if (glossaryMap.has($(this).val())) {
       $("#glossaryList").val([...glossaryMap.keys()].indexOf($(this).val()));
@@ -174,7 +174,7 @@ $("#pinyinConvertButton").on("click", function () {
 
 $("#sinoVietnameseConvertButton").click(function () {
   if ($("#sourceEntry").val().length > 0) {
-    $("#targetEntry").val(getConvertedChineseText(new Map([...sinoVietnameses].sort((a, b) => b[0].length - a[0].length)), $("#sourceEntry").val()));
+    $("#targetEntry").val(getConvertedChineseText(new Map([...sinovietnameses].sort((a, b) => b[0].length - a[0].length)), $("#sourceEntry").val()));
   }
 });
 
@@ -291,7 +291,7 @@ function loadGlossary() {
   $("#fileExtension").text(glossaryType === GlossaryType.TSV ? "tsv" : (glossaryType === GlossaryType.CSV ? "csv" : "txt"));
 
   if (glossary.length > 0) {
-    glossary = glossary.filter(([key])  => !glossary[key] && (glossary[key] = 1), {}).sort((a, b) => b[0].length - a[0].length || a[1].localeCompare(b[1]) || a[0].localeCompare(b[0]));
+    glossary.filter(([key], index, array)  => !array[key] && (array[key] = 1), {}).sort((a, b) => b[0].length - a[0].length || a[1].localeCompare(b[1]) || a[0].localeCompare(b[0]));
 
     glossary.forEach((element, index) => {
       glossaryList += `\n<option value="${index}">${element[0]}\t${element[1]}</option>`;
