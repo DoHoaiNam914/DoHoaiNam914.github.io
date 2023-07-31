@@ -1,5 +1,7 @@
 'use strict';
 
+let translator = JSON.parse(localStorage.getItem('translator')) || {translator: $(".translator.active").data("id"), showOriginal: $("#flexSwitchCheckShowOriginal").prop("checked"), glossary: $("#flexSwitchCheckGlossary").prop("checked"), source: 'auto', target: 'vi'};
+
 var pinyins = new Map();
 var sinoVietnameses = new Map();
 const markMap = new Map([
@@ -57,6 +59,8 @@ $(document).ready(() => {
   }).fail((jqXHR, textStatus, errorThrown) => {
     window.location.reload();
   });
+
+  localStorage.setItem("translator", JSON.stringify(translator));
 });
 
 $("#translateButton").click(async function () {
@@ -120,11 +124,11 @@ $(".option").change(() => {
   }
 
   localStorage.setItem("translator", JSON.stringify({translator: $(".translator.active").data("id"), showOriginal: $("#flexSwitchCheckShowOriginal").prop("checked"), glossary: $("#flexSwitchCheckGlossary").prop("checked"), source: $("#sourceLangSelect").val(), target: $("#targetLangSelect").val()}));
+  translator = JSON.parse(localStorage.getItem("translator"));
 });
 
 $(".translator").click(function () {
   if (!$(this).hasClass("disabled")) {
-    const translator = JSON.parse(localStorage.getItem('translator')) ?? {translator: $(".translator.active").data("id"), showOriginal: $("#flexSwitchCheckShowOriginal").prop("checked"), glossary: $("#flexSwitchCheckGlossary").prop("checked"), source: $("#sourceLangSelect").val(), target: $("#targetLangSelect").val()};
     const prevTranslator = translator.translator;
 
     const prevSourceLanguage = translator.source;
@@ -144,11 +148,11 @@ $(".translator").click(function () {
       } else if (index + 1 == $("#sourceLangSelect > option").length) {
         switch ($(".translator.active").data("id")) {
           case Translators.GOOGLE_TRANSLATE:
-            $("#sourceLangSelect").val("auto").change();
+            $("#sourceLangSelect").val("auto");
             break;
 
           default:
-            $("#sourceLangSelect").val("").change();
+            $("#sourceLangSelect").val("");
             break;
         }
       }
@@ -163,22 +167,23 @@ $(".translator").click(function () {
       } else if (index + 1 == $("#targetLangSelect > option").length) {
         switch ($(".translator.active").data("id")) {
           case Translators.DEEPL_TRANSLATOR:
-            $("#targetLangSelect").val("EN-US").change();
+            $("#targetLangSelect").val("EN-US");
             break;
 
           default:
-            $("#targetLangSelect").val("vi").change();
+            $("#targetLangSelect").val("vi");
             break;
         }
       }
     });
 
-    localStorage.setItem("translator", JSON.stringify({translator: $(".translator.active").data("id"), showOriginal: translator.showOriginal, glossary: translator.glossary, source: translator.source, target: translator.target}));
-  }
+    localStorage.setItem("translator", JSON.stringify({translator: $(this).data("id"), showOriginal: translator.showOriginal, glossary: translator.glossary, source: $("#sourceLangSelect").val(), target: $("#targetLangSelect").val()}));
+    translator = JSON.parse(localStorage.getItem("translator"));
 
-  if ($("#translateButton").text() == 'Sửa') {
-    translation = '';
-    $("#translateButton").text("Dịch").click();
+    if ($("#translateButton").text() == 'Sửa') {
+      translation = '';
+      $("#translateButton").text("Dịch").click();
+    }
   }
 });
 function getLanguageName(translator, languageCode) {
@@ -191,9 +196,6 @@ function getLanguageName(translator, languageCode) {
 
     case Translators.GOOGLE_TRANSLATE:
       return GoogleLanguage[languageCode] ?? '';
-
-    default:
-      return '';
   }
 }
 

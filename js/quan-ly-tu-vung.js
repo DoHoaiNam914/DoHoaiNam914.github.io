@@ -1,5 +1,7 @@
 'use strict';
 
+let localGlossary =  JSON.parse(localStorage.getItem("glossary")) || {type: $("#glossaryType").val(), data: []};
+
 var glossary = [];
 
 $("#glossaryManagerButton").on("mousedown", () => {
@@ -321,6 +323,7 @@ function loadGlossary() {
   $("#glossaryCounter").text(glossary.length);
 
   localStorage.setItem("glossary", JSON.stringify({type: glossaryType, data: Object.fromEntries(new Map(glossary))}));
+  localGlossary = JSON.parse(localStorage.getItem("glossary"));
 }
 
 const GlossaryType = {
