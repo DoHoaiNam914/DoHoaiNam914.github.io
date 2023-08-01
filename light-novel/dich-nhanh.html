@@ -77,6 +77,8 @@
           }
 
           $(`.translator[data-id="${translator.translator}"]`).click();
+          $("#flexSwitchCheckShowOriginal").prop("checked", translator.showOriginal);
+          $("#flexSwitchCheckGlossary").prop("checked", translator.glossary);
         })
         .script("/js/quan-ly-tu-vung.js").wait(function () {
           if (localGlossary == undefined) {
