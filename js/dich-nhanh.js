@@ -1033,11 +1033,11 @@ function getDynamicDictionaryTextForAnothers(text) {
 function textProcessPreTranslate(text, targetLang) {
   var newText = text;
 
-  if (!(targetLang.toLowerCase() == 'yue' && targetLang.toLowerCase() == 'lzh' && targetLang.toLowerCase().includes('zh-') && targetLang.toLowerCase() == 'ja') && targetLang.toLowerCase() == 'ko')) {
+  if (!(targetLang.toLowerCase() == 'yue' && targetLang.toLowerCase() == 'lzh' && targetLang.toLowerCase().includes('zh-') && targetLang.toLowerCase() == 'ja' && targetLang.toLowerCase() == 'ko')) {
     const markList = [...markMap.filter((element) => element.length == 3)];
 
     if (text.length > 0) {
-    for (let i = 0; i < markList.length; i++) {
+      for (let i = 0; i < markList.length; i++) {
         newText = newText.replace(new RegExp(mark[i][0], 'g'), `[${mark[i][3]}]`);
       }
     }
