@@ -15,24 +15,24 @@ const markMap = new Map([
   ['．', '.'],
   ['。', '. '],
   ['·', '•'],
-  ['＇', ' \' '],
-  ['＂', ' " '],
-  ['（', ' \('],
-  ['）', '\) '],
-  ['［', ' \['],
-  ['］', '\] '],
-  ['｛', ' {'],
-  ['｝', '} '],
-  ['〈', ' <'],
-  ['〉', '> '],
-  ['《', ' «'],
-  ['》', '» '],
-  ['「', ' "'],
-  ['」', '" '],
-  ['『', ' ‘'],
-  ['』', '’ '],
-  ['【', ' \['],
-  ['】', '\] '],
+  ['＇', ' \' ', 'APOSTROPHE'],
+  ['＂', ' " ', 'QUOTATIONMARK'],
+  ['（', ' \(', 'LEFTPARENTHESIS'],
+  ['）', '\) ', 'RIGHTPARENTHESIS'],
+  ['［', ' \[', 'LEFTSQUAREBRACKET'],
+  ['］', '\] ', 'RIGHTSQUAREBRACKET'],
+  ['｛', ' {', 'LEFTCURLYBRACKET'],
+  ['｝', '} ', 'RIGHTCURLYBRACKET'],
+  ['〈', ' <', 'LEFTANGLEBRACKET'],
+  ['〉', '> ', 'RIGHTANGLEBRACKET'],
+  ['《', ' «', 'LEFTDOUBLEANGLEBRACKET'],
+  ['》', '» ', 'RIGHTDOUBLEANGLEBRACKET'],
+  ['「', ' “', 'LEFTCORNERBRACKET'],
+  ['」', '” ', 'RIGHTCORNERBRACKET'],
+  ['『', ' ‘', 'LEFTWHITECORNERBRACKET'],
+  ['』', '’ ', 'RIGHTWHITECORNERBRACKET'],
+  ['【', ' \[', 'LEFTBLACKLENTICULARBRACKET'],
+  ['】', '\] ', 'RIGHTBLACKLENTICULARBRACKET'],
   ['＊', ' * '],
   ['／', '/'],
   ['＆', ' & '],
@@ -534,11 +534,11 @@ const DeepLTranslator = {
     try {
       const response = await $.ajax({
         url: "https://api-free.deepl.com/v2/translate?auth_key=" + authKey,
-        data: `text=${(isConvert ? inputText : getDynamicDictionaryTextForAnothers(inputText)).split(/\n/).map((sentence) => encodeURIComponent(sentence)).join('&text=')}${sourceLanguage != '' ? '&source_lang=' + sourceLanguage : ''}&target_lang=${targetLanguage}&tag_handling=html`,
+        data: `text=${textProcessPreTranslate(isConvert ? inputText : getDynamicDictionaryTextForAnothers(inputText)).split(/\n/).map((sentence) => encodeURIComponent(sentence)).join('&text=')}${sourceLanguage != '' ? '&source_lang=' + sourceLanguage : ''}&target_lang=${targetLanguage}&tag_handling=html`,
         method: "POST"
       });
 
-      return response.translations.map((line) => line.text.trim()).join('\n');
+      return textProcessPostTranslate(response.translations.map((line) => line.text.trim()).join('\n'));
     } catch (error) {
       console.error('Bản dịch lỗi:', error);
       throw error;
@@ -628,14 +628,14 @@ const GoogleTranslate = {
        * send(encodeURIComponent(inputText))
        */
       const response = await $.ajax({
-        url: `https://translate.googleapis.com/translate_a/t?anno=3&client=tw-ob&format=html&v=1.0&key&logId=v${version}&sl=${sourceLanguage}&tl=${targetLanguage}&tc=0&tk=${Bp(getDynamicDictionaryTextForAnothers(inputText), ctkk)}`,
-        data: `q=${(isConvert ? inputText : getDynamicDictionaryTextForAnothers(inputText)).split(/\n/).map((sentence) => encodeURIComponent(sentence)).join('&q=')}`,
+        url: `https://translate.googleapis.com/translate_a/t?anno=3&client=gtx&format=html&v=1.0&key&logId=v${version}&sl=${sourceLanguage}&tl=${targetLanguage}&tc=0&tk=${Bp(getDynamicDictionaryTextForAnothers(inputText), ctkk)}`,
+        data: `q=${textProcessPreTranslate(isConvert ? inputText : getDynamicDictionaryTextForAnothers(inputText)).split(/\n/).map((sentence) => encodeURIComponent(sentence)).join('&q=')}`,
         method: "GET"
       });
 
       const paragraph = document.createElement('p');
       $(paragraph).html(response.map((line) => ((sourceLanguage == 'auto' ? line[0] : line).includes('<i>') ? (sourceLanguage == 'auto' ? line[0] : line).split('</i> <b>').filter((element) => element.includes('</b>')).map((element) => ('<b>' + element.replace(/<i>.+/, ''))).join(' ') : (sourceLanguage == 'auto' ? line[0] : line)).trim()).join('\n'));
-      return $(paragraph).text();
+      return textProcessPostTranslate($(paragraph).text());
     } catch (error) {
       console.error('Bản dịch lỗi:', error);
       throw error;
@@ -813,11 +813,11 @@ const Papago = {
   translateText: async function (inputText, sourceLanguage, targetLanguage, isConvert = false) {
     try {
       const response = await $.ajax({
-        url: `https://corsproxy.io/?https://papago-extension.herokuapp.com/api/v1/translate?locale=vi&dict=true&dictDisplay=30&honorific=false&instant=false&paging=false&source=${sourceLanguage}&target=${targetLanguage}&text=${encodeURIComponent(isConvert ? inputText : getDynamicDictionaryTextForAnothers(inputText))}`,
+        url: `https://corsproxy.io/?https://papago-extension.herokuapp.com/api/v1/translate?locale=vi&dict=true&dictDisplay=30&honorific=false&instant=false&paging=false&source=${sourceLanguage}&target=${targetLanguage}&text=${encodeURIComponent(textProcessPreTranslate(isConvert ? inputText : getDynamicDictionaryTextForAnothers(inputText)))}`,
         method: 'GET'
       });
 
-      return response.message.result.translatedText.split(/\n/).map((element) => element.trim()).join('\n');
+      return textProcessPostTranslate(response.message.result.translatedText.split(/\n/).map((element) => element.trim()).join('\n'));
     } catch (error) {
       console.error('Bản dịch lỗi:', error);
       throw error;
@@ -868,7 +868,7 @@ const MicrosoftTranslator = {
        */
       const response = await $.ajax({
         url: `https://api.cognitive.microsofttranslator.com/translate?${sourceLanguage != '' ? 'from=' + sourceLanguage + '&' : ''}to=${targetLanguage}&api-version=3.0&textType=html&includeSentenceLength=true`,
-        data: JSON.stringify((isConvert ? inputText : getDynamicDictionaryText(inputText)).split(/\n/).map((sentence) => ({"Text": sentence}))),
+        data: JSON.stringify(textProcessPreTranslate(isConvert ? inputText : getDynamicDictionaryText(inputText)).split(/\n/).map((sentence) => ({"Text": sentence}))),
         method: 'POST',
         headers: {
           "Authorization": `Bearer ${accessToken}`,
@@ -876,7 +876,7 @@ const MicrosoftTranslator = {
         }
       });
 
-      return response.map((element) => element.translations[0].text.trim()).join('\n');
+      return textProcessPostTranslate(response.map((element) => element.translations[0].text.trim()).join('\n'));
     } catch (error) {
       console.error('Bản dịch lỗi:', error);
       throw error;
@@ -1024,6 +1024,36 @@ function getDynamicDictionaryTextForAnothers(text) {
 
     for (let i = 0; i < glossaryList.length; i++) {
       newText = newText.replace(new RegExp(glossaryList[i][0], 'g'), glossaryList[i][1]);
+    }
+  }
+
+  return newText;
+}
+
+function textProcessPreTranslate(text, targetLang) {
+  var newText = text;
+
+  if (!(targetLang.toLowerCase() == 'yue' && targetLang.toLowerCase() == 'lzh' && targetLang.toLowerCase().includes('zh-') && targetLang.toLowerCase() == 'ja') && targetLang.toLowerCase() == 'ko')) {
+    const markList = [...markMap.filter((element) => element.length == 3)];
+
+    if (text.length > 0) {
+      for (mark in markList) {
+        newText = newText.replace(new RegExp(mark[0], 'g'), `[${mark[3]}]`);
+      }
+    }
+  }
+
+  return newText;
+}
+
+function textProcessPostTranslate(text) {
+  var newText = text;
+
+  const markList = [...markMap.filter((element) => element.length == 3)];
+
+  if (text.length > 0) {
+    for (mark in markList) {
+      newText = newText.replace(new RegExp(`[${mark[3]}]`, 'g'), mark[1]).replace(/  /g, ' ');
     }
   }
 
