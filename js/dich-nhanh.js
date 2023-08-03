@@ -628,7 +628,7 @@ const GoogleTranslate = {
        * send(encodeURIComponent(inputText))
        */
       const response = await $.ajax({
-        url: `https://translate.googleapis.com/translate_a/t?anno=3&client=gtx&format=html&v=1.0&key&logId=v${version}&sl=${sourceLanguage}&tl=${targetLanguage}&tc=0&tk=${Bp(getDynamicDictionaryTextForAnothers(inputText), ctkk)}`,
+        url: `https://translate.googleapis.com/translate_a/t?anno=3&client=tw-ob&format=html&v=1.0&key&logId=v${version}&sl=${sourceLanguage}&tl=${targetLanguage}&tc=0&tk=${Bp(getDynamicDictionaryTextForAnothers(inputText), ctkk)}`,
         data: `q=${(isConvert ? inputText : getDynamicDictionaryTextForAnothers(inputText)).split(/\n/).map((sentence) => encodeURIComponent(sentence)).join('&q=')}`,
         method: "GET"
       });
