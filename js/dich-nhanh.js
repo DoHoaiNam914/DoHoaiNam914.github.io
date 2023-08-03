@@ -4,7 +4,7 @@ let translator = JSON.parse(localStorage.getItem("translator"));
 
 var pinyins = new Map();
 var sinovietnameses = new Map();
-const markMap = new Map([
+const marks = [
   ['　', ' '],
   ['，', ', '],
   ['、', ', '],
@@ -16,23 +16,27 @@ const markMap = new Map([
   ['。', '. '],
   ['·', '•'],
   ['＇', ' \' ', 'APOSTROPHE'],
-  ['＂', ' " ', 'QUOTATIONMARK'],
-  ['（', ' \(', 'LEFTPARENTHESIS'],
-  ['）', '\) ', 'RIGHTPARENTHESIS'],
-  ['［', ' \[', 'LEFTSQUAREBRACKET'],
-  ['］', '\] ', 'RIGHTSQUAREBRACKET'],
-  ['｛', ' {', 'LEFTCURLYBRACKET'],
-  ['｝', '} ', 'RIGHTCURLYBRACKET'],
-  ['〈', ' <', 'LEFTANGLEBRACKET'],
-  ['〉', '> ', 'RIGHTANGLEBRACKET'],
-  ['《', ' «', 'LEFTDOUBLEANGLEBRACKET'],
-  ['》', '» ', 'RIGHTDOUBLEANGLEBRACKET'],
-  ['「', ' “', 'LEFTCORNERBRACKET'],
-  ['」', '” ', 'RIGHTCORNERBRACKET'],
-  ['『', ' ‘', 'LEFTWHITECORNERBRACKET'],
-  ['』', '’ ', 'RIGHTWHITECORNERBRACKET'],
-  ['【', ' \[', 'LEFTBLACKLENTICULARBRACKET'],
-  ['】', '\] ', 'RIGHTBLACKLENTICULARBRACKET'],
+  ['＂', ' " ', 'QUOTATION_MARK'],
+  ['（', ' \(', 'LEFT_PARENTHESIS'],
+  ['）', '\) ', 'RIGHT_PARENTHESIS'],
+  ['［', ' \[', 'LEFT_SQUARE_BRACKET'],
+  ['］', '\] ', 'RIGHT_SQUARE_BRACKET'],
+  ['｛', ' {', 'LEFT_CURLY_BRACKET'],
+  ['｝', '} ', 'RIGHT_CURLY_BRACKET'],
+  ['〈', ' <', 'LEFT_ANGLE_BRACKET'],
+  ['〉', '> ', 'RIGHT_ANGLE_BRACKET'],
+  ['《', ' «', 'LEFT_DOUBLE_ANGLE_BRACKET'],
+  ['》', '» ', 'RIGHT_DOUBLE_ANGLE_BRACKET'],
+  ['“', '“', 'LEFT_DOUBLE_QUOTATION_MARK'],
+  ['「', ' “', 'LEFT_CORNER_BRACKET'],
+  ['”', '”', 'RIGHT_DOUBLE_QUOTATION_MARK'],
+  ['」', '” ', 'RIGHT_CORNER_BRACKET'],
+  ['‘', '‘', 'LEFT_SINGLE_QUOTATION_MARK'],
+  ['『', ' ‘', 'LEFT_WHITE_CORNER_BRACKET'],
+  ['’', '’', 'RIGHT_SINGLE_QUOTATION_MARK'],
+  ['』', '’ ', 'RIGHT_WHITE_CORNER_BRACKET'],
+  ['【', ' \[', 'LEFT_BLACK_LENTICULAR_BRACKET'],
+  ['】', '\] ', 'RIGHT_BLACK_LENTICULAR_BRACKET'],
   ['＊', ' * '],
   ['／', '/'],
   ['＆', ' & '],
@@ -40,7 +44,7 @@ const markMap = new Map([
   ['％', ' % '],
   ['＋', ' + '],
   ['～', ' ~ ']
-]);
+];
 
 const DEEPL_AUTH_KEY = '0c9649a5-e8f6-632a-9c42-a9eee160c330:fx';
 
@@ -174,7 +178,6 @@ $(".translator").click(function () {
         return false;
       } else if (index + 1 == $("#targetLangSelect > option").length) {
 
-        console.log($(this).text().replace(/[()]/g, ''), prevTargetLanguageName.replace(/[()]/g, '').split(' ').slice(1).join(' '));
         switch ($(".translator.active").data("id")) {
           case Translators.DEEPL_TRANSLATOR:
             $("#targetLangSelect").val("EN-US");
@@ -483,7 +486,7 @@ function getConvertedChineseText(data, text) {
     result.push(phrases.join(' '));
   }
 
-  [...markMap].forEach((mark) => result = result.map((line) => line.replace(new RegExp(` ?(${mark[0]}) ?`, 'g'), mark[1]).trim()));
+  marks.forEach((mark) => result = result.map((line) => line.replace(new RegExp(` ?(${mark[0]}) ?`, 'g'), mark[1]).trim()));
   return result.join('\n');
 }
 
@@ -628,7 +631,7 @@ const GoogleTranslate = {
        * send(encodeURIComponent(inputText))
        */
       const response = await $.ajax({
-        url: `https://translate.googleapis.com/translate_a/t?anno=3&client=gtx&format=html&v=1.0&key&logId=v${version}&sl=${sourceLanguage}&tl=${targetLanguage}&tc=0&tk=${Bp(getDynamicDictionaryTextForAnothers(inputText), ctkk)}`,
+        url: `https://translate.googleapis.com/translate_a/t?anno=3&client=tw-ob&format=html&v=1.0&key&logId=v${version}&sl=${sourceLanguage}&tl=${targetLanguage}&tc=0&tk=${Bp(getDynamicDictionaryTextForAnothers(inputText), ctkk)}`,
         data: `q=${textProcessPreTranslate(isConvert ? inputText : getDynamicDictionaryTextForAnothers(inputText), targetLanguage).split(/\n/).map((sentence) => encodeURIComponent(sentence)).join('&q=')}`,
         method: "GET"
       });
@@ -813,7 +816,7 @@ const Papago = {
   translateText: async function (inputText, sourceLanguage, targetLanguage, isConvert = false) {
     try {
       const response = await $.ajax({
-        url: `https://corsproxy.io/?https://papago-extension.herokuapp.com/api/v1/translate?locale=vi&dict=true&dictDisplay=30&honorific=false&instant=false&paging=false&source=${sourceLanguage}&target=${targetLanguage}&text=${encodeURIComponent(textProcessPreTranslate(isConvert ? inputText : getDynamicDictionaryTextForAnothers(inputText), targetLanguage))}`,
+        url: `https://corsproxy.io/?https://papago-extension.herokuapp.com/api/v1/translate?locale=vi&dict=true&dictDisplay=30&honorific=false&instant=false&paging=false&source=${sourceLanguage}&target=${targetLanguage}&text=${encodeURIComponent(textProcessPreTranslate(isConvert ? inputText : getDynamicDictionaryTextForAnothers(inputText, targetLanguage), targetLanguage))}`,
         method: 'GET'
       });
 
@@ -1031,15 +1034,12 @@ function getDynamicDictionaryTextForAnothers(text) {
 }
 
 function textProcessPreTranslate(text, targetLang) {
+  const markList = marks.filter((element) => element.length == 3);
   var newText = text;
 
-  if (!(targetLang.toLowerCase() == 'yue' && targetLang.toLowerCase() == 'lzh' && targetLang.toLowerCase().includes('zh') && targetLang.toLowerCase() == 'ja' && targetLang.toLowerCase() == 'ko')) {
-    const markList = [...markMap.filter((element) => element.length == 3)];
-
-    if (text.length > 0) {
-      for (let i = 0; i < markList.length; i++) {
-        newText = newText.replace(new RegExp(mark[i][0], 'g'), `[${mark[i][3]}]`);
-      }
+  if (text.length > 0) {
+    for (let i = 0; i < markList.length; i++) {
+      newText = newText.replace(new RegExp(markList[i][0], 'g'), `[${markList[i][2]}]`);
     }
   }
 
@@ -1047,13 +1047,12 @@ function textProcessPreTranslate(text, targetLang) {
 }
 
 function textProcessPostTranslate(text) {
+  const markList = marks.filter((element) => element.length == 3);
   var newText = text;
-
-  const markList = [...markMap.filter((element) => element.length == 3)];
 
   if (text.length > 0) {
     for (let i = 0; i < markList.length; i++) {
-      newText = newText.replace(new RegExp(` ?\\[${mark[i][3]}\\] ?`, 'g'), mark[i][1]).replace(/  /g, ' ');
+      newText = newText.replace(new RegExp(` ?\\[${markList[i][2]}\\] ?`, 'gi'), markList[i][1]);
     }
   }
 
