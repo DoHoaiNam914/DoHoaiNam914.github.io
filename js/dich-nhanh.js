@@ -1037,8 +1037,8 @@ function textProcessPreTranslate(text, targetLang) {
     const markList = [...markMap.filter((element) => element.length == 3)];
 
     if (text.length > 0) {
-      for (mark in markList) {
-        newText = newText.replace(new RegExp(mark[0], 'g'), `[${mark[3]}]`);
+    for (let i = 0; i < markList.length; i++) {
+        newText = newText.replace(new RegExp(mark[i][0], 'g'), `[${mark[i][3]}]`);
       }
     }
   }
@@ -1052,8 +1052,8 @@ function textProcessPostTranslate(text) {
   const markList = [...markMap.filter((element) => element.length == 3)];
 
   if (text.length > 0) {
-    for (mark in markList) {
-      newText = newText.replace(new RegExp(`[${mark[3]}]`, 'g'), mark[1]).replace(/  /g, ' ');
+    for (let i = 0; i < markList.length; i++) {
+      newText = newText.replace(new RegExp(`[${mark[i][3]}]`, 'g'), mark[i][1]).replace(/  /g, ' ');
     }
   }
 
