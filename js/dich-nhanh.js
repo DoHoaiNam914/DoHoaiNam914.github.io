@@ -1035,15 +1035,15 @@ function getDynamicDictionaryTextForAnothers(text) {
 function textProcessPreTranslate(text, targetLang) {
   const leftMarks = [...marks].filter((element) => element.length == 3 && element[2].includes('LEFT'));
   const rightMarks = [...marks].filter((element) => element.length == 3 && element[2].includes('RIGHT'));
-  let newText = text;
+  let newText = text.split(/\n/);
 
   if (text.length > 0) {
     for (let i = 0; i < leftMarks.length; i++) {
-      newText = newText.replace(new RegExp(`(^\s*?)${leftMarks[i][0]}(.*)${rightMarks[i][0]}$`, 'g'), `$1[${leftMarks[i][2]}]\n$2\n[${rightMarks[i][2]}]`);
+      newText = newText.map((line) => line.replace(new RegExp(`^(\\s*?)${leftMarks[i][0]}(.*)${rightMarks[i][0]}$`, 'g'), `[$1${leftMarks[i][2]}]\n$2\n[${rightMarks[i][2]}]`));
     }
   }
 
-  return newText;
+  return newText.join('\n');
 }
 
 function textProcessPostTranslate(text) {
