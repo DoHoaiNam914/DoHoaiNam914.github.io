@@ -534,7 +534,7 @@ const DeepLTranslator = {
     try {
       const response = await $.ajax({
         url: "https://api-free.deepl.com/v2/translate?auth_key=" + authKey,
-        data: `text=${textProcessPreTranslate(isConvert ? inputText : getDynamicDictionaryTextForAnothers(inputText)).split(/\n/).map((sentence) => encodeURIComponent(sentence)).join('&text=')}${sourceLanguage != '' ? '&source_lang=' + sourceLanguage : ''}&target_lang=${targetLanguage}&tag_handling=html`,
+        data: `text=${textProcessPreTranslate(isConvert ? inputText : getDynamicDictionaryTextForAnothers(inputText), targetLanguage).split(/\n/).map((sentence) => encodeURIComponent(sentence)).join('&text=')}${sourceLanguage != '' ? '&source_lang=' + sourceLanguage : ''}&target_lang=${targetLanguage}&tag_handling=html`,
         method: "POST"
       });
 
@@ -629,7 +629,7 @@ const GoogleTranslate = {
        */
       const response = await $.ajax({
         url: `https://translate.googleapis.com/translate_a/t?anno=3&client=gtx&format=html&v=1.0&key&logId=v${version}&sl=${sourceLanguage}&tl=${targetLanguage}&tc=0&tk=${Bp(getDynamicDictionaryTextForAnothers(inputText), ctkk)}`,
-        data: `q=${textProcessPreTranslate(isConvert ? inputText : getDynamicDictionaryTextForAnothers(inputText)).split(/\n/).map((sentence) => encodeURIComponent(sentence)).join('&q=')}`,
+        data: `q=${textProcessPreTranslate(isConvert ? inputText : getDynamicDictionaryTextForAnothers(inputText), targetLanguage).split(/\n/).map((sentence) => encodeURIComponent(sentence)).join('&q=')}`,
         method: "GET"
       });
 
@@ -813,7 +813,7 @@ const Papago = {
   translateText: async function (inputText, sourceLanguage, targetLanguage, isConvert = false) {
     try {
       const response = await $.ajax({
-        url: `https://corsproxy.io/?https://papago-extension.herokuapp.com/api/v1/translate?locale=vi&dict=true&dictDisplay=30&honorific=false&instant=false&paging=false&source=${sourceLanguage}&target=${targetLanguage}&text=${encodeURIComponent(textProcessPreTranslate(isConvert ? inputText : getDynamicDictionaryTextForAnothers(inputText)))}`,
+        url: `https://corsproxy.io/?https://papago-extension.herokuapp.com/api/v1/translate?locale=vi&dict=true&dictDisplay=30&honorific=false&instant=false&paging=false&source=${sourceLanguage}&target=${targetLanguage}&text=${encodeURIComponent(textProcessPreTranslate(isConvert ? inputText : getDynamicDictionaryTextForAnothers(inputText), targetLanguage))}`,
         method: 'GET'
       });
 
@@ -868,7 +868,7 @@ const MicrosoftTranslator = {
        */
       const response = await $.ajax({
         url: `https://api.cognitive.microsofttranslator.com/translate?${sourceLanguage != '' ? 'from=' + sourceLanguage + '&' : ''}to=${targetLanguage}&api-version=3.0&textType=html&includeSentenceLength=true`,
-        data: JSON.stringify(textProcessPreTranslate(isConvert ? inputText : getDynamicDictionaryText(inputText)).split(/\n/).map((sentence) => ({"Text": sentence}))),
+        data: JSON.stringify(textProcessPreTranslate(isConvert ? inputText : getDynamicDictionaryText(inputText), targetLanguage).split(/\n/).map((sentence) => ({"Text": sentence}))),
         method: 'POST',
         headers: {
           "Authorization": `Bearer ${accessToken}`,
