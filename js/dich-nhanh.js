@@ -1053,7 +1053,7 @@ function textProcessPostTranslate(text) {
 
   if (text.length > 0) {
     for (let i = 0; i < markList.length; i++) {
-      newText = newText.replace(new RegExp(`\\[${mark[i][3]}\\]`, 'g'), mark[i][1]).replace(/  /g, ' ');
+      newText = newText.replace(new RegExp(` ?\\[${mark[i][3]}\\] ?`, 'g'), mark[i][1]).replace(/  /g, ' ');
     }
   }
 
