@@ -815,11 +815,11 @@ const Papago = {
   translateText: async function (inputText, sourceLanguage, targetLanguage, isConvert = false) {
     try {
       const response = await $.ajax({
-        url: `https://corsproxy.io/?https://papago.naver.com/?sk=${sourceLanguage}&tk=${targetLanguage}&hn=1&st=${encodeURIComponent(textProcessPreTranslate(isConvert ? inputText : getDynamicDictionaryTextForAnothers(inputText, targetLanguage), targetLanguage))}`,
+        url: `https://thingproxy.freeboard.io/fetch/https://papago.naver.com/?sk=${sourceLanguage}&tk=${targetLanguage}&st=${encodeURIComponent(isConvert ? inputText : getDynamicDictionaryTextForAnothers(inputText, targetLanguage), targetLanguage)}`,
         method: 'GET'
       });
 
-      return textProcessPostTranslate($("#txtTarget", $(response)).text().split(/\n/).map((element) => element.trim()).join('\n'));
+      return $("#txtTarget", $(response)).text().split(/\n/).map((element) => element.trim()).join('\n');
     } catch (error) {
       console.error('Bản dịch lỗi:', error);
       throw error;
@@ -1033,12 +1033,13 @@ function getDynamicDictionaryTextForAnothers(text) {
 }
 
 function textProcessPreTranslate(text, targetLang) {
-  const markList = marks.filter((element) => element.length == 3);
+  const leftMarks = [...marks].filter((element) => element.length == 3 && element[2].includes('LEFT'));
+  const rightMarks = [...marks].filter((element) => element.length == 3 && element[2].includes('RIGHT'));
   let newText = text;
 
   if (text.length > 0) {
-    for (let i = 0; i < markList.length; i++) {
-      newText = newText.replace(new RegExp(`^${markList[i][0]}(.*)${markList[i][0]}$`, 'g'), `[${markList[i][2]}]\n$1[${markList[i][2]}]`);
+    for (let i = 0; i < leftMarks.length; i++) {
+      newText = newText.replace(new RegExp(`^${leftMarks[i][0]}(.*)${rightMarks[i][0]}$`, 'g'), `[${leftMarks[i][2]}]\n$1\n[${rightMarks[i][2]}]`);
     }
   }
 
@@ -1046,12 +1047,13 @@ function textProcessPreTranslate(text, targetLang) {
 }
 
 function textProcessPostTranslate(text) {
-  const markList = marks.filter((element) => element.length == 3);
+  const leftMarks = [...marks].filter((element) => element.length == 3 && element[2].includes('LEFT'));
+  const rightMarks = [...marks].filter((element) => element.length == 3 && element[2].includes('RIGHT'));
   let newText = text;
 
   if (text.length > 0) {
-    for (let i = 0; i < markList.length; i++) {
-      newText = newText.replace(new RegExp(` ?\\[${markList[i][0]}\\].*?\\n+(.*)\\n+.*?\\[${markList[i][0]}\\] ?`, 'gi'), `${markList[i][1]}$1${markList[i][1]}`);
+    for (let i = 0; i < leftMarks.length; i++) {
+      newText = newText.replace(new RegExp(`\\[${leftMarks[i][2]}\\].*?\n+(.*)\n+.*?\\[${rightMarks[i][2]}\\]`, 'gi'), `${leftMarks[i][1]}$1${rightMarks[i][1]}`);
     }
   }
 
