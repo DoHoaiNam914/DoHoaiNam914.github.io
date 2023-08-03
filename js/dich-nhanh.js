@@ -630,7 +630,7 @@ const GoogleTranslate = {
        * send(encodeURIComponent(inputText))
        */
       const response = await $.ajax({
-        url: `https://translate.googleapis.com/translate_a/t?anno=3&client=tw-ob&format=html&v=1.0&key&logId=v${version}&sl=${sourceLanguage}&tl=${targetLanguage}&tc=0&tk=${Bp(getDynamicDictionaryTextForAnothers(inputText), ctkk)}`,
+        url: `https://translate.googleapis.com/translate_a/t?anno=3&client=gtx&format=html&v=1.0&key&logId=v${version}&sl=${sourceLanguage}&tl=${targetLanguage}&tc=0&tk=${Bp(getDynamicDictionaryTextForAnothers(inputText), ctkk)}`,
         data: `q=${textProcessPreTranslate(isConvert ? inputText : getDynamicDictionaryTextForAnothers(inputText), targetLanguage).split(/\n/).map((sentence) => encodeURIComponent(sentence)).join('&q=')}`,
         method: "GET"
       });
@@ -1039,7 +1039,7 @@ function textProcessPreTranslate(text, targetLang) {
 
   if (text.length > 0) {
     for (let i = 0; i < leftMarks.length; i++) {
-      newText = newText.replace(new RegExp(`^${leftMarks[i][0]}(.*)${rightMarks[i][0]}$`, 'g'), `[${leftMarks[i][2]}]\n$1\n[${rightMarks[i][2]}]`);
+      newText = newText.replace(new RegExp(`(^\s*?)${leftMarks[i][0]}(.*)${rightMarks[i][0]}$`, 'g'), `$1[${leftMarks[i][2]}]\n$2\n[${rightMarks[i][2]}]`);
     }
   }
 
