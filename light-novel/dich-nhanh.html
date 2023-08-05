@@ -82,11 +82,11 @@
         })
         .script("/js/quan-ly-tu-vung.js").wait(function () {
           if (localGlossary == undefined) {
-            localStorage.setItem("glossary", JSON.stringify(localGlossary ?? {type: $("#glossaryType").val(), data: []}));
+            localStorage.setItem("glossary", JSON.stringify(localGlossary ?? {type: $("#glossaryType").val(), data: {}}));
             localGlossary = JSON.parse(localStorage.getItem("glossary"));
           }
 
-          glossary = Object.entries(localGlossary.data);
+          glossary = localGlossary.data;
           $("#glossaryType").val(localGlossary.type).change();
         });
     </script>
@@ -257,6 +257,7 @@
             <select class="form-select form-select-sm mb-3" id="glossaryType">
               <option value="text/tab-separated-values" selected>TSV</option>
               <option value="text/csv">CSV</option>
+              <option value="text/plain">VietPhrase</option>
             </select>
             <div class="input-group input-group-sm mb-3">
               <input type="text" placeholder="Thay thế" class="form-control" id="sourceEntry">
@@ -265,6 +266,9 @@
                 <li><button class="dropdown-item" id="clearSourceTextButton" type="button">Xoá</button></li>
                 <li><button class="dropdown-item" id="copySourceTextButton" type="button">Sao chép</button></li>
                 <li><button class="dropdown-item" id="pasteSourceTextButton" type="button">Dán</button></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><button class="dropdown-item" id="pinyinConvertButton" type="button">Chuyển đổi sang Bính âm</button></li>
+                <li><button class="dropdown-item" id="sinoVietnameseConvertButton" type="button">Chuyển đổi sang Hán việt</button></li>
                 <li><hr class="dropdown-divider"></li>
                 <li><button class="dropdown-item" id="lacvietdictionaryButton" type="button">Từ điển Lạc Việt</button></li>
                 <li><button class="dropdown-item" id="hvdicButton" type="button">Từ điển Hán Nôm</button></li>
@@ -294,9 +298,6 @@
                 <li><button class="dropdown-item upperCaseFromAmountButton" data-amount="2" type="button">Viết hoa 2 từ đơn đầu</button></li>
                 <li><button class="dropdown-item upperCaseFromAmountButton" data-amount="3" type="button">Viết hoa 3 từ đơn đầu</button></li>
                 <li><button class="dropdown-item upperCaseAllButton" type="button">Viết hoa tất cả</button></li>
-                <li><hr class="dropdown-divider"></li>
-                <li><button class="dropdown-item" id="pinyinConvertButton" type="button">Chuyển đổi sang Bính âm</button></li>
-                <li><button class="dropdown-item" id="sinoVietnameseConvertButton" type="button">Chuyển đổi sang Hán việt</button></li>
                 <li><hr class="dropdown-divider"></li>
                 <li><button class="dropdown-item convert deepl-convert" type="button" data-lang="ZH">DeepL Translator (Chinese)</button></li>
                 <li><button class="dropdown-item convert deepl-convert" type="button" data-lang="EN-US">DeepL Translator (English)</button></li>

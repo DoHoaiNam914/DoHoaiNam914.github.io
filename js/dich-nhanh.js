@@ -326,7 +326,6 @@ async function translate() {
   const sourceLanguage = $("#sourceLangSelect").val();
   const targetLanguage = $("#targetLangSelect").val();
 
-  const textLines = inputText.split(/\n/);
   const results = [];
 
   try {
@@ -358,12 +357,12 @@ async function translate() {
       return;
     }
 
-    const queryLines = [...textLines];
+    const queryLines = inputText.split(/\n/);
     let translateLines = [];
 
     let canTranslate = false;
 
-    for (let i = 0; i < textLines.length; i++) {
+    for (let i = 0; i < inputText.split(/\n/).length; i++) {
       translateLines.push(queryLines.shift());
 
       if (translateLines.join('\n').length >= MAX_LENGTH || queryLines.length == 0) {
@@ -410,7 +409,7 @@ async function translate() {
   }
 
   translation = results.join('\n');
-  $("#translatedText").html(buildTranslatedResult(translation, textLines, $("#flexSwitchCheckShowOriginal").prop("checked")));
+  $("#translatedText").html(buildTranslatedResult(translation, inputText.split(/\n/), $("#flexSwitchCheckShowOriginal").prop("checked")));
 }
 
 function buildTranslatedResult(translation, textLines, showOriginal) {
@@ -1003,15 +1002,15 @@ const MicrosoftLanguage = {
 function getDynamicDictionaryText(text) {
   let newText = text;
 
-  if ($("#flexSwitchCheckGlossary").prop("checked") && glossary != null) {
-    const glossaryList = [...glossary].filter((phrase) => text.includes(phrase[0]));
+  if ($("#flexSwitchCheckGlossary").prop("checked") && Object.entries(glossary).length > 0) {
+    const glossaryArray = Object.entries(glossary).filter((element) => text.includes(element[0]));
 
-    for (let i = 0; i < glossaryList.length; i++) {
-      newText = newText.replace(new RegExp(glossaryList[i][0], 'g'), `<mstrans:dictionary translation="${glossaryList[i][1]}">GLOSSARY_INDEX_${i}</mstrans:dictionary>`);
+    for (let i = 0; i < glossaryArray.length; i++) {
+      newText = newText.replace(new RegExp(glossaryArray[i][0], 'g'), `<mstrans:dictionary translation="${glossaryArray[i][1]}">MSTRANS_DICTIONARY_${i}</mstrans:dictionary>`);
     }
 
-    for (let i = glossaryList.length - 1; i >= 0; i--) {
-      newText = newText.replace(new RegExp(`GLOSSARY_INDEX_${i}`, 'g'), glossaryList[i][0]);
+    for (let i = glossaryArray.length - 1; i >= 0; i--) {
+      newText = newText.replace(new RegExp(`MSTRANS_DICTIONARY_${i}`, 'g'), glossaryArray[i][0]);
     }
   }
 
@@ -1021,11 +1020,11 @@ function getDynamicDictionaryText(text) {
 function getDynamicDictionaryTextForAnothers(text) {
   let newText = text;
 
-  if ($("#flexSwitchCheckGlossary").prop("checked") && $("#flexSwitchCheckAllowAnothers").prop("checked") && glossary != null) {
-    const glossaryList = [...glossary].filter((phrase) => text.includes(phrase[0]));
+  if ($("#flexSwitchCheckGlossary").prop("checked") && $("#flexSwitchCheckAllowAnothers").prop("checked") && Object.entries(glossary).length > 0) {
+    const glossaryArray = Object.entries(glossary).filter((element) => text.includes(element[0]));
 
-    for (let i = 0; i < glossaryList.length; i++) {
-      newText = newText.replace(new RegExp(glossaryList[i][0], 'g'), glossaryList[i][1]);
+    for (let i = 0; i < glossaryArray.length; i++) {
+      newText = newText.replace(new RegExp(glossaryArray[i][0], 'g'), glossaryArray[i][1]);
     }
   }
 
@@ -1033,23 +1032,25 @@ function getDynamicDictionaryTextForAnothers(text) {
 }
 
 function textProcessPreTranslate(text, targetLang) {
+  let lines = text.split(/\n/);
+
   const leftMarks = [...marks].filter((element) => element.length == 3 && element[2].includes('LEFT'));
   const rightMarks = [...marks].filter((element) => element.length == 3 && element[2].includes('RIGHT'));
-  let newText = text.split(/\n/);
 
   if (text.length > 0) {
     for (let i = 0; i < leftMarks.length; i++) {
-      newText = newText.map((line) => line.replace(new RegExp(`^(\\s*?)${leftMarks[i][0]}(.*)${rightMarks[i][0]}$`, 'g'), `[$1${leftMarks[i][2]}]\n$2\n[${rightMarks[i][2]}]`));
+      lines = lines.map((element) => element.replace(new RegExp(`^(\\s*?)${leftMarks[i][0]}(.*)${rightMarks[i][0]}$`, 'g'), `$1[${leftMarks[i][2]}]\n$2\n[${rightMarks[i][2]}]`));
     }
   }
 
-  return newText.join('\n');
+  return lines.join('\n');
 }
 
 function textProcessPostTranslate(text) {
+  let newText = text;
+
   const leftMarks = [...marks].filter((element) => element.length == 3 && element[2].includes('LEFT'));
   const rightMarks = [...marks].filter((element) => element.length == 3 && element[2].includes('RIGHT'));
-  let newText = text;
 
   if (text.length > 0) {
     for (let i = 0; i < leftMarks.length; i++) {
