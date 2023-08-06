@@ -2,8 +2,8 @@
 
 let translator = JSON.parse(localStorage.getItem("translator"));
 
-var pinyins = new Map();
-var sinovietnameses = new Map();
+let pinyins = new Map();
+let sinovietnameses = new Map();
 const marks = [
   ['　', ' '],
   ['，', ', '],
@@ -146,7 +146,7 @@ $(".translator").click(function () {
       if ($(".translator.active").data("id") === prevTranslator) {
         $("#sourceLangSelect").val(prevSourceLanguage);
         return false;
-      } else if (($(this).val().toLowerCase().split('-')[0] == prevSourceLanguage.toLowerCase().split('-')[0] && $(this).val().toLowerCase().split('-')[1] == prevSourceLanguage.toLowerCase().split('-')[1])  || ($(this).val().toLowerCase().split('-')[0] == prevSourceLanguage.toLowerCase().split('-')[0] && $(this).text().replace(/[()]/g, '').includes(prevSourceLanguageName.includes('Tiếng') ? prevSourceLanguageName.replace(/[()]/g, '').replace('Tiếng ', '') : prevSourceLanguageName.replace(/[()]/g, '').split(' ')[0]))) {
+      } else if (($(this).val().toLowerCase().split('-')[0] == prevSourceLanguage.toLowerCase().split('-')[0] && $(this).val().toLowerCase().split('-')[1] == prevSourceLanguage.toLowerCase().split('-')[1]) || $(this).text() == prevSourceLanguageName || ($(this).val().toLowerCase().split('-')[0] == prevSourceLanguage.toLowerCase().split('-')[0] && $(this).text().replace(/[()]/g, '').includes(prevSourceLanguageName.includes('Tiếng') ? prevSourceLanguageName.replace(/[()]/g, '').replace('Tiếng ', '') : prevSourceLanguageName.replace(/[()]/g, '').split(' ')[0]))) {
         $("#sourceLangSelect").val($(this).val()).change();
         return false;
       } else if (index + 1 == $("#targetLangSelect > option").length) {
@@ -169,7 +169,7 @@ $(".translator").click(function () {
       if ($(".translator.active").data("id") === prevTranslator) {
         $("#targetLangSelect").val(prevTargetLanguage);
         return false;
-      } else if (($(this).val().toLowerCase().split('-')[0] == prevTargetLanguage.toLowerCase().split('-')[0] && $(this).val().toLowerCase().split('-')[1] == prevTargetLanguage.toLowerCase().split('-')[1])  || ($(this).val().toLowerCase().split('-')[0] == prevTargetLanguage.toLowerCase().split('-')[0] && $(this).text().replace(/[()]/g, '').includes(prevTargetLanguageName.includes('Tiếng') ? prevTargetLanguageName.replace(/[()]/g, '').replace('Tiếng ', '') : prevTargetLanguageName.replace(/[()]/g, '').split(' ')[0]))) {
+      } else if (($(this).val().toLowerCase().split('-')[0] == prevTargetLanguage.toLowerCase().split('-')[0] && $(this).val().toLowerCase().split('-')[1] == prevTargetLanguage.toLowerCase().split('-')[1]) || $(this).text() == prevTargetLanguageName || ($(this).val().toLowerCase().split('-')[0] == prevTargetLanguage.toLowerCase().split('-')[0] && $(this).text().replace(/[()]/g, '').includes(prevTargetLanguageName.includes('Tiếng') ? prevTargetLanguageName.replace(/[()]/g, '').replace('Tiếng ', '') : prevTargetLanguageName.replace(/[()]/g, '').split(' ')[0]))) {
         if ($(".translator.active").data("id") === Translators.DEEPL_TRANSLATOR && prevTargetLanguageName == 'English') {
           $("#targetLangSelect").val("EN-US").change();
         } else {
@@ -827,24 +827,24 @@ const Papago = {
 };
 
 const PapagoLanguage = {
-  'ko': 'Tiếng Hàn',
-  'ja': 'Tiếng Nhật',
-  'zh-CN': 'Tiếng Trung (Giản thể)',
-  'zh-TW': 'Tiếng Trung (Phổn thể)',
-  'hi': 'Tiếng Hindi',
-  'en': 'Tiếng Anh',
-  'es': 'Tiếng Tây Ban Nha',
-  'fr': 'Tiếng Pháp',
-  'de': 'Tiếng Đức',
-  'pt': 'Tiếng Bồ Đào Nha',
-  'vi': 'Tiếng Việt',
-  'id': 'Tiếng Indonesia',
-  'fa': 'Tiếng Ba Tư',
-  'ar': 'Tiếng Ả Rập',
-  'mm': 'Tiếng Myanmar',
-  'th': 'Tiếng Thái',
-  'ru': 'Tiếng Nga',
-  'it': 'Tiếng Ý'
+  'ko': 'Korean',
+  'ja': 'Japanese',
+  'zh-CN': 'Chinese (Simplified)',
+  'zh-TW': 'Chinese (Traditional)',
+  'hi': 'Hindi',
+  'en': 'English',
+  'es': 'Spanish',
+  'fr': 'French',
+  'de': 'German',
+  'pt': 'Portuguese',
+  'vi': 'Vietnamese',
+  'id': 'Indonesian',
+  'fa': 'Persian',
+  'ar': 'Arabic',
+  'mm': 'Burmese',
+  'th': 'Thai',
+  'ru': 'Russian',
+  'it': 'Italian'
 };
 
 const MicrosoftTranslator = {
