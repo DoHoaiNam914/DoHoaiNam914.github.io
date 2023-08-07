@@ -17,6 +17,8 @@ const punctuation = [
   ['（…）', ' (...) '],
   ['－', ' - '],
   ['・', ' '],
+  ['‘…’', '‘...’'],
+  ['“…”', '“...”'],
   ['〈…〉', '〈…〉'],
   ['《…》', '《…》'],
   ['【…】', '【…】'],
@@ -1020,7 +1022,7 @@ function getProcessTextPreTranslate(text) {
 
   if (text.length > 0) {
     for (let i = 0; i < brackets.length; i++) {
-      lines = lines.map((element) => element.replace(new RegExp(`${brackets[i][0].split('…')[0]}(.*)${brackets[i][0].split('…')[1]}`, 'g'), `[LEFT_BRACKET_${i}]\n$1\n[RIGHT_BRACKET_${i}]`));
+      lines = lines.map((element) => element.replace(new RegExp(`${brackets[i][0].split('…')[0]}(.*)${brackets[i][0].split('…')[1]}`, 'g'), `\n[LEFT_BRACKET_${i}]\n$1\n[RIGHT_BRACKET_${i}]\n`));
     }
   }
 
@@ -1034,7 +1036,7 @@ function getProcessTextPostTranslate(text) {
 
   if (text.length > 0) {
     for (let i = 0; i < brackets.length; i++) {
-      newText = newText.replace(new RegExp(`\\[LEFT_BRACKET_${i}\\].*?\n+(.*)\n+.*?\\[RIGHT_BRACKET_${i}\\]`, 'gi'), `${brackets[i][1].split(brackets[i][1].includes('…') ? '…' : '...')[0]}$1${brackets[i][1].split(brackets[i][1].includes('…') ? '…' : '...')[1]}`).trim();
+      newText = newText.replace(new RegExp(`\n\\[LEFT_BRACKET_${i}\\].*?\n+(.*)\n+.*?\\[RIGHT_BRACKET_${i}\\]\n`, 'gi'), ` ${brackets[i][1].split(brackets[i][1].includes('…') ? '…' : '...')[0]}$1${brackets[i][1].split(brackets[i][1].includes('…') ? '…' : '...')[1]} `).trim();
     }
   }
 
