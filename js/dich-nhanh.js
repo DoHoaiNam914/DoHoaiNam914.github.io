@@ -9,7 +9,7 @@ const punctuation = [
   ['。', '. '],
   ['；', '; '],
   ['：', ': '],
-  ['？', '? '],
+  ['？', '\? '],
   ['！', '! '],
   ['…', '... '],
   ['「…」', ' “...” '],
@@ -17,6 +17,9 @@ const punctuation = [
   ['（…）', ' (...) '],
   ['－', ' - '],
   ['・', ' '],
+  ['〈…〉', '〈…〉'],
+  ['《…》', '《…》'],
+  ['【…】', '【…】'],
 ];
 
 const DEEPL_AUTH_KEY = '0c9649a5-e8f6-632a-9c42-a9eee160c330:fx';
@@ -434,7 +437,7 @@ function getConvertedChineseText(data, text) {
     result.push(phrases.join(' '));
   }
 
-  [...punctuation].filter((element) => element[0].length == 3).forEach((element) => result = result.map((line) => line.replace(new RegExp(`${element[0].split('…')[0]}(.*)${element[0].split('…')[1]}`, 'g'), `${element[1].split('...')[0]}$1${element[1].split('...')[1]}`).trim()));
+  [...punctuation].filter((element) => element[0].length == 3 && element[1].length != 3).forEach((element) => result = result.map((line) => line.replace(new RegExp(`${element[0].split('…')[0]}(.*)${element[0].split('…')[1]}`, 'g'), `${element[1].split('...')[0]}$1${element[1].split('...')[1]}`).trim()));
   [...punctuation].filter((element) => element[0].length == 1).forEach((element) => result = result.map((line) => line.replace(new RegExp(` *?(${element[0]}) *?`, 'g'), element[1]).trim()));
   return result.join('\n');
 }
@@ -1031,7 +1034,7 @@ function getProcessTextPostTranslate(text) {
 
   if (text.length > 0) {
     for (let i = 0; i < brackets.length; i++) {
-      newText = newText.replace(new RegExp(`\\[LEFT_BRACKET_${i}\\].*?\n+(.*)\n+.*?\\[RIGHT_BRACKET_${i}\\]`, 'gi'), `${brackets[i][1].split('...')[0]}$1${brackets[i][1].split('...')[1]}`).trim();
+      newText = newText.replace(new RegExp(`\\[LEFT_BRACKET_${i}\\].*?\n+(.*)\n+.*?\\[RIGHT_BRACKET_${i}\\]`, 'gi'), `${brackets[i][1].split(brackets[i][1].includes('…') ? '…' : '...')[0]}$1${brackets[i][1].split(brackets[i][1].includes('…') ? '…' : '...')[1]}`).trim();
     }
   }
 
