@@ -1036,7 +1036,7 @@ function getProcessTextPostTranslate(text) {
 
   if (text.length > 0) {
     for (let i = 0; i < brackets.length; i++) {
-      newText = newText.replace(new RegExp(`\n\\[LEFT_BRACKET_${i}\\].*?\n+(.*)\n+.*?\\[RIGHT_BRACKET_${i}\\]\n`, 'gi'), ` ${brackets[i][1].split(brackets[i][1].includes('…') ? '…' : '...')[0]}$1${brackets[i][1].split(brackets[i][1].includes('…') ? '…' : '...')[1]} `).trim();
+      newText = newText.replace(new RegExp(`\n\\[LEFT_BRACKET_${i}\\].*?\n+(.*)\n+.*?\\[RIGHT_BRACKET_${i}\\]\n`, 'gi'), ` ${brackets[i][1].split(brackets[i][1].includes('…') ? '…' : '...')[0]}$1${brackets[i][1].split(brackets[i][1].includes('…') ? '…' : '...')[1]} `);
     }
   }
 
