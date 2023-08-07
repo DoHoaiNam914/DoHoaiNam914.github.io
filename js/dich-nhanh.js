@@ -458,7 +458,7 @@ function buildTranslatedResult(translation, textLines, showOriginal) {
         continue;
       }
 
-      result += ('<p>' + (resultLines[i].trim() !== textLines[i + lostLineFixedAmount].trim() ? '<i>' + textLines[i + lostLineFixedAmount] + '</i><br>' + resultLines[i] : textLines[i + lostLineFixedAmount]) + '</p>');
+      result += ('<p>' + (getProcessTextPostTranslate(getProcessTextPreTranslate(resultLines[i].trim())) !== getProcessTextPostTranslate(getProcessTextPreTranslate(textLines[i + lostLineFixedAmount].trim())) ? '<i>' + textLines[i + lostLineFixedAmount] + '</i><br>' + resultLines[i] : textLines[i + lostLineFixedAmount]) + '</p>');
     }
   } else {
     result = ('<p>' + translation.split(/\n/).join('</p><p>') + '</p>');
