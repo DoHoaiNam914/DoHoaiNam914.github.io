@@ -1020,7 +1020,7 @@ function getProcessTextPreTranslate(text) {
 
   if (text.length > 0) {
     for (let i = 0; i < brackets.length; i++) {
-      lines = lines.map((element) => element.replace(new RegExp(`(\\s*?)${brackets[i][0].split('…')[0]}(.*)${brackets[i][0].split('…')[1]}`, 'g'), `$1[LEFT_BRACKET_${i}]\n$2\n[RIGHT_BRACKET_${i}]`));
+      lines = lines.map((element) => element.replace(new RegExp(`${brackets[i][0].split('…')[0]}(.*)${brackets[i][0].split('…')[1]}`, 'g'), `[LEFT_BRACKET_${i}]\n$1\n[RIGHT_BRACKET_${i}]`));
     }
   }
 
