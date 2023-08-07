@@ -4,46 +4,19 @@ let translator = JSON.parse(localStorage.getItem("translator"));
 
 let pinyins = new Map();
 let sinovietnameses = new Map();
-const marks = [
-  ['　', ' '],
-  ['，', ', '],
+const punctuation = [
   ['、', ', '],
+  ['。', '. '],
   ['；', '; '],
   ['：', ': '],
+  ['？', '? '],
   ['！', '! '],
-  ['？', '\? '],
-  ['．', '.'],
-  ['。', '. '],
-  ['·', '•'],
-  ['＇', ' \' ', 'APOSTROPHE'],
-  ['＂', ' " ', 'QUOTATION_MARK'],
-  ['（', ' \(', 'LEFT_PARENTHESIS'],
-  ['）', '\) ', 'RIGHT_PARENTHESIS'],
-  ['［', ' \[', 'LEFT_SQUARE_BRACKET'],
-  ['］', '\] ', 'RIGHT_SQUARE_BRACKET'],
-  ['｛', ' {', 'LEFT_CURLY_BRACKET'],
-  ['｝', '} ', 'RIGHT_CURLY_BRACKET'],
-  ['〈', ' <', 'LEFT_ANGLE_BRACKET'],
-  ['〉', '> ', 'RIGHT_ANGLE_BRACKET'],
-  ['《', ' «', 'LEFT_DOUBLE_ANGLE_BRACKET'],
-  ['》', '» ', 'RIGHT_DOUBLE_ANGLE_BRACKET'],
-  ['“', '“', 'LEFT_DOUBLE_QUOTATION_MARK'],
-  ['「', ' “', 'LEFT_CORNER_BRACKET'],
-  ['”', '”', 'RIGHT_DOUBLE_QUOTATION_MARK'],
-  ['」', '” ', 'RIGHT_CORNER_BRACKET'],
-  ['‘', '‘', 'LEFT_SINGLE_QUOTATION_MARK'],
-  ['『', ' ‘', 'LEFT_WHITE_CORNER_BRACKET'],
-  ['’', '’', 'RIGHT_SINGLE_QUOTATION_MARK'],
-  ['』', '’ ', 'RIGHT_WHITE_CORNER_BRACKET'],
-  ['【', ' \[', 'LEFT_BLACK_LENTICULAR_BRACKET'],
-  ['】', '\] ', 'RIGHT_BLACK_LENTICULAR_BRACKET'],
-  ['＊', ' * '],
-  ['／', '/'],
-  ['＆', ' & '],
-  ['＃', ' # '],
-  ['％', ' % '],
-  ['＋', ' + '],
-  ['～', ' ~ ']
+  ['…', '... '],
+  ['「…」', ' “...” '],
+  ['『…』', ' ‘...’ '],
+  ['（…）', ' (...) '],
+  ['－', ' - '],
+  ['・', ' '],
 ];
 
 const DEEPL_AUTH_KEY = '0c9649a5-e8f6-632a-9c42-a9eee160c330:fx';
@@ -412,29 +385,6 @@ async function translate() {
   $("#translatedText").html(buildTranslatedResult(translation, inputText.split(/\n/), $("#flexSwitchCheckShowOriginal").prop("checked")));
 }
 
-function buildTranslatedResult(translation, textLines, showOriginal) {
-  let result = '';
-
-  if (showOriginal) {
-    const resultLines = translation.split(/\n/);
-    let lostLineFixedAmount = 0;
-
-    for (let i = 0; i < textLines.length; i++) {
-      if (textLines[i + lostLineFixedAmount].trim().length == 0 && resultLines[i].trim().length > 0) {
-        lostLineFixedAmount++;
-        i--;
-        continue;
-      }
-
-      result += ('<p>' + (resultLines[i].trim() !== textLines[i + lostLineFixedAmount].trim() ? '<i>' + textLines[i + lostLineFixedAmount] + '</i><br>' + resultLines[i] : textLines[i + lostLineFixedAmount]) + '</p>');
-    }
-  } else {
-    result = ('<p>' + translation.split(/\n/).join('</p><p>') + '</p>');
-  }
-
-  return result.replace(/(<p>)(<\/p>)/g, '$1<br>$2');
-}
-
 function getConvertedChineseText(data, text) {
   const lines = text.split(/\n/);
   let result = [];
@@ -484,8 +434,32 @@ function getConvertedChineseText(data, text) {
     result.push(phrases.join(' '));
   }
 
-  marks.forEach((mark) => result = result.map((line) => line.replace(new RegExp(` ?(${mark[0]}) ?`, 'g'), mark[1]).trim()));
+  [...punctuation].filter((element) => element[0].length == 3).forEach((element) => result = result.map((line) => line.replace(new RegExp(`${element[0].split('…')[0]}(.*)${element[0].split('…')[1]}`, 'g'), `${element[1].split('...')[0]}$1${element[1].split('...')[1]}`).trim()));
+  [...punctuation].filter((element) => element[0].length == 1).forEach((element) => result = result.map((line) => line.replace(new RegExp(` *?(${element[0]}) *?`, 'g'), element[1]).trim()));
   return result.join('\n');
+}
+
+function buildTranslatedResult(translation, textLines, showOriginal) {
+  let result = '';
+
+  if (showOriginal) {
+    const resultLines = translation.split(/\n/);
+    let lostLineFixedAmount = 0;
+
+    for (let i = 0; i < textLines.length; i++) {
+      if (textLines[i + lostLineFixedAmount].trim().length == 0 && resultLines[i].trim().length > 0) {
+        lostLineFixedAmount++;
+        i--;
+        continue;
+      }
+
+      result += ('<p>' + (resultLines[i].trim() !== textLines[i + lostLineFixedAmount].trim() ? '<i>' + textLines[i + lostLineFixedAmount] + '</i><br>' + resultLines[i] : textLines[i + lostLineFixedAmount]) + '</p>');
+    }
+  } else {
+    result = ('<p>' + translation.split(/\n/).join('</p><p>') + '</p>');
+  }
+
+  return result.replace(/(<p>)(<\/p>)/g, '$1<br>$2');
 }
 
 function onInput() {
@@ -533,13 +507,15 @@ function onPostTranslate() {
 const DeepLTranslator = {
   translateText: async function (authKey, inputText, sourceLanguage, targetLanguage, isConvert = false) {
     try {
+      inputText = isConvert ? inputText : getDynamicDictionaryTextForAnothers(inputText);
+
       const response = await $.ajax({
         url: "https://api-free.deepl.com/v2/translate?auth_key=" + authKey,
-        data: `text=${textProcessPreTranslate(isConvert ? inputText : getDynamicDictionaryTextForAnothers(inputText), targetLanguage).split(/\n/).map((sentence) => encodeURIComponent(sentence)).join('&text=')}${sourceLanguage != '' ? '&source_lang=' + sourceLanguage : ''}&target_lang=${targetLanguage}&tag_handling=html`,
+        data: `text=${(!(targetLanguage == 'JA' || targetLanguage == 'KO' || targetLanguage == 'ZH') ? getProcessTextPreTranslate(inputText) : inputText).split(/\n/).map((sentence) => encodeURIComponent(sentence)).join('&text=')}${sourceLanguage != '' ? '&source_lang=' + sourceLanguage : ''}&target_lang=${targetLanguage}&tag_handling=html`,
         method: "POST"
       });
 
-      return textProcessPostTranslate(response.translations.map((line) => line.text.trim()).join('\n'));
+      return getProcessTextPostTranslate(response.translations.map((line) => line.text.trim()).join('\n'));
     } catch (error) {
       console.error('Bản dịch lỗi:', error);
       throw error;
@@ -616,6 +592,8 @@ const DeepLTargetLanguage = {
 const GoogleTranslate = {
   translateText: async function (inputText, version, ctkk, sourceLanguage, targetLanguage, isConvert = false) {
     try {
+      inputText = isConvert ? inputText : getDynamicDictionaryTextForAnothers(inputText);
+
       /**
        * Method: GET 
        * URL: https://translate.googleapis.com/translate_a/single?client=gtx&sl=${sourceLanguage}&tl=${targetLanguage}&hl=vi&dt=t&dt=bd&dj=1&q=${encodeURIComponent(inputText)}
@@ -630,13 +608,13 @@ const GoogleTranslate = {
        */
       const response = await $.ajax({
         url: `https://translate.googleapis.com/translate_a/t?anno=3&client=gtx&format=html&v=1.0&key&logId=v${version}&sl=${sourceLanguage}&tl=${targetLanguage}&tc=0&tk=${Bp(getDynamicDictionaryTextForAnothers(inputText), ctkk)}`,
-        data: `q=${textProcessPreTranslate(isConvert ? inputText : getDynamicDictionaryTextForAnothers(inputText), targetLanguage).split(/\n/).map((sentence) => encodeURIComponent(sentence)).join('&q=')}`,
+        data: `q=${(!(targetLanguage == 'zh-CN' || targetLanguage == 'zh-TW' || targetLanguage == 'ja' || targetLanguage == 'ko') ? getProcessTextPreTranslate(inputText) : inputText).split(/\n/).map((sentence) => encodeURIComponent(sentence)).join('&q=')}`,
         method: "GET"
       });
 
       const paragraph = document.createElement('p');
       $(paragraph).html(response.map((line) => ((sourceLanguage == 'auto' ? line[0] : line).includes('<i>') ? (sourceLanguage == 'auto' ? line[0] : line).split('</i> <b>').filter((element) => element.includes('</b>')).map((element) => ('<b>' + element.replace(/<i>.+/, ''))).join(' ') : (sourceLanguage == 'auto' ? line[0] : line)).trim()).join('\n'));
-      return textProcessPostTranslate($(paragraph).text());
+      return getProcessTextPostTranslate($(paragraph).text());
     } catch (error) {
       console.error('Bản dịch lỗi:', error);
       throw error;
@@ -700,7 +678,6 @@ const GoogleLanguage = {
   'ga': 'Irish',
   'it': 'Italian',
   'ja': 'Japanese',
-  'jv': 'Javanese',
   'jw': 'Javanese',
   'kn': 'Kannada',
   'kk': 'Kazakh',
@@ -850,6 +827,8 @@ const PapagoLanguage = {
 const MicrosoftTranslator = {
   translateText: async function (accessToken, inputText, sourceLanguage, targetLanguage, isConvert = false) {
     try {
+      inputText = isConvert ? inputText : getDynamicDictionaryText(inputText);
+
       /**
        *const bingTranslatorHTML = await $.get("https://cors-anywhere.herokuapp.com/https://www.bing.com/translator");
        *const IG = bingTranslatorHTML.match(/IG:"([A-Z0-9]+)"/)[1];
@@ -869,7 +848,7 @@ const MicrosoftTranslator = {
        */
       const response = await $.ajax({
         url: `https://api.cognitive.microsofttranslator.com/translate?${sourceLanguage != '' ? 'from=' + sourceLanguage + '&' : ''}to=${targetLanguage}&api-version=3.0&textType=html&includeSentenceLength=true`,
-        data: JSON.stringify(textProcessPreTranslate(isConvert ? inputText : getDynamicDictionaryText(inputText), targetLanguage).split(/\n/).map((sentence) => ({"Text": sentence}))),
+        data: JSON.stringify((!(targetLanguage == 'yue' || targetLanguage == 'lzh' || targetLanguage == 'zh-Hans' || targetLanguage == 'zh-Hant' || targetLanguage == 'ja' || targetLanguage == 'ko') ? getProcessTextPreTranslate(inputText) : inputText).split(/\n/).map((sentence) => ({"Text": sentence}))),
         method: 'POST',
         headers: {
           "Authorization": `Bearer ${accessToken}`,
@@ -877,7 +856,7 @@ const MicrosoftTranslator = {
         }
       });
 
-      return textProcessPostTranslate(response.map((element) => element.translations[0].text.trim()).join('\n'));
+      return getProcessTextPostTranslate(response.map((element) => element.translations[0].text.trim()).join('\n'));
     } catch (error) {
       console.error('Bản dịch lỗi:', error);
       throw error;
@@ -1031,34 +1010,32 @@ function getDynamicDictionaryTextForAnothers(text) {
   return newText;
 }
 
-function textProcessPreTranslate(text, targetLang) {
+function getProcessTextPreTranslate(text) {
   let lines = text.split(/\n/);
 
-  const leftMarks = [...marks].filter((element) => element.length == 3 && element[2].includes('LEFT'));
-  const rightMarks = [...marks].filter((element) => element.length == 3 && element[2].includes('RIGHT'));
+  const brackets = [...punctuation].filter((element) => element[0].length == 3);
 
   if (text.length > 0) {
-    for (let i = 0; i < leftMarks.length; i++) {
-      lines = lines.map((element) => element.replace(new RegExp(`^(\\s*?)${leftMarks[i][0]}(.*)${rightMarks[i][0]}$`, 'g'), `$1[${leftMarks[i][2]}]\n$2\n[${rightMarks[i][2]}]`));
+    for (let i = 0; i < brackets.length; i++) {
+      lines = lines.map((element) => element.replace(new RegExp(`(\\s*?)${brackets[i][0].split('…')[0]}(.*)${brackets[i][0].split('…')[1]}`, 'g'), `$1[LEFT_BRACKET_${i}]\n$2\n[RIGHT_BRACKET_${i}]`));
     }
   }
 
   return lines.join('\n');
 }
 
-function textProcessPostTranslate(text) {
+function getProcessTextPostTranslate(text) {
   let newText = text;
 
-  const leftMarks = [...marks].filter((element) => element.length == 3 && element[2].includes('LEFT'));
-  const rightMarks = [...marks].filter((element) => element.length == 3 && element[2].includes('RIGHT'));
+  const brackets = [...punctuation].filter((element) => element[0].length == 3);
 
   if (text.length > 0) {
-    for (let i = 0; i < leftMarks.length; i++) {
-      newText = newText.replace(new RegExp(`\\[${leftMarks[i][2]}\\].*?\n+(.*)\n+.*?\\[${rightMarks[i][2]}\\]`, 'gi'), `${leftMarks[i][1]}$1${rightMarks[i][1]}`);
+    for (let i = 0; i < brackets.length; i++) {
+      newText = newText.replace(new RegExp(`\\[LEFT_BRACKET_${i}\\].*?\n+(.*)\n+.*?\\[RIGHT_BRACKET_${i}\\]`, 'gi'), `${brackets[i][1].split('...')[0]}$1${brackets[i][1].split('...')[1]}`).trim();
     }
   }
 
-  return newText;
+  return newText.split(/\n/).map((element) => element.trim()).join('\n');
 }
 
 const Translators = {

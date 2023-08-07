@@ -94,6 +94,11 @@ $("#lacvietdictionaryButton").on("click", function () {
   }
 });
 
+$("#nomfoundationButton").on("click", function () {
+  if ($("#sourceEntry").val().length > 0) {
+    window.open(`http://www.nomfoundation.org/nom-tools/Nom-Lookup-Tool/Nom-Lookup-Tool?uiLang=en&inputText=${encodeURIComponent(($("#sourceEntry").val().substring($("#sourceEntry").prop("selectionStart"), $("#sourceEntry").prop("selectionEnd")) || $("#sourceEntry").val()).substring(0, 30))}`);
+  }
+});
 $("#hvdicButton").on("click", function () {
   if ($("#sourceEntry").val().length > 0) {
     window.open(`https://hvdic.thivien.net/whv/${encodeURIComponent(($("#sourceEntry").val().substring($("#sourceEntry").prop("selectionStart"), $("#sourceEntry").prop("selectionEnd")) || $("#sourceEntry").val()).substring(0, 30))}`);
