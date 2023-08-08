@@ -445,7 +445,7 @@ function getConvertedChineseText(data, text) {
 
   let result = results.join('\n');
 
-  [...punctuation].filter((element) => element[0].length == 1 || element[0] == '\\.\\.\\.').forEach((element) => {console.log(element[0]); result = result.replace(new RegExp(` ?${element[0]} ?`, 'g'), element[1]).split(/\n/).map((element) => element.trim()).join('\n')});
+  [...punctuation].filter((element) => element[0].length == 1 || element[0] == '\\.\\.\\.').forEach((element) => result = result.replace(new RegExp(` ?${element[0]} ?`, 'g'), element[1]).split(/\n/).map((element) => element.trim()).join('\n'));
   [...punctuation].filter((element) => element[0].length == 3 && element[0] != '\\.\\.\\.' && element[1].length > 3).forEach((element) => result = result.replace(new RegExp(`${element[0].split('…')[0]} (.*) ${element[0].split('…')[1]}`, 'g'), `${element[1].split('...')[0]}$1${element[1].split('...')[1]}`).split(/\n/).map((element) => element.trim()).join('\n'));
   return result;
 }
