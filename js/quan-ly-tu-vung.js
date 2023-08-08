@@ -304,14 +304,15 @@ function getSelectedTextOrActiveElementText() {
 function loadGlossary() {
   let glossaryArray = Object.entries(glossary);
 
-  let data = '';
   const glossaryList = document.createElement('select');
   const defaultOption = document.createElement('option');
   defaultOption.innerText = 'Chọn...';
   defaultOption.value = '';
   defaultOption.selected = true;
   glossaryList.appendChild(defaultOption);
+
   const glossaryType = $("#glossaryType").val();
+  let data = '';
 
   $("#fileExtension").text(glossaryType === GlossaryType.TSV ? "tsv" : (glossaryType === GlossaryType.CSV ? "csv" : "txt"));
 

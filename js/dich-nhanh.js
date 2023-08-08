@@ -17,11 +17,15 @@ const punctuation = [
   ['（…）', ' (...) '],
   ['－', ' - '],
   ['・', ' '],
+  ['\\.\\.\\.', '...'],
+  ['"', '"'],
+  ['\'', '\''],
   ['‘…’', '‘...’'],
   ['“…”', '“...”'],
   ['〈…〉', '〈…〉'],
   ['《…》', '《…》'],
   ['【…】', '【…】'],
+  ['，', ', '],
 ];
 
 const DEEPL_AUTH_KEY = '0c9649a5-e8f6-632a-9c42-a9eee160c330:fx';
@@ -29,13 +33,13 @@ const DEEPL_AUTH_KEY = '0c9649a5-e8f6-632a-9c42-a9eee160c330:fx';
 let translation = '';
 
 $(document).ready(() => {
-  $.get("/datasource/Unihan_Readings.txt").done((data) => {
-    let pinyinList = data.split(/\r?\n/).filter((line) => line.match(/^U+/) && line.includes('kMandarin')).map((line) => [String.fromCodePoint(parseInt(line.split(/\t/)[0].replace('U+', ''), 16)), line.split(/\t/)[2]]);
+  $.get("/datasource/Unihan_Readings.txt").done(async (data) => {
+    let pinyinList = [...data.split(/\r?\n/).filter((element) => element.match(/^U+/) && element.includes('kMandarin')).map((element) => [String.fromCodePoint(parseInt(element.split(/\t/)[0].replace('U+', ''), 16)), element.split(/\t/)[2]]), ...(await $.get("/datasource/Bính âm.txt")).split(/\r?\n/).reverse().map((element) => element.split('=')).filter((element) => element[0].length > 1).map((element) => [element[0], element[1].split('ǀ')[0]])];
     pinyinList = pinyinList.filter(([key]) => !pinyinList[key] && (pinyinList[key] = 1), {});
     pinyins = new Map(pinyinList);
     console.log('Đã tải xong bộ dữ liệu bính âm!');
 
-    let sinovietnameseList = [...hanvietData.map((line) => [line[0], line[1].split(',')[line[1].match(/^,/) ? 1 : 0]]), ...data.split(/\r?\n/).filter((line) => line.match(/^U+/) && line.includes('kVietnamese')).map((line) => [String.fromCodePoint(parseInt(line.split(/\t/)[0].replace('U+', ''), 16)), line.split(/\t/)[2]])];
+    let sinovietnameseList = [...hanvietData.map((element) => [element[0], element[1].split(',')[element[1].match(/^,/) ? 1 : 0]]), ...data.split(/\r?\n/).filter((element) => element.match(/^U+/) && element.includes('kVietnamese')).map((element) => [String.fromCodePoint(parseInt(element.split(/\t/)[0].replace('U+', ''), 16)), element.split(/\t/)[2]]), ...(await $.get("/datasource/Hán việt.txt")).split(/\r?\n/).reverse().map((element) => element.split('=')).filter((element) => element[0].length > 1).map((element) => [element[0], element[1].split('ǀ')[0]])];
     sinovietnameseList = sinovietnameseList.filter(([key]) => !sinovietnameseList[key] && (sinovietnameseList[key] = 1), {});
     sinovietnameses = new Map(sinovietnameseList);
     console.log('Đã tải xong bộ dữ liệu hán việt!');
@@ -392,7 +396,7 @@ async function translate() {
 
 function getConvertedChineseText(data, text) {
   const lines = text.split(/\n/);
-  let result = [];
+  let results = [];
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
@@ -436,12 +440,14 @@ function getConvertedChineseText(data, text) {
       }
     }
 
-    result.push(phrases.join(' '));
+    results.push(phrases.join(' '));
   }
 
-  [...punctuation].filter((element) => element[0].length == 3 && element[1].length != 3).forEach((element) => result = result.map((line) => line.replace(new RegExp(`${element[0].split('…')[0]}(.*)${element[0].split('…')[1]}`, 'g'), `${element[1].split('...')[0]}$1${element[1].split('...')[1]}`).trim()));
-  [...punctuation].filter((element) => element[0].length == 1).forEach((element) => result = result.map((line) => line.replace(new RegExp(` *?(${element[0]}) *?`, 'g'), element[1]).trim()));
-  return result.join('\n');
+  let result = results.join('\n');
+
+  [...punctuation].filter((element) => element[0].length == 1 || element[0] == '\\.\\.\\.').forEach((element) => {console.log(element[0]); result = result.replace(new RegExp(` ?${element[0]} ?`, 'g'), element[1]).split(/\n/).map((element) => element.trim()).join('\n')});
+  [...punctuation].filter((element) => element[0].length == 3 && element[0] != '\\.\\.\\.' && element[1].length > 3).forEach((element) => result = result.replace(new RegExp(`${element[0].split('…')[0]} (.*) ${element[0].split('…')[1]}`, 'g'), `${element[1].split('...')[0]}$1${element[1].split('...')[1]}`).split(/\n/).map((element) => element.trim()).join('\n'));
+  return result;
 }
 
 function buildTranslatedResult(translation, textLines, showOriginal) {
