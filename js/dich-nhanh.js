@@ -446,7 +446,7 @@ function getConvertedChineseText(data, text) {
   let result = results.join('\n');
 
   [...punctuation].filter((element) => element[0].length == 1 || element[0] == '\\.\\.\\.').forEach((element) => result = result.replace(new RegExp(` ?${element[0]} ?`, 'g'), element[1]).split(/\n/).map((element) => element.trim()).join('\n'));
-  [...punctuation].filter((element) => element[0].length == 3 && element[0] != '\\.\\.\\.' && element[1].length > 3).forEach((element) => result = result.replace(new RegExp(`${element[0].split('…')[0]} (.*) ${element[0].split('…')[1]}`, 'g'), `${element[1].split('...')[0]}$1${element[1].split('...')[1]}`).split(/\n/).map((element) => element.trim()).join('\n'));
+  [...punctuation].filter((element) => element[0].length == 3 && element[1].length == 5).forEach((element) => result = result.replace(new RegExp(`${element[0].split('…')[0]} (.*) ${element[0].split('…')[1]}`, 'g'), `${element[1].split('...')[0]}$1${element[1].split('...')[1]}`).split(/\n/).map((element) => element.trim()).join('\n'));
   return result;
 }
 
@@ -457,6 +457,7 @@ function buildTranslatedResult(translation, textLines, showOriginal) {
     const resultLines = translation.split(/\n/);
     let lostLineFixedAmount = 0;
 
+    console.log(textLines, resultLines);
     for (let i = 0; i < textLines.length; i++) {
       if (textLines[i + lostLineFixedAmount].trim().length == 0 && resultLines[i].trim().length > 0) {
         lostLineFixedAmount++;
@@ -1024,7 +1025,7 @@ function getDynamicDictionaryTextForAnothers(text) {
 function getProcessTextPreTranslate(text) {
   let lines = text.split(/\n/);
 
-  const brackets = [...punctuation].filter((element) => element[0].length == 3);
+  const brackets = [...punctuation].filter((element) => element[0].length == 3 && element[1].length == 5);
 
   if (text.length > 0) {
     for (let i = 0; i < brackets.length; i++) {
@@ -1038,7 +1039,7 @@ function getProcessTextPreTranslate(text) {
 function getProcessTextPostTranslate(text) {
   let newText = text;
 
-  const brackets = [...punctuation].filter((element) => element[0].length == 3);
+  const brackets = [...punctuation].filter((element) => element[0].length == 3 && element[1].length == 5);
 
   if (text.length > 0) {
     for (let i = 0; i < brackets.length; i++) {
