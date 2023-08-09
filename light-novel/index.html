@@ -5,9 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#000">
     <title>Light Novel - DoHoaiNam Light Novel Pages</title>
-    <link href="/css/bootstrap.min.css" rel="stylesheet">
-    <link href="/css/general_style.css" rel="stylesheet">
-    <meta name="theme-color" content="#000">
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/static/css/general_style.css" rel="stylesheet">
     <style>
       html,
       body {
@@ -18,13 +17,13 @@
         padding-top: 56px;
       }
     </style>
-    <script src="/lib/LAB.js"></script>
+    <script src="/static/lib/LAB.js"></script>
     <script>
       $LAB
-        .script("/lib/jquery-3.7.0.js")
-        .script("/lib/bootstrap.bundle.min.js")
-        .script("/lib/underscore-umd-min.js").wait()
-        .script("/js/thu-vien.js").wait(() => (new URLSearchParams(window.location.search)).has('thu-vien') ? volumeLibraryLoader() : bookLibraryLoader());
+        .script("/static/lib/jquery-3.7.0.js")
+        .script("/static/lib/bootstrap.bundle.min.js")
+        .script("/static/lib/underscore-umd-min.js").wait()
+        .script("/static/js/thu-vien.js").wait(() => (new URLSearchParams(window.location.search)).has('thu-vien') ? volumeLibraryLoader() : bookLibraryLoader());
     </script>
   </head>
   <body class="bg-light">

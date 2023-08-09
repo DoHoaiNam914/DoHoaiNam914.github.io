@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=0">
     <title>Dịch nhanh - DoHoaiNam Pages</title>
-    <link href="/css/bootstrap.min.css" rel="stylesheet">
-    <link href="/css/general_style.css" rel="stylesheet">
-    <script src="/lib/LAB.js"></script>
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/static/css/general_style.css" rel="stylesheet">
+    <script src="/static/lib/LAB.js"></script>
     <script>
       const storedTheme = localStorage.getItem("theme");
       const preferredTheme = storedTheme ?? 'auto';
@@ -46,9 +46,9 @@
       });
 
       $LAB
-        .script("/lib/jquery-3.7.0.js").wait()
-        .script("/lib/underscore-umd-min.js")
-        .script("/lib/bootstrap.bundle.min.js").wait(function () {
+        .script("/static/lib/jquery-3.7.0.js").wait()
+        .script("/static/lib/underscore-umd-min.js")
+        .script("/static/lib/bootstrap.bundle.min.js").wait(function () {
           setTheme(preferredTheme);
           showActiveTheme(preferredTheme);
           
@@ -60,16 +60,16 @@
             showActiveTheme(theme, true);
           });
         })
-        .script("/js/hanvietdict.js")
-        .script("/lib/tesseract.min.js")
-        .script("/lib/opencv.js").wait()
-        .script("/js/trich-xuat-van-ban.js").wait(function () {
+        .script("/static/js/hanvietdict.js")
+        .script("/static/lib/tesseract.min.js")
+        .script("/static/lib/opencv.js").wait()
+        .script("/static/js/trich-xuat-van-ban.js").wait(function () {
           const recognizer = JSON.parse(localStorage.getItem("recognizer")) ?? {langs: $("#recognizeLangsSelect").val(), grayscale: $("#flexCheckGrayscale").prop("checked"), threshold: $("#flexCheckThreshold").prop("checked")};
           $("#recognizeLangsSelect").val(recognizer.langs);
           $("#flexCheckGrayscale").prop("checked", recognizer.grayscale);
           $("#flexCheckThreshold").prop("checked", recognizer.threshold);
         }).wait()
-        .script("/js/dich-nhanh.js").wait(function () {
+        .script("/static/js/dich-nhanh.js").wait(function () {
           if (translator == undefined) {
 	          localStorage.setItem("translator", JSON.stringify(translator ?? {translator: $(".translator.active").data("id"), showOriginal: $("#flexSwitchCheckShowOriginal").prop("checked"), glossary: $("#flexSwitchCheckGlossary").prop("checked"), source: 'auto', target: 'vi'}));
 	          translator = JSON.parse(localStorage.getItem("translator"));
@@ -79,7 +79,7 @@
           $("#flexSwitchCheckShowOriginal").prop("checked", translator.showOriginal);
           $("#flexSwitchCheckGlossary").prop("checked", translator.glossary);
         })
-        .script("/js/quan-ly-tu-vung.js").wait(function () {
+        .script("/static/js/quan-ly-tu-vung.js").wait(function () {
           if (localGlossary == undefined) {
             localStorage.setItem("glossary", JSON.stringify(localGlossary ?? {type: $("#glossaryType").val(), data: {}}));
             localGlossary = JSON.parse(localStorage.getItem("glossary"));
