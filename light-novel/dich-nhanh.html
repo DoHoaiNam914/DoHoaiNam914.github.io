@@ -22,10 +22,7 @@
       const showActiveTheme = function (theme, focus = false) {
         const themeSwitcher = $('#theme');
 
-        if (!themeSwitcher) {
-          return
-        }
-
+        if (!themeSwitcher) return;
         const activeThemeIcon = $('.theme-icon-active');
         const btnToActive = $(`[data-theme-value="${theme}"]`);
         const svgOfActiveBtn = $(btnToActive).html();
@@ -34,9 +31,7 @@
         $(btnToActive).addClass("active");
         $(activeThemeIcon).html(svgOfActiveBtn);
 
-        if (focus) {
-          themeSwitcher.focus()
-        }
+        if (focus) themeSwitcher.focus()
       };
 
       window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function () {

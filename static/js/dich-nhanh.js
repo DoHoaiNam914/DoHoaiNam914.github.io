@@ -457,7 +457,6 @@ function buildTranslatedResult(translation, textLines, showOriginal) {
     const resultLines = translation.split(/\n/);
     let lostLineFixedAmount = 0;
 
-    console.log(textLines, resultLines);
     for (let i = 0; i < textLines.length; i++) {
       if (textLines[i + lostLineFixedAmount].trim().length == 0 && resultLines[i].trim().length > 0) {
         lostLineFixedAmount++;
@@ -1044,6 +1043,8 @@ function getProcessTextPostTranslate(text) {
   if (text.length > 0) {
     for (let i = 0; i < brackets.length; i++) {
       newText = newText.replace(new RegExp(`\n\\[LEFT_BRACKET_${i}\\].*?\n+(.*)\n+.*?\\[RIGHT_BRACKET_${i}\\]\n`, 'gi'), ` ${brackets[i][1].split('...')[0]}$1${brackets[i][1].split('...')[1]} `);
+
+      if (i == brackets.length - 1 && newText.includes('_BRACKET_')) i = -1;
     }
   }
 
