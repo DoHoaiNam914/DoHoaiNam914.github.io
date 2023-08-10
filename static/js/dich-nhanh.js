@@ -1028,7 +1028,7 @@ function getProcessTextPreTranslate(text) {
 
   if (text.length > 0) {
     for (let i = 0; i < brackets.length; i++) {
-      lines = lines.map((element) => element.replace(new RegExp(`${brackets[i][0].split('…')[0]}(.*)${brackets[i][0].split('…')[1]}`, 'g'), `\n[LEFT_BRACKET_${i}]\n$1\n[RIGHT_BRACKET_${i}]\n`));
+      lines = lines.map((element) => element.replace(new RegExp(`${brackets[i][0].split('…')[0]}(.*)${brackets[i][0].split('…')[1]}`, 'g'), `\n[OPEN_BRACKET_${i}]\n$1\n[CLOSE_BRACKET_${i}]\n`).replace(new RegExp(`${brackets[i][0].split('…')[1]}(.*)${brackets[i][0].split('…')[0]}`, 'g'), `\n[CLOSE_BRACKET_${i}]\n$1\n[OPEN_BRACKET_${i}]\n`));
     }
   }
 
@@ -1042,9 +1042,7 @@ function getProcessTextPostTranslate(text) {
 
   if (text.length > 0) {
     for (let i = 0; i < brackets.length; i++) {
-      newText = newText.replace(new RegExp(`\n\\[LEFT_BRACKET_${i}\\].*?\n+(.*)\n+.*?\\[RIGHT_BRACKET_${i}\\]\n`, 'gi'), ` ${brackets[i][1].split('...')[0]}$1${brackets[i][1].split('...')[1]} `);
-
-      if (i == brackets.length - 1 && newText.includes('_BRACKET_')) i = -1;
+      newText = newText.replace(new RegExp(`\n\\[OPEN_BRACKET_${i}\\].*?\n+(.*)\n+.*?\\[CLOSE_BRACKET_${i}\\]\n`, 'gi'), ` ${brackets[i][1].split('...')[0]}$1${brackets[i][1].split('...')[1]} `).replace(new RegExp(`\n\\[CLOSE_BRACKET_${i}\\].*?\n+(.*)\n+.*?\\[OPEN_BRACKET_${i}\\]\n`, 'gi'), `${brackets[i][1].split('...')[1]} $1 ${brackets[i][1].split('...')[0]}`);
     }
   }
 
