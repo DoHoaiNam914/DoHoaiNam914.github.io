@@ -28,7 +28,7 @@ const punctuation = [
   ['，', ', '],
 ];
 
-const DEEPL_AUTH_KEY = 'f1414922-db81-5454-67bd-9608cdca44b3:fx';
+const DEEPL_AUTH_KEY = '4670812e-ea92-88b1-8b82-0812f3f4009b:fx';
 
 let translation = '';
 
