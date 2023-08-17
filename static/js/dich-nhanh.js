@@ -186,10 +186,10 @@ $(".translator").click(function () {
     $("#sourceLangSelect").html(getSourceLanguageOptions($(this).data("id")));
 
     $("#sourceLangSelect > option").each(function (index) {
-      if ($(".translator.active").data("id") === prevTranslator) {
+      if ($(".translator.active").data("id") === prevTranslator && prevSourceLanguage != null) {
         $("#sourceLangSelect").val(prevSourceLanguage);
         return false;
-      } else if (($(this).val().toLowerCase().split('-')[0]
+      } else if (prevSourceLanguage != null && (($(this).val().toLowerCase().split('-')[0]
               == prevSourceLanguage.toLowerCase().split('-')[0] && $(
                   this).val().toLowerCase().split('-')[1]
               == prevSourceLanguage.toLowerCase().split('-')[1]) || $(this).text()
@@ -199,7 +199,7 @@ $(".translator").click(function () {
               prevSourceLanguageName.includes('Tiếng')
                   ? prevSourceLanguageName.replace(/[()]/g, '').replace(
                       'Tiếng ', '') : prevSourceLanguageName.replace(/[()]/g,
-                      '').split(' ')[0]))) {
+                      '').split(' ')[0])))) {
         $("#sourceLangSelect").val($(this).val()).change();
         return false;
       } else if (index + 1 == $("#targetLangSelect > option").length) {
@@ -223,10 +223,10 @@ $(".translator").click(function () {
     $("#targetLangSelect").html(getTargetLanguageOptions($(this).data("id")));
 
     $("#targetLangSelect > option").each(function (index) {
-      if ($(".translator.active").data("id") === prevTranslator) {
+      if ($(".translator.active").data("id") === prevTranslator && prevTargetLanguage != null) {
         $("#targetLangSelect").val(prevTargetLanguage);
         return false;
-      } else if (($(this).val().toLowerCase().split('-')[0]
+      } else if (prevTargetLanguage != null && (($(this).val().toLowerCase().split('-')[0]
               == prevTargetLanguage.toLowerCase().split('-')[0] && $(
                   this).val().toLowerCase().split('-')[1]
               == prevTargetLanguage.toLowerCase().split('-')[1]) || $(this).text()
@@ -236,7 +236,7 @@ $(".translator").click(function () {
               prevTargetLanguageName.includes('Tiếng')
                   ? prevTargetLanguageName.replace(/[()]/g, '').replace(
                       'Tiếng ', '') : prevTargetLanguageName.replace(/[()]/g,
-                      '').split(' ')[0]))) {
+                      '').split(' ')[0])))) {
         if ($(".translator.active").data("id")
             === Translators.DEEPL_TRANSLATOR && prevTargetLanguageName
             == 'English') {
@@ -259,7 +259,7 @@ $(".translator").click(function () {
       }
     });
 
-    if ($(".translator.active").data("id") === Translators.VIETPHRASES) {
+    if ($(".translator.active").data("id") !== Translators.VIETPHRASES) {
       localStorage.setItem("translator", JSON.stringify({
         translator: $(this).data("id"),
         showOriginal: translator.showOriginal,
@@ -515,7 +515,7 @@ async function translate() {
             if ($("#targetLangSelect").val() == 'vi' && Object.entries(
                 vietphrases).length > 0) {
               translatedText = getConvertedChineseText(
-                  {...glossary, ...vietphrases}, translateText).split(/\n/).map(
+                  {...sinovietnameses, ...vietphrases, ...glossary}, translateText).split(/\n/).map(
                   (element) => element.replace(
                       /(^|[.;:?!-]\s+|[("'‘“〈《【])([a-z])/g,
                       (match, p1, p2) => p1 + p2.toUpperCase())).join('\n');
