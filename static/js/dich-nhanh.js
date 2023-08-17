@@ -6,27 +6,29 @@ let pinyins = {};
 let sinovietnameses = {};
 let vietphrases = {};
 const punctuation = [
+  ['－', ' - '],
+  ['・', ' '],
+  ['，', ', '],
   ['、', ', '],
-  ['。', '. '],
   ['；', '; '],
   ['：', ': '],
   ['？', '\? '],
   ['！', '! '],
+  ['\\.\\.\\.', '... '],
   ['…', '... '],
-  ['「…」', ' “...” '],
-  ['『…』', ' ‘...’ '],
-  ['（…）', ' (...) '],
-  ['－', ' - '],
-  ['・', ' '],
-  ['\\.\\.\\.', '...'],
-  ['"', '"'],
+  ['。', '. '],
   ['\'', '\''],
   ['‘…’', '‘...’'],
+  ['"', '"'],
   ['“…”', '“...”'],
+  ['(…)', ' (...) '],
+  ['（…）', ' (...) '],
+  ['[…]', ' [...] '],
   ['〈…〉', '〈...〉'],
   ['《…》', '《...》'],
-  ['【…】', '【...】'],
-  ['，', ', '],
+  ['「…」', ' “...” '],
+  ['『…』', ' ‘...’ '],
+  ['【…】', '【...】']
 ];
 
 const DEEPL_AUTH_KEY = '4670812e-ea92-88b1-8b82-0812f3f4009b:fx';
@@ -135,10 +137,10 @@ $("#inputVietPhrases").on("change", function () {
         (phrase) => phrase.split('=')).filter(
         (phrase) => phrase.length == 2).map(
         (element) => [element[0], element[1].split('/')[0]]);
-    vietphraseList = vietphraseList.filter(
+    vietphraseList = [...vietphraseList,
+      ...Object.entries(sinovietnameses)].filter(
         ([key]) => !vietphraseList[key] && (vietphraseList[key] = 1), {})
     vietphrases = Object.fromEntries(vietphraseList);
-
   }
 
   reader.readAsText($(this).prop("files")[0]);
@@ -192,18 +194,22 @@ $(".translator").click(function () {
           && prevSourceLanguage != null) {
         $("#sourceLangSelect").val(prevSourceLanguage);
         return false;
-      } else if (prevSourceLanguage != null && prevSourceLanguageName != null && (($(
-                  this).val().toLowerCase().split('-')[0]
-              == prevSourceLanguage.toLowerCase().split('-')[0] && $(
-                  this).val().toLowerCase().split('-')[1]
-              == prevSourceLanguage.toLowerCase().split('-')[1]) || $(this).text()
-          == prevSourceLanguageName || ($(this).val().toLowerCase().split(
-              '-')[0] == prevSourceLanguage.toLowerCase().split('-')[0] && $(
-              this).text().replace(/[()]/g, '').includes(
-              prevSourceLanguageName.includes('Tiếng')
-                  ? prevSourceLanguageName.replace(/[()]/g, '').replace(
-                      'Tiếng ', '') : prevSourceLanguageName.replace(/[()]/g,
-                      '').split(' ')[0])))) {
+      } else if (prevSourceLanguage != null && prevSourceLanguageName != null
+          && (($(
+                      this).val().toLowerCase().split('-')[0]
+                  == prevSourceLanguage.toLowerCase().split('-')[0] && $(
+                      this).val().toLowerCase().split('-')[1]
+                  == prevSourceLanguage.toLowerCase().split('-')[1]) || $(
+                  this).text()
+              == prevSourceLanguageName || ($(this).val().toLowerCase().split(
+                      '-')[0] == prevSourceLanguage.toLowerCase().split('-')[0]
+                  && $(
+                      this).text().replace(/[()]/g, '').includes(
+                      prevSourceLanguageName.includes('Tiếng')
+                          ? prevSourceLanguageName.replace(/[()]/g, '').replace(
+                              'Tiếng ', '') : prevSourceLanguageName.replace(
+                              /[()]/g,
+                              '').split(' ')[0])))) {
         $("#sourceLangSelect").val($(this).val()).change();
         return false;
       } else if (index + 1 == $("#targetLangSelect > option").length) {
@@ -231,18 +237,22 @@ $(".translator").click(function () {
           && prevTargetLanguage != null) {
         $("#targetLangSelect").val(prevTargetLanguage);
         return false;
-      } else if (prevTargetLanguage != null && prevTargetLanguageName != null && (($(
-                  this).val().toLowerCase().split('-')[0]
-              == prevTargetLanguage.toLowerCase().split('-')[0] && $(
-                  this).val().toLowerCase().split('-')[1]
-              == prevTargetLanguage.toLowerCase().split('-')[1]) || $(this).text()
-          == prevTargetLanguageName || ($(this).val().toLowerCase().split(
-              '-')[0] == prevTargetLanguage.toLowerCase().split('-')[0] && $(
-              this).text().replace(/[()]/g, '').includes(
-              prevTargetLanguageName.includes('Tiếng')
-                  ? prevTargetLanguageName.replace(/[()]/g, '').replace(
-                      'Tiếng ', '') : prevTargetLanguageName.replace(/[()]/g,
-                      '').split(' ')[0])))) {
+      } else if (prevTargetLanguage != null && prevTargetLanguageName != null
+          && (($(
+                      this).val().toLowerCase().split('-')[0]
+                  == prevTargetLanguage.toLowerCase().split('-')[0] && $(
+                      this).val().toLowerCase().split('-')[1]
+                  == prevTargetLanguage.toLowerCase().split('-')[1]) || $(
+                  this).text()
+              == prevTargetLanguageName || ($(this).val().toLowerCase().split(
+                      '-')[0] == prevTargetLanguage.toLowerCase().split('-')[0]
+                  && $(
+                      this).text().replace(/[()]/g, '').includes(
+                      prevTargetLanguageName.includes('Tiếng')
+                          ? prevTargetLanguageName.replace(/[()]/g, '').replace(
+                              'Tiếng ', '') : prevTargetLanguageName.replace(
+                              /[()]/g,
+                              '').split(' ')[0])))) {
         if ($(".translator.active").data("id")
             === Translators.DEEPL_TRANSLATOR && prevTargetLanguageName
             == 'English') {
@@ -521,30 +531,30 @@ async function translate() {
           case Translators.VIETPHRASES:
             if ($("#targetLangSelect").val() == 'vi' && Object.entries(
                 vietphrases).length > 0) {
-              translatedText = getConvertedChineseText(
-                  {...sinovietnameses, ...vietphrases}, true,
+              translatedText = getConvertedChineseText(vietphrases, true,
                   translateText,
                   $("input[name=\"flexRadioTranslationAlgorithm\"]:checked").val()).split(
                   /\n/).map(
                   (element) => element.replace(
-                      /(^|[.;:?!-]\s+|[("'‘“〈《【])([a-z])/g,
+                      /(^|\s*[.;:?!-("'‘“〈《【]\s*)(\p{Lower})/gu,
                       (match, p1, p2) => p1 + p2.toUpperCase())).join('\n');
             } else if ($("#targetLangSelect").val() == 'zh-VN'
                 && Object.entries(sinovietnameses).length > 0) {
-              translatedText = getConvertedChineseText(sinovietnameses, true,
+              translatedText = getConvertedChineseText(sinovietnameses, false,
                   translateText,
                   $("input[name=\"flexRadioTranslationAlgorithm\"]:checked").val()).split(
                   /\n/).map(
                   (element) => element.replace(
-                      /(^|[.;:?!-]\s+|[("'‘“〈《【])([a-z])/g,
+                      /(^|[.;:?!-]\s+|[("'‘“〈《【])(\p{Lower})/gu,
                       (match, p1, p2) => p1 + p2.toUpperCase())).join('\n');
-            } else if (Object.entries(pinyins).length > 0) {
-              translatedText = getConvertedChineseText(pinyins, true,
+            } else if ($("#targetLangSelect").val() == 'pinyin'
+                && Object.entries(pinyins).length > 0) {
+              translatedText = getConvertedChineseText(pinyins, false,
                   translateText,
                   $("input[name=\"flexRadioTranslationAlgorithm\"]:checked").val()).split(
                   /\n/).map(
                   (element) => element.replace(
-                      /(^|[.;:?!-]\s+|[("'‘“〈《【])([a-z])/g,
+                      /(^|[.;:?!-]\s+|[("'‘“〈《【])(\p{Lower})/gu,
                       (match, p1, p2) => p1 + p2.toUpperCase())).join('\n');
             } else {
               onPostTranslate();
@@ -572,10 +582,12 @@ async function translate() {
 function getConvertedChineseText(data, useGlossary, inputText,
     translationAlgorithm = 'leftToRightTranslation') {
   data = Object.fromEntries(
-      [...Object.entries(glossary), ...Object.entries(data).filter(
-          (element) => inputText.includes(element[0])).sort(
-          (a, b) => b[0].length - a[0].length)]);
-  const dataEntries = Object.entries(data);
+      [...useGlossary ? Object.entries(glossary) : [],
+        ...Object.entries(data).filter(
+            (element) => (!useGlossary || !glossary.hasOwnProperty(element[0]))
+                && (translationAlgorithm != 'longPrior' || inputText.includes(
+                    element[0]))).sort(
+            (a, b) => b[0].length - a[0].length)]);
   const lines = inputText.split(/\n/);
   const results = [];
 
@@ -584,32 +596,23 @@ function getConvertedChineseText(data, useGlossary, inputText,
 
     if (translationAlgorithm == 'longPrior') {
       let tempLine = line;
-
-      if (useGlossary) {
-        for (const property in glossary) {
-          tempLine = tempLine.replace(new RegExp(`${property}`, 'g'),
-              ` ${glossary[property]}`).trimStart();
-        }
-      }
+      let bool = false
 
       for (const property in data) {
-        tempLine = tempLine.replace(new RegExp(`${property}`, 'g'),
+        tempLine = tempLine.replace(new RegExp(property, 'g'),
             ` ${data[property]}`).trimStart();
       }
 
       results.push(tempLine);
     } else {
+      const dataEntries = Object.entries(data);
+
       const phrases = [];
       let tempWord = '';
 
       for (let j = 0; j < line.length; j++) {
         for (let k = dataEntries[0][0].length; k >= 1; k--) {
-          if (useGlossary && glossary.hasOwnProperty(
-              line.substring(j, j + k))) {
-            phrases.push(glossary[line.substring(j, j + k)]);
-            j += k - 1;
-            break;
-          } else if (data.hasOwnProperty(line.substring(j, j + k))) {
+          if (data.hasOwnProperty(line.substring(j, j + k))) {
             phrases.push(data[line.substring(j, j + k)]);
             j += k - 1;
             break;

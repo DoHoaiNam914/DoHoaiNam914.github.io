@@ -47,10 +47,8 @@ $("#glossaryType").change(() => loadGlossary());
 
 $("#sourceEntry").on("input", function () {
   if ($(this).val().length > 0) {
-    $("#targetEntry").val(getConvertedChineseText({
-      ...glossary, ...Object.fromEntries(Object.entries(sinovietnameses).filter(
-          (element) => !glossary.hasOwnProperty(element[0])))
-    }, $(this).val()));
+    $("#targetEntry").val(
+        getConvertedChineseText(sinovietnameses, true, $(this).val()));
 
     if (glossary.hasOwnProperty($(this).val())) {
       $("#glossaryList").val($(this).val());
@@ -80,13 +78,13 @@ $("#pasteSourceTextButton").on("click", () => {
 
 $("#pinyinConvertButton").on("click", function () {
   if ($("#sourceEntry").val().length > 0) {
-    $("#targetEntry").val(getConvertedChineseText(pinyins, $("#sourceEntry").val()).toLowerCase());
+    $("#targetEntry").val(getConvertedChineseText(pinyins, false, $("#sourceEntry").val()).toLowerCase());
   }
 });
 
 $("#sinoVietnameseConvertButton").click(function () {
   if ($("#sourceEntry").val().length > 0) {
-    $("#targetEntry").val(getConvertedChineseText(sinovietnameses, $("#sourceEntry").val()).toLowerCase());
+    $("#targetEntry").val(getConvertedChineseText(sinovietnameses, false, $("#sourceEntry").val()).toLowerCase());
   }
 });
 
