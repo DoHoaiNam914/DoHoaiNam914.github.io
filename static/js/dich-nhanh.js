@@ -93,24 +93,26 @@ $("#translateButton").click(async function () {
 });
 
 $("#copyButton").on("click", () => {
-  navigator.clipboard.writeText($("#translateButton").text() == 'Sửa' ? translation : $("#queryText").val());
+  navigator.clipboard.writeText(
+      $("#translateButton").text() == 'Sửa' ? translation : $(
+          "#queryText").val());
 });
 
 $("#pasteButton").on("click", () => {
   navigator.clipboard
-    .readText()
-    .then((clipText) => {
-      if (clipText.length > 0) {
-        $("#queryText").val(clipText).change();
+  .readText()
+  .then((clipText) => {
+    if (clipText.length > 0) {
+      $("#queryText").val(clipText).change();
 
-        if ($("#translateButton").text() == 'Sửa') {
-          translation = '';
-          $("#translateButton").text("Dịch").click();
-          $(document.body).scrollTop(0);
-          $(document.documentElement).scrollTop(0);
-        }
+      if ($("#translateButton").text() == 'Sửa') {
+        translation = '';
+        $("#translateButton").text("Dịch").click();
+        $(document.body).scrollTop(0);
+        $(document.documentElement).scrollTop(0);
       }
-    });
+    }
+  });
 });
 
 $("#reTranslateButton").on("click", () => {
@@ -129,8 +131,12 @@ $("#inputVietPhrases").on("change", function () {
   const reader = new FileReader();
 
   reader.onload = function () {
-    let vietphraseList = this.result.split(/\r?\n/).map((phrase) => phrase.split('=')).filter((phrase) => phrase.length == 2).map((element) => [element[0], element[1].split('/')[0]]);
-    vietphraseList = vietphraseList.filter(([key]) => !vietphraseList[key] && (vietphraseList[key] = 1), {})
+    let vietphraseList = this.result.split(/\r?\n/).map(
+        (phrase) => phrase.split('=')).filter(
+        (phrase) => phrase.length == 2).map(
+        (element) => [element[0], element[1].split('/')[0]]);
+    vietphraseList = vietphraseList.filter(
+        ([key]) => !vietphraseList[key] && (vietphraseList[key] = 1), {})
     vietphrases = Object.fromEntries(vietphraseList);
 
   }
@@ -144,16 +150,14 @@ $(".option").change(() => {
     $("#translateButton").text("Dịch").click();
   }
 
-  if ($(".translator.active").data("id") !== Translators.VIETPHRASES || !$(this).hasClass("select-lang")) {
-    localStorage.setItem("translator", JSON.stringify({
-      translator: $(".translator.active").data("id"),
-      showOriginal: $("#flexSwitchCheckShowOriginal").prop("checked"),
-      glossary: $("#flexSwitchCheckGlossary").prop("checked"),
-      source: $("#sourceLangSelect").val(),
-      target: $("#targetLangSelect").val()
-    }));
-    translator = JSON.parse(localStorage.getItem("translator"));
-  }
+  localStorage.setItem("translator", JSON.stringify({
+    translator: $(".translator.active").data("id"),
+    showOriginal: $("#flexSwitchCheckShowOriginal").prop("checked"),
+    glossary: $("#flexSwitchCheckGlossary").prop("checked"),
+    source: $("#sourceLangSelect").val(),
+    target: $("#targetLangSelect").val()
+  }));
+  translator = JSON.parse(localStorage.getItem("translator"));
 });
 
 $(".translator").click(function () {
@@ -167,8 +171,7 @@ $(".translator").click(function () {
     const prevTargetLanguageName = getLanguageName(prevTranslator,
         prevTargetLanguage);
 
-    if ($(this).data("id") === Translators.VIETPHRASES && Object.entries(
-        vietphrases).length == 0) {
+    if ($(this).data("id") === Translators.VIETPHRASES) {
       localStorage.setItem("translator", JSON.stringify({
         translator: $(".translator.active").data("id"),
         showOriginal: $("#flexSwitchCheckShowOriginal").prop("checked"),
@@ -177,7 +180,6 @@ $(".translator").click(function () {
         target: $("#targetLangSelect").val()
       }));
       translator = JSON.parse(localStorage.getItem("translator"));
-      return;
     }
 
     $(".translator").removeClass("active");
@@ -186,10 +188,12 @@ $(".translator").click(function () {
     $("#sourceLangSelect").html(getSourceLanguageOptions($(this).data("id")));
 
     $("#sourceLangSelect > option").each(function (index) {
-      if ($(".translator.active").data("id") === prevTranslator && prevSourceLanguage != null) {
+      if ($(".translator.active").data("id") === prevTranslator
+          && prevSourceLanguage != null) {
         $("#sourceLangSelect").val(prevSourceLanguage);
         return false;
-      } else if (prevSourceLanguage != null && (($(this).val().toLowerCase().split('-')[0]
+      } else if (prevSourceLanguage != null && (($(
+                  this).val().toLowerCase().split('-')[0]
               == prevSourceLanguage.toLowerCase().split('-')[0] && $(
                   this).val().toLowerCase().split('-')[1]
               == prevSourceLanguage.toLowerCase().split('-')[1]) || $(this).text()
@@ -223,10 +227,12 @@ $(".translator").click(function () {
     $("#targetLangSelect").html(getTargetLanguageOptions($(this).data("id")));
 
     $("#targetLangSelect > option").each(function (index) {
-      if ($(".translator.active").data("id") === prevTranslator && prevTargetLanguage != null) {
+      if ($(".translator.active").data("id") === prevTranslator
+          && prevTargetLanguage != null) {
         $("#targetLangSelect").val(prevTargetLanguage);
         return false;
-      } else if (prevTargetLanguage != null && (($(this).val().toLowerCase().split('-')[0]
+      } else if (prevTargetLanguage != null && (($(
+                  this).val().toLowerCase().split('-')[0]
               == prevTargetLanguage.toLowerCase().split('-')[0] && $(
                   this).val().toLowerCase().split('-')[1]
               == prevTargetLanguage.toLowerCase().split('-')[1]) || $(this).text()
@@ -276,6 +282,7 @@ $(".translator").click(function () {
     }
   }
 });
+
 function getLanguageName(translator, languageCode) {
   switch (translator) {
     case Translators.DEEPL_TRANSLATOR:
@@ -515,27 +522,33 @@ async function translate() {
             if ($("#targetLangSelect").val() == 'vi' && Object.entries(
                 vietphrases).length > 0) {
               translatedText = getConvertedChineseText(
-                  {...sinovietnameses, ...vietphrases, ...glossary}, translateText).split(/\n/).map(
+                  {...sinovietnameses, ...vietphrases, ...glossary},
+                  translateText,
+                  $("input[name=\"flexRadioTranslationAlgorithm\"]:checked").val()).split(
+                  /\n/).map(
                   (element) => element.replace(
                       /(^|[.;:?!-]\s+|[("'‘“〈《【])([a-z])/g,
                       (match, p1, p2) => p1 + p2.toUpperCase())).join('\n');
             } else if ($("#targetLangSelect").val() == 'zh-VN'
                 && Object.entries(sinovietnameses).length > 0) {
               translatedText = getConvertedChineseText(sinovietnameses,
-                  translateText).split(/\n/).map(
+                  translateText,
+                  $("input[name=\"flexRadioTranslationAlgorithm\"]:checked").val()).split(
+                  /\n/).map(
                   (element) => element.replace(
                       /(^|[.;:?!-]\s+|[("'‘“〈《【])([a-z])/g,
                       (match, p1, p2) => p1 + p2.toUpperCase())).join('\n');
             } else if (Object.entries(pinyins).length > 0) {
               translatedText = getConvertedChineseText(pinyins,
-                  translateText).split(/\n/).map(
+                  translateText,
+                  $("input[name=\"flexRadioTranslationAlgorithm\"]:checked").val()).split(
+                  /\n/).map(
                   (element) => element.replace(
                       /(^|[.;:?!-]\s+|[("'‘“〈《【])([a-z])/g,
                       (match, p1, p2) => p1 + p2.toUpperCase())).join('\n');
             } else {
               onPostTranslate();
             }
-
             break;
         }
 
@@ -556,59 +569,73 @@ async function translate() {
           $("#flexSwitchCheckShowOriginal").prop("checked")));
 }
 
-function getConvertedChineseText(data, text) {
+function getConvertedChineseText(data, inputText,
+    translationAlgorithm = 'leftToRightTranslation') {
   data = Object.fromEntries(
-      Object.entries(data).sort((a, b) => b[0].length - a[0].length));
+      Object.entries(data).filter(
+          (element) => inputText.includes(element[0])).sort(
+          (a, b) => b[0].length - a[0].length));
   const dataEntries = Object.entries(data);
-  const lines = text.split(/\n/);
-  let results = [];
+  const lines = inputText.split(/\n/);
+  const results = [];
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
 
-    const phrases = [];
-    let tempWord = '';
+    if (translationAlgorithm == 'longPrior') {
+      let tempLine = line;
 
-    for (let j = 0; j < line.length; j++) {
-      for (let k = dataEntries[0][0].length; k >= 1; k--) {
-        if (data.hasOwnProperty(line.substring(j, j + k))) {
-          phrases.push(data[line.substring(j, j + k)]);
-          j += k - 1;
-          break;
-        } else if (k == 1) {
-          if (tempWord.length > 0 && /\s/.test(line[j]) && !/\s/.test(
-              tempWord)) {
-            tempWord.split(' ').forEach((word) => phrases.push(word));
-            tempWord = '';
-          }
+      for (const property in data) {
+        tempLine = tempLine.replace(new RegExp(`${property}`, 'g'),
+            ` ${data[property]}`).trimStart();
+      }
 
-          tempWord += line[j];
+      results.push(tempLine);
+    } else {
+      const phrases = [];
+      let tempWord = '';
 
-          if (/\s/.test(tempWord)) {
-            if (!/\s/.test(line[j + 1])) {
-              phrases[phrases.length - 1] += tempWord.substring(0,
-                  tempWord.length - 1);
+      for (let j = 0; j < line.length; j++) {
+        for (let k = dataEntries[0][0].length; k >= 1; k--) {
+          if (data.hasOwnProperty(line.substring(j, j + k))) {
+            phrases.push(data[line.substring(j, j + k)]);
+            j += k - 1;
+            break;
+          } else if (k == 1) {
+            if (tempWord.length > 0 && /\s/.test(line[j]) && !/\s/.test(
+                tempWord)) {
+              tempWord.split(' ').forEach((word) => phrases.push(word));
               tempWord = '';
+            }
+
+            tempWord += line[j];
+
+            if (/\s/.test(tempWord)) {
+              if (!/\s/.test(line[j + 1])) {
+                phrases[phrases.length - 1] += tempWord.substring(0,
+                    tempWord.length - 1);
+                tempWord = '';
+              }
+
+              break;
+            }
+
+            for (let l = dataEntries[0][0].length; l >= 1; l--) {
+              if (tempWord.length > 0 && (data.hasOwnProperty(
+                  line.substring(j + 1, j + 1 + l)) || j + 1 == line.length)) {
+                tempWord.split(' ').forEach((word) => phrases.push(word));
+                tempWord = '';
+                break;
+              }
             }
 
             break;
           }
-
-          for (let l = dataEntries[0][0].length; l >= 1; l--) {
-            if (tempWord.length > 0 && (data.hasOwnProperty(
-                line.substring(j + 1, j + 1 + l)) || j + 1 == line.length)) {
-              tempWord.split(' ').forEach((word) => phrases.push(word));
-              tempWord = '';
-              break;
-            }
-          }
-
-          break;
         }
       }
-    }
 
-    results.push(phrases.join(' '));
+      results.push(phrases.join(' '));
+    }
   }
 
   let result = results.join('\n');
@@ -635,13 +662,19 @@ function buildTranslatedResult(translation, textLines, showOriginal) {
     let lostLineFixedAmount = 0;
 
     for (let i = 0; i < textLines.length; i++) {
-      if (textLines[i + lostLineFixedAmount].trim().length == 0 && resultLines[i].trim().length > 0) {
+      if (textLines[i + lostLineFixedAmount].trim().length == 0
+          && resultLines[i].trim().length > 0) {
         lostLineFixedAmount++;
         i--;
         continue;
       }
 
-      result += ('<p>' + (getProcessTextPostTranslate(getProcessTextPreTranslate(resultLines[i].trim())) !== getProcessTextPostTranslate(getProcessTextPreTranslate(textLines[i + lostLineFixedAmount].trim())) ? '<i>' + textLines[i + lostLineFixedAmount] + '</i><br>' + resultLines[i] : textLines[i + lostLineFixedAmount]) + '</p>');
+      result += ('<p>' + (getProcessTextPostTranslate(
+          getProcessTextPreTranslate(resultLines[i].trim()))
+      !== getProcessTextPostTranslate(
+          getProcessTextPreTranslate(textLines[i + lostLineFixedAmount].trim()))
+          ? '<i>' + textLines[i + lostLineFixedAmount] + '</i><br>'
+          + resultLines[i] : textLines[i + lostLineFixedAmount]) + '</p>');
     }
   } else {
     result = ('<p>' + translation.split(/\n/).join('</p><p>') + '</p>');
@@ -693,17 +726,25 @@ function onPostTranslate() {
 }
 
 const DeepLTranslator = {
-  translateText: async function (authKey, inputText, sourceLanguage, targetLanguage, isConvert = false) {
+  translateText: async function (authKey, inputText, sourceLanguage,
+      targetLanguage, isConvert = false) {
     try {
-      inputText = isConvert ? inputText : getDynamicDictionaryTextForAnothers(inputText);
+      inputText = isConvert ? inputText : getDynamicDictionaryTextForAnothers(
+          inputText);
 
       const response = await $.ajax({
         url: "https://api-free.deepl.com/v2/translate?auth_key=" + authKey,
-        data: `text=${(!(targetLanguage == 'JA' || targetLanguage == 'KO' || targetLanguage == 'ZH') ? getProcessTextPreTranslate(inputText) : inputText).split(/\n/).map((sentence) => encodeURIComponent(sentence)).join('&text=')}${sourceLanguage != '' ? '&source_lang=' + sourceLanguage : ''}&target_lang=${targetLanguage}&tag_handling=html`,
+        data: `text=${(!(targetLanguage == 'JA' || targetLanguage == 'KO'
+            || targetLanguage == 'ZH') ? getProcessTextPreTranslate(inputText)
+            : inputText).split(/\n/).map(
+            (sentence) => encodeURIComponent(sentence)).join(
+            '&text=')}${sourceLanguage != '' ? '&source_lang=' + sourceLanguage
+            : ''}&target_lang=${targetLanguage}&tag_handling=html`,
         method: "POST"
       });
 
-      return getProcessTextPostTranslate(response.translations.map((line) => line.text.trim()).join('\n'));
+      return getProcessTextPostTranslate(
+          response.translations.map((line) => line.text.trim()).join('\n'));
     } catch (error) {
       console.error('Bản dịch lỗi:', error);
       throw error;
@@ -778,30 +819,42 @@ const DeepLTargetLanguage = {
 };
 
 const GoogleTranslate = {
-  translateText: async function (inputText, version, ctkk, sourceLanguage, targetLanguage, isConvert = false) {
+  translateText: async function (inputText, version, ctkk, sourceLanguage,
+      targetLanguage, isConvert = false) {
     try {
-      inputText = isConvert ? inputText : getDynamicDictionaryTextForAnothers(inputText);
+      inputText = isConvert ? inputText : getDynamicDictionaryTextForAnothers(
+          inputText);
 
       /**
-       * Method: GET 
+       * Method: GET
        * URL: https://translate.googleapis.com/translate_a/single?client=gtx&sl=${sourceLanguage}&tl=${targetLanguage}&hl=vi&dt=t&dt=bd&dj=1&q=${encodeURIComponent(inputText)}
        *
-       * Method: GET 
+       * Method: GET
        * URL: https://translate.googleapis.com/translate_a/t?anno=3&client=wt_lib&format=html&v=1.0&key&logId=v${version}&sl=${sourceLanguage}&tl=${targetLanguage}&tc=0${Bp(inputText, ctkk)}
        * Content-Type: application/x-www-form-urlencoded - send(encodeURIComponent(inputText))
        *
-       * Method: POST 
+       * Method: POST
        * URL: https://translate.googleapis.com/translate_a/t?anno=3&client=te&format=html&v=1.0&key&logId=v${version}&sl=${sourceLanguage}&tl=${targetLanguage}&tc=0${Bp(inputText, ctkk)}
        * send(encodeURIComponent(inputText))
        */
       const response = await $.ajax({
-        url: `https://translate.googleapis.com/translate_a/t?anno=3&client=gtx&format=html&v=1.0&key&logId=v${version}&sl=${sourceLanguage}&tl=${targetLanguage}&tc=0&tk=${Bp(getDynamicDictionaryTextForAnothers(inputText), ctkk)}`,
-        data: `q=${(!(targetLanguage == 'zh-CN' || targetLanguage == 'zh-TW' || targetLanguage == 'ja' || targetLanguage == 'ko') ? getProcessTextPreTranslate(inputText) : inputText).split(/\n/).map((sentence) => encodeURIComponent(sentence)).join('&q=')}`,
+        url: `https://translate.googleapis.com/translate_a/t?anno=3&client=gtx&format=html&v=1.0&key&logId=v${version}&sl=${sourceLanguage}&tl=${targetLanguage}&tc=0&tk=${Bp(
+            getDynamicDictionaryTextForAnothers(inputText), ctkk)}`,
+        data: `q=${(!(targetLanguage == 'zh-CN' || targetLanguage == 'zh-TW'
+            || targetLanguage == 'ja' || targetLanguage == 'ko')
+            ? getProcessTextPreTranslate(inputText) : inputText).split(
+            /\n/).map((sentence) => encodeURIComponent(sentence)).join('&q=')}`,
         method: "GET"
       });
 
       const paragraph = document.createElement('p');
-      $(paragraph).html(response.map((line) => ((sourceLanguage == 'auto' ? line[0] : line).includes('<i>') ? (sourceLanguage == 'auto' ? line[0] : line).split('</i> <b>').filter((element) => element.includes('</b>')).map((element) => ('<b>' + element.replace(/<i>.+/, ''))).join(' ') : (sourceLanguage == 'auto' ? line[0] : line)).trim()).join('\n'));
+      $(paragraph).html(response.map(
+          (line) => ((sourceLanguage == 'auto' ? line[0] : line).includes('<i>')
+              ? (sourceLanguage == 'auto' ? line[0] : line).split(
+                  '</i> <b>').filter((element) => element.includes('</b>')).map(
+                  (element) => ('<b>' + element.replace(/<i>.+/, ''))).join(' ')
+              : (sourceLanguage == 'auto' ? line[0] : line)).trim()).join(
+          '\n'));
       return getProcessTextPostTranslate($(paragraph).text());
     } catch (error) {
       console.error('Bản dịch lỗi:', error);
@@ -949,41 +1002,52 @@ const GoogleLanguage = {
 }
 
 function Ap(a, b) {
-    for (var c = 0; c < b.length - 2; c += 3) {
-        var d = b.charAt(c + 2);
-        d = "a" <= d ? d.charCodeAt(0) - 87 : Number(d);
-        d = "+" == b.charAt(c + 1) ? a >>> d : a << d;
-        a = "+" == b.charAt(c) ? a + d & 4294967295 : a ^ d
-    }
-    return a
+  for (var c = 0; c < b.length - 2; c += 3) {
+    var d = b.charAt(c + 2);
+    d = "a" <= d ? d.charCodeAt(0) - 87 : Number(d);
+    d = "+" == b.charAt(c + 1) ? a >>> d : a << d;
+    a = "+" == b.charAt(c) ? a + d & 4294967295 : a ^ d
+  }
+  return a
 }
 
 function Bp(a, b) {
-    var c = b.split(".");
-    b = Number(c[0]) || 0;
-    for (var d = [], e = 0, f = 0; f < a.length; f++) {
-        var h = a.charCodeAt(f);
-        128 > h ? d[e++] = h : (2048 > h ? d[e++] = h >> 6 | 192 : (55296 == (h & 64512) && f + 1 < a.length && 56320 == (a.charCodeAt(f + 1) & 64512) ? (h = 65536 + ((h & 1023) << 10) + (a.charCodeAt(++f) & 1023), d[e++] = h >> 18 | 240, d[e++] = h >> 12 & 63 | 128) : d[e++] = h >> 12 | 224, d[e++] = h >> 6 & 63 | 128), d[e++] = h & 63 | 128)
-    }
-    a = b;
-    for (e = 0; e < d.length; e++) a += d[e], a = Ap(a, "+-a^+6");
-    a = Ap(a, "+-3^+b+-f");
-    a ^= Number(c[1]) || 0;
-    0 > a && (a = (a & 2147483647) + 2147483648);
-    c = a % 1E6;
-    return c.toString() +
-        "." + (c ^ b)
+  var c = b.split(".");
+  b = Number(c[0]) || 0;
+  for (var d = [], e = 0, f = 0; f < a.length; f++) {
+    var h = a.charCodeAt(f);
+    128 > h ? d[e++] = h : (2048 > h ? d[e++] = h >> 6 | 192 : (55296 == (h
+        & 64512) && f + 1 < a.length && 56320 == (a.charCodeAt(f + 1) & 64512)
+        ? (h = 65536 + ((h & 1023) << 10) + (a.charCodeAt(++f)
+            & 1023), d[e++] = h >> 18 | 240, d[e++] = h >> 12 & 63 | 128)
+        : d[e++] = h >> 12 | 224, d[e++] = h >> 6 & 63 | 128), d[e++] = h & 63
+        | 128)
+  }
+  a = b;
+  for (e = 0; e < d.length; e++) {
+    a += d[e], a = Ap(a, "+-a^+6");
+  }
+  a = Ap(a, "+-3^+b+-f");
+  a ^= Number(c[1]) || 0;
+  0 > a && (a = (a & 2147483647) + 2147483648);
+  c = a % 1E6;
+  return c.toString() +
+      "." + (c ^ b)
 }
 
 const Papago = {
-  translateText: async function (inputText, sourceLanguage, targetLanguage, isConvert = false) {
+  translateText: async function (inputText, sourceLanguage, targetLanguage,
+      isConvert = false) {
     try {
       const response = await $.ajax({
-        url: `https://thingproxy.freeboard.io/fetch/https://papago.naver.com/?sk=${sourceLanguage}&tk=${targetLanguage}&st=${encodeURIComponent(isConvert ? inputText : getDynamicDictionaryTextForAnothers(inputText, targetLanguage), targetLanguage)}`,
+        url: `https://thingproxy.freeboard.io/fetch/https://papago.naver.com/?sk=${sourceLanguage}&tk=${targetLanguage}&st=${encodeURIComponent(
+            isConvert ? inputText : getDynamicDictionaryTextForAnothers(
+                inputText, targetLanguage), targetLanguage)}`,
         method: 'GET'
       });
 
-      return $("#txtTarget", $(response)).text().split(/\n/).map((element) => element.trim()).join('\n');
+      return $("#txtTarget", $(response)).text().split(/\n/).map(
+          (element) => element.trim()).join('\n');
     } catch (error) {
       console.error('Bản dịch lỗi:', error);
       throw error;
@@ -1013,7 +1077,8 @@ const PapagoLanguage = {
 };
 
 const MicrosoftTranslator = {
-  translateText: async function (accessToken, inputText, sourceLanguage, targetLanguage, isConvert = false) {
+  translateText: async function (accessToken, inputText, sourceLanguage,
+      targetLanguage, isConvert = false) {
     try {
       inputText = isConvert ? inputText : getDynamicDictionaryText(inputText);
 
@@ -1026,17 +1091,24 @@ const MicrosoftTranslator = {
        * URL: https://www.bing.com/ttranslatev3?isVertical=1&&IG=76A5BF5FFF374A53A1374DE8089BDFF2&IID=translator.5029
        * Content-type: application/x-www-form-urlencoded send(&fromLang=auto-detect&text=inputText&to=targetLanguage&token=kXtg8tfzQrA11KAJyMhp61NCVy-19gPj&key=1687667900500&tryFetchingGenderDebiasedTranslations=true)
        *
-       * Method: POST 
-       * URL: https://api.cognitive.microsofttranslator.com/translate?to=${targetLanguage}&api-version=3.0&includeSentenceLength=true 
+       * Method: POST
+       * URL: https://api.cognitive.microsofttranslator.com/translate?to=${targetLanguage}&api-version=3.0&includeSentenceLength=true
        * Content-Type: application/json - send(inputText)
        *
-       * Method: POST 
-       * URL: https://api-edge.cognitive.microsofttranslator.com/translate?to=${targetLanguage}&api-version=3.0&includeSentenceLength=true 
+       * Method: POST
+       * URL: https://api-edge.cognitive.microsofttranslator.com/translate?to=${targetLanguage}&api-version=3.0&includeSentenceLength=true
        * Authorization: Bearer ${accessToken} - Content-Type: application/json - send(inputText)
        */
       const response = await $.ajax({
-        url: `https://api.cognitive.microsofttranslator.com/translate?${sourceLanguage != '' ? 'from=' + sourceLanguage + '&' : ''}to=${targetLanguage}&api-version=3.0&textType=html&includeSentenceLength=true`,
-        data: JSON.stringify((!(targetLanguage == 'yue' || targetLanguage == 'lzh' || targetLanguage == 'zh-Hans' || targetLanguage == 'zh-Hant' || targetLanguage == 'ja' || targetLanguage == 'ko') ? getProcessTextPreTranslate(inputText) : inputText).split(/\n/).map((sentence) => ({"Text": sentence}))),
+        url: `https://api.cognitive.microsofttranslator.com/translate?${sourceLanguage
+        != '' ? 'from=' + sourceLanguage + '&'
+            : ''}to=${targetLanguage}&api-version=3.0&textType=html&includeSentenceLength=true`,
+        data: JSON.stringify(
+            (!(targetLanguage == 'yue' || targetLanguage == 'lzh'
+                || targetLanguage == 'zh-Hans' || targetLanguage == 'zh-Hant'
+                || targetLanguage == 'ja' || targetLanguage == 'ko')
+                ? getProcessTextPreTranslate(inputText) : inputText).split(
+                /\n/).map((sentence) => ({"Text": sentence}))),
         method: 'POST',
         headers: {
           "Authorization": `Bearer ${accessToken}`,
@@ -1044,7 +1116,9 @@ const MicrosoftTranslator = {
         }
       });
 
-      return getProcessTextPostTranslate(response.map((element) => element.translations[0].text.trim()).join('\n'));
+      return getProcessTextPostTranslate(
+          response.map((element) => element.translations[0].text.trim()).join(
+              '\n'));
     } catch (error) {
       console.error('Bản dịch lỗi:', error);
       throw error;
@@ -1169,15 +1243,19 @@ const MicrosoftLanguage = {
 function getDynamicDictionaryText(text) {
   let newText = text;
 
-  if ($("#flexSwitchCheckGlossary").prop("checked") && Object.entries(glossary).length > 0) {
-    const glossaryArray = Object.entries(glossary).filter((element) => text.includes(element[0]));
+  if ($("#flexSwitchCheckGlossary").prop("checked") && Object.entries(
+      glossary).length > 0) {
+    const glossaryArray = Object.entries(glossary).filter(
+        (element) => text.includes(element[0]));
 
     for (let i = 0; i < glossaryArray.length; i++) {
-      newText = newText.replace(new RegExp(glossaryArray[i][0], 'g'), `<mstrans:dictionary translation="${glossaryArray[i][1]}">MSTRANS_DICTIONARY_${i}</mstrans:dictionary>`);
+      newText = newText.replace(new RegExp(glossaryArray[i][0], 'g'),
+          `<mstrans:dictionary translation="${glossaryArray[i][1]}">MSTRANS_DICTIONARY_${i}</mstrans:dictionary>`);
     }
 
     for (let i = glossaryArray.length - 1; i >= 0; i--) {
-      newText = newText.replace(new RegExp(`MSTRANS_DICTIONARY_${i}`, 'g'), glossaryArray[i][0]);
+      newText = newText.replace(new RegExp(`MSTRANS_DICTIONARY_${i}`, 'g'),
+          glossaryArray[i][0]);
     }
   }
 
@@ -1187,11 +1265,15 @@ function getDynamicDictionaryText(text) {
 function getDynamicDictionaryTextForAnothers(text) {
   let newText = text;
 
-  if ($("#flexSwitchCheckGlossary").prop("checked") && $("#flexSwitchCheckAllowAnothers").prop("checked") && Object.entries(glossary).length > 0) {
-    const glossaryArray = Object.entries(glossary).filter((element) => text.includes(element[0]));
+  if ($("#flexSwitchCheckGlossary").prop("checked") && $(
+      "#flexSwitchCheckAllowAnothers").prop("checked") && Object.entries(
+      glossary).length > 0) {
+    const glossaryArray = Object.entries(glossary).filter(
+        (element) => text.includes(element[0]));
 
     for (let i = 0; i < glossaryArray.length; i++) {
-      newText = newText.replace(new RegExp(glossaryArray[i][0], 'g'), glossaryArray[i][1]);
+      newText = newText.replace(new RegExp(glossaryArray[i][0], 'g'),
+          glossaryArray[i][1]);
     }
   }
 
@@ -1201,11 +1283,17 @@ function getDynamicDictionaryTextForAnothers(text) {
 function getProcessTextPreTranslate(text) {
   let lines = text.split(/\n/);
 
-  const brackets = [...punctuation].filter((element) => element[0].length == 3 && element[1].length == 5);
+  const brackets = [...punctuation].filter(
+      (element) => element[0].length == 3 && element[1].length == 5);
 
   if (text.length > 0) {
     for (let i = 0; i < brackets.length; i++) {
-      lines = lines.map((element) => element.replace(new RegExp(`${brackets[i][0].split('…')[0]}(.*)${brackets[i][0].split('…')[1]}`, 'g'), `\n[OPEN_BRACKET_${i}]\n$1\n[CLOSE_BRACKET_${i}]\n`).replace(new RegExp(`${brackets[i][0].split('…')[1]}(.*)${brackets[i][0].split('…')[0]}`, 'g'), `\n[CLOSE_BRACKET_${i}]\n$1\n[OPEN_BRACKET_${i}]\n`));
+      lines = lines.map((element) => element.replace(
+          new RegExp(`${brackets[i][0].split('…')[0]}(.*)${brackets[i][0].split('…')[1]}`,
+              'g'),
+          `\n[OPEN_BRACKET_${i}]\n$1\n[CLOSE_BRACKET_${i}]\n`).replace(
+          new RegExp(`${brackets[i][0].split('…')[1]}(.*)${brackets[i][0].split('…')[0]}`,
+              'g'), `\n[CLOSE_BRACKET_${i}]\n$1\n[OPEN_BRACKET_${i}]\n`));
     }
   }
 
@@ -1215,11 +1303,20 @@ function getProcessTextPreTranslate(text) {
 function getProcessTextPostTranslate(text) {
   let newText = text;
 
-  const brackets = [...punctuation].filter((element) => element[0].length == 3 && element[1].length == 5);
+  const brackets = [...punctuation].filter(
+      (element) => element[0].length == 3 && element[1].length == 5);
 
   if (text.length > 0) {
     for (let i = 0; i < brackets.length; i++) {
-      newText = newText.replace(new RegExp(`\n\\[OPEN_BRACKET_${i}\\].*?\n+(.*)\n+.*?\\[CLOSE_BRACKET_${i}\\]\n`, 'gi'), ` ${brackets[i][1].split('...')[0]}$1${brackets[i][1].split('...')[1]} `).replace(new RegExp(`\n\\[CLOSE_BRACKET_${i}\\].*?\n+(.*)\n+.*?\\[OPEN_BRACKET_${i}\\]\n`, 'gi'), `${brackets[i][1].split('...')[1]} $1 ${brackets[i][1].split('...')[0]}`);
+      newText = newText.replace(
+          new RegExp(`\n\\[OPEN_BRACKET_${i}\\].*?\n+(.*)\n+.*?\\[CLOSE_BRACKET_${i}\\]\n`,
+              'gi'),
+          ` ${brackets[i][1].split('...')[0]}$1${brackets[i][1].split(
+              '...')[1]} `).replace(
+          new RegExp(`\n\\[CLOSE_BRACKET_${i}\\].*?\n+(.*)\n+.*?\\[OPEN_BRACKET_${i}\\]\n`,
+              'gi'),
+          `${brackets[i][1].split('...')[1]} $1 ${brackets[i][1].split(
+              '...')[0]}`);
     }
   }
 
