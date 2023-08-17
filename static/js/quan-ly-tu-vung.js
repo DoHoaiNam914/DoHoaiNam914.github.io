@@ -50,7 +50,7 @@ $("#sourceEntry").on("input", function () {
     $("#targetEntry").val(getConvertedChineseText({
       ...glossary, ...Object.fromEntries(Object.entries(sinovietnameses).filter(
           (element) => !glossary.hasOwnProperty(element[0])))
-    }, $(this).val()).toLowerCase());
+    }, $(this).val()));
 
     if (glossary.hasOwnProperty($(this).val())) {
       $("#glossaryList").val($(this).val());
