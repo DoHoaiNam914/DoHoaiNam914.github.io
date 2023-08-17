@@ -192,7 +192,7 @@ $(".translator").click(function () {
           && prevSourceLanguage != null) {
         $("#sourceLangSelect").val(prevSourceLanguage);
         return false;
-      } else if (prevSourceLanguage != null && (($(
+      } else if (prevSourceLanguage != null && prevSourceLanguageName != null && (($(
                   this).val().toLowerCase().split('-')[0]
               == prevSourceLanguage.toLowerCase().split('-')[0] && $(
                   this).val().toLowerCase().split('-')[1]
@@ -231,7 +231,7 @@ $(".translator").click(function () {
           && prevTargetLanguage != null) {
         $("#targetLangSelect").val(prevTargetLanguage);
         return false;
-      } else if (prevTargetLanguage != null && (($(
+      } else if (prevTargetLanguage != null && prevTargetLanguageName != null && (($(
                   this).val().toLowerCase().split('-')[0]
               == prevTargetLanguage.toLowerCase().split('-')[0] && $(
                   this).val().toLowerCase().split('-')[1]
@@ -522,7 +522,7 @@ async function translate() {
             if ($("#targetLangSelect").val() == 'vi' && Object.entries(
                 vietphrases).length > 0) {
               translatedText = getConvertedChineseText(
-                  {...sinovietnameses, ...vietphrases, ...glossary},
+                  {...sinovietnameses, ...vietphrases}, true,
                   translateText,
                   $("input[name=\"flexRadioTranslationAlgorithm\"]:checked").val()).split(
                   /\n/).map(
@@ -531,7 +531,7 @@ async function translate() {
                       (match, p1, p2) => p1 + p2.toUpperCase())).join('\n');
             } else if ($("#targetLangSelect").val() == 'zh-VN'
                 && Object.entries(sinovietnameses).length > 0) {
-              translatedText = getConvertedChineseText(sinovietnameses,
+              translatedText = getConvertedChineseText(sinovietnameses, true,
                   translateText,
                   $("input[name=\"flexRadioTranslationAlgorithm\"]:checked").val()).split(
                   /\n/).map(
@@ -539,7 +539,7 @@ async function translate() {
                       /(^|[.;:?!-]\s+|[("'‘“〈《【])([a-z])/g,
                       (match, p1, p2) => p1 + p2.toUpperCase())).join('\n');
             } else if (Object.entries(pinyins).length > 0) {
-              translatedText = getConvertedChineseText(pinyins,
+              translatedText = getConvertedChineseText(pinyins, true,
                   translateText,
                   $("input[name=\"flexRadioTranslationAlgorithm\"]:checked").val()).split(
                   /\n/).map(
@@ -569,12 +569,12 @@ async function translate() {
           $("#flexSwitchCheckShowOriginal").prop("checked")));
 }
 
-function getConvertedChineseText(data, inputText,
+function getConvertedChineseText(data, useGlossary, inputText,
     translationAlgorithm = 'leftToRightTranslation') {
   data = Object.fromEntries(
-      Object.entries(data).filter(
+      [...Object.entries(glossary), ...Object.entries(data).filter(
           (element) => inputText.includes(element[0])).sort(
-          (a, b) => b[0].length - a[0].length));
+          (a, b) => b[0].length - a[0].length)]);
   const dataEntries = Object.entries(data);
   const lines = inputText.split(/\n/);
   const results = [];
@@ -584,6 +584,13 @@ function getConvertedChineseText(data, inputText,
 
     if (translationAlgorithm == 'longPrior') {
       let tempLine = line;
+
+      if (useGlossary) {
+        for (const property in glossary) {
+          tempLine = tempLine.replace(new RegExp(`${property}`, 'g'),
+              ` ${glossary[property]}`).trimStart();
+        }
+      }
 
       for (const property in data) {
         tempLine = tempLine.replace(new RegExp(`${property}`, 'g'),
@@ -597,7 +604,12 @@ function getConvertedChineseText(data, inputText,
 
       for (let j = 0; j < line.length; j++) {
         for (let k = dataEntries[0][0].length; k >= 1; k--) {
-          if (data.hasOwnProperty(line.substring(j, j + k))) {
+          if (useGlossary && glossary.hasOwnProperty(
+              line.substring(j, j + k))) {
+            phrases.push(glossary[line.substring(j, j + k)]);
+            j += k - 1;
+            break;
+          } else if (data.hasOwnProperty(line.substring(j, j + k))) {
             phrases.push(data[line.substring(j, j + k)]);
             j += k - 1;
             break;
