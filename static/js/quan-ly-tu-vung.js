@@ -28,9 +28,8 @@ $("#inputGlossary").on("change", function () {
         break;
     }
 
-    $("#glossaryType").val($("#inputGlossary").prop("files")[0].type.replace('text/plain', GlossaryType.TSV));
     $("#glossaryName").val($("#inputGlossary").prop("files")[0].name.split('.').slice(0, $("#inputGlossary").prop("files")[0].name.split('.').length - 1).join('.'));
-    loadGlossary(); 
+    $("#glossaryType").val($("#inputGlossary").prop("files")[0].type).change();
   };
 
   reader.readAsText($(this).prop("files")[0]);
@@ -48,7 +47,10 @@ $("#glossaryType").change(() => loadGlossary());
 
 $("#sourceEntry").on("input", function () {
   if ($(this).val().length > 0) {
-    $("#targetEntry").val(getConvertedChineseText(new Map([...Object.entries(glossary), ...[...sinovietnameses].filter((element) => !glossary.hasOwnProperty(element[0]))].sort((a, b) => b[0].length - a[0].length)), $(this).val()));
+    $("#targetEntry").val(getConvertedChineseText({
+      ...glossary, ...Object.fromEntries(Object.entries(sinovietnameses).filter(
+          (element) => !glossary.hasOwnProperty(element[0])))
+    }, $(this).val()).toLowerCase());
 
     if (glossary.hasOwnProperty($(this).val())) {
       $("#glossaryList").val($(this).val());
@@ -78,13 +80,13 @@ $("#pasteSourceTextButton").on("click", () => {
 
 $("#pinyinConvertButton").on("click", function () {
   if ($("#sourceEntry").val().length > 0) {
-    $("#targetEntry").val(getConvertedChineseText(new Map([...pinyins].sort((a, b) => b[0].length - a[0].length)), $("#sourceEntry").val()));
+    $("#targetEntry").val(getConvertedChineseText(pinyins, $("#sourceEntry").val()).toLowerCase());
   }
 });
 
 $("#sinoVietnameseConvertButton").click(function () {
   if ($("#sourceEntry").val().length > 0) {
-    $("#targetEntry").val(getConvertedChineseText(new Map([...sinovietnameses].sort((a, b) => b[0].length - a[0].length)), $("#sourceEntry").val()));
+    $("#targetEntry").val(getConvertedChineseText(sinovietnameses, $("#sourceEntry").val()).toLowerCase());
   }
 });
 
