@@ -561,11 +561,6 @@ async function translate() {
                   `<p>Nhập tệp VietPhrase.txt nếu có hoặc tải về <a href="https://drive.google.com/drive/folders/0B6fxcJ5qbXgkeTJNTFJJS3lmc3c?resourcekey=0-Ych2OUVug3pkLgCIlzvcuA&usp=sharing">tại đây</a></p>`);
               onPostTranslate();
               return;
-            } else {
-              $("#translatedText").html(
-                  `<p>Bản dịch thất bại. Vui lòng thử lại</p>`);
-              onPostTranslate();
-              return;
             }
             break;
         }
@@ -589,93 +584,101 @@ async function translate() {
 
 function convertText(data, useGlossary, inputText,
     translationAlgorithm = 'leftToRightTranslation') {
-  let dataEntries = Object.entries(data).filter(
-      (element) => (!useGlossary || !glossary.hasOwnProperty(element[0]))
-          && inputText.includes(element[0])).sort(
-      (a, b) => b[0].length - a[0].length);
-  data = Object.fromEntries(
-      [...useGlossary ? Object.entries(glossary) : [], ...dataEntries]);
-  dataEntries = Object.entries(data);
-  const lines = inputText.split(/\n/);
-  const results = [];
+  try {
+    let dataEntries = Object.entries(data).filter(
+        (element) => (!useGlossary || !glossary.hasOwnProperty(element[0]))
+            && inputText.includes(element[0])).sort(
+        (a, b) => b[0].length - a[0].length);
+    data = Object.fromEntries(
+        [...useGlossary ? Object.entries(glossary) : [], ...dataEntries]);
+    dataEntries = Object.entries(data);
+    const lines = inputText.split(/\n/);
+    const results = [];
 
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
-    const filteredEntries = [...dataEntries].filter(
-        (element) => line.includes(element[0]));
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      const filteredEntries = [...dataEntries].filter(
+          (element) => line.includes(element[0]));
 
-    if (translationAlgorithm == 'longPrior') {
-      let tempLine = line;
+      if (translationAlgorithm == 'longPrior') {
+        let tempLine = line;
 
-      for (const property in Object.fromEntries(filteredEntries)) {
-        tempLine = tempLine.replace(
-            new RegExp(property, 'g')
-                ` ${data[property]}`).trimStart();
-        console.log(property, data[property]);
-      }
+        for (const property in Object.fromEntries(filteredEntries)) {
+          tempLine = tempLine.replace(new RegExp(property, 'g'),
+              ` ${data[property]}`).trimStart();
+        }
 
-      results.push(tempLine);
-    } else {
-      const phrases = [];
-      let tempWord = '';
+        results.push(tempLine);
+      } else {
+        const phrases = [];
+        let tempWord = '';
 
-      for (let j = 0; j < line.length; j++) {
-        for (let k = filteredEntries[0][0].length; k >= 1; k--) {
-          if (data.hasOwnProperty(line.substring(j, j + k))) {
-            phrases.push(data[line.substring(j, j + k)]);
-            j += k - 1;
-            break;
-          } else if (k == 1) {
-            if (tempWord.length > 0 && /\s/.test(line[j]) && !/\s/.test(
-                tempWord)) {
-              tempWord.split(' ').forEach((word) => phrases.push(word));
-              tempWord = '';
-            }
-
-            tempWord += line[j];
-
-            if (/\s/.test(tempWord)) {
-              if (!/\s/.test(line[j + 1])) {
-                phrases[phrases.length - 1] += tempWord.substring(0,
-                    tempWord.length - 1);
+        for (let j = 0; j < line.length; j++) {
+          for (let k = filteredEntries[0][0].length; k >= 1; k--) {
+            if (data.hasOwnProperty(line.substring(j, j + k))) {
+              phrases.push(data[line.substring(j, j + k)]);
+              j += k - 1;
+              break;
+            } else if (k == 1) {
+              if (tempWord.length > 0 && /\s/.test(line[j]) && !/\s/.test(
+                  tempWord)) {
+                tempWord.split(' ').forEach((word) => phrases.push(word));
                 tempWord = '';
+              }
+
+              tempWord += line[j];
+
+              if (/\s/.test(tempWord)) {
+                if (!/\s/.test(line[j + 1])) {
+                  phrases[phrases.length - 1] += tempWord.substring(0,
+                      tempWord.length - 1);
+                  tempWord = '';
+                }
+
+                break;
+              }
+
+              for (let l = filteredEntries[0][0].length; l >= 1; l--) {
+                if (tempWord.length > 0 && (data.hasOwnProperty(
+                        line.substring(j + 1, j + 1 + l)) || j + 1
+                    == line.length)) {
+                  tempWord.split(' ').forEach((word) => phrases.push(word));
+                  tempWord = '';
+                  break;
+                }
               }
 
               break;
             }
-
-            for (let l = filteredEntries[0][0].length; l >= 1; l--) {
-              if (tempWord.length > 0 && (data.hasOwnProperty(
-                  line.substring(j + 1, j + 1 + l)) || j + 1 == line.length)) {
-                tempWord.split(' ').forEach((word) => phrases.push(word));
-                tempWord = '';
-                break;
-              }
-            }
-
-            break;
           }
         }
+
+        results.push(phrases.join(' '));
       }
-
-      results.push(phrases.join(' '));
     }
+
+    let result = results.join('\n');
+
+    [...punctuation].filter(
+        (element) => element[0].length == 1 || element[0]
+            == '\\.\\.\\.').forEach(
+        (element) => result = result.replace(
+            new RegExp(` ?${element[0]} ?`, 'g'),
+            element[1]).split(/\n/).map((element) => element.trim()).join(
+            '\n'));
+    [...punctuation].filter(
+        (element) => element[0].length == 3 && element[1].length == 5).forEach(
+        (element) => result = result.replace(
+            new RegExp(`${element[0].split('…')[0]} (.*) ${element[0].split('…')[1]}`,
+                'g'),
+            `${element[1].split('...')[0]}$1${element[1].split(
+                '...')[1]}`).split(
+            /\n/).map((element) => element.trim()).join('\n'));
+    return result;
+  } catch (error) {
+    console.error('Bản dịch lỗi:', error);
+    throw error;
   }
-
-  let result = results.join('\n');
-
-  [...punctuation].filter(
-      (element) => element[0].length == 1 || element[0] == '\\.\\.\\.').forEach(
-      (element) => result = result.replace(new RegExp(` ?${element[0]} ?`, 'g'),
-          element[1]).split(/\n/).map((element) => element.trim()).join('\n'));
-  [...punctuation].filter(
-      (element) => element[0].length == 3 && element[1].length == 5).forEach(
-      (element) => result = result.replace(
-          new RegExp(`${element[0].split('…')[0]} (.*) ${element[0].split('…')[1]}`,
-              'g'),
-          `${element[1].split('...')[0]}$1${element[1].split('...')[1]}`).split(
-          /\n/).map((element) => element.trim()).join('\n'));
-  return result;
 }
 
 function buildTranslatedResult(translation, textLines, showOriginal) {
