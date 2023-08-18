@@ -610,11 +610,12 @@ function convertText(data, useGlossary, inputText,
 
         results.push(tempLine);
       } else {
+        const maxPhraseLength = filteredEntries[0] != undefined ? filteredEntries[0][0].length : 1;
         const phrases = [];
         let tempWord = '';
 
         for (let j = 0; j < line.length; j++) {
-          for (let k = filteredEntries[0][0].length; k >= 1; k--) {
+          for (let k = maxPhraseLength; k >= 1; k--) {
             if (data.hasOwnProperty(line.substring(j, j + k))) {
               phrases.push(data[line.substring(j, j + k)]);
               j += k - 1;
@@ -638,7 +639,7 @@ function convertText(data, useGlossary, inputText,
                 break;
               }
 
-              for (let l = filteredEntries[0][0].length; l >= 1; l--) {
+              for (let l = maxPhraseLength; l >= 1; l--) {
                 if (tempWord.length > 0 && (data.hasOwnProperty(
                         line.substring(j + 1, j + 1 + l)) || j + 1
                     == line.length)) {
