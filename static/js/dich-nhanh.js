@@ -136,7 +136,8 @@ $("#inputVietPhrases").on("change", function () {
     let vietphraseList = this.result.split(/\r?\n/).map(
         (phrase) => phrase.split('=')).filter(
         (phrase) => phrase.length == 2).map(
-        (element) => [element[0], element[1].split('/')[0]]);
+        (element) => [element[0].replace(/([\[\]()*+?])/g, '\\$1'),
+          element[1].split('/')[0].split('|')[0]]);
     vietphraseList = [...vietphraseList,
       ...Object.entries(sinovietnameses)].filter(
         ([key]) => !vietphraseList[key] && (vietphraseList[key] = 1), {})
@@ -446,7 +447,8 @@ async function translate() {
 
   try {
     const MAX_LENGTH = translator === Translators.GOOGLE_TRANSLATE
-    || translator === Translators.PAPAGO ? 1000 : 5000;
+    || translator === Translators.PAPAGO ? 1000 : (translator
+    === Translators.VIETPHRASES ? inputText.length : 5000);
 
     if (inputText.split(/\n/).sort((a, b) => b.length - a.length)[0].length
         > MAX_LENGTH) {
@@ -531,33 +533,39 @@ async function translate() {
           case Translators.VIETPHRASES:
             if ($("#targetLangSelect").val() == 'vi' && Object.entries(
                 vietphrases).length > 0) {
-              translatedText = getConvertedChineseText(vietphrases, true,
+              translatedText = getConvertedChineseText(vietphrases,
+                  $("#flexSwitchCheckGlossary").prop("checked"),
                   translateText,
                   $("input[name=\"flexRadioTranslationAlgorithm\"]:checked").val()).split(
                   /\n/).map(
                   (element) => element.replace(
-                      /(^|\s*[.;:?!-("'‘“〈《【]\s*)(\p{Lower})/gu,
+                      /(^|\s*[.;:?!\-("'‘“〈《【]\s*)(\p{Lower})/gu,
                       (match, p1, p2) => p1 + p2.toUpperCase())).join('\n');
             } else if ($("#targetLangSelect").val() == 'zh-VN'
                 && Object.entries(sinovietnameses).length > 0) {
               translatedText = getConvertedChineseText(sinovietnameses, false,
-                  translateText,
-                  $("input[name=\"flexRadioTranslationAlgorithm\"]:checked").val()).split(
-                  /\n/).map(
-                  (element) => element.replace(
-                      /(^|[.;:?!-]\s+|[("'‘“〈《【])(\p{Lower})/gu,
-                      (match, p1, p2) => p1 + p2.toUpperCase())).join('\n');
-            } else if ($("#targetLangSelect").val() == 'pinyin'
+                  translateText).split(
+                  /\n/).map((element) => element.replace(
+                  /(^|[.;:?!-]\s+|[("'‘“〈《【])(\p{Lower})/gu,
+                  (match, p1, p2) => p1 + p2.toUpperCase())).join('\n');
+            } else if ($("#targetLangSelect").val() == 'en'
                 && Object.entries(pinyins).length > 0) {
               translatedText = getConvertedChineseText(pinyins, false,
-                  translateText,
-                  $("input[name=\"flexRadioTranslationAlgorithm\"]:checked").val()).split(
-                  /\n/).map(
+                  translateText).split(/\n/).map(
                   (element) => element.replace(
                       /(^|[.;:?!-]\s+|[("'‘“〈《【])(\p{Lower})/gu,
                       (match, p1, p2) => p1 + p2.toUpperCase())).join('\n');
-            } else {
+            } else if ($("#targetLangSelect").val() == 'vi' && Object.entries(
+                vietphrases).length == 0) {
+              $("#translatedText").html(
+                  `<p>Nhập tệp VietPhrase.txt nếu có hoặc tải về <a href="https://drive.google.com/drive/folders/0B6fxcJ5qbXgkeTJNTFJJS3lmc3c?resourcekey=0-Ych2OUVug3pkLgCIlzvcuA&usp=sharing">tại đây</a></p>`);
               onPostTranslate();
+              return;
+            } else {
+              $("#translatedText").html(
+                  `<p>Bản dịch thất bại. Vui lòng thử lại</p>`);
+              onPostTranslate();
+              return;
             }
             break;
         }
@@ -581,37 +589,38 @@ async function translate() {
 
 function getConvertedChineseText(data, useGlossary, inputText,
     translationAlgorithm = 'leftToRightTranslation') {
+  let dataEntries = Object.entries(data).filter(
+      (element) => (!useGlossary || !glossary.hasOwnProperty(element[0]))
+          && inputText.includes(element[0])).sort(
+      (a, b) => b[0].length - a[0].length);
   data = Object.fromEntries(
-      [...useGlossary ? Object.entries(glossary) : [],
-        ...Object.entries(data).filter(
-            (element) => (!useGlossary || !glossary.hasOwnProperty(element[0]))
-                && (translationAlgorithm != 'longPrior' || inputText.includes(
-                    element[0]))).sort(
-            (a, b) => b[0].length - a[0].length)]);
+      [...useGlossary ? Object.entries(glossary) : [], ...dataEntries]);
+  dataEntries = Object.entries(data);
   const lines = inputText.split(/\n/);
   const results = [];
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
+    const filteredEntries = [...dataEntries].filter(
+        (element) => line.includes(element[0]));
 
     if (translationAlgorithm == 'longPrior') {
       let tempLine = line;
-      let bool = false
 
-      for (const property in data) {
-        tempLine = tempLine.replace(new RegExp(property, 'g'),
-            ` ${data[property]}`).trimStart();
+      for (const property in Object.fromEntries(filteredEntries)) {
+        tempLine = tempLine.replace(
+            new RegExp(property, 'g')
+                ` ${data[property]}`).trimStart();
+        console.log(property, data[property]);
       }
 
       results.push(tempLine);
     } else {
-      const dataEntries = Object.entries(data);
-
       const phrases = [];
       let tempWord = '';
 
       for (let j = 0; j < line.length; j++) {
-        for (let k = dataEntries[0][0].length; k >= 1; k--) {
+        for (let k = filteredEntries[0][0].length; k >= 1; k--) {
           if (data.hasOwnProperty(line.substring(j, j + k))) {
             phrases.push(data[line.substring(j, j + k)]);
             j += k - 1;
@@ -635,7 +644,7 @@ function getConvertedChineseText(data, useGlossary, inputText,
               break;
             }
 
-            for (let l = dataEntries[0][0].length; l >= 1; l--) {
+            for (let l = filteredEntries[0][0].length; l >= 1; l--) {
               if (tempWord.length > 0 && (data.hasOwnProperty(
                   line.substring(j + 1, j + 1 + l)) || j + 1 == line.length)) {
                 tempWord.split(' ').forEach((word) => phrases.push(word));
