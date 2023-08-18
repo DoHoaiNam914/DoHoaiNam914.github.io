@@ -174,7 +174,7 @@ $(".translator").click(function () {
     const prevTargetLanguageName = getLanguageName(prevTranslator,
         prevTargetLanguage);
 
-    if ($(this).data("id") === Translators.VIETPHRASES) {
+    if ($(this).data("id") === Translators.VIETPHRASE) {
       localStorage.setItem("translator", JSON.stringify({
         translator: $(".translator.active").data("id"),
         showOriginal: $("#flexSwitchCheckShowOriginal").prop("checked"),
@@ -220,7 +220,7 @@ $(".translator").click(function () {
             $("#sourceLangSelect").val("auto");
             break;
 
-          case Translators.VIETPHRASES:
+          case Translators.VIETPHRASE:
             $("#sourceLangSelect").val("zh");
             break;
 
@@ -276,7 +276,7 @@ $(".translator").click(function () {
       }
     });
 
-    if ($(".translator.active").data("id") !== Translators.VIETPHRASES) {
+    if ($(".translator.active").data("id") !== Translators.VIETPHRASE) {
       localStorage.setItem("translator", JSON.stringify({
         translator: $(this).data("id"),
         showOriginal: translator.showOriginal,
@@ -367,7 +367,7 @@ function getSourceLanguageOptions(translator) {
       }
       break;
 
-    case Translators.VIETPHRASES:
+    case Translators.VIETPHRASE:
       autoDetectOption.innerText = 'Tiếng Trung Quốc';
       autoDetectOption.value = 'zh';
       sourceLangSelect.appendChild(autoDetectOption);
@@ -417,7 +417,7 @@ function getTargetLanguageOptions(translator) {
       }
       break;
 
-    case Translators.VIETPHRASES:
+    case Translators.VIETPHRASE:
       const pinyinOption = document.createElement('option');
       const sinovietnameseOption = document.createElement('option');
       const vietphraseOption = document.createElement('option');
@@ -448,7 +448,7 @@ async function translate() {
   try {
     const MAX_LENGTH = translator === Translators.GOOGLE_TRANSLATE
     || translator === Translators.PAPAGO ? 1000 : (translator
-    === Translators.VIETPHRASES ? inputText.length : 5000);
+    === Translators.VIETPHRASE ? inputText.length : 5000);
 
     if (inputText.split(/\n/).sort((a, b) => b.length - a.length)[0].length
         > MAX_LENGTH) {
@@ -530,10 +530,10 @@ async function translate() {
                 accessToken, translateText, sourceLanguage, targetLanguage);
             break;
 
-          case Translators.VIETPHRASES:
+          case Translators.VIETPHRASE:
             if ($("#targetLangSelect").val() == 'vi' && Object.entries(
                 vietphrases).length > 0) {
-              translatedText = getConvertedChineseText(vietphrases,
+              translatedText = convertText(vietphrases,
                   $("#flexSwitchCheckGlossary").prop("checked"),
                   translateText,
                   $("input[name=\"flexRadioTranslationAlgorithm\"]:checked").val()).split(
@@ -543,14 +543,14 @@ async function translate() {
                       (match, p1, p2) => p1 + p2.toUpperCase())).join('\n');
             } else if ($("#targetLangSelect").val() == 'zh-VN'
                 && Object.entries(sinovietnameses).length > 0) {
-              translatedText = getConvertedChineseText(sinovietnameses, false,
+              translatedText = convertText(sinovietnameses, false,
                   translateText).split(
                   /\n/).map((element) => element.replace(
                   /(^|[.;:?!-]\s+|[("'‘“〈《【])(\p{Lower})/gu,
                   (match, p1, p2) => p1 + p2.toUpperCase())).join('\n');
             } else if ($("#targetLangSelect").val() == 'en'
                 && Object.entries(pinyins).length > 0) {
-              translatedText = getConvertedChineseText(pinyins, false,
+              translatedText = convertText(pinyins, false,
                   translateText).split(/\n/).map(
                   (element) => element.replace(
                       /(^|[.;:?!-]\s+|[("'‘“〈《【])(\p{Lower})/gu,
@@ -587,7 +587,7 @@ async function translate() {
           $("#flexSwitchCheckShowOriginal").prop("checked")));
 }
 
-function getConvertedChineseText(data, useGlossary, inputText,
+function convertText(data, useGlossary, inputText,
     translationAlgorithm = 'leftToRightTranslation') {
   let dataEntries = Object.entries(data).filter(
       (element) => (!useGlossary || !glossary.hasOwnProperty(element[0]))
@@ -1348,7 +1348,7 @@ function getProcessTextPostTranslate(text) {
 }
 
 const Translators = {
-  VIETPHRASES: 'vietphrases',
+  VIETPHRASE: 'vietphrase',
   DEEPL_TRANSLATOR: 'deeplTranslator',
   GOOGLE_TRANSLATE: 'googleTranslate',
   PAPAGO: 'papago',
