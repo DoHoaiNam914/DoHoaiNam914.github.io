@@ -610,7 +610,7 @@ function convertText(data, useGlossary, inputText,
 
         results.push(tempLine);
       } else {
-        const maxPhraseLength = filteredEntries.length > 0 ? filteredEntries[0][0].length : 1;
+        const maxPhraseLength = filteredEntries.length > 0 ? [...filteredEntries].sort((a, b) => b[0].length - a[0].length)[0][0].length : 1;
         const phrases = [];
         let tempWord = '';
 
