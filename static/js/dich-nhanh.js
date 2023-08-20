@@ -594,14 +594,15 @@ function convertText(data, useGlossary, inputText,
     const results = [];
 
     for (let i = 0; i < lines.length; i++) {
+      let line = lines[i];
       const filteredEntries = [...dataEntries].filter(
           (element) => line.includes(element[0]));
-      let line = lines[i];
 
       if (useGlossary) {
         for (const property in glossary) {
           line = line.replace(new RegExp(property, 'g'),
-              `${glossary[property]} `).trimEnd();
+              glossary[property] + (translationAlgorithm
+              == 'longPrior' ? ' ' : '')).trimEnd();
         }
       }
 
