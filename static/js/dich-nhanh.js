@@ -585,32 +585,39 @@ async function translate() {
 function convertText(data, useGlossary, inputText,
     translationAlgorithm = 'leftToRightTranslation') {
   try {
-    let dataEntries = Object.entries(data).filter(
+    data = Object.fromEntries(Object.entries(data).filter(
         (element) => (!useGlossary || !glossary.hasOwnProperty(element[0]))
             && inputText.includes(element[0])).sort(
-        (a, b) => b[0].length - a[0].length);
-    data = Object.fromEntries(
-        [...useGlossary ? Object.entries(glossary) : [], ...dataEntries]);
-    dataEntries = Object.entries(data);
+        (a, b) => b[0].length - a[0].length));
+    const dataEntries = Object.entries(data);
     const lines = inputText.split(/\n/);
     const results = [];
 
     for (let i = 0; i < lines.length; i++) {
-      const line = lines[i];
       const filteredEntries = [...dataEntries].filter(
           (element) => line.includes(element[0]));
+      let line = lines[i];
+
+      if (useGlossary) {
+        for (const property in glossary) {
+          line = line.replace(new RegExp(property, 'g'),
+              `${glossary[property]} `).trimEnd();
+        }
+      }
 
       if (translationAlgorithm == 'longPrior') {
         let tempLine = line;
 
         for (const property in Object.fromEntries(filteredEntries)) {
           tempLine = tempLine.replace(new RegExp(property, 'g'),
-              ` ${data[property]}`).trimStart();
+              `${data[property]} `).trimEnd();
         }
 
         results.push(tempLine);
       } else {
-        const maxPhraseLength = filteredEntries.length > 0 ? [...filteredEntries].sort((a, b) => b[0].length - a[0].length)[0][0].length : 1;
+        const maxPhraseLength = filteredEntries.length > 0
+            ? [...filteredEntries].sort(
+                (a, b) => b[0].length - a[0].length)[0][0].length : 1;
         const phrases = [];
         let tempWord = '';
 
