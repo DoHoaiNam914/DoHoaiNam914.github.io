@@ -108,10 +108,10 @@ $("#pasteButton").on("click", () => {
       $("#queryText").val(clipText).change();
 
       if ($("#translateButton").text() == 'Sửa') {
-        translation = '';
-        $("#translateButton").text("Dịch").click();
         $(document.body).scrollTop(0);
         $(document.documentElement).scrollTop(0);
+        translation = '';
+        $("#translateButton").text("Dịch").click();
       }
     }
   });
