@@ -605,20 +605,22 @@ function convertText(data, useGlossary, inputText,
               == 'longPrior' ? ' ' : '')).trimEnd();
         }
       }
+      
+      if (filteredEntries.length == 0) {
+        results.push(line);
+        continue;
+      }
 
       if (translationAlgorithm == 'longPrior') {
-        let tempLine = line;
-
         for (const property in Object.fromEntries(filteredEntries)) {
-          tempLine = tempLine.replace(new RegExp(property, 'g'),
+          line = line.replace(new RegExp(property, 'g'),
               `${data[property]} `).trimEnd();
         }
 
-        results.push(tempLine);
+        results.push(line);
       } else {
-        const maxPhraseLength = filteredEntries.length > 0
-            ? [...filteredEntries].sort(
-                (a, b) => b[0].length - a[0].length)[0][0].length : 1;
+        const maxPhraseLength = [...filteredEntries].sort(
+                (a, b) => b[0].length - a[0].length)[0][0].length;
         const phrases = [];
         let tempWord = '';
 
