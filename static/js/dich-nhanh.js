@@ -595,8 +595,6 @@ function convertText(data, useGlossary, inputText,
 
     for (let i = 0; i < lines.length; i++) {
       let line = lines[i];
-      const filteredEntries = [...dataEntries].filter(
-          (element) => line.includes(element[0]));
 
       if (useGlossary) {
         for (const property in glossary) {
@@ -605,6 +603,9 @@ function convertText(data, useGlossary, inputText,
               == 'longPrior' ? ' ' : '')).trimEnd();
         }
       }
+
+      const filteredEntries = [...dataEntries].filter(
+          (element) => line.includes(element[0]));
       
       if (filteredEntries.length == 0) {
         results.push(line);
