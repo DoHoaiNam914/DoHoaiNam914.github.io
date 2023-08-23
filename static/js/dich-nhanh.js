@@ -142,6 +142,7 @@ $("#inputVietPhrases").on("change", function () {
       ...Object.entries(sinovietnameses)].filter(
         ([key]) => !vietphraseList[key] && (vietphraseList[key] = 1), {})
     vietphrases = Object.fromEntries(vietphraseList);
+    console.log('Đã tải xong tệp dữ liệu VietPhrase.txt!');
   }
 
   reader.readAsText($(this).prop("files")[0]);
@@ -598,7 +599,7 @@ function convertText(data, useGlossary, inputText,
 
       if (useGlossary) {
         for (const property in glossary) {
-          line = line.replace(new RegExp(property, 'g'),
+          line = line.replace(new RegExp(property.replace(/([\[\]()*+?])/g, '\\$1'), 'g'),
               glossary[property] + (translationAlgorithm
               == 'longPrior' ? ' ' : '')).trimEnd();
         }
