@@ -259,7 +259,7 @@ $(".google-convert").on("click", async function () {
       let ctkk;
 
       const elementJs = await $.get(
-          "https://thingproxy.freeboard.io/fetch/https://translate.google.com/translate_a/element.js?hl=vi&client=wt");
+          "https://corsproxy.org/?https://translate.google.com/translate_a/element.js?hl=vi&client=wt");
 
       if (elementJs != undefined) {
         version = elementJs.match(
@@ -296,12 +296,12 @@ $(".papago-convert").on("click", async function () {
       let version;
 
       const mainJs = (await $.get(
-          "https://thingproxy.freeboard.io/fetch/https://papago.naver.com")).match(
+          "https://corsproxy.org/?https://papago.naver.com")).match(
           /\/(main.*\.js)/)[1];
 
       if (mainJs != undefined) {
         version = (await $.get(
-            "https://thingproxy.freeboard.io/fetch/https://papago.naver.com/"
+            "https://corsproxy.org/?https://papago.naver.com/"
             + mainJs)).match(/"PPG .*,"(v[^"]*)/)[1]
       }
 

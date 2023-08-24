@@ -500,7 +500,7 @@ async function translate() {
 
     if (translator === Translators.GOOGLE_TRANSLATE) {
       const elementJs = await $.get(
-          "https://thingproxy.freeboard.io/fetch/https://translate.google.com/translate_a/element.js?hl=vi&client=wt");
+          "https://corsproxy.org/?https://translate.google.com/translate_a/element.js?hl=vi&client=wt");
 
       if (elementJs != undefined) {
         googleTranslateVersion = elementJs.match(
@@ -518,11 +518,11 @@ async function translate() {
     let papagoVersion;
 
     if (translator === Translators.PAPAGO) {
-      const mainJs = (await $.get("https://thingproxy.freeboard.io/fetch/https://papago.naver.com")).match(/\/(main.*\.js)/)[1];
+      const mainJs = (await $.get("https://corsproxy.org/?https://papago.naver.com")).match(/\/(main.*\.js)/)[1];
 
       if (mainJs != undefined) {
         papagoVersion = (await $.get(
-            "https://thingproxy.freeboard.io/fetch/https://papago.naver.com/"
+            "https://corsproxy.org/?https://papago.naver.com/"
             + mainJs)).match(/"PPG .*,"(v[^"]*)/)[1]
       }
 
@@ -1148,7 +1148,7 @@ const Papago = {
       const timestamp = (new Date()).getTime();
 
       const response = await $.ajax({
-        url: 'https://thingproxy.freeboard.io/fetch/' + API_URL,
+        url: 'https://corsproxy.org/?' + API_URL,
         data: `locale=vi&dict=true&dictDisplay=30&honorific=true&instant=false&paging=false&source=${sourceLanguage}&target=${targetLanguage}&text=${encodeURIComponent(!(targetLanguage == 'ko' || targetLanguage == 'ja' || targetLanguage == 'zh-CN' || targetLanguage == 'zh-TW') ? getProcessTextPreTranslate(inputText) : inputText)}`,
         method: 'POST',
         headers: {
