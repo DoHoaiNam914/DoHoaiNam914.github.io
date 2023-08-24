@@ -500,7 +500,7 @@ async function translate() {
 
     if (translator === Translators.GOOGLE_TRANSLATE) {
       const elementJs = await $.get(
-          "https://corsproxy.org/?https://translate.google.com/translate_a/element.js?hl=vi&client=wt");
+          CORS_PROXY + "https://translate.google.com/translate_a/element.js?hl=vi&client=wt");
 
       if (elementJs != undefined) {
         googleTranslateVersion = elementJs.match(
@@ -518,11 +518,11 @@ async function translate() {
     let papagoVersion;
 
     if (translator === Translators.PAPAGO) {
-      const mainJs = (await $.get("https://corsproxy.org/?https://papago.naver.com")).match(/\/(main.*\.js)/)[1];
+      const mainJs = (await $.get(CORS_PROXY + "https://papago.naver.com")).match(/\/(main.*\.js)/)[1];
 
       if (mainJs != undefined) {
         papagoVersion = (await $.get(
-            "https://corsproxy.org/?https://papago.naver.com/"
+            CORS_PROXY + "https://papago.naver.com/"
             + mainJs)).match(/"PPG .*,"(v[^"]*)/)[1]
       }
 
@@ -1148,10 +1148,15 @@ const Papago = {
       const timestamp = (new Date()).getTime();
 
       const response = await $.ajax({
-        url: 'https://corsproxy.org/?' + API_URL,
-        data: `locale=vi&dict=true&dictDisplay=30&honorific=true&instant=false&paging=false&source=${sourceLanguage}&target=${targetLanguage}&text=${encodeURIComponent(!(targetLanguage == 'ko' || targetLanguage == 'ja' || targetLanguage == 'zh-CN' || targetLanguage == 'zh-TW') ? getProcessTextPreTranslate(inputText) : inputText)}`,
-        method: 'POST',
+        url: CORS_PROXY + API_URL,
+        data: `deviceId=${uuid}&locale=vi&dict=true&dictDisplay=30&honorific=true&instant=false&paging=false&source=${sourceLanguage}&target=${targetLanguage}&text=${encodeURIComponent(!(targetLanguage == 'ko' || targetLanguage == 'ja' || targetLanguage == 'zh-CN' || targetLanguage == 'zh-TW') ? getProcessTextPreTranslate(inputText) : inputText)}`,
+        method: "POST",
         headers: {
+          Accept: "application/json",
+          "Accept-Language": targetLanguage,
+          "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+          // "device-type": "pc" || "mobile",
+          "x-apigw-partnerid": "papago",
           Authorization: "PPG " + uuid + ":" + CryptoJS.HmacMD5(
               uuid + '\n' + API_URL.split('?')[0] + '\n' + timestamp, version).toString(CryptoJS.enc.Base64),
           Timestamp: timestamp
@@ -1220,7 +1225,7 @@ const MicrosoftTranslator = {
                 || targetLanguage == 'ja' || targetLanguage == 'ko')
                 ? getProcessTextPreTranslate(inputText) : inputText).split(
                 /\n/).map((sentence) => ({"Text": sentence}))),
-        method: 'POST',
+        method: "POST",
         headers: {
           Authorization: "Bearer " + accessToken,
           "Content-Type": "application/json"

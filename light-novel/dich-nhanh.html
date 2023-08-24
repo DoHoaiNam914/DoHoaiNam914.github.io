@@ -61,7 +61,8 @@
       .script("/static/lib/CryptoJS v3.1.2/components/enc-base64.js")
       .script("/static/lib/tesseract.min.js")
       .script("/static/lib/opencv.js")
-      .script("/static/js/hanvietdict.js").wait()
+      .script("/static/js/hanvietdict.js")
+      .script("/static/js/cors-proxy.js").wait()
       .script("/static/js/trich-xuat-van-ban.js").wait(function () {
         const recognizer = JSON.parse(localStorage.getItem("recognizer")) ?? {
           langs: $("#recognizeLangsSelect").val(),
