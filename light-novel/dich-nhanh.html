@@ -46,7 +46,6 @@
 
       $LAB
       .script("/static/lib/jquery-3.7.0.js").wait()
-      .script("/static/lib/underscore-umd-min.js")
       .script("/static/lib/bootstrap.bundle.min.js").wait(function () {
         setTheme(preferredTheme);
         showActiveTheme(preferredTheme);
@@ -58,9 +57,11 @@
           showActiveTheme(theme, true);
         });
       })
-      .script("/static/js/hanvietdict.js")
+      .script("/static/lib/CryptoJS v3.1.2/rollups/hmac-md5.js")
+      .script("/static/lib/CryptoJS v3.1.2/components/enc-base64.js")
       .script("/static/lib/tesseract.min.js")
-      .script("/static/lib/opencv.js").wait()
+      .script("/static/lib/opencv.js")
+      .script("/static/js/hanvietdict.js").wait()
       .script("/static/js/trich-xuat-van-ban.js").wait(function () {
         const recognizer = JSON.parse(localStorage.getItem("recognizer")) ?? {
           langs: $("#recognizeLangsSelect").val(),
@@ -327,14 +328,14 @@
                 </button>
               </li>
               <li>
-                <button class="dropdown-item" id="nomfoundationButton" type="button">Từ điển Nôm
-                </button>
+                <button class="dropdown-item" id="googleButton" type="button">Google</button>
               </li>
               <li>
                 <button class="dropdown-item" id="hvdicButton" type="button">Từ điển Hán Nôm</button>
               </li>
               <li>
-                <button class="dropdown-item" id="googleButton" type="button">Google</button>
+                <button class="dropdown-item" id="nomfoundationButton" type="button">Từ điển Nôm
+                </button>
               </li>
               <li>
                 <button class="dropdown-item" id="wikipediaButton" type="button">Wikipedia</button>

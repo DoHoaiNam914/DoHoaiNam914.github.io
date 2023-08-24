@@ -16,7 +16,9 @@ $("#inputGlossary").on("change", function () {
     switch ($("#inputGlossary").prop("files")[0].type) {
       default:
       case GlossaryType.TSV:
-        glossary = Object.fromEntries(this.result.split(/\r?\n/).map((phrase) => phrase.split(/\t/)).filter((phrase) => phrase.length >= 2));
+        glossary = Object.fromEntries(this.result.split(/\r?\n/).map(
+            (phrase) => phrase.split(/\t/)).filter(
+            (phrase) => phrase.length >= 2));
         break;
 
       case GlossaryType.CSV:
@@ -24,12 +26,18 @@ $("#inputGlossary").on("change", function () {
         break;
 
       case GlossaryType.VIETPHRASE:
-        glossary = Object.fromEntries(this.result.split(/\r?\n/).map((phrase) => phrase.split('=')).filter((phrase) => phrase.length >= 2));
+        glossary = Object.fromEntries(this.result.split(/\r?\n/).map(
+            (phrase) => phrase.split('=')).filter(
+            (phrase) => phrase.length >= 2));
         break;
     }
 
-    $("#glossaryName").val($("#inputGlossary").prop("files")[0].name.split('.').slice(0, $("#inputGlossary").prop("files")[0].name.split('.').length - 1).join('.'));
-    $("#glossaryType").val($("#inputGlossary").prop("files")[0].type || 'text/tab-separated-values').change();
+    $("#glossaryName").val(
+        $("#inputGlossary").prop("files")[0].name.split('.').slice(0,
+            $("#inputGlossary").prop("files")[0].name.split('.').length
+            - 1).join('.'));
+    $("#glossaryType").val($("#inputGlossary").prop("files")[0].type
+        || 'text/tab-separated-values').change();
   };
 
   reader.readAsText($(this).prop("files")[0]);
@@ -60,90 +68,128 @@ $("#sourceEntry").on("input", function () {
   }
 });
 
-$(".dropdown-toggle").on("click", () => { $(".dropdown-scroller").scrollTop(0); });
+$(".dropdown-toggle").on("click", () => {
+  $(".dropdown-scroller").scrollTop(0);
+});
 
 $("#sourceEntryMenu").on("mousedown", (event) => event.preventDefault());
 
-$("#clearSourceTextButton").on("click", () => $("#sourceEntry").val(null).trigger("input"));
+$("#clearSourceTextButton").on("click",
+    () => $("#sourceEntry").val(null).trigger("input"));
 
-$("#copySourceTextButton").on("click", () => navigator.clipboard.writeText($("#sourceEntry").val()));
+$("#copySourceTextButton").on("click",
+    () => navigator.clipboard.writeText($("#sourceEntry").val()));
 
 $("#pasteSourceTextButton").on("click", () => {
   navigator.clipboard
-    .readText()
-    .then((clipText) => {
-      $("#sourceEntry").val(clipText).trigger("input");
-    });
+  .readText()
+  .then((clipText) => {
+    $("#sourceEntry").val(clipText).trigger("input");
+  });
 });
 
 $("#pinyinConvertButton").on("click", function () {
   if ($("#sourceEntry").val().length > 0) {
-    $("#targetEntry").val(convertText(pinyins, false, $("#sourceEntry").val()).toLowerCase());
+    $("#targetEntry").val(
+        convertText(pinyins, false, $("#sourceEntry").val()).toLowerCase());
   }
 });
 
 $("#sinoVietnameseConvertButton").click(function () {
   if ($("#sourceEntry").val().length > 0) {
-    $("#targetEntry").val(convertText(sinovietnameses, false, $("#sourceEntry").val()).toLowerCase());
+    $("#targetEntry").val(convertText(sinovietnameses, false,
+        $("#sourceEntry").val()).toLowerCase());
   }
 });
 
 $("#lacvietdictionaryButton").on("click", function () {
   if ($("#sourceEntry").val().length > 0) {
-    window.open(`http://mobile.coviet.vn/tratu.aspx?k=${encodeURIComponent(($("#sourceEntry").val().substring($("#sourceEntry").prop("selectionStart"), $("#sourceEntry").prop("selectionEnd")) || $("#sourceEntry").val()).substring(0, 30))}&t=ALL`);
-  }
-});
-
-$("#nomfoundationButton").on("click", function () {
-  if ($("#sourceEntry").val().length > 0) {
-    window.open(`http://www.nomfoundation.org/nom-tools/Nom-Lookup-Tool/Nom-Lookup-Tool?uiLang=en&inputText=${encodeURIComponent(($("#sourceEntry").val().substring($("#sourceEntry").prop("selectionStart"), $("#sourceEntry").prop("selectionEnd")) || $("#sourceEntry").val()).substring(0, 30))}`);
-  }
-});
-$("#hvdicButton").on("click", function () {
-  if ($("#sourceEntry").val().length > 0) {
-    window.open(`https://hvdic.thivien.net/whv/${encodeURIComponent(($("#sourceEntry").val().substring($("#sourceEntry").prop("selectionStart"), $("#sourceEntry").prop("selectionEnd")) || $("#sourceEntry").val()).substring(0, 30))}`);
+    window.open(`http://mobile.coviet.vn/tratu.aspx?k=${encodeURIComponent(
+        ($("#sourceEntry").val().substring(
+            $("#sourceEntry").prop("selectionStart"),
+            $("#sourceEntry").prop("selectionEnd")) || $(
+            "#sourceEntry").val()).substring(0, 30))}&t=ALL`);
   }
 });
 
 $("#googleButton").on("click", function () {
   if ($("#sourceEntry").val().length > 0) {
-    window.open(`https://www.google.com.vn/search?q=${encodeURIComponent(($("#sourceEntry").val().substring($("#sourceEntry").prop("selectionStart"), $("#sourceEntry").prop("selectionEnd")) || $("#sourceEntry").val()).substring(0, 30))}`);
+    window.open(`https://www.google.com.vn/search?q=${encodeURIComponent(
+        ($("#sourceEntry").val().substring(
+            $("#sourceEntry").prop("selectionStart"),
+            $("#sourceEntry").prop("selectionEnd")) || $(
+            "#sourceEntry").val()).substring(0, 30))}`);
+  }
+});
+$("#hvdicButton").on("click", function () {
+  if ($("#sourceEntry").val().length > 0) {
+    window.open(`https://hvdic.thivien.net/whv/${encodeURIComponent(
+        ($("#sourceEntry").val().substring(
+            $("#sourceEntry").prop("selectionStart"),
+            $("#sourceEntry").prop("selectionEnd")) || $(
+            "#sourceEntry").val()).substring(0, 30))}`);
+  }
+});
+
+$("#nomfoundationButton").on("click", function () {
+  if ($("#sourceEntry").val().length > 0) {
+    window.open(
+        `http://www.nomfoundation.org/nom-tools/Nom-Lookup-Tool/Nom-Lookup-Tool?uiLang=en&inputText=${encodeURIComponent(
+            ($("#sourceEntry").val().substring(
+                $("#sourceEntry").prop("selectionStart"),
+                $("#sourceEntry").prop("selectionEnd")) || $(
+                "#sourceEntry").val()).substring(0, 30))}`);
   }
 });
 
 $("#wikipediaButton").on("click", function () {
   if ($("#sourceEntry").val().length > 0) {
-    window.open(`https://vi.wikipedia.org/w/?search=${encodeURIComponent(($("#sourceEntry").val().substring($("#sourceEntry").prop("selectionStart"), $("#sourceEntry").prop("selectionEnd")) || $("#sourceEntry").val()).substring(0, 30))}&ns0=1`);
+    window.open(`https://vi.wikipedia.org/w/?search=${encodeURIComponent(
+        ($("#sourceEntry").val().substring(
+            $("#sourceEntry").prop("selectionStart"),
+            $("#sourceEntry").prop("selectionEnd")) || $(
+            "#sourceEntry").val()).substring(0, 30))}&ns0=1`);
   }
 });
 
 $("#baiduButton").on("click", function () {
   if ($("#sourceEntry").val().length > 0) {
-    window.open(`https://www.baidu.com/s?wd=${encodeURIComponent(($("#sourceEntry").val().substring($("#sourceEntry").prop("selectionStart"), $("#sourceEntry").prop("selectionEnd")) || $("#sourceEntry").val()).substring(0, 30))}`);
+    window.open(`https://www.baidu.com/s?wd=${encodeURIComponent(
+        ($("#sourceEntry").val().substring(
+            $("#sourceEntry").prop("selectionStart"),
+            $("#sourceEntry").prop("selectionEnd")) || $(
+            "#sourceEntry").val()).substring(0, 30))}`);
   }
 });
 
 $("#deepltranslatorButton").on("click", function () {
   if ($("#sourceEntry").val().length > 0) {
-    window.open(`https://www.deepl.com/translator#auto/en/${encodeURIComponent($("#sourceEntry").val())}`);
+    window.open(`https://www.deepl.com/translator#auto/en/${encodeURIComponent(
+        $("#sourceEntry").val())}`);
   }
 });
 
 $("#googletranslateButton").on("click", function () {
   if ($("#sourceEntry").val().length > 0) {
-    window.open(`https://translate.google.com/?sl=auto&tl=vi&text=${encodeURIComponent($("#sourceEntry").val())}&op=translate`);
+    window.open(
+        `https://translate.google.com/?sl=auto&tl=vi&text=${encodeURIComponent(
+            $("#sourceEntry").val())}&op=translate`);
   }
 });
 
 $("#papagoButton").on("click", function () {
   if ($("#sourceEntry").val().length > 0) {
-    window.open(`https://papago.naver.com/?sk=auto&tk=vi&st=${encodeURIComponent($("#sourceEntry").val())}`);
+    window.open(
+        `https://papago.naver.com/?sk=auto&tk=vi&st=${encodeURIComponent(
+            $("#sourceEntry").val())}`);
   }
 });
 
 $("#bingtranslatorButton").on("click", function () {
   if ($("#sourceEntry").val().length > 0) {
-    window.open(`https://www.bing.com/translator?from=auto-detect&to=vi&text=${encodeURIComponent($("#sourceEntry").val())}`);
+    window.open(
+        `https://www.bing.com/translator?from=auto-detect&to=vi&text=${encodeURIComponent(
+            $("#sourceEntry").val())}`);
   }
 });
 
@@ -156,25 +202,30 @@ $("#addButton").on("click", function () {
   }
 });
 
-$("#copyTargetTextButton").on("click", () => navigator.clipboard.writeText($("#targetEntry").val()));
+$("#copyTargetTextButton").on("click",
+    () => navigator.clipboard.writeText($("#targetEntry").val()));
 
 $("#pasteTargetTextButton").on("click", () => {
   navigator.clipboard
-    .readText()
-    .then((clipText) => {
-      $("#targetEntry").val(clipText).trigger("input");
-    });
+  .readText()
+  .then((clipText) => {
+    $("#targetEntry").val(clipText).trigger("input");
+  });
 });
 
 $(".upperCaseFromAmountButton").on("click", function () {
   if ($("#targetEntry").val().length > 0) {
-    $("#targetEntry").val($("#targetEntry").val().split(' ').map((word, index) => (index < $(this).data("amount") && word.charAt(0).toUpperCase() + word.slice(1)) || word.toLowerCase()).join(' '));
+    $("#targetEntry").val($("#targetEntry").val().split(' ').map(
+        (word, index) => (index < $(this).data("amount") && word.charAt(
+            0).toUpperCase() + word.slice(1)) || word.toLowerCase()).join(' '));
   }
 });
 
 $(".upperCaseAllButton").on("click", function () {
   if ($("#targetEntry").val().length > 0) {
-    $("#targetEntry").val($("#targetEntry").val().split(' ').map((word, index) => word = word.charAt(0).toUpperCase() + word.slice(1)).join(' '));
+    $("#targetEntry").val($("#targetEntry").val().split(' ').map(
+        (word, index) => word = word.charAt(0).toUpperCase() + word.slice(
+            1)).join(' '));
   }
 });
 
@@ -184,7 +235,8 @@ $(".deepl-convert").on("click", async function () {
     $(".convert").addClass("disabled");
 
     try {
-      const translatedText = await DeepLTranslator.translateText(DEEPL_AUTH_KEY, $("#sourceEntry").val(), '', $(this).data("lang"), true);
+      const translatedText = await DeepLTranslator.translateText(DEEPL_AUTH_KEY,
+          $("#sourceEntry").val(), '', $(this).data("lang"), true);
 
       $("#targetEntry").val(translatedText);
       $(".convert").removeClass("disabled");
@@ -203,17 +255,28 @@ $(".google-convert").on("click", async function () {
     $(".convert").addClass("disabled");
 
     try {
-      const elementJs = await $.get("https://corsproxy.io/?https://translate.google.com/translate_a/element.js?hl=vi&client=wt");
+      let version;
+      let ctkk;
 
-      const version = elementJs != undefined ? elementJs.match(/_exportVersion\('(TE_\d+)'\)/)[1] : null;
-      const ctkk = elementJs != undefined ? elementJs.match(/c\._ctkk='(\d+\.\d+)'/)[1] : null;
+      const elementJs = await $.get(
+          "https://corsproxy.io/?https://translate.google.com/translate_a/element.js?hl=vi&client=wt");
+
+      if (elementJs != undefined) {
+        version = elementJs.match(
+            /_exportVersion\('(TE_\d+)'\)/)[1];
+        ctkk = elementJs.match(/c\._ctkk='(\d+\.\d+)'/)[1];
+      }
 
       if (version == undefined && ctkk == undefined) {
-        $("#targetEntry").val('Không thể lấy được Log ID hoặc Token từ máy chủ.');
+        const errorMessage = document.createElement('p');
+        errorMessage.innerText = 'Không thể lấy được Log ID hoặc Token từ element.js.';
+        $("#translatedText").append(errorMessage);
         return;
       }
 
-      const translatedText = await GoogleTranslate.translateText($("#sourceEntry").val(), version, ctkk, 'auto', $(this).data("lang"), true);
+      const translatedText = await GoogleTranslate.translateText(
+          $("#sourceEntry").val(), version, ctkk, 'auto', $(this).data("lang"),
+          true);
 
       $("#targetEntry").val(translatedText);
       $(".convert").removeClass("disabled");
@@ -232,7 +295,27 @@ $(".papago-convert").on("click", async function () {
     $(".convert").addClass("disabled");
 
     try {
-      const translatedText = await Papago.translateText($("#sourceEntry").val(), auto, $(this).data("lang"), true);
+      let version;
+
+      const mainJs = (await $.get(
+          "https://thingproxy.freeboard.io/fetch/https://papago.naver.com")).match(
+          /\/(main.*\.js)/)[1];
+
+      if (mainJs != undefined) {
+        version = (await $.get(
+            "https://thingproxy.freeboard.io/fetch/https://papago.naver.com/"
+            + mainJs)).match(/"PPG .*,"(v[^"]*)/)[1]
+      }
+
+      if (version == undefined) {
+        const errorMessage = document.createElement('p');
+        errorMessage.innerText = 'Không thể lấy được thông tin phiên bản từ main.js.';
+        $("#translatedText").append(errorMessage);
+        return;
+      }
+
+      const translatedText = await Papago.translateText(version, $("#sourceEntry").val(),
+          "auto", $(this).data("lang"), true);
 
       $("#targetEntry").val(translatedText);
       $(".convert").removeClass("disabled");
@@ -251,14 +334,18 @@ $(".microsoft-convert").on("click", async function () {
     $(".convert").addClass("disabled");
 
     try {
-      const accessToken = await $.get("https://edge.microsoft.com/translate/auth");
+      const accessToken = await $.get(
+          "https://edge.microsoft.com/translate/auth");
 
       if (accessToken == undefined) {
-        $("#targetEntry").val('Không thể lấy được Access Token từ máy chủ.');
+        const errorMessage = document.createElement('p');
+        errorMessage.innerText = 'Không thể lấy được Access Token từ máy chủ.';
+        $("#translatedText").append(errorMessage);
         return;
       }
 
-      const translatedText = await MicrosoftTranslator.translateText(accessToken, $("#sourceEntry").val(), '', $(this).data("lang"), true);
+      const translatedText = await MicrosoftTranslator.translateText(
+          accessToken, $("#sourceEntry").val(), '', $(this).data("lang"), true);
 
       $("#targetEntry").val(translatedText);
       $(".convert").removeClass("disabled");
@@ -281,7 +368,8 @@ $("#glossaryList").change(function () {
 });
 
 $("#removeButton").on("click", function () {
-  if (window.confirm('Bạn có muốn xoá từ (cụm từ) này chứ?') && glossary.hasOwnProperty($("#sourceEntry").val())) {
+  if (window.confirm('Bạn có muốn xoá từ (cụm từ) này chứ?')
+      && glossary.hasOwnProperty($("#sourceEntry").val())) {
     delete glossary[$("#sourceEntry").val()];
     loadGlossary();
     $("#sinoVietnameseConvertButton").click();
@@ -298,7 +386,15 @@ $("#preview").on("click", function () {
 $("#glossaryName").on("input", () => loadGlossary());
 
 function getSelectedTextOrActiveElementText() {
-  return window.getSelection().toString() || (document.activeElement.tagName.toLowerCase() == 'textarea' || (document.activeElement.tagName.toLowerCase() == 'input' && /^(?:text|search|password|tel|url)$/i.test(document.activeElement.type) && typeof document.activeElement.selectionStart == 'number') && document.activeElement.value.slice(document.activeElement.selectionStart, document.activeElement.selectionEnd)) || '';
+  return window.getSelection().toString()
+      || (document.activeElement.tagName.toLowerCase() == 'textarea'
+          || (document.activeElement.tagName.toLowerCase() == 'input'
+              && /^(?:text|search|password|tel|url)$/i.test(
+                  document.activeElement.type)
+              && typeof document.activeElement.selectionStart == 'number')
+          && document.activeElement.value.slice(
+              document.activeElement.selectionStart,
+              document.activeElement.selectionEnd)) || '';
 }
 
 function loadGlossary() {
@@ -314,10 +410,14 @@ function loadGlossary() {
   const glossaryType = $("#glossaryType").val();
   let data = '';
 
-  $("#fileExtension").text(glossaryType === GlossaryType.TSV ? "tsv" : (glossaryType === GlossaryType.CSV ? "csv" : "txt"));
+  $("#fileExtension").text(
+      glossaryType === GlossaryType.TSV ? "tsv" : (glossaryType
+      === GlossaryType.CSV ? "csv" : "txt"));
 
   if (glossaryArray.length > 0) {
-    glossary = Object.fromEntries(glossaryArray.sort((a, b) => b[0].length - a[0].length || a[1].localeCompare(b[1]) || a[0].localeCompare(b[0])));
+    glossary = Object.fromEntries(glossaryArray.sort(
+        (a, b) => b[0].length - a[0].length || a[1].localeCompare(b[1])
+            || a[0].localeCompare(b[0])));
     glossaryArray = Object.entries(glossary);
 
     for (let i = 0; i < glossaryArray.length; i++) {
@@ -329,20 +429,32 @@ function loadGlossary() {
 
     switch (glossaryType) {
       case GlossaryType.TSV:
-        data = glossaryArray.map((element) => (element.length > 2 ? element.splice(2, glossary.length - 2) : element).join('\t')).join('\n');
+        data = glossaryArray.map(
+            (element) => (element.length > 2 ? element.splice(2,
+                glossary.length - 2) : element).join('\t')).join('\n');
         break;
 
       case GlossaryType.CSV:
-        data = glossaryArray.map((element) => `${element[0].includes(',') ? '"' + element[0].replace(/"/g, '""') + '"' : element[0].replace(/"/g, '"""')},${element[1].includes(',') ? '"' + element[1].replace(/"/g, '""') + '"' : element[1].replace(/"/g, '"""')}`).join('\n');
+        data = glossaryArray.map(
+            (element) => `${element[0].includes(',') ? '"' + element[0].replace(
+                /"/g, '""') + '"' : element[0].replace(/"/g,
+                '"""')},${element[1].includes(',') ? '"' + element[1].replace(
+                /"/g, '""') + '"' : element[1].replace(/"/g, '"""')}`).join(
+            '\n');
         break;
 
       case GlossaryType.VIETPHRASE:
-        data = glossaryArray.map((element) => (element.length > 2 ? element.splice(2, glossary.length - 2) : element).join('=')).join('\n');
+        data = glossaryArray.map(
+            (element) => (element.length > 2 ? element.splice(2,
+                glossary.length - 2) : element).join('=')).join('\n');
         break;
     }
 
-    $("#downloadButton").attr("href", URL.createObjectURL(new Blob([data], {type: glossaryType + ';charset=UTF-8'})));
-    $("#downloadButton").attr("download", ($("#glossaryName").val().length > 0 ? $("#glossaryName").val() : 'Từ vựng') + '.' + $("#fileExtension").text());
+    $("#downloadButton").attr("href", URL.createObjectURL(
+        new Blob([data], {type: glossaryType + ';charset=UTF-8'})));
+    $("#downloadButton").attr("download",
+        ($("#glossaryName").val().length > 0 ? $("#glossaryName").val()
+            : 'Từ vựng') + '.' + $("#fileExtension").text());
   } else {
     $("#downloadButton").removeAttr("href");
     $("#downloadButton").removeAttr("download");
@@ -353,7 +465,8 @@ function loadGlossary() {
   $("#glossaryCounter").text(glossaryArray.length);
   $("#preview").val(data);
 
-  localStorage.setItem("glossary", JSON.stringify({type: glossaryType, data: glossary}));
+  localStorage.setItem("glossary",
+      JSON.stringify({type: glossaryType, data: glossary}));
   localGlossary = JSON.parse(localStorage.getItem("glossary"));
 }
 
