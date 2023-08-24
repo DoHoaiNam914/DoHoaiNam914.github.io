@@ -1140,22 +1140,25 @@ const Papago = {
   translateText: async function (version, inputText, sourceLanguage, targetLanguage,
       isConvert = false) {
     try {
+      inputText = isConvert ? inputText : getDynamicDictionaryTextForAnothers(
+          inputText);
+
       const API_URL = 'https://papago.naver.com/apis/n2mt/translate';
       const uuid = crypto.randomUUID();
       const timestamp = (new Date()).getTime();
 
       const response = await $.ajax({
         url: 'https://thingproxy.freeboard.io/fetch/' + API_URL,
-        data: `locale=vi&dict=true&dictDisplay=30&honorific=true&instant=false&paging=false&source=${sourceLanguage}&target=${targetLanguage}&text=${encodeURIComponent(inputText)}`,
+        data: `locale=vi&dict=true&dictDisplay=30&honorific=true&instant=false&paging=false&source=${sourceLanguage}&target=${targetLanguage}&text=${encodeURIComponent(!(targetLanguage == 'ko' || targetLanguage == 'ja' || targetLanguage == 'zh-CN' || targetLanguage == 'zh-TW') ? getProcessTextPreTranslate(inputText) : inputText)}`,
         method: 'POST',
         headers: {
           Authorization: "PPG " + uuid + ":" + CryptoJS.HmacMD5(
-              uuid + '\n' + API_URL.split('?') + '\n' + timestamp, version).toString(CryptoJS.enc.Base64),
+              uuid + '\n' + API_URL.split('?')[0] + '\n' + timestamp, version).toString(CryptoJS.enc.Base64),
           Timestamp: timestamp
         }
       });
 
-      return response.translatedText;
+      return getProcessTextPostTranslate(response.translatedText);
     } catch (error) {
       console.error('Bản dịch lỗi:', error);
       throw error;
