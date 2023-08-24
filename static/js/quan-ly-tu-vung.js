@@ -259,7 +259,7 @@ $(".google-convert").on("click", async function () {
       let ctkk;
 
       const elementJs = await $.get(
-          "https://corsproxy.io/?https://translate.google.com/translate_a/element.js?hl=vi&client=wt");
+          "https://thingproxy.freeboard.io/fetch/https://translate.google.com/translate_a/element.js?hl=vi&client=wt");
 
       if (elementJs != undefined) {
         version = elementJs.match(
@@ -268,9 +268,7 @@ $(".google-convert").on("click", async function () {
       }
 
       if (version == undefined && ctkk == undefined) {
-        const errorMessage = document.createElement('p');
-        errorMessage.innerText = 'Không thể lấy được Log ID hoặc Token từ element.js.';
-        $("#translatedText").append(errorMessage);
+        $("#targetEntry").val("Không thể lấy được Log ID hoặc Token từ element.js.");
         return;
       }
 
@@ -308,9 +306,7 @@ $(".papago-convert").on("click", async function () {
       }
 
       if (version == undefined) {
-        const errorMessage = document.createElement('p');
-        errorMessage.innerText = 'Không thể lấy được thông tin phiên bản từ main.js.';
-        $("#translatedText").append(errorMessage);
+        $("#targetEntry").val("Không thể lấy được thông tin phiên bản từ main.js.");
         return;
       }
 
@@ -338,9 +334,7 @@ $(".microsoft-convert").on("click", async function () {
           "https://edge.microsoft.com/translate/auth");
 
       if (accessToken == undefined) {
-        const errorMessage = document.createElement('p');
-        errorMessage.innerText = 'Không thể lấy được Access Token từ máy chủ.';
-        $("#translatedText").append(errorMessage);
+        $("#targetEntry").val("Không thể lấy được Access Token từ máy chủ.");
         return;
       }
 
