@@ -495,7 +495,7 @@ async function translate() {
 console.log(inputText.length, deeplUsage.character_limit - deeplUsage.character_count)
       if (inputText.length > (deeplUsage.character_limit - deeplUsage.character_count)) {
         errorMessage.innerText = `Lỗi DeepL: Đã đạt đến giới hạn dịch của tài khoản. (${deeplUsage.character_count}/${deeplUsage.character_limit} ký tự)`;
-        $("#translatedText").append(errorMessage);
+        $("#translatedText").html(errorMessage);
         onPostTranslate();
         return;
       }
@@ -507,7 +507,7 @@ console.log(inputText.length, deeplUsage.character_limit - deeplUsage.character_
         && (googleTranslateData.logId == undefined || googleTranslateData.ctkk
             == undefined)) {
       errorMessage.innerText = 'Không thể lấy được Log ID hoặc Token từ element.js.';
-      $("#translatedText").append(errorMessage);
+      $("#translatedText").html(errorMessage);
       return;
     }
 
@@ -515,7 +515,7 @@ console.log(inputText.length, deeplUsage.character_limit - deeplUsage.character_
 
     if (translator === Translators.PAPAGO && papagoVersion == undefined) {
       errorMessage.innerText = 'Không thể lấy được Thông tin phiên bản từ main.js.';
-      $("#translatedText").append(errorMessage);
+      $("#translatedText").html(errorMessage);
       return;
     }
 
@@ -525,7 +525,7 @@ console.log(inputText.length, deeplUsage.character_limit - deeplUsage.character_
     if (translator === Translators.MICROSOFT_TRANSLATOR
         && microsoftTranslatorAccessToken == undefined) {
       errorMessage.innerText = 'Không thể lấy được Access Token từ máy chủ.';
-      $("#translatedText").append(errorMessage);
+      $("#translatedText").html(errorMessage);
       return;
     }
 
@@ -609,8 +609,8 @@ console.log(inputText.length, deeplUsage.character_limit - deeplUsage.character_
                       (match, p1, p2) => p1 + p2.toUpperCase())).join('\n');
             } else if ($("#targetLangSelect").val() == 'vi' && Object.entries(
                 vietphrases).length == 0) {
-              $("#translatedText").html(
-                  `<p>Nhập tệp VietPhrase.txt nếu có hoặc tải về <a href="https://drive.google.com/drive/folders/0B6fxcJ5qbXgkeTJNTFJJS3lmc3c?resourcekey=0-Ych2OUVug3pkLgCIlzvcuA&usp=sharing">tại đây</a></p>`);
+              errorMessage.innerText = 'Nhập tệp VietPhrase.txt nếu có hoặc tải về <a href="https://drive.google.com/drive/folders/0B6fxcJ5qbXgkeTJNTFJJS3lmc3c?resourcekey=0-Ych2OUVug3pkLgCIlzvcuA&usp=sharing">tại đây</a>';
+              $("#translatedText").html(errorMessage);
               onPostTranslate();
               return;
             }
@@ -623,15 +623,13 @@ console.log(inputText.length, deeplUsage.character_limit - deeplUsage.character_
       }
     }
   } catch (error) {
-    $("#translatedText").html(
-        `<p>Bản dịch thất bại: ${JSON.stringify(error)}</p>`);
+    errorMessage.innerText = 'Bản dịch thất bại: ' + JSON.stringify(error);
+    $("#translatedText").html(errorMessage);
     onPostTranslate();
   }
 
   translation = results.join('\n');
-  $("#translatedText").html(
-      buildTranslatedResult(translation, inputText.split(/\n/),
-          $("#flexSwitchCheckShowOriginal").prop("checked")));
+  $("#translatedText").html(buildTranslatedResult(inputText.split(/\n/), translation.split(/\n/), $("#flexSwitchCheckShowOriginal").prop("checked")));
 }
 
 function convertText(data, useGlossary, inputText,
@@ -746,33 +744,33 @@ function convertText(data, useGlossary, inputText,
   }
 }
 
-function buildTranslatedResult(translation, textLines, showOriginal) {
-  let result = '';
+function buildTranslatedResult(textLines, resultLines, showOriginal) {
+  let result = document.createElement('div');
 
   if (showOriginal) {
-    const resultLines = translation.split(/\n/);
     let lostLineFixedAmount = 0;
 
     for (let i = 0; i < textLines.length; i++) {
-      if (textLines[i + lostLineFixedAmount].trim().length == 0
-          && resultLines[i].trim().length > 0) {
-        lostLineFixedAmount++;
-        i--;
-        continue;
-      }
+      if (i < resultLines.length) {
+        if (textLines[i + lostLineFixedAmount].trim().length == 0
+            && resultLines[i].trim().length > 0) {
+          lostLineFixedAmount++;
+          i--;
+          continue;
+        }
 
-      result += ('<p>' + (getProcessTextPostTranslate(
-          getProcessTextPreTranslate(resultLines[i].trim()))
-      !== getProcessTextPostTranslate(
-          getProcessTextPreTranslate(textLines[i + lostLineFixedAmount].trim()))
-          ? '<i>' + textLines[i + lostLineFixedAmount] + '</i><br>'
-          + resultLines[i] : textLines[i + lostLineFixedAmount]) + '</p>');
+        const paragraph = document.createElement('p');
+        paragraph.innerHTML = getProcessTextPostTranslate(getProcessTextPreTranslate(resultLines[i].trim())) !== getProcessTextPostTranslate(getProcessTextPreTranslate(textLines[i + lostLineFixedAmount].trim())) ? '<i>' + textLines[i + lostLineFixedAmount] + '</i><br>' + resultLines[i] : textLines[i + lostLineFixedAmount]
+        result.appendChild(paragraph);
+      } else {
+        result.appendChild(document.createElement('p'));
+      }
     }
   } else {
-    result = ('<p>' + translation.split(/\n/).join('</p><p>') + '</p>');
+    result.innerHTML = ('<p>' + resultLines.join('</p><p>') + '</p>');
   }
 
-  return result.replace(/(<p>)(<\/p>)/g, '$1<br>$2');
+  return result.innerHTML.replace(/(<p>)(<\/p>)/g, '$1<br>$2');
 }
 
 function onInput() {
