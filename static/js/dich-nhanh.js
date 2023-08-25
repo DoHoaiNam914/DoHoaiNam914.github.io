@@ -501,7 +501,7 @@ console.log(inputText.length, deeplUsage.character_limit - deeplUsage.character_
       }
     }
 
-    const googleTranslateData = getGoogleTranslateData(translator);
+    const googleTranslateData = await getGoogleTranslateData(translator);
 
     if (translator === Translators.GOOGLE_TRANSLATE
         && (googleTranslateData.logId == undefined || googleTranslateData.ctkk
@@ -511,7 +511,7 @@ console.log(inputText.length, deeplUsage.character_limit - deeplUsage.character_
       return;
     }
 
-    const papagoVersion = getPapagoVersion(translator);
+    const papagoVersion = await getPapagoVersion(translator);
 
     if (translator === Translators.PAPAGO && papagoVersion == undefined) {
       errorMessage.innerText = 'Không thể lấy được Thông tin phiên bản từ main.js.';
@@ -519,7 +519,7 @@ console.log(inputText.length, deeplUsage.character_limit - deeplUsage.character_
       return;
     }
 
-    const microsoftTranslatorAccessToken = getMicrosoftTranslatorAccessToken(
+    const microsoftTranslatorAccessToken = await getMicrosoftTranslatorAccessToken(
         translator);
 
     if (translator === Translators.MICROSOFT_TRANSLATOR

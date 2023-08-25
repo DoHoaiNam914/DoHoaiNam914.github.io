@@ -265,7 +265,7 @@ $(".google-convert").on("click", async function () {
     $(".convert").addClass("disabled");
 
     try {
-      const data = getGoogleTranslateData(translator);
+      const data = await getGoogleTranslateData(translator);
 
       if (data.logId == undefined || data.ctkk == undefined) {
         $("#targetEntry").val("Không thể lấy được Log ID hoặc Token từ element.js.");
@@ -293,7 +293,7 @@ $(".papago-convert").on("click", async function () {
     $(".convert").addClass("disabled");
 
     try {
-      const version = getPapagoVersion(translator);
+      const version = await getPapagoVersion(translator);
 
       if (version == undefined) {
         $("#targetEntry").val("Không thể lấy được Thông tin phiên bản từ main.js.");
@@ -319,7 +319,7 @@ $(".microsoft-convert").on("click", async function () {
     $(".convert").addClass("disabled");
 
     try {
-      const accessToken = getMicrosoftTranslatorAccessToken(translator);
+      const accessToken = await getMicrosoftTranslatorAccessToken(translator);
 
       if (accessToken == undefined) {
         $("#targetEntry").val("Không thể lấy được Access Token từ máy chủ.");
