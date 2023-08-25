@@ -2,6 +2,9 @@
 
 let translator = JSON.parse(localStorage.getItem("translator"));
 
+const DEEPL_AUTH_KEY = 'a4b25ba2-b628-fa56-916e-b323b16502de:fx';
+const uuid = crypto.randomUUID();
+
 let pinyins = {};
 let sinovietnameses = {};
 let vietphrases = {};
@@ -30,8 +33,6 @@ const punctuation = [
   ['『…』', ' ‘...’ '],
   ['【…】', '【...】']
 ];
-
-const DEEPL_AUTH_KEY = '9e00d743-da37-8466-8e8d-18940eeeaf88:fx';
 
 let translation = '';
 
@@ -440,12 +441,6 @@ function getTargetLanguageOptions(translator) {
   return targetLangSelect.innerHTML;
 }
 
-function uuidv4() {
-  return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
-      (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
-  );
-}
-
 async function translate() {
   const translator = $(".translator.active").data("id");
 
@@ -462,7 +457,7 @@ async function translate() {
 
     switch (translator) {
       case Translators.DEEPL_TRANSLATOR:
-        MAX_LENGTH = 100000;
+        MAX_LENGTH = 32768;
         MAX_LINE = 50;
         break;
 
@@ -495,54 +490,43 @@ async function translate() {
       return;
     }
 
-    let googleTranslateVersion;
-    let googleTranslateCtkk;
-
-    if (translator === Translators.GOOGLE_TRANSLATE) {
-      const elementJs = await $.get(
-          CORS_PROXY + "https://translate.google.com/translate_a/element.js?hl=vi&client=wt");
-
-      if (elementJs != undefined) {
-        googleTranslateVersion = elementJs.match(
-            /_exportVersion\('(TE_\d+)'\)/)[1];
-        googleTranslateCtkk = elementJs.match(/c\._ctkk='(\d+\.\d+)'/)[1];
-      }
-
-      if (googleTranslateVersion == undefined || googleTranslateCtkk == undefined) {
-        errorMessage.innerText = 'Không thể lấy được Log ID hoặc Token từ element.js.';
+    if (translator === Translators.DEEPL_TRANSLATOR) {
+      const deeplUsage = (await $.get("https://api-free.deepl.com/v2/usage?auth_key=" + DEEPL_AUTH_KEY)) ?? {"character_count": 500000, "character_limit": 500000};
+console.log(inputText.length, deeplUsage.character_limit - deeplUsage.character_count)
+      if (inputText.length > (deeplUsage.character_limit - deeplUsage.character_count)) {
+        errorMessage.innerText = `Lỗi DeepL: Đã đạt đến giới hạn dịch của tài khoản. (${deeplUsage.character_count}/${deeplUsage.character_limit} ký tự)`;
         $("#translatedText").append(errorMessage);
+        onPostTranslate();
         return;
       }
     }
 
-    let papagoVersion;
+    const googleTranslateData = getGoogleTranslateData(translator);
 
-    if (translator === Translators.PAPAGO) {
-      const mainJs = (await $.get(CORS_PROXY + "https://papago.naver.com")).match(/\/(main.*\.js)/)[1];
-
-      if (mainJs != undefined) {
-        papagoVersion = (await $.get(
-            CORS_PROXY + "https://papago.naver.com/"
-            + mainJs)).match(/"PPG .*,"(v[^"]*)/)[1]
-      }
-
-      if (papagoVersion == undefined) {
-        errorMessage.innerText = 'Không thể lấy được thông tin phiên bản từ main.js.';
-        $("#translatedText").append(errorMessage);
-        return;
-      }
+    if (translator === Translators.GOOGLE_TRANSLATE
+        && (googleTranslateData.logId == undefined || googleTranslateData.ctkk
+            == undefined)) {
+      errorMessage.innerText = 'Không thể lấy được Log ID hoặc Token từ element.js.';
+      $("#translatedText").append(errorMessage);
+      return;
     }
 
-    let microsoftTranslatorAccessToken;
+    const papagoVersion = getPapagoVersion(translator);
 
-    if (translator === Translators.MICROSOFT_TRANSLATOR) {
-      microsoftTranslatorAccessToken = await $.get("https://edge.microsoft.com/translate/auth");
+    if (translator === Translators.PAPAGO && papagoVersion == undefined) {
+      errorMessage.innerText = 'Không thể lấy được Thông tin phiên bản từ main.js.';
+      $("#translatedText").append(errorMessage);
+      return;
+    }
 
-      if (microsoftTranslatorAccessToken == undefined) {
-        errorMessage.innerText = 'Không thể lấy được Access Token từ máy chủ.';
-        $("#translatedText").append(errorMessage);
-        return;
-      }
+    const microsoftTranslatorAccessToken = getMicrosoftTranslatorAccessToken(
+        translator);
+
+    if (translator === Translators.MICROSOFT_TRANSLATOR
+        && microsoftTranslatorAccessToken == undefined) {
+      errorMessage.innerText = 'Không thể lấy được Access Token từ máy chủ.';
+      $("#translatedText").append(errorMessage);
+      return;
     }
 
     const queryLines = inputText.split(/\n/);
@@ -553,13 +537,16 @@ async function translate() {
     for (let i = 0; i < inputText.split(/\n/).length; i++) {
       translateLines.push(queryLines.shift());
 
-      if (queryLines.length == 0 || (!canTranslate && translateLines.join('\n').length >= MAX_LENGTH)) {
-        if (translateLines.join('\n').length > MAX_LENGTH || translateLines.length > MAX_LINE) {
+      if (queryLines.length == 0 || (!canTranslate && translateLines.join(
+          '\n').length >= MAX_LENGTH)) {
+        if (translateLines.join('\n').length > MAX_LENGTH
+            || translateLines.length > MAX_LINE) {
           queryLines.splice(0, 0, translateLines.pop());
           i--;
         }
 
-        if (translateLines.length <= MAX_LINE && translateLines.join('\n').length <= MAX_LENGTH) {
+        if (translateLines.length <= MAX_LINE && translateLines.join(
+            '\n').length <= MAX_LENGTH) {
           canTranslate = true;
         }
       }
@@ -578,17 +565,21 @@ async function translate() {
           default:
           case Translators.GOOGLE_TRANSLATE:
             translatedText = await GoogleTranslate.translateText(
-                translateText, googleTranslateVersion, googleTranslateCtkk, sourceLanguage, targetLanguage);
+                translateText, googleTranslateData.logId,
+                googleTranslateData.ctkk,
+                sourceLanguage, targetLanguage);
             break;
 
           case Translators.PAPAGO:
-            translatedText = await Papago.translateText(papagoVersion, translateText,
+            translatedText = await Papago.translateText(papagoVersion,
+                translateText,
                 sourceLanguage, targetLanguage);
             break;
 
           case Translators.MICROSOFT_TRANSLATOR:
             translatedText = await MicrosoftTranslator.translateText(
-                microsoftTranslatorAccessToken, translateText, sourceLanguage, targetLanguage);
+                microsoftTranslatorAccessToken, translateText, sourceLanguage,
+                targetLanguage);
             break;
 
           case Translators.VIETPHRASE:
@@ -920,7 +911,7 @@ const DeepLTargetLanguage = {
 };
 
 const GoogleTranslate = {
-  translateText: async function (inputText, version, ctkk, sourceLanguage,
+  translateText: async function (inputText, logId, ctkk, sourceLanguage,
       targetLanguage, isConvert = false) {
     try {
       inputText = isConvert ? inputText : getDynamicDictionaryTextForAnothers(
@@ -931,15 +922,15 @@ const GoogleTranslate = {
        * URL: https://translate.googleapis.com/translate_a/single?client=gtx&sl=${sourceLanguage}&tl=${targetLanguage}&hl=vi&dt=t&dt=bd&dj=1&q=${encodeURIComponent(inputText)}
        *
        * Method: GET
-       * URL: https://translate.googleapis.com/translate_a/t?anno=3&client=wt_lib&format=html&v=1.0&key&logId=v${version}&sl=${sourceLanguage}&tl=${targetLanguage}&tc=0${Bp(inputText, ctkk)}
+       * URL: https://translate.googleapis.com/translate_a/t?anno=3&client=wt_lib&format=html&v=1.0&key&logId=v${logId}&sl=${sourceLanguage}&tl=${targetLanguage}&tc=0${Bp(inputText, ctkk)}
        * Content-Type: application/x-www-form-urlencoded - send(encodeURIComponent(inputText))
        *
        * Method: POST
-       * URL: https://translate.googleapis.com/translate_a/t?anno=3&client=te&format=html&v=1.0&key&logId=v${version}&sl=${sourceLanguage}&tl=${targetLanguage}&tc=0${Bp(inputText, ctkk)}
+       * URL: https://translate.googleapis.com/translate_a/t?anno=3&client=te&format=html&v=1.0&key&logId=v${logId}&sl=${sourceLanguage}&tl=${targetLanguage}&tc=0${Bp(inputText, ctkk)}
        * send(encodeURIComponent(inputText))
        */
       const response = await $.ajax({
-        url: `https://translate.googleapis.com/translate_a/t?anno=3&client=gtx&format=html&v=1.0&key&logId=v${version}&sl=${sourceLanguage}&tl=${targetLanguage}&tc=0&tk=${Bp(
+        url: `https://translate.googleapis.com/translate_a/t?anno=3&client=gtx&format=html&v=1.0&key&logId=v${logId}&sl=${sourceLanguage}&tl=${targetLanguage}&tc=0&tk=${Bp(
             getDynamicDictionaryTextForAnothers(inputText), ctkk)}`,
         data: `q=${(!(targetLanguage == 'zh-CN' || targetLanguage == 'zh-TW'
             || targetLanguage == 'ja' || targetLanguage == 'ko')
@@ -963,6 +954,63 @@ const GoogleTranslate = {
     }
   }
 };
+
+async function getGoogleTranslateData(translator) {
+  if (translator === Translators.GOOGLE_TRANSLATE) {
+    try {
+      const data = {};
+
+      const elementJs = await $.get(
+          CORS_PROXY
+          + "https://translate.google.com/translate_a/element.js?hl=vi&client=wt");
+
+      if (elementJs != undefined) {
+        data.logId = elementJs.match(
+            /_exportVersion\('(TE_\d+)'\)/)[1];
+        data.ctkk = elementJs.match(/c\._ctkk='(\d+\.\d+)'/)[1];
+      }
+
+      return data;
+    } catch (error) {
+      console.error('Không thể lấy được Log ID hoặc Token:' + error);
+      throw error
+    }
+  }
+}
+
+function Ap(a, b) {
+  for (var c = 0; c < b.length - 2; c += 3) {
+    var d = b.charAt(c + 2);
+    d = "a" <= d ? d.charCodeAt(0) - 87 : Number(d);
+    d = "+" == b.charAt(c + 1) ? a >>> d : a << d;
+    a = "+" == b.charAt(c) ? a + d & 4294967295 : a ^ d
+  }
+  return a
+}
+
+function Bp(a, b) {
+  var c = b.split(".");
+  b = Number(c[0]) || 0;
+  for (var d = [], e = 0, f = 0; f < a.length; f++) {
+    var h = a.charCodeAt(f);
+    128 > h ? d[e++] = h : (2048 > h ? d[e++] = h >> 6 | 192 : (55296 == (h
+        & 64512) && f + 1 < a.length && 56320 == (a.charCodeAt(f + 1) & 64512)
+        ? (h = 65536 + ((h & 1023) << 10) + (a.charCodeAt(++f)
+            & 1023), d[e++] = h >> 18 | 240, d[e++] = h >> 12 & 63 | 128)
+        : d[e++] = h >> 12 | 224, d[e++] = h >> 6 & 63 | 128), d[e++] = h & 63
+        | 128)
+  }
+  a = b;
+  for (e = 0; e < d.length; e++) {
+    a += d[e], a = Ap(a, "+-a^+6");
+  }
+  a = Ap(a, "+-3^+b+-f");
+  a ^= Number(c[1]) || 0;
+  0 > a && (a = (a & 2147483647) + 2147483648);
+  c = a % 1E6;
+  return c.toString() +
+      "." + (c ^ b)
+}
 
 const GoogleLanguage = {
   'af': 'Afrikaans',
@@ -1102,64 +1150,34 @@ const GoogleLanguage = {
   'zu': 'Zulu'
 }
 
-function Ap(a, b) {
-  for (var c = 0; c < b.length - 2; c += 3) {
-    var d = b.charAt(c + 2);
-    d = "a" <= d ? d.charCodeAt(0) - 87 : Number(d);
-    d = "+" == b.charAt(c + 1) ? a >>> d : a << d;
-    a = "+" == b.charAt(c) ? a + d & 4294967295 : a ^ d
-  }
-  return a
-}
-
-function Bp(a, b) {
-  var c = b.split(".");
-  b = Number(c[0]) || 0;
-  for (var d = [], e = 0, f = 0; f < a.length; f++) {
-    var h = a.charCodeAt(f);
-    128 > h ? d[e++] = h : (2048 > h ? d[e++] = h >> 6 | 192 : (55296 == (h
-        & 64512) && f + 1 < a.length && 56320 == (a.charCodeAt(f + 1) & 64512)
-        ? (h = 65536 + ((h & 1023) << 10) + (a.charCodeAt(++f)
-            & 1023), d[e++] = h >> 18 | 240, d[e++] = h >> 12 & 63 | 128)
-        : d[e++] = h >> 12 | 224, d[e++] = h >> 6 & 63 | 128), d[e++] = h & 63
-        | 128)
-  }
-  a = b;
-  for (e = 0; e < d.length; e++) {
-    a += d[e], a = Ap(a, "+-a^+6");
-  }
-  a = Ap(a, "+-3^+b+-f");
-  a ^= Number(c[1]) || 0;
-  0 > a && (a = (a & 2147483647) + 2147483648);
-  c = a % 1E6;
-  return c.toString() +
-      "." + (c ^ b)
-}
-
 const Papago = {
-  translateText: async function (version, inputText, sourceLanguage, targetLanguage,
+  translateText: async function (version, inputText, sourceLanguage,
+      targetLanguage,
       isConvert = false) {
     try {
       inputText = isConvert ? inputText : getDynamicDictionaryTextForAnothers(
           inputText);
 
-      const API_URL = 'https://papago.naver.com/apis/n2mt/translate';
-      const uuid = crypto.randomUUID();
-      const timestamp = (new Date()).getTime();
+      const timeStamp = (new Date()).getTime();
 
       const response = await $.ajax({
-        url: CORS_PROXY + API_URL,
-        data: `deviceId=${uuid}&locale=vi&dict=true&dictDisplay=30&honorific=true&instant=false&paging=false&source=${sourceLanguage}&target=${targetLanguage}&text=${encodeURIComponent(!(targetLanguage == 'ko' || targetLanguage == 'ja' || targetLanguage == 'zh-CN' || targetLanguage == 'zh-TW') ? getProcessTextPreTranslate(inputText) : inputText)}`,
+        url: CORS_PROXY + "https://papago.naver.com/apis/n2mt/translate",
+        data: `deviceId=${uuid}&locale=vi&dict=true&dictDisplay=30&honorific=true&instant=false&paging=false&source=${sourceLanguage}&target=${targetLanguage}&text=${encodeURIComponent(
+            !(targetLanguage == 'ko' || targetLanguage == 'ja' || targetLanguage
+                == 'zh-CN' || targetLanguage == 'zh-TW')
+                ? getProcessTextPreTranslate(inputText) : inputText)}`,
         method: "POST",
         headers: {
           Accept: "application/json",
-          "Accept-Language": targetLanguage,
+          "Accept-Language": "vi",
           "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
           // "device-type": "pc" || "mobile",
           "x-apigw-partnerid": "papago",
           Authorization: "PPG " + uuid + ":" + CryptoJS.HmacMD5(
-              uuid + '\n' + API_URL.split('?')[0] + '\n' + timestamp, version).toString(CryptoJS.enc.Base64),
-          Timestamp: timestamp
+              uuid + '\n' + 'https://papago.naver.com/apis/n2mt/translate'
+              + '\n' + timeStamp,
+              version).toString(CryptoJS.enc.Base64),
+          Timestamp: timeStamp
         }
       });
 
@@ -1170,6 +1188,28 @@ const Papago = {
     }
   }
 };
+
+async function getPapagoVersion(translator) {
+  if (translator === Translators.PAPAGO) {
+    try {
+      let version;
+
+      const mainJs = (await $.get(
+          CORS_PROXY + "https://papago.naver.com")).match(/\/(main.*\.js)/)[1];
+
+      if (mainJs != undefined) {
+        version = (await $.get(
+            CORS_PROXY + "https://papago.naver.com/"
+            + mainJs)).match(/"PPG .*,"(v[^"]*)/)[1];
+      }
+
+      return version;
+    } catch (error) {
+      console.error('Không thể lấy được Thông tin phiên bản: ' + error);
+      throw error
+    }
+  }
+}
 
 const PapagoLanguage = {
   'ko': 'Korean',
@@ -1241,6 +1281,40 @@ const MicrosoftTranslator = {
     }
   }
 };
+
+async function getMicrosoftTranslatorAccessToken(translator) {
+  if (translator === Translators.MICROSOFT_TRANSLATOR) {
+    try {
+      return await $.get(
+          "https://edge.microsoft.com/translate/auth");
+    } catch (error) {
+      console.error('Không thể lấy được Access Token: ' + error);
+      throw error
+    }
+  }
+}
+
+function getDynamicDictionaryText(text) {
+  let newText = text;
+
+  if ($("#flexSwitchCheckGlossary").prop("checked") && Object.entries(
+      glossary).length > 0) {
+    const glossaryArray = Object.entries(glossary).filter(
+        (element) => text.includes(element[0]));
+
+    for (let i = 0; i < glossaryArray.length; i++) {
+      newText = newText.replace(new RegExp(glossaryArray[i][0], 'g'),
+          `<mstrans:dictionary translation="${glossaryArray[i][1]}">MSTRANS_DICTIONARY_${i}</mstrans:dictionary>`);
+    }
+
+    for (let i = glossaryArray.length - 1; i >= 0; i--) {
+      newText = newText.replace(new RegExp(`MSTRANS_DICTIONARY_${i}`, 'g'),
+          glossaryArray[i][0]);
+    }
+  }
+
+  return newText;
+}
 
 const MicrosoftLanguage = {
   'af': 'Afrikaans',
@@ -1356,28 +1430,6 @@ const MicrosoftLanguage = {
   'zu': 'Zulu'
 };
 
-function getDynamicDictionaryText(text) {
-  let newText = text;
-
-  if ($("#flexSwitchCheckGlossary").prop("checked") && Object.entries(
-      glossary).length > 0) {
-    const glossaryArray = Object.entries(glossary).filter(
-        (element) => text.includes(element[0]));
-
-    for (let i = 0; i < glossaryArray.length; i++) {
-      newText = newText.replace(new RegExp(glossaryArray[i][0], 'g'),
-          `<mstrans:dictionary translation="${glossaryArray[i][1]}">MSTRANS_DICTIONARY_${i}</mstrans:dictionary>`);
-    }
-
-    for (let i = glossaryArray.length - 1; i >= 0; i--) {
-      newText = newText.replace(new RegExp(`MSTRANS_DICTIONARY_${i}`, 'g'),
-          glossaryArray[i][0]);
-    }
-  }
-
-  return newText;
-}
-
 function getDynamicDictionaryTextForAnothers(text) {
   let newText = text;
 
@@ -1425,7 +1477,8 @@ function getProcessTextPostTranslate(text) {
   if (text.length > 0) {
     for (let i = 0; i < brackets.length; i++) {
       newText = newText.replace(
-          new RegExp(`\n\\[OPEN_BRACKET_${i}\\].*?\n+(.*)\n+.*?\\[CLOSE_BRACKET_${i}\\]\n`,
+          new RegExp(
+              `\n\\[OPEN_BRACKET_${i}\\].*?\n+(.*)\n+.*?\\[CLOSE_BRACKET_${i}\\]\n`,
               'gi'),
           ` ${brackets[i][1].split('...')[0]}$1${brackets[i][1].split(
               '...')[1]} `).replace(

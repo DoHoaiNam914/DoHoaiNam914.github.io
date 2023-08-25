@@ -235,6 +235,16 @@ $(".deepl-convert").on("click", async function () {
     $(".convert").addClass("disabled");
 
     try {
+      const deeplUsage = (await $.get(
+              "https://api-free.deepl.com/v2/usage?auth_key=" + DEEPL_AUTH_KEY))
+          ?? {"character_count": 500000, "character_limit": 500000};
+
+      if ($("#sourceEntry").val().length > (deeplUsage.character_limit
+          - deeplUsage.character_count)) {
+        $("#targetEntry").val(`Đã đạt đến giới hạn dịch của tài khoản. (${deeplUsage.character_count}/${deeplUsage.character_limit} ký tự)`);
+        return;
+      }
+
       const translatedText = await DeepLTranslator.translateText(DEEPL_AUTH_KEY,
           $("#sourceEntry").val(), '', $(this).data("lang"), true);
 
@@ -255,26 +265,16 @@ $(".google-convert").on("click", async function () {
     $(".convert").addClass("disabled");
 
     try {
-      let version;
-      let ctkk;
+      const data = getGoogleTranslateData(translator);
 
-      const elementJs = await $.get(
-          CORS_PROXY + "https://translate.google.com/translate_a/element.js?hl=vi&client=wt");
-
-      if (elementJs != undefined) {
-        version = elementJs.match(
-            /_exportVersion\('(TE_\d+)'\)/)[1];
-        ctkk = elementJs.match(/c\._ctkk='(\d+\.\d+)'/)[1];
-      }
-
-      if (version == undefined && ctkk == undefined) {
+      if (data.logId == undefined || data.ctkk == undefined) {
         $("#targetEntry").val("Không thể lấy được Log ID hoặc Token từ element.js.");
         return;
       }
 
       const translatedText = await GoogleTranslate.translateText(
-          $("#sourceEntry").val(), version, ctkk, 'auto', $(this).data("lang"),
-          true);
+          $("#sourceEntry").val(), data.logId, data.ctkk, 'auto',
+          $(this).data("lang"), true);
 
       $("#targetEntry").val(translatedText);
       $(".convert").removeClass("disabled");
@@ -293,25 +293,14 @@ $(".papago-convert").on("click", async function () {
     $(".convert").addClass("disabled");
 
     try {
-      let version;
-
-      const mainJs = (await $.get(
-          CORS_PROXY + "https://papago.naver.com")).match(
-          /\/(main.*\.js)/)[1];
-
-      if (mainJs != undefined) {
-        version = (await $.get(
-            CORS_PROXY + "https://papago.naver.com/"
-            + mainJs)).match(/"PPG .*,"(v[^"]*)/)[1]
-      }
+      const version = getPapagoVersion(translator);
 
       if (version == undefined) {
-        $("#targetEntry").val("Không thể lấy được thông tin phiên bản từ main.js.");
+        $("#targetEntry").val("Không thể lấy được Thông tin phiên bản từ main.js.");
         return;
       }
 
-      const translatedText = await Papago.translateText(version, $("#sourceEntry").val(),
-          "auto", $(this).data("lang"), true);
+      const translatedText = await Papago.translateText(version, $("#sourceEntry").val(), "auto", $(this).data("lang"), true);
 
       $("#targetEntry").val(translatedText);
       $(".convert").removeClass("disabled");
@@ -330,8 +319,7 @@ $(".microsoft-convert").on("click", async function () {
     $(".convert").addClass("disabled");
 
     try {
-      const accessToken = await $.get(
-          "https://edge.microsoft.com/translate/auth");
+      const accessToken = getMicrosoftTranslatorAccessToken(translator);
 
       if (accessToken == undefined) {
         $("#targetEntry").val("Không thể lấy được Access Token từ máy chủ.");
