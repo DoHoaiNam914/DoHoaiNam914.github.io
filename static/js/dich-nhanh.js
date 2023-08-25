@@ -110,8 +110,7 @@ $("#pasteButton").on("click", () => {
     if (clipText.length > 0) {
       $(document.body).scrollTop(0);
       $(document.documentElement).scrollTop(0);
-      $("#queryText").val(clipText).change();
-      $("#queryTextCounter").text($("#queryText").val().length);
+      $("#queryText").val(clipText).trigger("input");
 
       if ($("#translateButton").text() == 'Sửa') {
         translation = '';
