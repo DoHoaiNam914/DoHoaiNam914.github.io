@@ -535,19 +535,19 @@ console.log(inputText.length, deeplUsage.character_limit - deeplUsage.character_
     let canTranslate = false;
 
     for (let i = 0; i < inputText.split(/\n/).length; i++) {
-      translateLines.push(queryLines.shift());
+      if (translateLines.join('\n').length < MAX_LENGTH && translateLines.length < MAX_LINE) {
+        translateLines.push(queryLines.shift());
 
-      if (queryLines.length == 0 || (!canTranslate && translateLines.join(
-          '\n').length >= MAX_LENGTH)) {
-        if (translateLines.join('\n').length > MAX_LENGTH
+        if (queryLines.length == 0 || translateLines.length >= MAX_LINE || translateLines.join('\n').length >= MAX_LENGTH) {
+          if (translateLines.join('\n').length > MAX_LENGTH
             || translateLines.length > MAX_LINE) {
-          queryLines.splice(0, 0, translateLines.pop());
-          i--;
-        }
+            queryLines.splice(0, 0, translateLines.pop());
+            i--;
+          }
 
-        if (translateLines.length <= MAX_LINE && translateLines.join(
-            '\n').length <= MAX_LENGTH) {
-          canTranslate = true;
+          if (translateLines.length <= MAX_LINE && translateLines.join('\n').length <= MAX_LENGTH) {
+            canTranslate = true;
+          }
         }
       }
 
