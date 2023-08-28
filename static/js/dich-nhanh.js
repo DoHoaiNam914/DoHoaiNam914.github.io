@@ -590,21 +590,21 @@ console.log(inputText.length, deeplUsage.character_limit - deeplUsage.character_
                   $("input[name=\"flexRadioTranslationAlgorithm\"]:checked").val()).split(
                   /\n/).map(
                   (element) => element.replace(
-                      /(^|\s*[.;:?!\-("'‘“〈《【]\s*)(\p{Lower})/gu,
+                      /(^|\s*[.;:?!\-("'‘“〈《【]\s*)(\p{Ll})/gu,
                       (match, p1, p2) => p1 + p2.toUpperCase())).join('\n');
             } else if ($("#targetLangSelect").val() == 'zh-VN'
                 && Object.entries(sinovietnameses).length > 0) {
               translatedText = convertText(sinovietnameses, false,
                   translateText).split(
                   /\n/).map((element) => element.replace(
-                  /(^|[.;:?!-]\s+|[("'‘“〈《【])(\p{Lower})/gu,
+                  /(^|[.;:?!-]\s+|[("'‘“〈《【])(\p{Ll})/gu,
                   (match, p1, p2) => p1 + p2.toUpperCase())).join('\n');
             } else if ($("#targetLangSelect").val() == 'en'
                 && Object.entries(pinyins).length > 0) {
               translatedText = convertText(pinyins, false,
                   translateText).split(/\n/).map(
                   (element) => element.replace(
-                      /(^|[.;:?!-]\s+|[("'‘“〈《【])(\p{Lower})/gu,
+                      /(^|[.;:?!-]\s+|[("'‘“〈《【])(\p{Ll})/gu,
                       (match, p1, p2) => p1 + p2.toUpperCase())).join('\n');
             } else if ($("#targetLangSelect").val() == 'vi' && Object.entries(
                 vietphrases).length == 0) {
@@ -648,7 +648,11 @@ function convertText(data, useGlossary, inputText,
       if (useGlossary) {
         for (const property in glossary) {
           line = line.replace(
-              new RegExp(property.replace(/([\[\]()*+?])/g, '\\$1'), 'g'),
+              new RegExp(`(\\p{L})${property.replace(/([.\[\]()*+?])/g, '\\$1')}`, 'gu'),
+              '$1 ' + glossary[property]).replace(
+              new RegExp(`${property.replace(/([.\[\]()*+?])/g, '\\$1')}(\\p{L})`, 'gu'),
+              glossary[property] + ' $1').replace(
+              new RegExp(property.replace(/([.\[\]()*+?])/g, '\\$1'), 'g'),
               glossary[property] + (translationAlgorithm
               == 'longPrior' ? ' ' : '')).trimEnd();
         }
