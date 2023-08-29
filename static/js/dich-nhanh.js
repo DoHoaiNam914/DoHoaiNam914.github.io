@@ -652,31 +652,30 @@ function convertText(data, useGlossary, inputText,
     const results = [];
 
     for (let i = 0; i < lines.length; i++) {
-      let line = lines[i];
+      let chars = lines[i];
 
       if (useGlossary) {
-        const MAX_GLOSSARY_LENGTH = Object.entries(glossary).filter(
-            (element) => line.includes(element[0]))[0][0].length;
+        const MAX_GLOSSARY_LENGTH = Object.entries(glossary)[0][0].length;
         const phrases = [];
         let tempWord = '';
 
-        for (let j = 0; j < line.length; j++) {
+        for (let j = 0; j < chars.length; j++) {
           for (let k = MAX_GLOSSARY_LENGTH; k >= 1; k--) {
-            if (glossary.hasOwnProperty(line.substring(j, j + k))) {
-              phrases.push(glossary[line.substring(j, j + k)]);
+            if (glossary.hasOwnProperty(chars.substring(j, j + k))) {
+              phrases.push(glossary[chars.substring(j, j + k)]);
               j += k - 1;
               break;
-            } else {
-              if (tempWord.length > 0 && / /.test(line[j]) && !/ /.test(
+            } else if (k == 1) {
+              if (tempWord.length > 0 && / /.test(chars[j]) && !/ /.test(
                   tempWord)) {
                 tempWord.split(' ').forEach((element) => phrases.push(element));
                 tempWord = '';
               }
 
-              tempWord += line[j];
+              tempWord += chars[j];
 
               if (/ /.test(tempWord)) {
-                if (!/ /.test(line[j + 1])) {
+                if (!/ /.test(chars[j + 1])) {
                   phrases[phrases.length - 1] += tempWord.substring(0,
                       tempWord.length - 1);
                   tempWord = '';
@@ -687,8 +686,8 @@ function convertText(data, useGlossary, inputText,
 
               for (let l = MAX_GLOSSARY_LENGTH; l >= 1; l--) {
                 if (tempWord.length > 0 && (glossary.hasOwnProperty(
-                        line.substring(j + 1, j + 1 + l)) || j + 1
-                    == line.length)) {
+                        chars.substring(j + 1, j + 1 + l)) || j + 1
+                    == chars.length)) {
                   tempWord.split(' ').forEach(
                       (element) => phrases.push(element));
                   tempWord = '';
@@ -701,46 +700,46 @@ function convertText(data, useGlossary, inputText,
           }
         }
 
-        line = phrases.join(' ');
+        chars = phrases.join(' ');
       }
 
       const filteredEntries = [...dataEntries].filter(
-          (element) => line.includes(element[0]));
+          (element) => chars.includes(element[0]));
 
       if (filteredEntries.length == 0) {
-        results.push(line);
+        results.push(chars);
         continue;
       }
 
       if (translationAlgorithm == 'longPrior') {
         for (const property in Object.fromEntries(filteredEntries)) {
-          line = line.replace(new RegExp(property, 'g'),
+          chars = chars.replace(new RegExp(property, 'g'),
               `${data[property]} `).trimEnd();
         }
 
-        results.push(line);
+        results.push(chars);
       } else {
         const MAX_PHRASE_LENGTH = [...filteredEntries].sort(
             (a, b) => b[0].length - a[0].length)[0][0].length;
         const phrases = [];
         let tempWord = '';
 
-        for (let j = 0; j < line.length; j++) {
+        for (let j = 0; j < chars.length; j++) {
           for (let k = MAX_PHRASE_LENGTH; k >= 1; k--) {
-            if (data.hasOwnProperty(line.substring(j, j + k))) {
-              phrases.push(data[line.substring(j, j + k)]);
+            if (data.hasOwnProperty(chars.substring(j, j + k))) {
+              phrases.push(data[chars.substring(j, j + k)]);
               j += k - 1;
               break;
             } else if (k == 1) {
-              if (tempWord.length > 0 && / /.test(line[j]) && !/ /.test(tempWord)) {
+              if (tempWord.length > 0 && / /.test(chars[j]) && !/ /.test(tempWord)) {
                 tempWord.split(' ').forEach((element) => phrases.push(element));
                 tempWord = '';
               }
 
-              tempWord += line[j];
+              tempWord += chars[j];
 
               if (/ /.test(tempWord)) {
-                if (!/ /.test(line[j + 1])) {
+                if (!/ /.test(chars[j + 1])) {
                   phrases[phrases.length - 1] += tempWord.substring(0,
                       tempWord.length - 1);
                   tempWord = '';
@@ -751,8 +750,8 @@ function convertText(data, useGlossary, inputText,
 
               for (let l = MAX_PHRASE_LENGTH; l >= 1; l--) {
                 if (tempWord.length > 0 && (data.hasOwnProperty(
-                        line.substring(j + 1, j + 1 + l)) || j + 1
-                    == line.length)) {
+                        chars.substring(j + 1, j + 1 + l)) || j + 1
+                    == chars.length)) {
                   tempWord.split(' ').forEach(
                       (element) => phrases.push(element));
                   tempWord = '';
