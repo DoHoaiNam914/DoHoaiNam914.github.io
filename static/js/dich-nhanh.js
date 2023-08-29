@@ -139,7 +139,7 @@ $("#inputVietPhrases").on("change", function () {
     let vietphraseList = this.result.split(/\r?\n/).map(
         (phrase) => phrase.split('=')).filter(
         (phrase) => phrase.length == 2).map(
-        (element) => [element[0].replace(/([\[\]()*+?])/g, '\\$1'),
+        (element) => [element[0].replace(/([.\[\]()*+?])/g, '\\$1'),
           element[1].split('/')[0].split('|')[0]]);
     vietphraseList = [...vietphraseList,
       ...Object.entries(sinovietnameses)].filter(
@@ -490,9 +490,13 @@ async function translate() {
     }
 
     if (translator === Translators.DEEPL_TRANSLATOR) {
-      const deeplUsage = (await $.get("https://api-free.deepl.com/v2/usage?auth_key=" + DEEPL_AUTH_KEY)) ?? {"character_count": 500000, "character_limit": 500000};
-console.log(inputText.length, deeplUsage.character_limit - deeplUsage.character_count)
-      if (inputText.length > (deeplUsage.character_limit - deeplUsage.character_count)) {
+      const deeplUsage = (await $.get(
+              "https://api-free.deepl.com/v2/usage?auth_key=" + DEEPL_AUTH_KEY))
+          ?? {"character_count": 500000, "character_limit": 500000};
+      console.log(inputText.length,
+          deeplUsage.character_limit - deeplUsage.character_count)
+      if (inputText.length > (deeplUsage.character_limit
+          - deeplUsage.character_count)) {
         errorMessage.innerText = `Lỗi DeepL: Đã đạt đến giới hạn dịch của tài khoản. (${deeplUsage.character_count}/${deeplUsage.character_limit} ký tự)`;
         $("#translatedText").html(errorMessage);
         onPostTranslate();
@@ -534,17 +538,20 @@ console.log(inputText.length, deeplUsage.character_limit - deeplUsage.character_
     let canTranslate = false;
 
     for (let i = 0; i < inputText.split(/\n/).length; i++) {
-      if (translateLines.join('\n').length < MAX_LENGTH && translateLines.length < MAX_LINE) {
+      if (translateLines.join('\n').length < MAX_LENGTH && translateLines.length
+          < MAX_LINE) {
         translateLines.push(queryLines.shift());
 
-        if (queryLines.length == 0 || translateLines.length >= MAX_LINE || translateLines.join('\n').length >= MAX_LENGTH) {
+        if (queryLines.length == 0 || translateLines.length >= MAX_LINE
+            || translateLines.join('\n').length >= MAX_LENGTH) {
           if (translateLines.join('\n').length > MAX_LENGTH
-            || translateLines.length > MAX_LINE) {
+              || translateLines.length > MAX_LINE) {
             queryLines.splice(0, 0, translateLines.pop());
             i--;
           }
 
-          if (translateLines.length <= MAX_LINE && translateLines.join('\n').length <= MAX_LENGTH) {
+          if (translateLines.length <= MAX_LINE && translateLines.join(
+              '\n').length <= MAX_LENGTH) {
             canTranslate = true;
           }
         }
@@ -628,7 +635,9 @@ console.log(inputText.length, deeplUsage.character_limit - deeplUsage.character_
   }
 
   translation = results.join('\n');
-  $("#translatedText").html(buildTranslatedResult(inputText.split(/\n/), translation.split(/\n/), $("#flexSwitchCheckShowOriginal").prop("checked")));
+  $("#translatedText").html(
+      buildTranslatedResult(inputText.split(/\n/), translation.split(/\n/),
+          $("#flexSwitchCheckShowOriginal").prop("checked")));
 }
 
 function convertText(data, useGlossary, inputText,
@@ -646,16 +655,53 @@ function convertText(data, useGlossary, inputText,
       let line = lines[i];
 
       if (useGlossary) {
-        for (const property in glossary) {
-          line = line.replace(
-              new RegExp(`(\\p{L})${property.replace(/([.\[\]()*+?])/g, '\\$1')}`, 'gu'),
-              '$1 ' + glossary[property]).replace(
-              new RegExp(`${property.replace(/([.\[\]()*+?])/g, '\\$1')}(\\p{L})`, 'gu'),
-              glossary[property] + ' $1').replace(
-              new RegExp(property.replace(/([.\[\]()*+?])/g, '\\$1'), 'g'),
-              glossary[property] + (translationAlgorithm
-              == 'longPrior' ? ' ' : '')).trimEnd();
+        const MAX_GLOSSARY_LENGTH = Object.entries(glossary).filter(
+            (element) => line.includes(element[0]))[0][0].length;
+        const phrases = [];
+        let tempWord = '';
+
+        for (let j = 0; j < line.length; j++) {
+          for (let k = MAX_GLOSSARY_LENGTH; k >= 1; k--) {
+            if (glossary.hasOwnProperty(line.substring(j, j + k))) {
+              phrases.push(glossary[line.substring(j, j + k)]);
+              j += k - 1;
+              break;
+            } else {
+              if (tempWord.length > 0 && / /.test(line[j]) && !/ /.test(
+                  tempWord)) {
+                tempWord.split(' ').forEach((element) => phrases.push(element));
+                tempWord = '';
+              }
+
+              tempWord += line[j];
+
+              if (/ /.test(tempWord)) {
+                if (!/ /.test(line[j + 1])) {
+                  phrases[phrases.length - 1] += tempWord.substring(0,
+                      tempWord.length - 1);
+                  tempWord = '';
+                }
+
+                break;
+              }
+
+              for (let l = MAX_GLOSSARY_LENGTH; l >= 1; l--) {
+                if (tempWord.length > 0 && (glossary.hasOwnProperty(
+                        line.substring(j + 1, j + 1 + l)) || j + 1
+                    == line.length)) {
+                  tempWord.split(' ').forEach(
+                      (element) => phrases.push(element));
+                  tempWord = '';
+                  break;
+                }
+              }
+
+              break;
+            }
+          }
         }
+
+        line = phrases.join(' ');
       }
 
       const filteredEntries = [...dataEntries].filter(
@@ -674,28 +720,27 @@ function convertText(data, useGlossary, inputText,
 
         results.push(line);
       } else {
-        const maxPhraseLength = [...filteredEntries].sort(
+        const MAX_PHRASE_LENGTH = [...filteredEntries].sort(
             (a, b) => b[0].length - a[0].length)[0][0].length;
         const phrases = [];
         let tempWord = '';
 
         for (let j = 0; j < line.length; j++) {
-          for (let k = maxPhraseLength; k >= 1; k--) {
+          for (let k = MAX_PHRASE_LENGTH; k >= 1; k--) {
             if (data.hasOwnProperty(line.substring(j, j + k))) {
               phrases.push(data[line.substring(j, j + k)]);
               j += k - 1;
               break;
             } else if (k == 1) {
-              if (tempWord.length > 0 && /\s/.test(line[j]) && !/\s/.test(
-                  tempWord)) {
-                tempWord.split(' ').forEach((word) => phrases.push(word));
+              if (tempWord.length > 0 && / /.test(line[j]) && !/ /.test(tempWord)) {
+                tempWord.split(' ').forEach((element) => phrases.push(element));
                 tempWord = '';
               }
 
               tempWord += line[j];
 
-              if (/\s/.test(tempWord)) {
-                if (!/\s/.test(line[j + 1])) {
+              if (/ /.test(tempWord)) {
+                if (!/ /.test(line[j + 1])) {
                   phrases[phrases.length - 1] += tempWord.substring(0,
                       tempWord.length - 1);
                   tempWord = '';
@@ -704,11 +749,12 @@ function convertText(data, useGlossary, inputText,
                 break;
               }
 
-              for (let l = maxPhraseLength; l >= 1; l--) {
+              for (let l = MAX_PHRASE_LENGTH; l >= 1; l--) {
                 if (tempWord.length > 0 && (data.hasOwnProperty(
                         line.substring(j + 1, j + 1 + l)) || j + 1
                     == line.length)) {
-                  tempWord.split(' ').forEach((word) => phrases.push(word));
+                  tempWord.split(' ').forEach(
+                      (element) => phrases.push(element));
                   tempWord = '';
                   break;
                 }
@@ -763,7 +809,12 @@ function buildTranslatedResult(textLines, resultLines, showOriginal) {
         }
 
         const paragraph = document.createElement('p');
-        paragraph.innerHTML = getProcessTextPostTranslate(getProcessTextPreTranslate(resultLines[i].trim())) !== getProcessTextPostTranslate(getProcessTextPreTranslate(textLines[i + lostLineFixedAmount].trim())) ? '<i>' + textLines[i + lostLineFixedAmount] + '</i><br>' + resultLines[i] : textLines[i + lostLineFixedAmount]
+        paragraph.innerHTML = getProcessTextPostTranslate(
+            getProcessTextPreTranslate(resultLines[i].trim()))
+        !== getProcessTextPostTranslate(getProcessTextPreTranslate(
+            textLines[i + lostLineFixedAmount].trim())) ? '<i>' + textLines[i
+        + lostLineFixedAmount] + '</i><br>' + resultLines[i] : textLines[i
+        + lostLineFixedAmount]
         result.appendChild(paragraph);
       } else {
         result.appendChild(document.createElement('p'));
