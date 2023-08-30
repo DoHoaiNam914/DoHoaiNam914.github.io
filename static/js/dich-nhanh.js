@@ -404,10 +404,10 @@ async function translate() {
   const sourceLanguage = $("#sourceLangSelect").val();
   const targetLanguage = $("#targetLangSelect").val();
 
-  const processText = !(targetLanguage == 'JA' || targetLanguage == 'KO' || targetLanguage == 'ZH') ||
+  const processText = translator !== Translators.VIETPHRASE && (!(targetLanguage == 'JA' || targetLanguage == 'KO' || targetLanguage == 'ZH') ||
       !(targetLanguage == 'zh-CN' || targetLanguage == 'zh-TW' || targetLanguage == 'ja' || targetLanguage == 'ko') ||
       !(targetLanguage == 'ko' || targetLanguage == 'ja' || taảgetLanguage == 'zh-CN' || targetLanguage == 'zh-TW') ||
-      !(targetLanguage == 'yue' || targetLanguage == 'lzh' || targetLanguage == 'zh-Hans' || targetLanguage == 'zh-Hant' || targetLanguage == 'ja' || targetLanguage == 'ko') ? getProcessTextPreTranslate(inputText) : inputText;
+      !(targetLanguage == 'yue' || targetLanguage == 'lzh' || targetLanguage == 'zh-Hans' || targetLanguage == 'zh-Hant' || targetLanguage == 'ja' || targetLanguage == 'ko')) ? getProcessTextPreTranslate(inputText) : inputText;
   const results = [];
   const errorMessage = document.createElement("p");
 
@@ -607,9 +607,9 @@ function getProcessTextPreTranslate(text) {
       lines = lines.map((element) => element.replace(
           new RegExp(`${brackets[i][0].split('…')[0]}(.*)${brackets[i][0].split('…')[1]}`,
               'g'),
-          `\n[OPEN_BRACKET_${i}]\n$1\n[CLOSE_BRACKET_${i}]\n`).replace(
+          `[OPEN_BRACKET_${i}]\n$1\n[CLOSE_BRACKET_${i}]`).replace(
           new RegExp(`${brackets[i][0].split('…')[1]}(.*)${brackets[i][0].split('…')[0]}`,
-              'g'), `\n[CLOSE_BRACKET_${i}]\n$1\n[OPEN_BRACKET_${i}]\n`));
+              'g'), `\n[CLOSE_BRACKET_${i}]$1[OPEN_BRACKET_${i}]\n`));
     }
   }
 
@@ -626,11 +626,11 @@ function getProcessTextPostTranslate(text) {
     for (let i = 0; i < brackets.length; i++) {
       newText = newText.replace(
           new RegExp(
-              `\n\\[OPEN_BRACKET_${i}\\].*?\n+(.*)\n+.*?\\[CLOSE_BRACKET_${i}\\]\n`,
+              `\\[OPEN_BRACKET_${i}\\].*?\n+(.*)\n+.*?\\[CLOSE_BRACKET_${i}\\]\n`,
               'gi'),
           ` ${brackets[i][1].split('...')[0]}$1${brackets[i][1].split(
               '...')[1]} `).replace(
-          new RegExp(`\n\\[CLOSE_BRACKET_${i}\\].*?\n+(.*)\n+.*?\\[OPEN_BRACKET_${i}\\]\n`,
+          new RegExp(`\n+.*?\\[CLOSE_BRACKET_${i}\\](.*)\\[OPEN_BRACKET_${i}\\].*?\n+`,
               'gi'),
           `${brackets[i][1].split('...')[1]} $1 ${brackets[i][1].split(
               '...')[0]}`);
