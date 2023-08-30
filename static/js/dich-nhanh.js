@@ -404,6 +404,10 @@ async function translate() {
   const sourceLanguage = $("#sourceLangSelect").val();
   const targetLanguage = $("#targetLangSelect").val();
 
+  const processText = !(targetLanguage == 'JA' || targetLanguage == 'KO' || targetLanguage == 'ZH') ||
+      !(targetLanguage == 'zh-CN' || targetLanguage == 'zh-TW' || targetLanguage == 'ja' || targetLanguage == 'ko') ||
+      !(targetLanguage == 'ko' || targetLanguage == 'ja' || taảgetLanguage == 'zh-CN' || targetLanguage == 'zh-TW') ||
+      !(targetLanguage == 'yue' || targetLanguage == 'lzh' || targetLanguage == 'zh-Hans' || targetLanguage == 'zh-Hant' || targetLanguage == 'ja' || targetLanguage == 'ko') ? getProcessTextPreTranslate(inputText) ? inputText;
   const results = [];
   const errorMessage = document.createElement("p");
 
@@ -438,7 +442,7 @@ async function translate() {
         break;
     }
 
-    if (inputText.split(/\n/).sort((a, b) => b.length - a.length)[0].length
+    if (processText.split(/\n/).sort((a, b) => b.length - a.length)[0].length
         > MAX_LENGTH) {
       errorMessage.innerText = `Bản dịch thất bại: Số lượng từ trong một dòng quá dài (Số lượng từ hợp lệ nhỏ hơn hoặc bằng ${MAX_LENGTH})`;
       $("#translatedText").append(errorMessage);
@@ -451,7 +455,7 @@ async function translate() {
               "https://api-free.deepl.com/v2/usage?auth_key=" + DEEPL_AUTH_KEY))
           ?? {"character_count": 500000, "character_limit": 500000};
 
-      if (inputText.length > (deeplUsage.character_limit
+      if (processText.length > (deeplUsage.character_limit
           - deeplUsage.character_count)) {
         errorMessage.innerText = `Lỗi DeepL: Đã đạt đến giới hạn dịch của tài khoản. (${deeplUsage.character_count}/${deeplUsage.character_limit} ký tự)`;
         $("#translatedText").html(errorMessage);
@@ -488,12 +492,12 @@ async function translate() {
       return;
     }
 
-    const queryLines = inputText.split(/\n/);
+    const queryLines = processText.split(/\n/);
     let translateLines = [];
 
     let canTranslate = false;
 
-    for (let i = 0; i < inputText.split(/\n/).length; i++) {
+    for (let i = 0; i < processText.split(/\n/).length; i++) {
       if (translateLines.join('\n').length < MAX_LENGTH && translateLines.length
           < MAX_LINE) {
         translateLines.push(queryLines.shift());
@@ -575,7 +579,7 @@ async function translate() {
             break;
         }
 
-        results.push(translatedText);
+        results.push(getProcessTextPostTranslate(translatedText));
         translateLines = [];
         canTranslate = false;
       }
@@ -590,6 +594,50 @@ async function translate() {
   $("#translatedText").html(
       buildTranslatedResult(inputText.split(/\n/), translation.split(/\n/),
           $("#flexSwitchCheckShowOriginal").prop("checked")));
+}
+
+function getProcessTextPreTranslate(text) {
+  let lines = text.split(/\n/);
+
+  const brackets = [...punctuation].filter(
+      (element) => element[0].length == 3 && element[1].length == 5);
+
+  if (text.length > 0) {
+    for (let i = 0; i < brackets.length; i++) {
+      lines = lines.map((element) => element.replace(
+          new RegExp(`${brackets[i][0].split('…')[0]}(.*)${brackets[i][0].split('…')[1]}`,
+              'g'),
+          `\n[OPEN_BRACKET_${i}]\n$1\n[CLOSE_BRACKET_${i}]\n`).replace(
+          new RegExp(`${brackets[i][0].split('…')[1]}(.*)${brackets[i][0].split('…')[0]}`,
+              'g'), `\n[CLOSE_BRACKET_${i}]\n$1\n[OPEN_BRACKET_${i}]\n`));
+    }
+  }
+
+  return lines.join('\n');
+}
+
+function getProcessTextPostTranslate(text) {
+  let newText = text;
+
+  const brackets = [...punctuation].filter(
+      (element) => element[0].length == 3 && element[1].length == 5);
+
+  if (text.length > 0) {
+    for (let i = 0; i < brackets.length; i++) {
+      newText = newText.replace(
+          new RegExp(
+              `\n\\[OPEN_BRACKET_${i}\\].*?\n+(.*)\n+.*?\\[CLOSE_BRACKET_${i}\\]\n`,
+              'gi'),
+          ` ${brackets[i][1].split('...')[0]}$1${brackets[i][1].split(
+              '...')[1]} `).replace(
+          new RegExp(`\n\\[CLOSE_BRACKET_${i}\\].*?\n+(.*)\n+.*?\\[OPEN_BRACKET_${i}\\]\n`,
+              'gi'),
+          `${brackets[i][1].split('...')[1]} $1 ${brackets[i][1].split(
+              '...')[0]}`);
+    }
+  }
+
+  return newText.split(/\n/).map((element) => element.trim()).join('\n');
 }
 
 function convertText(inputText, data, useGlossary, translationAlgorithm) {
@@ -826,16 +874,10 @@ const DeepLTranslator = {
 
       const response = await $.ajax({
         url: "https://api-free.deepl.com/v2/translate?auth_key=" + authKey,
-        data: `text=${(!(targetLanguage == 'JA' || targetLanguage == 'KO'
-            || targetLanguage == 'ZH') ? getProcessTextPreTranslate(inputText)
-            : inputText).split(/\n/).map(
-            (sentence) => encodeURIComponent(sentence)).join(
-            '&text=')}${sourceLanguage != '' ? '&source_lang=' + sourceLanguage
-            : ''}&target_lang=${targetLanguage}&tag_handling=html`,
+        data: `text=${inputText.split(/\n/).map((sentence) => encodeURIComponent(sentence)).join('&text=')}${sourceLanguage != '' ? '&source_lang=' + sourceLanguage : ''}&target_lang=${targetLanguage}&tag_handling=html`,
         method: "POST"
       });
-      return getProcessTextPostTranslate(
-          response.translations.map((line) => line.text.trim()).join('\n'));
+      return response.translations.map((line) => line.text.trim()).join('\n');
     } catch (error) {
       console.error('Bản dịch lỗi:', error);
       throw error;
@@ -930,10 +972,7 @@ const GoogleTranslate = {
       const response = await $.ajax({
         url: `https://translate.googleapis.com/translate_a/t?anno=3&client=gtx&format=html&v=1.0&key&logId=v${data.logId}&sl=${sourceLanguage}&tl=${targetLanguage}&tc=0&tk=${Bp(
             inputText, data.ctkk)}`,
-        data: `q=${(!(targetLanguage == 'zh-CN' || targetLanguage == 'zh-TW'
-            || targetLanguage == 'ja' || targetLanguage == 'ko')
-            ? getProcessTextPreTranslate(inputText) : inputText).split(
-            /\n/).map((sentence) => encodeURIComponent(sentence)).join('&q=')}`,
+        data: `q=${inputText.split(/\n/).map((sentence) => encodeURIComponent(sentence)).join('&q=')}`,
         method: "GET"
       });
 
@@ -945,7 +984,7 @@ const GoogleTranslate = {
                   (element) => ('<b>' + element.replace(/<i>.+/, ''))).join(' ')
               : (sourceLanguage == 'auto' ? line[0] : line)).trim()).join(
           '\n'));
-      return getProcessTextPostTranslate($(paragraph).text());
+      return $(paragraph).text();
     } catch (error) {
       console.error('Bản dịch lỗi:', error);
       throw error;
@@ -1158,10 +1197,7 @@ const Papago = {
 
       const response = await $.ajax({
         url: CORS_PROXY + "https://papago.naver.com/apis/n2mt/translate",
-        data: `deviceId=${uuid}&locale=vi&dict=true&dictDisplay=30&honorific=true&instant=false&paging=false&source=${sourceLanguage}&target=${targetLanguage}&text=${encodeURIComponent(
-            !(targetLanguage == 'ko' || targetLanguage == 'ja' || targetLanguage
-                == 'zh-CN' || targetLanguage == 'zh-TW')
-                ? getProcessTextPreTranslate(inputText) : inputText)}`,
+        data: `deviceId=${uuid}&locale=vi&dict=true&dictDisplay=30&honorific=true&instant=false&paging=false&source=${sourceLanguage}&target=${targetLanguage}&text=${encodeURIComponent(inputText)}`,
         method: "POST",
         headers: {
           Accept: "application/json",
@@ -1176,7 +1212,7 @@ const Papago = {
           Timestamp: timeStamp
         }
       });
-      return getProcessTextPostTranslate(response.translatedText);
+      return response.translatedText;
     } catch (error) {
       console.error('Bản dịch lỗi:', error);
       throw error;
@@ -1253,11 +1289,7 @@ const MicrosoftTranslator = {
         url: `https://api.cognitive.microsofttranslator.com/translate?${sourceLanguage
         != '' ? 'from=' + sourceLanguage + '&'
             : ''}to=${targetLanguage}&api-version=3.0&textType=html&includeSentenceLength=true`,
-        data: JSON.stringify(
-            (!(targetLanguage == 'yue' || targetLanguage == 'lzh'
-                || targetLanguage == 'zh-Hans' || targetLanguage == 'zh-Hant'
-                || targetLanguage == 'ja' || targetLanguage == 'ko')
-                ? getProcessTextPreTranslate(inputText) : inputText).split(
+        data: JSON.stringify(inputText.split(
                 /\n/).map((sentence) => ({"Text": sentence}))),
         method: "POST",
         headers: {
@@ -1265,9 +1297,7 @@ const MicrosoftTranslator = {
           "Content-Type": "application/json"
         }
       });
-      return getProcessTextPostTranslate(
-          response.map((element) => element.translations[0].text.trim()).join(
-              '\n'));
+      return response.map((element) => element.translations[0].text.trim()).join('\n');
     } catch (error) {
       console.error('Bản dịch lỗi:', error);
       throw error;
@@ -1463,50 +1493,6 @@ const MicrosoftLanguage = {
   'yua': 'Yucatec Maya',
   'zu': 'Zulu'
 };
-
-function getProcessTextPreTranslate(text) {
-  let lines = text.split(/\n/);
-
-  const brackets = [...punctuation].filter(
-      (element) => element[0].length == 3 && element[1].length == 5);
-
-  if (text.length > 0) {
-    for (let i = 0; i < brackets.length; i++) {
-      lines = lines.map((element) => element.replace(
-          new RegExp(`${brackets[i][0].split('…')[0]}(.*)${brackets[i][0].split('…')[1]}`,
-              'g'),
-          `\n[OPEN_BRACKET_${i}]\n$1\n[CLOSE_BRACKET_${i}]\n`).replace(
-          new RegExp(`${brackets[i][0].split('…')[1]}(.*)${brackets[i][0].split('…')[0]}`,
-              'g'), `\n[CLOSE_BRACKET_${i}]\n$1\n[OPEN_BRACKET_${i}]\n`));
-    }
-  }
-
-  return lines.join('\n');
-}
-
-function getProcessTextPostTranslate(text) {
-  let newText = text;
-
-  const brackets = [...punctuation].filter(
-      (element) => element[0].length == 3 && element[1].length == 5);
-
-  if (text.length > 0) {
-    for (let i = 0; i < brackets.length; i++) {
-      newText = newText.replace(
-          new RegExp(
-              `\n\\[OPEN_BRACKET_${i}\\].*?\n+(.*)\n+.*?\\[CLOSE_BRACKET_${i}\\]\n`,
-              'gi'),
-          ` ${brackets[i][1].split('...')[0]}$1${brackets[i][1].split(
-              '...')[1]} `).replace(
-          new RegExp(`\n\\[CLOSE_BRACKET_${i}\\].*?\n+(.*)\n+.*?\\[OPEN_BRACKET_${i}\\]\n`,
-              'gi'),
-          `${brackets[i][1].split('...')[1]} $1 ${brackets[i][1].split(
-              '...')[0]}`);
-    }
-  }
-
-  return newText.split(/\n/).map((element) => element.trim()).join('\n');
-}
 
 const Translators = {
   VIETPHRASE: 'vietphrase',
