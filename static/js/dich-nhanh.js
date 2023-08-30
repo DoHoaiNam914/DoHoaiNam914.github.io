@@ -597,23 +597,23 @@ async function translate() {
 }
 
 function getProcessTextPreTranslate(text) {
-  let lines = text.split(/\n/);
+  let newText = text;
 
   const brackets = [...punctuation].filter(
       (element) => element[0].length == 3 && element[1].length == 5);
 
   if (text.length > 0) {
     for (let i = 0; i < brackets.length; i++) {
-      lines = lines.map((element) => element.replace(
+      newText = newText.replace(
           new RegExp(`${brackets[i][0].split('…')[0]}(.*)${brackets[i][0].split('…')[1]}`,
               'g'),
           `[OPEN_BRACKET_${i}]\n$1\n[CLOSE_BRACKET_${i}]`).replace(
           new RegExp(`${brackets[i][0].split('…')[1]}(.*)${brackets[i][0].split('…')[0]}`,
-              'g'), `\n[CLOSE_BRACKET_${i}]$1[OPEN_BRACKET_${i}]\n`));
+              'g'), `\n[CLOSE_BRACKET_${i}]$1[OPEN_BRACKET_${i}]\n`);
     }
   }
 
-  return lines.join('\n');
+  return newText;
 }
 
 function getProcessTextPostTranslate(text) {
