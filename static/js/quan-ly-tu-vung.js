@@ -55,8 +55,8 @@ $("#glossaryType").change(() => loadGlossary());
 
 $("#sourceEntry").on("input", function () {
   if ($(this).val().length > 0) {
-    $("#targetEntry").val(
-        convertText(sinovietnameses, true, $(this).val()));
+    $("#targetEntry").val(convertText($(this).val(), sinovietnameses, true,
+        VietPhraseTranslationAlgorithms.LEFT_TO_RIGHT_TRANSLATION));
 
     if (glossary.hasOwnProperty($(this).val())) {
       $("#glossaryList").val($(this).val());
@@ -90,15 +90,15 @@ $("#pasteSourceTextButton").on("click", () => {
 
 $("#pinyinConvertButton").on("click", function () {
   if ($("#sourceEntry").val().length > 0) {
-    $("#targetEntry").val(
-        convertText(pinyins, false, $("#sourceEntry").val()).toLowerCase());
+    $("#targetEntry").val(convertText($(this).val(), pinyins, false,
+        VietPhraseTranslationAlgorithms.LEFT_TO_RIGHT_TRANSLATION));
   }
 });
 
 $("#sinoVietnameseConvertButton").click(function () {
   if ($("#sourceEntry").val().length > 0) {
-    $("#targetEntry").val(convertText(sinovietnameses, false,
-        $("#sourceEntry").val()).toLowerCase());
+    $("#targetEntry").val(convertText($(this).val(), sinovietnameses, false,
+        VietPhraseTranslationAlgorithms.LEFT_TO_RIGHT_TRANSLATION));
   }
 });
 
@@ -241,12 +241,13 @@ $(".deepl-convert").on("click", async function () {
 
       if ($("#sourceEntry").val().length > (deeplUsage.character_limit
           - deeplUsage.character_count)) {
-        $("#targetEntry").val(`Đã đạt đến giới hạn dịch của tài khoản. (${deeplUsage.character_count}/${deeplUsage.character_limit} ký tự)`);
+        $("#targetEntry").val(
+            `Đã đạt đến giới hạn dịch của tài khoản. (${deeplUsage.character_count}/${deeplUsage.character_limit} ký tự)`);
         return;
       }
 
       const translatedText = await DeepLTranslator.translateText(DEEPL_AUTH_KEY,
-          $("#sourceEntry").val(), '', $(this).data("lang"), true);
+          $("#sourceEntry").val(), '', $(this).data("lang"));
 
       $("#targetEntry").val(translatedText);
       $(".convert").removeClass("disabled");
@@ -268,13 +269,12 @@ $(".google-convert").on("click", async function () {
       const data = await getGoogleTranslateData(Translators.GOOGLE_TRANSLATE);
 
       if (data.logId == undefined || data.ctkk == undefined) {
-        $("#targetEntry").val("Không thể lấy được Log ID hoặc Token từ element.js.");
+        $("#targetEntry").val(
+            "Không thể lấy được Log ID hoặc Token từ element.js.");
         return;
       }
 
-      const translatedText = await GoogleTranslate.translateText(
-          $("#sourceEntry").val(), data.logId, data.ctkk, 'auto',
-          $(this).data("lang"), true);
+      const translatedText = await GoogleTranslate.translateText(data, $("#sourceEntry").val(), 'auto', $(this).data("lang"));
 
       $("#targetEntry").val(translatedText);
       $(".convert").removeClass("disabled");
@@ -296,11 +296,13 @@ $(".papago-convert").on("click", async function () {
       const version = await getPapagoVersion(Translators.PAPAGO);
 
       if (version == undefined) {
-        $("#targetEntry").val("Không thể lấy được Thông tin phiên bản từ main.js.");
+        $("#targetEntry").val(
+            "Không thể lấy được Thông tin phiên bản từ main.js.");
         return;
       }
 
-      const translatedText = await Papago.translateText(version, $("#sourceEntry").val(), "auto", $(this).data("lang"), true);
+      const translatedText = await Papago.translateText(version,
+          $("#sourceEntry").val(), "auto", $(this).data("lang"));
 
       $("#targetEntry").val(translatedText);
       $(".convert").removeClass("disabled");
@@ -319,7 +321,8 @@ $(".microsoft-convert").on("click", async function () {
     $(".convert").addClass("disabled");
 
     try {
-      const accessToken = await getMicrosoftTranslatorAccessToken(Translators.MICROSOFT_TRANSLATOR);
+      const accessToken = await getMicrosoftTranslatorAccessToken(
+          Translators.MICROSOFT_TRANSLATOR);
 
       if (accessToken == undefined) {
         $("#targetEntry").val("Không thể lấy được Access Token từ máy chủ.");
@@ -327,7 +330,7 @@ $(".microsoft-convert").on("click", async function () {
       }
 
       const translatedText = await MicrosoftTranslator.translateText(
-          accessToken, $("#sourceEntry").val(), '', $(this).data("lang"), true);
+          accessToken, $("#sourceEntry").val(), '', $(this).data("lang"));
 
       $("#targetEntry").val(translatedText);
       $(".convert").removeClass("disabled");

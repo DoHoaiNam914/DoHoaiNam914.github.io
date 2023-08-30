@@ -74,7 +74,6 @@ $(document).ready(() => {
   }).fail((jqXHR, textStatus, errorThrown) => {
     window.location.reload();
   });
-
   $("#queryTextCounter").text($("#queryText").val().length);
 });
 
@@ -108,8 +107,7 @@ $("#pasteButton").on("click", () => {
   .readText()
   .then((clipText) => {
     if (clipText.length > 0) {
-      $(document.body).scrollTop(0);
-      $(document.documentElement).scrollTop(0);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
       $("#queryText").val(clipText).trigger("input");
 
       if ($("#translateButton").text() == 'Sửa') {
@@ -147,7 +145,6 @@ $("#inputVietPhrases").on("change", function () {
     vietphrases = Object.fromEntries(vietphraseList);
     console.log('Đã tải xong tệp dữ liệu VietPhrase.txt!');
   }
-
   reader.readAsText($(this).prop("files")[0]);
 });
 
@@ -171,12 +168,12 @@ $(".translator").click(function () {
   if (!$(this).hasClass("disabled")) {
     const prevTranslator = translator.translator;
 
-    const prevSourceLanguage = translator.source;
-    const prevTargetLanguage = translator.target;
+    const prevSourceLanguageCode = translator.source;
+    const prevTargetLanguageCode = translator.target;
     const prevSourceLanguageName = getLanguageName(prevTranslator,
-        prevSourceLanguage);
+        prevSourceLanguageCode);
     const prevTargetLanguageName = getLanguageName(prevTranslator,
-        prevTargetLanguage);
+        prevTargetLanguageCode);
 
     if ($(this).data("id") === Translators.VIETPHRASE) {
       localStorage.setItem("translator", JSON.stringify({
@@ -196,25 +193,10 @@ $(".translator").click(function () {
 
     $("#sourceLangSelect > option").each(function (index) {
       if ($(".translator.active").data("id") === prevTranslator
-          && prevSourceLanguage != null) {
-        $("#sourceLangSelect").val(prevSourceLanguage);
+          && prevSourceLanguageCode != null) {
+        $("#sourceLangSelect").val(prevSourceLanguageCode);
         return false;
-      } else if (prevSourceLanguage != null && prevSourceLanguageName != null
-          && (($(
-                      this).val().toLowerCase().split('-')[0]
-                  == prevSourceLanguage.toLowerCase().split('-')[0] && $(
-                      this).val().toLowerCase().split('-')[1]
-                  == prevSourceLanguage.toLowerCase().split('-')[1]) || $(
-                  this).text()
-              == prevSourceLanguageName || ($(this).val().toLowerCase().split(
-                      '-')[0] == prevSourceLanguage.toLowerCase().split('-')[0]
-                  && $(
-                      this).text().replace(/[()]/g, '').includes(
-                      prevSourceLanguageName.includes('Tiếng')
-                          ? prevSourceLanguageName.replace(/[()]/g, '').replace(
-                              'Tiếng ', '') : prevSourceLanguageName.replace(
-                              /[()]/g,
-                              '').split(' ')[0])))) {
+      }  else if (prevSourceLanguageName != null && prevSourceLanguageCode != null && ($(this).text().replace(/[()]/g, '') == prevSourceLanguageName.replace(/[()]/g, '') || $(this).val().toLowerCase() == prevSourceLanguageCode.toLowerCase() || ($(this).val().toLowerCase().split('-')[0] == prevSourceLanguageCode.toLowerCase().split('-')[0] && $(this).text().includes(prevSourceLanguageName.split(' ').length == 2 ? prevSourceLanguageName.replace(/[()]/g, '').split(' ')[1] : prevSourceLanguageName.replace(/[()]/g, '').split(' ')[0])))) {
         $("#sourceLangSelect").val($(this).val()).change();
         return false;
       } else if (index + 1 == $("#targetLangSelect > option").length) {
@@ -238,36 +220,13 @@ $(".translator").click(function () {
     $("#targetLangSelect").html(getTargetLanguageOptions($(this).data("id")));
 
     $("#targetLangSelect > option").each(function (index) {
-      if ($(".translator.active").data("id") === prevTranslator
-          && prevTargetLanguage != null) {
-        $("#targetLangSelect").val(prevTargetLanguage);
+      if ($(".translator.active").data("id") === prevTranslator && prevTargetLanguageCode != null) {
+        $("#targetLangSelect").val(prevTargetLanguageCode);
         return false;
-      } else if (prevTargetLanguage != null && prevTargetLanguageName != null
-          && (($(
-                      this).val().toLowerCase().split('-')[0]
-                  == prevTargetLanguage.toLowerCase().split('-')[0] && $(
-                      this).val().toLowerCase().split('-')[1]
-                  == prevTargetLanguage.toLowerCase().split('-')[1]) || $(
-                  this).text()
-              == prevTargetLanguageName || ($(this).val().toLowerCase().split(
-                      '-')[0] == prevTargetLanguage.toLowerCase().split('-')[0]
-                  && $(
-                      this).text().replace(/[()]/g, '').includes(
-                      prevTargetLanguageName.includes('Tiếng')
-                          ? prevTargetLanguageName.replace(/[()]/g, '').replace(
-                              'Tiếng ', '') : prevTargetLanguageName.replace(
-                              /[()]/g,
-                              '').split(' ')[0])))) {
-        if ($(".translator.active").data("id")
-            === Translators.DEEPL_TRANSLATOR && prevTargetLanguageName
-            == 'English') {
-          $("#targetLangSelect").val("EN-US").change();
-        } else {
-          $("#targetLangSelect").val($(this).val()).change();
-        }
+      } else if (prevTargetLanguageName != null && prevTargetLanguageCode != null && ($(this).text().replace(/[()]/g, '') == prevTargetLanguageName.replace(/[()]/g, '') || $(this).val().toLowerCase() == prevTargetLanguageCode.toLowerCase() || ($(this).val().toLowerCase().split('-')[0] == prevTargetLanguageCode.toLowerCase().split('-')[0] && $(this).text().includes(prevTargetLanguageName.split(' ').length >= 2 ? prevTargetLanguageName.replace(/[()]/g, '').split(' ')[1] : prevTargetLanguageName.replace(/[()]/g, '').split(' ')[0])))) {
+        $("#targetLangSelect").val($(this).val()).change();
         return false;
       } else if (index + 1 == $("#targetLangSelect > option").length) {
-
         switch ($(".translator.active").data("id")) {
           case Translators.DEEPL_TRANSLATOR:
             $("#targetLangSelect").val("EN-US");
@@ -377,7 +336,6 @@ function getSourceLanguageOptions(translator) {
       sourceLangSelect.appendChild(autoDetectOption);
       break;
   }
-
   return sourceLangSelect.innerHTML;
 }
 
@@ -436,7 +394,6 @@ function getTargetLanguageOptions(translator) {
       targetLangSelect.appendChild(vietphraseOption);
       break;
   }
-
   return targetLangSelect.innerHTML;
 }
 
@@ -493,8 +450,7 @@ async function translate() {
       const deeplUsage = (await $.get(
               "https://api-free.deepl.com/v2/usage?auth_key=" + DEEPL_AUTH_KEY))
           ?? {"character_count": 500000, "character_limit": 500000};
-      console.log(inputText.length,
-          deeplUsage.character_limit - deeplUsage.character_count)
+
       if (inputText.length > (deeplUsage.character_limit
           - deeplUsage.character_count)) {
         errorMessage.innerText = `Lỗi DeepL: Đã đạt đến giới hạn dịch của tài khoản. (${deeplUsage.character_count}/${deeplUsage.character_limit} ký tự)`;
@@ -565,54 +521,50 @@ async function translate() {
           case Translators.DEEPL_TRANSLATOR:
             translatedText = await DeepLTranslator.translateText(
                 DEEPL_AUTH_KEY, translateText, sourceLanguage,
-                targetLanguage);
+                targetLanguage, true);
             break;
 
           default:
           case Translators.GOOGLE_TRANSLATE:
-            translatedText = await GoogleTranslate.translateText(
-                translateText, googleTranslateData.logId,
-                googleTranslateData.ctkk,
-                sourceLanguage, targetLanguage);
+            translatedText = await GoogleTranslate.translateText(googleTranslateData, translateText, sourceLanguage, targetLanguage, true);
             break;
 
           case Translators.PAPAGO:
             translatedText = await Papago.translateText(papagoVersion,
                 translateText,
-                sourceLanguage, targetLanguage);
+                sourceLanguage, targetLanguage, true);
             break;
 
           case Translators.MICROSOFT_TRANSLATOR:
             translatedText = await MicrosoftTranslator.translateText(
                 microsoftTranslatorAccessToken, translateText, sourceLanguage,
-                targetLanguage);
+                targetLanguage, true);
             break;
 
           case Translators.VIETPHRASE:
             if ($("#targetLangSelect").val() == 'vi' && Object.entries(
                 vietphrases).length > 0) {
-              translatedText = convertText(vietphrases,
+              translatedText = convertText(translateText, vietphrases,
                   $("#flexSwitchCheckGlossary").prop("checked"),
-                  translateText,
                   $("input[name=\"flexRadioTranslationAlgorithm\"]:checked").val()).split(
-                  /\n/).map(
-                  (element) => element.replace(
-                      /(^|\s*[.;:?!\-("'‘“〈《【]\s*)(\p{Ll})/gu,
-                      (match, p1, p2) => p1 + p2.toUpperCase())).join('\n');
+                  /\n/).map((element) => element.replace(
+                  /(^|\s*[.;:?!\-("'‘“〈《【]\s*)(\p{Ll})/gu,
+                  (match, p1, p2) => p1 + p2.toUpperCase())).join('\n');
             } else if ($("#targetLangSelect").val() == 'zh-VN'
                 && Object.entries(sinovietnameses).length > 0) {
-              translatedText = convertText(sinovietnameses, false,
-                  translateText).split(
+              translatedText = convertText(translateText, sinovietnameses,
+                  false,
+                  VietPhraseTranslationAlgorithms.LEFT_TO_RIGHT_TRANSLATION).split(
                   /\n/).map((element) => element.replace(
-                  /(^|[.;:?!-]\s+|[("'‘“〈《【])(\p{Ll})/gu,
+                  /(^|\s*[.;:?!\-("'‘“〈《【]\s*)(\p{Ll})/gu,
                   (match, p1, p2) => p1 + p2.toUpperCase())).join('\n');
-            } else if ($("#targetLangSelect").val() == 'en'
-                && Object.entries(pinyins).length > 0) {
-              translatedText = convertText(pinyins, false,
-                  translateText).split(/\n/).map(
-                  (element) => element.replace(
-                      /(^|[.;:?!-]\s+|[("'‘“〈《【])(\p{Ll})/gu,
-                      (match, p1, p2) => p1 + p2.toUpperCase())).join('\n');
+            } else if ($("#targetLangSelect").val() == 'en' && Object.entries(
+                pinyins).length > 0) {
+              translatedText = convertText(translateText, pinyins, false,
+                  VietPhraseTranslationAlgorithms.LEFT_TO_RIGHT_TRANSLATION).split(
+                  /\n/).map((element) => element.replace(
+                  /(^|\s*[.;:?!\-("'‘“〈《【]\s*)(\p{Ll})/gu,
+                  (match, p1, p2) => p1 + p2.toUpperCase())).join('\n');
             } else if ($("#targetLangSelect").val() == 'vi' && Object.entries(
                 vietphrases).length == 0) {
               errorMessage.innerHTML = 'Nhập tệp VietPhrase.txt nếu có hoặc tải về <a href="https://drive.google.com/drive/folders/0B6fxcJ5qbXgkeTJNTFJJS3lmc3c?resourcekey=0-Ych2OUVug3pkLgCIlzvcuA&usp=sharing">tại đây</a>';
@@ -640,22 +592,23 @@ async function translate() {
           $("#flexSwitchCheckShowOriginal").prop("checked")));
 }
 
-function convertText(data, useGlossary, inputText,
-    translationAlgorithm = 'leftToRightTranslation') {
+function convertText(inputText, data, useGlossary, translationAlgorithm) {
   try {
     data = Object.fromEntries(Object.entries(data).filter(
         (element) => (!useGlossary || !glossary.hasOwnProperty(element[0]))
             && inputText.includes(element[0])).sort(
         (a, b) => b[0].length - a[0].length));
+    const glossaryEntries = Object.entries(glossary).filter((element) => inputText.includes(element[0]));
     const dataEntries = Object.entries(data);
     const lines = inputText.split(/\n/);
     const results = [];
+    let result = inputText;
 
     for (let i = 0; i < lines.length; i++) {
       let chars = lines[i];
 
-      if (useGlossary) {
-        const MAX_GLOSSARY_LENGTH = Object.entries(glossary)[0][0].length;
+      if (useGlossary && glossaryEntries.length > 0) {
+        const MAX_GLOSSARY_LENGTH = glossaryEntries[0][0].length;
         const phrases = [];
         let tempWord = '';
 
@@ -680,7 +633,6 @@ function convertText(data, useGlossary, inputText,
                       tempWord.length - 1);
                   tempWord = '';
                 }
-
                 break;
               }
 
@@ -694,7 +646,6 @@ function convertText(data, useGlossary, inputText,
                   break;
                 }
               }
-
               break;
             }
           }
@@ -711,14 +662,15 @@ function convertText(data, useGlossary, inputText,
         continue;
       }
 
-      if (translationAlgorithm == 'longPrior') {
+      if (translationAlgorithm === VietPhraseTranslationAlgorithms.LONG_PRIOR) {
         for (const property in Object.fromEntries(filteredEntries)) {
           chars = chars.replace(new RegExp(property, 'g'),
               `${data[property]} `).trimEnd();
         }
 
         results.push(chars);
-      } else {
+      } else if (translationAlgorithm
+          === VietPhraseTranslationAlgorithms.LEFT_TO_RIGHT_TRANSLATION) {
         const MAX_PHRASE_LENGTH = [...filteredEntries].sort(
             (a, b) => b[0].length - a[0].length)[0][0].length;
         const phrases = [];
@@ -731,7 +683,8 @@ function convertText(data, useGlossary, inputText,
               j += k - 1;
               break;
             } else if (k == 1) {
-              if (tempWord.length > 0 && / /.test(chars[j]) && !/ /.test(tempWord)) {
+              if (tempWord.length > 0 && / /.test(chars[j]) && !/ /.test(
+                  tempWord)) {
                 tempWord.split(' ').forEach((element) => phrases.push(element));
                 tempWord = '';
               }
@@ -744,7 +697,6 @@ function convertText(data, useGlossary, inputText,
                       tempWord.length - 1);
                   tempWord = '';
                 }
-
                 break;
               }
 
@@ -758,7 +710,6 @@ function convertText(data, useGlossary, inputText,
                   break;
                 }
               }
-
               break;
             }
           }
@@ -768,7 +719,7 @@ function convertText(data, useGlossary, inputText,
       }
     }
 
-    let result = results.join('\n');
+    result = results.join('\n');
 
     [...punctuation].filter(
         (element) => element[0].length == 1 || element[0]
@@ -822,7 +773,6 @@ function buildTranslatedResult(textLines, resultLines, showOriginal) {
   } else {
     result.innerHTML = ('<p>' + resultLines.join('</p><p>') + '</p>');
   }
-
   return result.innerHTML.replace(/(<p>)(<\/p>)/g, '$1<br>$2');
 }
 
@@ -870,10 +820,9 @@ function onPostTranslate() {
 
 const DeepLTranslator = {
   translateText: async function (authKey, inputText, sourceLanguage,
-      targetLanguage, isConvert = false) {
+      targetLanguage, useGlossary = false) {
     try {
-      inputText = isConvert ? inputText : getDynamicDictionaryTextForAnothers(
-          inputText);
+      inputText = useGlossary ? getDynamicDictionaryText(inputText, false) : inputText;
 
       const response = await $.ajax({
         url: "https://api-free.deepl.com/v2/translate?auth_key=" + authKey,
@@ -885,7 +834,6 @@ const DeepLTranslator = {
             : ''}&target_lang=${targetLanguage}&tag_handling=html`,
         method: "POST"
       });
-
       return getProcessTextPostTranslate(
           response.translations.map((line) => line.text.trim()).join('\n'));
     } catch (error) {
@@ -962,11 +910,10 @@ const DeepLTargetLanguage = {
 };
 
 const GoogleTranslate = {
-  translateText: async function (inputText, logId, ctkk, sourceLanguage,
-      targetLanguage, isConvert = false) {
+  translateText: async function (data, inputText, sourceLanguage,
+      targetLanguage, useGlossary = false) {
     try {
-      inputText = isConvert ? inputText : getDynamicDictionaryTextForAnothers(
-          inputText);
+      inputText = useGlossary ? getDynamicDictionaryText(inputText, false) : inputText;
 
       /**
        * Method: GET
@@ -981,8 +928,8 @@ const GoogleTranslate = {
        * send(encodeURIComponent(inputText))
        */
       const response = await $.ajax({
-        url: `https://translate.googleapis.com/translate_a/t?anno=3&client=gtx&format=html&v=1.0&key&logId=v${logId}&sl=${sourceLanguage}&tl=${targetLanguage}&tc=0&tk=${Bp(
-            getDynamicDictionaryTextForAnothers(inputText), ctkk)}`,
+        url: `https://translate.googleapis.com/translate_a/t?anno=3&client=gtx&format=html&v=1.0&key&logId=v${data.logId}&sl=${sourceLanguage}&tl=${targetLanguage}&tc=0&tk=${Bp(
+            inputText, data.ctkk)}`,
         data: `q=${(!(targetLanguage == 'zh-CN' || targetLanguage == 'zh-TW'
             || targetLanguage == 'ja' || targetLanguage == 'ko')
             ? getProcessTextPreTranslate(inputText) : inputText).split(
@@ -1020,7 +967,6 @@ async function getGoogleTranslateData(translator) {
             /_exportVersion\('(TE_\d+)'\)/)[1];
         data.ctkk = elementJs.match(/c\._ctkk='(\d+\.\d+)'/)[1];
       }
-
       return data;
     } catch (error) {
       console.error('Không thể lấy được Log ID hoặc Token:' + error);
@@ -1204,10 +1150,9 @@ const GoogleLanguage = {
 const Papago = {
   translateText: async function (version, inputText, sourceLanguage,
       targetLanguage,
-      isConvert = false) {
+      useGlossary = false) {
     try {
-      inputText = isConvert ? inputText : getDynamicDictionaryTextForAnothers(
-          inputText);
+      inputText = useGlossary ? getDynamicDictionaryText(inputText, false) : inputText;
 
       const timeStamp = (new Date()).getTime();
 
@@ -1231,7 +1176,6 @@ const Papago = {
           Timestamp: timeStamp
         }
       });
-
       return getProcessTextPostTranslate(response.translatedText);
     } catch (error) {
       console.error('Bản dịch lỗi:', error);
@@ -1253,7 +1197,6 @@ async function getPapagoVersion(translator) {
             CORS_PROXY + "https://papago.naver.com/"
             + mainJs)).match(/"PPG .*,"(v[^"]*)/)[1];
       }
-
       return version;
     } catch (error) {
       console.error('Không thể lấy được Thông tin phiên bản: ' + error);
@@ -1285,9 +1228,9 @@ const PapagoLanguage = {
 
 const MicrosoftTranslator = {
   translateText: async function (accessToken, inputText, sourceLanguage,
-      targetLanguage, isConvert = false) {
+      targetLanguage, useGlossary = true) {
     try {
-      inputText = isConvert ? inputText : getDynamicDictionaryText(inputText);
+      inputText = useGlossary ? getDynamicDictionaryText(inputText) : inputText;
 
       /**
        *const bingTranslatorHTML = await $.get("https://cors-anywhere.herokuapp.com/https://www.bing.com/translator");
@@ -1322,7 +1265,6 @@ const MicrosoftTranslator = {
           "Content-Type": "application/json"
         }
       });
-
       return getProcessTextPostTranslate(
           response.map((element) => element.translations[0].text.trim()).join(
               '\n'));
@@ -1345,25 +1287,65 @@ async function getMicrosoftTranslatorAccessToken(translator) {
   }
 }
 
-function getDynamicDictionaryText(text) {
+function getDynamicDictionaryText(text, isMicrosoftTranslator = true) {
+  const glossaryEntries = Object.entries(glossary).filter(
+      (element) => text.includes(element[0]));
   let newText = text;
 
-  if ($("#flexSwitchCheckGlossary").prop("checked") && Object.entries(
-      glossary).length > 0) {
-    const glossaryArray = Object.entries(glossary).filter(
-        (element) => text.includes(element[0]));
+  if ($("#flexSwitchCheckGlossary").prop("checked") && glossaryEntries.length
+      > 0) {
+    const lines = text.split(/\n/);
+    const results = [];
 
-    for (let i = 0; i < glossaryArray.length; i++) {
-      newText = newText.replace(new RegExp(glossaryArray[i][0], 'g'),
-          `<mstrans:dictionary translation="${glossaryArray[i][1]}">MSTRANS_DICTIONARY_${i}</mstrans:dictionary>`);
-    }
+    for (let i = 0; i < lines.length; i++) {
+      let chars = lines[i];
 
-    for (let i = glossaryArray.length - 1; i >= 0; i--) {
-      newText = newText.replace(new RegExp(`MSTRANS_DICTIONARY_${i}`, 'g'),
-          glossaryArray[i][0]);
+      const MAX_GLOSSARY_LENGTH = glossaryEntries[0][0].length;
+      const phrases = [];
+      let tempWord = '';
+
+      for (let j = 0; j < chars.length; j++) {
+        for (let k = MAX_GLOSSARY_LENGTH; k >= 1; k--) {
+          if (glossary.hasOwnProperty(chars.substring(j, j + k))) {
+            phrases.push(isMicrosoftTranslator ? `<mstrans:dictionary translation="${glossary[chars.substring(j, j + k)]}">${chars.substring(j, j + k)}</mstrans:dictionary>` : glossary[chars.substring(j, j + k)]);
+            j += k - 1;
+            break;
+          } else if (k == 1) {
+            if (tempWord.length > 0 && / /.test(chars[j]) && !/ /.test(
+                tempWord)) {
+              tempWord.split(' ').forEach((element) => phrases.push(element));
+              tempWord = '';
+            }
+
+            tempWord += chars[j];
+
+            if (/ /.test(tempWord)) {
+              if (!/ /.test(chars[j + 1])) {
+                phrases[phrases.length - 1] += tempWord.substring(0,
+                    tempWord.length - 1);
+                tempWord = '';
+              }
+              break;
+            }
+
+            for (let l = MAX_GLOSSARY_LENGTH; l >= 1; l--) {
+              if (tempWord.length > 0 && (glossary.hasOwnProperty(
+                      chars.substring(j + 1, j + 1 + l)) || j + 1
+                  == chars.length)) {
+                tempWord.split(' ').forEach(
+                    (element) => phrases.push(element));
+                tempWord = '';
+                break;
+              }
+            }
+            break;
+          }
+        }
+      }
+      results.push(phrases.join(' '));
     }
+    newText = results.join('\n');
   }
-
   return newText;
 }
 
@@ -1481,24 +1463,6 @@ const MicrosoftLanguage = {
   'zu': 'Zulu'
 };
 
-function getDynamicDictionaryTextForAnothers(text) {
-  let newText = text;
-
-  if ($("#flexSwitchCheckGlossary").prop("checked") && $(
-      "#flexSwitchCheckAllowAnothers").prop("checked") && Object.entries(
-      glossary).length > 0) {
-    const glossaryArray = Object.entries(glossary).filter(
-        (element) => text.includes(element[0]));
-
-    for (let i = 0; i < glossaryArray.length; i++) {
-      newText = newText.replace(new RegExp(glossaryArray[i][0], 'g'),
-          glossaryArray[i][1]);
-    }
-  }
-
-  return newText;
-}
-
 function getProcessTextPreTranslate(text) {
   let lines = text.split(/\n/);
 
@@ -1549,4 +1513,9 @@ const Translators = {
   GOOGLE_TRANSLATE: 'googleTranslate',
   PAPAGO: 'papago',
   MICROSOFT_TRANSLATOR: 'microsoftTranslator',
+};
+
+const VietPhraseTranslationAlgorithms = {
+  LEFT_TO_RIGHT_TRANSLATION: 'leftToRightTranslation',
+  LONG_PRIOR: 'longPrior',
 };
