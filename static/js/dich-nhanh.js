@@ -579,7 +579,7 @@ async function translate() {
             break;
         }
 
-        results.push(getProcessTextPostTranslate(translatedText));
+        results.push(translatedText);
         translateLines = [];
         canTranslate = false;
       }
@@ -590,7 +590,7 @@ async function translate() {
     onPostTranslate();
   }
 
-  translation = results.join('\n');
+  translation = getProcessTextPostTranslate(results.join('\n'));
   $("#translatedText").html(
       buildTranslatedResult(inputText.split(/\n/), translation.split(/\n/),
           $("#flexSwitchCheckShowOriginal").prop("checked")));
