@@ -407,7 +407,7 @@ async function translate() {
   const processText = !(targetLanguage == 'JA' || targetLanguage == 'KO' || targetLanguage == 'ZH') ||
       !(targetLanguage == 'zh-CN' || targetLanguage == 'zh-TW' || targetLanguage == 'ja' || targetLanguage == 'ko') ||
       !(targetLanguage == 'ko' || targetLanguage == 'ja' || taảgetLanguage == 'zh-CN' || targetLanguage == 'zh-TW') ||
-      !(targetLanguage == 'yue' || targetLanguage == 'lzh' || targetLanguage == 'zh-Hans' || targetLanguage == 'zh-Hant' || targetLanguage == 'ja' || targetLanguage == 'ko') ? getProcessTextPreTranslate(inputText) ? inputText;
+      !(targetLanguage == 'yue' || targetLanguage == 'lzh' || targetLanguage == 'zh-Hans' || targetLanguage == 'zh-Hant' || targetLanguage == 'ja' || targetLanguage == 'ko') ? getProcessTextPreTranslate(inputText) : inputText;
   const results = [];
   const errorMessage = document.createElement("p");
 
