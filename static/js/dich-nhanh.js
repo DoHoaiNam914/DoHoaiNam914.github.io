@@ -623,7 +623,7 @@ function getProcessTextPostTranslate(text) {
       (element) => element[0].length == 3 && element[1].length == 5);
 
   if (text.length > 0) {
-    for (let i = 0; i < brackets.length; i++) {
+    for (let i = brackets.length - 1; i >= 0; i--) {
       newText = newText.replace(
           new RegExp(
               `[\\["]OPEN_BRACKET_${i}\\].*?\n+(.*?)\n+?\\[CLOSE_BRACKET_${i}\\]`,
