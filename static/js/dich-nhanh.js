@@ -1292,8 +1292,7 @@ function getDynamicDictionaryText(text, isMicrosoftTranslator = true) {
       (element) => text.includes(element[0]));
   let newText = text;
 
-  if ($("#flexSwitchCheckGlossary").prop("checked") && glossaryEntries.length
-      > 0) {
+  if ($("#flexSwitchCheckGlossary").prop("checked") && (isMicrosoftTranslator || $("#flexSwitchCheckAllowAnothers").prop("checked")) && glossaryEntries.length > 0) {
     const lines = text.split(/\n/);
     const results = [];
 
@@ -1342,8 +1341,10 @@ function getDynamicDictionaryText(text, isMicrosoftTranslator = true) {
           }
         }
       }
+
       results.push(phrases.join(' '));
     }
+
     newText = results.join('\n');
   }
   return newText;
