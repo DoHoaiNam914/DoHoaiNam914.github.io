@@ -90,14 +90,14 @@ $("#pasteSourceTextButton").on("click", () => {
 
 $("#pinyinConvertButton").on("click", function () {
   if ($("#sourceEntry").val().length > 0) {
-    $("#targetEntry").val(convertText($(this).val(), pinyins, false,
+    $("#targetEntry").val(convertText($("#sourceEntry").val(), pinyins, false,
         VietPhraseTranslationAlgorithms.LEFT_TO_RIGHT_TRANSLATION));
   }
 });
 
 $("#sinoVietnameseConvertButton").click(function () {
   if ($("#sourceEntry").val().length > 0) {
-    $("#targetEntry").val(convertText($(this).val(), sinovietnameses, false,
+    $("#targetEntry").val(convertText($("#sourceEntry").val(), sinovietnameses, false,
         VietPhraseTranslationAlgorithms.LEFT_TO_RIGHT_TRANSLATION));
   }
 });
