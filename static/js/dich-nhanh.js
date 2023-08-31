@@ -640,9 +640,9 @@ function getProcessTextPreTranslate(text) {
       newText = newText.replace(
           new RegExp(`${brackets[i][0].split('…')[0]}(.*)${brackets[i][0].split('…')[1]}`,
               'g'),
-          `[OPEN_BRACKET_${i}]\n$1\n[CLOSE_BRACKET_${i}]`).replace(
+          `\n[OPEN_BRACKET_${i}]\n$1\n[CLOSE_BRACKET_${i}]`).replace(
           new RegExp(`${brackets[i][0].split('…')[1]}(.*)${brackets[i][0].split('…')[0]}`,
-              'g'), `\n[CLOSE_BRACKET_${i}]$1[OPEN_BRACKET_${i}]\n`);
+              'g'), `\n[CLOSE_BRACKET_${i}]$1\n[OPEN_BRACKET_${i}]\n`);
     }
   }
 
@@ -660,7 +660,7 @@ function getProcessTextPostTranslate(text) {
     for (let i = brackets.length - 1; i >= 0; i--) {
       newText = newText.replace(
           new RegExp(
-              `[\\["]OPEN_BRACKET_${i}\\].*?\n+(.*?)\n+?\\[CLOSE_BRACKET_${i}\\]`,
+              `.*\n+[\\["]OPEN_BRACKET_${i}\\].*\n+(.*)\n*\\[CLOSE_BRACKET_${i}\\]`,
               'gi'),
           ` ${brackets[i][1].split('...')[0]}$1${brackets[i][1].split(
               '...')[1]} `);
