@@ -623,7 +623,7 @@ async function translate() {
 
   translation = getProcessTextPostTranslate(results.join('\n'));
   $("#translatedText").html(
-      buildTranslatedResult(inputText.split(/\n/), translation.split(/\n/),
+      buildTranslatedResult(getProcessTextPostTranslate(processText).split(/\n/), translation.split(/\n/),
           $("#flexSwitchCheckShowOriginal").prop("checked")));
 }
 
@@ -636,13 +636,12 @@ function getProcessTextPreTranslate(text) {
 
   if (text.length > 0) {
     for (let i = 0; i < brackets.length; i++) {
-      console.log(brackets[i]);
       newText = newText.replace(
           new RegExp(`${brackets[i][0].split('…')[0]}(.*)${brackets[i][0].split('…')[1]}`,
               'g'),
-          `\n[OPEN_BRACKET_${i}]\n$1\n[CLOSE_BRACKET_${i}]`).replace(
+          `\n[OPEN_BRACKET_${i}]\n$1\n[CLOSE_BRACKET_${i}]\n`).replace(
           new RegExp(`${brackets[i][0].split('…')[1]}(.*)${brackets[i][0].split('…')[0]}`,
-              'g'), `\n[CLOSE_BRACKET_${i}]$1\n[OPEN_BRACKET_${i}]\n`);
+              'g'), `\n[CLOSE_BRACKET_${i}]\n$1\n[OPEN_BRACKET_${i}]\n`);
     }
   }
 
@@ -660,7 +659,7 @@ function getProcessTextPostTranslate(text) {
     for (let i = brackets.length - 1; i >= 0; i--) {
       newText = newText.replace(
           new RegExp(
-              `\n\\[OPEN_BRACKET_${i}\\]\n(.*)\n\\[CLOSE_BRACKET_${i}\\]`,
+              `\n\\[OPEN_BRACKET_${i}\\]\n(.*)\n\\[CLOSE_BRACKET_${i}\\]\n`,
               'gi'),
           ` ${brackets[i][1].split('...')[0]}$1${brackets[i][1].split(
               '...')[1]} `);
@@ -839,12 +838,9 @@ function buildTranslatedResult(textLines, resultLines, showOriginal) {
         }
 
         const paragraph = document.createElement('p');
-        paragraph.innerHTML = getProcessTextPostTranslate(
-            getProcessTextPreTranslate(resultLines[i].trim()))
-        !== getProcessTextPostTranslate(getProcessTextPreTranslate(
-            textLines[i + lostLineFixedAmount].trim())) ? '<i>' + textLines[i
-        + lostLineFixedAmount] + '</i><br>' + resultLines[i] : textLines[i
-        + lostLineFixedAmount]
+        paragraph.innerHTML = resultLines[i].trim()
+            !== textLines[i + lostLineFixedAmount] ? '<i>' + textLines[i
+            + lostLineFixedAmount] + '</i><br>' + resultLines[i] : resultLines[i];
         result.appendChild(paragraph);
       } else {
         const paragraph = document.createElement('p');
