@@ -97,8 +97,9 @@ $("#pinyinConvertButton").on("click", function () {
 
 $("#sinoVietnameseConvertButton").click(function () {
   if ($("#sourceEntry").val().length > 0) {
-    $("#targetEntry").val(convertText($("#sourceEntry").val(), sinovietnameses, false,
-        VietPhraseTranslationAlgorithms.LEFT_TO_RIGHT_TRANSLATION));
+    $("#targetEntry").val(
+        convertText($("#sourceEntry").val(), sinovietnameses, false,
+            VietPhraseTranslationAlgorithms.LEFT_TO_RIGHT_TRANSLATION));
   }
 });
 
@@ -274,7 +275,8 @@ $(".google-convert").on("click", async function () {
         return;
       }
 
-      const translatedText = await GoogleTranslate.translateText(data, $("#sourceEntry").val(), 'auto', $(this).data("lang"));
+      const translatedText = await GoogleTranslate.translateText(data,
+          $("#sourceEntry").val(), 'auto', $(this).data("lang"));
 
       $("#targetEntry").val(translatedText);
       $(".convert").removeClass("disabled");
