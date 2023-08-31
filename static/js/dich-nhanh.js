@@ -24,9 +24,9 @@ const punctuation = [
   ['‘…’', '‘...’'],
   ['"', '"'],
   ['“…”', '“...”'],
-  ['(…)', ' (...) '],
+  ['\\(…\\)', ' (...) '],
   ['（…）', ' (...) '],
-  ['[…]', ' [...] '],
+  ['\\[…\\]', ' [...] '],
   ['〈…〉', '〈...〉'],
   ['《…》', '《...》'],
   ['「…」', ' “...” '],
@@ -107,7 +107,7 @@ $("#pasteButton").on("click", () => {
   .readText()
   .then((clipText) => {
     if (clipText.length > 0) {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      window.scrollTo({top: 0, behavior: 'smooth'});
       $("#queryText").val(clipText).trigger("input");
 
       if ($("#translateButton").text() == 'Sửa') {
@@ -196,7 +196,18 @@ $(".translator").click(function () {
           && prevSourceLanguageCode != null) {
         $("#sourceLangSelect").val(prevSourceLanguageCode);
         return false;
-      }  else if (prevSourceLanguageName != null && prevSourceLanguageCode != null && ($(this).text().replace(/[()]/g, '') == prevSourceLanguageName.replace(/[()]/g, '') || $(this).val().toLowerCase() == prevSourceLanguageCode.toLowerCase() || ($(this).val().toLowerCase().split('-')[0] == prevSourceLanguageCode.toLowerCase().split('-')[0] && $(this).text().includes(prevSourceLanguageName.split(' ').length == 2 ? prevSourceLanguageName.replace(/[()]/g, '').split(' ')[1] : prevSourceLanguageName.replace(/[()]/g, '').split(' ')[0])))) {
+      } else if (prevSourceLanguageName != null && prevSourceLanguageCode
+          != null && ($(this).text().replace(/[()]/g, '')
+              == prevSourceLanguageName.replace(/[()]/g, '') || $(
+                  this).val().toLowerCase()
+              == prevSourceLanguageCode.toLowerCase() || ($(
+                      this).val().toLowerCase().split('-')[0]
+                  == prevSourceLanguageCode.toLowerCase().split('-')[0] && $(
+                      this).text().includes(
+                      prevSourceLanguageName.split(' ').length == 2
+                          ? prevSourceLanguageName.replace(/[()]/g, '').split(
+                              ' ')[1] : prevSourceLanguageName.replace(/[()]/g,
+                              '').split(' ')[0])))) {
         $("#sourceLangSelect").val($(this).val()).change();
         return false;
       } else if (index + 1 == $("#targetLangSelect > option").length) {
@@ -220,10 +231,22 @@ $(".translator").click(function () {
     $("#targetLangSelect").html(getTargetLanguageOptions($(this).data("id")));
 
     $("#targetLangSelect > option").each(function (index) {
-      if ($(".translator.active").data("id") === prevTranslator && prevTargetLanguageCode != null) {
+      if ($(".translator.active").data("id") === prevTranslator
+          && prevTargetLanguageCode != null) {
         $("#targetLangSelect").val(prevTargetLanguageCode);
         return false;
-      } else if (prevTargetLanguageName != null && prevTargetLanguageCode != null && ($(this).text().replace(/[()]/g, '') == prevTargetLanguageName.replace(/[()]/g, '') || $(this).val().toLowerCase() == prevTargetLanguageCode.toLowerCase() || ($(this).val().toLowerCase().split('-')[0] == prevTargetLanguageCode.toLowerCase().split('-')[0] && $(this).text().includes(prevTargetLanguageName.split(' ').length >= 2 ? prevTargetLanguageName.replace(/[()]/g, '').split(' ')[1] : prevTargetLanguageName.replace(/[()]/g, '').split(' ')[0])))) {
+      } else if (prevTargetLanguageName != null && prevTargetLanguageCode
+          != null && ($(this).text().replace(/[()]/g, '')
+              == prevTargetLanguageName.replace(/[()]/g, '') || $(
+                  this).val().toLowerCase()
+              == prevTargetLanguageCode.toLowerCase() || ($(
+                      this).val().toLowerCase().split('-')[0]
+                  == prevTargetLanguageCode.toLowerCase().split('-')[0] && $(
+                      this).text().includes(
+                      prevTargetLanguageName.split(' ').length >= 2
+                          ? prevTargetLanguageName.replace(/[()]/g, '').split(
+                              ' ')[1] : prevTargetLanguageName.replace(/[()]/g,
+                              '').split(' ')[0])))) {
         $("#targetLangSelect").val($(this).val()).change();
         return false;
       } else if (index + 1 == $("#targetLangSelect > option").length) {
@@ -404,10 +427,16 @@ async function translate() {
   const sourceLanguage = $("#sourceLangSelect").val();
   const targetLanguage = $("#targetLangSelect").val();
 
-  const processText = translator !== Translators.VIETPHRASE && (!(targetLanguage == 'JA' || targetLanguage == 'KO' || targetLanguage == 'ZH') ||
-      !(targetLanguage == 'zh-CN' || targetLanguage == 'zh-TW' || targetLanguage == 'ja' || targetLanguage == 'ko') ||
-      !(targetLanguage == 'ko' || targetLanguage == 'ja' || taảgetLanguage == 'zh-CN' || targetLanguage == 'zh-TW') ||
-      !(targetLanguage == 'yue' || targetLanguage == 'lzh' || targetLanguage == 'zh-Hans' || targetLanguage == 'zh-Hant' || targetLanguage == 'ja' || targetLanguage == 'ko')) ? getProcessTextPreTranslate(inputText) : inputText;
+  const processText = translator !== Translators.VIETPHRASE && (!(targetLanguage
+          == 'JA' || targetLanguage == 'KO' || targetLanguage == 'ZH') ||
+      !(targetLanguage == 'zh-CN' || targetLanguage == 'zh-TW' || targetLanguage
+          == 'ja' || targetLanguage == 'ko') ||
+      !(targetLanguage == 'ko' || targetLanguage == 'ja' || taảgetLanguage
+          == 'zh-CN' || targetLanguage == 'zh-TW') ||
+      !(targetLanguage == 'yue' || targetLanguage == 'lzh' || targetLanguage
+          == 'zh-Hans' || targetLanguage == 'zh-Hant' || targetLanguage == 'ja'
+          || targetLanguage == 'ko')) ? getProcessTextPreTranslate(inputText)
+      : inputText;
   const results = [];
   const errorMessage = document.createElement("p");
 
@@ -444,7 +473,7 @@ async function translate() {
 
     if (processText.split(/\n/).sort((a, b) => b.length - a.length)[0].length
         > MAX_LENGTH) {
-      errorMessage.innerText = `Bản dịch thất bại: Số lượng từ trong một dòng quá dài (Số lượng từ hợp lệ nhỏ hơn hoặc bằng ${MAX_LENGTH})`;
+      errorMessage.innerText = `Bản dịch thất bại: Số lượng từ trong một dòng quá dài (Số lượng từ hợp lệ nhỏ hơn hoặc bằng ${MAX_LENGTH}). Lưu ý: Khi sử dụng Dynamic Dictionary và Bảo vệ dấu trích đẫn sẽ làm giảm số lượng từ có thể dịch đi.`;
       $("#translatedText").append(errorMessage);
       onPostTranslate();
       return;
@@ -457,7 +486,7 @@ async function translate() {
 
       if (processText.length > (deeplUsage.character_limit
           - deeplUsage.character_count)) {
-        errorMessage.innerText = `Lỗi DeepL: Đã đạt đến giới hạn dịch của tài khoản. (${deeplUsage.character_count}/${deeplUsage.character_limit} ký tự)`;
+        errorMessage.innerText = `Lỗi DeepL: Đã đạt đến giới hạn dịch của tài khoản. (${deeplUsage.character_count}/${deeplUsage.character_limit} ký tự). Lưu ý: Khi sử dụng Dynamic Dictionary và Bảo vệ dấu trích đẫn sẽ làm giảm số lượng từ có thể dịch đi.`;
         $("#translatedText").html(errorMessage);
         onPostTranslate();
         return;
@@ -530,7 +559,9 @@ async function translate() {
 
           default:
           case Translators.GOOGLE_TRANSLATE:
-            translatedText = await GoogleTranslate.translateText(googleTranslateData, translateText, sourceLanguage, targetLanguage, true);
+            translatedText = await GoogleTranslate.translateText(
+                googleTranslateData, translateText, sourceLanguage,
+                targetLanguage, true);
             break;
 
           case Translators.PAPAGO:
@@ -600,10 +631,12 @@ function getProcessTextPreTranslate(text) {
   let newText = text;
 
   const brackets = [...punctuation].filter(
-      (element) => element[0].length == 3 && element[1].length == 5);
+      (element) => element[0].replace(/\\/g, '').length == 3 && element[0]
+          != '\\.\\.\\.').sort((a, b) => b.includes('\\[…\\]'));
 
   if (text.length > 0) {
     for (let i = 0; i < brackets.length; i++) {
+      console.log(brackets[i]);
       newText = newText.replace(
           new RegExp(`${brackets[i][0].split('…')[0]}(.*)${brackets[i][0].split('…')[1]}`,
               'g'),
@@ -620,7 +653,8 @@ function getProcessTextPostTranslate(text) {
   let newText = text;
 
   const brackets = [...punctuation].filter(
-      (element) => element[0].length == 3 && element[1].length == 5);
+      (element) => element[0].replace(/\\/g, '').length == 3 && element[0]
+          != '\\.\\.\\.').sort((a, b) => b.includes('\\[…\\]'));
 
   if (text.length > 0) {
     for (let i = brackets.length - 1; i >= 0; i--) {
@@ -642,7 +676,8 @@ function convertText(inputText, data, useGlossary, translationAlgorithm) {
         (element) => (!useGlossary || !glossary.hasOwnProperty(element[0]))
             && inputText.includes(element[0])).sort(
         (a, b) => b[0].length - a[0].length));
-    const glossaryEntries = Object.entries(glossary).filter((element) => inputText.includes(element[0]));
+    const glossaryEntries = Object.entries(glossary).filter(
+        (element) => inputText.includes(element[0]));
     const dataEntries = Object.entries(data);
     const lines = inputText.split(/\n/);
     const results = [];
@@ -773,13 +808,14 @@ function convertText(inputText, data, useGlossary, translationAlgorithm) {
             element[1]).split(/\n/).map((element) => element.trim()).join(
             '\n'));
     [...punctuation].filter(
-        (element) => element[0].length == 3 && element[1].length == 5).forEach(
+        (element) => element[0].replace(/\\/g, '').length == 3 && element[0]
+            != '\\.\\.\\.').sort(
+        (a, b) => b.includes('\\[…\\]')).forEach(
         (element) => result = result.replace(
             new RegExp(`${element[0].split('…')[0]} (.*) ${element[0].split('…')[1]}`,
-                'g'),
-            `${element[1].split('...')[0]}$1${element[1].split(
-                '...')[1]}`).split(
-            /\n/).map((element) => element.trim()).join('\n'));
+                'g'), `${element[1].split('...')[0]}$1${element[1].split(
+                '...')[1]}`).split(/\n/).map((element) => element.trim()).join(
+            '\n'));
     return result;
   } catch (error) {
     console.error('Bản dịch lỗi:', error);
@@ -866,11 +902,15 @@ const DeepLTranslator = {
   translateText: async function (authKey, inputText, sourceLanguage,
       targetLanguage, useGlossary = false) {
     try {
-      inputText = useGlossary ? getDynamicDictionaryText(inputText, false) : inputText;
+      inputText = useGlossary ? getDynamicDictionaryText(inputText, false)
+          : inputText;
 
       const response = await $.ajax({
         url: "https://api-free.deepl.com/v2/translate?auth_key=" + authKey,
-        data: `text=${inputText.split(/\n/).map((sentence) => encodeURIComponent(sentence)).join('&text=')}${sourceLanguage != '' ? '&source_lang=' + sourceLanguage : ''}&target_lang=${targetLanguage}&tag_handling=html`,
+        data: `text=${inputText.split(/\n/).map(
+            (sentence) => encodeURIComponent(sentence)).join(
+            '&text=')}${sourceLanguage != '' ? '&source_lang=' + sourceLanguage
+            : ''}&target_lang=${targetLanguage}&tag_handling=html`,
         method: "POST"
       });
       return response.translations.map((line) => line.text.trim()).join('\n');
@@ -951,7 +991,8 @@ const GoogleTranslate = {
   translateText: async function (data, inputText, sourceLanguage,
       targetLanguage, useGlossary = false) {
     try {
-      inputText = useGlossary ? getDynamicDictionaryText(inputText, false) : inputText;
+      inputText = useGlossary ? getDynamicDictionaryText(inputText, false)
+          : inputText;
 
       /**
        * Method: GET
@@ -968,7 +1009,8 @@ const GoogleTranslate = {
       const response = await $.ajax({
         url: `https://translate.googleapis.com/translate_a/t?anno=3&client=gtx&format=html&v=1.0&key&logId=v${data.logId}&sl=${sourceLanguage}&tl=${targetLanguage}&tc=0&tk=${Bp(
             inputText, data.ctkk)}`,
-        data: `q=${inputText.split(/\n/).map((sentence) => encodeURIComponent(sentence)).join('&q=')}`,
+        data: `q=${inputText.split(/\n/).map(
+            (sentence) => encodeURIComponent(sentence)).join('&q=')}`,
         method: "GET"
       });
 
@@ -1187,13 +1229,15 @@ const Papago = {
       targetLanguage,
       useGlossary = false) {
     try {
-      inputText = useGlossary ? getDynamicDictionaryText(inputText, false) : inputText;
+      inputText = useGlossary ? getDynamicDictionaryText(inputText, false)
+          : inputText;
 
       const timeStamp = (new Date()).getTime();
 
       const response = await $.ajax({
         url: CORS_PROXY + "https://papago.naver.com/apis/n2mt/translate",
-        data: `deviceId=${uuid}&locale=vi&dict=true&dictDisplay=30&honorific=true&instant=false&paging=false&source=${sourceLanguage}&target=${targetLanguage}&text=${encodeURIComponent(inputText)}`,
+        data: `deviceId=${uuid}&locale=vi&dict=true&dictDisplay=30&honorific=true&instant=false&paging=false&source=${sourceLanguage}&target=${targetLanguage}&text=${encodeURIComponent(
+            inputText)}`,
         method: "POST",
         headers: {
           Accept: "application/json",
@@ -1286,14 +1330,15 @@ const MicrosoftTranslator = {
         != '' ? 'from=' + sourceLanguage + '&'
             : ''}to=${targetLanguage}&api-version=3.0&textType=html&includeSentenceLength=true`,
         data: JSON.stringify(inputText.split(
-                /\n/).map((sentence) => ({"Text": sentence}))),
+            /\n/).map((sentence) => ({"Text": sentence}))),
         method: "POST",
         headers: {
           Authorization: "Bearer " + accessToken,
           "Content-Type": "application/json"
         }
       });
-      return response.map((element) => element.translations[0].text.trim()).join('\n');
+      return response.map(
+          (element) => element.translations[0].text.trim()).join('\n');
     } catch (error) {
       console.error('Bản dịch lỗi:', error);
       throw error;
@@ -1318,7 +1363,9 @@ function getDynamicDictionaryText(text, isMicrosoftTranslator = true) {
       (element) => text.includes(element[0]));
   let newText = text;
 
-  if ($("#flexSwitchCheckGlossary").prop("checked") && (isMicrosoftTranslator || $("#flexSwitchCheckAllowAnothers").prop("checked")) && glossaryEntries.length > 0) {
+  if ($("#flexSwitchCheckGlossary").prop("checked") && (isMicrosoftTranslator
+          || $("#flexSwitchCheckAllowAnothers").prop("checked"))
+      && glossaryEntries.length > 0) {
     const lines = text.split(/\n/);
     const results = [];
 
@@ -1332,7 +1379,11 @@ function getDynamicDictionaryText(text, isMicrosoftTranslator = true) {
       for (let j = 0; j < chars.length; j++) {
         for (let k = MAX_GLOSSARY_LENGTH; k >= 1; k--) {
           if (glossary.hasOwnProperty(chars.substring(j, j + k))) {
-            phrases.push(isMicrosoftTranslator ? `<mstrans:dictionary translation="${glossary[chars.substring(j, j + k)]}">${chars.substring(j, j + k)}</mstrans:dictionary>` : glossary[chars.substring(j, j + k)]);
+            phrases.push(isMicrosoftTranslator
+                ? `<mstrans:dictionary translation="${glossary[chars.substring(
+                    j, j + k)]}">${chars.substring(j,
+                    j + k)}</mstrans:dictionary>` : glossary[chars.substring(j,
+                    j + k)]);
             j += k - 1;
             break;
           } else if (k == 1) {
