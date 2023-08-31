@@ -660,7 +660,7 @@ function getProcessTextPostTranslate(text) {
     for (let i = brackets.length - 1; i >= 0; i--) {
       newText = newText.replace(
           new RegExp(
-              `.*\n+[\\["]OPEN_BRACKET_${i}\\].*\n+(.*)\n*\\[CLOSE_BRACKET_${i}\\]`,
+              `\n\\[OPEN_BRACKET_${i}\\]\n(.*)\n\\[CLOSE_BRACKET_${i}\\]`,
               'gi'),
           ` ${brackets[i][1].split('...')[0]}$1${brackets[i][1].split(
               '...')[1]} `);
