@@ -847,7 +847,9 @@ function buildTranslatedResult(textLines, resultLines, showOriginal) {
         + lostLineFixedAmount]
         result.appendChild(paragraph);
       } else {
-        result.appendChild(document.createElement('p'));
+        const paragraph = document.createElement('p');
+        paragraph.innerHTML = textLines[i + lostLineFixedAmount];
+        result.appendChild(paragraph);
       }
     }
   } else {
