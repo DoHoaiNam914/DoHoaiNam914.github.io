@@ -623,7 +623,7 @@ async function translate() {
 
   translation = getProcessTextPostTranslate(results.join('\n'));
   $("#translatedText").html(
-      buildTranslatedResult(getProcessTextPostTranslate(processText).split(/\n/), translation.split(/\n/),
+      buildTranslatedResult(inputText.split(/\n/), translation.split(/\n/),
           $("#flexSwitchCheckShowOriginal").prop("checked")));
 }
 
@@ -838,9 +838,7 @@ function buildTranslatedResult(textLines, resultLines, showOriginal) {
         }
 
         const paragraph = document.createElement('p');
-        paragraph.innerHTML = resultLines[i].trim()
-            !== textLines[i + lostLineFixedAmount] ? '<i>' + textLines[i
-            + lostLineFixedAmount] + '</i><br>' + resultLines[i] : resultLines[i];
+        paragraph.innerHTML = resultLines[i].trim() !== getProcessTextPostTranslate(getProcessTextPreTranslate(textLines[i + lostLineFixedAmount])) ? '<i>' + textLines[i + lostLineFixedAmount] + '</i><br>' + resultLines[i] : getProcessTextPostTranslate(getProcessTextPreTranslate(textLines[i + lostLineFixedAmount]));
         result.appendChild(paragraph);
       } else {
         const paragraph = document.createElement('p');
