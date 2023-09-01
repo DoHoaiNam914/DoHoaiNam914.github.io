@@ -729,14 +729,48 @@ async function translate() {
           $("#flexSwitchCheckShowOriginal").prop("checked")));
 }
 
+function buildTranslatedResult(textLines, resultLines, showOriginal) {
+  let result = document.createElement('div');
+
+  if (showOriginal) {
+    let lostLineFixedAmount = 0;
+
+    for (let i = 0; i < textLines[0].length; i++) {
+      if (i < resultLines.length) {
+        if (textLines[0][i + lostLineFixedAmount].trim().length == 0
+            && resultLines[i].trim().length > 0) {
+          lostLineFixedAmount++;
+          i--;
+          continue;
+        }
+
+        const paragraph = document.createElement('p');
+        paragraph.innerHTML = resultLines[i].trim()
+        !== getProcessTextPostTranslate(textLines[1][i + lostLineFixedAmount])
+            ? '<i>' + textLines[0][i + lostLineFixedAmount] + '</i><br>'
+            + resultLines[i] : getProcessTextPostTranslate(
+                textLines[1][i + lostLineFixedAmount]);
+        result.appendChild(paragraph);
+      } else {
+        const paragraph = document.createElement('p');
+        paragraph.innerHTML = textLines[0][i + lostLineFixedAmount];
+        result.appendChild(paragraph);
+      }
+    }
+  } else {
+    result.innerHTML = ('<p>' + resultLines.join('</p><p>') + '</p>');
+  }
+  return result.innerHTML.replace(/(<p>)(<\/p>)/g, '$1<br>$2');
+}
+
 function getProcessTextPreTranslate(text, doProtectQuotationMarks) {
   let newText = text;
 
   if (text.length > 0) {
     if (doProtectQuotationMarks) {
       const brackets = [...punctuation].filter(
-          (element) => element[0].split('…').length == 2).sort(
-          (a, b) => b.includes('\\[…\\]'));
+          (element) => element[0] != '…' && element[0].split('…').length
+              == 2).sort((a, b) => /[\[\]]/.test(b));
 
       for (let i = 0; i < brackets.length; i++) {
         newText = newText.replace(
@@ -756,8 +790,8 @@ function getProcessTextPostTranslate(text) {
   let newText = text;
 
   const brackets = [...punctuation].filter(
-      (element) => element[0].split('…').length == 2).sort(
-      (a, b) => b.includes('\\[…\\]'));
+      (element) => element[0] != '…' && element[0].split('…').length == 2).sort(
+      (a, b) => /[\[\]]/.test(b));
 
   if (text.length > 0) {
     for (let i = brackets.length - 1; i >= 0; i--) {
@@ -907,8 +941,8 @@ function convertText(inputText, data, useGlossary, translationAlgorithm) {
             new RegExp(` ?${element[0]} ?`, 'g'), element[1]).split(/\n/).map(
             (element) => element.trim()).join('\n'));
     [...punctuation].filter(
-        (element) => element[0].split('…').length == 2).sort(
-        (a, b) => b.includes('\\[…\\]')).forEach(
+        (element) => element[0] != '…' && element[0].split('…').length
+            == 2).sort((a, b) => b.includes('\\[…\\]')).forEach(
         (element) => result = result.replace(
             new RegExp(`${element[0].split('…')[0]} *(.*) *${element[0].split('…')[1]}`,
                 'g'), `${element[1].split('...')[0]}$1${element[1].split(
@@ -919,40 +953,6 @@ function convertText(inputText, data, useGlossary, translationAlgorithm) {
     console.error('Bản dịch lỗi:', error);
     throw error;
   }
-}
-
-function buildTranslatedResult(textLines, resultLines, showOriginal) {
-  let result = document.createElement('div');
-
-  if (showOriginal) {
-    let lostLineFixedAmount = 0;
-
-    for (let i = 0; i < textLines[0].length; i++) {
-      if (i < resultLines.length) {
-        if (textLines[0][i + lostLineFixedAmount].trim().length == 0
-            && resultLines[i].trim().length > 0) {
-          lostLineFixedAmount++;
-          i--;
-          continue;
-        }
-
-        const paragraph = document.createElement('p');
-        paragraph.innerHTML = resultLines[i].trim()
-        !== getProcessTextPostTranslate(textLines[1][i + lostLineFixedAmount])
-            ? '<i>' + textLines[0][i + lostLineFixedAmount] + '</i><br>'
-            + resultLines[i] : getProcessTextPostTranslate(
-                textLines[1][i + lostLineFixedAmount]);
-        result.appendChild(paragraph);
-      } else {
-        const paragraph = document.createElement('p');
-        paragraph.innerHTML = textLines[0][i + lostLineFixedAmount];
-        result.appendChild(paragraph);
-      }
-    }
-  } else {
-    result.innerHTML = ('<p>' + resultLines.join('</p><p>') + '</p>');
-  }
-  return result.innerHTML.replace(/(<p>)(<\/p>)/g, '$1<br>$2');
 }
 
 function onInput() {
