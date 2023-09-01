@@ -9,29 +9,129 @@ let pinyins = {};
 let sinovietnameses = {};
 let vietphrases = {};
 const punctuation = [
-  ['－', ' - '],
-  ['・', ' '],
-  ['，', ', '],
-  ['、', ', '],
-  ['；', '; '],
-  ['：', ': '],
-  ['？', '\? '],
-  ['！', '! '],
-  ['\\.\\.\\.', '... '],
-  ['…', '... '],
-  ['。', '. '],
-  ['\'', '\''],
-  ['‘…’', '‘...’'],
+  /**
+   * Basic Latin
+   */
+  ['!', '!'],
   ['"', '"'],
+  ['#', '#'],
+  ['\\$', '\$'],
+  ['%', '%'],
+  ['&', '&'],
+  ['\'', '\''],
+  ['\\(…\\)', '\(...\)'],
+  ['\\*', '\*'],
+  ['\\+', '\+'],
+  [',', ','],
+  [',', ','],
+  ['-', '-'],
+  ['\\.', '\.'],
+  ['\\/', '\/'],
+  [':', ':'],
+  [';', ';'],
+  ['<', '<'],
+  ['=', '='],
+  ['>', '>'],
+  ['\\?', '\?'],
+  ['@', '@'],
+  ['\\[…\\]', '[...]'],
+  ['\\\\', '\\'],
+  ['\\^', '\^'],
+  ['_', '_'],
+  ['`', '`'],
+  ['{…}', '{...}'],
+  ['|', '|'],
+  ['~', '~'],
+  /**
+   * General Punctuation
+   */
+  ['―', '—'],
+  ['‘…’', '‘...’'],
   ['“…”', '“...”'],
-  ['\\(…\\)', ' (...) '],
-  ['（…）', ' (...) '],
-  ['\\[…\\]', ' [...] '],
-  ['〈…〉', '〈...〉'],
+  ['…', '...'],
+  ['‹…›', ' ‹...›'],
+  ['‼', '!!'],
+  ['⁇', '\?\?'],
+  ['⁈', '\?!'],
+  ['⁉', '!\?'],
+  /**
+   * CJK Compatibility Forms
+   */
+  ['︱', '—'],
+  ['︵…︶', ' (...) '],
+  ['︷…︸', ' {...} '],
+  ['︹…︺', '〔...〕'],
+  ['︻…︼', '【...】'],
+  ['︽…︾', '《...》'],
+  ['︿…﹀', ' ‹...› '],
+  ['﹁…﹂', ' “...” '],
+  ['^﹃…﹄$', '『...』'],
+  ['﹃…﹄', ' ‘...’ '],
+  ['﹅', '﹅'],
+  ['﹇…﹈', ' [...] '],
+  /**
+   * CJK Symbols and Punctuation
+   */
+  ['　', ''],
+  ['、', ', '],
+  ['。', '\. '],
+  ['〃', '〃'],
+  ['〈…〉', ' ‹...› '],
   ['《…》', '《...》'],
   ['「…」', ' “...” '],
+  ['^『…』$', '『...』'],
   ['『…』', ' ‘...’ '],
-  ['【…】', '【...】']
+  ['【…】', '【...】'],
+  ['〔…〕', '〔...〕'],
+  ['〖…〗', '〖...〗'],
+  ['〘…〙', '〘...〙'],
+  ['〘…〙', '〘...〙'],
+  ['〚…〛', '〚...〛'],
+  ['〜', ' ~ '],
+  ['〝…〞', '〝...〞'],
+  ['〟', '〟'],
+  /**
+   * Halfwidth and Fullwidth Forms
+   */
+  ['！', '! '],
+  ['＂', ' " '],
+  ['＃', ' # '],
+  ['＄', ' $ '],
+  ['＄', ' \$ '],
+  ['％', ' % '],
+  ['＆', ' & '],
+  ['＇', ' \' '],
+  ['（…）', ' (...) '],
+  ['＊', ' \* '],
+  ['＋', ' \+ '],
+  ['，', ', '],
+  ['－', ' - '],
+  ['．', '\. '],
+  ['／', ' \/ '],
+  ['：', ': '],
+  ['；', '; '],
+  ['＜', ' < '],
+  ['＝', ' = '],
+  ['＞', ' > '],
+  ['？', '\? '],
+  ['＠', ' @ '],
+  ['［…］', ' [...] '],
+  ['＼', ' \\ '],
+  ['＾', ' \^ '],
+  ['＿', '  _ '],
+  ['｀', ' ` '],
+  ['｛…｝', ' {...} '],
+  ['｜', ' | '],
+  ['～', ' ~ '],
+  ['｟…｠', '｟...｠'],
+  ['｡', '.'],
+  ['｢…｣', '“...”'],
+  ['､', ','],
+  ['･', ' '],
+  /**
+   * Katakana
+   */
+  ['・', ' '],
 ];
 
 let translation = '';
@@ -427,16 +527,17 @@ async function translate() {
   const sourceLanguage = $("#sourceLangSelect").val();
   const targetLanguage = $("#targetLangSelect").val();
 
-  const processText = translator !== Translators.VIETPHRASE && (!(targetLanguage
-          == 'JA' || targetLanguage == 'KO' || targetLanguage == 'ZH') ||
-      !(targetLanguage == 'zh-CN' || targetLanguage == 'zh-TW' || targetLanguage
-          == 'ja' || targetLanguage == 'ko') ||
-      !(targetLanguage == 'ko' || targetLanguage == 'ja' || taảgetLanguage
-          == 'zh-CN' || targetLanguage == 'zh-TW') ||
-      !(targetLanguage == 'yue' || targetLanguage == 'lzh' || targetLanguage
-          == 'zh-Hans' || targetLanguage == 'zh-Hant' || targetLanguage == 'ja'
-          || targetLanguage == 'ko')) ? getProcessTextPreTranslate(inputText)
-      : inputText;
+  const processText = getProcessTextPreTranslate(inputText,
+      translator !== Translators.VIETPHRASE && ($(
+              "#flexSwitchCheckProtectQuotationMarks").prop("checked")
+          && !(targetLanguage == 'JA' || targetLanguage == 'KO' || targetLanguage
+              == 'ZH') || !(targetLanguage == 'zh-CN' || targetLanguage == 'zh-TW'
+              || targetLanguage == 'ja' || targetLanguage == 'ko')
+          || !(targetLanguage == 'ko' || targetLanguage == 'ja' || taảgetLanguage
+              == 'zh-CN' || targetLanguage == 'zh-TW') || !(targetLanguage == 'yue'
+              || targetLanguage == 'lzh' || targetLanguage == 'zh-Hans'
+              || targetLanguage == 'zh-Hant' || targetLanguage == 'ja'
+              || targetLanguage == 'ko')));
   const results = [];
   const errorMessage = document.createElement("p");
 
@@ -623,25 +724,28 @@ async function translate() {
 
   translation = getProcessTextPostTranslate(results.join('\n'));
   $("#translatedText").html(
-      buildTranslatedResult(inputText.split(/\n/), translation.split(/\n/),
+      buildTranslatedResult([inputText.split(/\n/), processText.split(/\n/)],
+          translation.split(/\n/),
           $("#flexSwitchCheckShowOriginal").prop("checked")));
 }
 
-function getProcessTextPreTranslate(text) {
+function getProcessTextPreTranslate(text, doProtectQuotationMarks) {
   let newText = text;
 
-  const brackets = [...punctuation].filter(
-      (element) => element[0].replace(/\\/g, '').length == 3 && element[0]
-          != '\\.\\.\\.').sort((a, b) => b.includes('\\[…\\]'));
-
   if (text.length > 0) {
-    for (let i = 0; i < brackets.length; i++) {
-      newText = newText.replace(
-          new RegExp(`${brackets[i][0].split('…')[0]}(.*)${brackets[i][0].split('…')[1]}`,
-              'g'),
-          `\n[OPEN_BRACKET_${i}]\n$1\n[CLOSE_BRACKET_${i}]\n`).replace(
-          new RegExp(`${brackets[i][0].split('…')[1]}(.*)${brackets[i][0].split('…')[0]}`,
-              'g'), `\n[CLOSE_BRACKET_${i}]\n$1\n[OPEN_BRACKET_${i}]\n`);
+    if (doProtectQuotationMarks) {
+      const brackets = [...punctuation].filter(
+          (element) => element[0].split('…').length == 2).sort(
+          (a, b) => b.includes('\\[…\\]'));
+
+      for (let i = 0; i < brackets.length; i++) {
+        newText = newText.replace(
+            new RegExp(`${brackets[i][0].split('…')[0]}(.*)${brackets[i][0].split('…')[1]}`,
+                'g'),
+            `\n[OPEN_BRACKET_${i}]\n$1\n[CLOSE_BRACKET_${i}]\n`).replace(
+            new RegExp(`${brackets[i][0].split('…')[1]}(.*)${brackets[i][0].split('…')[0]}`,
+                'g'), `\n[CLOSE_BRACKET_${i}]\n$1\n[OPEN_BRACKET_${i}]\n`);
+      }
     }
   }
 
@@ -652,17 +756,15 @@ function getProcessTextPostTranslate(text) {
   let newText = text;
 
   const brackets = [...punctuation].filter(
-      (element) => element[0].replace(/\\/g, '').length == 3 && element[0]
-          != '\\.\\.\\.').sort((a, b) => b.includes('\\[…\\]'));
+      (element) => element[0].split('…').length == 2).sort(
+      (a, b) => b.includes('\\[…\\]'));
 
   if (text.length > 0) {
     for (let i = brackets.length - 1; i >= 0; i--) {
       newText = newText.replace(
-          new RegExp(
-              `\n\\[OPEN_BRACKET_${i}\\]\n(.*)\n\\[CLOSE_BRACKET_${i}\\]\n`,
-              'gi'),
-          ` ${brackets[i][1].split('...')[0]}$1${brackets[i][1].split(
-              '...')[1]} `);
+          new RegExp(`\n\\[OPEN_BRACKET_${i}\\]\n(.*)\n\\[CLOSE_BRACKET_${i}\\]\n`,
+              'gi'), `${brackets[i][1].split('...')[0]}$1${brackets[i][1].split(
+              '...')[1]}`);
     }
   }
 
@@ -800,18 +902,15 @@ function convertText(inputText, data, useGlossary, translationAlgorithm) {
     result = results.join('\n');
 
     [...punctuation].filter(
-        (element) => element[0].length == 1 || element[0]
-            == '\\.\\.\\.').forEach(
+        (element) => element[0].split('…').length != 2).forEach(
         (element) => result = result.replace(
-            new RegExp(` ?${element[0]} ?`, 'g'),
-            element[1]).split(/\n/).map((element) => element.trim()).join(
-            '\n'));
+            new RegExp(` ?${element[0]} ?`, 'g'), element[1]).split(/\n/).map(
+            (element) => element.trim()).join('\n'));
     [...punctuation].filter(
-        (element) => element[0].replace(/\\/g, '').length == 3 && element[0]
-            != '\\.\\.\\.').sort(
+        (element) => element[0].split('…').length == 2).sort(
         (a, b) => b.includes('\\[…\\]')).forEach(
         (element) => result = result.replace(
-            new RegExp(`${element[0].split('…')[0]} (.*) ${element[0].split('…')[1]}`,
+            new RegExp(`${element[0].split('…')[0]} *(.*) *${element[0].split('…')[1]}`,
                 'g'), `${element[1].split('...')[0]}$1${element[1].split(
                 '...')[1]}`).split(/\n/).map((element) => element.trim()).join(
             '\n'));
@@ -828,9 +927,9 @@ function buildTranslatedResult(textLines, resultLines, showOriginal) {
   if (showOriginal) {
     let lostLineFixedAmount = 0;
 
-    for (let i = 0; i < textLines.length; i++) {
+    for (let i = 0; i < textLines[0].length; i++) {
       if (i < resultLines.length) {
-        if (textLines[i + lostLineFixedAmount].trim().length == 0
+        if (textLines[0][i + lostLineFixedAmount].trim().length == 0
             && resultLines[i].trim().length > 0) {
           lostLineFixedAmount++;
           i--;
@@ -838,11 +937,15 @@ function buildTranslatedResult(textLines, resultLines, showOriginal) {
         }
 
         const paragraph = document.createElement('p');
-        paragraph.innerHTML = resultLines[i].trim() !== getProcessTextPostTranslate(getProcessTextPreTranslate(textLines[i + lostLineFixedAmount])) ? '<i>' + textLines[i + lostLineFixedAmount] + '</i><br>' + resultLines[i] : getProcessTextPostTranslate(getProcessTextPreTranslate(textLines[i + lostLineFixedAmount]));
+        paragraph.innerHTML = resultLines[i].trim()
+        !== getProcessTextPostTranslate(textLines[1][i + lostLineFixedAmount])
+            ? '<i>' + textLines[0][i + lostLineFixedAmount] + '</i><br>'
+            + resultLines[i] : getProcessTextPostTranslate(
+                textLines[1][i + lostLineFixedAmount]);
         result.appendChild(paragraph);
       } else {
         const paragraph = document.createElement('p');
-        paragraph.innerHTML = textLines[i + lostLineFixedAmount];
+        paragraph.innerHTML = textLines[0][i + lostLineFixedAmount];
         result.appendChild(paragraph);
       }
     }
