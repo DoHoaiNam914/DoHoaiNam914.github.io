@@ -767,19 +767,24 @@ function getProcessTextPreTranslate(text, doProtectQuotationMarks) {
   let newText = text;
 
   if (text.length > 0) {
-    if (doProtectQuotationMarks) {
-      const brackets = [...punctuation].filter(
-          (element) => element[0] != '…' && element[0].split('…').length
-              == 2).sort((a, b) => /[\[\]]/.test(b));
+    try {
+      if (doProtectQuotationMarks) {
+        const brackets = [...punctuation].filter(
+            (element) => element[0] != '…' && element[0].split('…').length
+                == 2).sort((a, b) => /[\[\]]/.test(b));
 
-      for (let i = 0; i < brackets.length; i++) {
-        newText = newText.replace(
-            new RegExp(`${brackets[i][0].split('…')[0]}(.*)${brackets[i][0].split('…')[1]}`,
-                'g'),
-            `\n[OPEN_BRACKET_${i}]\n$1\n[CLOSE_BRACKET_${i}]\n`).replace(
-            new RegExp(`${brackets[i][0].split('…')[1]}(.*)${brackets[i][0].split('…')[0]}`,
-                'g'), `\n[CLOSE_BRACKET_${i}]\n$1\n[OPEN_BRACKET_${i}]\n`);
+        for (let i = 0; i < brackets.length; i++) {
+          newText = newText.replace(
+              new RegExp(`${brackets[i][0].split('…')[0]}(.*)${brackets[i][0].split('…')[1]}`,
+                  'g'),
+              `\n[OPEN_BRACKET_${i}]\n$1\n[CLOSE_BRACKET_${i}]\n`).replace(
+              new RegExp(`${brackets[i][0].split('…')[1]}(.*)${brackets[i][0].split('…')[0]}`,
+                  'g'), `\n[CLOSE_BRACKET_${i}]\n$1\n[OPEN_BRACKET_${i}]\n`);
+        }
       }
+    } catch (error) {
+      console.error('Lỗi xử lý văn bản trước khi dịch:', error);
+      throw error;
     }
   }
 
@@ -789,16 +794,23 @@ function getProcessTextPreTranslate(text, doProtectQuotationMarks) {
 function getProcessTextPostTranslate(text) {
   let newText = text;
 
-  const brackets = [...punctuation].filter(
-      (element) => element[0] != '…' && element[0].split('…').length == 2).sort(
-      (a, b) => /[\[\]]/.test(b));
-
   if (text.length > 0) {
-    for (let i = brackets.length - 1; i >= 0; i--) {
-      newText = newText.replace(
-          new RegExp(`\n\\[OPEN_BRACKET_${i}\\]\n(.*)\n\\[CLOSE_BRACKET_${i}\\]\n`,
-              'gi'), `${brackets[i][1].split('...')[0]}$1${brackets[i][1].split(
-              '...')[1]}`);
+    try {
+      const brackets = [...punctuation].filter(
+          (element) => element[0] != '…' && element[0].split('…').length
+              == 2).sort(
+          (a, b) => /[\[\]]/.test(b));
+
+      for (let i = brackets.length - 1; i >= 0; i--) {
+        newText = newText.replace(
+            new RegExp(`\n\\[OPEN_BRACKET_${i}\\]\n(.*)\n\\[CLOSE_BRACKET_${i}\\]\n`,
+                'gi'),
+            `${brackets[i][1].split('...')[0]}$1${brackets[i][1].split(
+                '...')[1]}`);
+      }
+    } catch (error) {
+      console.error('Lỗi xử lý văn bản sau khi dịch:', error);
+      throw error;
     }
   }
 
