@@ -1,3 +1,3 @@
 'use strict';
 
-const CORS_PROXY = 'https://cors-anywhere.azm.workers.dev/';
+const CORS_PROXY = 'https://cors-anywhere.itsdhnam.workers.dev/?';
