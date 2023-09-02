@@ -755,7 +755,7 @@ function buildTranslatedResult(textLines, resultLines, showOriginal) {
         const paragraph = document.createElement('p');
         paragraph.innerHTML = resultLines[i].trim()
         !== getProcessTextPostTranslate(textLines[1][i + lostLineFixedAmount])
-            ? '<i>' + textLines[0][i + lostLineFixedAmount] + '</i><br>'
+            ? '<i>' + textLines[0][i + lostLineFixedAmount].trimStart() + '</i><br>'
             + resultLines[i] : getProcessTextPostTranslate(
                 textLines[1][i + lostLineFixedAmount]);
         result.appendChild(paragraph);
@@ -786,19 +786,21 @@ function getProcessTextPreTranslate(text, doProtectQuotationMarks) {
             newText = newText.replace(
                 new RegExp(`${brackets[i][0].split('…')[0]}(.*)${brackets[i][0].split('…')[1]}(.?)$`,
                     'g'),
-                `\n[OPEN_BRACKET_${i}]\n$1\n[CLOSE_BRACKET_${i}]\n$2`).replace(
+                `[OPEN_BRACKET_${i}]$1[CLOSE_BRACKET_${i}]$2`).replace(
                 new RegExp(`${brackets[i][0].split('…')[1]}(.*)${brackets[i][0].split('…')[0]}(.?)$`,
                     'g'),
-                `\n[CLOSE_BRACKET_${i}]\n$1\n[OPEN_BRACKET_${i}]\n$2`);
+                `[CLOSE_BRACKET_${i}]$1[OPEN_BRACKET_${i}]$2`);
           } else {
             newText = newText.replace(
                 new RegExp(`${brackets[i][0].split('…')[0]}(.*)${brackets[i][0].split('…')[1]}`,
                     'g'),
-                `\n[OPEN_BRACKET_${i}]\n$1\n[CLOSE_BRACKET_${i}]\n`).replace(
+                `[OPEN_BRACKET_${i}]$1[CLOSE_BRACKET_${i}]`).replace(
                 new RegExp(`${brackets[i][0].split('…')[1]}(.*)${brackets[i][0].split('…')[0]}`,
-                    'g'), `\n[CLOSE_BRACKET_${i}]\n$1\n[OPEN_BRACKET_${i}]\n`);
+                    'g'), `[CLOSE_BRACKET_${i}]$1[OPEN_BRACKET_${i}]`);
           }
         }
+
+        newText = newText.replace(/(\\[(OPEN|CLOSE)_BRACKET_\d+\\])/g, '\n$1\n');
       }
     } catch (error) {
       console.error('Lỗi xử lý văn bản trước khi dịch:', error);
