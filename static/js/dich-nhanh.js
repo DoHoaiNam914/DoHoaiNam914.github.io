@@ -754,14 +754,14 @@ function buildTranslatedResult(textLines, resultLines, showOriginal) {
 
         const paragraph = document.createElement('p');
         paragraph.innerHTML = resultLines[i].trim()
-        !== getProcessTextPostTranslate(textLines[1][i + lostLineFixedAmount])
+        != getProcessTextPostTranslate(textLines[1][i + lostLineFixedAmount]).trim()
             ? '<i>' + textLines[0][i + lostLineFixedAmount].trimStart() + '</i><br>'
             + resultLines[i] : getProcessTextPostTranslate(
                 textLines[1][i + lostLineFixedAmount]);
         result.appendChild(paragraph);
       } else {
         const paragraph = document.createElement('p');
-        paragraph.innerHTML = textLines[0][i + lostLineFixedAmount];
+        paragraph.innerHTML = '<i>' + textLines[0][i + lostLineFixedAmount] + '</i>';
         result.appendChild(paragraph);
       }
     }
