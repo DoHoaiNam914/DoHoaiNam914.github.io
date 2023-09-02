@@ -55,20 +55,9 @@ const punctuation = [
   ['⁈', '\?!'],
   ['⁉', '!\?'],
   /**
-   * CJK Compatibility Forms
+   * Katakana
    */
-  ['︱', '—'],
-  ['︵…︶', ' (...) '],
-  ['︷…︸', ' {...} '],
-  ['︹…︺', '〔...〕'],
-  ['︻…︼', '【...】'],
-  ['︽…︾', '《...》'],
-  ['︿…﹀', ' ‹...› '],
-  ['﹁…﹂', ' “...” '],
-  ['^﹃…﹄.?$', '『...』'],
-  ['﹃…﹄', ' ‘...’ '],
-  ['﹅', '﹅'],
-  ['﹇…﹈', ' [...] '],
+  ['・', ' '],
   /**
    * CJK Symbols and Punctuation
    */
@@ -79,7 +68,7 @@ const punctuation = [
   ['〈…〉', ' ‹...› '],
   ['《…》', '《...》'],
   ['「…」', ' “...” '],
-  ['^『…』.?$', '『...』'],
+  ['^『…』', '『...』'],
   ['『…』', ' ‘...’ '],
   ['【…】', '【...】'],
   ['〔…〕', '〔...〕'],
@@ -90,6 +79,21 @@ const punctuation = [
   ['〜', ' ~ '],
   ['〝…〞', '〝...〞'],
   ['〟', '〟'],
+  /**
+   * CJK Compatibility Forms
+   */
+  ['︱', '—'],
+  ['︵…︶', ' (...) '],
+  ['︷…︸', ' {...} '],
+  ['︹…︺', '〔...〕'],
+  ['︻…︼', '【...】'],
+  ['︽…︾', '《...》'],
+  ['︿…﹀', ' ‹...› '],
+  ['﹁…﹂', ' “...” '],
+  ['^﹃…﹄', '『...』'],
+  ['﹃…﹄', ' ‘...’ '],
+  ['﹅', '﹅'],
+  ['﹇…﹈', ' [...] '],
   /**
    * Halfwidth and Fullwidth Forms
    */
@@ -128,10 +132,6 @@ const punctuation = [
   ['｢…｣', '“...”'],
   ['､', ','],
   ['･', ' '],
-  /**
-   * Katakana
-   */
-  ['・', ' '],
 ];
 
 let translation = '';
@@ -774,12 +774,21 @@ function getProcessTextPreTranslate(text, doProtectQuotationMarks) {
                 == 2).sort((a, b) => /[\[\]]/.test(b));
 
         for (let i = 0; i < brackets.length; i++) {
-          newText = newText.replace(
-              new RegExp(`${brackets[i][0].split('…')[0]}(.*)${brackets[i][0].split('…')[1]}`,
-                  'g'),
-              `\n[OPEN_BRACKET_${i}]\n$1\n[CLOSE_BRACKET_${i}]\n`).replace(
-              new RegExp(`${brackets[i][0].split('…')[1]}(.*)${brackets[i][0].split('…')[0]}`,
-                  'g'), `\n[CLOSE_BRACKET_${i}]\n$1\n[OPEN_BRACKET_${i}]\n`);
+          if (brackets[i][0].startsWith('^')) {
+            newText = newText.replace(
+                new RegExp(`${brackets[i][0].split('…')[0]}(.*)${brackets[i][0].split('…')[1]}(.*)$`,
+                    'g'),
+                `\n[OPEN_BRACKET_${i}]\n$1\n[CLOSE_BRACKET_${i}]\n$2`).replace(
+                new RegExp(`${brackets[i][0].split('…')[1]}(.*)${brackets[i][0].split('…')[0]}(.*)$`,
+                    'g'), `\n[CLOSE_BRACKET_${i}]\n$1\n[OPEN_BRACKET_${i}]\n$2`);
+          } else {
+            newText = newText.replace(
+                new RegExp(`${brackets[i][0].split('…')[0]}(.*)${brackets[i][0].split('…')[1]}`,
+                    'g'),
+                `\n[OPEN_BRACKET_${i}]\n$1\n[CLOSE_BRACKET_${i}]\n`).replace(
+                new RegExp(`${brackets[i][0].split('…')[1]}(.*)${brackets[i][0].split('…')[0]}`,
+                    'g'), `\n[CLOSE_BRACKET_${i}]\n$1\n[OPEN_BRACKET_${i}]\n`);
+          }
         }
       }
     } catch (error) {
