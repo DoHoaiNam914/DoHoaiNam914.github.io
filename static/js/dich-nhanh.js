@@ -358,8 +358,6 @@ $(".translator").click(function () {
           translator[$(".option")[i].id] = $(".option")[i].value;
         } else if ($(".option")[i].id == 'targetLangSelect') {
           translator[$(".option")[i].id] = $(".option")[i].value;
-        } else {
-          translator[$(".option")[i].id] = translator[$(".option")[i].id];
         }
       }
 
@@ -378,11 +376,9 @@ function loadTranslatorOptions() {
   data['translator'] = $(".translator.active").data("id");
 
   for (let i = 0; i < $(".option").length; i++) {
-    if ($(".option")[i].tagName == 'INPUT' && $(".option")[i].type
-        == 'checkbox') {
+    if ($(".option")[i].id.startsWith('flexSwitchCheck')) {
       data[$(".option")[i].id] = $(".option")[i].checked;
-    } else if ($(".option")[i].tagName == 'INPUT' && $(".option")[i].type
-        == 'radio' && $(".option")[i].checked == true) {
+    } else if ($(".option")[i].name.startsWith('flexRadio')) {
       data[$(".option")[i].name] = $(".option")[i].value;
     } else {
       data[$(".option")[i].id] = $(".option")[i].value;
