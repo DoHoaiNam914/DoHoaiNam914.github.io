@@ -55,10 +55,6 @@ const punctuation = [
   ['⁈', '\?!'],
   ['⁉', '!\?'],
   /**
-   * Katakana
-   */
-  ['・', ' '],
-  /**
    * CJK Symbols and Punctuation
    */
   ['　', ''],
@@ -79,6 +75,10 @@ const punctuation = [
   ['〜', ' ~ '],
   ['〝…〞', '〝...〞'],
   ['〟', '〟'],
+  /**
+   * Katakana
+   */
+  ['・', ' '],
   /**
    * CJK Compatibility Forms
    */
@@ -378,9 +378,11 @@ function loadTranslatorOptions() {
   data['translator'] = $(".translator.active").data("id");
 
   for (let i = 0; i < $(".option").length; i++) {
-    if ($(".option")[i].tagName == 'INPUT' && $(".option")[i].type == 'checkbox') {
+    if ($(".option")[i].tagName == 'INPUT' && $(".option")[i].type
+        == 'checkbox') {
       data[$(".option")[i].id] = $(".option")[i].checked;
-    } else if ($(".option")[i].tagName == 'INPUT' && $(".option")[i].type == 'radio' && $(".option")[i].checked == true) {
+    } else if ($(".option")[i].tagName == 'INPUT' && $(".option")[i].type
+        == 'radio' && $(".option")[i].checked == true) {
       data[$(".option")[i].name] = $(".option")[i].value;
     } else {
       data[$(".option")[i].id] = $(".option")[i].value;
@@ -786,11 +788,12 @@ function getProcessTextPreTranslate(text, doProtectQuotationMarks) {
         for (let i = 0; i < brackets.length; i++) {
           if (brackets[i][0].startsWith('^')) {
             newText = newText.replace(
-                new RegExp(`${brackets[i][0].split('…')[0]}(.*)${brackets[i][0].split('…')[1]}(.*)$`,
+                new RegExp(`${brackets[i][0].split('…')[0]}(.*)${brackets[i][0].split('…')[1]}(.?)$`,
                     'g'),
                 `\n[OPEN_BRACKET_${i}]\n$1\n[CLOSE_BRACKET_${i}]\n$2`).replace(
-                new RegExp(`${brackets[i][0].split('…')[1]}(.*)${brackets[i][0].split('…')[0]}(.*)$`,
-                    'g'), `\n[CLOSE_BRACKET_${i}]\n$1\n[OPEN_BRACKET_${i}]\n$2`);
+                new RegExp(`${brackets[i][0].split('…')[1]}(.*)${brackets[i][0].split('…')[0]}(.?)$`,
+                    'g'),
+                `\n[CLOSE_BRACKET_${i}]\n$1\n[OPEN_BRACKET_${i}]\n$2`);
           } else {
             newText = newText.replace(
                 new RegExp(`${brackets[i][0].split('…')[0]}(.*)${brackets[i][0].split('…')[1]}`,
@@ -823,9 +826,7 @@ function getProcessTextPostTranslate(text) {
       for (let i = brackets.length - 1; i >= 0; i--) {
         newText = newText.replace(
             new RegExp(`\n\\[OPEN_BRACKET_${i}\\]\n(.*)\n\\[CLOSE_BRACKET_${i}\\]\n`,
-                'gi'),
-            `${brackets[i][1].split('...')[0]}$1${brackets[i][1].split(
-                '...')[1]}`);
+                'gi'), /[\u{3000}-\u{303f}\u{30a0}-\u{30ff}\u{fe30}-\u{fe4f}\u{ff00}-\u{ffef}]/u.test(brackets[i][1].split('...')[1]) ? `${brackets[i][1].split('...')[0]}$1${brackets[i][1].split('...')[1]}` : ` ${brackets[i][1].split('...')[0]}$1${brackets[i][1].split('...')[1]} `);
       }
     } catch (error) {
       console.error('Lỗi xử lý văn bản sau khi dịch:', error);
