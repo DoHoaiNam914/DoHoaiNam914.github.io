@@ -260,24 +260,18 @@ $(".option").change(() => {
 
 $(".translator").click(function () {
   if (!$(this).hasClass("disabled")) {
-    const prevTranslator = translator.translator;
+    const prevTranslator = translator['translator'];
 
-    const prevSourceLanguageCode = translator.source;
-    const prevTargetLanguageCode = translator.target;
+    const prevSourceLanguageCode = translator['sourceLangSelect'];
+    const prevTargetLanguageCode = translator['targetLangSelect'];
     const prevSourceLanguageName = getLanguageName(prevTranslator,
         prevSourceLanguageCode);
     const prevTargetLanguageName = getLanguageName(prevTranslator,
         prevTargetLanguageCode);
 
     if ($(this).data("id") === Translators.VIETPHRASE) {
-      localStorage.setItem("translator", JSON.stringify({
-        translator: $(".translator.active").data("id"),
-        showOriginal: $("#flexSwitchCheckShowOriginal").prop("checked"),
-        glossary: $("#flexSwitchCheckGlossary").prop("checked"),
-        source: $("#sourceLangSelect").val(),
-        target: $("#targetLangSelect").val()
-      }));
-      translator = JSON.parse(localStorage.getItem("translator"));
+      translator = loadTranslatorOptions();
+      localStorage.setItem("translator", JSON.stringify(translator));
     }
 
     $(".translator").removeClass("active");
@@ -360,14 +354,12 @@ $(".translator").click(function () {
       translator['translator'] = $(this).data("id");
 
       for (let i = 0; i < $(".option").length; i++) {
-        if ($(".option")[i].attr("class").includes('sourceLangSelect')) {
-          translator[$(this).attr("id")] = $(this).val();
-        } else if ($(".option")[i].attr("class").includes('targetLangSelect')) {
-          translator[$(this).attr("id")] = $(this).val();
-        } else if ($(".option")[i].prop("tagName") == 'INPUT' && $(".option")[i].attr("type") == 'checkbox') {
-          translator[$(this).attr("id")] = translator[$(this).attr("id")];
+        if ($(".option")[i].id == 'sourceLangSelect') {
+          translator[$(".option")[i].id] = $(".option")[i].value;
+        } else if ($(".option")[i].id == 'targetLangSelect') {
+          translator[$(".option")[i].id] = $(".option")[i].value;
         } else {
-          translator[$(this).attr("id")] = translator[$(this).attr("id")];
+          translator[$(".option")[i].id] = translator[$(".option")[i].id];
         }
       }
 
@@ -386,10 +378,12 @@ function loadTranslatorOptions() {
   data['translator'] = $(".translator.active").data("id");
 
   for (let i = 0; i < $(".option").length; i++) {
-    if ($(".option")[i].prop("tagName") == 'INPUT' && $(".option")[i].attr("type") == 'checkbox') {
-      data[$(this).attr("id")] = $("#flexSwitchCheckGlossary").prop("checked");
+    if ($(".option")[i].tagName == 'INPUT' && $(".option")[i].type == 'checkbox') {
+      data[$(".option")[i].id] = $(".option")[i].checked;
+    } else if ($(".option")[i].tagName == 'INPUT' && $(".option")[i].type == 'radio' && $(".option")[i].checked == true) {
+      data[$(".option")[i].name] = $(".option")[i].value;
     } else {
-      data[$(this).attr("id")] = $(this).val();
+      data[$(".option")[i].id] = $(".option")[i].value;
     }
   }
 

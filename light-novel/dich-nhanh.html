@@ -75,7 +75,7 @@
     }).wait()
     .script("/static/js/dich-nhanh.js").wait(function () {
       if (translator == undefined) {
-        translator = JSON.parse(localStorage.getItem("translator")) ?? loadTranslatorOptions();
+        translator = loadTranslatorOptions();
         localStorage.setItem("translator", JSON.stringify(translator));
       }
 
@@ -85,7 +85,7 @@
     })
     .script("/static/js/quan-ly-tu-vung.js").wait(function () {
       if (localGlossary == undefined) {
-        localGlossary = JSON.parse(localStorage.getItem("glossary")) ?? {type: $("#glossaryType").val(), data: {}};
+        localGlossary = JSON.parse({type: $("#glossaryType").val(), data: {}});
         localStorage.setItem("glossary", JSON.stringify(localGlossary));
       }
 
@@ -624,13 +624,13 @@
         </div>
         <div class="form-check form-switch mb-3">
           <input class="form-check-input option" type="checkbox" role="switch"
-                 id="flexSwitchCheckProtectQuotationMarks">
+                 id="flexSwitchCheckProtectQuotationMarks" checked="true">
           <label class="form-check-label" for="flexSwitchCheckProtectQuotationMarks">Bảo vệ dấu
             trích dẫn</label>
         </div>
         <div class="form-check form-switch mb-3">
           <input class="form-check-input option" type="checkbox" role="switch"
-                 id="flexSwitchCheckShowOriginal" checked="true">
+                 id="flexSwitchCheckShowOriginal">
           <label class="form-check-label" for="flexSwitchCheckShowOriginal">Hiển thị văn bản
             gốc</label>
         </div>
