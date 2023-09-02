@@ -83,7 +83,7 @@
         if ($(".option")[i].id.startsWith('flexSwitchCheck')) {
           $(".option")[i].checked = translator[$(".option")[i].id];
         } else if ($(".option")[i].name.startsWith('flexRadio') && $(".option")[i].value == translator[$(".option")[i].name]) {
-          $(`.option[name=\"${$(".option")[i].name}\"]`).checked = false;
+          $(`.option[name=\"${$(".option")[i].name}\"]`).removeProp("checked");
           $(".option")[i].checked = true;
         } else {
           $(".option")[i].value = translator[$(".option")[i].id];
