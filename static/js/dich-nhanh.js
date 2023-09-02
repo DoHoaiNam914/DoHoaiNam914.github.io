@@ -800,7 +800,7 @@ function getProcessTextPreTranslate(text, doProtectQuotationMarks) {
           }
         }
 
-        newText = newText.replace(/(\\[(OPEN|CLOSE)_BRACKET_\d+\\])/g, '\n$1\n');
+        newText = newText.replace(/(\[(OPEN|CLOSE)_BRACKET_\d+\])/g, '\n$1\n');
       }
     } catch (error) {
       console.error('Lỗi xử lý văn bản trước khi dịch:', error);
