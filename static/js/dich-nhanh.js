@@ -249,19 +249,13 @@ $("#inputVietPhrases").on("change", function () {
 });
 
 $(".option").change(() => {
+  translator = loadTranslatorOptions();
+  localStorage.setItem("translator", JSON.stringify(translator));
+
   if ($("#translateButton").text() == 'Sửa') {
     translation = '';
     $("#translateButton").text("Dịch").click();
   }
-
-  localStorage.setItem("translator", JSON.stringify({
-    translator: $(".translator.active").data("id"),
-    showOriginal: $("#flexSwitchCheckShowOriginal").prop("checked"),
-    glossary: $("#flexSwitchCheckGlossary").prop("checked"),
-    source: $("#sourceLangSelect").val(),
-    target: $("#targetLangSelect").val()
-  }));
-  translator = JSON.parse(localStorage.getItem("translator"));
 });
 
 $(".translator").click(function () {
@@ -363,14 +357,21 @@ $(".translator").click(function () {
     });
 
     if ($(".translator.active").data("id") !== Translators.VIETPHRASE) {
-      localStorage.setItem("translator", JSON.stringify({
-        translator: $(this).data("id"),
-        showOriginal: translator.showOriginal,
-        glossary: translator.glossary,
-        source: $("#sourceLangSelect").val(),
-        target: $("#targetLangSelect").val()
-      }));
-      translator = JSON.parse(localStorage.getItem("translator"));
+      translator['translator'] = $(this).data("id");
+
+      for (let i = 0; i < $(".option").length; i++) {
+        if ($(".option")[i].attr("class").includes('sourceLangSelect')) {
+          translator[$(this).attr("id")] = $(this).val();
+        } else if ($(".option")[i].attr("class").includes('targetLangSelect')) {
+          translator[$(this).attr("id")] = $(this).val();
+        } else if ($(".option")[i].prop("tagName") == 'INPUT' && $(".option")[i].attr("type") == 'checkbox') {
+          translator[$(this).attr("id")] = translator[$(this).attr("id")];
+        } else {
+          translator[$(this).attr("id")] = translator[$(this).attr("id")];
+        }
+      }
+
+      localStorage.setItem("translator", JSON.stringify(translator));
     }
 
     if ($("#translateButton").text() == 'Sửa') {
@@ -379,6 +380,21 @@ $(".translator").click(function () {
     }
   }
 });
+
+function loadTranslatorOptions() {
+  const data = {};
+  data['translator'] = $(".translator.active").data("id");
+
+  for (let i = 0; i < $(".option").length; i++) {
+    if ($(".option")[i].prop("tagName") == 'INPUT' && $(".option")[i].attr("type") == 'checkbox') {
+      data[$(this).attr("id")] = $("#flexSwitchCheckGlossary").prop("checked");
+    } else {
+      data[$(this).attr("id")] = $(this).val();
+    }
+  }
+
+  return data;
+}
 
 function getLanguageName(translator, languageCode) {
   switch (translator) {
