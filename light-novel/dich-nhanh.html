@@ -79,18 +79,18 @@
         localStorage.setItem("translator", JSON.stringify(translator));
       }
 
+      $(`.translator[data-id="${translator.translator}"]`).click();
+
       for (let i = 0; i < $(".option").length; i++) {
         if ($(".option")[i].id.startsWith('flexSwitchCheck')) {
           $(".option")[i].checked = translator[$(".option")[i].id];
         } else if ($(".option")[i].name.startsWith('flexRadio') && $(".option")[i].value == translator[$(".option")[i].name]) {
           $(`.option[name=\"${$(".option")[i].name}\"]`).removeProp("checked");
           $(".option")[i].checked = true;
-        } else {
+        } else if ($(".option")[i].className.includes('form-select')) {
           $(".option")[i].value = translator[$(".option")[i].id];
         }
       }
-
-      $(`.translator[data-id="${translator.translator}"]`).click();
     })
     .script("/static/js/quan-ly-tu-vung.js").wait(function () {
       if (localGlossary == undefined) {
@@ -652,9 +652,9 @@
         </div>
         <div class="form-check">
           <input class="form-check-input option" type="radio" name="flexRadioTranslationAlgorithm"
-                 id="flexRadioLongPrior" value="longPrior"
+                 id="flexRadioLongVietPhrasePrior" value="longVietPhrasePrior"
                  checked>
-          <label class="form-check-label" for="flexRadioLongPrior">Ưu tiên cụm VietPhrase
+          <label class="form-check-label" for="flexRadioLongVietPhrasePrior">Ưu tiên cụm VietPhrase
             dài</label>
         </div>
         <div class="form-check">

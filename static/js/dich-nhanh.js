@@ -376,11 +376,16 @@ function loadTranslatorOptions() {
   data['translator'] = $(".translator.active").data("id");
 
   for (let i = 0; i < $(".option").length; i++) {
-    if ($(".option")[i].id.startsWith('flexSwitchCheck')) {
+    if ($(".option")[i].id == 'sourceLangSelect') {
+      data[$(".option")[i].id] = 'auto';
+    } else if ($(".option")[i].id == 'targetLangSelect') {
+      data[$(".option")[i].id] = 'vi';
+    } else if ($(".option")[i].id.startsWith('flexSwitchCheck')) {
       data[$(".option")[i].id] = $(".option")[i].checked;
-    } else if ($(".option")[i].name.startsWith('flexRadio')) {
+    } else if ($(".option")[i].name.startsWith('flexRadio') && $(
+        ".option")[i].checked == true) {
       data[$(".option")[i].name] = $(".option")[i].value;
-    } else {
+    } else if ($(".option")[i].className.includes('form-select')) {
       data[$(".option")[i].id] = $(".option")[i].value;
     }
   }
@@ -602,7 +607,8 @@ async function translate() {
       }
     }
 
-    const googleTranslateData = await getGoogleTranslateData(translator);
+    const googleTranslateData = translator === Translators.GOOGLE_TRANSLATE
+        ? await getGoogleTranslateData(translator) : null;
 
     if (translator === Translators.GOOGLE_TRANSLATE
         && (googleTranslateData.logId == undefined || googleTranslateData.ctkk
@@ -612,7 +618,8 @@ async function translate() {
       return;
     }
 
-    const papagoVersion = await getPapagoVersion(translator);
+    const papagoVersion = translator === Translators.PAPAGO
+        ? await getPapagoVersion(translator) : null;
 
     if (translator === Translators.PAPAGO && papagoVersion == undefined) {
       errorMessage.innerText = 'Không thể lấy được Thông tin phiên bản từ main.js.';
@@ -620,8 +627,9 @@ async function translate() {
       return;
     }
 
-    const microsoftTranslatorAccessToken = await getMicrosoftTranslatorAccessToken(
-        translator);
+    const microsoftTranslatorAccessToken = translator
+    === Translators.MICROSOFT_TRANSLATOR
+        ? await getMicrosoftTranslatorAccessToken(translator) : null;
 
     if (translator === Translators.MICROSOFT_TRANSLATOR
         && microsoftTranslatorAccessToken == undefined) {
@@ -754,14 +762,17 @@ function buildTranslatedResult(textLines, resultLines, showOriginal) {
 
         const paragraph = document.createElement('p');
         paragraph.innerHTML = resultLines[i].trim()
-        != getProcessTextPostTranslate(textLines[1][i + lostLineFixedAmount]).trim()
-            ? '<i>' + textLines[0][i + lostLineFixedAmount].trimStart() + '</i><br>'
+        != getProcessTextPostTranslate(
+            textLines[1][i + lostLineFixedAmount]).trim()
+            ? '<i>' + textLines[0][i + lostLineFixedAmount].trimStart()
+            + '</i><br>'
             + resultLines[i] : getProcessTextPostTranslate(
                 textLines[1][i + lostLineFixedAmount]);
         result.appendChild(paragraph);
       } else {
         const paragraph = document.createElement('p');
-        paragraph.innerHTML = '<i>' + textLines[0][i + lostLineFixedAmount] + '</i>';
+        paragraph.innerHTML = '<i>' + textLines[0][i + lostLineFixedAmount]
+            + '</i>';
         result.appendChild(paragraph);
       }
     }
@@ -911,7 +922,8 @@ function convertText(inputText, data, useGlossary, translationAlgorithm) {
         continue;
       }
 
-      if (translationAlgorithm === VietPhraseTranslationAlgorithms.LONG_PRIOR) {
+      if (translationAlgorithm
+          === VietPhraseTranslationAlgorithms.LONG_VIETPHRASE_PRIOR) {
         for (const property in Object.fromEntries(filteredEntries)) {
           chars = chars.replace(new RegExp(property, 'g'),
               `${data[property]} `).trimEnd();
@@ -1685,5 +1697,5 @@ const Translators = {
 
 const VietPhraseTranslationAlgorithms = {
   LEFT_TO_RIGHT_TRANSLATION: 'leftToRightTranslation',
-  LONG_PRIOR: 'longPrior',
+  LONG_VIETPHRASE_PRIOR: 'longVietPhrasePrior',
 };
