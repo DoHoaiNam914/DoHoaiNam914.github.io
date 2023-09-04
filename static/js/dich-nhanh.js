@@ -1450,7 +1450,7 @@ const PapagoLanguage = {
 
 const MicrosoftTranslator = {
   translateText: async function (accessToken, inputText, sourceLanguage,
-      targetLanguage, useGlossary = true) {
+      targetLanguage, useGlossary = false) {
     try {
       inputText = useGlossary ? getDynamicDictionaryText(inputText) : inputText;
 
