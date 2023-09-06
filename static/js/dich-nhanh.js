@@ -180,7 +180,9 @@ $(document).ready(() => {
           (element) => [element[0], element[1].split('ǀ')[0]])].filter(
         ([key]) => !sinovietnameseList[key] && (sinovietnameseList[key] = 1),
         {});
-    sinovietnameses = {...extendsSinovietnamese, ...Object.fromEntries(sinovietnameseList)};
+    sinovietnameses = {
+      ...extendsSinovietnamese, ...Object.fromEntries(sinovietnameseList)
+    };
     console.log('Đã tải xong bộ dữ liệu hán việt!');
   }).fail((jqXHR, textStatus, errorThrown) => {
     window.location.reload();
@@ -553,7 +555,7 @@ async function translate() {
 
   const processText = getProcessTextPreTranslate(inputText,
       ($("#flexSwitchCheckProtectQuotationMarks").prop("checked") || translator
-          == Translators.VIETPHRASE) && !(targetLanguage == 'JA'
+          === Translators.VIETPHRASE) && !(targetLanguage == 'JA'
           || targetLanguage == 'KO' || targetLanguage == 'ZH') || !(targetLanguage
           == 'zh-CN' || targetLanguage == 'zh-TW' || targetLanguage == 'ja'
           || targetLanguage == 'ko') || !(targetLanguage == 'ko' || targetLanguage
@@ -740,10 +742,10 @@ async function translate() {
   }
 
   translation = getProcessTextPostTranslate(results.join('\n'));
-  $("#translatedText").html(
-      buildTranslatedResult([inputText.split(/\n/), processText.split(/\n/)],
-          translation.split(/\n/),
-          $("#flexSwitchCheckShowOriginal").prop("checked")));
+  $("#translatedText").html(buildTranslatedResult([inputText.split(/\n/),
+        getProcessTextPostTranslate(processText).split(/\n/)],
+      translation.split(/\n/),
+      $("#flexSwitchCheckShowOriginal").prop("checked")));
 }
 
 function buildTranslatedResult(textLines, resultLines, showOriginal) {
@@ -762,13 +764,10 @@ function buildTranslatedResult(textLines, resultLines, showOriginal) {
         }
 
         const paragraph = document.createElement('p');
-        paragraph.innerHTML = resultLines[i].trim()
-        != getProcessTextPostTranslate(
-            textLines[1][i + lostLineFixedAmount]).trim()
-            ? '<i>' + textLines[0][i + lostLineFixedAmount].trimStart()
-            + '</i><br>'
-            + resultLines[i] : getProcessTextPostTranslate(
-                textLines[1][i + lostLineFixedAmount]);
+        paragraph.innerHTML = resultLines[i].trim() != textLines[1][i
+        + lostLineFixedAmount] ? '<i>' + textLines[0][i
+        + lostLineFixedAmount].trimStart() + '</i><br>' + resultLines[i]
+            : textLines[1][i + lostLineFixedAmount];
         result.appendChild(paragraph);
       } else {
         const paragraph = document.createElement('p');
@@ -842,6 +841,10 @@ function getProcessTextPostTranslate(text) {
                     '...')[0]}$1${brackets[i][1].split('...')[1]}`
                 : ` ${brackets[i][1].split('...')[0]}$1${brackets[i][1].split(
                     '...')[1]} `);
+
+        if (i == 0 && newText.includes('_BRACKET_')) {
+          i = brackets.length - 1;
+        }
       }
     } catch (error) {
       console.error('Lỗi xử lý văn bản sau khi dịch:', error);
