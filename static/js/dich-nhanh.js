@@ -8,6 +8,12 @@ const uuid = crypto.randomUUID();
 let pinyins = {};
 let sinovietnameses = {};
 let vietphrases = {};
+
+const extendsSinovietnamese = {
+  '团长': 'đoàn trưởng',
+  '将': 'tướng',
+}
+
 const punctuation = [
   /**
    * Basic Latin
@@ -174,7 +180,7 @@ $(document).ready(() => {
           (element) => [element[0], element[1].split('ǀ')[0]])].filter(
         ([key]) => !sinovietnameseList[key] && (sinovietnameseList[key] = 1),
         {});
-    sinovietnameses = Object.fromEntries(sinovietnameseList);
+    sinovietnameses = {...extendsSinovietnamese, ...Object.fromEntries(sinovietnameseList)};
     console.log('Đã tải xong bộ dữ liệu hán việt!');
   }).fail((jqXHR, textStatus, errorThrown) => {
     window.location.reload();
