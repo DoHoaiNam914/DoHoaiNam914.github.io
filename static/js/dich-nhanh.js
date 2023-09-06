@@ -833,17 +833,10 @@ function getProcessTextPostTranslate(text) {
           (a, b) => /[\[\]]/.test(b));
 
       for (let i = brackets.length - 1; i >= 0; i--) {
-        newText = newText.replace(
-            new RegExp(`\n\\[OPEN_BRACKET_${i}\\]\n(.*)\n\\[CLOSE_BRACKET_${i}\\]\n`,
-                'gi'),
-            /[\u{3000}-\u{303f}\u{30a0}-\u{30ff}\u{fe30}-\u{fe4f}\u{ff00}-\u{ffef}]/u.test(
-                brackets[i][1]) ? `${brackets[i][1].split(
-                    '...')[0]}$1${brackets[i][1].split('...')[1]}`
-                : ` ${brackets[i][1].split('...')[0]}$1${brackets[i][1].split(
-                    '...')[1]} `);
-
-        if (i == 0 && newText.includes('_BRACKET_')) {
-          i = brackets.length - 1;
+        if (/[\u{3000}-\u{303f}\u{30a0}-\u{30ff}\u{fe30}-\u{fe4f}\u{ff00}-\u{ffef}]/u.test(brackets[i][1])) {
+          newText = newText.replace(new RegExp(`\n\\[OPEN_BRACKET_${i}\\]\n`, 'gi'), brackets[i][1].split('...')[0]).replace(new RegExp(`\n\\[CLOSE_BRACKET_${i}\\]\n`, 'gi'), brackets[i][1].split('...')[1]);
+        } else {
+          newText = newText.replace(new RegExp(`\n\\[OPEN_BRACKET_${i}\\]\n`, 'gi'), ` ${brackets[i][1].split('...')[0]}`).replace(new RegExp(`\n\\[CLOSE_BRACKET_${i}\\]\n`, 'gi'), `${brackets[i][1].split('...')[1]} `);
         }
       }
     } catch (error) {
