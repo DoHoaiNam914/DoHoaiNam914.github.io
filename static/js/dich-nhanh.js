@@ -792,9 +792,9 @@ function getProcessTextPreTranslate(text, doProtectQuotationMarks) {
 
         for (let i = 0; i < brackets.length; i++) {
           if (brackets[i][0].startsWith('^')) {
-            newText = newText.replace(new RegExp(`${brackets[i][0].split('…')[0]}(?!(OPEN|CLOSE)_BRACKET_\\d+)(.*)${brackets[i][0].split('…')[1]}(.?)$`, 'g'), `[OPEN_BRACKET_${i}]$2[CLOSE_BRACKET_${i}]$3`).replace(new RegExp(`(?!CLOSE_BRACKET_\\d+)${brackets[i][0].split('…')[1]}(.*)${brackets[i][0].split('…')[0]}(?!OPEN_BRACKET_\\d+)(.?)$`, 'g'), `[CLOSE_BRACKET_${i}]$1[OPEN_BRACKET_${i}]$3`);
+            newText = newText.replace(new RegExp(`${brackets[i][0].split('…')[0]}(?!(OPEN|CLOSE)_BRACKET_\\d+)(.*)${brackets[i][0].split('…')[1]}(.?)$`, 'g'), `[OPEN_BRACKET_${i}]$2[CLOSE_BRACKET_${i}]$3`).replace(new RegExp(`(?!(OPEN|CLOSE)_BRACKET_\\d+)${brackets[i][0].split('…')[1]}(.*)${brackets[i][0].split('…')[0]}(?!(OPEN|CLOSE)_BRACKET_\\d+)(.?)`, 'g'), `[CLOSE_BRACKET_${i}]$1[OPEN_BRACKET_${i}]`);
           } else {
-            newText = newText.replace(new RegExp(`${brackets[i][0].split('…')[0]}(?!CLOSE_BRACKET_\\d+)(.*)${brackets[i][0].split('…')[1]}`, 'g'), `[OPEN_BRACKET_${i}]$2[CLOSE_BRACKET_${i}]`).replace(new RegExp(`${brackets[i][0].split('…')[1]}(.*)${brackets[i][0].split('…')[0]}(?!OPEN_BRACKET_\\d+)`, 'g'), `[CLOSE_BRACKET_${i}]$2[OPEN_BRACKET_${i}]`);
+            newText = newText.replace(new RegExp(`${brackets[i][0].split('…')[0]}(?!CLOSE_BRACKET_\\d+)(.*)${brackets[i][0].split('…')[1]}`, 'g'), `[OPEN_BRACKET_${i}]$2[CLOSE_BRACKET_${i}]`).replace(new RegExp(`(?!(OPEN|CLOSE)_BRACKET_\\d+)${brackets[i][0].split('…')[1]}(.*)${brackets[i][0].split('…')[0]}(?!(OPEN|CLOSE)_BRACKET_\\d+)`, 'g'), `[CLOSE_BRACKET_${i}]$2[OPEN_BRACKET_${i}]`);
           }
         }
 
