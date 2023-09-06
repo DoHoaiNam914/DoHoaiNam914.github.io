@@ -42,6 +42,7 @@ const punctuation = [
   ['{…}', '{...}'],
   ['\\|', '\|'],
   ['~', '~'],
+
   /**
    * General Punctuation
    */
@@ -54,6 +55,7 @@ const punctuation = [
   ['⁇', '\?\?'],
   ['⁈', '\?!'],
   ['⁉', '!\?'],
+
   /**
    * CJK Symbols and Punctuation
    */
@@ -75,10 +77,12 @@ const punctuation = [
   ['〜', ' ~ '],
   ['〝…〞', '〝...〞'],
   ['〟', '〟'],
+
   /**
    * Katakana
    */
   ['・', ' '],
+
   /**
    * CJK Compatibility Forms
    */
@@ -94,6 +98,7 @@ const punctuation = [
   ['﹃…﹄', ' ‘...’ '],
   ['﹅', '﹅'],
   ['﹇…﹈', ' [...] '],
+
   /**
    * Halfwidth and Fullwidth Forms
    */
@@ -541,16 +546,15 @@ async function translate() {
   const targetLanguage = $("#targetLangSelect").val();
 
   const processText = getProcessTextPreTranslate(inputText,
-      translator !== Translators.VIETPHRASE && ($(
-              "#flexSwitchCheckProtectQuotationMarks").prop("checked")
-          && !(targetLanguage == 'JA' || targetLanguage == 'KO' || targetLanguage
-              == 'ZH') || !(targetLanguage == 'zh-CN' || targetLanguage == 'zh-TW'
-              || targetLanguage == 'ja' || targetLanguage == 'ko')
-          || !(targetLanguage == 'ko' || targetLanguage == 'ja' || taảgetLanguage
-              == 'zh-CN' || targetLanguage == 'zh-TW') || !(targetLanguage == 'yue'
-              || targetLanguage == 'lzh' || targetLanguage == 'zh-Hans'
-              || targetLanguage == 'zh-Hant' || targetLanguage == 'ja'
-              || targetLanguage == 'ko')));
+      ($("#flexSwitchCheckProtectQuotationMarks").prop("checked") || translator
+          == Translators.VIETPHRASE) && !(targetLanguage == 'JA'
+          || targetLanguage == 'KO' || targetLanguage == 'ZH') || !(targetLanguage
+          == 'zh-CN' || targetLanguage == 'zh-TW' || targetLanguage == 'ja'
+          || targetLanguage == 'ko') || !(targetLanguage == 'ko' || targetLanguage
+          == 'ja' || targetLanguage == 'zh-CN' || targetLanguage == 'zh-TW')
+      || !(targetLanguage == 'yue' || targetLanguage == 'lzh' || targetLanguage
+          == 'zh-Hans' || targetLanguage == 'zh-Hant' || targetLanguage == 'ja'
+          || targetLanguage == 'ko'));
   const results = [];
   const errorMessage = document.createElement("p");
 
@@ -696,27 +700,18 @@ async function translate() {
           case Translators.VIETPHRASE:
             if ($("#targetLangSelect").val() == 'vi' && Object.entries(
                 vietphrases).length > 0) {
-              translatedText = convertText(translateText, vietphrases,
+              translatedText = convertText(translateText, vietphrases, true,
                   $("#flexSwitchCheckGlossary").prop("checked"),
-                  $("input[name=\"flexRadioTranslationAlgorithm\"]:checked").val()).split(
-                  /\n/).map((element) => element.replace(
-                  /(^|\s*[.;:?!\-("'‘“〈《【]\s*)(\p{Ll})/gu,
-                  (match, p1, p2) => p1 + p2.toUpperCase())).join('\n');
+                  $("input[name=\"flexRadioTranslationAlgorithm\"]:checked").val());
             } else if ($("#targetLangSelect").val() == 'zh-VN'
                 && Object.entries(sinovietnameses).length > 0) {
-              translatedText = convertText(translateText, sinovietnameses,
+              translatedText = convertText(translateText, sinovietnameses, true,
                   false,
-                  VietPhraseTranslationAlgorithms.LEFT_TO_RIGHT_TRANSLATION).split(
-                  /\n/).map((element) => element.replace(
-                  /(^|\s*[.;:?!\-("'‘“〈《【]\s*)(\p{Ll})/gu,
-                  (match, p1, p2) => p1 + p2.toUpperCase())).join('\n');
+                  VietPhraseTranslationAlgorithms.LEFT_TO_RIGHT_TRANSLATION);
             } else if ($("#targetLangSelect").val() == 'en' && Object.entries(
                 pinyins).length > 0) {
-              translatedText = convertText(translateText, pinyins, false,
-                  VietPhraseTranslationAlgorithms.LEFT_TO_RIGHT_TRANSLATION).split(
-                  /\n/).map((element) => element.replace(
-                  /(^|\s*[.;:?!\-("'‘“〈《【]\s*)(\p{Ll})/gu,
-                  (match, p1, p2) => p1 + p2.toUpperCase())).join('\n');
+              translatedText = convertText(translateText, pinyins, true, false,
+                  VietPhraseTranslationAlgorithms.LEFT_TO_RIGHT_TRANSLATION);
             } else if ($("#targetLangSelect").val() == 'vi' && Object.entries(
                 vietphrases).length == 0) {
               errorMessage.innerHTML = 'Nhập tệp VietPhrase.txt nếu có hoặc tải về <a href="https://drive.google.com/drive/folders/0B6fxcJ5qbXgkeTJNTFJJS3lmc3c?resourcekey=0-Ych2OUVug3pkLgCIlzvcuA&usp=sharing">tại đây</a>';
@@ -851,7 +846,8 @@ function getProcessTextPostTranslate(text) {
   return newText.split(/\n/).map((element) => element.trim()).join('\n');
 }
 
-function convertText(inputText, data, useGlossary, translationAlgorithm) {
+function convertText(inputText, data, caseSensitive, useGlossary,
+    translationAlgorithm) {
   try {
     data = Object.fromEntries(Object.entries(data).filter(
         (element) => (!useGlossary || !glossary.hasOwnProperty(element[0]))
@@ -860,6 +856,13 @@ function convertText(inputText, data, useGlossary, translationAlgorithm) {
     const glossaryEntries = Object.entries(glossary).filter(
         (element) => inputText.includes(element[0]));
     const dataEntries = Object.entries(data);
+
+    [...punctuation].filter(
+        (element) => element[0].split('…').length != 2).forEach(
+        (element) => inputText = inputText.replace(
+            new RegExp(element[0], 'g'), element[1]).split(/\n/).map(
+            (element) => element.trim()).join('\n'));
+
     const lines = inputText.split(/\n/);
     const results = [];
     let result = inputText;
@@ -879,16 +882,17 @@ function convertText(inputText, data, useGlossary, translationAlgorithm) {
               j += k - 1;
               break;
             } else if (k == 1) {
-              if (tempWord.length > 0 && / /.test(chars[j]) && !/ /.test(
-                  tempWord)) {
+              if (tempWord.length > 0 && /\p{White_Space}/u.test(chars[j])
+                  && !/\p{White_Space}/u.test(
+                      tempWord)) {
                 tempWord.split(' ').forEach((element) => phrases.push(element));
                 tempWord = '';
               }
 
               tempWord += chars[j];
 
-              if (/ /.test(tempWord)) {
-                if (!/ /.test(chars[j + 1])) {
+              if (/\p{White_Space}/u.test(tempWord)) {
+                if (!/\p{White_Space}/u.test(chars[j + 1])) {
                   phrases[phrases.length - 1] += tempWord.substring(0,
                       tempWord.length - 1);
                   tempWord = '';
@@ -944,16 +948,17 @@ function convertText(inputText, data, useGlossary, translationAlgorithm) {
               j += k - 1;
               break;
             } else if (k == 1) {
-              if (tempWord.length > 0 && / /.test(chars[j]) && !/ /.test(
-                  tempWord)) {
+              if (tempWord.length > 0 && /\p{White_Space}/u.test(chars[j])
+                  && !/\p{White_Space}/u.test(
+                      tempWord)) {
                 tempWord.split(' ').forEach((element) => phrases.push(element));
                 tempWord = '';
               }
 
               tempWord += chars[j];
 
-              if (/ /.test(tempWord)) {
-                if (!/ /.test(chars[j + 1])) {
+              if (/\p{White_Space}/u.test(tempWord)) {
+                if (!/\p{White_Space}/u.test(chars[j + 1])) {
                   phrases[phrases.length - 1] += tempWord.substring(0,
                       tempWord.length - 1);
                   tempWord = '';
@@ -981,21 +986,9 @@ function convertText(inputText, data, useGlossary, translationAlgorithm) {
     }
 
     result = results.join('\n');
-
-    [...punctuation].filter(
-        (element) => element[0].split('…').length != 2).forEach(
-        (element) => result = result.replace(
-            new RegExp(` ?${element[0]} ?`, 'g'), element[1]).split(/\n/).map(
-            (element) => element.trim()).join('\n'));
-    [...punctuation].filter(
-        (element) => element[0] != '…' && element[0].split('…').length
-            == 2).sort((a, b) => b.includes('\\[…\\]')).forEach(
-        (element) => result = result.replace(
-            new RegExp(`${element[0].split('…')[0]} *(.*) *${element[0].split('…')[1]}`,
-                'g'), `${element[1].split('...')[0]}$1${element[1].split(
-                '...')[1]}`).split(/\n/).map((element) => element.trim()).join(
-            '\n'));
-    return result;
+    return caseSensitive ? result.split(/\n/).map((element => element.replace(
+        /(^|\s*[.;:?!\-"'\p{Ps}\p{Pi}]\s*)(\p{Lower})/gu,
+        (match, p1, p2) => p1 + p2.toUpperCase()))).join('\n') : result;
   } catch (error) {
     console.error('Bản dịch lỗi:', error);
     throw error;
@@ -1533,16 +1526,17 @@ function getDynamicDictionaryText(text, isMicrosoftTranslator = true) {
             j += k - 1;
             break;
           } else if (k == 1) {
-            if (tempWord.length > 0 && / /.test(chars[j]) && !/ /.test(
-                tempWord)) {
+            if (tempWord.length > 0 && /\p{White_Space}/u.test(chars[j])
+                && !/\p{White_Space}/u.test(
+                    tempWord)) {
               tempWord.split(' ').forEach((element) => phrases.push(element));
               tempWord = '';
             }
 
             tempWord += chars[j];
 
-            if (/ /.test(tempWord)) {
-              if (!/ /.test(chars[j + 1])) {
+            if (/\p{White_Space}/u.test(tempWord)) {
+              if (!/\p{White_Space}/u.test(chars[j + 1])) {
                 phrases[phrases.length - 1] += tempWord.substring(0,
                     tempWord.length - 1);
                 tempWord = '';
