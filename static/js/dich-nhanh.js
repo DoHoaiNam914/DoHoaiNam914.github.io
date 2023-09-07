@@ -425,16 +425,18 @@ async function translate() {
   const sourceLanguage = $("#sourceLangSelect").val();
   const targetLanguage = $("#targetLangSelect").val();
 
-  const processText = getProcessTextPreTranslate(inputText,
-      ($("#flexSwitchCheckProtectQuotationMarks").prop("checked") && translator
-          !== Translators.VIETPHRASE) && !(targetLanguage == 'JA'
-          || targetLanguage == 'KO' || targetLanguage == 'ZH') || !(targetLanguage
-          == 'zh-CN' || targetLanguage == 'zh-TW' || targetLanguage == 'ja'
-          || targetLanguage == 'ko') || !(targetLanguage == 'ko' || targetLanguage
-          == 'ja' || targetLanguage == 'zh-CN' || targetLanguage == 'zh-TW')
+  const isCjkTargetLanguage = !(targetLanguage == 'JA' || targetLanguage == 'KO'
+          || targetLanguage == 'ZH') || !(targetLanguage == 'zh-CN'
+          || targetLanguage == 'zh-TW' || targetLanguage == 'ja' || targetLanguage
+          == 'ko') || !(targetLanguage == 'ko' || targetLanguage == 'ja'
+          || targetLanguage == 'zh-CN' || targetLanguage == 'zh-TW')
       || !(targetLanguage == 'yue' || targetLanguage == 'lzh' || targetLanguage
           == 'zh-Hans' || targetLanguage == 'zh-Hant' || targetLanguage == 'ja'
-          || targetLanguage == 'ko'));
+          || targetLanguage == 'ko');
+
+  const processText = getProcessTextPreTranslate(inputText,
+      $("#flexSwitchCheckProtectQuotationMarks").prop("checked") && translator
+      !== Translators.VIETPHRASE && isCjkTargetLanguage);
   const results = [];
   const errorMessage = document.createElement("p");
 
@@ -454,8 +456,8 @@ async function translate() {
         break;
 
       case Translators.PAPAGO:
-        MAX_LENGTH = 5000;
-        MAX_LINE = processText.split(/\n/).length;
+        MAX_LENGTH = 3000;
+        MAX_LINE = 1500;
         break;
 
       case Translators.MICROSOFT_TRANSLATOR:
@@ -471,7 +473,7 @@ async function translate() {
 
     if (processText.split(/\n/).sort((a, b) => b.length - a.length)[0].length
         > MAX_LENGTH) {
-      errorMessage.innerText = `Bản dịch thất bại: Số lượng từ trong một dòng quá dài (Số lượng từ hợp lệ nhỏ hơn hoặc bằng ${MAX_LENGTH}). Lưu ý: Khi sử dụng Dynamic Dictionary và Bảo vệ dấu trích đẫn sẽ làm giảm số lượng từ có thể dịch đi.`;
+      errorMessage.innerText = `Bản dịch thất bại: Số lượng từ trong một dòng quá dài (Số lượng từ hợp lệ nhỏ hơn hoặc bằng ${MAX_LENGTH}). [Lưu ý: Khi sử dụng Dynamic Dictionary và Bảo vệ dấu trích đẫn sẽ làm giảm số lượng từ có thể dịch đi.]`;
       $("#translatedText").append(errorMessage);
       onPostTranslate();
       return;
@@ -484,7 +486,7 @@ async function translate() {
 
       if (processText.length > (deeplUsage.character_limit
           - deeplUsage.character_count)) {
-        errorMessage.innerText = `Lỗi DeepL: Đã đạt đến giới hạn dịch của tài khoản. (${deeplUsage.character_count}/${deeplUsage.character_limit} ký tự). Lưu ý: Khi sử dụng Dynamic Dictionary và Bảo vệ dấu trích đẫn sẽ làm giảm số lượng từ có thể dịch đi.`;
+        errorMessage.innerText = `Lỗi DeepL: Đã đạt đến giới hạn dịch của tài khoản. (${deeplUsage.character_count}/${deeplUsage.character_limit} ký tự). [Lưu ý: Khi sử dụng Dynamic Dictionary và Bảo vệ dấu trích đẫn sẽ làm giảm số lượng từ có thể dịch đi.]`;
         $("#translatedText").html(errorMessage);
         onPostTranslate();
         return;
