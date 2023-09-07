@@ -155,6 +155,7 @@ $(".translator").click(function () {
         prevTargetLanguageCode);
 
     if ($(this).data("id") === Translators.VIETPHRASE) {
+      translator = loadTranslatorOptions();
       localStorage.setItem("translator", JSON.stringify(translator));
     }
 
@@ -260,11 +261,7 @@ function loadTranslatorOptions() {
   data['translator'] = $(".translator.active").data("id");
 
   for (let i = 0; i < $(".option").length; i++) {
-    if ($(".option")[i].id == 'sourceLangSelect') {
-      data[$(".option")[i].id] = 'auto';
-    } else if ($(".option")[i].id == 'targetLangSelect') {
-      data[$(".option")[i].id] = 'vi';
-    } else if ($(".option")[i].id.startsWith('flexSwitchCheck')) {
+    if ($(".option")[i].id.startsWith('flexSwitchCheck')) {
       data[$(".option")[i].id] = $(".option")[i].checked;
     } else if ($(".option")[i].name.startsWith('flexRadio') && $(
         ".option")[i].checked == true) {
