@@ -155,7 +155,6 @@ $(".translator").click(function () {
         prevTargetLanguageCode);
 
     if ($(this).data("id") === Translators.VIETPHRASE) {
-      translator = loadTranslatorOptions();
       localStorage.setItem("translator", JSON.stringify(translator));
     }
 
