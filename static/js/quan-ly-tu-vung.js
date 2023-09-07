@@ -55,7 +55,7 @@ $("#glossaryType").change(() => loadGlossary());
 
 $("#sourceEntry").on("input", function () {
   if ($(this).val().length > 0) {
-    $("#targetEntry").val(convertText($(this).val(), sinovietnameses, false, true, VietPhraseTranslationAlgorithms.LEFT_TO_RIGHT_TRANSLATION));
+    $("#targetEntry").val(getProcessTextPostTranslate(convertText(getProcessTextPreTranslate($(this).val(), true), sinovietnameses, false, true, VietPhraseTranslationAlgorithms.LEFT_TO_RIGHT_TRANSLATION)));
 
     if (glossary.hasOwnProperty($(this).val())) {
       $("#glossaryList").val($(this).val());
@@ -76,8 +76,11 @@ $("#sourceEntryMenu").on("mousedown", (event) => event.preventDefault());
 $("#clearSourceTextButton").on("click",
     () => $("#sourceEntry").val(null).trigger("input"));
 
-$("#copySourceTextButton").on("click",
-    () => navigator.clipboard.writeText($("#sourceEntry").val()));
+$("#copySourceTextButton").on("click", () => {
+  if ($("#sourceEntry").val().length > 0) {
+    navigator.clipboard.writeText($("#sourceEntry").val())
+  }
+});
 
 $("#pasteSourceTextButton").on("click", () => {
   navigator.clipboard
@@ -89,14 +92,13 @@ $("#pasteSourceTextButton").on("click", () => {
 
 $("#pinyinConvertButton").on("click", function () {
   if ($("#sourceEntry").val().length > 0) {
-    $("#targetEntry").val(convertText($("#sourceEntry").val(), pinyins, false, false, VietPhraseTranslationAlgorithms.LEFT_TO_RIGHT_TRANSLATION));
+    $("#targetEntry").val(getProcessTextPostTranslate(convertText(getProcessTextPreTranslate($("#sourceEntry").val(), true), pinyins, false, false, VietPhraseTranslationAlgorithms.LEFT_TO_RIGHT_TRANSLATION)));
   }
 });
 
 $("#sinoVietnameseConvertButton").click(function () {
   if ($("#sourceEntry").val().length > 0) {
-    $("#targetEntry").val(
-        convertText($("#sourceEntry").val(), sinovietnameses, false, false, VietPhraseTranslationAlgorithms.LEFT_TO_RIGHT_TRANSLATION));
+    $("#targetEntry").val(getProcessTextPostTranslate(convertText(getProcessTextPreTranslate($("#sourceEntry").val(), true), sinovietnameses, false, false, VietPhraseTranslationAlgorithms.LEFT_TO_RIGHT_TRANSLATION)));
   }
 });
 
@@ -200,8 +202,11 @@ $("#addButton").on("click", function () {
   }
 });
 
-$("#copyTargetTextButton").on("click",
-    () => navigator.clipboard.writeText($("#targetEntry").val()));
+$("#copyTargetTextButton").on("click", () => {
+  if ($("#targetEntry").val().length > 0) {
+    navigator.clipboard.writeText($("#targetEntry").val())
+  }
+});
 
 $("#pasteTargetTextButton").on("click", () => {
   navigator.clipboard

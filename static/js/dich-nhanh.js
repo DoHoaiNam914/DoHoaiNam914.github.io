@@ -312,9 +312,11 @@ $("#translateButton").click(async function () {
 });
 
 $("#copyButton").on("click", () => {
-  navigator.clipboard.writeText(
-      $("#translateButton").text() == 'Sửa' ? translation : $(
-          "#queryText").val());
+  const data = $("#translateButton").text() == 'Sửa' ? translation : $("#queryText").val();
+
+  if (data.length > 0) {
+    navigator.clipboard.writeText(data);
+  }
 });
 
 $("#pasteButton").on("click", () => {
