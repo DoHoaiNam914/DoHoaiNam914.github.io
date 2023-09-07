@@ -184,20 +184,7 @@ $(".translator").click(function () {
         $("#sourceLangSelect").val($(this).val()).change();
         return false;
       } else if (index + 1 == $("#targetLangSelect > option").length) {
-        switch ($(".translator.active").data("id")) {
-          case Translators.GOOGLE_TRANSLATE:
-          case Translators.PAPAGO:
-            $("#sourceLangSelect").val("auto");
-            break;
-
-          case Translators.VIETPHRASE:
-            $("#sourceLangSelect").val("zh");
-            break;
-
-          default:
-            $("#sourceLangSelect").val("");
-            break;
-        }
+        $("#sourceLangSelect").val(getDefaultSourceLanguage());
       }
     });
 
@@ -223,15 +210,7 @@ $(".translator").click(function () {
         $("#targetLangSelect").val($(this).val()).change();
         return false;
       } else if (index + 1 == $("#targetLangSelect > option").length) {
-        switch ($(".translator.active").data("id")) {
-          case Translators.DEEPL_TRANSLATOR:
-            $("#targetLangSelect").val("EN-US");
-            break;
-
-          default:
-            $("#targetLangSelect").val("vi");
-            break;
-        }
+        $("#targetLangSelect").val(getDefaultTargetLanguage());
       }
     });
 
@@ -267,11 +246,43 @@ function loadTranslatorOptions() {
         ".option")[i].checked == true) {
       data[$(".option")[i].name] = $(".option")[i].value;
     } else if ($(".option")[i].className.includes('form-select')) {
-      data[$(".option")[i].id] = $(".option")[i].value;
+      if ($(".option")[i].id == 'sourceLangSelect') {
+        data[$(".option")[i].id] = $(".option")[i].value ?? getDefaultSourceLanguage();
+      } else if ($(".option")[i].id == 'targetLangSelect') {
+        data[$(".option")[i].id] = $(".option")[i].value ?? getDefaultTargetLanguage();
+      } else {
+        data[$(".option")[i].id] = $(".option")[i].value;
+      }
     }
   }
 
   return data;
+}
+
+function getDefaultSourceLanguage() {
+  switch ($(".translator.active").data("id")) {
+    case Translators.GOOGLE_TRANSLATE:
+    case Translators.PAPAGO:
+      return 'auto';
+
+    case Translators.VIETPHRASE:
+      return 'zh';
+
+    default:
+      return '';
+  }
+}
+
+function getDefaultTargetLanguage() {
+  switch ($(".translator.active").data("id")) {
+    case Translators.DEEPL_TRANSLATOR:
+      data[$(".option")[i].id] = 'EN-US';
+      break;
+
+    default:
+      data[$(".option")[i].id] = 'vi';
+      break;
+  }
 }
 
 function getLanguageName(translator, languageCode) {
