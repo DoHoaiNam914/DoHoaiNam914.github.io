@@ -827,13 +827,13 @@ function getProcessTextPreTranslate(text, doProtectQuotationMarks) {
             newText = newText.replace(
                 new RegExp(`${brackets[i][0].split('…')[0]}(?!(OPEN|CLOSE)_BRACKET_\\d+)(.*${brackets[i][0].split('…')[1]}.?)$`,
                     'g'), `[OPEN_BRACKET_${i}]$1`).replace(
-                new RegExp(`(?<!(OPEN|CLOSE)_BRACKET_\\d+)${brackets[i][0].split('…')[1]}(.?)$`,
+                new RegExp(`(?:(OPEN|CLOSE)_BRACKET_\\d+)${brackets[i][0].split('…')[1]}(.?)$`,
                     'g'), `[CLOSE_BRACKET_${i}]$1`);
           } else {
             newText = newText.replace(
                 new RegExp(`${brackets[i][0].split('…')[0]}(?!(OPEN|CLOSE)_BRACKET_\\d+)`,
                     'g'), `[OPEN_BRACKET_${i}]`).replace(
-                new RegExp(`(?<!(OPEN|CLOSE)_BRACKET_\\d+)${brackets[i][0].split('…')[1]}`,
+                new RegExp(`(?:(OPEN|CLOSE)_BRACKET_\\d+)${brackets[i][0].split('…')[1]}`,
                     'g'), `[CLOSE_BRACKET_${i}]`);
           }
         }
