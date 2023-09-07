@@ -793,7 +793,7 @@ function convertText(inputText, data, caseSensitive, useGlossary,
 
     result = getProcessTextPostTranslate(results.join('\n'));
     return caseSensitive ? result.split(/\n/).map((element => element.replace(
-        /(^|\s*[.;:?!\-"'\p{Ps}\p{Pi}]\s*)(\p{Lower})/gu,
+        /(^|\s*[.;:?!\-"'\p{Ps}\p{Pi}]\s+)(\p{Lower})/gu,
         (match, p1, p2) => p1 + p2.toUpperCase()))).join('\n') : result;
   } catch (error) {
     console.error('Bản dịch lỗi:', error);
@@ -816,13 +816,13 @@ function getProcessTextPreTranslate(text, doProtectQuotationMarks) {
             newText = newText.replace(
                 new RegExp(`${brackets[i][0].split('…')[0]}(?!(OPEN|CLOSE)_BRACKET_\\d+)(.*${brackets[i][0].split('…')[1]}.?)$`,
                     'g'), `[OPEN_BRACKET_${i}]$1`).replace(
-                new RegExp(`(?!(OPEN|CLOSE)_BRACKET_\\d+)${brackets[i][0].split('…')[1]}(.?)$`,
+                new RegExp(`(?<!(OPEN|CLOSE)_BRACKET_\\d+)${brackets[i][0].split('…')[1]}(.?)$`,
                     'g'), `[CLOSE_BRACKET_${i}]$1`);
           } else {
             newText = newText.replace(
                 new RegExp(`${brackets[i][0].split('…')[0]}(?!(OPEN|CLOSE)_BRACKET_\\d+)`,
                     'g'), `[OPEN_BRACKET_${i}]`).replace(
-                new RegExp(`(?!(OPEN|CLOSE)_BRACKET_\\d+)${brackets[i][0].split('…')[1]}`,
+                new RegExp(`(?<!(OPEN|CLOSE)_BRACKET_\\d+)${brackets[i][0].split('…')[1]}`,
                     'g'), `[CLOSE_BRACKET_${i}]`);
           }
         }
