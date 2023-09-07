@@ -824,17 +824,25 @@ function getProcessTextPreTranslate(text, doProtectQuotationMarks) {
 
         for (let i = 0; i < brackets.length; i++) {
           if (brackets[i][0].startsWith('^')) {
-            newText = newText.replace(
-                new RegExp(`${brackets[i][0].split('…')[0]}(?!(OPEN|CLOSE)_BRACKET_\\d+)(.*${brackets[i][0].split('…')[1]}.?)$`,
-                    'g'), `[OPEN_BRACKET_${i}]$1`).replace(
-                new RegExp(`(?:(OPEN|CLOSE)_BRACKET_\\d+)${brackets[i][0].split('…')[1]}(.?)$`,
-                    'g'), `[CLOSE_BRACKET_${i}]$1`);
+            newText = newText.replace(new RegExp(`${brackets[i][0].split('…')[0]}(?!(OPEN|CLOSE)_BRACKET_\\d+)(.*${brackets[i][0].split('…')[1]}.?)$`, 'g'), `[OPEN_BRACKET_${i}]$1`).replace(new RegExp(`${brackets[i][0].split('…')[1]}(.?)$`, 'g'), (match, p1, offset) => {
+              for (let j = i; j >= 0; j--) {
+                if (/CLOSE_BRACKET_\d+/.test(newText.substring(offset - `CLOSE_BRACKET_${j}`.length, offset)) || /OPEN_BRACKET_\d+/.test(newText.substring(offset - `OPEN_BRACKET_${j}`.length, offset))) {
+                  return match;
+                } else if (j == 0) {
+                  return `[CLOSE_BRACKET_${i}]${p1}`;
+                }
+              }
+            });
           } else {
-            newText = newText.replace(
-                new RegExp(`${brackets[i][0].split('…')[0]}(?!(OPEN|CLOSE)_BRACKET_\\d+)`,
-                    'g'), `[OPEN_BRACKET_${i}]`).replace(
-                new RegExp(`(?:(OPEN|CLOSE)_BRACKET_\\d+)${brackets[i][0].split('…')[1]}`,
-                    'g'), `[CLOSE_BRACKET_${i}]`);
+            newText = newText.replace(new RegExp(`${brackets[i][0].split('…')[0]}(?!(OPEN|CLOSE)_BRACKET_\\d+)`, 'g'), `[OPEN_BRACKET_${i}]`).replace(new RegExp(${brackets[i][0].split('…')[1]}, 'g'), (match, offset) => {
+              for (let j = i; j >= 0; j--) {
+                if (/CLOSE_BRACKET_\d+/.test(newText.substring(offset - `CLOSE_BRACKET_${j}`.length, offset)) || /OPEN_BRACKET_\d+/.test(newText.substring(offset - `OPEN_BRACKET_${j}`.length, offset))) {
+                  return match;
+                } else if (j == 0) {
+                  return `[CLOSE_BRACKET_${i}]`;
+                }
+              }
+            });
           }
         }
 
