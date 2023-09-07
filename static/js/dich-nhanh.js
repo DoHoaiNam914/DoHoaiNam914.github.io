@@ -14,239 +14,6 @@ const extendsSinovietnamese = {
   '将': 'tướng',
 }
 
-const punctuation = [
-  /**
-   * Basic Latin
-   */
-  ['!', '!'],
-  ['"', '"'],
-  ['#', '#'],
-  ['\\$', '\$'],
-  ['%', '%'],
-  ['&', '&'],
-  ['\'', '\''],
-  ['\\(…\\)', '\(...\)'], // Bracket
-  ['\\(', '\('],
-  ['\\)', '\)'],
-  ['\\*', '\*'],
-  ['\\+', '\+'],
-  [',', ','],
-  [',', ','],
-  ['-', '-'],
-  ['\\.', '\.'],
-  ['\\/', '\/'],
-  [':', ':'],
-  [';', ';'],
-  ['<…>', '<...>'], // Bracket
-  ['<', '<'],
-  ['=', '='],
-  ['>', '>'],
-  ['\\?', '\?'],
-  ['@', '@'],
-  ['\\[…\\]', '\[...\]'], // Bracket
-  ['\\[', '\['],
-  ['\\\\', '\\'],
-  ['\\]', '\]'],
-  ['\\^', '\^'],
-  ['_', '_'],
-  ['`', '`'],
-  ['{…}', '{...}'], // Bracket
-  ['{', '{'],
-  ['\\|', '\|'],
-  ['}', '}'],
-  ['~', '~'],
-
-  /**
-   * General Punctuation
-   */
-  ['―', '—'],
-  ['‘…’', '‘...’'], // Bracket
-  ['‘', '‘'],
-  ['’', '’'],
-  ['“…”', '“...”'], // Bracket
-  ['“', '“'],
-  ['”', '”'],
-  ['…', '\.\.\.'],
-  ['‼', '!!'],
-  ['⁇', '\?\?'],
-  ['⁈', '\?!'],
-  ['⁉', '!\?'],
-
-  /**
-   * CJK Symbols and Punctuation
-   */
-  ['　', ''],
-  ['、', ', '],
-  ['。', '\. '],
-  ['〃', '〃'],
-  ['〈…〉', '〈...〉'], // Bracket
-  ['〈', '〈'],
-  ['〉', '〉'],
-  ['《…》', '《...》'], // Bracket
-  ['《', '《'],
-  ['》', '》'],
-  ['「…」', ' “...” '], // Bracket
-  ['「', ' “'],
-  ['」', '” '],
-  ['^『…』', '『...』'], // Bracket
-  ['『…』', ' ‘...’ '], // Bracket
-  ['『', ' ‘'],
-  ['』', '’ '],
-  ['【…】', '【...】'], // Bracket
-  ['【', '【'],
-  ['】', '】'],
-  ['〔…〕', '〔...〕'], // Bracket
-  ['〔', '〔'],
-  ['〕', '〕'],
-  ['〖', '〖'],
-  ['〗', '〗'],
-  ['〘', '〘'],
-  ['〙', '〙'],
-  ['〚', '〚'],
-  ['〛', '〛'],
-  ['〜', ' ~ '],
-  ['〝', '〝'],
-  ['〞', '〞'],
-  ['〟', '〟'],
-
-  /**
-   * Katakana
-   */
-  ['・', ' '],
-
-  /**
-   * CJK Compatibility Forms
-   */
-  ['︱', '—'],
-  ['︵…︶', ' (...) '], // Bracket
-  ['︵', ' ('],
-  ['︶', ') '],
-  ['︷…︸', ' {...} '], // Bracket
-  ['︷', ' {'],
-  ['︸', '} '],
-  ['︹', '〔'],
-  ['︺', '〕'],
-  ['︻…︼', '【...】'], // Bracket
-  ['︻', '【'],
-  ['︼', '】'],
-  ['︽…︾', '《...》'], // Bracket
-  ['︽', '《'],
-  ['︾', '》'],
-  ['︿…﹀', '〈...〉'], // Bracket
-  ['︿', '〈'],
-  ['﹀', '〉'],
-  ['﹁…﹂', ' “...” '], // Bracket
-  ['﹁', ' “'],
-  ['﹂', '” '],
-  ['^﹃…﹄', '『...』'], // Bracket
-  ['﹃…﹄', ' ‘...’ '], // Bracket
-  ['﹃', ' ‘'],
-  ['﹄', '’ '],
-  ['﹇…﹈', ' [...] '], // Bracket
-  ['﹇', ' ['],
-  ['﹈', '] '],
-
-  /**
-   * Halfwidth and Fullwidth Forms
-   */
-  ['！', '! '],
-  ['＂', ' " '],
-  ['＃', ' # '],
-  ['＄', ' $ '],
-  ['＄', ' \$ '],
-  ['％', ' % '],
-  ['＆', ' & '],
-  ['＇', ' \' '],
-  ['（…）', ' (...) '], // Bracket
-  ['（', ' ('],
-  ['）', ') '],
-  ['＊', ' \* '],
-  ['＋', ' \+ '],
-  ['，', ', '],
-  ['－', ' - '],
-  ['．', '\. '],
-  ['／', ' \/ '],
-  ['：', ': '],
-  ['；', '; '],
-  ['＜', ' < '],
-  ['＝', ' = '],
-  ['＞', ' > '],
-  ['？', '\? '],
-  ['＠', ' @ '],
-  ['Ａ', 'A '],
-  ['Ｂ', 'B '],
-  ['Ｃ', 'C '],
-  ['Ｄ', 'D '],
-  ['Ｅ', 'E '],
-  ['Ｆ', 'F '],
-  ['Ｇ', 'G '],
-  ['Ｈ', 'H '],
-  ['Ｉ', 'I '],
-  ['Ｊ', 'J '],
-  ['Ｋ', 'K '],
-  ['Ｌ', 'L '],
-  ['Ｍ', 'M '],
-  ['Ｎ', 'N '],
-  ['Ｏ', 'O '],
-  ['Ｐ', 'P '],
-  ['Ｑ', 'Q '],
-  ['Ｒ', 'R '],
-  ['Ｓ', 'S '],
-  ['Ｔ', 'T '],
-  ['Ｕ', 'U '],
-  ['Ｖ', 'V '],
-  ['Ｗ', 'W '],
-  ['Ｘ', 'X '],
-  ['Ｙ', 'Y '],
-  ['Ｚ', 'Z '],
-  ['［…］', ' [...] '], // Bracket
-  ['［', ' ['],
-  ['］', '] '],
-  ['＼', ' \\ '],
-  ['＾', ' \^ '],
-  ['＿', '  _ '],
-  ['｀', ' ` '],
-  ['ａ', 'a '],
-  ['ｂ', 'b '],
-  ['ｃ', 'c '],
-  ['ｄ', 'd '],
-  ['ｅ', 'e '],
-  ['ｆ', 'f '],
-  ['ｇ', 'g '],
-  ['ｈ', 'h '],
-  ['ｉ', 'i '],
-  ['ｊ', 'j '],
-  ['ｋ', 'k '],
-  ['ｌ', 'l '],
-  ['ｍ', 'm '],
-  ['ｎ', 'n '],
-  ['ｏ', 'o '],
-  ['ｐ', 'p '],
-  ['ｑ', 'q '],
-  ['ｒ', 'r '],
-  ['ｓ', 's '],
-  ['ｔ', 't '],
-  ['ｕ', 'u '],
-  ['ｖ', 'v '],
-  ['ｗ', 'w '],
-  ['ｘ', 'x '],
-  ['ｙ', 'y '],
-  ['ｚ', 'z '],
-  ['｛…｝', ' {...} '], // Bracket
-  ['｛', ' {'],
-  ['｝', '} '],
-  ['｜', ' | '],
-  ['～', ' ~ '],
-  ['｟…｠', '｟...｠'], // Bracket
-  ['｟', '｟'],
-  ['｠', '｠'],
-  ['｡', '.'],
-  ['｢', '“'],
-  ['｣', '”'],
-  ['､', ','],
-  ['･', ' '],
-];
-
 let translation = '';
 
 $(document).ready(() => {
@@ -312,7 +79,8 @@ $("#translateButton").click(async function () {
 });
 
 $("#copyButton").on("click", () => {
-  const data = $("#translateButton").text() == 'Sửa' ? translation : $("#queryText").val();
+  const data = $("#translateButton").text() == 'Sửa' ? translation : $(
+      "#queryText").val();
 
   if (data.length > 0) {
     navigator.clipboard.writeText(data);
@@ -658,8 +426,8 @@ async function translate() {
   const targetLanguage = $("#targetLangSelect").val();
 
   const processText = getProcessTextPreTranslate(inputText,
-      ($("#flexSwitchCheckProtectQuotationMarks").prop("checked") || translator
-          === Translators.VIETPHRASE) && !(targetLanguage == 'JA'
+      ($("#flexSwitchCheckProtectQuotationMarks").prop("checked") && translator
+          !== Translators.VIETPHRASE) && !(targetLanguage == 'JA'
           || targetLanguage == 'KO' || targetLanguage == 'ZH') || !(targetLanguage
           == 'zh-CN' || targetLanguage == 'zh-TW' || targetLanguage == 'ja'
           || targetLanguage == 'ko') || !(targetLanguage == 'ko' || targetLanguage
@@ -886,56 +654,6 @@ function buildTranslatedResult(textLines, resultLines, showOriginal) {
   return result.innerHTML.replace(/(<p>)(<\/p>)/g, '$1<br>$2');
 }
 
-function getProcessTextPreTranslate(text, doProtectQuotationMarks) {
-  let newText = text;
-
-  if (text.length > 0) {
-    try {
-      if (doProtectQuotationMarks) {
-        const brackets = [...punctuation].filter((element) => element[0] != '…' && element[0].split('…').length == 2);
-
-        for (let i = 0; i < brackets.length; i++) {
-          if (brackets[i][0].startsWith('^')) {
-            newText = newText.replace(new RegExp(`${brackets[i][0].split('…')[0]}(?!(OPEN|CLOSE)_BRACKET_\\d+)(.*${brackets[i][0].split('…')[1]}.?)$`, 'g'), `[OPEN_BRACKET_${i}]$1`).replace(new RegExp(`(?!(OPEN|CLOSE)_BRACKET_\\d+)${brackets[i][0].split('…')[1]}(.?)$`, 'g'), `[CLOSE_BRACKET_${i}]$1`);
-          } else {
-            newText = newText.replace(new RegExp(`${brackets[i][0].split('…')[0]}(?!(OPEN|CLOSE)_BRACKET_\\d+)`, 'g'), `[OPEN_BRACKET_${i}]`).replace(new RegExp(`(?!(OPEN|CLOSE)_BRACKET_\\d+)${brackets[i][0].split('…')[1]}`, 'g'), `[CLOSE_BRACKET_${i}]`);
-          }
-        }
-
-        newText = newText.replace(/(\[(OPEN|CLOSE)_BRACKET_\d+\])/g, '\n$1\n');
-      }
-    } catch (error) {
-      console.error('Lỗi xử lý văn bản trước khi dịch:', error);
-      throw error;
-    }
-  }
-
-  return newText;
-}
-
-function getProcessTextPostTranslate(text) {
-  let newText = text;
-
-  if (text.length > 0) {
-    try {
-      const brackets = [...punctuation].filter((element) => element[0] != '…' && element[0].split('…').length == 2);
-
-      for (let i = brackets.length - 1; i >= 0; i--) {
-        if (/[\u{3000}-\u{303f}\u{30a0}-\u{30ff}\u{fe30}-\u{fe4f}\u{ff00}-\u{ffef}]/u.test(brackets[i][1])) {
-          newText = newText.replace(new RegExp(`\n\\[OPEN_BRACKET_${i}\\]\n`, 'gi'), brackets[i][1].split('...')[0]).replace(new RegExp(`\n\\[CLOSE_BRACKET_${i}\\]\n`, 'gi'), brackets[i][1].split('...')[1]);
-        } else {
-          newText = newText.replace(new RegExp(`\n\\[OPEN_BRACKET_${i}\\]\n`, 'gi'), ` ${brackets[i][1].split('...')[0]}`).replace(new RegExp(`\n\\[CLOSE_BRACKET_${i}\\]\n`, 'gi'), `${brackets[i][1].split('...')[1]} `);
-        }
-      }
-    } catch (error) {
-      console.error('Lỗi xử lý văn bản sau khi dịch:', error);
-      throw error;
-    }
-  }
-
-  return newText.split(/\n/).map((element) => element.trim()).join('\n');
-}
-
 function convertText(inputText, data, caseSensitive, useGlossary,
     translationAlgorithm) {
   try {
@@ -947,15 +665,15 @@ function convertText(inputText, data, caseSensitive, useGlossary,
         (element) => inputText.includes(element[0]));
     const dataEntries = Object.entries(data);
 
-    [...punctuation].filter(
+    [...cjkmap].filter(
         (element) => element[0].split('…').length != 2).forEach(
         (element) => inputText = inputText.replace(
             new RegExp(element[0], 'g'), element[1]).split(/\n/).map(
             (element) => element.trim()).join('\n'));
 
-    const lines = inputText.split(/\n/);
     const results = [];
     let result = inputText;
+    const lines = getProcessTextPreTranslate(inputText, true).split(/\n/);
 
     for (let i = 0; i < lines.length; i++) {
       let chars = lines[i];
@@ -1075,7 +793,7 @@ function convertText(inputText, data, caseSensitive, useGlossary,
       }
     }
 
-    result = results.join('\n');
+    result = getProcessTextPostTranslate(results.join('\n'));
     return caseSensitive ? result.split(/\n/).map((element => element.replace(
         /(^|\s*[.;:?!\-"'\p{Ps}\p{Pi}]\s*)(\p{Lower})/gu,
         (match, p1, p2) => p1 + p2.toUpperCase()))).join('\n') : result;
@@ -1083,6 +801,76 @@ function convertText(inputText, data, caseSensitive, useGlossary,
     console.error('Bản dịch lỗi:', error);
     throw error;
   }
+}
+
+function getProcessTextPreTranslate(text, doProtectQuotationMarks) {
+  let newText = text;
+
+  if (text.length > 0) {
+    try {
+      if (doProtectQuotationMarks) {
+        const brackets = [...cjkmap].filter(
+            (element) => element[0] != '…' && element[0].split('…').length
+                == 2);
+
+        for (let i = 0; i < brackets.length; i++) {
+          if (brackets[i][0].startsWith('^')) {
+            newText = newText.replace(
+                new RegExp(`${brackets[i][0].split('…')[0]}(?!(OPEN|CLOSE)_BRACKET_\\d+)(.*${brackets[i][0].split('…')[1]}.?)$`,
+                    'g'), `[OPEN_BRACKET_${i}]$1`).replace(
+                new RegExp(`(?!(OPEN|CLOSE)_BRACKET_\\d+)${brackets[i][0].split('…')[1]}(.?)$`,
+                    'g'), `[CLOSE_BRACKET_${i}]$1`);
+          } else {
+            newText = newText.replace(
+                new RegExp(`${brackets[i][0].split('…')[0]}(?!(OPEN|CLOSE)_BRACKET_\\d+)`,
+                    'g'), `[OPEN_BRACKET_${i}]`).replace(
+                new RegExp(`(?!(OPEN|CLOSE)_BRACKET_\\d+)${brackets[i][0].split('…')[1]}`,
+                    'g'), `[CLOSE_BRACKET_${i}]`);
+          }
+        }
+
+        newText = newText.replace(/(\[(OPEN|CLOSE)_BRACKET_\d+\])/g, '\n$1\n');
+      }
+    } catch (error) {
+      console.error('Lỗi xử lý văn bản trước khi dịch:', error);
+      throw error;
+    }
+  }
+
+  return newText;
+}
+
+function getProcessTextPostTranslate(text) {
+  let newText = text;
+
+  if (text.length > 0) {
+    try {
+      const brackets = [...cjkmap].filter(
+          (element) => element[0] != '…' && element[0].split('…').length == 2);
+
+      for (let i = brackets.length - 1; i >= 0; i--) {
+        if (/[\u{3000}-\u{303f}\u{30a0}-\u{30ff}\u{fe30}-\u{fe4f}\u{ff00}-\u{ffef}]/u.test(
+            brackets[i][1])) {
+          newText = newText.replace(
+              new RegExp(`\n\\[OPEN_BRACKET_${i}\\]\n`, 'gi'),
+              brackets[i][1].split('...')[0]).replace(
+              new RegExp(`\n\\[CLOSE_BRACKET_${i}\\]\n`, 'gi'),
+              brackets[i][1].split('...')[1]);
+        } else {
+          newText = newText.replace(
+              new RegExp(`\n\\[OPEN_BRACKET_${i}\\]\n`, 'gi'),
+              ` ${brackets[i][1].split('...')[0]}`).replace(
+              new RegExp(`\n\\[CLOSE_BRACKET_${i}\\]\n`, 'gi'),
+              `${brackets[i][1].split('...')[1]} `);
+        }
+      }
+    } catch (error) {
+      console.error('Lỗi xử lý văn bản sau khi dịch:', error);
+      throw error;
+    }
+  }
+
+  return newText.split(/\n/).map((element) => element.trim()).join('\n');
 }
 
 function onInput() {
