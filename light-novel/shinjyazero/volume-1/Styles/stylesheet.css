@@ -229,3 +229,13 @@ margin: 0; padding: 0;
 code {
 font-family: Consolas,"courier new",monospace;
 }
+
+img.gaiji {
+  width:      1em;
+  height:     1em;
+  display:    inline-block;
+  margin:     0;
+  padding:    0;
+  border:     none;
+  background: transparent;
+}
