@@ -184,7 +184,8 @@ $(".translator").click(function () {
         $("#sourceLangSelect").val($(this).val()).change();
         return false;
       } else if (index + 1 == $("#targetLangSelect > option").length) {
-        $("#sourceLangSelect").val(getDefaultSourceLanguage());
+        $("#sourceLangSelect").val(
+            getDefaultSourceLanguage($(this).data("id")));
       }
     });
 
@@ -210,7 +211,8 @@ $(".translator").click(function () {
         $("#targetLangSelect").val($(this).val()).change();
         return false;
       } else if (index + 1 == $("#targetLangSelect > option").length) {
-        $("#targetLangSelect").val(getDefaultTargetLanguage());
+        $("#targetLangSelect").val(
+            getDefaultTargetLanguage($(this).data("id")));
       }
     });
 
@@ -240,27 +242,23 @@ function loadTranslatorOptions() {
   data['translator'] = $(".translator.active").data("id");
 
   for (let i = 0; i < $(".option").length; i++) {
-    if ($(".option")[i].id.startsWith('flexSwitchCheck')) {
+    if ($(".option")[i].id.startsWith('flexSwitchCheck') && $(
+        ".option")[i].checked == true) {
       data[$(".option")[i].id] = $(".option")[i].checked;
     } else if ($(".option")[i].name.startsWith('flexRadio') && $(
         ".option")[i].checked == true) {
       data[$(".option")[i].name] = $(".option")[i].value;
-    } else if ($(".option")[i].className.includes('form-select')) {
-      if ($(".option")[i].id == 'sourceLangSelect') {
-        data[$(".option")[i].id] = $(".option")[i].value ?? getDefaultSourceLanguage();
-      } else if ($(".option")[i].id == 'targetLangSelect') {
-        data[$(".option")[i].id] = $(".option")[i].value ?? getDefaultTargetLanguage();
-      } else {
-        data[$(".option")[i].id] = $(".option")[i].value;
-      }
+    } else if ($(".option")[i].className.includes('form-select') && $(
+        ".option")[i].value != '') {
+      data[$(".option")[i].id] = $(".option")[i].value;
     }
   }
 
   return data;
 }
 
-function getDefaultSourceLanguage() {
-  switch ($(".translator.active").data("id")) {
+function getDefaultSourceLanguage(translator) {
+  switch (translator) {
     case Translators.GOOGLE_TRANSLATE:
     case Translators.PAPAGO:
       return 'auto';
@@ -273,15 +271,13 @@ function getDefaultSourceLanguage() {
   }
 }
 
-function getDefaultTargetLanguage() {
-  switch ($(".translator.active").data("id")) {
+function getDefaultTargetLanguage(translator) {
+  switch (translator) {
     case Translators.DEEPL_TRANSLATOR:
-      data[$(".option")[i].id] = 'EN-US';
-      break;
+      return 'EN-US';
 
     default:
-      data[$(".option")[i].id] = 'vi';
-      break;
+      return 'vi';
   }
 }
 
@@ -824,25 +820,41 @@ function getProcessTextPreTranslate(text, doProtectQuotationMarks) {
 
         for (let i = 0; i < brackets.length; i++) {
           if (brackets[i][0].startsWith('^')) {
-            newText = newText.replace(new RegExp(`${brackets[i][0].split('…')[0]}(?!(?:OPEN|CLOSE)_BRACKET_\\d+)(.*${brackets[i][0].split('…')[1]}.?)$`, 'g'), `[OPEN_BRACKET_${i}]$1`).replace(new RegExp(`${brackets[i][0].split('…')[1]}(.?)$`, 'g'), (match, p1, offset) => {
-              for (let j = i; j >= 0; j--) {
-                if (/CLOSE_BRACKET_\d+/.test(newText.substring(offset - `CLOSE_BRACKET_${j}`.length, offset)) || /OPEN_BRACKET_\d+/.test(newText.substring(offset - `OPEN_BRACKET_${j}`.length, offset))) {
-                  return match;
-                } else if (j == 0) {
-                  return `[CLOSE_BRACKET_${i}]${p1}`;
-                }
-              }
-            });
+            newText = newText.replace(
+                new RegExp(`${brackets[i][0].split('…')[0]}(?!(?:OPEN|CLOSE)_BRACKET_\\d+)(.*${brackets[i][0].split('…')[1]}.?)$`,
+                    'g'), `[OPEN_BRACKET_${i}]$1`).replace(
+                new RegExp(`${brackets[i][0].split('…')[1]}(.?)$`, 'g'),
+                (match, p1, offset) => {
+                  for (let j = i; j >= 0; j--) {
+                    if (/CLOSE_BRACKET_\d+/.test(
+                        newText.substring(offset - `CLOSE_BRACKET_${j}`.length,
+                            offset)) || /OPEN_BRACKET_\d+/.test(
+                        newText.substring(offset - `OPEN_BRACKET_${j}`.length,
+                            offset))) {
+                      return match;
+                    } else if (j == 0) {
+                      return `[CLOSE_BRACKET_${i}]${p1}`;
+                    }
+                  }
+                });
           } else {
-            newText = newText.replace(new RegExp(`${brackets[i][0].split('…')[0]}(?!(?:OPEN|CLOSE)_BRACKET_\\d+)`, 'g'), `[OPEN_BRACKET_${i}]`).replace(new RegExp(brackets[i][0].split('…')[1], 'g'), (match, offset) => {
-              for (let j = i; j >= 0; j--) {
-                if (/CLOSE_BRACKET_\d+/.test(newText.substring(offset - `CLOSE_BRACKET_${j}`.length, offset)) || /OPEN_BRACKET_\d+/.test(newText.substring(offset - `OPEN_BRACKET_${j}`.length, offset))) {
-                  return match;
-                } else if (j == 0) {
-                  return `[CLOSE_BRACKET_${i}]`;
-                }
-              }
-            });
+            newText = newText.replace(
+                new RegExp(`${brackets[i][0].split('…')[0]}(?!(?:OPEN|CLOSE)_BRACKET_\\d+)`,
+                    'g'), `[OPEN_BRACKET_${i}]`).replace(
+                new RegExp(brackets[i][0].split('…')[1], 'g'),
+                (match, offset) => {
+                  for (let j = i; j >= 0; j--) {
+                    if (/CLOSE_BRACKET_\d+/.test(
+                        newText.substring(offset - `CLOSE_BRACKET_${j}`.length,
+                            offset)) || /OPEN_BRACKET_\d+/.test(
+                        newText.substring(offset - `OPEN_BRACKET_${j}`.length,
+                            offset))) {
+                      return match;
+                    } else if (j == 0) {
+                      return `[CLOSE_BRACKET_${i}]`;
+                    }
+                  }
+                });
           }
         }
 
