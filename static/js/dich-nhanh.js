@@ -619,21 +619,30 @@ async function translate() {
   }
 
   translation = getProcessTextPostTranslate(results.join('\n'));
-  $("#translatedText").html(buildTranslatedResult([inputText.split(/\n/),
-        getProcessTextPostTranslate(processText).split(/\n/)],
-      translation.split(/\n/),
-      $("#flexSwitchCheckShowOriginal").prop("checked")));
+  $("#translatedText").html(buildTranslatedResult([inputText, getProcessTextPostTranslate(processText)], translation, $("#flexSwitchCheckShowOriginal").prop("checked")));
 }
 
-function buildTranslatedResult(textLines, resultLines, showOriginal) {
+function buildTranslatedResult(inputTexts, translation, showOriginal) {
   let result = document.createElement('div');
+
+  const inputTextParagraph = document.createElement('p');
+  $(inputTextParagraph).text(inputTexts[0]);
+  const inputLines = $(inputTextParagraph).html().split(/\n/);
+
+  const processTextParagraph = document.createElement('p');
+  $(inputTextParagraph).text(inputTexts[1]);
+  const processLines = $(processTextParagraph).html().split(/\n/);
+
+  const translationParagraph = document.createElement('p');
+  $(translationParagraph).text(translation);
+  const resultLines = $(translationParagraph).html().split(/\n/);
 
   if (showOriginal) {
     let lostLineFixedAmount = 0;
 
-    for (let i = 0; i < textLines[0].length; i++) {
+    for (let i = 0; i < inputLines.length; i++) {
       if (i < resultLines.length) {
-        if (textLines[0][i + lostLineFixedAmount].trim().length == 0
+        if (inputLines[i + lostLineFixedAmount].trim().length == 0
             && resultLines[i].trim().length > 0) {
           lostLineFixedAmount++;
           i--;
@@ -641,15 +650,11 @@ function buildTranslatedResult(textLines, resultLines, showOriginal) {
         }
 
         const paragraph = document.createElement('p');
-        paragraph.innerHTML = resultLines[i].trim() != textLines[1][i
-        + lostLineFixedAmount] ? '<i>' + textLines[0][i
-        + lostLineFixedAmount].trimStart() + '</i><br>' + resultLines[i]
-            : textLines[1][i + lostLineFixedAmount];
+        paragraph.innerHTML = resultLines[i].trim() != processLines[i + lostLineFixedAmount] ? '<i>' + inputLines[i + lostLineFixedAmount] + '</i><br>' + resultLines[i] : processLines[i + lostLineFixedAmount];
         result.appendChild(paragraph);
       } else {
         const paragraph = document.createElement('p');
-        paragraph.innerHTML = '<i>' + textLines[0][i + lostLineFixedAmount]
-            + '</i>';
+        paragraph.innerHTML = '<i>' + inputLines[i + lostLineFixedAmount] + '</i>';
         result.appendChild(paragraph);
       }
     }
