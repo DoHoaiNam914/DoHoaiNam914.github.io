@@ -688,6 +688,14 @@ function convertText(inputText, data, caseSensitive, useGlossary,
     for (let i = 0; i < lines.length; i++) {
       let chars = lines[i];
 
+      if (chars.trim().length == 0 || /^\[(?:OPEN|CLOSE)_BRACKET_\d+\]$/.test(chars)) {
+        results.push(chars);
+        continue;
+      }
+
+      const filteredEntries = [...dataEntries].filter(
+          (element) => chars.includes(element[0]));
+
       if (useGlossary && glossaryEntries.length > 0) {
         const MAX_GLOSSARY_LENGTH = glossaryEntries[0][0].length;
         const phrases = [];
@@ -735,9 +743,6 @@ function convertText(inputText, data, caseSensitive, useGlossary,
 
         chars = phrases.join(' ');
       }
-
-      const filteredEntries = [...dataEntries].filter(
-          (element) => chars.includes(element[0]));
 
       if (filteredEntries.length == 0) {
         results.push(chars);
