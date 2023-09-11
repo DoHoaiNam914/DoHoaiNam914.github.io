@@ -11,6 +11,7 @@ let vietphrases = {};
 
 const extendsSinovietnamese = {
   '团长': 'đoàn trưởng',
+  '少爷': 'thiếu gia',
   '将': 'tướng',
 }
 
@@ -1382,9 +1383,7 @@ const MicrosoftTranslator = {
        * Authorization: Bearer ${accessToken} - Content-Type: application/json - send(inputText)
        */
       const response = await $.ajax({
-        url: `https://api.cognitive.microsofttranslator.com/translate?${sourceLanguage
-        != '' ? 'from=' + sourceLanguage + '&'
-            : ''}to=${targetLanguage}&api-version=3.0&textType=html&includeSentenceLength=true`,
+        url: `${CORS_PROXY}https://api.cognitive.microsofttranslator.com/translate?${sourceLanguage != '' ? `from=${sourceLanguage}&` : ''}to=${targetLanguage}&api-version=3.0&textType=html&includeSentenceLength=true`,
         data: JSON.stringify(inputText.split(
             /\n/).map((sentence) => ({"Text": sentence}))),
         method: "POST",
@@ -1405,8 +1404,7 @@ const MicrosoftTranslator = {
 async function getMicrosoftTranslatorAccessToken(translator) {
   if (translator === Translators.MICROSOFT_TRANSLATOR) {
     try {
-      return await $.get(
-          CORS_PROXY + "https://edge.microsoft.com/translate/auth");
+      return await $.get(CORS_PROXY + "https://edge.microsoft.com/translate/auth");
     } catch (error) {
       console.error('Không thể lấy được Access Token: ' + error);
       throw error
