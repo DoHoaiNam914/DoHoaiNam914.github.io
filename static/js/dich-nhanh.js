@@ -1406,7 +1406,7 @@ async function getMicrosoftTranslatorAccessToken(translator) {
   if (translator === Translators.MICROSOFT_TRANSLATOR) {
     try {
       return await $.get(
-          "https://edge.microsoft.com/translate/auth");
+          CORS_PROXY + "https://edge.microsoft.com/translate/auth");
     } catch (error) {
       console.error('Không thể lấy được Access Token: ' + error);
       throw error
