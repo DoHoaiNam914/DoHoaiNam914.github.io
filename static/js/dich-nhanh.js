@@ -812,7 +812,7 @@ function convertText(inputText, data, caseSensitive, useGlossary,
 
     result = getProcessTextPostTranslate(results.join('\n'));
     return caseSensitive ? result.split(/\n/).map((element => element.replace(
-        /(^|\s*[.;:?!\-"'\p{Ps}\p{Pi}]\s+)(\p{Lower})/gu,
+        /(^|\s*(?:[.;:?!\-]\s+|["'\p{Ps}\p{Pi}]\s*))(\p{Lower})/gu,
         (match, p1, p2) => p1 + p2.toUpperCase()))).join('\n') : result;
   } catch (error) {
     console.error('Bản dịch lỗi:', error);
