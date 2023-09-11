@@ -12,6 +12,7 @@ let vietphrases = {};
 const extendsSinovietnamese = {
   '团长': 'đoàn trưởng',
   '少爷': 'thiếu gia',
+  '传功': 'truyền công',
   '将': 'tướng',
 }
 
