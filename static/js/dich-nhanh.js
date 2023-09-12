@@ -766,8 +766,8 @@ function convertText(inputText, data, caseSensitive, useGlossary,
           for (let k = MAX_PHRASE_LENGTH; k >= 1; k--) {
             if (data.hasOwnProperty(chars.substring(j, j + k))) {
               if (punctuation.hasOwnProperty(chars[j - 1])) {
-                phrases[phrases.length - 1] += data[chars.substring(j, j + k)];
-              } else {
+                phrases.push(phrases.pop() + data[chars.substring(j, j + k)]);
+              } else {c
                 phrases.push(data[chars.substring(j, j + k)]);
               }
               j += k - 1;
@@ -784,7 +784,8 @@ function convertText(inputText, data, caseSensitive, useGlossary,
                 if (tempWord.length > 0 || lines[i].trimStart().startWith(chars[j])) {
                   tempWord += punctuation[chars[j]];
                 } else {
-                  phrases[phrases.length - 1] += punctuation[chars[j]];
+                  phrases.push(phrases.pop() + punctuation[chars[j]]);
+                  break;
                 }
               } else {
                 tempWord += chars[j];
