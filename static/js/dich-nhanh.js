@@ -14,9 +14,11 @@ const extendsSinovietnamese = {
   '少爷': 'thiếu gia',
   '传功': 'truyền công',
   '县': 'huyện',
+  '姐': 'thư',
   '将': 'tướng',
 }
 
+let translateTask;
 let translation = '';
 
 $(document).ready(() => {
@@ -59,15 +61,30 @@ $(document).ready(() => {
   }).fail((jqXHR, textStatus, errorThrown) => {
     window.location.reload();
   });
-  $("#queryTextCounter").text($("#queryText").val().length);
+  $("#queryText").trigger("input");
+});
+
+$(visualViewport).resize((event) => {
+  $("#queryText").css("max-height", event.target.height - 248 + "px");
 });
 
 $("#translateButton").click(async function () {
+  if (translateTask != undefined) {
+    translator.terminate();
+  }
+
   if ($(this).text() == 'Dịch') {
     if ($("#queryText").val().length > 0) {
-      onPreTranslate();
-      await translate();
-      onPostTranslate();
+      $("#translatedText").show();
+      $("#queryText").hide();
+      $("#copyButton").addClass("disabled");
+      $("#pasteButton").addClass("disabled");
+      $("#imageFile").addClass("disabled");
+      $("#pasteUrlButton").addClass("disabled");
+      $("#clearImageButton").addClass("disabled");
+      $("#translatedText").html(null);
+      translateTask = await translate($("#queryText").val()).finally(
+          () => onPostTranslate());
     }
   } else if ($(this).text() == 'Sửa') {
     $("#translatedText").hide();
@@ -75,7 +92,6 @@ $("#translateButton").click(async function () {
     $("#clearImageButton").removeClass("disabled");
     $("#pasteUrlButton").removeClass("disabled");
     $("#imageFile").removeClass("disabled");
-    $("#reTranslateButton").addClass("disabled");
     translation = '';
     $(this).text("Dịch");
   }
@@ -111,10 +127,9 @@ $("#reTranslateButton").on("click", () => {
   $("#translateButton").text("Dịch").click();
 });
 
-$(".textarea").on("input", onInput);
-
 $("#queryText").on("input", () => {
-  onInput();
+  $("#queryText").css("height", "auto");
+  $("#queryText").css("height", $("#queryText").prop("scrollHeight") + "px");
   $("#queryTextCounter").text($("#queryText").val().length);
 });
 
@@ -159,6 +174,7 @@ $(".translator").click(function () {
 
     $(".translator").removeClass("active");
     $(this).addClass("active");
+    console.log($(this).data("id"));
 
     $("#sourceLangSelect").html(getSourceLanguageOptions($(this).data("id")));
 
@@ -167,23 +183,12 @@ $(".translator").click(function () {
           && prevSourceLanguageCode != null) {
         $("#sourceLangSelect").val(prevSourceLanguageCode);
         return false;
-      } else if (prevSourceLanguageName != null && prevSourceLanguageCode
-          != null && ($(this).text().replace(/[()]/g, '')
-              == prevSourceLanguageName.replace(/[()]/g, '') || $(
-                  this).val().toLowerCase()
-              == prevSourceLanguageCode.toLowerCase() || ($(
-                      this).val().toLowerCase().split('-')[0]
-                  == prevSourceLanguageCode.toLowerCase().split('-')[0] && $(
-                      this).text().includes(
-                      prevSourceLanguageName.split(' ').length == 2
-                          ? prevSourceLanguageName.replace(/[()]/g, '').split(
-                              ' ')[1] : prevSourceLanguageName.replace(/[()]/g,
-                              '').split(' ')[0])))) {
-        $("#sourceLangSelect").val($(this).val()).change();
+      } else if (prevSourceLanguageCode != null && (prevSourceLanguageName != null && $(this).text().replace(/[()]/g, '') == prevSourceLanguageName.replace(/[()]/g, '') || $(this).val().toLowerCase() == prevSourceLanguageCode.toLowerCase() || (prevSourceLanguageName != null && $(this).text().includes($(this).text().split(' ').length == 2 && prevSourceLanguageName.split(' ').length == 2 ? prevSourceLanguageName.replace(/[()]/g, '').split(' ')[1] : prevSourceLanguageName.replace(/[()]/g, '').split(' ')[0]) && $(this).val().toLowerCase().split('-')[0] == prevSourceLanguageCode.toLowerCase().split('-')[0]) || ($(this).val().toLowerCase().split('-')[0] == prevSourceLanguageCode.toLowerCase().split('-')[0]))) {
+        $("#sourceLangSelect").val($(this).val());
         return false;
-      } else if (index + 1 == $("#targetLangSelect > option").length) {
+      } else if (index + 1 == $("#sourceLangSelect > option").length) {
         $("#sourceLangSelect").val(
-            getDefaultSourceLanguage($(this).data("id")));
+            getDefaultSourceLanguage($(".translator.active").data("id")));
       }
     });
 
@@ -194,23 +199,16 @@ $(".translator").click(function () {
           && prevTargetLanguageCode != null) {
         $("#targetLangSelect").val(prevTargetLanguageCode);
         return false;
-      } else if (prevTargetLanguageName != null && prevTargetLanguageCode
-          != null && ($(this).text().replace(/[()]/g, '')
-              == prevTargetLanguageName.replace(/[()]/g, '') || $(
-                  this).val().toLowerCase()
-              == prevTargetLanguageCode.toLowerCase() || ($(
-                      this).val().toLowerCase().split('-')[0]
-                  == prevTargetLanguageCode.toLowerCase().split('-')[0] && $(
-                      this).text().includes(
-                      prevTargetLanguageName.split(' ').length >= 2
-                          ? prevTargetLanguageName.replace(/[()]/g, '').split(
-                              ' ')[1] : prevTargetLanguageName.replace(/[()]/g,
-                              '').split(' ')[0])))) {
-        $("#targetLangSelect").val($(this).val()).change();
+      } else if (prevTargetLanguageCode != null && (prevTargetLanguageName != null && $(this).text().replace(/[()]/g, '') == prevTargetLanguageName.replace(/[()]/g, '') || $(this).val().toLowerCase() == prevTargetLanguageCode.toLowerCase() || (prevTargetLanguageName != null && $(this).text().includes($(this).text().split(' ').length == 2 && prevTargetLanguageName.split(' ').length == 2 ? prevTargetLanguageName.replace(/[()]/g, '').split(' ')[1] : prevTargetLanguageName.replace(/[()]/g, '').split(' ')[0]) && $(this).val().toLowerCase().split('-')[0] == prevTargetLanguageCode.toLowerCase().split('-')[0]) || ($(this).val().toLowerCase().split('-')[0] == prevTargetLanguageCode.toLowerCase().split('-')[0]))) {
+        if ($(".translator.active").data("id") === Translators.DEEPL_TRANSLATOR && prevTargetLanguageName == 'English') {
+          $("#targetLangSelect").val("EN-US");
+        } else {
+          $("#targetLangSelect").val($(this).val());
+        }
         return false;
       } else if (index + 1 == $("#targetLangSelect > option").length) {
         $("#targetLangSelect").val(
-            getDefaultTargetLanguage($(this).data("id")));
+            getDefaultTargetLanguage($(".translator.active").data("id")));
       }
     });
 
@@ -255,15 +253,15 @@ function loadTranslatorOptions() {
 
 function getDefaultSourceLanguage(translator) {
   switch (translator) {
-    case Translators.GOOGLE_TRANSLATE:
-    case Translators.PAPAGO:
-      return 'auto';
+    case Translators.DEEPL_TRANSLATOR:
+    case Translators.MICROSOFT_TRANSLATOR:
+      return '';
 
     case Translators.VIETPHRASE:
       return 'zh';
 
     default:
-      return '';
+      return 'auto';
   }
 }
 
@@ -351,7 +349,7 @@ function getSourceLanguageOptions(translator) {
       break;
 
     case Translators.VIETPHRASE:
-      autoDetectOption.innerText = 'Tiếng Trung Quốc';
+      autoDetectOption.innerText = 'Tiếng Trung';
       autoDetectOption.value = 'zh';
       sourceLangSelect.appendChild(autoDetectOption);
       break;
@@ -417,10 +415,9 @@ function getTargetLanguageOptions(translator) {
   return targetLangSelect.innerHTML;
 }
 
-async function translate() {
+async function translate(inputText) {
   const translator = $(".translator.active").data("id");
 
-  const inputText = $("#queryText").val();
   const sourceLanguage = $("#sourceLangSelect").val();
   const targetLanguage = $("#targetLangSelect").val();
 
@@ -758,8 +755,14 @@ function convertText(inputText, data, caseSensitive, useGlossary,
       if (translationAlgorithm
           === VietPhraseTranslationAlgorithms.LONG_VIETPHRASE_PRIOR) {
         for (const property in Object.fromEntries(filteredEntries)) {
-          punctuationEntries.forEach((element) => chars = chars.replace(new RegExp(element[0].replace(/[/\[\]\-.\\|^$!=<()*+?{}]/g, '\\$&'), 'g'), element[1]));
-          chars = chars.replace(new RegExp(`${property}(?=$|(?:[!,.:;?]\\s+|["'\\p{Pe}\\p{Pf}]\\s*))`, 'gu'), data[property]).replace(new RegExp(property, 'g'), `${data[property]} `);
+          punctuationEntries.forEach((element) => chars = chars.replace(
+              new RegExp(
+                  element[0].replace(/[/\[\]\-.\\|^$!=<()*+?{}]/g, '\\$&'),
+                  'g'), element[1]));
+          chars = chars.replace(
+              new RegExp(`${property}(?=$|(?:[!,.:;?]\\s+|["'\\p{Pe}\\p{Pf}]\\s*))`,
+                  'gu'), data[property]).replace(new RegExp(property, 'g'),
+              `${data[property]} `);
         }
 
         results.push(chars);
@@ -913,45 +916,13 @@ function getProcessTextPostTranslate(text) {
   return newText.split(/\n/).map((element) => element.trim()).join('\n');
 }
 
-function onInput() {
-  $("main.container .textarea").css("height", "auto");
-
-  const height = [
-    $("#queryText").prop("scrollHeight"),
-    $("#translatedText").prop("scrollHeight"),
-  ].sort((a, b) => b - a)[0];
-
-  if (height > 300) {
-    $("main.container .textarea").css("height", height + "px");
-  }
-}
-
-function onPreTranslate() {
-  $("#translatedText").show();
-  $("#queryText").hide();
-  $("#translateButton").addClass("disabled");
-  $("#reTranslateButton").addClass("disabled");
-  $(".translator").addClass("disabled");
-  $("select.option").attr("disabled", true);
-  $("input.option").attr("disabled", true);
-  $(".option:not([disabled])").addClass("disabled");
-  $("#copyButton").addClass("disabled");
-  $("#pasteButton").addClass("disabled");
-  $("#imageFile").addClass("disabled");
-  $("#pasteUrlButton").addClass("disabled");
-  $("#clearImageButton").addClass("disabled");
-  $("#translatedText").html(null);
-}
-
 function onPostTranslate() {
-  onInput();
-  $("#translateButton").removeClass("disabled");
-  $(".option").removeAttr("disabled");
-  $(".option").removeClass("disabled");
+  $("#translatedText").css("height", "auto");
+  $("#translatedText").css("height",
+      $("#translatedText").prop("scrollHeight") + "px");
   $("#pasteButton").removeClass("disabled");
   $("#copyButton").removeClass("disabled");
   $(".translator").removeClass("disabled");
-  $("#reTranslateButton").removeClass("disabled");
   $("#translateButton").text("Sửa");
 }
 

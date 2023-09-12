@@ -110,18 +110,22 @@
       text-align: center;
     }
 
-    main.container .textarea {
+    .textarea {
       font-family: serif-ja, serif;
       font-size: 18px;
-      min-height: 300px;
+      min-height: calc(100vh - 15.5rem) !important;
       line-height: 1.2em;
       overflow: hidden;
       overflow-wrap: break-word;
       width: 100%;
     }
 
+    #queryText {
+      overflow-y: auto;
+    }
+
     @media (max-width: 1000px) {
-      main.container .textarea {
+      .textarea {
         font-size: 16px;
       }
     }
