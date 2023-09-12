@@ -439,13 +439,14 @@ async function translate() {
           == 'zh-Hans' || targetLanguage == 'zh-Hant' || targetLanguage == 'ja'
           || targetLanguage == 'ko');
 
-  const processText = getProcessTextPreTranslate(inputText,
-      $("#flexSwitchCheckProtectQuotationMarks").prop("checked") && translator
-      !== Translators.VIETPHRASE && isCjkTargetLanguage);
-  const results = [];
   const errorMessage = document.createElement("p");
 
   try {
+    const processText = getProcessTextPreTranslate(inputText,
+        $("#flexSwitchCheckProtectQuotationMarks").prop("checked") && translator
+        !== Translators.VIETPHRASE && isCjkTargetLanguage);
+    const results = [];
+
     let MAX_LENGTH;
     let MAX_LINE;
 
@@ -614,14 +615,16 @@ async function translate() {
         canTranslate = false;
       }
     }
+
+    translation = getProcessTextPostTranslate(results.join('\n'));
+    $("#translatedText").html(buildTranslatedResult(
+        [inputText, getProcessTextPostTranslate(processText)], translation,
+        $("#flexSwitchCheckShowOriginal").prop("checked")));
   } catch (error) {
     errorMessage.innerText = 'Bản dịch thất bại: ' + JSON.stringify(error);
     $("#translatedText").html(errorMessage);
     onPostTranslate();
   }
-
-  translation = getProcessTextPostTranslate(results.join('\n'));
-  $("#translatedText").html(buildTranslatedResult([inputText, getProcessTextPostTranslate(processText)], translation, $("#flexSwitchCheckShowOriginal").prop("checked")));
 }
 
 function buildTranslatedResult(inputTexts, translation, showOriginal) {
@@ -652,16 +655,21 @@ function buildTranslatedResult(inputTexts, translation, showOriginal) {
         }
 
         const paragraph = document.createElement('p');
-        paragraph.innerHTML = resultLines[i].trim() != processLines[i + lostLineFixedAmount] ? '<i>\t' + inputLines[i + lostLineFixedAmount].trimStart() + '</i><br>\t' + resultLines[i].trimStart() : processLines[i + lostLineFixedAmount].trimStart();
+        paragraph.innerHTML = resultLines[i].trim() != processLines[i
+        + lostLineFixedAmount] ? `<i>${inputLines[i
+            + lostLineFixedAmount].trimStart()}</i><br>${resultLines[i].trimStart()}`
+            : processLines[i + lostLineFixedAmount].trimStart();
         result.appendChild(paragraph);
       } else {
         const paragraph = document.createElement('p');
-        paragraph.innerHTML = '<i>\t' + inputLines[i + lostLineFixedAmount].trimStart() + '</i>';
+        paragraph.innerHTML = `<i>${inputLines[i
+        + lostLineFixedAmount].trimStart()}</i>`;
         result.appendChild(paragraph);
       }
     }
   } else {
-    result.innerHTML = ('<p>\t' + resultLines.map((element) => element.trimStart()).join('</p><p>\t') + '</p>');
+    result.innerHTML = `<p>${resultLines.map(
+        (element) => element.trimStart()).join('</p><p>')}</p>`;
   }
   return result.innerHTML.replace(/(<p>)(<\/p>)/g, '$1<br>$2');
 }
@@ -677,7 +685,9 @@ function convertText(inputText, data, caseSensitive, useGlossary,
         (element) => inputText.includes(element[0]));
     const dataEntries = Object.entries(data);
 
-    const punctuation = Object.fromEntries([...cjkmap].filter((element) => element[0] == '…' || element[0].split('…').length != 2));
+    const punctuationEntries = [...cjkmap].filter(
+        (element) => element[0] == '…' || element[0].split('…').length != 2);
+    const punctuation = Object.fromEntries(punctuationEntries);
 
     const results = [];
     let result = inputText;
@@ -686,7 +696,11 @@ function convertText(inputText, data, caseSensitive, useGlossary,
     for (let i = 0; i < lines.length; i++) {
       let chars = lines[i];
 
-      if (chars.trim().length == 0 || /^\[(?:OPEN|CLOSE)_BRACKET_\d+\]$/.test(chars)) {
+      if (chars.trim().length == 0 || /^\[(?:OPEN|CLOSE)_BRACKET_\d+\]/.test(
+          chars)) {
+        punctuationEntries.forEach((element) => chars = chars.replace(
+            new RegExp(element[0].replace(/[/\[\]\-.\\|^$!=<()*+?{}]/g, '\\$&'),
+                'g'), element[1]));
         results.push(chars);
         continue;
       }
@@ -781,10 +795,11 @@ function convertText(inputText, data, caseSensitive, useGlossary,
               }
 
               if (punctuation.hasOwnProperty(chars[j])) {
-                if (tempWord.length > 0 || lines[i].trimStart().startsWith(chars[j])) {
-                  tempWord += punctuation[chars[j]].replace(/\\\\/g, '\\');
+                if (tempWord.length > 0 || lines[i].trimStart().startsWith(
+                    chars[j])) {
+                  tempWord += punctuation[chars[j]];
                 } else {
-                  phrases.push(phrases.pop() + punctuation[chars[j]].replace(/\\\\/g, '\\'));
+                  phrases.push(phrases.pop() + punctuation[chars[j]]);
                   break;
                 }
               } else {
@@ -840,46 +855,27 @@ function getProcessTextPreTranslate(text, doProtectQuotationMarks) {
                 == 2);
 
         for (let i = 0; i < brackets.length; i++) {
-          if (brackets[i][0].startsWith('^')) {
-            newText = newText.replace(
-                new RegExp(`${brackets[i][0].split('…')[0]}(?!(?:OPEN|CLOSE)_BRACKET_\\d+)(.*${brackets[i][0].split('…')[1]}.?)$`,
-                    'g'), `[OPEN_BRACKET_${i}]$1`).replace(
-                new RegExp(`${brackets[i][0].split('…')[1]}(.?)$`, 'g'),
-                (match, p1, offset) => {
-                  for (let j = i; j >= 0; j--) {
-                    if (/CLOSE_BRACKET_\d+/.test(
-                        newText.substring(offset - `CLOSE_BRACKET_${j}`.length,
-                            offset)) || /OPEN_BRACKET_\d+/.test(
-                        newText.substring(offset - `OPEN_BRACKET_${j}`.length,
-                            offset))) {
-                      return match;
-                    } else if (j == 0) {
-                      return `[CLOSE_BRACKET_${i}]${p1}`;
-                    }
+          newText = newText.replace(
+              new RegExp(`${brackets[i][0].split('…')[0]}(?!(?:OPEN|CLOSE)_BRACKET_\\d+)`,
+                  'g'), `[OPEN_BRACKET_${i}]`).replace(
+              new RegExp(brackets[i][0].split('…')[1], 'g'),
+              (match, offset) => {
+                for (let j = i; j >= 0; j--) {
+                  if (/CLOSE_BRACKET_\d+/.test(
+                      newText.substring(offset - `CLOSE_BRACKET_${j}`.length,
+                          offset)) || /OPEN_BRACKET_\d+/.test(
+                      newText.substring(offset - `OPEN_BRACKET_${j}`.length,
+                          offset))) {
+                    return match;
+                  } else if (j == 0) {
+                    return `[CLOSE_BRACKET_${i}]`;
                   }
-                });
-          } else {
-            newText = newText.replace(
-                new RegExp(`${brackets[i][0].split('…')[0]}(?!(?:OPEN|CLOSE)_BRACKET_\\d+)`,
-                    'g'), `[OPEN_BRACKET_${i}]`).replace(
-                new RegExp(brackets[i][0].split('…')[1], 'g'),
-                (match, offset) => {
-                  for (let j = i; j >= 0; j--) {
-                    if (/CLOSE_BRACKET_\d+/.test(
-                        newText.substring(offset - `CLOSE_BRACKET_${j}`.length,
-                            offset)) || /OPEN_BRACKET_\d+/.test(
-                        newText.substring(offset - `OPEN_BRACKET_${j}`.length,
-                            offset))) {
-                      return match;
-                    } else if (j == 0) {
-                      return `[CLOSE_BRACKET_${i}]`;
-                    }
-                  }
-                });
-          }
+                }
+              });
         }
 
-        newText = newText.replace(/(\[(OPEN|CLOSE)_BRACKET_\d+\])/g, '\n$1\n');
+        newText = newText.replace(/(\[OPEN_BRACKET_\d+\])/g,
+            '\n$1\n').replace(/(\[CLOSE_BRACKET_\d+\])(\p{Po}?)/gu, '\n$1$2\n');
       }
     } catch (error) {
       console.error('Lỗi xử lý văn bản trước khi dịch:', error);
@@ -910,6 +906,8 @@ function getProcessTextPostTranslate(text) {
           newText = newText.replace(
               new RegExp(`\n\\[OPEN_BRACKET_${i}\\]\n`, 'gi'),
               ` ${brackets[i][1].split('...')[0]}`).replace(
+              new RegExp(`\n\\[CLOSE_BRACKET_${i}\\](\\p{Po})\n`, 'giu'),
+              `${brackets[i][1].split('...')[1]}$1`).replace(
               new RegExp(`\n\\[CLOSE_BRACKET_${i}\\]\n`, 'gi'),
               `${brackets[i][1].split('...')[1]} `);
         }
@@ -1393,7 +1391,9 @@ const MicrosoftTranslator = {
        * Authorization: Bearer ${accessToken} - Content-Type: application/json - send(inputText)
        */
       const response = await $.ajax({
-        url: `${CORS_PROXY}https://api.cognitive.microsofttranslator.com/translate?${sourceLanguage != '' ? `from=${sourceLanguage}&` : ''}to=${targetLanguage}&api-version=3.0&textType=html&includeSentenceLength=true`,
+        url: `https://api.cognitive.microsofttranslator.com/translate?${sourceLanguage
+        != '' ? `from=${sourceLanguage}&`
+            : ''}to=${targetLanguage}&api-version=3.0&textType=html&includeSentenceLength=true`,
         data: JSON.stringify(inputText.split(
             /\n/).map((sentence) => ({"Text": sentence}))),
         method: "POST",
@@ -1414,7 +1414,7 @@ const MicrosoftTranslator = {
 async function getMicrosoftTranslatorAccessToken(translator) {
   if (translator === Translators.MICROSOFT_TRANSLATOR) {
     try {
-      return await $.get(CORS_PROXY + "https://edge.microsoft.com/translate/auth");
+      return await $.get("https://edge.microsoft.com/translate/auth");
     } catch (error) {
       console.error('Không thể lấy được Access Token: ' + error);
       throw error
