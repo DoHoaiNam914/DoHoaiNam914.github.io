@@ -124,7 +124,7 @@ $("#inputVietPhrases").on("change", function () {
     let vietphraseList = this.result.split(/\r?\n/).map(
         (phrase) => phrase.split('=')).filter(
         (phrase) => phrase.length == 2).map(
-        (element) => [element[0].replace(/([.\[\]()*+?])/g, '\\$1'),
+        (element) => [element[0].replace(/[/\[\]\-.\\|^$!=<()*+?{}]/g, '\\$&'),
           element[1].split('/')[0].split('|')[0]]);
     vietphraseList = [...vietphraseList,
       ...Object.entries(sinovietnameses)].filter(
@@ -155,11 +155,6 @@ $(".translator").click(function () {
         prevSourceLanguageCode);
     const prevTargetLanguageName = getLanguageName(prevTranslator,
         prevTargetLanguageCode);
-
-    if ($(this).data("id") === Translators.VIETPHRASE) {
-      translator = loadTranslatorOptions();
-      localStorage.setItem("translator", JSON.stringify(translator));
-    }
 
     $(".translator").removeClass("active");
     $(this).addClass("active");
@@ -218,19 +213,17 @@ $(".translator").click(function () {
       }
     });
 
-    if ($(".translator.active").data("id") !== Translators.VIETPHRASE) {
-      translator['translator'] = $(this).data("id");
+    translator['translator'] = $(this).data("id");
 
-      for (let i = 0; i < $(".option").length; i++) {
-        if ($(".option")[i].id == 'sourceLangSelect') {
-          translator[$(".option")[i].id] = $(".option")[i].value;
-        } else if ($(".option")[i].id == 'targetLangSelect') {
-          translator[$(".option")[i].id] = $(".option")[i].value;
-        }
+    for (let i = 0; i < $(".option").length; i++) {
+      if ($(".option")[i].id == 'sourceLangSelect') {
+        translator[$(".option")[i].id] = $(".option")[i].value;
+      } else if ($(".option")[i].id == 'targetLangSelect') {
+        translator[$(".option")[i].id] = $(".option")[i].value;
       }
-
-      localStorage.setItem("translator", JSON.stringify(translator));
     }
+
+    localStorage.setItem("translator", JSON.stringify(translator));
 
     if ($("#translateButton").text() == 'Sửa') {
       translation = '';
@@ -764,8 +757,8 @@ function convertText(inputText, data, caseSensitive, useGlossary,
       if (translationAlgorithm
           === VietPhraseTranslationAlgorithms.LONG_VIETPHRASE_PRIOR) {
         for (const property in Object.fromEntries(filteredEntries)) {
-          chars = chars.replace(new RegExp(property, 'g'),
-              `${data[property]} `).trimEnd();
+          punctuationEntries.forEach((element) => chars = chars.replace(new RegExp(element[0].replace(/[/\[\]\-.\\|^$!=<()*+?{}]/g, '\\$&'), 'g'), element[1]));
+          chars = chars.replace(new RegExp(`${property}(?=$|(?:[!,.:;?]\\s+|["'\\p{Pe}\\p{Pf}]\\s*))`, 'gu'), data[property]).replace(new RegExp(property, 'g'), `${data[property]} `);
         }
 
         results.push(chars);
@@ -836,7 +829,7 @@ function convertText(inputText, data, caseSensitive, useGlossary,
 
     result = getProcessTextPostTranslate(results.join('\n'));
     return caseSensitive ? result.split(/\n/).map((element => element.replace(
-        /(^|\s*(?:[.;:?!\-]\s+|["'\p{Ps}\p{Pi}]\s*))(\p{Lower})/gu,
+        /(^|\s*(?:[!\-.:;?]\s+|["'\p{Ps}\p{Pi}]\s*))(\p{Lower})/gu,
         (match, p1, p2) => p1 + p2.toUpperCase()))).join('\n') : result;
   } catch (error) {
     console.error('Bản dịch lỗi:', error);
