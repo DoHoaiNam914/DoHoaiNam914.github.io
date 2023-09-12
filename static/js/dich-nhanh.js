@@ -767,7 +767,7 @@ function convertText(inputText, data, caseSensitive, useGlossary,
             if (data.hasOwnProperty(chars.substring(j, j + k))) {
               if (punctuation.hasOwnProperty(chars[j - 1])) {
                 phrases.push(phrases.pop() + data[chars.substring(j, j + k)]);
-              } else {c
+              } else {
                 phrases.push(data[chars.substring(j, j + k)]);
               }
               j += k - 1;
@@ -781,10 +781,10 @@ function convertText(inputText, data, caseSensitive, useGlossary,
               }
 
               if (punctuation.hasOwnProperty(chars[j])) {
-                if (tempWord.length > 0 || lines[i].trimStart().startWith(chars[j])) {
-                  tempWord += punctuation[chars[j]];
+                if (tempWord.length > 0 || lines[i].trimStart().startsWith(chars[j])) {
+                  tempWord += punctuation[chars[j]].replace(/\\\\/g, '\\');
                 } else {
-                  phrases.push(phrases.pop() + punctuation[chars[j]]);
+                  phrases.push(phrases.pop() + punctuation[chars[j]].replace(/\\\\/g, '\\'));
                   break;
                 }
               } else {
