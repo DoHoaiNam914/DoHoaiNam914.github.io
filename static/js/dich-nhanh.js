@@ -906,7 +906,7 @@ function getProcessTextPostTranslate(text) {
           newText = newText.replace(
               new RegExp(`\n\\[OPEN_BRACKET_${i}\\]\n`, 'gi'),
               ` ${brackets[i][1].split('...')[0]}`).replace(
-              new RegExp(`\n\\[CLOSE_BRACKET_${i}\\](\\p{Po})\n`, 'giu'),
+              new RegExp(`\n\\[CLOSE_BRACKET_${i}\\](.*)\n`, 'gi'),
               `${brackets[i][1].split('...')[1]}$1`).replace(
               new RegExp(`\n\\[CLOSE_BRACKET_${i}\\]\n`, 'gi'),
               `${brackets[i][1].split('...')[1]} `);
