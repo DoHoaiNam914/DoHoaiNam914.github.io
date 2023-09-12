@@ -92,6 +92,7 @@ $("#translateButton").click(async function () {
     $("#clearImageButton").removeClass("disabled");
     $("#pasteUrlButton").removeClass("disabled");
     $("#imageFile").removeClass("disabled");
+    $("#retranslateButton").addClass("disabled");
     translation = '';
     $(this).text("Dịch");
   }
@@ -113,16 +114,12 @@ $("#pasteButton").on("click", () => {
     if (clipText.length > 0) {
       window.scrollTo({top: 0, behavior: 'smooth'});
       $("#queryText").val(clipText).trigger("input");
-
-      if ($("#translateButton").text() == 'Sửa') {
-        translation = '';
-        $("#translateButton").text("Dịch").click();
-      }
+      if ($("#translateButton").text() == 'Sửa') $("#retranslateButton").click();
     }
   });
 });
 
-$("#reTranslateButton").on("click", () => {
+$("#retranslateButton").click(() => {
   translation = '';
   $("#translateButton").text("Dịch").click();
 });
@@ -133,32 +130,14 @@ $("#queryText").on("input", () => {
   $("#queryTextCounter").text($("#queryText").val().length);
 });
 
-$("#inputVietPhrases").on("change", function () {
-  const reader = new FileReader();
+$(".modal").on("hidden.bs.modal", () => $(document.body).removeAttr("style"));
 
-  reader.onload = function () {
-    let vietphraseList = this.result.split(/\r?\n/).map(
-        (phrase) => phrase.split('=')).filter(
-        (phrase) => phrase.length == 2).map(
-        (element) => [element[0].replace(/[/\[\]\-.\\|^$!=<()*+?{}]/g, '\\$&'),
-          element[1].split('/')[0].split('|')[0]]);
-    vietphraseList = [...vietphraseList,
-      ...Object.entries(sinovietnameses)].filter(
-        ([key]) => !vietphraseList[key] && (vietphraseList[key] = 1), {})
-    vietphrases = Object.fromEntries(vietphraseList);
-    console.log('Đã tải xong tệp dữ liệu VietPhrase.txt!');
-  }
-  reader.readAsText($(this).prop("files")[0]);
-});
+$(".modal").on("shown.bs.modal", () => $(document.body).css("overflow", "hidden"));
 
 $(".option").change(() => {
   translator = loadTranslatorOptions();
   localStorage.setItem("translator", JSON.stringify(translator));
-
-  if ($("#translateButton").text() == 'Sửa') {
-    translation = '';
-    $("#translateButton").text("Dịch").click();
-  }
+  if ($("#translateButton").text() == 'Sửa') $("#retranslateButton").click();
 });
 
 $(".translator").click(function () {
@@ -223,12 +202,22 @@ $(".translator").click(function () {
     }
 
     localStorage.setItem("translator", JSON.stringify(translator));
-
-    if ($("#translateButton").text() == 'Sửa') {
-      translation = '';
-      $("#translateButton").text("Dịch").click();
-    }
+    if ($("#translateButton").text() == 'Sửa') $("#retranslateButton").click();
   }
+});
+
+$("#inputVietPhrases").on("change", function () {
+  const reader = new FileReader();
+
+  reader.onload = function () {
+    let vietphraseList = this.result.split(/\r?\n/).map((phrase) => phrase.split($("#inputVietPhrases").prop("files")[0].type == 'text/tab-separated-values' ? '\t' : '=')).filter((phrase) => phrase.length == 2).map((element) => [element[0].replace(/[/\[\]\-.\\|^$!=<()*+?{}]/g, '\\$&'), element[1].split('/')[0].split('|')[0]]);
+    vietphraseList = [...vietphraseList,
+      ...Object.entries(sinovietnameses)].filter(
+        ([key]) => !vietphraseList[key] && (vietphraseList[key] = 1), {})
+    vietphrases = Object.fromEntries(vietphraseList);
+    console.log('Đã tải xong tệp dữ liệu VietPhrase.txt!');
+  }
+  reader.readAsText($(this).prop("files")[0]);
 });
 
 function loadTranslatorOptions() {
@@ -776,11 +765,14 @@ function convertText(inputText, data, caseSensitive, useGlossary,
         for (let j = 0; j < chars.length; j++) {
           for (let k = MAX_PHRASE_LENGTH; k >= 1; k--) {
             if (data.hasOwnProperty(chars.substring(j, j + k))) {
-              if (punctuation.hasOwnProperty(chars[j - 1])) {
-                phrases.push(phrases.pop() + data[chars.substring(j, j + k)]);
-              } else {
-                phrases.push(data[chars.substring(j, j + k)]);
+              if (data[chars.substring(j, j + k)].length > 0) {
+                if (punctuation.hasOwnProperty(chars[j - 1]) && /[\u{3000}-\u{303f}\u{30a0}-\u{30ff}\u{fe30}-\u{fe4f}\u{ff00}-\u{ff60}]/u.test(chars[j - 1])) {
+                  phrases.push((phrases.pop() ?? '') + data[chars.substring(j, j + k)]);
+                } else {
+                  phrases.push(data[chars.substring(j, j + k)]);
+                }
               }
+
               j += k - 1;
               break;
             } else if (k == 1) {
@@ -792,24 +784,14 @@ function convertText(inputText, data, caseSensitive, useGlossary,
               }
 
               if (punctuation.hasOwnProperty(chars[j])) {
-                if (tempWord.length > 0 || lines[i].trimStart().startsWith(
-                    chars[j])) {
+                if (lines[i].startsWith(chars[j]) || tempWord.length > 0) {
                   tempWord += punctuation[chars[j]];
                 } else {
-                  phrases.push(phrases.pop() + punctuation[chars[j]]);
+                  phrases.push((phrases.pop() ?? '') + punctuation[chars[j]]);
                   break;
                 }
               } else {
                 tempWord += chars[j];
-              }
-
-              if (/\p{White_Space}/u.test(tempWord)) {
-                if (!/\p{White_Space}/u.test(chars[j + 1])) {
-                  phrases[phrases.length - 1] += tempWord.substring(0,
-                      tempWord.length - 1);
-                  tempWord = '';
-                }
-                break;
               }
 
               for (let l = MAX_PHRASE_LENGTH; l >= 1; l--) {
@@ -871,8 +853,7 @@ function getProcessTextPreTranslate(text, doProtectQuotationMarks) {
               });
         }
 
-        newText = newText.replace(/(\[OPEN_BRACKET_\d+\])/g,
-            '\n$1\n').replace(/(\[CLOSE_BRACKET_\d+\])(\p{Po}?)/gu, '\n$1$2\n');
+        newText = newText.replace(/(\[OPEN_BRACKET_\d+\])/g, '\n$1\n').replace(/(\[CLOSE_BRACKET_\d+\])([!,.:;?\u{3001}\u{3002}\u{ff01}\u{ff0c}\u{ff0e}\u{ff1a}\{ff1b}\u{ff1f}]?)/gu, '\n$1$2\n');
       }
     } catch (error) {
       console.error('Lỗi xử lý văn bản trước khi dịch:', error);
@@ -892,10 +873,10 @@ function getProcessTextPostTranslate(text) {
           (element) => element[0] != '…' && element[0].split('…').length == 2);
 
       for (let i = brackets.length - 1; i >= 0; i--) {
-        if (/[\u{3000}-\u{303f}\u{30a0}-\u{30ff}\u{fe30}-\u{fe4f}\u{ff00}-\u{ffef}]/u.test(
+        if (/[\u{3000}-\u{303f}\u{30a0}-\u{30ff}\u{fe30}-\u{fe4f}\u{ff00}-\u{ff60}]/u.test(
             brackets[i][1])) {
           newText = newText.replace(
-              new RegExp(`\n\\[OPEN_BRACKET_${i}\\]\n`, 'gi'),
+              new RegExp(`\p{White_Space}?\n\\[OPEN_BRACKET_${i}\\]\n`, 'giu'),
               brackets[i][1].split('...')[0]).replace(
               new RegExp(`\n\\[CLOSE_BRACKET_${i}\\](.*)\n`, 'gi'),
               `${brackets[i][1].split('...')[1]}$1`);
@@ -923,6 +904,7 @@ function onPostTranslate() {
   $("#pasteButton").removeClass("disabled");
   $("#copyButton").removeClass("disabled");
   $(".translator").removeClass("disabled");
+  $("#retranslateButton").removeClass("disabled");
   $("#translateButton").text("Sửa");
 }
 
