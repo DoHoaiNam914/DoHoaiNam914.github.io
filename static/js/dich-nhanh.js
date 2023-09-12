@@ -700,23 +700,12 @@ function convertText(inputText, data, caseSensitive, useGlossary,
               j += k - 1;
               break;
             } else if (k == 1) {
-              if (tempWord.length > 0 && /\p{White_Space}/u.test(chars[j])
-                  && !/\p{White_Space}/u.test(
-                      tempWord)) {
+              if (tempWord.length > 0 && chars[j] == ' ' && !tempWord.includes(' ')) {
                 tempWord.split(' ').forEach((element) => phrases.push(element));
                 tempWord = '';
               }
 
               tempWord += chars[j];
-
-              if (/\p{White_Space}/u.test(tempWord)) {
-                if (!/\p{White_Space}/u.test(chars[j + 1])) {
-                  phrases[phrases.length - 1] += tempWord.substring(0,
-                      tempWord.length - 1);
-                  tempWord = '';
-                }
-                break;
-              }
 
               for (let l = MAX_GLOSSARY_LENGTH; l >= 1; l--) {
                 if (tempWord.length > 0 && (glossary.hasOwnProperty(
@@ -776,9 +765,7 @@ function convertText(inputText, data, caseSensitive, useGlossary,
               j += k - 1;
               break;
             } else if (k == 1) {
-              if (tempWord.length > 0 && /\p{White_Space}/u.test(chars[j])
-                  && !/\p{White_Space}/u.test(
-                      tempWord)) {
+              if (tempWord.length > 0 && chars[j] == ' ' && !tempWord.includes(' ')) {
                 tempWord.split(' ').forEach((element) => phrases.push(element));
                 tempWord = '';
               }
@@ -853,7 +840,7 @@ function getProcessTextPreTranslate(text, doProtectQuotationMarks) {
               });
         }
 
-        newText = newText.replace(/(\[OPEN_BRACKET_\d+\])/g, '\n$1\n').replace(/(\[CLOSE_BRACKET_\d+\])([!,.:;?\u{3001}\u{3002}\u{ff01}\u{ff0c}\u{ff0e}\u{ff1a}\{ff1b}\u{ff1f}]?)/gu, '\n$1$2\n');
+        console.log(newText);newText = newText.replace(/(\[OPEN_BRACKET_\d+\])/g, '\n$1\n').replace(/(\[CLOSE_BRACKET_\d+\])(\u{3002}?)/gu, '\n$1$2\n');console.log(newText);
       }
     } catch (error) {
       console.error('Lỗi xử lý văn bản trước khi dịch:', error);
@@ -876,7 +863,7 @@ function getProcessTextPostTranslate(text) {
         if (/[\u{3000}-\u{303f}\u{30a0}-\u{30ff}\u{fe30}-\u{fe4f}\u{ff00}-\u{ff60}]/u.test(
             brackets[i][1])) {
           newText = newText.replace(
-              new RegExp(`\\p{White_Space}?\n\\[OPEN_BRACKET_${i}\\]\n`, 'giu'),
+              new RegExp(` ?\n\\[OPEN_BRACKET_${i}\\]\n`, 'giu'),
               brackets[i][1].split('...')[0]).replace(
               new RegExp(`\n\\[CLOSE_BRACKET_${i}\\](.*)\n`, 'gi'),
               `${brackets[i][1].split('...')[1]}$1`);
@@ -1396,23 +1383,12 @@ function getDynamicDictionaryText(text, isMicrosoftTranslator = true) {
             j += k - 1;
             break;
           } else if (k == 1) {
-            if (tempWord.length > 0 && /\p{White_Space}/u.test(chars[j])
-                && !/\p{White_Space}/u.test(
-                    tempWord)) {
+            if (tempWord.length > 0 && chars[j] == ' ' && !tempWord.includes(' ')) {
               tempWord.split(' ').forEach((element) => phrases.push(element));
               tempWord = '';
             }
 
             tempWord += chars[j];
-
-            if (/\p{White_Space}/u.test(tempWord)) {
-              if (!/\p{White_Space}/u.test(chars[j + 1])) {
-                phrases[phrases.length - 1] += tempWord.substring(0,
-                    tempWord.length - 1);
-                tempWord = '';
-              }
-              break;
-            }
 
             for (let l = MAX_GLOSSARY_LENGTH; l >= 1; l--) {
               if (tempWord.length > 0 && (glossary.hasOwnProperty(
