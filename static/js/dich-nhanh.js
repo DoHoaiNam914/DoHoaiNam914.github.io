@@ -831,7 +831,7 @@ function getProcessTextPreTranslate(text, doProtectQuotationMarks) {
               });
         }
 
-        console.log(newText);newText = newText.replace(/(\[OPEN_BRACKET_\d+\])/g, '\n$1\n').replace(/(\[CLOSE_BRACKET_\d+\])(\u{3002}?)/gu, '\n$1$2\n');console.log(newText);
+        newText = newText.replace(/(\[OPEN_BRACKET_\d+\])/g, '\n$1\n').replace(/(\[CLOSE_BRACKET_\d+\])(\u{3002}?)/gu, '\n$1$2\n');
       }
     } catch (error) {
       console.error('Lỗi xử lý văn bản trước khi dịch:', error);
