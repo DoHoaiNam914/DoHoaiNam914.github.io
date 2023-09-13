@@ -11,9 +11,7 @@ let vietphrases = {};
 
 const extendsSinovietnamese = {
   '团长': 'đoàn trưởng',
-  '少爷': 'thiếu gia',
   '传功': 'truyền công',
-  '县': 'huyện',
   '姐': 'thư',
   '将': 'tướng',
 }
@@ -23,43 +21,37 @@ let translation = '';
 
 $(document).ready(() => {
   $.get("/static/datasource/Unihan_Readings.txt").done(async (data) => {
-    let pinyinList = [...data.split(/\r?\n/).filter(
-        (element) => element.match(/^U+/) && element.includes('kMandarin')).map(
-        (element) => [String.fromCodePoint(
-            parseInt(element.split(/\t/)[0].replace('U+', ''), 16)),
-          element.split(/\t/)[2]])];
-    pinyinList = [...pinyinList,
-      ...(await $.get("/static/datasource/Bính âm.txt")).split(
-          /\r?\n/).reverse().map((element) => element.split('=')).filter(
-          (element) => element.length > 1 || Object.fromEntries(
-              pinyinList).hasOwnProperty(element[0])).map(
-          (element) => [element[0], element[1].split('ǀ')[0]])].filter(
-        ([key]) => !pinyinList[key] && (pinyinList[key] = 1), {});
+    let pinyinList = data.split(/\r?\n/).filter((element) => element.match(/^U\+\d+\tkMandarin/)).map((element) => [String.fromCodePoint(parseInt(element.split(/\t/)[0].match(/U\+(\d+)/)[1], 16)), element.split(/\t/)[2]]);
+    pinyins = Object.fromEntries(pinyinList);
+    pinyinList = [...pinyinList, ...(await $.get("/static/datasource/Bính âm.txt")).split(/\r?\n/).map((element) => element.split('=')).map((element) => [element[0], element[1].split('ǀ')[0]]).filter((element) => !pinyins.hasOwnProperty(element[0])) ?? []];
+    pinyinList = pinyinList.filter(([key]) => !pinyinList[key] && (pinyinList[key] = 1), {});
     pinyins = Object.fromEntries(pinyinList);
     console.log('Đã tải xong bộ dữ liệu bính âm!');
 
-    let sinovietnameseList = [...hanvietData.map((element) => [element[0],
-      element[1].split(',')[element[1].match(/^,/) ? 1 : 0]]),
-      ...data.split(/\r?\n/).filter(
-          (element) => element.match(/^U+/) && element.includes(
-              'kVietnamese')).map((element) => [String.fromCodePoint(
-          parseInt(element.split(/\t/)[0].replace('U+', ''), 16)),
-        element.split(/\t/)[2]])];
-    sinovietnameseList = [...sinovietnameseList,
-      ...(await $.get("/static/datasource/Hán việt.txt")).split(
-          /\r?\n/).reverse().filter(
-          (element) => element.length > 1 || Object.fromEntries(
-              sinovietnameseList).hasOwnProperty(element[0])).map(
-          (element) => element.split('=')).map(
-          (element) => [element[0], element[1].split('ǀ')[0]])].filter(
-        ([key]) => !sinovietnameseList[key] && (sinovietnameseList[key] = 1),
-        {});
-    sinovietnameses = {
-      ...extendsSinovietnamese, ...Object.fromEntries(sinovietnameseList)
-    };
+    let sinovietnameseList = [...Object.entries(extendsSinovietnamese), ...(await $.get("/static/datasource/ChinesePhienAmWords của thtgiang.txt")).split(/\r?\n/).map((element) => element.split('=')) ?? []];
+    sinovietnameses = Object.fromEntries(sinovietnameseList);
+    sinovietnameseList = [...sinovietnameseList, ...(await $.get("/static/datasource/vn.tangthuvien.ttvtranslate.ChinesePhienAmWords.txt")).split(/\r?\n/).map((element) => element.split('=')).filter((element) => !sinovietnameses.hasOwnProperty(element[0])) ?? []];
+    sinovietnameses = Object.fromEntries(sinovietnameseList);
+    sinovietnameseList = [...sinovietnameseList, ...(await $.get("/static/datasource/QuickTranslator_20130708_ChinesePhienAmWords.txt")).split(/\r?\n/).map((element) => element.split('=')).filter((element) => !sinovietnameses.hasOwnProperty(element[0])) ?? []];
+    sinovietnameses = Object.fromEntries(sinovietnameseList);
+    sinovietnameseList = [...sinovietnameseList, ...(await $.get("/static/datasource/QuickTranslatorChinesePhienAmWords.txt")).split(/\r?\n/).map((element) => element.split('=')).filter((element) => !sinovietnameses.hasOwnProperty(element[0])) ?? []];
+    sinovietnameses = Object.fromEntries(sinovietnameseList);
+    sinovietnameseList = [...sinovietnameseList, ...hanvietData.map((element) => [element[0], element[1].split(',')[element[1].match(/^,/) ? 1 : 0]]).filter((element) => !sinovietnameses.hasOwnProperty(element[0]))];
+    sinovietnameses = Object.fromEntries(sinovietnameseList);
+    sinovietnameseList = [...sinovietnameseList, ...(await $.get("/static/datasource/Hán việt.txt")).split(/\r?\n/).map((element) => element.split('=')).map((element) => [element[0], element[1].split('ǀ')[0]]).filter((element) => !sinovietnameses.hasOwnProperty(element[0])) ?? []];
+    sinovietnameses = Object.fromEntries(sinovietnameseList);
+    sinovietnameseList = [...sinovietnameseList, ...(await $.get("/static/datasource/QuickTranslate2020ChinesePhienAmWords.txt")).split(/\r?\n/).map((element) => element.split('=')).filter((element) => !sinovietnameses.hasOwnProperty(element[0])) ?? []];
+    sinovietnameseList = sinovietnameseList.filter(([key]) => !sinovietnameseList[key] && (sinovietnameseList[key] = 1), {});
+    sinovietnameses = Object.fromEntries(sinovietnameseList);
     console.log('Đã tải xong bộ dữ liệu hán việt!');
   }).fail((jqXHR, textStatus, errorThrown) => {
     window.location.reload();
+  });
+  $.get("/static/datasource/VietPhrase của thtgiang.txt").done((data) => {
+    let vietphraseList = data.split(/\r?\n/).map((element) => element.split('=')) ?? [];
+    vietphraseList = vietphraseList.filter(([key]) => !vietphraseList[key] && (vietphraseList[key] = 1), {});
+    vietphrases = Object.fromEntries(vietphraseList);
+    console.log('Đã tải xong bộ dữ liệu VietPhrase!');
   });
   $("#queryText").trigger("input");
 });
@@ -153,7 +145,6 @@ $(".translator").click(function () {
 
     $(".translator").removeClass("active");
     $(this).addClass("active");
-    console.log($(this).data("id"));
 
     $("#sourceLangSelect").html(getSourceLanguageOptions($(this).data("id")));
 
