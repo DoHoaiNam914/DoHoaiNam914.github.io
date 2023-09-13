@@ -12,7 +12,7 @@ function bookLibraryLoader() {
     <img src="${book.cover}" class="card-img-top">
     <div class="card-body">
       <a class="h5 card-title" href="?thu-vien=${book.id}">${book.title}</a>
-      <p class="card-text">${book.description}</p>
+      <p class="card-text">${book.description.split(/\n/).join('</p>\n      <p class="card-text">')}</p>
     </div>
   </div>
 </div>
@@ -40,7 +40,7 @@ function volumeLibraryLoader() {
       <a class="h5 card-title" href="${volume.spine.length > 0 ?
           `./trinh-xem.html?sach=${book}&tap=${volume.id}` :
           volume.href}">${volume.title}</a>
-      <p class="card-text">${volume.description}</p>
+      <p class="card-text">${book.description.split(/\n/).join('</p>\n      <p class="card-text">')}</p>
     </div>
   </div>
 </div>
