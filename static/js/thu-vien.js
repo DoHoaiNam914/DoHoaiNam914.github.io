@@ -40,7 +40,7 @@ function volumeLibraryLoader() {
       <a class="h5 card-title" href="${volume.spine.length > 0 ?
           `./trinh-xem.html?sach=${book}&tap=${volume.id}` :
           volume.href}">${volume.title}</a>
-      <p class="card-text">${book.description.split(/\n/).join('</p>\n      <p class="card-text">')}</p>
+      <p class="card-text">${volume.description.split(/\n/).join('</p>\n      <p class="card-text">')}</p>
     </div>
   </div>
 </div>
