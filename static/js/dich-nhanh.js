@@ -90,7 +90,8 @@ $(document).ready(() => {
             (element) => [element[0].replace(/[/[\]\-.\\|^$!=<()*+?{}]/g,
                 '\\$&'), element[1].split('/')[0].split('|')[0]]) ?? [];
         let vietphraseList = [...luatnhanList,
-          ...data.split(/\r?\n/).map((element) => element.split('=')).map(
+          ...data.split(/\r?\n/).map((element) => element.split('=')).filter(
+              (element) => element.length == 2).map(
               (element) => [element[0].replace(/[/[\]\-.\\|^$!=<()*+?{}]/g,
                   '\\$&'), element[1].split('/')[0].split('|')[0]]) ?? []];
         vietphraseList = vietphraseList.filter(
@@ -284,9 +285,9 @@ $("#inputVietphrase").on("change", function () {
 
   reader.onload = function () {
     let vietphraseList = this.result.split(/\r?\n/).map(
-        (phrase) => phrase.split($("#inputVietphrase").prop("files")[0].type
+        (element) => element.split($("#inputVietphrase").prop("files")[0].type
         == 'text/tab-separated-values' ? '\t' : '=')).filter(
-        (phrase) => phrase.length == 2).map(
+        (element) => element.length == 2).map(
         (element) => [element[0].replace(/[/[\]\-.\\|^$!=<()*+?{}]/g, '\\$&'),
           element[1].split('/')[0].split('|')[0]]);
     vietphraseList = [...luatnhanList, ...vietphraseList,
