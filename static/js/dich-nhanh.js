@@ -13,9 +13,12 @@ let luatnhanList = [];
 
 const extendsSinovietnamese = {
   '团长': 'đoàn trưởng',
+  '刺客': 'thích khách'
   '传功': 'truyền công',
+  '将领': 'tướng lĩnh',
+  '将军': 'tướng quân',
+  '将士': 'tướng sĩ',
   '姐': 'thư',
-  '将': 'tướng',
 }
 
 let translateTask;
@@ -88,18 +91,8 @@ $(document).ready(async () => {
   });
   $.get("/static/datasource/VietPhrase của thtgiang.txt").done(
       async (data) => {
-        luatnhanList = (await $.get(
-            "/static/datasource/LuatNhan của thtgiang.txt")).split(/\r?\n/).map(
-            (element) => element.split('=')).filter(
-            (element) => element.length == 2).map(
-            (element) => [element[0].replace(/[/[\]\-.\\|^$!=<()*+?{}]/g,
-                '\\$&'), element[1].split('/')[0]]) ?? [];
-        let vietphraseList = [...luatnhanList,
-          ...data.split(/\r?\n/).map((element) => element.split('=')).filter(
-              (element) => element.length == 2).map(
-              (element) => [element[0].replace(/[/[\]\-.\\|^$!=<()*+?{}]/g,
-                  '\\$&'), element[1].split('/')[0].split('|')[0]]) ?? [],
-          sinovietnameses];
+        luatnhanList = (await $.get("/static/datasource/LuatNhan của thtgiang.txt")).split(/\r?\n/).map((element) => element.split('=')).filter((element) => element.length == 2).map((element) => [element[0], element[1].split('/')[0]]) ?? [];
+        let vietphraseList = [...luatnhanList, ...data.split(/\r?\n/).map((element) => element.split('=')).filter((element) => element.length == 2).map((element) => [element[0], element[1].split('/')[0].split('|')[0]]) ?? [], sinovietnameses];
         vietphraseList = vietphraseList.filter(
             ([key]) => !vietphraseList[key] && (vietphraseList[key] = 1), {});
         if ($("#inputVietphrase").prop("files") == undefined) {
@@ -290,8 +283,7 @@ $("#inputVietphrase").on("change", function () {
         (element) => element.split($("#inputVietphrase").prop("files")[0].type
         == 'text/tab-separated-values' ? '\t' : '=')).filter(
         (element) => element.length == 2).map(
-        (element) => [element[0].replace(/[/[\]\-.\\|^$!=<()*+?{}]/g, '\\$&'),
-          element[1].split('/')[0].split('|')[0]]);
+        (element) => [element[0], element[1].split('/')[0].split('|')[0]]);
     vietphraseList = [...luatnhanList, ...vietphraseList,
       ...Object.entries(sinovietnameses)].filter(
         ([key]) => !vietphraseList[key] && (vietphraseList[key] = 1), {})
@@ -761,7 +753,7 @@ function convertText(inputText, data, caseSensitive, useGlossary,
           chars)) {
         punctuationEntries.forEach((element) => chars = chars.replace(
             new RegExp(element[0].replace(/[/[\]\-.\\|^$!=<()*+?{}]/g, '\\$&'),
-                'g'), element[1]));
+                'g'), element[1].replace(/$/g, '$$$&')));
         results.push(chars);
         continue;
       }
@@ -827,11 +819,11 @@ function convertText(inputText, data, caseSensitive, useGlossary,
           punctuationEntries.forEach((element) => chars = chars.replace(
               new RegExp(
                   element[0].replace(/[/[\]\-.\\|^$!=<()*+?{}]/g, '\\$&'),
-                  'g'), element[1]));
+                  'g'), element[1].replace(/$/g, '$$$&')));
           chars = chars.replace(
-              new RegExp(`${property}(?=$|(?:[!,.:;?]\\s+|["'\\p{Pe}\\p{Pf}]\\s*))`,
-                  'gu'), data[property]).replace(new RegExp(property, 'g'),
-              `${data[property]} `);
+              new RegExp(`${property.replace(/[/[\]\-.\\|^$!=<()*+?{}]/g, '\\$&')}(?=$|(?:[!,.:;?]\\s+|["'\\p{Pe}\\p{Pf}]\\s*))`,
+                  'gu'), data[property].replace(/[/[\]\-.\\|^$!=<()*+?{}]/g, '\\$&')).replace(new RegExp(property.replace(/[/[\]\-.\\|^$!=<()*+?{}]/g, '\\$&'), 'g'),
+              `${data[property].replace(/$/g, '$$$&')} `);
         }
 
         results.push(chars);
@@ -921,9 +913,7 @@ function getProcessTextPreTranslate(text, doProtectQuotationMarks) {
   if (text.length > 0) {
     try {
       if (doProtectQuotationMarks) {
-        const brackets = [...cjkmap].filter(
-            (element) => element[0] != '…' && element[0].split('…').length
-                == 2);
+        const brackets = [...cjkmap].filter((element) => element[0] != '…' && element[0].split('…').length == 2).map((element) => [element[0].replace(/[/[\]\-.\\|^$!=<()*+?{}]/g, '\\$&'), element[1]]);
 
         for (let i = 0; i < brackets.length; i++) {
           newText = newText.replace(
@@ -962,20 +952,19 @@ function getProcessTextPostTranslate(text) {
 
   if (text.length > 0) {
     try {
-      const brackets = [...cjkmap].filter(
-          (element) => element[0] != '…' && element[0].split('…').length == 2);
+      const brackets = [...cjkmap].filter((element) => element[0] != '…' && element[0].split('…').length == 2).map((element) => [element[0], element[1]]);
 
       for (let i = brackets.length - 1; i >= 0; i--) {
         if (/[\u{3000}-\u{303f}\u{30a0}-\u{30ff}\u{fe30}-\u{fe4f}\u{ff00}-\u{ff60}]/u.test(
             brackets[i][1])) {
           newText = newText.replace(
-              new RegExp(`(?:^| ?\n)\\[OPEN_BRACKET_${i}\\]\n`, 'gi'),
+              new RegExp(`(?: ?\n|^)\\[OPEN_BRACKET_${i}\\]\n`, 'gi'),
               brackets[i][1].split('...')[0]).replace(
               new RegExp(`\n\\[CLOSE_BRACKET_${i}\\](.*)\n`, 'gi'),
               `${brackets[i][1].split('...')[1]}$1`);
         } else {
           newText = newText.replace(
-              new RegExp(`(?:^|\n)\\[OPEN_BRACKET_${i}\\]\n`, 'gi'),
+              new RegExp(`(?:\n|^)\\[OPEN_BRACKET_${i}\\]\n`, 'gi'),
               ` ${brackets[i][1].split('...')[0]}`).replace(
               new RegExp(`\n\\[CLOSE_BRACKET_${i}\\](.*)\n`, 'gi'),
               `${brackets[i][1].split('...')[1]}$1 `);
