@@ -48,7 +48,7 @@ $(document).ready(() => {
     window.location.reload();
   });
   $.get("/static/datasource/VietPhrase của thtgiang.txt").done((data) => {
-    let vietphraseList = data.split(/\r?\n/).map((element) => element.split('=')) ?? [];
+    let vietphraseList = data.split(/\r?\n/).map((element) => element.split('=')).map((element) => [element[0].replace(/[/[\]\-.\\|^$!=<()*+?{}]/g, '\\$&'), element[1].split('/')[0].split('|')[0]]) ?? [];
     vietphraseList = vietphraseList.filter(([key]) => !vietphraseList[key] && (vietphraseList[key] = 1), {});
     vietphrases = Object.fromEntries(vietphraseList);
     console.log('Đã tải xong bộ dữ liệu VietPhrase!');
@@ -201,7 +201,7 @@ $("#inputVietPhrases").on("change", function () {
   const reader = new FileReader();
 
   reader.onload = function () {
-    let vietphraseList = this.result.split(/\r?\n/).map((phrase) => phrase.split($("#inputVietPhrases").prop("files")[0].type == 'text/tab-separated-values' ? '\t' : '=')).filter((phrase) => phrase.length == 2).map((element) => [element[0].replace(/[/\[\]\-.\\|^$!=<()*+?{}]/g, '\\$&'), element[1].split('/')[0].split('|')[0]]);
+    let vietphraseList = this.result.split(/\r?\n/).map((phrase) => phrase.split($("#inputVietPhrases").prop("files")[0].type == 'text/tab-separated-values' ? '\t' : '=')).filter((phrase) => phrase.length == 2).map((element) => [element[0].replace(/[/[\]\-.\\|^$!=<()*+?{}]/g, '\\$&'), element[1].split('/')[0].split('|')[0]]);
     vietphraseList = [...vietphraseList,
       ...Object.entries(sinovietnameses)].filter(
         ([key]) => !vietphraseList[key] && (vietphraseList[key] = 1), {})
@@ -670,7 +670,7 @@ function convertText(inputText, data, caseSensitive, useGlossary,
       if (chars.trim().length == 0 || /^\[(?:OPEN|CLOSE)_BRACKET_\d+\]/.test(
           chars)) {
         punctuationEntries.forEach((element) => chars = chars.replace(
-            new RegExp(element[0].replace(/[/\[\]\-.\\|^$!=<()*+?{}]/g, '\\$&'),
+            new RegExp(element[0].replace(/[/[\]\-.\\|^$!=<()*+?{}]/g, '\\$&'),
                 'g'), element[1]));
         results.push(chars);
         continue;
@@ -726,7 +726,7 @@ function convertText(inputText, data, caseSensitive, useGlossary,
         for (const property in Object.fromEntries(filteredEntries)) {
           punctuationEntries.forEach((element) => chars = chars.replace(
               new RegExp(
-                  element[0].replace(/[/\[\]\-.\\|^$!=<()*+?{}]/g, '\\$&'),
+                  element[0].replace(/[/[\]\-.\\|^$!=<()*+?{}]/g, '\\$&'),
                   'g'), element[1]));
           chars = chars.replace(
               new RegExp(`${property}(?=$|(?:[!,.:;?]\\s+|["'\\p{Pe}\\p{Pf}]\\s*))`,
