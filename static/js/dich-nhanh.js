@@ -969,13 +969,13 @@ function getProcessTextPostTranslate(text) {
         if (/[\u{3000}-\u{303f}\u{30a0}-\u{30ff}\u{fe30}-\u{fe4f}\u{ff00}-\u{ff60}]/u.test(
             brackets[i][1])) {
           newText = newText.replace(
-              new RegExp(` ?\n\\[OPEN_BRACKET_${i}\\]\n`, 'giu'),
+              new RegExp(`(?:^| ?\n)\\[OPEN_BRACKET_${i}\\]\n`, 'gi'),
               brackets[i][1].split('...')[0]).replace(
               new RegExp(`\n\\[CLOSE_BRACKET_${i}\\](.*)\n`, 'gi'),
               `${brackets[i][1].split('...')[1]}$1`);
         } else {
           newText = newText.replace(
-              new RegExp(`\n\\[OPEN_BRACKET_${i}\\]\n`, 'gi'),
+              new RegExp(`(?:^|\n)\\[OPEN_BRACKET_${i}\\]\n`, 'gi'),
               ` ${brackets[i][1].split('...')[0]}`).replace(
               new RegExp(`\n\\[CLOSE_BRACKET_${i}\\](.*)\n`, 'gi'),
               `${brackets[i][1].split('...')[1]}$1 `);
