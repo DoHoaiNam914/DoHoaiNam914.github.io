@@ -21,10 +21,10 @@
 
     const showActiveTheme = function (theme, focus = false) {
       const themeSwitcher = $('#theme');
-
       if (!themeSwitcher) {
         return;
       }
+
       const activeThemeIcon = $('.theme-icon-active');
       const btnToActive = $(`[data-theme-value="${theme}"]`);
       const svgOfActiveBtn = $(btnToActive).html();
@@ -32,7 +32,6 @@
       $("[data-theme-value]").removeClass("active");
       $(btnToActive).addClass("active");
       $(activeThemeIcon).html(svgOfActiveBtn);
-
       if (focus) {
         themeSwitcher.focus()
       }
@@ -85,7 +84,8 @@
       for (let i = 0; i < $(".option").length; i++) {
         if ($(".option")[i].id.startsWith('flexSwitchCheck')) {
           $(".option")[i].checked = translator[$(".option")[i].id];
-        } else if ($(".option")[i].name.startsWith('flexRadio') && $(".option")[i].value == translator[$(".option")[i].name]) {
+        } else if ($(".option")[i].name.startsWith('flexRadio') && $(".option")[i].value
+            == translator[$(".option")[i].name]) {
           $(`.option[name=\"${$(".option")[i].name}\"]`).removeProp("checked");
           $(".option")[i].checked = true;
         } else if ($(".option")[i].className.includes('form-select')) {
