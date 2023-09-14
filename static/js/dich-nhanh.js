@@ -9,6 +9,8 @@ let pinyins = {};
 let sinovietnameses = {};
 let vietphrases = {};
 
+const luatnhanList =[];
+
 const extendsSinovietnamese = {
   '团长': 'đoàn trưởng',
   '传功': 'truyền công',
@@ -48,8 +50,10 @@ $(document).ready(() => {
     window.location.reload();
   });
   $.get("/static/datasource/VietPhrase của thtgiang.txt").done((data) => {
-    let vietphraseList = data.split(/\r?\n/).map((element) => element.split('=')).map((element) => [element[0].replace(/[/[\]\-.\\|^$!=<()*+?{}]/g, '\\$&'), element[1].split('/')[0].split('|')[0]]) ?? [];
+    luatnhanList = (await $.get("/static/datasource/LuatNhan của thtgiang.txt")).split(/\r?\n/).map((element) => element.split('=')).map((element) => [element[0].replace(/[/[\]\-.\\|^$!=<()*+?{}]/g, '\\$&'), element[1].split('/')[0].split('|')[0]]) ?? [];
+    let vietphraseList = [...luatnhanList, ...data.split(/\r?\n/).map((element) => element.split('=')).map((element) => [element[0].replace(/[/[\]\-.\\|^$!=<()*+?{}]/g, '\\$&'), element[1].split('/')[0].split('|')[0]]) ?? []];
     vietphraseList = vietphraseList.filter(([key]) => !vietphraseList[key] && (vietphraseList[key] = 1), {});
+    if ($("#inputVietPhrases").prop("files") == undefined) return;
     vietphrases = Object.fromEntries(vietphraseList);
     console.log('Đã tải xong bộ dữ liệu VietPhrase!');
   });
@@ -202,7 +206,7 @@ $("#inputVietPhrases").on("change", function () {
 
   reader.onload = function () {
     let vietphraseList = this.result.split(/\r?\n/).map((phrase) => phrase.split($("#inputVietPhrases").prop("files")[0].type == 'text/tab-separated-values' ? '\t' : '=')).filter((phrase) => phrase.length == 2).map((element) => [element[0].replace(/[/[\]\-.\\|^$!=<()*+?{}]/g, '\\$&'), element[1].split('/')[0].split('|')[0]]);
-    vietphraseList = [...vietphraseList,
+    vietphraseList = [...luatnhanList, ...vietphraseList,
       ...Object.entries(sinovietnameses)].filter(
         ([key]) => !vietphraseList[key] && (vietphraseList[key] = 1), {})
     vietphrases = Object.fromEntries(vietphraseList);
@@ -787,7 +791,7 @@ function convertText(inputText, data, caseSensitive, useGlossary,
           }
         }
 
-        results.push(phrases.join(' '));
+        results.push(phrases.join(' ').trim());
       }
     }
 
