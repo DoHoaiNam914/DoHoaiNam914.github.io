@@ -86,9 +86,10 @@ $(document).ready(() => {
       async (data) => {
         luatnhanList = (await $.get(
             "/static/datasource/LuatNhan của thtgiang.txt")).split(/\r?\n/).map(
-            (element) => element.split('=')).map(
+            (element) => element.split('=')).filter(
+            (element) => element.length == 2).map(
             (element) => [element[0].replace(/[/[\]\-.\\|^$!=<()*+?{}]/g,
-                '\\$&'), element[1].split('/')[0].split('|')[0]]) ?? [];
+                '\\$&'), element[1].split('/')[0]]) ?? [];
         let vietphraseList = [...luatnhanList,
           ...data.split(/\r?\n/).map((element) => element.split('=')).filter(
               (element) => element.length == 2).map(
@@ -203,7 +204,6 @@ $(".translator").click(function () {
     $(this).addClass("active");
 
     $("#sourceLangSelect").html(getSourceLanguageOptions($(this).data("id")));
-
     $("#sourceLangSelect > option").each(function (index) {
       if ($(".translator.active").data("id") === prevTranslator
           && prevSourceLanguageCode != null) {
@@ -229,9 +229,7 @@ $(".translator").click(function () {
             getDefaultSourceLanguage($(".translator.active").data("id")));
       }
     });
-
     $("#targetLangSelect").html(getTargetLanguageOptions($(this).data("id")));
-
     $("#targetLangSelect > option").each(function (index) {
       if ($(".translator.active").data("id") === prevTranslator
           && prevTargetLanguageCode != null) {
