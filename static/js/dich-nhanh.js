@@ -115,6 +115,7 @@ $("#translateButton").click(async function () {
 
   if ($(this).text() == 'Dịch') {
     if ($("#queryText").val().length > 0) {
+      $("#translateButton").text("Sửa");
       $("#translatedText").show();
       $("#queryText").hide();
       $("#copyButton").addClass("disabled");
@@ -994,7 +995,6 @@ function onPostTranslate() {
   $("#copyButton").removeClass("disabled");
   $(".translator").removeClass("disabled");
   $("#retranslateButton").removeClass("disabled");
-  $("#translateButton").text("Sửa");
 }
 
 const DeepLTranslator = {
