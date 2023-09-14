@@ -1,6 +1,12 @@
 {
   "library": [
     {
+      "id": "chua-te-bong-toi",
+      "title": "Chúa tể bóng tối",
+      "cover": "https://cdn0.fahasa.com/media/catalog/product/c/h/chua_te_bong_toi_bia_tap_1_2.jpg",
+      "description": "Không phải nhân vật chính, cũng chẳng phải trùm cuối. Ấy là những Chúa tể Bóng tối, bình thường thì che giấu thực lực, giả làm người thường, nhưng trong bóng tối lại thể hiện sức mạnh thực sự của mình để bí mật can thiệp vào câu chuyện. Cậu thiếu niên ngưỡng mộ Chúa tể Bóng tối của chúng ta ngày ngày rèn luyện trau dồi sức mạnh, đồng thời vẫn đóng vai một nhân vật quần chúng mờ nhạt trước mặt người đời, cho đến khi gặp tai nạn và được chuyển sinh sang một thế giới khác.\n\nVui sướng trước tình cảnh này, cậu thiếu niên, giờ mang tên Cid, đã quyết định “tưởng tượng” ra một “Giáo phái bóng tối” để (giả vờ) bí mật lật đổ, thỏa mãn mong muốn đóng vai Chúa tể Bóng tối ở thế giới mới. Thế nhưng không ngờ “Giáo phái bóng tối” ấy lại có thật…?\n\nDo không ít hiểu lầm mà những cô gái trở thành thuộc hạ của Cid đều sùng bái cậu, và chính bản thân Cid cũng không biết cậu đã trở thành một Chúa tể Bóng tối thực sự, tổ chức bóng đêm Shadow Garden do cậu đứng đầu đang dần tiêu diệt màn đêm che phủ thế giới…"
+    },
+    {
       "id": "shinjyazero",
       "title": "Clear the world like a game with the zero believer goddess",
       "cover": "https://over-lap.co.jp/Contents/ProductImages/0/9784865544626_LL.jpg",
@@ -23,12 +29,6 @@
       "title": "SHINWA DENSETSU NO EIYUU NO ISEKAITAN",
       "cover": "https://over-lap.co.jp/Contents/ProductImages/0/9784865540437_LL.jpg",
       "description": "Unexpectedly summoned to the world of Aletia from modern-day Japan, Hiro Oguro soon discovers this isn’t his first visit. As the legendary Hero King Mars, he once ruled battlefields, conquered nations, and founded the continent-spanning Grantzian Empire before giving up all memories of his hard-won glory to return home to his old life. Now he’s back, a thousand years after he left, and his legacy is in peril. The Grantzian Empire creaks under a warmonger’s rule while ambitious royals squabble for power and foreign nations sharpen their swords. After a chance encounter with Princess Elizabeth von Grantz draws him into a cutthroat struggle for imperial succession, Hiro must don the mantle of the War God once more. Can he live up to his own legend now that Aletia needs him again?"
-    },
-    {
-      "id": "chua-te-bong-toi",
-      "title": "Chúa tể bóng tối",
-      "cover": "https://cdn0.fahasa.com/media/catalog/product/c/h/chua_te_bong_toi_bia_tap_1_2.jpg",
-      "description": "Không phải nhân vật chính, cũng chẳng phải trùm cuối. Ấy là những Chúa tể Bóng tối, bình thường thì che giấu thực lực, giả làm người thường, nhưng trong bóng tối lại thể hiện sức mạnh thực sự của mình để bí mật can thiệp vào câu chuyện. Cậu thiếu niên ngưỡng mộ Chúa tể Bóng tối của chúng ta ngày ngày rèn luyện trau dồi sức mạnh, đồng thời vẫn đóng vai một nhân vật quần chúng mờ nhạt trước mặt người đời, cho đến khi gặp tai nạn và được chuyển sinh sang một thế giới khác.\n\nVui sướng trước tình cảnh này, cậu thiếu niên, giờ mang tên Cid, đã quyết định “tưởng tượng” ra một “Giáo phái bóng tối” để (giả vờ) bí mật lật đổ, thỏa mãn mong muốn đóng vai Chúa tể Bóng tối ở thế giới mới. Thế nhưng không ngờ “Giáo phái bóng tối” ấy lại có thật…?\n\nDo không ít hiểu lầm mà những cô gái trở thành thuộc hạ của Cid đều sùng bái cậu, và chính bản thân Cid cũng không biết cậu đã trở thành một Chúa tể Bóng tối thực sự, tổ chức bóng đêm Shadow Garden do cậu đứng đầu đang dần tiêu diệt màn đêm che phủ thế giới…"
     },
     {
       "id": "tinhlinh",
