@@ -916,23 +916,16 @@ function getProcessTextPreTranslate(text, doProtectQuotationMarks) {
         const brackets = [...cjkmap].filter((element) => element[0] != '…' && element[0].split('…').length == 2).map((element) => [element[0].replace(/[/[\]\-.\\|^$!=<()*+?{}]/g, '\\$&'), element[1]]);
 
         for (let i = 0; i < brackets.length; i++) {
-          newText = newText.replace(
-              new RegExp(`${brackets[i][0].split('…')[0]}(?!(?:OPEN|CLOSE)_BRACKET_\\d+)`,
-                  'g'), `[OPEN_BRACKET_${i}]`).replace(
-              new RegExp(brackets[i][0].split('…')[1], 'g'),
-              (match, offset) => {
-                for (let j = i; j >= 0; j--) {
-                  if (/CLOSE_BRACKET_\d+/.test(
-                      newText.substring(offset - `CLOSE_BRACKET_${j}`.length,
-                          offset)) || /OPEN_BRACKET_\d+/.test(
-                      newText.substring(offset - `OPEN_BRACKET_${j}`.length,
-                          offset))) {
-                    return match;
-                  } else if (j == 0) {
-                    return `[CLOSE_BRACKET_${i}]`;
-                  }
-                }
-              });
+          newText = newText.replace(new RegExp(`${brackets[i][0].split('…')[0]}(?!(?:OPEN|CLOSE)_BRACKET_\\d+)`, 'g'), `[OPEN_BRACKET_${i}]`);
+          newText = newText.replace(new RegExp(brackets[i][0].split('…')[1], 'g'), (match, offset) => {
+            for (let j = i; j >= 0; j--) {
+              if (/CLOSE_BRACKET_\d+/.test(newText.substring(offset - `CLOSE_BRACKET_${j}`.length, offset)) || /OPEN_BRACKET_\d+/.test(newText.substring(offset - `OPEN_BRACKET_${j}`.length, offset))) {
+                return match;
+              } else if (j == 0) {
+                return `[CLOSE_BRACKET_${i}]`;
+              }
+            }
+          });
         }
 
         newText = newText.replace(/(\[OPEN_BRACKET_\d+\])/g, '\n$1\n').replace(
@@ -952,7 +945,7 @@ function getProcessTextPostTranslate(text) {
 
   if (text.length > 0) {
     try {
-      const brackets = [...cjkmap].filter((element) => element[0] != '…' && element[0].split('…').length == 2).map((element) => [element[0], element[1]]);
+      const brackets = [...cjkmap].filter((element) => element[0] != '…' && element[0].split('…').length == 2);
 
       for (let i = brackets.length - 1; i >= 0; i--) {
         if (/[\u{3000}-\u{303f}\u{30a0}-\u{30ff}\u{fe30}-\u{fe4f}\u{ff00}-\u{ff60}]/u.test(
