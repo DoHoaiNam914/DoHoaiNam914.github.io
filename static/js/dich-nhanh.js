@@ -13,94 +13,80 @@ let luatnhanList = [];
 
 const extendsSinovietnamese = {
   '团长': 'đoàn trưởng',
-  '刺客': 'thích khách'
+  '刺客': 'thích khách',
   '传功': 'truyền công',
   '将领': 'tướng lĩnh',
   '将军': 'tướng quân',
   '将士': 'tướng sĩ',
   '姐': 'thư',
-}
+};
 
 let translateTask;
 let translation = '';
 
 $(document).ready(async () => {
-  await $.get("/static/datasource/Unihan_Readings.txt").done(async (data) => {
-    let pinyinList = data.split(/\r?\n/).filter(
-        (element) => element.match(/^U\+\d+\tkMandarin/)).map(
-        (element) => [String.fromCodePoint(
-            parseInt(element.split(/\t/)[0].match(/U\+(\d+)/)[1], 16)),
-          element.split(/\t/)[2]]);
-    pinyins = Object.fromEntries(pinyinList);
-    pinyinList = [...pinyinList,
-      ...(await $.get("/static/datasource/Bính âm.txt")).split(/\r?\n/).map(
-          (element) => element.split('=')).map(
-          (element) => [element[0], element[1].split('ǀ')[0]]).filter(
-          (element) => !pinyins.hasOwnProperty(element[0])) ?? []];
-    pinyinList = pinyinList.filter(
-        ([key]) => !pinyinList[key] && (pinyinList[key] = 1), {});
+  try {
+    let pinyinList = [];
+
+    await $.get("/static/datasource/Unihan_Readings.txt").done((data) => {
+      pinyinList = data.split(/\r?\n/).filter((element) => element.match(/^U\+\d+\tkMandarin/)).map((element) => [String.fromCodePoint(parseInt(element.split(/\t/)[0].match(/U\+(\d+)/)[1], 16)), element.split(/\t/)[2]]);
+      pinyins = Object.fromEntries(pinyinList);
+    });
+    await $.get("/static/datasource/Bính âm.txt").done((data) => pinyinList = [...pinyinList, ...data.split(/\r?\n/).map((element) => element.split('=')).map((element) => [element[0], element[1].split('ǀ')[0]]).filter((element) => !pinyins.hasOwnProperty(element[0]))]);
+    pinyinList = pinyinList.filter(([key]) => !pinyinList[key] && (pinyinList[key] = 1), {});
     pinyins = Object.fromEntries(pinyinList);
     console.log('Đã tải xong bộ dữ liệu bính âm!');
+  } catch (error) {
+    console.error('Không thể tải bộ dữ liệu bính âm:', error);
+    setTimeout(() => window.location.reload(), 5000);
+  }
+
+  try {
+    let sinovietnameseList = Object.entries(extendsSinovietnamese);
+
+    await $.get("/static/datasource/ChinesePhienAmWords của thtgiang.txt").done((data) => {
+      sinovietnameseList = [...sinovietnameseList, ...data.split(/\r?\n/).map((element) => element.split('='))];
+      sinovietnameses = Object.fromEntries(sinovietnameseList);
+    });
+    await $.get("/static/datasource/TTV Translate.ChinesePhienAmWords.txt").done((data) => {
+      sinovietnameseList = [...sinovietnameseList, ...data.split(/\r?\n/).map((element) => element.split('=')).filter((element) => !sinovietnameses.hasOwnProperty(element[0]))];
+      sinovietnameses = Object.fromEntries(sinovietnameseList);
+    });
+    await $.get("/static/datasource/QuickTranslate2020 - ChinesePhienAmWords.txt").done((data) => {
+      sinovietnameseList = [...sinovietnameseList, ...data.split(/\r?\n/).map((element) => element.split('=')).filter((element) => !sinovietnameses.hasOwnProperty(element[0]))];
+      sinovietnameses = Object.fromEntries(sinovietnameseList);
+    });
+    await $.get("/static/datasource/Hán việt.txt").done((data) => sinovietnameseList = [...sinovietnameseList, ...data.split(/\r?\n/).map((element) => element.split('=')).map((element) => [element[0], element[1].split('ǀ')[0]]).filter((element) => !sinovietnameses.hasOwnProperty(element[0]))]);
+    sinovietnameseList = sinovietnameseList.filter(([key]) => !sinovietnameseList[key] && (sinovietnameseList[key] = 1), {});
+    sinovietnameses = Object.fromEntries(sinovietnameseList);
+    console.log('Đã tải xong bộ dữ liệu hán việt!');
+  } catch (error) {
+    console.error('Không thể tải bộ dữ liệu hán việt:', error);
+    setTimeout(() => window.location.reload(), 5000);
+  }
+  
+  await $.get("/static/datasource/LuatNhan của thtgiang.txt").done((data) => {
+    luatnhanList = data.split(/\r?\n/).map((element) => element.split('=')).filter((element) => element.length == 2).map((element) => [element[0], element[1].split('/')[0]]);
+    console.log('Đã tải xong tệp LuatNhan.txt!');
   }).fail((jqXHR, textStatus, errorThrown) => {
-    window.location.reload();
+    console.error('Không tải được tệp LuatNhan.txt:', errorThrown);
+    setTimeout(() => window.location.reload(), 5000);
   });
-  await $.get("/static/datasource/ChinesePhienAmWords của thtgiang.txt").done(
-      async (data) => {
-        let sinovietnameseList = [...Object.entries(extendsSinovietnamese),
-          ...data.split(/\r?\n/).map((element) => element.split('=')) ?? []];
-        sinovietnameses = Object.fromEntries(sinovietnameseList);
-        sinovietnameseList = [...sinovietnameseList, ...(await $.get(
-            "/static/datasource/vn.tangthuvien.ttvtranslate.ChinesePhienAmWords.txt")).split(
-            /\r?\n/).map((element) => element.split('=')).filter(
-            (element) => !sinovietnameses.hasOwnProperty(element[0])) ?? []];
-        sinovietnameses = Object.fromEntries(sinovietnameseList);
-        sinovietnameseList = [...sinovietnameseList, ...(await $.get(
-            "/static/datasource/QuickTranslator_20130708_ChinesePhienAmWords.txt")).split(
-            /\r?\n/).map((element) => element.split('=')).filter(
-            (element) => !sinovietnameses.hasOwnProperty(element[0])) ?? []];
-        sinovietnameses = Object.fromEntries(sinovietnameseList);
-        sinovietnameseList = [...sinovietnameseList, ...(await $.get(
-            "/static/datasource/QuickTranslatorChinesePhienAmWords.txt")).split(
-            /\r?\n/).map((element) => element.split('=')).filter(
-            (element) => !sinovietnameses.hasOwnProperty(element[0])) ?? []];
-        sinovietnameses = Object.fromEntries(sinovietnameseList);
-        sinovietnameseList = [...sinovietnameseList, ...hanvietData.map(
-            (element) => [element[0],
-              element[1].split(',')[element[1].match(/^,/) ? 1 : 0]]).filter(
-            (element) => !sinovietnameses.hasOwnProperty(element[0]))];
-        sinovietnameses = Object.fromEntries(sinovietnameseList);
-        sinovietnameseList = [...sinovietnameseList,
-          ...(await $.get("/static/datasource/Hán việt.txt")).split(
-              /\r?\n/).map(
-              (element) => element.split('=')).map(
-              (element) => [element[0], element[1].split('ǀ')[0]]).filter(
-              (element) => !sinovietnameses.hasOwnProperty(element[0])) ?? []];
-        sinovietnameses = Object.fromEntries(sinovietnameseList);
-        sinovietnameseList = [...sinovietnameseList, ...(await $.get(
-            "/static/datasource/QuickTranslate2020ChinesePhienAmWords.txt")).split(
-            /\r?\n/).map((element) => element.split('=')).filter(
-            (element) => !sinovietnameses.hasOwnProperty(element[0])) ?? []];
-        sinovietnameseList = sinovietnameseList.filter(
-            ([key]) => !sinovietnameseList[key]
-                && (sinovietnameseList[key] = 1),
-            {});
-        sinovietnameses = Object.fromEntries(sinovietnameseList);
-        console.log('Đã tải xong bộ dữ liệu hán việt!');
-      }).fail((jqXHR, textStatus, errorThrown) => {
-    window.location.reload();
-  });
-  $.get("/static/datasource/VietPhrase của thtgiang.txt").done(
-      async (data) => {
-        luatnhanList = (await $.get("/static/datasource/LuatNhan của thtgiang.txt")).split(/\r?\n/).map((element) => element.split('=')).filter((element) => element.length == 2).map((element) => [element[0], element[1].split('/')[0]]) ?? [];
-        let vietphraseList = [...luatnhanList, ...data.split(/\r?\n/).map((element) => element.split('=')).filter((element) => element.length == 2).map((element) => [element[0], element[1].split('/')[0].split('|')[0]]) ?? [], sinovietnameses];
-        vietphraseList = vietphraseList.filter(
-            ([key]) => !vietphraseList[key] && (vietphraseList[key] = 1), {});
-        if ($("#inputVietphrase").prop("files") == undefined) {
-          return;
-        }
-        vietphrases = Object.fromEntries(vietphraseList);
-        console.log('Đã tải xong bộ dữ liệu VietPhrase!');
-      });
+
+  if (Object.entries(vietphrases).length == 0) {
+    $.get("/static/datasource/VietPhrase của thtgiang.txt").done((data) => {
+      let vietphraseList = [...luatnhanList, ...data.split(/\r?\n/).map((element) => element.split('=')).filter((element) => element.length == 2).map((element) => [element[0], element[1].split('/')[0].split('|')[0]]), ...Object.entries(sinovietnameses)];
+      vietphraseList = vietphraseList.filter(([key]) => !vietphraseList[key] && (vietphraseList[key] = 1), {});
+      if ($("#inputVietphrase").prop("files") == undefined) {
+        return;
+      }
+      vietphrases = Object.fromEntries(vietphraseList);
+      console.log('Đã tải xong bộ dữ liệu VietPhrase!');
+    }).fail((jqXHR, textStatus, errorThrown) => {
+      console.error('Không thể tải bộ dữ liệu VietPhrase:', errorThrown);
+    });
+  }
+
   $("#queryText").trigger("input");
 });
 
