@@ -9,7 +9,7 @@ let pinyins = {};
 let sinovietnameses = {};
 let vietphrases = {};
 
-const luatnhanList =[];
+let luatnhanList = [];
 
 const extendsSinovietnamese = {
   '团长': 'đoàn trưởng',
@@ -23,40 +23,84 @@ let translation = '';
 
 $(document).ready(() => {
   $.get("/static/datasource/Unihan_Readings.txt").done(async (data) => {
-    let pinyinList = data.split(/\r?\n/).filter((element) => element.match(/^U\+\d+\tkMandarin/)).map((element) => [String.fromCodePoint(parseInt(element.split(/\t/)[0].match(/U\+(\d+)/)[1], 16)), element.split(/\t/)[2]]);
+    let pinyinList = data.split(/\r?\n/).filter(
+        (element) => element.match(/^U\+\d+\tkMandarin/)).map(
+        (element) => [String.fromCodePoint(
+            parseInt(element.split(/\t/)[0].match(/U\+(\d+)/)[1], 16)),
+          element.split(/\t/)[2]]);
     pinyins = Object.fromEntries(pinyinList);
-    pinyinList = [...pinyinList, ...(await $.get("/static/datasource/Bính âm.txt")).split(/\r?\n/).map((element) => element.split('=')).map((element) => [element[0], element[1].split('ǀ')[0]]).filter((element) => !pinyins.hasOwnProperty(element[0])) ?? []];
-    pinyinList = pinyinList.filter(([key]) => !pinyinList[key] && (pinyinList[key] = 1), {});
+    pinyinList = [...pinyinList,
+      ...(await $.get("/static/datasource/Bính âm.txt")).split(/\r?\n/).map(
+          (element) => element.split('=')).map(
+          (element) => [element[0], element[1].split('ǀ')[0]]).filter(
+          (element) => !pinyins.hasOwnProperty(element[0])) ?? []];
+    pinyinList = pinyinList.filter(
+        ([key]) => !pinyinList[key] && (pinyinList[key] = 1), {});
     pinyins = Object.fromEntries(pinyinList);
     console.log('Đã tải xong bộ dữ liệu bính âm!');
 
-    let sinovietnameseList = [...Object.entries(extendsSinovietnamese), ...(await $.get("/static/datasource/ChinesePhienAmWords của thtgiang.txt")).split(/\r?\n/).map((element) => element.split('=')) ?? []];
+    let sinovietnameseList = [...Object.entries(extendsSinovietnamese),
+      ...(await $.get(
+          "/static/datasource/ChinesePhienAmWords của thtgiang.txt")).split(
+          /\r?\n/).map((element) => element.split('=')) ?? []];
     sinovietnameses = Object.fromEntries(sinovietnameseList);
-    sinovietnameseList = [...sinovietnameseList, ...(await $.get("/static/datasource/vn.tangthuvien.ttvtranslate.ChinesePhienAmWords.txt")).split(/\r?\n/).map((element) => element.split('=')).filter((element) => !sinovietnameses.hasOwnProperty(element[0])) ?? []];
+    sinovietnameseList = [...sinovietnameseList, ...(await $.get(
+        "/static/datasource/vn.tangthuvien.ttvtranslate.ChinesePhienAmWords.txt")).split(
+        /\r?\n/).map((element) => element.split('=')).filter(
+        (element) => !sinovietnameses.hasOwnProperty(element[0])) ?? []];
     sinovietnameses = Object.fromEntries(sinovietnameseList);
-    sinovietnameseList = [...sinovietnameseList, ...(await $.get("/static/datasource/QuickTranslator_20130708_ChinesePhienAmWords.txt")).split(/\r?\n/).map((element) => element.split('=')).filter((element) => !sinovietnameses.hasOwnProperty(element[0])) ?? []];
+    sinovietnameseList = [...sinovietnameseList, ...(await $.get(
+        "/static/datasource/QuickTranslator_20130708_ChinesePhienAmWords.txt")).split(
+        /\r?\n/).map((element) => element.split('=')).filter(
+        (element) => !sinovietnameses.hasOwnProperty(element[0])) ?? []];
     sinovietnameses = Object.fromEntries(sinovietnameseList);
-    sinovietnameseList = [...sinovietnameseList, ...(await $.get("/static/datasource/QuickTranslatorChinesePhienAmWords.txt")).split(/\r?\n/).map((element) => element.split('=')).filter((element) => !sinovietnameses.hasOwnProperty(element[0])) ?? []];
+    sinovietnameseList = [...sinovietnameseList, ...(await $.get(
+        "/static/datasource/QuickTranslatorChinesePhienAmWords.txt")).split(
+        /\r?\n/).map((element) => element.split('=')).filter(
+        (element) => !sinovietnameses.hasOwnProperty(element[0])) ?? []];
     sinovietnameses = Object.fromEntries(sinovietnameseList);
-    sinovietnameseList = [...sinovietnameseList, ...hanvietData.map((element) => [element[0], element[1].split(',')[element[1].match(/^,/) ? 1 : 0]]).filter((element) => !sinovietnameses.hasOwnProperty(element[0]))];
+    sinovietnameseList = [...sinovietnameseList, ...hanvietData.map(
+        (element) => [element[0],
+          element[1].split(',')[element[1].match(/^,/) ? 1 : 0]]).filter(
+        (element) => !sinovietnameses.hasOwnProperty(element[0]))];
     sinovietnameses = Object.fromEntries(sinovietnameseList);
-    sinovietnameseList = [...sinovietnameseList, ...(await $.get("/static/datasource/Hán việt.txt")).split(/\r?\n/).map((element) => element.split('=')).map((element) => [element[0], element[1].split('ǀ')[0]]).filter((element) => !sinovietnameses.hasOwnProperty(element[0])) ?? []];
+    sinovietnameseList = [...sinovietnameseList,
+      ...(await $.get("/static/datasource/Hán việt.txt")).split(/\r?\n/).map(
+          (element) => element.split('=')).map(
+          (element) => [element[0], element[1].split('ǀ')[0]]).filter(
+          (element) => !sinovietnameses.hasOwnProperty(element[0])) ?? []];
     sinovietnameses = Object.fromEntries(sinovietnameseList);
-    sinovietnameseList = [...sinovietnameseList, ...(await $.get("/static/datasource/QuickTranslate2020ChinesePhienAmWords.txt")).split(/\r?\n/).map((element) => element.split('=')).filter((element) => !sinovietnameses.hasOwnProperty(element[0])) ?? []];
-    sinovietnameseList = sinovietnameseList.filter(([key]) => !sinovietnameseList[key] && (sinovietnameseList[key] = 1), {});
+    sinovietnameseList = [...sinovietnameseList, ...(await $.get(
+        "/static/datasource/QuickTranslate2020ChinesePhienAmWords.txt")).split(
+        /\r?\n/).map((element) => element.split('=')).filter(
+        (element) => !sinovietnameses.hasOwnProperty(element[0])) ?? []];
+    sinovietnameseList = sinovietnameseList.filter(
+        ([key]) => !sinovietnameseList[key] && (sinovietnameseList[key] = 1),
+        {});
     sinovietnameses = Object.fromEntries(sinovietnameseList);
     console.log('Đã tải xong bộ dữ liệu hán việt!');
   }).fail((jqXHR, textStatus, errorThrown) => {
     window.location.reload();
   });
-  $.get("/static/datasource/VietPhrase của thtgiang.txt").done((data) => {
-    luatnhanList = (await $.get("/static/datasource/LuatNhan của thtgiang.txt")).split(/\r?\n/).map((element) => element.split('=')).map((element) => [element[0].replace(/[/[\]\-.\\|^$!=<()*+?{}]/g, '\\$&'), element[1].split('/')[0].split('|')[0]]) ?? [];
-    let vietphraseList = [...luatnhanList, ...data.split(/\r?\n/).map((element) => element.split('=')).map((element) => [element[0].replace(/[/[\]\-.\\|^$!=<()*+?{}]/g, '\\$&'), element[1].split('/')[0].split('|')[0]]) ?? []];
-    vietphraseList = vietphraseList.filter(([key]) => !vietphraseList[key] && (vietphraseList[key] = 1), {});
-    if ($("#inputVietPhrases").prop("files") == undefined) return;
-    vietphrases = Object.fromEntries(vietphraseList);
-    console.log('Đã tải xong bộ dữ liệu VietPhrase!');
-  });
+  $.get("/static/datasource/VietPhrase của thtgiang.txt").done(
+      async (data) => {
+        luatnhanList = (await $.get(
+            "/static/datasource/LuatNhan của thtgiang.txt")).split(/\r?\n/).map(
+            (element) => element.split('=')).map(
+            (element) => [element[0].replace(/[/[\]\-.\\|^$!=<()*+?{}]/g,
+                '\\$&'), element[1].split('/')[0].split('|')[0]]) ?? [];
+        let vietphraseList = [...luatnhanList,
+          ...data.split(/\r?\n/).map((element) => element.split('=')).map(
+              (element) => [element[0].replace(/[/[\]\-.\\|^$!=<()*+?{}]/g,
+                  '\\$&'), element[1].split('/')[0].split('|')[0]]) ?? []];
+        vietphraseList = vietphraseList.filter(
+            ([key]) => !vietphraseList[key] && (vietphraseList[key] = 1), {});
+        if ($("#inputVietphrase").prop("files") == undefined) {
+          return;
+        }
+        vietphrases = Object.fromEntries(vietphraseList);
+        console.log('Đã tải xong bộ dữ liệu VietPhrase!');
+      });
   $("#queryText").trigger("input");
 });
 
@@ -110,7 +154,10 @@ $("#pasteButton").on("click", () => {
     if (clipText.length > 0) {
       window.scrollTo({top: 0, behavior: 'smooth'});
       $("#queryText").val(clipText).trigger("input");
-      if ($("#translateButton").text() == 'Sửa') $("#retranslateButton").click();
+      if ($("#translateButton").text() == 'Sửa') {
+        $(
+            "#retranslateButton").click();
+      }
     }
   });
 });
@@ -128,12 +175,15 @@ $("#queryText").on("input", () => {
 
 $(".modal").on("hidden.bs.modal", () => $(document.body).removeAttr("style"));
 
-$(".modal").on("shown.bs.modal", () => $(document.body).css("overflow", "hidden"));
+$(".modal").on("shown.bs.modal",
+    () => $(document.body).css("overflow", "hidden"));
 
 $(".option").change(() => {
   translator = loadTranslatorOptions();
   localStorage.setItem("translator", JSON.stringify(translator));
-  if ($("#translateButton").text() == 'Sửa') $("#retranslateButton").click();
+  if ($("#translateButton").text() == 'Sửa') {
+    $("#retranslateButton").click();
+  }
 });
 
 $(".translator").click(function () {
@@ -157,7 +207,19 @@ $(".translator").click(function () {
           && prevSourceLanguageCode != null) {
         $("#sourceLangSelect").val(prevSourceLanguageCode);
         return false;
-      } else if (prevSourceLanguageCode != null && (prevSourceLanguageName != null && $(this).text().replace(/[()]/g, '') == prevSourceLanguageName.replace(/[()]/g, '') || $(this).val().toLowerCase() == prevSourceLanguageCode.toLowerCase() || (prevSourceLanguageName != null && $(this).text().includes($(this).text().split(' ').length == 2 && prevSourceLanguageName.split(' ').length == 2 ? prevSourceLanguageName.replace(/[()]/g, '').split(' ')[1] : prevSourceLanguageName.replace(/[()]/g, '').split(' ')[0]) && $(this).val().toLowerCase().split('-')[0] == prevSourceLanguageCode.toLowerCase().split('-')[0]) || ($(this).val().toLowerCase().split('-')[0] == prevSourceLanguageCode.toLowerCase().split('-')[0]))) {
+      } else if (prevSourceLanguageCode != null && (prevSourceLanguageName
+          != null && $(this).text().replace(/[()]/g, '')
+          == prevSourceLanguageName.replace(/[()]/g, '') || $(
+              this).val().toLowerCase() == prevSourceLanguageCode.toLowerCase()
+          || (prevSourceLanguageName != null && $(this).text().includes(
+                  $(this).text().split(' ').length == 2
+                  && prevSourceLanguageName.split(' ').length == 2
+                      ? prevSourceLanguageName.replace(/[()]/g, '').split(' ')[1]
+                      : prevSourceLanguageName.replace(/[()]/g, '').split(' ')[0])
+              && $(this).val().toLowerCase().split('-')[0]
+              == prevSourceLanguageCode.toLowerCase().split('-')[0]) || ($(
+                  this).val().toLowerCase().split('-')[0]
+              == prevSourceLanguageCode.toLowerCase().split('-')[0]))) {
         $("#sourceLangSelect").val($(this).val());
         return false;
       } else if (index + 1 == $("#sourceLangSelect > option").length) {
@@ -173,8 +235,21 @@ $(".translator").click(function () {
           && prevTargetLanguageCode != null) {
         $("#targetLangSelect").val(prevTargetLanguageCode);
         return false;
-      } else if (prevTargetLanguageCode != null && (prevTargetLanguageName != null && $(this).text().replace(/[()]/g, '') == prevTargetLanguageName.replace(/[()]/g, '') || $(this).val().toLowerCase() == prevTargetLanguageCode.toLowerCase() || (prevTargetLanguageName != null && $(this).text().includes($(this).text().split(' ').length == 2 && prevTargetLanguageName.split(' ').length == 2 ? prevTargetLanguageName.replace(/[()]/g, '').split(' ')[1] : prevTargetLanguageName.replace(/[()]/g, '').split(' ')[0]) && $(this).val().toLowerCase().split('-')[0] == prevTargetLanguageCode.toLowerCase().split('-')[0]) || ($(this).val().toLowerCase().split('-')[0] == prevTargetLanguageCode.toLowerCase().split('-')[0]))) {
-        if ($(".translator.active").data("id") === Translators.DEEPL_TRANSLATOR && prevTargetLanguageName == 'English') {
+      } else if (prevTargetLanguageCode != null && (prevTargetLanguageName
+          != null && $(this).text().replace(/[()]/g, '')
+          == prevTargetLanguageName.replace(/[()]/g, '') || $(
+              this).val().toLowerCase() == prevTargetLanguageCode.toLowerCase()
+          || (prevTargetLanguageName != null && $(this).text().includes(
+                  $(this).text().split(' ').length == 2
+                  && prevTargetLanguageName.split(' ').length == 2
+                      ? prevTargetLanguageName.replace(/[()]/g, '').split(' ')[1]
+                      : prevTargetLanguageName.replace(/[()]/g, '').split(' ')[0])
+              && $(this).val().toLowerCase().split('-')[0]
+              == prevTargetLanguageCode.toLowerCase().split('-')[0]) || ($(
+                  this).val().toLowerCase().split('-')[0]
+              == prevTargetLanguageCode.toLowerCase().split('-')[0]))) {
+        if ($(".translator.active").data("id") === Translators.DEEPL_TRANSLATOR
+            && prevTargetLanguageName == 'English') {
           $("#targetLangSelect").val("EN-US");
         } else {
           $("#targetLangSelect").val($(this).val());
@@ -197,15 +272,22 @@ $(".translator").click(function () {
     }
 
     localStorage.setItem("translator", JSON.stringify(translator));
-    if ($("#translateButton").text() == 'Sửa') $("#retranslateButton").click();
+    if ($("#translateButton").text() == 'Sửa') {
+      $("#retranslateButton").click();
+    }
   }
 });
 
-$("#inputVietPhrases").on("change", function () {
+$("#inputVietphrase").on("change", function () {
   const reader = new FileReader();
 
   reader.onload = function () {
-    let vietphraseList = this.result.split(/\r?\n/).map((phrase) => phrase.split($("#inputVietPhrases").prop("files")[0].type == 'text/tab-separated-values' ? '\t' : '=')).filter((phrase) => phrase.length == 2).map((element) => [element[0].replace(/[/[\]\-.\\|^$!=<()*+?{}]/g, '\\$&'), element[1].split('/')[0].split('|')[0]]);
+    let vietphraseList = this.result.split(/\r?\n/).map(
+        (phrase) => phrase.split($("#inputVietphrase").prop("files")[0].type
+        == 'text/tab-separated-values' ? '\t' : '=')).filter(
+        (phrase) => phrase.length == 2).map(
+        (element) => [element[0].replace(/[/[\]\-.\\|^$!=<()*+?{}]/g, '\\$&'),
+          element[1].split('/')[0].split('|')[0]]);
     vietphraseList = [...luatnhanList, ...vietphraseList,
       ...Object.entries(sinovietnameses)].filter(
         ([key]) => !vietphraseList[key] && (vietphraseList[key] = 1), {})
@@ -695,7 +777,8 @@ function convertText(inputText, data, caseSensitive, useGlossary,
               j += k - 1;
               break;
             } else if (k == 1) {
-              if (tempWord.length > 0 && chars[j] == ' ' && !tempWord.includes(' ')) {
+              if (tempWord.length > 0 && chars[j] == ' ' && !tempWord.includes(
+                  ' ')) {
                 tempWord.split(' ').forEach((element) => phrases.push(element));
                 tempWord = '';
               }
@@ -704,7 +787,8 @@ function convertText(inputText, data, caseSensitive, useGlossary,
 
               if (tempWord.includes(' ')) {
                 if (!chars[j + 1].includes(' ')) {
-                  phrases.push((phrases.pop() ?? '') + tempWord.substring(0, tempWord.length - 1));
+                  phrases.push((phrases.pop() ?? '') + tempWord.substring(0,
+                      tempWord.length - 1));
                   tempWord = '';
                 }
                 break;
@@ -758,8 +842,11 @@ function convertText(inputText, data, caseSensitive, useGlossary,
           for (let k = MAX_PHRASE_LENGTH; k >= 1; k--) {
             if (data.hasOwnProperty(chars.substring(j, j + k))) {
               if (data[chars.substring(j, j + k)].length > 0) {
-                if (punctuation.hasOwnProperty(chars[j - 1]) && /[\u{3000}-\u{303f}\u{30a0}-\u{30ff}\u{fe30}-\u{fe4f}\u{ff00}-\u{ff60}]/u.test(chars[j - 1])) {
-                  phrases.push((phrases.pop() ?? '') + data[chars.substring(j, j + k)]);
+                if (punctuation.hasOwnProperty(chars[j - 1])
+                    && /[\u{3000}-\u{303f}\u{30a0}-\u{30ff}\u{fe30}-\u{fe4f}\u{ff00}-\u{ff60}]/u.test(
+                        chars[j - 1])) {
+                  phrases.push(
+                      (phrases.pop() ?? '') + data[chars.substring(j, j + k)]);
                 } else {
                   phrases.push(data[chars.substring(j, j + k)]);
                 }
@@ -768,7 +855,8 @@ function convertText(inputText, data, caseSensitive, useGlossary,
               j += k - 1;
               break;
             } else if (k == 1) {
-              if (tempWord.length > 0 && chars[j] == ' ' && !tempWord.includes(' ')) {
+              if (tempWord.length > 0 && chars[j] == ' ' && !tempWord.includes(
+                  ' ')) {
                 tempWord.split(' ').forEach((element) => phrases.push(element));
                 tempWord = '';
               }
@@ -784,9 +872,11 @@ function convertText(inputText, data, caseSensitive, useGlossary,
                 tempWord += chars[j];
               }
 
-              if (!punctuation.hasOwnProperty(chars[j]) && tempWord.includes(' ')) {
+              if (!punctuation.hasOwnProperty(chars[j]) && tempWord.includes(
+                  ' ')) {
                 if (!chars[j + 1].includes(' ')) {
-                  phrases.push((phrases.pop() ?? '') + tempWord.substring(0, tempWord.length - 1));
+                  phrases.push((phrases.pop() ?? '') + tempWord.substring(0,
+                      tempWord.length - 1));
                   tempWord = '';
                 }
                 break;
@@ -851,7 +941,8 @@ function getProcessTextPreTranslate(text, doProtectQuotationMarks) {
               });
         }
 
-        newText = newText.replace(/(\[OPEN_BRACKET_\d+\])/g, '\n$1\n').replace(/(\[CLOSE_BRACKET_\d+\])(\u{3002}?)/gu, '\n$1$2\n');
+        newText = newText.replace(/(\[OPEN_BRACKET_\d+\])/g, '\n$1\n').replace(
+            /(\[CLOSE_BRACKET_\d+\])(\u{3002}?)/gu, '\n$1$2\n');
       }
     } catch (error) {
       console.error('Lỗi xử lý văn bản trước khi dịch:', error);
@@ -1394,7 +1485,8 @@ function getDynamicDictionaryText(text, isMicrosoftTranslator = true) {
             j += k - 1;
             break;
           } else if (k == 1) {
-            if (tempWord.length > 0 && chars[j] == ' ' && !tempWord.includes(' ')) {
+            if (tempWord.length > 0 && chars[j] == ' ' && !tempWord.includes(
+                ' ')) {
               tempWord.split(' ').forEach((element) => phrases.push(element));
               tempWord = '';
             }
@@ -1403,7 +1495,8 @@ function getDynamicDictionaryText(text, isMicrosoftTranslator = true) {
 
             if (tempWord.includes(' ')) {
               if (!chars[j + 1].includes(' ')) {
-                phrases.push((phrases.pop() ?? '') + tempWord.substring(0, tempWord.length - 1));
+                phrases.push((phrases.pop() ?? '') + tempWord.substring(0,
+                    tempWord.length - 1));
                 tempWord = '';
               }
               break;
@@ -1556,5 +1649,5 @@ const Translators = {
 
 const VietPhraseTranslationAlgorithms = {
   LEFT_TO_RIGHT_TRANSLATION: 'leftToRightTranslation',
-  LONG_VIETPHRASE_PRIOR: 'longVietPhrasePrior',
+  LONG_VIETPHRASE_PRIOR: 'longVietphrasePrior',
 };
