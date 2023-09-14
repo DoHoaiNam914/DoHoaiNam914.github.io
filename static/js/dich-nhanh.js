@@ -702,6 +702,14 @@ function convertText(inputText, data, caseSensitive, useGlossary,
 
               tempWord += chars[j];
 
+              if (tempWord.includes(' ')) {
+                if (!chars[j + 1].includes(' ')) {
+                  phrases.push((phrases.pop() ?? '') + tempWord.substring(0, tempWord.length - 1));
+                  tempWord = '';
+                }
+                break;
+              }
+
               for (let l = MAX_GLOSSARY_LENGTH; l >= 1; l--) {
                 if (tempWord.length > 0 && (glossary.hasOwnProperty(
                         chars.substring(j + 1, j + 1 + l)) || j + 1
@@ -774,6 +782,14 @@ function convertText(inputText, data, caseSensitive, useGlossary,
                 }
               } else {
                 tempWord += chars[j];
+              }
+
+              if (!punctuation.hasOwnProperty(chars[j]) && tempWord.includes(' ')) {
+                if (!chars[j + 1].includes(' ')) {
+                  phrases.push((phrases.pop() ?? '') + tempWord.substring(0, tempWord.length - 1));
+                  tempWord = '';
+                }
+                break;
               }
 
               for (let l = MAX_PHRASE_LENGTH; l >= 1; l--) {
@@ -1384,6 +1400,14 @@ function getDynamicDictionaryText(text, isMicrosoftTranslator = true) {
             }
 
             tempWord += chars[j];
+
+            if (tempWord.includes(' ')) {
+              if (!chars[j + 1].includes(' ')) {
+                phrases.push((phrases.pop() ?? '') + tempWord.substring(0, tempWord.length - 1));
+                tempWord = '';
+              }
+              break;
+            }
 
             for (let l = MAX_GLOSSARY_LENGTH; l >= 1; l--) {
               if (tempWord.length > 0 && (glossary.hasOwnProperty(
