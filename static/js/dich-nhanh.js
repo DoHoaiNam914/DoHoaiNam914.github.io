@@ -33,7 +33,7 @@ $(document).ready(async () => {
       pinyins = Object.fromEntries(pinyinList);
     });
     await $.get("/static/datasource/Bính âm.txt").done((data) => pinyinList = [...pinyinList, ...data.split(/\r?\n/).map((element) => element.split('=')).map((element) => [element[0], element[1].split('ǀ')[0]]).filter((element) => !pinyins.hasOwnProperty(element[0]))]);
-    pinyinList = pinyinList.filter(([key]) => !pinyinList[key] && (pinyinList[key] = 1), {});
+    pinyinList = pinyinList.filter(([key, value]) => key != '' && value != undefined && !pinyinList[key] && (pinyinList[key] = 1), {});
     pinyins = Object.fromEntries(pinyinList);
     console.log('Đã tải xong bộ dữ liệu bính âm!');
   } catch (error) {
@@ -57,7 +57,7 @@ $(document).ready(async () => {
       sinovietnameses = Object.fromEntries(sinovietnameseList);
     });
     await $.get("/static/datasource/Hán việt.txt").done((data) => sinovietnameseList = [...sinovietnameseList, ...data.split(/\r?\n/).map((element) => element.split('=')).map((element) => [element[0], element[1].split('ǀ')[0]]).filter((element) => !sinovietnameses.hasOwnProperty(element[0]))]);
-    sinovietnameseList = sinovietnameseList.filter(([key]) => !sinovietnameseList[key] && (sinovietnameseList[key] = 1), {});
+    sinovietnameseList = sinovietnameseList.filter(([key, value]) => key != '' && value != undefined && !sinovietnameseList[key] && (sinovietnameseList[key] = 1), {});
     sinovietnameses = Object.fromEntries(sinovietnameseList);
     console.log('Đã tải xong bộ dữ liệu hán việt!');
   } catch (error) {
@@ -76,7 +76,7 @@ $(document).ready(async () => {
   if (Object.entries(vietphrases).length == 0) {
     $.get("/static/datasource/VietPhrase của thtgiang.txt").done((data) => {
       let vietphraseList = [...luatnhanList, ...data.split(/\r?\n/).map((element) => element.split('=')).filter((element) => element.length == 2).map((element) => [element[0], element[1].split('/')[0].split('|')[0]]), ...Object.entries(sinovietnameses)];
-      vietphraseList = vietphraseList.filter(([key]) => !vietphraseList[key] && (vietphraseList[key] = 1), {});
+      vietphraseList = vietphraseList.filter(([key, value]) => key != '' && value != undefined && !vietphraseList[key] && (vietphraseList[key] = 1), {});
       if ($("#inputVietphrase").prop("files") == undefined) {
         return;
       }
@@ -265,17 +265,11 @@ $("#inputVietphrase").on("change", function () {
   const reader = new FileReader();
 
   reader.onload = function () {
-    let vietphraseList = this.result.split(/\r?\n/).map(
-        (element) => element.split($("#inputVietphrase").prop("files")[0].type
-        == 'text/tab-separated-values' ? '\t' : '=')).filter(
-        (element) => element.length == 2).map(
-        (element) => [element[0], element[1].split('/')[0].split('|')[0]]);
-    vietphraseList = [...luatnhanList, ...vietphraseList,
-      ...Object.entries(sinovietnameses)].filter(
-        ([key]) => !vietphraseList[key] && (vietphraseList[key] = 1), {})
+    let vietphraseList = this.result.split(/\r?\n/).map((element) => element.split($("#inputVietphrase").prop("files")[0].type == 'text/tab-separated-values' ? '\t' : '=')).filter((element) => element.length == 2).map((element) => [element[0], element[1].split('/')[0].split('|')[0]]);
+    vietphraseList = [...luatnhanList, ...vietphraseList, ...Object.entries(sinovietnameses)].filter(([key, value]) => key != '' && value != undefined && !vietphraseList[key] && (vietphraseList[key] = 1), {})
     vietphrases = Object.fromEntries(vietphraseList);
     console.log('Đã tải xong tệp dữ liệu VietPhrase.txt!');
-  }
+  };
   reader.readAsText($(this).prop("files")[0]);
 });
 
@@ -656,9 +650,7 @@ async function translate(inputText) {
     }
 
     translation = getProcessTextPostTranslate(results.join('\n'));
-    $("#translatedText").html(buildTranslatedResult(
-        [inputText, getProcessTextPostTranslate(processText)], translation,
-        $("#flexSwitchCheckShowOriginal").prop("checked")));
+    $("#translatedText").html(buildTranslatedResult([inputText, convertText(inputText, {}, true, false, VietPhraseTranslationAlgorithms.LEFT_TO_RIGHT_TRANSLATION)], translation, $("#flexSwitchCheckShowOriginal").prop("checked")));
   } catch (error) {
     errorMessage.innerText = 'Bản dịch thất bại: ' + JSON.stringify(error);
     $("#translatedText").html(errorMessage);
@@ -667,14 +659,14 @@ async function translate(inputText) {
 }
 
 function buildTranslatedResult(inputTexts, translation, showOriginal) {
-  let result = document.createElement('div');
+  const result = document.createElement('div');
 
   const inputTextParagraph = document.createElement('p');
   $(inputTextParagraph).text(inputTexts[0]);
   const inputLines = $(inputTextParagraph).html().split(/\n/);
 
   const processTextParagraph = document.createElement('p');
-  $(inputTextParagraph).text(inputTexts[1]);
+  $(processTextParagraph).text(inputTexts[1]);
   const processLines = $(processTextParagraph).html().split(/\n/);
 
   const translationParagraph = document.createElement('p');
@@ -694,7 +686,7 @@ function buildTranslatedResult(inputTexts, translation, showOriginal) {
         }
 
         const paragraph = document.createElement('p');
-        paragraph.innerHTML = resultLines[i].trim() != processLines[i
+        paragraph.innerHTML = resultLines[i] != processLines[i
         + lostLineFixedAmount] ? `<i>${inputLines[i
             + lostLineFixedAmount].trimStart()}</i><br>${resultLines[i].trimStart()}`
             : processLines[i + lostLineFixedAmount].trimStart();
@@ -716,13 +708,11 @@ function buildTranslatedResult(inputTexts, translation, showOriginal) {
 function convertText(inputText, data, caseSensitive, useGlossary,
     translationAlgorithm) {
   try {
-    data = Object.fromEntries(Object.entries(data).filter(
-        (element) => (!useGlossary || !glossary.hasOwnProperty(element[0]))
-            && inputText.includes(element[0])).sort(
-        (a, b) => b[0].length - a[0].length));
+    let dataEntries = Object.entries(data);
+    data = Object.fromEntries(dataEntries.filter((element) => (!useGlossary || !glossary.hasOwnProperty(element[0])) && inputText.includes(element[0])).sort((a, b) => b[0].length - a[0].length));
     const glossaryEntries = Object.entries(glossary).filter(
         (element) => inputText.includes(element[0]));
-    const dataEntries = Object.entries(data);
+    dataEntries = Object.entries(data);
 
     const punctuationEntries = [...cjkmap].filter(
         (element) => element[0] == '…' || element[0].split('…').length != 2);
@@ -735,16 +725,16 @@ function convertText(inputText, data, caseSensitive, useGlossary,
     for (let i = 0; i < lines.length; i++) {
       let chars = lines[i];
 
+      const filteredPunctuationEntries = [...punctuationEntries].filter((element) => chars.includes(element[0]));
+
       if (chars.trim().length == 0 || /^\[(?:OPEN|CLOSE)_BRACKET_\d+\]/.test(
           chars)) {
-        punctuationEntries.forEach((element) => chars = chars.replace(
-            new RegExp(element[0].replace(/[/[\]\-.\\|^$!=<()*+?{}]/g, '\\$&'),
-                'g'), element[1].replace(/\$/g, '$$$&')));
+        filteredPunctuationEntries.forEach((element) => chars = chars.replace(new RegExp(element[0].replace(/[/[\]\-.\\|^$!=<()*+?{}]/g, '\\$&'), 'g'), element[1].replace(/\$/g, '$$$&')));
         results.push(chars);
         continue;
       }
 
-      const filteredEntries = [...dataEntries].filter(
+      const filteredDataEntries = [...dataEntries].filter(
           (element) => chars.includes(element[0]));
 
       if (useGlossary && glossaryEntries.length > 0) {
@@ -794,15 +784,15 @@ function convertText(inputText, data, caseSensitive, useGlossary,
         chars = phrases.join(' ');
       }
 
-      if (filteredEntries.length == 0) {
+      if (filteredDataEntries.length == 0 && filteredPunctuationEntries.length == 0) {
         results.push(chars);
         continue;
       }
 
       if (translationAlgorithm
           === VietPhraseTranslationAlgorithms.LONG_VIETPHRASE_PRIOR) {
-        for (const property in Object.fromEntries(filteredEntries)) {
-          punctuationEntries.forEach((element) => chars = chars.replace(
+        for (const property in Object.fromEntries(filteredDataEntries)) {
+          filteredPunctuationEntries.forEach((element) => chars = chars.replace(
               new RegExp(
                   element[0].replace(/[/[\]\-.\\|^$!=<()*+?{}]/g, '\\$&'),
                   'g'), element[1].replace(/\$/g, '$$$&')));
@@ -815,8 +805,7 @@ function convertText(inputText, data, caseSensitive, useGlossary,
         results.push(chars);
       } else if (translationAlgorithm
           === VietPhraseTranslationAlgorithms.LEFT_TO_RIGHT_TRANSLATION) {
-        const MAX_PHRASE_LENGTH = [...filteredEntries].sort(
-            (a, b) => b[0].length - a[0].length)[0][0].length;
+        const MAX_PHRASE_LENGTH = filteredDataEntries.length > 0 ? [...filteredDataEntries].sort((a, b) => b[0].length - a[0].length)[0][0].length : 1;
         const phrases = [];
         let tempWord = '';
 
