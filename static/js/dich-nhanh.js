@@ -739,7 +739,7 @@ function convertText(inputText, data, caseSensitive, useGlossary,
           chars)) {
         punctuationEntries.forEach((element) => chars = chars.replace(
             new RegExp(element[0].replace(/[/[\]\-.\\|^$!=<()*+?{}]/g, '\\$&'),
-                'g'), element[1].replace(/$/g, '$$$&')));
+                'g'), element[1].replace(/\$/g, '$$$&')));
         results.push(chars);
         continue;
       }
@@ -805,11 +805,11 @@ function convertText(inputText, data, caseSensitive, useGlossary,
           punctuationEntries.forEach((element) => chars = chars.replace(
               new RegExp(
                   element[0].replace(/[/[\]\-.\\|^$!=<()*+?{}]/g, '\\$&'),
-                  'g'), element[1].replace(/$/g, '$$$&')));
+                  'g'), element[1].replace(/\$/g, '$$$&')));
           chars = chars.replace(
               new RegExp(`${property.replace(/[/[\]\-.\\|^$!=<()*+?{}]/g, '\\$&')}(?=$|(?:[!,.:;?]\\s+|["'\\p{Pe}\\p{Pf}]\\s*))`,
                   'gu'), data[property].replace(/[/[\]\-.\\|^$!=<()*+?{}]/g, '\\$&')).replace(new RegExp(property.replace(/[/[\]\-.\\|^$!=<()*+?{}]/g, '\\$&'), 'g'),
-              `${data[property].replace(/$/g, '$$$&')} `);
+              `${data[property].replace(/\$/g, '$$$&')} `);
         }
 
         results.push(chars);
