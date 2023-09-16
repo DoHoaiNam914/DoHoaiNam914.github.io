@@ -193,8 +193,12 @@ $("#queryText").on("input", () => {
 
 $(".modal").on("hidden.bs.modal", () => $(document.body).removeAttr("style"));
 
-$(".modal").on("shown.bs.modal", () => $(document.body).css(
-    {"-webkit-overflow-scrolling": "auto", overflow: "hidden"}));
+$(".modal").on("shown.bs.modal", () => $(document.body).css({
+  "-webkit-overflow-scrolling": "auto",
+  overflow: "hidden",
+  "overscroll-behavior": "none",
+  "touch-action": "none",
+}));
 
 $(".option").change(() => {
   translator = loadTranslatorOptions();
