@@ -449,8 +449,8 @@ async function translate(inputText) {
                 break;
 
             case Translators.GOOGLE_TRANSLATE:
-                MAX_LENGTH = 5000;
-                MAX_LINE = 128;
+                MAX_LENGTH = 16272;
+                MAX_LINE = 73;
                 break;
 
             case Translators.PAPAGO:
