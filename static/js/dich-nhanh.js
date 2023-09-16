@@ -29,11 +29,21 @@ $(document).ready(async () => {
     let pinyinList = [];
 
     await $.get("/static/datasource/Unihan_Readings.txt").done((data) => {
-      pinyinList = data.split(/\r?\n/).filter((element) => element.match(/^U\+\d+\tkMandarin/)).map((element) => [String.fromCodePoint(parseInt(element.split(/\t/)[0].match(/U\+(\d+)/)[1], 16)), element.split(/\t/)[2]]);
+      pinyinList = data.split(/\r?\n/).filter(
+          (element) => element.match(/^U\+\d+\tkMandarin/)).map(
+          (element) => [String.fromCodePoint(
+              parseInt(element.split(/\t/)[0].match(/U\+(\d+)/)[1], 16)),
+            element.split(/\t/)[2]]);
       pinyins = Object.fromEntries(pinyinList);
     });
-    await $.get("/static/datasource/Bính âm.txt").done((data) => pinyinList = [...pinyinList, ...data.split(/\r?\n/).map((element) => element.split('=')).map((element) => [element[0], element[1].split('ǀ')[0]]).filter((element) => !pinyins.hasOwnProperty(element[0]))]);
-    pinyinList = pinyinList.filter(([key, value]) => key != '' && value != undefined && !pinyinList[key] && (pinyinList[key] = 1), {});
+    await $.get("/static/datasource/Bính âm.txt").done(
+        (data) => pinyinList = [...pinyinList,
+          ...data.split(/\r?\n/).map((element) => element.split('=')).map(
+              (element) => [element[0], element[1].split('ǀ')[0]]).filter(
+              (element) => !pinyins.hasOwnProperty(element[0]))]);
+    pinyinList = pinyinList.filter(
+        ([key, value]) => key != '' && value != undefined && !pinyinList[key]
+            && (pinyinList[key] = 1), {});
     pinyins = Object.fromEntries(pinyinList);
     console.log('Đã tải xong bộ dữ liệu bính âm!');
   } catch (error) {
@@ -44,29 +54,48 @@ $(document).ready(async () => {
   try {
     let sinovietnameseList = Object.entries(extendsSinovietnamese);
 
-    await $.get("/static/datasource/ChinesePhienAmWords của thtgiang.txt").done((data) => {
-      sinovietnameseList = [...sinovietnameseList, ...data.split(/\r?\n/).map((element) => element.split('='))];
-      sinovietnameses = Object.fromEntries(sinovietnameseList);
-    });
-    await $.get("/static/datasource/TTV Translate.ChinesePhienAmWords.txt").done((data) => {
-      sinovietnameseList = [...sinovietnameseList, ...data.split(/\r?\n/).map((element) => element.split('=')).filter((element) => !sinovietnameses.hasOwnProperty(element[0]))];
-      sinovietnameses = Object.fromEntries(sinovietnameseList);
-    });
-    await $.get("/static/datasource/QuickTranslate2020 - ChinesePhienAmWords.txt").done((data) => {
-      sinovietnameseList = [...sinovietnameseList, ...data.split(/\r?\n/).map((element) => element.split('=')).filter((element) => !sinovietnameses.hasOwnProperty(element[0]))];
-      sinovietnameses = Object.fromEntries(sinovietnameseList);
-    });
-    await $.get("/static/datasource/Hán việt.txt").done((data) => sinovietnameseList = [...sinovietnameseList, ...data.split(/\r?\n/).map((element) => element.split('=')).map((element) => [element[0], element[1].split('ǀ')[0]]).filter((element) => !sinovietnameses.hasOwnProperty(element[0]))]);
-    sinovietnameseList = sinovietnameseList.filter(([key, value]) => key != '' && value != undefined && !sinovietnameseList[key] && (sinovietnameseList[key] = 1), {});
+    await $.get("/static/datasource/ChinesePhienAmWords của thtgiang.txt").done(
+        (data) => {
+          sinovietnameseList = [...sinovietnameseList,
+            ...data.split(/\r?\n/).map((element) => element.split('='))];
+          sinovietnameses = Object.fromEntries(sinovietnameseList);
+        });
+    await $.get(
+        "/static/datasource/TTV Translate.ChinesePhienAmWords.txt").done(
+        (data) => {
+          sinovietnameseList = [...sinovietnameseList,
+            ...data.split(/\r?\n/).map((element) => element.split('=')).filter(
+                (element) => !sinovietnameses.hasOwnProperty(element[0]))];
+          sinovietnameses = Object.fromEntries(sinovietnameseList);
+        });
+    await $.get(
+        "/static/datasource/QuickTranslate2020 - ChinesePhienAmWords.txt").done(
+        (data) => {
+          sinovietnameseList = [...sinovietnameseList,
+            ...data.split(/\r?\n/).map((element) => element.split('=')).filter(
+                (element) => !sinovietnameses.hasOwnProperty(element[0]))];
+          sinovietnameses = Object.fromEntries(sinovietnameseList);
+        });
+    await $.get("/static/datasource/Hán việt.txt").done(
+        (data) => sinovietnameseList = [...sinovietnameseList,
+          ...data.split(/\r?\n/).map((element) => element.split('=')).map(
+              (element) => [element[0], element[1].split('ǀ')[0]]).filter(
+              (element) => !sinovietnameses.hasOwnProperty(element[0]))]);
+    sinovietnameseList = sinovietnameseList.filter(
+        ([key, value]) => key != '' && value != undefined
+            && !sinovietnameseList[key] && (sinovietnameseList[key] = 1), {});
     sinovietnameses = Object.fromEntries(sinovietnameseList);
     console.log('Đã tải xong bộ dữ liệu hán việt!');
   } catch (error) {
     console.error('Không thể tải bộ dữ liệu hán việt:', error);
     setTimeout(() => window.location.reload(), 5000);
   }
-  
+
   await $.get("/static/datasource/LuatNhan của thtgiang.txt").done((data) => {
-    luatnhanList = data.split(/\r?\n/).map((element) => element.split('=')).filter((element) => element.length == 2).map((element) => [element[0], element[1].split('/')[0]]);
+    luatnhanList = data.split(/\r?\n/).map(
+        (element) => element.split('=')).filter(
+        (element) => element.length == 2).map(
+        (element) => [element[0], element[1].split('/')[0]]);
     console.log('Đã tải xong tệp LuatNhan.txt!');
   }).fail((jqXHR, textStatus, errorThrown) => {
     console.error('Không tải được tệp LuatNhan.txt:', errorThrown);
@@ -75,8 +104,14 @@ $(document).ready(async () => {
 
   if (Object.entries(vietphrases).length == 0) {
     $.get("/static/datasource/VietPhrase của thtgiang.txt").done((data) => {
-      let vietphraseList = [...luatnhanList, ...data.split(/\r?\n/).map((element) => element.split('=')).filter((element) => element.length == 2).map((element) => [element[0], element[1].split('/')[0].split('|')[0]]), ...Object.entries(sinovietnameses)];
-      vietphraseList = vietphraseList.filter(([key, value]) => key != '' && value != undefined && !vietphraseList[key] && (vietphraseList[key] = 1), {});
+      let vietphraseList = [...luatnhanList,
+        ...data.split(/\r?\n/).map((element) => element.split('=')).filter(
+            (element) => element.length == 2).map(
+            (element) => [element[0], element[1].split('/')[0].split('|')[0]]),
+        ...Object.entries(sinovietnameses)];
+      vietphraseList = vietphraseList.filter(
+          ([key, value]) => key != '' && value != undefined
+              && !vietphraseList[key] && (vietphraseList[key] = 1), {});
       if ($("#inputVietphrase").prop("files") == undefined) {
         return;
       }
@@ -90,7 +125,8 @@ $(document).ready(async () => {
   $("#queryText").trigger("input");
 });
 
-$(visualViewport).resize((event) => $("#queryText").css("max-height", event.target.height - 248 + "px"));
+$(visualViewport).resize((event) => $("#queryText").css("max-height",
+    event.target.height - 248 + "px"));
 
 $("#translateButton").click(async function () {
   if (translateTask != undefined) {
@@ -123,8 +159,7 @@ $("#translateButton").click(async function () {
 });
 
 $("#copyButton").on("click", () => {
-  const data = $("#translateButton").text() == 'Sửa' ? translation : $(
-      "#queryText").val();
+  const data = translation.length ? translation : $("#queryText").val();
 
   if (data.length > 0) {
     navigator.clipboard.writeText(data);
@@ -158,8 +193,8 @@ $("#queryText").on("input", () => {
 
 $(".modal").on("hidden.bs.modal", () => $(document.body).removeAttr("style"));
 
-$(".modal").on("shown.bs.modal",
-    () => $(document.body).css("overflow", "hidden"));
+$(".modal").on("shown.bs.modal", () => $(document.body).css(
+    {"-webkit-overflow-scrolling": "auto", overflow: "hidden"}));
 
 $(".option").change(() => {
   translator = loadTranslatorOptions();
@@ -262,8 +297,15 @@ $("#inputVietphrase").on("change", function () {
   const reader = new FileReader();
 
   reader.onload = function () {
-    let vietphraseList = this.result.split(/\r?\n/).map((element) => element.split($("#inputVietphrase").prop("files")[0].type == 'text/tab-separated-values' ? '\t' : '=')).filter((element) => element.length == 2).map((element) => [element[0], element[1].split('/')[0].split('|')[0]]);
-    vietphraseList = [...luatnhanList, ...vietphraseList, ...Object.entries(sinovietnameses)].filter(([key, value]) => key != '' && value != undefined && !vietphraseList[key] && (vietphraseList[key] = 1), {})
+    let vietphraseList = this.result.split(/\r?\n/).map(
+        (element) => element.split($("#inputVietphrase").prop("files")[0].type
+        == 'text/tab-separated-values' ? '\t' : '=')).filter(
+        (element) => element.length == 2).map(
+        (element) => [element[0], element[1].split('/')[0].split('|')[0]]);
+    vietphraseList = [...luatnhanList, ...vietphraseList,
+      ...Object.entries(sinovietnameses)].filter(
+        ([key, value]) => key != '' && value != undefined
+            && !vietphraseList[key] && (vietphraseList[key] = 1), {})
     vietphrases = Object.fromEntries(vietphraseList);
     console.log('Đã tải xong tệp dữ liệu VietPhrase.txt!');
   };
@@ -647,7 +689,10 @@ async function translate(inputText) {
     }
 
     translation = getProcessTextPostTranslate(results.join('\n'));
-    $("#translatedText").html(buildTranslatedResult([inputText, convertText(inputText, {}, true, false, VietPhraseTranslationAlgorithms.LEFT_TO_RIGHT_TRANSLATION)], translation, $("#flexSwitchCheckShowOriginal").prop("checked")));
+    $("#translatedText").html(buildTranslatedResult([inputText,
+          convertText(inputText, {}, true, false,
+              VietPhraseTranslationAlgorithms.LEFT_TO_RIGHT_TRANSLATION)],
+        translation, $("#flexSwitchCheckShowOriginal").prop("checked")));
   } catch (error) {
     errorMessage.innerText = 'Bản dịch thất bại: ' + JSON.stringify(error);
     $("#translatedText").html(errorMessage);
@@ -706,7 +751,10 @@ function convertText(inputText, data, caseSensitive, useGlossary,
     translationAlgorithm) {
   try {
     let dataEntries = Object.entries(data);
-    data = Object.fromEntries(dataEntries.filter((element) => (!useGlossary || !glossary.hasOwnProperty(element[0])) && inputText.includes(element[0])).sort((a, b) => b[0].length - a[0].length));
+    data = Object.fromEntries(dataEntries.filter(
+        (element) => (!useGlossary || !glossary.hasOwnProperty(element[0]))
+            && inputText.includes(element[0])).sort(
+        (a, b) => b[0].length - a[0].length));
     const glossaryEntries = Object.entries(glossary).filter(
         (element) => inputText.includes(element[0]));
     dataEntries = Object.entries(data);
@@ -722,11 +770,14 @@ function convertText(inputText, data, caseSensitive, useGlossary,
     for (let i = 0; i < lines.length; i++) {
       let chars = lines[i];
 
-      const filteredPunctuationEntries = [...punctuationEntries].filter((element) => chars.includes(element[0]));
+      const filteredPunctuationEntries = [...punctuationEntries].filter(
+          (element) => chars.includes(element[0]));
 
       if (chars.trim().length == 0 || /^\[(?:OPEN|CLOSE)_BRACKET_\d+\]/.test(
           chars)) {
-        filteredPunctuationEntries.forEach((element) => chars = chars.replace(new RegExp(element[0].replace(/[/[\]\-.\\|^$!=<()*+?{}]/g, '\\$&'), 'g'), element[1].replace(/\$/g, '$$$&')));
+        filteredPunctuationEntries.forEach((element) => chars = chars.replace(
+            new RegExp(element[0].replace(/[/[\]\-.\\|^$!=<()*+?{}]/g, '\\$&'),
+                'g'), element[1].replace(/\$/g, '$$$&')));
         results.push(chars);
         continue;
       }
@@ -781,7 +832,8 @@ function convertText(inputText, data, caseSensitive, useGlossary,
         chars = phrases.join(' ');
       }
 
-      if (filteredDataEntries.length == 0 && filteredPunctuationEntries.length == 0) {
+      if (filteredDataEntries.length == 0 && filteredPunctuationEntries.length
+          == 0) {
         results.push(chars);
         continue;
       }
@@ -795,14 +847,19 @@ function convertText(inputText, data, caseSensitive, useGlossary,
                   'g'), element[1].replace(/\$/g, '$$$&')));
           chars = chars.replace(
               new RegExp(`${property.replace(/[/[\]\-.\\|^$!=<()*+?{}]/g, '\\$&')}(?=$|(?:[!,.:;?]\\s+|["'\\p{Pe}\\p{Pf}]\\s*))`,
-                  'gu'), data[property].replace(/[/[\]\-.\\|^$!=<()*+?{}]/g, '\\$&')).replace(new RegExp(property.replace(/[/[\]\-.\\|^$!=<()*+?{}]/g, '\\$&'), 'g'),
+                  'gu'), data[property].replace(/[/[\]\-.\\|^$!=<()*+?{}]/g,
+                  '\\$&')).replace(
+              new RegExp(property.replace(/[/[\]\-.\\|^$!=<()*+?{}]/g, '\\$&'),
+                  'g'),
               `${data[property].replace(/\$/g, '$$$&')} `);
         }
 
         results.push(chars);
       } else if (translationAlgorithm
           === VietPhraseTranslationAlgorithms.LEFT_TO_RIGHT_TRANSLATION) {
-        const MAX_PHRASE_LENGTH = filteredDataEntries.length > 0 ? [...filteredDataEntries].sort((a, b) => b[0].length - a[0].length)[0][0].length : 1;
+        const MAX_PHRASE_LENGTH = filteredDataEntries.length > 0
+            ? [...filteredDataEntries].sort(
+                (a, b) => b[0].length - a[0].length)[0][0].length : 1;
         const phrases = [];
         let tempWord = '';
 
@@ -885,19 +942,31 @@ function getProcessTextPreTranslate(text, doProtectQuotationMarks) {
   if (text.length > 0) {
     try {
       if (doProtectQuotationMarks) {
-        const brackets = [...cjkmap].filter((element) => element[0] != '…' && element[0].split('…').length == 2).map((element) => [element[0].replace(/[/[\]\-.\\|^$!=<()*+?{}]/g, '\\$&'), element[1]]);
+        const brackets = [...cjkmap].filter(
+            (element) => element[0] != '…' && element[0].split('…').length
+                == 2).map(
+            (element) => [element[0].replace(/[/[\]\-.\\|^$!=<()*+?{}]/g,
+                '\\$&'), element[1]]);
 
         for (let i = 0; i < brackets.length; i++) {
-          newText = newText.replace(new RegExp(`${brackets[i][0].split('…')[0]}(?!(?:OPEN|CLOSE)_BRACKET_\\d+)`, 'g'), `[OPEN_BRACKET_${i}]`);
-          newText = newText.replace(new RegExp(brackets[i][0].split('…')[1], 'g'), (match, offset) => {
-            for (let j = i; j >= 0; j--) {
-              if (/CLOSE_BRACKET_\d+/.test(newText.substring(offset - `CLOSE_BRACKET_${j}`.length, offset)) || /OPEN_BRACKET_\d+/.test(newText.substring(offset - `OPEN_BRACKET_${j}`.length, offset))) {
-                return match;
-              } else if (j == 0) {
-                return `[CLOSE_BRACKET_${i}]`;
-              }
-            }
-          });
+          newText = newText.replace(
+              new RegExp(`${brackets[i][0].split('…')[0]}(?!(?:OPEN|CLOSE)_BRACKET_\\d+)`,
+                  'g'), `[OPEN_BRACKET_${i}]`);
+          newText = newText.replace(
+              new RegExp(brackets[i][0].split('…')[1], 'g'),
+              (match, offset) => {
+                for (let j = i; j >= 0; j--) {
+                  if (/CLOSE_BRACKET_\d+/.test(
+                      newText.substring(offset - `CLOSE_BRACKET_${j}`.length,
+                          offset)) || /OPEN_BRACKET_\d+/.test(
+                      newText.substring(offset - `OPEN_BRACKET_${j}`.length,
+                          offset))) {
+                    return match;
+                  } else if (j == 0) {
+                    return `[CLOSE_BRACKET_${i}]`;
+                  }
+                }
+              });
         }
 
         newText = newText.replace(/(\[OPEN_BRACKET_\d+\])/g, '\n$1\n').replace(
@@ -917,7 +986,8 @@ function getProcessTextPostTranslate(text) {
 
   if (text.length > 0) {
     try {
-      const brackets = [...cjkmap].filter((element) => element[0] != '…' && element[0].split('…').length == 2);
+      const brackets = [...cjkmap].filter(
+          (element) => element[0] != '…' && element[0].split('…').length == 2);
 
       for (let i = brackets.length - 1; i >= 0; i--) {
         if (/[\u{3000}-\u{303f}\u{30a0}-\u{30ff}\u{fe30}-\u{fe4f}\u{ff00}-\u{ff60}]/u.test(
