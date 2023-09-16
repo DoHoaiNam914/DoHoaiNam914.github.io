@@ -1,33 +1,33 @@
 <!DOCTYPE html>
 <html>
-  <head>
+<head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="initial-scale=1, user-scalable=0, maximum-scale=1">
     <title>Trình xem Light Novel</title>
     <script src="/static/lib/LAB.js"></script>
     <script>
-      $LAB
-        .script("/static/lib/jquery-3.7.0.js")
-        .script("/static/lib/bootstrap.bundle.min.js")
-        .script("/static/lib/underscore-umd-min.js").wait()
-        .script("/static/js/trinh-xem.js");
+        $LAB
+            .script("/static/lib/jquery-3.7.0.js")
+            .script("/static/lib/bootstrap.bundle.min.js")
+            .script("/static/lib/underscore-umd-min.js").wait()
+            .script("/static/js/trinh-xem.js");
     </script>
-  </head>
-  <body>
-    <form>
-      <div class="notranslate" style="bottom: 8px; left: 8px; position: fixed;">
+</head>
+<body>
+<form>
+    <div class="notranslate" style="bottom: 8px; left: 8px; position: fixed;">
         <select id="view-select">
-          <option value="pagination">Trang</option>
-          <option value="vertical" selected>Dọc</option>
+            <option value="pagination">Trang</option>
+            <option value="vertical" selected>Dọc</option>
         </select>
         <select id="background-select">
-          <option value="white">Trắng</option>
-          <option value="sepia" selected>Sepia</option>
-          <option value="gray">Xám</option>
-          <option value="black">Đen</option>
+            <option value="white">Trắng</option>
+            <option value="sepia" selected>Sepia</option>
+            <option value="gray">Xám</option>
+            <option value="black">Đen</option>
         </select>
-      </div>
-    </form>
-  </body>
+    </div>
+</form>
+</body>
 </html>
