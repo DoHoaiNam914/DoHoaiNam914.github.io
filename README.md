@@ -6,6 +6,8 @@ This site was built using [GitHub Pages](https://pages.github.com/).
 
 ## [Light Novel](https://dohoainam914.github.io/light-novel/)
 
+- [Chúa tể bóng tối](https://dohoainam914.github.io/light-novel/?thu-vien=chua-te-bong-toi)
+
 - [Clear the world like a game with The Zero Believer Goddess](https://dohoainam914.github.io/light-novel/?thu-vien=shinjyazero)
 
 - [Demon's Sword Master of Excalibur School](https://dohoainam914.github.io/light-novel/?thu-vien=seikengakuin)
@@ -13,8 +15,6 @@ This site was built using [GitHub Pages](https://pages.github.com/).
 - [King Propose](https://dohoainam914.github.io/light-novel/?thu-vien=propose)
 
 - [SHINWA DENSETSU NO EIYUU NO ISEKAITAN](https://dohoainam914.github.io/light-novel/?thu-vien=shinwadensetu)
-
-- [The Eminence in Shadow](https://dohoainam914.github.io/light-novel/?thu-vien=kagenojitsuryokusya)
 
 - [Tinh linh huyễn tưởng ký](https://dohoainam914.github.io/light-novel/?thu-vien=tinhlinh)
 
