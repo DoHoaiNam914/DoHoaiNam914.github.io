@@ -11,7 +11,7 @@
         const storedTheme = localStorage.getItem('theme');
         const preferredTheme = storedTheme ?? 'auto';
 
-        const setTheme = function (theme) {
+        const setTheme = (theme) => {
             if (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches) {
                 $(document.documentElement).attr('data-bs-theme', 'dark');
             } else {
@@ -19,11 +19,9 @@
             }
         };
 
-        const showActiveTheme = function (theme, focus = false) {
+        const showActiveTheme = (theme, focus = false) => {
             const themeSwitcher = $('#theme');
-            if (!themeSwitcher) {
-                return;
-            }
+            if (!themeSwitcher) return;
 
             const activeThemeIcon = $('.theme-icon-active');
             const btnToActive = $(`[data-theme-value="${theme}"]`);
@@ -32,16 +30,10 @@
             $('[data-theme-value]').removeClass('active');
             $(btnToActive).addClass('active');
             $(activeThemeIcon).html(svgOfActiveBtn);
-            if (focus) {
-                themeSwitcher.focus()
-            }
+            if (focus) themeSwitcher.focus()
         };
 
-        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function () {
-            if (storedTheme !== 'light' || storedTheme !== 'dark') {
-                setTheme(preferredTheme);
-            }
-        });
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => (storedTheme !== 'light' || storedTheme !== 'dark') && setTheme(preferredTheme));
 
         $LAB
             .script('/static/lib/jquery-3.7.0.js').wait()

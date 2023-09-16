@@ -12,6 +12,7 @@ let vietphrases = {};
 let luatnhanList = [];
 
 const extendsSinovietnamese = {
+    '騎士長': 'kỵ sĩ trưởng',
     '团长': 'đoàn trưởng',
     '刺客': 'thích khách',
     '传功': 'truyền công',
@@ -32,7 +33,7 @@ $(document).ready(async () => {
             pinyinList = data.split(/\r?\n/).filter((element) => element.match(/^U\+\d+\tkMandarin/)).map((element) => [String.fromCodePoint(parseInt(element.split(/\t/)[0].match(/U\+(\d+)/)[1], 16)), element.split(/\t/)[2]]);
             pinyins = Object.fromEntries(pinyinList);
         });
-        await $.get('/static/datasource/Bính âm.txt').done((data) => pinyinList = [...pinyinList, ...data.split(/\r?\n/).map((element) => element.split('=')).map((element) => [element[0], element[1].split('ǀ')[0]]).filter((element) => !pinyins.hasOwnProperty(element[0]))]);
+        await $.get('/static/datasource/Bính âm.txt').done((data) => pinyinList = [...pinyinList, ...data.split(/\r?\n/).map((element) => element.split('=')).sort((a, b) => b[0].length - a[0].length).map((element) => [element[0], element[1].split('ǀ')[0]]).filter((element) => !pinyins.hasOwnProperty(element[0]))]);
         pinyinList = pinyinList.filter(([key, value]) => key != '' && value != undefined && !pinyinList[key] && (pinyinList[key] = 1), {});
         pinyins = Object.fromEntries(pinyinList);
         console.log('Đã tải xong bộ dữ liệu bính âm (%d)!', pinyinList.length);
@@ -56,7 +57,7 @@ $(document).ready(async () => {
             sinovietnameseList = [...sinovietnameseList, ...data.split(/\r?\n/).map((element) => element.split('=')).filter((element) => !sinovietnameses.hasOwnProperty(element[0]))];
             sinovietnameses = Object.fromEntries(sinovietnameseList);
         });
-        await $.get('/static/datasource/Hán việt.txt').done((data) => sinovietnameseList = [...sinovietnameseList, ...data.split(/\r?\n/).map((element) => element.split('=')).map((element) => [element[0], element[1].split('ǀ')[0]]).filter((element) => !sinovietnameses.hasOwnProperty(element[0]))]);
+        await $.get('/static/datasource/Hán việt.txt').done((data) => sinovietnameseList = [...sinovietnameseList, ...data.split(/\r?\n/).map((element) => element.split('=')).sort((a, b) => b[0].length - a[0].length).map((element) => [element[0], element[1].split('ǀ')[0]]).filter((element) => !sinovietnameses.hasOwnProperty(element[0]))]);
         sinovietnameseList = sinovietnameseList.filter(([key, value]) => key != '' && value != undefined && !sinovietnameseList[key] && (sinovietnameseList[key] = 1), {});
         sinovietnameses = Object.fromEntries(sinovietnameseList);
         console.log('Đã tải xong bộ dữ liệu hán việt (%d)!', sinovietnameseList.length);
@@ -666,17 +667,18 @@ function convertText(inputText, data, caseSensitive, useGlossary, translationAlg
             const filteredDataEntries = [...dataEntries].filter((element) => chars.includes(element[0]));
 
             if (useGlossary && glossaryEntries.length > 0) {
-                const MAX_GLOSSARY_LENGTH = glossaryEntries[0][0].length;
+                let glossaryLengths = [...glossaryEntries].map((element) => element[0]).sort((a, b) => b[0].length - a[0].length).map((element) => element.length);
+                glossaryLengths = [...glossaryLengths, 1].filter((element, index) => index == glossaryLengths.indexOf(element));
                 const phrases = [];
                 let tempWord = '';
 
                 for (let j = 0; j < chars.length; j++) {
-                    for (let k = MAX_GLOSSARY_LENGTH; k >= 1; k--) {
-                        if (glossary.hasOwnProperty(chars.substring(j, j + k))) {
-                            phrases.push(glossary[chars.substring(j, j + k)]);
-                            j += k - 1;
+                    for (const glossaryLength of glossaryLengths) {
+                        if (glossary.hasOwnProperty(chars.substring(j, j + glossaryLength))) {
+                            phrases.push(glossary[chars.substring(j, j + glossaryLength)]);
+                            j += glossaryLength - 1;
                             break;
-                        } else if (k == 1) {
+                        } else if (glossaryLength == 1) {
                             if (tempWord.length > 0 && chars[j] == ' ' && !tempWord.includes(' ')) {
                                 tempWord.split(' ').forEach((element) => phrases.push(element));
                                 tempWord = '';
@@ -692,8 +694,8 @@ function convertText(inputText, data, caseSensitive, useGlossary, translationAlg
                                 break;
                             }
 
-                            for (let l = MAX_GLOSSARY_LENGTH; l >= 1; l--) {
-                                if (tempWord.length > 0 && (glossary.hasOwnProperty(chars.substring(j + 1, j + 1 + l)) || j + 1 == chars.length)) {
+                            for (const glossaryLength1 of glossaryLengths) {
+                                if (tempWord.length > 0 && (glossary.hasOwnProperty(chars.substring(j + 1, j + 1 + glossaryLength1)) || j + 1 == chars.length)) {
                                     tempWord.split(' ').forEach(
                                         (element) => phrases.push(element));
                                     tempWord = '';
@@ -721,35 +723,40 @@ function convertText(inputText, data, caseSensitive, useGlossary, translationAlg
 
                 results.push(chars);
             } else if (translationAlgorithm === VietPhraseTranslationAlgorithms.LEFT_TO_RIGHT_TRANSLATION) {
-                const MAX_PHRASE_LENGTH = filteredDataEntries.length > 0 ? [...filteredDataEntries].sort((a, b) => b[0].length - a[0].length)[0][0].length : 1;
+                let phraseLengths = [...useGlossary && glossaryEntries.length > 0 ? glossaryEntries : [], ...filteredDataEntries].map((element) => useGlossary && glossaryEntries.length > 0 && glossary.hasOwnProperty(element[0]) ? element[1] : element[0]).sort((a, b) => b[0].length - a[0].length).map((element) => element.length);
+                phraseLengths = [...phraseLengths, 1].filter((element, index) => index == phraseLengths.indexOf(element));
                 const phrases = [];
                 let tempWord = '';
 
                 for (let j = 0; j < chars.length; j++) {
-                    for (let k = MAX_PHRASE_LENGTH; k >= 1; k--) {
-                        if (data.hasOwnProperty(chars.substring(j, j + k))) {
-                            if (data[chars.substring(j, j + k)].length > 0) {
+                    for (const phraseLength of phraseLengths) {
+                        if (useGlossary && glossaryEntries.length > 0 && glossary.hasOwnProperty(chars.substring(j, j + phraseLength))) {
+                            phrases.push(chars.substring(j, j + phraseLength));
+                            j += phraseLength - 1;
+                            break;
+                        } else if (data.hasOwnProperty(chars.substring(j, j + phraseLength))) {
+                            if (data[chars.substring(j, j + phraseLength)].length > 0) {
                                 if (punctuation.hasOwnProperty(chars[j - 1]) && /[\u{3000}-\u{303f}\u{30a0}-\u{30ff}\u{fe30}-\u{fe4f}\u{ff00}-\u{ff60}]/u.test(chars[j - 1])) {
-                                    phrases.push((phrases.pop() ?? '') + data[chars.substring(j, j + k)]);
+                                    phrases.push((phrases.pop() ?? '') + data[chars.substring(j, j + phraseLength)]);
                                 } else {
-                                    phrases.push(data[chars.substring(j, j + k)]);
+                                    phrases.push(data[chars.substring(j, j + phraseLength)]);
                                 }
                             }
 
-                            j += k - 1;
+                            j += phraseLength - 1;
                             break;
-                        } else if (k == 1) {
+                        } else if (phraseLength == 1) {
                             if (tempWord.length > 0 && chars[j] == ' ' && !tempWord.includes(' ')) {
                                 tempWord.split(' ').forEach((element) => phrases.push(element));
                                 tempWord = '';
                             }
 
                             if (punctuation.hasOwnProperty(chars[j])) {
-                                if (lines[i].startsWith(chars[j]) || tempWord.length > 0) {
-                                    tempWord += punctuation[chars[j]];
-                                } else {
-                                    phrases.push((phrases.pop() ?? '') + punctuation[chars[j]]);
+                                if (tempWord.length == 0 && !lines[i].startsWith(chars[j]) && /\p{Po}/u.test(chars[j])) {
+                                    phrases.push(phrases.pop() + punctuation[chars[j]]);console.log(phrases[phrases.length - 1], chars[j]);
                                     break;
+                                } else {
+                                    tempWord += punctuation[chars[j]];
                                 }
                             } else {
                                 tempWord += chars[j];
@@ -763,8 +770,8 @@ function convertText(inputText, data, caseSensitive, useGlossary, translationAlg
                                 break;
                             }
 
-                            for (let l = MAX_PHRASE_LENGTH; l >= 1; l--) {
-                                if (tempWord.length > 0 && (data.hasOwnProperty(chars.substring(j + 1, j + 1 + l)) || j + 1 == chars.length)) {
+                            for (const phraseLength1 of phraseLengths) {
+                                if (tempWord.length > 0 && (data.hasOwnProperty(chars.substring(j + 1, j + 1 + phraseLength1)) || j + 1 == chars.length)) {
                                     tempWord.split(' ').forEach((element) => phrases.push(element));
                                     tempWord = '';
                                     break;
@@ -1280,17 +1287,18 @@ function getDynamicDictionaryText(text, isMicrosoftTranslator = true) {
         for (let i = 0; i < lines.length; i++) {
             let chars = lines[i];
 
-            const MAX_GLOSSARY_LENGTH = glossaryEntries[0][0].length;
+            let glossaryLengths = [...glossaryEntries].map((element) => element[0]).sort((a, b) => b[0].length - a[0].length).map((element) => element.length);
+            glossaryLengths = [...glossaryLengths, 1].filter((element, index) => index == glossaryLengths.indexOf(element));
             const phrases = [];
             let tempWord = '';
 
             for (let j = 0; j < chars.length; j++) {
-                for (let k = MAX_GLOSSARY_LENGTH; k >= 1; k--) {
-                    if (glossary.hasOwnProperty(chars.substring(j, j + k))) {
-                        phrases.push(isMicrosoftTranslator ? `<mstrans:dictionary translation='${glossary[chars.substring(j, j + k)]}'>${chars.substring(j, j + k)}</mstrans:dictionary>` : glossary[chars.substring(j, j + k)]);
-                        j += k - 1;
+                for (const glossaryLength of glossaryLengths) {
+                    if (glossary.hasOwnProperty(chars.substring(j, j + glossaryLength))) {
+                        phrases.push(isMicrosoftTranslator ? `<mstrans:dictionary translation='${glossary[chars.substring(j, j + glossaryLength)]}'>${chars.substring(j, j + glossaryLength)}</mstrans:dictionary>` : glossary[chars.substring(j, j + glossaryLength)]);
+                        j += glossaryLength - 1;
                         break;
-                    } else if (k == 1) {
+                    } else if (glossaryLength == 1) {
                         if (tempWord.length > 0 && chars[j] == ' ' && !tempWord.includes(' ')) {
                             tempWord.split(' ').forEach((element) => phrases.push(element));
                             tempWord = '';
@@ -1306,8 +1314,8 @@ function getDynamicDictionaryText(text, isMicrosoftTranslator = true) {
                             break;
                         }
 
-                        for (let l = MAX_GLOSSARY_LENGTH; l >= 1; l--) {
-                            if (tempWord.length > 0 && (glossary.hasOwnProperty(chars.substring(j + 1, j + 1 + l)) || j + 1 == chars.length)) {
+                        for (const glossaryLength1 of glossaryLengths) {
+                            if (tempWord.length > 0 && (glossary.hasOwnProperty(chars.substring(j + 1, j + 1 + glossaryLength1)) || j + 1 == chars.length)) {
                                 tempWord.split(' ').forEach((element) => phrases.push(element));
                                 tempWord = '';
                                 break;
