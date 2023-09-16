@@ -99,34 +99,53 @@ $('#translateButton').click(async function () {
         translateAbortController = null;
     }
 
-    if ($(this).text() == 'Dịch') {
-        if ($('#queryText').val().length > 0) {
-            $('#translateButton').text('Sửa');
-            $('#translatedText').show();
-            $('#queryText').hide();
-            $('#copyButton').addClass('disabled');
-            $('#pasteButton').addClass('disabled');
-            $('#imageFile').addClass('disabled');
-            $('#pasteUrlButton').addClass('disabled');
-            $('#clearImageButton').addClass('disabled');
+    switch ($(this).text()) {
+        default:
+        case 'Dịch':
+            if ($('#queryText').val().length > 0) {
+                $(this).text('Huỷ');
+                $('#translatedText').show();
+                $('#queryText').hide();
+                $('#copyButton').addClass('disabled');
+                $('#pasteButton').addClass('disabled');
+                $('#imageFile').addClass('disabled');
+                $('#pasteUrlButton').addClass('disabled');
+                $('#clearImageButton').addClass('disabled');
+                $('#translatedText').html('Đang dịch...');
+                translateAbortController = new AbortController();
+                translate($('#queryText').val(), translateAbortController.signal).finally(() => onPostTranslate());
+            }
+            break;
+
+        case 'Huỷ':
             $('#translatedText').html(null);
-            translateAbortController = new AbortController();
-            translate($('#queryText').val(), translateAbortController.signal).finally(() => onPostTranslate());
-        }
-    } else if ($(this).text() == 'Sửa') {
-        $('#translatedText').hide();
-        $('#queryText').show();
-        $('#clearImageButton').removeClass('disabled');
-        $('#pasteUrlButton').removeClass('disabled');
-        $('#imageFile').removeClass('disabled');
-        $('#retranslateButton').addClass('disabled');
-        translation = '';
-        $(this).text('Dịch');
+            $('#translatedText').hide();
+            $('#queryText').show();
+            $('#retranslateButton').addClass('disabled');
+            $('#clearImageButton').removeClass('disabled');
+            $('#pasteUrlButton').removeClass('disabled');
+            $('#imageFile').removeClass('disabled');
+            $('#pasteButton').removeClass('disabled');
+            $('#copyButton').removeClass('disabled');
+            $(this).text('Dịch');
+            break;
+
+        case 'Sửa':
+            $('#translatedText').html(null);
+            $('#translatedText').hide();
+            $('#queryText').show();
+            $('#clearImageButton').removeClass('disabled');
+            $('#pasteUrlButton').removeClass('disabled');
+            $('#imageFile').removeClass('disabled');
+            $('#retranslateButton').addClass('disabled');
+            translation = '';
+            $(this).text('Dịch');
+            break;
     }
 });
 
 $('#copyButton').on('click', () => {
-    const data = translation.length ? translation : $('#queryText').val();
+    const data = translation.length > 0 ? translation : $('#queryText').val();
 
     if (data.length > 0) {
         navigator.clipboard.writeText(data);
@@ -140,16 +159,16 @@ $('#pasteButton').on('click', () => {
             if (clipText.length > 0) {
                 window.scrollTo({top: 0, behavior: 'smooth'});
                 $('#queryText').val(clipText).trigger('input');
-                if ($('#translateButton').text() == 'Sửa') {
-                    $('#retranslateButton').click();
-                }
+                $('#retranslateButton').click();
             }
         });
 });
 
 $('#retranslateButton').click(() => {
-    translation = '';
-    $('#translateButton').text('Dịch').click();
+    if ($('#translateButton').text() != 'Dịch') {
+        translation = '';
+        $('#translateButton').text('Dịch').click();
+    }
 });
 
 $('#queryText').on('input', () => {
@@ -170,9 +189,7 @@ $('.modal').on('shown.bs.modal', () => $(document.body).css({
 $('.option').change(() => {
     translator = loadTranslatorOptions();
     localStorage.setItem('translator', JSON.stringify(translator));
-    if ($('#translateButton').text() == 'Sửa') {
-        $('#retranslateButton').click();
-    }
+    $('#retranslateButton').click();
 });
 
 $('.translator').click(function () {
@@ -230,9 +247,7 @@ $('.translator').click(function () {
         }
 
         localStorage.setItem('translator', JSON.stringify(translator));
-        if ($('#translateButton').text() == 'Sửa') {
-            $('#retranslateButton').click();
-        }
+        $('#retranslateButton').click();
     }
 });
 
@@ -454,7 +469,7 @@ async function translate(inputText, abortSignal) {
 
             case Translators.GOOGLE_TRANSLATE:
                 MAX_LENGTH = 16272;
-                MAX_LINE = 68;
+                MAX_LINE = 66;
                 break;
 
             case Translators.PAPAGO:
@@ -647,7 +662,7 @@ function convertText(inputText, data, caseSensitive, useGlossary, translationAlg
         const glossaryEntries = Object.entries(glossary).filter((element) => inputText.includes(element[0]));
         dataEntries = Object.entries(data);
 
-        const punctuationEntries = [...cjkmap].filter((element) => element[0] == '…' || element[0].split('…').length != 2);
+        const punctuationEntries = cjkmap.filter((element) => element[0] == '…' || element[0].split('…').length != 2);
         const punctuation = Object.fromEntries(punctuationEntries);
 
         const results = [];
@@ -657,18 +672,17 @@ function convertText(inputText, data, caseSensitive, useGlossary, translationAlg
         for (let i = 0; i < lines.length; i++) {
             let chars = lines[i];
 
-            const filteredPunctuationEntries = [...punctuationEntries].filter((element) => chars.includes(element[0]));
+            const filteredPunctuationEntries = punctuationEntries.filter((element) => chars.includes(element[0]));
 
             if (chars.trim().length == 0) {
                 results.push(chars);
                 continue;
             }
 
-            const filteredDataEntries = [...dataEntries].filter((element) => chars.includes(element[0]));
+            const filteredDataEntries = dataEntries.filter((element) => chars.includes(element[0]));
 
             if (useGlossary && glossaryEntries.length > 0) {
-                let glossaryLengths = [...glossaryEntries].map((element) => element[0]).sort((a, b) => b[0].length - a[0].length).map((element) => element.length);
-                glossaryLengths = [...glossaryLengths, 1].filter((element, index) => index == glossaryLengths.indexOf(element));
+                const glossaryLengths = [...glossaryEntries.map((element) => element[0]).sort((a, b) => b[0].length - a[0].length).map((element) => element.length), 1].filter((element, index, array) => index == array.indexOf(element));
                 const phrases = [];
                 let tempWord = '';
 
@@ -723,8 +737,7 @@ function convertText(inputText, data, caseSensitive, useGlossary, translationAlg
 
                 results.push(chars);
             } else if (translationAlgorithm === VietPhraseTranslationAlgorithms.LEFT_TO_RIGHT_TRANSLATION) {
-                let phraseLengths = [...useGlossary && glossaryEntries.length > 0 ? glossaryEntries : [], ...filteredDataEntries].map((element) => useGlossary && glossaryEntries.length > 0 && glossary.hasOwnProperty(element[0]) ? element[1] : element[0]).sort((a, b) => b[0].length - a[0].length).map((element) => element.length);
-                phraseLengths = [...phraseLengths, 1].filter((element, index) => index == phraseLengths.indexOf(element));
+                const phraseLengths = [...[...useGlossary && glossaryEntries.length > 0 ? glossaryEntries : [], ...filteredDataEntries].map((element) => useGlossary && glossaryEntries.length > 0 && glossary.hasOwnProperty(element[0]) ? element[1] : element[0]).sort((a, b) => b[0].length - a[0].length).map((element) => element.length), 1].filter((element, index, array) => index == array.indexOf(element));
                 const phrases = [];
                 let tempWord = '';
 
@@ -752,8 +765,8 @@ function convertText(inputText, data, caseSensitive, useGlossary, translationAlg
                             }
 
                             if (punctuation.hasOwnProperty(chars[j])) {
-                                if (tempWord.length == 0 && !lines[i].startsWith(chars[j]) && /\p{Po}/u.test(chars[j])) {
-                                    phrases.push(phrases.pop() + punctuation[chars[j]]);console.log(phrases[phrases.length - 1], chars[j]);
+                                if (tempWord.length == 0 && !lines[i].startsWith(chars[j]) && /[\p{Pe}\p{Pf}\p{Po}]/u.test(chars[j])) {
+                                    phrases.push(phrases.pop() + punctuation[chars[j]]);
                                     break;
                                 } else {
                                     tempWord += punctuation[chars[j]];
@@ -800,7 +813,7 @@ function getProcessTextPreTranslate(text, doProtectQuotationMarks) {
     if (text.length > 0) {
         try {
             if (doProtectQuotationMarks) {
-                const brackets = [...cjkmap].filter((element) => element[0] != '…' && element[0].split('…').length == 2).map((element) => [element[0].replace(/[/[\]\-.\\|^$!=()*+?{}]/g, '\\$&'), element[1]]);
+                const brackets = cjkmap.filter((element) => element[0] != '…' && element[0].split('…').length == 2).map((element) => [element[0].replace(/[/[\]\-.\\|^$!=()*+?{}]/g, '\\$&'), element[1]]);
 
                 lines = lines.map((element) => {
                     for (let i = 0; i < brackets.length; i++) {
@@ -827,7 +840,7 @@ function getProcessTextPostTranslate(text) {
 
     if (text.length > 0) {
         try {
-            const brackets = [...cjkmap].filter((element) => element[0] != '…' && element[0].split('…').length == 2);
+            const brackets = cjkmap.filter((element) => element[0] != '…' && element[0].split('…').length == 2);
 
             for (let i = brackets.length - 1; i >= 0; i--) {
                 newText = newText.replace(new RegExp(`\\[OPEN_BRACKET_${i}\\].*?\n+(.*?)\n*\\[CLOSE_BRACKET_${i}\\]`, 'gi'), `${brackets[i][1].split('...')[0]}$1${brackets[i][1].split('...')[1]}`);
@@ -848,6 +861,7 @@ function onPostTranslate() {
     $('#copyButton').removeClass('disabled');
     $('.translator').removeClass('disabled');
     $('#retranslateButton').removeClass('disabled');
+    $('#translateButton').text('Sửa');
 }
 
 const DeepLTranslator = {
@@ -1287,8 +1301,7 @@ function getDynamicDictionaryText(text, isMicrosoftTranslator = true) {
         for (let i = 0; i < lines.length; i++) {
             let chars = lines[i];
 
-            let glossaryLengths = [...glossaryEntries].map((element) => element[0]).sort((a, b) => b[0].length - a[0].length).map((element) => element.length);
-            glossaryLengths = [...glossaryLengths, 1].filter((element, index) => index == glossaryLengths.indexOf(element));
+            const glossaryLengths = [...glossaryEntries.map((element) => element[0]).sort((a, b) => b[0].length - a[0].length).map((element) => element.length), 1].filter((element, index, array) => index == array.indexOf(element));
             const phrases = [];
             let tempWord = '';
 
