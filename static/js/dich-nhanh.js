@@ -90,9 +90,7 @@ $(document).ready(async () => {
   $("#queryText").trigger("input");
 });
 
-$(visualViewport).resize((event) => {
-  $("#queryText").css("max-height", event.target.height - 248 + "px");
-});
+$(visualViewport).resize((event) => $("#queryText").css("max-height", event.target.height - 248 + "px"));
 
 $("#translateButton").click(async function () {
   if (translateTask != undefined) {
@@ -141,8 +139,7 @@ $("#pasteButton").on("click", () => {
       window.scrollTo({top: 0, behavior: 'smooth'});
       $("#queryText").val(clipText).trigger("input");
       if ($("#translateButton").text() == 'Sửa') {
-        $(
-            "#retranslateButton").click();
+        $("#retranslateButton").click();
       }
     }
   });
