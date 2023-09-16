@@ -1194,7 +1194,7 @@ async function getPapagoVersion(translator) {
             const mainJs = (await $.get(CORS_PROXY + 'https://papago.naver.com')).match(/\/(main.*\.js)/)[1];
 
             if (mainJs != undefined) {
-                version = (await $.get(CORS_PROXY + 'https://papago.naver.com/' + mainJs)).match(/'PPG .*,'(v[^']*)/)[1];
+                version = (await $.get(CORS_PROXY + 'https://papago.naver.com/' + mainJs)).match(/"PPG .*,"(v[^"]*)/)[1];
             }
             return version;
         } catch (error) {
