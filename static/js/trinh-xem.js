@@ -210,7 +210,7 @@ function customLoader(book, volume, spine) {
                         .script('/static/js/nen.js').wait(() => $('#background-select').val(localStorage.getItem('background') || Colors.SEPIA).change());
                     }
 
-                    $(document.body).append(`\n<div class="body">${$(data).find('body').html().replace(new RegExp('<ruby>(<span xmlns="http://www.w3.org/1999/xhtml" class="koboSpan" id="kobo.\\d+.1">\\p{scx=Hani}+</span>)<rt>\\p{scx=Hira}+</rt></ruby>', 'gu'), '$1').replace(/<rt>/g, '（<rtc>').replace(/<\/rt>/g, '</rtc>）')}</div>\n\n`);
+                    $(document.body).append(`\n<div class="body">${$(data).find('body').html().replace(/<rt>\p{scx=Hira}+<\/rt>/gu, '').replace(/<rt>(\p{scx=Kana}+)<\/rt>/gu, '（$1）')}</div>\n\n`);
                     $('div.body').last().addClass($(data).find('body').attr('class'));
                 });
             }
