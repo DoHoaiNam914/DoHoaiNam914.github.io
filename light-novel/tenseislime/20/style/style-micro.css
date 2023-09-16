@@ -14,7 +14,7 @@
 .centerblock {
 margin-left:auto;
 margin-right:auto;
--epub-writing-mode:vertical-rl;
-writing-mode:vertical-rl;
+-epub-writing-mode:horizontal-tb;
+writing-mode:horizontal-tb;
 height:100%;
 }
