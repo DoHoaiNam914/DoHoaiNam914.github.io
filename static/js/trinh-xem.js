@@ -103,7 +103,7 @@ function j_novelLoader(book, volume, spine) {
     }
 
     $('img').each(function () {
-        $(this).attr('src', $(this).attr('src').replace(/\.\./g, `https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/light-novel/${book}/${volume}/OEBPS`));
+        $(this).attr('src', $(this).attr('src').replace(/\.\.\/OEBPS/g, `https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/light-novel/${book}/${volume}/OEBPS`).replace(/\.\./g, `https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/light-novel/${book}/${volume}/OEBPS`));
     });
 
     $('a[href]').each(function () {
