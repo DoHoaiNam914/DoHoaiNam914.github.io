@@ -827,7 +827,7 @@ function getProcessTextPreTranslate(text, doProtectQuotationMarks) {
                 lines = lines.map((element) => {
                     for (let i = 0; i < brackets.length; i++) {
                         if ((new RegExp(`[${brackets[i][0].split('…')[0]}${brackets[i][0].split('…')[1]}]`)).test(element)) {
-                            return element.replace(new RegExp(`^${brackets[i][0].split('…')[0]}(.*)${brackets[i][0].split('…')[1]}(\\u{3002}?)$`, 'gu'), `[OPEN_BRACKET_${i}]\n$1\n[CLOSE_BRACKET_${i}]$2`).replace(new RegExp(`^${brackets[i][0].split('…')[0]}(.*)(?!${brackets[i][0].split('…')[1]})$`, 'g'), `[OPEN_BRACKET_${i}]\n`).replace(new RegExp(`^(?!${brackets[i][0].split('…')[0]})(.*)${brackets[i][0].split('…')[1]}$`, 'g'), `\n[CLOSE_BRACKET_${i}]`);
+                            return element.replace(new RegExp(`^${brackets[i][0].split('…')[0]}(.*)${brackets[i][0].split('…')[1]}(\\u{3002}?)$`, 'gu'), `[OPEN_BRACKET_${i}]\n$1\n[CLOSE_BRACKET_${i}]$2`);
                             break;
                         }
                     }
