@@ -636,15 +636,11 @@ function buildTranslatedResult(inputTexts, translation, showOriginal) {
 			for (let i = 0; i < inputLines.length; i++) {
 				if (i < resultLines.length) {
 					if (inputLines[i + lostLineFixedAmount].trim().length == 0 && resultLines[i].trim().length > 0) {
-						console.log(1, 1, inputLines[i + lostLineFixedAmount], resultLines[i]);
 						lostLineFixedAmount++;
-						console.log(1, 2, inputLines[i + lostLineFixedAmount], resultLines[i]);
 						i--;
 						continue;
 					} else if (resultLines[i].trim().length == 0 && inputLines[i + lostLineFixedAmount].trim().length > 0) {
-						console.log(2, 1, resultLines[i], inputLines[i + lostLineFixedAmount]);
 						lostLineFixedAmount--;
-						console.log(2, 2, resultLines[i], inputLines[i + lostLineFixedAmount]);
 						continue;
 					}
 
@@ -762,7 +758,7 @@ function convertText(inputText, data, caseSensitive, useGlossary, translationAlg
                             break;
                         } else if (data.hasOwnProperty(chars.substring(j, j + phraseLength))) {
                             if (data[chars.substring(j, j + phraseLength)].length > 0) {
-                                if (punctuation.hasOwnProperty(chars[j - 1]) && /[\u{3000}-\u{303f}\u{30a0}-\u{30ff}\u{fe30}-\u{fe4f}\u{ff00}-\u{ff60}]/u.test(chars[j - 1])) {
+                                if (punctuation.hasOwnProperty(chars[j - 1]) && /[\p{Ps}\p{Pi}]/u.test(chars[j - 1])) {
                                     phrases.push((phrases.pop() ?? '') + data[chars.substring(j, j + phraseLength)]);
                                 } else {
                                     phrases.push(data[chars.substring(j, j + phraseLength)]);
