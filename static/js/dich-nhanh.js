@@ -145,7 +145,7 @@ $('#translateButton').click(async function () {
 });
 
 $('#copyButton').on('click', () => {
-    const data = translation.length > 0 ? translation : $('#queryText').val();
+    const data = $('#translatedText').text() > 0 ? $('#translatedText').text() : $('#queryText').val();
 
     if (data.length > 0) {
         navigator.clipboard.writeText(data);
@@ -629,29 +629,42 @@ function buildTranslatedResult(inputTexts, translation, showOriginal) {
     $(translationParagraph).text(translation);
     const resultLines = $(translationParagraph).html().split(/\n/);
 
-    if (showOriginal) {
-        let lostLineFixedAmount = 0;
+	try {
+		if (showOriginal) {
+			let lostLineFixedAmount = 0;
 
-        for (let i = 0; i < inputLines.length; i++) {
-            if (i < resultLines.length) {
-                if (inputLines[i + lostLineFixedAmount].trim().length == 0 && resultLines[i].trim().length > 0) {
-                    lostLineFixedAmount++;
-                    i--;
-                    continue;
-                }
+			for (let i = 0; i < inputLines.length; i++) {
+				if (i < resultLines.length) {
+					if (inputLines[i + lostLineFixedAmount].trim().length == 0 && resultLines[i].trim().length > 0) {
+						console.log(1, 1, inputLines[i + lostLineFixedAmount], resultLines[i]);
+						lostLineFixedAmount++;
+						console.log(1, 2, inputLines[i + lostLineFixedAmount], resultLines[i]);
+						i--;
+						continue;
+					} else if (resultLines[i].trim().length == 0 && inputLines[i + lostLineFixedAmount].trim().length > 0) {
+						console.log(2, 1, resultLines[i], inputLines[i + lostLineFixedAmount]);
+						lostLineFixedAmount--;
+						console.log(2, 2, resultLines[i], inputLines[i + lostLineFixedAmount]);
+						continue;
+					}
 
-                const paragraph = document.createElement('p');
-                paragraph.innerHTML = resultLines[i] != processLines[i + lostLineFixedAmount] ? `<i>${inputLines[i + lostLineFixedAmount].trimStart()}</i><br>${resultLines[i].trimStart()}` : processLines[i + lostLineFixedAmount].trimStart();
-                result.appendChild(paragraph);
-            } else {
-                const paragraph = document.createElement('p');
-                paragraph.innerHTML = `<i>${inputLines[i + lostLineFixedAmount].trimStart()}</i>`;
-                result.appendChild(paragraph);
-            }
-        }
-    } else {
-        result.innerHTML = `<p>${resultLines.map((element) => element.trimStart()).join('</p><p>')}</p>`;
-    }
+					const paragraph = document.createElement('p');
+					paragraph.innerHTML = resultLines[i] != processLines[i + lostLineFixedAmount] ? `<i>${inputLines[i + lostLineFixedAmount].trimStart()}</i><br>${resultLines[i].trimStart()}` : processLines[i + lostLineFixedAmount].trimStart();
+					result.appendChild(paragraph);
+				} else if (i + lostLineFixedAmount < inputLines.length) {
+					const paragraph = document.createElement('p');
+					paragraph.innerHTML = `<i>${inputLines[i + lostLineFixedAmount].trimStart()}</i>`;
+					result.appendChild(paragraph);
+				}
+			}
+		} else {
+			result.innerHTML = `<p>${resultLines.map((element) => element.trimStart()).join('</p><p>')}</p>`;
+		}
+	} catch (error) {
+		result.innerHTML = `<p>${resultLines.map((element) => element.trimStart()).join('</p><p>')}</p>`;
+        console.error('Lỗi hiển thị bản dịch:', error);
+        throw error;
+	}
     return result.innerHTML.replace(/(<p>)(<\/p>)/g, '$1<br>$2');
 }
 
@@ -966,7 +979,7 @@ const GoogleTranslate = {
              * send(encodeURIComponent(inputText))
              */
             const response = await $.ajax({
-                url: `https://translate.googleapis.com/translate_a/t?anno=3&client=gtx&format=html&v=1.0&key&logId=v${data.logId}&sl=${sourceLanguage}&tl=${targetLanguage}&tc=0&tk=${Bp(inputText, data.ctkk)}`,
+			url: `${CORS_PROXY}https://translate.googleapis.com/translate_a/t?anno=3&client=gtx&format=html&v=1.0&key&logId=v${data.logId}&sl=${sourceLanguage}&tl=${targetLanguage}&tc=0&tk=${Bp(inputText, data.ctkk)}`,
                 data: `q=${inputText.split(/\n/).map((sentence) => encodeURIComponent(sentence)).join('&q=')}`,
                 method: 'GET'
             });
