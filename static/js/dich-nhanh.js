@@ -831,7 +831,7 @@ function getProcessTextPreTranslate(text, doProtectQuotationMarks) {
                 lines = lines.map((element) => {
                     for (let i = 0; i < brackets.length; i++) {
                         if ((new RegExp(`[${brackets[i][0].split('…')[0]}${brackets[i][0].split('…')[1]}]`)).test(element)) {
-                            return element.replace(new RegExp(`^${brackets[i][0].split('…')[0]}(.*)${brackets[i][0].split('…')[1]}(\\u{3002}?)$`, 'gu'), `[OPEN_BRACKET_${i}]\n$1\n[CLOSE_BRACKET_${i}]$2`);
+                            return element.replace(new RegExp(`^${brackets[i][0].split('…')[0]}(.*)${brackets[i][0].split('…')[1]}(\\u{3002}?)$`, 'gu'), `[OPEN_BRACKET_${i}]\n$1\n[CLOSE_BRACKET_${i}]$2`).replace(new RegExp(`^${brackets[i][0].split('…')[0]}(.*)(?!${brackets[i][0].split('…')[1]})$`, 'g'), `[OPEN_BRACKET_${i}]\n`).replace(new RegExp(`^(?!${brackets[i][0].split('…')[0]})(.*)${brackets[i][0].split('…')[1]}$`, 'g'), `\n[CLOSE_BRACKET_${i}]`);
                             break;
                         }
                     }
@@ -856,7 +856,7 @@ function getProcessTextPostTranslate(text) {
             const brackets = cjkmap.filter((element) => element[0] != '…' && element[0].split('…').length == 2);
 
             for (let i = brackets.length - 1; i >= 0; i--) {
-                newText = newText.replace(new RegExp(`\\[OPEN_BRACKET_${i}\\].*?\n+(.*?)\n*\\[CLOSE_BRACKET_${i}\\]`, 'gi'), `${brackets[i][1].split('...')[0]}$1${brackets[i][1].split('...')[1]}`);
+                newText = newText.replace(new RegExp(`\\[OPEN_BRACKET_${i}\\].*\n+(.*)\n*\\[CLOSE_BRACKET_${i}\\]`, 'gi'), `${brackets[i][1].split('...')[0]}$1${brackets[i][1].split('...')[1]}`).replace(new RegExp(`\\[OPEN_BRACKET_${i}\\].*\n+`, 'gi'), brackets[i][1].split('...')[0]).replace(new RegExp(`\n*\\[CLOSE_BRACKET_${i}\\]`, 'gi'), brackets[i][1].split('...')[1]);
             }
         } catch (error) {
             console.error('Lỗi xử lý văn bản sau khi dịch:', error);
