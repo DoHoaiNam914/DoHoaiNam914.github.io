@@ -2,13 +2,15 @@
 
 let translator = JSON.parse(localStorage.getItem('translator'));
 
-const DEEPL_AUTH_KEY = 'a4b25ba2-b628-fa56-916e-b323b16502de:fx';
-const uuid = crypto.randomUUID();
-
 let pinyins = {};
 let sinovietnameses = {};
-let vietphrases = {};
 
+const DEEPL_AUTH_KEY = 'a4b25ba2-b628-fa56-916e-b323b16502de:fx';
+const GOOGLE_API_KEY = 'AIzaSyBOti4mM-6x9WDnZIjIeyEU21OpBXqWBgw';
+
+const uuid = crypto.randomUUID();
+
+let vietphrases = {};
 let luatnhanList = [];
 
 const extendsSinovietnamese = {
@@ -506,9 +508,9 @@ async function translate(inputText, abortSignal) {
             }
         }
 
-        const googleTranslateData = translator === Translators.GOOGLE_TRANSLATE ? await getGoogleTranslateData(translator) : null;
+        const googleTranslateData = translator === Translators.GOOGLE_TRANSLATE ? await getGoogleTranslateData(translator, GOOGLE_API_KEY) : null;
 
-        if (translator === Translators.GOOGLE_TRANSLATE && (googleTranslateData.logId == undefined || googleTranslateData.ctkk == undefined)) {
+        if (translator === Translators.GOOGLE_TRANSLATE && (googleTranslateData.version == undefined || googleTranslateData.ctkk == undefined)) {
             errorMessage.innerText = 'Không thể lấy được Log ID hoặc Token từ element.js.';
             $('#translatedText').html(errorMessage);
             return;
@@ -970,7 +972,7 @@ const GoogleTranslate = {
              * send(encodeURIComponent(inputText))
              */
             const response = await $.ajax({
-			url: `${CORS_PROXY}https://translate.googleapis.com/translate_a/t?anno=3&client=gtx&format=html&v=1.0&key&logId=v${data.logId}&sl=${sourceLanguage}&tl=${targetLanguage}&tc=0&tk=${Bp(inputText, data.ctkk)}`,
+			url: `${CORS_PROXY}https://translate.googleapis.com/translate_a/t?anno=3&client=${data.cac.length > 0 ? `${data.cac}${data.cam.length > 0 ? `_${data.cam}` : ''}` : 'te_lib'}&format=html&v=1.0&key${data.apiKey.length > 0 ? `=${data.apiKey}` : ''}&logId=v${data.version}&sl=${sourceLanguage}&tl=${targetLanguage}&tc=0&tk=${Bp(inputText, data.ctkk)}`,
                 data: `q=${inputText.split(/\n/).map((sentence) => encodeURIComponent(sentence)).join('&q=')}`,
                 method: 'GET'
             });
@@ -985,15 +987,21 @@ const GoogleTranslate = {
     }
 };
 
-async function getGoogleTranslateData(translator) {
+async function getGoogleTranslateData(translator, apiKey = '') {
     if (translator === Translators.GOOGLE_TRANSLATE) {
         try {
             const data = {};
 
-            const elementJs = await $.get(CORS_PROXY + 'https://translate.google.com/translate_a/element.js?hl=vi&client=wt');
+            // const elementJs = await $.get(CORS_PROXY + 'https://translate.google.com/translate_a/element.js?hl=vi&client=wt');
+            const elementJs = await $.get(`${CORS_PROXY}https://translate.googleapis.com/translate_a/element.js?aus=true&cb=cr.googleTranslate.onTranslateElementLoad&clc=cr.googleTranslate.onLoadCSS&jlc=cr.googleTranslate.onLoadJavascript${apiKey.length > 0 ? `&key=${apiKey}` : ''}&hl=vi`);
 
             if (elementJs != undefined) {
-                data.logId = elementJs.match(/_exportVersion\('(TE_\d+)'\)/)[1];
+                data.cac = elementJs.match(/c\._cac='([a-z]*)'/)[1];
+                data.cam = elementJs.match(/c\._cam='([a-z]*)'/)[1];
+
+                data.apiKey = apiKey;
+
+                data.version = elementJs.match(/_exportVersion\('(TE_\d+)'\)/)[1];
                 data.ctkk = elementJs.match(/c\._ctkk='(\d+\.\d+)'/)[1];
             }
             return data;
