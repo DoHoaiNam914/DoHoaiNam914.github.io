@@ -708,7 +708,7 @@ function convertText(inputText, data, caseSensitive, useGlossary, translationAlg
                             tempWord += chars[j];
 
                             if (tempWord.includes(' ')) {
-                                if (!chars[j + 1].includes(' ')) {
+                                if (j + 1 < chars.length && !chars[j + 1].includes(' ')) {
                                     phrases.push((phrases.pop() ?? '') + tempWord.substring(0, tempWord.length - 1));
                                     tempWord = '';
                                 }
@@ -783,7 +783,7 @@ function convertText(inputText, data, caseSensitive, useGlossary, translationAlg
                             }
 
                             if (!punctuation.hasOwnProperty(chars[j]) && tempWord.includes(' ')) {
-                                if (!chars[j + 1].includes(' ')) {
+                                if (j + 1 < chars.length && !chars[j + 1].includes(' ')) {
                                     phrases.push((phrases.pop() ?? '') + tempWord.substring(0, tempWord.length - 1));
                                     tempWord = '';
                                 }
@@ -1332,7 +1332,7 @@ function getDynamicDictionaryText(text, isMicrosoftTranslator = true) {
                         tempWord += chars[j];
 
                         if (tempWord.includes(' ')) {
-                            if (!chars[j + 1].includes(' ')) {
+                            if (j + 1 < chars.length && !chars[j + 1].includes(' ')) {
                                 phrases.push((phrases.pop() ?? '') + tempWord.substring(0, tempWord.length - 1));
                                 tempWord = '';
                             }
