@@ -170,15 +170,15 @@ $('#pasteTargetTextButton').on('click', () => {
     navigator.clipboard.readText().then((clipText) => $('#targetEntry').val(clipText).trigger('input'));
 });
 
-$('.upperCaseFromAmountButton').on('click', () => {
-    if ($('#targetEntry').val().length > 0) $('#targetEntry').val($('#targetEntry').val().split(' ').map((word, index) => (index < $(this).data('amount') && word.charAt(0).toUpperCase() + word.slice(1)) || word.toLowerCase()).join(' '));
+$('.upperCaseFromAmountButton').on('click', function () {
+    if ($('#targetEntry').val().length > 0) $('#targetEntry').val($('#targetEntry').val().split(' ').map((word, index) => index < $(this).data('amount') ? word.charAt(0).toUpperCase() + word.slice(1) : word.toLowerCase()).join(' '));
 });
 
 $('.upperCaseAllButton').on('click', () => {
     if ($('#targetEntry').val().length > 0) $('#targetEntry').val($('#targetEntry').val().split(' ').map((word, index) => word = word.charAt(0).toUpperCase() + word.slice(1)).join(' '));
 });
 
-$('.deepl-convert').on('click', async () => {
+$('.deepl-convert').on('click', async function () {
     if ($('#sourceEntry').val().length > 0) {
         $('#sourceEntry').attr('readonly', true);
         $('.convert').addClass('disabled');
@@ -207,7 +207,7 @@ $('.deepl-convert').on('click', async () => {
     }
 });
 
-$('.google-convert').on('click', async () => {
+$('.google-convert').on('click', async function () {
     if ($('#sourceEntry').val().length > 0) {
         $('#sourceEntry').attr('readonly', true);
         $('.convert').addClass('disabled');
@@ -233,7 +233,7 @@ $('.google-convert').on('click', async () => {
     }
 });
 
-$('.papago-convert').on('click', async () => {
+$('.papago-convert').on('click', async function () {
     if ($('#sourceEntry').val().length > 0) {
         $('#sourceEntry').attr('readonly', true);
         $('.convert').addClass('disabled');
@@ -259,7 +259,7 @@ $('.papago-convert').on('click', async () => {
     }
 });
 
-$('.microsoft-convert').on('click', async () => {
+$('.microsoft-convert').on('click', async function () {
     if ($('#sourceEntry').val().length > 0) {
         $('#sourceEntry').attr('readonly', true);
         $('.convert').addClass('disabled');
