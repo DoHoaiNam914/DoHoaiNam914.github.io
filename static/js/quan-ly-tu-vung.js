@@ -34,7 +34,7 @@ $('#inputGlossary').on('change', function () {
     reader.readAsText($(this).prop('files')[0]);
 });
 
-$('#clearGlossaryButton').on('click', function () {
+$('#clearGlossaryButton').on('click', () => {
     if (window.confirm('Bạn có muốn xoá tập từ vựng này chứ?')) {
         glossary = {};
         loadGlossary();
@@ -105,6 +105,12 @@ $('#googleButton').on('click', () => {
     }
 });
 
+$('#wikipediaButton').on('click', () => {
+    if ($('#sourceEntry').val().length > 0) {
+        window.open(`https://vi.wikipedia.org/w/?search=${encodeURIComponent(($('#sourceEntry').val().substring($('#sourceEntry').prop('selectionStart'), $('#sourceEntry').prop('selectionEnd')) || $('#sourceEntry').val()).substring(0, 30))}&ns0=1`);
+    }
+});
+
 $('#hvdicButton').on('click', () => {
     if ($('#sourceEntry').val().length > 0) {
         window.open(`https://hvdic.thivien.net/whv/${encodeURIComponent(($('#sourceEntry').val().substring($('#sourceEntry').prop('selectionStart'), $('#sourceEntry').prop('selectionEnd')) || $('#sourceEntry').val()).substring(0, 30))}`);
@@ -117,49 +123,37 @@ $('#naverDictButton').on('click', () => {
     }
 });
 
-$('#nomfoundationButton').on('click', function () {
-    if ($('#sourceEntry').val().length > 0) {
-        window.open(`http://www.nomfoundation.org/nom-tools/Nom-Lookup-Tool/Nom-Lookup-Tool?uiLang=en&inputText=${encodeURIComponent(($('#sourceEntry').val().substring($('#sourceEntry').prop('selectionStart'), $('#sourceEntry').prop('selectionEnd')) || $('#sourceEntry').val()).substring(0, 30))}`);
-    }
-});
-
-$('#wikipediaButton').on('click', function () {
-    if ($('#sourceEntry').val().length > 0) {
-        window.open(`https://vi.wikipedia.org/w/?search=${encodeURIComponent(($('#sourceEntry').val().substring($('#sourceEntry').prop('selectionStart'), $('#sourceEntry').prop('selectionEnd')) || $('#sourceEntry').val()).substring(0, 30))}&ns0=1`);
-    }
-});
-
-$('#baiduButton').on('click', function () {
+$('#baiduButton').on('click', () => {
     if ($('#sourceEntry').val().length > 0) {
         window.open(`https://www.baidu.com/s?wd=${encodeURIComponent(($('#sourceEntry').val().substring($('#sourceEntry').prop('selectionStart'), $('#sourceEntry').prop('selectionEnd')) || $('#sourceEntry').val()).substring(0, 30))}`);
     }
 });
 
-$('#deepltranslatorButton').on('click', function () {
+$('#deepltranslatorButton').on('click', () => {
     if ($('#sourceEntry').val().length > 0) {
         window.open(`https://www.deepl.com/translator#auto/en/${encodeURIComponent($('#sourceEntry').val())}`);
     }
 });
 
-$('#googletranslateButton').on('click', function () {
+$('#googletranslateButton').on('click', () => {
     if ($('#sourceEntry').val().length > 0) {
         window.open(`https://translate.google.com/?sl=auto&tl=vi&text=${encodeURIComponent($('#sourceEntry').val())}&op=translate`);
     }
 });
 
-$('#papagoButton').on('click', function () {
+$('#papagoButton').on('click', () => {
     if ($('#sourceEntry').val().length > 0) {
         window.open(`https://papago.naver.com/?sk=auto&tk=vi&st=${encodeURIComponent($('#sourceEntry').val())}`);
     }
 });
 
-$('#bingtranslatorButton').on('click', function () {
+$('#bingtranslatorButton').on('click', () => {
     if ($('#sourceEntry').val().length > 0) {
         window.open(`https://www.bing.com/translator?from=auto-detect&to=vi&text=${encodeURIComponent($('#sourceEntry').val())}`);
     }
 });
 
-$('#addButton').on('click', function () {
+$('#addButton').on('click', () => {
     if ($('#sourceEntry').val().length > 0) {
         glossary[$('#sourceEntry').val().trim()] = $('#targetEntry').val().trim();
         loadGlossary();
@@ -176,15 +170,15 @@ $('#pasteTargetTextButton').on('click', () => {
     navigator.clipboard.readText().then((clipText) => $('#targetEntry').val(clipText).trigger('input'));
 });
 
-$('.upperCaseFromAmountButton').on('click', function () {
+$('.upperCaseFromAmountButton').on('click', () => {
     if ($('#targetEntry').val().length > 0) $('#targetEntry').val($('#targetEntry').val().split(' ').map((word, index) => (index < $(this).data('amount') && word.charAt(0).toUpperCase() + word.slice(1)) || word.toLowerCase()).join(' '));
 });
 
-$('.upperCaseAllButton').on('click', function () {
+$('.upperCaseAllButton').on('click', () => {
     if ($('#targetEntry').val().length > 0) $('#targetEntry').val($('#targetEntry').val().split(' ').map((word, index) => word = word.charAt(0).toUpperCase() + word.slice(1)).join(' '));
 });
 
-$('.deepl-convert').on('click', async function () {
+$('.deepl-convert').on('click', async () => {
     if ($('#sourceEntry').val().length > 0) {
         $('#sourceEntry').attr('readonly', true);
         $('.convert').addClass('disabled');
@@ -213,7 +207,7 @@ $('.deepl-convert').on('click', async function () {
     }
 });
 
-$('.google-convert').on('click', async function () {
+$('.google-convert').on('click', async () => {
     if ($('#sourceEntry').val().length > 0) {
         $('#sourceEntry').attr('readonly', true);
         $('.convert').addClass('disabled');
@@ -239,7 +233,7 @@ $('.google-convert').on('click', async function () {
     }
 });
 
-$('.papago-convert').on('click', async function () {
+$('.papago-convert').on('click', async () => {
     if ($('#sourceEntry').val().length > 0) {
         $('#sourceEntry').attr('readonly', true);
         $('.convert').addClass('disabled');
@@ -265,7 +259,7 @@ $('.papago-convert').on('click', async function () {
     }
 });
 
-$('.microsoft-convert').on('click', async function () {
+$('.microsoft-convert').on('click', async () => {
     if ($('#sourceEntry').val().length > 0) {
         $('#sourceEntry').attr('readonly', true);
         $('.convert').addClass('disabled');
@@ -300,7 +294,7 @@ $('#glossaryList').change(function () {
     }
 });
 
-$('#removeButton').on('click', function () {
+$('#removeButton').on('click', () => {
     if (window.confirm('Bạn có muốn xoá từ (cụm từ) này chứ?')
         && glossary.hasOwnProperty($('#sourceEntry').val())) {
         delete glossary[$('#sourceEntry').val()];
