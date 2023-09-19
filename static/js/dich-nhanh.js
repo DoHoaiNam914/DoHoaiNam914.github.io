@@ -16,11 +16,15 @@ let luatnhanList = [];
 const extendsSinovietnamese = {
     '騎士長': 'kỵ sĩ trưởng',
     '团长': 'đoàn trưởng',
+    '师姐': 'sư tỷ',
+    '少主': 'thiếu chủ',
     '刺客': 'thích khách',
     '传功': 'truyền công',
     '将领': 'tướng lĩnh',
     '将军': 'tướng quân',
     '将士': 'tướng sĩ',
+    '姐姐': 'tỷ tỷ',
+    '县': 'huyện',
     '姐': 'thư'
 };
 
@@ -44,9 +48,9 @@ $(document).ready(async () => {
     }
 
     try {
-        let sinovietnameseList = Object.entries(extendsSinovietnamese);
+        let sinovietnameseList = [...Object.entries(extendsSinovietnamese), ...hanvietData.map((element) => [element[0], element[1].split(',')[element[1].startsWith(',') ? 1 : 0]])];
 
-        $.get('/static/datasource/ChinesePhienAmWords của thtgiang.txt').done((data) => {
+        await $.get('/static/datasource/ChinesePhienAmWords của thtgiang.txt').done((data) => {
             sinovietnameseList = [...sinovietnameseList, ...data.split(/\r?\n/).map((element) => element.split('='))];
             sinovietnameses = Object.fromEntries(sinovietnameseList);
         });
