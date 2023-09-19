@@ -193,7 +193,7 @@ $('.deepl-convert').on('click', async function () {
                 $('#targetEntry').val(`Đã đạt đến giới hạn dịch của tài khoản. (${deeplUsage.character_count}/${deeplUsage.character_limit} ký tự)`);
                 return;
             }
-
+            
             const translatedText = await DeepLTranslator.translateText(DEEPL_AUTH_KEY, $('#sourceEntry').val(), '', $(this).data('lang'));
 
             $('#targetEntry').val(translatedText);

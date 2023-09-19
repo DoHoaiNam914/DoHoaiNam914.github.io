@@ -27,7 +27,7 @@ const extendsSinovietnamese = {
     '姐妹': 'TỶ MUỘI',
     '姐夫': 'TỶ PHU',
     '姐姐': 'TỶ TỶ',
-    '台', 'ĐÀI',
+    '台': 'ĐÀI',
     '正': 'CHÍNH',
     '县': 'HUYỆN',
     '生': 'SINH',
