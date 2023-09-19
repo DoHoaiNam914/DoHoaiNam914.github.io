@@ -80,33 +80,40 @@ $('#pasteSourceTextButton').on('click', () => {
         });
 });
 
-$('#pinyinConvertButton').on('click', function () {
+$('#pinyinConvertButton').on('click', () => {
     if ($('#sourceEntry').val().length > 0) {
         $('#targetEntry').val(convertText($('#sourceEntry').val(), pinyins, false, false, VietPhraseTranslationAlgorithms.LEFT_TO_RIGHT_TRANSLATION));
     }
 });
 
-$('#sinoVietnameseConvertButton').click(function () {
+$('#sinoVietnameseConvertButton').on('click', () => {
     if ($('#sourceEntry').val().length > 0) {
         $('#targetEntry').val(convertText($('#sourceEntry').val(), sinovietnameses, false, false, VietPhraseTranslationAlgorithms.LEFT_TO_RIGHT_TRANSLATION));
     }
 });
 
-$('#lacvietdictionaryButton').on('click', function () {
+$('#lacvietdictionaryButton').on('click', () => {
     if ($('#sourceEntry').val().length > 0) {
         window.open(`http://mobile.coviet.vn/tratu.aspx?k=${encodeURIComponent(($('#sourceEntry').val().substring($('#sourceEntry').prop('selectionStart'), $('#sourceEntry').prop('selectionEnd')) || $('#sourceEntry').val()).substring(0, 30))}&t=ALL`);
     }
 });
 
-$('#googleButton').on('click', function () {
+$('#googleButton').on('click', () => {
     if ($('#sourceEntry').val().length > 0) {
         window.open(`https://www.google.com.vn/search?q=${encodeURIComponent(
             ($('#sourceEntry').val().substring($('#sourceEntry').prop('selectionStart'), $('#sourceEntry').prop('selectionEnd')) || $('#sourceEntry').val()).substring(0, 30))}`);
     }
 });
-$('#hvdicButton').on('click', function () {
+
+$('#hvdicButton').on('click', () => {
     if ($('#sourceEntry').val().length > 0) {
         window.open(`https://hvdic.thivien.net/whv/${encodeURIComponent(($('#sourceEntry').val().substring($('#sourceEntry').prop('selectionStart'), $('#sourceEntry').prop('selectionEnd')) || $('#sourceEntry').val()).substring(0, 30))}`);
+    }
+});
+
+$('#naverDictButton').on('click', () => {
+    if ($('#sourceEntry').val().length > 0) {
+        window.open(`https://english.dict.naver.com/english-chinese-dictionary/#/search?query=${encodeURIComponent(($('#sourceEntry').val().substring($('#sourceEntry').prop('selectionStart'), $('#sourceEntry').prop('selectionEnd')) || $('#sourceEntry').val()).substring(0, 30))}`);
     }
 });
 

@@ -14,18 +14,20 @@ let vietphrases = {};
 let luatnhanList = [];
 
 const extendsSinovietnamese = {
-    '騎士長': 'kỵ sĩ trưởng',
-    '团长': 'đoàn trưởng',
-    '师姐': 'sư tỷ',
-    '少主': 'thiếu chủ',
-    '刺客': 'thích khách',
-    '传功': 'truyền công',
-    '将领': 'tướng lĩnh',
-    '将军': 'tướng quân',
-    '将士': 'tướng sĩ',
-    '姐姐': 'tỷ tỷ',
-    '县': 'huyện',
-    '姐': 'thư'
+    '騎士長': 'KỴ SĨ TRƯỞNG',
+    '团长': 'ĐOÀN TRƯỞNG',
+    '师姐': 'SƯ TỶ',
+    '少主': 'THIẾU CHỦ',
+    '刺客': 'THÍCH KHÁCH',
+    '长老': 'TRƯỞNG LÃO',
+    '将领': 'TƯỚNG LĨNH',
+    '将军': 'TƯỚNG QUÂN',
+    '将士': 'TƯỚNG SĨ',
+    '姐姐': 'TỶ TỶ',
+    '正': 'CHÍNH',
+    '县': 'HUYỆN',
+    '姐': 'THƯ',
+    '传': 'TRUYỀN'
 };
 
 let translateAbortController;
@@ -48,7 +50,7 @@ $(document).ready(async () => {
     }
 
     try {
-        let sinovietnameseList = [...Object.entries(extendsSinovietnamese), ...hanvietData.map((element) => [element[0], element[1].split(',').filter((element1) => element1.length > 0)[0]])];
+        let sinovietnameseList = [...Object.entries(extendsSinovietnamese).map((element) => [element[0], element[1].toLowerCase()]), ...hanvietData.map((element) => [element[0], element[1].split(',').filter((element1) => element1.length > 0)[0]])];
 
         $.get('/static/datasource/ChinesePhienAmWords của thtgiang.txt').done((data) => {
             sinovietnameseList = [...sinovietnameseList, ...data.split(/\r?\n/).map((element) => element.split('=')).filter((element) => !sinovietnameses.hasOwnProperty(element[0]))];
