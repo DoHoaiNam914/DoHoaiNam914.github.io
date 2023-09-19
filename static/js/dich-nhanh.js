@@ -998,8 +998,7 @@ async function getGoogleTranslateData(translator, apiKey = '') {
         try {
             const data = {};
 
-            // const elementJs = await $.get(CORS_PROXY + 'https://translate.google.com/translate_a/element.js?hl=vi&client=wt');
-            const elementJs = await $.get(`${CORS_PROXY}https://translate.googleapis.com/translate_a/element.js?aus=true&cb=cr.googleTranslate.onTranslateElementLoad&clc=cr.googleTranslate.onLoadCSS&jlc=cr.googleTranslate.onLoadJavascript${apiKey.length > 0 ? `&key=${apiKey}` : ''}&hl=vi`);
+            const elementJs = await $.get(`${CORS_PROXY}https://translate.googleapis.com/translate_a/element.js?aus=true&cb=cr.googleTranslate.onTranslateElementLoad&clc=cr.googleTranslate.onLoadCSS&jlc=cr.googleTranslate.onLoadJavascript${apiKey.length > 0 ? `&key=${apiKey}` : ''}&hl=vi&client=gtx`);
 
             if (elementJs != undefined) {
                 data.cac = elementJs.match(/c\._cac='([a-z]*)'/)[1];
