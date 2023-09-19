@@ -48,10 +48,10 @@ $(document).ready(async () => {
     }
 
     try {
-        let sinovietnameseList = [...Object.entries(extendsSinovietnamese), ...hanvietData.map((element) => [element[0], element[1].split(',')[element[1].startsWith(',') ? 1 : 0]])];
+        let sinovietnameseList = [...Object.entries(extendsSinovietnamese), ...hanvietData.map((element) => [element[0], element[1].split(',').filter((element1) => element1.length > 0)[0]])];
 
-        await $.get('/static/datasource/ChinesePhienAmWords của thtgiang.txt').done((data) => {
-            sinovietnameseList = [...sinovietnameseList, ...data.split(/\r?\n/).map((element) => element.split('='))];
+        $.get('/static/datasource/ChinesePhienAmWords của thtgiang.txt').done((data) => {
+            sinovietnameseList = [...sinovietnameseList, ...data.split(/\r?\n/).map((element) => element.split('=')).filter((element) => !sinovietnameses.hasOwnProperty(element[0]))];
             sinovietnameses = Object.fromEntries(sinovietnameseList);
         });
         await $.get('/static/datasource/TTV Translate.ChinesePhienAmWords.txt').done((data) => {
