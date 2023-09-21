@@ -46,7 +46,7 @@ $('#glossaryType').change(() => loadGlossary());
 
 $('#sourceEntry').on('input', function () {
     if ($(this).val().length > 0) {
-        $('#targetEntry').val(convertText($(this).val(), sinovietnameses, false, true));
+        $('#targetEntry').val(convertText($(this).val(), sinovietnameses, false, true, VietPhraseTranslationAlgorithms.PRIORITIZE_LONG_VIETPHRASE_CLUSTERS, VietPhraseMultiplicationAlgorithm.NOT_APPLICABLE));
 
         if (glossary.hasOwnProperty($(this).val())) {
             $('#glossaryList').val($(this).val());
@@ -82,13 +82,13 @@ $('#pasteSourceTextButton').on('click', () => {
 
 $('#pinyinConvertButton').on('click', () => {
     if ($('#sourceEntry').val().length > 0) {
-        $('#targetEntry').val(convertText($('#sourceEntry').val(), pinyins, false, false));
+        $('#targetEntry').val(convertText($('#sourceEntry').val(), pinyins, false, false, VietPhraseTranslationAlgorithms.PRIORITIZE_LONG_VIETPHRASE_CLUSTERS, VietPhraseMultiplicationAlgorithm.NOT_APPLICABLE));
     }
 });
 
 $('#sinoVietnameseConvertButton').on('click', () => {
     if ($('#sourceEntry').val().length > 0) {
-        $('#targetEntry').val(convertText($('#sourceEntry').val(), sinovietnameses, false, false));
+        $('#targetEntry').val(convertText($('#sourceEntry').val(), sinovietnameses, false, false, VietPhraseTranslationAlgorithms.PRIORITIZE_LONG_VIETPHRASE_CLUSTERS, VietPhraseMultiplicationAlgorithm.NOT_APPLICABLE));
     }
 });
 
