@@ -703,7 +703,7 @@ function convertText(inputText, data, caseSensitive, useGlossary, translationAlg
         }
 
         let dataEntries = [...luatnhanList, ...Object.entries(data)];
-        data = Object.fromEntries(dataEntries.filter((element) => (!(useGlossary && glossaryEntries.length > 0) || !glossary.hasOwnProperty(element[0])) && inputText.includes(element[0])).sort((a, b) => b[0].length - a[0].length));
+        data = Object.fromEntries(dataEntries.filter((element) => (!useGlossary || !glossary.hasOwnProperty(element[0])) && inputText.includes(element[0])).sort((a, b) => b[0].length - a[0].length));
         dataEntries = Object.entries(data);
 
         const punctuationEntries = cjkmap.filter((element) => element[0] == '…' || element[0].split('…').length != 2);
@@ -775,10 +775,8 @@ function convertText(inputText, data, caseSensitive, useGlossary, translationAlg
 
             if (translationAlgorithm == VietPhraseTranslationAlgorithms.PRIORITIZE_LONG_VIETPHRASE_CLUSTERS) {
                 for (const property in Object.fromEntries(filteredDataEntries)) {
-                    if (!(chars.includes(property) && filteredPunctuationEntries.length > 0)) {
-                        filteredPunctuationEntries.forEach((element) => chars = chars.replace(new RegExp(element[0].replace(/[/[\]\-.\\|^$!=()*+?{}]/g, '\\$&'), 'g'), element[1].replace(/\$/g, '$$$&')));
-                        chars = chars.replace(new RegExp(`${property.replace(/[/[\]\-.\\|^$!=()*+?{}]/g, '\\$&')}(?=$|(?:[!,.:;?]\\s+|['"\\p{Pe}\\p{Pf}]\\s*))`, 'gu'), data[property].replace(/[/[\]\-.\\|^$!=()*+?{}]/g, '\\$&')).replace(new RegExp(property.replace(/[/[\]\-.\\|^$!=()*+?{}]/g, '\\$&'), 'g'), `${data[property].replace(/\$/g, '$$$&')} `);
-                    }
+                    filteredPunctuationEntries.forEach((element) => chars = chars.replace(new RegExp(element[0].replace(/[/[\]\-.\\|^$!=()*+?{}]/g, '\\$&'), 'g'), element[1].replace(/\$/g, '$$$&')));
+                    chars = chars.replace(new RegExp(`${property.replace(/[/[\]\-.\\|^$!=()*+?{}]/g, '\\$&')}(?=$|(?:[!,.:;?]\\s+|['"\\p{Pe}\\p{Pf}]\\s*))`, 'gu'), data[property].replace(/[/[\]\-.\\|^$!=()*+?{}]/g, '\\$&')).replace(new RegExp(property.replace(/[/[\]\-.\\|^$!=()*+?{}]/g, '\\$&'), 'g'), `${data[property].replace(/\$/g, '$$$&')} `);
                 }
 
                 results.push(chars);
@@ -789,12 +787,8 @@ function convertText(inputText, data, caseSensitive, useGlossary, translationAlg
 
                 for (let j = 0; j < chars.length; j++) {
                     for (const phraseLength of phraseLengths) {
-                        if (useGlossary && glossaryEntries.length > 0 && glossary.hasOwnProperty(chars.substring(j, j + phraseLength))) {
-                            phrases.push(chars.substring(j, j + phraseLength));
-                            j += phraseLength - 1;
-                            break;
-                        } else if (data.hasOwnProperty(chars.substring(j, j + phraseLength))) {
-                            if (data[chars.substring(j, j + phraseLength)].length > 0) {
+                        if (data.hasOwnProperty(chars.substring(j, j + phraseLength))) {
+                            if (data[chars.substring(j, j + phraseLength)].length != undefined) {
                                 if (punctuation.hasOwnProperty(chars[j - 1]) && /[\p{Ps}\p{Pi}\p{Po}]/u.test(chars[j - 1])) {
                                     phrases.push((phrases.pop() ?? '') + data[chars.substring(j, j + phraseLength)]);
                                 } else {
@@ -1520,8 +1514,8 @@ const Translators = {
 };
 
 const VietPhraseTranslationAlgorithms = {
-    TRANSLATE_FROM_LEFT_TO_RIGHT: 0,
-    PRIORITIZE_LONG_VIETPHRASE_CLUSTERS: 1
+    PRIORITIZE_LONG_VIETPHRASE_CLUSTERS: 0,
+    TRANSLATE_FROM_LEFT_TO_RIGHT: 1
 };
 
 const VietPhraseMultiplicationAlgorithm = {
