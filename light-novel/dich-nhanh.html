@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=0">
     <title>Dịch nhanh - DoHoaiNam Pages</title>
-    <link href="/static/css/bootstrap.min.css" rel="stylesheet">
-    <link href="/static/css/general_style.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/general_style.css">
     <script src="/static/lib/LAB.js"></script>
     <script>
         const storedTheme = localStorage.getItem('theme');
@@ -76,8 +76,7 @@
             for (let i = 0; i < $('.option').length; i++) {
                 if ($('.option')[i].id.startsWith('flexSwitchCheck')) {
                     $('.option')[i].checked = translator[$('.option')[i].id];
-                } else if ($('.option')[i].name.startsWith('flexRadio') && $('.option')[i].value
-                    == translator[$('.option')[i].name]) {
+                } else if ($('.option')[i].name.startsWith('flexRadio') && $('.option')[i].value == translator[$('.option')[i].name]) {
                     $(`.option[name="${$('.option')[i].name}"]`).removeProp('checked');
                     $('.option')[i].checked = true;
                 } else if ($('.option')[i].className.includes('form-select')) {
@@ -214,8 +213,7 @@
         </svg>
       </button>
     </div-->
-    <textarea class="form-control textarea" id="queryText"
-              placeholder="Viết gì đó tại đây"></textarea>
+    <textarea class="form-control textarea" id="queryText" placeholder="Viết gì đó tại đây"></textarea>
     <div class="form-control textarea" id="translatedText" style="display: none;"></div>
 </main>
 <div class="fixed-bottom">
@@ -239,45 +237,39 @@
         </li>
     </ul>
 </div>
-<button type="button" class="btn btn-float position-fixed" id="glossaryManagerButton" data-bs-toggle="modal"
-        data-bs-target="#glossaryManager">
-    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left-right"
-         viewBox="0 0 16 16">
-        <path fill-rule="evenodd"
-              d="M1 11.5a.5.5 0 0 0 .5.5h11.793l-3.147 3.146a.5.5 0 0 0 .708.708l4-4a.5.5 0 0 0 0-.708l-4-4a.5.5 0 0 0-.708.708L13.293 11H1.5a.5.5 0 0 0-.5.5zm14-7a.5.5 0 0 1-.5.5H2.707l3.147 3.146a.5.5 0 1 1-.708.708l-4-4a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 4H14.5a.5.5 0 0 1 .5.5z"/>
+<button type="button" class="btn btn-float position-fixed" id="glossaryManagerButton" data-bs-toggle="modal" data-bs-target="#glossaryManager">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left-right" viewBox="0 0 16 16">
+        <path fill-rule="evenodd" d="M1 11.5a.5.5 0 0 0 .5.5h11.793l-3.147 3.146a.5.5 0 0 0 .708.708l4-4a.5.5 0 0 0 0-.708l-4-4a.5.5 0 0 0-.708.708L13.293 11H1.5a.5.5 0 0 0-.5.5zm14-7a.5.5 0 0 1-.5.5H2.707l3.147 3.146a.5.5 0 1 1-.708.708l-4-4a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 4H14.5a.5.5 0 0 1 .5.5z"/>
     </svg>
 </button>
-<div class="modal fade" id="glossaryManager" data-bs-backdrop="static" data-bs-keyboard="false"
-     tabindex="-1" aria-labelledby="glossaryManagerLabel" aria-hidden="true">
+<div class="modal fade" id="glossaryManager" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="glossaryManagerLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
-                <h1 class="modal-title fs-5" id="glossaryManagerLabel">Dynamic Dictionary (Names2.txt)</h1>
+                <h1 class="modal-title fs-5" id="glossaryManagerLabel">
+                    Dynamic Dictionary (Vietphrase's Names)
+                </h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body pb-5">
                 <div class="form-check form-switch">
-                    <input class="form-check-input option" type="checkbox" role="switch" id="flexSwitchCheckGlossary"
-                           checked="true">
+                    <input class="form-check-input option" type="checkbox" role="switch" id="flexSwitchCheckGlossary" checked>
                     <label class="form-check-label" for="flexSwitchCheckGlossary">Bật</label>
                 </div>
                 <div class="form-check form-switch my-3">
-                    <input class="form-check-input option" type="checkbox" role="switch"
-                           id="flexSwitchCheckAllowAnothers">
-                    <label class="form-check-label" for="flexSwitchCheckAllowAnothers">Cho phép các trình dịch
-                        khác</label>
+                    <input class="form-check-input option" type="checkbox" role="switch" id="flexSwitchCheckAllowAnothers">
+                    <label class="form-check-label" for="flexSwitchCheckAllowAnothers">
+                        Cho phép các trình dịch khác
+                    </label>
                 </div>
                 <div class="input-group input-group-sm my-3">
                     <input type="file" class="form-control" id="inputGlossary" accept=".tsv,.tab,text/csv,text/plain">
                     <button class="btn btn-outline-danger position-relative" id="clearGlossaryButton" type="button">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                             class="bi bi-trash" viewBox="0 0 16 16">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
                             <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
-                            <path fill-rule="evenodd"
-                                  d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+                            <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
                         </svg>
-                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-info"
-                              id="glossaryCounter">0</span>
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-info" id="glossaryCounter">0</span>
                     </button>
                 </div>
                 <select class="form-select form-select-sm mb-3" id="glossaryType">
@@ -287,8 +279,7 @@
                 </select>
                 <div class="input-group input-group-sm mb-3">
                     <input type="text" placeholder="Thay thế" class="form-control" id="sourceEntry">
-                    <button type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split"
-                            id="sourceEntryMenu" data-bs-toggle="dropdown" aria-expanded="false"></button>
+                    <button type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" id="sourceEntryMenu" data-bs-toggle="dropdown" aria-expanded="false"></button>
                     <ul class="dropdown-menu dropdown-scroller">
                         <li>
                             <button class="dropdown-item" id="clearSourceTextButton" type="button">Xoá</button>
@@ -303,14 +294,9 @@
                             <hr class="dropdown-divider">
                         </li>
                         <li>
-                            <button class="dropdown-item" id="pinyinConvertButton" type="button">Chuyển đổi sang Bính âm</button>
-                        </li>
-                        <li>
-                            <button class="dropdown-item" id="sinoVietnameseConvertButton" type="button">Chuyển đổi sang Hán việt</button>
-                        </li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li>
-                            <button class="dropdown-item" id="lacvietdictionaryButton" type="button">Từ điển Lạc Việt</button>
+                            <button class="dropdown-item" id="lacvietdictionaryButton" type="button">
+                                Từ điển Lạc Việt
+                            </button>
                         </li>
                         <li>
                             <button class="dropdown-item" id="googleButton" type="button">Google</button>
@@ -327,9 +313,13 @@
                         <li>
                             <button class="dropdown-item" id="baiduButton" type="button">Baidu</button>
                         </li>
-                        <li><hr class="dropdown-divider"></li>
                         <li>
-                            <button class="dropdown-item" id="deepltranslatorButton" type="button">DeepL Translator</button>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li>
+                            <button class="dropdown-item" id="deepltranslatorButton" type="button">
+                                DeepL Translator
+                            </button>
                         </li>
                         <li>
                             <button class="dropdown-item" id="googletranslateButton" type="button">Google Dịch</button>
@@ -338,20 +328,20 @@
                             <button class="dropdown-item" id="papagoButton" type="button">Papago</button>
                         </li>
                         <li>
-                            <button class="dropdown-item" id="bingtranslatorButton" type="button">Trình dịch Microsoft Bing</button>
+                            <button class="dropdown-item" id="bingtranslatorButton" type="button">
+                                Trình dịch Microsoft Bing
+                            </button>
                         </li>
                     </ul>
                 </div>
                 <div class="input-group input-group-sm mb-3">
                     <input type="text" placeholder="Với" class="form-control" id="targetEntry">
                     <button class="btn btn-outline-secondary" id="addButton" type="button">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                             class="bi bi-pen" viewBox="0 0 16 16">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pen" viewBox="0 0 16 16">
                             <path d="m13.498.795.149-.149a1.207 1.207 0 1 1 1.707 1.708l-.149.148a1.5 1.5 0 0 1-.059 2.059L4.854 14.854a.5.5 0 0 1-.233.131l-4 1a.5.5 0 0 1-.606-.606l1-4a.5.5 0 0 1 .131-.232l9.642-9.642a.5.5 0 0 0-.642.056L6.854 4.854a.5.5 0 1 1-.708-.708L9.44.854A1.5 1.5 0 0 1 11.5.796a1.5 1.5 0 0 1 1.998-.001zm-.644.766a.5.5 0 0 0-.707 0L1.95 11.756l-.764 3.057 3.057-.764L14.44 3.854a.5.5 0 0 0 0-.708l-1.585-1.585z"/>
                         </svg>
                     </button>
-                    <button type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split"
-                            data-bs-toggle="dropdown" aria-expanded="false"></button>
+                    <button type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false"></button>
                     <ul class="dropdown-menu dropdown-scroller">
                         <li>
                             <button class="dropdown-item" id="copyTargetTextButton" type="button">Sao chép</button>
@@ -359,73 +349,132 @@
                         <li>
                             <button class="dropdown-item" id="pasteTargetTextButton" type="button">Dán</button>
                         </li>
-                        <li><hr class="dropdown-divider"></li>
                         <li>
-                            <button class="dropdown-item upperCaseFromAmountButton" data-amount="1" type="button">Viết hoa 1 từ đơn đầu</button>
+                            <hr class="dropdown-divider">
                         </li>
                         <li>
-                            <button class="dropdown-item upperCaseFromAmountButton" data-amount="2" type="button">Viết hoa 2 từ đơn đầu</button>
+                            <button class="dropdown-item" id="pinyinConvertButton" type="button">
+                                Chuyển đổi sang Bính âm
+                            </button>
                         </li>
                         <li>
-                            <button class="dropdown-item upperCaseFromAmountButton" data-amount="3" type="button">Viết hoa 3 từ đơn đầu</button>
+                            <button class="dropdown-item" id="sinoVietnameseConvertButton" type="button">
+                                Chuyển đổi sang Hán việt
+                            </button>
+                        </li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li>
+                            <button class="dropdown-item upperCaseFromAmountButton" data-amount="1" type="button">
+                                Viết hoa 1 từ đơn đầu
+                            </button>
+                        </li>
+                        <li>
+                            <button class="dropdown-item upperCaseFromAmountButton" data-amount="2" type="button">
+                                Viết hoa 2 từ đơn đầu
+                            </button>
+                        </li>
+                        <li>
+                            <button class="dropdown-item upperCaseFromAmountButton" data-amount="3" type="button">
+                                Viết hoa 3 từ đơn đầu
+                            </button>
                         </li>
                         <li>
                             <button class="dropdown-item upperCaseAllButton" type="button">Viết hoa tất cả</button>
                         </li>
-                        <li><hr class="dropdown-divider"></li>
                         <li>
-                            <button class="dropdown-item convert deepl-convert" type="button" data-lang="ZH">DeepL Translator (Chinese)</button>
+                            <hr class="dropdown-divider">
                         </li>
                         <li>
-                            <button class="dropdown-item convert deepl-convert" type="button" data-lang="EN-US">DeepL Translator (English)</button>
+                            <button class="dropdown-item convert deepl-convert" type="button" data-lang="ZH">
+                                DeepL Translator (Chinese)
+                            </button>
                         </li>
                         <li>
-                            <button class="dropdown-item convert deepl-convert" type="button" data-lang="JA">DeepL Translator (Japanese)</button>
+                            <button class="dropdown-item convert deepl-convert" type="button" data-lang="EN-US">
+                                DeepL Translator (English)
+                            </button>
                         </li>
                         <li>
-                            <button class="dropdown-item convert google-convert" type="button" data-lang="en">Google Dịch (Anh)</button>
+                            <button class="dropdown-item convert deepl-convert" type="button" data-lang="JA">
+                                DeepL Translator (Japanese)
+                            </button>
                         </li>
                         <li>
-                            <button class="dropdown-item convert google-convert" type="button" data-lang="ja">Google Dịch (Nhật)</button>
+                            <button class="dropdown-item convert google-convert" type="button" data-lang="en">
+                                Google Dịch (Anh)
+                            </button>
                         </li>
                         <li>
-                            <button class="dropdown-item convert google-convert" type="button" data-lang="zh-CN">Google Dịch (Trung (Giản thể))</button>
+                            <button class="dropdown-item convert google-convert" type="button" data-lang="ja">
+                                Google Dịch (Nhật)
+                            </button>
                         </li>
                         <li>
-                            <button class="dropdown-item convert google-convert" type="button" data-lang="zh-TW">Google Dịch (Trung (Phồn thể))</button>
+                            <button class="dropdown-item convert google-convert" type="button" data-lang="zh-CN">
+                                Google Dịch (Trung (Giản thể))
+                            </button>
                         </li>
                         <li>
-                            <button class="dropdown-item convert google-convert" type="button" data-lang="vi">Google Dịch (Việt)</button>
+                            <button class="dropdown-item convert google-convert" type="button" data-lang="zh-TW">
+                                Google Dịch (Trung (Phồn thể))
+                            </button>
                         </li>
                         <li>
-                            <button class="dropdown-item convert papago-convert" type="button" data-lang="en">Papago (Anh)</button>
+                            <button class="dropdown-item convert google-convert" type="button" data-lang="vi">
+                                Google Dịch (Việt)
+                            </button>
                         </li>
                         <li>
-                            <button class="dropdown-item convert papago-convert" type="button" data-lang="ja">Papago (Nhật)</button>
+                            <button class="dropdown-item convert papago-convert" type="button" data-lang="en">
+                                Papago (Anh)
+                            </button>
                         </li>
                         <li>
-                            <button class="dropdown-item convert papago-convert" type="button" data-lang="zh-CN">Papago (Trung (Giản thể))</button>
+                            <button class="dropdown-item convert papago-convert" type="button" data-lang="ja">
+                                Papago (Nhật)
+                            </button>
                         </li>
                         <li>
-                            <button class="dropdown-item convert papago-convert" type="button" data-lang="zh-TW">Papago (Trung (Phồn thể))</button>
+                            <button class="dropdown-item convert papago-convert" type="button" data-lang="zh-CN">
+                                Papago (Trung (Giản thể))
+                            </button>
                         </li>
                         <li>
-                            <button class="dropdown-item convert papago-convert" type="button" data-lang="vi">Papago (Việt)</button>
+                            <button class="dropdown-item convert papago-convert" type="button" data-lang="zh-TW">
+                                Papago (Trung (Phồn thể))
+                            </button>
                         </li>
                         <li>
-                            <button class="dropdown-item convert microsoft-convert" type="button" data-lang="en">Trình dịch Microsoft (Anh)</button>
+                            <button class="dropdown-item convert papago-convert" type="button" data-lang="vi">
+                                Papago (Việt)
+                            </button>
                         </li>
                         <li>
-                            <button class="dropdown-item convert microsoft-convert" type="button" data-lang="ja">Trình dịch Microsoft (Nhật)</button>
+                            <button class="dropdown-item convert microsoft-convert" type="button" data-lang="en">
+                                Trình dịch Microsoft (Anh)
+                            </button>
                         </li>
                         <li>
-                            <button class="dropdown-item convert microsoft-convert" type="button" data-lang="zh-CHS">Trình dịch Microsoft (Trung (Giản thể))</button>
+                            <button class="dropdown-item convert microsoft-convert" type="button" data-lang="ja">
+                                Trình dịch Microsoft (Nhật)
+                            </button>
                         </li>
                         <li>
-                            <button class="dropdown-item convert microsoft-convert" type="button" data-lang="zh-CHT">Trình dịch Microsoft (Trung (Phồn thể))</button>
+                            <button class="dropdown-item convert microsoft-convert" type="button" data-lang="zh-CHS">
+                                Trình dịch Microsoft (Trung (Giản thể))
+                            </button>
                         </li>
                         <li>
-                            <button class="dropdown-item convert microsoft-convert" type="button" data-lang="vi">Trình dịch Microsoft (Việt)</button>
+                            <button class="dropdown-item convert microsoft-convert" type="button" data-lang="zh-CHT">
+                                Trình dịch Microsoft (Trung (Phồn thể))
+                            </button>
+                        </li>
+                        <li>
+                            <button class="dropdown-item convert microsoft-convert" type="button" data-lang="vi">
+                                Trình dịch Microsoft (Việt)
+                            </button>
                         </li>
                     </ul>
                 </div>
@@ -446,8 +495,7 @@
                     <input type="text" placeholder="Từ vựng" class="form-control" id="glossaryName">
                     <span class="input-group-text">.<span id="fileExtension">tsv</span></span>
                     <a class="btn btn-primary btn-sm" id="downloadButton">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                             class="bi bi-download" viewBox="0 0 16 16">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-download" viewBox="0 0 16 16">
                             <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
                             <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
                         </svg>
@@ -458,16 +506,13 @@
         </div>
     </div>
 </div>
-<button type="button" class="btn btn-float position-fixed" id="settingsButton" data-bs-toggle="modal"
-        data-bs-target="#settings">
-    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-gear"
-         viewBox="0 0 16 16">
+<button type="button" class="btn btn-float position-fixed" id="settingsButton" data-bs-toggle="modal" data-bs-target="#settings">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-gear" viewBox="0 0 16 16">
         <path d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492zM5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0z"/>
         <path d="M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0l-.094.319a.873.873 0 0 1-1.255.52l-.292-.16c-1.64-.892-3.433.902-2.54 2.541l.159.292a.873.873 0 0 1-.52 1.255l-.319.094c-1.79.527-1.79 3.065 0 3.592l.319.094a.873.873 0 0 1 .52 1.255l-.16.292c-.892 1.64.901 3.434 2.541 2.54l.292-.159a.873.873 0 0 1 1.255.52l.094.319c.527 1.79 3.065 1.79 3.592 0l.094-.319a.873.873 0 0 1 1.255-.52l.292.16c1.64.893 3.434-.902 2.54-2.541l-.159-.292a.873.873 0 0 1 .52-1.255l.319-.094c1.79-.527 1.79-3.065 0-3.592l-.319-.094a.873.873 0 0 1-.52-1.255l.16-.292c.893-1.64-.902-3.433-2.541-2.54l-.292.159a.873.873 0 0 1-1.255-.52l-.094-.319zm-2.633.283c.246-.835 1.428-.835 1.674 0l.094.319a1.873 1.873 0 0 0 2.693 1.115l.291-.16c.764-.415 1.6.42 1.184 1.185l-.159.292a1.873 1.873 0 0 0 1.116 2.692l.318.094c.835.246.835 1.428 0 1.674l-.319.094a1.873 1.873 0 0 0-1.115 2.693l.16.291c.415.764-.42 1.6-1.185 1.184l-.291-.159a1.873 1.873 0 0 0-2.693 1.116l-.094.318c-.246.835-1.428.835-1.674 0l-.094-.319a1.873 1.873 0 0 0-2.692-1.115l-.292.16c-.764.415-1.6-.42-1.184-1.185l.159-.291A1.873 1.873 0 0 0 1.945 8.93l-.319-.094c-.835-.246-.835-1.428 0-1.674l.319-.094A1.873 1.873 0 0 0 3.06 4.377l-.16-.292c-.415-.764.42-1.6 1.185-1.184l.292.159a1.873 1.873 0 0 0 2.692-1.115l.094-.319z"/>
     </svg>
 </button>
-<div class="modal fade" id="settings" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-     aria-labelledby="settingsLabel" aria-hidden="true">
+<div class="modal fade" id="settings" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="settingsLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
@@ -477,10 +522,8 @@
             <div class="modal-body pb-5">
                 <h2 class="fs-5">Chung</h2>
                 <div class="dropdown mb-3">
-                    <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown"
-                            aria-expanded="false">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor"
-                             class="bi bi-circle-half my-1 theme-icon-active" viewBox="0 0 16 16">
+                    <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" class="bi bi-circle-half my-1 theme-icon-active" viewBox="0 0 16 16">
                             <path d="M8 15A7 7 0 1 0 8 1v14zm0 1A8 8 0 1 1 8 0a8 8 0 0 1 0 16z"/>
                         </svg>
                         Thay đổi chủ đề
@@ -488,8 +531,7 @@
                     <ul class="dropdown-menu">
                         <li>
                             <button type="button" class="dropdown-item active" data-theme-value="auto">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor"
-                                     class="bi bi-circle-half me-2 theme-icon" viewBox="0 0 16 16">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" class="bi bi-circle-half me-2 theme-icon" viewBox="0 0 16 16">
                                     <path d="M8 15A7 7 0 1 0 8 1v14zm0 1A8 8 0 1 1 8 0a8 8 0 0 1 0 16z"/>
                                 </svg>
                                 Tự động
@@ -497,8 +539,7 @@
                         </li>
                         <li>
                             <button type="button" class="dropdown-item" data-theme-value="light">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor"
-                                     class="bi bi-sun-fill me-2 theme-icon" viewBox="0 0 16 16">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" class="bi bi-sun-fill me-2 theme-icon" viewBox="0 0 16 16">
                                     <path d="M8 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0zm0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13zm8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5zM3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8zm10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0zm-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0zm9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707zM4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .708z"/>
                                 </svg>
                                 Sáng
@@ -506,8 +547,7 @@
                         </li>
                         <li>
                             <button type="button" class="dropdown-item" data-theme-value="dark">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor"
-                                     class="bi bi-moon-stars-fill me-2 theme-icon" viewBox="0 0 16 16">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" class="bi bi-moon-stars-fill me-2 theme-icon" viewBox="0 0 16 16">
                                     <path d="M6 .278a.768.768 0 0 1 .08.858 7.208 7.208 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277.527 0 1.04-.055 1.533-.16a.787.787 0 0 1 .81.316.733.733 0 0 1-.031.893A8.349 8.349 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.752.752 0 0 1 6 .278z"/>
                                     <path d="M10.794 3.148a.217.217 0 0 1 .412 0l.387 1.162c.173.518.579.924 1.097 1.097l1.162.387a.217.217 0 0 1 0 .412l-1.162.387a1.734 1.734 0 0 0-1.097 1.097l-.387 1.162a.217.217 0 0 1-.412 0l-.387-1.162A1.734 1.734 0 0 0 9.31 6.593l-1.162-.387a.217.217 0 0 1 0-.412l1.162-.387a1.734 1.734 0 0 0 1.097-1.097l.387-1.162zM13.863.099a.145.145 0 0 1 .274 0l.258.774c.115.346.386.617.732.732l.774.258a.145.145 0 0 1 0 .274l-.774.258a1.156 1.156 0 0 0-.732.732l-.258.774a.145.145 0 0 1-.274 0l-.258-.774a1.156 1.156 0 0 0-.732-.732l-.774-.258a.145.145 0 0 1 0-.274l.774-.258c.346-.115.617-.386.732-.732L13.863.1z"/>
                                 </svg>
@@ -517,13 +557,13 @@
                     </ul>
                 </div>
                 <div class="dropdown mb-3">
-                    <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown"
-                            aria-expanded="false">Trình dịch
+                    <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Trình dịch
                     </button>
                     <ul class="dropdown-menu">
                         <li>
-                            <button class="dropdown-item translator" data-id="deeplTranslator" type="button">DeepL
-                                Translator
+                            <button class="dropdown-item translator" data-id="deeplTranslator" type="button">
+                                DeepL Translator
                             </button>
                         </li>
                         <li>
@@ -535,25 +575,19 @@
                             <button class="dropdown-item translator" data-id="papago" type="button">Papago</button>
                         </li>
                         <li>
-                            <button class="dropdown-item translator" data-id="microsoftTranslator" type="button">Trình
-                                dịch Microsoft
+                            <button class="dropdown-item translator" data-id="microsoftTranslator" type="button">
+                                Trình dịch Microsoft
                             </button>
                         </li>
                         <li>
-                            <button class="dropdown-item translator" data-id="vietphrase" type="button">Vietphrase
+                            <button class="dropdown-item translator" data-id="vietphrase" type="button">
+                                Vietphrase
                             </button>
                         </li>
                     </ul>
                 </div>
                 <div class="form-check form-switch mb-3">
-                    <input class="form-check-input option" type="checkbox" role="switch"
-                           id="flexSwitchCheckProtectQuotationMarks" checked="true">
-                    <label class="form-check-label" for="flexSwitchCheckProtectQuotationMarks">Bảo vệ dấu trích
-                        dẫn</label>
-                </div>
-                <div class="form-check form-switch mb-3">
-                    <input class="form-check-input option" type="checkbox" role="switch"
-                           id="flexSwitchCheckShowOriginal">
+                    <input class="form-check-input option" type="checkbox" role="switch" id="flexSwitchCheckShowOriginal">
                     <label class="form-check-label" for="flexSwitchCheckShowOriginal">Hiển thị văn bản gốc</label>
                 </div>
                 <hr>
@@ -562,16 +596,37 @@
                     <label for="inputVietphrase" class="form-label">Nhập tệp VietPhrase.txt:</label>
                     <input type="file" class="form-control form-control-sm" id="inputVietphrase" accept="text/plain">
                 </div>
-                <div class="form-check">
-                    <input class="form-check-input option" type="radio" name="flexRadioTranslationAlgorithm"
-                           id="flexRadioLongVietphrasePrior" value="longVietphrasePrior" checked>
-                    <label class="form-check-label" for="flexRadioLongVietphrasePrior">Ưu tiên cụm VietPhrase
-                        dài</label>
+                <div class="mb-3">
+                    <h2 class="fs-6">Thuật toán dịch</h2>
+                    <div class="form-check">
+                        <input class="form-check-input option" type="radio" name="flexRadioTranslationAlgorithm" id="flexRadioPrioritizeLongVietPhraseClusters" value="0" checked>
+                        <label class="form-check-label" for="flexRadioPrioritizeLongVietPhraseClusters">
+                            Ưu tiên cụm VietPhrase dài
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input option" type="radio" name="flexRadioTranslationAlgorithm" id="flexRadioLeftToRightTranslation" value="1">
+                        <label class="form-check-label" for="flexRadioLeftToRightTranslation">Dịch từ trái sang phải</label>
+                    </div>
+                    <!-- div class="form-check">
+                        <input class="form-check-input option" type="checkbox" role="switch" id="flexSwitchCheckPrioritizeNameOverVietPhrase">
+                        <label class="form-check-label" for="flexSwitchCheckPrioritizeNameoverVietPhrase">Ưu tiên Name hơn VietPhrase</label>
+                    </div -->
                 </div>
-                <div class="form-check">
-                    <input class="form-check-input option" type="radio" name="flexRadioTranslationAlgorithm"
-                           id="flexRadioLeftToRightTranslation" value="leftToRightTranslation">
-                    <label class="form-check-label" for="flexRadioLeftToRightTranslation">Dịch từ trái sang phải</label>
+                <div class="mb-">
+                    <h2 class="fs-6">Thuật toán nhân</h2>
+                    <div class="form-check">
+                        <input class="form-check-input option" type="radio" name="flexRadioMultiplicationAlgorithm" id="flexRadioNoApply" value="0">
+                        <label class="form-check-label" for="flexRadioNoApply">Không áp dụng</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input option" type="radio" name="flexRadioMultiplicationAlgorithm" id="flexRadioMultiplicationByPronouns" value="1">
+                        <label class="form-check-label" for="flexRadioLeftToRightTranslation">Nhân theo Pronouns</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input option" type="radio" name="flexRadioMultiplicationAlgorithm" id="flexRadioMultiplicationByPronounsNames" value="2" checked>
+                        <label class="form-check-label" for="flexRadioLeftToRightTranslation">Nhân theo Pronouns + Names</label>
+                    </div>
                 </div>
                 <!--hr>
                 <h2 class="fs-5">Trích xuất văn bản</h2>

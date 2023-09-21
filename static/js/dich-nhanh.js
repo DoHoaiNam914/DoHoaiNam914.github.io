@@ -11,7 +11,8 @@ const GOOGLE_API_KEY = 'AIzaSyBOti4mM-6x9WDnZIjIeyEU21OpBXqWBgw';
 const uuid = crypto.randomUUID();
 
 let vietphrases = {};
-let luatnhanList = [];
+let cacluatnhan = {};
+let pronouns = {};
 
 const extendsSinovietnamese = {
     '騎士長': 'KỴ SĨ TRƯỞNG',
@@ -81,25 +82,33 @@ $(document).ready(async () => {
         setTimeout(() => window.location.reload(), 5000);
     }
 
-    $.get('/static/datasource/LuatNhan của thtgiang.txt').done((data) => {
-        luatnhanList = data.split(/\r?\n/).map((element) => element.split('=')).filter((element) => element.length == 2).map((element) => [element[0], element[1].split('/')[0]]);
-        console.log('Đã tải xong tệp LuatNhan.txt (%d)!', luatnhanList.length);
+    $.get('/static/datasource/LuatNhan.txt').done((data) => {
+        cacluatnhan = Object.fromEntries(data.split(/\r?\n/).map((element) => element.split('=')).filter((element) => element.length == 2));
+        console.log('Đã tải xong tệp LuatNhan.txt (%d)!', Object.entries(cacluatnhan).length);
     }).fail((jqXHR, textStatus, errorThrown) => {
         console.error('Không tải được tệp LuatNhan.txt:', errorThrown);
         setTimeout(() => window.location.reload(), 5000);
     });
 
+    $.get('/static/datasource/Pronouns.txt').done((data) => {
+        pronouns = Object.fromEntries(data.split(/\r?\n/).map((element) => element.split('=')).filter((element) => element.length == 2).map((element) => [element[0], element[1].split('/')[0]]));
+        console.log('Đã tải xong tệp Pronouns.txt (%d)!', Object.entries(pronouns).length);
+    }).fail((jqXHR, textStatus, errorThrown) => {
+        console.error('Không tải được tệp Pronouns.txt:', errorThrown);
+        setTimeout(() => window.location.reload(), 5000);
+    });
+
     if (Object.entries(vietphrases).length == 0) {
-        $.get('/static/datasource/VietPhrase của thtgiang.txt').done((data) => {
-            let vietphraseList = [...luatnhanList, ...data.split(/\r?\n/).map((element) => element.split('=')).filter((element) => element.length == 2).map((element) => [element[0], element[1].split('/')[0].split('|')[0]]), ...Object.entries(sinovietnameses)];
+        $.get('/static/datasource/VietPhrase.txt').done((data) => {
+            let vietphraseList = [...data.split(/\r?\n/).map((element) => element.split('=')).filter((element) => element.length == 2).map((element) => [element[0], element[1].split('/')[0].split('|')[0]]), ...Object.entries(sinovietnameses)];
             vietphraseList = vietphraseList.filter(([key, value]) => key != '' && value != undefined && !vietphraseList[key] && (vietphraseList[key] = 1), {});
             if ($('#inputVietphrase').prop('files') == undefined) {
                 return;
             }
             vietphrases = Object.fromEntries(vietphraseList);
-            console.log('Đã tải xong bộ dữ liệu VietPhrase (%d)!', vietphraseList.length);
+            console.log('Đã tải xong tệp VietPhrase.txt (%d)!', vietphraseList.length);
         }).fail((jqXHR, textStatus, errorThrown) => {
-            console.error('Không thể tải bộ dữ liệu VietPhrase:', errorThrown);
+            console.error('Không tải được tệp VietPhrase.txt:', errorThrown);
         });
     }
 
@@ -269,7 +278,7 @@ $('#inputVietphrase').on('change', function () {
 
     reader.onload = function () {
         let vietphraseList = this.result.split(/\r?\n/).map((element) => element.split($('#inputVietphrase').prop('files')[0].type == 'text/tab-separated-values' ? '\t' : '=')).filter((element) => element.length == 2).map((element) => [element[0], element[1].split('/')[0].split('|')[0]]);
-        vietphraseList = [...luatnhanList, ...vietphraseList, ...Object.entries(sinovietnameses)].filter(([key, value]) => key != '' && value != undefined && !vietphraseList[key] && (vietphraseList[key] = 1), {})
+        vietphraseList = [...vietphraseList, ...Object.entries(sinovietnameses)].filter(([key, value]) => key != '' && value != undefined && !vietphraseList[key] && (vietphraseList[key] = 1), {})
         vietphrases = Object.fromEntries(vietphraseList);
         console.log('Đã tải xong tệp dữ liệu VietPhrase.txt!');
     };
@@ -593,13 +602,11 @@ async function translate(inputText, abortSignal) {
                     case Translators.VIETPHRASE:
                         if ($('#targetLangSelect').val() == 'vi' && Object.entries(
                             vietphrases).length > 0) {
-                            translatedText = convertText(translateText, vietphrases, true, $('#flexSwitchCheckGlossary').prop('checked'), $('input[name=\'flexRadioTranslationAlgorithm\']:checked').val());
-                        } else if ($('#targetLangSelect').val() == 'zh-VN'
-                            && Object.entries(sinovietnameses).length > 0) {
-                            translatedText = convertText(translateText, sinovietnameses, true, false, VietPhraseTranslationAlgorithms.LEFT_TO_RIGHT_TRANSLATION);
-                        } else if ($('#targetLangSelect').val() == 'en' && Object.entries(
-                            pinyins).length > 0) {
-                            translatedText = convertText(translateText, pinyins, true, false, VietPhraseTranslationAlgorithms.LEFT_TO_RIGHT_TRANSLATION);
+                            translatedText = convertText(translateText, vietphrases, true, $('#flexSwitchCheckGlossary').prop('checked'), $('input[name=\'flexRadioTranslationAlgorithm\']:checked').val(), $('input[name=\'flexRadioMultiplicationAlgorithm\']:checked').val());
+                        } else if ($('#targetLangSelect').val() == 'zh-VN' && Object.entries(sinovietnameses).length > 0) {
+                            translatedText = convertText(translateText, sinovietnameses, true, false);
+                        } else if ($('#targetLangSelect').val() == 'en' && Object.entries(pinyins).length > 0) {
+                            translatedText = convertText(translateText, pinyins, true, false);
                         } else if ($('#targetLangSelect').val() == 'vi' && Object.entries(vietphrases).length == 0) {
                             errorMessage.innerHTML = 'Nhập tệp VietPhrase.txt nếu có hoặc tải về <a href="https://drive.google.com/drive/folders/0B6fxcJ5qbXgkeTJNTFJJS3lmc3c?resourcekey=0-Ych2OUVug3pkLgCIlzvcuA&usp=sharing">tại đây</a>';
                             $('#translatedText').html(errorMessage);
@@ -676,11 +683,27 @@ function buildTranslatedResult(inputTexts, result, showOriginal) {
     return resultDiv.innerHTML.replace(/(<p>)(<\/p>)/g, '$1<br>$2');
 }
 
-function convertText(inputText, data, caseSensitive, useGlossary, translationAlgorithm) {
+function convertText(inputText, data, caseSensitive, useGlossary, translationAlgorithm = VietPhraseTranslationAlgorithms.LONG_VIETPHRASE_PRIOR, multiplicationAlgorithm = VietPhraseMultiplicationAlgorithm.MULTIPLICATION_BY_PRONOUNS_NAMES) {
     try {
-        let dataEntries = Object.entries(data);
-        data = Object.fromEntries(dataEntries.filter((element) => (!useGlossary || !glossary.hasOwnProperty(element[0])) && inputText.includes(element[0])).sort((a, b) => b[0].length - a[0].length));
         const glossaryEntries = Object.entries(glossary).filter((element) => inputText.includes(element[0]));
+        const luatnhanList = [];
+
+        if (parseInt(multiplicationAlgorithm) > 0) {
+            for (const luatnhan in cacluatnhan) {
+                for (const pronoun in pronouns) {
+                    luatnhanList.push([luatnhan.replace(/\{0}/g, pronouns[pronoun]), cacluatnhan[luatnhan].replace(/\{0}/g, pronouns[pronoun])]);
+                }
+
+                if (parseInt(multiplicationAlgorithm) == 2 && useGlossary && glossaryEntries.length > 0) {
+                    for (const element in glossary) {
+                        luatnhanList.push([luatnhan.replace(/\{0}/g, glossary[element]), cacluatnhan[luatnhan].replace(/\{0}/g, glossary[element])]);
+                    }
+                }
+            }
+        }
+
+        let dataEntries = [...luatnhanList, ...Object.entries(data)];
+        data = Object.fromEntries(dataEntries.filter((element) => (!(useGlossary || glossaryEntries.length > 0) || !glossary.hasOwnProperty(element[0])) && inputText.includes(element[0])).sort((a, b) => b[0].length - a[0].length));
         dataEntries = Object.entries(data);
 
         const punctuationEntries = cjkmap.filter((element) => element[0] == '…' || element[0].split('…').length != 2);
@@ -750,14 +773,16 @@ function convertText(inputText, data, caseSensitive, useGlossary, translationAlg
                 continue;
             }
 
-            if (translationAlgorithm === VietPhraseTranslationAlgorithms.LONG_VIETPHRASE_PRIOR) {
+            if (parseInt(translationAlgorithm) === VietPhraseTranslationAlgorithms.LONG_VIETPHRASE_PRIOR) {
                 for (const property in Object.fromEntries(filteredDataEntries)) {
-                    filteredPunctuationEntries.forEach((element) => chars = chars.replace(new RegExp(element[0].replace(/[/[\]\-.\\|^$!=()*+?{}]/g, '\\$&'), 'g'), element[1].replace(/\$/g, '$$$&')));
-                    chars = chars.replace(new RegExp(`${property.replace(/[/[\]\-.\\|^$!=()*+?{}]/g, '\\$&')}(?=$|(?:[!,.:;?]\\s+|[''\\p{Pe}\\p{Pf}]\\s*))`, 'gu'), data[property].replace(/[/[\]\-.\\|^$!=()*+?{}]/g, '\\$&')).replace(new RegExp(property.replace(/[/[\]\-.\\|^$!=()*+?{}]/g, '\\$&'), 'g'), `${data[property].replace(/\$/g, '$$$&')} `);
+                    if (!(chars.includes(property) && filteredPunctuationEntries.length > 0)) {
+                        filteredPunctuationEntries.forEach((element) => chars = chars.replace(new RegExp(element[0].replace(/[/[\]\-.\\|^$!=()*+?{}]/g, '\\$&'), 'g'), element[1].replace(/\$/g, '$$$&')));
+                        chars = chars.replace(new RegExp(`${property.replace(/[/[\]\-.\\|^$!=()*+?{}]/g, '\\$&')}(?=$|(?:[!,.:;?]\\s+|['"\\p{Pe}\\p{Pf}]\\s*))`, 'gu'), data[property].replace(/[/[\]\-.\\|^$!=()*+?{}]/g, '\\$&')).replace(new RegExp(property.replace(/[/[\]\-.\\|^$!=()*+?{}]/g, '\\$&'), 'g'), `${data[property].replace(/\$/g, '$$$&')} `);
+                    }
                 }
 
                 results.push(chars);
-            } else if (translationAlgorithm === VietPhraseTranslationAlgorithms.LEFT_TO_RIGHT_TRANSLATION) {
+            } else if (parseInt(translationAlgorithm) === VietPhraseTranslationAlgorithms.LEFT_TO_RIGHT_TRANSLATION) {
                 const phraseLengths = [...[...useGlossary && glossaryEntries.length > 0 ? glossaryEntries : [], ...filteredDataEntries].map((element) => useGlossary && glossaryEntries.length > 0 && glossary.hasOwnProperty(element[0]) ? element[1] : element[0]).sort((a, b) => b[0].length - a[0].length).map((element) => element.length), 1].filter((element, index, array) => index == array.indexOf(element));
                 const phrases = [];
                 let tempWord = '';
@@ -1495,6 +1520,13 @@ const Translators = {
 };
 
 const VietPhraseTranslationAlgorithms = {
-    LEFT_TO_RIGHT_TRANSLATION: 'leftToRightTranslation',
-    LONG_VIETPHRASE_PRIOR: 'longVietphrasePrior'
+    LEFT_TO_RIGHT_TRANSLATION: 0,
+    LONG_VIETPHRASE_PRIOR: 0
+};
+
+const VietPhraseMultiplicationAlgorithm = {
+    NO_APPLY: 0,
+    MULTIPLICATION_BY_PRONOUNS: 1,
+    MULTIPLICATION_BY_PRONOUNS_NAMES: 2,
+    MULTIPLICATION_BY_PRONOUNS_NAMES_VIETPHRASE: 3,
 };
