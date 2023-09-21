@@ -30,7 +30,10 @@ const extendsSinovietnamese = {
     '台': 'ĐÀI',
     '正': 'CHÍNH',
     '县': 'HUYỆN',
+    '儿': 'NHI',
+    '厅': 'SẢNH',
     '生': 'SINH',
+    '山': 'SƠN',
     '姐': 'THƯ',
     '传': 'TRUYỀN'
 };

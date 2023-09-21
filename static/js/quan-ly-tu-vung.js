@@ -215,7 +215,7 @@ $('.google-convert').on('click', async function () {
         try {
             const data = await getGoogleTranslateData(Translators.GOOGLE_TRANSLATE, GOOGLE_API_KEY);
 
-            if (data.logId == undefined || data.ctkk == undefined) {
+            if (data.version == undefined || data.ctkk == undefined) {
                 $('#targetEntry').val('Không thể lấy được Log ID hoặc Token từ element.js.');
                 return;
             }
