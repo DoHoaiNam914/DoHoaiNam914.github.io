@@ -778,7 +778,7 @@ function convertText(inputText, data, caseSensitive, useGlossary, translationAlg
                                     }
                                 }
     
-                                j += glossaryLength - 1;
+                                j += glossaryLength;
                                 break;
                             }
                         }
