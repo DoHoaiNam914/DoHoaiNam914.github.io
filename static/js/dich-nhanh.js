@@ -20,7 +20,8 @@ const extendsSinovietnamese = {
     '掌柜': 'CHƯỞNG QUỸ',
     '团长': 'ĐOÀN TRƯỞNG',
     '师姐': 'SƯ TỶ',
-    '少主': 'THIẾU CHỦ',
+    '天相': 'THIÊN TƯỚNG',
+    '仙长': 'TIÊN TRƯỞNG',
     '长辈': 'TRƯỞNG BỐI',
     '长老': 'TRƯỞNG LÃO',
     '将领': 'TƯỚNG LĨNH',
@@ -29,20 +30,33 @@ const extendsSinovietnamese = {
     '姐妹': 'TỶ MUỘI',
     '姐夫': 'TỶ PHU',
     '姐姐': 'TỶ TỶ',
+    '王朝': 'VƯƠNG TRIỀU',
 
-    '台': 'ĐÀI',
+    '玑': 'CƠ',
+    '柜': 'CỰ, QUỸ',
     '正': 'CHÍNH',
+    '摇': 'DAO',
+    '台': 'ĐÀI',
+    '衡': 'HOÀNH',// HÀNH, HOÀNH
     '县': 'HUYỆN',
-    '期': 'KỲ',
+    '期': 'KỲ',// KI, CƠ, KỲ
+    '骑': 'KỴ',
+    '吕': 'LÃ, LỮ',// LỮ, LÃ
     '儿': 'NHI',
     '厅': 'SẢNH',
-    '刺': 'THÍCH',
+    '刺': 'THÍCH',// SI, THÍCH, THỨ
     '生': 'SINH',
     '山': 'SƠN',
-    '层': 'TẦNG',
+    '层': 'TẦNG',// TẰNG TẦNG
+    '栖': 'THÊ, TÊ, TÂY',
+    '少': 'THIẾU', // THIỂU, THIẾU
     '姐': 'THƯ',
+    '璇': 'TOÀN',
+    '朝': 'TRIÊU',// TRIỀU, TRÀO, TRIÊU
     '传': 'TRUYỀN, TRUYỆN',
-    '燕': 'YÊN'
+    '长': 'TRƯỜNG, TRÀNG, TRƯỞNG',
+    '将': 'TƯƠNG, TƯỚNG',
+    '燕': 'YÊN, YẾN'
 };
 
 let translateAbortController;
@@ -80,7 +94,7 @@ $(document).ready(async () => {
             sinovietnameses = Object.fromEntries(sinovietnameseList);
         });
         await $.get('/static/datasource/Hán việt.txt').done((data) => sinovietnameseList = [...sinovietnameseList, ...data.split(/\r?\n/).map((element) => element.split('=')).sort((a, b) => b[0].length - a[0].length).map((element) => [element[0], element[1].split('ǀ')[0]]).filter((element) => !sinovietnameses.hasOwnProperty(element[0]))]);
-        sinovietnameseList = sinovietnameseList.filter(([key, value]) => key != '' && value != undefined && !sinovietnameseList[key] && (sinovietnameseList[key] = 1), {});
+        sinovietnameseList = sinovietnameseList.filter(([key, value]) => key != '' && !/\p{sc=Latin}/u.test(key) && value != undefined && !sinovietnameseList[key] && (sinovietnameseList[key] = 1), {});
         sinovietnameses = Object.fromEntries(sinovietnameseList);
         console.log('Đã tải xong bộ dữ liệu hán việt (%d)!', sinovietnameseList.length);
     } catch (error) {
