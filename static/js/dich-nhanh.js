@@ -37,12 +37,17 @@ const extendsSinovietnamese = {
     '正': 'CHÍNH',
     '摇': 'DAO',
     '台': 'ĐÀI',
+    '叶': 'DIỆP',// HIỆP, DIỆP
+    '坏': 'HOẠI',
+    '壊': '坏',
     '衡': 'HOÀNH',// HÀNH, HOÀNH
     '县': 'HUYỆN',
     '期': 'KỲ',// KI, CƠ, KỲ
     '骑': 'KỴ',
     '吕': 'LÃ, LỮ',// LỮ, LÃ
     '儿': 'NHI',
+    '创': 'SÁNG',// SANG, SÁNG
+    '創': '创',
     '厅': 'SẢNH',
     '刺': 'THÍCH',// SI, THÍCH, THỨ
     '生': 'SINH',
@@ -53,6 +58,7 @@ const extendsSinovietnamese = {
     '姐': 'THƯ',
     '璇': 'TOÀN',
     '朝': 'TRIÊU',// TRIỀU, TRÀO, TRIÊU
+    '重': 'TRÙNG, TRỌNG',
     '传': 'TRUYỀN, TRUYỆN',
     '长': 'TRƯỜNG, TRÀNG, TRƯỞNG',
     '将': 'TƯƠNG, TƯỚNG',
@@ -79,7 +85,7 @@ $(document).ready(async () => {
     }
 
     try {
-        let sinovietnameseList = [...Object.entries(extendsSinovietnamese).map((element) => [element[0], element[1].replace('element[1]', extendsSinovietnamese[element[1]] ?? element[1]).split(', ')[0].toLowerCase()]), ...hanvietData.map((element) => [element[0], element[1].split(',').filter((element1) => element1.length > 0)[0]])];
+        let sinovietnameseList = [...Object.entries(extendsSinovietnamese).map((element) => [element[0], (extendsSinovietnamese[element[1]] ?? element[1]).split(', ')[0].toLowerCase()]), ...hanvietData.map((element) => [element[0], element[1].split(',').filter((element1) => element1.length > 0)[0]])];
 
         $.get('/static/datasource/ChinesePhienAmWords của thtgiang.txt').done((data) => {
             sinovietnameseList = [...sinovietnameseList, ...data.split(/\r?\n/).map((element) => element.split('=')).filter((element) => !sinovietnameses.hasOwnProperty(element[0]))];
