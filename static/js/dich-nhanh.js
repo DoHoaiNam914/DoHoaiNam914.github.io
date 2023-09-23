@@ -794,7 +794,7 @@ function convertText(inputText, data, caseSensitive, useGlossary, translationAlg
                     if (useGlossary && glossaryEntries.length > 0) {
                         for (const glossaryLength of glossaryLengths) {
                             if (glossary.hasOwnProperty(chars.substring(j, j + glossaryLength))) {
-                                if (glossary[chars.substring(j, j + glossaryLength)] != undefined) {
+                                if (glossary[chars.substring(j, j + glossaryLength)].length > 0) {
                                     if (punctuation.hasOwnProperty(chars[j - 1]) && /[\p{Ps}\p{Pi}\p{Po}]/u.test(chars[j - 1])) {
                                         phrases.push((phrases.pop() ?? '') + glossary[chars.substring(j, j + glossaryLength)]);
                                     } else {
@@ -1354,7 +1354,7 @@ function getDynamicDictionaryText(text, isMicrosoftTranslator = true) {
             for (let j = 0; j < chars.length; j++) {
                 for (const glossaryLength of glossaryLengths) {
                     if (glossary.hasOwnProperty(chars.substring(j, j + glossaryLength))) {
-                        if (glossary[chars.substring(j, j + glossaryLength)] != undefined) {
+                        if (glossary[chars.substring(j, j + glossaryLength)].length > 0) {
                             phrases.push(isMicrosoftTranslator ? `<mstrans:dictionary translation='${glossary[chars.substring(j, j + glossaryLength)]}'>${chars.substring(j, j + glossaryLength)}</mstrans:dictionary>` : glossary[chars.substring(j, j + glossaryLength)]);
                         }
 
