@@ -16,7 +16,6 @@ let pronouns = {};
 
 const extendsSinovietnamese = {
     '骑士长': 'KỴ SĨ TRƯỞNG',
-
     '掌柜': 'CHƯỞNG QUỸ',
     '团长': 'ĐOÀN TRƯỞNG',
     '师姐': 'SƯ TỶ',
@@ -31,33 +30,51 @@ const extendsSinovietnamese = {
     '姐夫': 'TỶ PHU',
     '姐姐': 'TỶ TỶ',
     '王朝': 'VƯƠNG TRIỀU',
-
+    '荫': 'ÂM, ẤM',
     '玑': 'CƠ',
     '柜': 'CỰ, QUỸ',
     '正': 'CHÍNH',
     '摇': 'DAO',
     '台': 'ĐÀI',
-    '叶': 'DIỆP',// HIỆP, DIỆP
-    '坏': 'HOẠI',
-    '壊': '坏',
-    '衡': 'HOÀNH',// HÀNH, HOÀNH
+    // HIỆP, DIỆP
+    '叶': 'DIỆP',
+    
+    '坏': 'HOẠI', // Giản thể
+    '壊': '坏', // Kanji
+    
+    // HÀNH, HOÀNH
+    '衡': 'HOÀNH',
     '县': 'HUYỆN',
-    '期': 'KỲ',// KI, CƠ, KỲ
+    // KI, CƠ, KỲ
+    '期': 'KỲ',
     '骑': 'KỴ',
-    '吕': 'LÃ, LỮ',// LỮ, LÃ
+    // LỮ, LÃ
+    '吕': 'LÃ, LỮ',
     '儿': 'NHI',
-    '创': 'SÁNG',// SANG, SÁNG
-    '創': '创',
+    
+    // SANG, SÁNG
+    '创': 'SÁNG', // Giản thể
+    '創': '创', // Phổn thể
+    
     '厅': 'SẢNH',
-    '刺': 'THÍCH',// SI, THÍCH, THỨ
+    // SI, THÍCH, THỨ
+    '刺': 'THÍCH',
     '生': 'SINH',
     '山': 'SƠN',
-    '层': 'TẦNG',// TẰNG TẦNG
+    // TẰNG TẦNG
+    '层': 'TẦNG',
     '栖': 'THÊ, TÊ, TÂY',
-    '少': 'THIẾU', // THIỂU, THIẾU
+    // THIỂU, THIẾU
+    '少': 'THIẾU',
+
+    // THỜI, THÌ
+    '时': 'THÌ', // Giản thể
+    '時': '时', // Phổn thể
+    
     '姐': 'THƯ',
     '璇': 'TOÀN',
-    '朝': 'TRIÊU',// TRIỀU, TRÀO, TRIÊU
+    // TRIỀU, TRÀO, TRIÊU
+    '朝': 'TRIÊU',
     '重': 'TRÙNG, TRỌNG',
     '传': 'TRUYỀN, TRUYỆN',
     '长': 'TRƯỜNG, TRÀNG, TRƯỞNG',
@@ -222,6 +239,7 @@ $('#retranslateButton').click(() => {
 $('#queryText').on('input', () => {
     $('#queryText').css('height', 'auto');
     $('#queryText').css('height', $('#queryText').prop('scrollHeight') + 'px');
+    $(visualViewport).resize();
     $('#queryTextCounter').text($('#queryText').val().length);
 });
 
@@ -503,7 +521,7 @@ async function translate(inputText, abortSignal) {
     const errorMessage = document.createElement('p');
 
     try {
-        const processText = getProcessTextPreTranslate(inputText, $('#flexSwitchCheckProtectQuotationMarks').prop('checked') && translator !== Translators.VIETPHRASE && isCjkTargetLanguage);
+        const processText = getProcessTextPreTranslate(inputText);
         const results = [];
 
         let MAX_LENGTH;
@@ -761,8 +779,8 @@ function convertText(inputText, data, caseSensitive, useGlossary, translationAlg
                 const sortedData = Object.fromEntries([...useGlossary && filteredGlossaryEntries.length > 0 ? filteredGlossaryEntries : [], ...filteredDataEntries]);
 
                 for (const property in sortedData) {
-                    filteredPunctuationEntries.forEach((element) => chars = chars.replace(new RegExp(element[0].replace(/[/[\]\-.\\|^$!=()*+?{}]/g, '\\$&'), 'g'), element[1].replace(/\$/g, '$$$&')));
                     chars = chars.replace(new RegExp(`${property.replace(/[/[\]\-.\\|^$!=()*+?{}]/g, '\\$&')}(?=$|(?:[!,.:;?]\\s+|['"\\p{Pe}\\p{Pf}]\\s*))`, 'gu'), sortedData[property].replace(/[/[\]\-.\\|^$!=()*+?{}]/g, '\\$&')).replace(new RegExp(property.replace(/[/[\]\-.\\|^$!=()*+?{}]/g, '\\$&'), 'g'), `${sortedData[property].replace(/\$/g, '$$$&')} `);
+                    filteredPunctuationEntries.forEach((element) => chars = chars.replace(new RegExp(element[0].replace(/[/[\]\-.\\|^$!=()*+?{}]/g, '\\$&'), 'g'), element[1].replace(/\$/g, '$$$&')));
                 }
 
                 results.push(chars);
@@ -851,44 +869,24 @@ function convertText(inputText, data, caseSensitive, useGlossary, translationAlg
     }
 }
 
-function getProcessTextPreTranslate(text, doProtectQuotationMarks) {
-    let lines = text.split(/\n/);
+function getProcessTextPreTranslate(text) {
+    let newText = text;
 
     if (text.length > 0) {
-        try {
-            if (doProtectQuotationMarks) {
-                const brackets = cjkmap.filter((element) => element[0] != '…' && element[0].split('…').length == 2).map((element) => [element[0].replace(/[/[\]\-.\\|^$!=()*+?{}]/g, '\\$&'), element[1]]);
-
-                lines = lines.map((element) => {
-                    for (let i = 0; i < brackets.length; i++) {
-                        if ((new RegExp(`[${brackets[i][0].split('…')[0]}${brackets[i][0].split('…')[1]}]`)).test(element)) {
-                            return element.replace(new RegExp(`^${brackets[i][0].split('…')[0]}(.*)${brackets[i][0].split('…')[1]}(\\u{3002}?)$`, 'gu'), `[OPEN_BRACKET_${i}]\n$1\n[CLOSE_BRACKET_${i}]$2`);
-                        }
-                    }
-
-                    return element;
-                });
-            }
-        } catch (error) {
+        try {} catch (error) {
             console.error('Lỗi xử lý văn bản trước khi dịch:', error);
             throw error;
         }
     }
 
-    return lines.join('\n');
+    return lines.split(/\n/).map((element) => element.trim()).join('\n');
 }
 
 function getProcessTextPostTranslate(text) {
     let newText = text;
 
     if (text.length > 0) {
-        try {
-            const brackets = cjkmap.filter((element) => element[1] != '...' && element[1].split('...').length == 2);
-
-            for (let i = brackets.length - 1; i >= 0; i--) {
-                newText = newText.replace(new RegExp(`\\[OPEN_BRACKET_${i}\\].*\n+(.*)\n*\\[CLOSE_BRACKET_${i}\\]`, 'gi'), `${brackets[i][1].split('...')[0]}$1${brackets[i][1].split('...')[1]}`).replace(new RegExp(`\\[OPEN_BRACKET_${i}\\].*\n+`, 'gi'), brackets[i][1].split('...')[0]).replace(new RegExp(`\n*\\[CLOSE_BRACKET_${i}\\]`, 'gi'), brackets[i][1].split('...')[1]);
-            }
-        } catch (error) {
+        try {} catch (error) {
             console.error('Lỗi xử lý văn bản sau khi dịch:', error);
             throw error;
         }
@@ -1235,7 +1233,7 @@ const Papago = {
                     Accept: 'application/json',
                     'Accept-Language': 'vi',
                     'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-                    // 'device-type': 'pc' || 'mobile',
+                 // 'device-type': 'pc' || 'mobile',
                     'x-apigw-partnerid': 'papago',
                     Authorization: 'PPG ' + uuid + ':' + CryptoJS.HmacMD5(uuid + '\n' + 'https://papago.naver.com/apis/n2mt/translate' + '\n' + timeStamp, version).toString(CryptoJS.enc.Base64),
                     Timestamp: timeStamp

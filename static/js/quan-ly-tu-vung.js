@@ -68,7 +68,8 @@ $('#clearSourceTextButton').on('click', () => $('#sourceEntry').val(null).trigge
 
 $('#copySourceTextButton').on('click', () => {
     if ($('#sourceEntry').val().length > 0) {
-        navigator.clipboard.writeText($('#sourceEntry').val())
+        navigator.clipboard.writeText(($('#sourceEntry').val().substring($('#sourceEntry').prop('selectionStart'), $('#sourceEntry').prop('selectionEnd')) || $('#sourceEntry').val()).substring(0, 30));
+        $('#sourceEntry').blur();
     }
 });
 
@@ -89,67 +90,77 @@ $('#pinyinConvertButton').on('click', () => {
 $('#sinoVietnameseConvertButton').on('click', () => {
     if ($('#sourceEntry').val().length > 0) {
         $('#targetEntry').val(convertText($('#sourceEntry').val(), sinovietnameses, false, false, VietPhraseTranslationAlgorithms.PRIORITIZE_LONG_VIETPHRASE_CLUSTERS, VietPhraseMultiplicationAlgorithm.NOT_APPLICABLE));
+        $('#sourceEntry').blur();
     }
 });
 
 $('#lacvietdictionaryButton').on('click', () => {
     if ($('#sourceEntry').val().length > 0) {
         window.open(`http://mobile.coviet.vn/tratu.aspx?k=${encodeURIComponent(($('#sourceEntry').val().substring($('#sourceEntry').prop('selectionStart'), $('#sourceEntry').prop('selectionEnd')) || $('#sourceEntry').val()).substring(0, 30))}&t=ALL`);
+        $('#sourceEntry').blur();
     }
 });
 
 $('#googleButton').on('click', () => {
     if ($('#sourceEntry').val().length > 0) {
-        window.open(`https://www.google.com.vn/search?q=${encodeURIComponent(
-            ($('#sourceEntry').val().substring($('#sourceEntry').prop('selectionStart'), $('#sourceEntry').prop('selectionEnd')) || $('#sourceEntry').val()).substring(0, 30))}`);
+        window.open(`https://www.google.com.vn/search?q=${encodeURIComponent(($('#sourceEntry').val().substring($('#sourceEntry').prop('selectionStart'), $('#sourceEntry').prop('selectionEnd')) || $('#sourceEntry').val()).substring(0, 30))}`);
+        $('#sourceEntry').blur();
     }
 });
 
 $('#wikipediaButton').on('click', () => {
     if ($('#sourceEntry').val().length > 0) {
         window.open(`https://vi.wikipedia.org/w/?search=${encodeURIComponent(($('#sourceEntry').val().substring($('#sourceEntry').prop('selectionStart'), $('#sourceEntry').prop('selectionEnd')) || $('#sourceEntry').val()).substring(0, 30))}&ns0=1`);
+        $('#sourceEntry').blur();
     }
 });
 
 $('#hvdicButton').on('click', () => {
     if ($('#sourceEntry').val().length > 0) {
         window.open(`https://hvdic.thivien.net/whv/${encodeURIComponent(($('#sourceEntry').val().substring($('#sourceEntry').prop('selectionStart'), $('#sourceEntry').prop('selectionEnd')) || $('#sourceEntry').val()).substring(0, 30))}`);
+        $('#sourceEntry').blur();
     }
 });
 
 $('#naverDictButton').on('click', () => {
     if ($('#sourceEntry').val().length > 0) {
         window.open(`https://english.dict.naver.com/english-chinese-dictionary/#/search?query=${encodeURIComponent(($('#sourceEntry').val().substring($('#sourceEntry').prop('selectionStart'), $('#sourceEntry').prop('selectionEnd')) || $('#sourceEntry').val()).substring(0, 30))}`);
+        $('#sourceEntry').blur();
     }
 });
 
 $('#baiduButton').on('click', () => {
     if ($('#sourceEntry').val().length > 0) {
         window.open(`https://www.baidu.com/s?wd=${encodeURIComponent(($('#sourceEntry').val().substring($('#sourceEntry').prop('selectionStart'), $('#sourceEntry').prop('selectionEnd')) || $('#sourceEntry').val()).substring(0, 30))}`);
+        $('#sourceEntry').blur();
     }
 });
 
 $('#deepltranslatorButton').on('click', () => {
     if ($('#sourceEntry').val().length > 0) {
         window.open(`https://www.deepl.com/translator#auto/en/${encodeURIComponent($('#sourceEntry').val())}`);
+        $('#sourceEntry').blur();
     }
 });
 
 $('#googletranslateButton').on('click', () => {
     if ($('#sourceEntry').val().length > 0) {
         window.open(`https://translate.google.com/?sl=auto&tl=vi&text=${encodeURIComponent($('#sourceEntry').val())}&op=translate`);
+        $('#sourceEntry').blur();
     }
 });
 
 $('#papagoButton').on('click', () => {
     if ($('#sourceEntry').val().length > 0) {
         window.open(`https://papago.naver.com/?sk=auto&tk=vi&st=${encodeURIComponent($('#sourceEntry').val())}`);
+        $('#sourceEntry').blur();
     }
 });
 
 $('#bingtranslatorButton').on('click', () => {
     if ($('#sourceEntry').val().length > 0) {
         window.open(`https://www.bing.com/translator?from=auto-detect&to=vi&text=${encodeURIComponent($('#sourceEntry').val())}`);
+        $('#sourceEntry').blur();
     }
 });
 
@@ -313,7 +324,7 @@ $('#preview').on('click', function () {
 $('#glossaryName').on('input', () => loadGlossary());
 
 function getSelectedTextOrActiveElementText() {
-    return window.getSelection().toString() || (document.activeElement.tagName.toLowerCase() == 'textarea' || (document.activeElement.tagName.toLowerCase() == 'input' && /^(?:text|search|password|tel|url)$/i.test(document.activeElement.type) && typeof document.activeElement.selectionStart == 'number') && document.activeElement.value.slice(document.activeElement.selectionStart, document.activeElement.selectionEnd)) || '';
+    return window.getSelection().toString() || typeof document.activeElement.selectionStart != undefined && document.activeElement.value.slice(document.activeElement.selectionStart, document.activeElement.selectionEnd)) || '';
 }
 
 function loadGlossary() {
