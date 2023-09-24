@@ -743,7 +743,7 @@ function convertText(inputText, data, caseSensitive, useGlossary, translationAlg
 
                     for (const phraseLength of phraseLengths) {
                         if (data.hasOwnProperty(chars.substring(j, j + phraseLength))) {
-                            if (data[chars.substring(j, j + phraseLength)] != undefined) {
+                            if (data[chars.substring(j, j + phraseLength)].length > 0) {
                                 if (punctuation.hasOwnProperty(chars[j - 1]) && /[\p{Ps}\p{Pi}\p{Po}]/u.test(chars[j - 1])) {
                                     phrases.push((phrases.pop() ?? '') + data[chars.substring(j, j + phraseLength)]);
                                 } else {
