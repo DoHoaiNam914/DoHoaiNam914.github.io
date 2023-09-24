@@ -669,7 +669,7 @@ async function translate(inputText, abortSignal) {
         if (abortSignal.aborted) return;
         $('#translatedText').html(buildTranslatedResult([inputText, inputText], getProcessTextPostTranslate(results.join('\n')), $('#flexSwitchCheckShowOriginal').prop('checked')));
     } catch (error) {
-        errorMessage.innerText = 'Bản dịch thất bại: ' + JSON.stringify(error);
+        errorMessage.innerText = 'Bản dịch thất bại: ' + error.toString();
         $('#translatedText').html(errorMessage);
         onPostTranslate();
     }
@@ -722,7 +722,7 @@ function buildTranslatedResult(inputTexts, result, showOriginal) {
 	} catch (error) {
         resultDiv.innerHTML = `<p>${resultLines.map((element) => element.trimStart()).join('</p><p>')}</p>`;
         console.error('Lỗi hiển thị bản dịch:', error);
-        throw error;
+        throw error.toString();
 	}
     return resultDiv.innerHTML.replace(/(<p>)(<\/p>)/g, '$1<br>$2');
 }
@@ -865,34 +865,30 @@ function convertText(inputText, data, caseSensitive, useGlossary, translationAlg
         return caseSensitive ? result.split(/\n/).map((element => element.replace(/(^|\s*(?:[!\-.:;?]\s+|[''\p{Ps}\p{Pi}]\s*))(\p{Lower})/gu, (match, p1, p2) => p1 + p2.toUpperCase()))).join('\n') : result;
     } catch (error) {
         console.error('Bản dịch lỗi:', error);
-        throw error;
+        throw error.toString();
     }
 }
 
 function getProcessTextPreTranslate(text) {
-    let newText = text;
-
-    if (text.length > 0) {
-        try {} catch (error) {
-            console.error('Lỗi xử lý văn bản trước khi dịch:', error);
-            throw error;
-        }
+    try {
+        let newText = text;
+        if (text.length > 0) {}
+        return newText.split(/\n/).map((element) => element.trim()).join('\n');
+    } catch (error) {
+        console.error('Lỗi xử lý văn bản trước khi dịch:', error);
+        throw error.toString();
     }
-
-    return lines.split(/\n/).map((element) => element.trim()).join('\n');
 }
 
 function getProcessTextPostTranslate(text) {
-    let newText = text;
-
-    if (text.length > 0) {
-        try {} catch (error) {
-            console.error('Lỗi xử lý văn bản sau khi dịch:', error);
-            throw error;
-        }
+    try {
+        let newText = text;
+        if (text.length > 0) {}
+        return newText.split(/\n/).map((element) => element.trim()).join('\n');
+    } catch (error) {
+        console.error('Lỗi xử lý văn bản sau khi dịch:', error);
+        throw error.toString();
     }
-
-    return newText.split(/\n/).map((element) => element.trim()).join('\n');
 }
 
 function onPostTranslate() {
@@ -918,7 +914,7 @@ const DeepLTranslator = {
             return response.translations.map((line) => line.text.trim()).join('\n');
         } catch (error) {
             console.error('Bản dịch lỗi:', error);
-            throw error;
+            throw error.toString();
         }
     }
 };
@@ -1017,7 +1013,7 @@ const GoogleTranslate = {
             return $(paragraph).text();
         } catch (error) {
             console.error('Bản dịch lỗi:', error);
-            throw error;
+            throw error.toString();
         }
     }
 };
@@ -1041,7 +1037,7 @@ async function getGoogleTranslateData(translator, apiKey = '') {
             return data;
         } catch (error) {
             console.error('Không thể lấy được Log ID hoặc Token:' + error);
-            throw error
+            throw error.toString()
         }
     }
 }
@@ -1242,7 +1238,7 @@ const Papago = {
             return response.translatedText;
         } catch (error) {
             console.error('Bản dịch lỗi:', error);
-            throw error;
+            throw error.toString();
         }
     }
 };
@@ -1260,7 +1256,7 @@ async function getPapagoVersion(translator) {
             return version;
         } catch (error) {
             console.error('Không thể lấy được Thông tin phiên bản: ' + error);
-            throw error
+            throw error.toString()
         }
     }
 }
@@ -1320,7 +1316,7 @@ const MicrosoftTranslator = {
             return response.map((element) => element.translations[0].text.trim()).join('\n');
         } catch (error) {
             console.error('Bản dịch lỗi:', error);
-            throw error;
+            throw error.toString();
         }
     }
 };
@@ -1331,7 +1327,7 @@ async function getMicrosoftTranslatorAccessToken(translator) {
             return await $.get('https://edge.microsoft.com/translate/auth');
         } catch (error) {
             console.error('Không thể lấy được Access Token: ' + error);
-            throw error
+            throw error.toString()
         }
     }
 }
