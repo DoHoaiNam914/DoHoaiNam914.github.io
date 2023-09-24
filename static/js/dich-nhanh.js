@@ -34,7 +34,7 @@ $(document).ready(async () => {
     }
 
     try {
-        let sinovietnameseList = [...Object.entries(specialSinovietnameseData).map(([first, second]) => [first, (specialSinovietnameseData[second] ?? second).split(', ')[0].toLowerCase()]), ...hanvietData.map(([first, second]) => [first, second.split(',').filter((element) => element.length > 0)[0]])];
+        let sinovietnameseList = [...specialSinovietnameseData.map(([first, second]) => [first, (Object.fromEntries(specialSinovietnameseData)[second] ?? second).split(', ')[0].toLowerCase()]), ...hanvietData.map(([first, second]) => [first, second.split(',').filter((element) => element.length > 0)[0]])];
 
         $.get('/static/datasource/ChinesePhienAmWords của thtgiang.txt').done((data) => {
             sinovietnameseList = [...sinovietnameseList, ...data.split(/\r?\n/).map((element) => element.split('=')).filter(([first]) => !sinovietnameses.hasOwnProperty(first))];
