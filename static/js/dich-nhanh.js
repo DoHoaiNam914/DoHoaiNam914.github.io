@@ -663,23 +663,25 @@ function buildTranslatedResult(inputTexts, result, showOriginal) {
 function convertText(inputText, data, caseSensitive, useGlossary, translationAlgorithm = VietPhraseTranslationAlgorithms.PRIORITIZE_LONG_VIETPHRASE_CLUSTERS, multiplicationAlgorithm = VietPhraseMultiplicationAlgorithm.MULTIPLICATION_BY_PRONOUNS_NAMES) {
     try {
         const glossaryEntries = Object.entries(glossary).filter(([first]) => inputText.includes(first));
-        const luatnhanList = [];
+        const luatnhanData = {};
 
         if (multiplicationAlgorithm > VietPhraseMultiplicationAlgorithm.NOT_APPLICABLE) {
             for (const luatnhan in cacluatnhan) {
-                for (const pronoun in pronouns) {
-                    luatnhanList.push([luatnhan.replace(/\{0}/g, pronoun), cacluatnhan[luatnhan].replace(/\{0}/g, pronouns[pronoun])]);
-                }
-
                 if (useGlossary && multiplicationAlgorithm == VietPhraseMultiplicationAlgorithm.MULTIPLICATION_BY_PRONOUNS_NAMES && glossaryEntries.length > 0) {
                     for (const element in glossary) {
-                        luatnhanList.push([luatnhan.replace(/\{0}/g, element).replace(/\$/g, '$$$&'), cacluatnhan[luatnhan].replace(/\{0}/g, glossary[element].replace(/\$/g, '$$$&'))]);
+                        luatnhanData[luatnhan.replace(/\{0}/g, element).replace(/\$/g, '$$$&')] = cacluatnhan[luatnhan].replace(/\{0}/g, glossary[element].replace(/\$/g, '$$$&'));
                     }
+                }
+
+                for (const pronoun in pronouns) {
+                    luatnhanData[luatnhan.replace(/\{0}/g, pronoun)] = cacluatnhan[luatnhan].replace(/\{0}/g, pronouns[pronoun]);
                 }
             }
         }
 
-        let dataEntries = [...luatnhanList, ...Object.entries(data)];
+        const luatnhanList = Object.entries(luatnhanData);
+
+        let dataEntries = Object.entries(data);
         data = Object.fromEntries(dataEntries.filter(([first]) => (!useGlossary || !glossary.hasOwnProperty(first)) && inputText.includes(first)).sort((a, b) => b[0].length - a[0].length));
         dataEntries = Object.entries(data);
 
@@ -701,7 +703,7 @@ function convertText(inputText, data, caseSensitive, useGlossary, translationAlg
             }
 
             const filteredDataEntries = dataEntries.filter(([first]) => chars.includes(first));
-            const filteredGlossaryEntries = glossaryEntries.filter(([first]) => chars.includes(first))
+            const filteredGlossaryEntries = glossaryEntries.filter(([first]) => chars.includes(first));
 
             if (filteredDataEntries.length == 0 && filteredPunctuationEntries.length == 0 && filteredGlossaryEntries.length == 0) {
                 results.push(chars);
@@ -709,7 +711,7 @@ function convertText(inputText, data, caseSensitive, useGlossary, translationAlg
             }
 
             if (translationAlgorithm == VietPhraseTranslationAlgorithms.PRIORITIZE_LONG_VIETPHRASE_CLUSTERS) {
-                const sortedData = Object.fromEntries([...useGlossary && filteredGlossaryEntries.length > 0 ? filteredGlossaryEntries : [], ...filteredDataEntries]);
+                const sortedData = Object.fromEntries([...luatnhanList, ...useGlossary && filteredGlossaryEntries.length > 0 ? filteredGlossaryEntries : [], ...filteredDataEntries].sort((a, b) => b[0].length - a[0].length));
 
                 for (const property in sortedData) {
                     chars = chars.replace(new RegExp(`${property.replace(/[/[\]\-.\\|^$!=()*+?{}]/g, '\\$&')}(?=$|(?:[!,.:;?]\\s+|['"\\p{Pe}\\p{Pf}]\\s*))`, 'gu'), sortedData[property].replace(/[/[\]\-.\\|^$!=()*+?{}]/g, '\\$&')).replace(new RegExp(property.replace(/[/[\]\-.\\|^$!=()*+?{}]/g, '\\$&'), 'g'), `${sortedData[property].replace(/\$/g, '$$$&')} `);
@@ -718,12 +720,28 @@ function convertText(inputText, data, caseSensitive, useGlossary, translationAlg
 
                 results.push(chars);
             } else if (translationAlgorithm == VietPhraseTranslationAlgorithms.TRANSLATE_FROM_LEFT_TO_RIGHT) {
+                const luatnhanLengths = [...luatnhanList.map(([first]) => first.length), 1].sort((a, b) => b - a).filter((element, index, array) => index == array.indexOf(element));
                 const glossaryLengths = [...filteredGlossaryEntries.map(([first]) => first.length), 1].sort((a, b) => b - a).filter((element, index, array) => index == array.indexOf(element));
-                const phraseLengths = [...useGlossary && glossaryLengths.length > 1 ? glossaryLengths : [], ...filteredDataEntries.map(([first]) => first.length), 1].sort((a, b) => b - a).filter((element, index, array) => index == array.indexOf(element));
+                const phraseLengths = [...filteredDataEntries.map(([first]) => first.length), 1].sort((a, b) => b - a).filter((element, index, array) => index == array.indexOf(element));
                 const phrases = [];
                 let tempWord = '';
 
                 for (let j = 0; j < chars.length; j++) {
+                    for (const luatnhanLength of luatnhanLengths) {
+                        if (luatnhanData.hasOwnProperty(chars.substring(j, j + luatnhanLength))) {
+                            if (luatnhanData[chars.substring(j, j + luatnhanLength)].length > 0) {
+                                if (punctuation.hasOwnProperty(chars[j - 1]) && /[\p{Ps}\p{Pi}\p{Po}]/u.test(chars[j - 1])) {
+                                    phrases.push((phrases.pop() ?? '') + luatnhanData[chars.substring(j, j + luatnhanLength)]);
+                                } else {
+                                    phrases.push(luatnhanData[chars.substring(j, j + luatnhanLength)]);
+                                }
+                            }
+
+                            j += luatnhanLength;
+                            break;
+                        }
+                    }
+
                     if (useGlossary && glossaryEntries.length > 0) {
                         for (const glossaryLength of glossaryLengths) {
                             if (glossary.hasOwnProperty(chars.substring(j, j + glossaryLength))) {

@@ -20,6 +20,7 @@ const specialSinovietnameseData = [
     ['正', 'CHÍNH'],
     ['摇', 'DAO'],
     ['台', 'ĐÀI'],
+    ['姛', 'ĐỒNG'], // Không xác định
     // HIỆP, DIỆP
     ['叶', 'DIỆP'],
 
@@ -35,6 +36,7 @@ const specialSinovietnameseData = [
     // LỮ, LÃ
     ['吕', 'LÃ, LỮ'],
     ['儿', 'NHI'],
+    ['樊', 'PHÀN'],
 
     // SANG, SÁNG
     ['创', 'SÁNG'], // Giản thể
