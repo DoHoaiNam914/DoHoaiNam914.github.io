@@ -5,6 +5,7 @@ let translator = JSON.parse(localStorage.getItem('translator'));
 let pinyins = {};
 let sinovietnameses = {};
 
+const BRAVE_API_KEY = 'qztbjzBqJueQZLFkwTTJrieu8Vw3789u';
 const DEEPL_AUTH_KEY = 'a4b25ba2-b628-fa56-916e-b323b16502de:fx';
 const GOOGLE_API_KEY = 'AIzaSyBOti4mM-6x9WDnZIjIeyEU21OpBXqWBgw';
 
@@ -305,17 +306,20 @@ function getDefaultTargetLanguage(translator) {
 
 function getLanguageName(translator, languageCode) {
     switch (translator) {
+        case Translators.BRAVE_TRANSLATE:
+            return BraveTranslate.Language[languageCode] ?? '';
+
         case Translators.DEEPL_TRANSLATOR:
-            return DeepLSourceLanguage[languageCode] ?? '';
-
-        case Translators.MICROSOFT_TRANSLATOR:
-            return MicrosoftLanguage[languageCode] ?? '';
-
-        case Translators.PAPAGO:
-            return PapagoLanguage[languageCode] ?? '';
+            return DeepLTranslator.SourceLanguage[languageCode] ?? '';
 
         case Translators.GOOGLE_TRANSLATE:
-            return GoogleLanguage[languageCode] ?? '';
+            return GoogleTranslate.Language[languageCode] ?? '';
+
+        case Translators.MICROSOFT_TRANSLATOR:
+            return MicrosoftTranslator.Language[languageCode] ?? '';
+
+        case Translators.PAPAGO:
+            return Papago.Language[languageCode] ?? '';
     }
 }
 
@@ -324,14 +328,27 @@ function getSourceLanguageOptions(translator) {
     const autoDetectOption = document.createElement('option');
 
     switch (translator) {
+        case Translators.BRAVE_TRANSLATE:
+            autoDetectOption.innerText = 'Phát hiện ngôn ngữ';
+            autoDetectOption.value = 'auto';
+            sourceLangSelect.appendChild(autoDetectOption);
+
+            for (const langCode in BraveTranslate.Language) {
+                const option = document.createElement('option');
+                option.innerText = BraveTranslate.Language[langCode];
+                option.value = langCode;
+                sourceLangSelect.appendChild(option);
+            }
+            break;
+
         case Translators.DEEPL_TRANSLATOR:
             autoDetectOption.innerText = 'Detect language';
             autoDetectOption.value = '';
             sourceLangSelect.appendChild(autoDetectOption);
 
-            for (const langCode in DeepLSourceLanguage) {
+            for (const langCode in DeepLTranslator.SourceLanguage) {
                 const option = document.createElement('option');
-                option.innerText = DeepLSourceLanguage[langCode];
+                option.innerText = DeepLTranslator.SourceLanguage[langCode];
                 option.value = langCode;
                 sourceLangSelect.appendChild(option);
             }
@@ -342,9 +359,9 @@ function getSourceLanguageOptions(translator) {
             autoDetectOption.value = 'auto';
             sourceLangSelect.appendChild(autoDetectOption);
 
-            for (const langCode in GoogleLanguage) {
+            for (const langCode in GoogleTranslate.Language) {
                 const option = document.createElement('option');
-                option.innerText = GoogleLanguage[langCode];
+                option.innerText = GoogleTranslate.Language[langCode];
                 option.value = langCode;
                 sourceLangSelect.appendChild(option);
             }
@@ -355,9 +372,9 @@ function getSourceLanguageOptions(translator) {
             autoDetectOption.value = 'auto';
             sourceLangSelect.appendChild(autoDetectOption);
 
-            for (const langCode in PapagoLanguage) {
+            for (const langCode in Papago.Language) {
                 const option = document.createElement('option');
-                option.innerText = PapagoLanguage[langCode];
+                option.innerText = Papago.Language[langCode];
                 option.value = langCode;
                 sourceLangSelect.appendChild(option);
             }
@@ -368,9 +385,9 @@ function getSourceLanguageOptions(translator) {
             autoDetectOption.value = '';
             sourceLangSelect.appendChild(autoDetectOption);
 
-            for (const langCode in MicrosoftLanguage) {
+            for (const langCode in MicrosoftTranslator.Language) {
                 const option = document.createElement('option');
-                option.innerText = MicrosoftLanguage[langCode];
+                option.innerText = MicrosoftTranslator.Language[langCode];
                 option.value = langCode;
                 sourceLangSelect.appendChild(option);
             }
@@ -389,37 +406,46 @@ function getTargetLanguageOptions(translator) {
     const targetLangSelect = document.createElement('select');
 
     switch (translator) {
-        case Translators.DEEPL_TRANSLATOR:
-            for (const langCode in DeepLTargetLanguage) {
+        case Translators.BRAVE_TRANSLATE:
+            for (const langCode in BraveTranslate.Language) {
                 const option = document.createElement('option');
-                option.innerText = DeepLTargetLanguage[langCode];
+                option.innerText = BraveTranslate.Language[langCode];
+                option.value = langCode;
+                targetLangSelect.appendChild(option);
+            }
+            break;
+
+        case Translators.DEEPL_TRANSLATOR:
+            for (const langCode in DeepLTranslator.TargetLanguage) {
+                const option = document.createElement('option');
+                option.innerText = DeepLTranslator.TargetLanguage[langCode];
                 option.value = langCode;
                 targetLangSelect.appendChild(option);
             }
             break;
 
         case Translators.GOOGLE_TRANSLATE:
-            for (const langCode in GoogleLanguage) {
+            for (const langCode in GoogleTranslate.Language) {
                 const option = document.createElement('option');
-                option.innerText = GoogleLanguage[langCode];
+                option.innerText = GoogleTranslate.Language[langCode];
                 option.value = langCode;
                 targetLangSelect.appendChild(option);
             }
             break;
 
         case Translators.PAPAGO:
-            for (const langCode in PapagoLanguage) {
+            for (const langCode in Papago.Language) {
                 const option = document.createElement('option');
-                option.innerText = PapagoLanguage[langCode];
+                option.innerText = Papago.Language[langCode];
                 option.value = langCode;
                 targetLangSelect.appendChild(option);
             }
             break;
 
         case Translators.MICROSOFT_TRANSLATOR:
-            for (const langCode in MicrosoftLanguage) {
+            for (const langCode in MicrosoftTranslator.Language) {
                 const option = document.createElement('option');
-                option.innerText = MicrosoftLanguage[langCode];
+                option.innerText = MicrosoftTranslator.Language[langCode];
                 option.value = langCode;
                 targetLangSelect.appendChild(option);
             }
@@ -494,6 +520,14 @@ async function translate(inputText, abortSignal) {
             return;
         }
 
+        const braveTranslateData = translator === Translators.BRAVE_TRANSLATE ? await BraveTranslate.getData(translator, BRAVE_API_KEY) : null;
+
+        if (translator === Translators.BRAVE_TRANSLATE && (braveTranslateData.version == undefined || braveTranslateData.ctkk == undefined)) {
+            errorMessage.innerText = 'Không thể lấy được Log ID hoặc Token từ element.js.';
+            $('#translatedText').html(errorMessage);
+            return;
+        }
+
         if (translator === Translators.DEEPL_TRANSLATOR) {
             const deeplUsage = (await $.get('https://api-free.deepl.com/v2/usage?auth_key=' + DEEPL_AUTH_KEY)) ?? {
                 'character_count': 500000,
@@ -508,7 +542,7 @@ async function translate(inputText, abortSignal) {
             }
         }
 
-        const googleTranslateData = translator === Translators.GOOGLE_TRANSLATE ? await getGoogleTranslateData(translator, GOOGLE_API_KEY) : null;
+        const googleTranslateData = translator === Translators.GOOGLE_TRANSLATE ? await GoogleTranslate.getData(translator, GOOGLE_API_KEY) : null;
 
         if (translator === Translators.GOOGLE_TRANSLATE && (googleTranslateData.version == undefined || googleTranslateData.ctkk == undefined)) {
             errorMessage.innerText = 'Không thể lấy được Log ID hoặc Token từ element.js.';
@@ -516,7 +550,7 @@ async function translate(inputText, abortSignal) {
             return;
         }
 
-        const papagoVersion = translator === Translators.PAPAGO ? await getPapagoVersion(translator) : null;
+        const papagoVersion = translator === Translators.PAPAGO ? await Papago.getVersion(translator) : null;
 
         if (translator === Translators.PAPAGO && papagoVersion == undefined) {
             errorMessage.innerText = 'Không thể lấy được Thông tin phiên bản từ main.js.';
@@ -524,7 +558,7 @@ async function translate(inputText, abortSignal) {
             return;
         }
 
-        const microsoftTranslatorAccessToken = translator === Translators.MICROSOFT_TRANSLATOR ? await getMicrosoftTranslatorAccessToken(translator) : null;
+        const microsoftTranslatorAccessToken = translator === Translators.MICROSOFT_TRANSLATOR ? await MicrosoftTranslator.getAccessToken(translator) : null;
 
         if (translator === Translators.MICROSOFT_TRANSLATOR && microsoftTranslatorAccessToken == undefined) {
             errorMessage.innerText = 'Không thể lấy được Access Token từ máy chủ.';
@@ -559,6 +593,10 @@ async function translate(inputText, abortSignal) {
                 let translatedText;
 
                 switch (translator) {
+                    case Translators.BRAVE_TRANSLATE:
+                        translatedText = await BraveTranslate.translateText(braveTranslateData, translateText, sourceLanguage, targetLanguage, true);
+                        break;
+
                     case Translators.DEEPL_TRANSLATOR:
                         translatedText = await DeepLTranslator.translateText(DEEPL_AUTH_KEY, translateText, sourceLanguage, targetLanguage, true);
                         break;
@@ -869,6 +907,203 @@ function onPostTranslate() {
     $('#translateButton').text('Sửa');
 }
 
+const BraveTranslate = {
+    translateText: async function (data, inputText, sourceLanguage, targetLanguage, useGlossary = false) {
+        try {
+            inputText = useGlossary ? getDynamicDictionaryText(inputText, false) : inputText;
+
+            /**
+             * Brave
+             * Method: POST
+             * URL: https://translate.brave.com/translate_a/t?anno=3&client=te_lib&format=html&v=1.0&key=qztbjzBqJueQZLFkwTTJrieu8Vw3789u&logld=v${version}&sl=${sourceLanguage}&tl=${targetLanguage}&tc=1&sr=1&tk=${this.Bn(inputText, ctkk)}&mode=1
+             * content-type: application/x-www-form-urlencoded - `q=${inputText.split(/\n/).map((sentence) => encodeURIComponent(sentence)).join('&q=')}`
+             */
+            const response = await $.ajax({
+                url: `https://translate.brave.com/translate_a/t?anno=3&client=${data.cac.length > 0 ? data.cac : 'te'}${data.cam.length > 0 ? `_${data.cam}` : ''}&format=html&v=1.0&key${data.apiKey.length > 0 ? `=${data.apiKey}` : ''}&logld=v${data.version}&sl=${sourceLanguage}&tl=${targetLanguage}&tc=1&sr=1&tk=${this.Bn(inputText, data.ctkk)}&mode=1`,
+                data: `q=${inputText.split(/\n/).map((sentence) => encodeURIComponent(sentence)).join('&q=')}`,
+                method: 'POST',
+                headers: {
+                    'content-type': 'application/x-www-form-urlencoded'
+                }
+            });
+
+            const paragraph = document.createElement('p');
+            $(paragraph).html(response.map((element) => (element.includes('<i>') ? element.split('</i> <b>').filter((element) => element.includes('</b>')).map((element) => ('<b>' + element.replace(/<i>.+/, ''))).join(' ') : element).trim()).join('\n'));
+            return $(paragraph).text();
+        } catch (error) {
+            console.error('Bản dịch lỗi:', error);
+            throw error.toString();
+        }
+    },
+    getData: async function (translator, apiKey = '') {
+        if (translator === Translators.BRAVE_TRANSLATE) {
+            try {
+                const data = {};
+
+                const elementJs = await $.get(`${CORS_PROXY}https://translate.brave.com/static/v1/element.js`);
+
+                if (elementJs != undefined) {
+                    data.cac = elementJs.match(/c\._cac='([a-z]*)'/)[1];
+                    data.cam = elementJs.match(/c\._cam='([a-z]*)'/)[1];
+
+                    data.apiKey = apiKey;
+
+                    data.version = elementJs.match(/_exportVersion\('(TE_\d+)'\)/)[1];
+                    data.ctkk = elementJs.match(/c\._ctkk='(\d+\.\d+)'/)[1];
+                }
+                return data;
+            } catch (error) {
+                console.error('Không thể lấy được Log ID hoặc Token:' + error);
+                throw error.toString()
+            }
+        }
+    },
+    // https://translate.brave.com/static/v1/js/element/main.js
+    An: function (a, b) {
+        for (var c = 0; c < b.length - 2; c += 3) {
+            var d = b.charAt(c + 2);
+            d = "a" <= d ? d.charCodeAt(0) - 87 : Number(d);
+            d = "+" == b.charAt(c + 1) ? a >>> d : a << d;
+            a = "+" == b.charAt(c) ? (a + d) & 4294967295 : a ^ d;
+        }
+        return a;
+    },
+    Bn: function (a, b) {
+        var c = b.split(".");
+        b = Number(c[0]) || 0;
+        for (var d = [], e = 0, f = 0; f < a.length; f++) {
+            var g = a.charCodeAt(f);
+            128 > g
+                ? (d[e++] = g)
+                : (2048 > g
+                    ? (d[e++] = (g >> 6) | 192)
+                    : (55296 == (g & 64512) && f + 1 < a.length && 56320 == (a.charCodeAt(f + 1) & 64512)
+                        ? ((g = 65536 + ((g & 1023) << 10) + (a.charCodeAt(++f) & 1023)), (d[e++] = (g >> 18) | 240), (d[e++] = ((g >> 12) & 63) | 128))
+                        : (d[e++] = (g >> 12) | 224),
+                        (d[e++] = ((g >> 6) & 63) | 128)),
+                    (d[e++] = (g & 63) | 128));
+        }
+        a = b;
+        for (e = 0; e < d.length; e++) (a += d[e]), (a = this.An(a, "+-a^+6"));
+        a = this.An(a, "+-3^+b+-f");
+        a ^= Number(c[1]) || 0;
+        0 > a && (a = (a & 2147483647) + 2147483648);
+        c = a % 1e6;
+        return c.toString() + "." + (c ^ b);
+    },
+    Language: {
+        af: 'Afrikaans',
+        sq: 'Albanian',
+        am: 'Amharic',
+        ar: 'Arabic',
+        hy: 'Armenian',
+        az: 'Azerbaijani',
+        eu: 'Basque',
+        be: 'Belarusian',
+        bn: 'Bengali',
+        bs: 'Bosnian',
+        bg: 'Bulgarian',
+        ca: 'Catalan',
+        ceb: 'Cebuano',
+        ny: 'Chichewa',
+        'zh-CN': 'Chinese (Simplified)',
+        'zh-TW': 'Chinese (Traditional)',
+        co: 'Corsican',
+        ht: 'Haitian Creole',
+        hr: 'Croatian',
+        cs: 'Czech',
+        da: 'Danish',
+        nl: 'Dutch',
+        en: 'English',
+        eo: 'Esperanto',
+        et: 'Estonian',
+        fi: 'Finnish',
+        fr: 'French',
+        fy: 'Frisian',
+        gl: 'Galician',
+        ka: 'Georgian',
+        de: 'German',
+        el: 'Greek',
+        gu: 'Gujarati',
+        ha: 'Hausa',
+        haw: 'Hawaiian',
+        he: 'Hebrew',
+        hi: 'Hindi',
+        hmn: 'Hmong',
+        hu: 'Hungarian',
+        is: 'Icelandic',
+        ig: 'Igbo',
+        id: 'Indonesian',
+        ga: 'Irish',
+        it: 'Italian',
+        ja: 'Japanese',
+        jv: 'Javanese',
+        kn: 'Kannada',
+        kk: 'Kazakh',
+        km: 'Khmer',
+        rw: 'Kinyarwanda',
+        ko: 'Korean',
+        ku: 'Kurdish (Kurmanji)',
+        ky: 'Kyrgyz',
+        lo: 'Lao',
+        la: 'Latin',
+        lv: 'Latvian',
+        lt: 'Lithuanian',
+        lb: 'Luxembourgish',
+        mk: 'Macedonian',
+        mg: 'Malagasy',
+        ms: 'Malay',
+        ml: 'Malayalam',
+        mt: 'Maltese',
+        mi: 'Maori',
+        mr: 'Marathi',
+        mn: 'Mongolian',
+        my: 'Myanmar (Burmese)',
+        ne: 'Nepali',
+        no: 'Norwegian',
+        or: 'Odia',
+        ps: 'Pashto',
+        fa: 'Persian',
+        pl: 'Polish',
+        pt: 'Portuguese',
+        pa: 'Punjabi',
+        ro: 'Romanian',
+        ru: 'Russian',
+        sm: 'Samoan',
+        gd: 'Scots Gaelic',
+        'sr-Cyrl': 'Serbian Cyrilic',
+        st: 'Sesotho',
+        sn: 'Shona',
+        sd: 'Sindhi',
+        si: 'Sinhala',
+        sk: 'Slovak',
+        sl: 'Slovenian',
+        so: 'Somali',
+        es: 'Spanish',
+        su: 'Sundanese',
+        sw: 'Swahili',
+        sv: 'Swedish',
+        tl: 'Filipino (Tagalog)',
+        tg: 'Tajik',
+        ta: 'Tamil',
+        tt: 'Tatar',
+        te: 'Telugu',
+        th: 'Thai',
+        tr: 'Turkish',
+        tk: 'Turkmen',
+        uk: 'Ukrainian',
+        ur: 'Urdu',
+        ug: 'Uyghur',
+        uz: 'Uzbek',
+        vi: 'Vietnamese',
+        cy: 'Welsh',
+        xh: 'Xhosa',
+        yi: 'Yiddish',
+        yo: 'Yoruba',
+        zu: 'Zulu'
+    }
+};
+
 const DeepLTranslator = {
     translateText: async function (authKey, inputText, sourceLanguage, targetLanguage, useGlossary = false) {
         try {
@@ -879,78 +1114,76 @@ const DeepLTranslator = {
                 data: `text=${inputText.split(/\n/).map((sentence) => encodeURIComponent(sentence)).join('&text=')}${sourceLanguage != '' ? '&source_lang=' + sourceLanguage : ''}&target_lang=${targetLanguage}&tag_handling=html`,
                 method: 'POST'
             });
-            return response.translations.map((line) => line.text.trim()).join('\n');
+            return response.translations.map((element) => element.text.trim()).join('\n');
         } catch (error) {
             console.error('Bản dịch lỗi:', error);
             throw error.toString();
         }
+    },
+    SourceLanguage: {
+        BG: 'Bulgarian',
+        CS: 'Czech',
+        DA: 'Danish',
+        DE: 'German',
+        EL: 'Greek',
+        EN: 'English',
+        ES: 'Spanish',
+        ET: 'Estonian',
+        FI: 'Finnish',
+        FR: 'French',
+        HU: 'Hungarian',
+        ID: 'Indonesian',
+        IT: 'Italian',
+        JA: 'Japanese',
+        KO: 'Korean',
+        LT: 'Lithuanian',
+        LV: 'Latvian',
+        NB: 'Norwegian (Bokmål)',
+        NL: 'Dutch',
+        PL: 'Polish',
+        PT: 'Portuguese',
+        RO: 'Romanian',
+        RU: 'Russian',
+        SK: 'Slovak',
+        SL: 'Slovenian',
+        SV: 'Swedish',
+        TR: 'Turkish',
+        UK: 'Ukrainian',
+        ZH: 'Chinese'
+    },
+    TargetLanguage: {
+        BG: 'Bulgarian',
+        CS: 'Czech',
+        DA: 'Danish',
+        DE: 'German',
+        EL: 'Greek',
+        'EN-GB': 'English (British)',
+        'EN-US': 'English (American)',
+        ES: 'Spanish',
+        ET: 'Estonian',
+        FI: 'Finnish',
+        FR: 'French',
+        HU: 'Hungarian',
+        ID: 'Indonesian',
+        IT: 'Italian',
+        JA: 'Japanese',
+        KO: 'Korean',
+        LT: 'Lithuanian',
+        LV: 'Latvian',
+        NB: 'Norwegian (Bokmål)',
+        NL: 'Dutch',
+        PL: 'Polish',
+        'PT-BR': 'Portuguese (Brazilian)',
+        'PT-PT': 'Portuguese',
+        RO: 'Romanian',
+        RU: 'Russian',
+        SK: 'Slovak',
+        SL: 'Slovenian',
+        SV: 'Swedish',
+        TR: 'Turkish',
+        UK: 'Ukrainian',
+        ZH: 'Chinese'
     }
-};
-
-const DeepLSourceLanguage = {
-    'BG': 'Bulgarian',
-    'CS': 'Czech',
-    'DA': 'Danish',
-    'DE': 'German',
-    'EL': 'Greek',
-    'EN': 'English',
-    'ES': 'Spanish',
-    'ET': 'Estonian',
-    'FI': 'Finnish',
-    'FR': 'French',
-    'HU': 'Hungarian',
-    'ID': 'Indonesian',
-    'IT': 'Italian',
-    'JA': 'Japanese',
-    'KO': 'Korean',
-    'LT': 'Lithuanian',
-    'LV': 'Latvian',
-    'NB': 'Norwegian (Bokmål)',
-    'NL': 'Dutch',
-    'PL': 'Polish',
-    'PT': 'Portuguese',
-    'RO': 'Romanian',
-    'RU': 'Russian',
-    'SK': 'Slovak',
-    'SL': 'Slovenian',
-    'SV': 'Swedish',
-    'TR': 'Turkish',
-    'UK': 'Ukrainian',
-    'ZH': 'Chinese'
-};
-
-const DeepLTargetLanguage = {
-    'BG': 'Bulgarian',
-    'CS': 'Czech',
-    'DA': 'Danish',
-    'DE': 'German',
-    'EL': 'Greek',
-    'EN-GB': 'English (British)',
-    'EN-US': 'English (American)',
-    'ES': 'Spanish',
-    'ET': 'Estonian',
-    'FI': 'Finnish',
-    'FR': 'French',
-    'HU': 'Hungarian',
-    'ID': 'Indonesian',
-    'IT': 'Italian',
-    'JA': 'Japanese',
-    'KO': 'Korean',
-    'LT': 'Lithuanian',
-    'LV': 'Latvian',
-    'NB': 'Norwegian (Bokmål)',
-    'NL': 'Dutch',
-    'PL': 'Polish',
-    'PT-BR': 'Portuguese (Brazilian)',
-    'PT-PT': 'Portuguese',
-    'RO': 'Romanian',
-    'RU': 'Russian',
-    'SK': 'Slovak',
-    'SL': 'Slovenian',
-    'SV': 'Swedish',
-    'TR': 'Turkish',
-    'UK': 'Ukrainian',
-    'ZH': 'Chinese'
 };
 
 const GoogleTranslate = {
@@ -959,228 +1192,234 @@ const GoogleTranslate = {
             inputText = useGlossary ? getDynamicDictionaryText(inputText, false) : inputText;
 
             /**
+             * Google translate Widget
+             * Method: POST
+             * URL: https://translate.googleapis.com/translate_a/t?anno=3&client=te&format=html&v=1.0&key&logld=v${version}&sl=${sourceLanguage}&tl=${targetLanguage}&tc=0&tk=${lq(inputText, ctkk)}
+             * `q=${inputText.split(/\n/).map((sentence) => encodeURIComponent(sentence)).join('&q=')}`
+             *
+             * Google Translate
              * Method: GET
              * URL: https://translate.googleapis.com/translate_a/single?client=gtx&sl=${sourceLanguage}&tl=${targetLanguage}&hl=vi&dt=t&dt=bd&dj=1&q=${encodeURIComponent(inputText)}
              *
-             * Method: GET
-             * URL: https://translate.googleapis.com/translate_a/t?anno=3&client=wt_lib&format=html&v=1.0&key&logId=v${logId}&sl=${sourceLanguage}&tl=${targetLanguage}&tc=0${Bp(inputText, ctkk)}
-             * Content-Type: application/x-www-form-urlencoded - send(encodeURIComponent(inputText))
-             *
+             * Google Translate Website
              * Method: POST
-             * URL: https://translate.googleapis.com/translate_a/t?anno=3&client=te&format=html&v=1.0&key&logId=v${logId}&sl=${sourceLanguage}&tl=${targetLanguage}&tc=0${Bp(inputText, ctkk)}
-             * send(encodeURIComponent(inputText))
+             * URL: https://translate.googleapis.com/translate_a/t?anno=3&client=wt_lib&format=html&v=1.0&key=&logld=v${version}&sl=${sourceLanguage}&tl=${targetLanguage}&tc=0&tk=${lq(inputText, ctkk)}
+             * Content-Type: application/x-www-form-urlencoded - `q=${inputText.split(/\n/).map((sentence) => encodeURIComponent(sentence)).join('&q=')}`
+             *
+             * Google Chrome
+             * Method: POST
+             * URL: https://translate.googleapis.com/translate_a/t?anno=3&client=te_lib&format=html&v=1.0&key=AIzaSyBOti4mM-6x9WDnZIjIeyEU21OpBXqWBgw&logld=v${version}&sl=${sourceLanguage}&tl=${targetLanguage}&tc=0&tk=${lq(inputText, ctkk)}
+             * content-type: application/x-www-form-urlencoded - `q=${inputText.split(/\n/).map((sentence) => encodeURIComponent(sentence)).join('&q=')}`
              */
             const response = await $.ajax({
-			url: `${CORS_PROXY}https://translate.googleapis.com/translate_a/t?anno=3&client=${data.cac.length > 0 ? `${data.cac}${data.cam.length > 0 ? `_${data.cam}` : ''}` : 'te_lib'}&format=html&v=1.0&key${data.apiKey.length > 0 ? `=${data.apiKey}` : ''}&logId=v${data.version}&sl=${sourceLanguage}&tl=${targetLanguage}&tc=0&tk=${Bp(inputText, data.ctkk)}`,
+			url: `https://translate.googleapis.com/translate_a/t?anno=3&client=${data.cac.length > 0 ? `${data.cac}${data.cam.length > 0 ? `_${data.cam}` : ''}` : 'te_lib'}&format=html&v=1.0&key${data.apiKey.length > 0 ? `=${data.apiKey}` : ''}&logld=v${data.version}&sl=${sourceLanguage}&tl=${targetLanguage}&tc=0&tk=${this.lq(inputText, data.ctkk)}`,
                 data: `q=${inputText.split(/\n/).map((sentence) => encodeURIComponent(sentence)).join('&q=')}`,
-                method: 'GET'
+                method: 'POST',
+                headers: {
+                    'content-type': 'application/x-www-form-urlencoded'
+                }
             });
 
             const paragraph = document.createElement('p');
-            $(paragraph).html(response.map((line) => ((sourceLanguage == 'auto' ? line[0] : line).includes('<i>') ? (sourceLanguage == 'auto' ? line[0] : line).split('</i> <b>').filter((element) => element.includes('</b>')).map((element) => ('<b>' + element.replace(/<i>.+/, ''))).join(' ') : (sourceLanguage == 'auto' ? line[0] : line)).trim()).join('\n'));
+            $(paragraph).html(response.map((element) => ((sourceLanguage == 'auto' ? element[0] : element).includes('<i>') ? (sourceLanguage == 'auto' ? element[0] : element).split('</i> <b>').filter((element) => element.includes('</b>')).map((element) => ('<b>' + element.replace(/<i>.+/, ''))).join(' ') : (sourceLanguage == 'auto' ? element[0] : element)).trim()).join('\n'));
             return $(paragraph).text();
         } catch (error) {
             console.error('Bản dịch lỗi:', error);
             throw error.toString();
         }
+    },
+    getData: async function (translator, apiKey = '') {
+        if (translator === Translators.GOOGLE_TRANSLATE) {
+            try {
+                const data = {};
+
+                /**
+                 * Google translate Widget
+                 * URL: //translate.google.com/translate_a/element.js?cb=googleTranslateElementInit
+                 *
+                 * Google Translate Websites
+                 * URL: https://translate.google.com/translate_a/element.js?cb=gtElInit&hl=vi&client=wt
+                 * 
+                 * Google Chrome
+                 * URL: https://translate.googleapis.com/translate_a/element.js?aus=true&cb=cr.googleTranslate.onTranslateElementLoad&clc=cr.googleTranslate.onLoadCSS&jlc=cr.googleTranslate.onLoadJavascript&hl=vi&key=AIzaSyBOti4mM-6x9WDnZIjIeyEU21OpBXqWBgw
+                 */
+                const elementJs = await $.get(`${CORS_PROXY}https://translate.googleapis.com/translate_a/element.js?aus=true&hl=vi${apiKey.length > 0 ? `&key=${apiKey}` : ''}`);
+
+                if (elementJs != undefined) {
+                    data.cac = elementJs.match(/c\._cac='([a-z]*)'/)[1];
+                    data.cam = elementJs.match(/c\._cam='([a-z]*)'/)[1];
+
+                    data.apiKey = apiKey;
+
+                    data.version = elementJs.match(/_exportVersion\('(TE_\d+)'\)/)[1];
+                    data.ctkk = elementJs.match(/c\._ctkk='(\d+\.\d+)'/)[1];
+                }
+                return data;
+            } catch (error) {
+                console.error('Không thể lấy được Log ID hoặc Token:' + error);
+                throw error.toString()
+            }
+        }
+    },
+    // https://translate.googleapis.com/_/translate_http/_/js/k=translate_http.tr.vi.kHDxdXNX_xs.O/d=1/exm=el_conf/ed=1/rs=AN8SPfpT9XwieloixvTeQsMmZktnBHnMuw/m=el_main
+    jq: function (a, b) {
+        for (var c = 0; c < b.length - 2; c += 3) {
+            var d = b.charAt(c + 2);
+            d = "a" <= d ? d.charCodeAt(0) - 87 : Number(d);
+            d = "+" == b.charAt(c + 1) ? a >>> d : a << d;
+            a = "+" == b.charAt(c) ? (a + d) & 4294967295 : a ^ d;
+        }
+        return a;
+    },
+    lq: function (a) {
+        var b = kq.split("."),
+            c = Number(b[0]) || 0;
+        a = Oo(a);
+        for (var d = c, e = 0; e < a.length; e++) (d += a[e]), (d = this.jq(d, "+-a^+6"));
+        d = this.jq(d, "+-3^+b+-f");
+        d ^= Number(b[1]) || 0;
+        0 > d && (d = (d & 2147483647) + 2147483648);
+        b = d % 1e6;
+        return b.toString() + "." + (b ^ c);
+    },
+    Language: {
+        af: 'Afrikaans',
+        sq: 'Albanian',
+        am: 'Amharic',
+        ar: 'Arabic',
+        hy: 'Armenian',
+        as: 'Assamese',
+        ay: 'Aymara',
+        az: 'Azerbaijani',
+        bm: 'Bambara',
+        eu: 'Basque',
+        be: 'Belarusian',
+        bn: 'Bengali',
+        bho: 'Bhojpuri',
+        bs: 'Bosnian',
+        bg: 'Bulgarian',
+        ca: 'Catalan',
+        ceb: 'Cebuano',
+        'zh-CN': 'Chinese (Simplified)',
+        'zh-TW': 'Chinese (Traditional)',
+        co: 'Corsican',
+        hr: 'Croatian',
+        cs: 'Czech',
+        da: 'Danish',
+        dv: 'Dhivehi',
+        doi: 'Dogri',
+        nl: 'Dutch',
+        en: 'English',
+        eo: 'Esperanto',
+        et: 'Estonian',
+        ee: 'Ewe',
+        fil: 'Filipino (Tagalog)',
+        fi: 'Finnish',
+        fr: 'French',
+        fy: 'Frisian',
+        gl: 'Galician',
+        ka: 'Georgian',
+        de: 'German',
+        el: 'Greek',
+        gn: 'Guarani',
+        gu: 'Gujarati',
+        ht: 'Haitian Creole',
+        ha: 'Hausa',
+        haw: 'Hawaiian',
+        he: 'Hebrew',
+        iw: 'Hebrew',
+        hi: 'Hindi',
+        hmn: 'Hmong',
+        hu: 'Hungarian',
+        is: 'Icelandic',
+        ig: 'Igbo',
+        ilo: 'Ilocano',
+        id: 'Indonesian',
+        ga: 'Irish',
+        it: 'Italian',
+        ja: 'Japanese',
+        jw: 'Javanese',
+        kn: 'Kannada',
+        kk: 'Kazakh',
+        km: 'Khmer',
+        rw: 'Kinyarwanda',
+        gom: 'Konkani',
+        ko: 'Korean',
+        kri: 'Krio',
+        ku: 'Kurdish',
+        ckb: 'Kurdish (Sorani)',
+        ky: 'Kyrgyz',
+        lo: 'Lao',
+        la: 'Latin',
+        lv: 'Latvian',
+        ln: 'Lingala',
+        lt: 'Lithuanian',
+        lg: 'Luganda',
+        lb: 'Luxembourgish',
+        mk: 'Macedonian',
+        mai: 'Maithili',
+        mg: 'Malagasy',
+        ms: 'Malay',
+        ml: 'Malayalam',
+        mt: 'Maltese',
+        mi: 'Maori',
+        mr: 'Marathi',
+        'mni-Mtei': 'Meiteilon (Manipuri)',
+        lus: 'Mizo',
+        mn: 'Mongolian',
+        my: 'Myanmar (Burmese)',
+        ne: 'Nepali',
+        no: 'Norwegian',
+        ny: 'Nyanja (Chichewa)',
+        or: 'Odia (Oriya)',
+        om: 'Oromo',
+        ps: 'Pashto',
+        fa: 'Persian',
+        pl: 'Polish',
+        pt: 'Portuguese',
+        pa: 'Punjabi',
+        qu: 'Quechua',
+        ro: 'Romanian',
+        ru: 'Russian',
+        sm: 'Samoan',
+        sa: 'Sanskrit',
+        gd: 'Scots Gaelic',
+        nso: 'Sepedi',
+        sr: 'Serbian',
+        st: 'Sesotho',
+        sn: 'Shona',
+        sd: 'Sindhi',
+        si: 'Sinhala (Sinhalese)',
+        sk: 'Slovak',
+        sl: 'Slovenian',
+        so: 'Somali',
+        es: 'Spanish',
+        su: 'Sundanese',
+        sw: 'Swahili',
+        sv: 'Swedish',
+        tl: 'Tagalog (Filipino)',
+        tg: 'Tajik',
+        ta: 'Tamil',
+        tt: 'Tatar',
+        te: 'Telugu',
+        th: 'Thai',
+        ti: 'Tigrinya',
+        ts: 'Tsonga',
+        tr: 'Turkish',
+        tk: 'Turkmen',
+        ak: 'Twi (Akan)',
+        uk: 'Ukrainian',
+        ur: 'Urdu',
+        ug: 'Uyghur',
+        uz: 'Uzbek',
+        vi: 'Vietnamese',
+        cy: 'Welsh',
+        xh: 'Xhosa',
+        yi: 'Yiddish',
+        yo: 'Yoruba',
+        zu: 'Zulu'
     }
 };
-
-async function getGoogleTranslateData(translator, apiKey = '') {
-    if (translator === Translators.GOOGLE_TRANSLATE) {
-        try {
-            const data = {};
-
-            const elementJs = await $.get(`${CORS_PROXY}https://translate.googleapis.com/translate_a/element.js?aus=true&cb=cr.googleTranslate.onTranslateElementLoad&clc=cr.googleTranslate.onLoadCSS&jlc=cr.googleTranslate.onLoadJavascript${apiKey.length > 0 ? `&key=${apiKey}` : ''}&hl=vi&client=gtx`);
-
-            if (elementJs != undefined) {
-                data.cac = elementJs.match(/c\._cac='([a-z]*)'/)[1];
-                data.cam = elementJs.match(/c\._cam='([a-z]*)'/)[1];
-
-                data.apiKey = apiKey;
-
-                data.version = elementJs.match(/_exportVersion\('(TE_\d+)'\)/)[1];
-                data.ctkk = elementJs.match(/c\._ctkk='(\d+\.\d+)'/)[1];
-            }
-            return data;
-        } catch (error) {
-            console.error('Không thể lấy được Log ID hoặc Token:' + error);
-            throw error.toString()
-        }
-    }
-}
-
-function Ap(a, b) {
-    for (var c = 0; c < b.length - 2; c += 3) {
-        var d = b.charAt(c + 2);
-        d = 'a' <= d ? d.charCodeAt(0) - 87 : Number(d);
-        d = '+' == b.charAt(c + 1) ? a >>> d : a << d;
-        a = '+' == b.charAt(c) ? a + d & 4294967295 : a ^ d
-    }
-    return a
-}
-
-function Bp(a, b) {
-    var c = b.split('.');
-    b = Number(c[0]) || 0;
-    for (var d = [], e = 0, f = 0; f < a.length; f++) {
-        var h = a.charCodeAt(f);
-        128 > h ? d[e++] = h : (2048 > h ? d[e++] = h >> 6 | 192 : (55296 == (h
-            & 64512) && f + 1 < a.length && 56320 == (a.charCodeAt(f + 1) & 64512)
-            ? (h = 65536 + ((h & 1023) << 10) + (a.charCodeAt(++f)
-                & 1023), d[e++] = h >> 18 | 240, d[e++] = h >> 12 & 63 | 128)
-            : d[e++] = h >> 12 | 224, d[e++] = h >> 6 & 63 | 128), d[e++] = h & 63
-            | 128)
-    }
-    a = b;
-    for (e = 0; e < d.length; e++) {
-        a += d[e], a = Ap(a, '+-a^+6');
-    }
-    a = Ap(a, '+-3^+b+-f');
-    a ^= Number(c[1]) || 0;
-    0 > a && (a = (a & 2147483647) + 2147483648);
-    c = a % 1E6;
-    return c.toString() +
-        '.' + (c ^ b)
-}
-
-const GoogleLanguage = {
-    'af': 'Afrikaans',
-    'sq': 'Albanian',
-    'am': 'Amharic',
-    'ar': 'Arabic',
-    'hy': 'Armenian',
-    'as': 'Assamese',
-    'ay': 'Aymara',
-    'az': 'Azerbaijani',
-    'bm': 'Bambara',
-    'eu': 'Basque',
-    'be': 'Belarusian',
-    'bn': 'Bengali',
-    'bho': 'Bhojpuri',
-    'bs': 'Bosnian',
-    'bg': 'Bulgarian',
-    'ca': 'Catalan',
-    'ceb': 'Cebuano',
-    'zh-CN': 'Chinese (Simplified)',
-    'zh-TW': 'Chinese (Traditional)',
-    'co': 'Corsican',
-    'hr': 'Croatian',
-    'cs': 'Czech',
-    'da': 'Danish',
-    'dv': 'Dhivehi',
-    'doi': 'Dogri',
-    'nl': 'Dutch',
-    'en': 'English',
-    'eo': 'Esperanto',
-    'et': 'Estonian',
-    'ee': 'Ewe',
-    'fil': 'Filipino (Tagalog)',
-    'fi': 'Finnish',
-    'fr': 'French',
-    'fy': 'Frisian',
-    'gl': 'Galician',
-    'ka': 'Georgian',
-    'de': 'German',
-    'el': 'Greek',
-    'gn': 'Guarani',
-    'gu': 'Gujarati',
-    'ht': 'Haitian Creole',
-    'ha': 'Hausa',
-    'haw': 'Hawaiian',
-    'he': 'Hebrew',
-    'iw': 'Hebrew',
-    'hi': 'Hindi',
-    'hmn': 'Hmong',
-    'hu': 'Hungarian',
-    'is': 'Icelandic',
-    'ig': 'Igbo',
-    'ilo': 'Ilocano',
-    'id': 'Indonesian',
-    'ga': 'Irish',
-    'it': 'Italian',
-    'ja': 'Japanese',
-    'jw': 'Javanese',
-    'kn': 'Kannada',
-    'kk': 'Kazakh',
-    'km': 'Khmer',
-    'rw': 'Kinyarwanda',
-    'gom': 'Konkani',
-    'ko': 'Korean',
-    'kri': 'Krio',
-    'ku': 'Kurdish',
-    'ckb': 'Kurdish (Sorani)',
-    'ky': 'Kyrgyz',
-    'lo': 'Lao',
-    'la': 'Latin',
-    'lv': 'Latvian',
-    'ln': 'Lingala',
-    'lt': 'Lithuanian',
-    'lg': 'Luganda',
-    'lb': 'Luxembourgish',
-    'mk': 'Macedonian',
-    'mai': 'Maithili',
-    'mg': 'Malagasy',
-    'ms': 'Malay',
-    'ml': 'Malayalam',
-    'mt': 'Maltese',
-    'mi': 'Maori',
-    'mr': 'Marathi',
-    'mni-Mtei': 'Meiteilon (Manipuri)',
-    'lus': 'Mizo',
-    'mn': 'Mongolian',
-    'my': 'Myanmar (Burmese)',
-    'ne': 'Nepali',
-    'no': 'Norwegian',
-    'ny': 'Nyanja (Chichewa)',
-    'or': 'Odia (Oriya)',
-    'om': 'Oromo',
-    'ps': 'Pashto',
-    'fa': 'Persian',
-    'pl': 'Polish',
-    'pt': 'Portuguese',
-    'pa': 'Punjabi',
-    'qu': 'Quechua',
-    'ro': 'Romanian',
-    'ru': 'Russian',
-    'sm': 'Samoan',
-    'sa': 'Sanskrit',
-    'gd': 'Scots Gaelic',
-    'nso': 'Sepedi',
-    'sr': 'Serbian',
-    'st': 'Sesotho',
-    'sn': 'Shona',
-    'sd': 'Sindhi',
-    'si': 'Sinhala (Sinhalese)',
-    'sk': 'Slovak',
-    'sl': 'Slovenian',
-    'so': 'Somali',
-    'es': 'Spanish',
-    'su': 'Sundanese',
-    'sw': 'Swahili',
-    'sv': 'Swedish',
-    'tl': 'Tagalog (Filipino)',
-    'tg': 'Tajik',
-    'ta': 'Tamil',
-    'tt': 'Tatar',
-    'te': 'Telugu',
-    'th': 'Thai',
-    'ti': 'Tigrinya',
-    'ts': 'Tsonga',
-    'tr': 'Turkish',
-    'tk': 'Turkmen',
-    'ak': 'Twi (Akan)',
-    'uk': 'Ukrainian',
-    'ur': 'Urdu',
-    'ug': 'Uyghur',
-    'uz': 'Uzbek',
-    'vi': 'Vietnamese',
-    'cy': 'Welsh',
-    'xh': 'Xhosa',
-    'yi': 'Yiddish',
-    'yo': 'Yoruba',
-    'zu': 'Zulu'
-}
 
 const Papago = {
     translateText: async function (version, inputText, sourceLanguage, targetLanguage, useGlossary = false) {
@@ -1208,46 +1447,44 @@ const Papago = {
             console.error('Bản dịch lỗi:', error);
             throw error.toString();
         }
-    }
-};
+    },
+    getVersion: async function (translator) {
+        if (translator === Translators.PAPAGO) {
+            try {
+                let version;
 
-async function getPapagoVersion(translator) {
-    if (translator === Translators.PAPAGO) {
-        try {
-            let version;
+                const mainJs = (await $.get(CORS_PROXY + 'https://papago.naver.com')).match(/\/(main.*\.js)/)[1];
 
-            const mainJs = (await $.get(CORS_PROXY + 'https://papago.naver.com')).match(/\/(main.*\.js)/)[1];
-
-            if (mainJs != undefined) {
-                version = (await $.get(CORS_PROXY + 'https://papago.naver.com/' + mainJs)).match(/"PPG .*,"(v[^"]*)/)[1];
+                if (mainJs != undefined) {
+                    version = (await $.get(CORS_PROXY + 'https://papago.naver.com/' + mainJs)).match(/"PPG .*,"(v[^"]*)/)[1];
+                }
+                return version;
+            } catch (error) {
+                console.error('Không thể lấy được Thông tin phiên bản: ' + error);
+                throw error.toString()
             }
-            return version;
-        } catch (error) {
-            console.error('Không thể lấy được Thông tin phiên bản: ' + error);
-            throw error.toString()
         }
+    },
+    Language: {
+        ko: 'Korean',
+        ja: 'Japanese',
+        'zh-CN': 'Chinese (Simplified)',
+        'zh-TW': 'Chinese (Traditional)',
+        hi: 'Hindi',
+        en: 'English',
+        es: 'Spanish',
+        fr: 'French',
+        de: 'German',
+        pt: 'Portuguese',
+        vi: 'Vietnamese',
+        id: 'Indonesian',
+        fa: 'Persian',
+        ar: 'Arabic',
+        mm: 'Burmese',
+        th: 'Thai',
+        ru: 'Russian',
+        it: 'Italian'
     }
-}
-
-const PapagoLanguage = {
-    'ko': 'Korean',
-    'ja': 'Japanese',
-    'zh-CN': 'Chinese (Simplified)',
-    'zh-TW': 'Chinese (Traditional)',
-    'hi': 'Hindi',
-    'en': 'English',
-    'es': 'Spanish',
-    'fr': 'French',
-    'de': 'German',
-    'pt': 'Portuguese',
-    'vi': 'Vietnamese',
-    'id': 'Indonesian',
-    'fa': 'Persian',
-    'ar': 'Arabic',
-    'mm': 'Burmese',
-    'th': 'Thai',
-    'ru': 'Russian',
-    'it': 'Italian'
 };
 
 const MicrosoftTranslator = {
@@ -1256,24 +1493,27 @@ const MicrosoftTranslator = {
             inputText = useGlossary ? getDynamicDictionaryText(inputText) : inputText;
 
             /**
-             *const bingTranslatorHTML = await $.get('https://cors-anywhere.herokuapp.com/https://www.bing.com/translator');
-             *const IG = bingTranslatorHTML.match(/IG:'([A-Z0-9]+)'/)[1];
-             *const IID = bingTranslatorHTML.match(/data-iid='(translator.\d+)'/)[1];
-             *const [, key, token] = bingTranslatorHTML.match(/var params_AbusePreventionHelper\s*=\s*\[([0-9]+),\s*'([^']+)',[^\]]*\];/);
+             * Microsoft Bing Translator
+             * const bingTranslatorHTML = await $.get('https://cors-anywhere.herokuapp.com/https://www.bing.com/translator');
+             * const IG = bingTranslatorHTML.match(/IG:'([A-Z0-9]+)'/)[1];
+             * const IID = bingTranslatorHTML.match(/data-iid='(translator.\d+)'/)[1];
+             * const [, key, token] = bingTranslatorHTML.match(/var params_AbusePreventionHelper\s*=\s*\[([0-9]+),\s*'([^']+)',[^\]]*\];/);
              * Method: POST
              * URL: https://www.bing.com/ttranslatev3?isVertical=1&&IG=76A5BF5FFF374A53A1374DE8089BDFF2&IID=translator.5029
              * Content-type: application/x-www-form-urlencoded send(&fromLang=auto-detect&text=inputText&to=targetLanguage&token=kXtg8tfzQrA11KAJyMhp61NCVy-19gPj&key=1687667900500&tryFetchingGenderDebiasedTranslations=true)
              *
+             * Microsoft Edge old
              * Method: POST
              * URL: https://api.cognitive.microsofttranslator.com/translate?to=${targetLanguage}&api-version=3.0&includeSentenceLength=true
              * Content-Type: application/json - send(inputText)
              *
+             * Microsoft Edge 2
              * Method: POST
              * URL: https://api-edge.cognitive.microsofttranslator.com/translate?to=${targetLanguage}&api-version=3.0&includeSentenceLength=true
              * Authorization: Bearer ${accessToken} - Content-Type: application/json - send(inputText)
              */
             const response = await $.ajax({
-                url: `https://api.cognitive.microsofttranslator.com/translate?${sourceLanguage != '' ? `from=${sourceLanguage}&` : ''}to=${targetLanguage}&api-version=3.0&textType=html&includeSentenceLength=true`,
+                url: `https://api-edge.cognitive.microsofttranslator.com/translate?${sourceLanguage != '' ? `from=${sourceLanguage}&` : ''}to=${targetLanguage}&api-version=3.0&textType=html&includeSentenceLength=true`,
                 data: JSON.stringify(inputText.split(/\n/).map((sentence) => ({'Text': sentence}))),
                 method: 'POST',
                 headers: {
@@ -1286,19 +1526,131 @@ const MicrosoftTranslator = {
             console.error('Bản dịch lỗi:', error);
             throw error.toString();
         }
+    },
+    getAccessToken: async function (translator) {
+        if (translator === Translators.MICROSOFT_TRANSLATOR) {
+            try {
+                return await $.get('https://edge.microsoft.com/translate/auth');
+            } catch (error) {
+                console.error('Không thể lấy được Access Token: ' + error);
+                throw error.toString()
+            }
+        }
+    },
+    Language: {
+        af: 'Afrikaans',
+        sq: 'Albanian',
+        am: 'Amharic',
+        ar: 'Arabic',
+        hy: 'Armenian',
+        as: 'Assamese',
+        az: 'Azerbaijani (Latin)',
+        bn: 'Bangla',
+        ba: 'Bashkir',
+        eu: 'Basque',
+        bs: 'Bosnian (Latin)',
+        bg: 'Bulgarian',
+        yue: 'Cantonese (Traditional)',
+        ca: 'Catalan',
+        lzh: 'Chinese (Literary)',
+        'zh-Hans': 'Chinese Simplified',
+        'zh-Hant': 'Chinese Traditional',
+        hr: 'Croatian',
+        cs: 'Czech',
+        da: 'Danish',
+        prs: 'Dari',
+        dv: 'Divehi',
+        nl: 'Dutch',
+        en: 'English',
+        et: 'Estonian',
+        fo: 'Faroese',
+        fj: 'Fijian',
+        fil: 'Filipino',
+        fi: 'Finnish',
+        fr: 'French',
+        'fr-ca': 'French (Canada)',
+        gl: 'Galician',
+        ka: 'Georgian',
+        de: 'German',
+        el: 'Greek',
+        gu: 'Gujarati',
+        ht: 'Haitian Creole',
+        he: 'Hebrew',
+        hi: 'Hindi',
+        mww: 'Hmong Daw (Latin)',
+        hu: 'Hungarian',
+        is: 'Icelandic',
+        id: 'Indonesian',
+        ikt: 'Inuinnaqtun',
+        iu: 'Inuktitut',
+        'iu-Latn': 'Inuktitut (Latin)',
+        ga: 'Irish',
+        it: 'Italian',
+        ja: 'Japanese',
+        kn: 'Kannada',
+        kk: 'Kazakh',
+        km: 'Khmer',
+        'tlh-Latn': 'Klingon',
+        'tlh-Piqd': 'Klingon (plqaD)',
+        ko: 'Korean',
+        ku: 'Kurdish (Central)',
+        kmr: 'Kurdish (Northern)',
+        ky: 'Kyrgyz (Cyrillic)',
+        lo: 'Lao',
+        lv: 'Latvian',
+        lt: 'Lithuanian',
+        mk: 'Macedonian',
+        mg: 'Malagasy',
+        ms: 'Malay (Latin)',
+        ml: 'Malayalam',
+        mt: 'Maltese',
+        mi: 'Maori',
+        mr: 'Marathi',
+        'mn-Cyrl': 'Mongolian (Cyrillic)',
+        'mn-Mong': 'Mongolian (Traditional)',
+        my: 'Myanmar',
+        ne: 'Nepali',
+        nb: 'Norwegian',
+        or: 'Odia',
+        ps: 'Pashto',
+        fa: 'Persian',
+        pl: 'Polish',
+        pt: 'Portuguese (Brazil)',
+        'pt-pt': 'Portuguese (Portugal)',
+        pa: 'Punjabi',
+        otq: 'Queretaro Otomi',
+        ro: 'Romanian',
+        ru: 'Russian',
+        sm: 'Samoan (Latin)',
+        'sr-Cyrl': 'Serbian (Cyrillic)',
+        'sr-Latn': 'Serbian (Latin)',
+        sk: 'Slovak',
+        sl: 'Slovenian',
+        so: 'Somali (Arabic)',
+        es: 'Spanish',
+        sw: 'Swahili (Latin)',
+        sv: 'Swedish',
+        ty: 'Tahitian',
+        ta: 'Tamil',
+        tt: 'Tatar (Latin)',
+        te: 'Telugu',
+        th: 'Thai',
+        bo: 'Tibetan',
+        ti: 'Tigrinya',
+        to: 'Tongan',
+        tr: 'Turkish',
+        tk: 'Turkmen (Latin)',
+        uk: 'Ukrainian',
+        hsb: 'Upper Sorbian',
+        ur: 'Urdu',
+        ug: 'Uyghur (Arabic)',
+        uz: 'Uzbek (Latin)',
+        vi: 'Vietnamese',
+        cy: 'Welsh',
+        yua: 'Yucatec Maya',
+        zu: 'Zulu'
     }
 };
-
-async function getMicrosoftTranslatorAccessToken(translator) {
-    if (translator === Translators.MICROSOFT_TRANSLATOR) {
-        try {
-            return await $.get('https://edge.microsoft.com/translate/auth');
-        } catch (error) {
-            console.error('Không thể lấy được Access Token: ' + error);
-            throw error.toString()
-        }
-    }
-}
 
 function getDynamicDictionaryText(text, isMicrosoftTranslator = true) {
     const glossaryEntries = Object.entries(glossary).filter(([first]) => text.includes(first));
@@ -1360,126 +1712,13 @@ function getDynamicDictionaryText(text, isMicrosoftTranslator = true) {
     return newText;
 }
 
-const MicrosoftLanguage = {
-    'af': 'Afrikaans',
-    'sq': 'Albanian',
-    'am': 'Amharic',
-    'ar': 'Arabic',
-    'hy': 'Armenian',
-    'as': 'Assamese',
-    'az': 'Azerbaijani (Latin)',
-    'bn': 'Bangla',
-    'ba': 'Bashkir',
-    'eu': 'Basque',
-    'bs': 'Bosnian (Latin)',
-    'bg': 'Bulgarian',
-    'yue': 'Cantonese (Traditional)',
-    'ca': 'Catalan',
-    'lzh': 'Chinese (Literary)',
-    'zh-Hans': 'Chinese Simplified',
-    'zh-Hant': 'Chinese Traditional',
-    'hr': 'Croatian',
-    'cs': 'Czech',
-    'da': 'Danish',
-    'prs': 'Dari',
-    'dv': 'Divehi',
-    'nl': 'Dutch',
-    'en': 'English',
-    'et': 'Estonian',
-    'fo': 'Faroese',
-    'fj': 'Fijian',
-    'fil': 'Filipino',
-    'fi': 'Finnish',
-    'fr': 'French',
-    'fr-ca': 'French (Canada)',
-    'gl': 'Galician',
-    'ka': 'Georgian',
-    'de': 'German',
-    'el': 'Greek',
-    'gu': 'Gujarati',
-    'ht': 'Haitian Creole',
-    'he': 'Hebrew',
-    'hi': 'Hindi',
-    'mww': 'Hmong Daw (Latin)',
-    'hu': 'Hungarian',
-    'is': 'Icelandic',
-    'id': 'Indonesian',
-    'ikt': 'Inuinnaqtun',
-    'iu': 'Inuktitut',
-    'iu-Latn': 'Inuktitut (Latin)',
-    'ga': 'Irish',
-    'it': 'Italian',
-    'ja': 'Japanese',
-    'kn': 'Kannada',
-    'kk': 'Kazakh',
-    'km': 'Khmer',
-    'tlh-Latn': 'Klingon',
-    'tlh-Piqd': 'Klingon (plqaD)',
-    'ko': 'Korean',
-    'ku': 'Kurdish (Central)',
-    'kmr': 'Kurdish (Northern)',
-    'ky': 'Kyrgyz (Cyrillic)',
-    'lo': 'Lao',
-    'lv': 'Latvian',
-    'lt': 'Lithuanian',
-    'mk': 'Macedonian',
-    'mg': 'Malagasy',
-    'ms': 'Malay (Latin)',
-    'ml': 'Malayalam',
-    'mt': 'Maltese',
-    'mi': 'Maori',
-    'mr': 'Marathi',
-    'mn-Cyrl': 'Mongolian (Cyrillic)',
-    'mn-Mong': 'Mongolian (Traditional)',
-    'my': 'Myanmar',
-    'ne': 'Nepali',
-    'nb': 'Norwegian',
-    'or': 'Odia',
-    'ps': 'Pashto',
-    'fa': 'Persian',
-    'pl': 'Polish',
-    'pt': 'Portuguese (Brazil)',
-    'pt-pt': 'Portuguese (Portugal)',
-    'pa': 'Punjabi',
-    'otq': 'Queretaro Otomi',
-    'ro': 'Romanian',
-    'ru': 'Russian',
-    'sm': 'Samoan (Latin)',
-    'sr-Cyrl': 'Serbian (Cyrillic)',
-    'sr-Latn': 'Serbian (Latin)',
-    'sk': 'Slovak',
-    'sl': 'Slovenian',
-    'so': 'Somali (Arabic)',
-    'es': 'Spanish',
-    'sw': 'Swahili (Latin)',
-    'sv': 'Swedish',
-    'ty': 'Tahitian',
-    'ta': 'Tamil',
-    'tt': 'Tatar (Latin)',
-    'te': 'Telugu',
-    'th': 'Thai',
-    'bo': 'Tibetan',
-    'ti': 'Tigrinya',
-    'to': 'Tongan',
-    'tr': 'Turkish',
-    'tk': 'Turkmen (Latin)',
-    'uk': 'Ukrainian',
-    'hsb': 'Upper Sorbian',
-    'ur': 'Urdu',
-    'ug': 'Uyghur (Arabic)',
-    'uz': 'Uzbek (Latin)',
-    'vi': 'Vietnamese',
-    'cy': 'Welsh',
-    'yua': 'Yucatec Maya',
-    'zu': 'Zulu'
-};
-
 const Translators = {
-    VIETPHRASE: 'vietphrase',
+    BRAVE_TRANSLATE: 'braveTranslate',
     DEEPL_TRANSLATOR: 'deeplTranslator',
     GOOGLE_TRANSLATE: 'googleTranslate',
     PAPAGO: 'papago',
-    MICROSOFT_TRANSLATOR: 'microsoftTranslator'
+    MICROSOFT_TRANSLATOR: 'microsoftTranslator',
+    VIETPHRASE: 'vietphrase'
 };
 
 const VietPhraseTranslationAlgorithms = {

@@ -189,6 +189,32 @@ $('.upperCaseAllButton').on('click', () => {
     if ($('#targetEntry').val().length > 0) $('#targetEntry').val($('#targetEntry').val().split(' ').map((word, index) => word = word.charAt(0).toUpperCase() + word.slice(1)).join(' '));
 });
 
+$('.brave-convert').on('click', async function () {
+    if ($('#sourceEntry').val().length > 0) {
+        $('#sourceEntry').attr('readonly', true);
+        $('.convert').addClass('disabled');
+
+        try {
+            const data = await BraveTranslate.getData(Translators.BRAVE_TRANSLATE, BRAVE_API_KEY);
+
+            if (data.version == undefined || data.ctkk == undefined) {
+                $('#targetEntry').val('Không thể lấy được Log ID hoặc Token từ element.js.');
+                return;
+            }
+
+            const translatedText = await BraveTranslate.translateText(data, $('#sourceEntry').val(), 'auto', $(this).data('lang'));
+
+            $('#targetEntry').val(translatedText);
+            $('.convert').removeClass('disabled');
+            $('#sourceEntry').removeAttr('readonly');
+        } catch (error) {
+            $('#targetEntry').val('Bản dịch thất bại: ' + JSON.stringify(error));
+            $('.convert').removeClass('disabled');
+            $('#sourceEntry').removeAttr('readonly');
+        }
+    }
+});
+
 $('.deepl-convert').on('click', async function () {
     if ($('#sourceEntry').val().length > 0) {
         $('#sourceEntry').attr('readonly', true);
@@ -224,7 +250,7 @@ $('.google-convert').on('click', async function () {
         $('.convert').addClass('disabled');
 
         try {
-            const data = await getGoogleTranslateData(Translators.GOOGLE_TRANSLATE, GOOGLE_API_KEY);
+            const data = await GoogleTranslate.getData(Translators.GOOGLE_TRANSLATE, GOOGLE_API_KEY);
 
             if (data.version == undefined || data.ctkk == undefined) {
                 $('#targetEntry').val('Không thể lấy được Log ID hoặc Token từ element.js.');
@@ -250,7 +276,7 @@ $('.papago-convert').on('click', async function () {
         $('.convert').addClass('disabled');
 
         try {
-            const version = await getPapagoVersion(Translators.PAPAGO);
+            const version = await Papago.getVersion(Translators.PAPAGO);
 
             if (version == undefined) {
                 $('#targetEntry').val('Không thể lấy được Thông tin phiên bản từ main.js.');
@@ -276,7 +302,7 @@ $('.microsoft-convert').on('click', async function () {
         $('.convert').addClass('disabled');
 
         try {
-            const accessToken = await getMicrosoftTranslatorAccessToken(Translators.MICROSOFT_TRANSLATOR);
+            const accessToken = await MicrosoftTranslator.getAccessToken(Translators.MICROSOFT_TRANSLATOR);
 
             if (accessToken == undefined) {
                 $('#targetEntry').val('Không thể lấy được Access Token từ máy chủ.');
