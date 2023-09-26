@@ -1668,7 +1668,7 @@ function getDynamicDictionaryText(text, isMicrosoftTranslator = true) {
                 for (const glossaryLength of glossaryLengths) {
                     if (glossary.hasOwnProperty(chars.substring(j, j + glossaryLength))) {
                         if (glossary[chars.substring(j, j + glossaryLength)].length > 0) {
-                            phrases.push(isMicrosoftTranslator ? `<mstrans:dictionary translation='${glossary[chars.substring(j, j + glossaryLength)]}'>${chars.substring(j, j + glossaryLength)}</mstrans:dictionary>` : glossary[chars.substring(j, j + glossaryLength)]);
+                            phrases.push(isMicrosoftTranslator ? `<mstrans:dictionary translation="${glossary[chars.substring(j, j + glossaryLength)]}">${chars.substring(j, j + glossaryLength)}</mstrans:dictionary>` : glossary[chars.substring(j, j + glossaryLength)]);
                         }
 
                         j += glossaryLength - 1;
