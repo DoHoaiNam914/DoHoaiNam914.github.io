@@ -52,7 +52,7 @@ $(document).ready(async () => {
         });
         await $.get('/static/datasource/Hán việt.txt').done((data) => sinovietnameseList = [...sinovietnameseList, ...data.split(/\r?\n/).map((element) => element.split('=')).sort((a, b) => b[0].length - a[0].length).map(([first, second]) => [first, second.split('ǀ')[0]]).filter(([first]) => !sinovietnameses.hasOwnProperty(first))]);
         sinovietnameseList = sinovietnameseList.filter(([first, second]) => first != '' && !/\p{sc=Latin}/u.test(first) && second != undefined && !sinovietnameseList[first] && (sinovietnameseList[first] = 1), {});
-        newAccentData.forEach(([first, second]) => sinovietnameseList.map(([first1, second1]) => [first1, second1.replace(new RegExp(first, 'gi') , second)]));
+        newAccentData.forEach(([first, second]) => sinovietnameseList = sinovietnameseList.map(([first1, second1]) => [first1, second1.replace(new RegExp(first, 'gi') , second)]));
         sinovietnameses = Object.fromEntries(sinovietnameseList);
         console.log('Đã tải xong bộ dữ liệu hán việt (%d)!', sinovietnameseList.length);
     } catch (error) {
@@ -140,6 +140,7 @@ $('#translateButton').click(async function () {
             $('#pasteUrlButton').removeClass('disabled');
             $('#imageFile').removeClass('disabled');
             $('#retranslateButton').addClass('disabled');
+            $('#translateTimer').text(0);
             $(this).text('Dịch');
             break;
     }
@@ -497,117 +498,121 @@ async function translate(inputText, abortSignal) {
             return;
         }
 
-        if (translator === Translators.DEEPL_TRANSLATOR) {
-            const deeplUsage = (await $.get('https://api-free.deepl.com/v2/usage?auth_key=' + DEEPL_AUTH_KEY)) ?? {
-                'character_count': 500000,
-                'character_limit': 500000
-            };
+        if (getDynamicDictionaryText(processText, translator === Translators.MICROSOFT_TRANSLATOR) != prevTranslation[0]) {
+            if (translator === Translators.DEEPL_TRANSLATOR) {
+                const deeplUsage = (await $.get('https://api-free.deepl.com/v2/usage?auth_key=' + DEEPL_AUTH_KEY)) ?? {
+                    'character_count': 500000,
+                    'character_limit': 500000
+                };
 
-            if (processText.length > (deeplUsage.character_limit - deeplUsage.character_count)) {
-                errorMessage.innerText = `Lỗi DeepL: Đã đạt đến giới hạn dịch của tài khoản. (${deeplUsage.character_count}/${deeplUsage.character_limit} ký tự). [Lưu ý: Khi sử dụng Dynamic Dictionary và Bảo vệ dấu trích đẫn sẽ làm giảm số lượng từ có thể dịch đi.]`;
+                if (processText.length > (deeplUsage.character_limit - deeplUsage.character_count)) {
+                    errorMessage.innerText = `Lỗi DeepL: Đã đạt đến giới hạn dịch của tài khoản. (${deeplUsage.character_count}/${deeplUsage.character_limit} ký tự). [Lưu ý: Khi sử dụng Dynamic Dictionary và Bảo vệ dấu trích đẫn sẽ làm giảm số lượng từ có thể dịch đi.]`;
+                    $('#translatedText').html(errorMessage);
+                    onPostTranslate();
+                    return;
+                }
+            }
+
+            const googleTranslateData = translator === Translators.GOOGLE_TRANSLATE ? await GoogleTranslate.getData(translator, GOOGLE_API_KEY) : null;
+
+            if (translator === Translators.GOOGLE_TRANSLATE && (googleTranslateData.version == undefined || googleTranslateData.ctkk == undefined)) {
+                errorMessage.innerText = 'Không thể lấy được Log ID hoặc Token từ element.js.';
                 $('#translatedText').html(errorMessage);
-                onPostTranslate();
                 return;
             }
-        }
 
-        const googleTranslateData = translator === Translators.GOOGLE_TRANSLATE ? await GoogleTranslate.getData(translator, GOOGLE_API_KEY) : null;
+            const papagoVersion = translator === Translators.PAPAGO ? await Papago.getVersion(translator) : null;
 
-        if (translator === Translators.GOOGLE_TRANSLATE && (googleTranslateData.version == undefined || googleTranslateData.ctkk == undefined)) {
-            errorMessage.innerText = 'Không thể lấy được Log ID hoặc Token từ element.js.';
-            $('#translatedText').html(errorMessage);
-            return;
-        }
-
-        const papagoVersion = translator === Translators.PAPAGO ? await Papago.getVersion(translator) : null;
-
-        if (translator === Translators.PAPAGO && papagoVersion == undefined) {
-            errorMessage.innerText = 'Không thể lấy được Thông tin phiên bản từ main.js.';
-            $('#translatedText').html(errorMessage);
-            return;
-        }
-
-        const microsoftTranslatorAccessToken = translator === Translators.MICROSOFT_TRANSLATOR ? await MicrosoftTranslator.getAccessToken(translator) : null;
-
-        if (translator === Translators.MICROSOFT_TRANSLATOR && microsoftTranslatorAccessToken == undefined) {
-            errorMessage.innerText = 'Không thể lấy được Access Token từ máy chủ.';
-            $('#translatedText').html(errorMessage);
-            return;
-        }
-
-        const queryLines = processText.split(/\n/);
-        let translateLines = [];
-
-        let canTranslate = false;
-        let tc = -1;
-
-        for (let i = 0; i < processText.split(/\n/).length; i++) {
-            if (abortSignal.aborted) return;
-            if (translateLines.join('\n').length < MAX_LENGTH && translateLines.length < MAX_LINE) {
-                translateLines.push(queryLines.shift());
-
-                if (canTranslate == false && (queryLines.length == 0 || translateLines.length >= MAX_LINE || translateLines.join('\n').length >= MAX_LENGTH)) {
-                    if (translateLines.join('\n').length > MAX_LENGTH || translateLines.length > MAX_LINE) {
-                        queryLines.splice(0, 0, translateLines.pop());
-                        i--;
-                    }
-
-                    if (translateLines.length <= MAX_LINE && translateLines.join('\n').length <= MAX_LENGTH) {
-                        canTranslate = true;
-                    }
-                }
+            if (translator === Translators.PAPAGO && papagoVersion == undefined) {
+                errorMessage.innerText = 'Không thể lấy được Thông tin phiên bản từ main.js.';
+                $('#translatedText').html(errorMessage);
+                return;
             }
 
-            if (canTranslate && translateLines.length > 0) {
-                const translateText = translateLines.join('\n');
-                let translatedText;
-                tc++;
+            const microsoftTranslatorAccessToken = translator === Translators.MICROSOFT_TRANSLATOR ? await MicrosoftTranslator.getAccessToken(translator) : null;
 
-                switch (translator) {
-                    case Translators.DEEPL_TRANSLATOR:
-                        translatedText = await DeepLTranslator.translateText(DEEPL_AUTH_KEY, translateText, sourceLanguage, targetLanguage, true);
-                        break;
+            if (translator === Translators.MICROSOFT_TRANSLATOR && microsoftTranslatorAccessToken == undefined) {
+                errorMessage.innerText = 'Không thể lấy được Access Token từ máy chủ.';
+                $('#translatedText').html(errorMessage);
+                return;
+            }
 
-                    default:
-                    case Translators.GOOGLE_TRANSLATE:
-                        translatedText = await GoogleTranslate.translateText(googleTranslateData, translateText, sourceLanguage, targetLanguage, true, tc);
-                        break;
+            const queryLines = processText.split(/\n/);
+            let translateLines = [];
 
-                    case Translators.PAPAGO:
-                        translatedText = await Papago.translateText(papagoVersion, translateText, sourceLanguage, targetLanguage, true);
-                        break;
+            let canTranslate = false;
+            let tc = -1;
 
-                    case Translators.MICROSOFT_TRANSLATOR:
-                        translatedText = await MicrosoftTranslator.translateText(microsoftTranslatorAccessToken, translateText, sourceLanguage, targetLanguage, true);
-                        break;
+            for (let i = 0; i < processText.split(/\n/).length; i++) {
+                if (abortSignal.aborted) return;
+                if (translateLines.join('\n').length < MAX_LENGTH && translateLines.length < MAX_LINE) {
+                    translateLines.push(queryLines.shift());
 
-                    case Translators.VIETPHRASE:
-                        if ($('#targetLangSelect').val() == 'vi' && Object.entries(
-                            vietphrases).length > 0) {
-                            translatedText = convertText(translateText, vietphrases, true, $('#flexSwitchCheckGlossary').prop('checked'), $('input[name=\'flexRadioTranslationAlgorithm\']:checked').val(), $('input[name=\'flexRadioMultiplicationAlgorithm\']:checked').val());
-                        } else if ($('#targetLangSelect').val() == 'zh-VN' && Object.entries(sinovietnameses).length > 0) {
-                            translatedText = convertText(translateText, sinovietnameses, true, false, VietPhraseTranslationAlgorithms.PRIORITIZE_LONG_VIETPHRASE_CLUSTERS, VietPhraseMultiplicationAlgorithm.NOT_APPLICABLE);
-                        } else if ($('#targetLangSelect').val() == 'en' && Object.entries(pinyins).length > 0) {
-                            translatedText = convertText(translateText, pinyins, true, false, VietPhraseTranslationAlgorithms.PRIORITIZE_LONG_VIETPHRASE_CLUSTERS, VietPhraseMultiplicationAlgorithm.NOT_APPLICABLE);
-                        } else if ($('#targetLangSelect').val() == 'vi' && Object.entries(vietphrases).length == 0) {
-                            errorMessage.innerHTML = 'Nhập tệp VietPhrase.txt nếu có hoặc tải về <a href="https://drive.google.com/drive/folders/0B6fxcJ5qbXgkeTJNTFJJS3lmc3c?resourcekey=0-Ych2OUVug3pkLgCIlzvcuA&usp=sharing">tại đây</a>';
-                            $('#translatedText').html(errorMessage);
-                            onPostTranslate();
-                            return;
+                    if (canTranslate == false && (queryLines.length == 0 || translateLines.length >= MAX_LINE || translateLines.join('\n').length >= MAX_LENGTH)) {
+                        if (translateLines.join('\n').length > MAX_LENGTH || translateLines.length > MAX_LINE) {
+                            queryLines.splice(0, 0, translateLines.pop());
+                            i--;
                         }
-                        break;
+
+                        if (translateLines.length <= MAX_LINE && translateLines.join('\n').length <= MAX_LENGTH) {
+                            canTranslate = true;
+                        }
+                    }
                 }
 
-                results.push(translatedText);
-                translateLines = [];
-                canTranslate = false;
+                if (canTranslate && translateLines.length > 0) {
+                    const translateText = translateLines.join('\n');
+                    let translatedText;
+                    tc++;
+
+                    switch (translator) {
+                        case Translators.DEEPL_TRANSLATOR:
+                            translatedText = await DeepLTranslator.translateText(DEEPL_AUTH_KEY, translateText, sourceLanguage, targetLanguage, true);
+                            break;
+
+                        default:
+                        case Translators.GOOGLE_TRANSLATE:
+                            translatedText = await GoogleTranslate.translateText(googleTranslateData, translateText, sourceLanguage, targetLanguage, true, tc);
+                            break;
+
+                        case Translators.PAPAGO:
+                            translatedText = await Papago.translateText(papagoVersion, translateText, sourceLanguage, targetLanguage, true);
+                            break;
+
+                        case Translators.MICROSOFT_TRANSLATOR:
+                            translatedText = await MicrosoftTranslator.translateText(microsoftTranslatorAccessToken, translateText, sourceLanguage, targetLanguage, true);
+                            break;
+
+                        case Translators.VIETPHRASE:
+                            if ($('#targetLangSelect').val() == 'vi' && Object.entries(
+                                vietphrases).length > 0) {
+                                translatedText = convertText(translateText, vietphrases, true, $('#flexSwitchCheckGlossary').prop('checked'), $('input[name=\'flexRadioTranslationAlgorithm\']:checked').val(), $('input[name=\'flexRadioMultiplicationAlgorithm\']:checked').val());
+                            } else if ($('#targetLangSelect').val() == 'zh-VN' && Object.entries(sinovietnameses).length > 0) {
+                                translatedText = convertText(translateText, sinovietnameses, true, false, VietPhraseTranslationAlgorithms.PRIORITIZE_LONG_VIETPHRASE_CLUSTERS, VietPhraseMultiplicationAlgorithm.NOT_APPLICABLE);
+                            } else if ($('#targetLangSelect').val() == 'en' && Object.entries(pinyins).length > 0) {
+                                translatedText = convertText(translateText, pinyins, true, false, VietPhraseTranslationAlgorithms.PRIORITIZE_LONG_VIETPHRASE_CLUSTERS, VietPhraseMultiplicationAlgorithm.NOT_APPLICABLE);
+                            } else if ($('#targetLangSelect').val() == 'vi' && Object.entries(vietphrases).length == 0) {
+                                errorMessage.innerHTML = 'Nhập tệp VietPhrase.txt nếu có hoặc tải về <a href="https://drive.google.com/drive/folders/0B6fxcJ5qbXgkeTJNTFJJS3lmc3c?resourcekey=0-Ych2OUVug3pkLgCIlzvcuA&usp=sharing">tại đây</a>';
+                                $('#translatedText').html(errorMessage);
+                                onPostTranslate();
+                                return;
+                            }
+                            break;
+                    }
+
+                    results.push(translatedText);
+                    translateLines = [];
+                    canTranslate = false;
+                }
             }
+        } else {
+            results = prevTranslation[1];
         }
 
+        prevTranslation = [getDynamicDictionaryText(processText, translator === Translators.MICROSOFT_TRANSLATOR), results];
         if (abortSignal.aborted) return;
         $('#translatedText').html(buildTranslatedResult([inputText, processText], getProcessTextPostTranslate(results.join('\n')), $('#flexSwitchCheckShowOriginal').prop('checked')));
-        prevTranslation = [getDynamicDictionaryText(processText, translator === Translators.MICROSOFT_TRANSLATOR), getProcessTextPostTranslate(results.join('\n'))];
-        $('#translateTimer').text(Math.floor((Date.now() - startTime)) / 1000);
+        $('#translateTimer').text(Math.floor((Date.now() - startTime) / 10) / 100);
     } catch (error) {
         errorMessage.innerText = 'Bản dịch thất bại: ' + error.toString();
         $('#translatedText').html(errorMessage);
@@ -761,7 +766,7 @@ function convertText(inputText, data, caseSensitive, useGlossary, translationAlg
                                         phrases.push(glossary[chars.substring(j, j + glossaryLength)]);
                                     }
                                 }
-    
+
                                 j += glossaryLength;
                                 break;
                             }
