@@ -487,6 +487,11 @@ async function translate(inputText, abortSignal) {
         let MAX_LINE;
 
         switch (translator) {
+            case Translators.BRAVE_TRANSLATE:
+                MAX_LENGTH = 20000;
+                MAX_LINE = 10;
+                break;
+
             case Translators.DEEPL_TRANSLATOR:
                 MAX_LENGTH = 32768;
                 MAX_LINE = 50;
