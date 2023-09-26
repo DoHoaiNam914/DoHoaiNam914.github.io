@@ -227,7 +227,7 @@
         </div>
     </nav>
     <ul class="nav nav-scroller bg-light-subtle">
-        <li class="nav-item mx-3">Số lượng ký tự: <span id="queryTextCounter">0</span></li>
+        <li class="nav-item mx-3">Số lượng ký tự: <span id="queryTextCounter">0</span> (<span id="translateTimer">0</span>s)</li>
         <li>
             <button class="nav-item nav-link" id="copyButton" type="button">Sao chép</button>
         </li>
@@ -588,11 +588,6 @@
                         Trình dịch
                     </button>
                     <ul class="dropdown-menu">
-                        <li>
-                            <button class="dropdown-item translator active" data-id="braveTranslate" type="button">
-                                Brave Dịch
-                            </button>
-                        </li>
                         <li>
                             <button class="dropdown-item translator" data-id="deeplTranslator" type="button">
                                 DeepL Translator

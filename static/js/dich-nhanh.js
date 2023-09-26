@@ -15,7 +15,8 @@ let vietphrases = {};
 let cacluatnhan = {};
 let pronouns = {};
 
-let translateAbortController;
+let translateAbortController = null;
+let prevTranslation = [];
 
 $(document).ready(async () => {
     try {
@@ -306,9 +307,6 @@ function getDefaultTargetLanguage(translator) {
 
 function getLanguageName(translator, languageCode) {
     switch (translator) {
-        case Translators.BRAVE_TRANSLATE:
-            return BraveTranslate.Language[languageCode] ?? '';
-
         case Translators.DEEPL_TRANSLATOR:
             return DeepLTranslator.SourceLanguage[languageCode] ?? '';
 
@@ -328,19 +326,6 @@ function getSourceLanguageOptions(translator) {
     const autoDetectOption = document.createElement('option');
 
     switch (translator) {
-        case Translators.BRAVE_TRANSLATE:
-            autoDetectOption.innerText = 'Phát hiện ngôn ngữ';
-            autoDetectOption.value = 'auto';
-            sourceLangSelect.appendChild(autoDetectOption);
-
-            for (const langCode in BraveTranslate.Language) {
-                const option = document.createElement('option');
-                option.innerText = BraveTranslate.Language[langCode];
-                option.value = langCode;
-                sourceLangSelect.appendChild(option);
-            }
-            break;
-
         case Translators.DEEPL_TRANSLATOR:
             autoDetectOption.innerText = 'Detect language';
             autoDetectOption.value = '';
@@ -406,15 +391,6 @@ function getTargetLanguageOptions(translator) {
     const targetLangSelect = document.createElement('select');
 
     switch (translator) {
-        case Translators.BRAVE_TRANSLATE:
-            for (const langCode in BraveTranslate.Language) {
-                const option = document.createElement('option');
-                option.innerText = BraveTranslate.Language[langCode];
-                option.value = langCode;
-                targetLangSelect.appendChild(option);
-            }
-            break;
-
         case Translators.DEEPL_TRANSLATOR:
             for (const langCode in DeepLTranslator.TargetLanguage) {
                 const option = document.createElement('option');
@@ -470,6 +446,7 @@ function getTargetLanguageOptions(translator) {
 }
 
 async function translate(inputText, abortSignal) {
+    const startTime = Date.now();
     const translator = $('.translator.active').data('id');
 
     const sourceLanguage = $('#sourceLangSelect').val();
@@ -487,11 +464,6 @@ async function translate(inputText, abortSignal) {
         let MAX_LINE;
 
         switch (translator) {
-            case Translators.BRAVE_TRANSLATE:
-                MAX_LENGTH = 20000;
-                MAX_LINE = 10;
-                break;
-
             case Translators.DEEPL_TRANSLATOR:
                 MAX_LENGTH = 32768;
                 MAX_LINE = 50;
@@ -522,14 +494,6 @@ async function translate(inputText, abortSignal) {
             errorMessage.innerText = `Bản dịch thất bại: Số lượng từ trong một dòng quá dài (Số lượng từ hợp lệ nhỏ hơn hoặc bằng ${MAX_LENGTH}). [Lưu ý: Khi sử dụng Dynamic Dictionary và Bảo vệ dấu trích đẫn sẽ làm giảm số lượng từ có thể dịch đi.]`;
             $('#translatedText').append(errorMessage);
             onPostTranslate();
-            return;
-        }
-
-        const braveTranslateData = translator === Translators.BRAVE_TRANSLATE ? await BraveTranslate.getData(translator, BRAVE_API_KEY) : null;
-
-        if (translator === Translators.BRAVE_TRANSLATE && (braveTranslateData.version == undefined || braveTranslateData.ctkk == undefined)) {
-            errorMessage.innerText = 'Không thể lấy được Log ID hoặc Token từ element.js.';
-            $('#translatedText').html(errorMessage);
             return;
         }
 
@@ -575,13 +539,14 @@ async function translate(inputText, abortSignal) {
         let translateLines = [];
 
         let canTranslate = false;
+        let tc = -1;
 
         for (let i = 0; i < processText.split(/\n/).length; i++) {
             if (abortSignal.aborted) return;
             if (translateLines.join('\n').length < MAX_LENGTH && translateLines.length < MAX_LINE) {
                 translateLines.push(queryLines.shift());
 
-                if (queryLines.length == 0 || translateLines.length >= MAX_LINE || translateLines.join('\n').length >= MAX_LENGTH) {
+                if (canTranslate == false && (queryLines.length == 0 || translateLines.length >= MAX_LINE || translateLines.join('\n').length >= MAX_LENGTH)) {
                     if (translateLines.join('\n').length > MAX_LENGTH || translateLines.length > MAX_LINE) {
                         queryLines.splice(0, 0, translateLines.pop());
                         i--;
@@ -596,19 +561,16 @@ async function translate(inputText, abortSignal) {
             if (canTranslate && translateLines.length > 0) {
                 const translateText = translateLines.join('\n');
                 let translatedText;
+                tc++;
 
                 switch (translator) {
-                    case Translators.BRAVE_TRANSLATE:
-                        translatedText = await BraveTranslate.translateText(braveTranslateData, translateText, sourceLanguage, targetLanguage, true);
-                        break;
-
                     case Translators.DEEPL_TRANSLATOR:
                         translatedText = await DeepLTranslator.translateText(DEEPL_AUTH_KEY, translateText, sourceLanguage, targetLanguage, true);
                         break;
 
                     default:
                     case Translators.GOOGLE_TRANSLATE:
-                        translatedText = await GoogleTranslate.translateText(googleTranslateData, translateText, sourceLanguage, targetLanguage, true);
+                        translatedText = await GoogleTranslate.translateText(googleTranslateData, translateText, sourceLanguage, targetLanguage, true, tc);
                         break;
 
                     case Translators.PAPAGO:
@@ -643,7 +605,9 @@ async function translate(inputText, abortSignal) {
         }
 
         if (abortSignal.aborted) return;
-        $('#translatedText').html(buildTranslatedResult([inputText, inputText], getProcessTextPostTranslate(results.join('\n')), $('#flexSwitchCheckShowOriginal').prop('checked')));
+        $('#translatedText').html(buildTranslatedResult([inputText, processText], getProcessTextPostTranslate(results.join('\n')), $('#flexSwitchCheckShowOriginal').prop('checked')));
+        prevTranslation = [getDynamicDictionaryText(processText, translator === Translators.MICROSOFT_TRANSLATOR), getProcessTextPostTranslate(results.join('\n'))];
+        $('#translateTimer').text(Math.floor((Date.now() - startTime)) / 1000);
     } catch (error) {
         errorMessage.innerText = 'Bản dịch thất bại: ' + error.toString();
         $('#translatedText').html(errorMessage);
@@ -913,21 +877,22 @@ function onPostTranslate() {
 }
 
 const BraveTranslate = {
-    translateText: async function (data, inputText, sourceLanguage, targetLanguage, useGlossary = false) {
+    translateText: async function (data, query, sourceLanguage, targetLanguage, useGlossary = false, tc = 1) {
         try {
-            inputText = useGlossary ? getDynamicDictionaryText(inputText, false) : inputText;
+            query = useGlossary ? getDynamicDictionaryText(query, false) : query;
 
             /**
              * Brave
              * Method: POST
-             * URL: https://translate.brave.com/translate_a/t?anno=3&client=te_lib&format=html&v=1.0&key=qztbjzBqJueQZLFkwTTJrieu8Vw3789u&logld=v${version}&sl=${sourceLanguage}&tl=${targetLanguage}&tc=1&sr=1&tk=${this.Bn(inputText, ctkk)}&mode=1
-             * content-type: application/x-www-form-urlencoded - `q=${inputText.split(/\n/).map((sentence) => encodeURIComponent(sentence)).join('&q=')}`
+             * URL: https://translate.brave.com/translate_a/t?anno=3&client=te_lib&format=html&v=1.0&key=qztbjzBqJueQZLFkwTTJrieu8Vw3789u&logld=v${version}&sl=${sourceLanguage}&tl=${targetLanguage}&tc=${tc}&sr=1&tk=${this.Bn(query, ctkk)}&mode=1
+             * content-type: application/x-www-form-urlencoded - `q=${query.split(/\n/).map((sentence) => encodeURIComponent(sentence)).join('&q=')}`
              */
             const response = await $.ajax({
-                url: `https://translate.brave.com/translate_a/t?anno=3&client=${data.cac.length > 0 ? data.cac : 'te'}${data.cam.length > 0 ? `_${data.cam}` : ''}&format=html&v=1.0&key${data.apiKey.length > 0 ? `=${data.apiKey}` : ''}&logld=v${data.version}&sl=${sourceLanguage}&tl=${targetLanguage}&tc=1&sr=1&tk=${this.Bn(inputText, data.ctkk)}&mode=1`,
-                data: `q=${inputText.split(/\n/).map((sentence) => encodeURIComponent(sentence)).join('&q=')}`,
+                url: `https://translate.brave.com/translate_a/t?anno=3&client=${data.cac.length > 0 ? data.cac : 'te'}${data.cam.length > 0 ? `_${data.cam}` : ''}&format=text&v=1.0&key${data.apiKey.length > 0 ? `=${data.apiKey}` : ''}&logld=v${data.version}&sl=${sourceLanguage}&tl=${targetLanguage}&tc=${tc}&sr=1&tk=${this.Bn(query, data.ctkk)}&mode=1`,
+                data: `q=${query.split(/\n/).map((sentence) => encodeURIComponent(sentence)).join('&q=')}`,
                 method: 'POST',
                 headers: {
+                    'accept-language': 'vi;q=0.5',
                     'content-type': 'application/x-www-form-urlencoded'
                 }
             });
@@ -941,7 +906,7 @@ const BraveTranslate = {
         }
     },
     getData: async function (translator, apiKey = '') {
-        if (translator === Translators.BRAVE_TRANSLATE) {
+       // if (translator === Translators.BRAVE_TRANSLATE) {
             try {
                 const data = {};
 
@@ -961,7 +926,7 @@ const BraveTranslate = {
                 console.error('Không thể lấy được Log ID hoặc Token:' + error);
                 throw error.toString()
             }
-        }
+       // }
     },
     // https://translate.brave.com/static/v1/js/element/main.js
     An: function (a, b) {
@@ -1192,7 +1157,7 @@ const DeepLTranslator = {
 };
 
 const GoogleTranslate = {
-    translateText: async function (data, inputText, sourceLanguage, targetLanguage, useGlossary = false) {
+    translateText: async function (data, inputText, sourceLanguage, targetLanguage, useGlossary = false, tc = 0) {
         try {
             inputText = useGlossary ? getDynamicDictionaryText(inputText, false) : inputText;
 
@@ -1217,7 +1182,7 @@ const GoogleTranslate = {
              * content-type: application/x-www-form-urlencoded - `q=${inputText.split(/\n/).map((sentence) => encodeURIComponent(sentence)).join('&q=')}`
              */
             const response = await $.ajax({
-			url: `https://translate.googleapis.com/translate_a/t?anno=3&client=${data.cac.length > 0 ? `${data.cac}${data.cam.length > 0 ? `_${data.cam}` : ''}` : 'te_lib'}&format=html&v=1.0&key${data.apiKey.length > 0 ? `=${data.apiKey}` : ''}&logld=v${data.version}&sl=${sourceLanguage}&tl=${targetLanguage}&tc=0&tk=${this.lq(inputText, data.ctkk)}`,
+			url: `https://translate.googleapis.com/translate_a/t?anno=3&client=${data.cac.length > 0 ? `${data.cac}${data.cam.length > 0 ? `_${data.cam}` : ''}` : 'te_lib'}&format=html&v=1.0&key${data.apiKey.length > 0 ? `=${data.apiKey}` : ''}&logld=v${data.version}&sl=${sourceLanguage}&tl=${targetLanguage}&tc=${tc}&tk=${this.lq(inputText, data.ctkk)}`,
                 data: `q=${inputText.split(/\n/).map((sentence) => encodeURIComponent(sentence)).join('&q=')}`,
                 method: 'POST',
                 headers: {
@@ -1246,9 +1211,9 @@ const GoogleTranslate = {
                  * URL: https://translate.google.com/translate_a/element.js?cb=gtElInit&hl=vi&client=wt
                  * 
                  * Google Chrome
-                 * URL: https://translate.googleapis.com/translate_a/element.js?aus=true&cb=cr.googleTranslate.onTranslateElementLoad&clc=cr.googleTranslate.onLoadCSS&jlc=cr.googleTranslate.onLoadJavascript&hl=vi&key=AIzaSyBOti4mM-6x9WDnZIjIeyEU21OpBXqWBgw
+                 * URL: https://translate.googleapis.com/translate_a/element.js?aus=true&cb=cr.googleTranslate.onTranslateElementLoad&clc=cr.googleTranslate.onLoadCSS&jlc=cr.googleTranslate.onLoadJavascript&key=AIzaSyBOti4mM-6x9WDnZIjIeyEU21OpBXqWBgw&hl=vi
                  */
-                const elementJs = await $.get(`${CORS_PROXY}https://translate.googleapis.com/translate_a/element.js?aus=true&hl=vi${apiKey.length > 0 ? `&key=${apiKey}` : ''}`);
+                const elementJs = await $.get(`${CORS_PROXY}https://translate.googleapis.com/translate_a/element.js?aus=true${apiKey.length > 0 ? `&key=${apiKey}` : ''}&hl=vi&client=gtx`);
 
                 if (elementJs != undefined) {
                     data.cac = elementJs.match(/c\._cac='([a-z]*)'/)[1];
@@ -1267,6 +1232,21 @@ const GoogleTranslate = {
         }
     },
     // https://translate.googleapis.com/_/translate_http/_/js/k=translate_http.tr.vi.kHDxdXNX_xs.O/d=1/exm=el_conf/ed=1/rs=AN8SPfpT9XwieloixvTeQsMmZktnBHnMuw/m=el_main
+    Oo: function (a) {
+        for (var b = [], c = 0, d = 0; d < a.length; d++) {
+            var e = a.charCodeAt(d);
+            128 > e
+                ? (b[c++] = e)
+                : (2048 > e
+                    ? (b[c++] = (e >> 6) | 192)
+                    : (55296 == (e & 64512) && d + 1 < a.length && 56320 == (a.charCodeAt(d + 1) & 64512)
+                        ? ((e = 65536 + ((e & 1023) << 10) + (a.charCodeAt(++d) & 1023)), (b[c++] = (e >> 18) | 240), (b[c++] = ((e >> 12) & 63) | 128))
+                        : (b[c++] = (e >> 12) | 224),
+                        (b[c++] = ((e >> 6) & 63) | 128)),
+                    (b[c++] = (e & 63) | 128));
+        }
+        return b;
+    },
     jq: function (a, b) {
         for (var c = 0; c < b.length - 2; c += 3) {
             var d = b.charAt(c + 2);
@@ -1276,10 +1256,10 @@ const GoogleTranslate = {
         }
         return a;
     },
-    lq: function (a) {
+    lq: function (a, kq) {
         var b = kq.split("."),
             c = Number(b[0]) || 0;
-        a = Oo(a);
+        a = this.Oo(a);
         for (var d = c, e = 0; e < a.length; e++) (d += a[e]), (d = this.jq(d, "+-a^+6"));
         d = this.jq(d, "+-3^+b+-f");
         d ^= Number(b[1]) || 0;
@@ -1515,14 +1495,15 @@ const MicrosoftTranslator = {
              * Microsoft Edge 2
              * Method: POST
              * URL: https://api-edge.cognitive.microsofttranslator.com/translate?to=${targetLanguage}&api-version=3.0&includeSentenceLength=true
+             * URL: https://api-edge.cognitive.microsofttranslator.com/translate?from=${sourceLanguage}&to=${targetLanguage}&api-version=3.0&includeSentenceLength=true
              * Authorization: Bearer ${accessToken} - Content-Type: application/json - send(inputText)
              */
             const response = await $.ajax({
-                url: `https://api-edge.cognitive.microsofttranslator.com/translate?${sourceLanguage != '' ? `from=${sourceLanguage}&` : ''}to=${targetLanguage}&api-version=3.0&textType=html&includeSentenceLength=true`,
+                url: `https://api-edge.cognitive.microsofttranslator.com/translate?${sourceLanguage != '' ? `from=${sourceLanguage}&` : ''}to=${targetLanguage}&api-version=3.0&includeSentenceLength=true&textType=html`,
                 data: JSON.stringify(inputText.split(/\n/).map((sentence) => ({'Text': sentence}))),
                 method: 'POST',
                 headers: {
-                    Authorization: 'Bearer ' + accessToken,
+                    Authorization: `Bearer ${accessToken}`,
                     'Content-Type': 'application/json'
                 }
             });
@@ -1718,7 +1699,6 @@ function getDynamicDictionaryText(text, isMicrosoftTranslator = true) {
 }
 
 const Translators = {
-    BRAVE_TRANSLATE: 'braveTranslate',
     DEEPL_TRANSLATOR: 'deeplTranslator',
     GOOGLE_TRANSLATE: 'googleTranslate',
     PAPAGO: 'papago',
