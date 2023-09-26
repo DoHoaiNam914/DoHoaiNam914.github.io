@@ -608,6 +608,7 @@ async function translate(inputText, abortSignal) {
                 }
             }
 
+            $('#translateTimer').text(Math.floor((Date.now() - startTime) / 10) / 100);
             prevTranslation = [getDynamicDictionaryText(processText, translator === Translators.MICROSOFT_TRANSLATOR), results];
         } else {
             results = prevTranslation[1];
@@ -615,7 +616,6 @@ async function translate(inputText, abortSignal) {
 
         if (abortSignal.aborted) return;
         $('#translatedText').html(buildTranslatedResult([inputText, processText], getProcessTextPostTranslate(results.join('\n')), $('#flexSwitchCheckShowOriginal').prop('checked')));
-        $('#translateTimer').text(Math.floor((Date.now() - startTime) / 10) / 100);
     } catch (error) {
         console.error('Bản dịch thất bại:', error.stack);
         errorMessage.innerText = 'Bản dịch thất bại: ' + error;
