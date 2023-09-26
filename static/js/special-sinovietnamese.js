@@ -32,6 +32,7 @@ const specialSinovietnameseData = [
     ['县', 'HUYỆN'],
     // KI, CƠ, KỲ
     ['期', 'KỲ'],
+    ['绮', 'KHỞI'],
     ['骑', 'KỴ'],
     // LỮ, LÃ
     ['吕', 'LÃ, LỮ'],
