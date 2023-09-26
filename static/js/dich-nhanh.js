@@ -678,24 +678,25 @@ function buildTranslatedResult(inputTexts, result, showOriginal) {
 
 function convertText(inputText, data, caseSensitive, useGlossary, translationAlgorithm = VietPhraseTranslationAlgorithms.PRIORITIZE_LONG_VIETPHRASE_CLUSTERS, multiplicationAlgorithm = VietPhraseMultiplicationAlgorithm.MULTIPLICATION_BY_PRONOUNS_NAMES) {
     try {
+        const a=Date.now();
         const glossaryEntries = Object.entries(glossary).filter(([first]) => inputText.includes(first));
-        const luatnhanData = {};
+        const luatnhanList = [];
 
         if (multiplicationAlgorithm > VietPhraseMultiplicationAlgorithm.NOT_APPLICABLE) {
             for (const luatnhan in cacluatnhan) {
                 if (useGlossary && multiplicationAlgorithm == VietPhraseMultiplicationAlgorithm.MULTIPLICATION_BY_PRONOUNS_NAMES && glossaryEntries.length > 0) {
                     for (const element in glossary) {
-                        luatnhanData[luatnhan.replace(/\{0}/g, element).replace(/\$/g, '$$$&')] = cacluatnhan[luatnhan].replace(/\{0}/g, glossary[element].replace(/\$/g, '$$$&'));
+                        luatnhanList.push([luatnhan.replace(/\{0}/g, element).replace(/\$/g, '$$$&'), cacluatnhan[luatnhan].replace(/\{0}/g, glossary[element].replace(/\$/g, '$$$&'))]);
                     }
                 }
 
                 for (const pronoun in pronouns) {
-                    luatnhanData[luatnhan.replace(/\{0}/g, pronoun)] = cacluatnhan[luatnhan].replace(/\{0}/g, pronouns[pronoun]);
+                    luatnhanList.push([luatnhan.replace(/\{0}/g, pronoun), cacluatnhan[luatnhan].replace(/\{0}/g, pronouns[pronoun])]);
                 }
             }
         }
 
-        const luatnhanList = Object.entries(luatnhanData);
+        const luatnhanData = Object.fromEntries(luatnhanList);
 
         let dataEntries = Object.entries(data);
         data = Object.fromEntries(dataEntries.filter(([first]) => (!useGlossary || !glossary.hasOwnProperty(first)) && inputText.includes(first)).sort((a, b) => b[0].length - a[0].length));
@@ -718,6 +719,7 @@ function convertText(inputText, data, caseSensitive, useGlossary, translationAlg
                 continue;
             }
 
+            const filteredLuatnhanList = luatnhanList.filter(([first]) => chars.includes(first));
             const filteredDataEntries = dataEntries.filter(([first]) => chars.includes(first));
             const filteredGlossaryEntries = glossaryEntries.filter(([first]) => chars.includes(first));
 
@@ -727,7 +729,7 @@ function convertText(inputText, data, caseSensitive, useGlossary, translationAlg
             }
 
             if (translationAlgorithm == VietPhraseTranslationAlgorithms.PRIORITIZE_LONG_VIETPHRASE_CLUSTERS) {
-                const sortedData = Object.fromEntries([...luatnhanList, ...useGlossary && filteredGlossaryEntries.length > 0 ? filteredGlossaryEntries : [], ...filteredDataEntries].sort((a, b) => b[0].length - a[0].length));
+                const sortedData = Object.fromEntries([...filteredLuatnhanList, ...useGlossary && filteredGlossaryEntries.length > 0 ? filteredGlossaryEntries : [], ...filteredDataEntries].sort((a, b) => b[0].length - a[0].length));
 
                 for (const property in sortedData) {
                     chars = chars.replace(new RegExp(`${property.replace(/[/[\]\-.\\|^$!=()*+?{}]/g, '\\$&')}(?=$|[${filteredPunctuationEntries.map(([first]) => first.replace(/[\]]/, '\\\\$&')).filter((element) => /[\p{Pe}\p{Pf}\p{Po}]/u.test(element)).join('')}])`, 'gu'), sortedData[property].replace(/[/[\]\-.\\|^$!=()*+?{}]/g, '\\$&')).replace(new RegExp(property.replace(/[/[\]\-.\\|^$!=()*+?{}]/g, '\\$&'), 'g'), `${sortedData[property].replace(/\$/g, '$$$&')} `);
@@ -736,15 +738,15 @@ function convertText(inputText, data, caseSensitive, useGlossary, translationAlg
 
                 results.push(chars);
             } else if (translationAlgorithm == VietPhraseTranslationAlgorithms.TRANSLATE_FROM_LEFT_TO_RIGHT) {
-                const luatnhanLengths = [...luatnhanList.map(([first]) => first.length), 1].sort((a, b) => b - a).filter((element, index, array) => index == array.indexOf(element));
+                const luatnhanLengths = [...filteredLuatnhanList.map(([first]) => first.length), 1].sort((a, b) => b - a).filter((element, index, array) => index == array.indexOf(element));
                 const glossaryLengths = [...filteredGlossaryEntries.map(([first]) => first.length), 1].sort((a, b) => b - a).filter((element, index, array) => index == array.indexOf(element));
                 const phraseLengths = [...filteredDataEntries.map(([first]) => first.length), 1].sort((a, b) => b - a).filter((element, index, array) => index == array.indexOf(element));
                 const phrases = [];
                 let tempWord = '';
 
                 for (let j = 0; j < chars.length; j++) {
-                    if (useGlossary && glossaryEntries.length > 0) {
-                        if (multiplicationAlgorithm == VietPhraseMultiplicationAlgorithm.MULTIPLICATION_BY_PRONOUNS_NAMES) {
+                    if (useGlossary && filteredGlossaryEntries.length > 0) {
+                        if (multiplicationAlgorithm == VietPhraseMultiplicationAlgorithm.MULTIPLICATION_BY_PRONOUNS_NAMES && filteredLuatnhanList.length > 0) {
                             for (const luatnhanLength of luatnhanLengths) {
                                 if (luatnhanData.hasOwnProperty(chars.substring(j, j + luatnhanLength))) {
                                     if (luatnhanData[chars.substring(j, j + luatnhanLength)].length > 0) {
@@ -775,7 +777,7 @@ function convertText(inputText, data, caseSensitive, useGlossary, translationAlg
                                 break;
                             }
                         }
-                    } else if (multiplicationAlgorithm == VietPhraseMultiplicationAlgorithm.MULTIPLICATION_BY_PRONOUNS) {
+                    } else if (multiplicationAlgorithm == VietPhraseMultiplicationAlgorithm.MULTIPLICATION_BY_PRONOUNS && filteredLuatnhanList.length > 0) {
                         for (const luatnhanLength of luatnhanLengths) {
                             if (luatnhanData.hasOwnProperty(chars.substring(j, j + luatnhanLength))) {
                                 if (luatnhanData[chars.substring(j, j + luatnhanLength)].length > 0) {
