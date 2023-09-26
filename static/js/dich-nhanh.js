@@ -191,6 +191,7 @@ $('.modal').on('shown.bs.modal', () => $(document.body).css({
 $('.option').change(() => {
     translator = loadTranslatorOptions();
     localStorage.setItem('translator', JSON.stringify(translator));
+    prevTranslation = [];
     $('#retranslateButton').click();
 });
 
@@ -249,6 +250,7 @@ $('.translator').click(function () {
         }
 
         localStorage.setItem('translator', JSON.stringify(translator));
+        prevTranslation = [];
         $('#retranslateButton').click();
     }
 });
@@ -459,7 +461,7 @@ async function translate(inputText, abortSignal) {
 
     try {
         const processText = getProcessTextPreTranslate(inputText);
-        const results = [];
+        let results = [];
 
         let MAX_LENGTH;
         let MAX_LINE;
@@ -498,7 +500,7 @@ async function translate(inputText, abortSignal) {
             return;
         }
 
-        if (getDynamicDictionaryText(processText, translator === Translators.MICROSOFT_TRANSLATOR) != prevTranslation[0]) {
+        if (prevTranslation[1].length > 0 && getDynamicDictionaryText(processText, translator === Translators.MICROSOFT_TRANSLATOR) != prevTranslation[0]) {
             if (translator === Translators.DEEPL_TRANSLATOR) {
                 const deeplUsage = (await $.get('https://api-free.deepl.com/v2/usage?auth_key=' + DEEPL_AUTH_KEY)) ?? {
                     'character_count': 500000,
@@ -605,16 +607,18 @@ async function translate(inputText, abortSignal) {
                     canTranslate = false;
                 }
             }
+
+            prevTranslation = [getDynamicDictionaryText(processText, translator === Translators.MICROSOFT_TRANSLATOR), results];
         } else {
             results = prevTranslation[1];
         }
 
-        prevTranslation = [getDynamicDictionaryText(processText, translator === Translators.MICROSOFT_TRANSLATOR), results];
         if (abortSignal.aborted) return;
         $('#translatedText').html(buildTranslatedResult([inputText, processText], getProcessTextPostTranslate(results.join('\n')), $('#flexSwitchCheckShowOriginal').prop('checked')));
         $('#translateTimer').text(Math.floor((Date.now() - startTime) / 10) / 100);
     } catch (error) {
-        errorMessage.innerText = 'Bản dịch thất bại: ' + error.toString();
+        console.error('Bản dịch thất bại:', error.stack);
+        errorMessage.innerText = 'Bản dịch thất bại: ' + error;
         $('#translatedText').html(errorMessage);
         onPostTranslate();
     }
@@ -771,7 +775,7 @@ function convertText(inputText, data, caseSensitive, useGlossary, translationAlg
                                 break;
                             }
                         }
-                    } else {
+                    } else if (multiplicationAlgorithm == VietPhraseMultiplicationAlgorithm.MULTIPLICATION_BY_PRONOUNS) {
                         for (const luatnhanLength of luatnhanLengths) {
                             if (luatnhanData.hasOwnProperty(chars.substring(j, j + luatnhanLength))) {
                                 if (luatnhanData[chars.substring(j, j + luatnhanLength)].length > 0) {

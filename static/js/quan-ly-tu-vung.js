@@ -350,7 +350,7 @@ $('#preview').on('click', function () {
 $('#glossaryName').on('input', () => loadGlossary());
 
 function getSelectedTextOrActiveElementText() {
-    return window.getSelection().toString() || typeof document.activeElement.selectionStart != undefined && document.activeElement.value.slice(document.activeElement.selectionStart, document.activeElement.selectionEnd) || '';
+    return window.getSelection().toString() || '';
 }
 
 function loadGlossary() {
