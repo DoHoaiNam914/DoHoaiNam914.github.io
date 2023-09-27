@@ -767,7 +767,7 @@ function convertText(inputText, data, caseSensitive, useGlossary, translationAlg
             }
 
             if (translationAlgorithm == VietPhraseTranslationAlgorithms.PRIORITIZE_LONG_VIETPHRASE_CLUSTERS) {
-                const sortedData = Object.fromEntries([...useGlossary && filteredGlossaryEntries.length > 0 ? filteredGlossaryEntries : [], ...filteredDataEntries].sort((a, b) => b[0].length - a[0].length));
+                const sortedData = Object.fromEntries([...useGlossary ? filteredGlossaryEntries : [], ...filteredDataEntries]);
 
                 for (const property in sortedData) {
                     chars = chars.replace(new RegExp(`${property.replace(/[/[\]\-.\\|^$!=()*+?{}]/g, '\\$&')}(?=(?:$|[${filteredPunctuationEntries.filter(([first]) => /[\p{Pe}\p{Pf}\p{Po}]/u.test(first)).map(([first]) => first.replace(/[\\\]]/g, '\\$&')).join('')}]))`, 'g'), sortedData[property].replace(/[/[\]\-.\\|^$!=()*+?{}]/g, '\\$&')).replace(new RegExp(property.replace(/[/[\]\-.\\|^$!=()*+?{}]/g, '\\$&'), 'g'), `${sortedData[property].replace(/\$/g, '$$$&')} `);
@@ -776,72 +776,32 @@ function convertText(inputText, data, caseSensitive, useGlossary, translationAlg
                 filteredPunctuationEntries.forEach(([first, second]) => chars = chars.replace(new RegExp(first.replace(/[/[\]\-.\\|^$!=()*+?{}]/g, '\\$&'), 'g'), second.replace(/\$/g, '$$$&')));
                 results.push(chars);
             } else if (translationAlgorithm == VietPhraseTranslationAlgorithms.TRANSLATE_FROM_LEFT_TO_RIGHT) {
+                const luatnhanLengths = [...filteredLuatnhanList.map(([first]) => first.length), 1].sort((a, b) => b - a).filter((element, index, array) => index == array.indexOf(element));
                 const glossaryLengths = [...filteredGlossaryEntries.map(([first]) => first.length), 1].sort((a, b) => b - a).filter((element, index, array) => index == array.indexOf(element));
                 const phraseLengths = [...filteredDataEntries.map(([first]) => first.length), 1].sort((a, b) => b - a).filter((element, index, array) => index == array.indexOf(element));
-                let phrases = [];
-                let isConvertingGlossary = useGlossary;
+                const phrases = [];
                 let tempWord = '';
-                
 
                 for (let j = 0; j < chars.length; j++) {
-                    if (isConvertingGlossary && useGlossary && filteredGlossaryEntries.length > 0) {
+                    if (useGlossary && filteredGlossaryEntries.length > 0) {
                         for (const glossaryLength of glossaryLengths) {
-                            if (filteredGlossaryEntries.filter(([first]) => chars.substring(j, chars.length).includes(first)).length > 0 && glossaryData.hasOwnProperty(chars.substring(j, j + glossaryLength))) {
-                                if (glossaryData[chars.substring(j, j + glossaryLength)].length > 0) {
+                            if (glossary.hasOwnProperty(chars.substring(j, j + glossaryLength))) {
+                                if (glossary[chars.substring(j, j + glossaryLength)].length > 0) {
                                     if (!lines[i].startsWith(chars[j]) && punctuation.hasOwnProperty(chars[j - 1]) && /[\p{Ps}\p{Pi}]/u.test(chars[j - 1])) {
-                                        phrases.push(phrases.pop() + glossaryData[chars.substring(j, j + glossaryLength)]);
+                                        phrases.push(phrases.pop() + glossary[chars.substring(j, j + glossaryLength)]);
                                     } else {
-                                        phrases.push([chars.substring(j, j + glossaryLength)]);
+                                        phrases.push(glossary[chars.substring(j, j + glossaryLength)]);
                                     }
                                 }
 
-                                j += glossaryLength - 1;
-                                break;
-                            } else if (glossaryLength == 1) {
-                                if (tempWord.length > 0 && chars[j] == ' ' && !tempWord.includes(' ')) {
-                                    tempWord.split(' ').forEach((element) => phrases.push(element));
-                                    tempWord = '';
-                                }
-
-                                if (tempWord.length == 0 && !lines[i].startsWith(chars[j]) && /[\p{Pe}\p{Pf}\p{Po}]/u.test(chars[j])) {
-                                    phrases.push(phrases.pop() + punctuation[chars[j]]);
-                                    break;
-                                } else {
-                                    tempWord += chars[j];
-                                }
-
-                                if (tempWord.includes(' ')) {
-                                    if (j + 1 == chars.length || !chars[j + 1].includes(' ')) {
-                                        phrases.push((phrases.pop() ?? '') + tempWord.substring(0, tempWord.length - 1));
-                                        tempWord = '';
-                                    }
-                                    break;
-                                }
-
-                                for (const glossaryLength1 of glossaryLengths) {
-                                    if (tempWord.length > 0 && (data.hasOwnProperty(chars.substring(j + 1, j + 1 + glossaryLength1)) || j + 1 == chars.length)) {
-                                        tempWord.split(' ').forEach((element) => phrases.push(element));
-                                        tempWord = '';
-                                        break;
-                                    }
-                                }
+                                j += glossaryLength;
                                 break;
                             }
                         }
                     }
-                    
-                    if (isConvertingGlossary) {
-                        if (j + 1 == chars.length) {
-                            chars = phrases.join(' ').trim();
-                            phrases = [];
-                            isConvertingGlossary = false;
-                            i = -1;
-                        }
-                        continue;
-                    }
 
                     for (const phraseLength of phraseLengths) {
-                        if (filteredDataEntries.filter(([first]) => chars.substring(j, chars.length).includes(first)).length > 0 && data.hasOwnProperty(chars.substring(j, j + phraseLength))) {
+                        if (data.hasOwnProperty(chars.substring(j, j + phraseLength))) {
                             if (data[chars.substring(j, j + phraseLength)].length > 0) {
                                 if (!lines[i].startsWith(chars[j]) && punctuation.hasOwnProperty(chars[j - 1]) && /[\p{Ps}\p{Pi}]/u.test(chars[j - 1])) {
                                     phrases.push(phrases.pop() + data[chars.substring(j, j + phraseLength)]);
@@ -1684,7 +1644,11 @@ function getDynamicDictionaryText(text, isMicrosoftTranslator = true, useAnother
                 for (const glossaryLength of glossaryLengths) {
                     if (glossary.hasOwnProperty(chars.substring(j, j + glossaryLength))) {
                         if (glossary[chars.substring(j, j + glossaryLength)].length > 0) {
-                            phrases.push(isMicrosoftTranslator ? `<mstrans:dictionary translation="${glossary[chars.substring(j, j + glossaryLength)]}">${chars.substring(j, j + glossaryLength)}</mstrans:dictionary>` : glossary[chars.substring(j, j + glossaryLength)]);
+                            if (!lines[i].startsWith(chars[j]) && /[\p{Ps}\p{Pi}]/u.test(chars[j - 1])) {
+                                phrases.push(phrases.pop() + (isMicrosoftTranslator ? `<mstrans:dictionary translation="${glossary[chars.substring(j, j + glossaryLength)]}">${chars.substring(j, j + glossaryLength)}</mstrans:dictionary>` : glossary[chars.substring(j, j + glossaryLength)]));
+                            } else {
+                                phrases.push(isMicrosoftTranslator ? `<mstrans:dictionary translation="${glossary[chars.substring(j, j + glossaryLength)]}">${chars.substring(j, j + glossaryLength)}</mstrans:dictionary>` : glossary[chars.substring(j, j + glossaryLength)]);
+                            }
                         }
 
                         j += glossaryLength - 1;
@@ -1695,7 +1659,12 @@ function getDynamicDictionaryText(text, isMicrosoftTranslator = true, useAnother
                             tempWord = '';
                         }
 
-                        tempWord += chars[j];
+                        if (tempWord.length == 0 && !lines[i].startsWith(chars[j]) && /[\p{Pe}\p{Pf}\p{Po}]/u.test(chars[j])) {
+                            phrases.push(phrases.pop() + chars[j]);
+                            break;
+                        } else {
+                            tempWord += chars[j];
+                        }
 
                         if (tempWord.includes(' ')) {
                             if (j + 1 == chars.length || !chars[j + 1].includes(' ')) {
