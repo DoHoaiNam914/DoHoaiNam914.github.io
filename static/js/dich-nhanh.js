@@ -786,7 +786,7 @@ function convertText(inputText, data, caseSensitive, useGlossary, translationAlg
                 for (let j = 0; j < chars.length; j++) {
                     if (isConvertingGlossary && useGlossary && filteredGlossaryEntries.length > 0) {
                         for (const glossaryLength of glossaryLengths) {
-                            if (glossaryData.hasOwnProperty(chars.substring(j, j + glossaryLength))) {
+                            if (filteredGlossaryEntries.filter(([first]) => chars.substring(j, chars.length).includes(first)).length > 0 && glossaryData.hasOwnProperty(chars.substring(j, j + glossaryLength))) {
                                 if (glossaryData[chars.substring(j, j + glossaryLength)].length > 0) {
                                     if (!lines[i].startsWith(chars[j]) && punctuation.hasOwnProperty(chars[j - 1]) && /[\p{Ps}\p{Pi}]/u.test(chars[j - 1])) {
                                         phrases.push(phrases.pop() + glossaryData[chars.substring(j, j + glossaryLength)]);
@@ -803,18 +803,14 @@ function convertText(inputText, data, caseSensitive, useGlossary, translationAlg
                                     tempWord = '';
                                 }
 
-                                if (punctuation.hasOwnProperty(chars[j])) {
-                                    if (tempWord.length == 0 && !lines[i].startsWith(chars[j]) && /[\p{Pe}\p{Pf}\p{Po}]/u.test(chars[j])) {
-                                        phrases.push(phrases.pop() + punctuation[chars[j]]);
-                                        break;
-                                    } else {
-                                        tempWord += punctuation[chars[j]];
-                                    }
+                                if (tempWord.length == 0 && !lines[i].startsWith(chars[j]) && /[\p{Pe}\p{Pf}\p{Po}]/u.test(chars[j])) {
+                                    phrases.push(phrases.pop() + punctuation[chars[j]]);
+                                    break;
                                 } else {
                                     tempWord += chars[j];
                                 }
 
-                                if (!punctuation.hasOwnProperty(chars[j]) && tempWord.includes(' ')) {
+                                if (tempWord.includes(' ')) {
                                     if (j + 1 == chars.length || !chars[j + 1].includes(' ')) {
                                         phrases.push((phrases.pop() ?? '') + tempWord.substring(0, tempWord.length - 1));
                                         tempWord = '';
@@ -843,7 +839,7 @@ function convertText(inputText, data, caseSensitive, useGlossary, translationAlg
                     }
 
                     for (const phraseLength of phraseLengths) {
-                        if (data.hasOwnProperty(chars.substring(j, j + phraseLength))) {
+                        if (filteredDataEntries.filter(([first]) => chars.substring(j, chars.length).includes(first)).length > 0 && data.hasOwnProperty(chars.substring(j, j + phraseLength))) {
                             if (data[chars.substring(j, j + phraseLength)].length > 0) {
                                 if (!lines[i].startsWith(chars[j]) && punctuation.hasOwnProperty(chars[j - 1]) && /[\p{Ps}\p{Pi}]/u.test(chars[j - 1])) {
                                     phrases.push(phrases.pop() + data[chars.substring(j, j + phraseLength)]);
