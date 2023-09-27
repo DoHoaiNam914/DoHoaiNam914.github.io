@@ -531,7 +531,7 @@ async function translate(inputText, abortSignal) {
             return;
         }
 
-        if (prevTranslation[1] == undefined || getDynamicDictionaryText(processText, translator === Translators.MICROSOFT_TRANSLATOR) != prevTranslation[0]) {
+        if (getDynamicDictionaryText(processText, translator === Translators.MICROSOFT_TRANSLATOR) != prevTranslation[0]) {
             if (translator === Translators.DEEPL_TRANSLATOR) {
                 const deeplUsage = (await $.get('https://api-free.deepl.com/v2/usage?auth_key=' + DEEPL_AUTH_KEY)) ?? {
                     'character_count': 500000,
