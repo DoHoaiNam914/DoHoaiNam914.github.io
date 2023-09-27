@@ -519,19 +519,19 @@ async function translate(inputText, abortSignal) {
                 break;
 
             default:
-                MAX_LENGTH = getDynamicDictionaryText(processText, false).length;
+                MAX_LENGTH = getDynamicDictionaryText(processText, false, $('#flexSwitchCheckAllowAnothers').prop('checked')).length;
                 MAX_LINE = processText.split(/\n/).length;
                 break;
         }
 
-        if (getDynamicDictionaryText(processText, translator === Translators.MICROSOFT_TRANSLATOR).split(/\n/).sort((a, b) => b.length - a.length)[0].length > MAX_LENGTH) {
+        if (getDynamicDictionaryText(processText, translator === Translators.MICROSOFT_TRANSLATOR, $('#flexSwitchCheckAllowAnothers').prop('checked')).split(/\n/).sort((a, b) => b.length - a.length)[0].length > MAX_LENGTH) {
             errorMessage.innerText = `Bản dịch thất bại: Số lượng từ trong một dòng quá dài (Số lượng từ hợp lệ nhỏ hơn hoặc bằng ${MAX_LENGTH}). [Lưu ý: Khi sử dụng Dynamic Dictionary và Bảo vệ dấu trích đẫn sẽ làm giảm số lượng từ có thể dịch đi.]`;
             $('#translatedText').append(errorMessage);
             onPostTranslate();
             return;
         }
 
-        if (getDynamicDictionaryText(processText, translator === Translators.MICROSOFT_TRANSLATOR) != prevTranslation[0]) {
+        if (getDynamicDictionaryText(processText, translator === Translators.MICROSOFT_TRANSLATOR, $('#flexSwitchCheckAllowAnothers').prop('checked')) != prevTranslation[0]) {
             if (translator === Translators.DEEPL_TRANSLATOR) {
                 const deeplUsage = (await $.get('https://api-free.deepl.com/v2/usage?auth_key=' + DEEPL_AUTH_KEY)) ?? {
                     'character_count': 500000,
@@ -652,7 +652,7 @@ async function translate(inputText, abortSignal) {
             }
 
             $('#translateTimer').text(Math.floor((Date.now() - startTime) / 10) / 100);
-            prevTranslation = [getDynamicDictionaryText(processText, translator === Translators.MICROSOFT_TRANSLATOR), results];
+            prevTranslation = [getDynamicDictionaryText(processText, translator === Translators.MICROSOFT_TRANSLATOR, $('#flexSwitchCheckAllowAnothers').prop('checked')), results];
         } else {
             results = prevTranslation[1];
         }
@@ -933,7 +933,7 @@ function onPostTranslate() {
 const Lingvanex = {
     translateText: async function (authKey, text, from, to, useGlossary = false, tc = 1) {
         try {
-            text = useGlossary ? getDynamicDictionaryText(text, false) : text;
+            text = useGlossary ? getDynamicDictionaryText(text, false, $('#flexSwitchCheckAllowAnothers').prop('checked')) : text;
 
             /**
              * Lingvanex Demo
@@ -1103,7 +1103,7 @@ const Lingvanex = {
 const DeepLTranslator = {
     translateText: async function (authKey, inputText, sourceLanguage, targetLanguage, useGlossary = false) {
         try {
-            inputText = useGlossary ? getDynamicDictionaryText(inputText, false) : inputText;
+            inputText = useGlossary ? getDynamicDictionaryText(inputText, false, $('#flexSwitchCheckAllowAnothers').prop('checked')) : inputText;
 
             const response = await $.ajax({
                 url: 'https://api-free.deepl.com/v2/translate?auth_key=' + authKey,
@@ -1185,7 +1185,7 @@ const DeepLTranslator = {
 const GoogleTranslate = {
     translateText: async function (data, inputText, sourceLanguage, targetLanguage, useGlossary = false, tc = 0) {
         try {
-            inputText = useGlossary ? getDynamicDictionaryText(inputText, false) : inputText;
+            inputText = useGlossary ? getDynamicDictionaryText(inputText, false, $('#flexSwitchCheckAllowAnothers').prop('checked')) : inputText;
 
             /**
              * Google translate Widget
@@ -1433,7 +1433,7 @@ const GoogleTranslate = {
 const Papago = {
     translateText: async function (version, inputText, sourceLanguage, targetLanguage, useGlossary = false) {
         try {
-            inputText = useGlossary ? getDynamicDictionaryText(inputText, false) : inputText;
+            inputText = useGlossary ? getDynamicDictionaryText(inputText, false, $('#flexSwitchCheckAllowAnothers').prop('checked')) : inputText;
 
             const timeStamp = (new Date()).getTime();
 
@@ -1662,11 +1662,11 @@ const MicrosoftTranslator = {
     }
 };
 
-function getDynamicDictionaryText(text, isMicrosoftTranslator = true) {
+function getDynamicDictionaryText(text, isMicrosoftTranslator = true, useAnotherTranslators = false) {
     const glossaryEntries = Object.entries(glossary).filter(([first]) => text.includes(first));
     let newText = text;
 
-    if ($('#flexSwitchCheckGlossary').prop('checked') && (isMicrosoftTranslator || $('#flexSwitchCheckAllowAnothers').prop('checked')) && glossaryEntries.length > 0) {
+    if ($('#flexSwitchCheckGlossary').prop('checked') && (isMicrosoftTranslator || useAnotherTranslators) && glossaryEntries.length > 0) {
         const lines = text.split(/\n/);
         const results = [];
 
