@@ -1,5 +1,36 @@
 'use strict';
 
+const dichNhanhJs = this;
+
+const sourceLangSelect = $('#sourceLangSelect');
+const sourceLangSelectOptions = $('#sourceLangSelect > option');
+const targetLangSelect = $('#targetLangSelect');
+const targetLangSelectOptions = $('#targetLangSelect > option');
+
+const translateButton = $('#translateButton');
+
+const queryTextCounter = $('#queryTextCounter');
+const copyButton = $('#copyButton');
+const pasteButton = $('#pasteButton');
+const retranslateButton = $('#retranslateButton');
+const translateTimer = $('#translateTimer');
+
+const queryText = $('#queryText');
+const translatedText = $('#translatedText');
+
+const modals = $('.modal');
+const translatorOptions = $('.option');
+
+const flexSwitchCheckGlossary = $('#flexSwitchCheckGlossary');
+const flexSwitchCheckAllowAnothers = $('#flexSwitchCheckAllowAnothers');
+
+const translators = $('.translator');
+const currentTranslator = $('.translator.active');
+const flexSwitchCheckShowOriginal = $('#flexSwitchCheckShowOriginal');
+const inputVietphrase = $('#inputVietphrase');
+const flexRadioTranslationAlgorithm = $(`input[name="flexRadioTranslationAlgorithm"]:checked`);
+const flexRadioMultiplicationAlgorithm = $(`input[name="flexRadioMultiplicationAlgorithm"]:checked`);
+
 let translator = JSON.parse(localStorage.getItem('translator'));
 
 let pinyins = {};
@@ -80,7 +111,7 @@ $(document).ready(async () => {
         $.get('/static/datasource/VietPhrase.txt').done((data) => {
             let vietphraseList = [...data.split(/\r?\n/).map((element) => element.split('=')).filter((element) => element.length == 2).map(([first, second]) => [first, second.split('/')[0].split('|')[0]]), ...Object.entries(sinovietnameses)];
             vietphraseList = vietphraseList.filter(([first, second]) => first != '' && second != undefined && !vietphraseList[first] && (vietphraseList[first] = 1), {});
-            if ($('#inputVietphrase').prop('files') == undefined) {
+            if (inputVietphrase.prop('files') == undefined) {
                 return;
             }
             vietphrases = Object.fromEntries(vietphraseList);
@@ -90,12 +121,12 @@ $(document).ready(async () => {
         });
     }
 
-    $('#queryText').trigger('input');
+    queryText.trigger('input');
 });
 
-$(visualViewport).resize((event) => $('#queryText').css('max-height', event.target.height - 248 + 'px'));
+$(visualViewport).resize((event) => queryText.css('max-height', event.target.height - 248 + 'px'));
 
-$('#translateButton').click(async function () {
+translateButton.click(async function () {
     if (translateAbortController != undefined) {
         translateAbortController.abort();
         translateAbortController = null;
@@ -104,98 +135,98 @@ $('#translateButton').click(async function () {
     switch ($(this).text()) {
         default:
         case 'Dịch':
-            if ($('#queryText').val().length > 0) {
+            if (queryText.val().length > 0) {
                 $(this).text('Huỷ');
-                $('#translatedText').show();
-                $('#queryText').hide();
-                $('#copyButton').addClass('disabled');
-                $('#pasteButton').addClass('disabled');
-                $('#imageFile').addClass('disabled');
-                $('#pasteUrlButton').addClass('disabled');
-                $('#clearImageButton').addClass('disabled');
-                $('#translatedText').html('Đang dịch...');
+                translatedText.show();
+                queryText.hide();
+                copyButton.addClass('disabled');
+                pasteButton.addClass('disabled');
+                // $('#imageFile').addClass('disabled');
+                // $('#pasteUrlButton').addClass('disabled');
+                // $('#clearImageButton').addClass('disabled');
+                translatedText.html('Đang dịch...');
                 translateAbortController = new AbortController();
-                translate($('#queryText').val(), translateAbortController.signal).finally(() => onPostTranslate());
+                translate(queryText.val(), translateAbortController.signal).finally(() => onPostTranslate());
             }
             break;
 
         case 'Huỷ':
-            $('#translatedText').html(null);
-            $('#translatedText').hide();
-            $('#queryText').show();
-            $('#retranslateButton').addClass('disabled');
-            $('#clearImageButton').removeClass('disabled');
-            $('#pasteUrlButton').removeClass('disabled');
-            $('#imageFile').removeClass('disabled');
-            $('#pasteButton').removeClass('disabled');
-            $('#copyButton').removeClass('disabled');
+            translatedText.html(null);
+            translatedText.hide();
+            queryText.show();
+            retranslateButton.addClass('disabled');
+            // $('#clearImageButton').removeClass('disabled');
+            // $('#pasteUrlButton').removeClass('disabled');
+            // $('#imageFile').removeClass('disabled');
+            pasteButton.removeClass('disabled');
+            copyButton.removeClass('disabled');
             $(this).text('Dịch');
             break;
 
         case 'Sửa':
-            $('#translatedText').html(null);
-            $('#translatedText').hide();
-            $('#queryText').show();
-            $('#clearImageButton').removeClass('disabled');
-            $('#pasteUrlButton').removeClass('disabled');
-            $('#imageFile').removeClass('disabled');
-            $('#retranslateButton').addClass('disabled');
-            $('#translateTimer').text(0);
+            translatedText.html(null);
+            translatedText.hide();
+            queryText.show();
+            // $('#clearImageButton').removeClass('disabled');
+            // $('#pasteUrlButton').removeClass('disabled');
+            // $('#imageFile').removeClass('disabled');
+            retranslateButton.addClass('disabled');
+            translateTimer.text(0);
             $(this).text('Dịch');
             break;
     }
 });
 
-$('#copyButton').on('click', () => {
-    const data = prevTranslation[1].length != undefined ? prevTranslation[1] : $('#queryText').val();
+copyButton.on('click', () => {
+    const data = prevTranslation[1].length != undefined ? prevTranslation[1] : queryText.val();
 
     if (data.length > 0) {
         navigator.clipboard.writeText(data);
     }
 });
 
-$('#pasteButton').on('click', () => {
+pasteButton.on('click', () => {
     navigator.clipboard
         .readText()
         .then((clipText) => {
             if (clipText.length > 0) {
                 window.scrollTo({top: 0, behavior: 'smooth'});
-                $('#queryText').val(clipText).trigger('input');
-                $('#retranslateButton').click();
+                queryText.val(clipText).trigger('input');
+                retranslateButton.click();
             }
         });
 });
 
-$('#retranslateButton').click(() => {
-    if ($('#translateButton').text() != 'Dịch') {
-        $('#translateButton').text('Dịch').click();
+retranslateButton.click(() => {
+    if (translateButton.text() != 'Dịch') {
+        translateButton.text('Dịch').click();
     }
 });
 
-$('#queryText').on('input', () => {
-    $('#queryText').css('height', 'auto');
-    $('#queryText').css('height', $('#queryText').prop('scrollHeight') + 'px');
+queryText.on('input', () => {
+    queryText.css('height', 'auto');
+    queryText.css('height', queryText.prop('scrollHeight') + 'px');
     $(visualViewport).resize();
-    $('#queryTextCounter').text($('#queryText').val().length);
+    queryTextCounter.text(queryText.val().length);
 });
 
-$('.modal').on('hidden.bs.modal', () => $(document.body).removeAttr('style'));
+modals.on('hidden.bs.modal', () => $(document.body).removeAttr('style'));
 
-$('.modal').on('shown.bs.modal', () => $(document.body).css({
+modals.on('shown.bs.modal', () => $(document.body).css({
     '-webkit-overflow-scrolling': 'auto',
     overflow: 'hidden',
     'overscroll-behavior': 'none',
     'touch-action': 'none'
 }));
 
-$('.option').change(() => {
+translatorOptions.change(() => {
     translator = loadTranslatorOptions();
     localStorage.setItem('translator', JSON.stringify(translator));
     prevTranslation = [];
-    $('#retranslateButton').click();
+    retranslateButton.click();
 });
 
-$('.translator').click(function () {
+translators.click(function () {
     if (!$(this).hasClass('disabled')) {
         const prevTranslator = translator['translator'];
 
@@ -204,62 +235,62 @@ $('.translator').click(function () {
         const prevSourceLanguageName = getLanguageName(prevTranslator, prevSourceLanguageCode);
         const prevTargetLanguageName = getLanguageName(prevTranslator, prevTargetLanguageCode);
 
-        $('.translator').removeClass('active');
+        translators.removeClass('active');
         $(this).addClass('active');
 
-        $('#sourceLangSelect').html(getSourceLanguageOptions($(this).data('id')));
-        $('#sourceLangSelect > option').each(function (index) {
-            if ($('.translator.active').data('id') === prevTranslator
+        sourceLangSelect.html(getSourceLanguageOptions($(this).data('id')));
+        sourceLangSelectOptions.each(function (index) {
+            if (currentTranslator.data('id') === prevTranslator
                 && prevSourceLanguageCode != null) {
-                $('#sourceLangSelect').val(prevSourceLanguageCode);
+                sourceLangSelect.val(prevSourceLanguageCode);
                 return false;
             } else if (prevSourceLanguageCode != null && (prevSourceLanguageName != null && $(this).text().replace(/[()]/g, '') == prevSourceLanguageName.replace(/[()]/g, '') || $(this).val().toLowerCase() == prevSourceLanguageCode.toLowerCase() || (prevSourceLanguageName != null && $(this).text().includes($(this).text().split(' ').length == 2 && prevSourceLanguageName.split(' ').length == 2 ? prevSourceLanguageName.replace(/[()]/g, '').split(' ')[1] : prevSourceLanguageName.replace(/[()]/g, '').split(' ')[0]) && $(this).val().toLowerCase().split('-')[0] == prevSourceLanguageCode.toLowerCase().split('-')[0]) || ($(this).val().toLowerCase().split('-')[0] == prevSourceLanguageCode.toLowerCase().split('-')[0]))) {
-                $('#sourceLangSelect').val($(this).val());
+                sourceLangSelect.val($(this).val());
                 return false;
-            } else if (index + 1 == $('#sourceLangSelect > option').length) {
-                $('#sourceLangSelect').val(
-                    getDefaultSourceLanguage($('.translator.active').data('id')));
+            } else if (index + 1 == sourceLangSelectOptions.length) {
+                sourceLangSelect.val(
+                    getDefaultSourceLanguage(currentTranslator.data('id')));
             }
         });
-        $('#targetLangSelect').html(getTargetLanguageOptions($(this).data('id')));
-        $('#targetLangSelect > option').each(function (index) {
-            if ($('.translator.active').data('id') === prevTranslator
+        targetLangSelect.html(getTargetLanguageOptions($(this).data('id')));
+        targetLangSelectOptions.each(function (index) {
+            if (currentTranslator.data('id') === prevTranslator
                 && prevTargetLanguageCode != null) {
-                $('#targetLangSelect').val(prevTargetLanguageCode);
+                targetLangSelect.val(prevTargetLanguageCode);
                 return false;
             } else if (prevTargetLanguageCode != null && (prevTargetLanguageName != null && $(this).text().replace(/[()]/g, '') == prevTargetLanguageName.replace(/[()]/g, '') || $(this).val().toLowerCase() == prevTargetLanguageCode.toLowerCase() || (prevTargetLanguageName != null && $(this).text().includes($(this).text().split(' ').length == 2 && prevTargetLanguageName.split(' ').length == 2 ? prevTargetLanguageName.replace(/[()]/g, '').split(' ')[1] : prevTargetLanguageName.replace(/[()]/g, '').split(' ')[0]) && $(this).val().toLowerCase().split('-')[0] == prevTargetLanguageCode.toLowerCase().split('-')[0]) || ($(this).val().toLowerCase().split('-')[0] == prevTargetLanguageCode.toLowerCase().split('-')[0]))) {
-                if ($('.translator.active').data('id') === Translators.DEEPL_TRANSLATOR && prevTargetLanguageCode == 'en') {
-                    $('#targetLangSelect').val('EN-US');
+                if (currentTranslator.data('id') === Translators.DEEPL_TRANSLATOR && prevTargetLanguageCode == 'en') {
+                    targetLangSelect.val('EN-US');
                 } else {
-                    $('#targetLangSelect').val($(this).val());
+                    targetLangSelect.val($(this).val());
                 }
                 return false;
-            } else if (index + 1 == $('#targetLangSelect > option').length) {
-                $('#targetLangSelect').val(getDefaultTargetLanguage($('.translator.active').data('id')));
+            } else if (index + 1 == targetLangSelectOptions.length) {
+                targetLangSelect.val(getDefaultTargetLanguage(currentTranslator.data('id')));
             }
         });
 
         translator['translator'] = $(this).data('id');
 
-        for (let i = 0; i < $('.option').length; i++) {
-            if ($('.option')[i].id == 'sourceLangSelect') {
-                translator[$('.option')[i].id] = $('.option')[i].value;
-            } else if ($('.option')[i].id == 'targetLangSelect') {
-                translator[$('.option')[i].id] = $('.option')[i].value;
+        for (let i = 0; i < translatorOptions.length; i++) {
+            if (translatorOptions[i].id == 'sourceLangSelect') {
+                translator[translatorOptions[i].id] = translatorOptions[i].value;
+            } else if (translatorOptions[i].id == 'targetLangSelect') {
+                translator[translatorOptions[i].id] = translatorOptions[i].value;
             }
         }
 
         localStorage.setItem('translator', JSON.stringify(translator));
         prevTranslation = [];
-        $('#retranslateButton').click();
+        retranslateButton.click();
     }
 });
 
-$('#inputVietphrase').on('change', function () {
+inputVietphrase.on('change', function () {
     const reader = new FileReader();
 
     reader.onload = function () {
-        let vietphraseList = this.result.split(/\r?\n/).map((element) => element.split($('#inputVietphrase').prop('files')[0].type == 'text/tab-separated-values' ? '\t' : '=')).filter((element) => element.length == 2).map(([first, second]) => [first, second.split('/')[0].split('|')[0]]);
+        let vietphraseList = this.result.split(/\r?\n/).map((element) => element.split(inputVietphrase.prop('files')[0].type == 'text/tab-separated-values' ? '\t' : '=')).filter((element) => element.length == 2).map(([first, second]) => [first, second.split('/')[0].split('|')[0]]);
         vietphraseList = [...vietphraseList, ...Object.entries(sinovietnameses)].filter(([first, second]) => first != '' && second != undefined && !vietphraseList[first] && (vietphraseList[first] = 1), {})
         vietphrases = Object.fromEntries(vietphraseList);
         console.log('Đã tải xong tệp VietPhrase.txt (%d)!', vietphraseList.length);
@@ -269,15 +300,15 @@ $('#inputVietphrase').on('change', function () {
 
 function loadTranslatorOptions() {
     const data = {};
-    data['translator'] = $('.translator.active').data('id');
+    data['translator'] = currentTranslator.data('id');
 
-    for (let i = 0; i < $('.option').length; i++) {
-        if ($('.option')[i].id.startsWith('flexSwitchCheck') && $('.option')[i].checked == true) {
-            data[$('.option')[i].id] = $('.option')[i].checked;
-        } else if ($('.option')[i].name.startsWith('flexRadio') && $('.option')[i].checked == true) {
-            data[$('.option')[i].name] = $('.option')[i].value;
-        } else if ($('.option')[i].className.includes('form-select') && $('.option')[i].value != '') {
-            data[$('.option')[i].id] = $('.option')[i].value;
+    for (let i = 0; i < translatorOptions.length; i++) {
+        if (translatorOptions[i].id.startsWith('flexSwitchCheck') && translatorOptions[i].checked == true) {
+            data[translatorOptions[i].id] = translatorOptions[i].checked;
+        } else if (translatorOptions[i].name.startsWith('flexRadio') && translatorOptions[i].checked == true) {
+            data[translatorOptions[i].name] = translatorOptions[i].value;
+        } else if (translatorOptions[i].className.includes('form-select') && translatorOptions[i].value != '') {
+            data[translatorOptions[i].id] = translatorOptions[i].value;
         }
     }
 
@@ -476,10 +507,10 @@ function getTargetLanguageOptions(translator) {
 
 async function translate(inputText, abortSignal) {
     const startTime = Date.now();
-    const translator = $('.translator.active').data('id');
+    const translator = currentTranslator.data('id');
 
-    const sourceLanguage = $('#sourceLangSelect').val();
-    const targetLanguage = $('#targetLangSelect').val();
+    const sourceLanguage = sourceLangSelect.val();
+    const targetLanguage = targetLangSelect.val();
 
     const isCjkTargetLanguage = !(targetLanguage == 'JA' || targetLanguage == 'KO' || targetLanguage == 'ZH') || !(targetLanguage == 'zh-CN' || targetLanguage == 'zh-TW' || targetLanguage == 'ja' || targetLanguage == 'ko') || !(targetLanguage == 'ko' || targetLanguage == 'ja' || targetLanguage == 'zh-CN' || targetLanguage == 'zh-TW') || !(targetLanguage == 'yue' || targetLanguage == 'lzh' || targetLanguage == 'zh-Hans' || targetLanguage == 'zh-Hant' || targetLanguage == 'ja' || targetLanguage == 'ko');
 
@@ -526,7 +557,7 @@ async function translate(inputText, abortSignal) {
 
         if (getDynamicDictionaryText(processText, translator === Translators.MICROSOFT_TRANSLATOR, true).split(/\n/).sort((a, b) => b.length - a.length)[0].length > MAX_LENGTH) {
             errorMessage.innerText = `Bản dịch thất bại: Số lượng từ trong một dòng quá dài (Số lượng từ hợp lệ nhỏ hơn hoặc bằng ${MAX_LENGTH}). [Lưu ý: Khi sử dụng Dynamic Dictionary và Bảo vệ dấu trích đẫn sẽ làm giảm số lượng từ có thể dịch đi.]`;
-            $('#translatedText').append(errorMessage);
+            translatedText.append(errorMessage);
             onPostTranslate();
             return;
         }
@@ -540,7 +571,7 @@ async function translate(inputText, abortSignal) {
 
                 if (processText.length > (deeplUsage.character_limit - deeplUsage.character_count)) {
                     errorMessage.innerText = `Lỗi DeepL: Đã đạt đến giới hạn dịch của tài khoản. (${deeplUsage.character_count}/${deeplUsage.character_limit} ký tự). [Lưu ý: Khi sử dụng Dynamic Dictionary và Bảo vệ dấu trích đẫn sẽ làm giảm số lượng từ có thể dịch đi.]`;
-                    $('#translatedText').html(errorMessage);
+                    translatedText.html(errorMessage);
                     onPostTranslate();
                     return;
                 }
@@ -550,7 +581,7 @@ async function translate(inputText, abortSignal) {
 
             if (translator === Translators.GOOGLE_TRANSLATE && (googleTranslateData.version == undefined || googleTranslateData.ctkk == undefined)) {
                 errorMessage.innerText = 'Không thể lấy được Log ID hoặc Token từ element.js.';
-                $('#translatedText').html(errorMessage);
+                translatedText.html(errorMessage);
                 return;
             }
 
@@ -558,7 +589,7 @@ async function translate(inputText, abortSignal) {
 
             if (translator === Translators.LINGVANEX && lingvanexAuthKey == undefined) {
                 errorMessage.innerText = 'Không thể lấy được Khoá xác thực từ từ api-base.js.';
-                $('#translatedText').html(errorMessage);
+                translatedText.html(errorMessage);
                 return;
             }
 
@@ -566,7 +597,7 @@ async function translate(inputText, abortSignal) {
 
             if (translator === Translators.PAPAGO && papagoVersion == undefined) {
                 errorMessage.innerText = 'Không thể lấy được Thông tin phiên bản từ main.js.';
-                $('#translatedText').html(errorMessage);
+                translatedText.html(errorMessage);
                 return;
             }
 
@@ -574,7 +605,7 @@ async function translate(inputText, abortSignal) {
 
             if (translator === Translators.MICROSOFT_TRANSLATOR && microsoftTranslatorAccessToken == undefined) {
                 errorMessage.innerText = 'Không thể lấy được Access Token từ máy chủ.';
-                $('#translatedText').html(errorMessage);
+                translatedText.html(errorMessage);
                 return;
             }
 
@@ -629,16 +660,16 @@ async function translate(inputText, abortSignal) {
                             break;
 
                         case Translators.VIETPHRASE:
-                            if ($('#targetLangSelect').val() == 'vi' && Object.entries(
+                            if (targetLangSelect.val() == 'vi' && Object.entries(
                                 vietphrases).length > 0) {
-                                translatedText = convertText(translateText, vietphrases, true, $('#flexSwitchCheckGlossary').prop('checked'), $('input[name=\'flexRadioTranslationAlgorithm\']:checked').val(), $('input[name=\'flexRadioMultiplicationAlgorithm\']:checked').val());
-                            } else if ($('#targetLangSelect').val() == 'zh-VN' && Object.entries(sinovietnameses).length > 0) {
+                                translatedText = convertText(translateText, vietphrases, true, flexSwitchCheckGlossary.prop('checked'), flexRadioTranslationAlgorithm.val(), flexRadioMultiplicationAlgorithm.val());
+                            } else if (targetLangSelect.val() == 'zh-VN' && Object.entries(sinovietnameses).length > 0) {
                                 translatedText = convertText(translateText, sinovietnameses, true, false, VietPhraseTranslationAlgorithms.PRIORITIZE_LONG_VIETPHRASE_CLUSTERS, VietPhraseMultiplicationAlgorithm.NOT_APPLICABLE);
-                            } else if ($('#targetLangSelect').val() == 'en' && Object.entries(pinyins).length > 0) {
+                            } else if (targetLangSelect.val() == 'en' && Object.entries(pinyins).length > 0) {
                                 translatedText = convertText(translateText, pinyins, true, false, VietPhraseTranslationAlgorithms.PRIORITIZE_LONG_VIETPHRASE_CLUSTERS, VietPhraseMultiplicationAlgorithm.NOT_APPLICABLE);
-                            } else if ($('#targetLangSelect').val() == 'vi' && Object.entries(vietphrases).length == 0) {
+                            } else if (targetLangSelect.val() == 'vi' && Object.entries(vietphrases).length == 0) {
                                 errorMessage.innerHTML = 'Nhập tệp VietPhrase.txt nếu có hoặc tải về <a href="https://drive.google.com/drive/folders/0B6fxcJ5qbXgkeTJNTFJJS3lmc3c?resourcekey=0-Ych2OUVug3pkLgCIlzvcuA&usp=sharing">tại đây</a>';
-                                $('#translatedText').html(errorMessage);
+                                translatedText.html(errorMessage);
                                 onPostTranslate();
                                 return;
                             }
@@ -651,18 +682,18 @@ async function translate(inputText, abortSignal) {
                 }
             }
 
-            $('#translateTimer').text(Math.floor((Date.now() - startTime) / 10) / 100);
+            translateTimer.text(Math.floor((Date.now() - startTime) / 10) / 100);
             prevTranslation = [getDynamicDictionaryText(processText, translator === Translators.MICROSOFT_TRANSLATOR, true), results];
         } else {
             results = prevTranslation[1];
         }
 
         if (abortSignal.aborted) return;
-        $('#translatedText').html(buildTranslatedResult([inputText, processText], getProcessTextPostTranslate(results.join('\n')), $('#flexSwitchCheckShowOriginal').prop('checked')));
+        translatedText.html(buildTranslatedResult([inputText, processText], getProcessTextPostTranslate(results.join('\n')), flexSwitchCheckShowOriginal.prop('checked')));
     } catch (error) {
         console.error('Bản dịch thất bại:', error.stack);
         errorMessage.innerText = 'Bản dịch thất bại: ' + JSON.stringify(error);
-        $('#translatedText').html(errorMessage);
+        translatedText.html(errorMessage);
         onPostTranslate();
     }
 
@@ -770,7 +801,7 @@ function convertText(inputText, data, caseSensitive, useGlossary, translationAlg
                 const sortedData = Object.fromEntries([...useGlossary ? filteredGlossaryEntries : [], ...filteredDataEntries]);
 
                 for (const property in sortedData) {
-                    chars = chars.replace(new RegExp(`${property.replace(/[/[\]\-.\\|^$!=()*+?{}]/g, '\\$&')}(?=(?:$|[${filteredPunctuationEntries.filter(([first]) => /[\p{Pe}\p{Pf}\p{Po}]/u.test(first)).map(([first]) => first.replace(/[\\\]]/g, '\\$&')).join('')}]))`, 'g'), sortedData[property].replace(/[/[\]\-.\\|^$!=()*+?{}]/g, '\\$&')).replace(new RegExp(property.replace(/[/[\]\-.\\|^$!=()*+?{}]/g, '\\$&'), 'g'), `${sortedData[property].replace(/\$/g, '$$$&')} `);
+                    chars = chars.replace(new RegExp(`${property.replace(/[/[\]\-.\\|^$!=()*+?{}]/g, '\\$&')}(?=$|[${filteredPunctuationEntries.filter(([first]) => /[\p{Pe}\p{Pf}\p{Po}]/u.test(first)).map(([first]) => first.replace(/[\\\]]/g, '\\$&')).join('')}])`, 'g'), sortedData[property].replace(/[/[\]\-.\\|^$!=()*+?{}]/g, '\\$&')).replace(new RegExp(`[\\p{Lu}\\p{Ll}\\p{Nd}]${property.replace(/[/[\]\-.\\|^$!=()*+?{}]/g, '\\$&')}`, 'gu'), `$1 ${sortedData[property].replace(/\$/g, '$$$&')}`).replace(new RegExp(property.replace(/[/[\]\-.\\|^$!=()*+?{}]/g, '\\$&'), 'g'), `${sortedData[property].replace(/\$/g, '$$$&')} `);
                 }
 
                 filteredPunctuationEntries.forEach(([first, second]) => chars = chars.replace(new RegExp(first.replace(/[/[\]\-.\\|^$!=()*+?{}]/g, '\\$&'), 'g'), second.replace(/\$/g, '$$$&')));
@@ -883,19 +914,19 @@ function getProcessTextPostTranslate(text) {
 }
 
 function onPostTranslate() {
-    $('#translatedText').css('height', 'auto');
-    $('#translatedText').css('height', $('#translatedText').prop('scrollHeight') + 'px');
-    $('#pasteButton').removeClass('disabled');
-    $('#copyButton').removeClass('disabled');
-    $('.translator').removeClass('disabled');
-    $('#retranslateButton').removeClass('disabled');
-    $('#translateButton').text('Sửa');
+    translatedText.css('height', 'auto');
+    translatedText.css('height', translatedText.prop('scrollHeight') + 'px');
+    pasteButton.removeClass('disabled');
+    copyButton.removeClass('disabled');
+    translators.removeClass('disabled');
+    retranslateButton.removeClass('disabled');
+    translateButton.text('Sửa');
 }
 
 const Lingvanex = {
     translateText: async function (authKey, text, from, to, useGlossary = false, tc = 1) {
         try {
-            text = useGlossary ? getDynamicDictionaryText(text, false, $('#flexSwitchCheckAllowAnothers').prop('checked')) : text;
+            text = useGlossary ? getDynamicDictionaryText(text, false, flexSwitchCheckAllowAnothers.prop('checked')) : text;
 
             /**
              * Lingvanex Demo
@@ -1065,7 +1096,7 @@ const Lingvanex = {
 const DeepLTranslator = {
     translateText: async function (authKey, inputText, sourceLanguage, targetLanguage, useGlossary = false) {
         try {
-            inputText = useGlossary ? getDynamicDictionaryText(inputText, false, $('#flexSwitchCheckAllowAnothers').prop('checked')) : inputText;
+            inputText = useGlossary ? getDynamicDictionaryText(inputText, false, flexSwitchCheckAllowAnothers.prop('checked')) : inputText;
 
             const response = await $.ajax({
                 url: 'https://api-free.deepl.com/v2/translate?auth_key=' + authKey,
@@ -1147,7 +1178,7 @@ const DeepLTranslator = {
 const GoogleTranslate = {
     translateText: async function (data, inputText, sourceLanguage, targetLanguage, useGlossary = false, tc = 0) {
         try {
-            inputText = useGlossary ? getDynamicDictionaryText(inputText, false, $('#flexSwitchCheckAllowAnothers').prop('checked')) : inputText;
+            inputText = useGlossary ? getDynamicDictionaryText(inputText, false, flexSwitchCheckAllowAnothers.prop('checked')) : inputText;
 
             /**
              * Google translate Widget
@@ -1395,7 +1426,7 @@ const GoogleTranslate = {
 const Papago = {
     translateText: async function (version, inputText, sourceLanguage, targetLanguage, useGlossary = false) {
         try {
-            inputText = useGlossary ? getDynamicDictionaryText(inputText, false, $('#flexSwitchCheckAllowAnothers').prop('checked')) : inputText;
+            inputText = useGlossary ? getDynamicDictionaryText(inputText, false, flexSwitchCheckAllowAnothers.prop('checked')) : inputText;
 
             const timeStamp = (new Date()).getTime();
 
@@ -1628,7 +1659,7 @@ function getDynamicDictionaryText(text, isMicrosoftTranslator = true, useAnother
     const glossaryEntries = Object.entries(glossary).filter(([first]) => text.includes(first));
     let newText = text;
 
-    if ($('#flexSwitchCheckGlossary').prop('checked') && (isMicrosoftTranslator || useAnotherTranslators) && glossaryEntries.length > 0) {
+    if (flexSwitchCheckGlossary.prop('checked') && (isMicrosoftTranslator || useAnotherTranslators) && glossaryEntries.length > 0) {
         const lines = text.split(/\n/);
         const results = [];
 

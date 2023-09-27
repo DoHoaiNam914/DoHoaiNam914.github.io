@@ -75,14 +75,14 @@
 
             $(`.translator[data-id="${translator.translator}"]`).click();
 
-            for (let i = 0; i < $('.option').length; i++) {
-                if ($('.option')[i].id.startsWith('flexSwitchCheck')) {
-                    $('.option')[i].checked = translator[$('.option')[i].id];
-                } else if ($('.option')[i].name.startsWith('flexRadio') && $('.option')[i].value == translator[$('.option')[i].name]) {
-                    $(`.option[name="${$('.option')[i].name}"]`).removeProp('checked');
-                    $('.option')[i].checked = true;
-                } else if ($('.option')[i].className.includes('form-select')) {
-                    $('.option')[i].value = translator[$('.option')[i].id];
+            for (let i = 0; i < translatorOptions.length; i++) {
+                if (translatorOptions[i].id.startsWith('flexSwitchCheck')) {
+                    translatorOptions[i].checked = translator[translatorOptions[i].id];
+                } else if (translatorOptions[i].name.startsWith('flexRadio') && translatorOptions[i].value == translator[translatorOptions[i].name]) {
+                    $(`.option[name="${translatorOptions[i].name}"]`).removeProp('checked');
+                    translatorOptions[i].checked = true;
+                } else if (translatorOptions[i].className.includes('form-select')) {
+                    translatorOptions[i].value = translator[translatorOptions[i].id];
                 }
             }
         })
@@ -281,16 +281,16 @@
                 </select>
                 <div class="input-group input-group-sm mb-3">
                     <input type="text" placeholder="Thay thế" class="form-control" id="sourceEntry">
-                    <button type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" id="sourceEntryMenu" data-bs-toggle="dropdown" aria-expanded="false"></button>
+                    <button type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split sourceEntry-menu" data-bs-toggle="dropdown" aria-expanded="false"></button>
                     <ul class="dropdown-menu dropdown-scroller">
                         <li>
                             <button class="dropdown-item" id="clearSourceTextButton" type="button">Xoá</button>
                         </li>
                         <li>
-                            <button class="dropdown-item" id="copySourceTextButton" type="button">Sao chép</button>
+                            <button class="dropdown-item copy-entryButton" data-for="sourceEntry" type="button">Sao chép</button>
                         </li>
                         <li>
-                            <button class="dropdown-item" id="pasteSourceTextButton" type="button">Dán</button>
+                            <button class="dropdown-item paste-entryButton" data-for="sourceEntry" type="button">Dán</button>
                         </li>
                         <li>
                             <hr class="dropdown-divider">
@@ -346,21 +346,21 @@
                     <button type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false"></button>
                     <ul class="dropdown-menu dropdown-scroller">
                         <li>
-                            <button class="dropdown-item" id="copyTargetTextButton" type="button">Sao chép</button>
+                            <button class="dropdown-item copy-entryButton" data-for="targetEntry" type="button">Sao chép</button>
                         </li>
                         <li>
-                            <button class="dropdown-item" id="pasteTargetTextButton" type="button">Dán</button>
+                            <button class="dropdown-item paste-entryButton" data-for="targetEntry" type="button">Dán</button>
                         </li>
                         <li>
                             <hr class="dropdown-divider">
                         </li>
                         <li>
-                            <button class="dropdown-item" id="pinyinConvertButton" type="button">
+                            <button class="dropdown-item convert-button" data-data="pinyins" type="button">
                                 Chuyển đổi sang Bính âm
                             </button>
                         </li>
                         <li>
-                            <button class="dropdown-item" id="sinoVietnameseConvertButton" type="button">
+                            <button class="dropdown-item convert-button" data-data="sinovietnameses" type="button">
                                 Chuyển đổi sang Hán việt
                             </button>
                         </li>
