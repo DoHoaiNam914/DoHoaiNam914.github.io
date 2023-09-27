@@ -36,7 +36,7 @@ const GOOGLE_API_KEY = 'AIzaSyBOti4mM-6x9WDnZIjIeyEU21OpBXqWBgw';
 
 const uuid = crypto.randomUUID();
 
-const Vietphrase = {
+const VietphraseData = {
     pinyins: {},
     chinesePhienAmWords: {},
     vietphrases: {},
@@ -108,7 +108,7 @@ $(document).ready(async () => {
         $.get('/static/datasource/VietPhrase.txt').done((data) => {
             let vietphraseList = [...data.split(/\r?\n/).map((element) => element.split('=')).filter((element) => element.length == 2).map(([first, second]) => [first, second.split('/')[0].split('|')[0]]), ...Object.entries(VietphraseData.chinesePhienAmWords)];
             vietphraseList = vietphraseList.filter(([first, second]) => first != '' && second != undefined && !vietphraseList[first] && (vietphraseList[first] = 1), {});
-            if (inputVietphraseData.prop('files') == undefined) return;
+            if (inputVietphrase.prop('files') == undefined) return;
             VietphraseData.vietphrases = Object.fromEntries(vietphraseList);
             console.log('Đã tải xong tệp VietPhrase.txt (%d)!', vietphraseList.length);
         }).fail((jqXHR, textStatus, errorThrown) => {
@@ -281,11 +281,11 @@ translators.click(function () {
     }
 });
 
-inputVietphraseData.on('change', function () {
+inputVietphrase.on('change', function () {
     const reader = new FileReader();
 
     reader.onload = function () {
-        let vietphraseList = this.result.split(/\r?\n/).map((element) => element.split(inputVietphraseData.prop('files')[0].type == 'text/tab-separated-values' ? '\t' : '=')).filter((element) => element.length == 2).map(([first, second]) => [first, second.split('/')[0].split('|')[0]]);
+        let vietphraseList = this.result.split(/\r?\n/).map((element) => element.split(inputVietphrase.prop('files')[0].type == 'text/tab-separated-values' ? '\t' : '=')).filter((element) => element.length == 2).map(([first, second]) => [first, second.split('/')[0].split('|')[0]]);
         vietphraseList = [...vietphraseList, ...Object.entries(VietphraseData.chinesePhienAmWords)].filter(([first, second]) => first != '' && second != undefined && !vietphraseList[first] && (vietphraseList[first] = 1), {})
         VietphraseData.vietphrases = Object.fromEntries(vietphraseList);
         console.log('Đã tải xong tệp VietPhrase.txt (%d)!', vietphraseList.length);
