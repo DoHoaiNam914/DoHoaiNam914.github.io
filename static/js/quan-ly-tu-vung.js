@@ -189,20 +189,20 @@ $('.upperCaseAllButton').on('click', () => {
     if ($('#targetEntry').val().length > 0) $('#targetEntry').val($('#targetEntry').val().split(' ').map((word, index) => word = word.charAt(0).toUpperCase() + word.slice(1)).join(' '));
 });
 
-$('.brave-convert').on('click', async function () {
+$('.lingvanex-convert').on('click', async function () {
     if ($('#sourceEntry').val().length > 0) {
         $('#sourceEntry').attr('readonly', true);
         $('.convert').addClass('disabled');
 
         try {
-            const data = await BraveTranslate.getData(Translators.BRAVE_TRANSLATE, BRAVE_API_KEY);
+            const authKey = await Lingvanex.getAuthKey(Translators.LINGVANEX);
 
-            if (data.version == undefined || data.ctkk == undefined) {
-                $('#targetEntry').val('Không thể lấy được Log ID hoặc Token từ element.js.');
+            if (authKey == undefined) {
+                $('#targetEntry').val('Không thể lấy được Khoá xác thực từ từ api-base.js.');
                 return;
             }
 
-            const translatedText = await BraveTranslate.translateText(data, $('#sourceEntry').val(), 'auto', $(this).data('lang'));
+            const translatedText = await Lingvanex.translateText(authKey, $('#sourceEntry').val(), '', $(this).data('lang'));
 
             $('#targetEntry').val(translatedText);
             $('.convert').removeClass('disabled');
