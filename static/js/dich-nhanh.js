@@ -147,7 +147,7 @@ $('#translateButton').click(async function () {
 });
 
 $('#copyButton').on('click', () => {
-    const data = prevTranslation[1].length != undefined ? prevTranslation[1] : $('#queryText').val();
+    const data = $('#translatedText').is(':visible') && prevTranslation[1] != undefined ? prevTranslation[1] : $('#queryText').val();
 
     if (data.length > 0) {
         navigator.clipboard.writeText(data);
@@ -532,6 +532,8 @@ async function translate(inputText, abortSignal) {
         }
 
         if (prevTranslation[1] == undefined || getDynamicDictionaryText(processText, translator === Translators.MICROSOFT_TRANSLATOR) != prevTranslation[0]) {
+            prevTranslation == [];
+
             if (translator === Translators.DEEPL_TRANSLATOR) {
                 const deeplUsage = (await $.get('https://api-free.deepl.com/v2/usage?auth_key=' + DEEPL_AUTH_KEY)) ?? {
                     'character_count': 500000,
