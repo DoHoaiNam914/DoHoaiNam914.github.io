@@ -778,8 +778,8 @@ function convertText(inputText, data, caseSensitive, useGlossary, translationAlg
             } else if (translationAlgorithm == VietPhraseTranslationAlgorithms.TRANSLATE_FROM_LEFT_TO_RIGHT) {
                 const glossaryLengths = [...filteredGlossaryEntries.map(([first]) => first.length), 1].sort((a, b) => b - a).filter((element, index, array) => index == array.indexOf(element));
                 const phraseLengths = [...filteredDataEntries.map(([first]) => first.length), 1].sort((a, b) => b - a).filter((element, index, array) => index == array.indexOf(element));
-                const isConvertingGlossary = useGlossary;
                 const phrases = [];
+                let isConvertingGlossary = useGlossary;
                 let tempWord = '';
                 
 
@@ -796,6 +796,39 @@ function convertText(inputText, data, caseSensitive, useGlossary, translationAlg
                                 }
 
                                 j += glossaryLength - 1;
+                                break;
+                            } else if (glossaryLength == 1) {
+                                if (tempWord.length > 0 && chars[j] == ' ' && !tempWord.includes(' ')) {
+                                    tempWord.split(' ').forEach((element) => phrases.push(element));
+                                    tempWord = '';
+                                }
+
+                                if (punctuation.hasOwnProperty(chars[j])) {
+                                    if (tempWord.length == 0 && !lines[i].startsWith(chars[j]) && /[\p{Pe}\p{Pf}\p{Po}]/u.test(chars[j])) {
+                                        phrases.push(phrases.pop() + punctuation[chars[j]]);
+                                        break;
+                                    } else {
+                                        tempWord += punctuation[chars[j]];
+                                    }
+                                } else {
+                                    tempWord += chars[j];
+                                }
+
+                                if (!punctuation.hasOwnProperty(chars[j]) && tempWord.includes(' ')) {
+                                    if (j + 1 == chars.length || !chars[j + 1].includes(' ')) {
+                                        phrases.push((phrases.pop() ?? '') + tempWord.substring(0, tempWord.length - 1));
+                                        tempWord = '';
+                                    }
+                                    break;
+                                }
+
+                                for (const glossaryLength1 of glossaryLengths) {
+                                    if (tempWord.length > 0 && (data.hasOwnProperty(chars.substring(j + 1, j + 1 + glossaryLength1)) || j + 1 == chars.length)) {
+                                        tempWord.split(' ').forEach((element) => phrases.push(element));
+                                        tempWord = '';
+                                        break;
+                                    }
+                                }
                                 break;
                             }
                         }
