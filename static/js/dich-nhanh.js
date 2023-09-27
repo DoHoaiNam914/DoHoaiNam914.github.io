@@ -23,11 +23,8 @@ const flexSwitchCheckGlossary = $('#flexSwitchCheckGlossary');
 const flexSwitchCheckAllowAnothers = $('#flexSwitchCheckAllowAnothers');
 
 const translators = $('.translator');
-const currentTranslator = $('.translator.active');
 const flexSwitchCheckShowOriginal = $('#flexSwitchCheckShowOriginal');
 const inputVietphrase = $('#inputVietphrase');
-const currentTranslationAlgorithm = $(`input[name="flexRadioTranslationAlgorithm"]:checked`);
-const currentMultiplicationAlgorithm = $(`input[name="flexRadioMultiplicationAlgorithm"]:checked`);
 
 let translator = JSON.parse(localStorage.getItem('translator'));
 
@@ -227,41 +224,41 @@ translators.click(function () {
 
         const prevSourceLanguageCode = translator['sourceLangSelect'];
         const prevTargetLanguageCode = translator['targetLangSelect'];
-        const prevSourceLanguageName = getLanguageName(prevTranslator, prevSourceLanguageCode);
-        const prevTargetLanguageName = getLanguageName(prevTranslator, prevTargetLanguageCode);
+        const prevSourceLanguageName = getLanguageName(prevTranslator, prevSourceLanguageCode) ?? getLanguageName(prevTranslator, getDefaultSourceLanguage(prevTranslator));
+        const prevTargetLanguageName = getLanguageName(prevTranslator, prevTargetLanguageCode) ?? getLanguageName(prevTranslator, getDefaultTargetLanguage(prevTranslator));
 
         translators.removeClass('active');
         $(this).addClass('active');
 
         sourceLangSelect.html(getSourceLanguageOptions($(this).data('id')));
         sourceLangSelectOptions.each(function (index) {
-            if (currentTranslator.data('id') === prevTranslator
+            if ($('.translator.active').data('id') === prevTranslator
                 && prevSourceLanguageCode != null) {
                 sourceLangSelect.val(prevSourceLanguageCode);
                 return false;
-            } else if (prevSourceLanguageCode != null && (prevSourceLanguageName != null && $(this).text().replace(/[()]/g, '') == prevSourceLanguageName.replace(/[()]/g, '') || $(this).val().toLowerCase() == prevSourceLanguageCode.toLowerCase() || (prevSourceLanguageName != null && $(this).text().includes($(this).text().split(' ').length == 2 && prevSourceLanguageName.split(' ').length == 2 ? prevSourceLanguageName.replace(/[()]/g, '').split(' ')[1] : prevSourceLanguageName.replace(/[()]/g, '').split(' ')[0]) && $(this).val().toLowerCase().split('-')[0] == prevSourceLanguageCode.toLowerCase().split('-')[0]) || ($(this).val().toLowerCase().split('-')[0] == prevSourceLanguageCode.toLowerCase().split('-')[0]))) {
+            } else if (prevSourceLanguageCode != null && (prevSourceLanguageName != null && $(this).text().replace(/[()]/g, '') == prevSourceLanguageName.replace(/[()]/g, '') || $(this).val().toLowerCase().split('_')[0] == prevSourceLanguageCode.toLowerCase().split('_')[0] || (prevSourceLanguageName != null && $(this).text().includes($(this).text().split(' ').length == 2 && prevSourceLanguageName.split(' ').length == 2 ? prevSourceLanguageName.replace(/[()]/g, '').split(' ')[1] : prevSourceLanguageName.replace(/[()]/g, '').split(' ')[0]) && $(this).val().toLowerCase().split('_')[0].split('-')[0] == prevSourceLanguageCode.toLowerCase().split('_')[0].split('-')[0]) || ($(this).val().toLowerCase().split('_')[0].split('-')[0] == prevSourceLanguageCode.toLowerCase().split('_')[0].split('-')[0]))) {
                 sourceLangSelect.val($(this).val());
                 return false;
             } else if (index + 1 == sourceLangSelectOptions.length) {
                 sourceLangSelect.val(
-                    getDefaultSourceLanguage(currentTranslator.data('id')));
+                    getDefaultSourceLanguage($('.translator.active').data('id')));
             }
         });
         targetLangSelect.html(getTargetLanguageOptions($(this).data('id')));
         targetLangSelectOptions.each(function (index) {
-            if (currentTranslator.data('id') === prevTranslator
+            if ($('.translator.active').data('id') === prevTranslator
                 && prevTargetLanguageCode != null) {
                 targetLangSelect.val(prevTargetLanguageCode);
                 return false;
-            } else if (prevTargetLanguageCode != null && (prevTargetLanguageName != null && $(this).text().replace(/[()]/g, '') == prevTargetLanguageName.replace(/[()]/g, '') || $(this).val().toLowerCase() == prevTargetLanguageCode.toLowerCase() || (prevTargetLanguageName != null && $(this).text().includes($(this).text().split(' ').length == 2 && prevTargetLanguageName.split(' ').length == 2 ? prevTargetLanguageName.replace(/[()]/g, '').split(' ')[1] : prevTargetLanguageName.replace(/[()]/g, '').split(' ')[0]) && $(this).val().toLowerCase().split('-')[0] == prevTargetLanguageCode.toLowerCase().split('-')[0]) || ($(this).val().toLowerCase().split('-')[0] == prevTargetLanguageCode.toLowerCase().split('-')[0]))) {
-                if (currentTranslator.data('id') === Translators.DEEPL_TRANSLATOR && prevTargetLanguageCode == 'en') {
+            } else if (prevTargetLanguageCode != null && (prevTargetLanguageName != null && $(this).text().replace(/[()]/g, '') == prevTargetLanguageName.replace(/[()]/g, '') || $(this).val().toLowerCase().split('_')[0] == prevTargetLanguageCode.toLowerCase().split('_')[0] || (prevTargetLanguageName != null && $(this).text().includes($(this).text().split(' ').length == 2 && prevTargetLanguageName.split(' ').length == 2 ? prevTargetLanguageName.replace(/[()]/g, '').split(' ')[1] : prevTargetLanguageName.replace(/[()]/g, '').split(' ')[0]) && $(this).val().toLowerCase().split('_')[0].split('-')[0] == prevTargetLanguageCode.toLowerCase().split('_')[0].split('-')[0]) || ($(this).val().toLowerCase().split('_')[0].split('-')[0] == prevTargetLanguageCode.toLowerCase().split('_')[0].split('-')[0]))) {
+                if ($('.translator.active').data('id') === Translators.DEEPL_TRANSLATOR && prevTargetLanguageCode == 'en') {
                     targetLangSelect.val('EN-US');
                 } else {
                     targetLangSelect.val($(this).val());
                 }
                 return false;
             } else if (index + 1 == targetLangSelectOptions.length) {
-                targetLangSelect.val(getDefaultTargetLanguage(currentTranslator.data('id')));
+                targetLangSelect.val(getDefaultTargetLanguage($('.translator.active').data('id')));
             }
         });
 
@@ -295,7 +292,7 @@ inputVietphrase.on('change', function () {
 
 function loadTranslatorOptions() {
     const data = {};
-    data['translator'] = currentTranslator.data('id');
+    data['translator'] = $('.translator.active').data('id');
 
     for (let i = 0; i < translatorOptions.length; i++) {
         if (translatorOptions[i].id.startsWith('flexSwitchCheck') && translatorOptions[i].checked == true) {
@@ -330,6 +327,10 @@ function getDefaultTargetLanguage(translator) {
         case Translators.DEEPL_TRANSLATOR:
             return 'EN-US';
 
+        case Translators.LINGVANEX:
+            return 'vi_VN';
+
+
         default:
             return 'vi';
     }
@@ -338,19 +339,19 @@ function getDefaultTargetLanguage(translator) {
 function getLanguageName(translator, languageCode) {
     switch (translator) {
         case Translators.DEEPL_TRANSLATOR:
-            return DeepLTranslator.SourceLanguage[languageCode] ?? '';
+            return DeepLTranslator.SourceLanguage[languageCode];
 
         case Translators.GOOGLE_TRANSLATE:
-            return GoogleTranslate.Language[languageCode] ?? '';
+            return GoogleTranslate.Language[languageCode];
 
         case Translators.LINGVANEX:
-            return Lingvanex.Language[languageCode] ?? '';
+            return Lingvanex.Language[languageCode];
 
         case Translators.MICROSOFT_TRANSLATOR:
-            return MicrosoftTranslator.Language[languageCode] ?? '';
+            return MicrosoftTranslator.Language[languageCode];
 
         case Translators.PAPAGO:
-            return Papago.Language[languageCode] ?? '';
+            return Papago.Language[languageCode];
     }
 }
 
@@ -502,7 +503,7 @@ function getTargetLanguageOptions(translator) {
 
 async function translate(inputText, abortSignal) {
     const startTime = Date.now();
-    const translator = currentTranslator.data('id');
+    const translator = $('.translator.active').data('id');
 
     const sourceLanguage = sourceLangSelect.val();
     const targetLanguage = targetLangSelect.val();
@@ -656,7 +657,7 @@ async function translate(inputText, abortSignal) {
 
                         case Translators.VIETPHRASE:
                             if (targetLangSelect.val() == 'vi' && Object.entries(VietphraseData.vietphrases).length > 0) {
-                                translatedText = convertText(translateText, VietphraseData.vietphrases, true, flexSwitchCheckGlossary.prop('checked'), currentTranslationAlgorithm.val(), currentMultiplicationAlgorithm.val());
+                                translatedText = convertText(translateText, VietphraseData.vietphrases, true, flexSwitchCheckGlossary.prop('checked'), $(`input[name="flexRadioTranslationAlgorithm"]:checked`).val(), $(`input[name="flexRadioMultiplicationAlgorithm"]:checked`).val());
                             } else if (targetLangSelect.val() == 'zh-VN' && Object.entries(VietphraseData.chinesePhienAmWords).length > 0) {
                                 translatedText = convertText(translateText, VietphraseData.chinesePhienAmWords, true, false, VietPhraseTranslationAlgorithms.PRIORITIZE_LONG_VIETPHRASE_CLUSTERS, VietPhraseMultiplicationAlgorithm.NOT_APPLICABLE);
                             } else if (targetLangSelect.val() == 'en' && Object.entries(VietphraseData.pinyins).length > 0) {
@@ -719,7 +720,7 @@ function buildTranslatedResult(inputTexts, result, showOriginal) {
 						lostLineFixedAmount++;
 						i--;
 						continue;
-					} else if (currentTranslator.data('id') === Translators.PAPAGO && resultLines[i].trim().length == 0 && inputLines[i + lostLineFixedAmount].trim().length > 0) {
+					} else if ($('.translator.active').data('id') === Translators.PAPAGO && resultLines[i].trim().length == 0 && inputLines[i + lostLineFixedAmount].trim().length > 0) {
 						lostLineFixedAmount--;
 						continue;
 					}
@@ -811,7 +812,7 @@ function convertText(inputText, data, caseSensitive, useGlossary, translationAlg
                         for (const glossaryLength of glossaryLengths) {
                             if (glossary.hasOwnProperty(chars.substring(j, j + glossaryLength))) {
                                 if (glossary[chars.substring(j, j + glossaryLength)].length > 0) {
-                                    if (!lines[i].startsWith(chars[j]) && punctuation.hasOwnProperty(chars[j - 1]) && /[\p{Ps}\p{Pi}]/u.test(chars[j - 1])) {
+                                    if (!lines[i].startsWith(chars[j]) && /[\p{Ps}\p{Pi}]/u.test(chars[j - 1])) {
                                         phrases.push(phrases.pop() + glossary[chars.substring(j, j + glossaryLength)]);
                                     } else {
                                         phrases.push(glossary[chars.substring(j, j + glossaryLength)]);
@@ -827,7 +828,7 @@ function convertText(inputText, data, caseSensitive, useGlossary, translationAlg
                     for (const phraseLength of phraseLengths) {
                         if (data.hasOwnProperty(chars.substring(j, j + phraseLength))) {
                             if (data[chars.substring(j, j + phraseLength)].length > 0) {
-                                if (!lines[i].startsWith(chars[j]) && punctuation.hasOwnProperty(chars[j - 1]) && /[\p{Ps}\p{Pi}]/u.test(chars[j - 1])) {
+                                if (!lines[i].startsWith(chars[j]) && /[\p{Ps}\p{Pi}]/u.test(chars[j - 1])) {
                                     phrases.push(phrases.pop() + data[chars.substring(j, j + phraseLength)]);
                                 } else {
                                     phrases.push(data[chars.substring(j, j + phraseLength)]);
@@ -878,7 +879,7 @@ function convertText(inputText, data, caseSensitive, useGlossary, translationAlg
         }
 
         result = results.join('\n');
-        return caseSensitive ? result.split(/\n/).map((element => element.replace(/(^|\s*(?:[!\-.:;?]\s+|[''\p{Ps}\p{Pi}]\s*))(\p{Lower})/gu, (match, p1, p2) => p1 + p2.toUpperCase()))).join('\n') : result;
+        return caseSensitive ? result.split(/\n/).map((element => element.replace(/(^|\s*(?:[!\-.:;?]\s+|[''\p{Ps}\p{Pi}]\s*))(\p{Ll})/gu, (match, p1, p2) => p1 + p2.toUpperCase()))).join('\n') : result;
     } catch (error) {
         console.error('Bản dịch lỗi:', error);
         throw error.toString();

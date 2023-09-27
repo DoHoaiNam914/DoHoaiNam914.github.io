@@ -23,7 +23,7 @@ const deeplConvertButtons = $('.deepl-convert-button');
 const googleConvertButtons = $('.google-convert-button');
 const lingvanexConvertButtons = $('.lingvanex-convert-button');
 const papagoConvertButtons = $('.papago-convert-button');
-const microaoftConvertButtons = $('.microsoft-convert-button');
+const microsoftConvertButtons = $('.microsoft-convert-button');
 
 let localGlossary = JSON.parse(localStorage.getItem('glossary'));
 
@@ -71,7 +71,7 @@ glossaryType.change(() => loadGlossary());
 
 sourceEntry.on('input', function () {
     if ($(this).val().length > 0) {
-        targetEntry.val(convertText($(this).val(), sinovietnameses, false, true, VietPhraseTranslationAlgorithms.PRIORITIZE_LONG_VIETPHRASE_CLUSTERS, VietPhraseMultiplicationAlgorithm.NOT_APPLICABLE));
+        targetEntry.val(convertText($(this).val(), VietphraseData.chinesePhienAmWords, false, true, VietPhraseTranslationAlgorithms.PRIORITIZE_LONG_VIETPHRASE_CLUSTERS, VietPhraseMultiplicationAlgorithm.NOT_APPLICABLE));
 
         if (glossary.hasOwnProperty($(this).val())) {
             $('#glossaryList').val($(this).val());
@@ -98,7 +98,7 @@ pasteEntryButton.on('click', function () {
 });
 defineButtons.on('click', function () {
     if (sourceEntry.val().length > 0) {
-        window.open($(this).data('href').replace('${0}', encodeURIComponent((sourceEntry.val().substring(sourceEntry.prop('selectionStart'), sourceEntry.prop('selectionEnd')) || sourceEntry.val()).substring(0, 30)));
+        window.open($(this).data('href').replace('${0}', encodeURIComponent((sourceEntry.val().substring(sourceEntry.prop('selectionStart'), sourceEntry.prop('selectionEnd')) || sourceEntry.val()).substring(0, 30))));
         sourceEntry.blur();
     }
 });
@@ -118,12 +118,7 @@ addButton.on('click', () => {
 });
 convertButtons.on('click', function () {
     if (sourceEntry.val().length > 0) {
-        for (const data of Object.keys(VietphraseData)) {
-            if (data == $(this).data('data')) {
-	            targetEntry.val(convertText(sourceEntry.val(), variable, false, false, VietPhraseTranslationAlgorithms.PRIORITIZE_LONG_VIETPHRASE_CLUSTERS, VietPhraseMultiplicationAlgorithm.NOT_APPLICABLE));
-	            break;
-            }
-        }
+        targetEntry.val(convertText(sourceEntry.val(), VietphraseData[$(this).data('data')], false, false, VietPhraseTranslationAlgorithms.PRIORITIZE_LONG_VIETPHRASE_CLUSTERS, VietPhraseMultiplicationAlgorithm.NOT_APPLICABLE));
     }
 });
 upperCaseButtons.on('click', function () {
