@@ -519,19 +519,19 @@ async function translate(inputText, abortSignal) {
                 break;
 
             default:
-                MAX_LENGTH = getDynamicDictionaryText(processText, false, $('#flexSwitchCheckAllowAnothers').prop('checked')).length;
+                MAX_LENGTH = getDynamicDictionaryText(processText, false, true).length;
                 MAX_LINE = processText.split(/\n/).length;
                 break;
         }
 
-        if (getDynamicDictionaryText(processText, translator === Translators.MICROSOFT_TRANSLATOR, $('#flexSwitchCheckAllowAnothers').prop('checked')).split(/\n/).sort((a, b) => b.length - a.length)[0].length > MAX_LENGTH) {
+        if (getDynamicDictionaryText(processText, translator === Translators.MICROSOFT_TRANSLATOR, true).split(/\n/).sort((a, b) => b.length - a.length)[0].length > MAX_LENGTH) {
             errorMessage.innerText = `Bản dịch thất bại: Số lượng từ trong một dòng quá dài (Số lượng từ hợp lệ nhỏ hơn hoặc bằng ${MAX_LENGTH}). [Lưu ý: Khi sử dụng Dynamic Dictionary và Bảo vệ dấu trích đẫn sẽ làm giảm số lượng từ có thể dịch đi.]`;
             $('#translatedText').append(errorMessage);
             onPostTranslate();
             return;
         }
 
-        if (getDynamicDictionaryText(processText, translator === Translators.MICROSOFT_TRANSLATOR, $('#flexSwitchCheckAllowAnothers').prop('checked')) != prevTranslation[0]) {
+        if (getDynamicDictionaryText(processText, translator === Translators.MICROSOFT_TRANSLATOR, true) != prevTranslation[0]) {
             if (translator === Translators.DEEPL_TRANSLATOR) {
                 const deeplUsage = (await $.get('https://api-free.deepl.com/v2/usage?auth_key=' + DEEPL_AUTH_KEY)) ?? {
                     'character_count': 500000,
@@ -652,7 +652,7 @@ async function translate(inputText, abortSignal) {
             }
 
             $('#translateTimer').text(Math.floor((Date.now() - startTime) / 10) / 100);
-            prevTranslation = [getDynamicDictionaryText(processText, translator === Translators.MICROSOFT_TRANSLATOR, $('#flexSwitchCheckAllowAnothers').prop('checked')), results];
+            prevTranslation = [getDynamicDictionaryText(processText, translator === Translators.MICROSOFT_TRANSLATOR, true), results];
         } else {
             results = prevTranslation[1];
         }
