@@ -7,10 +7,23 @@ const clearGlossaryButton = $('#clearGlossaryButton');
 const glossaryType = $('#glossaryType');
 const sourceEntry = $('#sourceEntry');
 const targetEntry = $('#targetEntry');
+const addButton = $('#addButton');
+const removeButton = $('#removeButton');
 
 const clearSourceTextButton = $('#clearSourceTextButton');
 const copyEntryButton = $('.copy-entryButton');
 const pasteEntryButton = $('.paste-entryButton');
+const defineButtons = $('.define-button');
+const translateButtons = $('.translate-button');
+
+const convertButtons = $('.convert-button');
+const upperCaseButtons = $('.upper-case-button');
+const transvertButtons = $('.transvert-button');
+const deeplConvertButtons = $('.deepl-convert-button');
+const googleConvertButtons = $('.google-convert-button');
+const lingvanexConvertButtons = $('.lingvanex-convert-button');
+const papagoConvertButtons = $('.papago-convert-button');
+const microaoftConvertButtons = $('.microsoft-convert-button');
 
 let localGlossary = JSON.parse(localStorage.getItem('glossary'));
 
@@ -80,95 +93,22 @@ copyEntryButton.on('click', function () {
         entry.blur();
     }
 });
-
-pasteEntryButton.on('click', () => {
-    navigator.clipboard
-        .readText()
-        .then((clipText) => {
-            $(`#${$(this).data('for')}`).val(clipText).trigger('input');
-        });
+pasteEntryButton.on('click', function () {
+	navigator.clipboard.readText().then((clipText) => $(`#${$(this).data('for')}`).val(clipText).trigger('input'));
 });
-
-$('.convert-button').on('click', () => {
+defineButtons.on('click', function () {
     if (sourceEntry.val().length > 0) {
-        const a = Object.entries(dichNhanhJs);
-        for (let i = 0; i < a.length; i++) {console.log(Object.keys({a[i]})[0]);
-            if (Object.keys({a[i]})[0] == $(this).data('data')) targetEntry.val(convertText(sourceEntry.val(), variable, false, false, VietPhraseTranslationAlgorithms.PRIORITIZE_LONG_VIETPHRASE_CLUSTERS, VietPhraseMultiplicationAlgorithm.NOT_APPLICABLE));
-        }
-    }
-});
-
-$('#lacvietdictionaryButton').on('click', () => {
-    if (sourceEntry.val().length > 0) {
-        window.open(`http://mobile.coviet.vn/tratu.aspx?k=${encodeURIComponent((sourceEntry.val().substring(sourceEntry.prop('selectionStart'), sourceEntry.prop('selectionEnd')) || sourceEntry.val()).substring(0, 30))}&t=ALL`);
+        window.open($(this).data('href').replace('${0}', encodeURIComponent((sourceEntry.val().substring(sourceEntry.prop('selectionStart'), sourceEntry.prop('selectionEnd')) || sourceEntry.val()).substring(0, 30)));
         sourceEntry.blur();
     }
 });
-
-$('#googleButton').on('click', () => {
+translateButtons.on('click', () => {
     if (sourceEntry.val().length > 0) {
-        window.open(`https://www.google.com.vn/search?q=${encodeURIComponent((sourceEntry.val().substring(sourceEntry.prop('selectionStart'), sourceEntry.prop('selectionEnd')) || sourceEntry.val()).substring(0, 30))}`);
+        window.open($(this).data('href').replace('${0}', encodeURIComponent(sourceEntry.val())));
         sourceEntry.blur();
     }
 });
-
-$('#wikipediaButton').on('click', () => {
-    if (sourceEntry.val().length > 0) {
-        window.open(`https://vi.wikipedia.org/w/?search=${encodeURIComponent((sourceEntry.val().substring(sourceEntry.prop('selectionStart'), sourceEntry.prop('selectionEnd')) || sourceEntry.val()).substring(0, 30))}&ns0=1`);
-        sourceEntry.blur();
-    }
-});
-
-$('#hvdicButton').on('click', () => {
-    if (sourceEntry.val().length > 0) {
-        window.open(`https://hvdic.thivien.net/whv/${encodeURIComponent((sourceEntry.val().substring(sourceEntry.prop('selectionStart'), sourceEntry.prop('selectionEnd')) || sourceEntry.val()).substring(0, 30))}`);
-        sourceEntry.blur();
-    }
-});
-
-$('#naverDictButton').on('click', () => {
-    if (sourceEntry.val().length > 0) {
-        window.open(`https://english.dict.naver.com/english-chinese-dictionary/#/search?query=${encodeURIComponent((sourceEntry.val().substring(sourceEntry.prop('selectionStart'), sourceEntry.prop('selectionEnd')) || sourceEntry.val()).substring(0, 30))}`);
-        sourceEntry.blur();
-    }
-});
-
-$('#baiduButton').on('click', () => {
-    if (sourceEntry.val().length > 0) {
-        window.open(`https://www.baidu.com/s?wd=${encodeURIComponent((sourceEntry.val().substring(sourceEntry.prop('selectionStart'), sourceEntry.prop('selectionEnd')) || sourceEntry.val()).substring(0, 30))}`);
-        sourceEntry.blur();
-    }
-});
-
-$('#deepltranslatorButton').on('click', () => {
-    if (sourceEntry.val().length > 0) {
-        window.open(`https://www.deepl.com/translator#auto/en/${encodeURIComponent(sourceEntry.val())}`);
-        sourceEntry.blur();
-    }
-});
-
-$('#googletranslateButton').on('click', () => {
-    if (sourceEntry.val().length > 0) {
-        window.open(`https://translate.google.com/?sl=auto&tl=vi&text=${encodeURIComponent(sourceEntry.val())}&op=translate`);
-        sourceEntry.blur();
-    }
-});
-
-$('#papagoButton').on('click', () => {
-    if (sourceEntry.val().length > 0) {
-        window.open(`https://papago.naver.com/?sk=auto&tk=vi&st=${encodeURIComponent(sourceEntry.val())}`);
-        sourceEntry.blur();
-    }
-});
-
-$('#bingtranslatorButton').on('click', () => {
-    if (sourceEntry.val().length > 0) {
-        window.open(`https://www.bing.com/translator?from=auto-detect&to=vi&text=${encodeURIComponent(sourceEntry.val())}`);
-        sourceEntry.blur();
-    }
-});
-
-$('#addButton').on('click', () => {
+addButton.on('click', () => {
     if (sourceEntry.val().length > 0) {
         glossary[sourceEntry.val().trim()] = targetEntry.val().trim();
         loadGlossary();
@@ -176,53 +116,24 @@ $('#addButton').on('click', () => {
         targetEntry.val(null);
     }
 });
-
-$('#copyTargetTextButton').on('click', () => {
-    if (targetEntry.val().length > 0) navigator.clipboard.writeText(targetEntry.val())
-});
-
-$('#pasteTargetTextButton').on('click', () => {
-    navigator.clipboard.readText().then((clipText) => targetEntry.val(clipText).trigger('input'));
-});
-
-$('.upperCaseFromAmountButton').on('click', function () {
-    if (targetEntry.val().length > 0) targetEntry.val(targetEntry.val().split(' ').map((word, index) => index < $(this).data('amount') ? word.charAt(0).toUpperCase() + word.slice(1) : word.toLowerCase()).join(' '));
-});
-
-$('.upperCaseAllButton').on('click', () => {
-    if (targetEntry.val().length > 0) targetEntry.val(targetEntry.val().split(' ').map((word, index) => word = word.charAt(0).toUpperCase() + word.slice(1)).join(' '));
-});
-
-$('.lingvanex-convert').on('click', async function () {
+convertButtons.on('click', function () {
     if (sourceEntry.val().length > 0) {
-        sourceEntry.attr('readonly', true);
-        $('.convert').addClass('disabled');
-
-        try {
-            const authKey = await Lingvanex.getAuthKey(Translators.LINGVANEX);
-
-            if (authKey == undefined) {
-                targetEntry.val('Không thể lấy được Khoá xác thực từ từ api-base.js.');
-                return;
+        for (const data of Object.keys(VietphraseData)) {
+            if (data == $(this).data('data')) {
+	            targetEntry.val(convertText(sourceEntry.val(), variable, false, false, VietPhraseTranslationAlgorithms.PRIORITIZE_LONG_VIETPHRASE_CLUSTERS, VietPhraseMultiplicationAlgorithm.NOT_APPLICABLE));
+	            break;
             }
-
-            const translatedText = await Lingvanex.translateText(authKey, sourceEntry.val(), '', $(this).data('lang'));
-
-            targetEntry.val(translatedText);
-            $('.convert').removeClass('disabled');
-            sourceEntry.removeAttr('readonly');
-        } catch (error) {
-            targetEntry.val('Bản dịch thất bại: ' + JSON.stringify(error));
-            $('.convert').removeClass('disabled');
-            sourceEntry.removeAttr('readonly');
         }
     }
 });
+upperCaseButtons.on('click', function () {
+    if (targetEntry.val().length > 0) targetEntry.val(targetEntry.val().split(' ').map((word, index) => $(this).data('amount').includes('#') ? word = word.charAt(0).toUpperCase() + word.slice(1) : (index < $(this).data('amount') ? word.charAt(0).toUpperCase() + word.slice(1) : word.toLowerCase())).join(' '));
+});
 
-$('.deepl-convert').on('click', async function () {
+deeplConvertButtons.on('click', async function () {
     if (sourceEntry.val().length > 0) {
         sourceEntry.attr('readonly', true);
-        $('.convert').addClass('disabled');
+        transvertButtons.addClass('disabled');
 
         try {
             const deeplUsage = (await $.get('https://api-free.deepl.com/v2/usage?auth_key=' + DEEPL_AUTH_KEY)) ?? {
@@ -238,20 +149,20 @@ $('.deepl-convert').on('click', async function () {
             const translatedText = await DeepLTranslator.translateText(DEEPL_AUTH_KEY, sourceEntry.val(), '', $(this).data('lang'));
 
             targetEntry.val(translatedText);
-            $('.convert').removeClass('disabled');
+            transvertButtons.removeClass('disabled');
             sourceEntry.removeAttr('readonly');
         } catch (error) {
             targetEntry.val('Bản dịch thất bại: ' + JSON.stringify(error));
-            $('.convert').removeClass('disabled');
+            transvertButtons.removeClass('disabled');
             sourceEntry.removeAttr('readonly');
         }
     }
 });
 
-$('.google-convert').on('click', async function () {
+googleConvertButtons.on('click', async function () {
     if (sourceEntry.val().length > 0) {
         sourceEntry.attr('readonly', true);
-        $('.convert').addClass('disabled');
+        transvertButtons.addClass('disabled');
 
         try {
             const data = await GoogleTranslate.getData(Translators.GOOGLE_TRANSLATE, GOOGLE_API_KEY);
@@ -264,20 +175,46 @@ $('.google-convert').on('click', async function () {
             const translatedText = await GoogleTranslate.translateText(data, sourceEntry.val(), 'auto', $(this).data('lang'));
 
             targetEntry.val(translatedText);
-            $('.convert').removeClass('disabled');
+            transvertButtons.removeClass('disabled');
             sourceEntry.removeAttr('readonly');
         } catch (error) {
             targetEntry.val('Bản dịch thất bại: ' + JSON.stringify(error));
-            $('.convert').removeClass('disabled');
+            transvertButtons.removeClass('disabled');
             sourceEntry.removeAttr('readonly');
         }
     }
 });
 
-$('.papago-convert').on('click', async function () {
+lingvanexConvertButtons.on('click', async function () {
     if (sourceEntry.val().length > 0) {
         sourceEntry.attr('readonly', true);
-        $('.convert').addClass('disabled');
+        transvertButtons.addClass('disabled');
+
+        try {
+            const authKey = await Lingvanex.getAuthKey(Translators.LINGVANEX);
+
+            if (authKey == undefined) {
+                targetEntry.val('Không thể lấy được Khoá xác thực từ từ api-base.js.');
+                return;
+            }
+
+            const translatedText = await Lingvanex.translateText(authKey, sourceEntry.val(), '', $(this).data('lang'));
+
+            targetEntry.val(translatedText);
+            transvertButtons.removeClass('disabled');
+            sourceEntry.removeAttr('readonly');
+        } catch (error) {
+            targetEntry.val('Bản dịch thất bại: ' + JSON.stringify(error));
+            transvertButtons.removeClass('disabled');
+            sourceEntry.removeAttr('readonly');
+        }
+    }
+});
+
+papagoConvertButtons.on('click', async function () {
+    if (sourceEntry.val().length > 0) {
+        sourceEntry.attr('readonly', true);
+        transvertButtons.addClass('disabled');
 
         try {
             const version = await Papago.getVersion(Translators.PAPAGO);
@@ -290,20 +227,20 @@ $('.papago-convert').on('click', async function () {
             const translatedText = await Papago.translateText(version, sourceEntry.val(), 'auto', $(this).data('lang'));
 
             targetEntry.val(translatedText);
-            $('.convert').removeClass('disabled');
+            transvertButtons.removeClass('disabled');
             sourceEntry.removeAttr('readonly');
         } catch (error) {
             targetEntry.val('Bản dịch thất bại: ' + JSON.stringify(error));
-            $('.convert').removeClass('disabled');
+            transvertButtons.removeClass('disabled');
             sourceEntry.removeAttr('readonly');
         }
     }
 });
 
-$('.microsoft-convert').on('click', async function () {
+microsoftConvertButtons.on('click', async function () {
     if (sourceEntry.val().length > 0) {
         sourceEntry.attr('readonly', true);
-        $('.convert').addClass('disabled');
+        transvertButtons.addClass('disabled');
 
         try {
             const accessToken = await MicrosoftTranslator.getAccessToken(Translators.MICROSOFT_TRANSLATOR);
@@ -316,11 +253,11 @@ $('.microsoft-convert').on('click', async function () {
             const translatedText = await MicrosoftTranslator.translateText(accessToken, sourceEntry.val(), '', $(this).data('lang'));
 
             targetEntry.val(translatedText);
-            $('.convert').removeClass('disabled');
+            transvertButtons.removeClass('disabled');
             sourceEntry.removeAttr('readonly');
         } catch (error) {
             targetEntry.val('Bản dịch thất bại: ' + JSON.stringify(error));
-            $('.convert').removeClass('disabled');
+            transvertButtons.removeClass('disabled');
             sourceEntry.removeAttr('readonly');
         }
     }
@@ -335,7 +272,7 @@ $('#glossaryList').change(function () {
     }
 });
 
-$('#removeButton').on('click', () => {
+removeButton.on('click', () => {
     if (window.confirm('Bạn có muốn xoá từ (cụm từ) này chứ?')
         && glossary.hasOwnProperty(sourceEntry.val())) {
         delete glossary[sourceEntry.val()];

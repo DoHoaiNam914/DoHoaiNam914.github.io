@@ -296,41 +296,41 @@
                             <hr class="dropdown-divider">
                         </li>
                         <li>
-                            <button class="dropdown-item" id="lacvietdictionaryButton" type="button">
+                            <button class="dropdown-item define-button" data-href="http://mobile.coviet.vn/tratu.aspx?k=${0}&t=ALL" type="button">
                                 Từ điển Lạc Việt
                             </button>
                         </li>
                         <li>
-                            <button class="dropdown-item" id="googleButton" type="button">Google</button>
+                            <button class="dropdown-item define-button" data-href="https://www.google.com.vn/search?q=${0}" type="button">Google</button>
                         </li>
                         <li>
-                            <button class="dropdown-item" id="wikipediaButton" type="button">Wikipedia</button>
+                            <button class="dropdown-item define-button" data-href="https://vi.wikipedia.org/w/?search=${0}&ns0=1" type="button">Wikipedia</button>
                         </li>
                         <li>
-                            <button class="dropdown-item" id="hvdicButton" type="button">Từ điển Hán Nôm</button>
+                            <button class="dropdown-item define-button" data-href="https://hvdic.thivien.net/whv/${0}" type="button">Từ điển Hán Nôm</button>
                         </li>
                         <li>
-                            <button class="dropdown-item" id="naverDictButton" type="button">Naver dictionary</button>
+                            <button class="dropdown-item define-button" data-href="https://english.dict.naver.com/english-chinese-dictionary/#/search?query=${0}" type="button">Naver dictionary</button>
                         </li>
                         <li>
-                            <button class="dropdown-item" id="baiduButton" type="button">Baidu</button>
+                            <button class="dropdown-item define-button" data-href="https://www.baidu.com/s?wd=${0}" type="button">Baidu</button>
                         </li>
                         <li>
                             <hr class="dropdown-divider">
                         </li>
                         <li>
-                            <button class="dropdown-item" id="deepltranslatorButton" type="button">
+                            <button class="dropdown-item translate-button" data-href="https://www.deepl.com/translator#auto/en/${0}" type="button">
                                 DeepL Translator
                             </button>
                         </li>
                         <li>
-                            <button class="dropdown-item" id="googletranslateButton" type="button">Google Dịch</button>
+                            <button class="dropdown-item translate-button" data-href="https://translate.google.com/?sl=auto&tl=vi&text=${0}&op=translate" type="button">Google Dịch</button>
                         </li>
                         <li>
-                            <button class="dropdown-item" id="papagoButton" type="button">Papago</button>
+                            <button class="dropdown-item translate-button" data-href="https://papago.naver.com/?sk=auto&tk=vi&st=${0}" data-href="button">Papago</button>
                         </li>
                         <li>
-                            <button class="dropdown-item" id="bingtranslatorButton" type="button">
+                            <button class="dropdown-item translate-button" data-href="https://www.bing.com/translator?from=auto-detect&to=vi&text=${0}" type="button">
                                 Trình dịch Microsoft Bing
                             </button>
                         </li>
@@ -368,138 +368,138 @@
                             <hr class="dropdown-divider">
                         </li>
                         <li>
-                            <button class="dropdown-item upperCaseFromAmountButton" data-amount="1" type="button">
+                            <button class="dropdown-item upper-case-button" data-amount="1" type="button">
                                 Viết hoa 1 từ đơn đầu
                             </button>
                         </li>
                         <li>
-                            <button class="dropdown-item upperCaseFromAmountButton" data-amount="2" type="button">
+                            <button class="dropdown-item upper-case-button" data-amount="2" type="button">
                                 Viết hoa 2 từ đơn đầu
                             </button>
                         </li>
                         <li>
-                            <button class="dropdown-item upperCaseFromAmountButton" data-amount="3" type="button">
+                            <button class="dropdown-item upper-case-button" data-amount="3" type="button">
                                 Viết hoa 3 từ đơn đầu
                             </button>
                         </li>
                         <li>
-                            <button class="dropdown-item upperCaseAllButton" type="button">Viết hoa tất cả</button>
+                            <button class="dropdown-item upper-case-button" data-amount="#" type="button">Viết hoa tất cả</button>
                         </li>
                         <li>
                             <hr class="dropdown-divider">
                         </li>
                         <li>
-                            <button class="dropdown-item convert deepl-convert" type="button" data-lang="ZH">
+                            <button class="dropdown-item transvert-button deepl-convert-button" type="button" data-lang="ZH">
                                 DeepL Translator (Chinese)
                             </button>
                         </li>
                         <li>
-                            <button class="dropdown-item convert deepl-convert" type="button" data-lang="EN-US">
+                            <button class="dropdown-item transvert-button deepl-convert-button" type="button" data-lang="EN-US">
                                 DeepL Translator (English)
                             </button>
                         </li>
                         <li>
-                            <button class="dropdown-item convert deepl-convert" type="button" data-lang="JA">
+                            <button class="dropdown-item transvert-button deepl-convert-button" type="button" data-lang="JA">
                                 DeepL Translator (Japanese)
                             </button>
                         </li>
                         <li>
-                            <button class="dropdown-item convert google-convert" type="button" data-lang="en">
+                            <button class="dropdown-item transvert-button google-convert-button" type="button" data-lang="en">
                                 Google Dịch (Anh)
                             </button>
                         </li>
                         <li>
-                            <button class="dropdown-item convert google-convert" type="button" data-lang="ja">
+                            <button class="dropdown-item transvert-button google-convert-button" type="button" data-lang="ja">
                                 Google Dịch (Nhật)
                             </button>
                         </li>
                         <li>
-                            <button class="dropdown-item convert google-convert" type="button" data-lang="zh-CN">
+                            <button class="dropdown-item transvert-button google-convert-button" type="button" data-lang="zh-CN">
                                 Google Dịch (Trung (Giản thể))
                             </button>
                         </li>
                         <li>
-                            <button class="dropdown-item convert google-convert" type="button" data-lang="zh-TW">
+                            <button class="dropdown-item transvert-button google-convert-button" type="button" data-lang="zh-TW">
                                 Google Dịch (Trung (Phồn thể))
                             </button>
                         </li>
                         <li>
-                            <button class="dropdown-item convert google-convert" type="button" data-lang="vi">
+                            <button class="dropdown-item transvert-button google-convert-button" type="button" data-lang="vi">
                                 Google Dịch (Việt)
                             </button>
                         </li>
                         <li>
-                            <button class="dropdown-item convert lingvanex-convert" type="button" data-lang="zh-Hans_CN">
+                            <button class="dropdown-item transvert-button lingvanex-convert-button" type="button" data-lang="zh-Hans_CN">
                                 Lingvanex (Chinese (Simplified))
                             </button>
                         </li>
                         <li>
-                            <button class="dropdown-item convert lingvanex-convert" type="button" data-lang="zh-Hant_TW">
+                            <button class="dropdown-item transvert-button lingvanex-convert-button" type="button" data-lang="zh-Hant_TW">
                                 Lingvanex (Chinese (Traditional))
                             </button>
                         </li>
                         <li>
-                            <button class="dropdown-item convert lingvanex-convert" type="button" data-lang="en_US">
+                            <button class="dropdown-item transvert-button lingvanex-convert-button" type="button" data-lang="en_US">
                                 Lingvanex (English)
                             </button>
                         </li>
                         <li>
-                            <button class="dropdown-item convert lingvanex-convert" type="button" data-lang="vi_VN">
+                            <button class="dropdown-item transvert-button lingvanex-convert-button" type="button" data-lang="vi_VN">
                                 Lingvanex (Japanese)
                             </button>
                         </li>
                         <li>
-                            <button class="dropdown-item convert lingvanex-convert" type="button" data-lang="vi">
+                            <button class="dropdown-item transvert-button lingvanex-convert-button" type="button" data-lang="vi">
                                 Lingvanex (Vietnamese)
                             </button>
                         </li>
                         <li>
-                            <button class="dropdown-item convert papago-convert" type="button" data-lang="en">
+                            <button class="dropdown-item transvert-button papago-convert-button" type="button" data-lang="en">
                                 Papago (Anh)
                             </button>
                         </li>
                         <li>
-                            <button class="dropdown-item convert papago-convert" type="button" data-lang="ja">
+                            <button class="dropdown-item transvert-button papago-convert-button" type="button" data-lang="ja">
                                 Papago (Nhật)
                             </button>
                         </li>
                         <li>
-                            <button class="dropdown-item convert papago-convert" type="button" data-lang="zh-CN">
+                            <button class="dropdown-item transvert-button papago-convert-button" type="button" data-lang="zh-CN">
                                 Papago (Trung (Giản thể))
                             </button>
                         </li>
                         <li>
-                            <button class="dropdown-item convert papago-convert" type="button" data-lang="zh-TW">
+                            <button class="dropdown-item transvert-button papago-convert-button" type="button" data-lang="zh-TW">
                                 Papago (Trung (Phồn thể))
                             </button>
                         </li>
                         <li>
-                            <button class="dropdown-item convert papago-convert" type="button" data-lang="vi">
+                            <button class="dropdown-item transvert-button papago-convert-button" type="button" data-lang="vi">
                                 Papago (Việt)
                             </button>
                         </li>
                         <li>
-                            <button class="dropdown-item convert microsoft-convert" type="button" data-lang="en">
+                            <button class="dropdown-item transvert-button microsoft-convert-button" type="button" data-lang="en">
                                 Trình dịch Microsoft (Anh)
                             </button>
                         </li>
                         <li>
-                            <button class="dropdown-item convert microsoft-convert" type="button" data-lang="ja">
+                            <button class="dropdown-item transvert-button microsoft-convert-button" type="button" data-lang="ja">
                                 Trình dịch Microsoft (Nhật)
                             </button>
                         </li>
                         <li>
-                            <button class="dropdown-item convert microsoft-convert" type="button" data-lang="zh-CHS">
+                            <button class="dropdown-item transvert-button microsoft-convert-button" type="button" data-lang="zh-CHS">
                                 Trình dịch Microsoft (Trung (Giản thể))
                             </button>
                         </li>
                         <li>
-                            <button class="dropdown-item convert microsoft-convert" type="button" data-lang="zh-CHT">
+                            <button class="dropdown-item transvert-button microsoft-convert-button" type="button" data-lang="zh-CHT">
                                 Trình dịch Microsoft (Trung (Phồn thể))
                             </button>
                         </li>
                         <li>
-                            <button class="dropdown-item convert microsoft-convert" type="button" data-lang="vi">
+                            <button class="dropdown-item transvert-button microsoft-convert-button" type="button" data-lang="vi">
                                 Trình dịch Microsoft (Việt)
                             </button>
                         </li>
