@@ -147,7 +147,7 @@ $('#translateButton').click(async function () {
 });
 
 $('#copyButton').on('click', () => {
-    const data = $('#translatedText').is(':visible') && prevTranslation[1] != undefined ? prevTranslation[1] : $('#queryText').val();
+    const data = prevTranslation[1].length != undefined ? prevTranslation[1] : $('#queryText').val();
 
     if (data.length > 0) {
         navigator.clipboard.writeText(data);
@@ -532,8 +532,6 @@ async function translate(inputText, abortSignal) {
         }
 
         if (prevTranslation[1] == undefined || getDynamicDictionaryText(processText, translator === Translators.MICROSOFT_TRANSLATOR) != prevTranslation[0]) {
-            prevTranslation == [];
-
             if (translator === Translators.DEEPL_TRANSLATOR) {
                 const deeplUsage = (await $.get('https://api-free.deepl.com/v2/usage?auth_key=' + DEEPL_AUTH_KEY)) ?? {
                     'character_count': 500000,
@@ -793,8 +791,8 @@ function convertText(inputText, data, caseSensitive, useGlossary, translationAlg
                             for (const luatnhanLength of luatnhanLengths) {
                                 if (luatnhanData.hasOwnProperty(chars.substring(j, j + luatnhanLength))) {
                                     if (luatnhanData[chars.substring(j, j + luatnhanLength)].length > 0) {
-                                        if (punctuation.hasOwnProperty(chars[j - 1]) && /[\p{Ps}\p{Pi}\p{Po}]/u.test(chars[j - 1])) {
-                                            phrases.push((phrases.pop() ?? '') + luatnhanData[chars.substring(j, j + luatnhanLength)]);
+                                        if (!lines[i].startsWith(chars[j]) && punctuation.hasOwnProperty(chars[j - 1]) && /[\p{Ps}\p{Pi}]/u.test(chars[j - 1])) {
+                                            phrases.push(phrases.pop() + luatnhanData[chars.substring(j, j + luatnhanLength)]);
                                         } else {
                                             phrases.push(luatnhanData[chars.substring(j, j + luatnhanLength)]);
                                         }
@@ -809,8 +807,8 @@ function convertText(inputText, data, caseSensitive, useGlossary, translationAlg
                         for (const glossaryLength of glossaryLengths) {
                             if (glossary.hasOwnProperty(chars.substring(j, j + glossaryLength))) {
                                 if (glossary[chars.substring(j, j + glossaryLength)].length > 0) {
-                                    if (punctuation.hasOwnProperty(chars[j - 1]) && /[\p{Ps}\p{Pi}\p{Po}]/u.test(chars[j - 1])) {
-                                        phrases.push((phrases.pop() ?? '') + glossary[chars.substring(j, j + glossaryLength)]);
+                                    if (!lines[i].startsWith(chars[j]) && punctuation.hasOwnProperty(chars[j - 1]) && /[\p{Ps}\p{Pi}]/u.test(chars[j - 1])) {
+                                        phrases.push(phrases.pop() + glossary[chars.substring(j, j + glossaryLength)]);
                                     } else {
                                         phrases.push(glossary[chars.substring(j, j + glossaryLength)]);
                                     }
@@ -826,8 +824,8 @@ function convertText(inputText, data, caseSensitive, useGlossary, translationAlg
                         for (const luatnhanLength of luatnhanLengths) {
                             if (luatnhanData.hasOwnProperty(chars.substring(j, j + luatnhanLength))) {
                                 if (luatnhanData[chars.substring(j, j + luatnhanLength)].length > 0) {
-                                    if (punctuation.hasOwnProperty(chars[j - 1]) && /[\p{Ps}\p{Pi}\p{Po}]/u.test(chars[j - 1])) {
-                                        phrases.push((phrases.pop() ?? '') + luatnhanData[chars.substring(j, j + luatnhanLength)]);
+                                    if (!lines[i].startsWith(chars[j]) && punctuation.hasOwnProperty(chars[j - 1]) && /[\p{Ps}\p{Pi}]/u.test(chars[j - 1])) {
+                                        phrases.push(phrases.pop() + luatnhanData[chars.substring(j, j + luatnhanLength)]);
                                     } else {
                                         phrases.push(luatnhanData[chars.substring(j, j + luatnhanLength)]);
                                     }
@@ -842,8 +840,8 @@ function convertText(inputText, data, caseSensitive, useGlossary, translationAlg
                     for (const phraseLength of phraseLengths) {
                         if (data.hasOwnProperty(chars.substring(j, j + phraseLength))) {
                             if (data[chars.substring(j, j + phraseLength)].length > 0) {
-                                if (punctuation.hasOwnProperty(chars[j - 1]) && /[\p{Ps}\p{Pi}\p{Po}]/u.test(chars[j - 1])) {
-                                    phrases.push((phrases.pop() ?? '') + data[chars.substring(j, j + phraseLength)]);
+                                if (!lines[i].startsWith(chars[j]) && punctuation.hasOwnProperty(chars[j - 1]) && /[\p{Ps}\p{Pi}]/u.test(chars[j - 1])) {
+                                    phrases.push(phrases.pop() + data[chars.substring(j, j + phraseLength)]);
                                 } else {
                                     phrases.push(data[chars.substring(j, j + phraseLength)]);
                                 }
