@@ -721,7 +721,6 @@ function buildTranslatedResult(inputTexts, result, showOriginal) {
 
 function convertText(inputText, data, caseSensitive, useGlossary, translationAlgorithm = VietPhraseTranslationAlgorithms.PRIORITIZE_LONG_VIETPHRASE_CLUSTERS, multiplicationAlgorithm = VietPhraseMultiplicationAlgorithm.MULTIPLICATION_BY_PRONOUNS_NAMES) {
     try {
-        const a=Date.now();
         const glossaryEntries = Object.entries(glossary).filter(([first]) => inputText.includes(first));
         const luatnhanList = [];
 
@@ -755,8 +754,6 @@ function convertText(inputText, data, caseSensitive, useGlossary, translationAlg
         for (let i = 0; i < lines.length; i++) {
             let chars = lines[i];
 
-            const filteredPunctuationEntries = punctuationEntries.filter(([first]) => chars.includes(first));
-
             if (chars.trim().length == 0) {
                 results.push(chars);
                 continue;
@@ -765,6 +762,7 @@ function convertText(inputText, data, caseSensitive, useGlossary, translationAlg
             const filteredLuatnhanList = luatnhanList.filter(([first]) => chars.includes(first));
             const filteredDataEntries = dataEntries.filter(([first]) => chars.includes(first));
             const filteredGlossaryEntries = glossaryEntries.filter(([first]) => chars.includes(first));
+            const filteredPunctuationEntries = punctuationEntries.filter(([first]) => chars.includes(first));
 
             if (filteredDataEntries.length == 0 && filteredPunctuationEntries.length == 0 && filteredGlossaryEntries.length == 0) {
                 results.push(chars);
@@ -775,10 +773,11 @@ function convertText(inputText, data, caseSensitive, useGlossary, translationAlg
                 const sortedData = Object.fromEntries([...filteredLuatnhanList, ...useGlossary && filteredGlossaryEntries.length > 0 ? filteredGlossaryEntries : [], ...filteredDataEntries].sort((a, b) => b[0].length - a[0].length));
 
                 for (const property in sortedData) {
-                    chars = chars.replace(new RegExp(`${property.replace(/[/[\]\-.\\|^$!=()*+?{}]/g, '\\$&')}(?=(?:$|[${filteredPunctuationEntries.map(([first]) => first.replace(/[\]]/, '\\\\$&')).filter((element) => /[\p{Pe}\p{Pf}\p{Po}]/u.test(element)).join('')}]))`, 'g'), sortedData[property].replace(/[/[\]\-.\\|^$!=()*+?{}]/g, '\\$&')).replace(new RegExp(property.replace(/[/[\]\-.\\|^$!=()*+?{}]/g, '\\$&'), 'g'), `${sortedData[property].replace(/\$/g, '$$$&')} `);
-                    filteredPunctuationEntries.forEach(([first, second]) => chars = chars.replace(new RegExp(first.replace(/[/[\]\-.\\|^$!=()*+?{}]/g, '\\$&'), 'g'), second.replace(/\$/g, '$$$&')));
+                    console.log(new RegExp(`${property.replace(/[/[\]\-.\\|^$!=()*+?{}]/g, '\\$&')}(?=(?:$|[${filteredPunctuationEntries.filter(([first]) => /[\p{Pe}\p{Pf}\p{Po}]/u.test(first)).map(([first]) => first.replace(/[\\\]]/g, '\\$&')).join('')}]))`, 'g'), chars.replace(new RegExp(`${property.replace(/[/[\]\-.\\|^$!=()*+?{}]/g, '\\$&')}(?=(?:$|[${filteredPunctuationEntries.filter(([first]) => /[\p{Pe}\p{Pf}\p{Po}]/u.test(first)).map(([first]) => first.replace(/[\\\]]/g, '\\$&')).join('')}]))`, 'g'), sortedData[property].replace(/[/[\]\-.\\|^$!=()*+?{}]/g, '\\$&')));
+                    chars = chars.replace(new RegExp(`${property.replace(/[/[\]\-.\\|^$!=()*+?{}]/g, '\\$&')}(?=(?:$|[${filteredPunctuationEntries.filter(([first]) => /[\p{Pe}\p{Pf}\p{Po}]/u.test(first)).map(([first]) => first.replace(/[\\\]]/g, '\\$&')).join('')}]))`, 'g'), sortedData[property].replace(/[/[\]\-.\\|^$!=()*+?{}]/g, '\\$&')).replace(new RegExp(property.replace(/[/[\]\-.\\|^$!=()*+?{}]/g, '\\$&'), 'g'), `${sortedData[property].replace(/\$/g, '$$$&')} `);
                 }
 
+                filteredPunctuationEntries.forEach(([first, second]) => chars = chars.replace(new RegExp(first.replace(/[/[\]\-.\\|^$!=()*+?{}]/g, '\\$&'), 'g'), second.replace(/\$/g, '$$$&')));
                 results.push(chars);
             } else if (translationAlgorithm == VietPhraseTranslationAlgorithms.TRANSLATE_FROM_LEFT_TO_RIGHT) {
                 const luatnhanLengths = [...filteredLuatnhanList.map(([first]) => first.length), 1].sort((a, b) => b - a).filter((element, index, array) => index == array.indexOf(element));

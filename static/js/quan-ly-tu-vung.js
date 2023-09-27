@@ -350,7 +350,7 @@ $('#preview').on('click', function () {
 $('#glossaryName').on('input', () => loadGlossary());
 
 function getSelectedTextOrActiveElementText() {
-    return window.getSelection().toString() || '';
+    return window.getSelection().toString() || ((document.activeElement.tagName == 'TEXTAREA' || (document.activeElement.tagName == 'INPUT' && /^(?:email|month|number|search|tel|text|url|week)$/i.test(document.activeElement.type))) && typeof document.activeElement.selectionStart == 'number' && document.activeElement.value.slice(document.activeElement.selectionStart, document.activeElement.selectionEnd)) || '';
 }
 
 function loadGlossary() {
