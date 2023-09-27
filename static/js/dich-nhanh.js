@@ -778,7 +778,7 @@ function convertText(inputText, data, caseSensitive, useGlossary, translationAlg
             } else if (translationAlgorithm == VietPhraseTranslationAlgorithms.TRANSLATE_FROM_LEFT_TO_RIGHT) {
                 const glossaryLengths = [...filteredGlossaryEntries.map(([first]) => first.length), 1].sort((a, b) => b - a).filter((element, index, array) => index == array.indexOf(element));
                 const phraseLengths = [...filteredDataEntries.map(([first]) => first.length), 1].sort((a, b) => b - a).filter((element, index, array) => index == array.indexOf(element));
-                const phrases = [];
+                let phrases = [];
                 let isConvertingGlossary = useGlossary;
                 let tempWord = '';
                 
@@ -832,6 +832,8 @@ function convertText(inputText, data, caseSensitive, useGlossary, translationAlg
                     
                     if (isConvertingGlossary) {
                         if (j + 1 == chars.length) {
+                            chars = phrases.join(' ').trim();
+                            phrases = [];
                             isConvertingGlossary = false;
                             i = -1;
                         }
