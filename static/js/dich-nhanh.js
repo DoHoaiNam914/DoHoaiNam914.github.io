@@ -20,7 +20,9 @@ const flexSwitchCheckGlossary = $('#flexSwitchCheckGlossary');
 const flexSwitchCheckAllowAnothers = $('#flexSwitchCheckAllowAnothers');
 
 const translators = $('.translator');
+const currentTranslator = $('.translator').filter($('.active'));
 const fontOptions = $('.font-option');
+const currentFont = $('.font-option').filter($('.active'));
 const flexSwitchCheckShowOriginal = $('#flexSwitchCheckShowOriginal');
 const inputVietphrase = $('#inputVietphrase');
 
@@ -218,8 +220,6 @@ translators.click(function () {
         translators.removeClass('active');
         $(this).addClass('active');
 
-        const currentTranslator = $('.translator.active');
-
         sourceLangSelect.html(getSourceLanguageOptions($(this).data('id')));
         const sourceLangSelectOptions = $('#sourceLangSelect > option');
         sourceLangSelectOptions.each(function (index) {
@@ -271,7 +271,7 @@ fontOptions.click(function () {
         fontOptions.removeClass('active');
         $(this).addClass('active');
         translator['font'] = $(this).text();
-        $(document.body).css('--opt-font-family', $(this).text());
+        $(document.body).css('--opt-font-family', $(this).text() !== 'Phông chữ hệ thống' ? $(this).text() : '');
 
         localStorage.setItem('translator', JSON.stringify(translator));
     }
@@ -289,21 +289,25 @@ inputVietphrase.on('change', function () {
 });
 
 function loadTranslatorOptions() {
-    const data = {};
-    data['translator'] = $('.translator.active').data('id');
-    data['font'] = $('.font-option.active').text();
+    try {
+        const data = {};
+        data['font'] = currentFont.text();
+        data['translator'] = currentTranslator.data('id');
 
-    for (let i = 0; i < translatorOptions.length; i++) {
-        if (translatorOptions[i].id.startsWith('flexSwitchCheck') && translatorOptions[i].checked === true) {
-            data[translatorOptions[i].id] = translatorOptions[i].checked;
-        } else if (translatorOptions[i].name.startsWith('flexRadio') && translatorOptions[i].checked === true) {
-            data[translatorOptions[i].name] = translatorOptions[i].value;
-        } else if (translatorOptions[i].className.includes('form-select') && translatorOptions[i].value !== '') {
-            data[translatorOptions[i].id] = translatorOptions[i].value;
+        for (let i = 0; i < translatorOptions.length; i++) {
+            if (translatorOptions.filter(`:eq(${i})`).attr('id').startsWith('flexSwitchCheck') && translatorOptions.filter(`:eq(${i})`).prop('checked') === true) {
+                data[translatorOptions.filter(`:eq(${i})`).attr('id')] = translatorOptions.filter(`:eq(${i})`).prop('checked');
+            } else if (translatorOptions.filter(`:eq(${i})`).attr('name') != undefined && translatorOptions.filter(`:eq(${i})`).attr('name').startsWith('flexRadio') && translatorOptions.filter(`:eq(${i})`).prop('checked') === true) {
+                data[translatorOptions.filter(`:eq(${i})`).attr('name')] = translatorOptions.filter(`:eq(${i})`).val();
+            } else if (translatorOptions.filter(`:eq(${i})`).hasClass('form-select')) {
+                data[translatorOptions.filter(`:eq(${i})`).attr('id')] = translatorOptions.filter(`:eq(${i})`).val();
+            }
         }
-    }
 
-    return data;
+        return data;
+    } catch (error) {
+        console.error(error);
+    }
 }
 
 function getDefaultSourceLanguage(translator) {
@@ -501,7 +505,7 @@ function getTargetLanguageOptions(translator) {
 
 async function translate(inputText, abortSignal) {
     const startTime = Date.now();
-    const translator = $('.translator.active').data('id');
+    const translator = currentTranslator.data('id');
 
     const sourceLanguage = sourceLangSelect.val();
     const targetLanguage = targetLangSelect.val();
@@ -716,7 +720,7 @@ function buildTranslatedResult(inputTexts, result, showOriginal) {
 						lostLineFixedAmount++;
 						i--;
 						continue;
-					} else if ($('.translator.active').data('id') === Translators.PAPAGO && resultLines[i].trim().length === 0 && inputLines[i + lostLineFixedAmount].trim().length > 0) {
+					} else if (currentTranslator.data('id') === Translators.PAPAGO && resultLines[i].trim().length === 0 && inputLines[i + lostLineFixedAmount].trim().length > 0) {
 						lostLineFixedAmount--;
 						continue;
 					}

@@ -11,30 +11,6 @@
         const storedTheme = localStorage.getItem('theme');
         const preferredTheme = storedTheme ?? 'auto';
 
-        const setTheme = (theme) => {
-            if (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-                $(document.documentElement).attr('data-bs-theme', 'dark');
-            } else {
-                $(document.documentElement).attr('data-bs-theme', theme);
-            }
-        };
-
-        const showActiveTheme = (theme, focus = false) => {
-            const themeSwitcher = $('#theme');
-            if (!themeSwitcher) return;
-
-            const activeThemeIcon = $('.theme-icon-active');
-            const btnToActive = $(`[data-theme-value="${theme}"]`);
-            const svgOfActiveBtn = $(btnToActive).html();
-
-            $('[data-theme-value]').removeClass('active');
-            $(btnToActive).addClass('active');
-            $(activeThemeIcon).html(svgOfActiveBtn);
-            if (focus) themeSwitcher.focus()
-        };
-
-        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => (storedTheme !== 'light' || storedTheme !== 'dark') && setTheme(preferredTheme));
-
         $LAB
             .script('/static/lib/jquery-3.7.0.js').wait()
             .script('/static/lib/bootstrap.bundle.min.js').wait(function () {
@@ -96,9 +72,37 @@
             glossary = localGlossary.data;
             $('#glossaryType').val(localGlossary.type).change();
         });
+
+        const setTheme = (theme) => {
+            if (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                $(document.documentElement).attr('data-bs-theme', 'dark');
+            } else {
+                $(document.documentElement).attr('data-bs-theme', theme);
+            }
+        };
+
+        const showActiveTheme = (theme, focus = false) => {
+            const themeSwitcher = $('#theme');
+            if (!themeSwitcher) return;
+
+            const activeThemeIcon = $('.theme-icon-active');
+            const btnToActive = $(`[data-theme-value="${theme}"]`);
+            const svgOfActiveBtn = $(btnToActive).html();
+
+            $('[data-theme-value]').removeClass('active');
+            $(btnToActive).addClass('active');
+            $(activeThemeIcon).html(svgOfActiveBtn);
+            if (focus) themeSwitcher.focus()
+        };
+
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => (storedTheme !== 'light' || storedTheme !== 'dark') && setTheme(preferredTheme));
     </script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Andika:ital,wght@0,400;0,700;1,400;1,700&family=Arbutus+Slab&family=Crimson+Text:ital,wght@0,400;0,700;1,400;1,700&family=Lato:ital,wght@0,400;0,700;1,400;1,700&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,700;1,7..72,400;1,7..72,700&family=Noto+Sans:ital,wght@0,400;0,700;1,400;1,700&family=Vollkorn:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
+        body {
+            --opt-font-family: serif-ja, serif;
+        }
 
         #recognizeImage {
             max-height: 20%;
@@ -107,7 +111,7 @@
         }
 
         .textarea {
-            font-family: var(--opt-font-family), serif-ja, serif;
+            font-family: var(--opt-font-family) !important;
             font-size: 18px;
             min-height: calc(100vh - 15.5rem) !important;
             line-height: 1.2em;
@@ -649,6 +653,9 @@
                         Phông chữ
                     </button>
                     <ul class="dropdown-menu">
+                        <li>
+                            <button class="dropdown-item font-option" type="button">Phông chữ hệ thống</button>
+                        </li>
                         <li>
                             <button class="dropdown-item font-option active" type="button">Crimson Text</button>
                         </li>
