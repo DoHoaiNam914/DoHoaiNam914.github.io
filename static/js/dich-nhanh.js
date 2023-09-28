@@ -20,6 +20,7 @@ const flexSwitchCheckGlossary = $('#flexSwitchCheckGlossary');
 const flexSwitchCheckAllowAnothers = $('#flexSwitchCheckAllowAnothers');
 
 const translators = $('.translator');
+const fontOptions = $('.font-option');
 const flexSwitchCheckShowOriginal = $('#flexSwitchCheckShowOriginal');
 const inputVietphrase = $('#inputVietphrase');
 
@@ -192,8 +193,8 @@ queryText.on('input', () => {
     $(visualViewport).resize();
     queryTextCounter.text(queryText.val().length);
 });
-$('.modal').on('hidden.bs.modal', () => $(document.body).removeAttr('style'));
-$('.modal').on('shown.bs.modal', () => $(document.body).css({
+$('.modal').on('hidden.bs.modal', () => $(document.documentElement).removeAttr('style'));
+$('.modal').on('shown.bs.modal', () => $(document.documentElement).css({
     '-webkit-overflow-scrolling': 'auto',
     overflow: 'hidden',
     'overscroll-behavior': 'none',
@@ -265,6 +266,16 @@ translators.click(function () {
         retranslateButton.click();
     }
 });
+fontOptions.click(function () {
+    if (!$(this).hasClass('disabled')) {
+        fontOptions.removeClass('active');
+        $(this).addClass('active');
+        translator['font'] = $(this).text();
+        $(document.body).css('--opt-font-family', $(this).text());
+
+        localStorage.setItem('translator', JSON.stringify(translator));
+    }
+});
 inputVietphrase.on('change', function () {
     const reader = new FileReader();
 
@@ -280,6 +291,7 @@ inputVietphrase.on('change', function () {
 function loadTranslatorOptions() {
     const data = {};
     data['translator'] = $('.translator.active').data('id');
+    data['font'] = $('.font-option.active').text();
 
     for (let i = 0; i < translatorOptions.length; i++) {
         if (translatorOptions[i].id.startsWith('flexSwitchCheck') && translatorOptions[i].checked === true) {
@@ -316,7 +328,6 @@ function getDefaultTargetLanguage(translator) {
 
         case Translators.LINGVANEX:
             return 'vi_VN';
-
 
         default:
             return 'vi';
@@ -494,8 +505,6 @@ async function translate(inputText, abortSignal) {
 
     const sourceLanguage = sourceLangSelect.val();
     const targetLanguage = targetLangSelect.val();
-
-    const isCjkTargetLanguage = !(targetLanguage === 'JA' || targetLanguage === 'KO' || targetLanguage === 'ZH') || !(targetLanguage === 'zh-CN' || targetLanguage === 'zh-TW' || targetLanguage === 'ja' || targetLanguage === 'ko') || !(targetLanguage === 'ko' || targetLanguage === 'ja' || targetLanguage === 'zh-CN' || targetLanguage === 'zh-TW') || !(targetLanguage === 'yue' || targetLanguage === 'lzh' || targetLanguage === 'zh-Hans' || targetLanguage === 'zh-Hant' || targetLanguage === 'ja' || targetLanguage === 'ko');
 
     const errorMessage = document.createElement('p');
 

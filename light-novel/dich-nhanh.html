@@ -73,16 +73,17 @@
                 localStorage.setItem('translator', JSON.stringify(translator));
             }
 
+            $(`.font-option:contains(${translator.font})`).click();
             $(`.translator[data-id="${translator.translator}"]`).click();
 
             for (let i = 0; i < translatorOptions.length; i++) {
-                if (translatorOptions[i].id.startsWith('flexSwitchCheck')) {
-                    translatorOptions[i].checked = translator[translatorOptions[i].id];
-                } else if (translatorOptions[i].name.startsWith('flexRadio') && translatorOptions[i].value == translator[translatorOptions[i].name]) {
-                    $(`.option[name="${translatorOptions[i].name}"]`).removeProp('checked');
-                    translatorOptions[i].checked = true;
-                } else if (translatorOptions[i].className.includes('form-select')) {
-                    translatorOptions[i].value = translator[translatorOptions[i].id];
+                if (translatorOptions.filter(`:eq(${i})`).attr('id').startsWith('flexSwitchCheck')) {
+                    translatorOptions.filter(`:eq(${i})`).prop('checked', translator[translatorOptions.filter(`:eq(${i})`).attr('id')]);
+                } else if (translatorOptions.filter(`:eq(${i})`).attr('name').startsWith('flexRadio') && translatorOptions.filter(`:eq(${i})`).val() === translator[translatorOptions.filter(`:eq(${i})`).attr('name')]) {
+                    $(`.option[name="${translatorOptions.filter(`:eq(${i})`).name}"]`).removeProp('checked');
+                    translatorOptions.filter(`:eq(${i})`).prop('checked', true);
+                } else if (translatorOptions.filter(`:eq(${i})`).hasClass('form-select')) {
+                    translatorOptions.filter(`:eq(${i})`).val(translator[translatorOptions.filter(`:eq(${i})`).attr('id')]);
                 }
             }
         })
@@ -97,6 +98,8 @@
         });
     </script>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Andika:ital,wght@0,400;0,700;1,400;1,700&family=Arbutus+Slab&family=Crimson+Text:ital,wght@0,400;0,700;1,400;1,700&family=Lato:ital,wght@0,400;0,700;1,400;1,700&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,700;1,7..72,400;1,7..72,700&family=Noto+Sans:ital,wght@0,400;0,700;1,400;1,700&family=Vollkorn:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
         #recognizeImage {
             max-height: 20%;
             max-width: 100%;
@@ -104,7 +107,7 @@
         }
 
         .textarea {
-            font-family: serif-ja, serif;
+            font-family: var(--opt-font-family), serif-ja, serif;
             font-size: 18px;
             min-height: calc(100vh - 15.5rem) !important;
             line-height: 1.2em;
@@ -227,7 +230,8 @@
         </div>
     </nav>
     <ul class="nav nav-scroller bg-light-subtle">
-        <li class="nav-item mx-3">Số lượng ký tự: <span id="queryTextCounter">0</span> (<span id="translateTimer">0</span>s)</li>
+        <li class="nav-item mx-3">Số lượng ký tự: <span id="queryTextCounter">0</span> (<span id="translateTimer">0</span>s)
+        </li>
         <li>
             <button class="nav-item nav-link" id="copyButton" type="button">Sao chép</button>
         </li>
@@ -285,10 +289,14 @@
                             <button class="dropdown-item" id="clearSourceTextButton" type="button">Xoá</button>
                         </li>
                         <li>
-                            <button class="dropdown-item copy-entryButton" data-for="sourceEntry" type="button">Sao chép</button>
+                            <button class="dropdown-item copy-entryButton" data-for="sourceEntry" type="button">
+                                Sao chép
+                            </button>
                         </li>
                         <li>
-                            <button class="dropdown-item paste-entryButton" data-for="sourceEntry" type="button">Dán</button>
+                            <button class="dropdown-item paste-entryButton" data-for="sourceEntry" type="button">
+                                Dán
+                            </button>
                         </li>
                         <li>
                             <hr class="dropdown-divider">
@@ -299,19 +307,29 @@
                             </button>
                         </li>
                         <li>
-                            <button class="dropdown-item define-button" data-href="https://www.google.com.vn/search?q=${0}" type="button">Google</button>
+                            <button class="dropdown-item define-button" data-href="https://www.google.com.vn/search?q=${0}" type="button">
+                                Google
+                            </button>
                         </li>
                         <li>
-                            <button class="dropdown-item define-button" data-href="https://vi.wikipedia.org/w/?search=${0}&ns0=1" type="button">Wikipedia</button>
+                            <button class="dropdown-item define-button" data-href="https://vi.wikipedia.org/w/?search=${0}&ns0=1" type="button">
+                                Wikipedia
+                            </button>
                         </li>
                         <li>
-                            <button class="dropdown-item define-button" data-href="https://hvdic.thivien.net/whv/${0}" type="button">Từ điển Hán Nôm</button>
+                            <button class="dropdown-item define-button" data-href="https://hvdic.thivien.net/whv/${0}" type="button">
+                                Từ điển Hán Nôm
+                            </button>
                         </li>
                         <li>
-                            <button class="dropdown-item define-button" data-href="https://english.dict.naver.com/english-chinese-dictionary/#/search?query=${0}" type="button">Naver dictionary</button>
+                            <button class="dropdown-item define-button" data-href="https://english.dict.naver.com/english-chinese-dictionary/#/search?query=${0}" type="button">
+                                Naver dictionary
+                            </button>
                         </li>
                         <li>
-                            <button class="dropdown-item define-button" data-href="https://www.baidu.com/s?wd=${0}" type="button">Baidu</button>
+                            <button class="dropdown-item define-button" data-href="https://www.baidu.com/s?wd=${0}" type="button">
+                                Baidu
+                            </button>
                         </li>
                         <li>
                             <hr class="dropdown-divider">
@@ -322,10 +340,14 @@
                             </button>
                         </li>
                         <li>
-                            <button class="dropdown-item translate-button" data-href="https://translate.google.com/?sl=auto&tl=vi&text=${0}&op=translate" type="button">Google Dịch</button>
+                            <button class="dropdown-item translate-button" data-href="https://translate.google.com/?sl=auto&tl=vi&text=${0}&op=translate" type="button">
+                                Google Dịch
+                            </button>
                         </li>
                         <li>
-                            <button class="dropdown-item translate-button" data-href="https://papago.naver.com/?sk=auto&tk=vi&st=${0}" data-href="button">Papago</button>
+                            <button class="dropdown-item translate-button" data-href="https://papago.naver.com/?sk=auto&tk=vi&st=${0}" data-href="button">
+                                Papago
+                            </button>
                         </li>
                         <li>
                             <button class="dropdown-item translate-button" data-href="https://www.bing.com/translator?from=auto-detect&to=vi&text=${0}" type="button">
@@ -344,10 +366,14 @@
                     <button type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false"></button>
                     <ul class="dropdown-menu dropdown-scroller">
                         <li>
-                            <button class="dropdown-item copy-entryButton" data-for="targetEntry" type="button">Sao chép</button>
+                            <button class="dropdown-item copy-entryButton" data-for="targetEntry" type="button">
+                                Sao chép
+                            </button>
                         </li>
                         <li>
-                            <button class="dropdown-item paste-entryButton" data-for="targetEntry" type="button">Dán</button>
+                            <button class="dropdown-item paste-entryButton" data-for="targetEntry" type="button">
+                                Dán
+                            </button>
                         </li>
                         <li>
                             <hr class="dropdown-divider">
@@ -381,7 +407,9 @@
                             </button>
                         </li>
                         <li>
-                            <button class="dropdown-item upper-case-button" data-amount="#" type="button">Viết hoa tất cả</button>
+                            <button class="dropdown-item upper-case-button" data-amount="#" type="button">
+                                Viết hoa tất cả
+                            </button>
                         </li>
                         <li>
                             <hr class="dropdown-divider">
@@ -508,8 +536,7 @@
                         <option value="-1" selected>Chọn...</option>
                     </select>
                     <button class="btn btn-outline-secondary" id="removeButton" type="button">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                             class="bi bi-eraser" viewBox="0 0 16 16">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eraser" viewBox="0 0 16 16">
                             <path d="M8.086 2.207a2 2 0 0 1 2.828 0l3.879 3.879a2 2 0 0 1 0 2.828l-5.5 5.5A2 2 0 0 1 7.879 15H5.12a2 2 0 0 1-1.414-.586l-2.5-2.5a2 2 0 0 1 0-2.828l6.879-6.879zm2.121.707a1 1 0 0 0-1.414 0L4.16 7.547l5.293 5.293 4.633-4.633a1 1 0 0 0 0-1.414l-3.879-3.879zM8.746 13.547 3.453 8.254 1.914 9.793a1 1 0 0 0 0 1.414l2.5 2.5a1 1 0 0 0 .707.293H7.88a1 1 0 0 0 .707-.293l.16-.16z"/>
                         </svg>
                     </button>
@@ -532,7 +559,8 @@
     </div>
 </div>
 <button type="button" class="btn btn-float position-fixed" id="settingsButton" data-bs-toggle="modal" data-bs-target="#settings">
-    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-gear" viewBox="0 0 16 16">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-gear"
+         viewBox="0 0 16 16">
         <path d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492zM5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0z"/>
         <path d="M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0l-.094.319a.873.873 0 0 1-1.255.52l-.292-.16c-1.64-.892-3.433.902-2.54 2.541l.159.292a.873.873 0 0 1-.52 1.255l-.319.094c-1.79.527-1.79 3.065 0 3.592l.319.094a.873.873 0 0 1 .52 1.255l-.16.292c-.892 1.64.901 3.434 2.541 2.54l.292-.159a.873.873 0 0 1 1.255.52l.094.319c.527 1.79 3.065 1.79 3.592 0l.094-.319a.873.873 0 0 1 1.255-.52l.292.16c1.64.893 3.434-.902 2.54-2.541l-.159-.292a.873.873 0 0 1 .52-1.255l.319-.094c1.79-.527 1.79-3.065 0-3.592l-.319-.094a.873.873 0 0 1-.52-1.255l.16-.292c.893-1.64-.902-3.433-2.541-2.54l-.292.159a.873.873 0 0 1-1.255-.52l-.094-.319zm-2.633.283c.246-.835 1.428-.835 1.674 0l.094.319a1.873 1.873 0 0 0 2.693 1.115l.291-.16c.764-.415 1.6.42 1.184 1.185l-.159.292a1.873 1.873 0 0 0 1.116 2.692l.318.094c.835.246.835 1.428 0 1.674l-.319.094a1.873 1.873 0 0 0-1.115 2.693l.16.291c.415.764-.42 1.6-1.185 1.184l-.291-.159a1.873 1.873 0 0 0-2.693 1.116l-.094.318c-.246.835-1.428.835-1.674 0l-.094-.319a1.873 1.873 0 0 0-2.692-1.115l-.292.16c-.764.415-1.6-.42-1.184-1.185l.159-.291A1.873 1.873 0 0 0 1.945 8.93l-.319-.094c-.835-.246-.835-1.428 0-1.674l.319-.094A1.873 1.873 0 0 0 3.06 4.377l-.16-.292c-.415-.764.42-1.6 1.185-1.184l.292.159a1.873 1.873 0 0 0 2.692-1.115l.094-.319z"/>
     </svg>
@@ -597,7 +625,7 @@
                             </button>
                         </li>
                         <li>
-                            <button class="dropdown-item translator active" data-id="lingvanex" type="button">
+                            <button class="dropdown-item translator" data-id="lingvanex" type="button">
                                 Lingvanex
                             </button>
                         </li>
@@ -613,6 +641,37 @@
                             <button class="dropdown-item translator" data-id="vietphrase" type="button">
                                 Vietphrase
                             </button>
+                        </li>
+                    </ul>
+                </div>
+                <div class="dropdown mb-3">
+                    <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Phông chữ
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <button class="dropdown-item font-option active" type="button">Crimson Text</button>
+                        </li>
+                        <li>
+                            <button class="dropdown-item font-option" type="button">Literata</button>
+                        </li>
+                        <li>
+                            <button class="dropdown-item font-option" type="button">Vollkorn</button>
+                        </li>
+                        <li>
+                            <button class="dropdown-item font-option" type="button">Roboto</button>
+                        </li>
+                        <li>
+                            <button class="dropdown-item font-option" type="button">Lato</button>
+                        </li>
+                        <li>
+                            <button class="dropdown-item font-option" type="button">Arbutus Slab</button>
+                        </li>
+                        <li>
+                            <button class="dropdown-item font-option" type="button">Noto Sans</button>
+                        </li>
+                        <li>
+                            <button class="dropdown-item font-option" type="button">Andika</button>
                         </li>
                     </ul>
                 </div>
@@ -636,7 +695,9 @@
                     </div>
                     <div class="form-check">
                         <input class="form-check-input option" type="radio" name="flexRadioTranslationAlgorithm" id="flexRadioTranslateFromLeftToRight" value="1">
-                        <label class="form-check-label" for="flexRadioTranslateFromLeftToRight">Dịch từ trái sang phải</label>
+                        <label class="form-check-label" for="flexRadioTranslateFromLeftToRight">
+                            Dịch từ trái sang phải
+                        </label>
                     </div>
                     <!-- div class="form-check">
                         <input class="form-check-input option" type="checkbox" role="switch" id="flexSwitchCheckPrioritizeNameOverVietPhrase">
@@ -651,11 +712,15 @@
                     </div>
                     <div class="form-check">
                         <input class="form-check-input option" type="radio" name="flexRadioMultiplicationAlgorithm" id="flexRadioMultiplicationByPronouns" value="1">
-                        <label class="form-check-label" for="flexRadioMultiplicationByPronouns">Nhân theo Pronouns</label>
+                        <label class="form-check-label" for="flexRadioMultiplicationByPronouns">
+                            Nhân theo Pronouns
+                        </label>
                     </div>
                     <div class="form-check">
                         <input class="form-check-input option" type="radio" name="flexRadioMultiplicationAlgorithm" id="flexRadioMultiplicationByPronounsNames" value="2" checked>
-                        <label class="form-check-label" for="flexRadioMultiplicationByPronounsNames">Nhân theo Pronouns + Names</label>
+                        <label class="form-check-label" for="flexRadioMultiplicationByPronounsNames">
+                            Nhân theo Pronouns + Names
+                        </label>
                     </div>
                 </div>
                 <!--hr>
@@ -686,9 +751,7 @@
 <script>
     ;(function () {
         var src = '//cdn.jsdelivr.net/npm/eruda';
-        if (!/eruda=true/.test(window.location) && localStorage.getItem('active-eruda') != 'true') {
-            return;
-        }
+        if (!/eruda=true/.test(window.location) && localStorage.getItem('active-eruda') != 'true') return;
         document.write('<scr' + 'ipt src="' + src + '"></scr' + 'ipt>');
         document.write('<scr' + 'ipt>eruda.init();</scr' + 'ipt>');
     })();
