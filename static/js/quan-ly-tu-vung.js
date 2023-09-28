@@ -4,11 +4,16 @@ const glossaryManagerButton = $('#glossaryManagerButton');
 
 const inputGlossary = $('#inputGlossary');
 const clearGlossaryButton = $('#clearGlossaryButton');
+const glossaryCounter = $('#glossaryCounter');
 const glossaryType = $('#glossaryType');
 const sourceEntry = $('#sourceEntry');
 const targetEntry = $('#targetEntry');
 const addButton = $('#addButton');
+const glossaryList = $('#glossaryList');
 const removeButton = $('#removeButton');
+const glossaryName = $('#glossaryName');
+const fileExtension = $('#fileExtension');
+const downloadButton = $('#downloadButton');
 
 const clearSourceTextButton = $('#clearSourceTextButton');
 const copyEntryButton = $('.copy-entryButton');
@@ -33,7 +38,6 @@ glossaryManagerButton.on('mousedown', () => {
     $('#glossaryList').val(-1).change();
     sourceEntry.val(getSelectedTextOrActiveElementText()).trigger('input');
 });
-
 inputGlossary.on('change', function () {
     const reader = new FileReader();
 
@@ -58,7 +62,6 @@ inputGlossary.on('change', function () {
     };
     reader.readAsText($(this).prop('files')[0]);
 });
-
 clearGlossaryButton.on('click', () => {
     if (window.confirm('Bạn có muốn xoá tập từ vựng này chứ?')) {
         glossary = {};
@@ -66,9 +69,7 @@ clearGlossaryButton.on('click', () => {
         inputGlossary.val(null);
     }
 });
-
 glossaryType.change(() => loadGlossary());
-
 sourceEntry.on('input', function () {
     if ($(this).val().length > 0) {
         targetEntry.val(convertText($(this).val(), VietphraseData.chinesePhienAmWords, false, true, VietPhraseTranslationAlgorithms.PRIORITIZE_LONG_VIETPHRASE_CLUSTERS, VietPhraseMultiplicationAlgorithm.NOT_APPLICABLE));
@@ -124,7 +125,6 @@ convertButtons.on('click', function () {
 upperCaseButtons.on('click', function () {
     if (targetEntry.val().length > 0) targetEntry.val(targetEntry.val().split(' ').map((word, index) => $(this).data('amount').includes('#') ? word = word.charAt(0).toUpperCase() + word.slice(1) : (index < $(this).data('amount') ? word.charAt(0).toUpperCase() + word.slice(1) : word.toLowerCase())).join(' '));
 });
-
 deeplConvertButtons.on('click', async function () {
     if (sourceEntry.val().length > 0) {
         sourceEntry.attr('readonly', true);
@@ -153,7 +153,6 @@ deeplConvertButtons.on('click', async function () {
         }
     }
 });
-
 googleConvertButtons.on('click', async function () {
     if (sourceEntry.val().length > 0) {
         sourceEntry.attr('readonly', true);
@@ -179,7 +178,6 @@ googleConvertButtons.on('click', async function () {
         }
     }
 });
-
 lingvanexConvertButtons.on('click', async function () {
     if (sourceEntry.val().length > 0) {
         sourceEntry.attr('readonly', true);
@@ -205,7 +203,6 @@ lingvanexConvertButtons.on('click', async function () {
         }
     }
 });
-
 papagoConvertButtons.on('click', async function () {
     if (sourceEntry.val().length > 0) {
         sourceEntry.attr('readonly', true);
@@ -231,7 +228,6 @@ papagoConvertButtons.on('click', async function () {
         }
     }
 });
-
 microsoftConvertButtons.on('click', async function () {
     if (sourceEntry.val().length > 0) {
         sourceEntry.attr('readonly', true);
@@ -257,8 +253,7 @@ microsoftConvertButtons.on('click', async function () {
         }
     }
 });
-
-$('#glossaryList').change(function () {
+glossaryList.change(function () {
     if (glossary.hasOwnProperty(this.value)) {
         sourceEntry.val(this.value).trigger('input');
     } else {
@@ -266,7 +261,6 @@ $('#glossaryList').change(function () {
         targetEntry.val('');
     }
 });
-
 removeButton.on('click', () => {
     if (window.confirm('Bạn có muốn xoá từ (cụm từ) này chứ?')
         && glossary.hasOwnProperty(sourceEntry.val())) {
@@ -276,33 +270,31 @@ removeButton.on('click', () => {
         inputGlossary.val(null);
     }
 });
-
 $('#preview').on('click', function () {
     if (Object.entries(glossary).length > 0) {
         this.select();
     }
 });
-
 $('#glossaryName').on('input', () => loadGlossary());
 
 function getSelectedTextOrActiveElementText() {
-    return window.getSelection().toString() || ((document.activeElement.tagName == 'TEXTAREA' || (document.activeElement.tagName == 'INPUT' && /^(?:email|month|number|search|tel|text|url|week)$/i.test(document.activeElement.type))) && typeof document.activeElement.selectionStart == 'number' && document.activeElement.value.slice(document.activeElement.selectionStart, document.activeElement.selectionEnd)) || '';
+    return window.getSelection().toString() || ((document.activeElement.tagName === 'TEXTAREA' || (document.activeElement.tagName === 'INPUT' && /^(?:email|month|number|search|tel|text|url|week)$/i.test(document.activeElement.type))) && typeof document.activeElement.selectionStart === 'number' && document.activeElement.value.slice(document.activeElement.selectionStart, document.activeElement.selectionEnd)) || '';
 }
 
 function loadGlossary() {
     let glossaryArray = Object.entries(glossary);
 
-    const glossaryList = document.createElement('select');
+    const entrySelect = document.createElement('select');
     const defaultOption = document.createElement('option');
     defaultOption.innerText = 'Chọn...';
     defaultOption.value = '';
     defaultOption.selected = true;
-    glossaryList.appendChild(defaultOption);
+    entrySelect.appendChild(defaultOption);
 
     const currentType = glossaryType.val();
     let data = '';
 
-    $('#fileExtension').text(currentType === GlossaryType.TSV ? 'tsv' : (currentType === GlossaryType.CSV ? 'csv' : 'txt'));
+    fileExtension.text(currentType === GlossaryType.TSV ? 'tsv' : (currentType === GlossaryType.CSV ? 'csv' : 'txt'));
 
     if (glossaryArray.length > 0) {
         glossary = Object.fromEntries(glossaryArray.sort((a, b) => b[0].length - a[0].length || a[1].localeCompare(b[1]) || a[0].localeCompare(b[0])));
@@ -312,7 +304,7 @@ function loadGlossary() {
             const option = document.createElement('option');
             option.innerText = `${glossaryArray[i][0]}\t${glossaryArray[i][1]}`;
             option.value = glossaryArray[i][0];
-            glossaryList.appendChild(option);
+            entrySelect.appendChild(option);
         }
 
         switch (currentType) {
@@ -329,16 +321,16 @@ function loadGlossary() {
                 break;
         }
 
-        $('#downloadButton').attr('href', URL.createObjectURL(new Blob([data], {type: currentType + ';charset=UTF-8'})));
-        $('#downloadButton').attr('download', ($('#glossaryName').val().length > 0 ? $('#glossaryName').val() : 'Từ vựng') + '.' + $('#fileExtension').text());
+        downloadButton.attr('href', URL.createObjectURL(new Blob([data], {type: currentType + ';charset=UTF-8'})));
+        downloadButton.attr('download', (glossaryName.val().length > 0 ? glossaryName.val() : 'Từ vựng') + '.' + fileExtension.text());
     } else {
-        $('#downloadButton').removeAttr('href');
-        $('#downloadButton').removeAttr('download');
-        $('#glossaryName').val(null);
+        downloadButton.removeAttr('href');
+        downloadButton.removeAttr('download');
+        glossaryName.val(null);
     }
 
-    $('#glossaryList').html(glossaryList.innerHTML);
-    $('#glossaryCounter').text(glossaryArray.length);
+    glossaryList.html(entrySelect.innerHTML);
+    glossaryCounter.text(glossaryArray.length);
     $('#preview').val(data);
 
     localStorage.setItem('glossary', JSON.stringify({type: currentType, data: glossary}));

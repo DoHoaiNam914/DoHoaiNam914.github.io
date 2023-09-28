@@ -1,9 +1,7 @@
 'use strict';
 
 const sourceLangSelect = $('#sourceLangSelect');
-const sourceLangSelectOptions = $('#sourceLangSelect > option');
 const targetLangSelect = $('#targetLangSelect');
-const targetLangSelectOptions = $('#targetLangSelect > option');
 
 const translateButton = $('#translateButton');
 
@@ -16,7 +14,6 @@ const translateTimer = $('#translateTimer');
 const queryText = $('#queryText');
 const translatedText = $('#translatedText');
 
-const modals = $('.modal');
 const translatorOptions = $('.option');
 
 const flexSwitchCheckGlossary = $('#flexSwitchCheckGlossary');
@@ -53,7 +50,7 @@ $(document).ready(async () => {
             VietphraseData.pinyins = Object.fromEntries(pinyinList);
         });
         await $.get('/static/datasource/Bính âm.txt').done((data) => pinyinList = [...pinyinList, ...data.split(/\r?\n/).map((element) => element.split('=')).sort((a, b) => b[0].length - a[0].length).map(([first, second]) => [first,second.split('ǀ')[0]]).filter(([first]) => !VietphraseData.pinyins.hasOwnProperty(first))]);
-        pinyinList = pinyinList.filter(([first, second]) => first != '' && second != undefined && !pinyinList[first] && (pinyinList[first] = 1), {});
+        pinyinList = pinyinList.filter(([first, second]) => first !== '' && second != undefined && !pinyinList[first] && (pinyinList[first] = 1), {});
         VietphraseData.pinyins = Object.fromEntries(pinyinList);
         console.log('Đã tải xong bộ dữ liệu bính âm (%d)!', pinyinList.length);
     } catch (error) {
@@ -77,7 +74,7 @@ $(document).ready(async () => {
             VietphraseData.chinesePhienAmWords = Object.fromEntries(sinovietnameseList);
         });
         await $.get('/static/datasource/Hán việt.txt').done((data) => sinovietnameseList = [...sinovietnameseList, ...data.split(/\r?\n/).map((element) => element.split('=')).sort((a, b) => b[0].length - a[0].length).map(([first, second]) => [first, second.split('ǀ')[0]]).filter(([first]) => !VietphraseData.chinesePhienAmWords.hasOwnProperty(first))]);
-        sinovietnameseList = sinovietnameseList.filter(([first, second]) => first != '' && !/\p{sc=Latin}/u.test(first) && second != undefined && !sinovietnameseList[first] && (sinovietnameseList[first] = 1), {});
+        sinovietnameseList = sinovietnameseList.filter(([first, second]) => first !== '' && !/\p{sc=Latin}/u.test(first) && second != undefined && !sinovietnameseList[first] && (sinovietnameseList[first] = 1), {});
         newAccentData.forEach(([first, second]) => sinovietnameseList = sinovietnameseList.map(([first1, second1]) => [first1, second1.replace(new RegExp(first, 'gi') , second)]));
         VietphraseData.chinesePhienAmWords = Object.fromEntries(sinovietnameseList);
         console.log('Đã tải xong bộ dữ liệu hán việt (%d)!', sinovietnameseList.length);
@@ -87,24 +84,24 @@ $(document).ready(async () => {
     }
 
     $.get('/static/datasource/Pronouns.txt').done((data) => {
-        VietphraseData.pronouns = Object.fromEntries(data.split(/\r?\n/).map((element) => element.split('=')).filter((element) => element.length == 2).map(([first, second]) => [first, second.split('/')[0]]));
+        VietphraseData.pronouns = Object.fromEntries(data.split(/\r?\n/).map((element) => element.split('=')).filter((element) => element.length === 2).map(([first, second]) => [first, second.split('/')[0]]));
         console.log('Đã tải xong tệp Pronouns.txt (%d)!', Object.entries(VietphraseData.pronouns).length);
     }).fail((jqXHR, textStatus, errorThrown) => {
         console.error('Không tải được tệp Pronouns.txt:', errorThrown);
         setTimeout(() => window.location.reload(), 5000);
     });
     $.get('/static/datasource/LuatNhan.txt').done((data) => {
-        VietphraseData.cacLuatnhan = Object.fromEntries(data.split(/\r?\n/).map((element) => element.split('=')).filter((element) => element.length == 2));
+        VietphraseData.cacLuatnhan = Object.fromEntries(data.split(/\r?\n/).map((element) => element.split('=')).filter((element) => element.length === 2));
         console.log('Đã tải xong tệp LuatNhan.txt (%d)!', Object.entries(VietphraseData.cacLuatnhan).length);
     }).fail((jqXHR, textStatus, errorThrown) => {
         console.error('Không tải được tệp LuatNhan.txt:', errorThrown);
         setTimeout(() => window.location.reload(), 5000);
     });
 
-    if (Object.entries(VietphraseData.vietphrases).length == 0) {
+    if (Object.entries(VietphraseData.vietphrases).length === 0) {
         $.get('/static/datasource/VietPhrase.txt').done((data) => {
-            let vietphraseList = [...data.split(/\r?\n/).map((element) => element.split('=')).filter((element) => element.length == 2).map(([first, second]) => [first, second.split('/')[0].split('|')[0]]), ...Object.entries(VietphraseData.chinesePhienAmWords)];
-            vietphraseList = vietphraseList.filter(([first, second]) => first != '' && second != undefined && !vietphraseList[first] && (vietphraseList[first] = 1), {});
+            let vietphraseList = [...data.split(/\r?\n/).map((element) => element.split('=')).filter((element) => element.length === 2).map(([first, second]) => [first, second.split('/')[0].split('|')[0]]), ...Object.entries(VietphraseData.chinesePhienAmWords)];
+            vietphraseList = vietphraseList.filter(([first, second]) => first !== '' && second != undefined && !vietphraseList[first] && (vietphraseList[first] = 1), {});
             if (inputVietphrase.prop('files') == undefined) return;
             VietphraseData.vietphrases = Object.fromEntries(vietphraseList);
             console.log('Đã tải xong tệp VietPhrase.txt (%d)!', vietphraseList.length);
@@ -115,9 +112,7 @@ $(document).ready(async () => {
 
     queryText.trigger('input');
 });
-
 $(visualViewport).resize((event) => queryText.css('max-height', event.target.height - 248 + 'px'));
-
 translateButton.click(async function () {
     if (translateAbortController != undefined) {
         translateAbortController.abort();
@@ -168,7 +163,6 @@ translateButton.click(async function () {
             break;
     }
 });
-
 copyButton.on('click', () => {
     const data = prevTranslation[1].length != undefined ? prevTranslation[1] : queryText.val();
 
@@ -176,7 +170,6 @@ copyButton.on('click', () => {
         navigator.clipboard.writeText(data);
     }
 });
-
 pasteButton.on('click', () => {
     navigator.clipboard
         .readText()
@@ -188,86 +181,81 @@ pasteButton.on('click', () => {
             }
         });
 });
-
 retranslateButton.click(() => {
-    if (translateButton.text() != 'Dịch') {
+    if (translateButton.text() !== 'Dịch') {
         translateButton.text('Dịch').click();
     }
 });
-
 queryText.on('input', () => {
     queryText.css('height', 'auto');
     queryText.css('height', queryText.prop('scrollHeight') + 'px');
     $(visualViewport).resize();
     queryTextCounter.text(queryText.val().length);
 });
-
-modals.on('hidden.bs.modal', () => $(document.body).removeAttr('style'));
-
-modals.on('shown.bs.modal', () => $(document.body).css({
+$('.modal').on('hidden.bs.modal', () => $(document.body).removeAttr('style'));
+$('.modal').on('shown.bs.modal', () => $(document.body).css({
     '-webkit-overflow-scrolling': 'auto',
     overflow: 'hidden',
     'overscroll-behavior': 'none',
     'touch-action': 'none'
 }));
-
 translatorOptions.change(() => {
     translator = loadTranslatorOptions();
     localStorage.setItem('translator', JSON.stringify(translator));
     prevTranslation = [];
     retranslateButton.click();
 });
-
 translators.click(function () {
     if (!$(this).hasClass('disabled')) {
         const prevTranslator = translator['translator'];
 
         const prevSourceLanguageCode = translator['sourceLangSelect'];
         const prevTargetLanguageCode = translator['targetLangSelect'];
-        const prevSourceLanguageName = getLanguageName(prevTranslator, prevSourceLanguageCode) ?? getLanguageName(prevTranslator, getDefaultSourceLanguage(prevTranslator));
-        const prevTargetLanguageName = getLanguageName(prevTranslator, prevTargetLanguageCode) ?? getLanguageName(prevTranslator, getDefaultTargetLanguage(prevTranslator));
+        const prevSourceLanguageName = getLanguageName(prevTranslator, prevSourceLanguageCode) ?? '';
+        const prevTargetLanguageName = getLanguageName(prevTranslator, prevTargetLanguageCode) ?? '';
 
         translators.removeClass('active');
         $(this).addClass('active');
 
+        const currentTranslator = $('.translator.active');
+
         sourceLangSelect.html(getSourceLanguageOptions($(this).data('id')));
+        const sourceLangSelectOptions = $('#sourceLangSelect > option');
         sourceLangSelectOptions.each(function (index) {
-            if ($('.translator.active').data('id') === prevTranslator
-                && prevSourceLanguageCode != null) {
+            if (currentTranslator.data('id') === prevTranslator && prevSourceLanguageCode != null) {
                 sourceLangSelect.val(prevSourceLanguageCode);
                 return false;
-            } else if (prevSourceLanguageCode != null && (prevSourceLanguageName != null && $(this).text().replace(/[()]/g, '') == prevSourceLanguageName.replace(/[()]/g, '') || $(this).val().toLowerCase().split('_')[0] == prevSourceLanguageCode.toLowerCase().split('_')[0] || (prevSourceLanguageName != null && $(this).text().includes($(this).text().split(' ').length == 2 && prevSourceLanguageName.split(' ').length == 2 ? prevSourceLanguageName.replace(/[()]/g, '').split(' ')[1] : prevSourceLanguageName.replace(/[()]/g, '').split(' ')[0]) && $(this).val().toLowerCase().split('_')[0].split('-')[0] == prevSourceLanguageCode.toLowerCase().split('_')[0].split('-')[0]) || ($(this).val().toLowerCase().split('_')[0].split('-')[0] == prevSourceLanguageCode.toLowerCase().split('_')[0].split('-')[0]))) {
+            } else if (prevSourceLanguageCode != null && (prevSourceLanguageName != null && $(this).text().replace(/[()]/g, '') === prevSourceLanguageName.replace(/[()]/g, '') || $(this).val().toLowerCase().split('_')[0] === prevSourceLanguageCode.toLowerCase().split('_')[0] || (prevSourceLanguageName != null && $(this).text().includes($(this).text().split(' ').length === 2 && prevSourceLanguageName.split(' ').length === 2 ? prevSourceLanguageName.replace(/[()]/g, '').split(' ')[1] : prevSourceLanguageName.replace(/[()]/g, '').split(' ')[0]) && $(this).val().toLowerCase().split('_')[0].split('-')[0] === prevSourceLanguageCode.toLowerCase().split('_')[0].split('-')[0]) || ($(this).val().toLowerCase().split('_')[0].split('-')[0] === prevSourceLanguageCode.toLowerCase().split('_')[0].split('-')[0]))) {
                 sourceLangSelect.val($(this).val());
                 return false;
-            } else if (index + 1 == sourceLangSelectOptions.length) {
-                sourceLangSelect.val(
-                    getDefaultSourceLanguage($('.translator.active').data('id')));
+            } else if (index + 1 === sourceLangSelectOptions.length) {
+                sourceLangSelect.val(getDefaultSourceLanguage(currentTranslator.data('id')));
             }
         });
         targetLangSelect.html(getTargetLanguageOptions($(this).data('id')));
+        const targetLangSelectOptions = $('#targetLangSelect > option');
         targetLangSelectOptions.each(function (index) {
-            if ($('.translator.active').data('id') === prevTranslator
-                && prevTargetLanguageCode != null) {
+            if (currentTranslator.data('id') === prevTranslator && prevTargetLanguageCode != null) {
                 targetLangSelect.val(prevTargetLanguageCode);
                 return false;
-            } else if (prevTargetLanguageCode != null && (prevTargetLanguageName != null && $(this).text().replace(/[()]/g, '') == prevTargetLanguageName.replace(/[()]/g, '') || $(this).val().toLowerCase().split('_')[0] == prevTargetLanguageCode.toLowerCase().split('_')[0] || (prevTargetLanguageName != null && $(this).text().includes($(this).text().split(' ').length == 2 && prevTargetLanguageName.split(' ').length == 2 ? prevTargetLanguageName.replace(/[()]/g, '').split(' ')[1] : prevTargetLanguageName.replace(/[()]/g, '').split(' ')[0]) && $(this).val().toLowerCase().split('_')[0].split('-')[0] == prevTargetLanguageCode.toLowerCase().split('_')[0].split('-')[0]) || ($(this).val().toLowerCase().split('_')[0].split('-')[0] == prevTargetLanguageCode.toLowerCase().split('_')[0].split('-')[0]))) {
-                if ($('.translator.active').data('id') === Translators.DEEPL_TRANSLATOR && prevTargetLanguageCode == 'en') {
+            } else if (prevTargetLanguageCode != null && (prevTargetLanguageName != null && $(this).text().replace(/[()]/g, '') === prevTargetLanguageName.replace(/[()]/g, '') || $(this).val().toLowerCase().split('_')[0] === prevTargetLanguageCode.toLowerCase().split('_')[0] || (prevTargetLanguageName != null && $(this).text().includes($(this).text().split(' ').length === 2 && prevTargetLanguageName.split(' ').length === 2 ? prevTargetLanguageName.replace(/[()]/g, '').split(' ')[1] : prevTargetLanguageName.replace(/[()]/g, '').split(' ')[0]) && $(this).val().toLowerCase().split('_')[0].split('-')[0] === prevTargetLanguageCode.toLowerCase().split('_')[0].split('-')[0]) || ($(this).val().toLowerCase().split('_')[0].split('-')[0] === prevTargetLanguageCode.toLowerCase().split('_')[0].split('-')[0]))) {
+                if (currentTranslator.data('id') === Translators.DEEPL_TRANSLATOR && prevTargetLanguageCode === 'en') {
                     targetLangSelect.val('EN-US');
                 } else {
                     targetLangSelect.val($(this).val());
                 }
                 return false;
-            } else if (index + 1 == targetLangSelectOptions.length) {
-                targetLangSelect.val(getDefaultTargetLanguage($('.translator.active').data('id')));
+            } else if (index + 1 === targetLangSelectOptions.length) {
+                targetLangSelect.val(getDefaultTargetLanguage(currentTranslator.data('id')));
             }
         });
 
         translator['translator'] = $(this).data('id');
 
         for (let i = 0; i < translatorOptions.length; i++) {
-            if (translatorOptions[i].id == 'sourceLangSelect') {
+            if (translatorOptions[i].id === 'sourceLangSelect') {
                 translator[translatorOptions[i].id] = translatorOptions[i].value;
-            } else if (translatorOptions[i].id == 'targetLangSelect') {
+            } else if (translatorOptions[i].id === 'targetLangSelect') {
                 translator[translatorOptions[i].id] = translatorOptions[i].value;
             }
         }
@@ -277,13 +265,12 @@ translators.click(function () {
         retranslateButton.click();
     }
 });
-
 inputVietphrase.on('change', function () {
     const reader = new FileReader();
 
     reader.onload = function () {
-        let vietphraseList = this.result.split(/\r?\n/).map((element) => element.split(inputVietphrase.prop('files')[0].type == 'text/tab-separated-values' ? '\t' : '=')).filter((element) => element.length == 2).map(([first, second]) => [first, second.split('/')[0].split('|')[0]]);
-        vietphraseList = [...vietphraseList, ...Object.entries(VietphraseData.chinesePhienAmWords)].filter(([first, second]) => first != '' && second != undefined && !vietphraseList[first] && (vietphraseList[first] = 1), {})
+        let vietphraseList = this.result.split(/\r?\n/).map((element) => element.split(inputVietphrase.prop('files')[0].type === 'text/tab-separated-values' ? '\t' : '=')).filter((element) => element.length === 2).map(([first, second]) => [first, second.split('/')[0].split('|')[0]]);
+        vietphraseList = [...vietphraseList, ...Object.entries(VietphraseData.chinesePhienAmWords)].filter(([first, second]) => first !== '' && second != undefined && !vietphraseList[first] && (vietphraseList[first] = 1), {})
         VietphraseData.vietphrases = Object.fromEntries(vietphraseList);
         console.log('Đã tải xong tệp VietPhrase.txt (%d)!', vietphraseList.length);
     };
@@ -295,11 +282,11 @@ function loadTranslatorOptions() {
     data['translator'] = $('.translator.active').data('id');
 
     for (let i = 0; i < translatorOptions.length; i++) {
-        if (translatorOptions[i].id.startsWith('flexSwitchCheck') && translatorOptions[i].checked == true) {
+        if (translatorOptions[i].id.startsWith('flexSwitchCheck') && translatorOptions[i].checked === true) {
             data[translatorOptions[i].id] = translatorOptions[i].checked;
-        } else if (translatorOptions[i].name.startsWith('flexRadio') && translatorOptions[i].checked == true) {
+        } else if (translatorOptions[i].name.startsWith('flexRadio') && translatorOptions[i].checked === true) {
             data[translatorOptions[i].name] = translatorOptions[i].value;
-        } else if (translatorOptions[i].className.includes('form-select') && translatorOptions[i].value != '') {
+        } else if (translatorOptions[i].className.includes('form-select') && translatorOptions[i].value !== '') {
             data[translatorOptions[i].id] = translatorOptions[i].value;
         }
     }
@@ -339,19 +326,19 @@ function getDefaultTargetLanguage(translator) {
 function getLanguageName(translator, languageCode) {
     switch (translator) {
         case Translators.DEEPL_TRANSLATOR:
-            return DeepLTranslator.SourceLanguage[languageCode];
+            return DeepLTranslator.SourceLanguage[languageCode] ?? '';
 
         case Translators.GOOGLE_TRANSLATE:
-            return GoogleTranslate.Language[languageCode];
+            return GoogleTranslate.Language[languageCode] ?? '';
 
         case Translators.LINGVANEX:
-            return Lingvanex.Language[languageCode];
+            return Lingvanex.Language[languageCode] ?? '';
 
         case Translators.MICROSOFT_TRANSLATOR:
-            return MicrosoftTranslator.Language[languageCode];
+            return MicrosoftTranslator.Language[languageCode] ?? '';
 
         case Translators.PAPAGO:
-            return Papago.Language[languageCode];
+            return Papago.Language[languageCode] ?? '';
     }
 }
 
@@ -508,7 +495,7 @@ async function translate(inputText, abortSignal) {
     const sourceLanguage = sourceLangSelect.val();
     const targetLanguage = targetLangSelect.val();
 
-    const isCjkTargetLanguage = !(targetLanguage == 'JA' || targetLanguage == 'KO' || targetLanguage == 'ZH') || !(targetLanguage == 'zh-CN' || targetLanguage == 'zh-TW' || targetLanguage == 'ja' || targetLanguage == 'ko') || !(targetLanguage == 'ko' || targetLanguage == 'ja' || targetLanguage == 'zh-CN' || targetLanguage == 'zh-TW') || !(targetLanguage == 'yue' || targetLanguage == 'lzh' || targetLanguage == 'zh-Hans' || targetLanguage == 'zh-Hant' || targetLanguage == 'ja' || targetLanguage == 'ko');
+    const isCjkTargetLanguage = !(targetLanguage === 'JA' || targetLanguage === 'KO' || targetLanguage === 'ZH') || !(targetLanguage === 'zh-CN' || targetLanguage === 'zh-TW' || targetLanguage === 'ja' || targetLanguage === 'ko') || !(targetLanguage === 'ko' || targetLanguage === 'ja' || targetLanguage === 'zh-CN' || targetLanguage === 'zh-TW') || !(targetLanguage === 'yue' || targetLanguage === 'lzh' || targetLanguage === 'zh-Hans' || targetLanguage === 'zh-Hant' || targetLanguage === 'ja' || targetLanguage === 'ko');
 
     const errorMessage = document.createElement('p');
 
@@ -558,7 +545,7 @@ async function translate(inputText, abortSignal) {
             return;
         }
 
-        if (getDynamicDictionaryText(processText, translator === Translators.MICROSOFT_TRANSLATOR, true) != prevTranslation[0]) {
+        if (getDynamicDictionaryText(processText, translator === Translators.MICROSOFT_TRANSLATOR, true) !== prevTranslation[0]) {
             if (translator === Translators.DEEPL_TRANSLATOR) {
                 const deeplUsage = (await $.get('https://api-free.deepl.com/v2/usage?auth_key=' + DEEPL_AUTH_KEY)) ?? {
                     'character_count': 500000,
@@ -616,7 +603,7 @@ async function translate(inputText, abortSignal) {
                 if (translateLines.join('\n').length < MAX_LENGTH && translateLines.length < MAX_LINE) {
                     translateLines.push(queryLines.shift());
 
-                    if (canTranslate == false && (queryLines.length == 0 || translateLines.length >= MAX_LINE || translateLines.join('\n').length >= MAX_LENGTH)) {
+                    if (canTranslate === false && (queryLines.length === 0 || translateLines.length >= MAX_LINE || translateLines.join('\n').length >= MAX_LENGTH)) {
                         if (translateLines.join('\n').length > MAX_LENGTH || translateLines.length > MAX_LINE) {
                             queryLines.splice(0, 0, translateLines.pop());
                             i--;
@@ -656,13 +643,13 @@ async function translate(inputText, abortSignal) {
                             break;
 
                         case Translators.VIETPHRASE:
-                            if (targetLangSelect.val() == 'vi' && Object.entries(VietphraseData.vietphrases).length > 0) {
+                            if (targetLangSelect.val() === 'vi' && Object.entries(VietphraseData.vietphrases).length > 0) {
                                 translatedText = convertText(translateText, VietphraseData.vietphrases, true, flexSwitchCheckGlossary.prop('checked'), $(`input[name="flexRadioTranslationAlgorithm"]:checked`).val(), $(`input[name="flexRadioMultiplicationAlgorithm"]:checked`).val());
-                            } else if (targetLangSelect.val() == 'zh-VN' && Object.entries(VietphraseData.chinesePhienAmWords).length > 0) {
+                            } else if (targetLangSelect.val() === 'zh-VN' && Object.entries(VietphraseData.chinesePhienAmWords).length > 0) {
                                 translatedText = convertText(translateText, VietphraseData.chinesePhienAmWords, true, false, VietPhraseTranslationAlgorithms.PRIORITIZE_LONG_VIETPHRASE_CLUSTERS, VietPhraseMultiplicationAlgorithm.NOT_APPLICABLE);
-                            } else if (targetLangSelect.val() == 'en' && Object.entries(VietphraseData.pinyins).length > 0) {
+                            } else if (targetLangSelect.val() === 'en' && Object.entries(VietphraseData.pinyins).length > 0) {
                                 translatedText = convertText(translateText, VietphraseData.pinyins, true, false, VietPhraseTranslationAlgorithms.PRIORITIZE_LONG_VIETPHRASE_CLUSTERS, VietPhraseMultiplicationAlgorithm.NOT_APPLICABLE);
-                            } else if (targetLangSelect.val() == 'vi' && Object.entries(VietphraseData.vietphrases).length == 0) {
+                            } else if (targetLangSelect.val() === 'vi' && Object.entries(VietphraseData.vietphrases).length === 0) {
                                 errorMessage.innerHTML = 'Nhập tệp VietPhrase.txt nếu có hoặc tải về <a href="https://drive.google.com/drive/folders/0B6fxcJ5qbXgkeTJNTFJJS3lmc3c?resourcekey=0-Ych2OUVug3pkLgCIlzvcuA&usp=sharing">tại đây</a>';
                                 translatedText.html(errorMessage);
                                 onPostTranslate();
@@ -716,17 +703,17 @@ function buildTranslatedResult(inputTexts, result, showOriginal) {
 
 			for (let i = 0; i < inputLines.length; i++) {
 				if (i < resultLines.length) {
-					if (inputLines[i + lostLineFixedAmount].trim().length == 0 && resultLines[i].trim().length > 0) {
+					if (inputLines[i + lostLineFixedAmount].trim().length === 0 && resultLines[i].trim().length > 0) {
 						lostLineFixedAmount++;
 						i--;
 						continue;
-					} else if ($('.translator.active').data('id') === Translators.PAPAGO && resultLines[i].trim().length == 0 && inputLines[i + lostLineFixedAmount].trim().length > 0) {
+					} else if ($('.translator.active').data('id') === Translators.PAPAGO && resultLines[i].trim().length === 0 && inputLines[i + lostLineFixedAmount].trim().length > 0) {
 						lostLineFixedAmount--;
 						continue;
 					}
 
 					const paragraph = document.createElement('p');
-					paragraph.innerHTML = resultLines[i] != processLines[i + lostLineFixedAmount] ? `<i>${inputLines[i + lostLineFixedAmount].trimStart()}</i><br>${resultLines[i].trimStart()}` : processLines[i + lostLineFixedAmount].trimStart();
+					paragraph.innerHTML = resultLines[i] !== processLines[i + lostLineFixedAmount] ? `<i>${inputLines[i + lostLineFixedAmount].trimStart()}</i><br>${resultLines[i].trimStart()}` : processLines[i + lostLineFixedAmount].trimStart();
                     resultDiv.appendChild(paragraph);
 				} else if (i + lostLineFixedAmount < inputLines.length) {
 					const paragraph = document.createElement('p');
@@ -752,7 +739,7 @@ function convertText(inputText, data, caseSensitive, useGlossary, translationAlg
 
         if (multiplicationAlgorithm > VietPhraseMultiplicationAlgorithm.NOT_APPLICABLE) {
             for (const luatnhan in VietphraseData.cacLuatnhan) {
-                if (useGlossary && multiplicationAlgorithm == VietPhraseMultiplicationAlgorithm.MULTIPLICATION_BY_PRONOUNS_NAMES && glossaryEntries.length > 0) {
+                if (useGlossary && multiplicationAlgorithm === VietPhraseMultiplicationAlgorithm.MULTIPLICATION_BY_PRONOUNS_NAMES && glossaryEntries.length > 0) {
                     for (const element in glossary) {
                         glossaryEntries.push([luatnhan.replace(/\{0}/g, element).replace(/\$/g, '$$$&'), VietphraseData.cacLuatnhan[luatnhan].replace(/\{0}/g, glossary[element].replace(/\$/g, '$$$&'))]);
                     }
@@ -768,7 +755,7 @@ function convertText(inputText, data, caseSensitive, useGlossary, translationAlg
         glossaryEntries = Object.entries(glossaryData);
         data = Object.fromEntries(dataEntries.sort((a, b) => b[0].length - a[0].length));
         dataEntries = Object.entries(data);
-        const punctuationEntries = cjkmap.filter(([first]) => first == '…' || first.split('…').length != 2);
+        const punctuationEntries = cjkmap.filter(([first]) => first === '…' || first.split('…').length !== 2);
         const punctuation = Object.fromEntries(punctuationEntries);
 
         const results = [];
@@ -778,7 +765,7 @@ function convertText(inputText, data, caseSensitive, useGlossary, translationAlg
         for (let i = 0; i < lines.length; i++) {
             let chars = lines[i];
 
-            if (chars.trim().length == 0) {
+            if (chars.trim().length === 0) {
                 results.push(chars);
                 continue;
             }
@@ -787,12 +774,12 @@ function convertText(inputText, data, caseSensitive, useGlossary, translationAlg
             const filteredGlossaryEntries = glossaryEntries.filter(([first]) => chars.includes(first));
             const filteredPunctuationEntries = punctuationEntries.filter(([first]) => chars.includes(first));
 
-            if (filteredDataEntries.length == 0 && filteredPunctuationEntries.length == 0 && filteredGlossaryEntries.length == 0) {
+            if (filteredDataEntries.length === 0 && filteredPunctuationEntries.length === 0 && filteredGlossaryEntries.length === 0) {
                 results.push(chars);
                 continue;
             }
 
-            if (translationAlgorithm == VietPhraseTranslationAlgorithms.PRIORITIZE_LONG_VIETPHRASE_CLUSTERS) {
+            if (translationAlgorithm === VietPhraseTranslationAlgorithms.PRIORITIZE_LONG_VIETPHRASE_CLUSTERS) {
                 const sortedData = Object.fromEntries([...useGlossary ? filteredGlossaryEntries : [], ...filteredDataEntries]);
 
                 for (const property in sortedData) {
@@ -801,9 +788,9 @@ function convertText(inputText, data, caseSensitive, useGlossary, translationAlg
 
                 filteredPunctuationEntries.forEach(([first, second]) => chars = chars.replace(new RegExp(first.replace(/[/[\]\-.\\|^$!=()*+?{}]/g, '\\$&'), 'g'), second.replace(/\$/g, '$$$&')));
                 results.push(chars);
-            } else if (translationAlgorithm == VietPhraseTranslationAlgorithms.TRANSLATE_FROM_LEFT_TO_RIGHT) {
-                const glossaryLengths = [...filteredGlossaryEntries.map(([first]) => first.length), 1].sort((a, b) => b - a).filter((element, index, array) => index == array.indexOf(element));
-                const phraseLengths = [...filteredDataEntries.map(([first]) => first.length), 1].sort((a, b) => b - a).filter((element, index, array) => index == array.indexOf(element));
+            } else if (translationAlgorithm === VietPhraseTranslationAlgorithms.TRANSLATE_FROM_LEFT_TO_RIGHT) {
+                const glossaryLengths = [...filteredGlossaryEntries.map(([first]) => first.length), 1].sort((a, b) => b - a).filter((element, index, array) => index === array.indexOf(element));
+                const phraseLengths = [...filteredDataEntries.map(([first]) => first.length), 1].sort((a, b) => b - a).filter((element, index, array) => index === array.indexOf(element));
                 const phrases = [];
                 let tempWord = '';
 
@@ -837,14 +824,14 @@ function convertText(inputText, data, caseSensitive, useGlossary, translationAlg
 
                             j += phraseLength - 1;
                             break;
-                        } else if (phraseLength == 1) {
-                            if (tempWord.length > 0 && chars[j] == ' ' && !tempWord.includes(' ')) {
+                        } else if (phraseLength === 1) {
+                            if (tempWord.length > 0 && chars[j] === ' ' && !tempWord.includes(' ')) {
                                 tempWord.split(' ').forEach((element) => phrases.push(element));
                                 tempWord = '';
                             }
 
                             if (punctuation.hasOwnProperty(chars[j])) {
-                                if (tempWord.length == 0 && !lines[i].startsWith(chars[j]) && /[\p{Pe}\p{Pf}\p{Po}]/u.test(chars[j])) {
+                                if (tempWord.length === 0 && !lines[i].startsWith(chars[j]) && /[\p{Pe}\p{Pf}\p{Po}]/u.test(chars[j])) {
                                     phrases.push(phrases.pop() + punctuation[chars[j]]);
                                     break;
                                 } else {
@@ -855,7 +842,7 @@ function convertText(inputText, data, caseSensitive, useGlossary, translationAlg
                             }
 
                             if (!punctuation.hasOwnProperty(chars[j]) && tempWord.includes(' ')) {
-                                if (j + 1 == chars.length || !chars[j + 1].includes(' ')) {
+                                if (j + 1 === chars.length || !chars[j + 1].includes(' ')) {
                                     phrases.push((phrases.pop() ?? '') + tempWord.substring(0, tempWord.length - 1));
                                     tempWord = '';
                                 }
@@ -863,7 +850,7 @@ function convertText(inputText, data, caseSensitive, useGlossary, translationAlg
                             }
 
                             for (const phraseLength1 of phraseLengths) {
-                                if (tempWord.length > 0 && (data.hasOwnProperty(chars.substring(j + 1, j + 1 + phraseLength1)) || j + 1 == chars.length)) {
+                                if (tempWord.length > 0 && (data.hasOwnProperty(chars.substring(j + 1, j + 1 + phraseLength1)) || j + 1 === chars.length)) {
                                     tempWord.split(' ').forEach((element) => phrases.push(element));
                                     tempWord = '';
                                     break;
@@ -935,7 +922,7 @@ const Lingvanex = {
              */
             const response = await $.ajax({
                 url: 'https://api-b2b.backenster.com/b1/api/v3/translate',
-                data: `${from != '' ? `from=${from}&` : ''}to=${to}&text=${encodeURIComponent(text)}&platform=dp&is_return_text_split_ranges=true`,
+                data: `${from !== '' ? `from=${from}&` : ''}to=${to}&text=${encodeURIComponent(text)}&platform=dp&is_return_text_split_ranges=true`,
                 method: 'POST',
                 headers: {
                     Accept: 'application/json, text/javascript, */*; q=0.01',
@@ -1095,7 +1082,7 @@ const DeepLTranslator = {
 
             const response = await $.ajax({
                 url: 'https://api-free.deepl.com/v2/translate?auth_key=' + authKey,
-                data: `text=${inputText.split(/\n/).map((sentence) => encodeURIComponent(sentence)).join('&text=')}${sourceLanguage != '' ? '&source_lang=' + sourceLanguage : ''}&target_lang=${targetLanguage}`,
+                data: `text=${inputText.split(/\n/).map((sentence) => encodeURIComponent(sentence)).join('&text=')}${sourceLanguage !== '' ? '&source_lang=' + sourceLanguage : ''}&target_lang=${targetLanguage}`,
                 method: 'POST'
             });
             return response.translations.map((element) => element.text.trim()).join('\n');
@@ -1204,7 +1191,7 @@ const GoogleTranslate = {
                 }
             });
 
-            return response.map((element) => ((sourceLanguage == 'auto' ? element[0] : element).includes('<i>') ? (sourceLanguage == 'auto' ? element[0] : element).split('</i> <b>').filter((element) => element.includes('</b>')).map((element) => ('<b>' + element.replace(/<i>.+/, ''))).join(' ') : (sourceLanguage == 'auto' ? element[0] : element)).trim()).join('\n');
+            return response.map((element) => ((sourceLanguage === 'auto' ? element[0] : element).includes('<i>') ? (sourceLanguage === 'auto' ? element[0] : element).split('</i> <b>').filter((element) => element.includes('</b>')).map((element) => ('<b>' + element.replace(/<i>.+/, ''))).join(' ') : (sourceLanguage === 'auto' ? element[0] : element)).trim()).join('\n');
         } catch (error) {
             console.error('Bản dịch lỗi:', error);
             throw error.toString();
@@ -1251,7 +1238,7 @@ const GoogleTranslate = {
                 ? (b[c++] = e)
                 : (2048 > e
                     ? (b[c++] = (e >> 6) | 192)
-                    : (55296 == (e & 64512) && d + 1 < a.length && 56320 == (a.charCodeAt(d + 1) & 64512)
+                    : (55296 === (e & 64512) && d + 1 < a.length && 56320 === (a.charCodeAt(d + 1) & 64512)
                         ? ((e = 65536 + ((e & 1023) << 10) + (a.charCodeAt(++d) & 1023)), (b[c++] = (e >> 18) | 240), (b[c++] = ((e >> 12) & 63) | 128))
                         : (b[c++] = (e >> 12) | 224),
                         (b[c++] = ((e >> 6) & 63) | 128)),
@@ -1263,8 +1250,8 @@ const GoogleTranslate = {
         for (var c = 0; c < b.length - 2; c += 3) {
             var d = b.charAt(c + 2);
             d = "a" <= d ? d.charCodeAt(0) - 87 : Number(d);
-            d = "+" == b.charAt(c + 1) ? a >>> d : a << d;
-            a = "+" == b.charAt(c) ? (a + d) & 4294967295 : a ^ d;
+            d = "+" === b.charAt(c + 1) ? a >>> d : a << d;
+            a = "+" === b.charAt(c) ? (a + d) & 4294967295 : a ^ d;
         }
         return a;
     },
@@ -1511,7 +1498,7 @@ const MicrosoftTranslator = {
              * Authorization: Bearer ${accessToken} - Content-Type: application/json - send(inputText)
              */
             const response = await $.ajax({
-                url: `https://api-edge.cognitive.microsofttranslator.com/translate?${sourceLanguage != '' ? `from=${sourceLanguage}&` : ''}to=${targetLanguage}&api-version=3.0&includeSentenceLength=true`,
+                url: `https://api-edge.cognitive.microsofttranslator.com/translate?${sourceLanguage !== '' ? `from=${sourceLanguage}&` : ''}to=${targetLanguage}&api-version=3.0&includeSentenceLength=true`,
                 data: JSON.stringify(inputText.split(/\n/).map((sentence) => ({'Text': sentence}))),
                 method: 'POST',
                 headers: {
@@ -1661,7 +1648,7 @@ function getDynamicDictionaryText(text, isMicrosoftTranslator = true, useAnother
         for (let i = 0; i < lines.length; i++) {
             let chars = lines[i];
 
-            const glossaryLengths = [...glossaryEntries.map(([first]) => first.length), 1].sort((a, b) => b - a).filter((element, index, array) => index == array.indexOf(element));
+            const glossaryLengths = [...glossaryEntries.map(([first]) => first.length), 1].sort((a, b) => b - a).filter((element, index, array) => index === array.indexOf(element));
             const phrases = [];
             let tempWord = '';
 
@@ -1678,13 +1665,13 @@ function getDynamicDictionaryText(text, isMicrosoftTranslator = true, useAnother
 
                         j += glossaryLength - 1;
                         break;
-                    } else if (glossaryLength == 1) {
-                        if (tempWord.length > 0 && chars[j] == ' ' && !tempWord.includes(' ')) {
+                    } else if (glossaryLength === 1) {
+                        if (tempWord.length > 0 && chars[j] === ' ' && !tempWord.includes(' ')) {
                             tempWord.split(' ').forEach((element) => phrases.push(element));
                             tempWord = '';
                         }
 
-                        if (tempWord.length == 0 && !lines[i].startsWith(chars[j]) && /[\p{Pe}\p{Pf}\p{Po}]/u.test(chars[j])) {
+                        if (tempWord.length === 0 && !lines[i].startsWith(chars[j]) && /[\p{Pe}\p{Pf}\p{Po}]/u.test(chars[j])) {
                             phrases.push(phrases.pop() + chars[j]);
                             break;
                         } else {
@@ -1692,7 +1679,7 @@ function getDynamicDictionaryText(text, isMicrosoftTranslator = true, useAnother
                         }
 
                         if (tempWord.includes(' ')) {
-                            if (j + 1 == chars.length || !chars[j + 1].includes(' ')) {
+                            if (j + 1 === chars.length || !chars[j + 1].includes(' ')) {
                                 phrases.push((phrases.pop() ?? '') + tempWord.substring(0, tempWord.length - 1));
                                 tempWord = '';
                             }
@@ -1700,7 +1687,7 @@ function getDynamicDictionaryText(text, isMicrosoftTranslator = true, useAnother
                         }
 
                         for (const glossaryLength1 of glossaryLengths) {
-                            if (tempWord.length > 0 && (glossary.hasOwnProperty(chars.substring(j + 1, j + 1 + glossaryLength1)) || j + 1 == chars.length)) {
+                            if (tempWord.length > 0 && (glossary.hasOwnProperty(chars.substring(j + 1, j + 1 + glossaryLength1)) || j + 1 === chars.length)) {
                                 tempWord.split(' ').forEach((element) => phrases.push(element));
                                 tempWord = '';
                                 break;
