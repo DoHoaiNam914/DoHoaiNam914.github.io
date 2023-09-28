@@ -677,7 +677,7 @@ async function translate(inputText, abortSignal) {
                 }
             }
 
-            translateTimer.text(Math.floor((Date.now() - startTime) / 10) / 100);
+            translateTimer.text(Date.now() - startTime);
             prevTranslation = [getDynamicDictionaryText(processText, translator === Translators.MICROSOFT_TRANSLATOR, true), results];
         } else {
             results = prevTranslation[1];
