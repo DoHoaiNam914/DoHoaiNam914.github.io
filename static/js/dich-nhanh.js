@@ -20,9 +20,7 @@ const flexSwitchCheckGlossary = $('#flexSwitchCheckGlossary');
 const flexSwitchCheckAllowAnothers = $('#flexSwitchCheckAllowAnothers');
 
 const translators = $('.translator');
-const currentTranslator = $('.translator').filter($('.active'));
 const fontOptions = $('.font-option');
-const currentFont = $('.font-option').filter($('.active'));
 const flexSwitchCheckShowOriginal = $('#flexSwitchCheckShowOriginal');
 const inputVietphrase = $('#inputVietphrase');
 
@@ -223,31 +221,31 @@ translators.click(function () {
         sourceLangSelect.html(getSourceLanguageOptions($(this).data('id')));
         const sourceLangSelectOptions = $('#sourceLangSelect > option');
         sourceLangSelectOptions.each(function (index) {
-            if (currentTranslator.data('id') === prevTranslator && prevSourceLanguageCode != null) {
+            if (translators.filter($('.active')).data('id') === prevTranslator && prevSourceLanguageCode != null) {
                 sourceLangSelect.val(prevSourceLanguageCode);
                 return false;
             } else if (prevSourceLanguageCode != null && (prevSourceLanguageName != null && $(this).text().replace(/[()]/g, '') === prevSourceLanguageName.replace(/[()]/g, '') || $(this).val().toLowerCase().split('_')[0] === prevSourceLanguageCode.toLowerCase().split('_')[0] || (prevSourceLanguageName != null && $(this).text().includes($(this).text().split(' ').length === 2 && prevSourceLanguageName.split(' ').length === 2 ? prevSourceLanguageName.replace(/[()]/g, '').split(' ')[1] : prevSourceLanguageName.replace(/[()]/g, '').split(' ')[0]) && $(this).val().toLowerCase().split('_')[0].split('-')[0] === prevSourceLanguageCode.toLowerCase().split('_')[0].split('-')[0]) || ($(this).val().toLowerCase().split('_')[0].split('-')[0] === prevSourceLanguageCode.toLowerCase().split('_')[0].split('-')[0]))) {
                 sourceLangSelect.val($(this).val());
                 return false;
             } else if (index + 1 === sourceLangSelectOptions.length) {
-                sourceLangSelect.val(getDefaultSourceLanguage(currentTranslator.data('id')));
+                sourceLangSelect.val(getDefaultSourceLanguage(translators.filter($('.active')).data('id')));
             }
         });
         targetLangSelect.html(getTargetLanguageOptions($(this).data('id')));
         const targetLangSelectOptions = $('#targetLangSelect > option');
         targetLangSelectOptions.each(function (index) {
-            if (currentTranslator.data('id') === prevTranslator && prevTargetLanguageCode != null) {
+            if (translators.filter($('.active')).data('id') === prevTranslator && prevTargetLanguageCode != null) {
                 targetLangSelect.val(prevTargetLanguageCode);
                 return false;
             } else if (prevTargetLanguageCode != null && (prevTargetLanguageName != null && $(this).text().replace(/[()]/g, '') === prevTargetLanguageName.replace(/[()]/g, '') || $(this).val().toLowerCase().split('_')[0] === prevTargetLanguageCode.toLowerCase().split('_')[0] || (prevTargetLanguageName != null && $(this).text().includes($(this).text().split(' ').length === 2 && prevTargetLanguageName.split(' ').length === 2 ? prevTargetLanguageName.replace(/[()]/g, '').split(' ')[1] : prevTargetLanguageName.replace(/[()]/g, '').split(' ')[0]) && $(this).val().toLowerCase().split('_')[0].split('-')[0] === prevTargetLanguageCode.toLowerCase().split('_')[0].split('-')[0]) || ($(this).val().toLowerCase().split('_')[0].split('-')[0] === prevTargetLanguageCode.toLowerCase().split('_')[0].split('-')[0]))) {
-                if (currentTranslator.data('id') === Translators.DEEPL_TRANSLATOR && prevTargetLanguageCode === 'en') {
+                if (translators.filter($('.active')).data('id') === Translators.DEEPL_TRANSLATOR && prevTargetLanguageCode === 'en') {
                     targetLangSelect.val('EN-US');
                 } else {
                     targetLangSelect.val($(this).val());
                 }
                 return false;
             } else if (index + 1 === targetLangSelectOptions.length) {
-                targetLangSelect.val(getDefaultTargetLanguage(currentTranslator.data('id')));
+                targetLangSelect.val(getDefaultTargetLanguage(translators.filter($('.active')).data('id')));
             }
         });
 
@@ -291,8 +289,8 @@ inputVietphrase.on('change', function () {
 function loadTranslatorOptions() {
     try {
         const data = {};
-        data['font'] = currentFont.text();
-        data['translator'] = currentTranslator.data('id');
+        data['font'] = fontOptions.filter($('.active')).text();
+        data['translator'] = translators.filter($('.active')).data('id');
 
         for (let i = 0; i < translatorOptions.length; i++) {
             if (translatorOptions.filter(`:eq(${i})`).attr('id').startsWith('flexSwitchCheck') && translatorOptions.filter(`:eq(${i})`).prop('checked') === true) {
@@ -505,7 +503,7 @@ function getTargetLanguageOptions(translator) {
 
 async function translate(inputText, abortSignal) {
     const startTime = Date.now();
-    const translator = currentTranslator.data('id');
+    const translator = translators.filter($('.active')).data('id');
 
     const sourceLanguage = sourceLangSelect.val();
     const targetLanguage = targetLangSelect.val();
@@ -720,7 +718,7 @@ function buildTranslatedResult(inputTexts, result, showOriginal) {
 						lostLineFixedAmount++;
 						i--;
 						continue;
-					} else if (currentTranslator.data('id') === Translators.PAPAGO && resultLines[i].trim().length === 0 && inputLines[i + lostLineFixedAmount].trim().length > 0) {
+					} else if (translators.filter($('.active')).data('id') === Translators.PAPAGO && resultLines[i].trim().length === 0 && inputLines[i + lostLineFixedAmount].trim().length > 0) {
 						lostLineFixedAmount--;
 						continue;
 					}
