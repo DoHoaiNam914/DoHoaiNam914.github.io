@@ -767,26 +767,29 @@ function buildTranslatedResult(inputTexts, result, showOriginal) {
 
 function convertText(inputText, data, caseSensitive, useGlossary, translationAlgorithm = VietPhraseTranslationAlgorithms.PRIORITIZE_LONG_VIETPHRASE_CLUSTERS, multiplicationAlgorithm = VietPhraseMultiplicationAlgorithm.MULTIPLICATION_BY_PRONOUNS_NAMES) {
     try {
-        let glossaryEntries = Object.entries(glossary).filter(([first]) => inputText.includes(first));
+        const glossaryEntries = Object.entries(glossary).filter(([first]) => inputText.includes(first));
         let dataEntries = Object.entries(data).filter(([first]) => (!useGlossary || !glossary.hasOwnProperty(first)) && inputText.includes(first));
 
         if (multiplicationAlgorithm > VietPhraseMultiplicationAlgorithm.NOT_APPLICABLE) {
             for (const luatnhan in VietphraseData.cacLuatnhan) {
                 if (useGlossary && multiplicationAlgorithm === VietPhraseMultiplicationAlgorithm.MULTIPLICATION_BY_PRONOUNS_NAMES && glossaryEntries.length > 0) {
+                    let i = 0;
+
                     for (const element in glossary) {
-                        glossaryEntries.push([luatnhan.replace(/\{0}/g, element).replace(/\$/g, '$$$&'), VietphraseData.cacLuatnhan[luatnhan].replace(/\{0}/g, glossary[element].replace(/\$/g, '$$$&'))]);
+                        glossaryEntries.splice(i, 0, [luatnhan.replace(/\{0}/g, element).replace(/\$/g, '$$$&'), VietphraseData.cacLuatnhan[luatnhan].replace(/\{0}/g, glossary[element].replace(/\$/g, '$$$&'))]);
+                        i++;
                     }
                 }
 
+                i = 0;
+
                 for (const pronoun in VietphraseData.pronouns) {
-                    dataEntries.push([luatnhan.replace(/\{0}/g, pronoun), VietphraseData.cacLuatnhan[luatnhan].replace(/\{0}/g, VietphraseData.pronouns[pronoun])]);
+                    dataEntries.splice(i, 0, [luatnhan.replace(/\{0}/g, pronoun), VietphraseData.cacLuatnhan[luatnhan].replace(/\{0}/g, VietphraseData.pronouns[pronoun])]);
                 }
             }
         }
 
-        const glossaryData = Object.fromEntries(glossaryEntries.sort((a, b) => b[0].length - a[0].length));
-        glossaryEntries = Object.entries(glossaryData);
-        data = Object.fromEntries(dataEntries.sort((a, b) => b[0].length - a[0].length));
+        data = Object.fromEntries([...useGlossary ? glossaryEntries.sort((a, b) => b[0].length - a[0].length) : [], ...dataEntries.sort((a, b) => b[0].length - a[0].length)]);
         dataEntries = Object.entries(data);
         const punctuationEntries = cjkmap.filter(([first]) => first === '…' || first.split('…').length !== 2);
         const punctuation = Object.fromEntries(punctuationEntries);
@@ -803,48 +806,29 @@ function convertText(inputText, data, caseSensitive, useGlossary, translationAlg
                 continue;
             }
 
-            const filteredGlossaryEntries = glossaryEntries.filter(([first]) => lines[i].includes(first));
             const filteredDataEntries = dataEntries.filter(([first]) => lines[i].includes(first));
             const filteredPunctuationEntries = punctuationEntries.filter(([first]) => lines[i].includes(first));
 
-            if (filteredGlossaryEntries.length === 0 && filteredDataEntries.length === 0 && filteredPunctuationEntries.length === 0) {
+            if (filteredDataEntries.length === 0 && filteredPunctuationEntries.length === 0) {
                 results.push(chars);
                 continue;
             }
 
             if (translationAlgorithm === VietPhraseTranslationAlgorithms.PRIORITIZE_LONG_VIETPHRASE_CLUSTERS) {
-                const sortedData = Object.fromEntries([...useGlossary ? filteredGlossaryEntries : [], ...filteredDataEntries]);
+                const filteredData = Object.fromEntries(filteredDataEntries);
 
-                for (const property in sortedData) {
-                    chars = chars.replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}])${property.replace(/[/[\]\-.\\|^$!=()*+?{}]/g, '\\$&')}(?=$|[${filteredPunctuationEntries.filter(([first]) => /[\p{Pe}\p{Pf}\p{Po}]/u.test(first)).map(([first]) => first.replace(/[\\\]]/g, '\\$&')).join('')}])`, 'gu'), `$1 ${sortedData[property].replace(/\$/g, '$$$&')}`).replace(new RegExp(`${property.replace(/[/[\]\-.\\|^$!=()*+?{}]/g, '\\$&')}(?=$|[${filteredPunctuationEntries.filter(([first]) => /[\p{Pe}\p{Pf}\p{Po}]/u.test(first)).map(([first]) => first.replace(/[\\\]]/g, '\\$&')).join('')}])`, 'g'), sortedData[property].replace(/\$/g, '$$$&')).replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}])${property.replace(/[/[\]\-.\\|^$!=()*+?{}]/g, '\\$&')}`, 'g'), `$1 ${sortedData[property].replace(/\$/g, '$$$&')} `).replace(new RegExp(property.replace(/[/[\]\-.\\|^$!=()*+?{}]/g, '\\$&'), 'g'), `${sortedData[property].replace(/\$/g, '$$$&')} `);
+                for (const property in filteredData) {
+                    chars = chars.replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}])${property.replace(/[/[\]\-.\\|^$!=()*+?{}]/g, '\\$&')}(?=$|[${filteredPunctuationEntries.filter(([first]) => /[\p{Pe}\p{Pf}\p{Po}]/u.test(first)).map(([first]) => first.replace(/[\\\]]/g, '\\$&')).join('')}])`, 'gu'), `$1 ${filteredData[property].replace(/\$/g, '$$$&')}`).replace(new RegExp(`${property.replace(/[/[\]\-.\\|^$!=()*+?{}]/g, '\\$&')}(?=$|[${filteredPunctuationEntries.filter(([first]) => /[\p{Pe}\p{Pf}\p{Po}]/u.test(first)).map(([first]) => first.replace(/[\\\]]/g, '\\$&')).join('')}])`, 'g'), filteredData[property].replace(/\$/g, '$$$&')).replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}])${property.replace(/[/[\]\-.\\|^$!=()*+?{}]/g, '\\$&')}`, 'g'), `$1 ${filteredData[property].replace(/\$/g, '$$$&')} `).replace(new RegExp(property.replace(/[/[\]\-.\\|^$!=()*+?{}]/g, '\\$&'), 'g'), `${filteredData[property].replace(/\$/g, '$$$&')} `);
                 }
 
                 filteredPunctuationEntries.forEach(([first, second]) => chars = chars.replace(new RegExp(first.replace(/[/[\]\-.\\|^$!=()*+?{}]/g, '\\$&'), 'g'), second.replace(/\$/g, '$$$&')));
                 results.push(chars);
             } else if (translationAlgorithm === VietPhraseTranslationAlgorithms.TRANSLATE_FROM_LEFT_TO_RIGHT) {
-                const glossaryLengths = [...filteredGlossaryEntries.map(([first]) => first.length), 1].sort((a, b) => b - a).filter((element, index, array) => index === array.indexOf(element));
                 const phraseLengths = [...filteredDataEntries.map(([first]) => first.length), 1].sort((a, b) => b - a).filter((element, index, array) => index === array.indexOf(element));
                 const phrases = [];
                 let tempWord = '';
 
                 for (let j = 0; j < chars.length; j++) {
-                    if (useGlossary && filteredGlossaryEntries.length > 0) {
-                        for (const glossaryLength of glossaryLengths) {
-                            if (glossaryData.hasOwnProperty(chars.substring(j, j + glossaryLength))) {
-                                if (glossaryData[chars.substring(j, j + glossaryLength)].length > 0) {
-                                    if (!lines[i].startsWith(chars[j]) && /[\p{Ps}\p{Pi}]/u.test(chars[j - 1])) {
-                                        phrases.push(phrases.pop() + glossaryData[chars.substring(j, j + glossaryLength)]);
-                                    } else {
-                                        phrases.push(glossaryData[chars.substring(j, j + glossaryLength)]);
-                                    }
-                                }
-
-                                j += glossaryLength;
-                                break;
-                            }
-                        }
-                    }
-
                     for (const phraseLength of phraseLengths) {
                         if (data.hasOwnProperty(chars.substring(j, j + phraseLength))) {
                             if (data[chars.substring(j, j + phraseLength)].length > 0) {
