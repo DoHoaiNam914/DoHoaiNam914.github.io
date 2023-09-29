@@ -97,7 +97,11 @@ function j_novelLoader(book, volume, spine) {
                 .script('/static/js/nen.js').wait(() => $('#background-select').val(localStorage.getItem('background') || Colors.SEPIA).change());
             }
 
-            $(document.body).append(`\n<div class="body${(data.toString().includes('<img') ? ' nomargin center"' : '"') + (!data.toString().includes('id="' + spineId + '"') ? ` id="${spineId}"` : '')}>${$(data).find('body').html()}</div>\n\n`);
+            const copyButton = document.createElement('button');
+            copyButton.className = 'copy-button';
+            copyButton.innerText = 'Sao chép';
+            copyButton.onclick = () => navigator.clipboard.writeText(document.querySelector(`#${spineId}`).innerText);
+            $(document.body).append('\n', !data.toString().includes('<img') ? copyButton : '', `<div class="body${(data.toString().includes('<img') ? ' nomargin center"' : '"') + (!data.toString().includes('id="' + spineId + '"') ? ` id="${spineId}"` : '')}>${$(data).find('body').html()}</div>\n\n`);
             $('div.body').last().addClass($(data).find('body').attr('class'));
         });
     }
@@ -159,7 +163,11 @@ function yenpressLoader(book, volume, spine) {
                 .script('/static/js/nen.js').wait(() => $('#background-select').val(localStorage.getItem('background') ?? Colors.SEPIA).change());
             }
 
-            $(document.body).append(`\n<div class="body"${!data.toString().includes('id="' + spineId + '"') ? ` id="${spineId}"` : ''}>${$(data).find('body').html()}</div>\n\n`);
+            const copyButton = document.createElement('button');
+            copyButton.className = 'copy-button';
+            copyButton.innerText = 'Sao chép';
+            copyButton.onclick = () => navigator.clipboard.writeText(document.querySelector(`#${spineId}`).innerText);
+            $(document.body).append('\n', !data.toString().includes('<img') ? copyButton : '', `<div class="body"${!data.toString().includes('id="' + spineId + '"') ? ` id="${spineId}"` : ''}>${$(data).find('body').html()}</div>\n\n`);
             $('div.body').last().addClass($(data).find('body').attr('class'));
         });
     }
@@ -210,7 +218,11 @@ function customLoader(book, volume, spine) {
                         .script('/static/js/nen.js').wait(() => $('#background-select').val(localStorage.getItem('background') || Colors.SEPIA).change());
                     }
 
-                    $(document.body).append(`\n<div class="body">${$(data).find('body').html().replace(/<rt>\p{scx=Hira}+<\/rt>/gu, '').replace(/<rt>(\p{scx=Kana}+)<\/rt>/gu, '（$1）')}</div>\n\n`);
+                    const copyButton = document.createElement('button');
+                    copyButton.className = 'copy-button';
+                    copyButton.innerText = 'Sao chép';
+                    copyButton.onclick = () => navigator.clipboard.writeText(document.querySelector(`#${spineId}`).innerText);
+                    $(document.body).append('\n', !data.toString().includes('<img') ? copyButton : '', `<div class="body">${$(data).find('body').html().replace(/<rt>\p{scx=Hira}+<\/rt>/gu, '').replace(/<rt>(\p{scx=Kana}+)<\/rt>/gu, '（$1）')}</div>\n\n`);
                     $('div.body').last().addClass($(data).find('body').attr('class'));
                 });
             }
