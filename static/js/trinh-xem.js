@@ -10,7 +10,7 @@ $(document).ready(function () {
     const searchParams = new URLSearchParams(window.location.search);
 
     const book = searchParams.get('sach') ?? 'tinhlinh';
-    const volume = searchParams.get('tap') ?? 'volume-22';
+    const volume = searchParams.get('tap') ?? 'volume-23';
 
     $.getJSON(`./${book}/data.json`, function (data) {
         _.each(data[book], function (currentVolume) {
@@ -221,8 +221,11 @@ function customLoader(book, volume, spine) {
                     const copyButton = document.createElement('button');
                     copyButton.className = 'copy-button';
                     copyButton.innerText = 'Sao chép';
-                    copyButton.onclick = () => navigator.clipboard.writeText(document.querySelector(`#${spineId}`).innerText);
-                    $(document.body).append('\n', !data.toString().includes('<img') ? copyButton : '', `<div class="body">${$(data).find('body').html().replace(/<rt>\p{scx=Hira}+<\/rt>/gu, '').replace(/<rt>(\p{scx=Kana}+)<\/rt>/gu, '（$1）')}</div>\n\n`);
+                    copyButton.onclick = function() {
+                        navigator.clipboard.writeText(this.nextSibling.innerText);
+                    };
+
+                    $(document.body).append('\n', copyButton, `<div class="body"">${$(data).find('body').html().replace(/<rt>\p{scx=Hira}+<\/rt>/gu, '').replace(/<rt>(\p{scx=Kana}+)<\/rt>/gu, '（$1）')}</div>\n\n`);
                     $('div.body').last().addClass($(data).find('body').attr('class'));
                 });
             }
