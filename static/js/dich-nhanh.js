@@ -208,7 +208,7 @@ fontOptions.click(function () {
     fontOptions.removeClass('active');
     $(this).addClass('active');
 
-    if ($(this).text() === 'Phông chữ mặc định (Hiragino Mincho ProN)') {
+    if ($(this).text() === 'Mặc định (Hiragino Mincho ProN)') {
         $(document.body).css('--opt-font-family', 'serif-ja, serif');
     } else if ($(this).text() === 'Phông chữ hệ thống') {
         $(document.body).css('--opt-font-family', 'var(--system-font-family)');
