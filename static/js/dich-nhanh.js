@@ -14,13 +14,15 @@ const translateTimer = $('#translateTimer');
 const queryText = $('#queryText');
 const translatedTextArea = $('#translatedText');
 
-const translatorOptions = $('.option');
+const translatorOptions = $(' .translator-option');
 
 const flexSwitchCheckGlossary = $('#flexSwitchCheckGlossary');
 const flexSwitchCheckAllowAnothers = $('#flexSwitchCheckAllowAnothers');
 
-const translators = $('.translator');
 const fontOptions = $('.font-option');
+const fontSizeDisplay = $('#font-size-display');
+const fontSize = $('#font-size');
+const translators = $('.translator');
 const flexSwitchCheckShowOriginal = $('#flexSwitchCheckShowOriginal');
 const inputVietphrase = $('#inputVietphrase');
 const translationAlgorithm = $('input[name="flexRadioTranslationAlgorithm"]');
@@ -205,6 +207,22 @@ translatorOptions.change(() => {
     prevTranslation = [];
     retranslateButton.click();
 });
+fontOptions.click(function () {
+    $(document.body).css('--opt-font-family', $(this).text() !== 'Phông chữ hệ thống' ? $(this).text() : 'serif-ja');
+    fontOptions.removeClass('active');
+    $(this).addClass('active');
+    translator['font'] = $(this).text();
+    localStorage.setItem('translator', JSON.stringify(translator));
+});
+fontSize.on('input', function () {
+    translator[fontSize.attr('id')] = $(this).val();
+    fontSizeDisplay.text(translator[fontSize.attr('id')]);
+    $(document.body).css('--opt-font-size', translator[fontSize.attr('id')] / 100);
+});
+fontSize.change(() => {
+    fontSize.trigger('input');
+    localStorage.setItem('translator', JSON.stringify(translator));
+});
 translators.click(function () {
     if (!$(this).hasClass('disabled')) {
         const prevTranslator = translator['translator'];
@@ -263,16 +281,6 @@ translators.click(function () {
         retranslateButton.click();
     }
 });
-fontOptions.click(function () {
-    if (!$(this).hasClass('disabled')) {
-        fontOptions.removeClass('active');
-        $(this).addClass('active');
-        translator['font'] = $(this).text();
-        $(document.body).css('--opt-font-family', $(this).text() !== 'Phông chữ hệ thống' ? $(this).text() : '');
-
-        localStorage.setItem('translator', JSON.stringify(translator));
-    }
-});
 inputVietphrase.on('change', function () {
     const reader = new FileReader();
 
@@ -291,13 +299,13 @@ function loadTranslatorOptions() {
         data['font'] = fontOptions.filter($('.active')).text();
         data['translator'] = translators.filter($('.active')).data('id');
 
-        for (let i = 0; i < translatorOptions.length; i++) {
-            if (translatorOptions.filter(`:eq(${i})`).attr('id').startsWith('flexSwitchCheck') && translatorOptions.filter(`:eq(${i})`).prop('checked') === true) {
-                data[translatorOptions.filter(`:eq(${i})`).attr('id')] = translatorOptions.filter(`:eq(${i})`).prop('checked');
-            } else if (translatorOptions.filter(`:eq(${i})`).attr('name') != undefined && translatorOptions.filter(`:eq(${i})`).attr('name').startsWith('flexRadio') && translatorOptions.filter(`:eq(${i})`).prop('checked') === true) {
-                data[translatorOptions.filter(`:eq(${i})`).attr('name')] = translatorOptions.filter(`:eq(${i})`).val();
-            } else if (translatorOptions.filter(`:eq(${i})`).hasClass('form-select')) {
-                data[translatorOptions.filter(`:eq(${i})`).attr('id')] = translatorOptions.filter(`:eq(${i})`).val();
+        for (let i = 0; i < $('.option').length; i++) {
+            if ($('.option').filter(`:eq(${i})`).attr('id').startsWith('flexSwitchCheck') && $('.option').filter(`:eq(${i})`).prop('checked') === true) {
+                data[$('.option').filter(`:eq(${i})`).attr('id')] = $('.option').filter(`:eq(${i})`).prop('checked');
+            } else if ($('.option').filter(`:eq(${i})`).attr('name') != undefined && $('.option').filter(`:eq(${i})`).attr('name').startsWith('flexRadio') && $('.option').filter(`:eq(${i})`).prop('checked') === true) {
+                data[$('.option').filter(`:eq(${i})`).attr('name')] = $('.option').filter(`:eq(${i})`).val();
+            } else {
+                data[$('.option').filter(`:eq(${i})`).attr('id')] = $('.option').filter(`:eq(${i})`).val();
             }
         }
 

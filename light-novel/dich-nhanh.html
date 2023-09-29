@@ -52,14 +52,14 @@
             $(`.font-option:contains(${translator.font})`).click();
             $(`.translator[data-id="${translator.translator}"]`).click();
 
-            for (let i = 0; i < translatorOptions.length; i++) {
-                if (translatorOptions.filter(`:eq(${i})`).attr('id').startsWith('flexSwitchCheck')) {
-                    translatorOptions.filter(`:eq(${i})`).prop('checked', translator[translatorOptions.filter(`:eq(${i})`).attr('id')]);
-                } else if (translatorOptions.filter(`:eq(${i})`).attr('name').startsWith('flexRadio') && translatorOptions.filter(`:eq(${i})`).val() === translator[translatorOptions.filter(`:eq(${i})`).attr('name')]) {
-                    $(`.option[name="${translatorOptions.filter(`:eq(${i})`).name}"]`).removeProp('checked');
-                    translatorOptions.filter(`:eq(${i})`).prop('checked', true);
-                } else if (translatorOptions.filter(`:eq(${i})`).hasClass('form-select')) {
-                    translatorOptions.filter(`:eq(${i})`).val(translator[translatorOptions.filter(`:eq(${i})`).attr('id')]);
+            for (let i = 0; i < $('.option').length; i++) {
+                if ($('.option').filter(`:eq(${i})`).attr('id').startsWith('flexSwitchCheck')) {
+                    $('.option').filter(`:eq(${i})`).prop('checked', translator[$('.option').filter(`:eq(${i})`).attr('id')]);
+                } else if ($('.option').filter(`:eq(${i})`).attr('name').startsWith('flexRadio') && $('.option').filter(`:eq(${i})`).val() === translator[$('.option').filter(`:eq(${i})`).attr('name')]) {
+                    $(`.option[name="${$('.option').filter(`:eq(${i})`).name}"]`).removeProp('checked');
+                    $('.option').filter(`:eq(${i})`).prop('checked', true);
+                } else {
+                    $('.option').filter(`:eq(${i})`).val(translator[$('.option').filter(`:eq(${i})`).attr('id')]).change();
                 }
             }
         })
@@ -101,7 +101,7 @@
         @import url('https://fonts.googleapis.com/css2?family=Andika:ital,wght@0,400;0,700;1,400;1,700&family=Arbutus+Slab&family=Crimson+Text:ital,wght@0,400;0,700;1,400;1,700&family=Lato:ital,wght@0,400;0,700;1,400;1,700&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,700;1,7..72,400;1,7..72,700&family=Noto+Sans:ital,wght@0,400;0,700;1,400;1,700&family=Vollkorn:ital,wght@0,400;0,700;1,400;1,700&display=swap');
 
         body {
-            --opt-font-family: serif-ja, serif;
+            --opt-font-family: Roboto, sans-serif;
         }
 
         #recognizeImage {
@@ -111,8 +111,8 @@
         }
 
         .textarea {
-            font-family: var(--opt-font-family) !important;
-            font-size: 18px;
+            font-family: var(--opt-font-family), serif;
+            font-size: calc(18px * var(--opt-font-size));
             min-height: calc(100vh - 15.5rem) !important;
             line-height: 1.2em;
             overflow: hidden;
@@ -126,7 +126,7 @@
 
         @media (max-width: 1000px) {
             .textarea {
-                font-size: 16px;
+                font-size: calc(16px * var(--opt-font-size));
             }
         }
 
@@ -228,8 +228,8 @@
 <div class="fixed-bottom">
     <nav class="navbar bg-body shadow-sm fixed-bottom">
         <div class="container-fluid">
-            <select class="form-select select-lang option" id="sourceLangSelect"></select>
-            <select class="form-select select-lang option" id="targetLangSelect"></select>
+            <select class="form-select select-lang option translator-option" id="sourceLangSelect"></select>
+            <select class="form-select select-lang option translator-option" id="targetLangSelect"></select>
             <button class="btn btn-primary btn-sm" id="translateButton" type="submit">Dịch</button>
         </div>
     </nav>
@@ -261,11 +261,11 @@
             </div>
             <div class="modal-body pb-5">
                 <div class="form-check form-switch">
-                    <input class="form-check-input option" type="checkbox" role="switch" id="flexSwitchCheckGlossary" checked>
+                    <input class="form-check-input option translator-option" type="checkbox" role="switch" id="flexSwitchCheckGlossary" checked>
                     <label class="form-check-label" for="flexSwitchCheckGlossary">Bật</label>
                 </div>
                 <div class="form-check form-switch my-3">
-                    <input class="form-check-input option" type="checkbox" role="switch" id="flexSwitchCheckAllowAnothers">
+                    <input class="form-check-input option translator-option" type="checkbox" role="switch" id="flexSwitchCheckAllowAnothers">
                     <label class="form-check-label" for="flexSwitchCheckAllowAnothers">
                         Cho phép các trình dịch khác
                     </label>
@@ -647,6 +647,8 @@
                         </li>
                     </ul>
                 </div>
+                <label for="font-size" class="form-label">Kích cỡ phông chữ: <span id="font-size-display">110</span>%</label>
+				<input type="range" class="form-range option" min="60" max="350" value="110" id="font-size">
                 <div class="dropdown mb-3">
                     <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                         Trình dịch
@@ -683,7 +685,7 @@
                     </ul>
                 </div>
                 <div class="form-check form-switch mb-3">
-                    <input class="form-check-input option" type="checkbox" role="switch" id="flexSwitchCheckShowOriginal">
+                    <input class="form-check-input option translator-option" type="checkbox" role="switch" id="flexSwitchCheckShowOriginal">
                     <label class="form-check-label" for="flexSwitchCheckShowOriginal">Hiển thị văn bản gốc</label>
                 </div>
                 <hr>
@@ -695,36 +697,36 @@
                 <div class="mb-3">
                     <h2 class="fs-6">Thuật toán dịch</h2>
                     <div class="form-check">
-                        <input class="form-check-input option" type="radio" name="flexRadioTranslationAlgorithm" id="flexRadioPrioritizeLongVietPhraseClusters" value="0" checked>
+                        <input class="form-check-input option translator-option" type="radio" name="flexRadioTranslationAlgorithm" id="flexRadioPrioritizeLongVietPhraseClusters" value="0" checked>
                         <label class="form-check-label" for="flexRadioPrioritizeLongVietPhraseClusters">
                             Ưu tiên cụm VietPhrase dài
                         </label>
                     </div>
                     <div class="form-check">
-                        <input class="form-check-input option" type="radio" name="flexRadioTranslationAlgorithm" id="flexRadioTranslateFromLeftToRight" value="1">
+                        <input class="form-check-input option translator-option" type="radio" name="flexRadioTranslationAlgorithm" id="flexRadioTranslateFromLeftToRight" value="1">
                         <label class="form-check-label" for="flexRadioTranslateFromLeftToRight">
                             Dịch từ trái sang phải
                         </label>
                     </div>
                     <!-- div class="form-check">
-                        <input class="form-check-input option" type="checkbox" role="switch" id="flexSwitchCheckPrioritizeNameOverVietPhrase">
+                        <input class="form-check-input option translator-option" type="checkbox" role="switch" id="flexSwitchCheckPrioritizeNameOverVietPhrase">
                         <label class="form-check-label" for="flexSwitchCheckPrioritizeNameoverVietPhrase">Ưu tiên Name hơn VietPhrase</label>
                     </div -->
                 </div>
                 <div class="mb-">
                     <h2 class="fs-6">Thuật toán nhân</h2>
                     <div class="form-check">
-                        <input class="form-check-input option" type="radio" name="flexRadioMultiplicationAlgorithm" id="flexRadioNoApply" value="0">
+                        <input class="form-check-input option translator-option" type="radio" name="flexRadioMultiplicationAlgorithm" id="flexRadioNoApply" value="0">
                         <label class="form-check-label" for="flexRadioNoApply">Không áp dụng</label>
                     </div>
                     <div class="form-check">
-                        <input class="form-check-input option" type="radio" name="flexRadioMultiplicationAlgorithm" id="flexRadioMultiplicationByPronouns" value="1">
+                        <input class="form-check-input option translator-option" type="radio" name="flexRadioMultiplicationAlgorithm" id="flexRadioMultiplicationByPronouns" value="1">
                         <label class="form-check-label" for="flexRadioMultiplicationByPronouns">
                             Nhân theo Pronouns
                         </label>
                     </div>
                     <div class="form-check">
-                        <input class="form-check-input option" type="radio" name="flexRadioMultiplicationAlgorithm" id="flexRadioMultiplicationByPronounsNames" value="2" checked>
+                        <input class="form-check-input option translator-option" type="radio" name="flexRadioMultiplicationAlgorithm" id="flexRadioMultiplicationByPronounsNames" value="2" checked>
                         <label class="form-check-label" for="flexRadioMultiplicationByPronounsNames">
                             Nhân theo Pronouns + Names
                         </label>
