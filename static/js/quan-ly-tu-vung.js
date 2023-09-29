@@ -123,7 +123,7 @@ convertButtons.on('click', function () {
     }
 });
 upperCaseButtons.on('click', function () {
-    if (targetEntry.val().length > 0) targetEntry.val(targetEntry.val().split(' ').map((word, index) => $(this).data('amount').includes('#') ? word = word.charAt(0).toUpperCase() + word.slice(1) : (index < $(this).data('amount') ? word.charAt(0).toUpperCase() + word.slice(1) : word.toLowerCase())).join(' '));
+    if (targetEntry.val().length > 0) targetEntry.val(targetEntry.val().split(' ').map((word, index) => word = $(this).data('amount').includes('#') ? word.charAt(0).toUpperCase() + word.slice(1) : (index < $(this).data('amount') ? word.charAt(0).toUpperCase() + word.slice(1) : word.toLowerCase())).join(' '));
 });
 deeplConvertButtons.on('click', async function () {
     if (sourceEntry.val().length > 0) {

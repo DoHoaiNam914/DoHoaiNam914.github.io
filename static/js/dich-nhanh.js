@@ -118,7 +118,7 @@ $(document).ready(async () => {
 
     queryText.trigger('input');
 });
-$(visualViewport).resize((event) => $('.textarea').css('max-height', event.target.height - 390 + 'px'));
+$(visualViewport).resize((event) => $('.textarea').css('max-height', event.target.height - ((event.target.width < 1200 ? 23.28703703703703 : 40.33092037228542) / 100) * event.target.height + 'px'));
 translateButton.click(async function () {
     if (translateAbortController != undefined) {
         translateAbortController.abort();
@@ -179,7 +179,7 @@ pasteButton.on('click', () => {
         .readText()
         .then((clipText) => {
             if (clipText.length > 0) {
-                translatedTextArea.prop('scrollY', 0)
+                translatedTextArea.prop('scrollY', 0);
                 queryText.val(clipText).trigger('input');
                 retranslateButton.click();
             }

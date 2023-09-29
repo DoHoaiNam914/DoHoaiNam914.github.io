@@ -108,6 +108,7 @@
         body {
             --opt-font-family: Roboto, sans-serif;
             --opt-font-size: 1;
+	        overflow: hidden;
         }
 
         .container {
@@ -123,10 +124,9 @@
         .textarea {
             font-family: var(--opt-font-family);
             font-size: calc(18px * var(--opt-font-size));
-            min-height: 53.4259259259vh !important;
+            min-height: 53.42592592592592vh !important;
             line-height: 1.2em;
             overflow-x: hidden;
-            overflow-y: auto;
             overflow-wrap: break-word;
             width: 100%;
         }
@@ -143,7 +143,6 @@
             flex-wrap: nowrap;
             height: 2.75rem;
             margin-bottom: calc(3.25rem - 1px);
-            overflow-x: auto;
             overflow-y: hidden;
             padding-bottom: 1rem;
             position: relative;
@@ -153,9 +152,9 @@
 
         .nav-scroller .nav-item {
             color: #6c757d;
-            font-size: .875rem;
-            padding-bottom: .75rem;
-            padding-top: .75rem;
+            font-size: 0.875rem;
+            padding-bottom: 0.75rem;
+            padding-top: 0.75rem;
         }
 
         .nav-scroller .nav-link:hover {
