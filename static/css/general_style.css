@@ -1,29 +1,8 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
-
-@font-face {
-    font-family: "Hiragino Kaku Gothic ProN";
-    src: url(https://github.com/DoHoaiNam914/CDN/raw/main/phong-chu/Hiragino%20Kaku%20Gothic%20ProN%20W3.otf) format('opentype');
-}
-
-@font-face {
-    font-family: "Hiragino Kaku Gothic ProN";
-    src: url(https://github.com/DoHoaiNam914/CDN/raw/main/phong-chu/Hiragino%20Kaku%20Gothic%20ProN%20W6.otf) format('opentype');
-    font-weight: bold;
-}
-
-@font-face {
-    font-family: "Hiragino Kaku Gothic ProN";
-    src: url(https://github.com/DoHoaiNam914/CDN/raw/main/phong-chu/Hiragino%20Kaku%20Gothic%20ProN%20W3.otf) format('opentype');
-}
-
-@font-face {
-    font-family: "Hiragino Kaku Gothic ProN";
-    src: url(https://github.com/DoHoaiNam914/CDN/raw/main/phong-chu/Hiragino%20Kaku%20Gothic%20ProN%20W6.otf) format('opentype');
-    font-weight: bold;
-}
+@import 'fonts.css';
 
 body {
-    font-family: Roboto, '游ゴシック', YuGothic, 'Hiragino Kaku Gothic ProN', Meiryo, sans-serif;
+    --system-font-family: -apple-system, system-ui, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen-Sans, Ubuntu, Cantrell, 'Helvetica Neue', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+    --bs-body-font-family: Roboto, '游ゴシック', YuGothic, 'Hiragino Kaku Gothic ProN', Meiryo, sans-serif;
 }
 
 textarea {

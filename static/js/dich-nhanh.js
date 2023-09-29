@@ -205,7 +205,7 @@ translatorOptions.change(() => {
     retranslateButton.click();
 });
 fontOptions.click(function () {
-    $(document.body).css('--opt-font-family', $(this).text() !== 'Phông chữ hệ thống' ? $(this).text() : 'serif-ja');
+    $(document.body).css('--opt-font-family', $(this).text() !== 'Phông chữ hệ thống' ? $(this).text() : 'var(--system-font-family)');
     fontOptions.removeClass('active');
     $(this).addClass('active');
     translator['font'] = $(this).text();
@@ -699,7 +699,7 @@ async function translate(inputText, abortSignal) {
         translatedTextArea.html(buildTranslatedResult([inputText, processText], getProcessTextPostTranslate(results.join('\n')), flexSwitchCheckShowOriginal.prop('checked')));
     } catch (error) {
         console.error('Bản dịch thất bại:', error.stack);
-        errorMessage.innerText = 'Bản dịch thất bại: ' + JSON.stringify(error);
+        errorMessage.innerText = 'Bản dịch thất bại: ' + JSON.stringify(error) ?? error.toString();
         translatedTextArea.html(errorMessage);
         onPostTranslate();
     }

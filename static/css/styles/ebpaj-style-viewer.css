@@ -1,3 +1,4 @@
-@import url('trinh-xem-before.css');
-@import url('/static/css/styles/ebpaj/book-style.css');
-@import url('trinh-xem-after.css');
+@import 'trinh-xem-before.css';
+@import '/static/css/ebpaj_fonts_patch.css';
+@import 'ebpaj/book-style.css';
+@import 'trinh-xem-after.css';
