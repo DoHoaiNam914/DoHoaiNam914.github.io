@@ -772,9 +772,9 @@ function convertText(inputText, data, caseSensitive, useGlossary, translationAlg
 
         if (multiplicationAlgorithm > VietPhraseMultiplicationAlgorithm.NOT_APPLICABLE) {
             for (const luatnhan in VietphraseData.cacLuatnhan) {
-                if (useGlossary && multiplicationAlgorithm === VietPhraseMultiplicationAlgorithm.MULTIPLICATION_BY_PRONOUNS_NAMES && glossaryEntries.length > 0) {
-                    let i = 0;
+                let i = 0;
 
+                if (useGlossary && multiplicationAlgorithm === VietPhraseMultiplicationAlgorithm.MULTIPLICATION_BY_PRONOUNS_NAMES && glossaryEntries.length > 0) {
                     for (const element in glossary) {
                         glossaryEntries.splice(i, 0, [luatnhan.replace(/\{0}/g, element).replace(/\$/g, '$$$&'), VietphraseData.cacLuatnhan[luatnhan].replace(/\{0}/g, glossary[element].replace(/\$/g, '$$$&'))]);
                         i++;
