@@ -93,7 +93,7 @@ function j_novelLoader(book, volume, spine) {
 
                 $('#view-select').val(localStorage.getItem('view') ?? 'vertical').change()
                 $LAB.setOptions({AlwaysPreserveOrder: true})
-                .script('/static/lib/jquery-3.7.0.js')
+                .script('/static/lib/jquery-3.7.1.min.js')
                 .script('/static/js/nen.js').wait(() => $('#background-select').val(localStorage.getItem('background') || Colors.SEPIA).change());
             }
 
@@ -155,7 +155,7 @@ function yenpressLoader(book, volume, spine) {
 
                 $('#view-select').val(localStorage.getItem('view') ?? 'vertical').change()
                 $LAB.setOptions({AlwaysPreserveOrder: true})
-                .script('/static/lib/jquery-3.7.0.js')
+                .script('/static/lib/jquery-3.7.1.min.js')
                 .script('/static/js/nen.js').wait(() => $('#background-select').val(localStorage.getItem('background') ?? Colors.SEPIA).change());
             }
 
@@ -206,7 +206,7 @@ function customLoader(book, volume, spine) {
 
                         $('#view-select').val(localStorage.getItem('view') ?? 'vertical').change()
                         $LAB.setOptions({AlwaysPreserveOrder: true})
-                        .script('/static/lib/jquery-3.7.0.js')
+                        .script('/static/lib/jquery-3.7.1.min.js')
                         .script('/static/js/nen.js').wait(() => $('#background-select').val(localStorage.getItem('background') || Colors.SEPIA).change());
                     }
 

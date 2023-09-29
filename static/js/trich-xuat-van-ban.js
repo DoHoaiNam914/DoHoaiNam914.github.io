@@ -2,7 +2,7 @@
 
 const {createWorker, PSM, OEM} = Tesseract;
 
-const options = {
+const tesseractOptions = {
     corePath: 'lib/tesseract-core.wasm.js',
     langPath: 'https://tessdata.projectnaptha.com/4.0.0_best',
     workerPath: 'lib/worker.min.js',
@@ -101,7 +101,7 @@ $('.option').on('change', () => localStorage.setItem('recognizer', JSON.stringif
 })));
 
 async function recognize(image, langs, parameters) {
-    const worker = await createWorker(options);
+    const worker = await createWorker(tesseractOptions);
     await worker.loadLanguage(langs);
     await worker.initialize(langs);
     await worker.setParameters(parameters);

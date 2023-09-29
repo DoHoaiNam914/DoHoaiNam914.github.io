@@ -12,7 +12,7 @@
         const preferredTheme = storedTheme ?? 'auto';
 
         $LAB
-            .script('/static/lib/jquery-3.7.0.js').wait()
+            .script('/static/lib/jquery-3.7.1.min.js').wait()
             .script('/static/lib/bootstrap.bundle.min.js').wait(function () {
             setTheme(preferredTheme);
             showActiveTheme(preferredTheme);
@@ -52,14 +52,18 @@
             $(`.font-option:contains(${translator.font})`).click();
             $(`.translator[data-id="${translator.translator}"]`).click();
 
-            for (let i = 0; i < $('.option').length; i++) {
-                if ($('.option').filter(`:eq(${i})`).attr('id').startsWith('flexSwitchCheck')) {
-                    $('.option').filter(`:eq(${i})`).prop('checked', translator[$('.option').filter(`:eq(${i})`).attr('id')]);
-                } else if ($('.option').filter(`:eq(${i})`).attr('name').startsWith('flexRadio') && $('.option').filter(`:eq(${i})`).val() === translator[$('.option').filter(`:eq(${i})`).attr('name')]) {
-                    $(`.option[name="${$('.option').filter(`:eq(${i})`).name}"]`).removeProp('checked');
-                    $('.option').filter(`:eq(${i})`).prop('checked', true);
+            for (let i = 0; i < options.length; i++) {
+                if (options.filter(`:eq(${i})`).attr('id').startsWith('flexSwitchCheck')) {
+                    options.filter(`:eq(${i})`).prop('checked', translator[options.filter(`:eq(${i})`).attr('id')]);
+                } else if (options.filter(`:eq(${i})`).attr('name') != undefined && options.filter(`:eq(${i})`).attr('name').startsWith('flexRadio') && options.filter(`:eq(${i})`).val() === translator[options.filter(`:eq(${i})`).attr('name')]) {
+                    $(`.option[name="${options.filter(`:eq(${i})`).attr('name')}"]`).removeProp('checked');
+                    options.filter(`:eq(${i})`).prop('checked', true);
                 } else {
-                    $('.option').filter(`:eq(${i})`).val(translator[$('.option').filter(`:eq(${i})`).attr('id')]).change();
+                    options.filter(`:eq(${i})`).val(typeof options.filter(`:eq(${i})`).val() == 'number' ? parseInt(translator[options.filter(`:eq(${i})`).attr('id')]) : translator[options.filter(`:eq(${i})`).attr('id')]);
+                }
+
+                if (!options.filter(`:eq(${i})`).hasClass('translator-option')) {
+                    options.filter(`:eq(${i})`).change();
                 }
             }
         })
@@ -92,7 +96,7 @@
             $('[data-theme-value]').removeClass('active');
             $(btnToActive).addClass('active');
             $(activeThemeIcon).html(svgOfActiveBtn);
-            if (focus) themeSwitcher.focus()
+            if (focus) themeSwitcher.focus();
         };
 
         window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => (storedTheme !== 'light' || storedTheme !== 'dark') && setTheme(preferredTheme));
@@ -102,6 +106,11 @@
 
         body {
             --opt-font-family: Roboto, sans-serif;
+            --opt-font-size: 1;
+        }
+
+        .container {
+            max-width: 62.5rem;
         }
 
         #recognizeImage {
@@ -113,14 +122,11 @@
         .textarea {
             font-family: var(--opt-font-family), serif;
             font-size: calc(18px * var(--opt-font-size));
-            min-height: calc(100vh - 15.5rem) !important;
+            min-height: calc(100vh - 24.375rem) !important;
             line-height: 1.2em;
             overflow: hidden;
             overflow-wrap: break-word;
             width: 100%;
-        }
-
-        #queryText {
             overflow-y: auto;
         }
 
@@ -228,8 +234,8 @@
 <div class="fixed-bottom">
     <nav class="navbar bg-body shadow-sm fixed-bottom">
         <div class="container-fluid">
-            <select class="form-select select-lang option translator-option" id="sourceLangSelect"></select>
-            <select class="form-select select-lang option translator-option" id="targetLangSelect"></select>
+            <select class="form-select select-lang option translator-option" id="source-language"></select>
+            <select class="form-select select-lang option translator-option" id="target-language"></select>
             <button class="btn btn-primary btn-sm" id="translateButton" type="submit">Dịch</button>
         </div>
     </nav>
