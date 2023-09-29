@@ -205,9 +205,17 @@ translatorOptions.change(() => {
     retranslateButton.click();
 });
 fontOptions.click(function () {
-    $(document.body).css('--opt-font-family', $(this).text() !== 'Phông chữ hệ thống' ? $(this).text() : 'var(--system-font-family)');
     fontOptions.removeClass('active');
     $(this).addClass('active');
+
+    if ($(this).text() === 'Phông chữ mặc định (Hiragino Mincho ProN)') {
+        $(document.body).css('--opt-font-family', 'serif-ja, serif');
+    } else if ($(this).text() === 'Phông chữ hệ thống') {
+        $(document.body).css('--opt-font-family', 'var(--system-font-family)');
+    } else {
+        $(document.body).css('--opt-font-family', $(this).text() + ', serif-ja, serif');
+    }
+
     translator['font'] = $(this).text();
     localStorage.setItem('translator', JSON.stringify(translator));
 });

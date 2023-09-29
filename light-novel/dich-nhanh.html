@@ -103,7 +103,7 @@
         window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => (storedTheme !== 'light' || storedTheme !== 'dark') && setTheme(preferredTheme));
     </script>
     <style>
-        @import url('/static/css/ebpaj_fonts_patch.css');
+        @import url('/static/css/style/ebpaj_fonts_patch.css');
 
         body {
             --opt-font-family: Roboto, sans-serif;
@@ -121,7 +121,7 @@
         }
 
         .textarea {
-            font-family: var(--opt-font-family), serif-ja, serif;
+            font-family: var(--opt-font-family), serif;
             font-size: calc(18px * var(--opt-font-size));
             min-height: calc(100vh - 24.375rem) !important;
             line-height: 1.2em;
@@ -626,7 +626,13 @@
                     </button>
                     <ul class="dropdown-menu">
                         <li>
+                            <button class="dropdown-item font-option" type="button">Phông chữ mặc định (Hiragino Mincho ProN)</button>
+                        </li>
+                        <li>
                             <button class="dropdown-item font-option" type="button">Phông chữ hệ thống</button>
+                        </li>
+                        <li>
+                            <button class="dropdown-item font-option" type="button">Times New Roman</button>
                         </li>
                         <li>
                             <button class="dropdown-item font-option active" type="button">Crimson Text</button>
@@ -635,22 +641,13 @@
                             <button class="dropdown-item font-option" type="button">Literata</button>
                         </li>
                         <li>
-                            <button class="dropdown-item font-option" type="button">Vollkorn</button>
+                            <button class="dropdown-item font-option" type="button">Bookerly</button>
                         </li>
                         <li>
-                            <button class="dropdown-item font-option" type="button">Roboto</button>
+                            <button class="dropdown-item font-option" type="button">Georgia</button>
                         </li>
                         <li>
-                            <button class="dropdown-item font-option" type="button">Lato</button>
-                        </li>
-                        <li>
-                            <button class="dropdown-item font-option" type="button">Arbutus Slab</button>
-                        </li>
-                        <li>
-                            <button class="dropdown-item font-option" type="button">Noto Sans</button>
-                        </li>
-                        <li>
-                            <button class="dropdown-item font-option" type="button">Andika</button>
+                            <button class="dropdown-item font-option" type="button">Iowan Old Style</button>
                         </li>
                     </ul>
                 </div>

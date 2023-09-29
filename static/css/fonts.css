@@ -1,16 +1,22 @@
-@import url('https://fonts.googleapis.com/css2?family=Andika:ital,wght@0,400;0,700;1,400;1,700&family=Arbutus+Slab&family=Crimson+Text:ital,wght@0,400;0,700;1,400;1,700&family=Lato:ital,wght@0,400;0,700;1,400;1,700&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,700;1,7..72,400;1,7..72,700&family=Noto+Sans:ital,wght@0,400;0,700;1,400;1,700&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Vollkorn:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=Literata:ital,opsz,wght@0,7..72,200;0,7..72,300;0,7..72,400;0,7..72,500;0,7..72,600;0,7..72,700;0,7..72,800;0,7..72,900;1,7..72,200;1,7..72,300;1,7..72,400;1,7..72,500;1,7..72,600;1,7..72,700;1,7..72,800;1,7..72,900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
 
 /* Hiragino Kaku Gothic ProN */
 
 @font-face {
     font-family: "Hiragino Kaku Gothic ProN";
+    font-weight: bold;
+    src: url(https://github.com/DoHoaiNam914/CDN/raw/main/phong-chu/Hiragino%20Kaku%20Gothic%20ProN%20W6.otf) format('opentype');
+}
+
+@font-face {
+    font-family: "Hiragino Kaku Gothic ProN";
     src: url(https://github.com/DoHoaiNam914/CDN/raw/main/phong-chu/Hiragino%20Kaku%20Gothic%20ProN%20W3.otf) format('opentype');
 }
 
 @font-face {
     font-family: "Hiragino Kaku Gothic ProN";
-    src: url(https://github.com/DoHoaiNam914/CDN/raw/main/phong-chu/Hiragino%20Kaku%20Gothic%20ProN%20W6.otf) format('opentype');
     font-weight: bold;
+    src: url(https://github.com/DoHoaiNam914/CDN/raw/main/phong-chu/Hiragino%20Kaku%20Gothic%20ProN%20W6.otf) format('opentype');
 }
 
 @font-face {
@@ -18,8 +24,54 @@
     src: url(https://github.com/DoHoaiNam914/CDN/raw/main/phong-chu/Hiragino%20Kaku%20Gothic%20ProN%20W3.otf) format('opentype');
 }
 
+/* Bookerly */
+
 @font-face {
-    font-family: "Hiragino Kaku Gothic ProN";
-    src: url(https://github.com/DoHoaiNam914/CDN/raw/main/phong-chu/Hiragino%20Kaku%20Gothic%20ProN%20W6.otf) format('opentype');
+    font-family: "Bookerly";
+    src: url(https://github.com/DoHoaiNam914/CDN/raw/main/phong-chu/BookerlyLCD_W_Rg.woff2) format('woff2');
+}
+
+@font-face {
+    font-family: "Bookerly";
+    font-style: italic;
+    src: url(https://github.com/DoHoaiNam914/CDN/raw/main/phong-chu/BookerlyLCD_W_RgIt.woff2) format('woff2');
+}
+
+@font-face {
+    font-family: "Bookerly";
     font-weight: bold;
+    src: url(https://github.com/DoHoaiNam914/CDN/raw/main/phong-chu/BookerlyLCD_W_Bd.woff2) format('woff2');
+}
+
+@font-face {
+    font-family: "Bookerly";
+    font-style: italic;
+    font-weight: bold;
+    src: url(https://github.com/DoHoaiNam914/CDN/raw/main/phong-chu/BookerlyLCD_W_BdIt.woff2) format('woff2');
+}
+
+/* Iowan Old Style */
+
+@font-face {
+    font-family: 'Iowan Old Style';
+    src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/IowanOldStBTRoman.ttf) format('truetype');
+}
+
+@font-face {
+    font-family: 'Iowan Old Style';
+    font-style: italic;
+    src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/IowanOldStBTItalic.ttf) format('truetype');
+}
+
+@font-face {
+    font-family: 'Iowan Old Style';
+    font-weight: bold;
+    src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/IowanOldStBTBold.ttf) format('truetype');
+}
+
+@font-face {
+    font-family: 'Iowan Old Style';
+    font-style: italic;
+    font-weight: bold;
+    src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/IowanOldStBTBoldItalic.ttf) format('truetype');
 }
