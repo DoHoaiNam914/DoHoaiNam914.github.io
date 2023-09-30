@@ -310,7 +310,9 @@ function loadTranslatorOptions() {
                 data[options.filter(`:eq(${i})`).attr('id')] = options.filter(`:eq(${i})`).prop('checked');
             } else if (options.filter(`:eq(${i})`).attr('name') != undefined && options.filter(`:eq(${i})`).attr('name').startsWith('flexRadio') && options.filter(`:eq(${i})`).prop('checked') === true) {
                 data[options.filter(`:eq(${i})`).attr('name')] = options.filter(`:eq(${i})`).val();
-            } else {
+            } else if (options.filter(`:ep(${i})`).hasClass('form-range')) {
+                data[options.filter(`:eq(${i})`).attr('id')] = parseInt(options.filter(`:eq(${i})`).val());
+            } else if (options.filter(`:ep(${i})`).hasClass('form-select')) {
                 data[options.filter(`:eq(${i})`).attr('id')] = options.filter(`:eq(${i})`).val();
             }
         }
@@ -819,7 +821,7 @@ function convertText(inputText, data, caseSensitive, useGlossary, translationAlg
                 const filteredData = Object.fromEntries(filteredDataEntries);
 
                 for (const property in filteredData) {
-                    chars = chars.replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}])${property.replace(/[/[\]\-.\\|^$!=()*+?{}]/g, '\\$&')}(?=$|[${filteredPunctuationEntries.filter(([first]) => /[\p{Pe}\p{Pf}\p{Po}]/u.test(first)).map(([first]) => first.replace(/[\\\]]/g, '\\$&')).join('')}])`, 'gu'), `$1 ${filteredData[property].replace(/\$/g, '$$$&')}`).replace(new RegExp(`${property.replace(/[/[\]\-.\\|^$!=()*+?{}]/g, '\\$&')}(?=$|[${filteredPunctuationEntries.filter(([first]) => /[\p{Pe}\p{Pf}\p{Po}]/u.test(first)).map(([first]) => first.replace(/[\\\]]/g, '\\$&')).join('')}])`, 'g'), filteredData[property].replace(/\$/g, '$$$&')).replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}])${property.replace(/[/[\]\-.\\|^$!=()*+?{}]/g, '\\$&')}`, 'g'), `$1 ${filteredData[property].replace(/\$/g, '$$$&')} `).replace(new RegExp(property.replace(/[/[\]\-.\\|^$!=()*+?{}]/g, '\\$&'), 'g'), `${filteredData[property].replace(/\$/g, '$$$&')} `);
+                    chars = chars.replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}])${property.replace(/[/[\]\-.\\|^$!=()*+?{}]/g, '\\$&')}(?=$|[${filteredPunctuationEntries.filter(([first]) => /[\p{Pe}\p{Pf}\p{Po}]/u.test(first)).map(([first]) => first.replace(/[\\\]]/g, '\\$&')).join('')}])`, 'gu'), `$1 ${filteredData[property].replace(/\$/g, '$$$&')}`).replace(new RegExp(`${property.replace(/[/[\]\-.\\|^$!=()*+?{}]/g, '\\$&')}(?=$|[${filteredPunctuationEntries.filter(([first]) => /[\p{Pe}\p{Pf}\p{Po}]/u.test(first)).map(([first]) => first.replace(/[\\\]]/g, '\\$&')).join('')}])`, 'g'), filteredData[property].replace(/\$/g, '$$$&')).replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}])${property.replace(/[/[\]\-.\\|^$!=()*+?{}]/g, '\\$&')}`, 'gu'), `$1 ${filteredData[property].replace(/\$/g, '$$$&')} `).replace(new RegExp(property.replace(/[/[\]\-.\\|^$!=()*+?{}]/g, '\\$&'), 'g'), `${filteredData[property].replace(/\$/g, '$$$&')} `);
                 }
 
                 filteredPunctuationEntries.forEach(([first, second]) => chars = chars.replace(new RegExp(first.replace(/[/[\]\-.\\|^$!=()*+?{}]/g, '\\$&'), 'g'), second.replace(/\$/g, '$$$&')));
