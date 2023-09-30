@@ -822,10 +822,10 @@ function convertText(inputText, data, caseSensitive, useGlossary, translationAlg
                 const filteredData = Object.fromEntries(filteredDataEntries);
 
                 for (const property in filteredData) {
-                    chars = chars.replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}])(${getTrieRegexPatternFromWords(property)})(?=$|${getTrieRegexPatternFromWords(filteredPunctuationEntries.filter(([first]) => /[\p{Pe}\p{Pf}\p{Po}]/u.test(first)).join(''))})`, 'gu'), (match, p1, p2) => filteredData[p2] != undefined ? `${p1} ${getRegexEscapedReplacement(filteredData[p2])}` : match)
-                        .replace(new RegExp(`(${getTrieRegexPatternFromWords(property)})(?=$|${getTrieRegexPatternFromWords(filteredPunctuationEntries.filter(([first]) => /[\p{Pe}\p{Pf}\p{Po}]/u.test(first)).join(''))})`, 'g'), (match) => filteredData[match] != undefined ? getRegexEscapedReplacement(filteredData[match]) : match)
-                        .replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}])(${getRegexEscapedText(property)})`, 'gu'), (match, p1, p2) => filteredData[p2] != undefined ? `${p1} ${getRegexEscapedReplacement(filteredData[p2])} ` : match)
-                        .replace(new RegExp(getTrieRegexPatternFromWords(property), 'g'), (match) => filteredData[match] != undefined ? `${getRegexEscapedReplacement(filteredData[match])} ` : match);
+                    chars = chars.replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}])(${getRegexEscapedText(property)})(?=$|${getTrieRegexPatternFromWords(filteredPunctuationEntries.filter(([first]) => /[\p{Pe}\p{Pf}\p{Po}]/u.test(first)).join(''))})`, 'gu'), (match, p1, p2) => filteredData.hasOwnProperty(p2) != undefined ? `${p1} ${getRegexEscapedReplacement(filteredData[p2])}` : match)
+                        .replace(new RegExp(`(${getRegexEscapedText(property)})(?=$|${getTrieRegexPatternFromWords(filteredPunctuationEntries.filter(([first]) => /[\p{Pe}\p{Pf}\p{Po}]/u.test(first)).join(''))})`, 'g'), (match) => filteredData.hasOwnProperty(match) ? getRegexEscapedReplacement(filteredData[match]) : match)
+                        .replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}])(${getRegexEscapedText(property)})`, 'gu'), (match, p1, p2) => filteredData.hasOwnProperty(p2) != undefined ? `${p1} ${getRegexEscapedReplacement(filteredData[p2])} ` : match)
+                        .replace(new RegExp(getRegexEscapedText(property), 'g'), (match) => filteredData.hasOwnProperty(match) ? `${getRegexEscapedReplacement(filteredData[match])} ` : match);
                 }
 
                 filteredPunctuationEntries.forEach(([first, second]) => chars = chars.replace(new RegExp(getRegexEscapedText(first), 'g'), getRegexEscapedReplacement(second)));
