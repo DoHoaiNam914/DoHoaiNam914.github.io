@@ -306,13 +306,13 @@ function loadTranslatorOptions() {
         data['translator'] = translators.filter($('.active')).data('id');
 
         for (let i = 0; i < options.length; i++) {
-            if (options.filter(`:eq(${i})`).attr('name') != undefined && options.filter(`:eq(${i})`).attr('name').startsWith('flexRadio') && options.filter(`:eq(${i})`).prop('checked') === true) {
-                data[options.filter(`:eq(${i})`).attr('name')] = options.filter(`:eq(${i})`).val();
-            } else if (options.filter(`:eq(${i})`).attr('id').startsWith('flexSwitchCheck') && options.filter(`:eq(${i})`).prop('checked') === true) {
+            if (options.filter(`:eq(${i})`).attr('id').startsWith('flexSwitchCheck') && options.filter(`:eq(${i})`).prop('checked') === true) {
                 data[options.filter(`:eq(${i})`).attr('id')] = options.filter(`:eq(${i})`).prop('checked');
-            } else if (options.filter(`:ep(${i})`).hasClass('form-range')) {
-                data[options.filter(`:eq(${i})`).attr('id')] = parseInt(options.filter(`:eq(${i})`).val());
-            } else if (options.filter(`:ep(${i})`).hasClass('form-select')) {
+            } else if (options.filter(`:eq(${i})`).attr('name') != undefined && options.filter(`:eq(${i})`).attr('name').startsWith('flexRadio') && options.filter(`:eq(${i})`).prop('checked') === true) {
+                data[options.filter(`:eq(${i})`).attr('name')] = options.filter(`:eq(${i})`).val();
+            } else if (options.filter(`:eq(${i})`).hasClass('form-range')) {
+                data[options.filter(`:eq(${i})`).attr('id')] = options.filter(`:eq(${i})`).val();
+            } else if (options.filter(`:eq(${i})`).hasClass('form-select')) {
                 data[options.filter(`:eq(${i})`).attr('id')] = options.filter(`:eq(${i})`).val();
             }
         }
@@ -320,6 +320,7 @@ function loadTranslatorOptions() {
         return data;
     } catch (error) {
         console.error(error);
+        throw error.toString();
     }
 }
 

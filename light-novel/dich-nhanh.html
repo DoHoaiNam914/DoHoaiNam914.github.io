@@ -59,9 +59,9 @@
                     options.filter(`:eq(${i})`).prop('checked', true);
                 } else if (options.filter(`:eq(${i})`).attr('id').startsWith('flexSwitchCheck')) {
                     options.filter(`:eq(${i})`).prop('checked', translator[options.filter(`:eq(${i})`).attr('id')]);
-                } else if (options.filter(`:ep(${i})`).hasClass('form-range')) {
+                } else if (options.filter(`:eq(${i})`).hasClass('form-range')) {
                     options.filter(`:eq(${i})`).val(parseInt(translator[options.filter(`:eq(${i})`).attr('id')]));
-                } else if (options.filter(`:ep(${i})`).hasClass('form-select')) {
+                } else if (options.filter(`:eq(${i})`).hasClass('form-select')) {
                     options.filter(`:eq(${i})`).val(translator[options.filter(`:eq(${i})`).attr('id')]);
                 }
 
