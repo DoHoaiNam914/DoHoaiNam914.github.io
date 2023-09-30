@@ -180,6 +180,7 @@ pasteButton.on('click', () => {
         .then((clipText) => {
             if (clipText.length > 0) {
                 translatedTextArea.prop('scrollY', 0);
+                translatedTextArea.scrollTop(0);
                 queryText.val(clipText).trigger('input');
                 retranslateButton.click();
             }

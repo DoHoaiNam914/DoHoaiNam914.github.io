@@ -37,6 +37,7 @@ const specialSinovietnameseData = [
     ['骑', 'KỴ'],
     // LỮ, LÃ
     ['吕', 'LÃ, LỮ'],
+    ['璃', 'LY'], // Không xác định
     ['儿', 'NHI'],
     ['樊', 'PHÀN'],
 
