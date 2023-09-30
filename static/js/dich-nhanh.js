@@ -780,7 +780,7 @@ function convertText(inputText, data, caseSensitive, useGlossary, translationAlg
 
                 if (useGlossary && multiplicationAlgorithm === VietPhraseMultiplicationAlgorithm.MULTIPLICATION_BY_PRONOUNS_NAMES && glossaryEntries.length > 0) {
                     for (const element in glossary) {
-                        glossaryEntries.splice(i, 0, [luatnhan.replace(/\{0}/g, element).replace(/\$/g, '$$$&'), VietphraseData.cacLuatnhan[luatnhan].replace(/\{0}/g, glossary[element].replace(/\$/g, '$$$&'))]);
+                        glossaryEntries.splice(i, 0, [luatnhan.replace(/\{0}/g, getRegexEscapedReplacement(element)), VietphraseData.cacLuatnhan[luatnhan].replace(/\{0}/g, getRegexEscapedReplacement(glossary[element]))]);
                         i++;
                     }
                 }
@@ -788,7 +788,7 @@ function convertText(inputText, data, caseSensitive, useGlossary, translationAlg
                 i = 0;
 
                 for (const pronoun in VietphraseData.pronouns) {
-                    dataEntries.splice(i, 0, [luatnhan.replace(/\{0}/g, pronoun), VietphraseData.cacLuatnhan[luatnhan].replace(/\{0}/g, VietphraseData.pronouns[pronoun])]);
+                    dataEntries.splice(i, 0, [luatnhan.replace(/\{0}/g, getRegexEscapedReplacement(pronoun)), VietphraseData.cacLuatnhan[luatnhan].replace(/\{0}/g, getRegexEscapedReplacement(VietphraseData.pronouns[pronoun]))]);
                 }
             }
         }
@@ -822,10 +822,13 @@ function convertText(inputText, data, caseSensitive, useGlossary, translationAlg
                 const filteredData = Object.fromEntries(filteredDataEntries);
 
                 for (const property in filteredData) {
-                    chars = chars.replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}])${property.replace(/[/[\]\-.\\|^$!=()*+?{}]/g, '\\$&')}(?=$|[${filteredPunctuationEntries.filter(([first]) => /[\p{Pe}\p{Pf}\p{Po}]/u.test(first)).map(([first]) => first.replace(/[\\\]]/g, '\\$&')).join('')}])`, 'gu'), `$1 ${filteredData[property].replace(/\$/g, '$$$&')}`).replace(new RegExp(`${property.replace(/[/[\]\-.\\|^$!=()*+?{}]/g, '\\$&')}(?=$|[${filteredPunctuationEntries.filter(([first]) => /[\p{Pe}\p{Pf}\p{Po}]/u.test(first)).map(([first]) => first.replace(/[\\\]]/g, '\\$&')).join('')}])`, 'g'), filteredData[property].replace(/\$/g, '$$$&')).replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}])${property.replace(/[/[\]\-.\\|^$!=()*+?{}]/g, '\\$&')}`, 'gu'), `$1 ${filteredData[property].replace(/\$/g, '$$$&')} `).replace(new RegExp(property.replace(/[/[\]\-.\\|^$!=()*+?{}]/g, '\\$&'), 'g'), `${filteredData[property].replace(/\$/g, '$$$&')} `);
+                    chars = chars.replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}])(${getTrieRegexPatternFromWords(property)})(?=$|${getTrieRegexPatternFromWords(filteredPunctuationEntries.filter(([first]) => /[\p{Pe}\p{Pf}\p{Po}]/u.test(first)).join(''))})`, 'gu'), (match, p1, p2) => filteredData[p2] != undefined ? `${p1} ${getRegexEscapedReplacement(filteredData[p2])}` : match)
+                        .replace(new RegExp(`(${getTrieRegexPatternFromWords(property)})(?=$|${getTrieRegexPatternFromWords(filteredPunctuationEntries.filter(([first]) => /[\p{Pe}\p{Pf}\p{Po}]/u.test(first)).join(''))})`, 'g'), (match) => filteredData[match] != undefined ? getRegexEscapedReplacement(filteredData[match]) : match)
+                        .replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}])(${getRegexEscapedText(property)})`, 'gu'), (match, p1, p2) => filteredData[p2] != undefined ? `${p1} ${getRegexEscapedReplacement(filteredData[p2])} ` : match)
+                        .replace(new RegExp(getTrieRegexPatternFromWords(property), 'g'), (match) => filteredData[match] != undefined ? `${getRegexEscapedReplacement(filteredData[match])} ` : match);
                 }
 
-                filteredPunctuationEntries.forEach(([first, second]) => chars = chars.replace(new RegExp(first.replace(/[/[\]\-.\\|^$!=()*+?{}]/g, '\\$&'), 'g'), second.replace(/\$/g, '$$$&')));
+                filteredPunctuationEntries.forEach(([first, second]) => chars = chars.replace(new RegExp(getRegexEscapedText(first), 'g'), getRegexEscapedReplacement(second)));
                 results.push(chars);
             } else if (translationAlgorithm === VietPhraseTranslationAlgorithms.TRANSLATE_FROM_LEFT_TO_RIGHT) {
                 const phraseLengths = [...filteredDataEntries.map(([first]) => first.length), 1].sort((a, b) => b - a).filter((element, index, array) => index === array.indexOf(element));
@@ -892,6 +895,81 @@ function convertText(inputText, data, caseSensitive, useGlossary, translationAlg
         console.error('Bản dịch lỗi:', error);
         throw error.toString();
     }
+}
+
+function getTrieRegexPatternFromWords(words, prefix = '', suffix = '') {
+    const trieData = {};
+
+    for (const word of words) {
+        let referenceData = trieData;
+
+        for (const char of word) {
+            referenceData[char] = referenceData.hasOwnProperty(char) ? referenceData[char] : {};
+            referenceData = referenceData[char];
+        }
+
+        referenceData[''] = 1;
+    }
+
+    return prefix + getRegexPattern(trieData) + suffix;
+}
+
+function getRegexPattern(data) {
+    if (!data.hasOwnProperty('') || Object.keys(data).length !== 1) {
+        const alternation = [];
+        const trie = [];
+        let isNoncapturing = false;
+
+        for (const char of Object.keys(data).sort()) {
+            if (typeof data[char] === 'object') {
+                let recurse = getRegexPattern(data[char]);
+
+                if (recurse != null) {
+                    alternation.push(getRegexEscapedText(char) + recurse);
+                } else {
+                    trie.push(getRegexEscapedText(char));
+                }
+            } else {
+                isNoncapturing = true;
+            }
+        }
+
+        const isTrieOnly = alternation.length === 0;
+
+        if (trie.length > 0) {
+            if (trie.length === 1) {
+                alternation.push(trie[0]);
+            } else {
+                alternation.push(`[${trie.join('')}]`);
+            }
+        }
+
+        let result = '';
+
+        if (alternation.length === 1) {
+            result = alternation[0];
+        } else {
+            result = `(?:${alternation.join('|')})`;
+        }
+
+        if (isNoncapturing) {
+            if (isTrieOnly) {
+                result += '?';
+            } else {
+                result = `(?:${result})?`;
+            }
+        }
+
+        return result;
+    }
+}
+
+function getRegexEscapedText(text) {
+    return text.replace(/[$()*+\-.\\/?[\]^{|}]/g, '\\$&');
+}
+
+function getRegexEscapedReplacement(replacement) {
+    return replacement.replace(/\$/g, '$$$&');
 }
 
 function getProcessTextPreTranslate(text) {
