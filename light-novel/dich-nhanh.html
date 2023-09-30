@@ -54,11 +54,11 @@
             $(`.translator[data-id="${translator.translator}"]`).click();
 
             for (let i = 0; i < options.length; i++) {
-                if (options.filter(`:eq(${i})`).attr('id').startsWith('flexSwitchCheck')) {
-                    options.filter(`:eq(${i})`).prop('checked', translator[options.filter(`:eq(${i})`).attr('id')]);
-                } else if (options.filter(`:eq(${i})`).attr('name') != undefined && options.filter(`:eq(${i})`).attr('name').startsWith('flexRadio') && options.filter(`:eq(${i})`).val() === translator[options.filter(`:eq(${i})`).attr('name')]) {
+                if (options.filter(`:eq(${i})`).attr('name') != undefined && options.filter(`:eq(${i})`).attr('name').startsWith('flexRadio') && options.filter(`:eq(${i})`).val() === translator[options.filter(`:eq(${i})`).attr('name')]) {
                     $(`.option[name="${options.filter(`:eq(${i})`).attr('name')}"]`).removeProp('checked');
                     options.filter(`:eq(${i})`).prop('checked', true);
+                } else if (options.filter(`:eq(${i})`).attr('id').startsWith('flexSwitchCheck')) {
+                    options.filter(`:eq(${i})`).prop('checked', translator[options.filter(`:eq(${i})`).attr('id')]);
                 } else if (options.filter(`:ep(${i})`).hasClass('form-range')) {
                     options.filter(`:eq(${i})`).val(parseInt(translator[options.filter(`:eq(${i})`).attr('id')]));
                 } else if (options.filter(`:ep(${i})`).hasClass('form-select')) {
