@@ -295,6 +295,7 @@ inputVietphrase.on('change', function () {
         vietphraseList = [...vietphraseList, ...Object.entries(VietphraseData.chinesePhienAmWords)].filter(([first, second]) => first !== '' && second != undefined && !vietphraseList[first] && (vietphraseList[first] = 1), {})
         VietphraseData.vietphrases = Object.fromEntries(vietphraseList);
         console.log('Đã tải xong tệp VietPhrase.txt (%d)!', vietphraseList.length);
+        prevTranslation = [];
     };
     reader.readAsText($(this).prop('files')[0]);
 });

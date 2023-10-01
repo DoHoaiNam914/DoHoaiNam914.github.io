@@ -15,11 +15,14 @@ const specialSinovietnameseData = [
     ['姐姐', 'TỶ TỶ'],
     ['王朝', 'VƯƠNG TRIỀU'],
     ['荫', 'ÂM, ẤM'],
+    // BỔN, BẢN
+    ['本', 'BẢN'],
     ['玑', 'CƠ'],
     ['柜', 'CỰ, QUỸ'],
     ['正', 'CHÍNH'],
     ['摇', 'DAO'],
     ['遥', 'DAO'],
+    ['熔', 'DUNG'],
     ['台', 'ĐÀI'],
     ['斗', 'ĐẨU, ĐẤU'],
     ['姛', 'ĐỒNG'], // Không xác định
@@ -42,8 +45,10 @@ const specialSinovietnameseData = [
     ['技', 'KỸ'],
     // LỮ, LÃ
     ['吕', 'LÃ, LỮ'],
-    ['璃', 'LY'], // Không xác định
+    // Không xác định
+    ['璃', 'LY'],
     ['儿', 'NHI'],
+    ['柠', 'NINH'],
     ['樊', 'PHÀN'],
     // QUAN, QUÁN
     ['观', 'QUÁN'],
