@@ -19,6 +19,7 @@ const specialSinovietnameseData = [
     ['柜', 'CỰ, QUỸ'],
     ['正', 'CHÍNH'],
     ['摇', 'DAO'],
+    ['遥', 'DAO'],
     ['台', 'ĐÀI'],
     ['斗', 'ĐẨU, ĐẤU'],
     ['姛', 'ĐỒNG'], // Không xác định
@@ -34,13 +35,18 @@ const specialSinovietnameseData = [
     ['岐', 'KỲ'],
     // KI, CƠ, KỲ
     ['期', 'KỲ'],
+    // KHÂU, KHƯU
+    ['丘', 'KHƯU'],
     ['绮', 'KHỞI'],
     ['骑', 'KỴ'],
+    ['技', 'KỸ'],
     // LỮ, LÃ
     ['吕', 'LÃ, LỮ'],
     ['璃', 'LY'], // Không xác định
     ['儿', 'NHI'],
     ['樊', 'PHÀN'],
+    // QUAN, QUÁN
+    ['观', 'QUÁN'],
 
     // SANG, SÁNG
     ['创', 'SÁNG'], // Giản thể
@@ -51,6 +57,7 @@ const specialSinovietnameseData = [
     ['刺', 'THÍCH'],
     ['生', 'SINH'],
     ['山', 'SƠN'],
+    ['使', 'SỨ, SỬ'],
     // TẰNG TẦNG
     ['层', 'TẦNG'],
     ['栖', 'THÊ, TÊ, TÂY'],
@@ -62,6 +69,7 @@ const specialSinovietnameseData = [
     ['時', '时'], // Phổn thể
 
     ['姐', 'THƯ'],
+    ['司', 'TƯ, TI'],
     ['璇', 'TOÀN'],
     // TRIỀU, TRÀO, TRIÊU
     ['朝', 'TRIÊU'],

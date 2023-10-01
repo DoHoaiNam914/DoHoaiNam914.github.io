@@ -560,12 +560,12 @@ async function translate(inputText, abortSignal) {
                 break;
 
             default:
-                MAX_LENGTH = getDynamicDictionaryText(processText, false, true).length;
+                MAX_LENGTH = getGlossaryAppliedText(processText, false, true).length;
                 MAX_LINE = processText.split(/\n/).length;
                 break;
         }
 
-        if (!abortSignal.aborted && getDynamicDictionaryText(processText, translator === Translators.MICROSOFT_TRANSLATOR, true).split(/\n/).sort((a, b) => b.length - a.length)[0].length > MAX_LENGTH) {
+        if (!abortSignal.aborted && getGlossaryAppliedText(processText, translator === Translators.MICROSOFT_TRANSLATOR, true).split(/\n/).sort((a, b) => b.length - a.length)[0].length > MAX_LENGTH) {
             errorMessage.innerText = `Bản dịch thất bại: Số lượng từ trong một dòng quá dài (Số lượng từ hợp lệ nhỏ hơn hoặc bằng ${MAX_LENGTH}). [Lưu ý: Khi sử dụng Dynamic Dictionary và Bảo vệ dấu trích đẫn sẽ làm giảm số lượng từ có thể dịch đi.]`;
             translatedTextArea.append(errorMessage);
             onPostTranslate();
@@ -574,7 +574,7 @@ async function translate(inputText, abortSignal) {
 
         if (abortSignal.aborted) return;
 
-        if (getDynamicDictionaryText(processText, translator === Translators.MICROSOFT_TRANSLATOR, true) !== prevTranslation[0]) {
+        if (getGlossaryAppliedText(processText, translator === Translators.MICROSOFT_TRANSLATOR, true) !== prevTranslation[0]) {
             if (!abortSignal.aborted && translator === Translators.DEEPL_TRANSLATOR) {
                 const deeplUsage = (await $.get('https://api-free.deepl.com/v2/usage?auth_key=' + DEEPL_AUTH_KEY)) ?? {
                     'character_count': 500000,
@@ -702,7 +702,7 @@ async function translate(inputText, abortSignal) {
 
             if (abortSignal.aborted) return;
             translateTimer.text(Date.now() - startTime);
-            prevTranslation = [getDynamicDictionaryText(processText, translator === Translators.MICROSOFT_TRANSLATOR, true), results];
+            prevTranslation = [getGlossaryAppliedText(processText, translator === Translators.MICROSOFT_TRANSLATOR, true), results];
         } else {
             results = prevTranslation[1];
         }
@@ -789,11 +789,12 @@ function convertText(inputText, data, caseSensitive, useGlossary, translationAlg
 
                 for (const pronoun in VietphraseData.pronouns) {
                     dataEntries.splice(i, 0, [luatnhan.replace(/\{0}/g, getRegexEscapedReplacement(pronoun)), VietphraseData.cacLuatnhan[luatnhan].replace(/\{0}/g, getRegexEscapedReplacement(VietphraseData.pronouns[pronoun]))]);
+                    i++;
                 }
             }
         }
 
-        data = Object.fromEntries([...useGlossary ? glossaryEntries.sort((a, b) => b[0].length - a[0].length) : [], ...dataEntries.sort((a, b) => b[0].length - a[0].length)]);
+        data = Object.fromEntries([...translationAlgorithm === VietPhraseTranslationAlgorithms.PRIORITIZE_LONG_VIETPHRASE_CLUSTERS && useGlossary ? glossaryEntries.sort((a, b) => b[0].length - a[0].length) : [], ...dataEntries.sort((a, b) => b[0].length - a[0].length)]);
         dataEntries = Object.entries(data);
         const punctuationEntries = cjkmap.filter(([first]) => first === '…' || first.split('…').length !== 2);
         const punctuation = Object.fromEntries(punctuationEntries);
@@ -810,20 +811,22 @@ function convertText(inputText, data, caseSensitive, useGlossary, translationAlg
                 continue;
             }
 
+            const filteredGlossaryEntries = glossaryEntries.filter(([first]) => lines[i].includes(first));
             const filteredDataEntries = dataEntries.filter(([first]) => lines[i].includes(first));
-            const filteredPunctuationEntries = punctuationEntries.filter(([first]) => lines[i].includes(first));
+            const filteredPunctuationEntries = punctuationEntries.filter(([first]) => lines[i].includes(first) && (translationAlgorithm !== VietPhraseTranslationAlgorithms.TRANSLATE_FROM_LEFT_TO_RIGHT || !useGlossary || filteredGlossaryEntries.indexOf(first) !== -1));
 
-            if (filteredDataEntries.length === 0 && filteredPunctuationEntries.length === 0) {
+            if (filteredGlossaryEntries.length === 0 && filteredDataEntries.length === 0 && filteredPunctuationEntries.length === 0) {
                 results.push(chars);
                 continue;
             }
 
+            const filteredData = Object.fromEntries(filteredDataEntries);
+
             if (translationAlgorithm === VietPhraseTranslationAlgorithms.PRIORITIZE_LONG_VIETPHRASE_CLUSTERS) {
-                const filteredData = Object.fromEntries(filteredDataEntries);
 
                 for (const property in filteredData) {
-                    chars = chars.replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}])(${getRegexEscapedText(property)})(?=$|${getTrieRegexPatternFromWords(punctuationEntries.filter(([first]) => /[\p{Pe}\p{Pf}\p{Po}]/u.test(first)).join(''))})`, 'gu'), `$1 ${getRegexEscapedReplacement(filteredData[property])}`)
-                        .replace(new RegExp(`(${getRegexEscapedText(property)})(?=$|${getTrieRegexPatternFromWords(punctuationEntries.filter(([first]) => /[\p{Pe}\p{Pf}\p{Po}]/u.test(first)).join(''))})`, 'g'), getRegexEscapedReplacement(filteredData[property]))
+                    chars = chars.replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}])(${getRegexEscapedText(property)})(?=$|${getTrieRegexPatternFromWords(punctuationEntries.filter(([first]) => /[\p{Ps}\p{Pe}\p{Pi}\p{Pf}\p{Po}]/u.test(first)).join(''))})`, 'gu'), `$1 ${getRegexEscapedReplacement(filteredData[property])}`)
+                        .replace(new RegExp(`(${getRegexEscapedText(property)})(?=$|${getTrieRegexPatternFromWords(punctuationEntries.filter(([first]) => /[\p{Ps}\p{Pe}\p{Pi}\p{Pf}\p{Po}]/u.test(first)).join(''))})`, 'g'), getRegexEscapedReplacement(filteredData[property]))
                         .replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}])(${getRegexEscapedText(property)})`, 'gu'), `$1 ${getRegexEscapedReplacement(filteredData[property])} `)
                         .replace(new RegExp(`(${getRegexEscapedText(property)})`, 'gu'), `${getRegexEscapedReplacement(filteredData[property])} `);
                 }
@@ -831,15 +834,26 @@ function convertText(inputText, data, caseSensitive, useGlossary, translationAlg
                 filteredPunctuationEntries.forEach(([first, second]) => chars = chars.replace(new RegExp(getRegexEscapedText(first), 'g'), getRegexEscapedReplacement(second)));
                 results.push(chars);
             } else if (translationAlgorithm === VietPhraseTranslationAlgorithms.TRANSLATE_FROM_LEFT_TO_RIGHT) {
-                const phraseLengths = [...filteredDataEntries.map(([first]) => first.length), 1].sort((a, b) => b - a).filter((element, index, array) => index === array.indexOf(element));
+                const phraseLengths = [...useGlossary ? filteredGlossaryEntries.map(([, second]) => second.length) : [], ...filteredDataEntries.map(([first]) => first.length), 1].sort((a, b) => b - a).filter((element, index, array) => index === array.indexOf(element));
                 const phrases = [];
                 let tempWord = '';
+                
+                chars = getGlossaryAppliedText(chars, false, true);
 
                 for (let j = 0; j < chars.length; j++) {
                     for (const phraseLength of phraseLengths) {
-                        if (data.hasOwnProperty(chars.substring(j, j + phraseLength))) {
+                        if (filteredGlossaryEntries.map(([, second]) => second).indexOf(chars.substring(j, j + phraseLength)) != -1) {
+                            if (!lines[i].startsWith(chars[j]) && /[\p{Ps}\p{Pe}\p{Pi}\p{Pf}]/u.test(chars[j - 1])) {
+                                phrases.push(phrases.pop() + chars.substring(j, j + phraseLength));
+                            } else {
+                                phrases.push(chars.substring(j, j + phraseLength));
+                            }
+
+                            j += phraseLength - 1;
+                            break;
+                        } else if (data.hasOwnProperty(chars.substring(j, j + phraseLength))) {
                             if (data[chars.substring(j, j + phraseLength)].length > 0) {
-                                if (!lines[i].startsWith(chars[j]) && /[\p{Ps}\p{Pi}]/u.test(chars[j - 1])) {
+                                if (!lines[i].startsWith(chars[j]) && /[\p{Ps}\p{Pe}\p{Pi}\p{Pf}]/u.test(chars[j - 1])) {
                                     phrases.push(phrases.pop() + data[chars.substring(j, j + phraseLength)]);
                                 } else {
                                     phrases.push(data[chars.substring(j, j + phraseLength)]);
@@ -855,7 +869,7 @@ function convertText(inputText, data, caseSensitive, useGlossary, translationAlg
                             }
 
                             if (punctuation.hasOwnProperty(chars[j])) {
-                                if (tempWord.length === 0 && !lines[i].startsWith(chars[j]) && /[\p{Pe}\p{Pf}\p{Po}]/u.test(chars[j])) {
+                                if (tempWord.length === 0 && !lines[i].startsWith(chars[j]) && /[\p{Ps}\p{Pe}\p{Pi}\p{Pf}\p{Po}]/u.test(chars[j])) {
                                     phrases.push(phrases.pop() + punctuation[chars[j]]);
                                     break;
                                 } else {
@@ -1007,7 +1021,7 @@ function onPostTranslate() {
 const Lingvanex = {
     translateText: async function (authKey, text, from, to, useGlossary = false, tc = 1) {
         try {
-            text = useGlossary ? getDynamicDictionaryText(text, false, flexSwitchCheckAllowAnothers.prop('checked')) : text;
+            text = useGlossary ? getGlossaryAppliedText(text, false, flexSwitchCheckAllowAnothers.prop('checked')) : text;
 
             /**
              * Lingvanex Demo
@@ -1177,7 +1191,7 @@ const Lingvanex = {
 const DeepLTranslator = {
     translateText: async function (authKey, inputText, sourceLanguage, targetLanguage, useGlossary = false) {
         try {
-            inputText = useGlossary ? getDynamicDictionaryText(inputText, false, flexSwitchCheckAllowAnothers.prop('checked')) : inputText;
+            inputText = useGlossary ? getGlossaryAppliedText(inputText, false, flexSwitchCheckAllowAnothers.prop('checked')) : inputText;
 
             const response = await $.ajax({
                 url: 'https://api-free.deepl.com/v2/translate?auth_key=' + authKey,
@@ -1259,7 +1273,7 @@ const DeepLTranslator = {
 const GoogleTranslate = {
     translateText: async function (data, inputText, sourceLanguage, targetLanguage, useGlossary = false, tc = 0) {
         try {
-            inputText = useGlossary ? getDynamicDictionaryText(inputText, false, flexSwitchCheckAllowAnothers.prop('checked')) : inputText;
+            inputText = useGlossary ? getGlossaryAppliedText(inputText, false, flexSwitchCheckAllowAnothers.prop('checked')) : inputText;
 
             /**
              * Google translate Widget
@@ -1507,7 +1521,7 @@ const GoogleTranslate = {
 const Papago = {
     translateText: async function (version, inputText, sourceLanguage, targetLanguage, useGlossary = false) {
         try {
-            inputText = useGlossary ? getDynamicDictionaryText(inputText, false, flexSwitchCheckAllowAnothers.prop('checked')) : inputText;
+            inputText = useGlossary ? getGlossaryAppliedText(inputText, false, flexSwitchCheckAllowAnothers.prop('checked')) : inputText;
 
             const timeStamp = (new Date()).getTime();
 
@@ -1573,7 +1587,7 @@ const Papago = {
 const MicrosoftTranslator = {
     translateText: async function (accessToken, inputText, sourceLanguage, targetLanguage, useGlossary = false) {
         try {
-            inputText = useGlossary ? getDynamicDictionaryText(inputText) : inputText;
+            inputText = useGlossary ? getGlossaryAppliedText(inputText) : inputText;
 
             /**
              * Microsoft Bing Translator
@@ -1736,7 +1750,7 @@ const MicrosoftTranslator = {
     }
 };
 
-function getDynamicDictionaryText(text, isMicrosoftTranslator = true, useAnotherTranslators = false) {
+function getGlossaryAppliedText(text, isMicrosoftTranslator = true, useAnotherTranslators = false) {
     const glossaryEntries = Object.entries(glossary).filter(([first]) => text.includes(first));
     let newText = text;
 
@@ -1755,7 +1769,7 @@ function getDynamicDictionaryText(text, isMicrosoftTranslator = true, useAnother
                 for (const glossaryLength of glossaryLengths) {
                     if (glossary.hasOwnProperty(chars.substring(j, j + glossaryLength))) {
                         if (glossary[chars.substring(j, j + glossaryLength)].length > 0) {
-                            if (!lines[i].startsWith(chars[j]) && /[\p{Ps}\p{Pi}]/u.test(chars[j - 1])) {
+                            if (!lines[i].startsWith(chars[j]) && /[\p{Ps}\p{Pe}\p{Pi}\p{Pf}]/u.test(chars[j - 1])) {
                                 phrases.push(phrases.pop() + (/*isMicrosoftTranslator ? `<mstrans:dictionary translation="${glossary[chars.substring(j, j + glossaryLength)]}">${chars.substring(j, j + glossaryLength)}</mstrans:dictionary>` : */glossary[chars.substring(j, j + glossaryLength)]));
                             } else {
                                 phrases.push(isMicrosoftTranslator ? `<mstrans:dictionary translation="${glossary[chars.substring(j, j + glossaryLength)]}">${chars.substring(j, j + glossaryLength)}</mstrans:dictionary>` : glossary[chars.substring(j, j + glossaryLength)]);
@@ -1770,7 +1784,7 @@ function getDynamicDictionaryText(text, isMicrosoftTranslator = true, useAnother
                             tempWord = '';
                         }
 
-                        if (tempWord.length === 0 && !lines[i].startsWith(chars[j]) && /[\p{Pe}\p{Pf}\p{Po}]/u.test(chars[j])) {
+                        if (tempWord.length === 0 && !lines[i].startsWith(chars[j]) && /[\p{Ps}\p{Pe}\p{Pi}\p{Pf}\p{Po}]/u.test(chars[j])) {
                             phrases.push(phrases.pop() + chars[j]);
                             break;
                         } else {
