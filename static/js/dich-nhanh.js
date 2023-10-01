@@ -679,13 +679,13 @@ async function translate(inputText, abortSignal) {
                             break;
 
                         case Translators.VIETPHRASE:
-                            if (targetLanguage.val() === 'vi' && Object.entries(VietphraseData.vietphrases).length > 0) {
+                            if (targetLanguage.val() === 'vi' && Object.keys(VietphraseData.vietphrases).length > 0) {
                                 translatedText = convertText(translateText, VietphraseData.vietphrases, true, flexSwitchCheckGlossary.prop('checked'), parseInt(translationAlgorithm.filter(':checked').val()), parseInt(multiplicationAlgorithm.filter(':checked').val()));
-                            } else if (targetLanguage.val() === 'zh-VN' && Object.entries(VietphraseData.chinesePhienAmWords).length > 0) {
+                            } else if (targetLanguage.val() === 'zh-VN' && Object.keys(VietphraseData.chinesePhienAmWords).length > 0) {
                                 translatedText = convertText(translateText, VietphraseData.chinesePhienAmWords, true, false, VietPhraseTranslationAlgorithms.PRIORITIZE_LONG_VIETPHRASE_CLUSTERS, VietPhraseMultiplicationAlgorithm.NOT_APPLICABLE);
-                            } else if (targetLanguage.val() === 'en' && Object.entries(VietphraseData.pinyins).length > 0) {
+                            } else if (targetLanguage.val() === 'en' && Object.keys(VietphraseData.pinyins).length > 0) {
                                 translatedText = convertText(translateText, VietphraseData.pinyins, true, false, VietPhraseTranslationAlgorithms.PRIORITIZE_LONG_VIETPHRASE_CLUSTERS, VietPhraseMultiplicationAlgorithm.NOT_APPLICABLE);
-                            } else if (targetLanguage.val() === 'vi' && Object.entries(VietphraseData.vietphrases).length === 0) {
+                            } else if (targetLanguage.val() === 'vi' && Object.keys(VietphraseData.vietphrases).length === 0) {
                                 errorMessage.innerHTML = 'Nhập tệp VietPhrase.txt nếu có hoặc tải về <a href="https://drive.google.com/drive/folders/0B6fxcJ5qbXgkeTJNTFJJS3lmc3c?resourcekey=0-Ych2OUVug3pkLgCIlzvcuA&usp=sharing">tại đây</a>.';
                                 translatedTextArea.html(errorMessage);
                                 onPostTranslate();
@@ -1288,7 +1288,7 @@ const GoogleTranslate = {
              * Method: GET
              * URL: https://translate.googleapis.com/translate_a/single?client=gtx&sl=${sourceLanguage}&tl=${targetLanguage}&hl=vi&dt=t&dt=bd&dj=1&q=${encodeURIComponent(inputText)}
              *
-             * Google Translate Website
+             * Google Translate Websites
              * Method: POST
              * URL: https://translate.googleapis.com/translate_a/t?anno=3&client=wt_lib&format=html&v=1.0&key=&logld=v${version}&sl=${sourceLanguage}&tl=${targetLanguage}&tc=0&tk=${lq(inputText, ctkk)}
              * Content-Type: application/x-www-form-urlencoded - `q=${inputText.split(/\n/).map((sentence) => encodeURIComponent(sentence)).join('&q=')}`
@@ -1754,7 +1754,7 @@ const MicrosoftTranslator = {
 };
 
 function getGlossaryAppliedText(text, isMicrosoftTranslator = true, useAnotherTranslators = false, glossary = {}) {
-    if (Object.keys(glossary).length === 0 ) glossary = globalThis.glossary;
+    if (Object.keys(glossary).length === 0 ) glossary = this.glossary;
     const glossaryEntries = Object.entries(glossary).filter(([first]) => text.includes(first));
     let newText = text;
 

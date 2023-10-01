@@ -90,7 +90,7 @@ copyEntryButton.on('click', function () {
     const entry = $(`#${$(this).data('for')}`);
 
     if (entry.val().length > 0) {
-        navigator.clipboard.writeText((entry.val().substring(entry.prop('selectionStart'), entry.prop('selectionEnd')) || entry.val()).substring(0, 30));
+        navigator.clipboard.writeText(entry.val());
         entry.blur();
     }
 });
@@ -103,7 +103,7 @@ defineButtons.on('click', function () {
         sourceEntry.blur();
     }
 });
-translateButtons.on('click', () => {
+translateButtons.on('click', function () {
     if (sourceEntry.val().length > 0) {
         window.open($(this).data('href').replace('${0}', encodeURIComponent(sourceEntry.val())));
         sourceEntry.blur();
