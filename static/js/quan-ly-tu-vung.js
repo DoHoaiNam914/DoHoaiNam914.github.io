@@ -32,7 +32,7 @@ const microsoftConvertButtons = $('.microsoft-convert-button');
 
 let localGlossary = JSON.parse(localStorage.getItem('glossary'));
 
-let glossary = {};
+var glossary = {};
 
 glossaryManagerButton.on('mousedown', () => {
     $('#glossaryList').val(-1).change();
@@ -119,7 +119,16 @@ addButton.on('click', () => {
 });
 convertButtons.on('click', function () {
     if (sourceEntry.val().length > 0) {
-        targetEntry.val(convertText(sourceEntry.val(), VietphraseData[$(this).data('data')], false, false, VietPhraseTranslationAlgorithms.PRIORITIZE_LONG_VIETPHRASE_CLUSTERS, VietPhraseMultiplicationAlgorithm.NOT_APPLICABLE));
+        if ($(this).data('data') === 'vietphrases') {
+            if (Object.keys(VietphraseData.vietphrases).length === 0) {
+                targetEntry.val('Bạn chưa nhập tệp VietPhrase.txt!');
+                return;
+            }
+
+            targetEntry.val(convertText(sourceEntry.val(), VietphraseData.vietphrases, false, false, VietPhraseTranslationAlgorithms.TRANSLATE_FROM_LEFT_TO_RIGHT, VietPhraseMultiplicationAlgorithm.NOT_APPLICABLE));
+        } else {
+            targetEntry.val(convertText(sourceEntry.val(), VietphraseData[$(this).data('data')], false, false, VietPhraseTranslationAlgorithms.PRIORITIZE_LONG_VIETPHRASE_CLUSTERS, VietPhraseMultiplicationAlgorithm.NOT_APPLICABLE));
+        }
     }
 });
 upperCaseButtons.on('click', function () {

@@ -686,7 +686,7 @@ async function translate(inputText, abortSignal) {
                             } else if (targetLanguage.val() === 'en' && Object.entries(VietphraseData.pinyins).length > 0) {
                                 translatedText = convertText(translateText, VietphraseData.pinyins, true, false, VietPhraseTranslationAlgorithms.PRIORITIZE_LONG_VIETPHRASE_CLUSTERS, VietPhraseMultiplicationAlgorithm.NOT_APPLICABLE);
                             } else if (targetLanguage.val() === 'vi' && Object.entries(VietphraseData.vietphrases).length === 0) {
-                                errorMessage.innerHTML = 'Nhập tệp VietPhrase.txt nếu có hoặc tải về <a href="https://drive.google.com/drive/folders/0B6fxcJ5qbXgkeTJNTFJJS3lmc3c?resourcekey=0-Ych2OUVug3pkLgCIlzvcuA&usp=sharing">tại đây</a>';
+                                errorMessage.innerHTML = 'Nhập tệp VietPhrase.txt nếu có hoặc tải về <a href="https://drive.google.com/drive/folders/0B6fxcJ5qbXgkeTJNTFJJS3lmc3c?resourcekey=0-Ych2OUVug3pkLgCIlzvcuA&usp=sharing">tại đây</a>.';
                                 translatedTextArea.html(errorMessage);
                                 onPostTranslate();
                                 translateAbortController.abort();
@@ -711,7 +711,7 @@ async function translate(inputText, abortSignal) {
         if (abortSignal.aborted) return;
         translatedTextArea.html(buildTranslatedResult([inputText, processText], getProcessTextPostTranslate(results.join('\n')), flexSwitchCheckShowOriginal.prop('checked')));
     } catch (error) {
-        console.error('Bản dịch thất bại:', error.stack);
+        console.error('Bản dịch thất bại:', error);
         errorMessage.innerText = 'Bản dịch thất bại: ' + JSON.stringify(error) ?? error.toString();
         translatedTextArea.html(errorMessage);
         onPostTranslate();
@@ -772,7 +772,7 @@ function buildTranslatedResult(inputTexts, result, showOriginal) {
 
 function convertText(inputText, data, caseSensitive, useGlossary, translationAlgorithm = VietPhraseTranslationAlgorithms.PRIORITIZE_LONG_VIETPHRASE_CLUSTERS, multiplicationAlgorithm = VietPhraseMultiplicationAlgorithm.MULTIPLICATION_BY_PRONOUNS_NAMES) {
     try {
-        const glossaryEntries = Object.entries(glossary).filter(([first]) => inputText.includes(first));
+        let glossaryEntries = Object.entries(glossary).filter(([first]) => inputText.includes(first));
         let dataEntries = Object.entries(data).filter(([first]) => (!useGlossary || !glossary.hasOwnProperty(first)) && inputText.includes(first));
 
         if (multiplicationAlgorithm > VietPhraseMultiplicationAlgorithm.NOT_APPLICABLE) {
@@ -795,7 +795,9 @@ function convertText(inputText, data, caseSensitive, useGlossary, translationAlg
             }
         }
 
-        data = Object.fromEntries([...translationAlgorithm === VietPhraseTranslationAlgorithms.PRIORITIZE_LONG_VIETPHRASE_CLUSTERS && useGlossary ? glossaryEntries.sort((a, b) => b[0].length - a[0].length) : [], ...dataEntries.sort((a, b) => b[0].length - a[0].length)]);
+        const glossaryData =  Object.fromEntries(glossaryEntries.sort((a, b) => b[0].length - a[0].length));
+        glossaryEntries = Object.entries(glossaryData);
+        data = Object.fromEntries([...translationAlgorithm === VietPhraseTranslationAlgorithms.PRIORITIZE_LONG_VIETPHRASE_CLUSTERS && useGlossary ? glossaryEntries : [], ...dataEntries.sort((a, b) => b[0].length - a[0].length)]);
         dataEntries = Object.entries(data);
         const punctuationEntries = cjkmap.filter(([first]) => first === '…' || first.split('…').length !== 2);
         const punctuation = Object.fromEntries(punctuationEntries);
@@ -826,8 +828,8 @@ function convertText(inputText, data, caseSensitive, useGlossary, translationAlg
             if (translationAlgorithm === VietPhraseTranslationAlgorithms.PRIORITIZE_LONG_VIETPHRASE_CLUSTERS) {
 
                 for (const property in filteredData) {
-                    chars = chars.replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}])(${getRegexEscapedText(property)})(?=$|${getTrieRegexPatternFromWords(punctuationEntries.filter(([first]) => /[\p{Ps}\p{Pe}\p{Pi}\p{Pf}\p{Po}]/u.test(first)).join(''))})`, 'gu'), `$1 ${getRegexEscapedReplacement(filteredData[property])}`)
-                        .replace(new RegExp(`(${getRegexEscapedText(property)})(?=$|${getTrieRegexPatternFromWords(punctuationEntries.filter(([first]) => /[\p{Ps}\p{Pe}\p{Pi}\p{Pf}\p{Po}]/u.test(first)).join(''))})`, 'g'), getRegexEscapedReplacement(filteredData[property]))
+                    chars = chars.replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}])(${getRegexEscapedText(property)})(?=$|${getTrieRegexPatternFromWords(punctuationEntries.filter(([first]) => (/[\p{Ps}\p{Pi}\p{Po}]/u.test(first) && /[\u{3000}-\u{303f}\u{30a0}-\u{30ff}\u{fe30}-\u{fe4f}\u{ff00}-\u{ffef}]/u.test(first)) || /[\p{Pe}\p{Pf}\p{Po}]/u.test(first)).join(''))})`, 'gu'), `$1 ${getRegexEscapedReplacement(filteredData[property])}`)
+                        .replace(new RegExp(`(${getRegexEscapedText(property)})(?=$|${getTrieRegexPatternFromWords(punctuationEntries.filter(([first]) => (/[\p{Ps}\p{Pi}\p{Po}]/u.test(first) && /[\u{3000}-\u{303f}\u{30a0}-\u{30ff}\u{fe30}-\u{fe4f}\u{ff00}-\u{ffef}]/u.test(first)) || /[\p{Pe}\p{Pf}\p{Po}]/u.test(first)).join(''))})`, 'g'), getRegexEscapedReplacement(filteredData[property]))
                         .replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}])(${getRegexEscapedText(property)})`, 'gu'), `$1 ${getRegexEscapedReplacement(filteredData[property])} `)
                         .replace(new RegExp(`(${getRegexEscapedText(property)})`, 'gu'), `${getRegexEscapedReplacement(filteredData[property])} `);
                 }
@@ -839,12 +841,12 @@ function convertText(inputText, data, caseSensitive, useGlossary, translationAlg
                 const phrases = [];
                 let tempWord = '';
                 
-                chars = getGlossaryAppliedText(chars, false, useGlossary);
+                chars = getGlossaryAppliedText(chars, false, useGlossary, glossaryData);
 
                 for (let j = 0; j < chars.length; j++) {
                     for (const phraseLength of phraseLengths) {
-                        if (filteredGlossaryEntries.map(([, second]) => second).indexOf(chars.substring(j, j + phraseLength)) != -1) {
-                            if (!lines[i].startsWith(chars[j]) && /[\p{Ps}\p{Pe}\p{Pi}\p{Pf}]/u.test(chars[j - 1])) {
+                        if (useGlossary && filteredGlossaryEntries.map(([, second]) => second).indexOf(chars.substring(j, j + phraseLength)) !== -1) {
+                            if (phrases.length > 0 && ((/[\p{Pe}\p{Pf}]/u.test(chars[j - 1]) && /[\u{3000}-\u{303f}\u{30a0}-\u{30ff}\u{fe30}-\u{fe4f}\u{ff00}-\u{ffef}]/u.test(chars[j - 1])) || /[\p{Ps}\p{Pi}]/u.test(chars[j - 1]))) {
                                 phrases.push(phrases.pop() + chars.substring(j, j + phraseLength));
                             } else {
                                 phrases.push(chars.substring(j, j + phraseLength));
@@ -854,7 +856,7 @@ function convertText(inputText, data, caseSensitive, useGlossary, translationAlg
                             break;
                         } else if (data.hasOwnProperty(chars.substring(j, j + phraseLength))) {
                             if (data[chars.substring(j, j + phraseLength)].length > 0) {
-                                if (!lines[i].startsWith(chars[j]) && /[\p{Ps}\p{Pe}\p{Pi}\p{Pf}]/u.test(chars[j - 1])) {
+                                if (phrases.length > 0 && ((/[\p{Pe}\p{Pf}]/u.test(chars[j - 1]) && /[\u{3000}-\u{303f}\u{30a0}-\u{30ff}\u{fe30}-\u{fe4f}\u{ff00}-\u{ffef}]/u.test(chars[j - 1])) || /[\p{Ps}\p{Pi}]/u.test(chars[j - 1]))) {
                                     phrases.push(phrases.pop() + data[chars.substring(j, j + phraseLength)]);
                                 } else {
                                     phrases.push(data[chars.substring(j, j + phraseLength)]);
@@ -870,7 +872,7 @@ function convertText(inputText, data, caseSensitive, useGlossary, translationAlg
                             }
 
                             if (punctuation.hasOwnProperty(chars[j])) {
-                                if (tempWord.length === 0 && !lines[i].startsWith(chars[j]) && /[\p{Ps}\p{Pe}\p{Pi}\p{Pf}\p{Po}]/u.test(chars[j])) {
+                                if (tempWord.length === 0 && phrases.length > 0 && ((/[\p{Ps}\p{Pi}\p{Po}]/u.test(chars[j]) && /[\u{3000}-\u{303f}\u{30a0}-\u{30ff}\u{fe30}-\u{fe4f}\u{ff00}-\u{ffef}]/u.test(chars[j])) || /[\p{Pe}\p{Pf}\p{Po}]/u.test(chars[j]))) {
                                     phrases.push(phrases.pop() + punctuation[chars[j]]);
                                     break;
                                 } else {
@@ -889,7 +891,7 @@ function convertText(inputText, data, caseSensitive, useGlossary, translationAlg
                             }
 
                             for (const phraseLength1 of phraseLengths) {
-                                if (tempWord.length > 0 && (data.hasOwnProperty(chars.substring(j + 1, j + 1 + phraseLength1)) || j + 1 === chars.length)) {
+                                if (tempWord.length > 0 && (filteredGlossaryEntries.map(([, second]) => second).indexOf(chars.substring(j + 1, j + 1 + phraseLength1)) !== -1 || data.hasOwnProperty(chars.substring(j + 1, j + 1 + phraseLength1)) || j + 1 === chars.length)) {
                                     tempWord.split(' ').forEach((element) => phrases.push(element));
                                     tempWord = '';
                                     break;
@@ -1751,7 +1753,8 @@ const MicrosoftTranslator = {
     }
 };
 
-function getGlossaryAppliedText(text, isMicrosoftTranslator = true, useAnotherTranslators = false) {
+function getGlossaryAppliedText(text, isMicrosoftTranslator = true, useAnotherTranslators = false, glossary = {}) {
+    if (Object.keys(glossary).length === 0 ) glossary = globalThis.glossary;
     const glossaryEntries = Object.entries(glossary).filter(([first]) => text.includes(first));
     let newText = text;
 
@@ -1763,56 +1766,25 @@ function getGlossaryAppliedText(text, isMicrosoftTranslator = true, useAnotherTr
             let chars = lines[i];
 
             const glossaryLengths = [...glossaryEntries.map(([first]) => first.length), 1].sort((a, b) => b - a).filter((element, index, array) => index === array.indexOf(element));
-            const phrases = [];
             let tempWord = '';
 
             for (let j = 0; j < chars.length; j++) {
                 for (const glossaryLength of glossaryLengths) {
                     if (glossary.hasOwnProperty(chars.substring(j, j + glossaryLength))) {
                         if (glossary[chars.substring(j, j + glossaryLength)].length > 0) {
-                            if (!lines[i].startsWith(chars[j]) && /[\p{Ps}\p{Pe}\p{Pi}\p{Pf}]/u.test(chars[j - 1])) {
-                                phrases.push(phrases.pop() + (/*isMicrosoftTranslator ? `<mstrans:dictionary translation="${glossary[chars.substring(j, j + glossaryLength)]}">${chars.substring(j, j + glossaryLength)}</mstrans:dictionary>` : */glossary[chars.substring(j, j + glossaryLength)]));
-                            } else {
-                                phrases.push(isMicrosoftTranslator ? `<mstrans:dictionary translation="${glossary[chars.substring(j, j + glossaryLength)]}">${chars.substring(j, j + glossaryLength)}</mstrans:dictionary>` : glossary[chars.substring(j, j + glossaryLength)]);
-                            }
+                            tempWord += isMicrosoftTranslator ? `<mstrans:dictionary translation="${glossary[chars.substring(j, j + glossaryLength)]}">${chars.substring(j, j + glossaryLength)}</mstrans:dictionary>` : glossary[chars.substring(j, j + glossaryLength)];
                         }
 
                         j += glossaryLength - 1;
                         break;
                     } else if (glossaryLength === 1) {
-                        if (tempWord.length > 0 && chars[j] === ' ' && !tempWord.includes(' ')) {
-                            tempWord.split(' ').forEach((element) => phrases.push(element));
-                            tempWord = '';
-                        }
-
-                        if (tempWord.length === 0 && !lines[i].startsWith(chars[j]) && /[\p{Ps}\p{Pe}\p{Pi}\p{Pf}\p{Po}]/u.test(chars[j])) {
-                            phrases.push(phrases.pop() + chars[j]);
-                            break;
-                        } else {
-                            tempWord += chars[j];
-                        }
-
-                        if (tempWord.includes(' ')) {
-                            if (j + 1 === chars.length || !chars[j + 1].includes(' ')) {
-                                phrases.push((phrases.pop() ?? '') + tempWord.substring(0, tempWord.length - 1));
-                                tempWord = '';
-                            }
-                            break;
-                        }
-
-                        for (const glossaryLength1 of glossaryLengths) {
-                            if (tempWord.length > 0 && (glossary.hasOwnProperty(chars.substring(j + 1, j + 1 + glossaryLength1)) || j + 1 === chars.length)) {
-                                tempWord.split(' ').forEach((element) => phrases.push(element));
-                                tempWord = '';
-                                break;
-                            }
-                        }
+                        tempWord += chars[j];
                         break;
                     }
                 }
             }
 
-            results.push(phrases.join(' '));
+            results.push(tempWord);
         }
 
         newText = results.join('\n');
