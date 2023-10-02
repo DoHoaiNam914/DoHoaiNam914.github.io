@@ -1772,7 +1772,7 @@ function getGlossaryAppliedText(text, isMicrosoftTranslator = true, useAnotherTr
                 for (const glossaryLength of glossaryLengths) {
                     if (glossary.hasOwnProperty(chars.substring(j, j + glossaryLength))) {
                         if (glossary[chars.substring(j, j + glossaryLength)].length > 0) {
-                            tempWord += isMicrosoftTranslator ? `<mstrans:dictionary translation="${glossary[chars.substring(j, j + glossaryLength)]}">${chars.substring(j, j + glossaryLength)}</mstrans:dictionary>` : glossary[chars.substring(j, j + glossaryLength)];
+                            tempWord += (/[\\p{Lu}\\p{Ll}\\p{Nd}]/u.test(tempWord[tempWord.length - 1]) ? ' ' : '') + (isMicrosoftTranslator ? `<mstrans:dictionary translation="${glossary[chars.substring(j, j + glossaryLength)]}">${chars.substring(j, j + glossaryLength)}</mstrans:dictionary>` : glossary[chars.substring(j, j + glossaryLength)]);
                         }
 
                         j += glossaryLength - 1;

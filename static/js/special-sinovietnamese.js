@@ -80,6 +80,7 @@ const specialSinovietnameseData = [
     ['朝', 'TRIÊU'],
     ['重', 'TRÙNG, TRỌNG'],
     ['传', 'TRUYỀN, TRUYỆN'],
+    ['场', 'TRƯỜNG'],
     ['长', 'TRƯỜNG, TRÀNG, TRƯỞNG'],
     ['将', 'TƯƠNG, TƯỚNG'],
     ['燕', 'YÊN, YẾN']
