@@ -137,8 +137,8 @@ translateButton.click(async function () {
                 // $('#imageFile').addClass('disabled');
                 // $('#pasteUrlButton').addClass('disabled');
                 // $('#clearImageButton').addClass('disabled');
-                const fakeLineCount = translatedTextArea.html().split(/<br>|<\/p><p>/).map(() => '<br>').join('');
-                translatedTextArea.html('Đang dịch...' + fakeLineCount);
+                let statusText = translatedTextArea.html().split(/<br>|<\/p><p>/).map((element, index) => index === 0 ? 'Đang dịch...' + element.slice(12).replace(/./g, ' ') : element.replace(/./g, ' ')).join('<br>');
+                translatedTextArea.html(statusText);
                 translateAbortController = new AbortController();
                 translate(queryText.val(), translateAbortController.signal).finally(() => onPostTranslate());
             }
@@ -188,9 +188,9 @@ pasteButton.on('click', () => {
 });
 retranslateButton.click(async () => {
     if (translateButton.text() !== 'Dịch') {
-        const prevScrollY = translatedTextArea.prop('scrollY');
+        const prevScrollTop = translatedTextArea.prop('scrollTop');
         await translateButton.text('Dịch').click();
-        translatedTextArea.prop('scrollY', prevScrollY);
+        translatedTextArea.prop('scrollY', prevScrollTop);
     }
 });
 queryText.on('input', () => {
@@ -711,8 +711,8 @@ async function translate(inputText, abortSignal) {
         if (abortSignal.aborted) return;
         translatedTextArea.html(buildTranslatedResult([inputText, processText], getProcessTextPostTranslate(results.join('\n')), flexSwitchCheckShowOriginal.prop('checked')));
     } catch (error) {
-        console.error('Bản dịch thất bại:', error);
-        errorMessage.innerText = 'Bản dịch thất bại: ' + JSON.stringify(error) ?? error.toString();
+        console.error('Bản dịch thất bại:', Object.keys(error).length > 0 ? error : error.toString());
+        errorMessage.innerText = 'Bản dịch thất bại: ' + Object.keys(error).length > 0 ? JSON.stringify(error) : error.toString();
         translatedTextArea.html(errorMessage);
         onPostTranslate();
     }
@@ -1021,176 +1021,6 @@ function onPostTranslate() {
     translateButton.text('Sửa');
 }
 
-const Lingvanex = {
-    translateText: async function (authKey, text, from, to, useGlossary = false, tc = 1) {
-        try {
-            text = useGlossary ? getGlossaryAppliedText(text, false, flexSwitchCheckAllowAnothers.prop('checked')) : text;
-
-            /**
-             * Lingvanex Demo
-             * URL: https://api-b2b.backenster.com/b1/api/v3/translate
-             * Accept: 'application/json, text/javascript, *\/*; q=0.01', Accept-Language: vi-VN,vi;q=0.8,en-US;q=0.5,en;q=0.3, Content-Type: application/x-www-form-urlencoded; charset=UTF-8, Authorization Bearer a_25rccaCYcBC9ARqMODx2BV2M0wNZgDCEl3jryYSgYZtF1a702PVi4sxqi2AmZWyCcw4x209VXnCYwesx - from=${from}&to=${to}&text=${encodeURIComponent(text)}&platform=dp&is_return_text_split_ranges=true
-             *
-             * Brave
-             * Method: POST
-             * URL: https://translate.brave.com/translate_a/t?anno=3&client=te_lib&format=html&v=1.0&key=qztbjzBqJueQZLFkwTTJrieu8Vw3789u&logld=v${version}&sl=${from}&tl=${to}&tc=${tc}&sr=1&tk=${this.Bn(text, ctkk)}&mode=1
-             * 'accept-language': vi;q=0.5, content-type: application/x-www-form-urlencoded - `q=${text.split(/\n/).map((sentence) => encodeURIComponent(sentence)).join('&q=')}`
-             */
-            const response = await $.ajax({
-                url: 'https://api-b2b.backenster.com/b1/api/v3/translate',
-                data: `${from !== '' ? `from=${from}&` : ''}to=${to}&text=${encodeURIComponent(text)}&platform=dp&is_return_text_split_ranges=true`,
-                method: 'POST',
-                headers: {
-                    Accept: 'application/json, text/javascript, */*; q=0.01',
-                    'Accept-Language': 'vi-VN,vi;q=0.8,en-US;q=0.5,en;q=0.3',
-                    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-                    Authorization: authKey
-                }
-            });
-
-            return response.result.text;
-        } catch (error) {
-            console.error('Bản dịch lỗi:', error);
-            throw error.toString();
-        }
-    },
-    getAuthKey: async function (translator, apiKey = '') {
-        if (translator === Translators.LINGVANEX) {
-            try {
-                let authKey;
-                /**
-                 * Lingvanex Demo
-                 * URL: https://lingvanex.com/lingvanex_demo_page/js/api-base.js
-                 *
-                 * Brave
-                 * URL: https://translate.brave.com/static/v1/element.js
-                 */
-                const apiBaseJs = await $.get(`${CORS_PROXY}https://lingvanex.com/lingvanex_demo_page/js/api-base.js`);
-
-                if (apiBaseJs != undefined) {
-                    authKey = apiBaseJs.match(/B2B_AUTH_TOKEN="(Bearer [^"]+)"/)[1];
-                }
-                return authKey;
-            } catch (error) {
-                console.error('Không thể lấy được Khoá xác thực:' + error);
-                throw error.toString()
-            }
-        }
-    },
-    Language: {
-        //af: 'Afrikaans', sq: 'Albanian', am: 'Amharic', ar: 'Arabic', hy: 'Armenian', az: 'Azerbaijani', eu: 'Basque', be: 'Belarusian', bn: 'Bengali', bs: 'Bosnian', bg: 'Bulgarian', ca: 'Catalan', ceb: 'Cebuano', ny: 'Chichewa', 'zh-CN': 'Chinese (Simplified)', 'zh-TW': 'Chinese (Traditional)', co: 'Corsican', ht: 'Haitian Creole', hr: 'Croatian', cs: 'Czech', da: 'Danish', nl: 'Dutch', en: 'English', eo: 'Esperanto', et: 'Estonian', fi: 'Finnish', fr: 'French', fy: 'Frisian', gl: 'Galician', ka: 'Georgian', de: 'German', el: 'Greek', gu: 'Gujarati', ha: 'Hausa', haw: 'Hawaiian', iw: 'Hebrew', hi: 'Hindi', hmn: 'Hmong', hu: 'Hungarian', is: 'Icelandic', ig: 'Igbo', id: 'Indonesian', ga: 'Irish', it: 'Italian', ja: 'Japanese', jw: 'Javanese', kn: 'Kannada', kk: 'Kazakh', km: 'Khmer', rw: 'Kinyarwanda', ko: 'Korean', ku: 'Kurdish (Kurmanji)', ky: 'Kyrgyz', lo: 'Lao', la: 'Latin', lv: 'Latvian', lt: 'Lithuanian', lb: 'Luxembourgish', mk: 'Macedonian', mg: 'Malagasy', ms: 'Malay', ml: 'Malayalam', mt: 'Maltese', mi: 'Maori', mr: 'Marathi', mn: 'Mongolian', my: 'Myanmar (Burmese)', ne: 'Nepali', no: 'Norwegian', or: 'Odia', ps: 'Pashto', fa: 'Persian', pl: 'Polish', pt: 'Portuguese', pa: 'Punjabi', ro: 'Romanian', ru: 'Russian', sm: 'Samoan', gd: 'Scots Gaelic', 'sr-Cyrl': 'Serbian Cyrilic', st: 'Sesotho', sn: 'Shona', sd: 'Sindhi', si: 'Sinhala', sk: 'Slovak', sl: 'Slovenian', so: 'Somali', es: 'Spanish', su: 'Sundanese', sw: 'Swahili', sv: 'Swedish', tl: 'Filipino (Tagalog)', tg: 'Tajik', ta: 'Tamil', tt: 'Tatar', te: 'Telugu', th: 'Thai', tr: 'Turkish', tk: 'Turkmen', uk: 'Ukrainian', ur: 'Urdu', ug: 'Uyghur', uz: 'Uzbek', vi: 'Vietnamese', cy: 'Welsh', xh: 'Xhosa', yi: 'Yiddish', yo: 'Yoruba', zu: 'Zulu'
-        af_ZA: 'Afrikaans',
-        sq_AL: 'Albanian',
-        am_ET: 'Amharic',
-        ar_SA: 'Arabic',
-        hy_AM: 'Armenian',
-        az_AZ: 'Azerbaijani',
-        eu_ES: 'Basque',
-        be_BY: 'Belarusian',
-        bn_BD: 'Bengali',
-        bs_BA: 'Bosnian',
-        bg_BG: 'Bulgarian',
-        ca_ES: 'Catalan',
-        ceb_PH: 'Cebuano',
-        ny_MW: 'Chichewa',
-        'zh-Hans_CN': 'Chinese (Simplified)',
-        'zh-Hant_TW': 'Chinese (Traditional)',
-        co_FR: 'Corsican',
-        ht_HT: 'Haitian Creole',
-        hr_HR: 'Croatian',
-        cs_CZ: 'Czech',
-        da_DK: 'Danish',
-        nl_NL: 'Dutch',
-        en_US: 'English',
-        eo_WORLD: 'Esperanto',
-        et_EE: 'Estonian',
-        fi_FI: 'Finnish',
-        fr_CA: 'French',
-        fy_NL: 'Frisian',
-        gl_ES: 'Galician',
-        ka_GE: 'Georgian',
-        de_DE: 'German',
-        el_GR: 'Greek',
-        gu_IN: 'Gujarati',
-        ha_NE: 'Hausa',
-        haw_US: 'Hawaiian',
-        he_IL: 'Hebrew',
-        hi_IN: 'Hindi',
-        hmn_CN: 'Hmong',
-        hu_HU: 'Hungarian',
-        is_IS: 'Icelandic',
-        ig_NG: 'Igbo',
-        id_ID: 'Indonesian',
-        ga_IE: 'Irish',
-        it_IT: 'Italian',
-        ja_JP: 'Japanese',
-        jv_ID: 'Javanese',
-        kn_IN: 'Kannada',
-        kk_KZ: 'Kazakh',
-        km_KH: 'Khmer',
-        rw_RW: 'Kinyarwanda',
-        ko_KR: 'Korean',
-        ku_IR: 'Kurdish (Kurmanji)',
-        ky_KG: 'Kyrgyz',
-        lo_LA: 'Lao',
-        la_VAT: 'Latin',
-        lv_LV: 'Latvian',
-        lt_LT: 'Lithuanian',
-        lb_LU: 'Luxembourgish',
-        mk_MK: 'Macedonian',
-        mg_MG: 'Malagasy',
-        ms_MY: 'Malay',
-        ml_IN: 'Malayalam',
-        mt_MT: 'Maltese',
-        mi_NZ: 'Maori',
-        mr_IN: 'Marathi',
-        mn_MN: 'Mongolian',
-        my_MM: 'Myanmar (Burmese)',
-        ne_NP: 'Nepali',
-        no_NO: 'Norwegian',
-        or_OR: 'Odia',
-        ps_AF: 'Pashto',
-        fa_IR: 'Persian',
-        pl_PL: 'Polish',
-        pt_PT: 'Portuguese',
-        pa_PK: 'Punjabi',
-        ro_RO: 'Romanian',
-        ru_RU: 'Russian',
-        sm_WS: 'Samoan',
-        gd_GB: 'Scots Gaelic',
-        'sr-Cyrl_RS': 'Serbian Cyrilic',
-        st_LS: 'Sesotho',
-        sn_ZW: 'Shona',
-        sd_PK: 'Sindhi',
-        si_LK: 'Sinhala',
-        sk_SK: 'Slovak',
-        sl_SI: 'Slovenian',
-        so_SO: 'Somali',
-        es_ES: 'Spanish',
-        su_ID: 'Sundanese',
-        sw_TZ: 'Swahili',
-        sv_SE: 'Swedish',
-        tl_PH: 'Filipino (Tagalog)',
-        tg_TJ: 'Tajik',
-        ta_IN: 'Tamil',
-        tt_TT: 'Tatar',
-        te_IN: 'Telugu',
-        th_TH: 'Thai',
-        tr_TR: 'Turkish',
-        tk_TK: 'Turkmen',
-        uk_UA: 'Ukrainian',
-        ur_PK: 'Urdu',
-        ug_UG: 'Uyghur',
-        uz_UZ: 'Uzbek',
-        vi_VN: 'Vietnamese',
-        cy_GB: 'Welsh',
-        xh_ZA: 'Xhosa',
-        yi_IL: 'Yiddish',
-        yo_NG: 'Yoruba',
-        zu_ZA: 'Zulu'
-    }
-};
-
 const DeepLTranslator = {
     translateText: async function (authKey, inputText, sourceLanguage, targetLanguage, useGlossary = false) {
         try {
@@ -1326,9 +1156,9 @@ const GoogleTranslate = {
                  * URL: https://translate.google.com/translate_a/element.js?cb=gtElInit&hl=vi&client=wt
                  * 
                  * Google Chrome
-                 * URL: https://translate.googleapis.com/translate_a/element.js?aus=true&cb=cr.googleTranslate.onTranslateElementLoad&clc=cr.googleTranslate.onLoadCSS&jlc=cr.googleTranslate.onLoadJavascript&key=AIzaSyBOti4mM-6x9WDnZIjIeyEU21OpBXqWBgw&hl=vi
+                 * URL: https://translate.googleapis.com/translate_a/element.js?cb=cr.googleTranslate.onTranslateElementLoad&aus=true&clc=cr.googleTranslate.onLoadCSS&jlc=cr.googleTranslate.onLoadJavascript&hl=vi&key=AIzaSyBOti4mM-6x9WDnZIjIeyEU21OpBXqWBgw
                  */
-                const elementJs = await $.get(`${CORS_PROXY}https://translate.googleapis.com/translate_a/element.js?aus=true${apiKey.length > 0 ? `&key=${apiKey}` : ''}&hl=vi&client=gtx`);
+                const elementJs = await $.get(`${CORS_PROXY}https://translate.googleapis.com/translate_a/element.js?aus=true&hl=vi${apiKey.length > 0 ? `&key=${apiKey}` : ''}`);
 
                 if (elementJs != undefined) {
                     data.cac = elementJs.match(/c\._cac='([a-z]*)'/)[1];
@@ -1346,7 +1176,7 @@ const GoogleTranslate = {
             }
         }
     },
-    // https://translate.googleapis.com/_/translate_http/_/js/k=translate_http.tr.vi.kHDxdXNX_xs.O/d=1/exm=el_conf/ed=1/rs=AN8SPfpT9XwieloixvTeQsMmZktnBHnMuw/m=el_main
+    // https://translate.googleapis.com/_/translate_http/_/js/k=translate_http.tr.vi.EzjfV2OyKL4.O/d=1/exm=el_conf/ed=1/rs=AN8SPfqiDrE8FTdbH7d7Ky6-JzIR_pi7RQ/m=el_main
     Oo: function (a) {
         for (var b = [], c = 0, d = 0; d < a.length; d++) {
             var e = a.charCodeAt(d);
@@ -1518,6 +1348,176 @@ const GoogleTranslate = {
         yi: 'Yiddish',
         yo: 'Yoruba',
         zu: 'Zulu'
+    }
+};
+
+const Lingvanex = {
+    translateText: async function (authKey, text, from, to, useGlossary = false, tc = 1) {
+        try {
+            text = useGlossary ? getGlossaryAppliedText(text, false, flexSwitchCheckAllowAnothers.prop('checked')) : text;
+
+            /**
+             * Lingvanex Demo
+             * URL: https://api-b2b.backenster.com/b1/api/v3/translate
+             * Accept: 'application/json, text/javascript, *\/*; q=0.01', Accept-Language: vi-VN,vi;q=0.8,en-US;q=0.5,en;q=0.3, Content-Type: application/x-www-form-urlencoded; charset=UTF-8, Authorization Bearer a_25rccaCYcBC9ARqMODx2BV2M0wNZgDCEl3jryYSgYZtF1a702PVi4sxqi2AmZWyCcw4x209VXnCYwesx - from=${from}&to=${to}&text=${encodeURIComponent(text)}&platform=dp&is_return_text_split_ranges=true
+             *
+             * Brave
+             * Method: POST
+             * URL: https://translate.brave.com/translate_a/t?anno=3&client=te_lib&format=html&v=1.0&key=qztbjzBqJueQZLFkwTTJrieu8Vw3789u&logld=v${version}&sl=${from}&tl=${to}&tc=${tc}&sr=1&tk=${this.Bn(text, ctkk)}&mode=1
+             * 'accept-language': vi;q=0.5, content-type: application/x-www-form-urlencoded - `q=${text.split(/\n/).map((sentence) => encodeURIComponent(sentence)).join('&q=')}`
+             */
+            const response = await $.ajax({
+                url: 'https://api-b2b.backenster.com/b1/api/v3/translate',
+                data: `${from !== '' ? `from=${from}&` : ''}to=${to}&text=${encodeURIComponent(text)}&platform=dp&is_return_text_split_ranges=true`,
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json, text/javascript, */*; q=0.01',
+                    'Accept-Language': 'vi-VN,vi;q=0.8,en-US;q=0.5,en;q=0.3',
+                    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                    Authorization: authKey
+                }
+            });
+
+            return response.result.text;
+        } catch (error) {
+            console.error('Bản dịch lỗi:', error);
+            throw error.toString();
+        }
+    },
+    getAuthKey: async function (translator, apiKey = '') {
+        if (translator === Translators.LINGVANEX) {
+            try {
+                let authKey;
+                /**
+                 * Lingvanex Demo
+                 * URL: https://lingvanex.com/lingvanex_demo_page/js/api-base.js
+                 *
+                 * Brave
+                 * URL: https://translate.brave.com/static/v1/element.js
+                 */
+                const apiBaseJs = await $.get(`${CORS_PROXY}https://lingvanex.com/lingvanex_demo_page/js/api-base.js`);
+
+                if (apiBaseJs != undefined) {
+                    authKey = apiBaseJs.match(/B2B_AUTH_TOKEN="(Bearer [^"]+)"/)[1];
+                }
+                return authKey;
+            } catch (error) {
+                console.error('Không thể lấy được Khoá xác thực:' + error);
+                throw error.toString()
+            }
+        }
+    },
+    Language: {
+        //af: 'Afrikaans', sq: 'Albanian', am: 'Amharic', ar: 'Arabic', hy: 'Armenian', az: 'Azerbaijani', eu: 'Basque', be: 'Belarusian', bn: 'Bengali', bs: 'Bosnian', bg: 'Bulgarian', ca: 'Catalan', ceb: 'Cebuano', ny: 'Chichewa', 'zh-CN': 'Chinese (Simplified)', 'zh-TW': 'Chinese (Traditional)', co: 'Corsican', ht: 'Haitian Creole', hr: 'Croatian', cs: 'Czech', da: 'Danish', nl: 'Dutch', en: 'English', eo: 'Esperanto', et: 'Estonian', fi: 'Finnish', fr: 'French', fy: 'Frisian', gl: 'Galician', ka: 'Georgian', de: 'German', el: 'Greek', gu: 'Gujarati', ha: 'Hausa', haw: 'Hawaiian', iw: 'Hebrew', hi: 'Hindi', hmn: 'Hmong', hu: 'Hungarian', is: 'Icelandic', ig: 'Igbo', id: 'Indonesian', ga: 'Irish', it: 'Italian', ja: 'Japanese', jw: 'Javanese', kn: 'Kannada', kk: 'Kazakh', km: 'Khmer', rw: 'Kinyarwanda', ko: 'Korean', ku: 'Kurdish (Kurmanji)', ky: 'Kyrgyz', lo: 'Lao', la: 'Latin', lv: 'Latvian', lt: 'Lithuanian', lb: 'Luxembourgish', mk: 'Macedonian', mg: 'Malagasy', ms: 'Malay', ml: 'Malayalam', mt: 'Maltese', mi: 'Maori', mr: 'Marathi', mn: 'Mongolian', my: 'Myanmar (Burmese)', ne: 'Nepali', no: 'Norwegian', or: 'Odia', ps: 'Pashto', fa: 'Persian', pl: 'Polish', pt: 'Portuguese', pa: 'Punjabi', ro: 'Romanian', ru: 'Russian', sm: 'Samoan', gd: 'Scots Gaelic', 'sr-Cyrl': 'Serbian Cyrilic', st: 'Sesotho', sn: 'Shona', sd: 'Sindhi', si: 'Sinhala', sk: 'Slovak', sl: 'Slovenian', so: 'Somali', es: 'Spanish', su: 'Sundanese', sw: 'Swahili', sv: 'Swedish', tl: 'Filipino (Tagalog)', tg: 'Tajik', ta: 'Tamil', tt: 'Tatar', te: 'Telugu', th: 'Thai', tr: 'Turkish', tk: 'Turkmen', uk: 'Ukrainian', ur: 'Urdu', ug: 'Uyghur', uz: 'Uzbek', vi: 'Vietnamese', cy: 'Welsh', xh: 'Xhosa', yi: 'Yiddish', yo: 'Yoruba', zu: 'Zulu'
+        af_ZA: 'Afrikaans',
+        sq_AL: 'Albanian',
+        am_ET: 'Amharic',
+        ar_SA: 'Arabic',
+        hy_AM: 'Armenian',
+        az_AZ: 'Azerbaijani',
+        eu_ES: 'Basque',
+        be_BY: 'Belarusian',
+        bn_BD: 'Bengali',
+        bs_BA: 'Bosnian',
+        bg_BG: 'Bulgarian',
+        ca_ES: 'Catalan',
+        ceb_PH: 'Cebuano',
+        ny_MW: 'Chichewa',
+        'zh-Hans_CN': 'Chinese (Simplified)',
+        'zh-Hant_TW': 'Chinese (Traditional)',
+        co_FR: 'Corsican',
+        ht_HT: 'Haitian Creole',
+        hr_HR: 'Croatian',
+        cs_CZ: 'Czech',
+        da_DK: 'Danish',
+        nl_NL: 'Dutch',
+        en_US: 'English',
+        eo_WORLD: 'Esperanto',
+        et_EE: 'Estonian',
+        fi_FI: 'Finnish',
+        fr_CA: 'French',
+        fy_NL: 'Frisian',
+        gl_ES: 'Galician',
+        ka_GE: 'Georgian',
+        de_DE: 'German',
+        el_GR: 'Greek',
+        gu_IN: 'Gujarati',
+        ha_NE: 'Hausa',
+        haw_US: 'Hawaiian',
+        he_IL: 'Hebrew',
+        hi_IN: 'Hindi',
+        hmn_CN: 'Hmong',
+        hu_HU: 'Hungarian',
+        is_IS: 'Icelandic',
+        ig_NG: 'Igbo',
+        id_ID: 'Indonesian',
+        ga_IE: 'Irish',
+        it_IT: 'Italian',
+        ja_JP: 'Japanese',
+        jv_ID: 'Javanese',
+        kn_IN: 'Kannada',
+        kk_KZ: 'Kazakh',
+        km_KH: 'Khmer',
+        rw_RW: 'Kinyarwanda',
+        ko_KR: 'Korean',
+        ku_IR: 'Kurdish (Kurmanji)',
+        ky_KG: 'Kyrgyz',
+        lo_LA: 'Lao',
+        la_VAT: 'Latin',
+        lv_LV: 'Latvian',
+        lt_LT: 'Lithuanian',
+        lb_LU: 'Luxembourgish',
+        mk_MK: 'Macedonian',
+        mg_MG: 'Malagasy',
+        ms_MY: 'Malay',
+        ml_IN: 'Malayalam',
+        mt_MT: 'Maltese',
+        mi_NZ: 'Maori',
+        mr_IN: 'Marathi',
+        mn_MN: 'Mongolian',
+        my_MM: 'Myanmar (Burmese)',
+        ne_NP: 'Nepali',
+        no_NO: 'Norwegian',
+        or_OR: 'Odia',
+        ps_AF: 'Pashto',
+        fa_IR: 'Persian',
+        pl_PL: 'Polish',
+        pt_PT: 'Portuguese',
+        pa_PK: 'Punjabi',
+        ro_RO: 'Romanian',
+        ru_RU: 'Russian',
+        sm_WS: 'Samoan',
+        gd_GB: 'Scots Gaelic',
+        'sr-Cyrl_RS': 'Serbian Cyrilic',
+        st_LS: 'Sesotho',
+        sn_ZW: 'Shona',
+        sd_PK: 'Sindhi',
+        si_LK: 'Sinhala',
+        sk_SK: 'Slovak',
+        sl_SI: 'Slovenian',
+        so_SO: 'Somali',
+        es_ES: 'Spanish',
+        su_ID: 'Sundanese',
+        sw_TZ: 'Swahili',
+        sv_SE: 'Swedish',
+        tl_PH: 'Filipino (Tagalog)',
+        tg_TJ: 'Tajik',
+        ta_IN: 'Tamil',
+        tt_TT: 'Tatar',
+        te_IN: 'Telugu',
+        th_TH: 'Thai',
+        tr_TR: 'Turkish',
+        tk_TK: 'Turkmen',
+        uk_UA: 'Ukrainian',
+        ur_PK: 'Urdu',
+        ug_UG: 'Uyghur',
+        uz_UZ: 'Uzbek',
+        vi_VN: 'Vietnamese',
+        cy_GB: 'Welsh',
+        xh_ZA: 'Xhosa',
+        yi_IL: 'Yiddish',
+        yo_NG: 'Yoruba',
+        zu_ZA: 'Zulu'
     }
 };
 
@@ -1754,7 +1754,7 @@ const MicrosoftTranslator = {
 };
 
 function getGlossaryAppliedText(text, isMicrosoftTranslator = true, useAnotherTranslators = false, glossary = {}) {
-    if (Object.keys(glossary).length === 0 ) glossary = this.glossary;
+    if (Object.keys(glossary).length === 0 ) glossary = globalThis.glossary;
     const glossaryEntries = Object.entries(glossary).filter(([first]) => text.includes(first));
     let newText = text;
 
