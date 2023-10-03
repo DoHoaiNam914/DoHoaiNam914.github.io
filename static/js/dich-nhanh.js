@@ -209,12 +209,12 @@ fontOptions.click(function () {
     fontOptions.removeClass('active');
     $(this).addClass('active');
 
-    if ($(this).text() === 'Mặc định (Georgia)') {
-        $(document.body).css('--opt-font-family', 'Georgia, serif');
+    if (!$(this).text().includes('Mặc định')) {
+        $(document.body).css('--opt-font-family', `${$(this).text().includes(' ') ? `'${$(this).text()}'` : $(this).text()}, serif`);
     } else if ($(this).text() === 'Phông chữ hệ thống') {
         $(document.body).css('--opt-font-family', 'var(--system-font-family)');
     } else {
-        $(document.body).css('--opt-font-family', `${$(this).text().includes(' ') ? `'${$(this).text()}'` : $(this).text()}, serif`);
+        $(document.body).css('--opt-font-family', 'Georgia, serif');
     }
 
     translator['font'] = $(this).text();
