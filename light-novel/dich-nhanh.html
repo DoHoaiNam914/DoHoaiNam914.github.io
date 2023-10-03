@@ -104,8 +104,6 @@
         window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => (storedTheme !== 'light' || storedTheme !== 'dark') && setTheme(preferredTheme));
     </script>
     <style>
-        @import '/static/css/styles/ebpaj_fonts_patch.css';
-
         body {
             --opt-font-family: Roboto, sans-serif;
             --opt-font-size: 1;
@@ -130,12 +128,6 @@
             overflow-x: hidden;
             overflow-wrap: break-word;
             width: 100%;
-        }
-
-        @media (max-width: 74.9rem) {
-            .textarea {
-                font-size: calc(16px * var(--opt-font-size));
-            }
         }
 
         .nav-scroller {
@@ -631,16 +623,16 @@
                     </button>
                     <ul class="dropdown-menu">
                         <li>
-                            <button class="dropdown-item font-option active" type="button">Mặc định (Hiragino Mincho ProN)</button>
-                        </li>
-                        <li>
-                            <button class="dropdown-item font-option" type="button">Phông chữ hệ thống</button>
+                            <button class="dropdown-item font-option active" type="button">Mặc định (Georgia)</button>
                         </li>
                         <li>
                             <button class="dropdown-item font-option" type="button">Times New Roman</button>
                         </li>
                         <li>
-                            <button class="dropdown-item font-option" type="button">Crimson Text</button>
+                            <button class="dropdown-item font-option" type="button">Phông chữ hệ thống</button>
+                        </li>
+                        <li>
+                            <button class="dropdown-item font-option" type="button">Hiragino Mincho ProN</button>
                         </li>
                         <li>
                             <button class="dropdown-item font-option" type="button">Literata</button>
@@ -649,10 +641,10 @@
                             <button class="dropdown-item font-option" type="button">Bookerly</button>
                         </li>
                         <li>
-                            <button class="dropdown-item font-option" type="button">Georgia</button>
+                            <button class="dropdown-item font-option" type="button">Iowan Old Style</button>
                         </li>
                         <li>
-                            <button class="dropdown-item font-option" type="button">Iowan Old Style</button>
+                            <button class="dropdown-item font-option" type="button">Crimson Text</button>
                         </li>
                     </ul>
                 </div>

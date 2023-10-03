@@ -209,12 +209,12 @@ fontOptions.click(function () {
     fontOptions.removeClass('active');
     $(this).addClass('active');
 
-    if ($(this).text() === 'Mặc định (Hiragino Mincho ProN)') {
-        $(document.body).css('--opt-font-family', 'serif-ja, serif');
+    if ($(this).text() === 'Mặc định (Georgia)') {
+        $(document.body).css('--opt-font-family', 'Georgia, serif');
     } else if ($(this).text() === 'Phông chữ hệ thống') {
         $(document.body).css('--opt-font-family', 'var(--system-font-family)');
     } else {
-        $(document.body).css('--opt-font-family', $(this).text() + ', serif-ja, serif');
+        $(document.body).css('--opt-font-family', `${$(this).text().includes(' ') ? `'${$(this).text()}'` : $(this).text()}, serif`);
     }
 
     translator['font'] = $(this).text();
@@ -595,7 +595,7 @@ async function translate(inputText, abortSignal) {
 
             case Translators.GOOGLE_TRANSLATE:
                 MAX_LENGTH = 16272;
-                MAX_LINE = 66;
+                MAX_LINE = 100;
                 break;
 
             case Translators.LINGVANEX:
