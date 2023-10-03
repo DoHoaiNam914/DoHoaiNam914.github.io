@@ -170,7 +170,7 @@ googleConvertButtons.on('click', async function () {
         try {
             const data = await GoogleTranslate.getData(Translators.GOOGLE_TRANSLATE, GOOGLE_API_KEY);
 
-            if (data.version == undefined || data.ctkk == undefined) {
+            if (data.v == undefined || GoogleTranslate.kq == undefined) {
                 targetEntry.val('Không thể lấy được Log ID hoặc Token từ element.js.');
                 return;
             }
