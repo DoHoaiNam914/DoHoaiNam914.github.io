@@ -235,8 +235,8 @@ translators.click(function () {
 
         const prevSourceLanguageCode = translator['source-language'];
         const prevTargetLanguageCode = translator['target-language'];
-        const prevSourceLanguageName = getLanguageName(prevTranslator, prevSourceLanguageCode) ?? '';
-        const prevTargetLanguageName = getLanguageName(prevTranslator, prevTargetLanguageCode) ?? '';
+        const prevSourceLanguageName = getSourceLanguageName(prevTranslator, prevSourceLanguageCode) ?? '';
+        const prevTargetLanguageName = getTargetLanguageName(prevTranslator, prevTargetLanguageCode) ?? '';
 
         translators.removeClass('active');
         $(this).addClass('active');
@@ -247,7 +247,7 @@ translators.click(function () {
             if (translators.filter($('.active')).data('id') === prevTranslator && prevSourceLanguageCode != null) {
                 sourceLanguage.val(prevSourceLanguageCode);
                 return false;
-            } else if (prevSourceLanguageCode != null && (prevSourceLanguageName != null && $(this).text().replace(/[()]/g, '') === prevSourceLanguageName.replace(/[()]/g, '') || $(this).val().toLowerCase().split('_')[0] === prevSourceLanguageCode.toLowerCase().split('_')[0] || (prevSourceLanguageName != null && $(this).text().includes($(this).text().split(' ').length === 2 && prevSourceLanguageName.split(' ').length === 2 ? prevSourceLanguageName.replace(/[()]/g, '').split(' ')[1] : prevSourceLanguageName.replace(/[()]/g, '').split(' ')[0]) && $(this).val().toLowerCase().split('_')[0].split('-')[0] === prevSourceLanguageCode.toLowerCase().split('_')[0].split('-')[0]) || ($(this).val().toLowerCase().split('_')[0].split('-')[0] === prevSourceLanguageCode.toLowerCase().split('_')[0].split('-')[0]))) {
+            } else if (prevSourceLanguageCode != null && (prevSourceLanguageName != null && $(this).text().replace(/Tiếng /gi, '').replace(/[()]/g, '') === prevSourceLanguageName.replace(/Tiếng /gi, '').replace(/[()]/g, '') || $(this).val().toLowerCase().split('_')[0] === prevSourceLanguageCode.toLowerCase().split('_')[0] || (prevSourceLanguageName != null && $(this).text().includes($(this).text().split(' ').length === 2 && prevSourceLanguageName.split(' ').length === 2 ? prevSourceLanguageName.replace(/Tiếng /gi, '').replace(/[()]/g, '').split(' ')[1] : prevSourceLanguageName.replace(/Tiếng /gi, '').replace(/[()]/g, '').split(' ')[0]) && $(this).val().toLowerCase().split('_')[0].split('-')[0] === prevSourceLanguageCode.toLowerCase().split('_')[0].split('-')[0]) || ($(this).val().toLowerCase().split('_')[0].split('-')[0] === prevSourceLanguageCode.toLowerCase().split('_')[0].split('-')[0]))) {
                 sourceLanguage.val($(this).val());
                 return false;
             } else if (index + 1 === sourceLangSelectOptions.length) {
@@ -260,7 +260,7 @@ translators.click(function () {
             if (translators.filter($('.active')).data('id') === prevTranslator && prevTargetLanguageCode != null) {
                 targetLanguage.val(prevTargetLanguageCode);
                 return false;
-            } else if (prevTargetLanguageCode != null && (prevTargetLanguageName != null && $(this).text().replace(/[()]/g, '') === prevTargetLanguageName.replace(/[()]/g, '') || $(this).val().toLowerCase().split('_')[0] === prevTargetLanguageCode.toLowerCase().split('_')[0] || (prevTargetLanguageName != null && $(this).text().includes($(this).text().split(' ').length === 2 && prevTargetLanguageName.split(' ').length === 2 ? prevTargetLanguageName.replace(/[()]/g, '').split(' ')[1] : prevTargetLanguageName.replace(/[()]/g, '').split(' ')[0]) && $(this).val().toLowerCase().split('_')[0].split('-')[0] === prevTargetLanguageCode.toLowerCase().split('_')[0].split('-')[0]) || ($(this).val().toLowerCase().split('_')[0].split('-')[0] === prevTargetLanguageCode.toLowerCase().split('_')[0].split('-')[0]))) {
+            } else if (prevTargetLanguageCode != null && (prevTargetLanguageName != null && $(this).text().replace(/Tiếng /gi, '').replace(/[()]/g, '') === prevTargetLanguageName.replace(/Tiếng /gi, '').replace(/[()]/g, '') || $(this).val().toLowerCase().split('_')[0] === prevTargetLanguageCode.toLowerCase().split('_')[0] || (prevTargetLanguageName != null && $(this).text().includes($(this).text().split(' ').length === 2 && prevTargetLanguageName.split(' ').length === 2 ? prevTargetLanguageName.replace(/Tiếng /gi, '').replace(/[()]/g, '').split(' ')[1] : prevTargetLanguageName.replace(/Tiếng /gi, '').replace(/[()]/g, '').split(' ')[0]) && $(this).val().toLowerCase().split('_')[0].split('-')[0] === prevTargetLanguageCode.toLowerCase().split('_')[0].split('-')[0]) || ($(this).val().toLowerCase().split('_')[0].split('-')[0] === prevTargetLanguageCode.toLowerCase().split('_')[0].split('-')[0]))) {
                 if (translators.filter($('.active')).data('id') === Translators.DEEPL_TRANSLATOR && prevTargetLanguageCode === 'en') {
                     targetLanguage.val('EN-US');
                 } else {
@@ -353,23 +353,80 @@ function getDefaultTargetLanguage(translator) {
     }
 }
 
-function getLanguageName(translator, languageCode) {
+function getSourceLanguageName(translator, languageCode) {
+    let languageName = '';
+
     switch (translator) {
         case Translators.DEEPL_TRANSLATOR:
-            return DeepLTranslator.SourceLanguage[languageCode] ?? '';
+            for (const language of DeepLTranslator.SourceLanguage) {
+                if (language.language === languageCode) {
+                    languageName = language.name;
+                    break;
+                }
+            }
+            break;
 
         case Translators.GOOGLE_TRANSLATE:
-            return GoogleTranslate.Language[languageCode] ?? '';
+            languageName = GoogleTranslate.SourceLanguage[languageCode] ?? '';
+            break;
 
         case Translators.LINGVANEX:
-            return Lingvanex.Language[languageCode] ?? '';
+            for (const language of Lingvanex.Language) {
+                if (language.full_code === languageCode) {
+                    languageName = language.codeName;
+                    break;
+                }
+            }
+            break;
 
         case Translators.MICROSOFT_TRANSLATOR:
-            return MicrosoftTranslator.Language[languageCode] ?? '';
+            languageName = MicrosoftTranslator.Language[languageCode] != undefined ? MicrosoftTranslator.Language[languageCode].name : '';
+            break;
 
         case Translators.PAPAGO:
-            return Papago.Language[languageCode] ?? '';
+            languageName = Papago.Language[languageCode] ?? '';
+            break;
     }
+
+    return languageName;
+}
+
+function getTargetLanguageName(translator, languageCode) {
+    let languageName = '';
+
+    switch (translator) {
+        case Translators.DEEPL_TRANSLATOR:
+            for (const language of DeepLTranslator.TargetLanguage) {
+                if (language.language === languageCode) {
+                    languageName = language.name;
+                    break;
+                }
+            }
+            break;
+
+        case Translators.GOOGLE_TRANSLATE:
+            languageName = GoogleTranslate.TargetLanguage[languageCode] ?? '';
+            break;
+
+        case Translators.LINGVANEX:
+            for (const language of Lingvanex.Language) {
+                if (language.full_code === languageCode) {
+                    languageName = language.codeName;
+                    break;
+                }
+            }
+            break;
+
+        case Translators.MICROSOFT_TRANSLATOR:
+            languageName = MicrosoftTranslator.Language[languageCode] != undefined ? MicrosoftTranslator.Language[languageCode].name : '';
+            break;
+
+        case Translators.PAPAGO:
+            languageName = Papago.Language[languageCode] ?? '';
+            break;
+    }
+
+    return languageName;
 }
 
 function getSourceLanguageOptions(translator) {
@@ -382,22 +439,18 @@ function getSourceLanguageOptions(translator) {
             autoDetectOption.value = '';
             sourceLanguageSelect.appendChild(autoDetectOption);
 
-            for (const langCode in DeepLTranslator.SourceLanguage) {
+            for (const language of DeepLTranslator.SourceLanguage) {
                 const option = document.createElement('option');
-                option.innerText = DeepLTranslator.SourceLanguage[langCode];
-                option.value = langCode;
+                option.innerText = language.name;
+                option.value = language.language;
                 sourceLanguageSelect.appendChild(option);
             }
             break;
 
         case Translators.GOOGLE_TRANSLATE:
-            autoDetectOption.innerText = 'Phát hiện ngôn ngữ';
-            autoDetectOption.value = 'auto';
-            sourceLanguageSelect.appendChild(autoDetectOption);
-
-            for (const langCode in GoogleTranslate.Language) {
+            for (const langCode in GoogleTranslate.SourceLanguage) {
                 const option = document.createElement('option');
-                option.innerText = GoogleTranslate.Language[langCode];
+                option.innerText = GoogleTranslate.SourceLanguage[langCode];
                 option.value = langCode;
                 sourceLanguageSelect.appendChild(option);
             }
@@ -408,10 +461,10 @@ function getSourceLanguageOptions(translator) {
             autoDetectOption.value = '';
             sourceLanguageSelect.appendChild(autoDetectOption);
 
-            for (const langCode in Lingvanex.Language) {
+            for (const language of Lingvanex.Language) {
                 const option = document.createElement('option');
-                option.innerText = Lingvanex.Language[langCode];
-                option.value = langCode;
+                option.innerText = language.codeName;
+                option.value = language.full_code;
                 sourceLanguageSelect.appendChild(option);
             }
             break;
@@ -436,7 +489,7 @@ function getSourceLanguageOptions(translator) {
 
             for (const langCode in MicrosoftTranslator.Language) {
                 const option = document.createElement('option');
-                option.innerText = MicrosoftTranslator.Language[langCode];
+                option.innerText = MicrosoftTranslator.Language[langCode].name;
                 option.value = langCode;
                 sourceLanguageSelect.appendChild(option);
             }
@@ -456,28 +509,28 @@ function getTargetLanguageOptions(translator) {
 
     switch (translator) {
         case Translators.DEEPL_TRANSLATOR:
-            for (const langCode in DeepLTranslator.TargetLanguage) {
+            for (const language of DeepLTranslator.TargetLanguage) {
                 const option = document.createElement('option');
-                option.innerText = DeepLTranslator.TargetLanguage[langCode];
-                option.value = langCode;
+                option.innerText = language.name;
+                option.value = language.language;
                 targetLanguageSelect.appendChild(option);
             }
             break;
 
         case Translators.GOOGLE_TRANSLATE:
-            for (const langCode in GoogleTranslate.Language) {
+            for (const langCode in GoogleTranslate.TargetLanguage) {
                 const option = document.createElement('option');
-                option.innerText = GoogleTranslate.Language[langCode];
+                option.innerText = GoogleTranslate.TargetLanguage[langCode];
                 option.value = langCode;
                 targetLanguageSelect.appendChild(option);
             }
             break;
 
         case Translators.LINGVANEX:
-            for (const langCode in Lingvanex.Language) {
-                const option = document.createElement('option');
-                option.innerText = Lingvanex.Language[langCode];
-                option.value = langCode;
+            for (const language of Lingvanex.Language) {
+                const option = document.createElement('option');;
+                option.innerText = language.codeName;
+                option.value = language.full_code;
                 targetLanguageSelect.appendChild(option);
             }
             break;
@@ -494,7 +547,7 @@ function getTargetLanguageOptions(translator) {
         case Translators.MICROSOFT_TRANSLATOR:
             for (const langCode in MicrosoftTranslator.Language) {
                 const option = document.createElement('option');
-                option.innerText = MicrosoftTranslator.Language[langCode];
+                option.innerText = MicrosoftTranslator.Language[langCode].name;
                 option.value = langCode;
                 targetLanguageSelect.appendChild(option);
             }
@@ -592,7 +645,7 @@ async function translate(inputText, abortSignal) {
 
             const googleTranslateData = !abortSignal.aborted && translator === Translators.GOOGLE_TRANSLATE ? await GoogleTranslate.getData(translator, GOOGLE_API_KEY) : null;
 
-            if (!abortSignal.aborted && translator === Translators.GOOGLE_TRANSLATE && (googleTranslateData.version == undefined || googleTranslateData.ctkk == undefined)) {
+            if (!abortSignal.aborted && translator === Translators.GOOGLE_TRANSLATE && (googleTranslateData.v == undefined || GoogleTranslate.kq == undefined)) {
                 errorMessage.innerText = 'Không thể lấy được Log ID hoặc Token từ element.js.';
                 translatedTextArea.html(errorMessage);
                 translateAbortController.abort()
@@ -1022,13 +1075,13 @@ function onPostTranslate() {
 }
 
 const DeepLTranslator = {
-    translateText: async function (authKey, inputText, sourceLanguage, targetLanguage, useGlossary = false) {
+    translateText: async function (authKey, inputText, sourceLang, targetLang, useGlossary = false) {
         try {
             inputText = useGlossary ? getGlossaryAppliedText(inputText, false, flexSwitchCheckAllowAnothers.prop('checked')) : inputText;
 
             const response = await $.ajax({
                 url: 'https://api-free.deepl.com/v2/translate?auth_key=' + authKey,
-                data: `text=${inputText.split(/\n/).map((sentence) => encodeURIComponent(sentence)).join('&text=')}${sourceLanguage !== '' ? '&source_lang=' + sourceLanguage : ''}&target_lang=${targetLanguage}`,
+                data: `text=${inputText.split(/\n/).map((sentence) => encodeURIComponent(sentence)).join('&text=')}${sourceLang !== '' ? '&source_lang=' + sourceLang : ''}&target_lang=${targetLang}`,
                 method: 'POST'
             });
             return response.translations.map((element) => element.text.trim()).join('\n');
@@ -1037,103 +1090,41 @@ const DeepLTranslator = {
             throw error.toString();
         }
     },
-    SourceLanguage: {
-        BG: 'Bulgarian',
-        CS: 'Czech',
-        DA: 'Danish',
-        DE: 'German',
-        EL: 'Greek',
-        EN: 'English',
-        ES: 'Spanish',
-        ET: 'Estonian',
-        FI: 'Finnish',
-        FR: 'French',
-        HU: 'Hungarian',
-        ID: 'Indonesian',
-        IT: 'Italian',
-        JA: 'Japanese',
-        KO: 'Korean',
-        LT: 'Lithuanian',
-        LV: 'Latvian',
-        NB: 'Norwegian (Bokmål)',
-        NL: 'Dutch',
-        PL: 'Polish',
-        PT: 'Portuguese',
-        RO: 'Romanian',
-        RU: 'Russian',
-        SK: 'Slovak',
-        SL: 'Slovenian',
-        SV: 'Swedish',
-        TR: 'Turkish',
-        UK: 'Ukrainian',
-        ZH: 'Chinese'
-    },
-    TargetLanguage: {
-        BG: 'Bulgarian',
-        CS: 'Czech',
-        DA: 'Danish',
-        DE: 'German',
-        EL: 'Greek',
-        'EN-GB': 'English (British)',
-        'EN-US': 'English (American)',
-        ES: 'Spanish',
-        ET: 'Estonian',
-        FI: 'Finnish',
-        FR: 'French',
-        HU: 'Hungarian',
-        ID: 'Indonesian',
-        IT: 'Italian',
-        JA: 'Japanese',
-        KO: 'Korean',
-        LT: 'Lithuanian',
-        LV: 'Latvian',
-        NB: 'Norwegian (Bokmål)',
-        NL: 'Dutch',
-        PL: 'Polish',
-        'PT-BR': 'Portuguese (Brazilian)',
-        'PT-PT': 'Portuguese',
-        RO: 'Romanian',
-        RU: 'Russian',
-        SK: 'Slovak',
-        SL: 'Slovenian',
-        SV: 'Swedish',
-        TR: 'Turkish',
-        UK: 'Ukrainian',
-        ZH: 'Chinese'
-    }
+    SourceLanguage: [{"language":"BG","name":"Bulgarian"},{"language":"CS","name":"Czech"},{"language":"DA","name":"Danish"},{"language":"DE","name":"German"},{"language":"EL","name":"Greek"},{"language":"EN","name":"English"},{"language":"ES","name":"Spanish"},{"language":"ET","name":"Estonian"},{"language":"FI","name":"Finnish"},{"language":"FR","name":"French"},{"language":"HU","name":"Hungarian"},{"language":"ID","name":"Indonesian"},{"language":"IT","name":"Italian"},{"language":"JA","name":"Japanese"},{"language":"KO","name":"Korean"},{"language":"LT","name":"Lithuanian"},{"language":"LV","name":"Latvian"},{"language":"NB","name":"Norwegian"},{"language":"NL","name":"Dutch"},{"language":"PL","name":"Polish"},{"language":"PT","name":"Portuguese"},{"language":"RO","name":"Romanian"},{"language":"RU","name":"Russian"},{"language":"SK","name":"Slovak"},{"language":"SL","name":"Slovenian"},{"language":"SV","name":"Swedish"},{"language":"TR","name":"Turkish"},{"language":"UK","name":"Ukrainian"},{"language":"ZH","name":"Chinese"}],
+    TargetLanguage: [{"language":"BG","name":"Bulgarian","supports_formality":false},{"language":"CS","name":"Czech","supports_formality":false},{"language":"DA","name":"Danish","supports_formality":false},{"language":"DE","name":"German","supports_formality":true},{"language":"EL","name":"Greek","supports_formality":false},{"language":"EN-GB","name":"English (British)","supports_formality":false},{"language":"EN-US","name":"English (American)","supports_formality":false},{"language":"ES","name":"Spanish","supports_formality":true},{"language":"ET","name":"Estonian","supports_formality":false},{"language":"FI","name":"Finnish","supports_formality":false},{"language":"FR","name":"French","supports_formality":true},{"language":"HU","name":"Hungarian","supports_formality":false},{"language":"ID","name":"Indonesian","supports_formality":false},{"language":"IT","name":"Italian","supports_formality":true},{"language":"JA","name":"Japanese","supports_formality":true},{"language":"KO","name":"Korean","supports_formality":false},{"language":"LT","name":"Lithuanian","supports_formality":false},{"language":"LV","name":"Latvian","supports_formality":false},{"language":"NB","name":"Norwegian","supports_formality":false},{"language":"NL","name":"Dutch","supports_formality":true},{"language":"PL","name":"Polish","supports_formality":true},{"language":"PT-BR","name":"Portuguese (Brazilian)","supports_formality":true},{"language":"PT-PT","name":"Portuguese (European)","supports_formality":true},{"language":"RO","name":"Romanian","supports_formality":false},{"language":"RU","name":"Russian","supports_formality":true},{"language":"SK","name":"Slovak","supports_formality":false},{"language":"SL","name":"Slovenian","supports_formality":false},{"language":"SV","name":"Swedish","supports_formality":false},{"language":"TR","name":"Turkish","supports_formality":false},{"language":"UK","name":"Ukrainian","supports_formality":false},{"language":"ZH","name":"Chinese (simplified)","supports_formality":false}]
 };
 
 const GoogleTranslate = {
     translateText: async function (data, inputText, sourceLanguage, targetLanguage, useGlossary = false, tc = 0) {
         try {
-            inputText = useGlossary ? getGlossaryAppliedText(inputText, false, flexSwitchCheckAllowAnothers.prop('checked')) : inputText;
+            const querys = useGlossary ? getGlossaryAppliedText(inputText, false, flexSwitchCheckAllowAnothers.prop('checked')).split(/\n/) : inputText.split(/\n/);
 
             /**
              * Google translate Widget
              * Method: POST
-             * URL: https://translate.googleapis.com/translate_a/t?anno=3&client=te&format=html&v=1.0&key&logld=v${version}&sl=${sourceLanguage}&tl=${targetLanguage}&tc=0&tk=${lq(inputText, ctkk)}
-             * `q=${inputText.split(/\n/).map((sentence) => encodeURIComponent(sentence)).join('&q=')}`
+             * URL: https://translate.googleapis.com/translate_a/t?anno=3&client=te&format=html&v=1.0&key&logld=v${version}&sl=${sourceLanguage}&tl=${targetLanguage}&tc=0&tk=${lq(querys, ctkk)}
+             * `q=${querys.split(/\n/).map((sentence) => encodeURIComponent(sentence)).join('&q=')}`
              *
              * Google Translate
              * Method: GET
-             * URL: https://translate.googleapis.com/translate_a/single?client=gtx&sl=${sourceLanguage}&tl=${targetLanguage}&hl=vi&dt=t&dt=bd&dj=1&q=${encodeURIComponent(inputText)}
+             * URL: https://translate.googleapis.com/translate_a/single?client=gtx&sl=${sourceLanguage}&tl=${targetLanguage}&hl=vi&dt=t&dt=bd&dj=1&q=${encodeURIComponent(querys)}
              *
              * Google Translate Websites
              * Method: POST
-             * URL: https://translate.googleapis.com/translate_a/t?anno=3&client=wt_lib&format=html&v=1.0&key=&logld=v${version}&sl=${sourceLanguage}&tl=${targetLanguage}&tc=0&tk=${lq(inputText, ctkk)}
-             * Content-Type: application/x-www-form-urlencoded - `q=${inputText.split(/\n/).map((sentence) => encodeURIComponent(sentence)).join('&q=')}`
+             * URL: https://translate.googleapis.com/translate_a/t?anno=3&client=wt_lib&format=html&v=1.0&key=&logld=v${version}&sl=${sourceLanguage}&tl=${targetLanguage}&tc=0&tk=${lq(querys, ctkk)}
+             * Content-Type: application/x-www-form-urlencoded - `q=${querys.split(/\n/).map((sentence) => encodeURIComponent(sentence)).join('&q=')}`
              *
              * Google Chrome
              * Method: POST
-             * URL: https://translate.googleapis.com/translate_a/t?anno=3&client=te_lib&format=html&v=1.0&key=AIzaSyBOti4mM-6x9WDnZIjIeyEU21OpBXqWBgw&logld=v${version}&sl=${sourceLanguage}&tl=${targetLanguage}&tc=0&tk=${lq(inputText, ctkk)}
-             * content-type: application/x-www-form-urlencoded - `q=${inputText.split(/\n/).map((sentence) => encodeURIComponent(sentence)).join('&q=')}`
+             * URL: https://translate.googleapis.com/translate_a/t?anno=3&client=${(_cac || 'te') + (_cam === 'lib' ? '_lib' : '')}&format=html&v=1.0&key=AIzaSyBOti4mM-6x9WDnZIjIeyEU21OpBXqWBgw&logld=v${v || ''}&sl=${sourceLanguage}&tl=${targetLanguage}&tc=0&tk=${lq(querys, ctkk)}
+             * Content-Type: application/x-www-form-urlencoded - `q=${querys.split(/\n/).map((sentence) => encodeURIComponent(sentence)).join('&q=')}`
              */
             const response = await $.ajax({
-			url: `https://translate.googleapis.com/translate_a/t?anno=3&client=${data.cac.length > 0 ? `${data.cac}${data.cam.length > 0 ? `_${data.cam}` : ''}` : 'te_lib'}&format=text&v=1.0&key${data.apiKey.length > 0 ? `=${data.apiKey}` : ''}&logld=v${data.version}&sl=${sourceLanguage}&tl=${targetLanguage}&tc=${tc}&tk=${this.lq(inputText, data.ctkk)}`,
-                data: `q=${inputText.split(/\n/).map((sentence) => encodeURIComponent(sentence)).join('&q=')}`,
+			url: `https://translate.googleapis.com/translate_a/t?anno=3&client=${(data._cac || 'te') + (data._cam === 'lib' ? '_lib' : '')}&format=text&v=1.0&key${data.translateApiKey.length > 0 ? `=${data.translateApiKey}` : ''}&logld=v${data.v || ''}&sl=${sourceLanguage}&tl=${targetLanguage}&tc=${tc}&tk=${this.lq(querys.join(''))}`,
+                data: `q=${querys.map((sentence) => encodeURIComponent(sentence)).join('&q=')}`,
                 method: 'POST',
                 headers: {
-                    'content-type': 'application/x-www-form-urlencoded'
+                    'Content-Type': 'application/x-www-form-urlencoded',
                 }
             });
 
@@ -1156,18 +1147,26 @@ const GoogleTranslate = {
                  * URL: https://translate.google.com/translate_a/element.js?cb=gtElInit&hl=vi&client=wt
                  * 
                  * Google Chrome
+                 * Method: GET
                  * URL: https://translate.googleapis.com/translate_a/element.js?cb=cr.googleTranslate.onTranslateElementLoad&aus=true&clc=cr.googleTranslate.onLoadCSS&jlc=cr.googleTranslate.onLoadJavascript&hl=vi&key=AIzaSyBOti4mM-6x9WDnZIjIeyEU21OpBXqWBgw
+                 * Google-Translate-Element-Mode: library
                  */
-                const elementJs = await $.get(`${CORS_PROXY}https://translate.googleapis.com/translate_a/element.js?aus=true&hl=vi${apiKey.length > 0 ? `&key=${apiKey}` : ''}`);
+                const elementJs = await $.ajax({
+                    url: `${CORS_PROXY}https://translate.googleapis.com/translate_a/element.js?aus=true&hl=vi${apiKey.length > 0 ? `&key=${apiKey}` : ''}`,
+                    method: 'GET',
+                    headers: {
+                        'Google-Translate-Element-Mode': 'library'
+                    }
+                });
 
                 if (elementJs != undefined) {
-                    data.cac = elementJs.match(/c\._cac='([a-z]*)'/)[1];
-                    data.cam = elementJs.match(/c\._cam='([a-z]*)'/)[1];
+                    data.translateApiKey = apiKey;
 
-                    data.apiKey = apiKey;
-
-                    data.version = elementJs.match(/_exportVersion\('(TE_\d+)'\)/)[1];
-                    data.ctkk = elementJs.match(/c\._ctkk='(\d+\.\d+)'/)[1];
+                    data._cac = elementJs.match(/c\._cac='([a-z]*)'/)[1];
+                    data._cam = elementJs.match(/c\._cam='([a-z]*)'/)[1];
+                    this.kq = elementJs.match(/c\._ctkk='(\d+\.\d+)'/)[1];
+                    // console.log(elementJs.match(/_loadJs\('([^']+)'\)/)[1]);
+                    data.v = elementJs.match(/_exportVersion\('(TE_\d+)'\)/)[1];
                 }
                 return data;
             } catch (error) {
@@ -1176,7 +1175,6 @@ const GoogleTranslate = {
             }
         }
     },
-    // https://translate.googleapis.com/_/translate_http/_/js/k=translate_http.tr.vi.EzjfV2OyKL4.O/d=1/exm=el_conf/ed=1/rs=AN8SPfqiDrE8FTdbH7d7Ky6-JzIR_pi7RQ/m=el_main
     Oo: function (a) {
         for (var b = [], c = 0, d = 0; d < a.length; d++) {
             var e = a.charCodeAt(d);
@@ -1201,8 +1199,8 @@ const GoogleTranslate = {
         }
         return a;
     },
-    lq: function (a, kq) {
-        var b = kq.split("."),
+    lq: function (a) {
+        var b = this.kq.split("."),
             c = Number(b[0]) || 0;
         a = this.Oo(a);
         for (var d = c, e = 0; e < a.length; e++) (d += a[e]), (d = this.jq(d, "+-a^+6"));
@@ -1212,169 +1210,34 @@ const GoogleTranslate = {
         b = d % 1e6;
         return b.toString() + "." + (b ^ c);
     },
-    Language: {
-        af: 'Afrikaans',
-        sq: 'Albanian',
-        am: 'Amharic',
-        ar: 'Arabic',
-        hy: 'Armenian',
-        as: 'Assamese',
-        ay: 'Aymara',
-        az: 'Azerbaijani',
-        bm: 'Bambara',
-        eu: 'Basque',
-        be: 'Belarusian',
-        bn: 'Bengali',
-        bho: 'Bhojpuri',
-        bs: 'Bosnian',
-        bg: 'Bulgarian',
-        ca: 'Catalan',
-        ceb: 'Cebuano',
-        'zh-CN': 'Chinese (Simplified)',
-        'zh-TW': 'Chinese (Traditional)',
-        co: 'Corsican',
-        hr: 'Croatian',
-        cs: 'Czech',
-        da: 'Danish',
-        dv: 'Dhivehi',
-        doi: 'Dogri',
-        nl: 'Dutch',
-        en: 'English',
-        eo: 'Esperanto',
-        et: 'Estonian',
-        ee: 'Ewe',
-        fil: 'Filipino (Tagalog)',
-        fi: 'Finnish',
-        fr: 'French',
-        fy: 'Frisian',
-        gl: 'Galician',
-        ka: 'Georgian',
-        de: 'German',
-        el: 'Greek',
-        gn: 'Guarani',
-        gu: 'Gujarati',
-        ht: 'Haitian Creole',
-        ha: 'Hausa',
-        haw: 'Hawaiian',
-        he: 'Hebrew',
-        iw: 'Hebrew',
-        hi: 'Hindi',
-        hmn: 'Hmong',
-        hu: 'Hungarian',
-        is: 'Icelandic',
-        ig: 'Igbo',
-        ilo: 'Ilocano',
-        id: 'Indonesian',
-        ga: 'Irish',
-        it: 'Italian',
-        ja: 'Japanese',
-        jw: 'Javanese',
-        kn: 'Kannada',
-        kk: 'Kazakh',
-        km: 'Khmer',
-        rw: 'Kinyarwanda',
-        gom: 'Konkani',
-        ko: 'Korean',
-        kri: 'Krio',
-        ku: 'Kurdish',
-        ckb: 'Kurdish (Sorani)',
-        ky: 'Kyrgyz',
-        lo: 'Lao',
-        la: 'Latin',
-        lv: 'Latvian',
-        ln: 'Lingala',
-        lt: 'Lithuanian',
-        lg: 'Luganda',
-        lb: 'Luxembourgish',
-        mk: 'Macedonian',
-        mai: 'Maithili',
-        mg: 'Malagasy',
-        ms: 'Malay',
-        ml: 'Malayalam',
-        mt: 'Maltese',
-        mi: 'Maori',
-        mr: 'Marathi',
-        'mni-Mtei': 'Meiteilon (Manipuri)',
-        lus: 'Mizo',
-        mn: 'Mongolian',
-        my: 'Myanmar (Burmese)',
-        ne: 'Nepali',
-        no: 'Norwegian',
-        ny: 'Nyanja (Chichewa)',
-        or: 'Odia (Oriya)',
-        om: 'Oromo',
-        ps: 'Pashto',
-        fa: 'Persian',
-        pl: 'Polish',
-        pt: 'Portuguese (Portugal, Brazil)',
-        pa: 'Punjabi',
-        qu: 'Quechua',
-        ro: 'Romanian',
-        ru: 'Russian',
-        sm: 'Samoan',
-        sa: 'Sanskrit',
-        gd: 'Scots Gaelic',
-        nso: 'Sepedi',
-        sr: 'Serbian',
-        st: 'Sesotho',
-        sn: 'Shona',
-        sd: 'Sindhi',
-        si: 'Sinhala (Sinhalese)',
-        sk: 'Slovak',
-        sl: 'Slovenian',
-        so: 'Somali',
-        es: 'Spanish',
-        su: 'Sundanese',
-        sw: 'Swahili',
-        sv: 'Swedish',
-        tl: 'Tagalog (Filipino)',
-        tg: 'Tajik',
-        ta: 'Tamil',
-        tt: 'Tatar',
-        te: 'Telugu',
-        th: 'Thai',
-        ti: 'Tigrinya',
-        ts: 'Tsonga',
-        tr: 'Turkish',
-        tk: 'Turkmen',
-        ak: 'Twi (Akan)',
-        uk: 'Ukrainian',
-        ur: 'Urdu',
-        ug: 'Uyghur',
-        uz: 'Uzbek',
-        vi: 'Vietnamese',
-        cy: 'Welsh',
-        xh: 'Xhosa',
-        yi: 'Yiddish',
-        yo: 'Yoruba',
-        zu: 'Zulu'
-    }
+    SourceLanguage: {"auto":"Phát hiện ngôn ngữ","ar":"Ả Rập","sq":"Albania","am":"Amharic","en":"Anh","hy":"Armenia","as":"Assam","ay":"Aymara","az":"Azerbaijan","pl":"Ba Lan","fa":"Ba Tư","bm":"Bambara","xh":"Bantu","eu":"Basque","be":"Belarus","bn":"Bengal","bho":"Bhojpuri","bs":"Bosnia","pt":"Bồ Đào Nha","bg":"Bulgaria","ca":"Catalan","ceb":"Cebuano","ny":"Chichewa","co":"Corsi","ht":"Creole (Haiti)","hr":"Croatia","dv":"Dhivehi","iw":"Do Thái","doi":"Dogri","da":"Đan Mạch","de":"Đức","et":"Estonia","ee":"Ewe","tl":"Filipino","fy":"Frisia","gd":"Gael Scotland","gl":"Galicia","ka":"George","gn":"Guarani","gu":"Gujarat","nl":"Hà Lan","af":"Hà Lan (Nam Phi)","ko":"Hàn","ha":"Hausa","haw":"Hawaii","hi":"Hindi","hmn":"Hmong","hu":"Hungary","el":"Hy Lạp","is":"Iceland","ig":"Igbo","ilo":"Ilocano","id":"Indonesia","ga":"Ireland","jw":"Java","kn":"Kannada","kk":"Kazakh","km":"Khmer","rw":"Kinyarwanda","gom":"Konkani","kri":"Krio","ku":"Kurd (Kurmanji)","ckb":"Kurd (Sorani)","ky":"Kyrgyz","lo":"Lào","la":"Latinh","lv":"Latvia","ln":"Lingala","lt":"Litva","lg":"Luganda","lb":"Luxembourg","ms":"Mã Lai","mk":"Macedonia","mai":"Maithili","mg":"Malagasy","ml":"Malayalam","mt":"Malta","mi":"Maori","mr":"Marathi","mni-Mtei":"Meiteilon (Manipuri)","lus":"Mizo","mn":"Mông Cổ","my":"Myanmar","no":"Na Uy","ne":"Nepal","ru":"Nga","ja":"Nhật","or":"Odia (Oriya)","om":"Oromo","ps":"Pashto","sa":"Phạn","fr":"Pháp","fi":"Phần Lan","pa":"Punjab","qu":"Quechua","eo":"Quốc tế ngữ","ro":"Rumani","sm":"Samoa","cs":"Séc","nso":"Sepedi","sr":"Serbia","st":"Sesotho","sn":"Shona","sd":"Sindhi","si":"Sinhala","sk":"Slovak","sl":"Slovenia","so":"Somali","su":"Sunda","sw":"Swahili","tg":"Tajik","ta":"Tamil","tt":"Tatar","es":"Tây Ban Nha","te":"Telugu","th":"Thái","tr":"Thổ Nhĩ Kỳ","sv":"Thụy Điển","ti":"Tigrinya","zh-CN":"Trung","ts":"Tsonga","tk":"Turkmen","ak":"Twi","uk":"Ukraina","ur":"Urdu","ug":"Uyghur","uz":"Uzbek","vi":"Việt","cy":"Xứ Wales","it":"Ý","yi":"Yiddish","yo":"Yoruba","zu":"Zulu"},
+    TargetLanguage: {"ar":"Ả Rập","sq":"Albania","am":"Amharic","en":"Anh","hy":"Armenia","as":"Assam","ay":"Aymara","az":"Azerbaijan","pl":"Ba Lan","fa":"Ba Tư","bm":"Bambara","xh":"Bantu","eu":"Basque","be":"Belarus","bn":"Bengal","bho":"Bhojpuri","bs":"Bosnia","pt":"Bồ Đào Nha","bg":"Bulgaria","ca":"Catalan","ceb":"Cebuano","ny":"Chichewa","co":"Corsi","ht":"Creole (Haiti)","hr":"Croatia","dv":"Dhivehi","iw":"Do Thái","doi":"Dogri","da":"Đan Mạch","de":"Đức","et":"Estonia","ee":"Ewe","tl":"Filipino","fy":"Frisia","gd":"Gael Scotland","gl":"Galicia","ka":"George","gn":"Guarani","gu":"Gujarat","nl":"Hà Lan","af":"Hà Lan (Nam Phi)","ko":"Hàn","ha":"Hausa","haw":"Hawaii","hi":"Hindi","hmn":"Hmong","hu":"Hungary","el":"Hy Lạp","is":"Iceland","ig":"Igbo","ilo":"Ilocano","id":"Indonesia","ga":"Ireland","jw":"Java","kn":"Kannada","kk":"Kazakh","km":"Khmer","rw":"Kinyarwanda","gom":"Konkani","kri":"Krio","ku":"Kurd (Kurmanji)","ckb":"Kurd (Sorani)","ky":"Kyrgyz","lo":"Lào","la":"Latinh","lv":"Latvia","ln":"Lingala","lt":"Litva","lg":"Luganda","lb":"Luxembourg","ms":"Mã Lai","mk":"Macedonia","mai":"Maithili","mg":"Malagasy","ml":"Malayalam","mt":"Malta","mi":"Maori","mr":"Marathi","mni-Mtei":"Meiteilon (Manipuri)","lus":"Mizo","mn":"Mông Cổ","my":"Myanmar","no":"Na Uy","ne":"Nepal","ru":"Nga","ja":"Nhật","or":"Odia (Oriya)","om":"Oromo","ps":"Pashto","sa":"Phạn","fr":"Pháp","fi":"Phần Lan","pa":"Punjab","qu":"Quechua","eo":"Quốc tế ngữ","ro":"Rumani","sm":"Samoa","cs":"Séc","nso":"Sepedi","sr":"Serbia","st":"Sesotho","sn":"Shona","sd":"Sindhi","si":"Sinhala","sk":"Slovak","sl":"Slovenia","so":"Somali","su":"Sunda","sw":"Swahili","tg":"Tajik","ta":"Tamil","tt":"Tatar","es":"Tây Ban Nha","te":"Telugu","th":"Thái","tr":"Thổ Nhĩ Kỳ","sv":"Thụy Điển","ti":"Tigrinya","zh-CN":"Trung (Giản thể)","zh-TW":"Trung (Phồn thể)","ts":"Tsonga","tk":"Turkmen","ak":"Twi","uk":"Ukraina","ur":"Urdu","ug":"Uyghur","uz":"Uzbek","vi":"Việt","cy":"Xứ Wales","it":"Ý","yi":"Yiddish","yo":"Yoruba","zu":"Zulu"}
 };
 
 const Lingvanex = {
-    translateText: async function (authKey, text, from, to, useGlossary = false, tc = 1) {
+    translateText: async function (authKey, inputText, from, to, useGlossary = false, tc = 1) {
         try {
-            text = useGlossary ? getGlossaryAppliedText(text, false, flexSwitchCheckAllowAnothers.prop('checked')) : text;
+            inputText = useGlossary ? getGlossaryAppliedText(inputText, false, flexSwitchCheckAllowAnothers.prop('checked')) : inputText;
 
             /**
              * Lingvanex Demo
              * URL: https://api-b2b.backenster.com/b1/api/v3/translate
-             * Accept: 'application/json, text/javascript, *\/*; q=0.01', Accept-Language: vi-VN,vi;q=0.8,en-US;q=0.5,en;q=0.3, Content-Type: application/x-www-form-urlencoded; charset=UTF-8, Authorization Bearer a_25rccaCYcBC9ARqMODx2BV2M0wNZgDCEl3jryYSgYZtF1a702PVi4sxqi2AmZWyCcw4x209VXnCYwesx - from=${from}&to=${to}&text=${encodeURIComponent(text)}&platform=dp&is_return_text_split_ranges=true
+             * Accept: 'application/json, inputText/javascript, *\/*; q=0.01', Accept-Language: vi-VN,vi;q=0.8,en-US;q=0.5,en;q=0.3, Content-Type: application/x-www-form-urlencoded; charset=UTF-8, Authorization Bearer a_25rccaCYcBC9ARqMODx2BV2M0wNZgDCEl3jryYSgYZtF1a702PVi4sxqi2AmZWyCcw4x209VXnCYwesx - from=${from}&to=${to}&inputText=${encodeURIComponent(inputText)}&platform=dp&is_return_text_split_ranges=true
              *
              * Brave
              * Method: POST
-             * URL: https://translate.brave.com/translate_a/t?anno=3&client=te_lib&format=html&v=1.0&key=qztbjzBqJueQZLFkwTTJrieu8Vw3789u&logld=v${version}&sl=${from}&tl=${to}&tc=${tc}&sr=1&tk=${this.Bn(text, ctkk)}&mode=1
-             * 'accept-language': vi;q=0.5, content-type: application/x-www-form-urlencoded - `q=${text.split(/\n/).map((sentence) => encodeURIComponent(sentence)).join('&q=')}`
+             * URL: https://translate.brave.com/translate_a/t?anno=3&client=te_lib&format=html&v=1.0&key=qztbjzBqJueQZLFkwTTJrieu8Vw3789u&logld=v${version}&sl=${from}&tl=${to}&tc=${tc}&sr=1&tk=${this.Bn(inputText, ctkk)}&mode=1
+             * 'accept-language': vi;q=0.5, content-type: application/x-www-form-urlencoded - `q=${inputText.split(/\n/).map((sentence) => encodeURIComponent(sentence)).join('&q=')}`
              */
             const response = await $.ajax({
                 url: 'https://api-b2b.backenster.com/b1/api/v3/translate',
-                data: `${from !== '' ? `from=${from}&` : ''}to=${to}&text=${encodeURIComponent(text)}&platform=dp&is_return_text_split_ranges=true`,
+                data: `${from !== '' ? `from=${from}&` : ''}to=${to}&text=${encodeURIComponent(inputText)}&platform=dp&is_return_text_split_ranges=true`,
                 method: 'POST',
                 headers: {
-                    Accept: 'application/json, text/javascript, */*; q=0.01',
+                    Accept: 'application/json, inputText/javascript, */*; q=0.01',
                     'Accept-Language': 'vi-VN,vi;q=0.8,en-US;q=0.5,en;q=0.3',
                     'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-                    Authorization: authKey
+                    Authorization: `Bearer ${authKey}`
                 }
             });
 
@@ -1398,7 +1261,7 @@ const Lingvanex = {
                 const apiBaseJs = await $.get(`${CORS_PROXY}https://lingvanex.com/lingvanex_demo_page/js/api-base.js`);
 
                 if (apiBaseJs != undefined) {
-                    authKey = apiBaseJs.match(/B2B_AUTH_TOKEN="(Bearer [^"]+)"/)[1];
+                    authKey = apiBaseJs.match(/B2B_AUTH_TOKEN="Bearer ([^"]+)"/)[1];
                 }
                 return authKey;
             } catch (error) {
@@ -1407,118 +1270,7 @@ const Lingvanex = {
             }
         }
     },
-    Language: {
-        //af: 'Afrikaans', sq: 'Albanian', am: 'Amharic', ar: 'Arabic', hy: 'Armenian', az: 'Azerbaijani', eu: 'Basque', be: 'Belarusian', bn: 'Bengali', bs: 'Bosnian', bg: 'Bulgarian', ca: 'Catalan', ceb: 'Cebuano', ny: 'Chichewa', 'zh-CN': 'Chinese (Simplified)', 'zh-TW': 'Chinese (Traditional)', co: 'Corsican', ht: 'Haitian Creole', hr: 'Croatian', cs: 'Czech', da: 'Danish', nl: 'Dutch', en: 'English', eo: 'Esperanto', et: 'Estonian', fi: 'Finnish', fr: 'French', fy: 'Frisian', gl: 'Galician', ka: 'Georgian', de: 'German', el: 'Greek', gu: 'Gujarati', ha: 'Hausa', haw: 'Hawaiian', iw: 'Hebrew', hi: 'Hindi', hmn: 'Hmong', hu: 'Hungarian', is: 'Icelandic', ig: 'Igbo', id: 'Indonesian', ga: 'Irish', it: 'Italian', ja: 'Japanese', jw: 'Javanese', kn: 'Kannada', kk: 'Kazakh', km: 'Khmer', rw: 'Kinyarwanda', ko: 'Korean', ku: 'Kurdish (Kurmanji)', ky: 'Kyrgyz', lo: 'Lao', la: 'Latin', lv: 'Latvian', lt: 'Lithuanian', lb: 'Luxembourgish', mk: 'Macedonian', mg: 'Malagasy', ms: 'Malay', ml: 'Malayalam', mt: 'Maltese', mi: 'Maori', mr: 'Marathi', mn: 'Mongolian', my: 'Myanmar (Burmese)', ne: 'Nepali', no: 'Norwegian', or: 'Odia', ps: 'Pashto', fa: 'Persian', pl: 'Polish', pt: 'Portuguese', pa: 'Punjabi', ro: 'Romanian', ru: 'Russian', sm: 'Samoan', gd: 'Scots Gaelic', 'sr-Cyrl': 'Serbian Cyrilic', st: 'Sesotho', sn: 'Shona', sd: 'Sindhi', si: 'Sinhala', sk: 'Slovak', sl: 'Slovenian', so: 'Somali', es: 'Spanish', su: 'Sundanese', sw: 'Swahili', sv: 'Swedish', tl: 'Filipino (Tagalog)', tg: 'Tajik', ta: 'Tamil', tt: 'Tatar', te: 'Telugu', th: 'Thai', tr: 'Turkish', tk: 'Turkmen', uk: 'Ukrainian', ur: 'Urdu', ug: 'Uyghur', uz: 'Uzbek', vi: 'Vietnamese', cy: 'Welsh', xh: 'Xhosa', yi: 'Yiddish', yo: 'Yoruba', zu: 'Zulu'
-        af_ZA: 'Afrikaans',
-        sq_AL: 'Albanian',
-        am_ET: 'Amharic',
-        ar_SA: 'Arabic',
-        hy_AM: 'Armenian',
-        az_AZ: 'Azerbaijani',
-        eu_ES: 'Basque',
-        be_BY: 'Belarusian',
-        bn_BD: 'Bengali',
-        bs_BA: 'Bosnian',
-        bg_BG: 'Bulgarian',
-        ca_ES: 'Catalan',
-        ceb_PH: 'Cebuano',
-        ny_MW: 'Chichewa',
-        'zh-Hans_CN': 'Chinese (Simplified)',
-        'zh-Hant_TW': 'Chinese (Traditional)',
-        co_FR: 'Corsican',
-        ht_HT: 'Haitian Creole',
-        hr_HR: 'Croatian',
-        cs_CZ: 'Czech',
-        da_DK: 'Danish',
-        nl_NL: 'Dutch',
-        en_US: 'English',
-        eo_WORLD: 'Esperanto',
-        et_EE: 'Estonian',
-        fi_FI: 'Finnish',
-        fr_CA: 'French',
-        fy_NL: 'Frisian',
-        gl_ES: 'Galician',
-        ka_GE: 'Georgian',
-        de_DE: 'German',
-        el_GR: 'Greek',
-        gu_IN: 'Gujarati',
-        ha_NE: 'Hausa',
-        haw_US: 'Hawaiian',
-        he_IL: 'Hebrew',
-        hi_IN: 'Hindi',
-        hmn_CN: 'Hmong',
-        hu_HU: 'Hungarian',
-        is_IS: 'Icelandic',
-        ig_NG: 'Igbo',
-        id_ID: 'Indonesian',
-        ga_IE: 'Irish',
-        it_IT: 'Italian',
-        ja_JP: 'Japanese',
-        jv_ID: 'Javanese',
-        kn_IN: 'Kannada',
-        kk_KZ: 'Kazakh',
-        km_KH: 'Khmer',
-        rw_RW: 'Kinyarwanda',
-        ko_KR: 'Korean',
-        ku_IR: 'Kurdish (Kurmanji)',
-        ky_KG: 'Kyrgyz',
-        lo_LA: 'Lao',
-        la_VAT: 'Latin',
-        lv_LV: 'Latvian',
-        lt_LT: 'Lithuanian',
-        lb_LU: 'Luxembourgish',
-        mk_MK: 'Macedonian',
-        mg_MG: 'Malagasy',
-        ms_MY: 'Malay',
-        ml_IN: 'Malayalam',
-        mt_MT: 'Maltese',
-        mi_NZ: 'Maori',
-        mr_IN: 'Marathi',
-        mn_MN: 'Mongolian',
-        my_MM: 'Myanmar (Burmese)',
-        ne_NP: 'Nepali',
-        no_NO: 'Norwegian',
-        or_OR: 'Odia',
-        ps_AF: 'Pashto',
-        fa_IR: 'Persian',
-        pl_PL: 'Polish',
-        pt_PT: 'Portuguese',
-        pa_PK: 'Punjabi',
-        ro_RO: 'Romanian',
-        ru_RU: 'Russian',
-        sm_WS: 'Samoan',
-        gd_GB: 'Scots Gaelic',
-        'sr-Cyrl_RS': 'Serbian Cyrilic',
-        st_LS: 'Sesotho',
-        sn_ZW: 'Shona',
-        sd_PK: 'Sindhi',
-        si_LK: 'Sinhala',
-        sk_SK: 'Slovak',
-        sl_SI: 'Slovenian',
-        so_SO: 'Somali',
-        es_ES: 'Spanish',
-        su_ID: 'Sundanese',
-        sw_TZ: 'Swahili',
-        sv_SE: 'Swedish',
-        tl_PH: 'Filipino (Tagalog)',
-        tg_TJ: 'Tajik',
-        ta_IN: 'Tamil',
-        tt_TT: 'Tatar',
-        te_IN: 'Telugu',
-        th_TH: 'Thai',
-        tr_TR: 'Turkish',
-        tk_TK: 'Turkmen',
-        uk_UA: 'Ukrainian',
-        ur_PK: 'Urdu',
-        ug_UG: 'Uyghur',
-        uz_UZ: 'Uzbek',
-        vi_VN: 'Vietnamese',
-        cy_GB: 'Welsh',
-        xh_ZA: 'Xhosa',
-        yi_IL: 'Yiddish',
-        yo_NG: 'Yoruba',
-        zu_ZA: 'Zulu'
-    }
+    Language: [{"full_code":"af_ZA","code_alpha_1":"af","englishName":"Afrikaans","codeName":"Tiếng Hà Lan (Nam Phi)","flagPath":"static/flags/afrikaans","testWordForSyntezis":"Hallo","rtl":"false","modes":[{"name":"Translate web site","value":true},{"name":"Translation","value":true},{"name":"Translation document","value":true},{"name":"Image recognition","value":true},{"name":"Image object recognition","value":true}]},{"full_code":"sq_AL","code_alpha_1":"sq","englishName":"Albanian","codeName":"Tiếng Albania","flagPath":"static/flags/albanian","testWordForSyntezis":"Përshëndetje","rtl":"false","modes":[{"name":"Image object recognition","value":true},{"name":"Translate web site","value":true},{"name":"Translation","value":true},{"name":"Translation document","value":true},{"name":"Image recognition","value":true}]},{"full_code":"am_ET","code_alpha_1":"am","englishName":"Amharic","codeName":"Tiếng Amharic","flagPath":"static/flags/amharic","testWordForSyntezis":"ሰላም","rtl":"false","modes":[{"name":"Image object recognition","value":true},{"name":"Translate web site","value":true},{"name":"Translation document","value":true},{"name":"Translation","value":true}]},{"full_code":"ar_EG","code_alpha_1":"ar","englishName":"Arabic (Egypt)","codeName":"Tiếng Ả Rập","flagPath":"static/flags/arabic_eg","testWordForSyntezis":"مرحبا","rtl":"true","modes":[{"name":"Image recognition","value":true},{"name":"Image object recognition","value":true},{"name":"Translate web site","value":true},{"name":"Translation","value":true},{"name":"Translation document","value":true}]},{"full_code":"ar_SA","code_alpha_1":"ar","englishName":"Arabic (Saudi Arabia)","codeName":"Tiếng Ả Rập","flagPath":"static/flags/arabic_sa","testWordForSyntezis":"مرحبا","rtl":"true","modes":[{"name":"Image object recognition","value":true},{"name":"Translation","value":true},{"name":"Translate web site","value":true},{"name":"Speech recognition","value":true},{"name":"Translation document","value":true},{"name":"Image recognition","value":true}]},{"full_code":"ar_AE","code_alpha_1":"ar","englishName":"Arabic (United Arab Emirates)","codeName":"Tiếng Ả Rập","flagPath":"static/flags/arabic_ae","testWordForSyntezis":"مرحبا","rtl":"true","modes":[{"name":"Translation","value":true},{"name":"Translate web site","value":true},{"name":"Speech recognition","value":true},{"name":"Translation document","value":true},{"name":"Image recognition","value":true},{"name":"Image object recognition","value":true}]},{"full_code":"hy_AM","code_alpha_1":"hy","englishName":"Armenian","codeName":"Tiếng Armenia","flagPath":"static/flags/armenian","testWordForSyntezis":"Hi","rtl":"false","modes":[{"name":"Translate web site","value":true},{"name":"Translation","value":true},{"name":"Translation document","value":true},{"name":"Image recognition","value":true},{"name":"Image object recognition","value":true}]},{"full_code":"az_AZ","code_alpha_1":"az","englishName":"Azerbaijani","codeName":"Tiếng Azerbaijan","flagPath":"static/flags/azerbaijani","testWordForSyntezis":"Salam","rtl":"false","modes":[{"name":"Translate web site","value":true},{"name":"Translation document","value":true},{"name":"Translation","value":true},{"name":"Image object recognition","value":true}]},{"full_code":"eu_ES","code_alpha_1":"eu","englishName":"Basque","codeName":"Tiếng Basque","flagPath":"static/flags/basque","testWordForSyntezis":"Kaixo","rtl":"false","modes":[{"name":"Translate web site","value":true},{"name":"Translation document","value":true},{"name":"Translation","value":true},{"name":"Image object recognition","value":true}]},{"full_code":"be_BY","code_alpha_1":"be","englishName":"Belarusian","codeName":"Tiếng Belarus","flagPath":"static/flags/belarusian","testWordForSyntezis":"","rtl":"false","modes":[{"name":"Image object recognition","value":true},{"name":"Translate web site","value":true},{"name":"Translation","value":true},{"name":"Translation document","value":true},{"name":"Image recognition","value":true}]},{"full_code":"bn_BD","code_alpha_1":"bn","englishName":"Bengali","codeName":"Tiếng Bengal","flagPath":"static/flags/bengali","testWordForSyntezis":"হ্যালো","rtl":"false","modes":[{"name":"Image recognition","value":true},{"name":"Image object recognition","value":true},{"name":"Translate web site","value":true},{"name":"Translation","value":true},{"name":"Translation document","value":true}]},{"full_code":"bs_BA","code_alpha_1":"bs","englishName":"Bosnian","codeName":"Tiếng Bosnia","flagPath":"static/flags/bosnian","testWordForSyntezis":"Pozdrav","rtl":"false","modes":[{"name":"Translation","value":true},{"name":"Image object recognition","value":true},{"name":"Translate web site","value":true},{"name":"Translation document","value":true}]},{"full_code":"bg_BG","code_alpha_1":"bg","englishName":"Bulgarian","codeName":"Tiếng Bulgaria","flagPath":"static/flags/bulgarian","testWordForSyntezis":"Здравейте","rtl":"false","modes":[{"name":"Translation","value":true},{"name":"Translation document","value":true},{"name":"Image recognition","value":true},{"name":"Image object recognition","value":true},{"name":"Translate web site","value":true}]},{"full_code":"ca_ES","code_alpha_1":"ca","englishName":"Catalan","codeName":"Tiếng Catalan","flagPath":"static/flags/catalan","testWordForSyntezis":"Hola","rtl":"false","modes":[{"name":"Image object recognition","value":true},{"name":"Translation","value":true},{"name":"Translate web site","value":true},{"name":"Speech recognition","value":true},{"name":"Translation document","value":true},{"name":"Image recognition","value":true}]},{"full_code":"ceb_PH","code_alpha_1":"ceb","englishName":"Cebuano","codeName":"Tiếng Cebuano","flagPath":"static/flags/cebuano","testWordForSyntezis":"","rtl":"false","modes":[{"name":"Image object recognition","value":true},{"name":"Translate web site","value":true},{"name":"Translation document","value":true},{"name":"Translation","value":true}]},{"full_code":"ny_MW","code_alpha_1":"ny","englishName":"Chichewa (Nyanja)","codeName":"Tiếng Chichewa","flagPath":"static/flags/chichewa","testWordForSyntezis":"Moni","rtl":"false","modes":[{"name":"Image object recognition","value":true},{"name":"Translate web site","value":true},{"name":"Translation document","value":true},{"name":"Translation","value":true}]},{"full_code":"zh-Hans_CN","code_alpha_1":"zh-Hans","englishName":"Chinese (simplified)","codeName":"Tiếng Trung (Giản Thể)","flagPath":"static/flags/chinese_mandarin","testWordForSyntezis":"你好","rtl":"false","modes":[{"name":"Translation","value":true},{"name":"Translate web site","value":true},{"name":"Speech recognition","value":true},{"name":"Translation document","value":true},{"name":"Image recognition","value":true},{"name":"Image object recognition","value":true}]},{"full_code":"zh-Hant_TW","code_alpha_1":"zh-Hant","englishName":"Chinese (traditional)","codeName":"Tiếng Trung (Phồn thể)","flagPath":"static/flags/chinese_taiwan","testWordForSyntezis":"你好","rtl":"false","modes":[{"name":"Image object recognition","value":true},{"name":"Translate web site","value":true},{"name":"Translation","value":true},{"name":"Translation document","value":true},{"name":"Image recognition","value":true}]},{"full_code":"co_FR","code_alpha_1":"co","englishName":"Corsican","codeName":"Tiếng Corsi","flagPath":"static/flags/corsican","testWordForSyntezis":"","rtl":"false","modes":[{"name":"Image object recognition","value":true},{"name":"Translate web site","value":true},{"name":"Translation document","value":true},{"name":"Translation","value":true}]},{"full_code":"ht_HT","code_alpha_1":"ht","englishName":"Creole","codeName":"Tiếng Creole ở Haiti","flagPath":"static/flags/haitian_creole","testWordForSyntezis":"alo","rtl":"false","modes":[{"name":"Image object recognition","value":true},{"name":"Translate web site","value":true},{"name":"Translation document","value":true},{"name":"Translation","value":true}]},{"full_code":"hr_HR","code_alpha_1":"hr","englishName":"Croatian","codeName":"Tiếng Croatia","flagPath":"static/flags/croatian","testWordForSyntezis":"Pozdrav","rtl":"false","modes":[{"name":"Image recognition","value":true},{"name":"Image object recognition","value":true},{"name":"Translate web site","value":true},{"name":"Translation document","value":true},{"name":"Translation","value":true}]},{"full_code":"cs_CZ","code_alpha_1":"cs","englishName":"Czech","codeName":"Tiếng Séc","flagPath":"static/flags/czech","testWordForSyntezis":"Dobrý den","rtl":"false","modes":[{"name":"Translation document","value":true},{"name":"Translation","value":true},{"name":"Image recognition","value":true},{"name":"Image object recognition","value":true},{"name":"Translate web site","value":true}]},{"full_code":"da_DK","code_alpha_1":"da","englishName":"Danish","codeName":"Tiếng Đan Mạch","flagPath":"static/flags/danish","testWordForSyntezis":"Hej","rtl":"false","modes":[{"name":"Translation","value":true},{"name":"Translation document","value":true},{"name":"Image recognition","value":true},{"name":"Image object recognition","value":true},{"name":"Translate web site","value":true}]},{"full_code":"nl_NL","code_alpha_1":"nl","englishName":"Dutch","codeName":"Tiếng Hà Lan","flagPath":"static/flags/dutch","testWordForSyntezis":"Hallo","rtl":"false","modes":[{"name":"Speech recognition","value":true},{"name":"Translation document","value":true},{"name":"Image recognition","value":true},{"name":"Image object recognition","value":true},{"name":"Translation","value":true},{"name":"Translate web site","value":true}]},{"full_code":"en_AU","code_alpha_1":"en","englishName":"English (Australian)","codeName":"Tiếng Anh","flagPath":"static/flags/english_au","testWordForSyntezis":"test","rtl":"false","modes":[{"name":"Speech recognition","value":true},{"name":"Translation document","value":true},{"name":"Image recognition","value":true},{"name":"Image object recognition","value":true},{"name":"Translation","value":true},{"name":"Translate web site","value":true}]},{"full_code":"en_GB","code_alpha_1":"en","englishName":"English (Great Britain)","codeName":"Tiếng Anh","flagPath":"static/flags/english_uk","testWordForSyntezis":"test","rtl":"false","modes":[{"name":"Speech recognition","value":true},{"name":"Translation document","value":true},{"name":"Image recognition","value":true},{"name":"Image object recognition","value":true},{"name":"Translation","value":true},{"name":"Translate web site","value":true}]},{"full_code":"en_US","code_alpha_1":"en","englishName":"English (USA)","codeName":"Tiếng Anh","flagPath":"static/flags/english_us","testWordForSyntezis":"test","rtl":"false","modes":[{"name":"Image object recognition","value":true},{"name":"Translation","value":true},{"name":"Translate web site","value":true},{"name":"Speech recognition","value":true},{"name":"Translation document","value":true},{"name":"Image recognition","value":true}]},{"full_code":"eo_WORLD","code_alpha_1":"eo","englishName":"Esperanto","codeName":"Quốc tế ngữ","flagPath":"static/flags/esperanto","testWordForSyntezis":"Saluton","rtl":"false","modes":[{"name":"Translation","value":true},{"name":"Translation document","value":true},{"name":"Speech recognition","value":true},{"name":"Image object recognition","value":true},{"name":"Translate web site","value":true}]},{"full_code":"et_EE","code_alpha_1":"et","englishName":"Estonian","codeName":"Tiếng Estonia","flagPath":"static/flags/estonian","testWordForSyntezis":"Tere","rtl":"false","modes":[{"name":"Image recognition","value":true},{"name":"Image object recognition","value":true},{"name":"Translate web site","value":true},{"name":"Translation","value":true},{"name":"Translation document","value":true}]},{"full_code":"fi_FI","code_alpha_1":"fi","englishName":"Finnish","codeName":"Tiếng Phần Lan","flagPath":"static/flags/finnish","testWordForSyntezis":"Moi","rtl":"false","modes":[{"name":"Translate web site","value":true},{"name":"Translation","value":true},{"name":"Translation document","value":true},{"name":"Image recognition","value":true},{"name":"Image object recognition","value":true}]},{"full_code":"fr_CA","code_alpha_1":"fr","englishName":"French (Canada)","codeName":"Tiếng Pháp","flagPath":"static/flags/french_canada","testWordForSyntezis":"Salut","rtl":"false","modes":[{"name":"Speech recognition","value":true},{"name":"Translation document","value":true},{"name":"Image recognition","value":true},{"name":"Image object recognition","value":true},{"name":"Translation","value":true},{"name":"Translate web site","value":true}]},{"full_code":"fr_FR","code_alpha_1":"fr","englishName":"French (France)","codeName":"Tiếng Pháp","flagPath":"static/flags/french","testWordForSyntezis":"Salut","rtl":"false","modes":[{"name":"Image object recognition","value":true},{"name":"Translation","value":true},{"name":"Translate web site","value":true},{"name":"Speech recognition","value":true},{"name":"Translation document","value":true},{"name":"Image recognition","value":true}]},{"full_code":"fy_NL","code_alpha_1":"fy","englishName":"Frisian","codeName":"Tiếng Frisia","flagPath":"static/flags/frisian","testWordForSyntezis":"Hoi","rtl":"false","modes":[{"name":"Translate web site","value":true},{"name":"Translation document","value":true},{"name":"Translation","value":true},{"name":"Image object recognition","value":true}]},{"full_code":"gl_ES","code_alpha_1":"gl","englishName":"Galician","codeName":"Tiếng Galicia","flagPath":"static/flags/galician","testWordForSyntezis":"","rtl":"false","modes":[{"name":"Translate web site","value":true},{"name":"Translation document","value":true},{"name":"Translation","value":true},{"name":"Image object recognition","value":true}]},{"full_code":"ka_GE","code_alpha_1":"ka","englishName":"Georgian","codeName":"Tiếng George","flagPath":"static/flags/georgian","testWordForSyntezis":"გამარჯობა","rtl":"false","modes":[{"name":"Translate web site","value":true},{"name":"Translation document","value":true},{"name":"Translation","value":true},{"name":"Image object recognition","value":true}]},{"full_code":"de_DE","code_alpha_1":"de","englishName":"German","codeName":"Tiếng Đức","flagPath":"static/flags/german","testWordForSyntezis":"Hallo","rtl":"false","modes":[{"name":"Image object recognition","value":true},{"name":"Translate web site","value":true},{"name":"Translation","value":true},{"name":"Translation document","value":true},{"name":"Speech recognition","value":true},{"name":"Image recognition","value":true}]},{"full_code":"el_GR","code_alpha_1":"el","englishName":"Greek","codeName":"Tiếng Hy Lạp","flagPath":"static/flags/greek","testWordForSyntezis":"Γεια σου","rtl":"false","modes":[{"name":"Image object recognition","value":true},{"name":"Translation","value":true},{"name":"Translate web site","value":true},{"name":"Speech recognition","value":true},{"name":"Translation document","value":true},{"name":"Image recognition","value":true}]},{"full_code":"gu_IN","code_alpha_1":"gu","englishName":"Gujarati","codeName":"Tiếng Gujarat","flagPath":"static/flags/gujarati","testWordForSyntezis":"","rtl":"false","modes":[{"name":"Image object recognition","value":true},{"name":"Translate web site","value":true},{"name":"Translation document","value":true},{"name":"Translation","value":true},{"name":"Image recognition","value":true}]},{"full_code":"ha_NE","code_alpha_1":"ha","englishName":"Hausa","codeName":"Tiếng Hausa","flagPath":"static/flags/hausa","testWordForSyntezis":"Hello","rtl":"false","modes":[{"name":"Image object recognition","value":true},{"name":"Translate web site","value":true},{"name":"Translation document","value":true},{"name":"Translation","value":true}]},{"full_code":"haw_US","code_alpha_1":"haw","englishName":"Hawaiian","codeName":"Tiếng Hawaii","flagPath":"static/flags/hawaii","testWordForSyntezis":"","rtl":"false","modes":[{"name":"Image object recognition","value":true},{"name":"Translate web site","value":true},{"name":"Translation document","value":true},{"name":"Translation","value":true}]},{"full_code":"he_IL","code_alpha_1":"he","englishName":"Hebrew","codeName":"Tiếng Do Thái","flagPath":"static/flags/israel","testWordForSyntezis":"שלום","rtl":"true","modes":[{"name":"Translation","value":true},{"name":"Image object recognition","value":true},{"name":"Translate web site","value":true},{"name":"Translation document","value":true}]},{"full_code":"hi_IN","code_alpha_1":"hi","englishName":"Hindi","codeName":"Tiếng Hindi","flagPath":"static/flags/hindi","testWordForSyntezis":"नमस्कार","rtl":"false","modes":[{"name":"Image recognition","value":true},{"name":"Image object recognition","value":true},{"name":"Translate web site","value":true},{"name":"Translation","value":true},{"name":"Translation document","value":true}]},{"full_code":"hmn_CN","code_alpha_1":"hmn","englishName":"Hmong","codeName":"Tiếng Hmong","flagPath":"static/flags/hmong","testWordForSyntezis":"","rtl":"false","modes":[{"name":"Translation","value":true},{"name":"Image object recognition","value":true},{"name":"Translate web site","value":true},{"name":"Translation document","value":true}]},{"full_code":"hu_HU","code_alpha_1":"hu","englishName":"Hungarian","codeName":"Tiếng Hungary","flagPath":"static/flags/hungarian","testWordForSyntezis":"helló","rtl":"false","modes":[{"name":"Translation document","value":true},{"name":"Translation","value":true},{"name":"Image recognition","value":true},{"name":"Image object recognition","value":true},{"name":"Translate web site","value":true}]},{"full_code":"is_IS","code_alpha_1":"is","englishName":"Icelandic","codeName":"Tiếng Iceland","flagPath":"static/flags/icelandic","testWordForSyntezis":"Halló","rtl":"false","modes":[{"name":"Image recognition","value":true},{"name":"Image object recognition","value":true},{"name":"Translate web site","value":true},{"name":"Translation","value":true},{"name":"Translation document","value":true}]},{"full_code":"ig_NG","code_alpha_1":"ig","englishName":"Igbo","codeName":"Tiếng Igbo","flagPath":"static/flags/igbo","testWordForSyntezis":"","rtl":"false","modes":[{"name":"Translation","value":true},{"name":"Image object recognition","value":true},{"name":"Translate web site","value":true},{"name":"Translation document","value":true}]},{"full_code":"id_ID","code_alpha_1":"id","englishName":"Indonesian","codeName":"Tiếng Indonesia","flagPath":"static/flags/indonesian","testWordForSyntezis":"Halo","rtl":"false","modes":[{"name":"Translation","value":true},{"name":"Translation document","value":true},{"name":"Image recognition","value":true},{"name":"Image object recognition","value":true},{"name":"Translate web site","value":true}]},{"full_code":"ga_IE","code_alpha_1":"ga","englishName":"Irish","codeName":"Tiếng Ireland","flagPath":"static/flags/irish","testWordForSyntezis":"","rtl":"false","modes":[{"name":"Translation document","value":true},{"name":"Translation","value":true},{"name":"Image object recognition","value":true},{"name":"Translate web site","value":true}]},{"full_code":"it_IT","code_alpha_1":"it","englishName":"Italian","codeName":"Tiếng Ý","flagPath":"static/flags/italian","testWordForSyntezis":"Ciao","rtl":"false","modes":[{"name":"Speech recognition","value":true},{"name":"Translation document","value":true},{"name":"Image recognition","value":true},{"name":"Image object recognition","value":true},{"name":"Translation","value":true},{"name":"Translate web site","value":true}]},{"full_code":"ja_JP","code_alpha_1":"ja","englishName":"Japanese","codeName":"Tiếng Nhật","flagPath":"static/flags/japanese","testWordForSyntezis":"こんにちは","rtl":"false","modes":[{"name":"Speech recognition","value":true},{"name":"Translation document","value":true},{"name":"Image recognition","value":true},{"name":"Image object recognition","value":true},{"name":"Translation","value":true},{"name":"Translate web site","value":true}]},{"full_code":"jv_ID","code_alpha_1":"jv","englishName":"Javanese","codeName":"Tiếng Java","flagPath":"static/flags/javanese","testWordForSyntezis":"","rtl":"false","modes":[{"name":"Translation document","value":true},{"name":"Translation","value":true},{"name":"Image object recognition","value":true},{"name":"Translate web site","value":true}]},{"full_code":"kn_IN","code_alpha_1":"kn","englishName":"Kannada","codeName":"Tiếng Kannada","flagPath":"static/flags/kannada","testWordForSyntezis":"","rtl":"false","modes":[{"name":"Translate web site","value":true},{"name":"Translation document","value":true},{"name":"Translation","value":true},{"name":"Image recognition","value":true},{"name":"Image object recognition","value":true}]},{"full_code":"kk_KZ","code_alpha_1":"kk","englishName":"Kazakh","codeName":"Tiếng Kazakh","flagPath":"static/flags/kazakh","testWordForSyntezis":"","rtl":"false","modes":[{"name":"Image object recognition","value":true},{"name":"Translate web site","value":true},{"name":"Translation","value":true},{"name":"Translation document","value":true},{"name":"Speech recognition","value":true}]},{"full_code":"km_KH","code_alpha_1":"km","englishName":"Khmer","codeName":"Tiếng Khmer","flagPath":"static/flags/khmer","testWordForSyntezis":"ជំរាបសួរ","rtl":"false","modes":[{"name":"Image recognition","value":true},{"name":"Image object recognition","value":true},{"name":"Translate web site","value":true},{"name":"Translation","value":true},{"name":"Translation document","value":true}]},{"full_code":"rw_RW","code_alpha_1":"rw","englishName":"Kinyarwanda","codeName":"Kinyarwanda","flagPath":"static/flags/kinyarwanda","testWordForSyntezis":"Muraho","rtl":"false","modes":[{"name":"Translate web site","value":true},{"name":"Translation document","value":true},{"name":"Translation","value":true},{"name":"Image object recognition","value":true}]},{"full_code":"ko_KR","code_alpha_1":"ko","englishName":"Korean","codeName":"Tiếng Hàn","flagPath":"static/flags/korean","testWordForSyntezis":"안녕하세요","rtl":"false","modes":[{"name":"Image object recognition","value":true},{"name":"Translate web site","value":true},{"name":"Translation","value":true},{"name":"Translation document","value":true},{"name":"Image recognition","value":true}]},{"full_code":"ku_IR","code_alpha_1":"ku","englishName":"Kurdish","codeName":"Tiếng Kurd","flagPath":"static/flags/kurdish","testWordForSyntezis":"Slav","rtl":"false","modes":[{"name":"Translation","value":true},{"name":"Image object recognition","value":true},{"name":"Translate web site","value":true},{"name":"Translation document","value":true}]},{"full_code":"ky_KG","code_alpha_1":"ky","englishName":"Kyrgyz","codeName":"Tiếng Kyrgyz","flagPath":"static/flags/kyrgyz","testWordForSyntezis":"","rtl":"false","modes":[{"name":"Translation","value":true},{"name":"Image object recognition","value":true},{"name":"Translate web site","value":true},{"name":"Translation document","value":true}]},{"full_code":"lo_LA","code_alpha_1":"lo","englishName":"Lao","codeName":"Tiếng Lào","flagPath":"static/flags/lao","testWordForSyntezis":"","rtl":"false","modes":[{"name":"Translation","value":true},{"name":"Translation document","value":true},{"name":"Image recognition","value":true},{"name":"Image object recognition","value":true},{"name":"Translate web site","value":true}]},{"full_code":"la_VAT","code_alpha_1":"la","englishName":"Latin","codeName":"Tiếng Latinh","flagPath":"static/flags/latin","testWordForSyntezis":"Salve","rtl":"false","modes":[{"name":"Translation document","value":true},{"name":"Translation","value":true},{"name":"Image object recognition","value":true},{"name":"Translate web site","value":true}]},{"full_code":"lv_LV","code_alpha_1":"lv","englishName":"Latvian","codeName":"Tiếng Latvia","flagPath":"static/flags/latvian","testWordForSyntezis":"labdien","rtl":"false","modes":[{"name":"Translate web site","value":true},{"name":"Translation","value":true},{"name":"Translation document","value":true},{"name":"Image recognition","value":true},{"name":"Image object recognition","value":true}]},{"full_code":"lt_LT","code_alpha_1":"lt","englishName":"Lithuanian","codeName":"Tiếng Litva","flagPath":"static/flags/lithuanian","testWordForSyntezis":"labas","rtl":"false","modes":[{"name":"Image object recognition","value":true},{"name":"Translate web site","value":true},{"name":"Translation document","value":true},{"name":"Translation","value":true},{"name":"Image recognition","value":true}]},{"full_code":"lb_LU","code_alpha_1":"lb","englishName":"Luxembourgish","codeName":"Tiếng Luxembourg","flagPath":"static/flags/luxembourgish","testWordForSyntezis":"","rtl":"false","modes":[{"name":"Image object recognition","value":true},{"name":"Translate web site","value":true},{"name":"Translation document","value":true},{"name":"Translation","value":true}]},{"full_code":"mk_MK","code_alpha_1":"mk","englishName":"Macedonian","codeName":"Tiếng Macedonia","flagPath":"static/flags/macedonian","testWordForSyntezis":"","rtl":"false","modes":[{"name":"Translation","value":true},{"name":"Translation document","value":true},{"name":"Image recognition","value":true},{"name":"Image object recognition","value":true},{"name":"Translate web site","value":true}]},{"full_code":"mg_MG","code_alpha_1":"mg","englishName":"Malagasy","codeName":"Tiếng Malagasy","flagPath":"static/flags/malagasy","testWordForSyntezis":"","rtl":"false","modes":[{"name":"Translation document","value":true},{"name":"Translation","value":true},{"name":"Image object recognition","value":true},{"name":"Translate web site","value":true}]},{"full_code":"ms_MY","code_alpha_1":"ms","englishName":"Malay","codeName":"Tiếng Mã Lai","flagPath":"static/flags/malay","testWordForSyntezis":"Hello","rtl":"false","modes":[{"name":"Image recognition","value":true},{"name":"Image object recognition","value":true},{"name":"Translate web site","value":true},{"name":"Translation","value":true},{"name":"Translation document","value":true}]},{"full_code":"ml_IN","code_alpha_1":"ml","englishName":"Malayalam","codeName":"Tiếng Malayalam","flagPath":"static/flags/malayalam","testWordForSyntezis":"ഹലോ","rtl":"false","modes":[{"name":"Translate web site","value":true},{"name":"Translation","value":true},{"name":"Translation document","value":true},{"name":"Image recognition","value":true},{"name":"Image object recognition","value":true}]},{"full_code":"mt_MT","code_alpha_1":"mt","englishName":"Maltese","codeName":"Tiếng Malta","flagPath":"static/flags/maltese","testWordForSyntezis":"","rtl":"false","modes":[{"name":"Translate web site","value":true},{"name":"Translation document","value":true},{"name":"Translation","value":true},{"name":"Image object recognition","value":true}]},{"full_code":"mi_NZ","code_alpha_1":"mi","englishName":"Maori","codeName":"Tiếng Maori","flagPath":"static/flags/maori","testWordForSyntezis":"","rtl":"false","modes":[{"name":"Translate web site","value":true},{"name":"Translation document","value":true},{"name":"Translation","value":true},{"name":"Image object recognition","value":true}]},{"full_code":"mr_IN","code_alpha_1":"mr","englishName":"Marathi","codeName":"Tiếng Marathi","flagPath":"static/flags/marathi","testWordForSyntezis":"","rtl":"false","modes":[{"name":"Image object recognition","value":true},{"name":"Translate web site","value":true},{"name":"Translation","value":true},{"name":"Translation document","value":true},{"name":"Image recognition","value":true}]},{"full_code":"mn_MN","code_alpha_1":"mn","englishName":"Mongolian","codeName":"Tiếng Mông Cổ","flagPath":"static/flags/mongolian","testWordForSyntezis":"","rtl":"false","modes":[{"name":"Image object recognition","value":true},{"name":"Translate web site","value":true},{"name":"Translation document","value":true},{"name":"Translation","value":true}]},{"full_code":"my_MM","code_alpha_1":"my","englishName":"Myanmar (Burmese)","codeName":"Tiếng Myanmar","flagPath":"static/flags/myanmar","testWordForSyntezis":"ဟလို","rtl":"false","modes":[{"name":"Image object recognition","value":true},{"name":"Translate web site","value":true},{"name":"Translation document","value":true},{"name":"Translation","value":true}]},{"full_code":"ne_NP","code_alpha_1":"ne","englishName":"Nepali","codeName":"Tiếng Nepal","flagPath":"static/flags/nepali","testWordForSyntezis":"नमस्कार","rtl":"false","modes":[{"name":"Translation","value":true},{"name":"Translation document","value":true},{"name":"Image recognition","value":true},{"name":"Image object recognition","value":true},{"name":"Translate web site","value":true}]},{"full_code":"no_NO","code_alpha_1":"no","englishName":"Norwegian","codeName":"Tiếng Na Uy","flagPath":"static/flags/norwegian","testWordForSyntezis":"hallo","rtl":"false","modes":[{"name":"Image recognition","value":true},{"name":"Image object recognition","value":true},{"name":"Translate web site","value":true},{"name":"Translation","value":true},{"name":"Translation document","value":true}]},{"full_code":"or_OR","code_alpha_1":"or","englishName":"Odia","codeName":"Odia","flagPath":"static/flags/odia","testWordForSyntezis":"ନମସ୍କାର","rtl":"false","modes":[{"name":"Translate web site","value":true},{"name":"Translation document","value":true},{"name":"Translation","value":true},{"name":"Image object recognition","value":true}]},{"full_code":"ps_AF","code_alpha_1":"ps","englishName":"Pashto","codeName":"Tiếng Pashto","flagPath":"static/flags/pashto","testWordForSyntezis":"","rtl":"true","modes":[{"name":"Translation document","value":true},{"name":"Translation","value":true},{"name":"Image object recognition","value":true},{"name":"Translate web site","value":true}]},{"full_code":"fa_IR","code_alpha_1":"fa","englishName":"Persian","codeName":"Tiếng Ba Tư","flagPath":"static/flags/persian","testWordForSyntezis":"سلام","rtl":"true","modes":[{"name":"Translation","value":true},{"name":"Translate web site","value":true},{"name":"Speech recognition","value":true},{"name":"Translation document","value":true},{"name":"Image recognition","value":true},{"name":"Image object recognition","value":true}]},{"full_code":"pl_PL","code_alpha_1":"pl","englishName":"Polish","codeName":"Tiếng Ba Lan","flagPath":"static/flags/polish","testWordForSyntezis":"Cześć","rtl":"false","modes":[{"name":"Image recognition","value":true},{"name":"Image object recognition","value":true},{"name":"Translate web site","value":true},{"name":"Translation","value":true},{"name":"Translation document","value":true},{"name":"Speech recognition","value":true}]},{"full_code":"pt_PT","code_alpha_1":"pt","englishName":"Portuguese","codeName":"Tiếng Bồ Đào Nha","flagPath":"static/flags/portuguese","testWordForSyntezis":"Olá","rtl":"false","modes":[{"name":"Translation","value":true},{"name":"Translate web site","value":true},{"name":"Speech recognition","value":true},{"name":"Translation document","value":true},{"name":"Image recognition","value":true},{"name":"Image object recognition","value":true}]},{"full_code":"pt_BR","code_alpha_1":"pt","englishName":"Portuguese (Brazil)","codeName":"Tiếng Bồ Đào Nha","flagPath":"static/flags/portuguese_brazil","testWordForSyntezis":"Olá","rtl":"false","modes":[{"name":"Image recognition","value":true},{"name":"Image object recognition","value":true},{"name":"Translation","value":true},{"name":"Translate web site","value":true},{"name":"Speech recognition","value":true},{"name":"Translation document","value":true}]},{"full_code":"pa_PK","code_alpha_1":"pa","englishName":"Punjabi","codeName":"Tiếng Punjab","flagPath":"static/flags/punjabi","testWordForSyntezis":"","rtl":"false","modes":[{"name":"Image object recognition","value":true},{"name":"Translate web site","value":true},{"name":"Translation","value":true},{"name":"Translation document","value":true},{"name":"Image recognition","value":true}]},{"full_code":"ro_RO","code_alpha_1":"ro","englishName":"Romanian","codeName":"Tiếng Rumani","flagPath":"static/flags/romanian","testWordForSyntezis":"bună","rtl":"false","modes":[{"name":"Image recognition","value":true},{"name":"Image object recognition","value":true},{"name":"Translate web site","value":true},{"name":"Translation","value":true},{"name":"Translation document","value":true}]},{"full_code":"ru_RU","code_alpha_1":"ru","englishName":"Russian","codeName":"Tiếng Nga","flagPath":"static/flags/russian","testWordForSyntezis":"Привет","rtl":"false","modes":[{"name":"Image object recognition","value":true},{"name":"Translation","value":true},{"name":"Translate web site","value":true},{"name":"Speech recognition","value":true},{"name":"Translation document","value":true},{"name":"Image recognition","value":true}]},{"full_code":"sm_WS","code_alpha_1":"sm","englishName":"Samoan","codeName":"Tiếng Samoa","flagPath":"static/flags/samoan","testWordForSyntezis":"","rtl":"false","modes":[{"name":"Translation","value":true},{"name":"Image object recognition","value":true},{"name":"Translate web site","value":true},{"name":"Translation document","value":true}]},{"full_code":"gd_GB","code_alpha_1":"gd","englishName":"Scottish","codeName":"Tiếng Gael Scotland","flagPath":"static/flags/scottish_gaelic","testWordForSyntezis":"","rtl":"false","modes":[{"name":"Translate web site","value":true},{"name":"Translation document","value":true},{"name":"Translation","value":true},{"name":"Image object recognition","value":true}]},{"full_code":"sr-Cyrl_RS","code_alpha_1":"sr-Cyrl","englishName":"Serbian Kyrilic","codeName":"Serbian Cyrilic","flagPath":"static/flags/serbian","testWordForSyntezis":"Здраво","rtl":"false","modes":[{"name":"Translate web site","value":true},{"name":"Translation document","value":true},{"name":"Translation","value":true},{"name":"Image object recognition","value":true}]},{"full_code":"st_LS","code_alpha_1":"st","englishName":"Sesotho","codeName":"Tiếng Sesotho","flagPath":"static/flags/sesotho","testWordForSyntezis":"","rtl":"false","modes":[{"name":"Translation document","value":true},{"name":"Translation","value":true},{"name":"Image object recognition","value":true},{"name":"Translate web site","value":true}]},{"full_code":"sn_ZW","code_alpha_1":"sn","englishName":"Shona","codeName":"Tiếng Shona","flagPath":"static/flags/shona","testWordForSyntezis":"","rtl":"false","modes":[{"name":"Translation document","value":true},{"name":"Translation","value":true},{"name":"Image object recognition","value":true},{"name":"Translate web site","value":true}]},{"full_code":"sd_PK","code_alpha_1":"sd","englishName":"Sindhi","codeName":"Tiếng Sindhi","flagPath":"static/flags/sindhi","testWordForSyntezis":"سلام","rtl":"true","modes":[{"name":"Translation document","value":true},{"name":"Translation","value":true},{"name":"Image object recognition","value":true},{"name":"Translate web site","value":true}]},{"full_code":"si_LK","code_alpha_1":"si","englishName":"Sinhala","codeName":"Tiếng Sinhala","flagPath":"static/flags/sinhala","testWordForSyntezis":"ආයුබෝවන්","rtl":"false","modes":[{"name":"Translation document","value":true},{"name":"Translation","value":true},{"name":"Image object recognition","value":true},{"name":"Translate web site","value":true}]},{"full_code":"sk_SK","code_alpha_1":"sk","englishName":"Slovak","codeName":"Tiếng Slovak","flagPath":"static/flags/slovak","testWordForSyntezis":"dobrý deň","rtl":"false","modes":[{"name":"Translate web site","value":true},{"name":"Translation","value":true},{"name":"Translation document","value":true},{"name":"Image recognition","value":true},{"name":"Image object recognition","value":true}]},{"full_code":"sl_SI","code_alpha_1":"sl","englishName":"Slovenian","codeName":"Tiếng Slovenia","flagPath":"static/flags/slovenian","testWordForSyntezis":"zdravo","rtl":"false","modes":[{"name":"Image object recognition","value":true},{"name":"Translate web site","value":true},{"name":"Translation document","value":true},{"name":"Translation","value":true},{"name":"Image recognition","value":true}]},{"full_code":"so_SO","code_alpha_1":"so","englishName":"Somali","codeName":"Tiếng Somali","flagPath":"static/flags/somali","testWordForSyntezis":"","rtl":"false","modes":[{"name":"Image object recognition","value":true},{"name":"Translate web site","value":true},{"name":"Translation document","value":true},{"name":"Translation","value":true}]},{"full_code":"es_ES","code_alpha_1":"es","englishName":"Spanish","codeName":"Tiếng Tây Ban Nha","flagPath":"static/flags/spanish","testWordForSyntezis":"Hola","rtl":"false","modes":[{"name":"Translation","value":true},{"name":"Translate web site","value":true},{"name":"Speech recognition","value":true},{"name":"Translation document","value":true},{"name":"Image recognition","value":true},{"name":"Image object recognition","value":true}]},{"full_code":"es_MX","code_alpha_1":"es","englishName":"Spanish (Mexico)","codeName":"Tiếng Tây Ban Nha","flagPath":"static/flags/spanish_mexico","testWordForSyntezis":"Hola","rtl":"false","modes":[{"name":"Image recognition","value":true},{"name":"Image object recognition","value":true},{"name":"Translation","value":true},{"name":"Translate web site","value":true},{"name":"Speech recognition","value":true},{"name":"Translation document","value":true}]},{"full_code":"es_US","code_alpha_1":"es","englishName":"Spanish (United States)","codeName":"Tiếng Tây Ban Nha","flagPath":"static/flags/english_us","testWordForSyntezis":"Hola","rtl":"false","modes":[{"name":"Translation","value":true},{"name":"Translate web site","value":true},{"name":"Speech recognition","value":true},{"name":"Translation document","value":true},{"name":"Image recognition","value":true},{"name":"Image object recognition","value":true}]},{"full_code":"su_ID","code_alpha_1":"su","englishName":"Sundanese","codeName":"Tiếng Sunda","flagPath":"static/flags/sundanese","testWordForSyntezis":"","rtl":"false","modes":[{"name":"Image object recognition","value":true},{"name":"Translate web site","value":true},{"name":"Translation document","value":true},{"name":"Translation","value":true}]},{"full_code":"sw_TZ","code_alpha_1":"sw","englishName":"Swahili","codeName":"Tiếng Swahili","flagPath":"static/flags/swahili","testWordForSyntezis":"Hello","rtl":"false","modes":[{"name":"Image object recognition","value":true},{"name":"Translate web site","value":true},{"name":"Translation document","value":true},{"name":"Translation","value":true}]},{"full_code":"sv_SE","code_alpha_1":"sv","englishName":"Swedish","codeName":"Tiếng Thụy Điển","flagPath":"static/flags/swedish","testWordForSyntezis":"Hej","rtl":"false","modes":[{"name":"Image recognition","value":true},{"name":"Image object recognition","value":true},{"name":"Translation","value":true},{"name":"Translate web site","value":true},{"name":"Speech recognition","value":true},{"name":"Translation document","value":true}]},{"full_code":"tl_PH","code_alpha_1":"tl","englishName":"Tagalog","codeName":"Tiếng Filipino","flagPath":"static/flags/tagalog","testWordForSyntezis":"Hello","rtl":"false","modes":[{"name":"Translation","value":true},{"name":"Translate web site","value":true},{"name":"Speech recognition","value":true},{"name":"Translation document","value":true},{"name":"Image recognition","value":true},{"name":"Image object recognition","value":true}]},{"full_code":"tg_TJ","code_alpha_1":"tg","englishName":"Tajik","codeName":"Tiếng Tajik","flagPath":"static/flags/tajik","testWordForSyntezis":"Салом","rtl":"false","modes":[{"name":"Image object recognition","value":true},{"name":"Translate web site","value":true},{"name":"Translation document","value":true},{"name":"Translation","value":true}]},{"full_code":"ta_IN","code_alpha_1":"ta","englishName":"Tamil","codeName":"Tiếng Tamil","flagPath":"static/flags/tamil","testWordForSyntezis":"வணக்கம்","rtl":"false","modes":[{"name":"Image recognition","value":true},{"name":"Image object recognition","value":true},{"name":"Translate web site","value":true},{"name":"Translation","value":true},{"name":"Translation document","value":true}]},{"full_code":"tt_TT","code_alpha_1":"tt","englishName":"Tatar","codeName":"Tatar","flagPath":"static/flags/tatar","testWordForSyntezis":"Сәлам","rtl":"false","modes":[{"name":"Translate web site","value":true},{"name":"Translation document","value":true},{"name":"Translation","value":true},{"name":"Image object recognition","value":true}]},{"full_code":"te_IN","code_alpha_1":"te","englishName":"Telugu","codeName":"Tiếng Telugu","flagPath":"static/flags/telugu","testWordForSyntezis":"","rtl":"false","modes":[{"name":"Image object recognition","value":true},{"name":"Translate web site","value":true},{"name":"Translation","value":true},{"name":"Translation document","value":true},{"name":"Image recognition","value":true}]},{"full_code":"th_TH","code_alpha_1":"th","englishName":"Thai","codeName":"Tiếng Thái","flagPath":"static/flags/thai","testWordForSyntezis":"สวัสดี","rtl":"false","modes":[{"name":"Image recognition","value":true},{"name":"Image object recognition","value":true},{"name":"Translate web site","value":true},{"name":"Translation document","value":true},{"name":"Translation","value":true}]},{"full_code":"tr_TR","code_alpha_1":"tr","englishName":"Turkish","codeName":"Tiếng Thổ Nhĩ Kỳ","flagPath":"static/flags/turkish","testWordForSyntezis":"Merhaba","rtl":"false","modes":[{"name":"Translation","value":true},{"name":"Translate web site","value":true},{"name":"Speech recognition","value":true},{"name":"Translation document","value":true},{"name":"Image recognition","value":true},{"name":"Image object recognition","value":true}]},{"full_code":"tk_TM","code_alpha_1":"tk","englishName":"Turkmen","codeName":"Turkmen","flagPath":"static/flags/turkmen","testWordForSyntezis":"Salam","rtl":"false","modes":[{"name":"Translate web site","value":true},{"name":"Translation document","value":true},{"name":"Translation","value":true},{"name":"Image object recognition","value":true}]},{"full_code":"uk_UA","code_alpha_1":"uk","englishName":"Ukrainian","codeName":"Tiếng Ukraina","flagPath":"static/flags/ukrainian","testWordForSyntezis":"Вітаю","rtl":"false","modes":[{"name":"Speech recognition","value":true},{"name":"Translation document","value":true},{"name":"Image recognition","value":true},{"name":"Image object recognition","value":true},{"name":"Translation","value":true},{"name":"Translate web site","value":true}]},{"full_code":"ur_PK","code_alpha_1":"ur","englishName":"Urdu","codeName":"Tiếng Urdu","flagPath":"static/flags/urdu","testWordForSyntezis":"خوش آمدید","rtl":"true","modes":[{"name":"Translation document","value":true},{"name":"Translation","value":true},{"name":"Image object recognition","value":true},{"name":"Translate web site","value":true}]},{"full_code":"ug_CN","code_alpha_1":"ug","englishName":"Uyghur","codeName":"Uyghur","flagPath":"static/flags/uyghur","testWordForSyntezis":"ياخشىمۇسىز","rtl":"true","modes":[{"name":"Translate web site","value":true},{"name":"Translation document","value":true},{"name":"Translation","value":true},{"name":"Image object recognition","value":true}]},{"full_code":"uz_UZ","code_alpha_1":"uz","englishName":"Uzbek","codeName":"Tiếng Uzbek","flagPath":"static/flags/uzbek","testWordForSyntezis":"Salom","rtl":"false","modes":[{"name":"Translation document","value":true},{"name":"Translation","value":true},{"name":"Image object recognition","value":true},{"name":"Translate web site","value":true}]},{"full_code":"vi_VN","code_alpha_1":"vi","englishName":"Vietnamese","codeName":"Tiếng Việt","flagPath":"static/flags/vietnamese","testWordForSyntezis":"Xin chào","rtl":"false","modes":[{"name":"Image object recognition","value":true},{"name":"Translation","value":true},{"name":"Translate web site","value":true},{"name":"Speech recognition","value":true},{"name":"Translation document","value":true},{"name":"Image recognition","value":true}]},{"full_code":"cy_GB","code_alpha_1":"cy","englishName":"Welsh","codeName":"Tiếng Xứ Wales","flagPath":"static/flags/welsh","testWordForSyntezis":"Helo","rtl":"false","modes":[{"name":"Image object recognition","value":true},{"name":"Translate web site","value":true},{"name":"Translation document","value":true},{"name":"Translation","value":true}]},{"full_code":"xh_ZA","code_alpha_1":"xh","englishName":"Xhosa","codeName":"Tiếng Bantu","flagPath":"static/flags/xhosa","testWordForSyntezis":"","rtl":"false","modes":[{"name":"Translate web site","value":true},{"name":"Translation document","value":true},{"name":"Translation","value":true},{"name":"Image object recognition","value":true}]},{"full_code":"yi_IL","code_alpha_1":"yi","englishName":"Yiddish","codeName":"Tiếng Yiddish","flagPath":"static/flags/yiddish","testWordForSyntezis":"","rtl":"true","modes":[{"name":"Translate web site","value":true},{"name":"Translation","value":true},{"name":"Translation document","value":true},{"name":"Image recognition","value":true},{"name":"Image object recognition","value":true}]},{"full_code":"yo_NG","code_alpha_1":"yo","englishName":"Yoruba","codeName":"Tiếng Yoruba","flagPath":"static/flags/yoruba","testWordForSyntezis":"","rtl":"false","modes":[{"name":"Translate web site","value":true},{"name":"Translation document","value":true},{"name":"Translation","value":true},{"name":"Image object recognition","value":true}]},{"full_code":"zu_ZA","code_alpha_1":"zu","englishName":"Zulu","codeName":"Zulu","flagPath":"static/flags/afrikaans","testWordForSyntezis":"Sawubona","rtl":"false","modes":[{"name":"Translate web site","value":true},{"name":"Translation document","value":true},{"name":"Translation","value":true},{"name":"Image object recognition","value":true}]}]
 };
 
 const Papago = {
@@ -1566,24 +1318,21 @@ const Papago = {
         }
     },
     Language: {
-        ko: 'Korean',
-        ja: 'Japanese',
-        'zh-CN': 'Chinese (Simplified)',
-        'zh-TW': 'Chinese (Traditional)',
-        hi: 'Hindi',
-        en: 'English',
-        es: 'Spanish',
-        fr: 'French',
-        de: 'German',
-        pt: 'Portuguese',
-        vi: 'Vietnamese',
-        id: 'Indonesian',
-        fa: 'Persian',
-        ar: 'Arabic',
-        mm: 'Burmese',
-        th: 'Thai',
-        ru: 'Russian',
-        it: 'Italian'
+        ko: 'Hàn',
+        en: 'Anh',
+        ja: 'Nhật',
+        'zh-CN': 'Trung (Giản thể)',
+        'zh-TW': 'Trung (Phổn thể)',
+        es: 'Tây Ban Nha',
+        fr: 'Pháp',
+        de: 'Đức',
+        ru: 'Nga',
+        pt: 'Bồ Đào Nha',
+        it: 'Ý',
+        vi: 'Việt',
+        th: 'Thái',
+        id: 'Indonesia',
+        hi: 'Hindi'
     }
 };
 
@@ -1638,119 +1387,7 @@ const MicrosoftTranslator = {
             }
         }
     },
-    Language: {
-        af: 'Afrikaans',
-        sq: 'Albanian',
-        am: 'Amharic',
-        ar: 'Arabic',
-        hy: 'Armenian',
-        as: 'Assamese',
-        az: 'Azerbaijani (Latin)',
-        bn: 'Bangla',
-        ba: 'Bashkir',
-        eu: 'Basque',
-        bs: 'Bosnian (Latin)',
-        bg: 'Bulgarian',
-        yue: 'Cantonese (Traditional)',
-        ca: 'Catalan',
-        lzh: 'Chinese (Literary)',
-        'zh-Hans': 'Chinese Simplified',
-        'zh-Hant': 'Chinese Traditional',
-        hr: 'Croatian',
-        cs: 'Czech',
-        da: 'Danish',
-        prs: 'Dari',
-        dv: 'Divehi',
-        nl: 'Dutch',
-        en: 'English',
-        et: 'Estonian',
-        fo: 'Faroese',
-        fj: 'Fijian',
-        fil: 'Filipino',
-        fi: 'Finnish',
-        fr: 'French',
-        'fr-ca': 'French (Canada)',
-        gl: 'Galician',
-        ka: 'Georgian',
-        de: 'German',
-        el: 'Greek',
-        gu: 'Gujarati',
-        ht: 'Haitian Creole',
-        he: 'Hebrew',
-        hi: 'Hindi',
-        mww: 'Hmong Daw (Latin)',
-        hu: 'Hungarian',
-        is: 'Icelandic',
-        id: 'Indonesian',
-        ikt: 'Inuinnaqtun',
-        iu: 'Inuktitut',
-        'iu-Latn': 'Inuktitut (Latin)',
-        ga: 'Irish',
-        it: 'Italian',
-        ja: 'Japanese',
-        kn: 'Kannada',
-        kk: 'Kazakh',
-        km: 'Khmer',
-        'tlh-Latn': 'Klingon',
-        'tlh-Piqd': 'Klingon (plqaD)',
-        ko: 'Korean',
-        ku: 'Kurdish (Central)',
-        kmr: 'Kurdish (Northern)',
-        ky: 'Kyrgyz (Cyrillic)',
-        lo: 'Lao',
-        lv: 'Latvian',
-        lt: 'Lithuanian',
-        mk: 'Macedonian',
-        mg: 'Malagasy',
-        ms: 'Malay (Latin)',
-        ml: 'Malayalam',
-        mt: 'Maltese',
-        mi: 'Maori',
-        mr: 'Marathi',
-        'mn-Cyrl': 'Mongolian (Cyrillic)',
-        'mn-Mong': 'Mongolian (Traditional)',
-        my: 'Myanmar',
-        ne: 'Nepali',
-        nb: 'Norwegian',
-        or: 'Odia',
-        ps: 'Pashto',
-        fa: 'Persian',
-        pl: 'Polish',
-        pt: 'Portuguese (Brazil)',
-        'pt-pt': 'Portuguese (Portugal)',
-        pa: 'Punjabi',
-        otq: 'Queretaro Otomi',
-        ro: 'Romanian',
-        ru: 'Russian',
-        sm: 'Samoan (Latin)',
-        'sr-Cyrl': 'Serbian (Cyrillic)',
-        'sr-Latn': 'Serbian (Latin)',
-        sk: 'Slovak',
-        sl: 'Slovenian',
-        so: 'Somali (Arabic)',
-        es: 'Spanish',
-        sw: 'Swahili (Latin)',
-        sv: 'Swedish',
-        ty: 'Tahitian',
-        ta: 'Tamil',
-        tt: 'Tatar (Latin)',
-        te: 'Telugu',
-        th: 'Thai',
-        bo: 'Tibetan',
-        ti: 'Tigrinya',
-        to: 'Tongan',
-        tr: 'Turkish',
-        tk: 'Turkmen (Latin)',
-        uk: 'Ukrainian',
-        hsb: 'Upper Sorbian',
-        ur: 'Urdu',
-        ug: 'Uyghur (Arabic)',
-        uz: 'Uzbek (Latin)',
-        vi: 'Vietnamese',
-        cy: 'Welsh',
-        yua: 'Yucatec Maya',
-        zu: 'Zulu'
-    }
+    Language: {"af":{"name":"Tiếng Afrikaans","nativeName":"Afrikaans","dir":"ltr"},"am":{"name":"Tiếng Amharic","nativeName":"አማርኛ","dir":"ltr"},"ar":{"name":"Tiếng Ả Rập","nativeName":"العربية","dir":"rtl"},"as":{"name":"Tiếng Assam","nativeName":"অসমীয়া","dir":"ltr"},"az":{"name":"Tiếng Azerbaijan","nativeName":"Azərbaycan","dir":"ltr"},"ba":{"name":"Tiếng Bashkir","nativeName":"Bashkir","dir":"ltr"},"bg":{"name":"Tiếng Bulgaria","nativeName":"Български","dir":"ltr"},"bn":{"name":"Tiếng Bangla","nativeName":"বাংলা","dir":"ltr"},"bo":{"name":"Tiếng Tây Tạng","nativeName":"བོད་སྐད་","dir":"ltr"},"bs":{"name":"Tiếng Bosnia","nativeName":"Bosnian","dir":"ltr"},"ca":{"name":"Tiếng Catalan","nativeName":"Català","dir":"ltr"},"cs":{"name":"Tiếng Séc","nativeName":"Čeština","dir":"ltr"},"cy":{"name":"Tiếng Wales","nativeName":"Cymraeg","dir":"ltr"},"da":{"name":"Tiếng Đan Mạch","nativeName":"Dansk","dir":"ltr"},"de":{"name":"Tiếng Đức","nativeName":"Deutsch","dir":"ltr"},"dsb":{"name":"Tiếng Hạ Sorbia","nativeName":"Dolnoserbšćina","dir":"ltr"},"dv":{"name":"Tiếng Divehi","nativeName":"ދިވެހިބަސް","dir":"rtl"},"el":{"name":"Tiếng Hy Lạp","nativeName":"Ελληνικά","dir":"ltr"},"en":{"name":"Tiếng Anh","nativeName":"English","dir":"ltr"},"es":{"name":"Tiếng Tây Ban Nha","nativeName":"Español","dir":"ltr"},"et":{"name":"Tiếng Estonia","nativeName":"Eesti","dir":"ltr"},"eu":{"name":"Tiếng Basque","nativeName":"Euskara","dir":"ltr"},"fa":{"name":"Tiếng Ba Tư","nativeName":"فارسی","dir":"rtl"},"fi":{"name":"Tiếng Phần Lan","nativeName":"Suomi","dir":"ltr"},"fil":{"name":"Tiếng Philippines","nativeName":"Filipino","dir":"ltr"},"fj":{"name":"Tiếng Fiji","nativeName":"Na Vosa Vakaviti","dir":"ltr"},"fo":{"name":"Tiếng Faroe","nativeName":"Føroyskt","dir":"ltr"},"fr":{"name":"Tiếng Pháp","nativeName":"Français","dir":"ltr"},"fr-CA":{"name":"Tiếng Pháp (Canada)","nativeName":"Français (Canada)","dir":"ltr"},"ga":{"name":"Tiếng Ireland","nativeName":"Gaeilge","dir":"ltr"},"gl":{"name":"Tiếng Galician","nativeName":"Galego","dir":"ltr"},"gom":{"name":"Konkani","nativeName":"Konkani","dir":"ltr"},"gu":{"name":"Tiếng Gujarati","nativeName":"ગુજરાતી","dir":"ltr"},"ha":{"name":"Tiếng Hausa","nativeName":"Hausa","dir":"ltr"},"he":{"name":"Tiếng Do Thái","nativeName":"עברית","dir":"rtl"},"hi":{"name":"Tiếng Hindi","nativeName":"हिन्दी","dir":"ltr"},"hr":{"name":"Tiếng Croatia","nativeName":"Hrvatski","dir":"ltr"},"hsb":{"name":"Tiếng Thượng Sorbia","nativeName":"Hornjoserbšćina","dir":"ltr"},"ht":{"name":"Tiếng Haiti","nativeName":"Haitian Creole","dir":"ltr"},"hu":{"name":"Tiếng Hungary","nativeName":"Magyar","dir":"ltr"},"hy":{"name":"Tiếng Armenia","nativeName":"Հայերեն","dir":"ltr"},"id":{"name":"Tiếng Indonesia","nativeName":"Indonesia","dir":"ltr"},"ig":{"name":"Tiếng Igbo","nativeName":"Ásụ̀sụ́ Ìgbò","dir":"ltr"},"ikt":{"name":"Inuinnaqtun","nativeName":"Inuinnaqtun","dir":"ltr"},"is":{"name":"Tiếng Iceland","nativeName":"Íslenska","dir":"ltr"},"it":{"name":"Tiếng Italy","nativeName":"Italiano","dir":"ltr"},"iu":{"name":"Tiếng Inuktitut","nativeName":"ᐃᓄᒃᑎᑐᑦ","dir":"ltr"},"iu-Latn":{"name":"Inuktitut (Latin)","nativeName":"Inuktitut (Latin)","dir":"ltr"},"ja":{"name":"Tiếng Nhật","nativeName":"日本語","dir":"ltr"},"ka":{"name":"Tiếng Georgia","nativeName":"ქართული","dir":"ltr"},"kk":{"name":"Tiếng Kazakh","nativeName":"Қазақ Тілі","dir":"ltr"},"km":{"name":"Tiếng Khmer","nativeName":"ខ្មែរ","dir":"ltr"},"kmr":{"name":"Tiếng Kurd (Bắc)","nativeName":"Kurdî (Bakur)","dir":"ltr"},"kn":{"name":"Tiếng Kannada","nativeName":"ಕನ್ನಡ","dir":"ltr"},"ko":{"name":"Tiếng Hàn","nativeName":"한국어","dir":"ltr"},"ku":{"name":"Tiếng Kurd (Trung)","nativeName":"Kurdî (Navîn)","dir":"rtl"},"ky":{"name":"Tiếng Kyrgyz","nativeName":"Кыргызча","dir":"ltr"},"ln":{"name":"Tiếng Lingala","nativeName":"Lingála","dir":"ltr"},"lo":{"name":"Tiếng Lào","nativeName":"ລາວ","dir":"ltr"},"lt":{"name":"Tiếng Litva","nativeName":"Lietuvių","dir":"ltr"},"lug":{"name":"Ganda","nativeName":"Ganda","dir":"ltr"},"lv":{"name":"Tiếng Latvia","nativeName":"Latviešu","dir":"ltr"},"lzh":{"name":"Chinese (Literary)","nativeName":"中文 (文言文)","dir":"ltr"},"mai":{"name":"Tiếng Maithili","nativeName":"Maithili","dir":"ltr"},"mg":{"name":"Tiếng Malagasy","nativeName":"Malagasy","dir":"ltr"},"mi":{"name":"Tiếng Maori","nativeName":"Te Reo Māori","dir":"ltr"},"mk":{"name":"Tiếng Macedonia","nativeName":"Македонски","dir":"ltr"},"ml":{"name":"Tiếng Malayalam","nativeName":"മലയാളം","dir":"ltr"},"mn-Cyrl":{"name":"Mongolian (Cyrillic)","nativeName":"Mongolian (Cyrillic)","dir":"ltr"},"mn-Mong":{"name":"Mongolian (Traditional)","nativeName":"ᠮᠣᠩᠭᠣᠯ ᠬᠡᠯᠡ","dir":"ltr"},"mr":{"name":"Tiếng Marathi","nativeName":"मराठी","dir":"ltr"},"ms":{"name":"Tiếng Mã Lai","nativeName":"Melayu","dir":"ltr"},"mt":{"name":"Tiếng Malta","nativeName":"Malti","dir":"ltr"},"mww":{"name":"Tiếng H’Mông","nativeName":"Hmong Daw","dir":"ltr"},"my":{"name":"Tiếng Miến Điện","nativeName":"မြန်မာ","dir":"ltr"},"nb":{"name":"Tiếng Na Uy (Bokmål)","nativeName":"Norsk Bokmål","dir":"ltr"},"ne":{"name":"Tiếng Nepal","nativeName":"नेपाली","dir":"ltr"},"nl":{"name":"Tiếng Hà Lan","nativeName":"Nederlands","dir":"ltr"},"nso":{"name":"Sesotho sa Leboa","nativeName":"Sesotho sa Leboa","dir":"ltr"},"nya":{"name":"Nyanja","nativeName":"Nyanja","dir":"ltr"},"or":{"name":"Tiếng Odia","nativeName":"ଓଡ଼ିଆ","dir":"ltr"},"otq":{"name":"Tiếng Querétaro Otomi","nativeName":"Hñähñu","dir":"ltr"},"pa":{"name":"Tiếng Punjab","nativeName":"ਪੰਜਾਬੀ","dir":"ltr"},"pl":{"name":"Tiếng Ba Lan","nativeName":"Polski","dir":"ltr"},"prs":{"name":"Tiếng Dari","nativeName":"دری","dir":"rtl"},"ps":{"name":"Tiếng Pashto","nativeName":"پښتو","dir":"rtl"},"pt":{"name":"Tiếng Bồ Đào Nha (Brazil)","nativeName":"Português (Brasil)","dir":"ltr"},"pt-PT":{"name":"Tiếng Bồ Đào Nha (Bồ Đào Nha)","nativeName":"Português (Portugal)","dir":"ltr"},"ro":{"name":"Tiếng Romania","nativeName":"Română","dir":"ltr"},"ru":{"name":"Tiếng Nga","nativeName":"Русский","dir":"ltr"},"run":{"name":"Rundi","nativeName":"Rundi","dir":"ltr"},"rw":{"name":"Tiếng Kinyarwanda","nativeName":"Kinyarwanda","dir":"ltr"},"sd":{"name":"Tiếng Sindhi","nativeName":"سنڌي","dir":"ltr"},"si":{"name":"Tiếng Sinhala","nativeName":"සිංහල","dir":"ltr"},"sk":{"name":"Tiếng Slovak","nativeName":"Slovenčina","dir":"ltr"},"sl":{"name":"Tiếng Slovenia","nativeName":"Slovenščina","dir":"ltr"},"sm":{"name":"Tiếng Samoa","nativeName":"Gagana Sāmoa","dir":"ltr"},"sn":{"name":"Tiếng Shona","nativeName":"chiShona","dir":"ltr"},"so":{"name":"Tiếng Somali","nativeName":"Soomaali","dir":"ltr"},"sq":{"name":"Tiếng Albania","nativeName":"Shqip","dir":"ltr"},"sr-Cyrl":{"name":"Tiếng Serbia (Chữ Kirin)","nativeName":"Српски (ћирилица)","dir":"ltr"},"sr-Latn":{"name":"Tiếng Serbia (Chữ La Tinh)","nativeName":"Srpski (latinica)","dir":"ltr"},"st":{"name":"Sesotho","nativeName":"Sesotho","dir":"ltr"},"sv":{"name":"Tiếng Thụy Điển","nativeName":"Svenska","dir":"ltr"},"sw":{"name":"Tiếng Swahili","nativeName":"Kiswahili","dir":"ltr"},"ta":{"name":"Tiếng Tamil","nativeName":"தமிழ்","dir":"ltr"},"te":{"name":"Tiếng Telugu","nativeName":"తెలుగు","dir":"ltr"},"th":{"name":"Tiếng Thái","nativeName":"ไทย","dir":"ltr"},"ti":{"name":"Tiếng Tigrinya","nativeName":"ትግር","dir":"ltr"},"tk":{"name":"Tiếng Turkmen","nativeName":"Türkmen Dili","dir":"ltr"},"tlh-Latn":{"name":"Tiếng Klingon (Chữ La Tinh)","nativeName":"Klingon (Latin)","dir":"ltr"},"tlh-Piqd":{"name":"Tiếng Klingon (pIqaD)","nativeName":"Klingon (pIqaD)","dir":"ltr"},"tn":{"name":"Setswana","nativeName":"Setswana","dir":"ltr"},"to":{"name":"Tiếng Tonga","nativeName":"Lea Fakatonga","dir":"ltr"},"tr":{"name":"Tiếng Thổ Nhĩ Kỳ","nativeName":"Türkçe","dir":"ltr"},"tt":{"name":"Tiếng Tatar","nativeName":"Татар","dir":"ltr"},"ty":{"name":"Tiếng Tahiti","nativeName":"Reo Tahiti","dir":"ltr"},"ug":{"name":"Tiếng Uyghur","nativeName":"ئۇيغۇرچە","dir":"rtl"},"uk":{"name":"Tiếng Ukraina","nativeName":"Українська","dir":"ltr"},"ur":{"name":"Tiếng Urdu","nativeName":"اردو","dir":"rtl"},"uz":{"name":"Tiếng Uzbek","nativeName":"Uzbek (Latin)","dir":"ltr"},"vi":{"name":"Tiếng Việt","nativeName":"Tiếng Việt","dir":"ltr"},"xh":{"name":"Tiếng Xhosa","nativeName":"isiXhosa","dir":"ltr"},"yo":{"name":"Tiếng Yoruba","nativeName":"Èdè Yorùbá","dir":"ltr"},"yua":{"name":"Tiếng Maya Yucatec","nativeName":"Yucatec Maya","dir":"ltr"},"yue":{"name":"Tiếng Quảng Đông (Phồn Thể)","nativeName":"粵語 (繁體)","dir":"ltr"},"zh-Hans":{"name":"Tiếng Trung (Giản Thể)","nativeName":"中文 (简体)","dir":"ltr"},"zh-Hant":{"name":"Tiếng Trung (Phồn Thể)","nativeName":"繁體中文 (繁體)","dir":"ltr"},"zu":{"name":"Tiếng Zulu","nativeName":"Isi-Zulu","dir":"ltr"}}
 };
 
 function getGlossaryAppliedText(text, isMicrosoftTranslator = true, useAnotherTranslators = false, glossary = {}) {
