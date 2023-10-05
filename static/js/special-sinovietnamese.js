@@ -22,6 +22,7 @@ const specialSinovietnameseData = [
     ['正', 'CHÍNH'],
     ['摇', 'DAO'],
     ['遥', 'DAO'],
+    ['尹', 'DOÃN'],
     ['熔', 'DUNG'],
     ['台', 'ĐÀI'],
     ['斗', 'ĐẨU, ĐẤU'],

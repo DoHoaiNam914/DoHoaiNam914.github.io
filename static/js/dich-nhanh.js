@@ -944,7 +944,7 @@ function convertText(inputText, data, caseSensitive, useGlossary, translationAlg
                             }
 
                             for (const phraseLength1 of phraseLengths) {
-                                if (tempWord.length > 0 && (j + 1 === chars.length || (useGlossary && filteredGlossaryEntries.map(([, second]) => second).indexOf(chars.substring(j + 1, j + 1 + phraseLength)) !== -1) || (data.hasOwnProperty(chars.substring(j, j + phraseLength)) && data[chars.substring(j + 1, j + 1 + phraseLength)].length > 0))) {
+                                if (tempWord.length > 0 && (j + 1 === chars.length || (useGlossary && filteredGlossaryEntries.map(([, second]) => second).indexOf(chars.substring(j + 1, j + 1 + phraseLength1)) !== -1) || (data.hasOwnProperty(chars.substring(j, j + phraseLength1)) && data[chars.substring(j + 1, j + 1 + phraseLength1)].length > 0))) {
                                     tempWord.split(' ').forEach((element) => phrases.push(element));
                                     tempWord = '';
                                     break;
