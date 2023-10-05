@@ -936,7 +936,7 @@ function convertText(inputText, data, caseSensitive, useGlossary, translationAlg
                             }
 
                             if (tempWord.endsWith(' ')) {
-                                if (j + 1 === chars.length || !chars[j + 1].includes(' ')) {
+                                if (j + 1 === chars.length || (punctuation.hasOwnProperty(chars[j + 1]) && punctuation[chars[j + 1]].endsWith(' ')) || !chars[j + 1].endsWith(' ')) {
                                     phrases.push((phrases.pop() ?? '') + tempWord.substring(0, tempWord.length - 1));
                                     tempWord = '';
                                 }
