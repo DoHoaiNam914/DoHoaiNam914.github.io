@@ -22,10 +22,13 @@ const specialSinovietnameseData = [
     ['正', 'CHÍNH'],
     ['摇', 'DAO'],
     ['遥', 'DAO'],
+    // DỊ, DỊCH
+    ['易', 'DỊCH'],
     ['尹', 'DOÃN'],
     ['熔', 'DUNG'],
     ['台', 'ĐÀI'],
     ['斗', 'ĐẨU, ĐẤU'],
+    ['侄', 'ĐIỆT'],
     ['姛', 'ĐỒNG'], // Không xác định
     // HIỆP, DIỆP
     ['叶', 'DIỆP'],
@@ -39,6 +42,7 @@ const specialSinovietnameseData = [
     ['岐', 'KỲ'],
     // KI, CƠ, KỲ
     ['期', 'KỲ'],
+    ['纪', 'KỶ'],
     // KHÂU, KHƯU
     ['丘', 'KHƯU'],
     ['绮', 'KHỞI'],
@@ -48,6 +52,8 @@ const specialSinovietnameseData = [
     ['吕', 'LÃ, LỮ'],
     // Không xác định
     ['璃', 'LY'],
+    // NHÃ, NHƯỢC
+    ['若', 'NHƯỢC'],
     ['儿', 'NHI'],
     ['柠', 'NINH'],
     ['樊', 'PHÀN'],
