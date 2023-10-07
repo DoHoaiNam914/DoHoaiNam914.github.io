@@ -11,19 +11,18 @@
         const storedTheme = localStorage.getItem('theme');
         const preferredTheme = storedTheme ?? 'auto';
 
-        $LAB
-            .script('/static/lib/jquery-3.7.1.min.js').wait()
+        $LAB.script('/static/lib/jquery-3.7.1.min.js').wait()
             .script('/static/lib/bootstrap.bundle.min.js').wait(function () {
-            setTheme(preferredTheme);
-            showActiveTheme(preferredTheme);
+                setTheme(preferredTheme);
+                showActiveTheme(preferredTheme);
 
-            $('[data-theme-value]').on('click', function () {
-                const theme = $(this).data('theme-value');
-                localStorage.setItem('theme', theme);
-                setTheme(theme);
-                showActiveTheme(theme, true);
-            });
-        })
+                $('[data-theme-value]').on('click', function () {
+                    const theme = $(this).data('theme-value');
+                    localStorage.setItem('theme', theme);
+                    setTheme(theme);
+                    showActiveTheme(theme, true);
+                });
+            })
             .script('/static/lib/CryptoJS v3.1.2/rollups/hmac-md5.js')
             .script('/static/lib/CryptoJS v3.1.2/components/enc-base64.js')
             .script('/static/lib/tesseract.min.js')
@@ -34,50 +33,50 @@
             .script('/static/js/cjkmap.js')
             .script('/static/js/corsproxy.js').wait()
             .script('/static/js/trich-xuat-van-ban.js').wait(function () {
-            // const recognizer = JSON.parse(localStorage.getItem('recognizer')) ?? {
-            //   langs: $('#recognizeLangsSelect').val(),
-            //   grayscale: $('#flexCheckGrayscale').prop('checked'),
-            //   threshold: $('#flexCheckThreshold').prop('checked')
-            // };
-            // $('#recognizeLangsSelect').val(recognizer.langs);
-            // $('#flexCheckGrayscale').prop('checked', recognizer.grayscale);
-            // $('#flexCheckThreshold').prop('checked', recognizer.threshold);
-        })
+                // const recognizer = JSON.parse(localStorage.getItem('recognizer')) ?? {
+                //   langs: $('#recognizeLangsSelect').val(),
+                //   grayscale: $('#flexCheckGrayscale').prop('checked'),
+                //   threshold: $('#flexCheckThreshold').prop('checked')
+                // };
+                // $('#recognizeLangsSelect').val(recognizer.langs);
+                // $('#flexCheckGrayscale').prop('checked', recognizer.grayscale);
+                // $('#flexCheckThreshold').prop('checked', recognizer.threshold);
+            })
             .script('/static/js/dich-nhanh.js').wait(function () {
-            if (translator == undefined) {
-                translator = loadTranslatorOptions();
-                localStorage.setItem('translator', JSON.stringify(translator));
-            }
-
-            $(`.font-option:contains(${translator.font})`).click();
-            $(`.translator[data-id="${translator.translator}"]`).click();
-
-            for (let i = 0; i < options.length; i++) {
-                if (options.filter(`:eq(${i})`).attr('name') != undefined && options.filter(`:eq(${i})`).attr('name').startsWith('flexRadio') && options.filter(`:eq(${i})`).val() === translator[options.filter(`:eq(${i})`).attr('name')]) {
-                    $(`.option[name="${options.filter(`:eq(${i})`).attr('name')}"]`).removeProp('checked');
-                    options.filter(`:eq(${i})`).prop('checked', true);
-                } else if (options.filter(`:eq(${i})`).attr('id').startsWith('flexSwitchCheck')) {
-                    options.filter(`:eq(${i})`).prop('checked', translator[options.filter(`:eq(${i})`).attr('id')]);
-                } else if (options.filter(`:eq(${i})`).hasClass('form-range')) {
-                    options.filter(`:eq(${i})`).val(parseInt(translator[options.filter(`:eq(${i})`).attr('id')]));
-                } else if (options.filter(`:eq(${i})`).hasClass('form-select')) {
-                    options.filter(`:eq(${i})`).val(translator[options.filter(`:eq(${i})`).attr('id')]);
+                if (translator == undefined) {
+                    translator = loadTranslatorOptions();
+                    localStorage.setItem('translator', JSON.stringify(translator));
                 }
 
-                if (!options.filter(`:eq(${i})`).hasClass('translator-option')) {
-                    options.filter(`:eq(${i})`).change();
+                $(`.font-option:contains(${translator.font})`).click();
+                $(`.translator[data-id="${translator.translator}"]`).click();
+
+                for (let i = 0; i < options.length; i++) {
+                    if (options.filter(`:eq(${i})`).attr('name') != undefined && options.filter(`:eq(${i})`).attr('name').startsWith('flexRadio') && options.filter(`:eq(${i})`).val() === translator[options.filter(`:eq(${i})`).attr('name')]) {
+                        $(`.option[name="${options.filter(`:eq(${i})`).attr('name')}"]`).removeProp('checked');
+                        options.filter(`:eq(${i})`).prop('checked', true);
+                    } else if (options.filter(`:eq(${i})`).attr('id').startsWith('flexSwitchCheck')) {
+                        options.filter(`:eq(${i})`).prop('checked', translator[options.filter(`:eq(${i})`).attr('id')]);
+                    } else if (options.filter(`:eq(${i})`).hasClass('form-range')) {
+                        options.filter(`:eq(${i})`).val(parseInt(translator[options.filter(`:eq(${i})`).attr('id')]));
+                    } else if (options.filter(`:eq(${i})`).hasClass('form-select')) {
+                        options.filter(`:eq(${i})`).val(translator[options.filter(`:eq(${i})`).attr('id')]);
+                    }
+
+                    if (!options.filter(`:eq(${i})`).hasClass('translator-option')) {
+                        options.filter(`:eq(${i})`).change();
+                    }
                 }
-            }
-        })
+            })
             .script('/static/js/quan-ly-tu-vung.js').wait(function () {
-            if (localGlossary == undefined) {
-                localGlossary = JSON.parse({type: $('#glossaryType').val(), data: {}});
-                localStorage.setItem('glossary', JSON.stringify(localGlossary));
-            }
+                if (localGlossary == undefined) {
+                    localGlossary = JSON.parse({type: $('#glossaryType').val(), data: {}});
+                    localStorage.setItem('glossary', JSON.stringify(localGlossary));
+                }
 
-            glossary = localGlossary.data;
-            $('#glossaryType').val(localGlossary.type).change();
-        });
+                glossary = localGlossary.data;
+                $('#glossaryType').val(localGlossary.type).change();
+            });
 
         const setTheme = (theme) => {
             if (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches) {
