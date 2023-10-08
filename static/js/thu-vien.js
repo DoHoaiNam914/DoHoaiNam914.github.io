@@ -1,12 +1,12 @@
 'use strict';
 
 function bookLibraryLoader() {
-    $.getJSON('./library.json', function (data) {
-        if (data.library.length > 0) {
-            $('.row').html(null);
+  $.getJSON('./library.json', function (data) {
+    if (data.library.length > 0) {
+      $('.row').html(null);
 
-            _.each(data.library, function (book) {
-                $('.row').append(`
+      _.each(data.library, function (book) {
+        $('.row').append(`
 <div class="col">
   <div class="card shadow-sm">
     <img src="${book.cover}" class="card-img-top">
@@ -17,22 +17,22 @@ function bookLibraryLoader() {
   </div>
 </div>
 `);
-            });
-        }
-    }).fail(function (jqXHR, textStatus) {
-        throw new Error(textStatus);
-    });
+      });
+    }
+  }).fail(function (jqXHR, textStatus) {
+    throw new Error(textStatus);
+  });
 }
 
 function volumeLibraryLoader() {
-    const book = (new URLSearchParams(window.location.search)).get('thu-vien');
+  const book = (new URLSearchParams(window.location.search)).get('thu-vien');
 
-    $.getJSON(`./${book}/data.json`, function (data) {
-        if (data[book].length > 0) {
-            $('.row').html(null);
+  $.getJSON(`./${book}/data.json`, function (data) {
+    if (data[book].length > 0) {
+      $('.row').html(null);
 
-            _.each(data[book], function (volume) {
-                $('.row').append(`
+      _.each(data[book], function (volume) {
+        $('.row').append(`
 <div class="col">
   <div class="card shadow-sm">
     <img src="${volume.cover}" class="card-img-top">
@@ -43,9 +43,9 @@ function volumeLibraryLoader() {
   </div>
 </div>
 `);
-            });
-        }
-    }).fail(function (jqXHR, textStatus) {
-        throw new Error(textStatus);
-    });
+      });
+    }
+  }).fail(function (jqXHR, textStatus) {
+    throw new Error(textStatus);
+  });
 }

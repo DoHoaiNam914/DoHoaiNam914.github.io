@@ -3,88 +3,88 @@
 /* Hiragino Kaku Gothic ProN */
 
 @font-face {
-    font-family: "Hiragino Kaku Gothic ProN";
-    font-weight: bold;
-    src: url(https://github.com/DoHoaiNam914/CDN/raw/main/phong-chu/Hiragino%20Kaku%20Gothic%20ProN%20W6.otf) format('opentype');
+  font-family: "Hiragino Kaku Gothic ProN";
+  font-weight: bold;
+  src: url(https://github.com/DoHoaiNam914/CDN/raw/main/phong-chu/Hiragino%20Kaku%20Gothic%20ProN%20W6.otf) format('opentype');
 }
 
 @font-face {
-    font-family: "Hiragino Kaku Gothic ProN";
-    src: url(https://github.com/DoHoaiNam914/CDN/raw/main/phong-chu/Hiragino%20Kaku%20Gothic%20ProN%20W3.otf) format('opentype');
+  font-family: "Hiragino Kaku Gothic ProN";
+  src: url(https://github.com/DoHoaiNam914/CDN/raw/main/phong-chu/Hiragino%20Kaku%20Gothic%20ProN%20W3.otf) format('opentype');
 }
 
 @font-face {
-    font-family: "Hiragino Kaku Gothic ProN";
-    font-weight: bold;
-    src: url(https://github.com/DoHoaiNam914/CDN/raw/main/phong-chu/Hiragino%20Kaku%20Gothic%20ProN%20W6.otf) format('opentype');
+  font-family: "Hiragino Kaku Gothic ProN";
+  font-weight: bold;
+  src: url(https://github.com/DoHoaiNam914/CDN/raw/main/phong-chu/Hiragino%20Kaku%20Gothic%20ProN%20W6.otf) format('opentype');
 }
 
 @font-face {
-    font-family: "Hiragino Kaku Gothic ProN";
-    src: url(https://github.com/DoHoaiNam914/CDN/raw/main/phong-chu/Hiragino%20Kaku%20Gothic%20ProN%20W3.otf) format('opentype');
+  font-family: "Hiragino Kaku Gothic ProN";
+  src: url(https://github.com/DoHoaiNam914/CDN/raw/main/phong-chu/Hiragino%20Kaku%20Gothic%20ProN%20W3.otf) format('opentype');
 }
 
 /* Hiragino Mincho ProN */
 
 @font-face {
-    font-family: "Hiragino Mincho ProN";
-    src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Hiragino%20Mincho%20ProN%20W3.otf) format('opentype');
+  font-family: "Hiragino Mincho ProN";
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Hiragino%20Mincho%20ProN%20W3.otf) format('opentype');
 }
 
 @font-face {
-    font-family: "Hiragino Mincho ProN";
-    src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Hiragino%20Mincho%20ProN%20W6.otf) format('opentype');
-    font-weight: bold;
+  font-family: "Hiragino Mincho ProN";
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Hiragino%20Mincho%20ProN%20W6.otf) format('opentype');
+  font-weight: bold;
 }
 
 /* Bookerly */
 
 @font-face {
-    font-family: "Bookerly";
-    src: url(https://github.com/DoHoaiNam914/CDN/raw/main/phong-chu/BookerlyLCD_W_Rg.woff2) format('woff2');
+  font-family: "Bookerly";
+  src: url(https://github.com/DoHoaiNam914/CDN/raw/main/phong-chu/BookerlyLCD_W_Rg.woff2) format('woff2');
 }
 
 @font-face {
-    font-family: "Bookerly";
-    font-style: italic;
-    src: url(https://github.com/DoHoaiNam914/CDN/raw/main/phong-chu/BookerlyLCD_W_RgIt.woff2) format('woff2');
+  font-family: "Bookerly";
+  font-style: italic;
+  src: url(https://github.com/DoHoaiNam914/CDN/raw/main/phong-chu/BookerlyLCD_W_RgIt.woff2) format('woff2');
 }
 
 @font-face {
-    font-family: "Bookerly";
-    font-weight: bold;
-    src: url(https://github.com/DoHoaiNam914/CDN/raw/main/phong-chu/BookerlyLCD_W_Bd.woff2) format('woff2');
+  font-family: "Bookerly";
+  font-weight: bold;
+  src: url(https://github.com/DoHoaiNam914/CDN/raw/main/phong-chu/BookerlyLCD_W_Bd.woff2) format('woff2');
 }
 
 @font-face {
-    font-family: "Bookerly";
-    font-style: italic;
-    font-weight: bold;
-    src: url(https://github.com/DoHoaiNam914/CDN/raw/main/phong-chu/BookerlyLCD_W_BdIt.woff2) format('woff2');
+  font-family: "Bookerly";
+  font-style: italic;
+  font-weight: bold;
+  src: url(https://github.com/DoHoaiNam914/CDN/raw/main/phong-chu/BookerlyLCD_W_BdIt.woff2) format('woff2');
 }
 
 /* Iowan Old Style */
 
 @font-face {
-    font-family: 'Iowan Old Style';
-    src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/IowanOldStBTRoman.ttf) format('truetype');
+  font-family: 'Iowan Old Style';
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/IowanOldStBTRoman.ttf) format('truetype');
 }
 
 @font-face {
-    font-family: 'Iowan Old Style';
-    font-style: italic;
-    src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/IowanOldStBTItalic.ttf) format('truetype');
+  font-family: 'Iowan Old Style';
+  font-style: italic;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/IowanOldStBTItalic.ttf) format('truetype');
 }
 
 @font-face {
-    font-family: 'Iowan Old Style';
-    font-weight: bold;
-    src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/IowanOldStBTBold.ttf) format('truetype');
+  font-family: 'Iowan Old Style';
+  font-weight: bold;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/IowanOldStBTBold.ttf) format('truetype');
 }
 
 @font-face {
-    font-family: 'Iowan Old Style';
-    font-style: italic;
-    font-weight: bold;
-    src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/IowanOldStBTBoldItalic.ttf) format('truetype');
+  font-family: 'Iowan Old Style';
+  font-style: italic;
+  font-weight: bold;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/IowanOldStBTBoldItalic.ttf) format('truetype');
 }

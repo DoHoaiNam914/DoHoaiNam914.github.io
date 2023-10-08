@@ -2,48 +2,48 @@
 <textarea class="input" id="spine"></textarea>
 <textarea id="result" readonly onclick="this.select()"></textarea>
 <script>
-    var manifest;
-    var spine;
+  var manifest;
+  var spine;
 
-    var curr;
-    var result = [];
+  var curr;
+  var result = [];
 
-    document.querySelectorAll('.input').forEach((element) => element.addEventListener('change', function () {
-        manifest = `[
+  document.querySelectorAll('.input').forEach((element) => element.addEventListener('change', function () {
+    manifest = `[
 ${document.querySelector('#manifest').value}
 ]`
-            .replace(new RegExp(' *<item media-type=".+" id=(".+") href=(".+") properties=".+"/>', 'g'), '[$1, $2],')
-            .replace(new RegExp(' *<item media-type=".+" id=(".+") href=(".+")/>', 'g'), '[$1, $2],')
-            .replace(new RegExp(' *<item id=(".+") href=(".+") media-type=".+" properties=".+"/>', 'g'), '[$1, $2],')
-            .replace(new RegExp(' *<item id=(".+") href=(".+") media-type=".+"/>', 'g'), '[$1, $2],')
-            .replace(new RegExp(' *<item href=(".+") id=(".+") media-type=".+" properties=".+"/>', 'g'), '[$2, $1],')
-            .replace(new RegExp(' *<item href=(".+") id=(".+") media-type=".+"/>', 'g'), '[$2, $1],')
-            .replace(/,(\n])/, '$1');
-        spine = `[
+    .replace(new RegExp(' *<item media-type=".+" id=(".+") href=(".+") properties=".+"/>', 'g'), '[$1, $2],')
+    .replace(new RegExp(' *<item media-type=".+" id=(".+") href=(".+")/>', 'g'), '[$1, $2],')
+    .replace(new RegExp(' *<item id=(".+") href=(".+") media-type=".+" properties=".+"/>', 'g'), '[$1, $2],')
+    .replace(new RegExp(' *<item id=(".+") href=(".+") media-type=".+"/>', 'g'), '[$1, $2],')
+    .replace(new RegExp(' *<item href=(".+") id=(".+") media-type=".+" properties=".+"/>', 'g'), '[$2, $1],')
+    .replace(new RegExp(' *<item href=(".+") id=(".+") media-type=".+"/>', 'g'), '[$2, $1],')
+    .replace(/,(\n])/, '$1');
+    spine = `[
 ${document.querySelector('#spine').value}
       ]`
-            .replace(new RegExp(' *<itemref linear=".+" idref=(".+") properties=".+"/>', 'g'), '        $1,')
-            .replace(new RegExp(' *<itemref linear=".+" idref=(".+")/>', 'g'), '        $1,')
-            .replace(new RegExp(' *<itemref idref=(".+") linear=".+"/>', 'g'), '    $1,')
-            .replace(new RegExp(' *<itemref idref=(".+")/>', 'g'), '    $1,')
-            .replace(/,(\n\s+])/, '$1');
-        spine.split(/\n/).forEach(function (line) {
-            JSON.parse(manifest)
-                .filter((element) => spine.includes(element[0]))
-                .sort((a, b) => b[0].length - a[0].length || a[1].length - b[1].length)
-                .forEach(function (element) {
-                    if (line.trim().replace(/",?/g, '') === element[0]) {
-                        curr = line.replace(element[0], element[1]);
-                    }
-                });
+    .replace(new RegExp(' *<itemref linear=".+" idref=(".+") properties=".+"/>', 'g'), '        $1,')
+    .replace(new RegExp(' *<itemref linear=".+" idref=(".+")/>', 'g'), '        $1,')
+    .replace(new RegExp(' *<itemref idref=(".+") linear=".+"/>', 'g'), '    $1,')
+    .replace(new RegExp(' *<itemref idref=(".+")/>', 'g'), '    $1,')
+    .replace(/,(\n\s+])/, '$1');
+    spine.split(/\n/).forEach(function (line) {
+      JSON.parse(manifest)
+      .filter((element) => spine.includes(element[0]))
+      .sort((a, b) => b[0].length - a[0].length || a[1].length - b[1].length)
+      .forEach(function (element) {
+        if (line.trim().replace(/",?/g, '') === element[0]) {
+          curr = line.replace(element[0], element[1]);
+        }
+      });
 
-            result.push(curr != undefined ? curr : line);
-            curr = undefined;
-        });
+      result.push(curr != undefined ? curr : line);
+      curr = undefined;
+    });
 
-        document.querySelector('#result').value = result.join('\n');
+    document.querySelector('#result').value = result.join('\n');
 
-        curr = undefined;
-        result = [];
-    }));
+    curr = undefined;
+    result = [];
+  }));
 </script>
