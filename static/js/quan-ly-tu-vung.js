@@ -144,7 +144,7 @@ deeplConvertButtons.on('click', async function () {
     try {
       const deeplUsage = (await $.get('https://api-free.deepl.com/v2/usage?auth_key=' + DEEPL_AUTH_KEY)) ?? {
         'character_count': 500000,
-        'character_limit': 500000
+        'character_limit': 500000,
       };
 
       if (sourceEntry.val().length > (deeplUsage.character_limit - deeplUsage.character_count)) {
@@ -273,8 +273,7 @@ glossaryList.change(function () {
   }
 });
 removeButton.on('click', () => {
-  if (window.confirm('Bạn có muốn xoá từ (cụm từ) này chứ?')
-      && glossary.hasOwnProperty(sourceEntry.val())) {
+  if (window.confirm('Bạn có muốn xoá từ (cụm từ) này chứ?') && glossary.hasOwnProperty(sourceEntry.val())) {
     delete glossary[sourceEntry.val()];
     loadGlossary();
     $('#sinoVietnameseConvertButton').click();
@@ -345,8 +344,7 @@ function loadGlossary() {
   $('#preview').val(data);
 
   localStorage.setItem('glossary', JSON.stringify({
-    type: currentType,
-    data: glossary
+    type: currentType, data: glossary
   }));
   localGlossary = JSON.parse(localStorage.getItem('glossary'));
 }
