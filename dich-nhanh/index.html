@@ -124,13 +124,22 @@
     }
 
     .textarea {
+      --const-font-size: 100%;
       font-family: var(--opt-font-family);
-      font-size: calc(18px * var(--opt-font-size));
+      font-size: calc(var(--const-font-size) * var(--opt-font-size));
       min-height: 53.42592592592592vh !important;
       line-height: 1.2em;
       overflow-x: hidden;
       overflow-wrap: break-word;
       width: 100%;
+    }
+
+    @media screen and (min-width: 75em) {
+
+      .textarea {
+        --const-font-size: 112.5%;
+      }
+
     }
 
     .nav-scroller {

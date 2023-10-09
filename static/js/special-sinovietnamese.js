@@ -3,6 +3,7 @@ const specialSinovietnameseData = [
   ['掌柜', 'CHƯỞNG QUỸ'],
   ['团长', 'ĐOÀN TRƯỞNG'],
   ['皇朝', 'HOÀNG TRIỀU'],
+  ['牡丹', 'MẪU ĐƠN'],
   ['师姐', 'SƯ TỶ'],
   ['天相', 'THIÊN TƯỚNG'],
   ['仙长', 'TIÊN TRƯỞNG'],
@@ -20,6 +21,7 @@ const specialSinovietnameseData = [
   ['本', 'BẢN'],
   ['竞', 'CÁNH, CẠNH'],
   ['玑', 'CƠ'],
+  ['畸', 'CƠ'],
   ['柜', 'CỰ, QUỸ'],
   ['政', 'CHÍNH'],
   ['正', 'CHÍNH'],
@@ -62,6 +64,7 @@ const specialSinovietnameseData = [
   ['儿', 'NHI'],
   ['柠', 'NINH'],
   ['樊', 'PHÀN'],
+  ['凤', 'PHỤNG, PHƯỢNG'],
   /* QUAN, QUÁN */
   ['观', 'QUÁN'],
 
@@ -77,6 +80,7 @@ const specialSinovietnameseData = [
   ['使', 'SỨ, SỬ'],
   /* TẰNG TẦNG */
   ['层', 'TẦNG'],
+  ['沈', 'THẨM'],
   ['栖', 'THÊ, TÊ, TÂY'],
   /* THIỂU, THIẾU */
   ['少', 'THIẾU'],
