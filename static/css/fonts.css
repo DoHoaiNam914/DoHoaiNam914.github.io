@@ -52,6 +52,19 @@
   src: url(https://github.com/DoHoaiNam914/CDN/raw/main/phong-chu/BookerlyLCD_W_BdIt.woff2) format('woff2');
 }
 
+/* TBMincho */
+
+@font-face {
+  font-family: "TBMincho";
+  src: url(https://github.com/phong-chu/TBMinchoMedium_213.woff2) format('woff2');
+}
+
+@font-face {
+  font-family: "TBMincho";
+  font-weight: bold;
+  src: url(https://github.com/phong-chu/TBMinchoBold_213.woff2) format('woff2');
+}
+
 /* Iowan Old Style */
 
 @font-face {

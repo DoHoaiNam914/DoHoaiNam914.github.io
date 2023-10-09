@@ -215,7 +215,7 @@ fontOptions.click(function () {
   $(this).addClass('active');
 
   if (!$(this).text().includes('Mặc định')) {
-    $(document.body).css('--opt-font-family', `${$(this).text().includes(' ') ? `'${$(this).text()}'` : $(this).text()}, serif`);
+    $(document.body).css('--opt-font-family', `${$(this).text().includes(' ') ? `'${$(this).text()}'` : $(this).text()}, ${$(this).data('sub-fonts').length > 0 ? `${$(this).data('sub-fonts')}, serif` : 'serif'}`);
   } else if ($(this).text() === 'Phông chữ hệ thống') {
     $(document.body).css('--opt-font-family', 'var(--system-font-family)');
   } else {
