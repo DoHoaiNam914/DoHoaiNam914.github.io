@@ -109,7 +109,7 @@
   <style>
     body {
       --opt-font-family: Roboto, sans-serif;
-      --opt-font-size: 1;
+      --opt-font-size: 100%;
       overflow-x: hidden;
     }
 
@@ -124,22 +124,13 @@
     }
 
     .textarea {
-      --const-font-size: 100%;
       font-family: var(--opt-font-family);
-      font-size: calc(var(--const-font-size) * var(--opt-font-size));
+      font-size: var(--opt-font-size);
       min-height: 53.42592592592592vh !important;
       line-height: 1.2em;
       overflow-x: hidden;
       overflow-wrap: break-word;
       width: 100%;
-    }
-
-    @media screen and (min-width: 75em) {
-
-      .textarea {
-        --const-font-size: 112.5%;
-      }
-
     }
 
     .nav-scroller {
@@ -205,6 +196,10 @@
     .modal-body {
       min-height: 300px;
       overflow-x: hidden;
+    }
+
+    .font-size-input {
+      width: 5em;
     }
   </style>
 </head>
@@ -912,13 +907,13 @@
               <button class="dropdown-item font-option" type="button">Hiragino Mincho ProN</button>
             </li>
             <li>
-              <button class="dropdown-item font-option" type="button">Literata</button>
+              <button class="dropdown-item font-option" data-additional-fonts="Hiragino Mincho ProN" type="button">Literata</button>
             </li>
             <li>
-              <button class="dropdown-item font-option" data-sub-fonts="TBMincho" type="button">Bookerly</button>
+              <button class="dropdown-item font-option" data-additional-fonts="TBMincho" type="button">Bookerly</button>
             </li>
             <li>
-              <button class="dropdown-item font-option" type="button">Iowan Old Style</button>
+              <button class="dropdown-item font-option" data-additional-fonts="Hiragino Mincho Pro" type="button">Iowan Old Style</button>
             </li>
             <li>
               <button class="dropdown-item font-option" type="button">Crimson Text</button>
@@ -926,9 +921,8 @@
           </ul>
         </div>
         <div class="mb-3">
-          <label for="font-size" class="form-label">Kích cỡ phông chữ:
-            <span id="font-size-display">89</span>%</label>
-          <input type="range" class="form-range option" min="60" max="350" step="1" value="89" id="font-size">
+          <label for="font-size" class="form-label">Kích cỡ phông chữ: <input class="form-control form-control-sm d-inline font-size-input" type="number" id="font-size-display" min="60" max="350"/></label>
+          <input type="range" class="form-range option" min="60" max="350" value="100" id="font-size">
         </div>
         <div class="dropdown mb-3">
           <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">

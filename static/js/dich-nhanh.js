@@ -215,7 +215,7 @@ fontOptions.click(function () {
   $(this).addClass('active');
 
   if (!$(this).text().includes('Mặc định')) {
-    $(document.body).css('--opt-font-family', `${$(this).text().includes(' ') ? `'${$(this).text()}'` : $(this).text()}, ${$(this).data('sub-fonts').length > 0 ? `${$(this).data('sub-fonts')}, serif` : 'serif'}`);
+    $(document.body).css('--opt-font-family', `${$(this).text().includes(' ') ? `'${$(this).text()}'` : $(this).text()}, ${$(this).data('additional-fonts') != undefined && $(this).data('additional-fonts').length > 0 ? `${$(this).text().includes(' ') ? `'${$(this).data('additional-fonts')}'` : $(this).data('additional-fonts')}, serif` : 'serif'}`);
   } else if ($(this).text() === 'Phông chữ hệ thống') {
     $(document.body).css('--opt-font-family', 'var(--system-font-family)');
   } else {
@@ -225,10 +225,13 @@ fontOptions.click(function () {
   translator['font'] = $(this).text();
   localStorage.setItem('translator', JSON.stringify(translator));
 });
+fontSizeDisplay.on('change', function () {
+  fontSize.val($(this).val() < parseInt(fontSize.attr('min')) ? fontSize.attr('min') : ($(this).val() > parseInt(fontSize.attr('max')) ? fontSize.attr('max') : $(this).val())).trigger('input');
+});
 fontSize.on('input', function () {
   translator[fontSize.attr('id')] = $(this).val();
-  fontSizeDisplay.text(translator[fontSize.attr('id')]);
-  $(document.body).css('--opt-font-size', translator[fontSize.attr('id')] / 100);
+  fontSizeDisplay.val(translator[fontSize.attr('id')]);
+  $(document.body).css('--opt-font-size', `${translator[fontSize.attr('id')]}%`);
 });
 fontSize.change(() => {
   fontSize.trigger('input');
