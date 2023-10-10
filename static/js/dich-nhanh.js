@@ -15,7 +15,7 @@ const queryText = $('#queryText');
 const translatedTextArea = $('#translatedText');
 
 const options = $('.option');
-const translatorOptions = $(' .translator-option');
+const translatorOptions = $('.translator-option');
 
 const flexSwitchCheckGlossary = $('#flexSwitchCheckGlossary');
 const flexSwitchCheckAllowAnothers = $('#flexSwitchCheckAllowAnothers');
@@ -162,15 +162,10 @@ translateButton.click(async function () {
         // $('#imageFile').addClass('disabled');
         // $('#pasteUrlButton').addClass('disabled');
         // $('#clearImageButton').addClass('disabled');
-        let statusText = translatedTextArea.html()
-        .split(/<br>|<\/p><p>/)
-        .map((element, index) => index === 0 ? 'Đang dịch...' + element.slice(12)
-        .replace(/./g, ' ') : element.replace(/./g, ' '))
-        .join('<br>');
+        let statusText = translatedTextArea.html().split(/<br>|<\/p><p>/).map((element, index) => index === 0 ? 'Đang dịch...' + element.slice(12).replace(/./g, ' ') : element.replace(/./g, ' ')).join('<br>');
         translatedTextArea.html(statusText);
         translateAbortController = new AbortController();
-        translate(queryText.val(), translateAbortController.signal)
-        .finally(() => onPostTranslate());
+        translate(queryText.val(), translateAbortController.signal).finally(() => onPostTranslate());
       }
       break;
   }
@@ -257,15 +252,13 @@ translators.click(function () {
         sourceLanguage.val($(this).val());
         return false;
       } else if (index + 1 === sourceLangSelectOptions.length) {
-        sourceLanguage.val(getDefaultSourceLanguage(translators.filter($('.active'))
-        .data('id')));
+        sourceLanguage.val(getDefaultSourceLanguage(translators.filter($('.active')).data('id')));
       }
     });
     targetLanguage.html(getTargetLanguageOptions($(this).data('id')));
     const targetLangSelectOptions = $('#target-language > option');
     targetLangSelectOptions.each(function (index) {
-      if (translators.filter($('.active'))
-      .data('id') === prevTranslator && prevTargetLanguageCode != null) {
+      if (translators.filter($('.active')).data('id') === prevTranslator && prevTargetLanguageCode != null) {
         targetLanguage.val(prevTargetLanguageCode);
         return false;
       } else if (prevTargetLanguageCode != null && (prevTargetLanguageName != null && $(this).text().replace(/Tiếng /gi, '').replace(/[()]/g, '') === prevTargetLanguageName.replace(/Tiếng /gi, '').replace(/[()]/g, '') || $(this).val().toLowerCase().split('_')[0] === prevTargetLanguageCode.toLowerCase().split('_')[0] || (prevTargetLanguageName != null && $(this).text().includes($(this).text().split(' ').length === 2 && prevTargetLanguageName.split(' ').length === 2 ? prevTargetLanguageName.replace(/Tiếng /gi, '').replace(/[()]/g, '').split(' ')[1] : prevTargetLanguageName.replace(/Tiếng /gi, '').replace(/[()]/g, '').split(' ')[0]) && $(this).val().toLowerCase().split('_')[0].split('-')[0] === prevTargetLanguageCode.toLowerCase().split('_')[0].split('-')[0]) || ($(this).val().toLowerCase().split('_')[0].split('-')[0] === prevTargetLanguageCode.toLowerCase().split('_')[0].split('-')[0]))) {
@@ -299,10 +292,7 @@ inputVietphrase.on('change', function () {
   const reader = new FileReader();
 
   reader.onload = function () {
-    let vietphraseList = this.result.split(/\r?\n/)
-    .map((element) => element.split(inputVietphrase.prop('files')[0].type === 'text/tab-separated-values' ? '\t' : '='))
-    .filter((element) => element.length === 2)
-    .map(([first, second]) => [first, second.split('/')[0].split('|')[0]]);
+    let vietphraseList = this.result.split(/\r?\n/).map((element) => element.split(inputVietphrase.prop('files')[0].type === 'text/tab-separated-values' ? '\t' : '=')).filter((element) => element.length === 2).map(([first, second]) => [first, second.split('/')[0].split('|')[0]]);
     vietphraseList = [...vietphraseList, ...Object.entries(VietphraseData.chinesePhienAmWords)].filter(([first, second]) => first !== '' && second != undefined && !vietphraseList[first] && (vietphraseList[first] = 1), {})
     VietphraseData.vietphrases = Object.fromEntries(vietphraseList);
     console.log('Đã tải xong tệp VietPhrase.txt (%d)!', vietphraseList.length);
@@ -1090,7 +1080,7 @@ const DeepLTranslator = {
 
       const response = await $.ajax({
         url: 'https://api-free.deepl.com/v2/translate?auth_key=' + authKey,
-        data: `text=${inputText.split(/\n/).map((sentence) => encodeURIComponent(sentence)).join('&text=')}${sourceLang !== '' ? '&source_lang=' + sourceLang : ''}&target_lang=${targetLang}`,
+        data: `text=${inputText.split(/\n/).map((sentence) => encodeURIComponent(sentence)).join('&text=')}${sourceLang !== '' ? '&source_lang=' + sourceLang : ''}&target_lang=${targetLang}&tag_handling=html`,
         method: 'POST'
       });
       return response.translations.map((element) => element.text.trim()).join('\n');
@@ -1201,6 +1191,12 @@ const DeepLTranslator = {
   }]
 };
 
+function convertHtmlToText(html) {
+  const paragraph = document.createElement('p');
+  paragraph.innerHTML = html;
+  return paragraph.innerText;
+}
+
 const GoogleTranslate = {
   translateText: async function (data, inputText, sourceLanguage, targetLanguage, useGlossary = false, tc = 0) {
     try {
@@ -1227,7 +1223,7 @@ const GoogleTranslate = {
        * Content-Type: application/x-www-form-urlencoded - `q=${querys.split(/\n/).map((sentence) => encodeURIComponent(sentence)).join('&q=')}`
        */
       const response = await $.ajax({
-        url: `https://translate.googleapis.com/translate_a/t?anno=3&client=${(data._cac || 'te') + (data._cam === 'lib' ? '_lib' : '')}&format=text&v=1.0&key${data.translateApiKey.length > 0 ? `=${data.translateApiKey}` : ''}&logld=v${data.v || ''}&sl=${sourceLanguage}&tl=${targetLanguage}&tc=${tc}&tk=${this.lq(querys.join(''))}`,
+        url: `https://translate.googleapis.com/translate_a/t?anno=3&client=${(data._cac || 'te') + (data._cam === 'lib' ? '_lib' : '')}&format=html&v=1.0&key${data.translateApiKey.length > 0 ? `=${data.translateApiKey}` : ''}&logld=v${data.v || ''}&sl=${sourceLanguage}&tl=${targetLanguage}&tc=${tc}&tk=${this.lq(querys.join(''))}`,
         data: `q=${querys.map((sentence) => encodeURIComponent(sentence)).join('&q=')}`,
         method: 'POST',
         headers: {
@@ -1235,7 +1231,7 @@ const GoogleTranslate = {
         }
       });
 
-      return response.map((element) => ((sourceLanguage === 'auto' ? element[0] : element).includes('<i>') ? (sourceLanguage === 'auto' ? element[0] : element).split('</i> <b>').filter((element) => element.includes('</b>')).map((element) => ('<b>' + element.replace(/<i>.+/, ''))).join(' ') : (sourceLanguage === 'auto' ? element[0] : element)).trim()).join('\n');
+      return convertHtmlToText(response.map((element) => ((sourceLanguage === 'auto' ? element[0] : element).includes('<i>') ? (sourceLanguage === 'auto' ? element[0] : element).split('</i> <b>').filter((element) => element.includes('</b>')).map((element) => ('<b>' + element.replace(/<i>.+/, ''))).join(' ') : (sourceLanguage === 'auto' ? element[0] : element)).trim()).join('\n'));
     } catch (error) {
       console.error('Bản dịch lỗi:', error.stack);
       throw error.toString();
@@ -1593,7 +1589,7 @@ const Lingvanex = {
        */
       const response = await $.ajax({
         url: 'https://api-b2b.backenster.com/b1/api/v3/translate',
-        data: `${from !== '' ? `from=${from}&` : ''}to=${to}&text=${encodeURIComponent(inputText)}&platform=dp&is_return_text_split_ranges=true`,
+        data: `${from !== '' ? `from=${from}&` : ''}to=${to}&text=${encodeURIComponent(inputText)}&platform=dp&is_return_text_split_ranges=true&translateMode=html`,
         method: 'POST',
         headers: {
           Accept: 'application/json, inputText/javascript, */*; q=0.01',
@@ -3468,10 +3464,10 @@ const Papago = {
         headers: {
           Accept: 'application/json',
           'Accept-Language': 'vi',
-          'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8', // 'device-type': 'pc' || 'mobile',
+          'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+          'device-type': 'pc', // 'mobile',
           'x-apigw-partnerid': 'papago',
-          Authorization: 'PPG ' + uuid + ':' + CryptoJS.HmacMD5(uuid + '\n' + 'https://papago.naver.com/apis/n2mt/translate' + '\n' + timeStamp, version)
-          .toString(CryptoJS.enc.Base64),
+          Authorization: 'PPG ' + uuid + ':' + CryptoJS.HmacMD5(uuid + '\n' + 'https://papago.naver.com/apis/n2mt/translate' + '\n' + timeStamp, version).toString(CryptoJS.enc.Base64),
           Timestamp: timeStamp
         }
       });
@@ -3542,7 +3538,7 @@ const MicrosoftTranslator = {
        * Authorization: Bearer ${accessToken} - Content-Type: application/json - send(inputText)
        */
       const response = await $.ajax({
-        url: `https://api-edge.cognitive.microsofttranslator.com/translate?${sourceLanguage !== '' ? `from=${sourceLanguage}&` : ''}to=${targetLanguage}&api-version=3.0&includeSentenceLength=true`,
+        url: `https://api-edge.cognitive.microsofttranslator.com/translate?${sourceLanguage !== '' ? `from=${sourceLanguage}&` : ''}to=${targetLanguage}&api-version=3.0&includeSentenceLength=true&textType=html`,
         data: JSON.stringify(inputText.split(/\n/).map((sentence) => ({'Text': sentence}))),
         method: 'POST',
         headers: {
@@ -3550,8 +3546,7 @@ const MicrosoftTranslator = {
           'Content-Type': 'application/json'
         }
       });
-      return response.map((element) => element.translations[0].text.trim())
-      .join('\n');
+      return response.map((element) => element.translations[0].text.trim()).join('\n');
     } catch (error) {
       console.error('Bản dịch lỗi:', error.stack);
       throw error.toString();
@@ -3797,7 +3792,7 @@ function getGlossaryAppliedText(text, isMicrosoftTranslator = true, useAnotherTr
         for (const glossaryLength of glossaryLengths) {
           if (glossary.hasOwnProperty(chars.substring(j, j + glossaryLength))) {
             if (glossary[chars.substring(j, j + glossaryLength)].length > 0) {
-              tempWord += (/[\\p{Lu}\\p{Ll}\\p{Nd}]/u.test(tempWord[tempWord.length - 1]) ? ' ' : '') + (isMicrosoftTranslator ? `<mstrans:dictionary translation="${glossary[chars.substring(j, j + glossaryLength)]}">${chars.substring(j, j + glossaryLength)}</mstrans:dictionary>` : glossary[chars.substring(j, j + glossaryLength)]);
+              tempWord += (/[\\p{Lu}\\p{Ll}\\p{Nd}]/u.test(tempWord[tempWord.length - 1]) ? ' ' : '') + getIgnoreTranslationMarkup(glossary[chars.substring(j, j + glossaryLength)]);
             }
 
             j += glossaryLength - 1;
@@ -3815,6 +3810,24 @@ function getGlossaryAppliedText(text, isMicrosoftTranslator = true, useAnotherTr
     newText = results.join('\n');
   }
   return newText;
+}
+
+function getIgnoreTranslationMarkup(text) {
+  switch (translators.filter('.active').data('id')) {
+    case Translators.DEEPL_TRANSLATOR:
+    case Translators.GOOGLE_TRANSLATE:
+    case Translators.PAPAGO:
+      return `<span translate="no">${text}</span>`;
+
+    case Translators.LINGVANEX:
+      return `<notranslate>${text}</notranslate>`;
+
+    case Translators.MICROSOFT_TRANSLATOR:
+      return `<span class="notranslate">${text}</span>`;
+
+    default:
+      return text;
+  }
 }
 
 const Translators = {

@@ -59,6 +59,7 @@ const specialSinovietnameseData = [
   ['丽', 'LI, LỆ'],
   /* Không xác định */
   ['璃', 'LY'],
+  ['荛', 'NGHIÊU'],
   /* NHÃ, NHƯỢC */
   ['若', 'NHƯỢC'],
   ['儿', 'NHI'],
