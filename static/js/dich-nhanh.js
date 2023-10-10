@@ -3786,25 +3786,28 @@ function getGlossaryAppliedText(text, isMicrosoftTranslator = true, useAnotherTr
       let chars = lines[i];
 
       const glossaryLengths = [...glossaryEntries.map(([first]) => first.length), 1].sort((a, b) => b - a).filter((element, index, array) => index === array.indexOf(element));
-      let tempWord = '';
+      let tempLine = '';
+      let prevPhrase = '';
 
       for (let j = 0; j < chars.length; j++) {
         for (const glossaryLength of glossaryLengths) {
           if (glossary.hasOwnProperty(chars.substring(j, j + glossaryLength))) {
             if (glossary[chars.substring(j, j + glossaryLength)].length > 0) {
-              tempWord += (/[\\p{Lu}\\p{Ll}\\p{Nd}]/u.test(tempWord[tempWord.length - 1]) ? ' ' : '') + getIgnoreTranslationMarkup(glossary[chars.substring(j, j + glossaryLength)]);
+              tempLine += (/[\\p{Lu}\\p{Ll}\\p{Nd}]/u.test(prevPhrase || tempLine[tempLine.length - 1]) ? ' ' : '') + getIgnoreTranslationMarkup(glossary[chars.substring(j, j + glossaryLength)]);
+              prevPhrase = glossary[chars.substring(j, j + glossaryLength)];
             }
 
             j += glossaryLength - 1;
             break;
           } else if (glossaryLength === 1) {
-            tempWord += chars[j];
+            tempLine += chars[j];
+            prevPhrase = '';
             break;
           }
         }
       }
 
-      results.push(tempWord);
+      results.push(tempLine);
     }
 
     newText = results.join('\n');
