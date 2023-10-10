@@ -788,7 +788,7 @@ function buildTranslatedResult(inputTexts, result, showOriginal) {
   const processLines = $(processTextParagraph).html().split(/\n/);
 
   const resultParagraph = document.createElement('p');
-  $(resultParagraph).text(result);
+  $(resultParagraph).text(convertHtmlToText(result));
   const resultLines = $(resultParagraph).html().split(/\n/);
 
   try {
@@ -896,7 +896,7 @@ function convertText(inputText, data, caseSensitive, useGlossary, translationAlg
         const phrases = [];
         let tempWord = '';
 
-        chars = getGlossaryAppliedText(chars, false, useGlossary, glossaryData);
+        chars = convertHtmlToText(getGlossaryAppliedText(chars, false, useGlossary, glossaryData));
 
         for (let j = 0; j < chars.length; j++) {
           for (const phraseLength of phraseLengths) {
