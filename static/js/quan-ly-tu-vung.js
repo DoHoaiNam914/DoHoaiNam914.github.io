@@ -281,9 +281,7 @@ removeButton.on('click', () => {
   }
 });
 $('#preview').on('click', function () {
-  if (Object.entries(glossary).length > 0) {
-    this.select();
-  }
+  if (Object.entries(glossary).length > 0) this.select();
 });
 $('#glossaryName').on('input', () => loadGlossary());
 

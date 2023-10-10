@@ -177,9 +177,7 @@ translateButton.click(async function () {
 });
 copyButton.on('click', () => {
   const data = translatedTextArea.is(':visible') ? prevTranslation[1] : queryText.val();
-  if (data.length > 0) {
-    navigator.clipboard.writeText(data);
-  }
+  if (data.length > 0) navigator.clipboard.writeText(data);
 });
 pasteButton.on('click', () => {
   navigator.clipboard.readText().then((clipText) => {
@@ -325,11 +323,9 @@ function loadTranslatorOptions() {
       } else if (options.filter(`:eq(${i})`).attr('name') != undefined && options.filter(`:eq(${i})`).attr('name').startsWith('flexRadio') && options.filter(`:eq(${i})`).prop('checked') === true) {
         data[options.filter(`:eq(${i})`).attr('name')] = options.filter(`:eq(${i})`).val();
       } else if (options.filter(`:eq(${i})`).hasClass('form-range')) {
-        data[options.filter(`:eq(${i})`)
-        .attr('id')] = options.filter(`:eq(${i})`).val();
+        data[options.filter(`:eq(${i})`).attr('id')] = options.filter(`:eq(${i})`).val();
       } else if (options.filter(`:eq(${i})`).hasClass('form-select')) {
-        data[options.filter(`:eq(${i})`)
-        .attr('id')] = options.filter(`:eq(${i})`).val();
+        data[options.filter(`:eq(${i})`).attr('id')] = options.filter(`:eq(${i})`).val();
       }
     }
     return data;
@@ -716,9 +712,7 @@ async function translate(inputText, abortSignal) {
               i--;
             }
 
-            if (translateLines.length <= MAX_LINE && translateLines.join('\n').length <= MAX_LENGTH) {
-              canTranslate = true;
-            }
+            if (translateLines.length <= MAX_LINE && translateLines.join('\n').length <= MAX_LENGTH) canTranslate = true;
           }
         }
 
@@ -1060,8 +1054,7 @@ function getRegexEscapedReplacement(replacement) {
 function getProcessTextPreTranslate(text) {
   try {
     let newText = text;
-    if (text.length > 0) {
-    }
+    if (text.length > 0) {}
     return newText.split(/\n/).map((element) => element.trim()).join('\n');
   } catch (error) {
     console.error('Lỗi xử lý văn bản trước khi dịch:', error.stack);
@@ -1072,8 +1065,7 @@ function getProcessTextPreTranslate(text) {
 function getProcessTextPostTranslate(text) {
   try {
     let newText = text;
-    if (text.length > 0) {
-    }
+    if (text.length > 0) {}
     return newText.split(/\n/).map((element) => element.trim()).join('\n');
   } catch (error) {
     console.error('Lỗi xử lý văn bản sau khi dịch:', error.stack);
