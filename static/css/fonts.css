@@ -79,32 +79,6 @@
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/literata-bold-italic.otf) format('opentype');
 }
 
-/* Hiragino Mincho Pro */
-
-@font-face {
-  font-family: 'Hiragino Mincho Pro';
-  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/HiraMinProN-W3-AlphaNum-02.otf) format('opentype');
-}
-
-@font-face {
-  font-family: 'Hiragino Mincho Pro';
-  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/HiraMinProN-W6-AlphaNum-04.otf) format('opentype');
-  font-weight: bold;
-}
-
-/* TBMincho */
-
-@font-face {
-  font-family: 'TBMincho';
-  src: url(https://github.com/phong-chu/TBMinchoMedium_213.woff2) format('woff2');
-}
-
-@font-face {
-  font-family: 'TBMincho';
-  font-weight: bold;
-  src: url(https://github.com/phong-chu/TBMinchoBold_213.woff2) format('woff2');
-}
-
 /* Iowan Old Style */
 
 @font-face {
@@ -129,4 +103,17 @@
   font-style: italic;
   font-weight: bold;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/IowanOldStyle-BoldItalic.ttf) format('truetype');
+}
+
+/* Hiragino Mincho Pro */
+
+@font-face {
+  font-family: 'Hiragino Mincho Pro';
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/HiraMinProN-W3-AlphaNum-02.otf) format('opentype');
+}
+
+@font-face {
+  font-family: 'Hiragino Mincho Pro';
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/HiraMinProN-W6-AlphaNum-04.otf) format('opentype');
+  font-weight: bold;
 }
