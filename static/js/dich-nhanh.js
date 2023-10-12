@@ -51,8 +51,8 @@ $(document).ready(async () => {
   try {
     let pinyinList = [];
 
-    $.get('/static/datasource/Unihan_Readings.txt').done((data) => {
-      pinyinList = data.split(/\r?\n/).filter((element) => element.match(/^U\+\d+\tkMandarin/)).map((element) => [String.fromCodePoint(parseInt(element.split(/\t/)[0].match(/U\+(\d+)/)[1], 16)), element.split(/\t/)[2]]);
+    await $.get('/static/datasource/Unihan_Readings.txt').done((data) => {
+      pinyinList = data.split(/\r?\n/).filter((element) => element.startsWith('U+')).map((element) => element.split(/\t/)).map(([first, second]) => [String.fromCodePoint(parseInt(first.match(/U\+(\w+)/)[1], 16)), second]);
       VietphraseData.pinyins = Object.fromEntries(pinyinList);
     });
     await $.get('/static/datasource/Bính âm.txt').done((data) => pinyinList = [...pinyinList, ...data.split(/\r?\n/).map((element) => element.split('=')).sort((a, b) => b[0].length - a[0].length).map(([first, second]) => [first, second.split('ǀ')[0]]).filter(([first]) => !VietphraseData.pinyins.hasOwnProperty(first))]);
@@ -67,7 +67,7 @@ $(document).ready(async () => {
   try {
     let chinesePhienAmWordList = [...specialSinovietnameseData.map(([first, second]) => [first, (Object.fromEntries(specialSinovietnameseData)[second] ?? second).split(', ')[0].toLowerCase()]), ...hanvietData.map(([first, second]) => [first, second.split(',').filter((element) => element.length > 0)[0]])];
 
-    $.get('/static/datasource/ChinesePhienAmWords của thtgiang.txt').done((data) => {
+    await $.get('/static/datasource/ChinesePhienAmWords của thtgiang.txt').done((data) => {
       chinesePhienAmWordList = [...chinesePhienAmWordList, ...data.split(/\r?\n/).map((element) => element.split('=')).filter(([first]) => !VietphraseData.chinesePhienAmWords.hasOwnProperty(first))];
       VietphraseData.chinesePhienAmWords = Object.fromEntries(chinesePhienAmWordList);
     });
@@ -89,14 +89,14 @@ $(document).ready(async () => {
     setTimeout(() => window.location.reload(), 5000);
   }
 
-  $.get('/static/datasource/Pronouns.txt').done((data) => {
+  await $.get('/static/datasource/Pronouns.txt').done((data) => {
     VietphraseData.pronouns = Object.fromEntries(data.split(/\r?\n/).map((element) => element.split('=')).filter((element) => element.length === 2).map(([first, second]) => [first, second.split('/')[0]]));
     console.log('Đã tải xong tệp Pronouns.txt (%d)!', Object.entries(VietphraseData.pronouns).length);
   }).fail((jqXHR, textStatus, errorThrown) => {
     console.error('Không tải được tệp Pronouns.txt:', errorThrown);
     setTimeout(() => window.location.reload(), 5000);
   });
-  $.get('/static/datasource/LuatNhan.txt').done((data) => {
+   await $.get('/static/datasource/LuatNhan.txt').done((data) => {
     VietphraseData.cacLuatnhan = Object.fromEntries(data.split(/\r?\n/).map((element) => element.split('=')).filter((element) => element.length === 2));
     console.log('Đã tải xong tệp LuatNhan.txt (%d)!', Object.entries(VietphraseData.cacLuatnhan).length);
   }).fail((jqXHR, textStatus, errorThrown) => {
@@ -290,7 +290,6 @@ translators.click(function () {
 });
 inputVietphrase.on('change', function () {
   const reader = new FileReader();
-
   reader.onload = function () {
     let vietphraseList = this.result.split(/\r?\n/).map((element) => element.split(inputVietphrase.prop('files')[0].type === 'text/tab-separated-values' ? '\t' : '=')).filter((element) => element.length === 2).map(([first, second]) => [first, second.split('/')[0].split('|')[0]]);
     vietphraseList = [...vietphraseList, ...Object.entries(VietphraseData.chinesePhienAmWords)].filter(([first, second]) => first !== '' && second != undefined && !vietphraseList[first] && (vietphraseList[first] = 1), {})
@@ -618,12 +617,12 @@ async function translate(inputText, abortSignal) {
         break;
 
       default:
-        MAX_LENGTH = getGlossaryAppliedText(processText, false, true).length;
+        MAX_LENGTH = getGlossaryAppliedText(processText, translator).length;
         MAX_LINE = processText.split(/\n/).length;
         break;
     }
 
-    if (!abortSignal.aborted && getGlossaryAppliedText(processText, translator === Translators.MICROSOFT_TRANSLATOR, true).split(/\n/).sort((a, b) => b.length - a.length)[0].length > MAX_LENGTH) {
+    if (!abortSignal.aborted && getGlossaryAppliedText(processText, translator).split(/\n/).sort((a, b) => b.length - a.length)[0].length > MAX_LENGTH) {
       errorMessage.innerText = `Bản dịch thất bại: Số lượng từ trong một dòng quá dài (Số lượng từ hợp lệ nhỏ hơn hoặc bằng ${MAX_LENGTH}). [Lưu ý: Khi sử dụng Dynamic Dictionary và Bảo vệ dấu trích đẫn sẽ làm giảm số lượng từ có thể dịch đi.]`;
       translatedTextArea.append(errorMessage);
       onPostTranslate();
@@ -632,7 +631,7 @@ async function translate(inputText, abortSignal) {
 
     if (abortSignal.aborted) return;
 
-    if (getGlossaryAppliedText(processText, translator === Translators.MICROSOFT_TRANSLATOR, true) !== prevTranslation[0]) {
+    if (getGlossaryAppliedText(processText, translator) !== prevTranslation[0]) {
       if (!abortSignal.aborted && translator === Translators.DEEPL_TRANSLATOR) {
         const deeplUsage = (await $.get('https://api-free.deepl.com/v2/usage?auth_key=' + DEEPL_AUTH_KEY)) ?? {
           'character_count': 500000,
@@ -758,7 +757,7 @@ async function translate(inputText, abortSignal) {
 
       if (abortSignal.aborted) return;
       translateTimer.text(Date.now() - startTime);
-      prevTranslation = [getGlossaryAppliedText(processText, translator === Translators.MICROSOFT_TRANSLATOR, true), results, translateTimer.text()];
+      prevTranslation = [getGlossaryAppliedText(processText, translator), results, translateTimer.text()];
     } else {
       results = prevTranslation[1];
       translateTimer.text(prevTranslation[2]);
@@ -774,6 +773,48 @@ async function translate(inputText, abortSignal) {
   }
 
   translateAbortController = null;
+}
+
+function getGlossaryAppliedText(text, translator, glossary = {}) {
+  if (Object.keys(glossary).length === 0) glossary = globalThis.glossary;
+  const glossaryEntries = Object.entries(glossary).filter(([first]) => text.includes(first));
+  let newText = text;
+
+  if (flexSwitchCheckGlossary.prop('checked') && glossaryEntries.length > 0) {
+    const lines = text.split(/\n/);
+    const results = [];
+
+    for (let i = 0; i < lines.length; i++) {
+      let chars = lines[i];
+
+      const glossaryLengths = [...glossaryEntries.map(([first]) => first.length), 1].sort((a, b) => b - a).filter((element, index, array) => index === array.indexOf(element));
+      let tempLine = '';
+      let prevPhrase = '';
+
+      for (let j = 0; j < chars.length; j++) {
+        for (const glossaryLength of glossaryLengths) {
+          if (glossary.hasOwnProperty(chars.substring(j, j + glossaryLength))) {
+            if (glossary[chars.substring(j, j + glossaryLength)].length > 0) {
+              tempLine += (/[\\p{Lu}\\p{Ll}\\p{Nd}]/u.test(prevPhrase || tempLine[tempLine.length - 1]) ? ' ' : '') + getIgnoreTranslationMarkup(glossary[chars.substring(j, j + glossaryLength)]);
+              prevPhrase = glossary[chars.substring(j, j + glossaryLength)];
+            }
+
+            j += glossaryLength - 1;
+            break;
+          } else if (glossaryLength === 1) {
+            tempLine += chars[j];
+            prevPhrase = '';
+            break;
+          }
+        }
+      }
+
+      results.push(tempLine);
+    }
+
+    newText = results.join('\n');
+  }
+  return newText;
 }
 
 function buildTranslatedResult(inputTexts, result, showOriginal) {
@@ -896,7 +937,7 @@ function convertText(inputText, data, caseSensitive, useGlossary, translationAlg
         const phrases = [];
         let tempWord = '';
 
-        chars = convertHtmlToText(getGlossaryAppliedText(chars, false, useGlossary, glossaryData));
+        chars = getGlossaryAppliedText(chars, Translators.VIETPHRASE, glossaryData);
 
         for (let j = 0; j < chars.length; j++) {
           for (const phraseLength of phraseLengths) {
@@ -963,6 +1004,24 @@ function convertText(inputText, data, caseSensitive, useGlossary, translationAlg
   } catch (error) {
     console.error('Bản dịch lỗi:', error.stack);
     throw error.toString();
+  }
+}
+
+function getIgnoreTranslationMarkup(text, translator) {
+  switch (translator) {
+    case Translators.DEEPL_TRANSLATOR:
+    case Translators.GOOGLE_TRANSLATE:
+    case Translators.PAPAGO:
+      return `<span translate="no">${text}</span>`;
+
+    case Translators.LINGVANEX:
+      return `<notranslate>${text}</notranslate>`;
+
+    case Translators.MICROSOFT_TRANSLATOR:
+      return `<span class="notranslate">${text}</span>`;
+
+    default:
+      return text;
   }
 }
 
@@ -1041,6 +1100,12 @@ function getRegexEscapedReplacement(replacement) {
   return replacement.replace(/\$/g, '$$$&');
 }
 
+function convertHtmlToText(html) {
+  const paragraph = document.createElement('p');
+  paragraph.innerHTML = html;
+  return paragraph.innerText;
+}
+
 function getProcessTextPreTranslate(text) {
   try {
     let newText = text;
@@ -1076,7 +1141,7 @@ function onPostTranslate() {
 const DeepLTranslator = {
   translateText: async function (authKey, inputText, sourceLang, targetLang, useGlossary = false) {
     try {
-      inputText = useGlossary ? getGlossaryAppliedText(inputText, false, flexSwitchCheckAllowAnothers.prop('checked')) : inputText;
+      inputText = useGlossary ? getGlossaryAppliedText(inputText, Translators.DEEPL_TRANSLATOR) : inputText;
 
       const response = await $.ajax({
         url: 'https://api-free.deepl.com/v2/translate?auth_key=' + authKey,
@@ -1191,16 +1256,10 @@ const DeepLTranslator = {
   }]
 };
 
-function convertHtmlToText(html) {
-  const paragraph = document.createElement('p');
-  paragraph.innerHTML = html;
-  return paragraph.innerText;
-}
-
 const GoogleTranslate = {
   translateText: async function (data, inputText, sourceLanguage, targetLanguage, useGlossary = false, tc = 0) {
     try {
-      const querys = useGlossary ? getGlossaryAppliedText(inputText, false, flexSwitchCheckAllowAnothers.prop('checked')).split(/\n/) : inputText.split(/\n/);
+      const querys = useGlossary ? getGlossaryAppliedText(inputText, Translators.GOOGLE_TRANSLATE).split(/\n/) : inputText.split(/\n/);
 
       /**
        * Google translate Widget
@@ -1575,7 +1634,7 @@ const GoogleTranslate = {
 const Lingvanex = {
   translateText: async function (authKey, inputText, from, to, useGlossary = false, tc = 1) {
     try {
-      inputText = useGlossary ? getGlossaryAppliedText(inputText, false, flexSwitchCheckAllowAnothers.prop('checked')) : inputText;
+      inputText = useGlossary ? getGlossaryAppliedText(inputText, Translators.LINGVANEX) : inputText;
 
       /**
        * Lingvanex Demo
@@ -1599,7 +1658,7 @@ const Lingvanex = {
         }
       });
 
-      return response.result.text;
+      return response.result;
     } catch (error) {
       console.error('Bản dịch lỗi:', error.stack);
       throw error.toString();
@@ -3453,7 +3512,7 @@ const Lingvanex = {
 const Papago = {
   translateText: async function (version, inputText, sourceLanguage, targetLanguage, useGlossary = false) {
     try {
-      inputText = useGlossary ? getGlossaryAppliedText(inputText, false, flexSwitchCheckAllowAnothers.prop('checked')) : inputText;
+      inputText = useGlossary ? getGlossaryAppliedText(inputText, Translators.PAPAGO) : inputText;
 
       const timeStamp = (new Date()).getTime();
 
@@ -3514,7 +3573,7 @@ const Papago = {
 const MicrosoftTranslator = {
   translateText: async function (accessToken, inputText, sourceLanguage, targetLanguage, useGlossary = false) {
     try {
-      inputText = useGlossary ? getGlossaryAppliedText(inputText) : inputText;
+      inputText = useGlossary ? getGlossaryAppliedText(inputText, Translators.MICROSOFT_TRANSLATOR) : inputText;
 
       /**
        * Microsoft Bing Translator
@@ -3772,66 +3831,6 @@ const MicrosoftTranslator = {
     "zu": {"name": "Tiếng Zulu", "nativeName": "Isi-Zulu", "dir": "ltr"}
   }
 };
-
-function getGlossaryAppliedText(text, isMicrosoftTranslator = true, useAnotherTranslators = false, glossary = {}) {
-  if (Object.keys(glossary).length === 0) glossary = globalThis.glossary;
-  const glossaryEntries = Object.entries(glossary).filter(([first]) => text.includes(first));
-  let newText = text;
-
-  if (flexSwitchCheckGlossary.prop('checked') && (isMicrosoftTranslator || useAnotherTranslators) && glossaryEntries.length > 0) {
-    const lines = text.split(/\n/);
-    const results = [];
-
-    for (let i = 0; i < lines.length; i++) {
-      let chars = lines[i];
-
-      const glossaryLengths = [...glossaryEntries.map(([first]) => first.length), 1].sort((a, b) => b - a).filter((element, index, array) => index === array.indexOf(element));
-      let tempLine = '';
-      let prevPhrase = '';
-
-      for (let j = 0; j < chars.length; j++) {
-        for (const glossaryLength of glossaryLengths) {
-          if (glossary.hasOwnProperty(chars.substring(j, j + glossaryLength))) {
-            if (glossary[chars.substring(j, j + glossaryLength)].length > 0) {
-              tempLine += (/[\\p{Lu}\\p{Ll}\\p{Nd}]/u.test(prevPhrase || tempLine[tempLine.length - 1]) ? ' ' : '') + getIgnoreTranslationMarkup(glossary[chars.substring(j, j + glossaryLength)]);
-              prevPhrase = glossary[chars.substring(j, j + glossaryLength)];
-            }
-
-            j += glossaryLength - 1;
-            break;
-          } else if (glossaryLength === 1) {
-            tempLine += chars[j];
-            prevPhrase = '';
-            break;
-          }
-        }
-      }
-
-      results.push(tempLine);
-    }
-
-    newText = results.join('\n');
-  }
-  return newText;
-}
-
-function getIgnoreTranslationMarkup(text) {
-  switch (translators.filter('.active').data('id')) {
-    case Translators.DEEPL_TRANSLATOR:
-    case Translators.GOOGLE_TRANSLATE:
-    case Translators.PAPAGO:
-      return `<span translate="no">${text}</span>`;
-
-    case Translators.LINGVANEX:
-      return `<notranslate>${text}</notranslate>`;
-
-    case Translators.MICROSOFT_TRANSLATOR:
-      return `<span class="notranslate">${text}</span>`;
-
-    default:
-      return text;
-  }
-}
 
 const Translators = {
   DEEPL_TRANSLATOR: 'deeplTranslator',
