@@ -52,7 +52,7 @@ $(document).ready(async () => {
     let pinyinList = [];
 
     await $.get('/static/datasource/Unihan_Readings.txt').done((data) => {
-      pinyinList = data.split(/\r?\n/).filter((element) => element.startsWith('U+')).map((element) => element.split(/\t/)).map(([first, second]) => [String.fromCodePoint(parseInt(first.match(/U\+(\w+)/)[1], 16)), second]);
+      pinyinList = data.split(/\r?\n/).filter((element) => element.startsWith('U+')).map((element) => element.substring(2).split(/\t/)).map(([first, second]) => [String.fromCodePoint(parseInt(first, 16)), second]);
       VietphraseData.pinyins = Object.fromEntries(pinyinList);
     });
     await $.get('/static/datasource/Bính âm.txt').done((data) => pinyinList = [...pinyinList, ...data.split(/\r?\n/).map((element) => element.split('=')).sort((a, b) => b[0].length - a[0].length).map(([first, second]) => [first, second.split('ǀ')[0]]).filter(([first]) => !VietphraseData.pinyins.hasOwnProperty(first))]);
