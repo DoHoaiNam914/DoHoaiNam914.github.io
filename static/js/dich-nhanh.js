@@ -937,7 +937,7 @@ function convertText(inputText, data, caseSensitive, useGlossary, translationAlg
         const phrases = [];
         let tempWord = '';
 
-        chars = getGlossaryAppliedText(chars, Translators.VIETPHRASE, glossaryData);
+        chars = useGlossary ? getGlossaryAppliedText(chars, Translators.VIETPHRASE, glossaryData) : chars;
 
         for (let j = 0; j < chars.length; j++) {
           for (const phraseLength of phraseLengths) {
