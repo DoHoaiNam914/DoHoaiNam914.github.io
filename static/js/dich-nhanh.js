@@ -18,7 +18,6 @@ const options = $('.option');
 const translatorOptions = $('.translator-option');
 
 const flexSwitchCheckGlossary = $('#flexSwitchCheckGlossary');
-const flexSwitchCheckAllowAnothers = $('#flexSwitchCheckAllowAnothers');
 
 const fontOptions = $('.font-option');
 const fontSizeDisplay = $('#font-size-display');
