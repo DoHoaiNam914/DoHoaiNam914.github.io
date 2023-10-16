@@ -6,6 +6,8 @@ This site was built using [GitHub Pages](https://pages.github.com/).
 
 ## [Light Novel](https://dohoainam914.github.io/light-novel/)
 
+- [Aim the deepest part of the different world labyrinth](https://dohoainam914.github.io/light-novel/?thu-vien=ibusou)
+
 - [Chúa tể bóng tối](https://dohoainam914.github.io/light-novel/?thu-vien=chua-te-bong-toi)
 
 - [Clear the world like a game with The Zero Believer Goddess](https://dohoainam914.github.io/light-novel/?thu-vien=shinjyazero)
