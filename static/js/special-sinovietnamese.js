@@ -16,90 +16,70 @@ const specialSinovietnameseData = [
   ['姐夫', 'TỶ PHU'],
   ['姐姐', 'TỶ TỶ'],
   ['王朝', 'VƯƠNG TRIỀU'],
+
   ['荫', 'ÂM, ẤM'],
-  /* BỔN, BẢN */
-  ['本', 'BẢN'],
+  ['本', 'BỔN, BẢN'],
   ['竞', 'CÁNH, CẠNH'],
   ['玑', 'CƠ'],
   ['畸', 'CƠ'],
   ['柜', 'CỰ, QUỸ'],
+  ['只', 'CHÍCH'],
   ['政', 'CHÍNH'],
   ['正', 'CHÍNH'],
   ['摇', 'DAO'],
   ['遥', 'DAO'],
-  /* DỊ, DỊCH */
-  ['易', 'DỊCH'],
+  ['易', 'DỊCH' /* DỊ, DỊCH */],
   ['尹', 'DOÃN'],
   ['熔', 'DUNG'],
   ['台', 'ĐÀI'],
   ['斗', 'ĐẨU, ĐẤU'],
   ['侄', 'ĐIỆT'],
-  ['姛', 'ĐỒNG'], // Không xác định
+  ['姛', 'ĐỒNG' /* Không xác định */],
   ['洞', 'ĐỘNG'],
-  /* HIỆP, DIỆP */
-  ['叶', 'DIỆP'],
-
-  ['坏', 'HOẠI'], // Giản thể
-  ['壊', '坏'], // Kanji
-
-  /* HÀNH, HOÀNH */
-  ['衡', 'HOÀNH'],
+  ['叶', 'DIỆP, NGHIỆP' /* HIỆP, DIỆP */],
+  [/* Giản thể */ '坏', 'HOẠI'],
+  [/* Kanji */ '壊', '坏'],
+  ['衡', 'HOÀNH' /* HÀNH, HOÀNH */],
   ['县', 'HUYỆN'],
-  ['岐', 'KỲ'],
-  /* KI, CƠ, KỲ */
+  ['岐', 'KỲ' /* KI, CƠ, KỲ */],
   ['期', 'KỲ'],
   ['琪', 'KỲ'],
   ['纪', 'KỶ'],
-  /* KHÂU, KHƯU */
-  ['丘', 'KHƯU'],
+  ['丘', 'KHƯU' /* KHÂU, KHƯU */],
   ['绮', 'KHỞI'],
   ['骑', 'KỴ'],
   ['技', 'KỸ'],
-  /* LỮ, LÃ */
-  ['吕', 'LÃ, LỮ'],
+  ['吕', 'LÃ, LỮ' /* LỮ, LÃ */],
   ['丽', 'LI, LỆ'],
-  /* Không xác định */
-  ['璃', 'LY'],
+  ['璃', 'LY' /* Không xác định */],
   ['荛', 'NGHIÊU'],
-  /* NHÃ, NHƯỢC */
-  ['若', 'NHƯỢC'],
+  ['若', 'NHÃ, NHƯỢC'],
   ['儿', 'NHI'],
   ['柠', 'NINH'],
   ['樊', 'PHÀN'],
   ['凤', 'PHỤNG, PHƯỢNG'],
-  /* QUAN, QUÁN */
-  ['观', 'QUÁN'],
-
-  /* SANG, SÁNG */
-  ['创', 'SÁNG'], // Giản thể
-  ['創', '创'], // Phổn thể
-
+  ['观', 'QUAN, QUÁN'],
+  [/* Giản thể */ '创', 'SÁNG' /* SANG, SÁNG */],
+  [/* Phổn thể */ '創', '创'],
   ['厅', 'SẢNH'],
-  /* SI, THÍCH, THỨ */
-  ['刺', 'THÍCH'],
+  ['刺', 'THÍCH' /* SI, THÍCH, THỨ */],
   ['生', 'SINH'],
   ['山', 'SƠN'],
   ['使', 'SỨ, SỬ'],
-  /* TẰNG TẦNG */
-  ['层', 'TẦNG'],
+  ['层', 'TẰNG, TẦNG'],
   ['沈', 'THẨM'],
   ['栖', 'THÊ, TÊ, TÂY'],
-  /* THIỂU, THIẾU */
-  ['少', 'THIẾU'],
-
-  /* THỜI, THÌ */
-  ['时', 'THÌ'], // Giản thể
-  ['時', '时'], // Phổn thể
-
+  ['少', 'THIẾU' /* THIỂU, THIẾU */],
+  [/* Giản thể */ '时', 'THÌ' /* THỜI, THÌ */],
+  [/* Phổn thể */ '時', '时'],
   ['姐', 'THƯ'],
   ['司', 'TƯ, TI'],
   ['璇', 'TOÀN'],
-  /* TRIỀU, TRÀO, TRIÊU */
-  ['朝', 'TRIÊU'],
+  ['朝', 'TRIÊU' /* TRIỀU, TRÀO, TRIÊU */],
   ['重', 'TRÙNG, TRỌNG'],
   ['传', 'TRUYỀN, TRUYỆN'],
   ['场', 'TRƯỜNG'],
   ['长', 'TRƯỜNG, TRÀNG, TRƯỞNG'],
-  ['将', 'TƯƠNG, TƯỚNG'],
+  ['将', 'TƯƠNG, TƯỚNG, THƯƠNG'],
   ['燕', 'YÊN, YẾN'],
 ];

@@ -794,7 +794,7 @@ function getGlossaryAppliedText(text, translator, glossary = {}) {
         for (const glossaryLength of glossaryLengths) {
           if (glossary.hasOwnProperty(chars.substring(j, j + glossaryLength))) {
             if (glossary[chars.substring(j, j + glossaryLength)].length > 0) {
-              tempLine += (/[\\p{Lu}\\p{Ll}\\p{Nd}]/u.test(prevPhrase || tempLine[tempLine.length - 1]) ? ' ' : '') + getIgnoreTranslationMarkup(glossary[chars.substring(j, j + glossaryLength)]);
+              tempLine += (/[\\p{Lu}\\p{Ll}\\p{Nd}]/u.test(prevPhrase || tempLine[tempLine.length - 1]) ? ' ' : '') + getIgnoreTranslationMarkup(glossary[chars.substring(j, j + glossaryLength)], translator);
               prevPhrase = glossary[chars.substring(j, j + glossaryLength)];
             }
 
@@ -819,17 +819,9 @@ function getGlossaryAppliedText(text, translator, glossary = {}) {
 function buildTranslatedResult(inputTexts, result, showOriginal) {
   const resultDiv = document.createElement('div');
 
-  const inputTextParagraph = document.createElement('p');
-  $(inputTextParagraph).text(inputTexts[0]);
-  const inputLines = $(inputTextParagraph).html().split(/\n/);
-
-  const processTextParagraph = document.createElement('p');
-  $(processTextParagraph).text(convertText(inputTexts[1], {}, false, false, VietPhraseTranslationAlgorithms.TRANSLATE_FROM_LEFT_TO_RIGHT, VietPhraseMultiplicationAlgorithm.NOT_APPLICABLE));
-  const processLines = $(processTextParagraph).html().split(/\n/);
-
-  const resultParagraph = document.createElement('p');
-  $(resultParagraph).text(convertHtmlToText(result));
-  const resultLines = $(resultParagraph).html().split(/\n/);
+  const inputLines = convertTextToHtml(inputTexts[0]).split(/\n/);
+  const processLines = convertTextToHtml(convertText(inputTexts[1], {}, false, false, VietPhraseTranslationAlgorithms.TRANSLATE_FROM_LEFT_TO_RIGHT, VietPhraseMultiplicationAlgorithm.NOT_APPLICABLE)).split(/\n/);
+  const resultLines = convertTextToHtml(result).split(/\n/);
 
   try {
     if (showOriginal) {
@@ -1010,7 +1002,7 @@ function getIgnoreTranslationMarkup(text, translator) {
   switch (translator) {
     case Translators.DEEPL_TRANSLATOR:
     case Translators.GOOGLE_TRANSLATE:
-    case Translators.PAPAGO:
+ // case Translators.PAPAGO:
       return `<span translate="no">${text}</span>`;
 
     case Translators.LINGVANEX:
@@ -1105,6 +1097,12 @@ function convertHtmlToText(html) {
   return paragraph.innerText;
 }
 
+function convertTextToHtml(text) {
+  const paragraph = document.createElement('p');
+  paragraph.innerText = text;
+  return paragraph.innerHTML;
+}
+
 function getProcessTextPreTranslate(text) {
   try {
     let newText = text;
@@ -1140,14 +1138,14 @@ function onPostTranslate() {
 const DeepLTranslator = {
   translateText: async function (authKey, inputText, sourceLang, targetLang, useGlossary = false) {
     try {
-      inputText = useGlossary ? getGlossaryAppliedText(inputText, Translators.DEEPL_TRANSLATOR) : inputText;
+      inputText = useGlossary ? getGlossaryAppliedText(convertTextToHtml(inputText), Translators.DEEPL_TRANSLATOR) : convertTextToHtml(inputText);
 
       const response = await $.ajax({
         url: 'https://api-free.deepl.com/v2/translate?auth_key=' + authKey,
         data: `text=${inputText.split(/\n/).map((sentence) => encodeURIComponent(sentence)).join('&text=')}${sourceLang !== '' ? '&source_lang=' + sourceLang : ''}&target_lang=${targetLang}&tag_handling=html`,
         method: 'POST'
       });
-      return response.translations.map((element) => element.text.trim()).join('\n');
+      return convertHtmlToText(response.translations.map((element) => element.text.trim()).join('\n'));
     } catch (error) {
       console.error('Bản dịch lỗi:', error.stack);
       throw error.toString();
@@ -1258,7 +1256,7 @@ const DeepLTranslator = {
 const GoogleTranslate = {
   translateText: async function (data, inputText, sourceLanguage, targetLanguage, useGlossary = false, tc = 0) {
     try {
-      const querys = useGlossary ? getGlossaryAppliedText(inputText, Translators.GOOGLE_TRANSLATE).split(/\n/) : inputText.split(/\n/);
+      const querys = useGlossary ? getGlossaryAppliedText(convertTextToHtml(inputText), Translators.GOOGLE_TRANSLATE).split(/\n/) : convertTextToHtml(inputText.split(/\n/));
 
       /**
        * Google translate Widget
@@ -1647,7 +1645,7 @@ const Lingvanex = {
        */
       const response = await $.ajax({
         url: 'https://api-b2b.backenster.com/b1/api/v3/translate',
-        data: `${from !== '' ? `from=${from}&` : ''}to=${to}&text=${encodeURIComponent(inputText)}&platform=dp&is_return_text_split_ranges=true&translateMode=html`,
+        data: `${from !== '' ? `from=${from}&` : ''}to=${to}&text=${encodeURIComponent(inputText)}&platform=dp&is_return_text_split_ranges=true`,
         method: 'POST',
         headers: {
           Accept: 'application/json, inputText/javascript, */*; q=0.01',
@@ -1657,7 +1655,7 @@ const Lingvanex = {
         }
       });
 
-      return response.result;
+      return response.result.text;
     } catch (error) {
       console.error('Bản dịch lỗi:', error.stack);
       throw error.toString();
@@ -3572,7 +3570,7 @@ const Papago = {
 const MicrosoftTranslator = {
   translateText: async function (accessToken, inputText, sourceLanguage, targetLanguage, useGlossary = false) {
     try {
-      inputText = useGlossary ? getGlossaryAppliedText(inputText, Translators.MICROSOFT_TRANSLATOR) : inputText;
+      inputText = useGlossary ? getGlossaryAppliedText(convertTextToHtml(inputText), Translators.MICROSOFT_TRANSLATOR) : convertTextToHtml(inputText);
 
       /**
        * Microsoft Bing Translator
@@ -3604,7 +3602,7 @@ const MicrosoftTranslator = {
           'Content-Type': 'application/json'
         }
       });
-      return response.map((element) => element.translations[0].text.trim()).join('\n');
+      return convertHtmlToText(response.map((element) => element.translations[0].text.trim()).join('\n'));
     } catch (error) {
       console.error('Bản dịch lỗi:', error.stack);
       throw error.toString();
