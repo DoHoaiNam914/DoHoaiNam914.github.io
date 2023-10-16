@@ -48,6 +48,7 @@ const specialSinovietnameseData = [
   ['岐', 'KỲ'],
   /* KI, CƠ, KỲ */
   ['期', 'KỲ'],
+  ['琪', 'KỲ'],
   ['纪', 'KỶ'],
   /* KHÂU, KHƯU */
   ['丘', 'KHƯU'],
