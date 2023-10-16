@@ -819,9 +819,9 @@ function getGlossaryAppliedText(text, translator, glossary = {}) {
 function buildTranslatedResult(inputTexts, result, showOriginal) {
   const resultDiv = document.createElement('div');
 
-  const inputLines = convertTextToHtml(inputTexts[0]).split(/\n/);
-  const processLines = convertTextToHtml(convertText(inputTexts[1], {}, false, false, VietPhraseTranslationAlgorithms.TRANSLATE_FROM_LEFT_TO_RIGHT, VietPhraseMultiplicationAlgorithm.NOT_APPLICABLE)).split(/\n/);
-  const resultLines = convertTextToHtml(result).split(/\n/);
+  const inputLines = inputTexts[0].split(/\n/).map((element) => convertTextToHtml(element));
+  const processLines = convertText(inputTexts[1], {}, false, false, VietPhraseTranslationAlgorithms.TRANSLATE_FROM_LEFT_TO_RIGHT, VietPhraseMultiplicationAlgorithm.NOT_APPLICABLE).split(/\n/).map((element) => convertTextToHtml(element));
+  const resultLines = result.split(/\n/).map((element) => convertTextToHtml(element));
 
   try {
     if (showOriginal) {
@@ -1145,7 +1145,7 @@ const DeepLTranslator = {
         data: `text=${inputText.split(/\n/).map((sentence) => encodeURIComponent(sentence)).join('&text=')}${sourceLang !== '' ? '&source_lang=' + sourceLang : ''}&target_lang=${targetLang}&tag_handling=html`,
         method: 'POST'
       });
-      return convertHtmlToText(response.translations.map((element) => element.text.trim()).join('\n'));
+      return response.translations.map((element) => convertHtmlToText(element.text).trim()).join('\n');
     } catch (error) {
       console.error('Bản dịch lỗi:', error.stack);
       throw error.toString();
@@ -1287,7 +1287,7 @@ const GoogleTranslate = {
         }
       });
 
-      return convertHtmlToText(response.map((element) => ((sourceLanguage === 'auto' ? element[0] : element).includes('<i>') ? (sourceLanguage === 'auto' ? element[0] : element).split('</i> <b>').filter((element) => element.includes('</b>')).map((element) => ('<b>' + element.replace(/<i>.+/, ''))).join(' ') : (sourceLanguage === 'auto' ? element[0] : element)).trim()).join('\n'));
+      return response.map((element) => convertHtmlToText((sourceLanguage === 'auto' ? element[0] : element).includes('<i>') ? (sourceLanguage === 'auto' ? element[0] : element).split('</i> <b>').filter((element) => element.includes('</b>')).map((element) => ('<b>' + element.replace(/<i>.+/, ''))).join(' ') : (sourceLanguage === 'auto' ? element[0] : element)).trim()).join('\n');
     } catch (error) {
       console.error('Bản dịch lỗi:', error.stack);
       throw error.toString();
@@ -3602,7 +3602,7 @@ const MicrosoftTranslator = {
           'Content-Type': 'application/json'
         }
       });
-      return convertHtmlToText(response.map((element) => element.translations[0].text.trim()).join('\n'));
+      return response.map((element) => convertHtmlToText(element.translations[0].text).trim()).join('\n');
     } catch (error) {
       console.error('Bản dịch lỗi:', error.stack);
       throw error.toString();
