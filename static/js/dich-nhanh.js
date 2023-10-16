@@ -1256,7 +1256,7 @@ const DeepLTranslator = {
 const GoogleTranslate = {
   translateText: async function (data, inputText, sourceLanguage, targetLanguage, useGlossary = false, tc = 0) {
     try {
-      const querys = useGlossary ? getGlossaryAppliedText(convertTextToHtml(inputText), Translators.GOOGLE_TRANSLATE).split(/\n/) : convertTextToHtml(inputText.split(/\n/));
+      const querys = useGlossary ? getGlossaryAppliedText(convertTextToHtml(inputText), Translators.GOOGLE_TRANSLATE).split(/\n/) : convertTextToHtml(inputText).split(/\n/);
 
       /**
        * Google translate Widget
