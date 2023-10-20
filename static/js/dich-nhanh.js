@@ -196,6 +196,9 @@ queryText.on('input', () => {
   $(visualViewport).resize();
   queryTextCounter.text(queryText.val().length);
 });
+queryText.on('keydown', (event) => {
+  if (event.shiftKey && event.key === 'Enter') translateButton.click();
+});
 translatedTextArea.on('dblclick', () => {
   translateButton.click();
   queryText.focus();
