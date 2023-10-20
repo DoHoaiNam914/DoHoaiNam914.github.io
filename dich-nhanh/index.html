@@ -113,7 +113,10 @@
     }
 
     .container {
-      max-width: 62.5rem;
+      line-height: 1.2em;
+      font-size: 1em;
+      overflow-wrap: break-word;
+      width: 62.5rem;
     }
 
     #recognizeImage {
@@ -125,11 +128,23 @@
     .textarea {
       font-family: var(--opt-font-family);
       font-size: var(--opt-font-size);
+      font-weight: normal;
       min-height: 53.42592592592592vh !important;
+      letter-spacing: 0;
       line-height: 1.2em;
+      margin: 0;
+      orphans: 1;
       overflow-x: hidden;
-      overflow-wrap: break-word;
-      width: 100%;
+      padding: 0;
+      text-align: justify;
+      widows: 1;
+      word-spacing: 0;
+    }
+
+    .textarea > p {
+      display: block;
+      margin: 0;
+      text-indent: 20pt;
     }
 
     .nav-scroller {

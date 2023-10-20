@@ -637,7 +637,9 @@ function getTargetLanguageOptions(translator) {
 
 async function translate(inputText, abortSignal) {
   const startTime = Date.now();
+
   const translator = translators.filter($('.active')).data('id');
+  inputText = inputText.split(/\r?\n/).map((element) => element.trimStart()).join('\n');
 
   const srcLang = sourceLanguage.val();
   const tgtLang = targetLanguage.val();
@@ -914,19 +916,19 @@ function buildTranslatedResult(inputTexts, result, showOriginal) {
           }
 
           const paragraph = document.createElement('p');
-          paragraph.innerHTML = resultLines[i] !== processLines[i + lostLineFixedAmount] ? `<i>${inputLines[i + lostLineFixedAmount].trimStart().replace(/^\s+/, '')}</i><br>${resultLines[i].trimStart()}` : processLines[i + lostLineFixedAmount].trimStart().replace(/^\s+/, '');
+          paragraph.innerHTML = resultLines[i] !== processLines[i + lostLineFixedAmount] ? `<i>${inputLines[i + lostLineFixedAmount]}</i><br>${resultLines[i]}` : processLines[i + lostLineFixedAmount];
           resultDiv.appendChild(paragraph);
         } else if (i + lostLineFixedAmount < inputLines.length) {
           const paragraph = document.createElement('p');
-          paragraph.innerHTML = `<i>${inputLines[i + lostLineFixedAmount].trimStart().replace(/^\s+/, '')}</i>`;
+          paragraph.innerHTML = `<i>${inputLines[i + lostLineFixedAmount]}</i>`;
           resultDiv.appendChild(paragraph);
         }
       }
     } else {
-      resultDiv.innerHTML = `<p>${resultLines.map((element) => element.trimStart()).join('</p><p>')}</p>`;
+      resultDiv.innerHTML = `<p>${resultLines.join('</p><p>')}</p>`;
     }
   } catch (error) {
-    resultDiv.innerHTML = `<p>${resultLines.map((element) => element.trimStart()).join('</p><p>')}</p>`;
+    resultDiv.innerHTML = `<p>${resultLines.join('</p><p>')}</p>`;
     console.error('Lỗi hiển thị bản dịch:', error.stack);
     throw error.toString();
   }
@@ -1074,7 +1076,7 @@ function convertText(inputText, data, caseSensitive, useGlossary, translationAlg
           }
         }
 
-        results.push(phrases.join(' ').trim());
+        results.push(phrases.join(' ').trimEnd());
       }
     }
 
@@ -1196,7 +1198,7 @@ function getProcessTextPreTranslate(text) {
     let newText = text;
     if (text.length > 0) {
     }
-    return newText.split(/\n/).map((element) => element.trim()).join('\n');
+    return newText;
   } catch (error) {
     console.error('Lỗi xử lý văn bản trước khi dịch:', error.stack);
     throw error.toString();
@@ -1208,7 +1210,7 @@ function getProcessTextPostTranslate(text) {
     let newText = text;
     if (text.length > 0) {
     }
-    return newText.split(/\n/).map((element) => element.trim()).join('\n');
+    return newText;
   } catch (error) {
     console.error('Lỗi xử lý văn bản sau khi dịch:', error.stack);
     throw error.toString();
@@ -1235,7 +1237,7 @@ const DeepLTranslator = {
         data: `text=${inputText.split(/\n/).map((sentence) => encodeURIComponent(sentence)).join('&text=')}${sourceLang !== '' ? '&source_lang=' + sourceLang : ''}&target_lang=${targetLang}&tag_handling=html`,
         method: 'POST'
       });
-      return convertHtmlToText(response.translations.map((element) => element.text.trim()).join('\n'));
+      return convertHtmlToText(response.translations.map((element) => element.text).join('\n'));
     } catch (error) {
       console.error('Bản dịch lỗi:', error.stack);
       throw error.toString();
@@ -1552,7 +1554,7 @@ const GoogleTranslate = {
         }
       });
 
-      return convertHtmlToText(response.map((element) => ((sourceLanguage === 'auto' ? element[0] : element).includes('<i>') ? (sourceLanguage === 'auto' ? element[0] : element).split('</i> <b>').filter((element) => element.includes('</b>')).map((element) => ('<b>' + element.replace(/<i>.+/, ''))).join(' ') : (sourceLanguage === 'auto' ? element[0] : element)).trim()).join('\n'));
+      return convertHtmlToText(response.map((element) => ((sourceLanguage === 'auto' ? element[0] : element).includes('<i>') ? (sourceLanguage === 'auto' ? element[0] : element).split('</i> <b>').filter((element) => element.includes('</b>')).map((element) => ('<b>' + element.replace(/<i>.+/, ''))).join(' ') : (sourceLanguage === 'auto' ? element[0] : element))).join('\n'));
     } catch (error) {
       console.error('Bản dịch lỗi:', error.stack);
       throw error.toString();
@@ -5590,7 +5592,7 @@ const MicrosoftTranslator = {
           'Content-Type': 'application/json'
         }
       });
-      return convertHtmlToText(response.map((element) => element.translations[0].text.trim()).join('\n'));
+      return convertHtmlToText(response.map((element) => element.translations[0].text).join('\n'));
     } catch (error) {
       console.error('Bản dịch lỗi:', error.stack);
       throw error.toString();
