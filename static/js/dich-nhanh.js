@@ -914,11 +914,11 @@ function buildTranslatedResult(inputTexts, result, showOriginal) {
           }
 
           const paragraph = document.createElement('p');
-          paragraph.innerHTML = resultLines[i] !== processLines[i + lostLineFixedAmount] ? `<i>${inputLines[i + lostLineFixedAmount].trimStart()}</i><br>${resultLines[i].trimStart()}` : processLines[i + lostLineFixedAmount].trimStart();
+          paragraph.innerHTML = resultLines[i] !== processLines[i + lostLineFixedAmount] ? `<i>${inputLines[i + lostLineFixedAmount].trimStart().replace(/^\s+/, '')}</i><br>${resultLines[i].trimStart()}` : processLines[i + lostLineFixedAmount].trimStart().replace(/^\s+/, '');
           resultDiv.appendChild(paragraph);
         } else if (i + lostLineFixedAmount < inputLines.length) {
           const paragraph = document.createElement('p');
-          paragraph.innerHTML = `<i>${inputLines[i + lostLineFixedAmount].trimStart()}</i>`;
+          paragraph.innerHTML = `<i>${inputLines[i + lostLineFixedAmount].trimStart().replace(/^\s+/, '')}</i>`;
           resultDiv.appendChild(paragraph);
         }
       }
