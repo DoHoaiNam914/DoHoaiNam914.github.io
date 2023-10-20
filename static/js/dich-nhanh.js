@@ -196,6 +196,10 @@ queryText.on('input', () => {
   $(visualViewport).resize();
   queryTextCounter.text(queryText.val().length);
 });
+translatedTextArea.on('dblclick', () => {
+  translateButton.click();
+  queryText.focus();
+});
 translatorOptions.change(() => {
   translator = loadTranslatorOptions();
   localStorage.setItem('translator', JSON.stringify(translator));
