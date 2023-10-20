@@ -67,7 +67,7 @@ const specialSinovietnameseData = [
   ['生', 'SINH'],
   ['山', 'SƠN'],
   ['使', 'SỨ, SỬ'],
-  ['层', 'TẰNG, TẦNG'],
+  ['层', 'TẦNG' /* TẰNG, TẦNG */],
   ['沈', 'THẨM'],
   ['栖', 'THÊ, TÊ, TÂY'],
   ['少', 'THIẾU' /* THIỂU, THIẾU */],
