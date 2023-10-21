@@ -108,14 +108,17 @@
   <style>
     body {
       --opt-font-family: Roboto, sans-serif;
-      --opt-font-size: 100%;
+      --opt-font-size: 1em;
+      --opt-line-height: 1.2em;
       overflow-x: hidden;
     }
 
     .container {
       line-height: 1.2em;
       font-size: 1em;
+      height: 577px;
       overflow-wrap: break-word;
+      padding: 1.5rem 0 8rem;
       max-width: 1000px;
     }
 
@@ -129,15 +132,16 @@
       font-family: var(--opt-font-family);
       font-size: var(--opt-font-size);
       font-weight: normal;
-      min-height: 53.42592592592592vh !important;
+      min-height: 53.425925925925924vh !important;
       letter-spacing: 0;
-      line-height: 1.2em;
+      line-height: var(--opt-line-height);
       margin: 0;
       orphans: 1;
       overflow-x: hidden;
-      /* padding: 0; */
+      padding: 20px;
       text-align: justify;
       widows: 1;
+      max-width: 51.25vw;
       word-spacing: 0;
     }
 
@@ -168,10 +172,6 @@
 
     .nav-scroller .nav-link:hover {
       color: black;
-    }
-
-    .textarea > p {
-      margin-bottom: 0;
     }
 
     .select-lang {
@@ -211,13 +211,13 @@
       overflow-x: hidden;
     }
 
-    .font-size-input {
+    .value-option-input {
       width: 5em;
     }
   </style>
 </head>
 <body class="bg-body-tertiary">
-<main class="container pt-4 pb-32">
+<main class="container position-relative">
   <!--label for="imageFile" class="form-label">Trích xuất văn bản</label>
   <canvas id="recognizeImage" style="display: none;"></canvas>
   <div class="input-group input-group-sm">
@@ -241,8 +241,8 @@
       </svg>
     </button>
   </div-->
-  <textarea class="form-control textarea" id="queryText" placeholder="Viết gì đó tại đây"></textarea>
-  <div class="form-control textarea" id="translatedText" style="display: none;"></div>
+  <textarea class="form-control textarea position-absolute start-50 translate-middle-x" id="queryText" placeholder="Viết gì đó tại đây"></textarea>
+  <div class="form-control textarea position-absolute start-50 translate-middle-x" id="translatedText" style="display: none;"></div>
 </main>
 <div class="fixed-bottom">
   <nav class="navbar bg-body shadow-sm fixed-bottom">
@@ -842,8 +842,13 @@
         </div>
         <div class="mb-3">
           <label for="font-size" class="form-label">Kích cỡ phông chữ:
-            <input class="form-control form-control-sm d-inline font-size-input" type="number" id="font-size-display" min="60" max="350" value="100"/></label>
+            <input class="form-control form-control-sm d-inline value-option-input" type="number" id="font-size-display" min="60" max="350" value="100"/></label>
           <input type="range" class="form-range option" min="60" max="350" value="100" id="font-size">
+        </div>
+        <div class="mb-3">
+          <label for="font-size" class="form-label">Khoảng cách dòng:
+            <input class="form-control form-control-sm d-inline value-option-input" type="number" id="line-spacing-display" min="0" max="300" value="60"/></label>
+          <input type="range" class="form-range option" min="0" max="300" value="60" id="line-spacing">
         </div>
         <div class="dropdown mb-3">
           <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">

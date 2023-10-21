@@ -22,6 +22,8 @@ const flexSwitchCheckGlossary = $('#flexSwitchCheckGlossary');
 const fontOptions = $('.font-option');
 const fontSizeDisplay = $('#font-size-display');
 const fontSize = $('#font-size');
+const lineSpacingDisplay = $('#line-spacing-display');
+const lineSpacing = $('#line-spacing');
 const translators = $('.translator');
 const flexSwitchCheckShowOriginal = $('#flexSwitchCheckShowOriginal');
 const inputVietphrase = $('#inputVietphrase');
@@ -268,15 +270,28 @@ fontOptions.click(function () {
   localStorage.setItem('translator', JSON.stringify(translator));
 });
 fontSizeDisplay.on('change', function () {
-  fontSize.val($(this).val() < parseInt(fontSize.attr('min')) ? fontSize.attr('min') : ($(this).val() > parseInt(fontSize.attr('max')) ? fontSize.attr('max') : $(this).val())).trigger('input');
+  fontSize.val($(this).val() < parseInt(fontSize.attr('min')) ? fontSize.attr('min') : ($(this).val() > parseInt(fontSize.attr('max')) ? fontSize.attr('max') : $(this).val())).change();
 });
 fontSize.on('input', function () {
   translator[fontSize.attr('id')] = $(this).val();
   fontSizeDisplay.val(translator[fontSize.attr('id')]);
-  $(document.body).css('--opt-font-size', `${translator[fontSize.attr('id')]}%`);
+  $(document.body).css('--opt-font-size', `${1 * translator[fontSize.attr('id')] / 100}rem`);
 });
 fontSize.change(() => {
   fontSize.trigger('input');
+  localStorage.setItem('translator', JSON.stringify(translator));
+});
+
+lineSpacingDisplay.on('change', function () {
+  lineSpacing.val($(this).val() < parseInt(lineSpacing.attr('min')) ? lineSpacing.attr('min') : ($(this).val() > parseInt(lineSpacing.attr('max')) ? lineSpacing.attr('max') : $(this).val())).change();
+});
+lineSpacing.on('input', function () {
+  translator[lineSpacing.attr('id')] = $(this).val();
+  lineSpacingDisplay.val(translator[lineSpacing.attr('id')]);
+  $(document.body).css('--opt-line-height', `${1 + (0.5 * translator[lineSpacing.attr('id')] / 100)}em`);
+});
+lineSpacing.change(() => {
+  lineSpacing.trigger('input');
   localStorage.setItem('translator', JSON.stringify(translator));
 });
 translators.click(function () {
