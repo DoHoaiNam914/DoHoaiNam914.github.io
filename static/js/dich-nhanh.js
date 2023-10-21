@@ -1124,53 +1124,52 @@ function getTrieRegexPatternFromWords(words, prefix = '', suffix = '') {
 }
 
 function getRegexPattern(data) {
-  if (!data.hasOwnProperty('') || Object.keys(data).length !== 1) {
-    const alternation = [];
-    const trie = [];
-    let isNoncapturing = false;
+  if (data.hasOwnProperty('') && Object.keys(data).length === 1) return '';
+  const alternation = [];
+  const trie = [];
+  let isNoncapturing = false;
 
-    for (const char of Object.keys(data).sort()) {
-      if (typeof data[char] === 'object') {
-        let recurse = getRegexPattern(data[char]);
+  for (const char of Object.keys(data).sort()) {
+    if (typeof data[char] === 'object') {
+      let recurse = getRegexPattern(data[char]);
 
-        if (recurse != null) {
-          alternation.push(getRegexEscapedText(char) + recurse);
-        } else {
-          trie.push(getRegexEscapedText(char));
-        }
+      if (recurse != null) {
+        alternation.push(getRegexEscapedText(char) + recurse);
       } else {
-        isNoncapturing = true;
+        trie.push(getRegexEscapedText(char));
       }
-    }
-
-    const isTrieOnly = alternation.length === 0;
-
-    if (trie.length > 0) {
-      if (trie.length === 1) {
-        alternation.push(trie[0]);
-      } else {
-        alternation.push(`[${trie.join('')}]`);
-      }
-    }
-
-    let result = '';
-
-    if (alternation.length === 1) {
-      result = alternation[0];
     } else {
-      result = `(?:${alternation.join('|')})`;
+      isNoncapturing = true;
     }
-
-    if (isNoncapturing) {
-      if (isTrieOnly) {
-        result += '?';
-      } else {
-        result = `(?:${result})?`;
-      }
-    }
-
-    return result;
   }
+
+  const isTrieOnly = alternation.length === 0;
+
+  if (trie.length > 0) {
+    if (trie.length === 1) {
+      alternation.push(trie[0]);
+    } else {
+      alternation.push(`[${trie.join('')}]`);
+    }
+  }
+
+  let result = '';
+
+  if (alternation.length === 1) {
+    result = alternation[0];
+  } else {
+    result = `(?:${alternation.join('|')})`;
+  }
+
+  if (isNoncapturing) {
+    if (isTrieOnly) {
+      result += '?';
+    } else {
+      result = `(?:${result})?`;
+    }
+  }
+
+  return result;
 }
 
 function getRegexEscapedText(text) {
