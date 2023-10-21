@@ -118,7 +118,7 @@
       font-size: 1em;
       height: 577px;
       overflow-wrap: break-word;
-      padding: 1.5rem 0 8rem;
+      padding: 1.5rem 8px 8rem;
       max-width: 1000px;
     }
 
@@ -141,8 +141,15 @@
       padding: 20px;
       text-align: justify;
       widows: 1;
-      max-width: 51.25vw;
       word-spacing: 0;
+    }
+    
+    @media screen and (min-width: 75em) {
+
+      .textarea {
+        max-width: 51.25vw;
+      }
+
     }
 
     .textarea > p {
