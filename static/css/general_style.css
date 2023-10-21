@@ -1,8 +1,13 @@
 @import 'fonts.css';
 
-body {
+:root {
   --system-font-family: -apple-system, system-ui, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen-Sans, Ubuntu, Cantrell, 'Helvetica Neue', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
   --bs-body-font-family: Roboto, '游ゴシック', YuGothic, 'Hiragino Kaku Gothic ProN', Meiryo, sans-serif;
+  box-sizing: border-box;
+}
+
+body {
+  box-sizing: border-box;
 }
 
 textarea {
