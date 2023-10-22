@@ -83,7 +83,7 @@ $(document).ready(async () => {
           third ?? second
         ]))[second] ?? third ?? second).split(', ')[0].toLowerCase()
       ]),
-      ...hanvietData.map(([first, second]) => [
+      ...hanData.names.map(([first, second]) => [
         first,
         second.split(',').filter((element) => element.length > 0)[0]
       ])
