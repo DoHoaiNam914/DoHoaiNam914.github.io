@@ -99,13 +99,13 @@ pasteEntryButton.on('click', function () {
 });
 defineButtons.on('click', function () {
   if (sourceEntry.val().length > 0) {
-    window.open($(this).data('href').replace('${0}', encodeURIComponent((sourceEntry.val().substring(sourceEntry.prop('selectionStart'), sourceEntry.prop('selectionEnd')) || sourceEntry.val()).substring(0, 30))));
+    window.open($(this).data('href').replace('${0}', encodeURIComponent((sourceEntry.val().substring(sourceEntry.prop('selectionStart'), sourceEntry.prop('selectionEnd')) || sourceEntry.val()).substring(0, 30).trim())));
     sourceEntry.blur();
   }
 });
 translateButtons.on('click', function () {
   if (sourceEntry.val().length > 0) {
-    window.open($(this).data('href').replace('${0}', encodeURIComponent(sourceEntry.val())));
+    window.open($(this).data('href').replace('${0}', encodeURIComponent(sourceEntry.val().trimEnd())));
     sourceEntry.blur();
   }
 });
