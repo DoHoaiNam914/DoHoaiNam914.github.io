@@ -76,9 +76,12 @@ $(document).ready(async () => {
 
   try {
     let chinesePhienAmWordList = [
-      ...specialSinovietnameseData.map(([first, second]) => [
+      ...specialSinovietnameseData.map(([first, second, third]) => [
         first,
-        (Object.fromEntries(specialSinovietnameseData)[second] ?? second).split(', ')[0].toLowerCase()
+        (Object.fromEntries(specialSinovietnameseData.filter(([, second]) => !/\p{sc=Hani}/u.test(second)).map(([first, second, third]) => [
+          first,
+          third ?? second
+        ]))[second] ?? third ?? second).split(', ')[0].toLowerCase()
       ]),
       ...hanvietData.map(([first, second]) => [
         first,
