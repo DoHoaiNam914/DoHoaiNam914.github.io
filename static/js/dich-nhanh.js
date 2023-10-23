@@ -983,10 +983,10 @@ function convertText(inputText, data, caseSensitive, useGlossary, translationAlg
       }
     }
 
-    glossaryEntries = glossaryEntries.sort((a, b) => b[0].length - a[0].length);
+    glossaryEntries = glossaryEntries.sort((a, b) => a[1].localeCompare(b[1]) || a[0].localeCompare(b[0]) || b[0].length - a[0].length));
     dataEntries = [
       ...translationAlgorithm === VietPhraseTranslationAlgorithms.PRIORITIZE_LONG_VIETPHRASE_CLUSTERS && useGlossary ? glossaryEntries : [],
-      ...dataEntries.sort((a, b) => b[0].length - a[0].length)
+      ...dataEntries.sort((a, b) => a[1].localeCompare(b[1]) || a[0].localeCompare(b[0]) || b[0].length - a[0].length))
     ];
     dataEntries = dataEntries.filter(([first, second]) => first !== '' && second != undefined && !dataEntries[first] && (dataEntries[first] = 1), {});
     data = translationAlgorithm === VietPhraseTranslationAlgorithms.TRANSLATE_FROM_LEFT_TO_RIGHT ? Object.fromEntries(dataEntries) : {};

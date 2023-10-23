@@ -305,7 +305,7 @@ function loadGlossary() {
   fileExtension.text(currentType === GlossaryType.TSV ? 'tsv' : (currentType === GlossaryType.CSV ? 'csv' : 'txt'));
 
   if (glossaryArray.length > 0) {
-    glossary = Object.fromEntries(glossaryArray.sort((a, b) => b[0].length - a[0].length || a[1].localeCompare(b[1]) || a[0].localeCompare(b[0])));
+    glossary = Object.fromEntries(glossaryArray.sort((a, b) => a[1].localeCompare(b[1]) || a[0].localeCompare(b[0]) || b[0].length - a[0].length));
     glossaryArray = Object.entries(glossary);
 
     for (let i = 0; i < glossaryArray.length; i++) {
