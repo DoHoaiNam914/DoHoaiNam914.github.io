@@ -83,6 +83,9 @@ sourceEntry.on('input', function () {
     $('#glossaryList').val(null).change();
   }
 });
+targetEntry.on('keypress', function (event) {
+  if (sourceEntry.val().length > 0 && event.key === 'Enter') addButton.click();
+});
 $('.dropdown-toggle').on('click', () => $('.dropdown-scroller').scrollTop(0));
 $('.sourceEntry-menu').on('mousedown', (event) => event.preventDefault());
 clearSourceTextButton.on('click', () => sourceEntry.val(null).trigger('input'));
@@ -109,7 +112,7 @@ translateButtons.on('click', function () {
     sourceEntry.blur();
   }
 });
-addButton.on('click', () => {
+addButton.click(() => {
   if (sourceEntry.val().length > 0) {
     glossary[sourceEntry.val().trim()] = targetEntry.val().trim();
     loadGlossary();
@@ -305,12 +308,12 @@ function loadGlossary() {
   fileExtension.text(currentType === GlossaryType.TSV ? 'tsv' : (currentType === GlossaryType.CSV ? 'csv' : 'txt'));
 
   if (glossaryArray.length > 0) {
-    glossary = Object.fromEntries(glossaryArray.sort((a, b) => a[1].localeCompare(b[1], 'vi') || b[0].length - a[0].length || a[0].localeCompare(b[0], 'vi')));
+    glossary = Object.fromEntries(glossaryArray.sort((a, b) => b[1].substring(0, 1) === b[1].substring(0, 1).toUpperCase() && a[1].substring(0, 1) !== a[1].substring(0, 1).toUpperCase() || a[1].localeCompare(b[1], 'vi', {sensitivity: 'base'}) || b[0].length - a[0].length));
     glossaryArray = Object.entries(glossary);
 
     for (let i = 0; i < glossaryArray.length; i++) {
       const option = document.createElement('option');
-      option.innerText = `${glossaryArray[i][0]}\t${glossaryArray[i][1]}`;
+      option.innerText = `${glossaryArray[i][1]}\t${glossaryArray[i][0]}`;
       option.value = glossaryArray[i][0];
       entrySelect.appendChild(option);
     }

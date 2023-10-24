@@ -244,7 +244,7 @@ queryText.on('input', () => {
   $(visualViewport).resize();
   queryTextCounter.text(queryText.val().length);
 });
-queryText.on('keydown', (event) => {
+queryText.on('keypress', (event) => {
   if (event.shiftKey && event.key === 'Enter') translateButton.click();
 });
 translatedTextArea.on('dblclick', () => {
@@ -315,7 +315,7 @@ translators.click(function () {
       if (translators.filter($('.active')).data('id') === prevTranslator && prevSourceLanguageCode != null) {
         sourceLanguage.val(prevSourceLanguageCode);
         return false;
-      } else if (prevSourceLanguageCode != null && (prevSourceLanguageName != null && $(this).text().replace(/Tiếng /gi, '').replace(/[()]/g, '') === prevSourceLanguageName.replace(/Tiếng /gi, '').replace(/[()]/g, '') || $(this).val().toLowerCase().split('_')[0] === prevSourceLanguageCode.toLowerCase().split('_')[0] || (prevSourceLanguageName != null && $(this).text().includes($(this).text().split(' ').length === 2 && prevSourceLanguageName.split(' ').length === 2 ? prevSourceLanguageName.replace(/Tiếng /gi, '').replace(/[()]/g, '').split(' ')[1] : prevSourceLanguageName.replace(/Tiếng /gi, '').replace(/[()]/g, '').split(' ')[0]) && $(this).val().toLowerCase().split('_')[0].split('-')[0] === prevSourceLanguageCode.toLowerCase().split('_')[0].split('-')[0]) || ($(this).val().toLowerCase().split('_')[0].split('-')[0] === prevSourceLanguageCode.toLowerCase().split('_')[0].split('-')[0]))) {
+      } else if (prevSourceLanguageCode != null && (prevSourceLanguageName != null && $(this).text().replace(/[()]/g, '') === prevSourceLanguageName.replace(/[()]/g, '') || $(this).val().toLowerCase().split('_')[0] === prevSourceLanguageCode.toLowerCase().split('_')[0] || (prevSourceLanguageName != null && $(this).text().includes($(this).text().split(' ').length === 2 && prevSourceLanguageName.split(' ').length === 2 ? prevSourceLanguageName.replace(/[()]/g, '').split(' ')[1] : prevSourceLanguageName.replace(/[()]/g, '').split(' ')[0]) && $(this).val().toLowerCase().split('_')[0].split('-')[0] === prevSourceLanguageCode.toLowerCase().split('_')[0].split('-')[0]) || ($(this).val().toLowerCase().split('_')[0].split('-')[0] === prevSourceLanguageCode.toLowerCase().split('_')[0].split('-')[0]))) {
         if (translators.filter($('.active')).data('id') === Translators.LINGVANEX && (prevSourceLanguageName === 'EN' || prevSourceLanguageName === 'en')) {
           targetLanguage.val(Lingvanex.Language.filter((element) => element.codeName === 'English (USA)')[0].full_code);
         } else {
@@ -332,7 +332,7 @@ translators.click(function () {
       if (translators.filter($('.active')).data('id') === prevTranslator && prevTargetLanguageCode != null) {
         targetLanguage.val(prevTargetLanguageCode);
         return false;
-      } else if (prevTargetLanguageCode != null && (prevTargetLanguageName != null && $(this).text().replace(/Tiếng /gi, '').replace(/[()]/g, '') === prevTargetLanguageName.replace(/Tiếng /gi, '').replace(/[()]/g, '') || $(this).val().toLowerCase().split('_')[0] === prevTargetLanguageCode.toLowerCase().split('_')[0] || (prevTargetLanguageName != null && $(this).text().includes($(this).text().split(' ').length === 2 && prevTargetLanguageName.split(' ').length === 2 ? prevTargetLanguageName.replace(/Tiếng /gi, '').replace(/[()]/g, '').split(' ')[1] : prevTargetLanguageName.replace(/Tiếng /gi, '').replace(/[()]/g, '').split(' ')[0]) && $(this).val().toLowerCase().split('_')[0].split('-')[0] === prevTargetLanguageCode.toLowerCase().split('_')[0].split('-')[0]) || ($(this).val().toLowerCase().split('_')[0].split('-')[0] === prevTargetLanguageCode.toLowerCase().split('_')[0].split('-')[0]))) {
+      } else if (prevTargetLanguageCode != null && (prevTargetLanguageName != null && $(this).text().replace(/[()]/g, '') === prevTargetLanguageName.replace(/[()]/g, '') || $(this).val().toLowerCase().split('_')[0] === prevTargetLanguageCode.toLowerCase().split('_')[0] || (prevTargetLanguageName != null && $(this).text().includes($(this).text().split(' ').length === 2 && prevTargetLanguageName.split(' ').length === 2 ? prevTargetLanguageName.replace(/[()]/g, '').split(' ')[1] : prevTargetLanguageName.replace(/[()]/g, '').split(' ')[0]) && $(this).val().toLowerCase().split('_')[0].split('-')[0] === prevTargetLanguageCode.toLowerCase().split('_')[0].split('-')[0]) || ($(this).val().toLowerCase().split('_')[0].split('-')[0] === prevTargetLanguageCode.toLowerCase().split('_')[0].split('-')[0]))) {
         if (translators.filter($('.active')).data('id') === Translators.DEEPL_TRANSLATOR && (prevTargetLanguageCode === 'en_US' || prevTargetLanguageCode === 'en')) {
           targetLanguage.val(DeepLTranslator.TargetLanguage.filter((element) => element.name === 'English')[0].language);
         } else if (translators.filter($('.active')).data('id') === Translators.LINGVANEX && (prevTargetLanguageCode === 'EN-US' || prevTargetLanguageCode === 'en')) {
@@ -447,14 +447,14 @@ function getSourceLanguageName(translator, languageCode) {
     case Translators.LINGVANEX:
       for (const language of Lingvanex.Language) {
         if (language.full_code === languageCode) {
-          languageName = language.codeName;
+          languageName = language.codeName.replace('Tiếng ', '');
           break;
         }
       }
       break;
 
     case Translators.MICROSOFT_TRANSLATOR:
-      languageName = MicrosoftTranslator.Language[languageCode] != undefined ? MicrosoftTranslator.Language[languageCode].name : '';
+      languageName = MicrosoftTranslator.Language[languageCode] != undefined ? MicrosoftTranslator.Language[languageCode].name.replace('Tiếng ', '') : '';
       break;
 
     case Translators.PAPAGO:
@@ -486,7 +486,7 @@ function getTargetLanguageName(translator, languageCode) {
     case Translators.LINGVANEX:
       for (const language of Lingvanex.Language) {
         if (language.full_code === languageCode) {
-          languageName = language.codeName;
+          languageName = language.codeName.replace('Tiếng ', '');
           break;
         }
       }
@@ -497,7 +497,7 @@ function getTargetLanguageName(translator, languageCode) {
       break;
 
     case Translators.MICROSOFT_TRANSLATOR:
-      languageName = MicrosoftTranslator.Language[languageCode] != undefined ? MicrosoftTranslator.Language[languageCode].name : '';
+      languageName = MicrosoftTranslator.Language[languageCode] != undefined ? MicrosoftTranslator.Language[languageCode].name.replace('Tiếng ', '') : '';
       break;
 
     default:
@@ -534,7 +534,7 @@ function getSourceLanguageOptions(translator) {
 
       for (const language of Lingvanex.Language) {
         const option = document.createElement('option');
-        option.innerText = language.codeName;
+        option.innerText = language.codeName.replace('Tiếng ', '');
         option.value = language.full_code;
         sourceLanguageSelect.appendChild(option);
       }
@@ -560,7 +560,7 @@ function getSourceLanguageOptions(translator) {
 
       for (const langCode in MicrosoftTranslator.Language) {
         const option = document.createElement('option');
-        option.innerText = MicrosoftTranslator.Language[langCode].name;
+        option.innerText = MicrosoftTranslator.Language[langCode].name.replace('Tiếng ', '');
         option.value = langCode;
         sourceLanguageSelect.appendChild(option);
       }
@@ -601,7 +601,7 @@ function getTargetLanguageOptions(translator) {
     case Translators.LINGVANEX:
       for (const language of Lingvanex.Language) {
         const option = document.createElement('option');
-        ;option.innerText = language.codeName;
+        ;option.innerText = language.codeName.replace('Tiếng ', '');
         option.value = language.full_code;
         targetLanguageSelect.appendChild(option);
       }
@@ -619,7 +619,7 @@ function getTargetLanguageOptions(translator) {
     case Translators.MICROSOFT_TRANSLATOR:
       for (const langCode in MicrosoftTranslator.Language) {
         const option = document.createElement('option');
-        option.innerText = MicrosoftTranslator.Language[langCode].name;
+        option.innerText = MicrosoftTranslator.Language[langCode].name.replace('Tiếng ', '');
         option.value = langCode;
         targetLanguageSelect.appendChild(option);
       }
@@ -959,34 +959,35 @@ function convertText(inputText, data, caseSensitive, useGlossary, translationAlg
     let dataEntries = Object.entries(data).filter(([first]) => inputText.includes(first));
     if (multiplicationAlgorithm > VietPhraseMultiplicationAlgorithm.NOT_APPLICABLE) {
       for (const luatnhan in VietphraseData.cacLuatnhan) {
-        let i = 0;
+        let luatnhanData = [];
 
         if (useGlossary && multiplicationAlgorithm == VietPhraseMultiplicationAlgorithm.MULTIPLICATION_BY_PRONOUNS_NAMES && glossaryEntries.length > 0) {
+
           for (const element in glossary) {
-            glossaryEntries.splice(i, 0, [
+            luatnhanData.push([
               luatnhan.replace(/\{0}/g, getRegexEscapedReplacement(element)),
               VietphraseData.cacLuatnhan[luatnhan].replace(/\{0}/g, getRegexEscapedReplacement(glossary[element]))
             ]);
-            i++;
           }
         }
 
-        i = 0;
+        glossaryEntries = [...luatnhanData, ...glossaryEntries];
 
         for (const pronoun in VietphraseData.pronouns) {
-          dataEntries.splice(i, 0, [
+          luatnhanData.push([
             luatnhan.replace(/\{0}/g, getRegexEscapedReplacement(pronoun)),
             VietphraseData.cacLuatnhan[luatnhan].replace(/\{0}/g, getRegexEscapedReplacement(VietphraseData.pronouns[pronoun]))
           ]);
-          i++;
         }
+
+        dataEntries = [...luatnhanData, ...dataEntries];
       }
     }
 
-    glossaryEntries = glossaryEntries.sort((a, b) => a[1].localeCompare(b[1], 'vi') || b[0].length - a[0].length || a[0].localeCompare(b[0], 'vi'));
+    glossaryEntries = glossaryEntries.sort((a, b) => b[0].length - a[0].length || a[0].localeCompare(b[0], 'vi'));
     dataEntries = [
       ...translationAlgorithm === VietPhraseTranslationAlgorithms.PRIORITIZE_LONG_VIETPHRASE_CLUSTERS && useGlossary ? glossaryEntries : [],
-      ...dataEntries.sort((a, b) => a[1].localeCompare(b[1], 'vi') || b[0].length - a[0].length || a[0].localeCompare(b[0], 'vi'))
+      ...dataEntries.sort((a, b) => b[0].length - a[0].length || a[0].localeCompare(b[0], 'vi'))
     ];
     dataEntries = dataEntries.filter(([first, second]) => first !== '' && second != undefined && !dataEntries[first] && (dataEntries[first] = 1), {});
     data = translationAlgorithm === VietPhraseTranslationAlgorithms.TRANSLATE_FROM_LEFT_TO_RIGHT ? Object.fromEntries(dataEntries) : {};
@@ -1117,7 +1118,7 @@ function getIgnoreTranslationMarkup(text, translator) {
       return `<notranslate>${text[1]}</notranslate>`;
 
     case Translators.MICROSOFT_TRANSLATOR:
-      return `<mstrans:dictionary translation="${text[1]}">${text[0]}</mstrans:dictionary>`;
+      return `<span class="notranslate">${/\p{sc=Hani}/u.test(text[0]) ? ` ${text[1]} ` : text[1]}</span>`;
 
     default:
       return text[1];
@@ -1919,14 +1920,14 @@ const GoogleTranslate = {
 };
 
 const Lingvanex = {
-  translateText: async function (authKey, inputText, from, to, useGlossary = false, tc = 1) {
+  translateText: async function (authToken, inputText, from, to, useGlossary = false, tc = 1) {
     try {
       inputText = useGlossary ? getGlossaryAppliedText(inputText, Translators.LINGVANEX) : inputText;
 
       /**
        * Lingvanex Demo
        * URL: https://api-b2b.backenster.com/b1/api/v3/translate
-       * Accept: 'application/json, inputText/javascript, *\/*; q=0.01', Accept-Language: vi-VN,vi;q=0.8,en-US;q=0.5,en;q=0.3, Content-Type: application/x-www-form-urlencoded; charset=UTF-8, Authorization Bearer a_25rccaCYcBC9ARqMODx2BV2M0wNZgDCEl3jryYSgYZtF1a702PVi4sxqi2AmZWyCcw4x209VXnCYwesx - from=${from}&to=${to}&inputText=${encodeURIComponent(inputText)}&platform=dp&is_return_text_split_ranges=true
+       * Accept: 'application/json, inputText/javascript, *()/*; q=0.01', Accept-Language: vi-VN,vi;q=0.8,en-US;q=0.5,en;q=0.3, Content-Type: application/x-www-form-urlencoded; charset=UTF-8, Authorization ${authToken} - from=${from}&to=${to}&inputText=${encodeURIComponent(inputText)}&platform=dp&is_return_text_split_ranges=true
        *
        * Brave
        * Method: POST
@@ -1935,17 +1936,21 @@ const Lingvanex = {
        */
       const response = await $.ajax({
         url: 'https://api-b2b.backenster.com/b1/api/v3/translate',
-        data: `${from !== '' ? `from=${from}&` : ''}to=${to}&text=${encodeURIComponent(inputText)}&platform=dp&is_return_text_split_ranges=true`,
+        data: JSON.stringify({
+          from: from,
+          to: to,
+          data: inputText.split(/\n/),
+          platform: 'api'
+        }),
         method: 'POST',
         headers: {
-          Accept: 'application/json, inputText/javascript, */*; q=0.01',
-          'Accept-Language': 'vi-VN,vi;q=0.8,en-US;q=0.5,en;q=0.3',
-          'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-          Authorization: `Bearer ${authKey}`
+          accept: 'application/json',
+          'content-type': 'application/json',
+          Authorization: authToken
         }
       });
 
-      return response.result.text;
+      return response.result;
     } catch (error) {
       console.error('Bản dịch lỗi:', error.stack);
       throw error.toString();
@@ -1954,7 +1959,7 @@ const Lingvanex = {
   getAuthKey: async function (translator, apiKey = '') {
     if (translator === Translators.LINGVANEX) {
       try {
-        let authKey;
+        let authToken;
         /**
          * Lingvanex Demo
          * URL: https://lingvanex.com/lingvanex_demo_page/js/api-base.js
@@ -1964,8 +1969,8 @@ const Lingvanex = {
          */
         const apiBaseJs = await $.get(`${CORS_PROXY}https://lingvanex.com/lingvanex_demo_page/js/api-base.js`);
 
-        if (apiBaseJs != undefined) authKey = apiBaseJs.match(/B2B_AUTH_TOKEN="Bearer ([^"]+)"/)[1];
-        return authKey;
+        if (apiBaseJs != undefined) authToken = apiBaseJs.match(/B2B_AUTH_TOKEN="([^"]+)"/)[1];
+        return authToken;
       } catch (error) {
         console.error('Không thể lấy được Khoá xác thực:' + error);
         throw error.toString()
@@ -5601,12 +5606,13 @@ const MicrosoftTranslator = {
        * Authorization: Bearer ${accessToken} - Content-Type: application/json - send(inputText)
        */
       const response = await $.ajax({
-        url: `https://api-edge.cognitive.microsofttranslator.com/translate?${sourceLanguage !== '' ? `from=${sourceLanguage}&` : ''}to=${targetLanguage}&api-version=3.0&includeSentenceLength=true&textType=html`,
+        url: `https://api-edge.cognitive.microsofttranslator.com/translate?api-version=3.0&from=${sourceLanguage}&to=${targetLanguage}&textType=html`,
         data: JSON.stringify(inputText.split(/\n/).map((sentence) => ({'Text': sentence}))),
         method: 'POST',
         headers: {
           Authorization: `Bearer ${accessToken}`,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Content-Length': JSON.stringify(inputText.split(/\n/).map((sentence) => ({'Text': sentence}))).length
         }
       });
       return convertHtmlToText(response.map((element) => element.translations[0].text).join('\n'));
