@@ -166,6 +166,18 @@ $(document).ready(async () => {
 
   queryText.trigger('input');
 });
+$(window).on('keydown', (event) => {
+  if (translatedTextArea.is(':visible')) {
+    switch (event.key) {
+      case 'Home':
+        translatedTextArea.prop('scrollTop', 0);
+        break;
+      case 'End':
+        translatedTextArea.prop('scrollTop', translatedTextArea.prop('scrollTopMax'));
+        break;
+    }
+  }
+});
 $(visualViewport).resize((event) => $('.textarea').css('max-height', event.target.height - ((event.target.width < 1200 ? 23.28703703703703 : 40.33092037228542) / 100) * event.target.height + 'px'));
 translateButton.click(async function () {
   if (translateAbortController != undefined) {

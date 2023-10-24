@@ -68,6 +68,7 @@ const specialSinovietnameseData = [
   ['柠', 'NINH'],
   ['苧', 'NINH'],
   ['樊', 'PHÀN' /* Họ */],
+  ['缚', 'PHỌC'],
   ['凤', 'PHỤNG, PHƯỢNG' /* Họ Phượng, Phụng */],
   [/* Giản thể */ '创', 'SANG, SÁNG', 'SÁNG'],
   [/* Phổn thể */ '創', '创'],
