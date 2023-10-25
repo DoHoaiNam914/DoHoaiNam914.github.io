@@ -1,5 +1,6 @@
 const specialSinovietnameseData = [
   ['骑士长', 'KỴ SĨ TRƯỞNG'],
+  ['表姐', 'BIỂU TỶ'],
   ['掌柜', 'CHƯỞNG QUỸ'],
   ['公司', 'CÔNG TI'],
   ['团长', 'ĐOÀN TRƯỞNG'],
@@ -23,8 +24,11 @@ const specialSinovietnameseData = [
   ['姐妹', 'TỶ MUỘI'],
   ['姐夫', 'TỶ PHU'],
   ['姐姐', 'TỶ TỶ'],
+  ['武道', 'VÕ ĐẠO'],
+  ['武学', 'VÕ HỌC'],
   ['武者', 'VÕ GIẢ'],
   ['王朝', 'VƯƠNG TRIỀU'],
+  ['幻', 'ẢO, HUYỄN', 'HUYỄN'],
   ['玑', 'CƠ'],
   ['畸', 'CƠ'],
   ['只', 'CHÍCH'],
@@ -49,6 +53,7 @@ const specialSinovietnameseData = [
   [/* Kanji */ '壊', '坏'],
   ['县', 'HUYỆN'],
   ['经', 'KINH, KÌNH' /* Họ Kinh */],
+  ['劲', 'KÌNH'],
   ['岐', 'KỲ'],
   ['期', 'KỲ'],
   ['琪', 'KỲ'],
@@ -83,5 +88,6 @@ const specialSinovietnameseData = [
   ['朝', 'TRIỀU, TRÀO, TRIÊU', 'TRIÊU'],
   ['司', 'TƯ, TI'],
   ['场', 'TRƯỜNG'],
+  ['无', 'VÔ, MÔ'],
   ['燕', 'YÊN, YẾN', 'YẾN' /* Họ Yên */],
 ];

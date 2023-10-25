@@ -580,7 +580,7 @@ function getSourceLanguageOptions(translator) {
       break;
 
     case Translators.VIETPHRASE:
-      autoDetectOption.innerText = 'Tiếng Trung';
+      autoDetectOption.innerText = 'Trung';
       autoDetectOption.value = 'zh';
       sourceLanguageSelect.appendChild(autoDetectOption);
       break;
