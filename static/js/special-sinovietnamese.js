@@ -31,6 +31,7 @@ const specialSinovietnameseData = [
   ['幻', 'ẢO, HUYỄN', 'HUYỄN'],
   ['玑', 'CƠ'],
   ['畸', 'CƠ'],
+  ['奇', 'CƠ, KI, KỲ', /* Họ Kỳ */],
   ['只', 'CHÍCH'],
   ['政', 'CHÍNH'],
   ['正', 'CHÍNH' /* Họ */],

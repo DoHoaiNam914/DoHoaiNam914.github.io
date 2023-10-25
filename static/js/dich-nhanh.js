@@ -1128,7 +1128,7 @@ function getIgnoreTranslationMarkup(text, translator) {
       return `<notranslate>${text[1]}</notranslate>`;
 
     case Translators.MICROSOFT_TRANSLATOR:
-      return `${/\p{sc=Hani}/u.test(text[0]) ? ' ' : ''}<mstrans:dictionary translation="${text[1]}">${text[0]}</mstrans:dictionary>`;
+      return `<mstrans:dictionary translation="${/\p{sc=Hani}/u.test(text[0]) && /\p{sc=Latn}/u.test(text[1]) ? ` ${text[1]} ` : text[1]}">${text[0]}</mstrans:dictionary>`;
 
     default:
       return text[1];
@@ -5597,7 +5597,7 @@ const Papago = {
 const MicrosoftTranslator = {
   translateText: async function (accessToken, inputText, sourceLanguage, targetLanguage, useGlossary = false) {
     try {
-      inputText = useGlossary ? getGlossaryAppliedText(convertTextToHtml(inputText), Translators.MICROSOFT_TRANSLATOR) : convertTextToHtml(inputText);
+      inputText = useGlossary ? getGlossaryAppliedText(inputText, Translators.MICROSOFT_TRANSLATOR) : inputText;
 
       /**
        * Microsoft Bing Translator
