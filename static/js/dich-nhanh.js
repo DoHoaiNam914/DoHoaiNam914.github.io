@@ -47,6 +47,7 @@ const VietphraseData = {
 
 let translateAbortController = null;
 let prevTranslation = [];
+let prevScrollTop;
 
 $(document).ready(async () => {
   try {
@@ -167,7 +168,7 @@ $(document).ready(async () => {
   queryText.trigger('input');
 });
 $(window).on('keydown', (event) => {
-  if (translatedTextArea.is(':visible')) {
+  if ($(document.activeElement).is('body')  && translatedTextArea.is(':visible')) {
     switch (event.key) {
       case 'Home':
         translatedTextArea.prop('scrollTop', 0);
@@ -179,8 +180,8 @@ $(window).on('keydown', (event) => {
   }
 });
 $(visualViewport).resize((event) => $('.textarea').css('max-height', event.target.height - ((event.target.width < 1200 ? 23.28703703703703 : 40.33092037228542) / 100) * event.target.height + 'px'));
-translateButton.click(async function () {
-  if (translateAbortController != undefined) {
+translateButton.click(function () {
+  if (translateAbortController != null) {
     translateAbortController.abort();
     translateAbortController = null;
   }
@@ -243,13 +244,9 @@ pasteButton.on('click', () => {
     }
   });
 });
-retranslateButton.click(async () => {
-console.log(1, translatedTextArea.prop('scrollTop'));
-  const prevScrollTop = translatedTextArea.prop('scrollTop');
-console.log(2, prevScrollTop);
-  await translateButton.text('Dịch').click();
-  translatedTextArea.prop('scrollTop', prevScrollTop);
-console.log(3, translatedTextArea.prop('scrollTop'));
+retranslateButton.click(() => {
+  prevScrollTop = translatedTextArea.prop('scrollTop');
+  translateButton.text('Dịch').click();
 });
 queryText.on('input', () => {
   queryText.css('height', 'auto');
@@ -997,10 +994,10 @@ function convertText(inputText, data, caseSensitive, useGlossary, translationAlg
       }
     }
 
-    glossaryEntries = glossaryEntries.sort((a, b) => b[0].length - a[0].length || a[0].localeCompare(b[0], 'vi'));
+    glossaryEntries = glossaryEntries.sort((a, b) => b[0].length - a[0].length);
     dataEntries = [
       ...translationAlgorithm === VietPhraseTranslationAlgorithms.PRIORITIZE_LONG_VIETPHRASE_CLUSTERS && useGlossary ? glossaryEntries : [],
-      ...dataEntries.sort((a, b) => b[0].length - a[0].length || a[0].localeCompare(b[0], 'vi'))
+      ...dataEntries.sort((a, b) => b[0].length - a[0].length)
     ];
     dataEntries = dataEntries.filter(([first, second]) => first !== '' && second != undefined && !dataEntries[first] && (dataEntries[first] = 1), {});
     data = translationAlgorithm === VietPhraseTranslationAlgorithms.TRANSLATE_FROM_LEFT_TO_RIGHT ? Object.fromEntries(dataEntries) : {};
@@ -1124,14 +1121,14 @@ function getIgnoreTranslationMarkup(text, translator) {
   switch (translator) {
     case Translators.DEEPL_TRANSLATOR:
     case Translators.GOOGLE_TRANSLATE:
-      // case Translators.PAPAGO:
+ // case Translators.PAPAGO:
       return `<span translate="no">${text[1]}</span>`;
 
     case Translators.LINGVANEX:
       return `<notranslate>${text[1]}</notranslate>`;
 
     case Translators.MICROSOFT_TRANSLATOR:
-      return `<span class="notranslate">${/\p{sc=Hani}/u.test(text[0]) ? ` ${text[1]} ` : text[1]}</span>`;
+      return `${/\p{sc=Hani}/u.test(text[0]) ? ' ' : ''}<mstrans:dictionary translation="${text[1]}">${text[0]}</mstrans:dictionary>`;
 
     default:
       return text[1];
@@ -1256,6 +1253,11 @@ function onPostTranslate() {
   translators.removeClass('disabled');
   retranslateButton.removeClass('disabled');
   translateButton.text('Sửa');
+
+  if (prevScrollTop != null) {
+    translatedTextArea.prop('scrollTop', prevScrollTop);
+    prevScrollTop = null;
+  }
 }
 
 const DeepLTranslator = {
@@ -5619,7 +5621,7 @@ const MicrosoftTranslator = {
        * Authorization: Bearer ${accessToken} - Content-Type: application/json - send(inputText)
        */
       const response = await $.ajax({
-        url: `https://api-edge.cognitive.microsofttranslator.com/translate?api-version=3.0&from=${sourceLanguage}&to=${targetLanguage}&textType=html`,
+        url: `https://api-edge.cognitive.microsofttranslator.com/translate?api-version=3.0&from=${sourceLanguage}&to=${targetLanguage}`,
         data: JSON.stringify(inputText.split(/\n/).map((sentence) => ({'Text': sentence}))),
         method: 'POST',
         headers: {
@@ -5628,7 +5630,7 @@ const MicrosoftTranslator = {
           'Content-Length': JSON.stringify(inputText.split(/\n/).map((sentence) => ({'Text': sentence}))).length
         }
       });
-      return convertHtmlToText(response.map((element) => element.translations[0].text).join('\n'));
+      return response.map((element) => element.translations[0].text).join('\n');
     } catch (error) {
       console.error('Bản dịch lỗi:', error.stack);
       throw error.toString();
