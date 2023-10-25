@@ -179,7 +179,7 @@ $(window).on('keydown', (event) => {
   }
 });
 $(visualViewport).resize((event) => $('.textarea').css('max-height', event.target.height - ((event.target.width < 1200 ? 23.28703703703703 : 40.33092037228542) / 100) * event.target.height + 'px'));
-translateButton.click(function () {
+translateButton.click(async function () {
   if (translateAbortController != null) {
     translateAbortController.abort();
     translateAbortController = null;
@@ -225,7 +225,7 @@ translateButton.click(function () {
         let statusText = translatedTextArea.html().split(/<br>|<\/p><p>/).map((element, index) => index === 0 ? 'Đang dịch...' + element.slice(12).replace(/./g, ' ') : element.replace(/./g, ' ')).join('<br>');
         translatedTextArea.html(statusText);
         translateAbortController = new AbortController();
-        translate(queryText.val(), translateAbortController.signal).finally(() => onPostTranslate());
+        await translate(queryText.val(), translateAbortController.signal).finally(() => onPostTranslate());
       }
       break;
   }
