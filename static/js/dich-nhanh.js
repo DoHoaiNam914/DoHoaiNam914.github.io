@@ -244,11 +244,12 @@ pasteButton.on('click', () => {
   });
 });
 retranslateButton.click(async () => {
-  if (translateButton.text() !== 'Dịch') {
-    const prevScrollTop = translatedTextArea.prop('scrollTop');
-    await translateButton.text('Dịch').click();
-    translatedTextArea.prop('scrollTop', prevScrollTop);
-  }
+console.log(1, translatedTextArea.prop('scrollTop'));
+  const prevScrollTop = translatedTextArea.prop('scrollTop');
+console.log(2, prevScrollTop);
+  await translateButton.text('Dịch').click();
+  translatedTextArea.prop('scrollTop', prevScrollTop);
+console.log(3, translatedTextArea.prop('scrollTop'));
 });
 queryText.on('input', () => {
   queryText.css('height', 'auto');
