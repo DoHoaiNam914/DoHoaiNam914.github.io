@@ -47,6 +47,7 @@ const VietphraseData = {
 
 let translateAbortController = null;
 let prevTranslation = [];
+let prevScrollTop = 0;
 
 $(document).ready(async () => {
   try {
@@ -243,11 +244,10 @@ pasteButton.on('click', () => {
     }
   });
 });
-retranslateButton.click(async () => {
+retranslateButton.click(() => {
   if (translateButton.text() === 'Sửa') {
-    const prevScrollTop = translatedTextArea.prop('scrollTop');
-    await translateButton.text('Dịch').click();
-    translatedTextArea.prop('scrollTop', prevScrollTop);
+    prevScrollTop = translatedTextArea.prop('scrollTop');
+    translateButton.text('Dịch').click();
   }
 });
 queryText.on('input', () => {
@@ -1255,6 +1255,11 @@ function onPostTranslate() {
   translators.removeClass('disabled');
   retranslateButton.removeClass('disabled');
   translateButton.text('Sửa');
+
+  if (prevScrollTop > 0) {
+    translatedTextArea.prop('scrollTop', prevScrollTop);
+    prevScrollTop = 0;
+  }
 }
 
 const DeepLTranslator = {
