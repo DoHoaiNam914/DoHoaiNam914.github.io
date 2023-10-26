@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html class="h-100 m-0" lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Dịch nhanh - DoHoaiNam Pages</title>
+  <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/static/css/general_style.css">
+  <style>
+    body {
+      --opt-font-family: Roboto, sans-serif;
+      --opt-font-size: 1em;
+      --opt-line-height: 1.2em;
+      overflow-x: hidden;
+    }
+
+    .workspace {
+      line-height: 1.2em;
+      font-size: 1em;
+      max-height: 577px;
+      overflow-wrap: break-word;
+      padding: 1.5rem 8px 8rem;
+    }
+
+    .textarea {
+      font-family: var(--opt-font-family);
+      font-size: var(--opt-font-size);
+      font-weight: normal;
+      min-height: 53.425925925925924vh !important;
+      letter-spacing: 0;
+      line-height: var(--opt-line-height);
+      margin: 0;
+      orphans: 1;
+      overflow-x: hidden;
+      padding: 8px;
+      text-align: justify;
+      widows: 1;
+      word-spacing: 0;
+    }
+
+    @media screen and (min-width: 75rem) {
+
+      .textarea {
+        max-width: 1000px;
+        padding: 20px;
+      }
+
+    }
+
+    .textarea > p {
+      display: block;
+      margin: 0;
+    }
+
+    .viewport {
+      max-width: 1000px;
+    }
+
+    .action-nav {
+      height: 2.5em;
+      margin-bottom: calc(3.25em - 1px);
+      user-select: none;
+    }
+
+    .action-nav > .nav {
+      display: flex;
+      flex-wrap: nowrap;
+      overflow-y: hidden;
+      padding-bottom: 1em;
+      vertical-align: middle;
+      white-space: nowrap;
+    }
+
+    .action-nav .nav-item {
+      color: #6c757d;
+      font-size: 0.875em;
+      padding-bottom: 0.75em;
+      padding-top: 0.75em;
+    }
+
+    .action-nav .nav-link:hover {
+      color: black;
+    }
+
+    .number-option-display {
+      width: 5em;
+    }
+  </style>
+  <script src="/static/lib/LAB.js"></script>
+  <script>
+    'use strict';
+
+    const scriptsToLoad = [
+      '/static/lib/jquery-3.7.1.min.js',
+      '/static/lib/bootstrap.bundle.min.js',
+      '/static/js/dich-nhanh.js',
+    ];
+    let i = 0;
+
+    const labJs = () => {
+      if (i < scriptsToLoad.length) {
+        $LAB.script(scriptsToLoad[i]).wait(labJs);
+        i++;
+      }
+    };
+    labJs();
+  </script>
+  <script>
+    /*!
+     * Color mode toggler for Bootstrap's docs (https://getbootstrap.com/)
+     * Copyright 2011-2023 The Bootstrap Authors
+     * Licensed under the Creative Commons Attribution 3.0 Unported License.
+     */
+
+    (() => {
+      'use strict'
+
+      const getStoredTheme = () => localStorage.getItem('theme')
+      const setStoredTheme = theme => localStorage.setItem('theme', theme)
+
+      const getPreferredTheme = () => {
+        const storedTheme = getStoredTheme()
+        if (storedTheme) {
+          return storedTheme
+        }
+
+        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+      }
+
+      const setTheme = theme => {
+        if (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+          document.documentElement.setAttribute('data-bs-theme', 'dark')
+        } else {
+          document.documentElement.setAttribute('data-bs-theme', theme)
+        }
+      }
+
+      setTheme(getPreferredTheme())
+
+      const showActiveTheme = (theme, focus = false) => {
+        const themeSwitcher = document.querySelector('#bd-theme')
+
+        if (!themeSwitcher) {
+          return
+        }
+
+        // const themeSwitcherText = document.querySelector('#bd-theme-text')
+        // const activeThemeIcon = document.querySelector('.theme-icon-active use')
+        const btnToActive = document.querySelector(`[data-bs-theme-value="${theme}"]`)
+        // const svgOfActiveBtn = btnToActive.querySelector('svg use').getAttribute('href')
+
+        document.querySelectorAll('[data-bs-theme-value]').forEach(element => {
+          element.classList.remove('active')
+          element.setAttribute('aria-pressed', 'false')
+        })
+
+        btnToActive.classList.add('active')
+        btnToActive.setAttribute('aria-pressed', 'true')
+        // activeThemeIcon.setAttribute('href', svgOfActiveBtn)
+        // const themeSwitcherLabel = `${themeSwitcherText.textContent} (${btnToActive.dataset.bsThemeValue})`
+        // themeSwitcher.setAttribute('aria-label', themeSwitcherLabel)
+
+        if (focus) {
+          themeSwitcher.focus()
+        }
+      }
+
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+        const storedTheme = getStoredTheme()
+        if (storedTheme !== 'light' && storedTheme !== 'dark') {
+          setTheme(getPreferredTheme())
+        }
+      })
+
+      window.addEventListener('DOMContentLoaded', () => {
+        showActiveTheme(getPreferredTheme())
+
+        document.querySelectorAll('[data-bs-theme-value]')
+                .forEach(toggle => {
+                  toggle.addEventListener('click', () => {
+                    const theme = toggle.getAttribute('data-bs-theme-value')
+                    setStoredTheme(theme)
+                    setTheme(theme)
+                    showActiveTheme(theme, true)
+                  })
+                })
+      })
+    })()
+  </script>
+</head>
+<body class="bg-body-tertiary h-100 m-0 p-0 position-relative w-100">
+<main class="container-fluid viewport workspace">
+  <textarea class="form-control textarea" id="input-textarea" placeholder="Viết gì đó tại đây"></textarea>
+  <div class="form-control textarea" id="result-textarea" style="display: none;"></div>
+</main>
+<div class="container-fluid fixed-bottom p-0">
+  <nav class="navbar bg-body fixed-bottom shadow-sm">
+    <div class="container-fluid p-0 text-center viewport">
+      <div class="row d-inline-flex flex-nowrap m-auto w-100">
+        <div class="col-10 pe-0">
+          <div class="row m-0 w-100">
+            <div class="col">
+              <select class="form-select" id="source-language">
+                <option value="auto" selected>Phát hiện ngôn ngữ</option>
+                <option value="ar">Ả Rập</option>
+                <option value="sq">Albania</option>
+                <option value="am">Amharic</option>
+                <option value="en">Anh</option>
+                <option value="hy">Armenia</option>
+                <option value="as">Assam</option>
+                <option value="ay">Aymara</option>
+                <option value="az">Azerbaijan</option>
+                <option value="pl">Ba Lan</option>
+                <option value="fa">Ba Tư</option>
+                <option value="bm">Bambara</option>
+                <option value="xh">Bantu</option>
+                <option value="eu">Basque</option>
+                <option value="be">Belarus</option>
+                <option value="bn">Bengal</option>
+                <option value="bho">Bhojpuri</option>
+                <option value="bs">Bosnia</option>
+                <option value="pt">Bồ Đào Nha</option>
+                <option value="bg">Bulgaria</option>
+                <option value="ca">Catalan</option>
+                <option value="ceb">Cebuano</option>
+                <option value="ny">Chichewa</option>
+                <option value="co">Corsi</option>
+                <option value="ht">Creole (Haiti)</option>
+                <option value="hr">Croatia</option>
+                <option value="dv">Dhivehi</option>
+                <option value="iw">Do Thái</option>
+                <option value="doi">Dogri</option>
+                <option value="da">Đan Mạch</option>
+                <option value="de">Đức</option>
+                <option value="et">Estonia</option>
+                <option value="ee">Ewe</option>
+                <option value="tl">Filipino</option>
+                <option value="fy">Frisia</option>
+                <option value="gd">Gael Scotland</option>
+                <option value="gl">Galicia</option>
+                <option value="ka">George</option>
+                <option value="gn">Guarani</option>
+                <option value="gu">Gujarat</option>
+                <option value="nl">Hà Lan</option>
+                <option value="af">Hà Lan (Nam Phi)</option>
+                <option value="ko">Hàn</option>
+                <option value="ha">Hausa</option>
+                <option value="haw">Hawaii</option>
+                <option value="hi">Hindi</option>
+                <option value="hmn">Hmong</option>
+                <option value="hu">Hungary</option>
+                <option value="el">Hy Lạp</option>
+                <option value="is">Iceland</option>
+                <option value="ig">Igbo</option>
+                <option value="ilo">Ilocano</option>
+                <option value="id">Indonesia</option>
+                <option value="ga">Ireland</option>
+                <option value="jw">Java</option>
+                <option value="kn">Kannada</option>
+                <option value="kk">Kazakh</option>
+                <option value="km">Khmer</option>
+                <option value="rw">Kinyarwanda</option>
+                <option value="gom">Konkani</option>
+                <option value="kri">Krio</option>
+                <option value="ku">Kurd (Kurmanji)</option>
+                <option value="ckb">Kurd (Sorani)</option>
+                <option value="ky">Kyrgyz</option>
+                <option value="lo">Lào</option>
+                <option value="la">Latinh</option>
+                <option value="lv">Latvia</option>
+                <option value="ln">Lingala</option>
+                <option value="lt">Litva</option>
+                <option value="lg">Luganda</option>
+                <option value="lb">Luxembourg</option>
+                <option value="ms">Mã Lai</option>
+                <option value="mk">Macedonia</option>
+                <option value="mai">Maithili</option>
+                <option value="mg">Malagasy</option>
+                <option value="ml">Malayalam</option>
+                <option value="mt">Malta</option>
+                <option value="mi">Maori</option>
+                <option value="mr">Marathi</option>
+                <option value="mni-Mtei">Meiteilon (Manipuri)</option>
+                <option value="lus">Mizo</option>
+                <option value="mn">Mông Cổ</option>
+                <option value="my">Myanmar</option>
+                <option value="no">Na Uy</option>
+                <option value="ne">Nepal</option>
+                <option value="ru">Nga</option>
+                <option value="ja">Nhật</option>
+                <option value="or">Odia (Oriya)</option>
+                <option value="om">Oromo</option>
+                <option value="ps">Pashto</option>
+                <option value="sa">Phạn</option>
+                <option value="fr">Pháp</option>
+                <option value="fi">Phần Lan</option>
+                <option value="pa">Punjab</option>
+                <option value="qu">Quechua</option>
+                <option value="eo">Quốc tế ngữ</option>
+                <option value="ro">Rumani</option>
+                <option value="sm">Samoa</option>
+                <option value="cs">Séc</option>
+                <option value="nso">Sepedi</option>
+                <option value="sr">Serbia</option>
+                <option value="st">Sesotho</option>
+                <option value="sn">Shona</option>
+                <option value="sd">Sindhi</option>
+                <option value="si">Sinhala</option>
+                <option value="sk">Slovak</option>
+                <option value="sl">Slovenia</option>
+                <option value="so">Somali</option>
+                <option value="su">Sunda</option>
+                <option value="sw">Swahili</option>
+                <option value="tg">Tajik</option>
+                <option value="ta">Tamil</option>
+                <option value="tt">Tatar</option>
+                <option value="es">Tây Ban Nha</option>
+                <option value="te">Telugu</option>
+                <option value="th">Thái</option>
+                <option value="tr">Thổ Nhĩ Kỳ</option>
+                <option value="sv">Thụy Điển</option>
+                <option value="ti">Tigrinya</option>
+                <option value="zh-CN">Trung</option>
+                <option value="ts">Tsonga</option>
+                <option value="tk">Turkmen</option>
+                <option value="ak">Twi</option>
+                <option value="uk">Ukraina</option>
+                <option value="ur">Urdu</option>
+                <option value="ug">Uyghur</option>
+                <option value="uz">Uzbek</option>
+                <option value="vi">Việt</option>
+                <option value="cy">Xứ Wales</option>
+                <option value="it">Ý</option>
+                <option value="yi">Yiddish</option>
+                <option value="yo">Yoruba</option>
+                <option value="zu">Zulu</option>
+              </select>
+            </div>
+            <div class="col">
+              <select class="form-select" id="target-language">
+                <option value="ar">Ả Rập</option>
+                <option value="sq">Albania</option>
+                <option value="am">Amharic</option>
+                <option value="en">Anh</option>
+                <option value="hy">Armenia</option>
+                <option value="as">Assam</option>
+                <option value="ay">Aymara</option>
+                <option value="az">Azerbaijan</option>
+                <option value="pl">Ba Lan</option>
+                <option value="fa">Ba Tư</option>
+                <option value="bm">Bambara</option>
+                <option value="xh">Bantu</option>
+                <option value="eu">Basque</option>
+                <option value="be">Belarus</option>
+                <option value="bn">Bengal</option>
+                <option value="bho">Bhojpuri</option>
+                <option value="bs">Bosnia</option>
+                <option value="pt">Bồ Đào Nha</option>
+                <option value="bg">Bulgaria</option>
+                <option value="ca">Catalan</option>
+                <option value="ceb">Cebuano</option>
+                <option value="ny">Chichewa</option>
+                <option value="co">Corsi</option>
+                <option value="ht">Creole (Haiti)</option>
+                <option value="hr">Croatia</option>
+                <option value="dv">Dhivehi</option>
+                <option value="iw">Do Thái</option>
+                <option value="doi">Dogri</option>
+                <option value="da">Đan Mạch</option>
+                <option value="de">Đức</option>
+                <option value="et">Estonia</option>
+                <option value="ee">Ewe</option>
+                <option value="tl">Filipino</option>
+                <option value="fy">Frisia</option>
+                <option value="gd">Gael Scotland</option>
+                <option value="gl">Galicia</option>
+                <option value="ka">George</option>
+                <option value="gn">Guarani</option>
+                <option value="gu">Gujarat</option>
+                <option value="nl">Hà Lan</option>
+                <option value="af">Hà Lan (Nam Phi)</option>
+                <option value="ko">Hàn</option>
+                <option value="ha">Hausa</option>
+                <option value="haw">Hawaii</option>
+                <option value="hi">Hindi</option>
+                <option value="hmn">Hmong</option>
+                <option value="hu">Hungary</option>
+                <option value="el">Hy Lạp</option>
+                <option value="is">Iceland</option>
+                <option value="ig">Igbo</option>
+                <option value="ilo">Ilocano</option>
+                <option value="id">Indonesia</option>
+                <option value="ga">Ireland</option>
+                <option value="jw">Java</option>
+                <option value="kn">Kannada</option>
+                <option value="kk">Kazakh</option>
+                <option value="km">Khmer</option>
+                <option value="rw">Kinyarwanda</option>
+                <option value="gom">Konkani</option>
+                <option value="kri">Krio</option>
+                <option value="ku">Kurd (Kurmanji)</option>
+                <option value="ckb">Kurd (Sorani)</option>
+                <option value="ky">Kyrgyz</option>
+                <option value="lo">Lào</option>
+                <option value="la">Latinh</option>
+                <option value="lv">Latvia</option>
+                <option value="ln">Lingala</option>
+                <option value="lt">Litva</option>
+                <option value="lg">Luganda</option>
+                <option value="lb">Luxembourg</option>
+                <option value="ms">Mã Lai</option>
+                <option value="mk">Macedonia</option>
+                <option value="mai">Maithili</option>
+                <option value="mg">Malagasy</option>
+                <option value="ml">Malayalam</option>
+                <option value="mt">Malta</option>
+                <option value="mi">Maori</option>
+                <option value="mr">Marathi</option>
+                <option value="mni-Mtei">Meiteilon (Manipuri)</option>
+                <option value="lus">Mizo</option>
+                <option value="mn">Mông Cổ</option>
+                <option value="my">Myanmar</option>
+                <option value="no">Na Uy</option>
+                <option value="ne">Nepal</option>
+                <option value="ru">Nga</option>
+                <option value="ja">Nhật</option>
+                <option value="or">Odia (Oriya)</option>
+                <option value="om">Oromo</option>
+                <option value="ps">Pashto</option>
+                <option value="sa">Phạn</option>
+                <option value="fr">Pháp</option>
+                <option value="fi">Phần Lan</option>
+                <option value="pa">Punjab</option>
+                <option value="qu">Quechua</option>
+                <option value="eo">Quốc tế ngữ</option>
+                <option value="ro">Rumani</option>
+                <option value="sm">Samoa</option>
+                <option value="cs">Séc</option>
+                <option value="nso">Sepedi</option>
+                <option value="sr">Serbia</option>
+                <option value="st">Sesotho</option>
+                <option value="sn">Shona</option>
+                <option value="sd">Sindhi</option>
+                <option value="si">Sinhala</option>
+                <option value="sk">Slovak</option>
+                <option value="sl">Slovenia</option>
+                <option value="so">Somali</option>
+                <option value="su">Sunda</option>
+                <option value="sw">Swahili</option>
+                <option value="tg">Tajik</option>
+                <option value="ta">Tamil</option>
+                <option value="tt">Tatar</option>
+                <option value="es">Tây Ban Nha</option>
+                <option value="te">Telugu</option>
+                <option value="th">Thái</option>
+                <option value="tr">Thổ Nhĩ Kỳ</option>
+                <option value="sv">Thụy Điển</option>
+                <option value="ti">Tigrinya</option>
+                <option value="zh-CN">Trung (Giản thể)</option>
+                <option value="zh-TW">Trung (Phồn thể)</option>
+                <option value="ts">Tsonga</option>
+                <option value="tk">Turkmen</option>
+                <option value="ak">Twi</option>
+                <option value="uk">Ukraina</option>
+                <option value="ur">Urdu</option>
+                <option value="ug">Uyghur</option>
+                <option value="uz">Uzbek</option>
+                <option value="vi" selected>Việt</option>
+                <option value="cy">Xứ Wales</option>
+                <option value="it">Ý</option>
+                <option value="yi">Yiddish</option>
+                <option value="yo">Yoruba</option>
+                <option value="zu">Zulu</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="col align-middle d-inline-flex ps-0">
+          <button type="button" class="btn btn-primary ms-auto me-1" id="translate-button">Dịch</button>
+        </div>
+      </div>
+    </div>
+  </nav>
+  <div class="action-nav bg-light-subtle w-100">
+    <ul class="nav m-auto viewport">
+      <li class="nav-item mx-3">Số lượng ký tự: <span id="queryTextCounter">0</span></li>
+      <li>
+        <button type="button" class="nav-item nav-link" id="copyButton">Sao chép</button>
+      </li>
+      <li>
+        <button type="button" class="nav-item nav-link" id="pasteButton">Dán</button>
+      </li>
+      <li>
+        <button type="button" class="nav-item nav-link disabled" id="retranslateButton">Dịch lại</button>
+      </li>
+      <li class="nav-item mx-3">Thời gian dịch: <span id="translateTimer">0</span>ms</li>
+    </ul>
+  </div>
+</div>
+<div class="modals viewport">
+  <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#settings-modal">Settings</button>
+  <div class="modal fade" id="settings-modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Thiết lập</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <h2 class="fs-5">Thiết lập giao diện</h2>
+          <div class="dropdown mb-3">
+            <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" id="bd-theme" data-bs-toggle="dropdown">
+              <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" class="bi bi-circle-half my-1 theme-icon-active" viewBox="0 0 16 16">
+                <path d="M8 15A7 7 0 1 0 8 1v14zm0 1A8 8 0 1 1 8 0a8 8 0 0 1 0 16z"/>
+              </svg>
+              Thay đổi chủ đề
+            </button>
+            <ul class="dropdown-menu">
+              <li>
+                <button type="button" class="dropdown-item active" data-bs-theme-value="auto">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" class="bi bi-circle-half me-2 theme-icon" viewBox="0 0 16 16">
+                    <path d="M8 15A7 7 0 1 0 8 1v14zm0 1A8 8 0 1 1 8 0a8 8 0 0 1 0 16z"/>
+                  </svg>
+                  Tự động
+                </button>
+              </li>
+              <li>
+                <button type="button" class="dropdown-item" data-bs-theme-value="light">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" class="bi bi-sun-fill me-2 theme-icon" viewBox="0 0 16 16">
+                    <path d="M8 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0zm0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13zm8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5zM3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8zm10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0zm-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0zm9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707zM4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .708z"/>
+                  </svg>
+                  Sáng
+                </button>
+              </li>
+              <li>
+                <button type="button" class="dropdown-item" data-bs-theme-value="dark">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" class="bi bi-moon-stars-fill me-2 theme-icon" viewBox="0 0 16 16">
+                    <path d="M6 .278a.768.768 0 0 1 .08.858 7.208 7.208 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277.527 0 1.04-.055 1.533-.16a.787.787 0 0 1 .81.316.733.733 0 0 1-.031.893A8.349 8.349 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.752.752 0 0 1 6 .278z"/>
+                    <path d="M10.794 3.148a.217.217 0 0 1 .412 0l.387 1.162c.173.518.579.924 1.097 1.097l1.162.387a.217.217 0 0 1 0 .412l-1.162.387a1.734 1.734 0 0 0-1.097 1.097l-.387 1.162a.217.217 0 0 1-.412 0l-.387-1.162A1.734 1.734 0 0 0 9.31 6.593l-1.162-.387a.217.217 0 0 1 0-.412l1.162-.387a1.734 1.734 0 0 0 1.097-1.097l.387-1.162zM13.863.099a.145.145 0 0 1 .274 0l.258.774c.115.346.386.617.732.732l.774.258a.145.145 0 0 1 0 .274l-.774.258a1.156 1.156 0 0 0-.732.732l-.258.774a.145.145 0 0 1-.274 0l-.258-.774a1.156 1.156 0 0 0-.732-.732l-.774-.258a.145.145 0 0 1 0-.274l.774-.258c.346-.115.617-.386.732-.732L13.863.1z"/>
+                  </svg>
+                  Tối
+                </button>
+              </li>
+            </ul>
+          </div>
+          <div class="dropdown mb-3">
+            <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Phông chữ
+            </button>
+            <ul class="dropdown-menu">
+              <li>
+                <button class="dropdown-item font-option active" type="button">Mặc định (Georgia)</button>
+              </li>
+              <li>
+                <button class="dropdown-item font-option" type="button">Times New Roman</button>
+              </li>
+              <li>
+                <button class="dropdown-item font-option" type="button">Phông chữ hệ thống</button>
+              </li>
+              <li>
+                <button class="dropdown-item font-option" type="button">Hiragino Mincho ProN</button>
+              </li>
+              <li>
+                <button class="dropdown-item font-option" data-additional-fonts="Hiragino Mincho ProN" type="button">Literata</button>
+              </li>
+              <li>
+                <button class="dropdown-item font-option" data-additional-fonts="Hiragino Mincho ProN" type="button">Bookerly</button>
+              </li>
+              <li>
+                <button class="dropdown-item font-option" data-additional-fonts="Hiragino Mincho Pro" type="button">Iowan Old Style</button>
+              </li>
+              <li>
+                <button class="dropdown-item font-option" type="button">Crimson Text</button>
+              </li>
+            </ul>
+          </div>
+          <div class="mb-3">
+            <label for="font-size" class="form-label">Kích cỡ phông chữ:
+              <input class="form-control form-control-sm d-inline number-option-display" type="number" id="font-size-display" min="60" max="350" value="100"/></label>
+            <input type="range" class="form-range option" min="60" max="350" value="100" id="font-size">
+          </div>
+          <div class="mb-3">
+            <label for="font-size" class="form-label">Khoảng cách dòng:
+              <input class="form-control form-control-sm d-inline number-option-display" type="number" id="line-spacing-display" min="0" max="300" value="40"/></label>
+            <input type="range" class="form-range option" min="0" max="300" value="40" id="line-spacing">
+          </div>
+          <hr>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Reset</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

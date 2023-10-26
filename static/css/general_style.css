@@ -13,3 +13,8 @@ body {
 textarea {
   resize: none;
 }
+
+.col-0_5 {
+  flex: 0 0 auto;
+  width: 4.166666665%
+}
