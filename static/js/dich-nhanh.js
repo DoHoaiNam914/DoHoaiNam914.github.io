@@ -243,10 +243,10 @@ pasteButton.on('click', () => {
     }
   });
 });
-retranslateButton.click(() => {
+retranslateButton.click(async () => {
   if (translateButton.text() === 'Sửa') {
     const prevScrollTop = translatedTextArea.prop('scrollTop');
-    translateButton.text('Dịch').click();
+    await translateButton.text('Dịch').click();
     translatedTextArea.prop('scrollTop', prevScrollTop);
   }
 });
@@ -1962,7 +1962,7 @@ const Lingvanex = {
         }
       });
 
-      return response.result;
+      return response.result.join('\n');
     } catch (error) {
       console.error('Bản dịch lỗi:', error.stack);
       throw error.toString();
