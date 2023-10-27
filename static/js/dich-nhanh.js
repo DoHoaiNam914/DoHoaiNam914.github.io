@@ -9,6 +9,7 @@ const options = $('.option');
 const fontOptions = $('.font-option');
 const fontSize = $('#font-size');
 const lineSpacing = $('#line-spacing');
+const alignmentSettings = $('#alignment-settings');
 
 $(document).ready(() => {
   if (Object.keys(quickTranslateStorage).length === 0) return;
@@ -71,5 +72,10 @@ $('#line-spacing-display').on('change', function () {
 });
 lineSpacing.change(function () {
   $(this).trigger('input');
+  localStorage.setItem('dich-nhanh', JSON.stringify(quickTranslateStorage));
+});
+alignmentSettings.change(function () {
+  quickTranslateStorage[$(this).attr('id')] = $(this).prop('checked');
+  $(document.body).css('--opt-text-align', quickTranslateStorage[$(this).attr('id')] ? 'justify' : 'start');
   localStorage.setItem('dich-nhanh', JSON.stringify(quickTranslateStorage));
 });

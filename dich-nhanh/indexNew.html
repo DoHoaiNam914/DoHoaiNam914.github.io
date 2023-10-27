@@ -12,6 +12,7 @@
       --opt-font-family: Roboto, sans-serif;
       --opt-font-size: 1em;
       --opt-line-height: 1.2em;
+      --opt-text-align: justify;
       overflow-x: hidden;
     }
 
@@ -34,7 +35,7 @@
       orphans: 1;
       overflow-x: hidden;
       padding: 8px;
-      text-align: justify;
+      text-align: var(--opt-text-align);
       widows: 1;
       word-spacing: 0;
     }
@@ -550,40 +551,44 @@
             </button>
             <ul class="dropdown-menu">
               <li>
-                <button class="dropdown-item font-option active" type="button">Mặc định (Georgia)</button>
+                <button type="button" class="dropdown-item font-option active">Mặc định (Georgia)</button>
               </li>
               <li>
-                <button class="dropdown-item font-option" type="button">Times New Roman</button>
+                <button type="button" class="dropdown-item font-option">Times New Roman</button>
               </li>
               <li>
-                <button class="dropdown-item font-option" type="button">Phông chữ hệ thống</button>
+                <button type="button" class="dropdown-item font-option">Phông chữ hệ thống</button>
               </li>
               <li>
-                <button class="dropdown-item font-option" type="button">Hiragino Mincho ProN</button>
+                <button type="button" class="dropdown-item font-option">Hiragino Mincho ProN</button>
               </li>
               <li>
-                <button class="dropdown-item font-option" data-additional-fonts="Hiragino Mincho ProN" type="button">Literata</button>
+                <button type="button" class="dropdown-item font-option" data-additional-fonts="Hiragino Mincho ProN">Literata</button>
               </li>
               <li>
-                <button class="dropdown-item font-option" data-additional-fonts="Hiragino Mincho ProN" type="button">Bookerly</button>
+                <button type="button" class="dropdown-item font-option" data-additional-fonts="Hiragino Mincho ProN">Bookerly</button>
               </li>
               <li>
-                <button class="dropdown-item font-option" data-additional-fonts="Hiragino Mincho Pro" type="button">Iowan Old Style</button>
+                <button type="button" class="dropdown-item font-option" data-additional-fonts="Hiragino Mincho Pro">Iowan Old Style</button>
               </li>
               <li>
-                <button class="dropdown-item font-option" type="button">Crimson Text</button>
+                <button type="button" class="dropdown-item font-option">Crimson Text</button>
               </li>
             </ul>
           </div>
           <div class="mb-3">
             <label for="font-size" class="form-label">Kích cỡ phông chữ:
-              <input class="form-control form-control-sm d-inline number-option-display" type="number" id="font-size-display" min="60" max="350" value="100"/></label>
+              <input type="number" class="form-control form-control-sm d-inline number-option-display" id="font-size-display" min="60" max="350" value="100"/></label>
             <input type="range" class="form-range option" min="60" max="350" value="100" id="font-size">
           </div>
           <div class="mb-3">
             <label for="font-size" class="form-label">Khoảng cách dòng:
-              <input class="form-control form-control-sm d-inline number-option-display" type="number" id="line-spacing-display" min="0" max="300" value="40"/></label>
+              <input type="number" class="form-control form-control-sm d-inline number-option-display" id="line-spacing-display" min="0" max="300" value="40"/></label>
             <input type="range" class="form-range option" min="0" max="300" value="40" id="line-spacing">
+          </div>
+          <div class="form-check form-switch mb-3">
+            <input type="checkbox" class="form-check-input option" role="switch" id="alignment-settings" checked>
+            <label class="form-check-label" for="alignment-settings">Thiết lập căn lề</label>
           </div>
           <hr>
         </div>
