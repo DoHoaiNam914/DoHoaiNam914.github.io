@@ -1121,10 +1121,10 @@ function convertText(inputText, data, caseSensitive, useGlossary, translationAlg
 
 function getIgnoreTranslationMarkup(text, translator) {
   switch (translator) {
-    case Translators.DEEPL_TRANSLATOR:
+    /* case Translators.DEEPL_TRANSLATOR:
     case Translators.GOOGLE_TRANSLATE:
  // case Translators.PAPAGO:
-      return `<span translate="no">${text[1]}</span>`;
+      return `<span translate="no">${text[1]}</span>`; */
 
     case Translators.LINGVANEX:
       return `<notranslate>${text[1]}</notranslate>`;
