@@ -6,6 +6,7 @@ const specialSinovietnameseData = [
   ['公司', 'CÔNG TI'],
   ['团长', 'ĐOÀN TRƯỞNG'],
   ['皇朝', 'HOÀNG TRIỀU'],
+  ['乡长', 'HƯƠNG TRƯỞNG'],
   ['计划', 'KẾ HOẠCH'],
   ['经济', 'KINH TẾ'],
   ['奇迹', 'KỲ TÍCH'],
