@@ -104,21 +104,20 @@ class DeepLTranslator {
   static getMappedSourceLanguageCode(translator, languageCode) {
     switch (translator) {
       case Translators.GOOGLE_TRANSLATE:
-        return DeepLTranslator.GOOGLE_TRANSLATE_MAPPING[languageCode] ?? GoogleTranslate.SOURCE_LANGUAGES.hasOwnProperty(languageCode) ? languageCode : GoogleTranslate.DefaultLanguage.SL;
+        return DeepLTranslator.GOOGLE_TRANSLATE_MAPPING[languageCode] ?? (GoogleTranslate.SOURCE_LANGUAGES.hasOwnProperty(languageCode) ? languageCode : GoogleTranslate.DefaultLanguage.SL);
 
       case Translators.MICROSOFT_TRANSLATOR:
-        console.log(languageCode, DeepLTranslator.MICROSOFT_TRANSLATOR_MAPPING[languageCode], MicrosoftTranslator.DefaultLanguage.TO)
-        return DeepLTranslator.MICROSOFT_TRANSLATOR_MAPPING[languageCode] ?? MicrosoftTranslator.DefaultLanguage.FROM;
+        return DeepLTranslator.MICROSOFT_TRANSLATOR_MAPPING[languageCode] ?? (MicrosoftTranslator.FROM_LANGUAGES.hasOwnProperty(languageCode) ? languageCode : MicrosoftTranslator.DefaultLanguage.FROM);
     }
   }
 
   static getMappedTargetLanguageCode(translator, languageCode) {
     switch (translator) {
       case Translators.GOOGLE_TRANSLATE:
-        return DeepLTranslator.GOOGLE_TRANSLATE_MAPPING[languageCode] ?? GoogleTranslate.TARGET_LANGUAGES.hasOwnProperty(languageCode) ? languageCode : GoogleTranslate.DefaultLanguage.TL;
+        return DeepLTranslator.GOOGLE_TRANSLATE_MAPPING[languageCode] ?? (GoogleTranslate.TARGET_LANGUAGES.hasOwnProperty(languageCode) ? languageCode : GoogleTranslate.DefaultLanguage.TL);
 
       case Translators.MICROSOFT_TRANSLATOR:
-        return DeepLTranslator.MICROSOFT_TRANSLATOR_MAPPING[languageCode] ?? MicrosoftTranslator.DefaultLanguage.TO;
+        return DeepLTranslator.MICROSOFT_TRANSLATOR_MAPPING[languageCode] ?? (MicrosoftTranslator.TO_LANGUAGES.hasOwnProperty(languageCode) ? languageCode : MicrosoftTranslator.DefaultLanguage.TO);
     }
   }
 
@@ -204,20 +203,20 @@ class GoogleTranslate {
   static getMappedSourceLanguageCode(translator, languageCode) {
     switch (translator) {
       case Translators.DEEPL_TRANSLATOR:
-        return GoogleTranslate.DEEPL_TRANSLATOR_MAPPING.SOURCE_LANGUAGES[languageCode] ?? DeepLTranslator.DefaultLanguage.SOURCE_LANG;
+        return GoogleTranslate.DEEPL_TRANSLATOR_MAPPING.SOURCE_LANGUAGES[languageCode] ?? (DeepLTranslator.SOURCE_LANGUAGES.filter(({language}) => language === languageCode).length > 0 ? languageCode : DeepLTranslator.DefaultLanguage.SOURCE_LANG);
 
       case Translators.MICROSOFT_TRANSLATOR:
-        return GoogleTranslate.MICROSOFT_TRANSLATOR_MAPPING[languageCode] ?? MicrosoftTranslator.FROM_LANGUAGES.hasOwnProperty(languageCode) ? languageCode : MicrosoftTranslator.DefaultLanguage.FROM;
+        return GoogleTranslate.MICROSOFT_TRANSLATOR_MAPPING[languageCode] ?? (MicrosoftTranslator.FROM_LANGUAGES.hasOwnProperty(languageCode) ? languageCode : MicrosoftTranslator.DefaultLanguage.FROM);
     }
   }
 
   static getMappedTargetLanguageCode(translator, languageCode) {
     switch (translator) {
       case Translators.DEEPL_TRANSLATOR:
-        return GoogleTranslate.DEEPL_TRANSLATOR_MAPPING.TARGET_LANGUAGES[languageCode] ?? DeepLTranslator.DefaultLanguage.TARGET_LANG;
+        return GoogleTranslate.DEEPL_TRANSLATOR_MAPPING.TARGET_LANGUAGES[languageCode] ?? (DeepLTranslator.TARGET_LANGUAGES.filter(({language}) => language === languageCode).length > 0 ? languageCode : DeepLTranslator.DefaultLanguage.TARGET_LANG);
 
       case Translators.MICROSOFT_TRANSLATOR:
-        return GoogleTranslate.MICROSOFT_TRANSLATOR_MAPPING[languageCode] ?? MicrosoftTranslator.TO_LANGUAGES.hasOwnProperty(languageCode) ? languageCode : MicrosoftTranslator.DefaultLanguage.TO;
+        return GoogleTranslate.MICROSOFT_TRANSLATOR_MAPPING[languageCode] ?? (MicrosoftTranslator.TO_LANGUAGES.hasOwnProperty(languageCode) ? languageCode : MicrosoftTranslator.DefaultLanguage.TO);
     }
   }
 
@@ -376,20 +375,20 @@ class MicrosoftTranslator {
   static getMappedSourceLanguageCode(translator, languageCode) {
     switch (translator) {
       case Translators.DEEPL_TRANSLATOR:
-        return MicrosoftTranslator.DEEPL_TRANSLATOR_MAPPING.SOURCE_LANGUAGES[languageCode] ?? DeepLTranslator.DefaultLanguage.SOURCE_LANG;
+        return MicrosoftTranslator.DEEPL_TRANSLATOR_MAPPING.SOURCE_LANGUAGES[languageCode] ?? (DeepLTranslator.SOURCE_LANGUAGES.filter(({language}) => language === languageCode).length > 0 ? languageCode : DeepLTranslator.DefaultLanguage.SOURCE_LANG);
 
       case Translators.GOOGLE_TRANSLATE:
-        return MicrosoftTranslator.GOOGLE_TRANSLATE_MAPPING[languageCode] ?? GoogleTranslate.SOURCE_LANGUAGES.hasOwnProperty(languageCode) ? languageCode : GoogleTranslate.DefaultLanguage.SL;
+        return MicrosoftTranslator.GOOGLE_TRANSLATE_MAPPING[languageCode] ?? (GoogleTranslate.SOURCE_LANGUAGES.hasOwnProperty(languageCode) ? languageCode : GoogleTranslate.DefaultLanguage.SL);
     }
   }
 
   static getMappedTargetLanguageCode(translator, languageCode) {
     switch (translator) {
       case Translators.DEEPL_TRANSLATOR:
-        return MicrosoftTranslator.DEEPL_TRANSLATOR_MAPPING.TARGET_LANGUAGES[languageCode] ?? DeepLTranslator.DefaultLanguage.TARGET_LANG;
+        return MicrosoftTranslator.DEEPL_TRANSLATOR_MAPPING.TARGET_LANGUAGES[languageCode] ?? (DeepLTranslator.TARGET_LANGUAGES.filter(({language}) => language === languageCode).length > 0 ? languageCode : DeepLTranslator.DefaultLanguage.TARGET_LANG);
 
       case Translators.GOOGLE_TRANSLATE:
-        return MicrosoftTranslator.GOOGLE_TRANSLATE_MAPPING[languageCode] ?? GoogleTranslate.TARGET_LANGUAGES.hasOwnProperty(languageCode) ? languageCode : GoogleTranslate.DefaultLanguage.TL;
+        return MicrosoftTranslator.GOOGLE_TRANSLATE_MAPPING[languageCode] ?? (GoogleTranslate.TARGET_LANGUAGES.hasOwnProperty(languageCode) ? languageCode : GoogleTranslate.DefaultLanguage.TL);
     }
   }
 

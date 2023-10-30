@@ -861,7 +861,7 @@ async function translate(inputText, abortSignal) {
     }
 
     if (abortSignal.aborted) return;
-    translatedTextArea.html(buildTranslatedResult([
+    translatedTextArea.html(buildResult([
       inputText,
       processText
     ], getProcessTextPostTranslate(results.join('\n')), flexSwitchCheckShowOriginal.prop('checked')));
@@ -923,7 +923,7 @@ function getGlossaryAppliedText(text, translator, glossary = {}) {
   return newText;
 }
 
-function buildTranslatedResult(inputTexts, result, showOriginal) {
+function buildResult(inputTexts, result, showOriginal) {
   const resultDiv = document.createElement('div');
 
   const inputLines = convertTextToHtml(inputTexts[0]).split(/\n/);
@@ -932,37 +932,49 @@ function buildTranslatedResult(inputTexts, result, showOriginal) {
 
   try {
     if (showOriginal) {
-      let lostLineFixedAmount = 0;
+      let lostLineFixedNumber = 0;
 
       for (let i = 0; i < inputLines.length; i++) {
         if (i < resultLines.length) {
-          if (inputLines[i + lostLineFixedAmount].trim().length === 0 && resultLines[i].trim().length > 0) {
-            lostLineFixedAmount++;
+          if (inputLines[i + lostLineFixedNumber].trim().length === 0 && resultLines[i].trim().length > 0) {
+            lostLineFixedNumber++;
             i--;
             continue;
-          } else if (translators.filter($('.active')).data('id') === Translators.PAPAGO && resultLines[i].trim().length === 0 && inputLines[i + lostLineFixedAmount].trim().length > 0) {
-            lostLineFixedAmount--;
+          } else if (translators.filter($('.active')).data('id') === Translators.PAPAGO && resultLines[i].trim().length === 0 && inputLines[i + lostLineFixedNumber].trim().length > 0) {
+            lostLineFixedNumber--;
             continue;
           }
 
           const paragraph = document.createElement('p');
-          paragraph.innerHTML = resultLines[i] !== processLines[i + lostLineFixedAmount] ? `<i>${inputLines[i + lostLineFixedAmount]}</i><br>${resultLines[i]}` : processLines[i + lostLineFixedAmount];
+          let textNode = document.createTextNode(resultLines[i].trim() === processLines[i + lostLineFixedNumber].trim() ? processLines[i + lostLineFixedNumber] : resultLines[i]);
+
+          if (resultLines[i].trim().length !== processLines[i + lostLineFixedNumber].trim().length) {
+            const idiomaticText = document.createElement('i');
+            const linebreak = document.createElement('br');
+            idiomaticText.innerText = inputLines[i + lostLineFixedNumber];
+            paragraph.appendChild(idiomaticText);
+            paragraph.appendChild(linebreak.cloneNode(true));
+            textNode = document.createElement('b');
+            textNode.innerText = resultLines[i];
+          }
+
+          paragraph.appendChild(textNode);
           resultDiv.appendChild(paragraph);
-        } else if (i + lostLineFixedAmount < inputLines.length) {
+        } else if (i + lostLineFixedNumber < inputLines.length) {
           const paragraph = document.createElement('p');
-          paragraph.innerHTML = `<i>${inputLines[i + lostLineFixedAmount]}</i>`;
+          paragraph.appendChild(`<i>${inputLines[i + lostLineFixedNumber]}</i>`);
           resultDiv.appendChild(paragraph);
         }
       }
     } else {
       resultDiv.innerHTML = `<p>${resultLines.join('</p><p>')}</p>`;
     }
+
+    return resultDiv.innerHTML.replace(/(<p>)(<\/p>)/g, '$1<br>$2');
   } catch (error) {
-    resultDiv.innerHTML = `<p>${resultLines.join('</p><p>')}</p>`;
     console.error('Lỗi hiển thị bản dịch:', error.stack);
     throw error.toString();
   }
-  return resultDiv.innerHTML.replace(/(<p>)(<\/p>)/g, '$1<br>$2');
 }
 
 function convertText(inputText, data, caseSensitive, useGlossary, translationAlgorithm = VietPhraseTranslationAlgorithms.PRIORITIZE_LONG_VIETPHRASE_CLUSTERS, multiplicationAlgorithm = VietPhraseMultiplicationAlgorithm.MULTIPLICATION_BY_PRONOUNS_NAMES) {

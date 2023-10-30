@@ -132,6 +132,7 @@ options.change(function () {
   if (optionType !== OptionTypes.SELECT && optionType !== OptionTypes.RADIO) return;
   quickTranslateStorage[optionId] = $(this).val();
   localStorage.setItem('dich_nhanh', JSON.stringify(quickTranslateStorage));
+  if ($(this).hasClass('quick-translate-option')) retranslateButton.click();
 });
 fontOptions.click(function () {
   fontOptions.removeClass('active');
@@ -550,7 +551,6 @@ function buildResult(inputText, result) {
           resultDiv.appendChild(paragraph);
         } else if (i + lostLineFixedNumber < inputLines.length) {
           const paragraph = document.createElement('p');
-          idiomatic.innerText = inputLines[i + lostLineFixedNumber];
           paragraph.appendChild(`<i>${inputLines[i + lostLineFixedNumber]}</i>`);
           resultDiv.appendChild(paragraph);
         }
