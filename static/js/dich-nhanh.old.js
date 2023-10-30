@@ -244,8 +244,8 @@ pasteButton.on('click', () => {
     }
   });
 });
-retranslateButton.click(() => {
-  if (translateButton.text() === 'Sửa') {
+retranslateButton.click(function () {
+  if (!$(this).hasClass('disabled')) {
     prevScrollTop = translatedTextArea.prop('scrollTop');
     translateButton.text('Dịch').click();
   }

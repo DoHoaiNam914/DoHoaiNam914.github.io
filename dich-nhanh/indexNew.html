@@ -493,7 +493,7 @@
   </nav>
   <div class="slide-navbar bg-light-subtle w-100" id="action-navbar">
     <ul class="nav m-auto viewport">
-      <li class="nav-item mx-3">Số lượng ký tự: <span id="queryTextCounter">0</span></li>
+      <li class="nav-item mx-3">Số lượng ký tự: <span id="input-textarea-counter">0</span></li>
       <li>
         <button type="button" class="nav-item nav-link copy-button" data-target="input-textarea">Sao chép</button>
       </li>
@@ -639,6 +639,10 @@
                 <button class="dropdown-item translator-option" data-id="vietphrase" type="button">Vietphrase</button>
               </li>
             </ul>
+          </div>
+          <div class="form-check form-switch mb-3">
+            <input class="form-check-input option" type="checkbox" role="switch" id="show-original-text-switch">
+            <label class="form-check-label" for="show-original-text-switch">Hiển thị văn bản gốc</label>
           </div>
         </div>
         <div class="modal-footer">

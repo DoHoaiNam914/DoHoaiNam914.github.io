@@ -17,6 +17,7 @@ const fontSizeRange = $('#font-size-range');
 const lineSpacingRange = $('#line-spacing-range');
 const alignmentSettingsSwitch = $('#alignment-settings-switch');
 const translatorOptions = $('.translator-option');
+const showOriginalTextSwitch = $('#show-original-text-switch');
 
 const inputTextarea = $('#input-textarea');
 const resultTextarea = $('#result-textarea');
@@ -26,6 +27,8 @@ let defaultOptions = JSON.parse('{"source_language":"","target_language":"vi","f
 
 let translateAbortController = null;
 let prevScrollTop = 0;
+
+let lastSession = {};
 
 $(document).ready(() => {
   loadAllQuickTranslatorOptions();
@@ -91,6 +94,13 @@ translateButton.on('click', function () {
   }
 });
 copyButton.on('click', function () {
+  if ($(this).data('target') === 'result-textarea') {
+    if (Object.keys(lastSession).length > 0) {
+      navigator.clipboard.writeText(lastSession.result);
+    }
+    return;
+  }
+
   const target = $(`#${$(this).data('target')}`);
 
   if (target.val().length > 0) {
@@ -99,11 +109,19 @@ copyButton.on('click', function () {
   }
 });
 pasteButton.on('click', function () {
-  navigator.clipboard.readText().then((clipText) => $(`#${$(this).data('target')}`).val(clipText).trigger('input'));
+  navigator.clipboard.readText().then((clipText) => {
+    if ($(this).data('target') === 'input-textarea') {
+      resultTextarea.prop('scrollTop', 0);
+      $(`#${$(this).data('target')}`).val(clipText).trigger('input');
+      retranslateButton.click();
+    } else {
+      $(`#${$(this).data('target')}`).val(clipText).trigger('input');
+    }
+  });
 });
-retranslateButton.click(() => {
-  if (translateButton.text() === 'Sửa') {
-    prevScrollTop = translatedTextArea.prop('scrollTop');
+retranslateButton.click(function () {
+  if (!$(this).hasClass('disabled')) {
+    prevScrollTop = resultTextarea.prop('scrollTop');
     translateButton.text('Dịch').click();
   }
 });
@@ -111,7 +129,7 @@ options.change(function () {
   const optionId = getOptionId($(this).attr('name') != undefined ? $(this).attr('name') : $(this).attr('id'));
   const optionType = getOptionType($(this).attr('name') != undefined ? $(this).attr('name') : $(this).attr('id'));
 
-  if (optionType === OptionTypes.SELECT || optionType === OptionTypes.RADIO) return;
+  if (optionType !== OptionTypes.SELECT && optionType !== OptionTypes.RADIO) return;
   quickTranslateStorage[optionId] = $(this).val();
   localStorage.setItem('dich_nhanh', JSON.stringify(quickTranslateStorage));
 });
@@ -165,8 +183,9 @@ translatorOptions.click(function () {
   updateLanguageSelect($(this).data('id'), quickTranslateStorage['translator']);
   quickTranslateStorage['translator'] = $(this).data('id');
   localStorage.setItem('dich_nhanh', JSON.stringify(quickTranslateStorage));
-  translateButton.text('Dịch').click();
+  retranslateButton.click();
 });
+showOriginalTextSwitch.change(() => retranslateButton.click());
 resetButton.on('click', () => {
   if (!window.confirm('Bạn có muốn đặt lại tất cả thiết lập chứ?')) return;
   localStorage.setItem('dich_nhanh', JSON.stringify(defaultOptions));
@@ -176,7 +195,7 @@ inputTextarea.on('input', function () {
   $(this).css('height', 'auto');
   $(this).css('height', $(this).prop('scrollHeight') + 'px');
   $(visualViewport).resize();
-  queryTextCounter.text($(this).val().length);
+  $('#input-textarea-counter').text($(this).val().length);
 });
 inputTextarea.on('keypress', (event) => {
   if (!event.shiftKey && event.key === 'Enter') translateButton.click();
@@ -197,7 +216,7 @@ function loadAllQuickTranslatorOptions() {
     switch (optionType) {
       case OptionTypes.RADIO:
         $(`.option[name="${option.attr('name')}"]`).removeProp('checked');
-        option.prop('checked', true).change();
+        option.prop('checked', true);
         break;
 
       case OptionTypes.CHECK:
@@ -225,7 +244,7 @@ function loadAllQuickTranslatorOptions() {
 
       default:
       case OptionTypes.SELECT:
-        option.val(quickTranslateStorage[optionId]).change();
+        option.val(quickTranslateStorage[optionId]);
         break;
     }
   }
@@ -291,24 +310,26 @@ function getOptionType(id) {
 function updateLanguageSelect(translator, prevTranslator) {
   let sourceLanguage = quickTranslateStorage['source_language'];
   let targetLanguage = quickTranslateStorage['target_language'];
-  console.log(quickTranslateStorage);
-  console.log(1, sourceLanguage, targetLanguage);
 
   if (translator !== prevTranslator) {
     switch (prevTranslator) {
+      case Translators.DEEPL_TRANSLATOR:
+        sourceLanguage = DeepLTranslator.getMappedSourceLanguageCode(translator, sourceLanguage) ?? sourceLanguage;
+        targetLanguage = DeepLTranslator.getMappedTargetLanguageCode(translator, targetLanguage) ?? targetLanguage;
+        break;
+
       case Translators.GOOGLE_TRANSLATE:
-        sourceLanguage = GoogleTranslate.getMappedLanguageCode(translator, sourceLanguage) ?? sourceLanguage;
-        targetLanguage = GoogleTranslate.getMappedLanguageCode(translator, targetLanguage) ?? targetLanguage;
+        sourceLanguage = GoogleTranslate.getMappedSourceLanguageCode(translator, sourceLanguage) ?? sourceLanguage;
+        targetLanguage = GoogleTranslate.getMappedTargetLanguageCode(translator, targetLanguage) ?? targetLanguage;
         break;
 
       default:
       case Translators.MICROSOFT_TRANSLATOR:
-        sourceLanguage = MicrosoftTranslator.getMappedLanguageCode(translator, sourceLanguage) ?? sourceLanguage;
-        targetLanguage = MicrosoftTranslator.getMappedLanguageCode(translator, targetLanguage) ?? targetLanguage;
+        sourceLanguage = MicrosoftTranslator.getMappedSourceLanguageCode(translator, sourceLanguage) ?? sourceLanguage;
+        targetLanguage = MicrosoftTranslator.getMappedTargetLanguageCode(translator, targetLanguage) ?? targetLanguage;
         break;
     }
   }
-  console.log(2, sourceLanguage, targetLanguage);
 
   sourceLanguageSelect.html(getSourceLanguageSelectOptions(translator));
   sourceLanguageSelect.val(sourceLanguage).change();
@@ -320,10 +341,19 @@ function getSourceLanguageSelectOptions(translator) {
   const sourceLanguageSelect = document.createElement('select');
 
   switch (translator) {
+    case Translators.DEEPL_TRANSLATOR:
+      for (const {language} of DeepLTranslator.SOURCE_LANGUAGES) {
+        const option = document.createElement('option');
+        option.innerText = DeepLTranslator.getSourceLangName(language);
+        option.value = language;
+        sourceLanguageSelect.appendChild(option);
+      }
+      break;
+
     case Translators.GOOGLE_TRANSLATE:
       for (const languageCode in GoogleTranslate.SOURCE_LANGUAGES) {
         const option = document.createElement('option');
-        option.innerText = GoogleTranslate.getSourceLanguageName(languageCode);
+        option.innerText = GoogleTranslate.getSlName(languageCode);
         option.value = languageCode;
         sourceLanguageSelect.appendChild(option);
       }
@@ -346,10 +376,19 @@ function getTargetLanguageSelectOptions(translator) {
   const targetLanguageSelect = document.createElement('select');
 
   switch (translator) {
+    case Translators.DEEPL_TRANSLATOR:
+      for (const {language} of DeepLTranslator.TARGET_LANGUAGES) {
+        const option = document.createElement('option');
+        option.innerText = DeepLTranslator.getTargetLangName(language);
+        option.value = language;
+        targetLanguageSelect.appendChild(option);
+      }
+      break;
+
     case Translators.GOOGLE_TRANSLATE:
       for (const languageCode in GoogleTranslate.TARGET_LANGUAGES) {
         const option = document.createElement('option');
-        option.innerText = GoogleTranslate.getTargetLanguagesName(languageCode);
+        option.innerText = GoogleTranslate.getTlName(languageCode);
         option.value = languageCode;
         targetLanguageSelect.appendChild(option);
       }
@@ -377,49 +416,68 @@ async function translateTextarea() {
   const sourceLanguage = sourceLanguageSelect.val();
   const targetLanguage = targetLanguageSelect.val();
 
-  const [MAX_LENGTH, MAX_LINE] = getTextMaxLengthAndLine(translatorOption, inputText);
+  const [MAX_LENGTH, MAX_LINE] = getMaxQueryLengthAndLine(translatorOption, inputText);
 
   if (inputText.split(/\n/).sort((a, b) => b.length - a.length)[0].length > MAX_LENGTH) throw new Error(`Số lượng từ trong một dòng quá dài (Số lượng từ hợp lệ nhỏ hơn hoặc bằng ${MAX_LENGTH}). [Lưu ý: Khi sử dụng Dynamic Dictionary và Bảo vệ dấu trích đẫn sẽ làm giảm số lượng từ có thể dịch đi.]`);
 
   try {
-    let result = inputText;
-    let results = [];
-    let translator = null;
+    let result = '';
 
-    switch (translatorOption) {
-      case Translators.GOOGLE_TRANSLATE:
-        translator = await new GoogleTranslate().init();
-        break;
+    if (Object.keys(lastSession).length > 0 && lastSession.inputText === inputText && lastSession.translatorOption === translatorOption && lastSession.sourceLanguage === sourceLanguage && lastSession.targetLanguage === targetLanguage) {
+      result = lastSession.result;
+    } else {
+      let results = [];
+      let translator = null;
 
-      default:
-      case Translators.MICROSOFT_TRANSLATOR:
-        translator = await new MicrosoftTranslator().init();
-        break;
-    }
+      switch (translatorOption) {
+        case Translators.DEEPL_TRANSLATOR:
+          translator = await new DeepLTranslator().init();
+          break;
 
-    const inputLines = inputText.split(/\r?\n/);
-    let queryLines = [];
+        case Translators.GOOGLE_TRANSLATE:
+          translator = await new GoogleTranslate().init();
+          break;
 
-    while (inputLines.length > 0 && queryLines.length + 1 <= MAX_LINE && [
-      ...queryLines,
-      inputLines[0]
-    ].join('\n').length <= MAX_LENGTH) {
-      if (translateAbortController.signal.aborted) break;
-      queryLines.push(inputLines.shift());
+        default:
+        case Translators.MICROSOFT_TRANSLATOR:
+          translator = await new MicrosoftTranslator().init();
+          break;
+      }
 
-      if (inputLines.length === 0 || queryLines.length + 1 >= MAX_LINE || [
+      if (translatorOption === Translators.DEEPL_TRANSLATOR && translator.usage.character_count + inputText.length > translator.usage.character_limit) {
+        throw Error(`Lỗi DeepL: Đã đạt đến giới hạn dịch của tài khoản. (${deeplUsage.character_count}/${deeplUsage.character_limit} ký tự).`);
+      }
+
+      const inputLines = inputText.split(/\r?\n/);
+      let queryLines = [];
+
+      while (inputLines.length > 0 && queryLines.length + 1 <= MAX_LINE && [
         ...queryLines,
         inputLines[0]
-      ].join('\n').length >= MAX_LENGTH) {
-        results.push(await translator.translateText(sourceLanguage, targetLanguage, queryLines.join('\n')));
-        queryLines = [];
+      ].join('\n').length <= MAX_LENGTH) {
+        if (translateAbortController.signal.aborted) break;
+        queryLines.push(inputLines.shift());
+
+        if (inputLines.length === 0 || queryLines.length + 1 >= MAX_LINE || [
+          ...queryLines,
+          inputLines[0]
+        ].join('\n').length >= MAX_LENGTH) {
+          results.push(await translator.translateText(sourceLanguage, targetLanguage, queryLines.join('\n')));
+          queryLines = [];
+        }
       }
+
+      result = results.join('\n');
+      $('#translate-timer').text(Date.now() - startTime);
+      lastSession.inputText = inputText;
+      lastSession.translatorOption = translatorOption;
+      lastSession.sourceLanguage = sourceLanguage;
+      lastSession.targetLanguage = targetLanguage;
+      lastSession.result = result;
     }
 
     if (translateAbortController.signal.aborted) return;
-    result = results.join('\n');
-    $('#translate-timer').text(Date.now() - startTime);
-    resultTextarea.html(`<p>${result.split(/\n/).join('</p><p>')}</p>`.replace(/(<p>)(<\/p>)/g, '$1<br>$2'));
+    resultTextarea.html(buildResult(inputText, result));
   } catch (error) {
     console.error(error)
     const paragraph = document.createElement('p');
@@ -429,7 +487,7 @@ async function translateTextarea() {
   }
 }
 
-function getTextMaxLengthAndLine(translator, text) {
+function getMaxQueryLengthAndLine(translator, text) {
   switch (translator) {
     case Translators.DEEPL_TRANSLATOR:
       return [32768, 50];
@@ -454,6 +512,60 @@ function getTextMaxLengthAndLine(translator, text) {
   }
 }
 
+function buildResult(inputText, result) {
+  try {
+    const resultDiv = document.createElement('div');
+
+    const inputLines = Utils.convertTextToHtml(inputText).split(/\r?\n/);
+    const resultLines = Utils.convertTextToHtml(result).split(/\n/);
+
+    if (showOriginalTextSwitch.prop('checked')) {
+      let lostLineFixedNumber = 0;
+
+      for (let i = 0; i < inputLines.length; i++) {
+        if (i < resultLines.length) {
+          if (inputLines[i + lostLineFixedNumber].trim().length === 0 && resultLines[i].trim().length > 0) {
+            lostLineFixedNumber++;
+            i--;
+            continue;
+          } else if (translatorOptions.filter($('.active')).data('id') === Translators.PAPAGO && resultLines[i].trim().length === 0 && inputLines[i + lostLineFixedNumber].trim().length > 0) {
+            lostLineFixedNumber--;
+            continue;
+          }
+
+          const paragraph = document.createElement('p');
+          let textNode = document.createTextNode(resultLines[i].trim() === inputLines[i + lostLineFixedNumber].trim() ? inputLines[i + lostLineFixedNumber] : resultLines[i]);
+
+          if (resultLines[i].trim().length !== inputLines[i + lostLineFixedNumber].trim().length) {
+            const idiomaticText = document.createElement('i');
+            const linebreak = document.createElement('br');
+            idiomaticText.innerText = inputLines[i + lostLineFixedNumber];
+            paragraph.appendChild(idiomaticText);
+            paragraph.appendChild(linebreak.cloneNode(true));
+            textNode = document.createElement('b');
+            textNode.innerText = resultLines[i];
+          }
+
+          paragraph.appendChild(textNode);
+          resultDiv.appendChild(paragraph);
+        } else if (i + lostLineFixedNumber < inputLines.length) {
+          const paragraph = document.createElement('p');
+          idiomatic.innerText = inputLines[i + lostLineFixedNumber];
+          paragraph.appendChild(`<i>${inputLines[i + lostLineFixedNumber]}</i>`);
+          resultDiv.appendChild(paragraph);
+        }
+      }
+    } else {
+      resultDiv.innerHTML = `<p>${resultLines.join('</p><p>')}</p>`;
+    }
+
+    return resultDiv.innerHTML.replace(/<p><\/p>/g, '<br>');
+  } catch (error) {
+    console.error('Lỗi hiển thị bản dịch:', error);
+    throw error.toString();
+  }
+}
+
 const OptionTypes = {
   SELECT: 'select',
   CHECK: 'check',
@@ -462,3 +574,12 @@ const OptionTypes = {
   RANGE: 'range',
   DROPDOWN: 'dropdown',
 }
+
+const Translators = {
+  DEEPL_TRANSLATOR: 'deeplTranslator',
+  GOOGLE_TRANSLATE: 'googleTranslate',
+  LINGVANEX: 'lingvanex',
+  PAPAGO: 'papago',
+  MICROSOFT_TRANSLATOR: 'microsoftTranslator',
+  VIETPHRASE: 'vietphrase',
+};

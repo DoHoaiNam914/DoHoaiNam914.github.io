@@ -1,5 +1,153 @@
 'use strict';
 
+class DeepLTranslator {
+  /** https://api-free.deepl.com/v2/languages?type=source */
+  static SOURCE_LANGUAGES = [{language: '', name: 'Detect language'}, ...JSON.parse('[{"language":"BG","name":"Bulgarian"},{"language":"CS","name":"Czech"},{"language":"DA","name":"Danish"},{"language":"DE","name":"German"},{"language":"EL","name":"Greek"},{"language":"EN","name":"English"},{"language":"ES","name":"Spanish"},{"language":"ET","name":"Estonian"},{"language":"FI","name":"Finnish"},{"language":"FR","name":"French"},{"language":"HU","name":"Hungarian"},{"language":"ID","name":"Indonesian"},{"language":"IT","name":"Italian"},{"language":"JA","name":"Japanese"},{"language":"KO","name":"Korean"},{"language":"LT","name":"Lithuanian"},{"language":"LV","name":"Latvian"},{"language":"NB","name":"Norwegian"},{"language":"NL","name":"Dutch"},{"language":"PL","name":"Polish"},{"language":"PT","name":"Portuguese"},{"language":"RO","name":"Romanian"},{"language":"RU","name":"Russian"},{"language":"SK","name":"Slovak"},{"language":"SL","name":"Slovenian"},{"language":"SV","name":"Swedish"},{"language":"TR","name":"Turkish"},{"language":"UK","name":"Ukrainian"},{"language":"ZH","name":"Chinese"}]')];
+  /** https://api-free.deepl.com/v2/languages?type=target */
+  static TARGET_LANGUAGES = JSON.parse('[{"language":"BG","name":"Bulgarian","supports_formality":false},{"language":"CS","name":"Czech","supports_formality":false},{"language":"DA","name":"Danish","supports_formality":false},{"language":"DE","name":"German","supports_formality":true},{"language":"EL","name":"Greek","supports_formality":false},{"language":"EN-GB","name":"English (British)","supports_formality":false},{"language":"EN-US","name":"English (American)","supports_formality":false},{"language":"ES","name":"Spanish","supports_formality":true},{"language":"ET","name":"Estonian","supports_formality":false},{"language":"FI","name":"Finnish","supports_formality":false},{"language":"FR","name":"French","supports_formality":true},{"language":"HU","name":"Hungarian","supports_formality":false},{"language":"ID","name":"Indonesian","supports_formality":false},{"language":"IT","name":"Italian","supports_formality":true},{"language":"JA","name":"Japanese","supports_formality":true},{"language":"KO","name":"Korean","supports_formality":false},{"language":"LT","name":"Lithuanian","supports_formality":false},{"language":"LV","name":"Latvian","supports_formality":false},{"language":"NB","name":"Norwegian","supports_formality":false},{"language":"NL","name":"Dutch","supports_formality":true},{"language":"PL","name":"Polish","supports_formality":true},{"language":"PT-BR","name":"Portuguese (Brazilian)","supports_formality":true},{"language":"PT-PT","name":"Portuguese (European)","supports_formality":true},{"language":"RO","name":"Romanian","supports_formality":false},{"language":"RU","name":"Russian","supports_formality":true},{"language":"SK","name":"Slovak","supports_formality":false},{"language":"SL","name":"Slovenian","supports_formality":false},{"language":"SV","name":"Swedish","supports_formality":false},{"language":"TR","name":"Turkish","supports_formality":false},{"language":"UK","name":"Ukrainian","supports_formality":false},{"language":"ZH","name":"Chinese (simplified)","supports_formality":false}]');
+
+  static DETECT_LANGUAGE = '';
+  static DefaultLanguage = {
+    SOURCE_LANG: DeepLTranslator.DETECT_LANGUAGE,
+    TARGET_LANG: 'EN-US'
+  };
+
+  static GOOGLE_TRANSLATE_MAPPING = {
+    '': 'auto',
+    'BG': 'bg',
+    'CS': 'cs',
+    'DA': 'da',
+    'DE': 'de',
+    'EL': 'el',
+    'EN': 'en',
+    'EN-GB': 'en',
+    'EN-US': 'en',
+    'ES': 'es',
+    'ET': 'et',
+    'FI': 'fi',
+    'FR': 'fr',
+    'HU': 'hu',
+    'ID': 'id',
+    'IT': 'it',
+    'JA': 'ja',
+    'KO': 'ko',
+    'LT': 'lt',
+    'LV': 'lv',
+    'NL': 'nl',
+    'PL': 'pl',
+    'PT': 'pt',
+    'PT-BR': 'pt',
+    'PT-PT': 'pt',
+    'RO': 'ro',
+    'RU': 'ru',
+    'SK': 'sk',
+    'SL': 'sl',
+    'SV': 'sv',
+    'UK': 'uk',
+    'ZH': 'zh-CN',
+  };
+  static MICROSOFT_TRANSLATOR_MAPPING = {
+    'BG': 'bg',
+    'CS': 'cs',
+    'DA': 'da',
+    'DE': 'de',
+    'EL': 'el',
+    'EN': 'en',
+    'EN-GB': 'en',
+    'EN-US': 'en',
+    'ES': 'es',
+    'ET': 'et',
+    'FI': 'fi',
+    'FR': 'fr',
+    'HU': 'hu',
+    'ID': 'id',
+    'IT': 'it',
+    'JA': 'ja',
+    'KO': 'ko',
+    'LT': 'lt',
+    'LV': 'lv',
+    'NL': 'nl',
+    'PL': 'pl',
+    'PT': 'pt',
+    'PT-BR': 'pt',
+    'PT-PT': 'pt-PT',
+    'RO': 'ro',
+    'RU': 'ru',
+    'SK': 'sk',
+    'SL': 'sl',
+    'SV': 'sv',
+    'UK': 'uk',
+    'ZH': 'zh-CN',
+  };
+
+  constructor() {
+    this.authKey_ = 'a4b25ba2-b628-fa56-916e-b323b16502de:fx';
+  }
+
+  async init() {
+    try {
+      this.usage = await this.fetchUsage();
+    } catch (error) {
+      throw error;
+    }
+    return this;
+  }
+
+  static getSourceLangName(languageCode) {
+    return DeepLTranslator.SOURCE_LANGUAGES.filter(({language}) => language === languageCode)[0].name;
+  }
+
+  static getTargetLangName(languageCode) {
+    return DeepLTranslator.TARGET_LANGUAGES.filter(({language}) => language === languageCode)[0].name;
+  }
+
+  static getMappedSourceLanguageCode(translator, languageCode) {
+    switch (translator) {
+      case Translators.GOOGLE_TRANSLATE:
+        return DeepLTranslator.GOOGLE_TRANSLATE_MAPPING[languageCode] ?? GoogleTranslate.SOURCE_LANGUAGES.hasOwnProperty(languageCode) ? languageCode : GoogleTranslate.DefaultLanguage.SL;
+
+      case Translators.MICROSOFT_TRANSLATOR:
+        console.log(languageCode, DeepLTranslator.MICROSOFT_TRANSLATOR_MAPPING[languageCode], MicrosoftTranslator.DefaultLanguage.TO)
+        return DeepLTranslator.MICROSOFT_TRANSLATOR_MAPPING[languageCode] ?? MicrosoftTranslator.DefaultLanguage.FROM;
+    }
+  }
+
+  static getMappedTargetLanguageCode(translator, languageCode) {
+    switch (translator) {
+      case Translators.GOOGLE_TRANSLATE:
+        return DeepLTranslator.GOOGLE_TRANSLATE_MAPPING[languageCode] ?? GoogleTranslate.TARGET_LANGUAGES.hasOwnProperty(languageCode) ? languageCode : GoogleTranslate.DefaultLanguage.TL;
+
+      case Translators.MICROSOFT_TRANSLATOR:
+        return DeepLTranslator.MICROSOFT_TRANSLATOR_MAPPING[languageCode] ?? MicrosoftTranslator.DefaultLanguage.TO;
+    }
+  }
+
+  async fetchUsage() {
+    try {
+      return await $.ajax({
+        method: 'GET',
+        url: `https://api-free.deepl.com/v2/usage?auth_key=${this.authKey_}`
+      });
+    } catch (error) {
+      console.error('Không thể lấy được Mức sử dụng:', error);
+      throw new Error('Không thể lấy được Mức sử dụng!');
+    }
+  }
+
+  async translateText(sourceLang, targetLang, text) {
+    try {
+      return Utils.convertHtmlToText((await $.ajax({
+        data: `text=${Utils.convertTextToHtml(text).split(/\n/).map((element) => encodeURIComponent(element)).join('&text=')}&source_lang=${sourceLang}&target_lang=${targetLang}&tag_handling=xml`,
+        method: 'POST',
+        url: `https://api-free.deepl.com/v2/translate?auth_key=${this.authKey_}`
+      })).translations.map(({text}) => text).join('\n'));
+    } catch (error) {
+      console.error('Bản dịch lỗi:', error);
+      throw error;
+    }
+  }
+}
+
 class GoogleTranslate {
   /** https://translate.googleapis.com/translate_a/l?client=chrome */
   static SOURCE_LANGUAGES = JSON.parse('{"auto":"Phát hiện ngôn ngữ","ar":"Ả Rập","sq":"Albania","am":"Amharic","en":"Anh","hy":"Armenia","as":"Assam","ay":"Aymara","az":"Azerbaijan","pl":"Ba Lan","fa":"Ba Tư","bm":"Bambara","xh":"Bantu","eu":"Basque","be":"Belarus","bn":"Bengal","bho":"Bhojpuri","bs":"Bosnia","pt":"Bồ Đào Nha","bg":"Bulgaria","ca":"Catalan","ceb":"Cebuano","ny":"Chichewa","co":"Corsi","ht":"Creole (Haiti)","hr":"Croatia","dv":"Dhivehi","iw":"Do Thái","doi":"Dogri","da":"Đan Mạch","de":"Đức","et":"Estonia","ee":"Ewe","tl":"Filipino","fy":"Frisia","gd":"Gael Scotland","gl":"Galicia","ka":"George","gn":"Guarani","gu":"Gujarat","nl":"Hà Lan","af":"Hà Lan (Nam Phi)","ko":"Hàn","ha":"Hausa","haw":"Hawaii","hi":"Hindi","hmn":"Hmong","hu":"Hungary","el":"Hy Lạp","is":"Iceland","ig":"Igbo","ilo":"Ilocano","id":"Indonesia","ga":"Ireland","jw":"Java","kn":"Kannada","kk":"Kazakh","km":"Khmer","rw":"Kinyarwanda","gom":"Konkani","kri":"Krio","ku":"Kurd (Kurmanji)","ckb":"Kurd (Sorani)","ky":"Kyrgyz","lo":"Lào","la":"Latinh","lv":"Latvia","ln":"Lingala","lt":"Litva","lg":"Luganda","lb":"Luxembourg","ms":"Mã Lai","mk":"Macedonia","mai":"Maithili","mg":"Malagasy","ml":"Malayalam","mt":"Malta","mi":"Maori","mr":"Marathi","mni-Mtei":"Meiteilon (Manipuri)","lus":"Mizo","mn":"Mông Cổ","my":"Myanmar","no":"Na Uy","ne":"Nepal","ru":"Nga","ja":"Nhật","or":"Odia (Oriya)","om":"Oromo","ps":"Pashto","sa":"Phạn","fr":"Pháp","fi":"Phần Lan","pa":"Punjab","qu":"Quechua","eo":"Quốc tế ngữ","ro":"Rumani","sm":"Samoa","cs":"Séc","nso":"Sepedi","sr":"Serbia","st":"Sesotho","sn":"Shona","sd":"Sindhi","si":"Sinhala","sk":"Slovak","sl":"Slovenia","so":"Somali","su":"Sunda","sw":"Swahili","tg":"Tajik","ta":"Tamil","tt":"Tatar","es":"Tây Ban Nha","te":"Telugu","th":"Thái","tr":"Thổ Nhĩ Kỳ","sv":"Thụy Điển","ti":"Tigrinya","zh-CN":"Trung","ts":"Tsonga","tk":"Turkmen","ak":"Twi","uk":"Ukraina","ur":"Urdu","ug":"Uyghur","uz":"Uzbek","vi":"Việt","cy":"Xứ Wales","it":"Ý","yi":"Yiddish","yo":"Yoruba","zu":"Zulu"}');
@@ -7,14 +155,29 @@ class GoogleTranslate {
 
   static DETECT_LANGUAGE = 'auto';
   static DefaultLanguage = {
-    SOURCE_LANGUAGE: GoogleTranslate.DETECT_LANGUAGE,
-    TARGET_LANGUAGE: 'vi'
+    SL: GoogleTranslate.DETECT_LANGUAGE,
+    TL: 'vi'
   };
 
+  static DEEPL_TRANSLATOR_MAPPING = {
+    SOURCE_LANGUAGES: {
+      'auto': '',
+      'ja': 'JA',
+      'en': 'EN',
+      'zh-CN': 'ZH',
+      'zh-TW': 'ZH',
+    },
+    TARGET_LANGUAGES: {
+      'ja': 'JA',
+      'en': 'EN-US',
+      'zh-CN': 'ZH',
+      'zh-TW': 'ZH',
+    }
+  };
   static MICROSOFT_TRANSLATOR_MAPPING = {
     'auto': '',
-    'zh-Hans': 'zh-CN',
-    'zh-Hant': 'zh-TW',
+    'zh-CN': 'zh-Hans',
+    'zh-TW': 'zh-Hant',
   };
 
   constructor() {
@@ -30,21 +193,31 @@ class GoogleTranslate {
     return this;
   }
 
-  static getSourceLanguageName(languageCode) {
+  static getSlName(languageCode) {
     return GoogleTranslate.SOURCE_LANGUAGES[languageCode];
   }
 
-  static getTargetLanguagesName(languageCode) {
+  static getTlName(languageCode) {
     return GoogleTranslate.TARGET_LANGUAGES[languageCode];
   }
 
-  static getMappedLanguageCode(translator, languageCode) {
+  static getMappedSourceLanguageCode(translator, languageCode) {
     switch (translator) {
-      case Translators.MICROSOFT_TRANSLATOR:
-        return GoogleTranslate.MICROSOFT_TRANSLATOR_MAPPING[languageCode];
+      case Translators.DEEPL_TRANSLATOR:
+        return GoogleTranslate.DEEPL_TRANSLATOR_MAPPING.SOURCE_LANGUAGES[languageCode] ?? DeepLTranslator.DefaultLanguage.SOURCE_LANG;
 
-      default:
-        return languageCode;
+      case Translators.MICROSOFT_TRANSLATOR:
+        return GoogleTranslate.MICROSOFT_TRANSLATOR_MAPPING[languageCode] ?? MicrosoftTranslator.FROM_LANGUAGES.hasOwnProperty(languageCode) ? languageCode : MicrosoftTranslator.DefaultLanguage.FROM;
+    }
+  }
+
+  static getMappedTargetLanguageCode(translator, languageCode) {
+    switch (translator) {
+      case Translators.DEEPL_TRANSLATOR:
+        return GoogleTranslate.DEEPL_TRANSLATOR_MAPPING.TARGET_LANGUAGES[languageCode] ?? DeepLTranslator.DefaultLanguage.TARGET_LANG;
+
+      case Translators.MICROSOFT_TRANSLATOR:
+        return GoogleTranslate.MICROSOFT_TRANSLATOR_MAPPING[languageCode] ?? MicrosoftTranslator.TO_LANGUAGES.hasOwnProperty(languageCode) ? languageCode : MicrosoftTranslator.DefaultLanguage.TO;
     }
   }
 
@@ -65,7 +238,6 @@ class GoogleTranslate {
        * Google-Translate-Element-Mode: library
        */
       const elementJs = await $.ajax({
-        dataType: 'text',
         headers: {
           'Google-Translate-Element-Mode': 'library'
         },
@@ -85,37 +257,36 @@ class GoogleTranslate {
     }
   }
 
-  async translateText(sourceLanguage, targetLanguage, query) {
+  async translateText(sl, tl, q) {
     try {
       /**
        * Google translate Widget
        * Method: POST
-       * URL: https://translate.googleapis.com/translate_a/t?anno=3&client=te&format=html&v=1.0&key&logld=v${version}&sl=${sourceLanguage}&tl=${targetLanguage}&tc=0&tk=${lq(querys)}
+       * URL: https://translate.googleapis.com/translate_a/t?anno=3&client=te&format=html&v=1.0&key&logld=v${version}&sl=${sl}&tl=${tl}&tc=0&tk=${lq(querys)}
        * `q=${querys.split(/\n/).map((sentence) => encodeURIComponent(sentence)).join('&q=')}`
        *
        * Google Translate
        * Method: GET
-       * URL: https://translate.googleapis.com/translate_a/single?client=gtx&sl=${sourceLanguage}&tl=${targetLanguage}&hl=vi&dt=t&dt=bd&dj=1&q=${encodeURIComponent(querys)}
+       * URL: https://translate.googleapis.com/translate_a/single?client=gtx&sl=${sl}&tl=${tl}&hl=vi&dt=t&dt=bd&dj=1&q=${encodeURIComponent(querys)}
        *
        * Google Translate Websites
        * Method: POST
-       * URL: https://translate.googleapis.com/translate_a/t?anno=3&client=wt_lib&format=html&v=1.0&key=&logld=v${version}&sl=${sourceLanguage}&tl=${targetLanguage}&tc=0&tk=${lq(querys)}
+       * URL: https://translate.googleapis.com/translate_a/t?anno=3&client=wt_lib&format=html&v=1.0&key=&logld=v${version}&sl=${sl}&tl=${tl}&tc=0&tk=${lq(querys)}
        * Content-Type: application/x-www-form-urlencoded - `q=${querys.split(/\n/).map((sentence) => encodeURIComponent(sentence)).join('&q=')}`
        *
        * Google Chrome
        * Method: POST
-       * URL: https://translate.googleapis.com/translate_a/t?anno=3&client=${(_cac || 'te') + (_cam === 'lib' ? '_lib' : '')}&format=html&v=1.0&key=AIzaSyBOti4mM-6x9WDnZIjIeyEU21OpBXqWBgw&logld=v${v || ''}&sl=${sourceLanguage}&tl=${targetLanguage}&tc=0&tk=${lq(querys)}
+       * URL: https://translate.googleapis.com/translate_a/t?anno=3&client=${(_cac || 'te') + (_cam === 'lib' ? '_lib' : '')}&format=html&v=1.0&key=AIzaSyBOti4mM-6x9WDnZIjIeyEU21OpBXqWBgw&logld=v${v || ''}&sl=${sl}&tl=${tl}&tc=0&tk=${lq(querys)}
        * Content-Type: application/x-www-form-urlencoded - `q=${querys.split(/\n/).map((sentence) => encodeURIComponent(sentence)).join('&q=')}`
        */
       return Utils.convertHtmlToText((await $.ajax({
-        data: `q=${Utils.convertTextToHtml(query).split(/\n/).map((sentence) => encodeURIComponent(sentence)).join('&q=')}`,
-        dataType: 'json',
+        data: `q=${Utils.convertTextToHtml(q).split(/\n/).map((sentence) => encodeURIComponent(sentence)).join('&q=')}`,
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded'
         },
         method: 'POST',
-        url: `https://translate.googleapis.com/translate_a/t?anno=3&client=${(this.data_._cac || 'te') + (this.data_._cam === 'lib' ? '_lib' : '')}&format=html&v=1.0&key${this.apiKey_.length > 0 ? `=${this.apiKey_}` : ''}&logld=v${this.data_.v || ''}&sl=${sourceLanguage}&tl=${targetLanguage}&tc=0&tk=${this.lq(Utils.convertTextToHtml(query).replace(/\n/g, ''))}`
-      })).map((element) => sourceLanguage === 'auto' ? element[0] : element).map((element) => element.includes('<i>') ? element.replace(/<i>(?:.(?!<\/i>))+.(?=<\/i>)<\/i> <b>((?:.(?!<\/b>))+.(?=<\/b>))<\/b>/g, '$1') : element).join('\n'));
+        url: `https://translate.googleapis.com/translate_a/t?anno=3&client=${(this.data_._cac || 'te') + (this.data_._cam === 'lib' ? '_lib' : '')}&format=html&v=1.0&key${this.apiKey_.length > 0 ? `=${this.apiKey_}` : ''}&logld=v${this.data_.v || ''}&sl=${sl}&tl=${tl}&tc=0&tk=${this.lq(Utils.convertTextToHtml(q).replace(/\n/g, ''))}`
+      })).map((element) => sl === 'auto' ? element[0] : element).map((element) => element.includes('<i>') ? element.replace(/<i>(?:.(?!<\/i>))+.(?=<\/i>)<\/i> <b>((?:.(?!<\/b>))+.(?=<\/b>))<\/b>/g, '$1') : element).join('\n'));
     } catch (error) {
       console.error('Bản dịch lỗi:', error);
       throw error;
@@ -161,10 +332,24 @@ class MicrosoftTranslator {
 
   static AUTODETECT = '';
   static DefaultLanguage = {
-    FROM_LANGUAGE: MicrosoftTranslator.AUTODETECT,
-    TO_LANGUAGE: 'vi'
+    FROM: MicrosoftTranslator.AUTODETECT,
+    TO: 'vi'
   };
 
+  static DEEPL_TRANSLATOR_MAPPING = {
+    SOURCE_LANGUAGES: {
+      'ja': 'JA',
+      'en': 'EN',
+      'zh-Hans': 'ZH',
+      'zh-Hant': 'ZH',
+    },
+    TARGET_LANGUAGES: {
+      'ja': 'JA',
+      'en': 'EN-US',
+      'zh-Hans': 'ZH',
+      'zh-TW': 'ZH',
+    }
+  };
   static GOOGLE_TRANSLATE_MAPPING = {
     '': 'auto',
     'zh-Hans': 'zh-CN',
@@ -188,21 +373,32 @@ class MicrosoftTranslator {
     return MicrosoftTranslator.TO_LANGUAGES[languageCode].name.startsWith('Tiếng ') ? MicrosoftTranslator.TO_LANGUAGES[languageCode].name.match(/Tiếng (.+)/)[1] : MicrosoftTranslator.TO_LANGUAGES[languageCode].name;
   }
 
-  static getMappedLanguageCode(translator, languageCode) {
+  static getMappedSourceLanguageCode(translator, languageCode) {
     switch (translator) {
-      case Translators.GOOGLE_TRANSLATE:
-        return MicrosoftTranslator.GOOGLE_TRANSLATE_MAPPING[languageCode];
+      case Translators.DEEPL_TRANSLATOR:
+        return MicrosoftTranslator.DEEPL_TRANSLATOR_MAPPING.SOURCE_LANGUAGES[languageCode] ?? DeepLTranslator.DefaultLanguage.SOURCE_LANG;
 
-      default:
-        return languageCode;
+      case Translators.GOOGLE_TRANSLATE:
+        return MicrosoftTranslator.GOOGLE_TRANSLATE_MAPPING[languageCode] ?? GoogleTranslate.SOURCE_LANGUAGES.hasOwnProperty(languageCode) ? languageCode : GoogleTranslate.DefaultLanguage.SL;
+    }
+  }
+
+  static getMappedTargetLanguageCode(translator, languageCode) {
+    switch (translator) {
+      case Translators.DEEPL_TRANSLATOR:
+        return MicrosoftTranslator.DEEPL_TRANSLATOR_MAPPING.TARGET_LANGUAGES[languageCode] ?? DeepLTranslator.DefaultLanguage.TARGET_LANG;
+
+      case Translators.GOOGLE_TRANSLATE:
+        return MicrosoftTranslator.GOOGLE_TRANSLATE_MAPPING[languageCode] ?? GoogleTranslate.TARGET_LANGUAGES.hasOwnProperty(languageCode) ? languageCode : GoogleTranslate.DefaultLanguage.TL;
     }
   }
 
   async fetchAccessToken() {
     try {
-      return await $.ajax('https://edge.microsoft.com/translate/auth', {
+      return await $.ajax({
         dataType: 'text',
-        method: 'GET'
+        method: 'GET',
+        url: 'https://edge.microsoft.com/translate/auth'
       });
     } catch (error) {
       console.error('Không thể lấy được Access Token:', error);
@@ -237,7 +433,7 @@ class MicrosoftTranslator {
         data: JSON.stringify(text.split(/\n/).map((sentence) => ({Text: sentence}))),
         dataType: 'json',
         headers: {
-          Authorization: `Bearer ${this.accessToken_}`,
+          'Authorization': `Bearer ${this.accessToken_}`,
           'Content-Type': 'application/json'
         },
         method: 'POST',
@@ -249,12 +445,3 @@ class MicrosoftTranslator {
     }
   }
 }
-
-const Translators = {
-  DEEPL_TRANSLATOR: 'deeplTranslator',
-  GOOGLE_TRANSLATE: 'googleTranslate',
-  LINGVANEX: 'lingvanex',
-  PAPAGO: 'papago',
-  MICROSOFT_TRANSLATOR: 'microsoftTranslator',
-  VIETPHRASE: 'vietphrase',
-};
