@@ -202,8 +202,8 @@ inputTextarea.on('keypress', (event) => {
   if (!event.shiftKey && event.key === 'Enter') translateButton.click();
 });
 resultTextarea.on('dblclick', () => {
-  translateButton.click();
-  queryText.focus();
+  resultTextarea.click();
+  inputTextarea.focus();
 });
 
 function loadAllQuickTranslatorOptions() {
@@ -360,11 +360,20 @@ function getSourceLanguageSelectOptions(translator) {
       }
       break;
 
+    case Translators.PAPAGO:
+      for (const languageCode in Papago.SOURCE_LANGUAGES) {
+        const option = document.createElement('option');
+        option.innerText = Papago.getSourceName(languageCode);
+        option.value = languageCode;
+        sourceLanguageSelect.appendChild(option);
+      }
+      break;
+
     default:
     case Translators.MICROSOFT_TRANSLATOR:
       for (const languageCode in MicrosoftTranslator.FROM_LANGUAGES) {
         const option = document.createElement('option');
-        option.innerText = MicrosoftTranslator.getFromLanguageName(languageCode);
+        option.innerText = MicrosoftTranslator.getFromName(languageCode);
         option.value = languageCode;
         sourceLanguageSelect.appendChild(option);
       }
@@ -395,11 +404,20 @@ function getTargetLanguageSelectOptions(translator) {
       }
       break;
 
+    case Translators.PAPAGO:
+      for (const languageCode in Papago.TARGET_LANGUAGES) {
+        const option = document.createElement('option');
+        option.innerText = Papago.getTargetName(languageCode);
+        option.value = languageCode;
+        targetLanguageSelect.appendChild(option);
+      }
+      break;
+
     default:
     case Translators.MICROSOFT_TRANSLATOR:
       for (const languageCode in MicrosoftTranslator.TO_LANGUAGES) {
         const option = document.createElement('option');
-        option.innerText = MicrosoftTranslator.getToLanguageName(languageCode);
+        option.innerText = MicrosoftTranslator.getToName(languageCode);
         option.value = languageCode;
         targetLanguageSelect.appendChild(option);
       }
@@ -437,6 +455,10 @@ async function translateTextarea() {
 
         case Translators.GOOGLE_TRANSLATE:
           translator = await new GoogleTranslate().init();
+          break;
+
+        case Translators.PAPAGO:
+          translator = await new Papago().init();
           break;
 
         default:
@@ -482,7 +504,7 @@ async function translateTextarea() {
   } catch (error) {
     console.error(error)
     const paragraph = document.createElement('p');
-    paragraph.innerText = `Bản dịch thất bại: ${error}`;
+    paragraph.innerText = `Bản dịch thất bại: ${error}`.replace(/ Error: /, ' ');
     resultTextarea.html(paragraph);
     translateAbortController = null;
   }
