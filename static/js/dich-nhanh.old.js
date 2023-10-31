@@ -926,9 +926,9 @@ function getGlossaryAppliedText(text, translator, glossary = {}) {
 function buildResult(inputTexts, result, showOriginal) {
   const resultDiv = document.createElement('div');
 
-  const inputLines = convertTextToHtml(inputTexts[0]).split(/\n/);
-  const processLines = convertTextToHtml(convertText(inputTexts[1], {}, false, false, VietPhraseTranslationAlgorithms.TRANSLATE_FROM_LEFT_TO_RIGHT, VietPhraseMultiplicationAlgorithm.NOT_APPLICABLE).split(/\n/));
-  const resultLines = convertTextToHtml(result).split(/\n/);
+  const inputLines = inputTexts[0].split(/\n/);
+  const processLines = convertText(inputTexts[1], {}, false, false, VietPhraseTranslationAlgorithms.TRANSLATE_FROM_LEFT_TO_RIGHT, VietPhraseMultiplicationAlgorithm.NOT_APPLICABLE).split(/\n/);
+  const resultLines = result.split(/\n/);
 
   try {
     if (showOriginal) {
@@ -951,11 +951,11 @@ function buildResult(inputTexts, result, showOriginal) {
           if (resultLines[i].trim().length !== processLines[i + lostLineFixedNumber].trim().length) {
             const idiomaticText = document.createElement('i');
             const linebreak = document.createElement('br');
-            idiomaticText.innerHTML = inputLines[i + lostLineFixedNumber];
+            idiomaticText.innerText = inputLines[i + lostLineFixedNumber];
             paragraph.appendChild(idiomaticText);
             paragraph.appendChild(linebreak.cloneNode(true));
             textNode = document.createElement('b');
-            textNode.innerHTML = resultLines[i];
+            textNode.innerText = resultLines[i];
           }
 
           paragraph.appendChild(textNode);
@@ -967,7 +967,7 @@ function buildResult(inputTexts, result, showOriginal) {
         }
       }
     } else {
-      resultDiv.innerHTML = `<p>${resultLines.join('</p><p>')}</p>`;
+      resultDiv.innerHTML = `<p>${convertTextToHtml(resultLines.join('\n')).split(/\n/).join('</p><p>')}</p>`;
     }
 
     return resultDiv.innerHTML.replace(/(<p>)(<\/p>)/g, '$1<br>$2');
