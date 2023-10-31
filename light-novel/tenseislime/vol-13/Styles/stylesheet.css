@@ -1084,6 +1084,16 @@ margin-bottom: 0em;
 text-align:left;
 }
 
+p.bl-listt
+{
+line-height: 1.3em;
+text-indent: -0.6em;
+padding-left: 2.2em;
+margin-top: 1.5em;
+margin-bottom: 0em;
+text-align:left;
+}
+
 p.nl-list
 {
 line-height: 1.3em;
@@ -1797,4 +1807,9 @@ margin-left: 3em;
 .space-break3 {
 margin-top: 1.5em;
 text-indent: 20pt;
+}
+
+.answer-first1 {
+margin-top: 0em;
+margin-left: 3em;
 }

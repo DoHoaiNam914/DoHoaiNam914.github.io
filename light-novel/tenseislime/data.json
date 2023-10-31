@@ -739,19 +739,18 @@
       ]
     },
     {
-      "id": "vol-16-jnovels",
+      "id": "vol-16",
       "title": "That Time I Got Reincarnated as a Slime, Vol. 16",
       "cover": "https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/light-novel/tenseislime/vol-16-jnovels/OEBPS/Images/9781975369767.jpg",
       "description": "Rimuru has emerged victorious in the war against the Eastern Empire, but between the ultimate skill Michael hijacking Emperor Ludora’s body and the mystic lord Feldway’s secret machinations, he still has a lot left on his plate. Plus, a recent fight at the labyrinth—which occurred while Rimuru was busy with his own climactic battle—revealed serious flaws in Tempest’s defenses. Now that he’s finally got a moment to breathe, it’s time for everyone’s favorite slime to address some major infrastructure issues with his team…",
       "loader": "yenpress",
       "spine": [
         "Text/cover.xhtml",
-        "Text/nav.xhtml",
         "Text/insert001.xhtml",
         "Text/insert002.xhtml",
         "Text/titlepage.xhtml",
+        "Text/copyright.xhtml",
         "Text/toc.xhtml",
-        "Text/jnovels.xhtml",
         "Text/preface001.xhtml",
         "Text/preface002.xhtml",
         "Text/preface003.xhtml",
@@ -803,8 +802,7 @@
         "Text/appendix016.xhtml",
         "Text/appendix017.xhtml",
         "Text/appendix018.xhtml",
-        "Text/newsletterSignup.xhtml",
-        "Text/copyright.xhtml"
+        "Text/newsletterSignup.xhtml"
       ]
     },
     {

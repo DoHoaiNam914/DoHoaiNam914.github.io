@@ -13,6 +13,7 @@
     const preferredTheme = storedTheme ?? 'auto';
 
     $LAB.script('/static/lib/jquery-3.7.1.min.js').wait()
+        .script('/static/lib/jquery.csv.min.js').wait()
         .script('/static/lib/bootstrap.bundle.min.js').wait(function () {
       setTheme(preferredTheme);
       showActiveTheme(preferredTheme);

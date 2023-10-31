@@ -898,7 +898,7 @@ function getGlossaryAppliedText(text, translator, glossary = {}) {
         for (const glossaryLength of glossaryLengths) {
           if (glossary.hasOwnProperty(chars.substring(j, j + glossaryLength))) {
             if (glossary[chars.substring(j, j + glossaryLength)].length > 0) {
-              tempLine += (/[\\p{Lu}\\p{Ll}\\p{Nd}]/u.test(prevPhrase || tempLine[tempLine.length - 1]) ? ' ' : '') + getIgnoreTranslationMarkup([
+              tempLine += (/[\p{Lu}\p{Ll}\p{Nd}]/u.test(prevPhrase || tempLine[tempLine.length - 1]) ? ' ' : '') + getIgnoreTranslationMarkup([
                 chars.substring(j, j + glossaryLength),
                 glossary[chars.substring(j, j + glossaryLength)]
               ], translator);

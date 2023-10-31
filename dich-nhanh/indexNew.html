@@ -25,7 +25,7 @@
       width: 3.5em;
     }
 
-    .navigator,  .modals {
+    .navigator, .modals {
       user-select: none;
     }
 
@@ -103,6 +103,7 @@
 
     const scriptsToLoad = [
       '/static/lib/jquery-3.7.1.min.js',
+      '/static/lib/jquery.csv.min.js',
       '/static/lib/bootstrap.bundle.min.js',
       '/static/lib/CryptoJS v3.1.2/rollups/hmac-md5.js',
       '/static/lib/CryptoJS v3.1.2/components/enc-base64.js',
@@ -488,7 +489,7 @@
           </div>
         </div>
         <div class="col align-middle d-inline-flex ps-0">
-          <button type="button" class="btn btn-primary ms-auto me-1 translate-button" id="translate-button">Dịch</button>
+          <button type="submit" class="btn btn-primary ms-auto me-1 translate-button" id="translate-button">Dịch</button>
         </div>
       </div>
     </div>
@@ -497,17 +498,17 @@
     <ul class="nav m-auto viewport">
       <li class="nav-item mx-3">Số lượng ký tự: <span id="input-textarea-counter">0</span></li>
       <li>
-        <button type="button" class="nav-item nav-link copy-button" data-target="input-textarea">Sao chép</button>
+        <button type="button" class="nav-item nav-link copy-button" data-target="#input-textarea">Sao chép</button>
       </li>
       <li>
-        <button type="button" class="nav-item nav-link paste-button" data-target="input-textarea">Dán</button>
+        <button type="button" class="nav-item nav-link paste-button" data-target="#input-textarea">Dán</button>
       </li>
       <li>
         <button type="button" class="nav-item nav-link disabled" id="retranslate-button">Dịch lại</button>
       </li>
       <li class="nav-item mx-3">Thời gian dịch: <span id="translate-timer">0</span>ms</li>
       <li>
-        <button type="button" class="nav-item nav-link" data-bs-toggle="modal" data-bs-target="#glossary-modal">Thuật ngữ</button>
+        <button type="button" class="nav-item nav-link" id="glossary-management-button" data-bs-toggle="modal" data-bs-target="#glossary-modal">Quản lý thuật ngữ</button>
       </li>
       <li>
         <button type="button" class="nav-item nav-link" data-bs-toggle="modal" data-bs-target="#settings-modal">Thiết lập</button>
@@ -531,33 +532,32 @@
           <h2 class="fs-5">Thiết lập giao diện</h2>
           <div class="dropdown mb-3">
             <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" id="bd-theme" data-bs-toggle="dropdown">
-              <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" class="bi bi-circle-half my-1 theme-icon-active" viewBox="0 0 16 16">
-                <path d="M8 15A7 7 0 1 0 8 1v14zm0 1A8 8 0 1 1 8 0a8 8 0 0 1 0 16z"/>
+              <svg class="bi my-1 theme-icon-active" width="1em" height="1em" fill="currentColor">
+                <use xlink:href="#circle-half"></use>
               </svg>
               Thay đổi chủ đề
             </button>
             <ul class="dropdown-menu">
               <li>
                 <button type="button" class="dropdown-item active" data-bs-theme-value="auto">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" class="bi bi-circle-half me-2 theme-icon" viewBox="0 0 16 16">
-                    <path d="M8 15A7 7 0 1 0 8 1v14zm0 1A8 8 0 1 1 8 0a8 8 0 0 1 0 16z"/>
+                  <svg class="bi me-2 theme-icon" width="1em" height="1em" fill="currentColor">
+                    <use xlink:href="#circle-half"></use>
                   </svg>
                   Tự động
                 </button>
               </li>
               <li>
                 <button type="button" class="dropdown-item" data-bs-theme-value="light">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" class="bi bi-sun-fill me-2 theme-icon" viewBox="0 0 16 16">
-                    <path d="M8 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0zm0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13zm8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5zM3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8zm10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0zm-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0zm9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707zM4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .708z"/>
+                  <svg class="bi me-2 theme-icon" width="1em" height="1em" fill="currentColor">
+                    <use xlink:href="#sun-fill"></use>
                   </svg>
                   Sáng
                 </button>
               </li>
               <li>
                 <button type="button" class="dropdown-item" data-bs-theme-value="dark">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" class="bi bi-moon-stars-fill me-2 theme-icon" viewBox="0 0 16 16">
-                    <path d="M6 .278a.768.768 0 0 1 .08.858 7.208 7.208 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277.527 0 1.04-.055 1.533-.16a.787.787 0 0 1 .81.316.733.733 0 0 1-.031.893A8.349 8.349 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.752.752 0 0 1 6 .278z"/>
-                    <path d="M10.794 3.148a.217.217 0 0 1 .412 0l.387 1.162c.173.518.579.924 1.097 1.097l1.162.387a.217.217 0 0 1 0 .412l-1.162.387a1.734 1.734 0 0 0-1.097 1.097l-.387 1.162a.217.217 0 0 1-.412 0l-.387-1.162A1.734 1.734 0 0 0 9.31 6.593l-1.162-.387a.217.217 0 0 1 0-.412l1.162-.387a1.734 1.734 0 0 0 1.097-1.097l.387-1.162zM13.863.099a.145.145 0 0 1 .274 0l.258.774c.115.346.386.617.732.732l.774.258a.145.145 0 0 1 0 .274l-.774.258a1.156 1.156 0 0 0-.732.732l-.258.774a.145.145 0 0 1-.274 0l-.258-.774a1.156 1.156 0 0 0-.732-.732l-.774-.258a.145.145 0 0 1 0-.274l.774-.258c.346-.115.617-.386.732-.732L13.863.1z"/>
+                  <svg class="bi me-2 theme-icon" width="1em" height="1em" fill="currentColor">
+                    <use xlink:href="#moon-stars-fill"></use>
                   </svg>
                   Tối
                 </button>
@@ -565,36 +565,36 @@
             </ul>
           </div>
           <div class="dropdown mb-3 option" id="font-dropdown">
-            <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-fonts" viewBox="0 0 16 16">
-                <path d="M12.258 3h-8.51l-.083 2.46h.479c.26-1.544.758-1.783 2.693-1.845l.424-.013v7.827c0 .663-.144.82-1.3.923v.52h4.082v-.52c-1.162-.103-1.306-.26-1.306-.923V3.602l.431.013c1.934.062 2.434.301 2.693 1.846h.479L12.258 3z"/>
+            <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
+              <svg class="bi" width="1em" height="1em" fill="currentColor">
+                <use xlink:href="#fonts"></use>
               </svg>
               Phông chữ
             </button>
             <ul class="dropdown-menu">
               <li>
-                <button type="button" class="dropdown-item font-option active">Mặc định (Georgia)</button>
+                <button type="submit" class="dropdown-item font-option active">Mặc định (Georgia)</button>
               </li>
               <li>
-                <button type="button" class="dropdown-item font-option">Times New Roman</button>
+                <button type="submit" class="dropdown-item font-option">Times New Roman</button>
               </li>
               <li>
-                <button type="button" class="dropdown-item font-option">Phông chữ hệ thống</button>
+                <button type="submit" class="dropdown-item font-option">Phông chữ hệ thống</button>
               </li>
               <li>
-                <button type="button" class="dropdown-item font-option">Hiragino Mincho ProN</button>
+                <button type="submit" class="dropdown-item font-option">Hiragino Mincho ProN</button>
               </li>
               <li>
-                <button type="button" class="dropdown-item font-option" data-additional-fonts="Hiragino Mincho ProN">Bookerly</button>
+                <button type="submit" class="dropdown-item font-option" data-additional-fonts="Hiragino Mincho ProN">Bookerly</button>
               </li>
               <li>
-                <button type="button" class="dropdown-item font-option" data-additional-fonts="Hiragino Mincho ProN">Literata</button>
+                <button type="submit" class="dropdown-item font-option" data-additional-fonts="Hiragino Mincho ProN">Literata</button>
               </li>
               <li>
-                <button type="button" class="dropdown-item font-option" data-additional-fonts="Hiragino Mincho Pro">Iowan Old Style</button>
+                <button type="submit" class="dropdown-item font-option" data-additional-fonts="Hiragino Mincho Pro">Iowan Old Style</button>
               </li>
               <li>
-                <button type="button" class="dropdown-item font-option">Crimson Text</button>
+                <button type="submit" class="dropdown-item font-option">Crimson Text</button>
               </li>
             </ul>
           </div>
@@ -614,31 +614,30 @@
           </div>
           <hr>
           <div class="dropdown mb-3 option quick-translate-option" id="translator-dropdown">
-            <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-translate" viewBox="0 0 16 16">
-                <path d="M4.545 6.714 4.11 8H3l1.862-5h1.284L8 8H6.833l-.435-1.286H4.545zm1.634-.736L5.5 3.956h-.049l-.679 2.022H6.18z"/>
-                <path d="M0 2a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v3h3a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-3H2a2 2 0 0 1-2-2V2zm2-1a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h7a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H2zm7.138 9.995c.193.301.402.583.63.846-.748.575-1.673 1.001-2.768 1.292.178.217.451.635.555.867 1.125-.359 2.08-.844 2.886-1.494.777.665 1.739 1.165 2.93 1.472.133-.254.414-.673.629-.89-1.125-.253-2.057-.694-2.82-1.284.681-.747 1.222-1.651 1.621-2.757H14V8h-3v1.047h.765c-.318.844-.74 1.546-1.272 2.13a6.066 6.066 0 0 1-.415-.492 1.988 1.988 0 0 1-.94.31z"/>
+            <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
+              <svg class="bi" width="1em" height="1em" fill="currentColor">
+                <use xlink:href="#translate"></use>
               </svg>
               Trình dịch
             </button>
             <ul class="dropdown-menu">
               <li>
-                <button class="dropdown-item translator-option" data-id="deeplTranslator" type="button">DeepL Translator</button>
+                <button type="submit" class="dropdown-item translator-option" data-id="deeplTranslator">DeepL Translator</button>
               </li>
               <li>
-                <button class="dropdown-item translator-option" data-id="googleTranslate" type="button">Google Dịch</button>
+                <button type="submit" class="dropdown-item translator-option" data-id="googleTranslate">Google Dịch</button>
               </li>
               <li>
-                <button class="dropdown-item translator-option" data-id="lingvanex" type="button">Lingvanex</button>
+                <button type="submit" class="dropdown-item translator-option" data-id="lingvanex">Lingvanex</button>
               </li>
               <li>
-                <button class="dropdown-item translator-option" data-id="papago" type="button">Papago</button>
+                <button type="submit" class="dropdown-item translator-option" data-id="papago">Papago</button>
               </li>
               <li>
-                <button class="dropdown-item translator-option active" data-id="microsoftTranslator" type="button">Trình dịch Microsoft</button>
+                <button type="submit" class="dropdown-item translator-option active" data-id="microsoftTranslator">Trình dịch Microsoft</button>
               </li>
               <li>
-                <button class="dropdown-item translator-option" data-id="vietphrase" type="button">Vietphrase</button>
+                <button type="submit" class="dropdown-item translator-option" data-id="vietphrase">Vietphrase</button>
               </li>
             </ul>
           </div>
@@ -648,7 +647,7 @@
           </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" id="reset-button">
+          <button type="reset" class="btn btn-secondary" id="reset-button">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-counterclockwise" viewBox="0 0 16 16">
               <path fill-rule="evenodd" d="M8 3a5 5 0 1 1-4.546 2.914.5.5 0 0 0-.908-.417A6 6 0 1 0 8 2v1z"/>
               <path d="M8 4.466V.534a.25.25 0 0 0-.41-.192L5.23 2.308a.25.25 0 0 0 0 .384l2.36 1.966A.25.25 0 0 0 8 4.466z"/>
@@ -659,6 +658,105 @@
       </div>
     </div>
   </div>
+  <div class="modal fade" id="glossary-modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Bảng thuật ngữ (<span id="glossary-counter">0</span>)</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="form-check form-switch mb-3">
+            <input class="form-check-input option quick-translate-option" type="checkbox" role="switch" id="glossary-switch" checked>
+            <label class="form-check-label" for="glossary-switch">Bật</label>
+          </div>
+          <div class="input-group input-group-sm my-3">
+            <input type="file" class="form-control" id="glossary-input" accept=".tsv,.tab,text/csv,text/plain">
+            <button type="submit" class="btn btn-outline-danger position-relative" id="clear-button">
+              <svg class="bi" width="16" height="16" fill="currentColor">
+                <use xlink:href="#x-lg"></use>
+              </svg>
+            </button>
+          </div>
+          <div class="row align-items-center mb-3">
+            <div class="col pe-1">
+              <input type="text" class="form-control" id="source-pair-input" placeholder="Nguồn">
+            </div>
+            <div class="col ps-1">
+              <input type="text" class="form-control" id="target-pair-input" placeholder="Đích">
+            </div>
+            <div class="col-3">
+              <select class="form-select option quick-translate-option" id="language-pairs-select">
+                <option value="ja-en">Nhật → Anh</option>
+                <option value="ja-vi">Nhật → Việt</option>
+                <option value="zh-en">Trung → Anh</option>
+                <option value="zh-vi" selected>Trung → Việt</option>
+              </select>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-sm btn-success mb-3 disabled" id="add-button">
+            <svg class="bi" width="1em" height="1em" fill="currentColor">
+              <use xlink:href="#plus"></use>
+            </svg>
+            Thêm
+          </button>
+          <select class="form-select mb-3" id="glossary-data-list" multiple>
+            <option value="" selected>Chọn...</option>
+          </select>
+          <button type="submit" class="btn btn-sm btn-danger mb-3 disabled" id="remove-button">
+            <svg class="bi" width="1em" height="1em" fill="currentColor">
+              <use xlink:href="#dash"></use>
+            </svg>
+            Xoá
+          </button>
+        </div>
+        <div class="modal-footer">
+          <div class="input-group input-group-sm">
+            <input type="text" placeholder="Bảng thuật ngữ" class="form-control" id="glossary-name">
+            <span class="input-group-text">.<span id="glossary-extension">tsv</span></span>
+            <a class="btn btn-primary btn-sm" id="download-button" role="button">
+              <svg class="bi" width="1em" height="1em" fill="currentColor">
+                <use xlink:href="#download"></use>
+              </svg>
+              Tải xuống</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
+</div>
+<svg class="d-none" xmlns="http://www.w3.org/2000/svg">
+  <symbol id="circle-half" viewBox="0 0 16 16">
+    <path d="M8 15A7 7 0 1 0 8 1v14zm0 1A8 8 0 1 1 8 0a8 8 0 0 1 0 16z"/>
+  </symbol>
+  <symbol id="sun-fill" viewBox="0 0 16 16">
+    <path d="M8 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0zm0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13zm8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5zM3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8zm10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0zm-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0zm9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707zM4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .708z"/>
+  </symbol>
+  <symbol id="moon-stars-fill" viewBox="0 0 16 16">
+    <path d="M6 .278a.768.768 0 0 1 .08.858 7.208 7.208 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277.527 0 1.04-.055 1.533-.16a.787.787 0 0 1 .81.316.733.733 0 0 1-.031.893A8.349 8.349 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.752.752 0 0 1 6 .278z"/>
+    <path d="M10.794 3.148a.217.217 0 0 1 .412 0l.387 1.162c.173.518.579.924 1.097 1.097l1.162.387a.217.217 0 0 1 0 .412l-1.162.387a1.734 1.734 0 0 0-1.097 1.097l-.387 1.162a.217.217 0 0 1-.412 0l-.387-1.162A1.734 1.734 0 0 0 9.31 6.593l-1.162-.387a.217.217 0 0 1 0-.412l1.162-.387a1.734 1.734 0 0 0 1.097-1.097l.387-1.162zM13.863.099a.145.145 0 0 1 .274 0l.258.774c.115.346.386.617.732.732l.774.258a.145.145 0 0 1 0 .274l-.774.258a1.156 1.156 0 0 0-.732.732l-.258.774a.145.145 0 0 1-.274 0l-.258-.774a1.156 1.156 0 0 0-.732-.732l-.774-.258a.145.145 0 0 1 0-.274l.774-.258c.346-.115.617-.386.732-.732L13.863.1z"/>
+  </symbol>
+  <symbol id="fonts" viewBox="0 0 16 16">
+    <path d="M12.258 3h-8.51l-.083 2.46h.479c.26-1.544.758-1.783 2.693-1.845l.424-.013v7.827c0 .663-.144.82-1.3.923v.52h4.082v-.52c-1.162-.103-1.306-.26-1.306-.923V3.602l.431.013c1.934.062 2.434.301 2.693 1.846h.479L12.258 3z"/>
+  </symbol>
+  <symbol id="translate" viewBox="0 0 16 16">
+    <path d="M4.545 6.714 4.11 8H3l1.862-5h1.284L8 8H6.833l-.435-1.286H4.545zm1.634-.736L5.5 3.956h-.049l-.679 2.022H6.18z"/>
+    <path d="M0 2a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v3h3a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-3H2a2 2 0 0 1-2-2V2zm2-1a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h7a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H2zm7.138 9.995c.193.301.402.583.63.846-.748.575-1.673 1.001-2.768 1.292.178.217.451.635.555.867 1.125-.359 2.08-.844 2.886-1.494.777.665 1.739 1.165 2.93 1.472.133-.254.414-.673.629-.89-1.125-.253-2.057-.694-2.82-1.284.681-.747 1.222-1.651 1.621-2.757H14V8h-3v1.047h.765c-.318.844-.74 1.546-1.272 2.13a6.066 6.066 0 0 1-.415-.492 1.988 1.988 0 0 1-.94.31z"/>
+  </symbol>
+  <symbol id="plus" viewBox="0 0 16 16">
+    <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+  </symbol>
+  <symbol id="dash" viewBox="0 0 16 16">
+    <path d="M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8z"/>
+  </symbol>
+  <symbol id="x-lg" viewBox="0 0 16 16">
+    <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z"/>
+  </symbol>
+  <symbol id="download" viewBox="0 0 16 16">
+    <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+    <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+  </symbol>
+</svg>
 </body>
 </html>
