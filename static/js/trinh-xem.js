@@ -192,6 +192,8 @@ function yenpressLoader(book, volume, spine) {
 function customLoader(book, volume, spine) {
   switch (`${book}_${volume}`) {
     case 'tenseislime_20':
+    case 'chua-te-bong-toi_06':
+    case 'tenseislime_21':
       for (let i = 0; i < spine.length; i++) {
         const spineHref = spine[i];
         const spineId = spineHref.replace(/xhtml\/(.+)\.xhtml/, '$1');
@@ -201,7 +203,7 @@ function customLoader(book, volume, spine) {
           crossDomain: false,
           url: `./${book}/${volume}/${spineHref}`
         }).done(function (data) {
-          if (i === 4) {
+          if ((`${book}_${volume}` === 'tenseislime_20' && i === 4) || (`${book}_${volume}` === 'chua-te-bong-toi_06' && i === 7) || (`${book}_${volume}` === 'tenseislime_21' && i === 5)) {
             $(document.documentElement).addClass('hltr');
             $(document.documentElement).attr('lang', $(data).find('html').attr('xml:lang'));
             $(document.head).html($(data).find('head').html());
@@ -227,7 +229,7 @@ function customLoader(book, volume, spine) {
             navigator.clipboard.writeText(this.nextSibling.innerText);
           };
 
-          $(document.body).append('\n', copyButton, `<div class="body"">${$(data).find('body').html().replace(/<rt>\p{scx=Hira}+<\/rt>/gu, '').replace(/<rt>(\p{scx=Kana}+)<\/rt>/gu, '（$1）')}</div>\n\n`);
+          $(document.body).append('\n', copyButton, `<div class="body"${!data.toString().includes('id="' + spineId + '"') ? ` id="${spineId}"` : ''}>${$(data).find('body').html().replace(/<rt>\p{scx=Hira}+<\/rt>/gu, '').replace(/<rt>(\p{scx=Kana}+)<\/rt>/gu, '（$1）')}</div>\n\n`);
           $('div.body').last().addClass($(data).find('body').attr('class'));
         });
       }
@@ -239,7 +241,6 @@ function customLoader(book, volume, spine) {
       $('img').each(function () {
         $(this).attr('src', $(this).attr('src').replace('..', `https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/light-novel/${book}/${volume}/item`));
       });
-
       break;
   }
 

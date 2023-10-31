@@ -13,12 +13,13 @@
 ${document.querySelector('#manifest').value}
 ]`
     .replace(new RegExp(' *<item media-type=".+" id=(".+") href=(".+") properties=".+"/>', 'g'), '[$1, $2],')
-    .replace(new RegExp(' *<item media-type=".+" id=(".+") href=(".+")/>', 'g'), '[$1, $2],')
+    .replace(new RegExp(' *<item media-type=".+" id=(".+") +href=(".+")/>', 'g'), '[$1, $2],')
     .replace(new RegExp(' *<item id=(".+") href=(".+") media-type=".+" properties=".+"/>', 'g'), '[$1, $2],')
     .replace(new RegExp(' *<item id=(".+") href=(".+") media-type=".+"/>', 'g'), '[$1, $2],')
     .replace(new RegExp(' *<item href=(".+") id=(".+") media-type=".+" properties=".+"/>', 'g'), '[$2, $1],')
     .replace(new RegExp(' *<item href=(".+") id=(".+") media-type=".+"/>', 'g'), '[$2, $1],')
     .replace(/,(\n])/, '$1');
+    console.log(manifest);
     spine = `[
 ${document.querySelector('#spine').value}
       ]`
