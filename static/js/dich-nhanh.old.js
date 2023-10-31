@@ -951,11 +951,11 @@ function buildResult(inputTexts, result, showOriginal) {
           if (resultLines[i].trim().length !== processLines[i + lostLineFixedNumber].trim().length) {
             const idiomaticText = document.createElement('i');
             const linebreak = document.createElement('br');
-            idiomaticText.innerText = inputLines[i + lostLineFixedNumber];
+            idiomaticText.innerHTML = inputLines[i + lostLineFixedNumber];
             paragraph.appendChild(idiomaticText);
             paragraph.appendChild(linebreak.cloneNode(true));
             textNode = document.createElement('b');
-            textNode.innerText = resultLines[i];
+            textNode.innerHTML = resultLines[i];
           }
 
           paragraph.appendChild(textNode);
