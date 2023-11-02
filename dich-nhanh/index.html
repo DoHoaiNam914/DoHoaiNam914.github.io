@@ -7,127 +7,64 @@
   <title>Dịch nhanh - DoHoaiNam Pages</title>
   <link rel="stylesheet" href="/static/css/bootstrap.min.css">
   <link rel="stylesheet" href="/static/css/general_style.css">
-  <script src="/static/lib/LAB.js"></script>
-  <script>
-    const storedTheme = localStorage.getItem('theme');
-    const preferredTheme = storedTheme ?? 'auto';
-
-    $LAB.script('/static/lib/jquery-3.7.1.min.js').wait()
-        .script('/static/lib/jquery.csv.min.js').wait()
-        .script('/static/lib/bootstrap.bundle.min.js').wait(function () {
-      setTheme(preferredTheme);
-      showActiveTheme(preferredTheme);
-
-      $('[data-theme-value]').on('click', function () {
-        const theme = $(this).data('theme-value');
-        localStorage.setItem('theme', theme);
-        setTheme(theme);
-        showActiveTheme(theme, true);
-      });
-    })
-        .script('/static/lib/CryptoJS v3.1.2/rollups/hmac-md5.js')
-        .script('/static/lib/CryptoJS v3.1.2/components/enc-base64.js')
-        .script('/static/lib/tesseract.min.js')
-        .script('/static/lib/opencv.js')
-        .script('/static/lib/handict.js')
-        .script('/static/js/special-sinovietnamese.js')
-        .script('/static/js/new-accent.js')
-        .script('/static/js/cjkmap.js')
-        .script('/static/js/corsproxy.js').wait()
-        .script('/static/js/trich-xuat-van-ban.js').wait(function () {
-      // const recognizer = JSON.parse(localStorage.getItem('recognizer')) ?? {
-      //   langs: $('#recognizeLangsSelect').val(),
-      //   grayscale: $('#flexCheckGrayscale').prop('checked'),
-      //   threshold: $('#flexCheckThreshold').prop('checked')
-      // };
-      // $('#recognizeLangsSelect').val(recognizer.langs);
-      // $('#flexCheckGrayscale').prop('checked', recognizer.grayscale);
-      // $('#flexCheckThreshold').prop('checked', recognizer.threshold);
-    })
-        .script('/static/js/dich-nhanh.old.js').wait(function () {
-      if (translator == undefined) {
-        translator = loadTranslatorOptions();
-        localStorage.setItem('translator', JSON.stringify(translator));
-      }
-
-      $(`.font-option:contains(${translator.font})`).click();
-      $(`.translator[data-id="${translator.translator}"]`).click();
-
-      for (let i = 0; i < options.length; i++) {
-        if (options.filter(`:eq(${i})`).attr('name') != undefined && options.filter(`:eq(${i})`).attr('name').startsWith('flexRadio') && options.filter(`:eq(${i})`).val() === translator[options.filter(`:eq(${i})`).attr('name')]) {
-          $(`.option[name="${options.filter(`:eq(${i})`).attr('name')}"]`).removeProp('checked');
-          options.filter(`:eq(${i})`).prop('checked', true);
-        } else if (options.filter(`:eq(${i})`).attr('id').startsWith('flexSwitchCheck')) {
-          options.filter(`:eq(${i})`).prop('checked', translator[options.filter(`:eq(${i})`).attr('id')]);
-        } else if (options.filter(`:eq(${i})`).hasClass('form-range')) {
-          options.filter(`:eq(${i})`).val(parseInt(translator[options.filter(`:eq(${i})`).attr('id')]));
-        } else if (options.filter(`:eq(${i})`).hasClass('form-select')) {
-          options.filter(`:eq(${i})`).val(translator[options.filter(`:eq(${i})`).attr('id')]);
-        }
-
-        if (!options.filter(`:eq(${i})`).hasClass('translator-option')) {
-          options.filter(`:eq(${i})`).change();
-        }
-      }
-    })
-        .script('/static/js/quan-ly-tu-vung.js').wait(function () {
-      if (localGlossary == undefined) {
-        localGlossary = JSON.parse({
-          type: $('#glossaryType').val(),
-          data: {}
-        });
-        localStorage.setItem('glossary', JSON.stringify(localGlossary));
-      }
-
-      glossary = localGlossary.data;
-      $('#glossaryType').val(localGlossary.type).change();
-    });
-
-    const setTheme = (theme) => {
-      if (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        $(document.documentElement).attr('data-bs-theme', 'dark');
-      } else {
-        $(document.documentElement).attr('data-bs-theme', theme);
-      }
-    };
-
-    const showActiveTheme = (theme, focus = false) => {
-      const themeSwitcher = $('#theme');
-      if (!themeSwitcher) return;
-
-      const activeThemeIcon = $('.theme-icon-active');
-      const btnToActive = $(`[data-theme-value="${theme}"]`);
-      const svgOfActiveBtn = $(btnToActive).html();
-
-      $('[data-theme-value]').removeClass('active');
-      $(btnToActive).addClass('active');
-      $(activeThemeIcon).html(svgOfActiveBtn);
-      if (focus) themeSwitcher.focus();
-    };
-
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => (storedTheme !== 'light' || storedTheme !== 'dark') && setTheme(preferredTheme));
-  </script>
   <style>
     body {
       --opt-font-family: Roboto, sans-serif;
       --opt-font-size: 1em;
       --opt-line-height: 1.2em;
+      --opt-text-align: justify;
       overflow-x: hidden;
     }
 
-    .container {
-      line-height: 1.2em;
-      font-size: 1em;
-      height: 577px;
-      overflow-wrap: break-word;
-      padding: 1.5rem 8px 8rem;
+    .viewport {
       max-width: 1000px;
     }
 
-    #recognizeImage {
-      max-height: 20%;
-      max-width: 100%;
-      text-align: center;
+    .translate-textarea-button {
+      height: 2.375em;
+      width: 3.5em;
+    }
+
+    .navigator, .modals {
+      user-select: none;
+    }
+
+    .slide-navbar {
+      height: 2.5em;
+      margin-bottom: calc(3.25em - 1px);
+    }
+
+    .slide-navbar > .nav {
+      display: flex;
+      flex-wrap: nowrap;
+      scrollbar-width: none;
+      overflow-y: hidden;
+      padding-bottom: 1em;
+      vertical-align: middle;
+      white-space: nowrap;
+    }
+
+    .slide-navbar .nav-item {
+      color: #6c757d;
+      font-size: 0.875em;
+      padding-bottom: 0.75em;
+      padding-top: 0.75em;
+    }
+
+    .slide-navbar .nav-link:hover {
+      color: black;
+    }
+
+    .number-option-display {
+      width: 5em;
+    }
+
+    .workspace {
+      line-height: 1.2em;
+      font-size: 1em;
+      max-height: 577px;
+      overflow-wrap: break-word;
+      padding: 1.5rem 8px 8rem;
     }
 
     .textarea {
@@ -140,16 +77,17 @@
       margin: 0;
       orphans: 1;
       overflow-x: hidden;
-      padding: 20px;
-      text-align: justify;
+      padding: 8px;
+      text-align: var(--opt-text-align);
       widows: 1;
       word-spacing: 0;
     }
-    
+
     @media screen and (min-width: 75rem) {
 
       .textarea {
-        max-width: 51.25vw;
+        max-width: 1000px;
+        padding: 20px;
       }
 
     }
@@ -157,823 +95,884 @@
     .textarea > p {
       display: block;
       margin: 0;
-    }
-
-    .nav-scroller {
-      -webkit-overflow-scrolling: touch;
-      display: flex;
-      flex-wrap: nowrap;
-      height: 2.75em;
-      margin-bottom: calc(3.25em - 1px);
-      overflow-y: hidden;
-      padding-bottom: 1em;
-      position: relative;
-      text-align: center;
-      white-space: nowrap;
-    }
-
-    .nav-scroller .nav-item {
-      color: #6c757d;
-      font-size: 0.875em;
-      padding-bottom: 0.75em;
-      padding-top: 0.75em;
-    }
-
-    .nav-scroller .nav-link:hover {
-      color: black;
-    }
-
-    .select-lang {
-      width: 40%;
-      max-width: 40vw;
-    }
-
-    .btn-float {
-      --bs-bg-opacity: 0.6;
-      background-color: rgba(var(--bs-body-bg-rgb), var(--bs-bg-opacity));
-    }
-
-    #glossaryManagerButton {
-      bottom: 7rem;
-      left: 1rem;
-    }
-
-    #settingsButton {
-      bottom: 7rem;
-      right: 1rem;
-    }
-
-    .dropdown-scroller {
-      -webkit-overflow-scrolling: touch;
-      height: 16rem;
-      overflow-x: hidden;
-      overflow-y: scroll;
-      white-space: nowrap;
-    }
-
-    #preview {
-      height: 250px;
+      user-select: auto;
     }
 
     .modal-body {
-      min-height: 300px;
       overflow-x: hidden;
+      scrollbar-width: none;
     }
 
-    .value-option-input {
-      width: 5em;
+    .dropdown-scroller {
+      height: 16rem;
+      scrollbar-width: none;
+      overflow-x: hidden;
+      white-space: nowrap;
+    }
+
+    .glossary-data-list {
+      height: 300px;
     }
   </style>
+  <script src="/static/lib/LAB.js"></script>
+  <script>
+    'use strict';
+
+    const scriptsToLoad = [
+      '/static/lib/jquery-3.7.1.min.js',
+      '/static/lib/jquery.csv.min.js',
+      '/static/lib/bootstrap.bundle.min.js',
+      '/static/lib/CryptoJS v3.1.2/rollups/hmac-md5.js',
+      '/static/lib/CryptoJS v3.1.2/components/enc-base64.js',
+      '/static/js/cac-tien-ich.js',
+      '/static/lib/handict.js',
+      '/static/js/dich-nhanh/cjkmap.js',
+      '/static/js/dich-nhanh/special-sinovietnamese.js',
+      '/static/js/dich-nhanh/new-accent.js',
+      '/static/js/dich-nhanh/trinh-dich.js',
+      '/static/js/dich-nhanh/dich-nhanh.js',
+    ];
+    let i = 0;
+
+    const labJs = () => {
+      if (i < scriptsToLoad.length) {
+        $LAB.script(scriptsToLoad[i]).wait(labJs);
+        i++;
+      }
+    };
+    labJs();
+  </script>
+  <script>
+    /*!
+     * Color mode toggler for Bootstrap's docs (https://getbootstrap.com/)
+     * Copyright 2011-2023 The Bootstrap Authors
+     * Licensed under the Creative Commons Attribution 3.0 Unported License.
+     */
+
+    (() => {
+      'use strict'
+
+      const getStoredTheme = () => localStorage.getItem('theme')
+      const setStoredTheme = theme => localStorage.setItem('theme', theme)
+
+      const getPreferredTheme = () => {
+        const storedTheme = getStoredTheme()
+        if (storedTheme) {
+          return storedTheme
+        }
+
+        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+      }
+
+      const setTheme = theme => {
+        if (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+          document.documentElement.setAttribute('data-bs-theme', 'dark')
+        } else {
+          document.documentElement.setAttribute('data-bs-theme', theme)
+        }
+      }
+
+      setTheme(getPreferredTheme())
+
+      const showActiveTheme = (theme, focus = false) => {
+        const themeSwitcher = document.querySelector('#bd-theme')
+
+        if (!themeSwitcher) {
+          return
+        }
+
+        // const themeSwitcherText = document.querySelector('#bd-theme-text')
+        const activeThemeIcon = document.querySelector('.theme-icon-active use')
+        const btnToActive = document.querySelector(`[data-bs-theme-value="${theme}"]`)
+        const svgOfActiveBtn = btnToActive.querySelector('svg use').getAttribute('xlink:href')
+
+        document.querySelectorAll('[data-bs-theme-value]').forEach(element => {
+          element.classList.remove('active')
+          element.setAttribute('aria-pressed', 'false')
+        })
+
+        btnToActive.classList.add('active')
+        btnToActive.setAttribute('aria-pressed', 'true')
+        activeThemeIcon.setAttribute('href', svgOfActiveBtn)
+        // const themeSwitcherLabel = `${themeSwitcherText.textContent} (${btnToActive.dataset.bsThemeValue})`
+        // themeSwitcher.setAttribute('aria-label', themeSwitcherLabel)
+
+        if (focus) {
+          themeSwitcher.focus()
+        }
+      }
+
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+        const storedTheme = getStoredTheme()
+        if (storedTheme !== 'light' && storedTheme !== 'dark') {
+          setTheme(getPreferredTheme())
+        }
+      })
+
+      window.addEventListener('DOMContentLoaded', () => {
+        showActiveTheme(getPreferredTheme())
+
+        document.querySelectorAll('[data-bs-theme-value]')
+                .forEach(toggle => {
+                  toggle.addEventListener('click', () => {
+                    const theme = toggle.getAttribute('data-bs-theme-value')
+                    setStoredTheme(theme)
+                    setTheme(theme)
+                    showActiveTheme(theme, true)
+                  })
+                })
+      })
+    })()
+  </script>
 </head>
-<body class="bg-body-tertiary h-100 m-0 p-0 w-100">
-<main class="container position-relative">
-  <!--label for="imageFile" class="form-label">Trích xuất văn bản</label>
-  <canvas id="recognizeImage" style="display: none;"></canvas>
-  <div class="input-group input-group-sm">
-    <button type="button" class="btn btn-sm dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false"></button>
-    <ul class="dropdown-menu">
-      <li><button class="dropdown-item inputType active" id="local" type="button">Local</button></li>
-      <li><button class="dropdown-item inputType" id="url" type="button">URL</button></li>
-    </ul>
-    <input class="form-control form-control-sm image-input" type="file" id="imageFile" accept="image/*">
-    <input class="form-control form-control-sm image-input" type="url" id="imageURL" placeholder="https://example.com" readOnly style="display: none;">
-    <button class="btn btn-sm btn-secondary position-relative" id="pasteUrlButton" type="button" style="display: none;">
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clipboard" viewBox="0 0 16 16">
-        <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/>
-        <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/>
-      </svg>
-    </button>
-    <button class="btn btn-sm btn-danger position-relative" id="clearImageButton" type="button">
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
-        <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
-        <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
-      </svg>
-    </button>
-  </div-->
-  <textarea class="form-control textarea position-absolute start-50 translate-middle-x" id="queryText" placeholder="Viết gì đó tại đây"></textarea>
-  <div class="form-control textarea position-absolute start-50 translate-middle-x" id="translatedText" style="display: none;"></div>
-</main>
-<div class="fixed-bottom">
-  <nav class="navbar bg-body shadow-sm fixed-bottom">
-    <div class="container-fluid">
-      <select class="form-select select-lang option translator-option" id="source-language">
-        <option value="auto" selected>Phát hiện ngôn ngữ</option>
-        <option value="ar">Ả Rập</option>
-        <option value="sq">Albania</option>
-        <option value="am">Amharic</option>
-        <option value="en">Anh</option>
-        <option value="hy">Armenia</option>
-        <option value="as">Assam</option>
-        <option value="ay">Aymara</option>
-        <option value="az">Azerbaijan</option>
-        <option value="pl">Ba Lan</option>
-        <option value="fa">Ba Tư</option>
-        <option value="bm">Bambara</option>
-        <option value="xh">Bantu</option>
-        <option value="eu">Basque</option>
-        <option value="be">Belarus</option>
-        <option value="bn">Bengal</option>
-        <option value="bho">Bhojpuri</option>
-        <option value="bs">Bosnia</option>
-        <option value="pt">Bồ Đào Nha</option>
-        <option value="bg">Bulgaria</option>
-        <option value="ca">Catalan</option>
-        <option value="ceb">Cebuano</option>
-        <option value="ny">Chichewa</option>
-        <option value="co">Corsi</option>
-        <option value="ht">Creole (Haiti)</option>
-        <option value="hr">Croatia</option>
-        <option value="dv">Dhivehi</option>
-        <option value="iw">Do Thái</option>
-        <option value="doi">Dogri</option>
-        <option value="da">Đan Mạch</option>
-        <option value="de">Đức</option>
-        <option value="et">Estonia</option>
-        <option value="ee">Ewe</option>
-        <option value="tl">Filipino</option>
-        <option value="fy">Frisia</option>
-        <option value="gd">Gael Scotland</option>
-        <option value="gl">Galicia</option>
-        <option value="ka">George</option>
-        <option value="gn">Guarani</option>
-        <option value="gu">Gujarat</option>
-        <option value="nl">Hà Lan</option>
-        <option value="af">Hà Lan (Nam Phi)</option>
-        <option value="ko">Hàn</option>
-        <option value="ha">Hausa</option>
-        <option value="haw">Hawaii</option>
-        <option value="hi">Hindi</option>
-        <option value="hmn">Hmong</option>
-        <option value="hu">Hungary</option>
-        <option value="el">Hy Lạp</option>
-        <option value="is">Iceland</option>
-        <option value="ig">Igbo</option>
-        <option value="ilo">Ilocano</option>
-        <option value="id">Indonesia</option>
-        <option value="ga">Ireland</option>
-        <option value="jw">Java</option>
-        <option value="kn">Kannada</option>
-        <option value="kk">Kazakh</option>
-        <option value="km">Khmer</option>
-        <option value="rw">Kinyarwanda</option>
-        <option value="gom">Konkani</option>
-        <option value="kri">Krio</option>
-        <option value="ku">Kurd (Kurmanji)</option>
-        <option value="ckb">Kurd (Sorani)</option>
-        <option value="ky">Kyrgyz</option>
-        <option value="lo">Lào</option>
-        <option value="la">Latinh</option>
-        <option value="lv">Latvia</option>
-        <option value="ln">Lingala</option>
-        <option value="lt">Litva</option>
-        <option value="lg">Luganda</option>
-        <option value="lb">Luxembourg</option>
-        <option value="ms">Mã Lai</option>
-        <option value="mk">Macedonia</option>
-        <option value="mai">Maithili</option>
-        <option value="mg">Malagasy</option>
-        <option value="ml">Malayalam</option>
-        <option value="mt">Malta</option>
-        <option value="mi">Maori</option>
-        <option value="mr">Marathi</option>
-        <option value="mni-Mtei">Meiteilon (Manipuri)</option>
-        <option value="lus">Mizo</option>
-        <option value="mn">Mông Cổ</option>
-        <option value="my">Myanmar</option>
-        <option value="no">Na Uy</option>
-        <option value="ne">Nepal</option>
-        <option value="ru">Nga</option>
-        <option value="ja">Nhật</option>
-        <option value="or">Odia (Oriya)</option>
-        <option value="om">Oromo</option>
-        <option value="ps">Pashto</option>
-        <option value="sa">Phạn</option>
-        <option value="fr">Pháp</option>
-        <option value="fi">Phần Lan</option>
-        <option value="pa">Punjab</option>
-        <option value="qu">Quechua</option>
-        <option value="eo">Quốc tế ngữ</option>
-        <option value="ro">Rumani</option>
-        <option value="sm">Samoa</option>
-        <option value="cs">Séc</option>
-        <option value="nso">Sepedi</option>
-        <option value="sr">Serbia</option>
-        <option value="st">Sesotho</option>
-        <option value="sn">Shona</option>
-        <option value="sd">Sindhi</option>
-        <option value="si">Sinhala</option>
-        <option value="sk">Slovak</option>
-        <option value="sl">Slovenia</option>
-        <option value="so">Somali</option>
-        <option value="su">Sunda</option>
-        <option value="sw">Swahili</option>
-        <option value="tg">Tajik</option>
-        <option value="ta">Tamil</option>
-        <option value="tt">Tatar</option>
-        <option value="es">Tây Ban Nha</option>
-        <option value="te">Telugu</option>
-        <option value="th">Thái</option>
-        <option value="tr">Thổ Nhĩ Kỳ</option>
-        <option value="sv">Thụy Điển</option>
-        <option value="ti">Tigrinya</option>
-        <option value="zh-CN">Trung</option>
-        <option value="ts">Tsonga</option>
-        <option value="tk">Turkmen</option>
-        <option value="ak">Twi</option>
-        <option value="uk">Ukraina</option>
-        <option value="ur">Urdu</option>
-        <option value="ug">Uyghur</option>
-        <option value="uz">Uzbek</option>
-        <option value="vi">Việt</option>
-        <option value="cy">Xứ Wales</option>
-        <option value="it">Ý</option>
-        <option value="yi">Yiddish</option>
-        <option value="yo">Yoruba</option>
-        <option value="zu">Zulu</option>
-      </select>
-      <select class="form-select select-lang option translator-option" id="target-language">
-        <option value="ar">Ả Rập</option>
-        <option value="sq">Albania</option>
-        <option value="am">Amharic</option>
-        <option value="en">Anh</option>
-        <option value="hy">Armenia</option>
-        <option value="as">Assam</option>
-        <option value="ay">Aymara</option>
-        <option value="az">Azerbaijan</option>
-        <option value="pl">Ba Lan</option>
-        <option value="fa">Ba Tư</option>
-        <option value="bm">Bambara</option>
-        <option value="xh">Bantu</option>
-        <option value="eu">Basque</option>
-        <option value="be">Belarus</option>
-        <option value="bn">Bengal</option>
-        <option value="bho">Bhojpuri</option>
-        <option value="bs">Bosnia</option>
-        <option value="pt">Bồ Đào Nha</option>
-        <option value="bg">Bulgaria</option>
-        <option value="ca">Catalan</option>
-        <option value="ceb">Cebuano</option>
-        <option value="ny">Chichewa</option>
-        <option value="co">Corsi</option>
-        <option value="ht">Creole (Haiti)</option>
-        <option value="hr">Croatia</option>
-        <option value="dv">Dhivehi</option>
-        <option value="iw">Do Thái</option>
-        <option value="doi">Dogri</option>
-        <option value="da">Đan Mạch</option>
-        <option value="de">Đức</option>
-        <option value="et">Estonia</option>
-        <option value="ee">Ewe</option>
-        <option value="tl">Filipino</option>
-        <option value="fy">Frisia</option>
-        <option value="gd">Gael Scotland</option>
-        <option value="gl">Galicia</option>
-        <option value="ka">George</option>
-        <option value="gn">Guarani</option>
-        <option value="gu">Gujarat</option>
-        <option value="nl">Hà Lan</option>
-        <option value="af">Hà Lan (Nam Phi)</option>
-        <option value="ko">Hàn</option>
-        <option value="ha">Hausa</option>
-        <option value="haw">Hawaii</option>
-        <option value="hi">Hindi</option>
-        <option value="hmn">Hmong</option>
-        <option value="hu">Hungary</option>
-        <option value="el">Hy Lạp</option>
-        <option value="is">Iceland</option>
-        <option value="ig">Igbo</option>
-        <option value="ilo">Ilocano</option>
-        <option value="id">Indonesia</option>
-        <option value="ga">Ireland</option>
-        <option value="jw">Java</option>
-        <option value="kn">Kannada</option>
-        <option value="kk">Kazakh</option>
-        <option value="km">Khmer</option>
-        <option value="rw">Kinyarwanda</option>
-        <option value="gom">Konkani</option>
-        <option value="kri">Krio</option>
-        <option value="ku">Kurd (Kurmanji)</option>
-        <option value="ckb">Kurd (Sorani)</option>
-        <option value="ky">Kyrgyz</option>
-        <option value="lo">Lào</option>
-        <option value="la">Latinh</option>
-        <option value="lv">Latvia</option>
-        <option value="ln">Lingala</option>
-        <option value="lt">Litva</option>
-        <option value="lg">Luganda</option>
-        <option value="lb">Luxembourg</option>
-        <option value="ms">Mã Lai</option>
-        <option value="mk">Macedonia</option>
-        <option value="mai">Maithili</option>
-        <option value="mg">Malagasy</option>
-        <option value="ml">Malayalam</option>
-        <option value="mt">Malta</option>
-        <option value="mi">Maori</option>
-        <option value="mr">Marathi</option>
-        <option value="mni-Mtei">Meiteilon (Manipuri)</option>
-        <option value="lus">Mizo</option>
-        <option value="mn">Mông Cổ</option>
-        <option value="my">Myanmar</option>
-        <option value="no">Na Uy</option>
-        <option value="ne">Nepal</option>
-        <option value="ru">Nga</option>
-        <option value="ja">Nhật</option>
-        <option value="or">Odia (Oriya)</option>
-        <option value="om">Oromo</option>
-        <option value="ps">Pashto</option>
-        <option value="sa">Phạn</option>
-        <option value="fr">Pháp</option>
-        <option value="fi">Phần Lan</option>
-        <option value="pa">Punjab</option>
-        <option value="qu">Quechua</option>
-        <option value="eo">Quốc tế ngữ</option>
-        <option value="ro">Rumani</option>
-        <option value="sm">Samoa</option>
-        <option value="cs">Séc</option>
-        <option value="nso">Sepedi</option>
-        <option value="sr">Serbia</option>
-        <option value="st">Sesotho</option>
-        <option value="sn">Shona</option>
-        <option value="sd">Sindhi</option>
-        <option value="si">Sinhala</option>
-        <option value="sk">Slovak</option>
-        <option value="sl">Slovenia</option>
-        <option value="so">Somali</option>
-        <option value="su">Sunda</option>
-        <option value="sw">Swahili</option>
-        <option value="tg">Tajik</option>
-        <option value="ta">Tamil</option>
-        <option value="tt">Tatar</option>
-        <option value="es">Tây Ban Nha</option>
-        <option value="te">Telugu</option>
-        <option value="th">Thái</option>
-        <option value="tr">Thổ Nhĩ Kỳ</option>
-        <option value="sv">Thụy Điển</option>
-        <option value="ti">Tigrinya</option>
-        <option value="zh-CN">Trung (Giản thể)</option>
-        <option value="zh-TW">Trung (Phồn thể)</option>
-        <option value="ts">Tsonga</option>
-        <option value="tk">Turkmen</option>
-        <option value="ak">Twi</option>
-        <option value="uk">Ukraina</option>
-        <option value="ur">Urdu</option>
-        <option value="ug">Uyghur</option>
-        <option value="uz">Uzbek</option>
-        <option value="vi" selected>Việt</option>
-        <option value="cy">Xứ Wales</option>
-        <option value="it">Ý</option>
-        <option value="yi">Yiddish</option>
-        <option value="yo">Yoruba</option>
-        <option value="zu">Zulu</option>
-      </select>
-      <button class="btn btn-primary btn-sm" id="translateButton" type="submit">Dịch</button>
+<body class="bg-body-tertiary h-100 m-0 p-0 position-relative w-100">
+<div class="container-fluid fixed-bottom p-0 navigator">
+  <nav class="navbar bg-body fixed-bottom shadow-sm">
+    <div class="container-fluid p-0 text-center viewport">
+      <div class="row d-inline-flex flex-nowrap m-auto w-100">
+        <div class="col-10 pe-0">
+          <div class="row m-0 w-100">
+            <div class="col">
+              <select class="form-select option quick-translate-option" id="source-language-select">
+                <option value="" selected>Tự phát hiện</option>
+                <option value="af">Afrikaans</option>
+                <option value="am">Amharic</option>
+                <option value="ar">Ả Rập</option>
+                <option value="as">Assam</option>
+                <option value="az">Azerbaijan</option>
+                <option value="ba">Bashkir</option>
+                <option value="bg">Bulgaria</option>
+                <option value="bho">Bhojpuri</option>
+                <option value="bn">Bangla</option>
+                <option value="bo">Tây Tạng</option>
+                <option value="brx">Bodo</option>
+                <option value="bs">Bosnia</option>
+                <option value="ca">Catalan</option>
+                <option value="cs">Séc</option>
+                <option value="cy">Wales</option>
+                <option value="da">Đan Mạch</option>
+                <option value="de">Đức</option>
+                <option value="doi">Dogri</option>
+                <option value="dsb">Hạ Sorbia</option>
+                <option value="dv">Divehi</option>
+                <option value="el">Hy Lạp</option>
+                <option value="en">Anh</option>
+                <option value="es">Tây Ban Nha</option>
+                <option value="et">Estonia</option>
+                <option value="eu">Basque</option>
+                <option value="fa">Ba Tư</option>
+                <option value="fi">Phần Lan</option>
+                <option value="fil">Philippines</option>
+                <option value="fj">Fiji</option>
+                <option value="fo">Faroe</option>
+                <option value="fr">Pháp</option>
+                <option value="fr-CA">Pháp (Canada)</option>
+                <option value="ga">Ireland</option>
+                <option value="gl">Galician</option>
+                <option value="gom">Konkani</option>
+                <option value="gu">Gujarati</option>
+                <option value="ha">Hausa</option>
+                <option value="he">Do Thái</option>
+                <option value="hi">Hindi</option>
+                <option value="hr">Croatia</option>
+                <option value="hsb">Thượng Sorbia</option>
+                <option value="ht">Haiti</option>
+                <option value="hu">Hungary</option>
+                <option value="hy">Armenia</option>
+                <option value="id">Indonesia</option>
+                <option value="ig">Igbo</option>
+                <option value="ikt">Inuinnaqtun</option>
+                <option value="is">Iceland</option>
+                <option value="it">Italy</option>
+                <option value="iu">Inuktitut</option>
+                <option value="iu-Latn">Inuktitut (Latin)</option>
+                <option value="ja">Nhật</option>
+                <option value="ka">Georgia</option>
+                <option value="kk">Kazakh</option>
+                <option value="km">Khmer</option>
+                <option value="kmr">Kurd (Bắc)</option>
+                <option value="kn">Kannada</option>
+                <option value="ko">Hàn</option>
+                <option value="ks">Kashmiri</option>
+                <option value="ku">Kurd (Trung)</option>
+                <option value="ky">Kyrgyz</option>
+                <option value="ln">Lingala</option>
+                <option value="lo">Lào</option>
+                <option value="lt">Litva</option>
+                <option value="lug">Ganda</option>
+                <option value="lv">Latvia</option>
+                <option value="lzh">Chinese (Literary)</option>
+                <option value="mai">Maithili</option>
+                <option value="mg">Malagasy</option>
+                <option value="mi">Maori</option>
+                <option value="mk">Macedonia</option>
+                <option value="ml">Malayalam</option>
+                <option value="mn-Cyrl">Mongolian (Cyrillic)</option>
+                <option value="mn-Mong">Mongolian (Traditional)</option>
+                <option value="mr">Marathi</option>
+                <option value="ms">Mã Lai</option>
+                <option value="mt">Malta</option>
+                <option value="mww">H’Mông</option>
+                <option value="my">Miến Điện</option>
+                <option value="nb">Na Uy (Bokmål)</option>
+                <option value="ne">Nepal</option>
+                <option value="nl">Hà Lan</option>
+                <option value="nso">Sesotho sa Leboa</option>
+                <option value="nya">Nyanja</option>
+                <option value="or">Odia</option>
+                <option value="otq">Querétaro Otomi</option>
+                <option value="pa">Punjab</option>
+                <option value="pl">Ba Lan</option>
+                <option value="prs">Dari</option>
+                <option value="ps">Pashto</option>
+                <option value="pt">Bồ Đào Nha (Brazil)</option>
+                <option value="pt-PT">Bồ Đào Nha (Bồ Đào Nha)</option>
+                <option value="ro">Romania</option>
+                <option value="ru">Nga</option>
+                <option value="run">Rundi</option>
+                <option value="rw">Kinyarwanda</option>
+                <option value="sd">Sindhi</option>
+                <option value="si">Sinhala</option>
+                <option value="sk">Slovak</option>
+                <option value="sl">Slovenia</option>
+                <option value="sm">Samoa</option>
+                <option value="sn">Shona</option>
+                <option value="so">Somali</option>
+                <option value="sq">Albania</option>
+                <option value="sr-Cyrl">Serbia (Chữ Kirin)</option>
+                <option value="sr-Latn">Serbia (Chữ La Tinh)</option>
+                <option value="st">Sesotho</option>
+                <option value="sv">Thụy Điển</option>
+                <option value="sw">Swahili</option>
+                <option value="ta">Tamil</option>
+                <option value="te">Telugu</option>
+                <option value="th">Thái</option>
+                <option value="ti">Tigrinya</option>
+                <option value="tk">Turkmen</option>
+                <option value="tlh-Latn">Klingon (Chữ La Tinh)</option>
+                <option value="tlh-Piqd">Klingon (pIqaD)</option>
+                <option value="tn">Setswana</option>
+                <option value="to">Tonga</option>
+                <option value="tr">Thổ Nhĩ Kỳ</option>
+                <option value="tt">Tatar</option>
+                <option value="ty">Tahiti</option>
+                <option value="ug">Uyghur</option>
+                <option value="uk">Ukraina</option>
+                <option value="ur">Urdu</option>
+                <option value="uz">Uzbek</option>
+                <option value="vi">Việt</option>
+                <option value="xh">Xhosa</option>
+                <option value="yo">Yoruba</option>
+                <option value="yua">Maya Yucatec</option>
+                <option value="yue">Quảng Đông (Phồn Thể)</option>
+                <option value="zh-Hans">Trung (Giản Thể)</option>
+                <option value="zh-Hant">Trung (Phồn Thể)</option>
+                <option value="zu">Zulu</option>
+              </select>
+            </div>
+            <div class="col">
+              <select class="form-select option quick-translate-option" id="target-language-select">
+                <option value="af">Afrikaans</option>
+                <option value="am">Amharic</option>
+                <option value="ar">Ả Rập</option>
+                <option value="as">Assam</option>
+                <option value="az">Azerbaijan</option>
+                <option value="ba">Bashkir</option>
+                <option value="bg">Bulgaria</option>
+                <option value="bho">Bhojpuri</option>
+                <option value="bn">Bangla</option>
+                <option value="bo">Tây Tạng</option>
+                <option value="brx">Bodo</option>
+                <option value="bs">Bosnia</option>
+                <option value="ca">Catalan</option>
+                <option value="cs">Séc</option>
+                <option value="cy">Wales</option>
+                <option value="da">Đan Mạch</option>
+                <option value="de">Đức</option>
+                <option value="doi">Dogri</option>
+                <option value="dsb">Hạ Sorbia</option>
+                <option value="dv">Divehi</option>
+                <option value="el">Hy Lạp</option>
+                <option value="en">Anh</option>
+                <option value="es">Tây Ban Nha</option>
+                <option value="et">Estonia</option>
+                <option value="eu">Basque</option>
+                <option value="fa">Ba Tư</option>
+                <option value="fi">Phần Lan</option>
+                <option value="fil">Philippines</option>
+                <option value="fj">Fiji</option>
+                <option value="fo">Faroe</option>
+                <option value="fr">Pháp</option>
+                <option value="fr-CA">Pháp (Canada)</option>
+                <option value="ga">Ireland</option>
+                <option value="gl">Galician</option>
+                <option value="gom">Konkani</option>
+                <option value="gu">Gujarati</option>
+                <option value="ha">Hausa</option>
+                <option value="he">Do Thái</option>
+                <option value="hi">Hindi</option>
+                <option value="hr">Croatia</option>
+                <option value="hsb">Thượng Sorbia</option>
+                <option value="ht">Haiti</option>
+                <option value="hu">Hungary</option>
+                <option value="hy">Armenia</option>
+                <option value="id">Indonesia</option>
+                <option value="ig">Igbo</option>
+                <option value="ikt">Inuinnaqtun</option>
+                <option value="is">Iceland</option>
+                <option value="it">Italy</option>
+                <option value="iu">Inuktitut</option>
+                <option value="iu-Latn">Inuktitut (Latin)</option>
+                <option value="ja">Nhật</option>
+                <option value="ka">Georgia</option>
+                <option value="kk">Kazakh</option>
+                <option value="km">Khmer</option>
+                <option value="kmr">Kurd (Bắc)</option>
+                <option value="kn">Kannada</option>
+                <option value="ko">Hàn</option>
+                <option value="ks">Kashmiri</option>
+                <option value="ku">Kurd (Trung)</option>
+                <option value="ky">Kyrgyz</option>
+                <option value="ln">Lingala</option>
+                <option value="lo">Lào</option>
+                <option value="lt">Litva</option>
+                <option value="lug">Ganda</option>
+                <option value="lv">Latvia</option>
+                <option value="lzh">Chinese (Literary)</option>
+                <option value="mai">Maithili</option>
+                <option value="mg">Malagasy</option>
+                <option value="mi">Maori</option>
+                <option value="mk">Macedonia</option>
+                <option value="ml">Malayalam</option>
+                <option value="mn-Cyrl">Mongolian (Cyrillic)</option>
+                <option value="mn-Mong">Mongolian (Traditional)</option>
+                <option value="mr">Marathi</option>
+                <option value="ms">Mã Lai</option>
+                <option value="mt">Malta</option>
+                <option value="mww">H’Mông</option>
+                <option value="my">Miến Điện</option>
+                <option value="nb">Na Uy (Bokmål)</option>
+                <option value="ne">Nepal</option>
+                <option value="nl">Hà Lan</option>
+                <option value="nso">Sesotho sa Leboa</option>
+                <option value="nya">Nyanja</option>
+                <option value="or">Odia</option>
+                <option value="otq">Querétaro Otomi</option>
+                <option value="pa">Punjab</option>
+                <option value="pl">Ba Lan</option>
+                <option value="prs">Dari</option>
+                <option value="ps">Pashto</option>
+                <option value="pt">Bồ Đào Nha (Brazil)</option>
+                <option value="pt-PT">Bồ Đào Nha (Bồ Đào Nha)</option>
+                <option value="ro">Romania</option>
+                <option value="ru">Nga</option>
+                <option value="run">Rundi</option>
+                <option value="rw">Kinyarwanda</option>
+                <option value="sd">Sindhi</option>
+                <option value="si">Sinhala</option>
+                <option value="sk">Slovak</option>
+                <option value="sl">Slovenia</option>
+                <option value="sm">Samoa</option>
+                <option value="sn">Shona</option>
+                <option value="so">Somali</option>
+                <option value="sq">Albania</option>
+                <option value="sr-Cyrl">Serbia (Chữ Kirin)</option>
+                <option value="sr-Latn">Serbia (Chữ La Tinh)</option>
+                <option value="st">Sesotho</option>
+                <option value="sv">Thụy Điển</option>
+                <option value="sw">Swahili</option>
+                <option value="ta">Tamil</option>
+                <option value="te">Telugu</option>
+                <option value="th">Thái</option>
+                <option value="ti">Tigrinya</option>
+                <option value="tk">Turkmen</option>
+                <option value="tlh-Latn">Klingon (Chữ La Tinh)</option>
+                <option value="tlh-Piqd">Klingon (pIqaD)</option>
+                <option value="tn">Setswana</option>
+                <option value="to">Tonga</option>
+                <option value="tr">Thổ Nhĩ Kỳ</option>
+                <option value="tt">Tatar</option>
+                <option value="ty">Tahiti</option>
+                <option value="ug">Uyghur</option>
+                <option value="uk">Ukraina</option>
+                <option value="ur">Urdu</option>
+                <option value="uz">Uzbek</option>
+                <option value="vi" selected>Việt</option>
+                <option value="xh">Xhosa</option>
+                <option value="yo">Yoruba</option>
+                <option value="yua">Maya Yucatec</option>
+                <option value="yue">Quảng Đông (Phồn Thể)</option>
+                <option value="zh-Hans">Trung (Giản Thể)</option>
+                <option value="zh-Hant">Trung (Phồn Thể)</option>
+                <option value="zu">Zulu</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="col align-middle d-inline-flex ps-0">
+          <button type="submit" class="btn btn-primary ms-auto me-1 translate-textarea-button" id="translate-button">Dịch</button>
+        </div>
+      </div>
     </div>
   </nav>
-  <ul class="nav nav-scroller bg-light-subtle">
-    <li class="nav-item mx-3">Số lượng ký tự: <span id="queryTextCounter">0</span></li>
-    <li>
-      <button class="nav-item nav-link" id="copyButton" type="button">Sao chép</button>
-    </li>
-    <li>
-      <button class="nav-item nav-link" id="pasteButton" type="button">Dán</button>
-    </li>
-    <li>
-      <button class="nav-item nav-link disabled" id="retranslateButton" type="button">Dịch lại</button>
-    </li>
-    <li class="nav-item mx-3">Thời gian dịch: <span id="translateTimer">0</span>ms</li>
-  </ul>
+  <div class="slide-navbar bg-light-subtle w-100" id="action-navbar">
+    <ul class="nav m-auto viewport">
+      <li class="nav-item mx-3">Số lượng ký tự: <span id="input-textarea-counter">0</span></li>
+      <li>
+        <button type="button" class="nav-item nav-link copy-button" data-target="#input-textarea">Sao chép</button>
+      </li>
+      <li>
+        <button type="button" class="nav-item nav-link paste-button" data-target="#input-textarea">Dán</button>
+      </li>
+      <li>
+        <button type="button" class="nav-item nav-link disabled" id="retranslate-button">Dịch lại</button>
+      </li>
+      <li class="nav-item mx-3">Thời gian dịch: <span id="translate-timer">0</span>ms</li>
+      <li>
+        <button type="button" class="nav-item nav-link" id="glossary-management-button" data-bs-toggle="modal" data-bs-target="#glossary-modal">Quản lý thuật ngữ</button>
+      </li>
+      <li>
+        <button type="button" class="nav-item nav-link" data-bs-toggle="modal" data-bs-target="#settings-modal">Thiết lập</button>
+      </li>
+    </ul>
+  </div>
 </div>
-<button type="button" class="btn btn-float position-fixed" id="glossaryManagerButton" data-bs-toggle="modal" data-bs-target="#glossaryManager">
-  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left-right" viewBox="0 0 16 16">
-    <path fill-rule="evenodd" d="M1 11.5a.5.5 0 0 0 .5.5h11.793l-3.147 3.146a.5.5 0 0 0 .708.708l4-4a.5.5 0 0 0 0-.708l-4-4a.5.5 0 0 0-.708.708L13.293 11H1.5a.5.5 0 0 0-.5.5zm14-7a.5.5 0 0 1-.5.5H2.707l3.147 3.146a.5.5 0 1 1-.708.708l-4-4a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 4H14.5a.5.5 0 0 1 .5.5z"/>
-  </svg>
-</button>
-<div class="modal fade" id="glossaryManager" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="glossaryManagerLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5" id="glossaryManagerLabel">Tập từ vựng</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+<main class="container-fluid viewport workspace">
+  <textarea class="form-control textarea" id="input-textarea" placeholder="Viết gì đó tại đây"></textarea>
+  <div class="form-control textarea" id="result-textarea" style="display: none;"></div>
+</main>
+<div class="modals viewport">
+  <div class="modal fade" id="settings-modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Thiết lập</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <h2 class="fs-5">Thiết lập giao diện</h2>
+          <div class="dropdown mb-3">
+            <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" id="bd-theme" data-bs-toggle="dropdown">
+              <svg class="bi my-1 theme-icon-active" width="1em" height="1em" fill="currentColor">
+                <use xlink:href="#circle-half"></use>
+              </svg>
+              Thay đổi chủ đề
+            </button>
+            <ul class="dropdown-menu">
+              <li>
+                <button type="button" class="dropdown-item active" data-bs-theme-value="auto">
+                  <svg class="bi me-2 theme-icon" width="1em" height="1em" fill="currentColor">
+                    <use xlink:href="#circle-half"></use>
+                  </svg>
+                  Tự động
+                </button>
+              </li>
+              <li>
+                <button type="button" class="dropdown-item" data-bs-theme-value="light">
+                  <svg class="bi me-2 theme-icon" width="1em" height="1em" fill="currentColor">
+                    <use xlink:href="#sun-fill"></use>
+                  </svg>
+                  Sáng
+                </button>
+              </li>
+              <li>
+                <button type="button" class="dropdown-item" data-bs-theme-value="dark">
+                  <svg class="bi me-2 theme-icon" width="1em" height="1em" fill="currentColor">
+                    <use xlink:href="#moon-stars-fill"></use>
+                  </svg>
+                  Tối
+                </button>
+              </li>
+            </ul>
+          </div>
+          <div class="dropdown mb-3 option" id="font-dropdown">
+            <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
+              <svg class="bi" width="1em" height="1em" fill="currentColor">
+                <use xlink:href="#fonts"></use>
+              </svg>
+              Phông chữ
+            </button>
+            <ul class="dropdown-menu">
+              <li>
+                <button type="submit" class="dropdown-item font-option active">Mặc định (Georgia)</button>
+              </li>
+              <li>
+                <button type="submit" class="dropdown-item font-option">Times New Roman</button>
+              </li>
+              <li>
+                <button type="submit" class="dropdown-item font-option">Phông chữ hệ thống</button>
+              </li>
+              <li>
+                <button type="submit" class="dropdown-item font-option">Hiragino Mincho ProN</button>
+              </li>
+              <li>
+                <button type="submit" class="dropdown-item font-option" data-additional-fonts="Hiragino Mincho ProN">Bookerly</button>
+              </li>
+              <li>
+                <button type="submit" class="dropdown-item font-option" data-additional-fonts="Hiragino Mincho ProN">Literata</button>
+              </li>
+              <li>
+                <button type="submit" class="dropdown-item font-option" data-additional-fonts="Hiragino Mincho Pro">Iowan Old Style</button>
+              </li>
+              <li>
+                <button type="submit" class="dropdown-item font-option">Crimson Text</button>
+              </li>
+            </ul>
+          </div>
+          <div class="mb-3">
+            <label for="font-size-range" class="form-label">Kích cỡ phông chữ:
+              <input type="number" class="form-control form-control-sm d-inline number-option-display" id="font-size-display" min="60" max="350" value="100"/></label>
+            <input type="range" class="form-range option" id="font-size-range" min="60" max="350" value="100">
+          </div>
+          <div class="mb-3">
+            <label for="line-spacing-range" class="form-label">Khoảng cách dòng:
+              <input type="number" class="form-control form-control-sm d-inline number-option-display" id="line-spacing-display" min="0" max="300" value="40"/></label>
+            <input type="range" class="form-range option" id="line-spacing-range" min="0" max="300" value="40">
+          </div>
+          <div class="form-check form-switch mb-3">
+            <input type="checkbox" class="form-check-input option" id="alignment-settings-switch" role="switch" checked>
+            <label class="form-check-label" for="alignment-settings-switch">Thiết lập căn lề</label>
+          </div>
+          <hr>
+          <div class="dropdown mb-3 option quick-translate-option" id="translator-dropdown">
+            <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
+              <svg class="bi" width="1em" height="1em" fill="currentColor">
+                <use xlink:href="#translate"></use>
+              </svg>
+              Trình dịch
+            </button>
+            <ul class="dropdown-menu">
+              <li>
+                <button type="submit" class="dropdown-item translator-option" data-id="deeplTranslator">DeepL Translator</button>
+              </li>
+              <li>
+                <button type="submit" class="dropdown-item translator-option" data-id="googleTranslate">Google Dịch</button>
+              </li>
+              <li>
+                <button type="submit" class="dropdown-item translator-option" data-id="lingvanex">Lingvanex</button>
+              </li>
+              <li>
+                <button type="submit" class="dropdown-item translator-option" data-id="papago">Papago</button>
+              </li>
+              <li>
+                <button type="submit" class="dropdown-item translator-option active" data-id="microsoftTranslator">Trình dịch Microsoft</button>
+              </li>
+              <li>
+                <button type="submit" class="dropdown-item translator-option" data-id="vietphrase">Vietphrase</button>
+              </li>
+            </ul>
+          </div>
+          <div class="form-check form-switch mb-3">
+            <input type="checkbox" class="form-check-input option quick-translate-option" id="show-original-text-switch" role="switch">
+            <label class="form-check-label" for="show-original-text-switch">Hiển thị văn bản gốc</label>
+          </div>
+          <hr>
+          <h2 class="fs-5">Vietphrase</h2>
+          <div class="mb-3">
+            <label for="vietphrases-input" class="form-label">Nhập tệp VietPhrase.txt:</label>
+            <input type="file" class="form-control form-control-sm" id="vietphrases-input" accept="text/plain">
+          </div>
+          <div class="mb-3">
+            <h2 class="fs-6">Thuật toán dịch</h2>
+            <div class="form-check">
+              <input type="radio" class="form-check-input option quick-translate-option" id="prioritize-long-viet-phrase-clusters-radio" name="translation-algorithm-radio" value="0" checked>
+              <label class="form-check-label" for="prioritize-long-viet-phrase-clusters-radio">Ưu tiên cụm VietPhrase dài</label>
+            </div>
+            <div class="form-check">
+              <input type="radio" class="form-check-input option quick-translate-option" id="translate-from-left-to-right-radio" name="translation-algorithm-radio" value="1">
+              <label class="form-check-label" for="translate-from-left-to-right-radio">Dịch từ trái sang phải</label>
+            </div>
+            <div class="form-check">
+              <input type="checkbox" class="form-check-input option quick-translate-option" id="prioritize-name-over-vietphrase-check">
+              <label class="form-check-label" for="prioritize-name-over-vietphrase-check">Ưu tiên Name hơn VietPhrase</label>
+            </div>
+          </div>
+          <div class="mb-3">
+            <h2 class="fs-6">Thuật toán nhân</h2>
+            <div class="form-check">
+              <input type="radio" class="form-check-input option quick-translate-option" id="no-apply-radio" name="multiplication-algorithm-radio" value="0">
+              <label class="form-check-label" for="no-apply-radio">Không áp dụng</label>
+            </div>
+            <div class="form-check">
+              <input type="radio" class="form-check-input option quick-translate-option" id="multiplication-by-pronouns-radio" name="multiplication-algorithm-radio" value="1">
+              <label class="form-check-label" for="multiplication-by-pronouns-radio">Nhân theo Pronouns</label>
+            </div>
+            <div class="form-check">
+              <input type="radio" class="form-check-input option quick-translate-option" id="multiplication-by-pronouns-and-names-radio" name="multiplication-algorithm-radio" value="2" checked>
+              <label class="form-check-label" for="multiplication-by-pronouns-and-names-radio">Nhân theo Pronouns + Names</label>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="reset" class="btn btn-secondary" id="reset-button">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-counterclockwise" viewBox="0 0 16 16">
+              <path fill-rule="evenodd" d="M8 3a5 5 0 1 1-4.546 2.914.5.5 0 0 0-.908-.417A6 6 0 1 0 8 2v1z"/>
+              <path d="M8 4.466V.534a.25.25 0 0 0-.41-.192L5.23 2.308a.25.25 0 0 0 0 .384l2.36 1.966A.25.25 0 0 0 8 4.466z"/>
+            </svg>
+            Reset
+          </button>
+        </div>
       </div>
-      <div class="modal-body pb-5">
-        <div class="form-check form-switch">
-          <input class="form-check-input option translator-option" type="checkbox" role="switch" id="flexSwitchCheckGlossary" checked>
-          <label class="form-check-label" for="flexSwitchCheckGlossary">Bật</label>
+    </div>
+  </div>
+  <div class="modal fade" id="glossary-modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Bảng thuật ngữ (<span id="glossary-counter">0</span>)</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
-        <div class="input-group input-group-sm my-3">
-          <input type="file" class="form-control" id="inputGlossary" accept=".tsv,.tab,text/csv,text/plain">
-          <button class="btn btn-outline-danger position-relative" id="clearGlossaryButton" type="button">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
-              <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
-              <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
-            </svg>
-            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-info" id="glossaryCounter">0</span>
-          </button>
-        </div>
-        <select class="form-select form-select-sm mb-3" id="glossaryType">
-          <option value="text/tab-separated-values" selected>TSV</option>
-          <option value="text/csv">CSV</option>
-          <option value="text/plain">Vietphrase</option>
-        </select>
-        <div class="input-group input-group-sm mb-3">
-          <input type="text" placeholder="Thay thế" class="form-control" id="sourceEntry">
-          <button type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split sourceEntry-menu" data-bs-toggle="dropdown" aria-expanded="false"></button>
-          <ul class="dropdown-menu dropdown-scroller">
-            <li>
-              <button class="dropdown-item" id="clearSourceTextButton" type="button">Xoá</button>
-            </li>
-            <li>
-              <button class="dropdown-item copy-entryButton" data-for="sourceEntry" type="button">Sao chép</button>
-            </li>
-            <li>
-              <button class="dropdown-item paste-entryButton" data-for="sourceEntry" type="button">Dán</button>
-            </li>
-            <li>
-              <hr class="dropdown-divider">
-            </li>
-            <li>
-              <button class="dropdown-item define-button" data-href="http://tratu.coviet.vn/hoc-tieng-anh/tu-dien/lac-viet/A-V/${0}.html" type="button">Vietgle Tra từ (A-V)</button>
-            </li>
-            <li>
-              <button class="dropdown-item define-button" data-href="http://tratu.coviet.vn/hoc-tieng-trung/tu-dien/lac-viet/T-V/${0}.html" type="button">Vietgle Tra từ (T-V)</button>
-            </li>
-            <li>
-              <button class="dropdown-item define-button" data-href="https://www.google.com.vn/search?q=${0}" type="button">Google</button>
-            </li>
-            <li>
-              <button class="dropdown-item define-button" data-href="https://vi.wikipedia.org/w/?search=${0}&ns0=1" type="button">Wikipedia</button>
-            </li>
-            <li>
-              <button class="dropdown-item define-button" data-href="http://nomfoundation.org/nom-tools/Giup-Doc?uiLang=vn&inputText=${0}" type="button">Giúp đọc Nôm và Hán Việt</button>
-            </li>
-            <li>
-              <button class="dropdown-item define-button" data-href="https://hvdic.thivien.net/whv/${0}" type="button">Từ điển Hán Nôm</button>
-            </li>
-            <li>
-              <button class="dropdown-item define-button" data-href="https://vdict.pro/cn-vi/${0}" type="button">Vdict.pro</button>
-            </li>
-            <li>
-              <button class="dropdown-item define-button" data-href="https://english.dict.naver.com/english-chinese-dictionary/#/search?query=${0}" type="button">Naver dictionary</button>
-            </li>
-            <li>
-              <button class="dropdown-item define-button" data-href="https://www.baidu.com/s?wd=${0}" type="button">Baidu</button>
-            </li>
-            <li>
-              <hr class="dropdown-divider">
-            </li>
-            <li>
-              <button class="dropdown-item translate-button" data-href="https://www.deepl.com/translator#auto/en/${0}" type="button">DeepL Translator</button>
-            </li>
-            <li>
-              <button class="dropdown-item translate-button" data-href="https://translate.google.com/?sl=auto&tl=vi&text=${0}&op=translate" type="button">Google Dịch</button>
-            </li>
-            <li>
-              <button class="dropdown-item translate-button" data-href="https://papago.naver.com/?sk=auto&tk=vi&st=${0}" data-href="button">Papago</button>
-            </li>
-            <li>
-              <button class="dropdown-item translate-button" data-href="https://www.bing.com/translator?from=auto-detect&to=vi&text=${0}" type="button">Trình dịch Microsoft Bing</button>
-            </li>
-          </ul>
-        </div>
-        <div class="input-group input-group-sm mb-3">
-          <input type="text" placeholder="Với" class="form-control" id="targetEntry">
-          <button class="btn btn-outline-secondary" id="addButton" type="button">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pen" viewBox="0 0 16 16">
-              <path d="m13.498.795.149-.149a1.207 1.207 0 1 1 1.707 1.708l-.149.148a1.5 1.5 0 0 1-.059 2.059L4.854 14.854a.5.5 0 0 1-.233.131l-4 1a.5.5 0 0 1-.606-.606l1-4a.5.5 0 0 1 .131-.232l9.642-9.642a.5.5 0 0 0-.642.056L6.854 4.854a.5.5 0 1 1-.708-.708L9.44.854A1.5 1.5 0 0 1 11.5.796a1.5 1.5 0 0 1 1.998-.001zm-.644.766a.5.5 0 0 0-.707 0L1.95 11.756l-.764 3.057 3.057-.764L14.44 3.854a.5.5 0 0 0 0-.708l-1.585-1.585z"/>
-            </svg>
-          </button>
-          <button type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false"></button>
-          <ul class="dropdown-menu dropdown-scroller">
-            <li>
-              <button class="dropdown-item copy-entryButton" data-for="targetEntry" type="button">Sao chép</button>
-            </li>
-            <li>
-              <button class="dropdown-item paste-entryButton" data-for="targetEntry" type="button">Dán</button>
-            </li>
-            <li>
-              <hr class="dropdown-divider">
-            </li>
-            <li>
-              <button class="dropdown-item convert-button" data-data="pinyins" type="button">Chuyển đổi sang Bính âm</button>
-            </li>
-            <li>
-              <button class="dropdown-item convert-button" data-data="chinesePhienAmWords" type="button">Chuyển đổi sang Hán việt</button>
-            </li>
-            <li>
-              <button class="dropdown-item convert-button" data-data="vietphrases" type="button">Chuyển đổi sang Vietphrase</button>
-            </li>
-            <li>
-              <hr class="dropdown-divider">
-            </li>
-            <li>
-              <button class="dropdown-item upper-case-button" data-amount="1" type="button">Viết hoa 1 từ đơn đầu</button>
-            </li>
-            <li>
-              <button class="dropdown-item upper-case-button" data-amount="2" type="button">Viết hoa 2 từ đơn đầu</button>
-            </li>
-            <li>
-              <button class="dropdown-item upper-case-button" data-amount="3" type="button">Viết hoa 3 từ đơn đầu</button>
-            </li>
-            <li>
-              <button class="dropdown-item upper-case-button" data-amount="#" type="button">Viết hoa tất cả</button>
-            </li>
-            <li>
-              <hr class="dropdown-divider">
-            </li>
-            <li>
-              <button class="dropdown-item transvert-button deepl-convert-button" type="button" data-lang="EN-US">DeepL Translator (English)</button>
-            </li>
-            <li>
-              <button class="dropdown-item transvert-button deepl-convert-button" type="button" data-lang="JA">DeepL Translator (Japanese)</button>
-            </li>
-            <li>
-              <button class="dropdown-item transvert-button deepl-convert-button" type="button" data-lang="ZH">DeepL Translator (Chinese)</button>
-            </li>
-            <li>
-              <button class="dropdown-item transvert-button google-convert-button" type="button" data-lang="en">Google Dịch (Anh)</button>
-            </li>
-            <li>
-              <button class="dropdown-item transvert-button google-convert-button" type="button" data-lang="ja">Google Dịch (Nhật)</button>
-            </li>
-            <li>
-              <button class="dropdown-item transvert-button google-convert-button" type="button" data-lang="zh-CN">Google Dịch (Trung (Giản thể))</button>
-            </li>
-            <li>
-              <button class="dropdown-item transvert-button google-convert-button" type="button" data-lang="zh-TW">Google Dịch (Trung (Phồn thể))</button>
-            </li>
-            <li>
-              <button class="dropdown-item transvert-button google-convert-button" type="button" data-lang="vi">Google Dịch (Việt)</button>
-            </li>
-            <li>
-              <button class="dropdown-item transvert-button lingvanex-convert-button" type="button" data-lang="en_US">Lingvanex (Tiếng Anh)</button>
-            </li>
-            <li>
-              <button class="dropdown-item transvert-button lingvanex-convert-button" type="button" data-lang="vi_VN">Lingvanex (Tiếng Nhật)</button>
-            </li>
-            <li>
-              <button class="dropdown-item transvert-button lingvanex-convert-button" type="button" data-lang="vi">Lingvanex (Tiếng Việt)</button>
-            </li>
-            <li>
-              <button class="dropdown-item transvert-button lingvanex-convert-button" type="button" data-lang="zh-Hans_CN">Lingvanex (Tiếng Trung (Giản Thể))</button>
-            </li>
-            <li>
-              <button class="dropdown-item transvert-button lingvanex-convert-button" type="button" data-lang="zh-Hant_TW">Lingvanex (Tiếng Trung (Phổn Thể))</button>
-            </li>
-            <li>
-              <button class="dropdown-item transvert-button papago-convert-button" type="button" data-lang="en">Papago (Anh)</button>
-            </li>
-            <li>
-              <button class="dropdown-item transvert-button papago-convert-button" type="button" data-lang="ja">Papago (Nhật)</button>
-            </li>
-            <li>
-              <button class="dropdown-item transvert-button papago-convert-button" type="button" data-lang="zh-CN">Papago (Trung (Giản thể))</button>
-            </li>
-            <li>
-              <button class="dropdown-item transvert-button papago-convert-button" type="button" data-lang="zh-TW">Papago (Trung (Phồn thể))</button>
-            </li>
-            <li>
-              <button class="dropdown-item transvert-button papago-convert-button" type="button" data-lang="vi">Papago (Việt)</button>
-            </li>
-            <li>
-              <button class="dropdown-item transvert-button microsoft-convert-button" type="button" data-lang="en">Trình dịch Microsoft (Tiếng Anh)</button>
-            </li>
-            <li>
-              <button class="dropdown-item transvert-button microsoft-convert-button" type="button" data-lang="ja">Trình dịch Microsoft (Tiếng Nhật)</button>
-            </li>
-            <li>
-              <button class="dropdown-item transvert-button microsoft-convert-button" type="button" data-lang="vi">Trình dịch Microsoft (Tiếng Việt)</button>
-            </li>
-            <li>
-              <button class="dropdown-item transvert-button microsoft-convert-button" type="button" data-lang="zh-Hans">Trình dịch Microsoft (Tiếng Trung (Giản Thể))</button>
-            </li>
-            <li>
-              <button class="dropdown-item transvert-button microsoft-convert-button" type="button" data-lang="zh-Hant">Trình dịch Microsoft (Tiếng Trung (Phồn Thể))</button>
-            </li>
-          </ul>
-        </div>
-        <div class="input-group input-group-sm mb-4">
-          <select class="form-select" id="glossaryList">
-            <option value="-1" selected>Chọn...</option>
+        <div class="modal-body">
+          <div class="form-check form-switch mb-3">
+            <input type="checkbox" class="form-check-input option quick-translate-option" id="glossary-switch" role="switch" checked>
+            <label class="form-check-label" for="glossary-switch">Bật</label>
+          </div>
+          <div class="input-group input-group-sm my-3">
+            <input type="file" class="form-control" id="glossary-input" accept=".tsv,.tab,text/csv,text/plain">
+            <button type="submit" class="btn btn-outline-danger position-relative" id="clear-button">
+              <svg class="bi" width="16" height="16" fill="currentColor">
+                <use xlink:href="#x-lg"></use>
+              </svg>
+            </button>
+          </div>
+          <select class="form-select form-select-sm mb-3" id="glossary-type">
+            <option value="text/tab-separated-values" selected>TSV</option>
+            <option value="text/csv">CSV</option>
+            <option value="text/plain">Vietphrase</option>
           </select>
-          <button class="btn btn-outline-secondary" id="removeButton" type="button">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eraser" viewBox="0 0 16 16">
-              <path d="M8.086 2.207a2 2 0 0 1 2.828 0l3.879 3.879a2 2 0 0 1 0 2.828l-5.5 5.5A2 2 0 0 1 7.879 15H5.12a2 2 0 0 1-1.414-.586l-2.5-2.5a2 2 0 0 1 0-2.828l6.879-6.879zm2.121.707a1 1 0 0 0-1.414 0L4.16 7.547l5.293 5.293 4.633-4.633a1 1 0 0 0 0-1.414l-3.879-3.879zM8.746 13.547 3.453 8.254 1.914 9.793a1 1 0 0 0 0 1.414l2.5 2.5a1 1 0 0 0 .707.293H7.88a1 1 0 0 0 .707-.293l.16-.16z"/>
+          <div class="row align-items-center mb-3">
+            <div class="col pe-1">
+              <div class="input-group dropdown">
+                <input type="text" class="form-control" id="source-pair-input" placeholder="Nguồn">
+                <button type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" id="source-pair-dropdown" data-bs-toggle="dropdown"></button>
+                <ul class="dropdown-menu dropdown-scroller">
+                  <li>
+                    <button class="dropdown-item copy-button" data-target="#source-pair-input" type="button">Sao chép</button>
+                  </li>
+                  <li>
+                    <button class="dropdown-item paste-button" data-target="#source-pair-input" type="button">Dán</button>
+                  </li>
+                  <li>
+                    <hr class="dropdown-divider">
+                  </li>
+                  <li>
+                    <button class="dropdown-item define-button" data-href="http://tratu.coviet.vn/hoc-tieng-anh/tu-dien/lac-viet/A-V/${0}.html" type="button">Vietgle Tra từ (A-V)</button>
+                  </li>
+                  <li>
+                    <button class="dropdown-item define-button" data-href="http://tratu.coviet.vn/hoc-tieng-trung/tu-dien/lac-viet/T-V/${0}.html" type="button">Vietgle Tra từ (T-V)</button>
+                  </li>
+                  <li>
+                    <button class="dropdown-item define-button" data-href="https://www.google.com.vn/search?q=${0}" type="button">Google</button>
+                  </li>
+                  <li>
+                    <button class="dropdown-item define-button" data-href="https://vi.wikipedia.org/w/?search=${0}&ns0=1" type="button">Wikipedia</button>
+                  </li>
+                  <li>
+                    <button class="dropdown-item define-button" data-href="http://nomfoundation.org/nom-tools/Giup-Doc?uiLang=vn&inputText=${0}" type="button">Giúp đọc Nôm và Hán Việt</button>
+                  </li>
+                  <li>
+                    <button class="dropdown-item define-button" data-href="https://hvdic.thivien.net/whv/${0}" type="button">Từ điển Hán Nôm</button>
+                  </li>
+                  <li>
+                    <button class="dropdown-item define-button" data-href="http://tratu.soha.vn/index.php?search=${0}" type="button">Soha Tratu</button>
+                  </li>
+                  <li>
+                    <button class="dropdown-item define-button" data-href="https://english.dict.naver.com/english-chinese-dictionary/#/search?query=${0}" type="button">Naver dictionary</button>
+                  </li>
+                  <li>
+                    <button class="dropdown-item define-button" data-href="https://www.baidu.com/s?wd=${0}" type="button">Baidu</button>
+                  </li>
+                  <li>
+                    <hr class="dropdown-divider">
+                  </li>
+                  <li>
+                    <button class="dropdown-item translate-webpage-button" data-href="https://fanyi.baidu.com/#auto/vie/${0}" type="button">Baidu Fanyi</button>
+                  </li>
+                  <li>
+                    <button class="dropdown-item translate-webpage-button" data-href="https://www.deepl.com/translator#auto/en/${0}" type="button">DeepL Translator</button>
+                  </li>
+                  <li>
+                    <button class="dropdown-item translate-webpage-button" data-href="https://translate.google.com/?sl=auto&tl=vi&text=${0}&op=translate" type="button">Google Dịch</button>
+                  </li>
+                  <li>
+                    <button class="dropdown-item translate-webpage-button" data-href="https://papago.naver.com/?sk=auto&tk=vi&st=${0}" data-href="button">Papago</button>
+                  </li>
+                  <li>
+                    <button class="dropdown-item translate-webpage-button" data-href="https://www.bing.com/translator?from=auto-detect&to=vi&text=${0}" type="button">Trình dịch Microsoft Bing</button>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <div class="col ps-1">
+              <div class="input-group dropdown-center">
+                <input type="text" class="form-control" id="target-pair-input" placeholder="Đích">
+                <button type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown"></button>
+                <ul class="dropdown-menu dropdown-scroller">
+                  <li>
+                    <button class="dropdown-item copy-button" data-target="#target-pair-input" type="button">Sao chép</button>
+                  </li>
+                  <li>
+                    <button class="dropdown-item paste-button" data-target="#target-pair-input" type="button">Dán</button>
+                  </li>
+                  <li>
+                    <hr class="dropdown-divider">
+                  </li>
+                  <li>
+                    <button class="dropdown-item translate-button" data-translator="vietphrase" data-lang="pinyin" data-data="pinyins" type="button">Chuyển đổi sang Bính âm</button>
+                  </li>
+                  <li>
+                    <button class="dropdown-item translate-button" data-translator="vietphrase" data-lang="sinoVietnamese" type="button">Chuyển đổi sang Hán việt</button>
+                  </li>
+                  <li>
+                    <button class="dropdown-item translate-button" data-translator="vietphrase" data-lang="vi" type="button">Chuyển đổi sang Vietphrase</button>
+                  </li>
+                  <li>
+                    <hr class="dropdown-divider">
+                  </li>
+                  <li>
+                    <button class="dropdown-item upper-case-button" data-amount="1" type="button">Viết hoa 1 từ đơn đầu</button>
+                  </li>
+                  <li>
+                    <button class="dropdown-item upper-case-button" data-amount="2" type="button">Viết hoa 2 từ đơn đầu</button>
+                  </li>
+                  <li>
+                    <button class="dropdown-item upper-case-button" data-amount="3" type="button">Viết hoa 3 từ đơn đầu</button>
+                  </li>
+                  <li>
+                    <button class="dropdown-item upper-case-button" data-amount="#" type="button">Viết hoa tất cả</button>
+                  </li>
+                  <li>
+                    <hr class="dropdown-divider">
+                  </li>
+                  <li>
+                    <button class="dropdown-item translate-button" type="button" data-translator="deeplTranslator" data-lang="EN-US">DeepL Translator (English)</button>
+                  </li>
+                  <li>
+                    <button class="dropdown-item translate-button" type="button" data-translator="deeplTranslator" data-lang="JA">DeepL Translator (Japanese)</button>
+                  </li>
+                  <li>
+                    <button class="dropdown-item translate-button" type="button" data-translator="deeplTranslator" data-lang="ZH">DeepL Translator (Chinese)</button>
+                  </li>
+                  <li>
+                    <button class="dropdown-item translate-button" type="button" data-translator="googleTranslate" data-lang="en">Google Dịch (Anh)</button>
+                  </li>
+                  <li>
+                    <button class="dropdown-item translate-button" type="button" data-translator="googleTranslate" data-lang="ja">Google Dịch (Nhật)</button>
+                  </li>
+                  <li>
+                    <button class="dropdown-item translate-button" type="button" data-translator="googleTranslate" data-lang="zh-CN">Google Dịch (Trung (Giản thể))</button>
+                  </li>
+                  <li>
+                    <button class="dropdown-item translate-button" type="button" data-translator="googleTranslate" data-lang="zh-TW">Google Dịch (Trung (Phồn thể))</button>
+                  </li>
+                  <li>
+                    <button class="dropdown-item translate-button" type="button" data-translator="googleTranslate" data-lang="vi">Google Dịch (Việt)</button>
+                  </li>
+                  <li>
+                    <button class="dropdown-item translate-button" type="button" data-translator="papago" data-lang="en">Papago (Anh)</button>
+                  </li>
+                  <li>
+                    <button class="dropdown-item translate-button" type="button" data-translator="papago" data-lang="ja">Papago (Nhật)</button>
+                  </li>
+                  <li>
+                    <button class="dropdown-item translate-button" type="button" data-translator="papago" data-lang="zh-CN">Papago (Trung (Giản thể))</button>
+                  </li>
+                  <li>
+                    <button class="dropdown-item translate-button" type="button" data-translator="papago" data-lang="zh-TW">Papago (Trung (Phồn thể))</button>
+                  </li>
+                  <li>
+                    <button class="dropdown-item translate-button" type="button" data-translator="papago" data-lang="vi">Papago (Việt)</button>
+                  </li>
+                  <li>
+                    <button class="dropdown-item translate-button" type="button" data-translator="microsoftTranslator" data-lang="en">Trình dịch Microsoft (Tiếng Anh)</button>
+                  </li>
+                  <li>
+                    <button class="dropdown-item translate-button" type="button" data-translator="microsoftTranslator" data-lang="ja">Trình dịch Microsoft (Tiếng Nhật)</button>
+                  </li>
+                  <li>
+                    <button class="dropdown-item translate-button" type="button" data-translator="microsoftTranslator" data-lang="vi">Trình dịch Microsoft (Tiếng Việt)</button>
+                  </li>
+                  <li>
+                    <button class="dropdown-item translate-button" type="button" data-translator="microsoftTranslator" data-lang="zh-Hans">Trình dịch Microsoft (Tiếng Trung (Giản Thể))</button>
+                  </li>
+                  <li>
+                    <button class="dropdown-item translate-button" type="button" data-translator="microsoftTranslator" data-lang="zh-Hant">Trình dịch Microsoft (Tiếng Trung (Phồn Thể))</button>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <div class="col-3">
+              <select class="form-select option quick-translate-option" id="language-pairs-select">
+                <option value="ja-en">Nhật → Anh</option>
+                <option value="ja-vi">Nhật → Việt</option>
+                <option value="zh-en">Trung → Anh</option>
+                <option value="zh-vi" selected>Trung → Việt</option>
+              </select>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-sm btn-success mb-3 disabled" id="add-button">
+            <svg class="bi" width="1em" height="1em" fill="currentColor">
+              <use xlink:href="#plus"></use>
             </svg>
+            Thêm
           </button>
-        </div>
-        <label for="preview">Bản xem trước:</label>
-        <textarea class="form-control mb-3" id="preview" readonly="true"></textarea>
-        <div class="input-group input-group-sm">
-          <input type="text" placeholder="Từ vựng" class="form-control" id="glossaryName">
-          <span class="input-group-text">.<span id="fileExtension">tsv</span></span>
-          <a class="btn btn-primary btn-sm" id="downloadButton">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-download" viewBox="0 0 16 16">
-              <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
-              <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+          <button type="submit" class="btn btn-sm btn-danger mb-3 disabled" id="remove-button">
+            <svg class="bi" width="1em" height="1em" fill="currentColor">
+              <use xlink:href="#dash"></use>
             </svg>
-            Tải xuống</a>
+            Xoá
+          </button>
+          <select class="form-select mb-3 glossary-data-list" id="glossary-data-list" multiple>
+            <option value="" selected>Chọn...</option>
+          </select>
+        </div>
+        <div class="modal-footer">
+          <div class="input-group input-group-sm">
+            <input type="text" placeholder="Bảng thuật ngữ" class="form-control" id="glossary-name">
+            <span class="input-group-text">.<span id="glossary-extension">tsv</span></span>
+            <a class="btn btn-primary btn-sm" id="download-button" role="button">
+              <svg class="bi" width="1em" height="1em" fill="currentColor">
+                <use xlink:href="#download"></use>
+              </svg>
+              Tải xuống</a>
+          </div>
         </div>
       </div>
     </div>
   </div>
 </div>
-<button type="button" class="btn btn-float position-fixed" id="settingsButton" data-bs-toggle="modal" data-bs-target="#settings">
-  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-gear" viewBox="0 0 16 16">
-    <path d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492zM5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0z"/>
-    <path d="M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0l-.094.319a.873.873 0 0 1-1.255.52l-.292-.16c-1.64-.892-3.433.902-2.54 2.541l.159.292a.873.873 0 0 1-.52 1.255l-.319.094c-1.79.527-1.79 3.065 0 3.592l.319.094a.873.873 0 0 1 .52 1.255l-.16.292c-.892 1.64.901 3.434 2.541 2.54l.292-.159a.873.873 0 0 1 1.255.52l.094.319c.527 1.79 3.065 1.79 3.592 0l.094-.319a.873.873 0 0 1 1.255-.52l.292.16c1.64.893 3.434-.902 2.54-2.541l-.159-.292a.873.873 0 0 1 .52-1.255l.319-.094c1.79-.527 1.79-3.065 0-3.592l-.319-.094a.873.873 0 0 1-.52-1.255l.16-.292c.893-1.64-.902-3.433-2.541-2.54l-.292.159a.873.873 0 0 1-1.255-.52l-.094-.319zm-2.633.283c.246-.835 1.428-.835 1.674 0l.094.319a1.873 1.873 0 0 0 2.693 1.115l.291-.16c.764-.415 1.6.42 1.184 1.185l-.159.292a1.873 1.873 0 0 0 1.116 2.692l.318.094c.835.246.835 1.428 0 1.674l-.319.094a1.873 1.873 0 0 0-1.115 2.693l.16.291c.415.764-.42 1.6-1.185 1.184l-.291-.159a1.873 1.873 0 0 0-2.693 1.116l-.094.318c-.246.835-1.428.835-1.674 0l-.094-.319a1.873 1.873 0 0 0-2.692-1.115l-.292.16c-.764.415-1.6-.42-1.184-1.185l.159-.291A1.873 1.873 0 0 0 1.945 8.93l-.319-.094c-.835-.246-.835-1.428 0-1.674l.319-.094A1.873 1.873 0 0 0 3.06 4.377l-.16-.292c-.415-.764.42-1.6 1.185-1.184l.292.159a1.873 1.873 0 0 0 2.692-1.115l.094-.319z"/>
-  </svg>
-</button>
-<div class="modal fade" id="settings" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="settingsLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5" id="settingsLabel">Thiết lập</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body pb-5">
-        <h2 class="fs-5">Chung</h2>
-        <div class="dropdown mb-3">
-          <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-            <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" class="bi bi-circle-half my-1 theme-icon-active" viewBox="0 0 16 16">
-              <path d="M8 15A7 7 0 1 0 8 1v14zm0 1A8 8 0 1 1 8 0a8 8 0 0 1 0 16z"/>
-            </svg>
-            Thay đổi chủ đề
-          </button>
-          <ul class="dropdown-menu">
-            <li>
-              <button type="button" class="dropdown-item active" data-theme-value="auto">
-                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" class="bi bi-circle-half me-2 theme-icon" viewBox="0 0 16 16">
-                  <path d="M8 15A7 7 0 1 0 8 1v14zm0 1A8 8 0 1 1 8 0a8 8 0 0 1 0 16z"/>
-                </svg>
-                Tự động
-              </button>
-            </li>
-            <li>
-              <button type="button" class="dropdown-item" data-theme-value="light">
-                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" class="bi bi-sun-fill me-2 theme-icon" viewBox="0 0 16 16">
-                  <path d="M8 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0zm0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13zm8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5zM3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8zm10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0zm-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0zm9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707zM4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .708z"/>
-                </svg>
-                Sáng
-              </button>
-            </li>
-            <li>
-              <button type="button" class="dropdown-item" data-theme-value="dark">
-                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" class="bi bi-moon-stars-fill me-2 theme-icon" viewBox="0 0 16 16">
-                  <path d="M6 .278a.768.768 0 0 1 .08.858 7.208 7.208 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277.527 0 1.04-.055 1.533-.16a.787.787 0 0 1 .81.316.733.733 0 0 1-.031.893A8.349 8.349 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.752.752 0 0 1 6 .278z"/>
-                  <path d="M10.794 3.148a.217.217 0 0 1 .412 0l.387 1.162c.173.518.579.924 1.097 1.097l1.162.387a.217.217 0 0 1 0 .412l-1.162.387a1.734 1.734 0 0 0-1.097 1.097l-.387 1.162a.217.217 0 0 1-.412 0l-.387-1.162A1.734 1.734 0 0 0 9.31 6.593l-1.162-.387a.217.217 0 0 1 0-.412l1.162-.387a1.734 1.734 0 0 0 1.097-1.097l.387-1.162zM13.863.099a.145.145 0 0 1 .274 0l.258.774c.115.346.386.617.732.732l.774.258a.145.145 0 0 1 0 .274l-.774.258a1.156 1.156 0 0 0-.732.732l-.258.774a.145.145 0 0 1-.274 0l-.258-.774a1.156 1.156 0 0 0-.732-.732l-.774-.258a.145.145 0 0 1 0-.274l.774-.258c.346-.115.617-.386.732-.732L13.863.1z"/>
-                </svg>
-                Tối
-              </button>
-            </li>
-          </ul>
-        </div>
-        <div class="dropdown mb-3">
-          <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Phông chữ
-          </button>
-          <ul class="dropdown-menu">
-            <li>
-              <button class="dropdown-item font-option active" type="button">Mặc định (Georgia)</button>
-            </li>
-            <li>
-              <button class="dropdown-item font-option" type="button">Times New Roman</button>
-            </li>
-            <li>
-              <button class="dropdown-item font-option" type="button">Phông chữ hệ thống</button>
-            </li>
-            <li>
-              <button class="dropdown-item font-option" type="button">Hiragino Mincho ProN</button>
-            </li>
-            <li>
-              <button class="dropdown-item font-option" data-additional-fonts="Hiragino Mincho ProN" type="button">Literata</button>
-            </li>
-            <li>
-              <button class="dropdown-item font-option" data-additional-fonts="Hiragino Mincho ProN" type="button">Bookerly</button>
-            </li>
-            <li>
-              <button class="dropdown-item font-option" data-additional-fonts="Hiragino Mincho Pro" type="button">Iowan Old Style</button>
-            </li>
-            <li>
-              <button class="dropdown-item font-option" type="button">Crimson Text</button>
-            </li>
-          </ul>
-        </div>
-        <div class="mb-3">
-          <label for="font-size" class="form-label">Kích cỡ phông chữ:
-            <input class="form-control form-control-sm d-inline value-option-input" type="number" id="font-size-display" min="60" max="350" value="100"/></label>
-          <input type="range" class="form-range option" min="60" max="350" value="100" id="font-size">
-        </div>
-        <div class="mb-3">
-          <label for="font-size" class="form-label">Khoảng cách dòng:
-            <input class="form-control form-control-sm d-inline value-option-input" type="number" id="line-spacing-display" min="0" max="300" value="40"/></label>
-          <input type="range" class="form-range option" min="0" max="300" value="40" id="line-spacing">
-        </div>
-        <div class="dropdown mb-3">
-          <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Trình dịch
-          </button>
-          <ul class="dropdown-menu">
-            <li>
-              <button class="dropdown-item translator" data-id="deeplTranslator" type="button">
-                DeepL Translator
-              </button>
-            </li>
-            <li>
-              <button class="dropdown-item translator active" data-id="googleTranslate" type="button">
-                Google Dịch
-              </button>
-            </li>
-            <li>
-              <button class="dropdown-item translator" data-id="lingvanex" type="button">
-                Lingvanex
-              </button>
-            </li>
-            <li>
-              <button class="dropdown-item translator" data-id="papago" type="button">Papago</button>
-            </li>
-            <li>
-              <button class="dropdown-item translator" data-id="microsoftTranslator" type="button">
-                Trình dịch Microsoft
-              </button>
-            </li>
-            <li>
-              <button class="dropdown-item translator" data-id="vietphrase" type="button">
-                Vietphrase
-              </button>
-            </li>
-          </ul>
-        </div>
-        <div class="form-check form-switch mb-3">
-          <input class="form-check-input option translator-option" type="checkbox" role="switch" id="flexSwitchCheckShowOriginal">
-          <label class="form-check-label" for="flexSwitchCheckShowOriginal">Hiển thị văn bản gốc</label>
-        </div>
-        <hr>
-        <h2 class="fs-5">Vietphrase</h2>
-        <div class="mb-3">
-          <label for="inputVietphrase" class="form-label">Nhập tệp VietPhrase.txt:</label>
-          <input type="file" class="form-control form-control-sm" id="inputVietphrase" accept="text/plain">
-        </div>
-        <div class="mb-3">
-          <h2 class="fs-6">Thuật toán dịch</h2>
-          <div class="form-check">
-            <input class="form-check-input option translator-option" type="radio" name="flexRadioTranslationAlgorithm" id="flexRadioPrioritizeLongVietPhraseClusters" value="0" checked>
-            <label class="form-check-label" for="flexRadioPrioritizeLongVietPhraseClusters">Ưu tiên cụm VietPhrase dài</label>
-          </div>
-          <div class="form-check">
-            <input class="form-check-input option translator-option" type="radio" name="flexRadioTranslationAlgorithm" id="flexRadioTranslateFromLeftToRight" value="1">
-            <label class="form-check-label" for="flexRadioTranslateFromLeftToRight">Dịch từ trái sang phải</label>
-          </div>
-          <!-- div class="form-check">
-              <input class="form-check-input option translator-option" type="checkbox" role="switch" id="flexSwitchCheckPrioritizeNameOverVietPhrase">
-              <label class="form-check-label" for="flexSwitchCheckPrioritizeNameoverVietPhrase">Ưu tiên Name hơn VietPhrase</label>
-          </div -->
-        </div>
-        <div class="mb-">
-          <h2 class="fs-6">Thuật toán nhân</h2>
-          <div class="form-check">
-            <input class="form-check-input option translator-option" type="radio" name="flexRadioMultiplicationAlgorithm" id="flexRadioNoApply" value="0">
-            <label class="form-check-label" for="flexRadioNoApply">Không áp dụng</label>
-          </div>
-          <div class="form-check">
-            <input class="form-check-input option translator-option" type="radio" name="flexRadioMultiplicationAlgorithm" id="flexRadioMultiplicationByPronouns" value="1">
-            <label class="form-check-label" for="flexRadioMultiplicationByPronouns">Nhân theo Pronouns</label>
-          </div>
-          <div class="form-check">
-            <input class="form-check-input option translator-option" type="radio" name="flexRadioMultiplicationAlgorithm" id="flexRadioMultiplicationByPronounsNames" value="2" checked>
-            <label class="form-check-label" for="flexRadioMultiplicationByPronounsNames">Nhân theo Pronouns + Names</label>
-          </div>
-        </div>
-        <!--hr>
-        <h2 class="fs-5">Trích xuất văn bản</h2>
-        <select class="form-select form-select-sm mb-3 option" id="recognizeLangsSelect" multiple>
-          <option value="jpn_vert">Tiếng Nhật (Dọc)</option>
-          <option value="jpn">Tiếng Nhật</option>
-          <option value="chi_tra">Tiếng Trung (Phổn thể)</option>
-          <option value="chi_tra_vert">Tiếng Trung (Phổn thể) (Dọc)</option>
-          <option value="chi_sim">Tiếng Trung (Giản thể)</option>
-          <option value="chi_sim_vert">Tiếng Trung (Giản thể) (Dọc)</option>
-          <option value="vie">Tiếng Việt</option>
-          <option value="eng" selected>Tiếng Anh</option>
-        </select>
-        <div class="form-check">
-          <input class="form-check-input option" type="checkbox" value="" id="flexCheckGrayscale">
-          <label class="form-check-label" for="flexCheckGrayscale">Bật Grayscale</label>
-        </div>
-        <div class="form-check">
-          <input class="form-check-input option" type="checkbox" value="" id="flexCheckThreshold">
-          <label class="form-check-label" for="flexCheckThreshold">Bật Threshold</label>
-        </div-->
-      </div>
-    </div>
-  </div>
 </div>
+<svg class="d-none" xmlns="http://www.w3.org/2000/svg">
+  <symbol id="circle-half" viewBox="0 0 16 16">
+    <path d="M8 15A7 7 0 1 0 8 1v14zm0 1A8 8 0 1 1 8 0a8 8 0 0 1 0 16z"/>
+  </symbol>
+  <symbol id="sun-fill" viewBox="0 0 16 16">
+    <path d="M8 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0zm0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13zm8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5zM3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8zm10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0zm-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0zm9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707zM4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .708z"/>
+  </symbol>
+  <symbol id="moon-stars-fill" viewBox="0 0 16 16">
+    <path d="M6 .278a.768.768 0 0 1 .08.858 7.208 7.208 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277.527 0 1.04-.055 1.533-.16a.787.787 0 0 1 .81.316.733.733 0 0 1-.031.893A8.349 8.349 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.752.752 0 0 1 6 .278z"/>
+    <path d="M10.794 3.148a.217.217 0 0 1 .412 0l.387 1.162c.173.518.579.924 1.097 1.097l1.162.387a.217.217 0 0 1 0 .412l-1.162.387a1.734 1.734 0 0 0-1.097 1.097l-.387 1.162a.217.217 0 0 1-.412 0l-.387-1.162A1.734 1.734 0 0 0 9.31 6.593l-1.162-.387a.217.217 0 0 1 0-.412l1.162-.387a1.734 1.734 0 0 0 1.097-1.097l.387-1.162zM13.863.099a.145.145 0 0 1 .274 0l.258.774c.115.346.386.617.732.732l.774.258a.145.145 0 0 1 0 .274l-.774.258a1.156 1.156 0 0 0-.732.732l-.258.774a.145.145 0 0 1-.274 0l-.258-.774a1.156 1.156 0 0 0-.732-.732l-.774-.258a.145.145 0 0 1 0-.274l.774-.258c.346-.115.617-.386.732-.732L13.863.1z"/>
+  </symbol>
+  <symbol id="fonts" viewBox="0 0 16 16">
+    <path d="M12.258 3h-8.51l-.083 2.46h.479c.26-1.544.758-1.783 2.693-1.845l.424-.013v7.827c0 .663-.144.82-1.3.923v.52h4.082v-.52c-1.162-.103-1.306-.26-1.306-.923V3.602l.431.013c1.934.062 2.434.301 2.693 1.846h.479L12.258 3z"/>
+  </symbol>
+  <symbol id="translate" viewBox="0 0 16 16">
+    <path d="M4.545 6.714 4.11 8H3l1.862-5h1.284L8 8H6.833l-.435-1.286H4.545zm1.634-.736L5.5 3.956h-.049l-.679 2.022H6.18z"/>
+    <path d="M0 2a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v3h3a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-3H2a2 2 0 0 1-2-2V2zm2-1a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h7a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H2zm7.138 9.995c.193.301.402.583.63.846-.748.575-1.673 1.001-2.768 1.292.178.217.451.635.555.867 1.125-.359 2.08-.844 2.886-1.494.777.665 1.739 1.165 2.93 1.472.133-.254.414-.673.629-.89-1.125-.253-2.057-.694-2.82-1.284.681-.747 1.222-1.651 1.621-2.757H14V8h-3v1.047h.765c-.318.844-.74 1.546-1.272 2.13a6.066 6.066 0 0 1-.415-.492 1.988 1.988 0 0 1-.94.31z"/>
+  </symbol>
+  <symbol id="plus" viewBox="0 0 16 16">
+    <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+  </symbol>
+  <symbol id="dash" viewBox="0 0 16 16">
+    <path d="M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8z"/>
+  </symbol>
+  <symbol id="x-lg" viewBox="0 0 16 16">
+    <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z"/>
+  </symbol>
+  <symbol id="download" viewBox="0 0 16 16">
+    <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+    <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+  </symbol>
+</svg>
 </body>
-<script>
-  ;(function () {
-    var src = '//cdn.jsdelivr.net/npm/eruda';
-    if (!/eruda=true/.test(window.location) && localStorage.getItem('active-eruda') != 'true') return;
-    document.write('<scr' + 'ipt src="' + src + '"></scr' + 'ipt>');
-    document.write('<scr' + 'ipt>eruda.init();</scr' + 'ipt>');
-  })();
-</script>
 </html>

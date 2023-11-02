@@ -134,6 +134,9 @@ class DeepLTranslator {
 
       case Translators.MICROSOFT_TRANSLATOR:
         return DeepLTranslator.MICROSOFT_TRANSLATOR_MAPPING[languageCode] ?? (MicrosoftTranslator.FROM_LANGUAGES.hasOwnProperty(languageCode) ? languageCode : MicrosoftTranslator.DefaultLanguage.FROM);
+
+      case Translators.VIETPHRASE:
+        return Vietphrase.DefaultLanguage.SOURCE_LANGUAGE;
     }
   }
 
@@ -147,6 +150,9 @@ class DeepLTranslator {
 
       case Translators.MICROSOFT_TRANSLATOR:
         return DeepLTranslator.MICROSOFT_TRANSLATOR_MAPPING[languageCode] ?? (MicrosoftTranslator.TO_LANGUAGES.hasOwnProperty(languageCode) ? languageCode : MicrosoftTranslator.DefaultLanguage.TO);
+
+      case Translators.VIETPHRASE:
+        return Vietphrase.DefaultLanguage.TARGET_LANGUAGE;
     }
   }
 
@@ -158,14 +164,14 @@ class DeepLTranslator {
       });
     } catch (error) {
       console.error('Không thể lấy được Mức sử dụng:', error);
-      throw new Error('Không thể lấy được Mức sử dụng!');
+      throw 'Không thể lấy được Mức sử dụng!';
     }
   }
 
   async translateText(sourceLang, targetLang, text) {
     try {
       return Utils.convertHtmlToText((await $.ajax({
-        data: `text=${Utils.convertTextToHtml(text).split(/\n/).map((element) => encodeURIComponent(element)).join('&text=')}&source_lang=${sourceLang}&target_lang=${targetLang}&tag_handling=xml`,
+        data: `text=${text.split(/\n/).map((element) => encodeURIComponent(element)).join('&text=')}&source_lang=${sourceLang}&target_lang=${targetLang}&tag_handling=xml`,
         method: 'POST',
         url: `https://api-free.deepl.com/v2/translate?auth_key=${this.authKey_}`
       })).translations.map(({text}) => text).join('\n'));
@@ -236,6 +242,9 @@ class GoogleTranslate {
 
       case Translators.MICROSOFT_TRANSLATOR:
         return GoogleTranslate.MICROSOFT_TRANSLATOR_MAPPING[languageCode] ?? (MicrosoftTranslator.FROM_LANGUAGES.hasOwnProperty(languageCode) ? languageCode : MicrosoftTranslator.DefaultLanguage.FROM);
+
+      case Translators.VIETPHRASE:
+        return Vietphrase.DefaultLanguage.SOURCE_LANGUAGE;
     }
   }
 
@@ -249,6 +258,9 @@ class GoogleTranslate {
 
       case Translators.MICROSOFT_TRANSLATOR:
         return GoogleTranslate.MICROSOFT_TRANSLATOR_MAPPING[languageCode] ?? (MicrosoftTranslator.TO_LANGUAGES.hasOwnProperty(languageCode) ? languageCode : MicrosoftTranslator.DefaultLanguage.TO);
+
+      case Translators.VIETPHRASE:
+        return Vietphrase.DefaultLanguage.TARGET_LANGUAGE;
     }
   }
 
@@ -284,7 +296,7 @@ class GoogleTranslate {
       return data;
     } catch (error) {
       console.error('Không thể lấy được Google Translate Element:', error);
-      throw new Error('Không thể lấy được Google Translate Element!');
+      throw 'Không thể lấy được Google Translate Element!';
     }
   }
 
@@ -311,12 +323,12 @@ class GoogleTranslate {
        * Content-Type: application/x-www-form-urlencoded - `q=${querys.split(/\n/).map((sentence) => encodeURIComponent(sentence)).join('&q=')}`
        */
       return Utils.convertHtmlToText((await $.ajax({
-        data: `q=${Utils.convertTextToHtml(q).split(/\n/).map((sentence) => encodeURIComponent(sentence)).join('&q=')}`,
+        data: `q=${q.split(/\n/).map((element) => encodeURIComponent(element)).join('&q=')}`,
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded'
         },
         method: 'POST',
-        url: `https://translate.googleapis.com/translate_a/t?anno=3&client=${(this.data_._cac || 'te') + (this.data_._cam === 'lib' ? '_lib' : '')}&format=html&v=1.0&key${this.apiKey_.length > 0 ? `=${this.apiKey_}` : ''}&logld=v${this.data_.v || ''}&sl=${sl}&tl=${tl}&tc=0&tk=${this.lq(Utils.convertTextToHtml(q).replace(/\n/g, ''))}`
+        url: `https://translate.googleapis.com/translate_a/t?anno=3&client=${(this.data_._cac || 'te') + (this.data_._cam === 'lib' ? '_lib' : '')}&format=html&v=1.0&key${this.apiKey_.length > 0 ? `=${this.apiKey_}` : ''}&logld=v${this.data_.v || ''}&sl=${sl}&tl=${tl}&tc=0&tk=${this.lq(q.replace(/\n/g, ''))}`
       })).map((element) => sl === 'auto' ? element[0] : element).map((element) => element.includes('<i>') ? element.replace(/<i>(?:.(?!<\/i>))+.(?=<\/i>)<\/i> <b>((?:.(?!<\/b>))+.(?=<\/b>))<\/b>/g, '$1') : element).join('\n'));
     } catch (error) {
       console.error('Bản dịch lỗi:', error);
@@ -449,6 +461,9 @@ class Papago {
 
       case Translators.MICROSOFT_TRANSLATOR:
         return Papago.MICROSOFT_TRANSLATOR_MAPPING[languageCode] ?? (MicrosoftTranslator.FROM_LANGUAGES.hasOwnProperty(languageCode) ? languageCode : MicrosoftTranslator.DefaultLanguage.FROM);
+
+      case Translators.VIETPHRASE:
+        return Vietphrase.DefaultLanguage.SOURCE_LANGUAGE;
     }
   }
 
@@ -462,6 +477,9 @@ class Papago {
 
       case Translators.MICROSOFT_TRANSLATOR:
         return Papago.MICROSOFT_TRANSLATOR_MAPPING[languageCode] ?? (MicrosoftTranslator.TO_LANGUAGES.hasOwnProperty(languageCode) ? languageCode : MicrosoftTranslator.DefaultLanguage.TO);
+
+      case Translators.VIETPHRASE:
+        return Vietphrase.DefaultLanguage.TARGET_LANGUAGE;
     }
   }
 
@@ -477,7 +495,7 @@ class Papago {
       })).match(/"PPG .*,"(v[^"]*)/)[1];
     } catch (error) {
       console.error('Không thể lấy được Thông tin phiên bản:', error);
-      throw new Error('Không thể lấy được Thông tin phiên bản!')
+      throw 'Không thể lấy được Thông tin phiên bản!';
     }
   }
 
@@ -491,8 +509,8 @@ class Papago {
           Accept: 'application/json',
           'Accept-Language': 'vi',
           'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-       // 'device-type': 'pc',
-       // 'device-type': 'mobile',
+          // 'device-type': 'pc',
+          // 'device-type': 'mobile',
           'x-apigw-partnerid': 'papago',
           Authorization: 'PPG ' + this.uuid_ + ':' + CryptoJS.HmacMD5(this.uuid_ + '\n' + 'https://papago.naver.com/apis/n2mt/translate' + '\n' + timeStamp, this.version_).toString(CryptoJS.enc.Base64),
           Timestamp: timeStamp
@@ -572,6 +590,9 @@ class MicrosoftTranslator {
 
       case Translators.PAPAGO:
         return MicrosoftTranslator.PAPAGO_MAPPING[languageCode] ?? (Papago.SOURCE_LANGUAGES.hasOwnProperty(languageCode) ? languageCode : Papago.DefaultLanguage.SOURCE);
+
+      case Translators.VIETPHRASE:
+        return Vietphrase.DefaultLanguage.SOURCE_LANGUAGE;
     }
   }
 
@@ -585,6 +606,9 @@ class MicrosoftTranslator {
 
       case Translators.PAPAGO:
         return MicrosoftTranslator.PAPAGO_MAPPING[languageCode] ?? (Papago.TARGET_LANGUAGES.hasOwnProperty(languageCode) ? languageCode : Papago.DefaultLanguage.TARGET);
+
+      case Translators.VIETPHRASE:
+        return Vietphrase.DefaultLanguage.TARGET_LANGUAGE;
     }
   }
 
@@ -597,7 +621,7 @@ class MicrosoftTranslator {
       });
     } catch (error) {
       console.error('Không thể lấy được Access Token:', error);
-      throw new Error('Không thể lấy được Access Token!');
+      throw 'Không thể lấy được Access Token!';
     }
   }
 
@@ -625,7 +649,7 @@ class MicrosoftTranslator {
        * Authorization: Bearer ${accessToken} - Content-Type: application/json - send(inputText)
        */
       return (await $.ajax({
-        data: JSON.stringify(text.split(/\n/).map((sentence) => ({Text: sentence}))),
+        data: JSON.stringify(text.split(/\n/).map((element) => ({Text: element}))),
         dataType: 'json',
         headers: {
           'Authorization': `Bearer ${this.accessToken_}`,
@@ -637,6 +661,325 @@ class MicrosoftTranslator {
     } catch (error) {
       console.error('Bản dịch lỗi:', error);
       throw error;
+    }
+  }
+}
+
+class Vietphrase {
+  static SOURCE_LANGUAGES = {zh: 'Tiếng Trung'};
+  static TARGET_LANGUAGES = {
+    pinyin: 'Bính âm',
+    sinoVietnamese: 'Hán Việt',
+    vi: 'Vietphrase'
+  };
+
+  static DefaultLanguage = {
+    SOURCE_LANGUAGE: 'zh',
+    TARGET_LANGUAGE: 'vi'
+  };
+
+  TranslationAlgorithms = {
+    PRIORITIZE_LONG_VIETPHRASE_CLUSTERS: '0',
+    TRANSLATE_FROM_LEFT_TO_RIGHT: '1',
+  };
+  MultiplicationAlgorithm = {
+    NOT_APPLICABLE: '0',
+    MULTIPLICATION_BY_PRONOUNS: '1',
+    MULTIPLICATION_BY_PRONOUNS_AND_NAMES: '2',
+  };
+
+  constructor(data, translationAlgorithm, multiplicationAlgorithm, caseSensitive = false, useGlossary = false, glossary = {}, prioritizeNameOverVietphraseCheck = false) {
+    this.data_ = data;
+    this.translationAlgorithm_ = translationAlgorithm;
+    this.multiplicationAlgorithm_ = multiplicationAlgorithm;
+    this.caseSensitive_ = caseSensitive;
+    this.useGlossary_ = useGlossary;
+    this.glossary_ = glossary;
+    this.prioritizeNameOverVietphraseCheck_ = prioritizeNameOverVietphraseCheck;
+  }
+
+  static getSourceLanguageName(languageCode) {
+    return Vietphrase.SOURCE_LANGUAGES[languageCode].startsWith('Tiếng ') ? Vietphrase.SOURCE_LANGUAGES[languageCode].match(/Tiếng (.+)/)[1] : Vietphrase.SOURCE_LANGUAGES[languageCode];
+  }
+
+  static getTargetLanguageName(languageCode) {
+    return Vietphrase.TARGET_LANGUAGES[languageCode].startsWith('Tiếng ') ? Vietphrase.TARGET_LANGUAGES[languageCode].match(/Tiếng (.+)/)[1] : Vietphrase.TARGET_LANGUAGES[languageCode];
+  }
+
+  static getMappedSourceLanguageCode(translator, languageCode) {
+    switch (translator) {
+      case Translators.DEEPL_TRANSLATOR:
+        return DeepLTranslator.DefaultLanguage.SOURCE_LANG;
+
+      case Translators.GOOGLE_TRANSLATE:
+        return GoogleTranslate.DefaultLanguage.SL;
+
+      case Translators.PAPAGO:
+        return Papago.DefaultLanguage.SOURCE;
+
+      case Translators.MICROSOFT_TRANSLATOR:
+        return MicrosoftTranslator.DefaultLanguage.FROM;
+    }
+  }
+
+  static getMappedTargetLanguageCode(translator, languageCode) {
+    switch (translator) {
+      case Translators.DEEPL_TRANSLATOR:
+        return DeepLTranslator.DefaultLanguage.TARGET_LANG;
+
+      case Translators.GOOGLE_TRANSLATE:
+        return GoogleTranslate.DefaultLanguage.TL;
+
+      case Translators.PAPAGO:
+        return Papago.DefaultLanguage.TARGET;
+
+      case Translators.MICROSOFT_TRANSLATOR:
+        return MicrosoftTranslator.DefaultLanguage.TO;
+    }
+  }
+
+  translateText(sourceLanugage, targetLanguage, inputText) {
+    try {
+      let data = {};
+
+      switch (targetLanguage) {
+        case 'pinyin':
+          data = this.data_.pinyins;
+          break;
+
+        case 'sinoVietnamese':
+          data = this.data_.chinesePhienAmWords;
+          break;
+
+        case 'vi':
+          data = this.data_.vietphrases;
+          break;
+      }
+
+      switch (this.translationAlgorithm_) {
+        case this.TranslationAlgorithms.TRANSLATE_FROM_LEFT_TO_RIGHT:
+          return this.translateFromLeftToRight(data, targetLanguage, inputText);
+
+        default:
+        case this.TranslationAlgorithms.PRIORITIZE_LONG_VIETPHRASE_CLUSTERS:
+          return this.translatePrioritizeLongVietphraseClusters(data, targetLanguage, inputText);
+      }
+    } catch (error) {
+      console.error('Bản dịch lỗi:', error);
+      throw error;
+    }
+  }
+
+  translatePrioritizeLongVietphraseClusters(data, targetLanguage, inputText) {
+    let dataEntries = Object.entries(data).filter(([first]) => inputText.includes(first));
+    let result = inputText.trim();
+
+    switch (targetLanguage) {
+      case 'pinyin':
+      case 'sinoVietnamese':
+        if (dataEntries.length === 0) return;
+        data = Object.fromEntries(dataEntries);
+
+        for (const property in data) {
+          result = result.replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}])${Utils.getRegexEscapedText(property)}([\\p{Lu}\\p{Ll}\\p{Nd}])`, 'gu'), `$1 ${Utils.getRegexEscapedReplacement(data[property])} $2`)
+                               .replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}])${Utils.getRegexEscapedText(property)}`, 'gu'), `$1 ${Utils.getRegexEscapedReplacement(data[property])}`)
+                               .replace(new RegExp(`${Utils.getRegexEscapedText(property)}([\\p{Lu}\\p{Ll}\\p{Nd}])`, 'gu'), `${Utils.getRegexEscapedReplacement(data[property])} $1`)
+                               .replace(new RegExp(Utils.getRegexEscapedText(property), 'g'), Utils.getRegexEscapedReplacement(data[property]));
+        }
+        return result.split(/\n/).map((element) => this.caseSensitive_ ? element.replace(/(^|\s*(?:[!\-.:;?]\s+|['"\p{Ps}\p{Pi}]\s*))(\p{Ll})/gu, (match, p1, p2) => p1 + p2.toUpperCase()) : element).join('\n');
+
+      case 'vi':
+        let glossaryEntries = Object.entries(this.glossary_);
+
+        if (dataEntries.length === 0 && glossaryEntries.length === 0) return;
+        if (this.multiplicationAlgorithm_ > this.MultiplicationAlgorithm.NOT_APPLICABLE) {
+          const luatnhanNameEntries = [];
+          const luatnhanPronounEntries = [];
+
+          for (const luatnhan in this.data_.cacLuatnhan) {
+            if (this.useGlossary_ && this.multiplicationAlgorithm_ === this.MultiplicationAlgorithm.MULTIPLICATION_BY_PRONOUNS_AND_NAMES && glossaryEntries.length > 0) {
+              for (const element in this.glossary_) {
+                const first = luatnhan.replace(/\{0}/g, Utils.getRegexEscapedReplacement(this.prioritizeNameOverVietphraseCheck_ ? this.glossary_[element] : element));
+
+                if (inputText.includes(first)) {
+                  luatnhanNameEntries.push([
+                    first,
+                    this.data_.cacLuatnhan[luatnhan].replace(/\{0}/g, Utils.getRegexEscapedReplacement(this.glossary_[element]))
+                  ]);
+                }
+              }
+            }
+
+            for (const pronoun in this.data_.pronouns) {
+              const first = luatnhan.replace(/\{0}/g, Utils.getRegexEscapedReplacement(pronoun));
+
+              if (inputText.includes(first)) {
+                luatnhanPronounEntries.push([
+                  first,
+                  this.data_.cacLuatnhan[luatnhan].replace(/\{0}/g, Utils.getRegexEscapedReplacement(this.data_.pronouns[pronoun]))
+                ]);
+              }
+            }
+          }
+
+          glossaryEntries = [...luatnhanNameEntries, ...glossaryEntries];
+          dataEntries = [...this.prioritizeNameOverVietphraseCheck_ ? luatnhanNameEntries : [], ...luatnhanPronounEntries, ...dataEntries];
+        }
+
+        dataEntries = this.useGlossary_ && !this.prioritizeNameOverVietphraseCheck_ ? [
+          ...glossaryEntries.filter(([first]) => inputText.includes(first)),
+          ...dataEntries
+        ] : dataEntries;
+
+        data = Object.fromEntries(dataEntries);
+
+        for (const property in data) {
+          result = result.replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}])${Utils.getRegexEscapedText(property)}(?=${Object.values(this.glossary_).join('|')})`, 'gu'), `$1 ${Utils.getRegexEscapedReplacement(data[property])} `)
+                               .replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}])${Utils.getRegexEscapedText(property)}([\\p{Lu}\\p{Ll}\\p{Nd}])`, 'gu'), `$1 ${Utils.getRegexEscapedReplacement(data[property])} $2`)
+                               .replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}])${Utils.getRegexEscapedText(property)}`, 'gu'), `$1 ${Utils.getRegexEscapedReplacement(data[property])}`)
+                               .replace(new RegExp(`${Utils.getRegexEscapedText(property)}([\\p{Lu}\\p{Ll}\\p{Nd}])`, 'gu'), `${Utils.getRegexEscapedReplacement(data[property])} $1`)
+                               .replace(new RegExp(`${Utils.getRegexEscapedText(property)}(?=${Object.values(this.glossary_).join('|')})`, 'g'), `${Utils.getRegexEscapedReplacement(data[property])} `)
+                               .replace(new RegExp(Utils.getRegexEscapedText(property), 'g'), Utils.getRegexEscapedReplacement(data[property]));
+        }
+
+        return result.split(/\n/).map((element) => this.caseSensitive_ ? element.replace(/(^|\s*(?:[!\-.:;?]\s+|['"\p{Ps}\p{Pi}]\s*))(\p{Ll})/gu, (match, p1, p2) => p1 + p2.toUpperCase()) : element).join('\n');
+    }
+  }
+
+  translateFromLeftToRight(data, targetLanguage, inputText) {
+    let dataEntries = Object.entries(data).filter(([first, second]) => inputText.includes(first));
+
+    const lines = inputText.trim().split(/\n/);
+    const results = [];
+    let result = inputText.trim();
+
+    switch (targetLanguage) {
+      case 'pinyin':
+      case 'sinoVietnamese':
+        if (dataEntries.length > 0) {
+          data = Object.fromEntries(dataEntries);
+
+          for (let i = 0; i < lines.length; i++) {
+            let chars = lines[i];
+
+            const dataLengths = [
+              ...dataEntries.map(([first]) => first.length),
+              1
+            ].sort((a, b) => b - a).filter((element, index, array) => index === array.indexOf(element));
+            let tempLine = '';
+            let prevPhrase = '';
+
+            for (let j = 0; j < chars.length; j++) {
+              for (const dataLength of dataLengths) {
+                const phrase = chars.substring(j, j + dataLength);
+
+                if (data.hasOwnProperty(phrase)) {
+                  if (data[phrase].length > 0) {
+                    tempLine += (j > 0 && /^[\p{Lu}\p{Ll}\p{Nd}]+$/u.test(prevPhrase || tempLine[tempLine.length - 1] || '') ? ' ' : '') + data[phrase];
+                    prevPhrase = data[phrase];
+                  }
+
+                  j += dataLength - 1;
+                  break;
+                } else if (dataLength === 1) {
+                  tempLine += chars[j];
+                  prevPhrase = '';
+                  break;
+                }
+              }
+            }
+
+            results.push(tempLine);
+          }
+        }
+
+        result = results.map((element) => this.caseSensitive_ ? element.replace(/(^|\s*(?:[!\-.:;?]\s+|['"\p{Ps}\p{Pi}]\s*))(\p{Ll})/gu, (match, p1, p2) => p1 + p2.toUpperCase()) : element).join('\n');
+        return result;
+
+      case 'vi':
+        let glossaryEntries = Object.entries(this.glossary_);
+
+        if (dataEntries.length > 0 || glossaryEntries.length > 0) {
+          if (this.multiplicationAlgorithm_ > this.MultiplicationAlgorithm.NOT_APPLICABLE) {
+            const luatnhanNameEntries = [];
+            const luatnhanPronounEntries = [];
+
+            for (const luatnhan in this.data_.cacLuatnhan) {
+              if (this.useGlossary_ && this.multiplicationAlgorithm_ === this.MultiplicationAlgorithm.MULTIPLICATION_BY_PRONOUNS_AND_NAMES && glossaryEntries.length > 0) {
+                for (const element in this.glossary_) {
+                  luatnhanNameEntries.push([
+                    luatnhan.replace(/\{0}/g, Utils.getRegexEscapedReplacement(this.prioritizeNameOverVietphraseCheck_ ? this.glossary_[element] : element)),
+                    this.data_.cacLuatnhan[luatnhan].replace(/\{0}/g, Utils.getRegexEscapedReplacement(this.glossary_[element]))
+                  ]);
+                }
+              }
+
+              for (const pronoun in this.data_.pronouns) {
+                luatnhanPronounEntries.push([
+                  luatnhan.replace(/\{0}/g, Utils.getRegexEscapedReplacement(pronoun)),
+                  this.data_.cacLuatnhan[luatnhan].replace(/\{0}/g, Utils.getRegexEscapedReplacement(this.data_.pronouns[pronoun]))
+                ]);
+              }
+            }
+
+            glossaryEntries = [...luatnhanNameEntries, ...glossaryEntries];
+            dataEntries = [
+              ...this.prioritizeNameOverVietphraseCheck_ ? luatnhanNameEntries : [],
+              ...luatnhanPronounEntries,
+              ...dataEntries
+            ];
+          }
+
+          dataEntries = this.useGlossary_ && !this.prioritizeNameOverVietphraseCheck_ ? [
+            ...glossaryEntries,
+            ...dataEntries
+          ] : dataEntries;
+
+          data = Object.fromEntries(dataEntries);
+
+          for (let i = 0; i < lines.length; i++) {
+            let chars = lines[i];
+
+            let tempLine = '';
+            let prevPhrase = '';
+
+            const dataLengths = [
+              ...this.useGlossary_ && this.prioritizeNameOverVietphraseCheck_ ? glossaryEntries.map(([, second]) => second.length) : [],
+              ...dataEntries.map(([first]) => first.length),
+              1
+            ].sort((a, b) => b - a).filter((element, index, array) => index === array.indexOf(element));
+
+            for (let j = 0; j < chars.length; j++) {
+              for (const dataLength of dataLengths) {
+                const phrase = chars.substring(j, j + dataLength);
+
+                if (this.useGlossary_ && this.prioritizeNameOverVietphraseCheck_ && Object.values(this.glossary_).indexOf(phrase) !== -1) {
+                  tempLine += (j > 0 && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(prevPhrase || tempLine[tempLine.length - 1] || '') ? ' ' : '') + chars.substring(j, j + dataLength);
+
+                  j += dataLength - 1;
+                  break;
+                } else if (data.hasOwnProperty(phrase)) {
+                  if (data[phrase].length > 0) {
+                    tempLine += (j > 0 && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(prevPhrase || tempLine[tempLine.length - 1] || '') ? ' ' : '') + data[phrase];
+                    prevPhrase = data[phrase];
+                  }
+
+                  j += dataLength - 1;
+                  break;
+                } else if (dataLength === 1) {
+                  tempLine += chars[j];
+                  prevPhrase = '';
+                  break;
+                }
+              }
+            }
+
+            results.push(tempLine);
+          }
+        }
+
+        result = results.map((element) => this.caseSensitive_ ? element.replace(/(^|\s*(?:[!\-.:;?]\s+|['"\p{Ps}\p{Pi}]\s*))(\p{Ll})/gu, (match, p1, p2) => p1 + p2.toUpperCase()) : element).join('\n');
+        return result;
     }
   }
 }
