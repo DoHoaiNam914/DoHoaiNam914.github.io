@@ -958,7 +958,7 @@ class Vietphrase {
             let tempLine = '';
             let prevPhrase = '';
 
-            for (let j = 0; j < chars.length; j++) {console.log(j);
+            for (let j = 0; j < chars.length; j++) {
               for (const dataLength of dataLengths) {
                 const phrase = chars.substring(j, j + dataLength);
 

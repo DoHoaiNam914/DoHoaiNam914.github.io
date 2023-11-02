@@ -1061,12 +1061,14 @@ function buildResult(inputText, result) {
           resultDiv.appendChild(paragraph);
         } else if (i + lostLineFixedNumber < inputLines.length) {
           const paragraph = document.createElement('p');
-          paragraph.appendChild(`<i>${Utils.convertTextToHtml(inputLines[i + lostLineFixedNumber])}</i>`);
+          const idiomaticText = document.createElement('i');
+          idiomaticText.innerText = inputLines[i + lostLineFixedNumber].trim();
+          paragraph.appendChild(idiomaticText);
           resultDiv.appendChild(paragraph);
         }
       }
     } else {
-      resultDiv.innerHTML = `<p>${Utils.convertTextToHtml(resultLines).join('</p><p>')}</p>`;
+      resultDiv.innerHTML = `<p>${resultLines.map(Utils.convertTextToHtml).join('</p><p>')}</p>`;
     }
 
     return resultDiv.innerHTML.replace(/<p><\/p>/g, '<br>');
