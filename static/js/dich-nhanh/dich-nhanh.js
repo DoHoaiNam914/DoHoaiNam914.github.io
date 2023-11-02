@@ -417,10 +417,17 @@ glossaryType.on('change', () => reloadGlossaryEntries());
 sourcePairInput.on('input', function () {
   if ($(this).val().length > 0) {
     targetPairInput.val(applyGlossaryToText($(this).val()));
+
+    if (glossary.hasOwnProperty($(this).val())) {
+      glossaryDataList.val($(this).val());
+    } else {
+      glossaryDataList.val(null);
+    }
+
     addButton.removeClass('disabled');
     removeButton.removeClass('disabled');
   } else {
-    targetPairInput.val(null);
+    glossaryDataList.val(null).change()
     addButton.addClass('disabled');
     removeButton.addClass('disabled');
   }
