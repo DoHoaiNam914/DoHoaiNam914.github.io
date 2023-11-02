@@ -231,7 +231,7 @@ translateButton.on('click', function () {
         retranslateButton.removeClass('disabled');
 
         if (prevScrollTop > 0) {
-          translatedTextArea.prop('scrollTop', prevScrollTop);
+          resultTextarea.prop('scrollTop', prevScrollTop);
           prevScrollTop = 0;
         }
       });
