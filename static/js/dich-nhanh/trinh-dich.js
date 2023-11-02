@@ -902,7 +902,7 @@ class Vietphrase {
           }
         }
 
-        result = results.map((element) => this.caseSensitive_ ? element.replace(/(^|\s*(?:[!\-.:;?]\s+|['"\p{Ps}\p{Pi}]\s*))(\p{Ll})/gu, (match, p1, p2) => p1 + p2.toUpperCase()) : element).join('\n');
+        result = results.map((element) => this.caseSensitive_ ? element.replace(/(^\s*|\s*(?:[!\-.:;?]\s+|['"\p{Ps}\p{Pi}]\s*))(\p{Ll})/gu, (match, p1, p2) => p1 + p2.toUpperCase()) : element).join('\n');
         break;
 
       case 'vi':
@@ -962,12 +962,12 @@ class Vietphrase {
               for (const dataLength of dataLengths) {
                 const phrase = chars.substring(j, j + dataLength);
 
-                /*if (this.useGlossary_ && this.prioritizeNameOverVietphraseCheck_ && Object.values(this.glossary_).indexOf(phrase) !== -1) {
-                  tempLine += (j > 0 && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(prevPhrase || tempLine[tempLine.length - 1] || '') ? ' ' : '') + chars.substring(j, j + dataLength);
-
+                if (this.useGlossary_ && this.prioritizeNameOverVietphraseCheck_ && Object.values(this.glossary_).indexOf(phrase) !== -1) {
+                  tempLine += (j > 0 && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(prevPhrase || tempLine[tempLine.length - 1] || '') ? ' ' : '') + phrase;
+                  prevPhrase = phrase;
                   j += dataLength - 1;
                   break;
-                } else */if (data.hasOwnProperty(phrase)) {
+                } else if (data.hasOwnProperty(phrase)) {
                   if (data[phrase].length > 0) {
                     tempLine += (j > 0 && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(prevPhrase || tempLine[tempLine.length - 1] || '') ? ' ' : '') + data[phrase];
                     prevPhrase = data[phrase];
@@ -987,7 +987,7 @@ class Vietphrase {
           }
         }
 
-        result = results.map((element) => this.caseSensitive_ ? element.replace(/(^|\s*(?:[!\-.:;?]\s+|['"\p{Ps}\p{Pi}]\s*))(\p{Ll})/gu, (match, p1, p2) => p1 + p2.toUpperCase()) : element).join('\n');
+        result = results.map((element) => this.caseSensitive_ ? element.replace(/(^\s*|\s*(?:[!\-.:;?]\s+|['"\p{Ps}\p{Pi}]\s*))(\p{Ll})/gu, (match, p1, p2) => p1 + p2.toUpperCase()) : element).join('\n');
         break;
     }
 
