@@ -514,7 +514,8 @@ glossaryDataList.change(function () {
     sourcePairInput.val($(this).val()).trigger('input');
     removeButton.removeClass('disabled');
   } else {
-    sourcePairInput.val(null).trigger('input');
+    sourcePairInput.val(null);
+    targetPairInput.val(null);
     removeButton.addClass('disabled');
   }
 });
