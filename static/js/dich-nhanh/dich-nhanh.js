@@ -353,7 +353,7 @@ showOriginalTextSwitch.change(function () {
 vietphrasesInput.on('change', function () {
   const reader = new FileReader();
   reader.onload = function () {
-    let vietphraseList = this.result.split(/\r?\n/).map((element) => element.split(inputVietphrase.prop('files')[0].type === 'text/tab-separated-values' ? '\t' : '=')).filter((element) => element.length === 2).map(([first, second]) => [
+    let vietphraseList = this.result.split(/\r?\n/).map((element) => element.split(vietphrasesInput.prop('files')[0].type === 'text/tab-separated-values' ? '\t' : '=')).filter((element) => element.length === 2).map(([first, second]) => [
       first,
       second.split('/')[0].split('|')[0]
     ]);
@@ -363,7 +363,7 @@ vietphrasesInput.on('change', function () {
     ].filter(([first, second], index, array) => first !== '' && second != undefined && !array[first] && (array[first] = 1), {})
     VietphraseData.vietphrases = Object.fromEntries(vietphraseList);
     console.log('Đã tải xong tệp VietPhrase.txt (%d)!', vietphraseList.length);
-    prevTranslation = [];
+    lastSession = {};
   };
   reader.readAsText($(this).prop('files')[0]);
 });
@@ -480,7 +480,6 @@ $('.translate-button').on('click', async function () {
       }
 
       if (translatorOption === Translators.DEEPL_TRANSLATOR && translator.usage.character_count + inputText.length > translator.usage.character_limit) throw `Lỗi DeepL Translator: Đã đạt đến giới hạn dịch của tài khoản. (${translator.usage.character_count}/${translator.usage.character_limit} ký tự).`;
-      console.log(await translator.translateText(sourceLanguage, targetLanguage, inputText));
       targetPairInput.val(await translator.translateText(sourceLanguage, targetLanguage, inputText));
     } catch (error) {
       console.error(error)
