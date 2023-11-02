@@ -787,13 +787,14 @@ function applyGlossaryToText(text, translator = '') {
     const lines = text.split(/\n/);
     const results = [];
 
+    const glossaryLengths = [
+      ...glossaryEntries.map(([first]) => first.length),
+      1
+    ].sort((a, b) => b - a).filter((element, index, array) => index === array.indexOf(element));
+
     for (let i = 0; i < lines.length; i++) {
       let chars = lines[i];
 
-      const glossaryLengths = [
-        ...glossaryEntries.map(([first]) => first.length),
-        1
-      ].sort((a, b) => b - a).filter((element, index, array) => index === array.indexOf(element));
       let tempLine = '';
       let prevPhrase = '';
 
