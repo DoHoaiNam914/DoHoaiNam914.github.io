@@ -772,7 +772,7 @@ class Vietphrase {
 
   translatePrioritizeLongVietphraseClusters(data, targetLanguage, inputText) {
     let dataEntries = Object.entries(data).filter(([first]) => inputText.includes(first));
-    let result = inputText.trim();
+    let result = inputText.split(/\r?\n/).map((element) => element.trim());
 
     switch (targetLanguage) {
       case 'pinyin':
@@ -856,9 +856,9 @@ class Vietphrase {
   translateFromLeftToRight(data, targetLanguage, inputText) {
     let dataEntries = Object.entries(data).filter(([first]) => inputText.includes(first));
 
-    let result = inputText.trim();
+    let result = inputText.split(/\r?\n/).map((element) => element.trim()).join('\n');
 
-    const lines = inputText.trim().split(/\n/);
+    const lines = inputText.split(/\r?\n/).map((element) => element.trim());
     const results = [];
 
     switch (targetLanguage) {
