@@ -91,6 +91,7 @@ const specialSinovietnameseData = [
   ['厅', 'SẢNH'],
   ['生', 'SINH'],
   ['山', 'SƠN' /* Họ */],
+  ['剂', 'TỄ'],
   ['蔡', 'THÁI, SÁI' /* Họ Thái*/],
   ['沈', 'THẨM' /* Họ */],
   ['姐', 'THƯ'],

@@ -777,81 +777,89 @@ class Vietphrase {
     switch (targetLanguage) {
       case 'pinyin':
       case 'sinoVietnamese':
-        if (dataEntries.length === 0) return;
-        data = Object.fromEntries(dataEntries);
+        if (dataEntries.length > 0) {
+          data = Object.fromEntries(dataEntries);
 
-        for (const property in data) {
-          result = result.replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}])${Utils.getRegexEscapedText(property)}([\\p{Lu}\\p{Ll}\\p{Nd}])`, 'gu'), `$1 ${Utils.getRegexEscapedReplacement(data[property])} $2`)
-                               .replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}])${Utils.getRegexEscapedText(property)}`, 'gu'), `$1 ${Utils.getRegexEscapedReplacement(data[property])}`)
-                               .replace(new RegExp(`${Utils.getRegexEscapedText(property)}([\\p{Lu}\\p{Ll}\\p{Nd}])`, 'gu'), `${Utils.getRegexEscapedReplacement(data[property])} $1`)
-                               .replace(new RegExp(Utils.getRegexEscapedText(property), 'g'), Utils.getRegexEscapedReplacement(data[property]));
+          for (const property in data) {
+            result = result.replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}])${Utils.getRegexEscapedText(property)}([\\p{Lu}\\p{Ll}\\p{Nd}])`, 'gu'), `$1 ${Utils.getRegexEscapedReplacement(data[property])} $2`)
+                           .replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}])${Utils.getRegexEscapedText(property)}`, 'gu'), `$1 ${Utils.getRegexEscapedReplacement(data[property])}`)
+                           .replace(new RegExp(`${Utils.getRegexEscapedText(property)}([\\p{Lu}\\p{Ll}\\p{Nd}])`, 'gu'), `${Utils.getRegexEscapedReplacement(data[property])} $1`)
+                           .replace(new RegExp(Utils.getRegexEscapedText(property), 'g'), Utils.getRegexEscapedReplacement(data[property]));
+          }
+
+          result = result.split(/\n/).map((element) => this.caseSensitive_ ? element.replace(/(^|\s*(?:[!\-.:;?]\s+|['"\p{Ps}\p{Pi}]\s*))(\p{Ll})/gu, (match, p1, p2) => p1 + p2.toUpperCase()) : element).join('\n');
         }
-        return result.split(/\n/).map((element) => this.caseSensitive_ ? element.replace(/(^|\s*(?:[!\-.:;?]\s+|['"\p{Ps}\p{Pi}]\s*))(\p{Ll})/gu, (match, p1, p2) => p1 + p2.toUpperCase()) : element).join('\n');
+        break;
 
       case 'vi':
         let glossaryEntries = Object.entries(this.glossary_);
 
-        if (dataEntries.length === 0 && glossaryEntries.length === 0) return;
-        if (this.multiplicationAlgorithm_ > this.MultiplicationAlgorithm.NOT_APPLICABLE) {
-          const luatnhanNameEntries = [];
-          const luatnhanPronounEntries = [];
+        if (dataEntries.length > 0 || glossaryEntries.length > 0) {
+          if (this.multiplicationAlgorithm_ > this.MultiplicationAlgorithm.NOT_APPLICABLE) {
+            const luatnhanNameEntries = [];
+            const luatnhanPronounEntries = [];
 
-          for (const luatnhan in this.data_.cacLuatnhan) {
-            if (this.useGlossary_ && this.multiplicationAlgorithm_ === this.MultiplicationAlgorithm.MULTIPLICATION_BY_PRONOUNS_AND_NAMES && glossaryEntries.length > 0) {
-              for (const element in this.glossary_) {
-                const first = luatnhan.replace(/\{0}/g, Utils.getRegexEscapedReplacement(this.prioritizeNameOverVietphraseCheck_ ? this.glossary_[element] : element));
+            for (const luatnhan in this.data_.cacLuatnhan) {
+              if (this.useGlossary_ && this.multiplicationAlgorithm_ === this.MultiplicationAlgorithm.MULTIPLICATION_BY_PRONOUNS_AND_NAMES && glossaryEntries.length > 0) {
+                for (const element in this.glossary_) {
+                  const first = luatnhan.replace(/\{0}/g, Utils.getRegexEscapedReplacement(this.prioritizeNameOverVietphraseCheck_ ? this.glossary_[element] : element));
+
+                  if (inputText.includes(first)) {
+                    luatnhanNameEntries.push([
+                      first,
+                      this.data_.cacLuatnhan[luatnhan].replace(/\{0}/g, Utils.getRegexEscapedReplacement(this.glossary_[element]))
+                    ]);
+                  }
+                }
+              }
+
+              for (const pronoun in this.data_.pronouns) {
+                const first = luatnhan.replace(/\{0}/g, Utils.getRegexEscapedReplacement(pronoun));
 
                 if (inputText.includes(first)) {
-                  luatnhanNameEntries.push([
+                  luatnhanPronounEntries.push([
                     first,
-                    this.data_.cacLuatnhan[luatnhan].replace(/\{0}/g, Utils.getRegexEscapedReplacement(this.glossary_[element]))
+                    this.data_.cacLuatnhan[luatnhan].replace(/\{0}/g, Utils.getRegexEscapedReplacement(this.data_.pronouns[pronoun]))
                   ]);
                 }
               }
             }
 
-            for (const pronoun in this.data_.pronouns) {
-              const first = luatnhan.replace(/\{0}/g, Utils.getRegexEscapedReplacement(pronoun));
-
-              if (inputText.includes(first)) {
-                luatnhanPronounEntries.push([
-                  first,
-                  this.data_.cacLuatnhan[luatnhan].replace(/\{0}/g, Utils.getRegexEscapedReplacement(this.data_.pronouns[pronoun]))
-                ]);
-              }
-            }
+            glossaryEntries = [...luatnhanNameEntries, ...glossaryEntries];
+            dataEntries = [...this.prioritizeNameOverVietphraseCheck_ ? luatnhanNameEntries : [], ...luatnhanPronounEntries, ...dataEntries];
           }
 
-          glossaryEntries = [...luatnhanNameEntries, ...glossaryEntries];
-          dataEntries = [...this.prioritizeNameOverVietphraseCheck_ ? luatnhanNameEntries : [], ...luatnhanPronounEntries, ...dataEntries];
+          dataEntries = [
+            ...this.useGlossary_ && !this.prioritizeNameOverVietphraseCheck_ ? glossaryEntries : [],
+            ...dataEntries
+          ];
+
+          data = Object.fromEntries(dataEntries);
+
+          for (const property in data) {
+            result = result.replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}])${Utils.getRegexEscapedText(property)}(?=${Object.values(this.glossary_).join('|')})`, 'gu'), `$1 ${Utils.getRegexEscapedReplacement(data[property])} `)
+                           .replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}])${Utils.getRegexEscapedText(property)}([\\p{Lu}\\p{Ll}\\p{Nd}])`, 'gu'), `$1 ${Utils.getRegexEscapedReplacement(data[property])} $2`)
+                           .replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}])${Utils.getRegexEscapedText(property)}`, 'gu'), `$1 ${Utils.getRegexEscapedReplacement(data[property])}`)
+                           .replace(new RegExp(`${Utils.getRegexEscapedText(property)}([\\p{Lu}\\p{Ll}\\p{Nd}])`, 'gu'), `${Utils.getRegexEscapedReplacement(data[property])} $1`)
+                           .replace(new RegExp(`${Utils.getRegexEscapedText(property)}(?=${Object.values(this.glossary_).join('|')})`, 'g'), `${Utils.getRegexEscapedReplacement(data[property])} `)
+                           .replace(new RegExp(Utils.getRegexEscapedText(property), 'g'), Utils.getRegexEscapedReplacement(data[property]));
+          }
+
+          result = result.split(/\n/).map((element) => this.caseSensitive_ ? element.replace(/(^|\s*(?:[!\-.:;?]\s+|['"\p{Ps}\p{Pi}]\s*))(\p{Ll})/gu, (match, p1, p2) => p1 + p2.toUpperCase()) : element).join('\n');
         }
-
-        dataEntries = this.useGlossary_ && !this.prioritizeNameOverVietphraseCheck_ ? [
-          ...glossaryEntries.filter(([first]) => inputText.includes(first)),
-          ...dataEntries
-        ] : dataEntries;
-
-        data = Object.fromEntries(dataEntries);
-
-        for (const property in data) {
-          result = result.replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}])${Utils.getRegexEscapedText(property)}(?=${Object.values(this.glossary_).join('|')})`, 'gu'), `$1 ${Utils.getRegexEscapedReplacement(data[property])} `)
-                               .replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}])${Utils.getRegexEscapedText(property)}([\\p{Lu}\\p{Ll}\\p{Nd}])`, 'gu'), `$1 ${Utils.getRegexEscapedReplacement(data[property])} $2`)
-                               .replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}])${Utils.getRegexEscapedText(property)}`, 'gu'), `$1 ${Utils.getRegexEscapedReplacement(data[property])}`)
-                               .replace(new RegExp(`${Utils.getRegexEscapedText(property)}([\\p{Lu}\\p{Ll}\\p{Nd}])`, 'gu'), `${Utils.getRegexEscapedReplacement(data[property])} $1`)
-                               .replace(new RegExp(`${Utils.getRegexEscapedText(property)}(?=${Object.values(this.glossary_).join('|')})`, 'g'), `${Utils.getRegexEscapedReplacement(data[property])} `)
-                               .replace(new RegExp(Utils.getRegexEscapedText(property), 'g'), Utils.getRegexEscapedReplacement(data[property]));
-        }
-
-        return result.split(/\n/).map((element) => this.caseSensitive_ ? element.replace(/(^|\s*(?:[!\-.:;?]\s+|['"\p{Ps}\p{Pi}]\s*))(\p{Ll})/gu, (match, p1, p2) => p1 + p2.toUpperCase()) : element).join('\n');
+        break;
     }
+    
+    return result;
   }
 
   translateFromLeftToRight(data, targetLanguage, inputText) {
-    let dataEntries = Object.entries(data).filter(([first, second]) => inputText.includes(first));
+    let dataEntries = Object.entries(data).filter(([first]) => inputText.includes(first));
+
+    let result = inputText.trim();
 
     const lines = inputText.trim().split(/\n/);
     const results = [];
-    let result = inputText.trim();
 
     switch (targetLanguage) {
       case 'pinyin':
@@ -859,13 +867,14 @@ class Vietphrase {
         if (dataEntries.length > 0) {
           data = Object.fromEntries(dataEntries);
 
+          const dataLengths = [
+            ...dataEntries.map(([first]) => first.length),
+            1
+          ].sort((a, b) => b - a).filter((element, index, array) => index === array.indexOf(element));
+
           for (let i = 0; i < lines.length; i++) {
             let chars = lines[i];
 
-            const dataLengths = [
-              ...dataEntries.map(([first]) => first.length),
-              1
-            ].sort((a, b) => b - a).filter((element, index, array) => index === array.indexOf(element));
             let tempLine = '';
             let prevPhrase = '';
 
@@ -894,7 +903,7 @@ class Vietphrase {
         }
 
         result = results.map((element) => this.caseSensitive_ ? element.replace(/(^|\s*(?:[!\-.:;?]\s+|['"\p{Ps}\p{Pi}]\s*))(\p{Ll})/gu, (match, p1, p2) => p1 + p2.toUpperCase()) : element).join('\n');
-        return result;
+        break;
 
       case 'vi':
         let glossaryEntries = Object.entries(this.glossary_);
@@ -930,12 +939,18 @@ class Vietphrase {
             ];
           }
 
-          dataEntries = this.useGlossary_ && !this.prioritizeNameOverVietphraseCheck_ ? [
-            ...glossaryEntries,
+          dataEntries = [
+            ...this.useGlossary_ && !this.prioritizeNameOverVietphraseCheck_ ? glossaryEntries : [],
             ...dataEntries
-          ] : dataEntries;
+          ];
 
           data = Object.fromEntries(dataEntries);
+
+          const dataLengths = [
+            ...this.useGlossary_ && this.prioritizeNameOverVietphraseCheck_ ? glossaryEntries.map(([, second]) => second.length) : [],
+            ...dataEntries.map(([first]) => first.length),
+            1
+          ].sort((a, b) => b - a).filter((element, index, array) => index === array.indexOf(element));
 
           for (let i = 0; i < lines.length; i++) {
             let chars = lines[i];
@@ -943,22 +958,16 @@ class Vietphrase {
             let tempLine = '';
             let prevPhrase = '';
 
-            const dataLengths = [
-              ...this.useGlossary_ && this.prioritizeNameOverVietphraseCheck_ ? glossaryEntries.map(([, second]) => second.length) : [],
-              ...dataEntries.map(([first]) => first.length),
-              1
-            ].sort((a, b) => b - a).filter((element, index, array) => index === array.indexOf(element));
-
-            for (let j = 0; j < chars.length; j++) {
+            for (let j = 0; j < chars.length; j++) {console.log(j);
               for (const dataLength of dataLengths) {
                 const phrase = chars.substring(j, j + dataLength);
 
-                if (this.useGlossary_ && this.prioritizeNameOverVietphraseCheck_ && Object.values(this.glossary_).indexOf(phrase) !== -1) {
+                /*if (this.useGlossary_ && this.prioritizeNameOverVietphraseCheck_ && Object.values(this.glossary_).indexOf(phrase) !== -1) {
                   tempLine += (j > 0 && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(prevPhrase || tempLine[tempLine.length - 1] || '') ? ' ' : '') + chars.substring(j, j + dataLength);
 
                   j += dataLength - 1;
                   break;
-                } else if (data.hasOwnProperty(phrase)) {
+                } else */if (data.hasOwnProperty(phrase)) {
                   if (data[phrase].length > 0) {
                     tempLine += (j > 0 && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(prevPhrase || tempLine[tempLine.length - 1] || '') ? ' ' : '') + data[phrase];
                     prevPhrase = data[phrase];
@@ -979,7 +988,9 @@ class Vietphrase {
         }
 
         result = results.map((element) => this.caseSensitive_ ? element.replace(/(^|\s*(?:[!\-.:;?]\s+|['"\p{Ps}\p{Pi}]\s*))(\p{Ll})/gu, (match, p1, p2) => p1 + p2.toUpperCase()) : element).join('\n');
-        return result;
+        break;
     }
+
+    return result;
   }
 }
