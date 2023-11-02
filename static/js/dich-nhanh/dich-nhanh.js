@@ -213,8 +213,8 @@ translateButton.on('click', function () {
     default:
     case 'Dịch':
       if (inputTextarea.val().length === 0) break;
-      $('#action-nav .copy-button').addClass('disabled');
-      pasteButtons.addClass('disabled');
+      $('#action-navbar .copy-button').addClass('disabled');
+      $('#action-navbar .paste-button').addClass('disabled');
       resultTextarea.html(resultTextarea.html().split(/<br>|<\/p><p>/).map((element, index) => index === 0 ? `Đang dịch...${element.slice(12).replace(/./g, ' ')}` : element.replace(/./g, ' ')).join('<br>'));
       inputTextarea.hide();
       resultTextarea.show();
@@ -271,7 +271,7 @@ retranslateButton.click(function () {
   }
 });
 $('#glossary-management-button').on('mousedown', () => {
-  $('#glossaryList').val(null).change();
+  glossaryDataList.val(null).change();
   sourcePairInput.val(getSelectedTextOrActiveElementText()).trigger('input');
 });
 options.change(function () {
@@ -904,8 +904,8 @@ async function translateTextarea() {
   const startTime = Date.now();
 
   let inputText = inputTextarea.val();
-  const translatorOption = translatorOptions.filter($('.active')).data('id');
 
+  const translatorOption = translatorOptions.filter($('.active')).data('id');
   const sourceLanguage = sourceLanguageSelect.val();
   const targetLanguage = targetLanguageSelect.val();
 
@@ -1028,26 +1028,26 @@ function buildResult(inputText, result) {
 
       for (let i = 0; i < inputLines.length; i++) {
         if (i < resultLines.length) {
-          if (inputLines[i + lostLineFixedNumber].trim().length === 0 && resultLines[i].trim().length > 0) {
+          if (inputLines[i + lostLineFixedNumber].trim().length === 0 && resultLines[i].length > 0) {
             lostLineFixedNumber++;
             i--;
             continue;
-          } else if (translatorOptions.filter($('.active')).data('id') === Translators.PAPAGO && resultLines[i].trim().length === 0 && inputLines[i + lostLineFixedNumber].trim().length > 0) {
+          } else if (translatorOptions.filter($('.active')).data('id') === Translators.PAPAGO && resultLines[i].length === 0 && inputLines[i + lostLineFixedNumber].trim().length > 0) {
             lostLineFixedNumber--;
             continue;
           }
 
           const paragraph = document.createElement('p');
-          let textNode = document.createTextNode((resultLines[i].trim() === inputLines[i + lostLineFixedNumber].trim() ? inputLines[i + lostLineFixedNumber] : resultLines[i]).trim());
+          let textNode = document.createTextNode(resultLines[i]);
 
-          if (Utils.convertHtmlToText(resultLines[i]).trim().length !== inputLines[i + lostLineFixedNumber].trim().length) {
+          if (resultLines[i].length !== inputLines[i + lostLineFixedNumber].trim().length) {
             const idiomaticText = document.createElement('i');
             const linebreak = document.createElement('br');
             idiomaticText.innerText = inputLines[i + lostLineFixedNumber].trim();
             paragraph.appendChild(idiomaticText);
             paragraph.appendChild(linebreak.cloneNode(true));
             textNode = document.createElement('b');
-            textNode.innerText = resultLines[i].trim();
+            textNode.innerText = resultLines[i];
           }
 
           paragraph.appendChild(textNode);
@@ -1059,7 +1059,7 @@ function buildResult(inputText, result) {
         }
       }
     } else {
-      resultDiv.innerHTML = `<p>${resultLines.join('</p><p>')}</p>`;
+      resultDiv.innerHTML = `<p>${Utils.convertTextToHtml(resultLines).join('</p><p>')}</p>`;
     }
 
     return resultDiv.innerHTML.replace(/<p><\/p>/g, '<br>');

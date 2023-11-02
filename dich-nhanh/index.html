@@ -737,6 +737,12 @@
             <option value="text/csv">CSV</option>
             <option value="text/plain">Vietphrase</option>
           </select>
+          <select class="form-select mb-3 option quick-translate-option" id="language-pairs-select">
+            <option value="ja-en">Nhật → Anh</option>
+            <option value="ja-vi">Nhật → Việt</option>
+            <option value="zh-en">Trung → Anh</option>
+            <option value="zh-vi" selected>Trung → Việt</option>
+          </select>
           <div class="row align-items-center mb-3">
             <div class="col pe-1">
               <div class="input-group dropdown">
@@ -801,7 +807,7 @@
               </div>
             </div>
             <div class="col ps-1">
-              <div class="input-group dropdown-center">
+              <div class="input-group dropdown">
                 <input type="text" class="form-control" id="target-pair-input" placeholder="Đích">
                 <button type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown"></button>
                 <ul class="dropdown-menu dropdown-scroller">
@@ -897,14 +903,6 @@
                   </li>
                 </ul>
               </div>
-            </div>
-            <div class="col-3">
-              <select class="form-select option quick-translate-option" id="language-pairs-select">
-                <option value="ja-en">Nhật → Anh</option>
-                <option value="ja-vi">Nhật → Việt</option>
-                <option value="zh-en">Trung → Anh</option>
-                <option value="zh-vi" selected>Trung → Việt</option>
-              </select>
             </div>
           </div>
           <button type="submit" class="btn btn-sm btn-success mb-3 disabled" id="add-button">
