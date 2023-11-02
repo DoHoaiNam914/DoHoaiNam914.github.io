@@ -203,16 +203,17 @@ translateButton.on('click', function () {
       resultTextarea.hide();
       inputTextarea.show();
       $(this).text('Dịch');
-      $('#action-nav .copy-button').data('target', '#input-textarea');
-      copyButtons.removeClass('disabled');
-      pasteButtons.removeClass('disabled');
+      const copyButton = $('#action-navbar .copy-button');
+      copyButton.data('target', '#input-textarea');
+      copyButton.removeClass('disabled');
+      $('#action-nav .paste-button').removeClass('disabled');
       retranslateButton.addClass('disabled');
       break;
 
     default:
     case 'Dịch':
       if (inputTextarea.val().length === 0) break;
-      copyButtons.addClass('disabled');
+      $('#action-nav .copy-button').addClass('disabled');
       pasteButtons.addClass('disabled');
       resultTextarea.html(resultTextarea.html().split(/<br>|<\/p><p>/).map((element, index) => index === 0 ? `Đang dịch...${element.slice(12).replace(/./g, ' ')}` : element.replace(/./g, ' ')).join('<br>'));
       inputTextarea.hide();
@@ -223,9 +224,10 @@ translateButton.on('click', function () {
         resultTextarea.css('height', 'auto');
         resultTextarea.css('height', resultTextarea.prop('scrollHeight') + 'px');
         translateButton.text('Sửa');
-        $('#action-navbar .copy-button').data('target', '#result-textarea');
-        copyButtons.removeClass('disabled');
-        pasteButtons.removeClass('disabled');
+        const copyButton = $('#action-navbar .copy-button');
+        copyButton.data('target', '#result-textarea');
+        copyButton.removeClass('disabled');
+        $('#action-navbar .paste-button').removeClass('disabled');
         retranslateButton.removeClass('disabled');
 
         if (prevScrollTop > 0) {
