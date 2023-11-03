@@ -875,6 +875,11 @@ class Vietphrase {
           for (let i = 0; i < lines.length; i++) {
             let chars = lines[i];
 
+            if (chars.length === 0) {
+              results.push(chars);
+              continue;
+            }
+
             let tempLine = '';
             let prevPhrase = '';
 
@@ -884,7 +889,7 @@ class Vietphrase {
 
                 if (data.hasOwnProperty(phrase)) {
                   if (data[phrase].length > 0) {
-                    tempLine += (j > 0 && /^[\p{Lu}\p{Ll}\p{Nd}]+$/u.test(prevPhrase || tempLine[tempLine.length - 1] || '') ? ' ' : '') + data[phrase];
+                    tempLine += (j > 0 && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(prevPhrase || tempLine[tempLine.length - 1] || '') ? ' ' : '') + data[phrase];
                     prevPhrase = data[phrase];
                   }
 
@@ -955,6 +960,11 @@ class Vietphrase {
           for (let i = 0; i < lines.length; i++) {
             let chars = lines[i];
 
+            if (chars.length === 0) {
+              results.push(chars);
+              continue;
+            }
+
             let tempLine = '';
             let prevPhrase = '';
 
@@ -962,7 +972,7 @@ class Vietphrase {
               for (const dataLength of dataLengths) {
                 const phrase = chars.substring(j, j + dataLength);
 
-                if (this.useGlossary_ && this.prioritizeNameOverVietphraseCheck_ && Object.values(this.glossary_).indexOf(phrase) !== -1) {
+                if (this.useGlossary_ && this.prioritizeNameOverVietphraseCheck_ && glossaryEntries.map(([, second]) => second.length).indexOf(phrase) > -1) {
                   tempLine += (j > 0 && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(prevPhrase || tempLine[tempLine.length - 1] || '') ? ' ' : '') + phrase;
                   prevPhrase = phrase;
                   j += dataLength - 1;
