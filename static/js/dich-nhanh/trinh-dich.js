@@ -850,7 +850,6 @@ class Vietphrase {
         }
         break;
     }
-    
     return result;
   }
 
@@ -870,10 +869,6 @@ class Vietphrase {
         if (dataEntries.length > 0) {
           data = Object.fromEntries(dataEntries);
 
-          const dataLengths = [
-            ...dataEntries.map(([first]) => first.length),
-            1
-          ].sort((a, b) => b - a).filter((element, index, array) => index === array.indexOf(element));
 
           for (let i = 0; i < lines.length; i++) {
             let chars = lines[i];
@@ -882,6 +877,11 @@ class Vietphrase {
               results.push(chars);
               continue;
             }
+
+            const dataLengths = [
+              ...dataEntries.filter(([first]) => chars.includes(first)).map(([first]) => first.length),
+              1
+            ].sort((a, b) => b - a).filter((element, index, array) => index === array.indexOf(element));
 
             let tempLine = '';
             let prevPhrase = '';
@@ -963,20 +963,19 @@ class Vietphrase {
               results.push(chars);
               continue;
             }
-            
+
             const glossaryEntriesInLine = glossaryEntries.filter(([first, second]) => chars.includes(second));
-            const dataEntriesInLine = dataEntries.filter(([first]) => chars.includes(first));
+
+            const dataLengths = [
+              ...this.useGlossary_ && this.prioritizeNameOverVietphraseCheck_ ? glossaryEntriesInLine.map(([, second]) => second.length) : [],
+              ...dataEntries.filter(([first]) => chars.includes(first)).map(([first]) => first.length),
+              1
+            ].sort((a, b) => b - a).filter((element, index, array) => index === array.indexOf(element));
 
             let tempLine = '';
             let prevPhrase = '';
 
             for (let j = 0; j < chars.length; j++) {
-              const dataLengths = [
-                ...this.useGlossary_ && this.prioritizeNameOverVietphraseCheck_ ? glossaryEntriesInLines.map(([, second]) => second.length) : [],
-                ...dataEntriesInLine.map(([first]) => first.length),
-                1
-              ].sort((a, b) => b - a).filter((element, index, array) => index === array.indexOf(element));
-
               for (const dataLength of dataLengths) {
                 const phrase = chars.substring(j, j + dataLength);
 
@@ -1008,7 +1007,6 @@ class Vietphrase {
         result = results.map((element) => this.caseSensitive_ ? element.replace(/(^\s*|\s*(?:[!\-.:;?。！．：；？]\s*|['"\p{Ps}\p{Pi}]\s*))(\p{Ll})/gu, (match, p1, p2) => p1 + p2.toUpperCase()) : element).join('\n');
         break;
     }
-
     return result;
   }
 }
