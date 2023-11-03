@@ -979,7 +979,7 @@ class Vietphrase {
               for (const dataLength of dataLengths) {
                 const phrase = chars.substring(j, j + dataLength);
 
-                if (this.useGlossary_ && this.prioritizeNameOverVietphraseCheck_ && glossaryEntries.map(([, second]) => second.length).indexOf(phrase) > -1) {
+                if (this.useGlossary_ && this.prioritizeNameOverVietphraseCheck_ && glossaryEntries.map(([, second]) => second).indexOf(phrase) > -1) {
                   tempLine += (j > 0 && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(prevPhrase || tempLine[tempLine.length - 1] || '') ? ' ' : '') + phrase;
                   prevPhrase = phrase;
                   j += dataLength - 1;
