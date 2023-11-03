@@ -781,7 +781,7 @@ class Vietphrase {
       case 'pinyin':
       case 'sinoVietnamese':
         if (dataEntries.length > 0) {
-          data = Object.fromEntries(dataEntries);
+          data = Object.fromEntries(dataEntries.sort((a, b) => b[0].length - a[0].length));
 
           for (const property in data) {
             result = result.replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}])${Utils.getRegexEscapedText(property)}([\\p{Lu}\\p{Ll}\\p{Nd}])`, 'gu'), `$1 ${Utils.getRegexEscapedReplacement(data[property])} $2`)
@@ -835,7 +835,7 @@ class Vietphrase {
             ...dataEntries
           ];
 
-          data = Object.fromEntries(dataEntries);
+          data = Object.fromEntries(dataEntries.sort((a, b) => b[0].length - a[0].length));
 
           for (const property in data) {
             result = result.replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}])${Utils.getRegexEscapedText(property)}(?=${Object.values(this.glossary_).join('|')})`, 'gu'), `$1 ${Utils.getRegexEscapedReplacement(data[property])} `)
