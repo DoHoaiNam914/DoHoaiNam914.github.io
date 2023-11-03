@@ -804,24 +804,24 @@ class Vietphrase {
           if (this.multiplicationAlgorithm_ > this.MultiplicationAlgorithm.NOT_APPLICABLE) {
             for (const luatnhan in this.data_.cacLuatnhan) {
               if (this.useGlossary_ && this.multiplicationAlgorithm_ === this.MultiplicationAlgorithm.MULTIPLICATION_BY_PRONOUNS_AND_NAMES && glossaryEntries.length > 0) {
-                for (const element in this.glossary_) {
-                  const first = luatnhan.replace(/\{0}/g, Utils.getRegexEscapedReplacement(this.prioritizeNameOverVietphraseCheck_ ? this.glossary_[element] : element));
+                for (const glossary in this.glossary_) {
+                  const entriesKey = luatnhan.replace(/\{0}/g, Utils.getRegexEscapedReplacement(this.prioritizeNameOverVietphraseCheck_ ? this.glossary_[glossary] : glossary));
 
-                  if (inputText.includes(first)) {
+                  if (inputText.includes(entriesKey)) {
                     luatnhanNameEntries.push([
-                      first,
-                      this.data_.cacLuatnhan[luatnhan].replace(/\{0}/g, Utils.getRegexEscapedReplacement(this.glossary_[element]))
+                      entriesKey,
+                      this.data_.cacLuatnhan[luatnhan].replace(/\{0}/g, Utils.getRegexEscapedReplacement(this.glossary_[glossary]))
                     ]);
                   }
                 }
               }
 
               for (const pronoun in this.data_.pronouns) {
-                const first = luatnhan.replace(/\{0}/g, Utils.getRegexEscapedReplacement(pronoun));
+                const entriesKey = luatnhan.replace(/\{0}/g, Utils.getRegexEscapedReplacement(pronoun));
 
-                if (inputText.includes(first)) {
+                if (inputText.includes(entriesKey)) {
                   luatnhanPronounEntries.push([
-                    first,
+                    entriesKey,
                     this.data_.cacLuatnhan[luatnhan].replace(/\{0}/g, Utils.getRegexEscapedReplacement(this.data_.pronouns[pronoun]))
                   ]);
                 }
@@ -926,7 +926,7 @@ class Vietphrase {
                 for (const glossary in this.glossary_) {
                   const entriesKey = luatnhan.replace(/\{0}/g, Utils.getRegexEscapedReplacement(this.prioritizeNameOverVietphraseCheck_ ? this.glossary_[glossary] : glossary));
 
-                  if (inputText.includes(entriesKey) {
+                  if (inputText.includes(entriesKey)) {
                     luatnhanNameEntries.push([
                       entriesKey,
                       this.data_.cacLuatnhan[luatnhan].replace(/\{0}/g, Utils.getRegexEscapedReplacement(this.glossary_[glossary]))
