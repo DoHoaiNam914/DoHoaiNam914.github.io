@@ -790,7 +790,7 @@ class Vietphrase {
                            .replace(new RegExp(Utils.getRegexEscapedText(property), 'g'), Utils.getRegexEscapedReplacement(data[property]));
           }
 
-          result = result.map((element) => this.caseSensitive_ ? element.replace(/(^\s*|(?:[!.:;?]\s+|\s+\-\s+|[。！．：；？]\s*|['"\p{Ps}\p{Pi}]\s*))(\p{Ll})/gu, (match, p1, p2) => p1 + p2.toUpperCase()) : element).join('\n');
+          result = this.getCaseSensitive(result.join('\n'));
         }
         break;
 
@@ -798,7 +798,7 @@ class Vietphrase {
         const glossaryEntries = Object.entries(this.glossary_);
 
         if (dataEntries.length > 0 || glossaryEntries.length > 0) {
-          const [luatnhanNameEntries, luatnhanPronounEntries] = this.getLuatnhanData(inputText, glossaryEntries);
+          const [luatnhanNameEntries, luatnhanPronounEntries] = this.getLuatnhanData(glossaryEntries, inputText);
 
           dataEntries = [
             ...this.useGlossary_ ? (this.prioritizeNameOverVietphraseCheck_ ? luatnhanNameEntries : [
@@ -820,7 +820,7 @@ class Vietphrase {
                            .replace(new RegExp(Utils.getRegexEscapedText(property), 'g'), Utils.getRegexEscapedReplacement(data[property]));
           }
 
-          result = result.map((element) => this.caseSensitive_ ? element.replace(/(^\s*|(?:[!.:;?]\s+|\s+\-\s+|[。！．：；？]\s*|['"\p{Ps}\p{Pi}]\s*))(\p{Ll})/gu, (match, p1, p2) => p1 + p2.toUpperCase()) : element).join('\n');
+          result = this.getCaseSensitive(result.join('\n'));
         }
         break;
     }
@@ -883,14 +883,14 @@ class Vietphrase {
           }
         }
 
-        result = results.map((element) => this.caseSensitive_ ? element.replace(/(^\s*|(?:[!.:;?]\s+|\s+\-\s+|[。！．：；？]\s*|['"\p{Ps}\p{Pi}]\s*))(\p{Ll})/gu, (match, p1, p2) => p1 + p2.toUpperCase()) : element).join('\n');
+        result = this.getCaseSensitive(result.join('\n'));
         break;
 
       case 'vi':
         const glossaryEntries = Object.entries(this.glossary_);
 
         if (dataEntries.length > 0 || glossaryEntries.length > 0) {
-          const [luatnhanNameEntries, luatnhanPronounEntries] = this.getLuatnhanData(inputText, glossaryEntries);
+          const [luatnhanNameEntries, luatnhanPronounEntries] = this.getLuatnhanData(glossaryEntries, inputText);
 
           dataEntries = [
             ...this.useGlossary_ ? (this.prioritizeNameOverVietphraseCheck_ ? luatnhanNameEntries : [
@@ -951,13 +951,17 @@ class Vietphrase {
           }
         }
 
-        result = results.map((element) => this.caseSensitive_ ? element.replace(/(^\s*|(?:[!.:;?]\s+|\s+\-\s+|[。！．：；？]\s*|['"\p{Ps}\p{Pi}]\s*))(\p{Ll})/gu, (match, p1, p2) => p1 + p2.toUpperCase()) : element).join('\n');
+        result = this.getCaseSensitive(result.join('\n'));
         break;
     }
     return result;
   }
 
-  getLuatnhanData(inputText, glossaryEntries) {
+  getCaseSensitive(text) {
+    return text.split(/\n/).map((element) => this.caseSensitive_ ? element.replace(/(^\s*|(?:[!.:;?]\s+|\s+-\s+|[。！．：；？]\s*|['"\p{Ps}\p{Pi}]\s*))(\p{Ll})/gu, (match, p1, p2) => p1 + p2.toUpperCase()) : element).join('\n');
+  }
+
+  getLuatnhanData(glossaryEntries, inputText) {
     const luatnhanNameEntries = [];
     const luatnhanPronounEntries = [];
 
