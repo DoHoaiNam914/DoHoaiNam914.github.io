@@ -775,7 +775,7 @@ class Vietphrase {
 
     let dataEntries = Object.entries(data).filter(([first]) => inputText.includes(first));
 
-    let result = inputText.split(/\n/);
+    let result = inputText;
 
     switch (targetLanguage) {
       case 'pinyin':
