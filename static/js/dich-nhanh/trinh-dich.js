@@ -790,7 +790,7 @@ class Vietphrase {
                            .replace(new RegExp(Utils.getRegexEscapedText(property), 'g'), Utils.getRegexEscapedReplacement(data[property]));
           }
 
-          result = result.split(/\n/).map((element) => this.caseSensitive_ ? element.replace(/(^\s*|\s*(?:[!\-.:;?。！．：；？]\s*|['"\p{Ps}\p{Pi}]\s*))(\p{Ll})/gu, (match, p1, p2) => p1 + p2.toUpperCase()) : element).join('\n');
+          result = result.map((element) => this.caseSensitive_ ? element.replace(/(^\s*|(?:[!.:;?]\s+|\s+\-\s+|[。！．：；？]\s*|['"\p{Ps}\p{Pi}]\s*))(\p{Ll})/gu, (match, p1, p2) => p1 + p2.toUpperCase()) : element).join('\n');
         }
         break;
 
@@ -798,39 +798,13 @@ class Vietphrase {
         const glossaryEntries = Object.entries(this.glossary_);
 
         if (dataEntries.length > 0 || glossaryEntries.length > 0) {
-          const luatnhanNameEntries = [];
-          const luatnhanPronounEntries = [];
-
-          if (this.multiplicationAlgorithm_ > this.MultiplicationAlgorithm.NOT_APPLICABLE) {
-            for (const luatnhan in this.data_.cacLuatnhan) {
-              if (this.useGlossary_ && this.multiplicationAlgorithm_ === this.MultiplicationAlgorithm.MULTIPLICATION_BY_PRONOUNS_AND_NAMES && glossaryEntries.length > 0) {
-                for (const glossary in this.glossary_) {
-                  const entriesKey = luatnhan.replace(/\{0}/g, Utils.getRegexEscapedReplacement(this.prioritizeNameOverVietphraseCheck_ ? this.glossary_[glossary] : glossary));
-
-                  if (inputText.includes(entriesKey)) {
-                    luatnhanNameEntries.push([
-                      entriesKey,
-                      this.data_.cacLuatnhan[luatnhan].replace(/\{0}/g, Utils.getRegexEscapedReplacement(this.glossary_[glossary]))
-                    ]);
-                  }
-                }
-              }
-
-              for (const pronoun in this.data_.pronouns) {
-                const entriesKey = luatnhan.replace(/\{0}/g, Utils.getRegexEscapedReplacement(pronoun));
-
-                if (inputText.includes(entriesKey)) {
-                  luatnhanPronounEntries.push([
-                    entriesKey,
-                    this.data_.cacLuatnhan[luatnhan].replace(/\{0}/g, Utils.getRegexEscapedReplacement(this.data_.pronouns[pronoun]))
-                  ]);
-                }
-              }
-            }
-          }
+          const [luatnhanNameEntries, luatnhanPronounEntries] = this.getLuatnhanData(inputText, glossaryEntries);
 
           dataEntries = [
-            ...this.useGlossary_ ? (this.prioritizeNameOverVietphraseCheck_ ? luatnhanNameEntries : [...luatnhanNameEntries, ...glossaryEntries]) : [],
+            ...this.useGlossary_ ? (this.prioritizeNameOverVietphraseCheck_ ? luatnhanNameEntries : [
+              ...luatnhanNameEntries,
+              ...glossaryEntries
+            ]) : [],
             ...luatnhanPronounEntries,
             ...dataEntries
           ];
@@ -846,7 +820,7 @@ class Vietphrase {
                            .replace(new RegExp(Utils.getRegexEscapedText(property), 'g'), Utils.getRegexEscapedReplacement(data[property]));
           }
 
-          result = result.split(/\n/).map((element) => this.caseSensitive_ ? element.replace(/(^\s*|\s*(?:[!\-.:;?。！．：；？]\s*|['"\p{Ps}\p{Pi}]\s*))(\p{Ll})/gu, (match, p1, p2) => p1 + p2.toUpperCase()) : element).join('\n');
+          result = result.map((element) => this.caseSensitive_ ? element.replace(/(^\s*|(?:[!.:;?]\s+|\s+\-\s+|[。！．：；？]\s*|['"\p{Ps}\p{Pi}]\s*))(\p{Ll})/gu, (match, p1, p2) => p1 + p2.toUpperCase()) : element).join('\n');
         }
         break;
     }
@@ -868,7 +842,6 @@ class Vietphrase {
       case 'sinoVietnamese':
         if (dataEntries.length > 0) {
           data = Object.fromEntries(dataEntries);
-
 
           for (let i = 0; i < lines.length; i++) {
             let chars = lines[i];
@@ -910,46 +883,20 @@ class Vietphrase {
           }
         }
 
-        result = results.map((element) => this.caseSensitive_ ? element.replace(/(^\s*|\s*(?:[!\-.:;?。！．：；？]\s*|['"\p{Ps}\p{Pi}]\s*))(\p{Ll})/gu, (match, p1, p2) => p1 + p2.toUpperCase()) : element).join('\n');
+        result = results.map((element) => this.caseSensitive_ ? element.replace(/(^\s*|(?:[!.:;?]\s+|\s+\-\s+|[。！．：；？]\s*|['"\p{Ps}\p{Pi}]\s*))(\p{Ll})/gu, (match, p1, p2) => p1 + p2.toUpperCase()) : element).join('\n');
         break;
 
       case 'vi':
         const glossaryEntries = Object.entries(this.glossary_);
 
         if (dataEntries.length > 0 || glossaryEntries.length > 0) {
-          const luatnhanNameEntries = [];
-          const luatnhanPronounEntries = [];
-
-          if (this.multiplicationAlgorithm_ > this.MultiplicationAlgorithm.NOT_APPLICABLE) {
-            for (const luatnhan in this.data_.cacLuatnhan) {
-              if (this.useGlossary_ && this.multiplicationAlgorithm_ === this.MultiplicationAlgorithm.MULTIPLICATION_BY_PRONOUNS_AND_NAMES && glossaryEntries.length > 0) {
-                for (const glossary in this.glossary_) {
-                  const entriesKey = luatnhan.replace(/\{0}/g, Utils.getRegexEscapedReplacement(this.prioritizeNameOverVietphraseCheck_ ? this.glossary_[glossary] : glossary));
-
-                  if (inputText.includes(entriesKey)) {
-                    luatnhanNameEntries.push([
-                      entriesKey,
-                      this.data_.cacLuatnhan[luatnhan].replace(/\{0}/g, Utils.getRegexEscapedReplacement(this.glossary_[glossary]))
-                    ]);
-                  }
-                }
-              }
-
-              for (const pronoun in this.data_.pronouns) {
-                const entriesKey = luatnhan.replace(/\{0}/g, Utils.getRegexEscapedReplacement(pronoun));
-
-                if (inputText.includes(entriesKey)) {
-                  luatnhanPronounEntries.push([
-                    entriesKey,
-                    this.data_.cacLuatnhan[luatnhan].replace(/\{0}/g, Utils.getRegexEscapedReplacement(this.data_.pronouns[pronoun]))
-                  ]);
-                }
-              }
-            }
-          }
+          const [luatnhanNameEntries, luatnhanPronounEntries] = this.getLuatnhanData(inputText, glossaryEntries);
 
           dataEntries = [
-            ...this.useGlossary_ ? (this.prioritizeNameOverVietphraseCheck_ ? luatnhanNameEntries : [...luatnhanNameEntries, ...glossaryEntries]) : [],
+            ...this.useGlossary_ ? (this.prioritizeNameOverVietphraseCheck_ ? luatnhanNameEntries : [
+              ...luatnhanNameEntries,
+              ...glossaryEntries
+            ]) : [],
             ...luatnhanPronounEntries,
             ...dataEntries
           ];
@@ -1004,9 +951,43 @@ class Vietphrase {
           }
         }
 
-        result = results.map((element) => this.caseSensitive_ ? element.replace(/(^\s*|\s*(?:[!\-.:;?。！．：；？]\s*|['"\p{Ps}\p{Pi}]\s*))(\p{Ll})/gu, (match, p1, p2) => p1 + p2.toUpperCase()) : element).join('\n');
+        result = results.map((element) => this.caseSensitive_ ? element.replace(/(^\s*|(?:[!.:;?]\s+|\s+\-\s+|[。！．：；？]\s*|['"\p{Ps}\p{Pi}]\s*))(\p{Ll})/gu, (match, p1, p2) => p1 + p2.toUpperCase()) : element).join('\n');
         break;
     }
     return result;
+  }
+
+  getLuatnhanData(inputText, glossaryEntries) {
+    const luatnhanNameEntries = [];
+    const luatnhanPronounEntries = [];
+
+    if (this.multiplicationAlgorithm_ > this.MultiplicationAlgorithm.NOT_APPLICABLE) {
+      for (const luatnhan in this.data_.cacLuatnhan) {
+        if (this.useGlossary_ && this.multiplicationAlgorithm_ === this.MultiplicationAlgorithm.MULTIPLICATION_BY_PRONOUNS_AND_NAMES && glossaryEntries.length > 0) {
+          for (const glossary in this.glossary_) {
+            const entriesKey = luatnhan.replace(/\{0}/g, Utils.getRegexEscapedReplacement(this.prioritizeNameOverVietphraseCheck_ ? this.glossary_[glossary] : glossary));
+
+            if (inputText.includes(entriesKey)) {
+              luatnhanNameEntries.push([
+                entriesKey,
+                this.data_.cacLuatnhan[luatnhan].replace(/\{0}/g, Utils.getRegexEscapedReplacement(this.glossary_[glossary]))
+              ]);
+            }
+          }
+        }
+
+        for (const pronoun in this.data_.pronouns) {
+          const entriesKey = luatnhan.replace(/\{0}/g, Utils.getRegexEscapedReplacement(pronoun));
+
+          if (inputText.includes(entriesKey)) {
+            luatnhanPronounEntries.push([
+              entriesKey,
+              this.data_.cacLuatnhan[luatnhan].replace(/\{0}/g, Utils.getRegexEscapedReplacement(this.data_.pronouns[pronoun]))
+            ]);
+          }
+        }
+      }
+    }
+    return [luatnhanNameEntries, luatnhanPronounEntries];
   }
 }

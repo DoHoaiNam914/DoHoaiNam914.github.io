@@ -932,7 +932,7 @@ async function translateTextarea() {
   const processText = glossaryEnabled && (translatorOption === Translators.VIETPHRASE ? prioritizeNameOverVietphraseCheck.prop('checked') && targetLanguage === 'vi' : sourceLanguage.split('-')[0].toLowerCase() === glossaryLanguageSource && targetLanguage.split('-')[0].toLowerCase() === glossaryLanguageTarget) ? applyGlossaryToText(inputText, translatorOption) : inputText;
   inputText = translatorOption === Translators.DEEPL_TRANSLATOR || translatorOption === Translators.GOOGLE_TRANSLATE ? Utils.convertHtmlToText(processText) : processText;
 
-  const [MAX_LENGTH, MAX_LINE] = getMaxQueryLengthAndLine(translatorOption, inputText);
+  const [MAX_LENGTH, MAX_LINE] = getMaxQueryLengthAndLine(translatorOption, processText);
 
   if (inputText.split(/\n/).sort((a, b) => b.length - a.length)[0].length > MAX_LENGTH) throw `Số lượng từ trong một dòng quá dài (Số lượng từ hợp lệ nhỏ hơn hoặc bằng ${MAX_LENGTH}). [Lưu ý: Khi sử dụng Dynamic Dictionary và Bảo vệ dấu trích đẫn sẽ làm giảm số lượng từ có thể dịch đi.]`;
 
@@ -973,23 +973,28 @@ async function translateTextarea() {
       const inputLines = processText.split(/\r?\n/);
       let queryLines = [];
 
-      while (inputLines.length > 0 && queryLines.length + 1 <= MAX_LINE && [
-        ...queryLines,
-        inputLines[0]
-      ].join('\n').length <= MAX_LENGTH) {
-        if (translateAbortController.signal.aborted) break;
-        queryLines.push(inputLines.shift());
-
-        if (inputLines.length === 0 || queryLines.length + 1 >= MAX_LINE || [
+      if (processText.split(/\r?\n/).length <= MAX_LINE && processText.length <= MAX_LENGTH) {
+        result = await translator.translateText(sourceLanguage, targetLanguage, processText);
+      } else {
+        while (inputLines.length > 0 && queryLines.length + 1 <= MAX_LINE && [
           ...queryLines,
           inputLines[0]
-        ].join('\n').length >= MAX_LENGTH) {
-          results.push(await translator.translateText(sourceLanguage, targetLanguage, queryLines.join('\n')));
-          queryLines = [];
+        ].join('\n').length <= MAX_LENGTH) {
+          if (translateAbortController.signal.aborted) break;
+          queryLines.push(inputLines.shift());
+
+          if (inputLines.length === 0 || queryLines.length + 1 >= MAX_LINE || [
+            ...queryLines,
+            inputLines[0]
+          ].join('\n').length >= MAX_LENGTH) {
+            results.push(await translator.translateText(sourceLanguage, targetLanguage, queryLines.join('\n')));
+            queryLines = [];
+          }
         }
+
+        result = results.join('\n');
       }
 
-      result = results.join('\n');
       $('#translate-timer').text(Date.now() - startTime);
       lastSession.inputText = inputText;
       lastSession.translatorOption = translatorOption;
