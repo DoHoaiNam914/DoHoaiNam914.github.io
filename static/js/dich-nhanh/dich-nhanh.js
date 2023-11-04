@@ -299,7 +299,7 @@ retranslateButton.click(function () {
   }
 });
 $('#glossary-management-button').on('mousedown', () => {
-  glossaryDataList.val(null).change();
+  glossaryDataList.val('').change();
   sourcePairInput.val(getSelectedTextOrActiveElementText()).trigger('input');
 });
 options.change(function () {
@@ -449,13 +449,13 @@ sourcePairInput.on('input', function () {
     if (glossary.hasOwnProperty($(this).val())) {
       glossaryDataList.val($(this).val());
     } else {
-      glossaryDataList.val(null);
+      glossaryDataList.val('');
     }
 
     addButton.removeClass('disabled');
     removeButton.removeClass('disabled');
   } else {
-    glossaryDataList.val(null).change()
+    glossaryDataList.val('').change()
     addButton.addClass('disabled');
     removeButton.addClass('disabled');
   }
@@ -526,7 +526,7 @@ $('.translate-button').on('click', async function () {
 });
 addButton.on('click', () => {
   glossary[sourcePairInput.val().trim()] = targetPairInput.val().trim();
-  glossaryDataList.val(null).change();
+  glossaryDataList.val('').change();
   reloadGlossaryEntries();
   glossaryInput.val(null);
 });
@@ -534,13 +534,13 @@ removeButton.on('click', () => {
   if (glossary.hasOwnProperty(sourcePairInput.val())) {
     if (window.confirm('Bạn có muốn xoá cụm từ này chứ?')) {
       delete glossary[sourcePairInput.val()];
-      glossaryDataList.val(null);
+      glossaryDataList.val('');
       reloadGlossaryEntries();
       glossaryInput.val(null);
       sourcePairInput.trigger('input');
     }
   } else {
-    glossaryDataList.val(null).change();
+    glossaryDataList.val('').change();
   }
 });
 glossaryDataList.change(function () {
