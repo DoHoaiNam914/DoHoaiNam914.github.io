@@ -966,7 +966,7 @@ async function translateTextarea() {
   try {
     let result = '';
 
-    if (Object.keys(lastSession).length > 0 && lastSession.inputText === inputText && lastSession.translatorOption === translatorOption && lastSession.sourceLanguage === sourceLanguage && lastSession.targetLanguage === targetLanguage) {
+    if (Object.keys(lastSession).length > 0 && lastSession.inputText === (glossaryEnabled && translatorOption === Translators.VIETPHRASE && !prioritizeNameOverVietphraseCheck.prop('checked') ? applyGlossaryToText(inputText) : inputText) && lastSession.translatorOption === translatorOption && lastSession.sourceLanguage === sourceLanguage && lastSession.targetLanguage === targetLanguage) {
       result = lastSession.result;
     } else {
       let results = [];
@@ -1023,7 +1023,7 @@ async function translateTextarea() {
       }
 
       $('#translate-timer').text(Date.now() - startTime);
-      lastSession.inputText = inputText;
+      lastSession.inputText = glossaryEnabled && translatorOption === Translators.VIETPHRASE && !prioritizeNameOverVietphraseCheck.prop('checked') ? applyGlossaryToText(inputText) : inputText;
       lastSession.translatorOption = translatorOption;
       lastSession.sourceLanguage = sourceLanguage;
       lastSession.targetLanguage = targetLanguage;
