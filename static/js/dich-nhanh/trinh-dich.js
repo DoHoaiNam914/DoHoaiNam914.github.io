@@ -883,7 +883,7 @@ class Vietphrase {
           }
         }
 
-        result = this.getCaseSensitive(result.join('\n'));
+        result = this.getCaseSensitive(results.join('\n'));
         break;
 
       case 'vi':
@@ -951,7 +951,7 @@ class Vietphrase {
           }
         }
 
-        result = this.getCaseSensitive(result.join('\n'));
+        result = this.getCaseSensitive(results.join('\n'));
         break;
     }
     return result;
