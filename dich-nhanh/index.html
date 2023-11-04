@@ -55,16 +55,12 @@
       color: black;
     }
 
-    .number-option-display {
-      width: 5em;
-    }
-
     .workspace {
       line-height: 1.2em;
       font-size: 1em;
       max-height: 577px;
       overflow-wrap: break-word;
-      padding: 15px 10px 60px;
+      padding: 15px 10px calc(3.25em + 60px);
     }
 
     .textarea {
@@ -86,7 +82,7 @@
     @media screen and (min-width: 75rem) {
 
       .workspace {
-        padding: 25px 0 70px;
+        padding: 25px 0 calc(3.25em + 70px);
       }
 
       .textarea {
@@ -106,6 +102,10 @@
       min-height: 500px;
       overflow-x: hidden;
       scrollbar-width: none;
+    }
+
+    .number-option-display {
+      width: 5em;
     }
 
     .dropdown-scroller {
