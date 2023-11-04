@@ -790,7 +790,7 @@ class Vietphrase {
                            .replace(new RegExp(Utils.getRegexEscapedText(property), 'g'), Utils.getRegexEscapedReplacement(data[property]));
           }
 
-          result = this.getCaseSensitive(result.join('\n'));
+          result = this.getCaseSensitive(result);
         }
         break;
 
@@ -820,7 +820,7 @@ class Vietphrase {
                            .replace(new RegExp(Utils.getRegexEscapedText(property), 'g'), Utils.getRegexEscapedReplacement(data[property]));
           }
 
-          result = this.getCaseSensitive(result.join('\n'));
+          result = this.getCaseSensitive(result);
         }
         break;
     }
