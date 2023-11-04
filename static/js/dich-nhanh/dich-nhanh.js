@@ -58,14 +58,20 @@ $(document).ready(async () => {
   try {
     let pinyinList = [];
 
-    await $.get('/static/datasource/Unihan_Readings.txt').done((data) => {
+    await $.ajax({
+      method: 'GET',
+      url: '/static/datasource/Unihan_Readings.txt'
+    }).done((data) => {
       pinyinList = data.split(/\r?\n/).filter((element) => element.startsWith('U+')).map((element) => element.substring(2).split(/\t/)).map(([first, second]) => [
         String.fromCodePoint(parseInt(first, 16)),
         second
       ]);
       vietphraseData.pinyins = Object.fromEntries(pinyinList);
     });
-    await $.get('/static/datasource/Bính âm.txt').done((data) => pinyinList = [
+    await $.ajax({
+      method: 'GET',
+      url: '/static/datasource/Bính âm.txt'
+    }).done((data) => pinyinList = [
       ...pinyinList,
       ...data.split(/\r?\n/).map((element) => element.split('=')).sort((a, b) => b[0].length - a[0].length).map(([first, second]) => [
         first,
@@ -78,7 +84,7 @@ $(document).ready(async () => {
     lastSession = {}
   } catch (error) {
     console.error('Không thể tải bộ dữ liệu bính âm:', error);
-    setTimeout(() => window.location.reload(), 5000);
+    setTimeout(window.location.reload, 5000);
   }
 
   try {
@@ -96,28 +102,40 @@ $(document).ready(async () => {
       ])
     ];
 
-    await $.get('/static/datasource/ChinesePhienAmWords của thtgiang.txt').done((data) => {
+    await $.ajax({
+      method: 'GET',
+      url: '/static/datasource/ChinesePhienAmWords của thtgiang.txt'
+    }).done((data) => {
       chinesePhienAmWordList = [
         ...chinesePhienAmWordList,
         ...data.split(/\r?\n/).map((element) => element.split('=')).filter(([first]) => !vietphraseData.chinesePhienAmWords.hasOwnProperty(first))
       ];
       vietphraseData.chinesePhienAmWords = Object.fromEntries(chinesePhienAmWordList);
     });
-    await $.get('/static/datasource/TTV Translate.ChinesePhienAmWords.txt').done((data) => {
+    await $.ajax({
+      method: 'GET',
+      url: '/static/datasource/TTV Translate.ChinesePhienAmWords.txt'
+    }).done((data) => {
       chinesePhienAmWordList = [
         ...chinesePhienAmWordList,
         ...data.split(/\r?\n/).map((element) => element.split('=')).filter(([first]) => !vietphraseData.chinesePhienAmWords.hasOwnProperty(first))
       ];
       vietphraseData.chinesePhienAmWords = Object.fromEntries(chinesePhienAmWordList);
     });
-    await $.get('/static/datasource/QuickTranslate2020 - ChinesePhienAmWords.txt').done((data) => {
+    await $.ajax({
+      method: 'GET',
+      url: '/static/datasource/QuickTranslate2020 - ChinesePhienAmWords.txt'
+    }).done((data) => {
       chinesePhienAmWordList = [
         ...chinesePhienAmWordList,
         ...data.split(/\r?\n/).map((element) => element.split('=')).filter(([first]) => !vietphraseData.chinesePhienAmWords.hasOwnProperty(first))
       ];
       vietphraseData.chinesePhienAmWords = Object.fromEntries(chinesePhienAmWordList);
     });
-    await $.get('/static/datasource/Hán việt.txt').done((data) => chinesePhienAmWordList = [
+    await $.ajax({
+      method: 'GET',
+      url: '/static/datasource/Hán việt.txt'
+    }).done((data) => chinesePhienAmWordList = [
       ...chinesePhienAmWordList,
       ...data.split(/\r?\n/).map((element) => element.split('=')).sort((a, b) => b[0].length - a[0].length).map(([first, second]) => [
         first,
@@ -134,10 +152,13 @@ $(document).ready(async () => {
     lastSession = {}
   } catch (error) {
     console.error('Không thể tải bộ dữ liệu hán việt:', error);
-    setTimeout(() => window.location.reload(), 5000);
+    setTimeout(window.location.reload, 5000);
   }
 
-  await $.get('/static/datasource/Pronouns.txt').done((data) => {
+  await $.ajax({
+    method: 'GET',
+    url: '/static/datasource/Pronouns.txt'
+  }).done((data) => {
     vietphraseData.pronouns = Object.fromEntries(data.split(/\r?\n/).map((element) => element.split('=')).filter((element) => element.length === 2).map(([first, second]) => [
       first,
       second.split('/')[0]
@@ -146,19 +167,25 @@ $(document).ready(async () => {
     lastSession = {}
   }).fail((jqXHR, textStatus, errorThrown) => {
     console.error('Không tải được tệp Pronouns.txt:', errorThrown);
-    setTimeout(() => window.location.reload(), 5000);
+    setTimeout(window.location.reload, 5000);
   });
-  await $.get('/static/datasource/LuatNhan.txt').done((data) => {
+  await $.ajax({
+    method: 'GET',
+    url: '/static/datasource/LuatNhan.txt'
+  }).done((data) => {
     vietphraseData.cacLuatnhan = Object.fromEntries(data.split(/\r?\n/).map((element) => element.split('=')).filter((element) => element.length === 2));
     console.log('Đã tải xong tệp LuatNhan.txt (%d)!', Object.entries(vietphraseData.cacLuatnhan).length);
     lastSession = {}
   }).fail((jqXHR, textStatus, errorThrown) => {
     console.error('Không tải được tệp LuatNhan.txt:', errorThrown);
-    setTimeout(() => window.location.reload(), 5000);
+    setTimeout(window.location.reload, 5000);
   });
 
   if (Object.entries(vietphraseData.vietphrases).length === 0) {
-    await $.get('/static/datasource/VietPhrase.txt').done((data) => {
+    await $.ajax({
+      method: 'GET',
+      url: '/static/datasource/VietPhrase.txt'
+    }).done((data) => {
       let vietphraseList = [
         ...data.split(/\r?\n/).map((element) => element.split('=')).filter((element) => element.length === 2).map(([first, second]) => [
           first,
