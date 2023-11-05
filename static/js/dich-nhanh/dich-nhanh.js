@@ -448,7 +448,7 @@ sourcePairInput.on('input', async function () {
   const inputText = $(this).val();
 
   if (inputText.length > 0) {
-    targetPairInput.val(/\p{sc=Hani}/u.test(inputText) ? await translateText(inputText, Translators.VIETPHRASE, 'sinoVietnamese', true) : applyGlossaryToText(inputText));
+    targetPairInput.val(!glossary.hasOwnProperty(inputText) && /\p{sc=Hani}/u.test(inputText) ? await translateText(inputText, Translators.VIETPHRASE, 'sinoVietnamese', true) : applyGlossaryToText(inputText));
 
     if (glossary.hasOwnProperty(inputText)) {
       glossaryDataList.val(inputText);
