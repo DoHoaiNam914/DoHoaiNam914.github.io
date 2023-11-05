@@ -448,7 +448,7 @@ sourcePairInput.on('input', async function () {
   const inputText = $(this).val();
 
   if (inputText.length > 0) {
-    targetPairInput.val(/\p{sc=Hani}/u.test(inputText) ? await translateText(applyGlossaryToText(inputText), Translators.VIETPHRASE, 'sinoVietnamese', true) : applyGlossaryToText(inputText));
+    targetPairInput.val(/\p{sc=Hani}/u.test(inputText) ? await translateText(inputText, Translators.VIETPHRASE, 'sinoVietnamese', true) : applyGlossaryToText(inputText));
 
     if (glossary.hasOwnProperty(inputText)) {
       glossaryDataList.val(inputText);
@@ -791,7 +791,7 @@ function getTargetLanguageSelectOptions(translator) {
 async function translateText(inputText, translatorOption, targetLanguage, useGlossary) {
   try {
     inputText = useGlossary && (translatorOption !== Translators.VIETPHRASE || prioritizeNameOverVietphraseCheck.prop('checked')) ? applyGlossaryToText(inputText, translatorOption) : inputText;
-    inputText = translatorOption === Translators.DEEPL_TRANSLATOR || translatorOption === Translators.GOOGLE_TRANSLATE ? Utils.convertHtmlToText(inputText) : inputText;
+    inputText = useGlossary && (translatorOption === Translators.DEEPL_TRANSLATOR || translatorOption === Translators.GOOGLE_TRANSLATE) ? Utils.convertHtmlToText(inputText) : inputText;
     let translator = null;
     let sourceLanguage = '';
 
@@ -967,7 +967,7 @@ async function translateTextarea() {
   const glossaryLanguageTarget = languagePairs.split('-')[1];
 
   const processText = glossaryEnabled && (translatorOption === Translators.VIETPHRASE ? prioritizeNameOverVietphraseCheck.prop('checked') && targetLanguage === 'vi' : sourceLanguage.split('-')[0].toLowerCase() === glossaryLanguageSource && targetLanguage.split('-')[0].toLowerCase() === glossaryLanguageTarget) ? applyGlossaryToText(inputText, translatorOption) : inputText;
-  inputText = translatorOption === Translators.DEEPL_TRANSLATOR || translatorOption === Translators.GOOGLE_TRANSLATE ? Utils.convertHtmlToText(processText) : processText;
+  inputText = glossaryEnabled && (translatorOption === Translators.DEEPL_TRANSLATOR || translatorOption === Translators.GOOGLE_TRANSLATE) && sourceLanguage.split('-')[0].toLowerCase() === glossaryLanguageSource && targetLanguage.split('-')[0].toLowerCase() === glossaryLanguageTarget ? Utils.convertHtmlToText(processText) : processText;
 
   const [MAX_LENGTH, MAX_LINE] = getMaxQueryLengthAndLine(translatorOption, processText);
 
