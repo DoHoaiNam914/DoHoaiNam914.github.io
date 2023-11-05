@@ -790,6 +790,8 @@ function getTargetLanguageSelectOptions(translator) {
 
 async function translateText(inputText, translatorOption, targetLanguage, useGlossary) {
   try {
+    inputText = useGlossary && (translatorOption !== Translators.VIETPHRASE || prioritizeNameOverVietphraseCheck.prop('checked')) ? applyGlossaryToText(inputText, translatorOption) : inputText;
+    inputText = translatorOption === Translators.DEEPL_TRANSLATOR || translatorOption === Translators.GOOGLE_TRANSLATE ? Utils.convertHtmlToText(inputText) : inputText;
     let translator = null;
     let sourceLanguage = '';
 
