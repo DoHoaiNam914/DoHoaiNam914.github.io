@@ -308,18 +308,20 @@ options.change(function () {
   const optionId = getOptionId($(this).attr('name') != undefined ? $(this).attr('name') : $(this).attr('id'));
   const optionType = getOptionType($(this).attr('name') != undefined ? $(this).attr('name') : $(this).attr('id'));
 
-  if (optionType !== OptionTypes.SELECT && optionType !== OptionTypes.CHECK && optionType !== OptionTypes.RADIO) return;
+  if (optionType !== OptionTypes.SELECT && optionType !== OptionTypes.CHECK && optionType !== OptionTypes.RADIO || optionType !== OptionTypes.SWITCH) return;
   if (optionType === OptionTypes.RADIO) {
     options.filter(`[name="${$(this).attr('name')}"]`).removeAttr('checked');
     $(this).attr('checked', true);
   }
 
-  if (optionType === OptionTypes.CHECK) {
+  if (optionType === OptionTypes.CHECK || optionType === OptionTypes.SWITCH) {
     quickTranslateStorage[optionId] = $(this).prop('checked');
   } else {
     quickTranslateStorage[optionId] = $(this).val();
   }
+
   localStorage.setItem('dich_nhanh', JSON.stringify(quickTranslateStorage));
+
   if ($(this).hasClass('quick-translate-option')) {
     lastSession = {};
     retranslateButton.click();
@@ -374,11 +376,6 @@ translatorOptions.click(function () {
   $(this).addClass('active');
   updateLanguageSelect($(this).data('id'), quickTranslateStorage['translator']);
   quickTranslateStorage['translator'] = $(this).data('id');
-  localStorage.setItem('dich_nhanh', JSON.stringify(quickTranslateStorage));
-  retranslateButton.click();
-});
-showOriginalTextSwitch.change(function () {
-  quickTranslateStorage[getOptionId($(this).attr('id'))] = $(this).prop('checked');
   localStorage.setItem('dich_nhanh', JSON.stringify(quickTranslateStorage));
   retranslateButton.click();
 });
