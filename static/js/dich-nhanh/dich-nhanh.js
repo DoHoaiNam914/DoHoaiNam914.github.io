@@ -20,6 +20,8 @@ const translatorOptions = $('.translator-option');
 const showOriginalTextSwitch = $('#show-original-text-switch');
 const vietphrasesInput = $('#vietphrases-input');
 const prioritizeNameOverVietphraseCheck = $('#prioritize-name-over-vietphrase-check');
+const translationAlgorithmRadio = $('.option[name="translation-algorithm-radio"]');
+const multiplicationAlgorithmRadio = $('.option[name="multiplication-algorithm-radio"]');
 
 const inputTextarea = $('#input-textarea');
 const resultTextarea = $('#result-textarea');
@@ -442,12 +444,14 @@ $('#clear-button').on('click', () => {
   glossaryInput.val(null);
 });
 glossaryType.on('change', () => reloadGlossaryEntries());
-sourcePairInput.on('input', function () {
-  if ($(this).val().length > 0) {
-    targetPairInput.val(applyGlossaryToText($(this).val()));
+sourcePairInput.on('input', async function () {
+  const inputText = $(this).val();
 
-    if (glossary.hasOwnProperty($(this).val())) {
-      glossaryDataList.val($(this).val());
+  if (inputText.length > 0) {
+    targetPairInput.val(/\p{sc=Hani}/u.test(inputText) ? await translateText(applyGlossaryToText(inputText), Translators.VIETPHRASE, 'sinoVietnamese', true) : applyGlossaryToText(inputText));
+
+    if (glossary.hasOwnProperty(inputText)) {
+      glossaryDataList.val(inputText);
     } else {
       glossaryDataList.val('');
     }
@@ -480,48 +484,11 @@ $('.upper-case-button').on('click', function () {
 $('.translate-button').on('click', async function () {
   const inputText = sourcePairInput.val();
 
+  const translatorOption = $(this).data('translator');
+  const targetLanguage = $(this).data('lang');
+
   if (inputText.length > 0) {
-    const translatorOption = $(this).data('translator');
-    const targetLanguage = $(this).data('lang');
-
-    try {
-      let translator = null;
-      let sourceLanguage = '';
-
-      switch (translatorOption) {
-        case Translators.DEEPL_TRANSLATOR:
-          translator = await new DeepLTranslator().init();
-          sourceLanguage = DeepLTranslator.DETECT_LANGUAGE;
-          break;
-
-        case Translators.GOOGLE_TRANSLATE:
-          translator = await new GoogleTranslate().init();
-          sourceLanguage = GoogleTranslate.DETECT_LANGUAGE;
-          break;
-
-        case Translators.PAPAGO:
-          translator = await new Papago().init();
-          sourceLanguage = Papago.DETECT_LANGUAGE;
-          break;
-
-        case Translators.VIETPHRASE:
-          translator = await new Vietphrase(vietphraseData, $('input[name="translation-algorithm-radio"][checked]').val(), $('input[name="multiplication-algorithm-radio"][checked]').val());
-          sourceLanguage = Vietphrase.DefaultLanguage.SOURCE_LANGUAGE;
-          break;
-
-        default:
-        case Translators.MICROSOFT_TRANSLATOR:
-          translator = await new MicrosoftTranslator().init();
-          sourceLanguage = MicrosoftTranslator.AUTODETECT;
-          break;
-      }
-
-      if (translatorOption === Translators.DEEPL_TRANSLATOR && translator.usage.character_count + inputText.length > translator.usage.character_limit) throw `Lỗi DeepL Translator: Đã đạt đến giới hạn dịch của tài khoản. (${translator.usage.character_count}/${translator.usage.character_limit} ký tự).`;
-      targetPairInput.val(await translator.translateText(sourceLanguage, targetLanguage, inputText));
-    } catch (error) {
-      console.error(error)
-      targetPairInput.val(`Bản dịch thất bại: ${error}`);
-    }
+    targetPairInput.val(await translateText(inputText, translatorOption, targetLanguage, false));
   }
 });
 addButton.on('click', () => {
@@ -821,6 +788,47 @@ function getTargetLanguageSelectOptions(translator) {
   return targetLanguageSelect.innerHTML;
 }
 
+async function translateText(inputText, translatorOption, targetLanguage, useGlossary) {
+  try {
+    let translator = null;
+    let sourceLanguage = '';
+
+    switch (translatorOption) {
+      case Translators.DEEPL_TRANSLATOR:
+        translator = await new DeepLTranslator().init();
+        sourceLanguage = DeepLTranslator.DETECT_LANGUAGE;
+        break;
+
+      case Translators.GOOGLE_TRANSLATE:
+        translator = await new GoogleTranslate().init();
+        sourceLanguage = GoogleTranslate.DETECT_LANGUAGE;
+        break;
+
+      case Translators.PAPAGO:
+        translator = await new Papago().init();
+        sourceLanguage = Papago.DETECT_LANGUAGE;
+        break;
+
+      case Translators.VIETPHRASE:
+        translator = await new Vietphrase(vietphraseData, translationAlgorithmRadio.filter('[checked]').val(), multiplicationAlgorithmRadio.filter('[checked]').val(), useGlossary, glossary, prioritizeNameOverVietphraseCheck.prop('checked'));
+        sourceLanguage = Vietphrase.DefaultLanguage.SOURCE_LANGUAGE;
+        break;
+
+      default:
+      case Translators.MICROSOFT_TRANSLATOR:
+        translator = await new MicrosoftTranslator().init();
+        sourceLanguage = MicrosoftTranslator.AUTODETECT;
+        break;
+    }
+
+    if (translatorOption === Translators.DEEPL_TRANSLATOR && translator.usage.character_count + inputText.length > translator.usage.character_limit) throw `Lỗi DeepL Translator: Đã đạt đến giới hạn dịch của tài khoản. (${translator.usage.character_count}/${translator.usage.character_limit} ký tự).`;
+    return await translator.translateText(sourceLanguage, targetLanguage, inputText);
+  } catch (error) {
+    console.error(error)
+    targetPairInput.val(`Bản dịch thất bại: ${error}`);
+  }
+}
+
 function applyGlossaryToText(text, translator = '') {
   const glossaryEntries = Object.entries(glossary).filter(([first]) => text.includes(first));
   let newText = text;
@@ -986,7 +994,7 @@ async function translateTextarea() {
           break;
 
         case Translators.VIETPHRASE:
-          translator = await new Vietphrase(vietphraseData, $('input[name="translation-algorithm-radio"][checked]').val(), $('input[name="multiplication-algorithm-radio"][checked]').val(), true, glossaryEnabled && targetLanguage === 'vi', glossary, prioritizeNameOverVietphraseCheck.prop('checked'));
+          translator = await new Vietphrase(vietphraseData, translationAlgorithmRadio.filter('[checked]').val(), multiplicationAlgorithmRadio.filter('[checked]').val(), true, glossaryEnabled && targetLanguage === 'vi', glossary, prioritizeNameOverVietphraseCheck.prop('checked'));
           break;
 
         default:

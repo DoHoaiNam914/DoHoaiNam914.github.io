@@ -688,14 +688,14 @@ class Vietphrase {
     MULTIPLICATION_BY_PRONOUNS_AND_NAMES: '2',
   };
 
-  constructor(data, translationAlgorithm, multiplicationAlgorithm, caseSensitive = false, useGlossary = false, glossary = {}, prioritizeNameOverVietphraseCheck = false) {
+  constructor(data, translationAlgorithm, multiplicationAlgorithm, useGlossary = false, glossary = {}, prioritizeNameOverVietphraseCheck = false, caseSensitive = false) {
     this.data_ = data;
     this.translationAlgorithm_ = translationAlgorithm;
     this.multiplicationAlgorithm_ = multiplicationAlgorithm;
-    this.caseSensitive_ = caseSensitive;
     this.useGlossary_ = useGlossary;
     this.glossary_ = glossary;
     this.prioritizeNameOverVietphraseCheck_ = prioritizeNameOverVietphraseCheck;
+    this.caseSensitive_ = caseSensitive;
   }
 
   static getSourceLanguageName(languageCode) {
