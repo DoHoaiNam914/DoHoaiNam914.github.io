@@ -958,7 +958,7 @@ class Vietphrase {
   }
 
   getCaseSensitive(text) {
-    return text.split(/\n/).map((element) => this.caseSensitive_ ? element.replace(/(^\s*|(?:[!.:;?]\s+|\s+-\s+|[。！．：；？]\s*|['"\p{Ps}\p{Pi}]\s*))(\p{Ll})/gu, (match, p1, p2) => p1 + p2.toUpperCase()) : element).join('\n');
+    return text.split(/\n/).map((element) => this.caseSensitive_ ? element.replace(/(^\s*|(?:[!.:;?]\s+|\s+-\s+|…\s*|[。！．：；？]\s*|['"\p{Ps}\p{Pi}]\s*))(\p{Ll})/gu, (match, p1, p2) => p1 + p2.toUpperCase()) : element).join('\n');
   }
 
   getLuatnhanData(glossaryEntries, inputText) {
