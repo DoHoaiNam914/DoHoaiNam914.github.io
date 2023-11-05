@@ -996,7 +996,7 @@ async function translateTextarea() {
           break;
 
         case Translators.VIETPHRASE:
-          translator = await new Vietphrase(vietphraseData, translationAlgorithmRadio.filter('[checked]').val(), multiplicationAlgorithmRadio.filter('[checked]').val(), true, glossaryEnabled && targetLanguage === 'vi', glossary, prioritizeNameOverVietphraseCheck.prop('checked'));
+          translator = await new Vietphrase(vietphraseData, translationAlgorithmRadio.filter('[checked]').val(), multiplicationAlgorithmRadio.filter('[checked]').val(), glossaryEnabled && targetLanguage === 'vi', glossary, prioritizeNameOverVietphraseCheck.prop('checked'), true);
           break;
 
         default:
