@@ -48,6 +48,7 @@ const vietphraseData = {
   cacLuatnhan: {}
 };
 
+var glossaryData = '';
 var translateAbortController = null;
 var prevScrollTop = 0;
 
@@ -272,6 +273,11 @@ copyButtons.on('click', async function () {
   if ($(this).data('target') === '#result-textarea') {
     if (Object.keys(lastSession).length > 0) {
       await navigator.clipboard.writeText(lastSession.result);
+    }
+    return;
+  } else if ($(this).data('target') === '#glossary-data-list') {
+    if (glossaryData.length > 0) {
+      await navigator.clipboard.writeText(glossaryData);
     }
     return;
   }
@@ -917,30 +923,29 @@ function reloadGlossaryEntries() {
       entrySelect.appendChild(option);
     }
 
-    let data = '';
-
     switch (glossaryType.val()) {
       case GlossaryType.CSV:
-        data = $.csv.fromArrays(glossaryEntries);
+        glossaryData = $.csv.fromArrays(glossaryEntries);
         glossaryExtension.text('csv');
         break;
 
       case GlossaryType.VIETPHRASE:
-        data = glossaryEntries.map((element) => (element.length > 2 ? element.splice(2, glossary.length - 2) : element).join('=')).join('\n');
+        glossaryData = glossaryEntries.map((element) => (element.length > 2 ? element.splice(2, glossary.length - 2) : element).join('=')).join('\n');
         glossaryExtension.text('txt');
         break;
 
       default:
       case GlossaryType.TSV:
-        data = glossaryEntries.map((element) => (element.length > 2 ? element.splice(2, glossary.length - 2) : element).join('\t')).join('\n');
+        glossaryData = glossaryEntries.map((element) => (element.length > 2 ? element.splice(2, glossary.length - 2) : element).join('\t')).join('\n');
         glossaryExtension.text('tsv');
         break;
     }
 
-    downloadButton.attr('href', URL.createObjectURL(new Blob([data], {type: `${glossaryType};charset=UTF-8`})));
+    downloadButton.attr('href', URL.createObjectURL(new Blob([glossaryData], {type: `${glossaryType};charset=UTF-8`})));
     downloadButton.attr('download', `${glossaryName.val().length > 0 ? glossaryName.val() : glossaryName.attr('placeholder')}.${glossaryExtension.text()}`);
     downloadButton.removeClass('disabled');
   } else {
+    glossaryData = '';
     downloadButton.removeAttr('href');
     downloadButton.removeAttr('download');
     downloadButton.addClass('disabled');
