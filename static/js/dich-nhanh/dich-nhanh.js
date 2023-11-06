@@ -451,11 +451,11 @@ sourcePairInput.on('input', async function () {
   const inputText = $(this).val();
 
   if (inputText.length > 0) {
-    targetPairInput.val(!glossary.hasOwnProperty(inputText) && /\p{sc=Hani}/u.test(inputText) ? await translateText(inputText, Translators.VIETPHRASE, 'sinoVietnamese', true) : applyGlossaryToText(inputText));
-
     if (glossary.hasOwnProperty(inputText)) {
+      targetPairInput.val(applyGlossaryToText(inputText));
       glossaryDataList.val(inputText);
     } else {
+      targetPairInput.val(/\p{sc=Hani}/u.test(inputText) ? await translateText(inputText, Translators.VIETPHRASE, 'sinoVietnamese', true) : inputText);
       glossaryDataList.val('');
     }
 
