@@ -314,18 +314,20 @@ options.change(function () {
   const optionId = getOptionId($(this).attr('name') != undefined ? $(this).attr('name') : $(this).attr('id'));
   const optionType = getOptionType($(this).attr('name') != undefined ? $(this).attr('name') : $(this).attr('id'));
 
-  if (optionType !== OptionTypes.SELECT && optionType !== OptionTypes.CHECK && optionType !== OptionTypes.RADIO) return;
+  if (optionType !== OptionTypes.SELECT && optionType !== OptionTypes.CHECK && optionType !== OptionTypes.RADIO || optionType !== OptionTypes.SWITCH) return;
   if (optionType === OptionTypes.RADIO) {
     options.filter(`[name="${$(this).attr('name')}"]`).removeAttr('checked');
     $(this).attr('checked', true);
   }
 
-  if (optionType === OptionTypes.CHECK) {
+  if (optionType === OptionTypes.CHECK || optionType === OptionTypes.SWITCH) {
     quickTranslateStorage[optionId] = $(this).prop('checked');
   } else {
     quickTranslateStorage[optionId] = $(this).val();
   }
+
   localStorage.setItem('dich_nhanh', JSON.stringify(quickTranslateStorage));
+
   if ($(this).hasClass('quick-translate-option')) {
     lastSession = {};
     retranslateButton.click();
@@ -380,11 +382,6 @@ translatorOptions.click(function () {
   $(this).addClass('active');
   updateLanguageSelect($(this).data('id'), quickTranslateStorage['translator']);
   quickTranslateStorage['translator'] = $(this).data('id');
-  localStorage.setItem('dich_nhanh', JSON.stringify(quickTranslateStorage));
-  retranslateButton.click();
-});
-showOriginalTextSwitch.change(function () {
-  quickTranslateStorage[getOptionId($(this).attr('id'))] = $(this).prop('checked');
   localStorage.setItem('dich_nhanh', JSON.stringify(quickTranslateStorage));
   retranslateButton.click();
 });
@@ -454,7 +451,7 @@ sourcePairInput.on('input', async function () {
   const inputText = $(this).val();
 
   if (inputText.length > 0) {
-    targetPairInput.val(/\p{sc=Hani}/u.test(inputText) ? await translateText(inputText, Translators.VIETPHRASE, 'sinoVietnamese', true) : applyGlossaryToText(inputText));
+    targetPairInput.val(!glossary.hasOwnProperty(inputText) && /\p{sc=Hani}/u.test(inputText) ? await translateText(inputText, Translators.VIETPHRASE, 'sinoVietnamese', true) : applyGlossaryToText(inputText));
 
     if (glossary.hasOwnProperty(inputText)) {
       glossaryDataList.val(inputText);
@@ -1001,7 +998,7 @@ async function translateTextarea() {
           break;
 
         case Translators.VIETPHRASE:
-          translator = await new Vietphrase(vietphraseData, translationAlgorithmRadio.filter('[checked]').val(), multiplicationAlgorithmRadio.filter('[checked]').val(), true, glossaryEnabled && targetLanguage === 'vi', glossary, prioritizeNameOverVietphraseCheck.prop('checked'));
+          translator = await new Vietphrase(vietphraseData, translationAlgorithmRadio.filter('[checked]').val(), multiplicationAlgorithmRadio.filter('[checked]').val(), glossaryEnabled && targetLanguage === 'vi', glossary, prioritizeNameOverVietphraseCheck.prop('checked'), true);
           break;
 
         default:
