@@ -444,7 +444,7 @@ $('#clear-button').on('click', () => {
   glossary = {};
   glossaryName.val(null);
   reloadGlossaryEntries();
-  glossaryInput.val(null);
+  glossaryInput.val('');
 });
 glossaryType.on('change', () => reloadGlossaryEntries());
 sourcePairInput.on('input', async function () {
