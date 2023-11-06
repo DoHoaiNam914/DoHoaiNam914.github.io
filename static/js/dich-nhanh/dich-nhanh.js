@@ -1085,7 +1085,7 @@ function buildResult(inputText, result) {
       let lostLineFixedNumber = 0;
 
       for (let i = 0; i < inputLines.length; i++) {
-        if (i < resultLines.length) {
+        if (i + lostLineFixedNumber < resultLines.length) {
           if (inputLines[i + lostLineFixedNumber].trim().length === 0 && resultLines[i].length > 0) {
             lostLineFixedNumber++;
             i--;
