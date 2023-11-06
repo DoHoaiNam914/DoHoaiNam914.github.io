@@ -314,7 +314,7 @@ options.change(function () {
   const optionId = getOptionId($(this).attr('name') != undefined ? $(this).attr('name') : $(this).attr('id'));
   const optionType = getOptionType($(this).attr('name') != undefined ? $(this).attr('name') : $(this).attr('id'));
 
-  if (optionType !== OptionTypes.SELECT && optionType !== OptionTypes.CHECK && optionType !== OptionTypes.RADIO || optionType !== OptionTypes.SWITCH) return;
+  if (optionType !== OptionTypes.SELECT && optionType !== OptionTypes.CHECK && optionType !== OptionTypes.RADIO && optionType !== OptionTypes.SWITCH) return;
   if (optionType === OptionTypes.RADIO) {
     options.filter(`[name="${$(this).attr('name')}"]`).removeAttr('checked');
     $(this).attr('checked', true);
