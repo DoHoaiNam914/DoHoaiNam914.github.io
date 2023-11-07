@@ -1078,19 +1078,19 @@ function buildResult(inputText, result) {
   try {
     const resultDiv = document.createElement('div');
 
-    const inputLines = inputText.split(/\r?\n/);
-    const resultLines = result.split(/\n/);
+    const inputLines = inputText.split(/\r?\n/).map((element) => element.trim());
+    const resultLines = result.split(/\r?\n/).map((element) => element.trim());
 
     if (showOriginalTextSwitch.prop('checked')) {
       let lostLineFixedNumber = 0;
 
       for (let i = 0; i < inputLines.length; i++) {
         if (i + lostLineFixedNumber < resultLines.length) {
-          if (inputLines[i + lostLineFixedNumber].trim().length === 0 && resultLines[i].length > 0) {
+          if (inputLines[i + lostLineFixedNumber].length === 0 && resultLines[i].length > 0) {
             lostLineFixedNumber++;
             i--;
             continue;
-          } else if (translatorOptions.filter($('.active')).data('id') === Translators.PAPAGO && resultLines[i].length === 0 && inputLines[i + lostLineFixedNumber].trim().length > 0) {
+          } else if (translatorOptions.filter($('.active')).data('id') === Translators.PAPAGO && resultLines[i].length === 0 && inputLines[i + lostLineFixedNumber].length > 0) {
             lostLineFixedNumber--;
             continue;
           }
@@ -1098,10 +1098,10 @@ function buildResult(inputText, result) {
           const paragraph = document.createElement('p');
           let textNode = document.createTextNode(resultLines[i]);
 
-          if (resultLines[i].length !== inputLines[i + lostLineFixedNumber].trim().length) {
+          if (resultLines[i].length !== inputLines[i + lostLineFixedNumber].length) {
             const idiomaticText = document.createElement('i');
             const linebreak = document.createElement('br');
-            idiomaticText.innerText = inputLines[i + lostLineFixedNumber].trim();
+            idiomaticText.innerText = inputLines[i + lostLineFixedNumber];
             paragraph.appendChild(idiomaticText);
             paragraph.appendChild(linebreak.cloneNode(true));
             textNode = document.createElement('b');
@@ -1113,7 +1113,7 @@ function buildResult(inputText, result) {
         } else if (i + lostLineFixedNumber < inputLines.length) {
           const paragraph = document.createElement('p');
           const idiomaticText = document.createElement('i');
-          idiomaticText.innerText = inputLines[i + lostLineFixedNumber].trim();
+          idiomaticText.innerText = inputLines[i + lostLineFixedNumber];
           paragraph.appendChild(idiomaticText);
           resultDiv.appendChild(paragraph);
         }
