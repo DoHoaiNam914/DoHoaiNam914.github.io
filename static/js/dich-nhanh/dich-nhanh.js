@@ -867,7 +867,7 @@ function applyGlossaryToText(text, translator = '') {
             break;
           } else if (glossaryLength === 1) {
             tempLine += translator === Translators.DEEPL_TRANSLATOR || translator === Translators.GOOGLE_TRANSLATE ? Utils.convertTextToHtml(chars[j]) : chars[j];
-            prevPhrase = translator === Translators.DEEPL_TRANSLATOR || translator === Translators.GOOGLE_TRANSLATE ? Utils.convertTextToHtml(chars[j]) : chars[j];
+            prevPhrase = '';
             break;
           }
         }

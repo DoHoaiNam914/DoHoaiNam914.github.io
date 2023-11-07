@@ -878,7 +878,7 @@ class Vietphrase {
                   j += dataLength - 1;
                   break;
                 } else if (dataLength === 1) {
-                  tempLine += chars[j];
+                  tempLine += (j > 0 && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(chars[j]) && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(prevPhrase || '') ? ' ' : '') + chars[j];
                   prevPhrase = '';
                   break;
                 }
@@ -947,7 +947,7 @@ class Vietphrase {
                   j += dataLength - 1;
                   break;
                 } else if (dataLength === 1) {
-                  tempLine += (j > 0 && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(prevPhrase || '') ? ' ' : '') + chars[j];
+                  tempLine += (j > 0 && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(chars[j]) && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(prevPhrase || '') ? ' ' : '') + chars[j];
                   prevPhrase = '';
                   break;
                 }
