@@ -815,7 +815,7 @@ async function translateText(inputText, translatorOption, targetLanguage, useGlo
         break;
 
       case Translators.VIETPHRASE:
-        translator = await new Vietphrase(vietphraseData, translationAlgorithmRadio.filter('[checked]').val(), multiplicationAlgorithmRadio.filter('[checked]').val(), useGlossary, glossary, prioritizeNameOverVietphraseCheck.prop('checked'));
+        translator = await new Vietphrase(vietphraseData, translationAlgorithmRadio.filter('[checked]').val(), multiplicationAlgorithmRadio.filter('[checked]').val(), $('#ttvtranslate-mode-switch').prop('checked'), useGlossary, glossary, prioritizeNameOverVietphraseCheck.prop('checked'));
         sourceLanguage = Vietphrase.DefaultLanguage.SOURCE_LANGUAGE;
         break;
 
@@ -859,7 +859,7 @@ function applyGlossaryToText(text, translator = '') {
 
           if (glossary.hasOwnProperty(phrase)) {
             if (glossary[phrase].length > 0) {
-              tempLine += (j > 0 && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(prevPhrase || tempLine[tempLine.length - 1] || '') ? ' ' : '') + getIgnoreTranslationMarkup(phrase, glossary[phrase], translator);
+              tempLine += (j > 0 && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(prevPhrase || '') ? ' ' : '') + getIgnoreTranslationMarkup(phrase, glossary[phrase], translator);
               prevPhrase = glossary[phrase];
             }
 
@@ -867,7 +867,7 @@ function applyGlossaryToText(text, translator = '') {
             break;
           } else if (glossaryLength === 1) {
             tempLine += translator === Translators.DEEPL_TRANSLATOR || translator === Translators.GOOGLE_TRANSLATE ? Utils.convertTextToHtml(chars[j]) : chars[j];
-            prevPhrase = '';
+            prevPhrase = translator === Translators.DEEPL_TRANSLATOR || translator === Translators.GOOGLE_TRANSLATE ? Utils.convertTextToHtml(chars[j]) : chars[j];
             break;
           }
         }
@@ -998,7 +998,7 @@ async function translateTextarea() {
           break;
 
         case Translators.VIETPHRASE:
-          translator = await new Vietphrase(vietphraseData, translationAlgorithmRadio.filter('[checked]').val(), multiplicationAlgorithmRadio.filter('[checked]').val(), glossaryEnabled && targetLanguage === 'vi', glossary, prioritizeNameOverVietphraseCheck.prop('checked'), true);
+          translator = await new Vietphrase(vietphraseData, translationAlgorithmRadio.filter('[checked]').val(), multiplicationAlgorithmRadio.filter('[checked]').val(), $('#ttvtranslate-mode-switch').prop('checked'), glossaryEnabled && targetLanguage === 'vi', glossary, prioritizeNameOverVietphraseCheck.prop('checked'), true);
           break;
 
         default:

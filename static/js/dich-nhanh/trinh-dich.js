@@ -688,10 +688,11 @@ class Vietphrase {
     MULTIPLICATION_BY_PRONOUNS_AND_NAMES: '2',
   };
 
-  constructor(data, translationAlgorithm, multiplicationAlgorithm, useGlossary = false, glossary = {}, prioritizeNameOverVietphraseCheck = false, caseSensitive = false) {
+  constructor(data, translationAlgorithm, multiplicationAlgorithm, isTtvTranslate, useGlossary = false, glossary = {}, prioritizeNameOverVietphraseCheck = false, caseSensitive = false) {
     this.data_ = data;
     this.translationAlgorithm_ = translationAlgorithm;
     this.multiplicationAlgorithm_ = multiplicationAlgorithm;
+    this.isTtvTranslate_ = isTtvTranslate;
     this.useGlossary_ = useGlossary;
     this.glossary_ = glossary;
     this.prioritizeNameOverVietphraseCheck_ = prioritizeNameOverVietphraseCheck;
@@ -784,10 +785,12 @@ class Vietphrase {
           data = Object.fromEntries(dataEntries.sort((a, b) => b[0].length - a[0].length));
 
           for (const property in data) {
-            result = result.replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}])${Utils.getRegexEscapedText(property)}([\\p{Lu}\\p{Ll}\\p{Nd}])`, 'gu'), `$1 ${Utils.getRegexEscapedReplacement(data[property])} $2`)
-                           .replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}])${Utils.getRegexEscapedText(property)}`, 'gu'), `$1 ${Utils.getRegexEscapedReplacement(data[property])}`)
-                           .replace(new RegExp(`${Utils.getRegexEscapedText(property)}([\\p{Lu}\\p{Ll}\\p{Nd}])`, 'gu'), `${Utils.getRegexEscapedReplacement(data[property])} $1`)
-                           .replace(new RegExp(Utils.getRegexEscapedText(property), 'g'), Utils.getRegexEscapedReplacement(data[property]));
+            if ((!this.isTtvTranslate_ || /^[\p{sc=Hani}\p{P}]+$/u.test(property))) {
+              result = result.replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}])${Utils.getRegexEscapedText(property)}([\\p{Lu}\\p{Ll}\\p{Nd}])`, 'gu'), `$1 ${Utils.getRegexEscapedReplacement(data[property])} $2`)
+                             .replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}])${Utils.getRegexEscapedText(property)}`, 'gu'), `$1 ${Utils.getRegexEscapedReplacement(data[property])}`)
+                             .replace(new RegExp(`${Utils.getRegexEscapedText(property)}([\\p{Lu}\\p{Ll}\\p{Nd}])`, 'gu'), `${Utils.getRegexEscapedReplacement(data[property])} $1`)
+                             .replace(new RegExp(Utils.getRegexEscapedText(property), 'g'), Utils.getRegexEscapedReplacement(data[property]));
+            }
           }
 
           result = this.getCaseSensitive(result);
@@ -812,12 +815,14 @@ class Vietphrase {
           data = Object.fromEntries(dataEntries.sort((a, b) => b[0].length - a[0].length));
 
           for (const property in data) {
-            result = result.replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}])${Utils.getRegexEscapedText(property)}(?=${Object.values(this.glossary_).join('|')})`, 'gu'), `$1 ${Utils.getRegexEscapedReplacement(data[property])} `)
-                           .replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}])${Utils.getRegexEscapedText(property)}([\\p{Lu}\\p{Ll}\\p{Nd}])`, 'gu'), `$1 ${Utils.getRegexEscapedReplacement(data[property])} $2`)
-                           .replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}])${Utils.getRegexEscapedText(property)}`, 'gu'), `$1 ${Utils.getRegexEscapedReplacement(data[property])}`)
-                           .replace(new RegExp(`${Utils.getRegexEscapedText(property)}([\\p{Lu}\\p{Ll}\\p{Nd}])`, 'gu'), `${Utils.getRegexEscapedReplacement(data[property])} $1`)
-                           .replace(new RegExp(`${Utils.getRegexEscapedText(property)}(?=${Object.values(this.glossary_).join('|')})`, 'g'), `${Utils.getRegexEscapedReplacement(data[property])} `)
-                           .replace(new RegExp(Utils.getRegexEscapedText(property), 'g'), Utils.getRegexEscapedReplacement(data[property]));
+            if ((!this.isTtvTranslate_ || /^[\p{sc=Hani}\p{P}]+$/u.test(property))) {
+              result = result.replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}])${Utils.getRegexEscapedText(property)}(?=${Object.values(this.glossary_).join('|')})`, 'gu'), `$1 ${Utils.getRegexEscapedReplacement(data[property])} `)
+                             .replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}])${Utils.getRegexEscapedText(property)}([\\p{Lu}\\p{Ll}\\p{Nd}])`, 'gu'), `$1 ${Utils.getRegexEscapedReplacement(data[property])} $2`)
+                             .replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}])${Utils.getRegexEscapedText(property)}`, 'gu'), `$1 ${Utils.getRegexEscapedReplacement(data[property])}`)
+                             .replace(new RegExp(`${Utils.getRegexEscapedText(property)}([\\p{Lu}\\p{Ll}\\p{Nd}])`, 'gu'), `${Utils.getRegexEscapedReplacement(data[property])} $1`)
+                             .replace(new RegExp(`${Utils.getRegexEscapedText(property)}(?=${Object.values(this.glossary_).join('|')})`, 'g'), `${Utils.getRegexEscapedReplacement(data[property])} `)
+                             .replace(new RegExp(Utils.getRegexEscapedText(property), 'g'), Utils.getRegexEscapedReplacement(data[property]));
+            }
           }
 
           result = this.getCaseSensitive(result);
@@ -835,7 +840,7 @@ class Vietphrase {
     const lines = inputText.split(/\n/);
     const results = [];
 
-    let result = '';
+    let result = inputText;
 
     switch (targetLanguage) {
       case 'pinyin':
@@ -852,6 +857,7 @@ class Vietphrase {
             }
 
             const dataLengths = [
+              chars.length,
               ...dataEntries.filter(([first]) => chars.includes(first)).map(([first]) => first.length),
               1
             ].sort((a, b) => b - a).filter((element, index, array) => index === array.indexOf(element));
@@ -863,7 +869,7 @@ class Vietphrase {
               for (const dataLength of dataLengths) {
                 const phrase = chars.substring(j, j + dataLength);
 
-                if (data.hasOwnProperty(phrase)) {
+                if ((!this.isTtvTranslate_ || /^[\p{sc=Hani}\p{P}]+$/u.test(phrase)) && data.hasOwnProperty(phrase)) {
                   if (data[phrase].length > 0) {
                     tempLine += (j > 0 && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(prevPhrase || tempLine[tempLine.length - 1] || '') ? ' ' : '') + data[phrase];
                     prevPhrase = data[phrase];
@@ -914,6 +920,7 @@ class Vietphrase {
             const glossaryEntriesInLine = glossaryEntries.filter(([first, second]) => chars.includes(second));
 
             const dataLengths = [
+              chars.length,
               ...this.useGlossary_ && this.prioritizeNameOverVietphraseCheck_ ? glossaryEntriesInLine.map(([, second]) => second.length) : [],
               ...dataEntries.filter(([first]) => chars.includes(first)).map(([first]) => first.length),
               1
@@ -931,7 +938,7 @@ class Vietphrase {
                   prevPhrase = phrase;
                   j += dataLength - 1;
                   break;
-                } else if (data.hasOwnProperty(phrase)) {
+                } else if ((!this.isTtvTranslate_ || /^[\p{sc=Hani}\p{P}]+$/u.test(phrase)) && data.hasOwnProperty(phrase)) {
                   if (data[phrase].length > 0) {
                     tempLine += (j > 0 && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(prevPhrase || tempLine[tempLine.length - 1] || '') ? ' ' : '') + data[phrase];
                     prevPhrase = data[phrase];
@@ -940,7 +947,7 @@ class Vietphrase {
                   j += dataLength - 1;
                   break;
                 } else if (dataLength === 1) {
-                  tempLine += chars[j];
+                  tempLine += (j > 0 && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(prevPhrase || '') ? ' ' : '') + chars[j];
                   prevPhrase = '';
                   break;
                 }
@@ -955,10 +962,6 @@ class Vietphrase {
         break;
     }
     return result;
-  }
-
-  getCaseSensitive(text) {
-    return text.split(/\n/).map((element) => this.caseSensitive_ ? element.replace(/(^\s*|(?:[!.:;?]\s+|\s+-\s+|…\s*|[。！．：；？]\s*|['"\p{Ps}\p{Pi}]\s*))(\p{Ll})/gu, (match, p1, p2) => p1 + p2.toUpperCase()) : element).join('\n');
   }
 
   getLuatnhanData(glossaryEntries, inputText) {
@@ -993,5 +996,9 @@ class Vietphrase {
       }
     }
     return [luatnhanNameEntries, luatnhanPronounEntries];
+  }
+
+  getCaseSensitive(text) {
+    return text.split(/\n/).map((element) => this.caseSensitive_ ? element.replace(/(^\s*|(?:[!.:;?]\s+|\s+-\s+|…\s*|[。！．：；？]\s*|['"\p{Ps}\p{Pi}]\s*))(\p{Ll})/gu, (match, p1, p2) => p1 + p2.toUpperCase()) : element).join('\n');
   }
 }
