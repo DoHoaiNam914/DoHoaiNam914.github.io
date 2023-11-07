@@ -785,7 +785,7 @@ class Vietphrase {
           data = Object.fromEntries(dataEntries.sort((a, b) => b[0].length - a[0].length));
 
           for (const property in data) {
-            if ((!this.isTtvTranslate_ || /^[\p{sc=Hani}\p{P}]+$/u.test(property))) {
+            if ((!this.isTtvTranslate_ || /^[\d\p{sc=Hani}\p{P}]+$/u.test(property))) {
               result = result.replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}])${Utils.getRegexEscapedText(property)}([\\p{Lu}\\p{Ll}\\p{Nd}])`, 'gu'), `$1 ${Utils.getRegexEscapedReplacement(data[property])} $2`)
                              .replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}])${Utils.getRegexEscapedText(property)}`, 'gu'), `$1 ${Utils.getRegexEscapedReplacement(data[property])}`)
                              .replace(new RegExp(`${Utils.getRegexEscapedText(property)}([\\p{Lu}\\p{Ll}\\p{Nd}])`, 'gu'), `${Utils.getRegexEscapedReplacement(data[property])} $1`)
@@ -815,7 +815,7 @@ class Vietphrase {
           data = Object.fromEntries(dataEntries.sort((a, b) => b[0].length - a[0].length));
 
           for (const property in data) {
-            if ((!this.isTtvTranslate_ || /^[\p{sc=Hani}\p{P}]+$/u.test(property))) {
+            if ((!this.isTtvTranslate_ || /^[\d\p{sc=Hani}\p{P}]+$/u.test(property))) {
               result = result.replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}])${Utils.getRegexEscapedText(property)}(?=${Object.values(this.glossary_).join('|')})`, 'gu'), `$1 ${Utils.getRegexEscapedReplacement(data[property])} `)
                              .replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}])${Utils.getRegexEscapedText(property)}([\\p{Lu}\\p{Ll}\\p{Nd}])`, 'gu'), `$1 ${Utils.getRegexEscapedReplacement(data[property])} $2`)
                              .replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}])${Utils.getRegexEscapedText(property)}`, 'gu'), `$1 ${Utils.getRegexEscapedReplacement(data[property])}`)
@@ -869,7 +869,7 @@ class Vietphrase {
               for (const dataLength of dataLengths) {
                 const phrase = chars.substring(j, j + dataLength);
 
-                if ((!this.isTtvTranslate_ || /^[\p{sc=Hani}\p{P}]+$/u.test(phrase)) && data.hasOwnProperty(phrase)) {
+                if ((!this.isTtvTranslate_ || /^[\d\p{sc=Hani}\p{P}]+$/u.test(phrase)) && data.hasOwnProperty(phrase)) {
                   if (data[phrase].length > 0) {
                     tempLine += (j > 0 && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(prevPhrase || tempLine[tempLine.length - 1] || '') ? ' ' : '') + data[phrase];
                     prevPhrase = data[phrase];
@@ -938,7 +938,7 @@ class Vietphrase {
                   prevPhrase = phrase;
                   j += dataLength - 1;
                   break;
-                } else if ((!this.isTtvTranslate_ || /^[\p{sc=Hani}\p{P}]+$/u.test(phrase)) && data.hasOwnProperty(phrase)) {
+                } else if ((!this.isTtvTranslate_ || /^[\d\p{sc=Hani}\p{P}]+$/u.test(phrase)) && data.hasOwnProperty(phrase)) {
                   if (data[phrase].length > 0) {
                     tempLine += (j > 0 && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(prevPhrase || tempLine[tempLine.length - 1] || '') ? ' ' : '') + data[phrase];
                     prevPhrase = data[phrase];
