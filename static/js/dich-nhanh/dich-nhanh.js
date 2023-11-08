@@ -977,7 +977,7 @@ async function translateTextarea() {
   try {
     let result = '';
 
-    if (Object.keys(lastSession).length > 0 && lastSession.inputText === (glossaryEnabled && translatorOption === Translators.VIETPHRASE && !prioritizeNameOverVietphraseCheck.prop('checked') ? applyGlossaryToText(inputText) : inputText) && lastSession.translatorOption === translatorOption && lastSession.sourceLanguage === sourceLanguage && lastSession.targetLanguage === targetLanguage) {
+    if (Object.keys(lastSession).length > 0 && lastSession.inputText === (glossaryEnabled && (translatorOption === Translators.VIETPHRASE ? targetLanguage === 'vi' : sourceLanguage.split('-')[0].toLowerCase() === glossaryLanguageSource && targetLanguage.split('-')[0].toLowerCase() === glossaryLanguageTarget) ? applyGlossaryToText(inputText) : inputText) && lastSession.translatorOption === translatorOption && lastSession.sourceLanguage === sourceLanguage && lastSession.targetLanguage === targetLanguage) {
       result = lastSession.result;
     } else {
       let results = [];
@@ -1008,12 +1008,12 @@ async function translateTextarea() {
 
       if (translatorOption === Translators.DEEPL_TRANSLATOR && translator.usage.character_count + inputText.length > translator.usage.character_limit) throw `Lỗi DeepL Translator: Đã đạt đến giới hạn dịch của tài khoản. (${translator.usage.character_count}/${translator.usage.character_limit} ký tự).`;
 
-      const inputLines = processText.split(/\r?\n/);
-      let queryLines = [];
-
       if (processText.split(/\r?\n/).length <= MAX_LINE && processText.length <= MAX_LENGTH) {
         result = await translator.translateText(sourceLanguage, targetLanguage, processText);
       } else {
+        const inputLines = processText.split(/\r?\n/);
+        let queryLines = [];
+
         while (inputLines.length > 0 && queryLines.length + 1 <= MAX_LINE && [
           ...queryLines,
           inputLines[0]
@@ -1034,7 +1034,7 @@ async function translateTextarea() {
       }
 
       $('#translate-timer').text(Date.now() - startTime);
-      lastSession.inputText = glossaryEnabled && translatorOption === Translators.VIETPHRASE && !prioritizeNameOverVietphraseCheck.prop('checked') ? applyGlossaryToText(inputText) : inputText;
+      lastSession.inputText = glossaryEnabled && (translatorOption === Translators.VIETPHRASE ? targetLanguage === 'vi' : sourceLanguage.split('-')[0].toLowerCase() === glossaryLanguageSource && targetLanguage.split('-')[0].toLowerCase() === glossaryLanguageTarget) ? applyGlossaryToText(inputText) : inputText;
       lastSession.translatorOption = translatorOption;
       lastSession.sourceLanguage = sourceLanguage;
       lastSession.targetLanguage = targetLanguage;
