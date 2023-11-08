@@ -795,7 +795,7 @@ class Vietphrase {
         data = Object.fromEntries(dataEntries.sort((a, b) => b[0].length - a[0].length));
 
         for (const property in data) {
-          if (!this.isTtvTranslate_ || /^[\d\p{sc=Hani}\p{P}]+$/u.test(property) || [
+          if (!this.isTtvTranslate_ || /^[\d\p{sc=Hani}]+$/u.test(property) || [
             ...luatnhanNameEntries,
             ...glossaryEntries
           ].indexOf(property) > -1) {
@@ -871,7 +871,7 @@ class Vietphrase {
                 prevPhrase = phrase;
                 j += dataLength - 1;
                 break;
-              } else if ((!this.isTtvTranslate_ || /^[\d\p{sc=Hani}\p{P}]+$/u.test(phrase) || [
+              } else if ((!this.isTtvTranslate_ || /^[\d\p{sc=Hani}]+$/u.test(phrase) || [
                 ...luatnhanNameEntries,
                 ...glossaryEntries
               ].indexOf(phrase) > -1) && data.hasOwnProperty(phrase)) {
