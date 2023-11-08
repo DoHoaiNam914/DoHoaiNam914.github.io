@@ -759,11 +759,11 @@ class Vietphrase {
 
       switch (this.translationAlgorithm_) {
         case this.TranslationAlgorithms.TRANSLATE_FROM_LEFT_TO_RIGHT:
-          return this.translateFromLeftToRight(data, targetLanguage, inputText);
+          return this.translateFromLeftToRight(data, inputText);
 
         default:
         case this.TranslationAlgorithms.PRIORITIZE_LONG_VIETPHRASE_CLUSTERS:
-          return this.translatePrioritizeLongVietphraseClusters(data, targetLanguage, inputText);
+          return this.translatePrioritizeLongVietphraseClusters(data, inputText);
       }
     } catch (error) {
       console.error('Bản dịch lỗi:', error);
@@ -771,197 +771,134 @@ class Vietphrase {
     }
   }
 
-  translatePrioritizeLongVietphraseClusters(data, targetLanguage, inputText) {
-    inputText = inputText.split(/\r?\n/).map((element) => element.trim()).join('\n');
+  translatePrioritizeLongVietphraseClusters(data, inputText) {
+    try {
+      inputText = inputText.split(/\r?\n/).map((element) => element.trim()).join('\n');
 
-    let dataEntries = Object.entries(data).filter(([first]) => inputText.includes(first));
+      let dataEntries = Object.entries(data).filter(([first]) => inputText.includes(first));
+      const glossaryEntries = Object.entries(this.glossary_);
 
-    let result = inputText;
+      let result = inputText;
 
-    switch (targetLanguage) {
-      case 'pinyin':
-      case 'sinoVietnamese':
-        if (dataEntries.length > 0) {
-          data = Object.fromEntries(dataEntries.sort((a, b) => b[0].length - a[0].length));
+      if (dataEntries.length > 0 || glossaryEntries.length > 0) {
+        const [luatnhanNameEntries, luatnhanPronounEntries] = this.getLuatnhanData(glossaryEntries, inputText);
 
-          for (const property in data) {
-            if (!this.isTtvTranslate_ || /^[\d\p{sc=Hani}\p{P}]+$/u.test(property)) {
-              result = result.replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}])${Utils.getRegexEscapedText(property)}([\\p{Lu}\\p{Ll}\\p{Nd}])`, 'gu'), `$1 ${Utils.getRegexEscapedReplacement(data[property])} $2`)
-                             .replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}])${Utils.getRegexEscapedText(property)}`, 'gu'), `$1 ${Utils.getRegexEscapedReplacement(data[property])}`)
-                             .replace(new RegExp(`${Utils.getRegexEscapedText(property)}([\\p{Lu}\\p{Ll}\\p{Nd}])`, 'gu'), `${Utils.getRegexEscapedReplacement(data[property])} $1`)
-                             .replace(new RegExp(Utils.getRegexEscapedText(property), 'g'), Utils.getRegexEscapedReplacement(data[property]));
-            }
+        dataEntries = [
+          ...this.useGlossary_ ? (this.prioritizeNameOverVietphraseCheck_ ? luatnhanNameEntries : [
+            ...luatnhanNameEntries,
+            ...glossaryEntries
+          ]) : [],
+          ...luatnhanPronounEntries,
+          ...dataEntries
+        ];
+
+        data = Object.fromEntries(dataEntries.sort((a, b) => b[0].length - a[0].length));
+
+        for (const property in data) {
+          if (!this.isTtvTranslate_ || /^[\d\p{sc=Hani}\p{P}]+$/u.test(property) || [
+            ...luatnhanNameEntries,
+            ...glossaryEntries
+          ].indexOf(property) > -1) {
+            result = result.replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}])${Utils.getRegexEscapedText(property)}(?=${Object.values(this.glossary_).join('|')})`, 'gu'), `$1 ${Utils.getRegexEscapedReplacement(data[property])} `)
+                           .replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}])${Utils.getRegexEscapedText(property)}([\\p{Lu}\\p{Ll}\\p{Nd}])`, 'gu'), `$1 ${Utils.getRegexEscapedReplacement(data[property])} $2`)
+                           .replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}])${Utils.getRegexEscapedText(property)}`, 'gu'), `$1 ${Utils.getRegexEscapedReplacement(data[property])}`)
+                           .replace(new RegExp(`${Utils.getRegexEscapedText(property)}([\\p{Lu}\\p{Ll}\\p{Nd}])`, 'gu'), `${Utils.getRegexEscapedReplacement(data[property])} $1`)
+                           .replace(new RegExp(`${Utils.getRegexEscapedText(property)}(?=${Object.values(this.glossary_).join('|')})`, 'g'), `${Utils.getRegexEscapedReplacement(data[property])} `)
+                           .replace(new RegExp(Utils.getRegexEscapedText(property), 'g'), Utils.getRegexEscapedReplacement(data[property]));
           }
-
-          result = this.getCaseSensitive(result);
         }
-        break;
 
-      case 'vi':
-        const glossaryEntries = Object.entries(this.glossary_);
-
-        if (dataEntries.length > 0 || glossaryEntries.length > 0) {
-          const [luatnhanNameEntries, luatnhanPronounEntries] = this.getLuatnhanData(glossaryEntries, inputText);
-
-          dataEntries = [
-            ...this.useGlossary_ ? (this.prioritizeNameOverVietphraseCheck_ ? luatnhanNameEntries : [
-              ...luatnhanNameEntries,
-              ...glossaryEntries
-            ]) : [],
-            ...luatnhanPronounEntries,
-            ...dataEntries
-          ];
-
-          data = Object.fromEntries(dataEntries.sort((a, b) => b[0].length - a[0].length));
-
-          for (const property in data) {
-            if (!this.isTtvTranslate_ || /^[\d\p{sc=Hani}\p{P}]+$/u.test(phrase) || [...luatnhanNameEntries, ...glossaryEntries].indexOf(phrase) > -1) {
-              result = result.replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}])${Utils.getRegexEscapedText(property)}(?=${Object.values(this.glossary_).join('|')})`, 'gu'), `$1 ${Utils.getRegexEscapedReplacement(data[property])} `)
-                             .replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}])${Utils.getRegexEscapedText(property)}([\\p{Lu}\\p{Ll}\\p{Nd}])`, 'gu'), `$1 ${Utils.getRegexEscapedReplacement(data[property])} $2`)
-                             .replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}])${Utils.getRegexEscapedText(property)}`, 'gu'), `$1 ${Utils.getRegexEscapedReplacement(data[property])}`)
-                             .replace(new RegExp(`${Utils.getRegexEscapedText(property)}([\\p{Lu}\\p{Ll}\\p{Nd}])`, 'gu'), `${Utils.getRegexEscapedReplacement(data[property])} $1`)
-                             .replace(new RegExp(`${Utils.getRegexEscapedText(property)}(?=${Object.values(this.glossary_).join('|')})`, 'g'), `${Utils.getRegexEscapedReplacement(data[property])} `)
-                             .replace(new RegExp(Utils.getRegexEscapedText(property), 'g'), Utils.getRegexEscapedReplacement(data[property]));
-            }
-          }
-
-          result = this.getCaseSensitive(result);
-        }
-        break;
+        result = this.getCaseSensitive(result);
+      }
+      return result;
+    } catch (error) {
+      throw error;
     }
-    return result;
   }
 
-  translateFromLeftToRight(data, targetLanguage, inputText) {
-    inputText = inputText.split(/\r?\n/).map((element) => element.trim()).join('\n');
+  translateFromLeftToRight(data, inputText) {
+    try {
+      inputText = inputText.split(/\r?\n/).map((element) => element.trim()).join('\n');
 
-    let dataEntries = Object.entries(data).filter(([first]) => inputText.includes(first));
+      let dataEntries = Object.entries(data).filter(([first]) => inputText.includes(first));
+      const glossaryEntries = Object.entries(this.glossary_);
 
-    const lines = inputText.split(/\n/);
-    const results = [];
+      const lines = inputText.split(/\n/);
+      const results = [];
 
-    let result = inputText;
+      let result = inputText;
 
-    switch (targetLanguage) {
-      case 'pinyin':
-      case 'sinoVietnamese':
-        if (dataEntries.length > 0) {
-          data = Object.fromEntries(dataEntries);
+      if (dataEntries.length > 0 || glossaryEntries.length > 0) {
+        const [luatnhanNameEntries, luatnhanPronounEntries] = this.getLuatnhanData(glossaryEntries, inputText);
 
-          for (let i = 0; i < lines.length; i++) {
-            let chars = lines[i];
+        dataEntries = [
+          ...this.useGlossary_ ? (this.prioritizeNameOverVietphraseCheck_ ? luatnhanNameEntries : [
+            ...luatnhanNameEntries,
+            ...glossaryEntries
+          ]) : [],
+          ...luatnhanPronounEntries,
+          ...dataEntries
+        ];
 
-            if (chars.length === 0) {
-              results.push(chars);
-              continue;
-            }
+        data = Object.fromEntries(dataEntries);
 
-            const dataLengths = [
-              chars.length,
-              ...dataEntries.filter(([first]) => chars.includes(first)).map(([first]) => first.length),
-              1
-            ].sort((a, b) => b - a).filter((element, index, array) => index === array.indexOf(element));
+        for (let i = 0; i < lines.length; i++) {
+          let chars = lines[i];
 
-            let tempLine = '';
-            let prevPhrase = '';
+          if (chars.length === 0) {
+            results.push(chars);
+            continue;
+          }
 
-            for (let j = 0; j < chars.length; j++) {
-              for (const dataLength of dataLengths) {
-                const phrase = chars.substring(j, j + dataLength);
+          const glossaryEntriesInLine = glossaryEntries.filter(([first, second]) => chars.includes(second));
 
-                if ((!this.isTtvTranslate_ || /^[\d\p{sc=Hani}\p{P}]+$/u.test(phrase)) && data.hasOwnProperty(phrase)) {
-                  if (data[phrase].length > 0) {
-                    tempLine += (j > 0 && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(prevPhrase || tempLine[tempLine.length - 1] || '') ? ' ' : '') + data[phrase];
-                    prevPhrase = data[phrase];
-                  }
+          const dataLengths = [
+            chars.length,
+            ...this.useGlossary_ && this.prioritizeNameOverVietphraseCheck_ ? glossaryEntriesInLine.map(([, second]) => second.length) : [],
+            ...dataEntries.filter(([first]) => chars.includes(first)).map(([first]) => first.length),
+            1
+          ].sort((a, b) => b - a).filter((element, index, array) => index === array.indexOf(element));
 
-                  j += dataLength - 1;
-                  break;
-                } else if (dataLength === 1) {
-                  tempLine += (j > 0 && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(chars[j]) && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(prevPhrase || '') ? ' ' : '') + chars[j];
-                  prevPhrase = '';
-                  break;
+          let tempLine = '';
+          let prevPhrase = '';
+
+          for (let j = 0; j < chars.length; j++) {
+            for (const dataLength of dataLengths) {
+              const phrase = chars.substring(j, j + dataLength);
+
+              if (this.useGlossary_ && this.prioritizeNameOverVietphraseCheck_ && glossaryEntries.map(([, second]) => second).indexOf(phrase) > -1) {
+                tempLine += (j > 0 && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(prevPhrase || tempLine[tempLine.length - 1] || '') ? ' ' : '') + phrase;
+                prevPhrase = phrase;
+                j += dataLength - 1;
+                break;
+              } else if ((!this.isTtvTranslate_ || /^[\d\p{sc=Hani}\p{P}]+$/u.test(phrase) || [
+                ...luatnhanNameEntries,
+                ...glossaryEntries
+              ].indexOf(phrase) > -1) && data.hasOwnProperty(phrase)) {
+                if (data[phrase].length > 0) {
+                  tempLine += (j > 0 && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(prevPhrase || tempLine[tempLine.length - 1] || '') ? ' ' : '') + data[phrase];
+                  prevPhrase = data[phrase];
                 }
+
+                j += dataLength - 1;
+                break;
+              } else if (dataLength === 1) {
+                tempLine += (j > 0 && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(chars[j]) && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(prevPhrase || '') ? ' ' : '') + chars[j];
+                prevPhrase = '';
+                break;
               }
             }
-
-            results.push(tempLine);
           }
+
+          results.push(tempLine);
         }
 
         result = this.getCaseSensitive(results.join('\n'));
-        break;
-
-      case 'vi':
-        const glossaryEntries = Object.entries(this.glossary_);
-
-        if (dataEntries.length > 0 || glossaryEntries.length > 0) {
-          const [luatnhanNameEntries, luatnhanPronounEntries] = this.getLuatnhanData(glossaryEntries, inputText);
-
-          dataEntries = [
-            ...this.useGlossary_ ? (this.prioritizeNameOverVietphraseCheck_ ? luatnhanNameEntries : [
-              ...luatnhanNameEntries,
-              ...glossaryEntries
-            ]) : [],
-            ...luatnhanPronounEntries,
-            ...dataEntries
-          ];
-
-          data = Object.fromEntries(dataEntries);
-
-          for (let i = 0; i < lines.length; i++) {
-            let chars = lines[i];
-
-            if (chars.length === 0) {
-              results.push(chars);
-              continue;
-            }
-
-            const glossaryEntriesInLine = glossaryEntries.filter(([first, second]) => chars.includes(second));
-
-            const dataLengths = [
-              chars.length,
-              ...this.useGlossary_ && this.prioritizeNameOverVietphraseCheck_ ? glossaryEntriesInLine.map(([, second]) => second.length) : [],
-              ...dataEntries.filter(([first]) => chars.includes(first)).map(([first]) => first.length),
-              1
-            ].sort((a, b) => b - a).filter((element, index, array) => index === array.indexOf(element));
-
-            let tempLine = '';
-            let prevPhrase = '';
-
-            for (let j = 0; j < chars.length; j++) {
-              for (const dataLength of dataLengths) {
-                const phrase = chars.substring(j, j + dataLength);
-
-                if (this.useGlossary_ && this.prioritizeNameOverVietphraseCheck_ && glossaryEntries.map(([, second]) => second).indexOf(phrase) > -1) {
-                  tempLine += (j > 0 && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(prevPhrase || tempLine[tempLine.length - 1] || '') ? ' ' : '') + phrase;
-                  prevPhrase = phrase;
-                  j += dataLength - 1;
-                  break;
-                } else if ((!this.isTtvTranslate_ || /^[\d\p{sc=Hani}\p{P}]+$/u.test(phrase) || [...luatnhanNameEntries, ...glossaryEntries].indexOf(phrase) > -1) && data.hasOwnProperty(phrase)) {
-                  if (data[phrase].length > 0) {
-                    tempLine += (j > 0 && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(prevPhrase || tempLine[tempLine.length - 1] || '') ? ' ' : '') + data[phrase];
-                    prevPhrase = data[phrase];
-                  }
-
-                  j += dataLength - 1;
-                  break;
-                } else if (dataLength === 1) {
-                  tempLine += (j > 0 && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(chars[j]) && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(prevPhrase || '') ? ' ' : '') + chars[j];
-                  prevPhrase = '';
-                  break;
-                }
-              }
-            }
-
-            results.push(tempLine);
-          }
-        }
-
-        result = this.getCaseSensitive(results.join('\n'));
-        break;
+      }
+      return result;
+    } catch (error) {
+      throw error;
     }
-    return result;
   }
 
   getLuatnhanData(glossaryEntries, inputText) {

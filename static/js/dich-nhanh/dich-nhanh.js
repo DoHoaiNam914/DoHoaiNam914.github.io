@@ -793,8 +793,7 @@ function getTargetLanguageSelectOptions(translator) {
 
 async function translateText(inputText, translatorOption, targetLanguage, useGlossary) {
   try {
-    inputText = useGlossary && (translatorOption !== Translators.VIETPHRASE || prioritizeNameOverVietphraseCheck.prop('checked')) ? applyGlossaryToText(inputText, translatorOption) : inputText;
-    inputText = useGlossary && (translatorOption === Translators.DEEPL_TRANSLATOR || translatorOption === Translators.GOOGLE_TRANSLATE) ? Utils.convertHtmlToText(inputText) : inputText;
+    inputText = useGlossary && translatorOption === Translators.VIETPHRASE && prioritizeNameOverVietphraseCheck.prop('checked') ? applyGlossaryToText(inputText, translatorOption) : inputText;
     let translator = null;
     let sourceLanguage = '';
 
@@ -859,14 +858,14 @@ function applyGlossaryToText(text, translator = '') {
 
           if (glossary.hasOwnProperty(phrase)) {
             if (glossary[phrase].length > 0) {
-              tempLine += (j > 0 && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(prevPhrase || '') ? ' ' : '') + getIgnoreTranslationMarkup(phrase, glossary[phrase], translator);
+              tempLine += (j > 0 && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(prevPhrase || tempLine[tempLine.length - 1] || '') ? ' ' : '') + getIgnoreTranslationMarkup(phrase, glossary[phrase], translator);
               prevPhrase = glossary[phrase];
             }
 
             j += glossaryLength - 1;
             break;
           } else if (glossaryLength === 1) {
-            tempLine += translator === Translators.DEEPL_TRANSLATOR || translator === Translators.GOOGLE_TRANSLATE ? Utils.convertTextToHtml(chars[j]) : chars[j];
+            tempLine += (j > 0 && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(chars[j]) && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(prevPhrase || '') ? ' ' : '') + (translator === Translators.DEEPL_TRANSLATOR || translator === Translators.GOOGLE_TRANSLATE ? Utils.convertTextToHtml(chars[j]) : chars[j]);
             prevPhrase = '';
             break;
           }
@@ -968,12 +967,12 @@ async function translateTextarea() {
   const glossaryLanguageSource = languagePairs.split('-')[0];
   const glossaryLanguageTarget = languagePairs.split('-')[1];
 
-  const processText = glossaryEnabled && (translatorOption === Translators.VIETPHRASE ? prioritizeNameOverVietphraseCheck.prop('checked') && targetLanguage === 'vi' : sourceLanguage.split('-')[0].toLowerCase() === glossaryLanguageSource && targetLanguage.split('-')[0].toLowerCase() === glossaryLanguageTarget) ? applyGlossaryToText(inputText, translatorOption) : inputText;
-  inputText = glossaryEnabled && (translatorOption === Translators.DEEPL_TRANSLATOR || translatorOption === Translators.GOOGLE_TRANSLATE) && sourceLanguage.split('-')[0].toLowerCase() === glossaryLanguageSource && targetLanguage.split('-')[0].toLowerCase() === glossaryLanguageTarget ? Utils.convertHtmlToText(processText) : processText;
+  let processText = glossaryEnabled && (translatorOption === Translators.VIETPHRASE ? prioritizeNameOverVietphraseCheck.prop('checked') && targetLanguage === 'vi' : sourceLanguage.split('-')[0].toLowerCase() === glossaryLanguageSource && targetLanguage.split('-')[0].toLowerCase() === glossaryLanguageTarget) ? applyGlossaryToText(inputText, translatorOption) : inputText;
+  processText = glossaryEnabled && (translatorOption === Translators.DEEPL_TRANSLATOR || translatorOption === Translators.GOOGLE_TRANSLATE) && sourceLanguage.split('-')[0].toLowerCase() === glossaryLanguageSource && targetLanguage.split('-')[0].toLowerCase() === glossaryLanguageTarget ? Utils.convertHtmlToText(processText) : processText;
 
   const [MAX_LENGTH, MAX_LINE] = getMaxQueryLengthAndLine(translatorOption, processText);
 
-  if (inputText.split(/\n/).sort((a, b) => b.length - a.length)[0].length > MAX_LENGTH) throw `Số lượng từ trong một dòng quá dài (Số lượng từ hợp lệ nhỏ hơn hoặc bằng ${MAX_LENGTH}). [Lưu ý: Khi sử dụng Dynamic Dictionary và Bảo vệ dấu trích đẫn sẽ làm giảm số lượng từ có thể dịch đi.]`;
+  if (processText.split(/\n/).sort((a, b) => b.length - a.length)[0].length > MAX_LENGTH) throw `Số lượng từ trong một dòng quá dài (Số lượng từ hợp lệ nhỏ hơn hoặc bằng ${MAX_LENGTH}). [Lưu ý: Khi sử dụng Dynamic Dictionary và Bảo vệ dấu trích đẫn sẽ làm giảm số lượng từ có thể dịch đi.]`;
 
   try {
     let result = '';
@@ -1049,6 +1048,7 @@ async function translateTextarea() {
     const paragraph = document.createElement('p');
     paragraph.innerText = `Bản dịch thất bại: ${error}`;
     resultTextarea.html(paragraph);
+    lastSession = {};
   }
 }
 
