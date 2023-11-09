@@ -795,7 +795,7 @@ class Vietphrase {
 
                 dataEntries = [...this.useGlossary ? (this.prioritizeNameOverVietphraseCheck ? luatnhanNameEntries : [...luatnhanNameEntries, ...glossaryEntries]) : [], ...luatnhanPronounEntries, ...dataEntries].sort((a, b) => b[0].length - a[0].length);
 
-                dataEntries.forEach(([key, value]) => {
+                dataEntries.some(([key, value], index, array) => {
                     if (!this.isTtvTranslate || /^[\d\p{sc=Hani}]+$/u.test(key) || [...luatnhanNameEntries, ...glossaryEntries].indexOf(key) > -1) {
                         result = result.replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}])${Utils.getRegexEscapedText(key)}(?=${Object.values(this.glossary).join('|')})`, 'gu'), `$1 ${Utils.getRegexEscapedReplacement(value)} `)
                                 .replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}])${Utils.getRegexEscapedText(key)}([\\p{Lu}\\p{Ll}\\p{Nd}])`, 'gu'), `$1 ${Utils.getRegexEscapedReplacement(value)} $2`)
@@ -804,6 +804,9 @@ class Vietphrase {
                                 .replace(new RegExp(`${Utils.getRegexEscapedText(key)}(?=${Object.values(this.glossary).join('|')})`, 'g'), `${Utils.getRegexEscapedReplacement(value)} `)
                                 .replace(new RegExp(Utils.getRegexEscapedText(key), 'g'), Utils.getRegexEscapedReplacement(value));
                     }
+
+                    if (array.filter(([first]) => result.includes(first)).length === 0) return true;
+                    return false
                 });
 
                 result = this.getCaseSensitive(result);
@@ -850,14 +853,14 @@ class Vietphrase {
                     let prevPhrase = '';
 
                     for (let j = 0; j < chars.length; j++) {
-                        dataLengths.forEach((element) => {
+                        dataLengths.some((element) => {
                             const phrase = chars.substring(j, j + element);
 
                             if (this.useGlossary && this.prioritizeNameOverVietphraseCheck && glossaryEntries.map(([, second]) => second).indexOf(phrase) > -1) {
                                 tempLine += (j > 0 && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(prevPhrase || tempLine[tempLine.length - 1] || '') ? ' ' : '') + phrase;
                                 prevPhrase = phrase;
                                 j += element - 1;
-                                return false;
+                                return true;
                             } else if ((!this.isTtvTranslate || /^[\d\p{sc=Hani}]+$/u.test(phrase) || [...luatnhanNameEntries, ...glossaryEntries].indexOf(phrase) > -1) && data.hasOwnProperty(phrase)) {
                                 if (data[phrase].length > 0) {
                                     tempLine += (j > 0 && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(prevPhrase || tempLine[tempLine.length - 1] || '') ? ' ' : '') + data[phrase];
@@ -865,11 +868,14 @@ class Vietphrase {
                                 }
 
                                 j += element - 1;
-                                return false;
+                                return true;
                             } else if (element === 1) {
                                 tempLine += (j > 0 && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(chars[j]) && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(prevPhrase || '') ? ' ' : '') + chars[j];
                                 prevPhrase = '';
+                                return true;
                             }
+
+                            return false;
                         });
                     }
 

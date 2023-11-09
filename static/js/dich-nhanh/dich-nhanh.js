@@ -818,7 +818,7 @@ function applyGlossaryToText(text, translator = '') {
             let prevPhrase = '';
 
             for (let j = 0; j < chars.length; j++) {
-                glossaryLengths.forEach((element) => {
+                glossaryLengths.some((element) => {
                     const phrase = translator === Translators.DEEPL_TRANSLATOR || translator === Translators.GOOGLE_TRANSLATE ? Utils.convertHtmlToText(chars.substring(j, j + element)) : chars.substring(j, j + element);
 
                     if (glossary.hasOwnProperty(phrase)) {
@@ -828,11 +828,14 @@ function applyGlossaryToText(text, translator = '') {
                         }
 
                         j += element - 1;
-                        return false;
+                        return true;
                     } else if (element === 1) {
                         tempLine += (j > 0 && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(chars[j]) && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(prevPhrase || '') ? ' ' : '') + (translator === Translators.DEEPL_TRANSLATOR || translator === Translators.GOOGLE_TRANSLATE ? Utils.convertTextToHtml(chars[j]) : chars[j]);
                         prevPhrase = '';
+                        return true;
                     }
+
+                    return false;
                 });
                 results.push(tempLine);
             }
