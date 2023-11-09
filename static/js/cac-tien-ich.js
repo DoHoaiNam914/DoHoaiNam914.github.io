@@ -43,7 +43,7 @@ class Utils {
 
         for (const char of Object.keys(data).sort()) {
             if (typeof data[char] === 'object') {
-                let recurse = this.getRegexPattern(data[char]);
+                const recurse = this.getRegexPattern(data[char]);
 
                 if (recurse != null) {
                     alternation.push(this.getRegexEscapedText(char) + recurse);

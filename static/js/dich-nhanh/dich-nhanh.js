@@ -167,6 +167,7 @@ $(window).on('keydown', (event) => {
             case 'Home':
                 resultTextarea.prop('scrollTop', 0);
                 break;
+
             case 'End':
                 resultTextarea.prop('scrollTop', resultTextarea.prop('scrollTopMax'));
                 break;
@@ -221,6 +222,7 @@ translateButton.on('click', function () {
                     prevScrollTop = 0;
                 }
             });
+
             break;
     }
 });
@@ -229,11 +231,13 @@ copyButtons.on('click', async function () {
         if (Object.keys(lastSession).length > 0) {
             await navigator.clipboard.writeText(lastSession.result);
         }
+
         return;
     } else if ($(this).data('target') === '#glossary-data-list') {
         if (glossaryData.length > 0) {
             await navigator.clipboard.writeText(glossaryData);
         }
+
         return;
     }
 
@@ -503,6 +507,7 @@ function loadAllQuickTranslatorOptions() {
                     $(`.option[name="${option.attr('name')}"]`).removeAttr('checked');
                     option.attr('checked', true);
                 }
+
                 break;
 
             case OptionTypes.CHECK:
@@ -526,6 +531,7 @@ function loadAllQuickTranslatorOptions() {
                         values.filter(`[data-id="${quickTranslateStorage[optionId]}"]`).click();
                         break;
                 }
+
                 break;
 
             default:
@@ -571,6 +577,7 @@ function getCurrentOptions() {
                             data.translator = selectedValue.data('id');
                             break;
                     }
+
                     break;
 
                 default:
@@ -579,6 +586,7 @@ function getCurrentOptions() {
                     break;
             }
         }
+
         return data;
     } catch (error) {
         console.error(error);
@@ -644,6 +652,7 @@ function getSourceLanguageSelectOptions(translator) {
                 option.value = language;
                 sourceLanguageSelect.appendChild(option);
             });
+
             break;
 
         case Translators.GOOGLE_TRANSLATE:
@@ -653,6 +662,7 @@ function getSourceLanguageSelectOptions(translator) {
                 option.value = languageCode;
                 sourceLanguageSelect.appendChild(option);
             });
+
             break;
 
         case Translators.PAPAGO:
@@ -662,6 +672,7 @@ function getSourceLanguageSelectOptions(translator) {
                 option.value = languageCode;
                 sourceLanguageSelect.appendChild(option);
             });
+
             break;
 
         case Translators.VIETPHRASE:
@@ -671,6 +682,7 @@ function getSourceLanguageSelectOptions(translator) {
                 option.value = languageCode;
                 sourceLanguageSelect.appendChild(option);
             });
+
             break;
 
         default:
@@ -681,8 +693,10 @@ function getSourceLanguageSelectOptions(translator) {
                 option.value = languageCode;
                 sourceLanguageSelect.appendChild(option);
             });
+
             break;
     }
+
     return sourceLanguageSelect.innerHTML;
 }
 
@@ -697,6 +711,7 @@ function getTargetLanguageSelectOptions(translator) {
                 option.value = language;
                 targetLanguageSelect.appendChild(option);
             });
+
             break;
 
         case Translators.GOOGLE_TRANSLATE:
@@ -706,6 +721,7 @@ function getTargetLanguageSelectOptions(translator) {
                 option.value = languageCode;
                 targetLanguageSelect.appendChild(option);
             });
+
             break;
 
         case Translators.PAPAGO:
@@ -715,6 +731,7 @@ function getTargetLanguageSelectOptions(translator) {
                 option.value = languageCode;
                 targetLanguageSelect.appendChild(option);
             });
+
             break;
 
         case Translators.VIETPHRASE:
@@ -724,6 +741,7 @@ function getTargetLanguageSelectOptions(translator) {
                 option.value = languageCode;
                 targetLanguageSelect.appendChild(option);
             });
+
             break;
 
         default:
@@ -734,8 +752,10 @@ function getTargetLanguageSelectOptions(translator) {
                 option.value = languageCode;
                 targetLanguageSelect.appendChild(option);
             });
+
             break;
     }
+
     return targetLanguageSelect.innerHTML;
 }
 
@@ -808,7 +828,7 @@ function applyGlossaryToText(text, translator = '') {
                         }
 
                         j += element - 1;
-                        return null;
+                        return false;
                     } else if (element === 1) {
                         tempLine += (j > 0 && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(chars[j]) && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(prevPhrase || '') ? ' ' : '') + (translator === Translators.DEEPL_TRANSLATOR || translator === Translators.GOOGLE_TRANSLATE ? Utils.convertTextToHtml(chars[j]) : chars[j]);
                         prevPhrase = '';
