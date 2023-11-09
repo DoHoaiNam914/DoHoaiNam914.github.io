@@ -482,7 +482,7 @@ inputTextarea.on('input', function () {
     $('#input-textarea-counter').text($(this).val().length);
 });
 inputTextarea.on('keypress', (event) => {
-    if (!event.shiftKey && event.key === 'Enter') translateButton.click();
+    if (event.shiftKey && event.key === 'Enter') translateButton.click();
 });
 resultTextarea.on('dblclick', () => {
     translateButton.click();
