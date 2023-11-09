@@ -890,22 +890,22 @@ class Vietphrase {
         const luatnhanPronounEntries = [];
 
         if (this.multiplicationAlgorithm > this.MultiplicationAlgorithm.NOT_APPLICABLE) {
-            Object.entries(this.data.cacLuatnhan).forEach((a) => {
+            Object.entries(this.data.cacLuatnhan).forEach(([a, b]) => {
                 if (this.useGlossary && this.multiplicationAlgorithm === this.MultiplicationAlgorithm.MULTIPLICATION_BY_PRONOUNS_AND_NAMES && glossaryEntries.length > 0) {
-                    Object.entries(this.glossary).forEach((b) => {
-                        const entriesKey = a.replace(/\{0}/g, Utils.getRegexEscapedReplacement(this.prioritizeNameOverVietphraseCheck ? this.glossary[b] : b));
+                    Object.entries(this.glossary).forEach(([c, d]) => {
+                        const entriesKey = a.replace(/\{0}/g, Utils.getRegexEscapedReplacement(this.prioritizeNameOverVietphraseCheck ? d : c));
 
                         if (inputText.includes(entriesKey)) {
-                            luatnhanNameEntries.push([entriesKey, this.data.cacLuatnhan[a].replace(/\{0}/g, Utils.getRegexEscapedReplacement(this.glossary[b]))]);
+                            luatnhanNameEntries.push([entriesKey, b.replace(/\{0}/g, Utils.getRegexEscapedReplacement(d))]);
                         }
                     });
                 }
 
-                Object.entries(this.data.pronouns).forEach((b) => {
-                    const entriesKey = a.replace(/\{0}/g, Utils.getRegexEscapedReplacement(b));
+                Object.entries(this.data.pronouns).forEach(([c, d]) => {
+                    const entriesKey = a.replace(/\{0}/g, Utils.getRegexEscapedReplacement(c));
 
                     if (inputText.includes(entriesKey)) {
-                        luatnhanPronounEntries.push([entriesKey, this.data.cacLuatnhan[a].replace(/\{0}/g, Utils.getRegexEscapedReplacement(this.data.pronouns[b]))]);
+                        luatnhanPronounEntries.push([entriesKey, b.replace(/\{0}/g, Utils.getRegexEscapedReplacement(d))]);
                     }
                 });
             });
