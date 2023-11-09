@@ -357,13 +357,13 @@ class GoogleTranslate {
         return a;
     }
 
-    static lq(a) {
+    lq(a) {
         var b = this.kq().split("."), c = Number(b[0]) || 0;
-        a = this.Oo(a);
+        a = GoogleTranslate.Oo(a);
         for (var d = c, e = 0; e < a.length; e++) {
-            (d += a[e]), (d = this.jq(d, "+-a^+6"));
+            (d += a[e]), (d = GoogleTranslate.jq(d, "+-a^+6"));
         }
-        d = this.jq(d, "+-3^+b+-f");
+        d = GoogleTranslate.jq(d, "+-3^+b+-f");
         d ^= Number(b[1]) || 0;
         0 > d && (d = (d & 2147483647) + 2147483648);
         b = d % 1e6;

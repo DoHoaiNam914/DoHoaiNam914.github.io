@@ -837,12 +837,14 @@ function applyGlossaryToText(text, translator = '') {
 
                     return false;
                 });
-                results.push(tempLine);
             }
 
-            newText = results.join('\n');
+            results.push(tempLine);
         }
+
+        newText = results.join('\n');
     }
+
     return newText;
 }
 
