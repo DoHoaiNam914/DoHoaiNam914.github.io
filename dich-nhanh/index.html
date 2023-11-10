@@ -125,11 +125,11 @@
       '/static/lib/bootstrap.bundle.min.js',
       '/static/lib/CryptoJS v3.1.2/rollups/hmac-md5.js',
       '/static/lib/CryptoJS v3.1.2/components/enc-base64.js',
-      '/static/js/cac-tien-ich.js',
       '/static/lib/handict.js',
       '/static/js/dich-nhanh/hanviet-dac-biet.js',
       '/static/js/dich-nhanh/dau-thanh-moi.js',
-      '/static/js/dich-nhanh/trinh-dich.js',
+      '/static/js/cac-tien-ich.js',
+      '/static/js/dich-nhanh/cac-trinh-dich.js',
       '/static/js/dich-nhanh/dich-nhanh.js',
     ];
     var i = 0;
@@ -649,9 +649,6 @@
                 <button type="submit" class="dropdown-item translator-option" data-id="googleTranslate">Google Dịch</button>
               </li>
               <li>
-                <button type="submit" class="dropdown-item translator-option" data-id="lingvanex">Lingvanex</button>
-              </li>
-              <li>
                 <button type="submit" class="dropdown-item translator-option" data-id="papago">Papago</button>
               </li>
               <li>
@@ -766,49 +763,49 @@
                     <hr class="dropdown-divider">
                   </li>
                   <li>
-                    <button type="button" class="dropdown-item define-button" data-href="http://tratu.coviet.vn/hoc-tieng-anh/tu-dien/lac-viet/A-V/${0}.html">Vietgle Tra từ (A-V)</button>
+                    <button type="button" class="dropdown-item define-button" data-href="http://tratu.coviet.vn/hoc-tieng-anh/tu-dien/lac-viet/A-V/{0}.html">Vietgle Tra từ (A-V)</button>
                   </li>
                   <li>
-                    <button type="button" class="dropdown-item define-button" data-href="http://tratu.coviet.vn/hoc-tieng-trung/tu-dien/lac-viet/T-V/${0}.html">Vietgle Tra từ (T-V)</button>
+                    <button type="button" class="dropdown-item define-button" data-href="http://tratu.coviet.vn/hoc-tieng-trung/tu-dien/lac-viet/T-V/{0}.html">Vietgle Tra từ (T-V)</button>
                   </li>
                   <li>
-                    <button type="button" class="dropdown-item define-button" data-href="https://www.google.com.vn/search?q=${0}">Google</button>
+                    <button type="button" class="dropdown-item define-button" data-href="https://www.google.com.vn/search?q={0}">Google</button>
                   </li>
                   <li>
-                    <button type="button" class="dropdown-item define-button" data-href="https://vi.wikipedia.org/w/?search=${0}&ns0=1">Wikipedia</button>
+                    <button type="button" class="dropdown-item define-button" data-href="https://vi.wikipedia.org/w/?search={0}&ns0=1">Wikipedia</button>
                   </li>
                   <li>
-                    <button type="button" class="dropdown-item define-button" data-href="http://nomfoundation.org/nom-tools/Giup-Doc?uiLang=vn&inputText=${0}">Giúp đọc Nôm và Hán Việt</button>
+                    <button type="button" class="dropdown-item define-button" data-href="http://nomfoundation.org/nom-tools/Giup-Doc?uiLang=vn&inputText={0}">Giúp đọc Nôm và Hán Việt</button>
                   </li>
                   <li>
-                    <button type="button" class="dropdown-item define-button" data-href="https://hvdic.thivien.net/whv/${0}">Từ điển Hán Nôm</button>
+                    <button type="button" class="dropdown-item define-button" data-href="https://hvdic.thivien.net/whv/{0}">Từ điển Hán Nôm</button>
                   </li>
                   <li>
-                    <button type="button" class="dropdown-item define-button" data-href="http://tratu.soha.vn/index.php?search=${0}">Soha Tratu</button>
+                    <button type="button" class="dropdown-item define-button" data-href="http://tratu.soha.vn/index.php?search={0}">Soha Tratu</button>
                   </li>
                   <li>
-                    <button type="button" class="dropdown-item define-button" data-href="https://english.dict.naver.com/english-chinese-dictionary/#/search?query=${0}">Naver dictionary</button>
+                    <button type="button" class="dropdown-item define-button" data-href="https://english.dict.naver.com/english-chinese-dictionary/#/search?query={0}">Naver dictionary</button>
                   </li>
                   <li>
-                    <button type="button" class="dropdown-item define-button" data-href="https://www.baidu.com/s?wd=${0}">Baidu</button>
+                    <button type="button" class="dropdown-item define-button" data-href="https://www.baidu.com/s?wd={0}">Baidu</button>
                   </li>
                   <li>
                     <hr class="dropdown-divider">
                   </li>
                   <li>
-                    <button type="button" class="dropdown-item translate-webpage-button" data-href="https://fanyi.baidu.com/#auto/vie/${0}">Baidu Fanyi</button>
+                    <button type="button" class="dropdown-item translate-webpage-button" data-href="https://fanyi.baidu.com/#auto/vie/{0}">Baidu Fanyi</button>
                   </li>
                   <li>
-                    <button type="button" class="dropdown-item translate-webpage-button" data-href="https://www.deepl.com/translator#auto/en/${0}">DeepL Translator</button>
+                    <button type="button" class="dropdown-item translate-webpage-button" data-href="https://www.deepl.com/translator#auto/en/{0}">DeepL Translator</button>
                   </li>
                   <li>
-                    <button type="button" class="dropdown-item translate-webpage-button" data-href="https://translate.google.com/?sl=auto&tl=vi&text=${0}&op=translate">Google Dịch</button>
+                    <button type="button" class="dropdown-item translate-webpage-button" data-href="https://translate.google.com/?sl=auto&tl=vi&text={0}&op=translate">Google Dịch</button>
                   </li>
                   <li>
-                    <button type="button" class="dropdown-item translate-webpage-button" data-href="https://papago.naver.com/?sk=auto&tk=vi&st=${0}">Papago</button>
+                    <button type="button" class="dropdown-item translate-webpage-button" data-href="https://papago.naver.com/?sk=auto&tk=vi&st={0}">Papago</button>
                   </li>
                   <li>
-                    <button type="button" class="dropdown-item translate-webpage-button" data-href="https://www.bing.com/translator?from=auto-detect&to=vi&text=${0}">Trình dịch Microsoft Bing</button>
+                    <button type="button" class="dropdown-item translate-webpage-button" data-href="https://www.bing.com/translator?from=auto-detect&to=vi&text={0}">Trình dịch Microsoft Bing</button>
                   </li>
                 </ul>
               </div>
