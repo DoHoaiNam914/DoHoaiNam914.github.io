@@ -1,27 +1,96 @@
-// Use this file as a starting point for your project's .eslintrc.
-// Copy this file, and add rule overrides as needed.
 {
   "extends": "airbnb-base",
   "env": {
     "browser": true,
+    "es6": true,
     "jquery": true
   },
   "parserOptions": {
     "ecmaVersion": "latest"
   },
   "rules": {
-    // disable requiring trailing commas because it might be nice to revert to
-    // being JSON at some point, and I don't want to make big changes now.
-    "comma-dangle": "off",
-
-    "max-len": "off",
-
     "no-await-in-loop": "warn",
-    "no-unused-vars": "warn",
-    "no-use-before-define": "warn",
-    "max-classes-per-file": "warn",
-    "no-param-reassign": "warn",
-    "no-return-assign": "warn",
-    "no-underscore-dangle": "warn"
+    "no-unused-vars": [
+      "warn",
+      {
+        "vars": "all",
+        "args": "after-used",
+        "ignoreRestSiblings": true
+      }
+    ],
+    "no-use-before-define": [
+      "warn",
+      {
+        "functions": true,
+        "classes": true,
+        "variables": true
+      }
+    ],
+    "max-classes-per-file": [
+      "warn",
+      1
+    ],
+    "no-param-reassign": [
+      "error",
+      {
+        "props": true,
+        "ignorePropertyModificationsFor": [
+          "acc",
+          // for reduce accumulators
+          "accumulator",
+          // for reduce accumulators
+          "e",
+          // for e.returnvalue
+          "ctx",
+          // for Koa routing
+          "context",
+          // for Koa routing
+          "req",
+          // for Express requests
+          "request",
+          // for Express requests
+          "res",
+          // for Express responses
+          "response",
+          // for Express responses
+          "$scope",
+          // for Angular 1 scopes
+          "staticContext",
+          // for ReactRouter context
+          "array"
+        ]
+      }
+    ],
+    "no-return-assign": [
+      "warn",
+      "always"
+    ],
+    "no-underscore-dangle": [
+      "warn",
+      {
+        "allow": [],
+        "allowAfterThis": false,
+        "allowAfterSuper": false,
+        "enforceInMethodNames": true
+      }
+    ],
+    "max-len": [
+      "warn",
+      100,
+      2,
+      {
+        "ignoreUrls": true,
+        "ignoreComments": false,
+        "ignoreRegExpLiterals": true,
+        "ignoreStrings": true,
+        "ignoreTemplateLiterals": true
+      }
+    ],
+    "newline-per-chained-call": [
+      "off",
+      {
+        "ignoreChainWithDepth": 4
+      }
+    ]
   }
 }

@@ -117,7 +117,7 @@
   </style>
   <script src="/static/lib/LAB.js"></script>
   <script>
-    const scriptsToLoad = [
+    const librariesToLoad = [
       '/static/lib/jquery-3.7.1.min.js',
       '/static/lib/jquery.csv.min.js',
       '/static/lib/bootstrap.bundle.min.js',
@@ -126,12 +126,19 @@
       '/static/lib/handict.js',
       '/static/js/dich-nhanh/hanviet-dac-biet.js',
       '/static/js/dich-nhanh/dau-thanh-moi.js',
+    ];
+
+    const scriptsToLoad = [...librariesToLoad, .../devMode=true/.test(window.location) ? [
       '/static/js/cac-tien-ich.js',
       '/static/js/dich-nhanh/cac-trinh-dich.js',
       '/static/js/dich-nhanh/dich-nhanh.js',
-    ];
-    let i = 0;
+    ] : [
+      '/dist/cac-tien-ich.js',
+      '/dist/cac-trinh-dich.js',
+      '/dist/dich-nhanh.js'
+    ]];
 
+    let i = 0;
     const labJs = () => {
       if (i < scriptsToLoad.length) {
         $LAB.script(scriptsToLoad[i])
