@@ -811,7 +811,7 @@ class Vietphrase {
     }
   }
 
-  translateText(sourceLanugage, targetLanguage, inputText) {
+  async translateText(sourceLanugage, targetLanguage, inputText) {
     try {
       let data = {};
 
@@ -900,22 +900,20 @@ class Vietphrase {
         const dataObj = Object.fromEntries(dataEntries);
 
         lines.forEach((a) => {
-          const chars = a;
-
-          if (chars.length === 0) {
-            results.push(chars);
+          if (a.length === 0) {
+            results.push(a);
           } else {
-            const glossaryEntriesInLine = glossaryEntries.filter(([, second]) => chars.includes(second));
+            const glossaryEntriesInLine = glossaryEntries.filter(([, second]) => a.includes(second));
 
-            const dataLengths = [chars.length, ...this.useGlossary && this.prioritizeNameOverVietphrase ? glossaryEntriesInLine.map(([, second]) => second.length) : [], ...dataEntries.filter(([first]) => chars.includes(first)).map(([first]) => first.length), 1].sort((b, c) => c - b).filter((element, index, array) => element > 0 && index === array.indexOf(element));
+            const dataLengths = [a.length, ...this.useGlossary && this.prioritizeNameOverVietphrase ? glossaryEntriesInLine.map(([, second]) => second.length) : [], ...dataEntries.filter(([first]) => a.includes(first)).map(([first]) => first.length), 1].sort((b, c) => c - b).filter((element, index, array) => element > 0 && index === array.indexOf(element));
 
             let tempLine = '';
             let prevPhrase = '';
             let i = 0;
-            console.log(chars);
-            chars.forEach(() => {
+            console.log(a);
+            a.forEach(() => {
               dataLengths.some((b) => {
-                const phrase = chars.substring(i, i + b);
+                const phrase = a.substring(i, i + b);
 
                 if (this.useGlossary && this.prioritizeNameOverVietphrase && glossaryEntries.map(([, second]) => second).indexOf(phrase) > -1) {
                   tempLine += (i > 0 && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(prevPhrase || tempLine[tempLine.length - 1] || '') ? ' ' : '') + phrase;
@@ -933,7 +931,7 @@ class Vietphrase {
                   return true;
                 }
                 if (b === 1) {
-                  tempLine += (i > 0 && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(chars[i]) && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(prevPhrase || '') ? ' ' : '') + chars[i];
+                  tempLine += (i > 0 && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(a[i]) && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(prevPhrase || '') ? ' ' : '') + a[i];
                   prevPhrase = '';
                   return true;
                 }
