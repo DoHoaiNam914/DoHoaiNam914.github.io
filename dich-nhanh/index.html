@@ -233,6 +233,14 @@
       });
     })();
   </script>
+  <script>
+    ;(function () {
+        var src = '//cdn.jsdelivr.net/npm/eruda';
+        if (!/eruda=true/.test(window.location) && localStorage.getItem('active-eruda') != 'true') return;
+        document.write('<scr' + 'ipt src="' + src + '"></scr' + 'ipt>');
+        document.write('<scr' + 'ipt>eruda.init();</scr' + 'ipt>');
+    })();
+  </script>
 </head>
 <body class="bg-body-tertiary h-100 m-0 p-0 position-relative w-100">
 <div class="container-fluid fixed-bottom p-0 navigator">
