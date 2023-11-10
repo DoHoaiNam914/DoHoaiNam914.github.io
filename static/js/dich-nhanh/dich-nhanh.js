@@ -273,30 +273,32 @@ function applyGlossaryToText(text, translator = '') {
         let prevPhrase = '';
         let i = 0;
 
-        a.split('').forEach(() => {
-          glossaryLengths.some((b) => {
-            const phrase = translator === Translators.DEEPL_TRANSLATE || translator === Translators.GOOGLE_TRANSLATE ? Utils.convertHtmlToText(a.substring(i, i + b)) : a.substring(i, i + b);
+        a.split('').forEach((b, c) => {
+          if (c === i) {
+            glossaryLengths.some((d) => {
+              const phrase = translator === Translators.DEEPL_TRANSLATE || translator === Translators.GOOGLE_TRANSLATE ? Utils.convertHtmlToText(a.substring(i, i + d)) : a.substring(i, i + d);
 
-            if (Object.prototype.hasOwnProperty.call(glossary, phrase)) {
-              if (glossary[phrase].length > 0) {
-                tempLine += (i > 0 && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(prevPhrase || tempLine[tempLine.length - 1] || '') ? ' ' : '') + getIgnoreTranslationMarkup(phrase, glossary[phrase], translator);
-                prevPhrase = glossary[phrase];
+              if (Object.prototype.hasOwnProperty.call(glossary, phrase)) {
+                if (glossary[phrase].length > 0) {
+                  tempLine += (i > 0 && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(prevPhrase || tempLine[tempLine.length - 1] || '') ? ' ' : '') + getIgnoreTranslationMarkup(phrase, glossary[phrase], translator);
+                  prevPhrase = glossary[phrase];
+                }
+
+                i += d - 1;
+                return true;
               }
 
-              i += b - 1;
-              return true;
-            }
+              if (d === 1) {
+                tempLine += (i > 0 && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(a[i]) && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(prevPhrase || '') ? ' ' : '') + (translator === Translators.DEEPL_TRANSLATE || translator === Translators.GOOGLE_TRANSLATE ? Utils.convertTextToHtml(phrase) : phrase);
+                prevPhrase = '';
+                return true;
+              }
 
-            if (b === 1) {
-              tempLine += (i > 0 && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(a[i]) && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(prevPhrase || '') ? ' ' : '') + (translator === Translators.DEEPL_TRANSLATE || translator === Translators.GOOGLE_TRANSLATE ? Utils.convertTextToHtml(a[i]) : a[i]);
-              prevPhrase = '';
-              return true;
-            }
+              return false;
+            });
 
-            return false;
-          });
-
-          i += 1;
+            i += 1;
+          }
         });
 
         results.push(tempLine);

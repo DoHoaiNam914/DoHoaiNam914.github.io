@@ -1010,34 +1010,36 @@ class Vietphrase {
             let tempLine = '';
             let prevPhrase = '';
             let i = 0;
-            a.split('').forEach(() => {
-              dataLengths.some(b => {
-                const phrase = a.substring(i, i + b);
-                if (this.useGlossary && this.prioritizeNameOverVietphrase && glossaryEntries.map(_ref18 => {
-                  let [, second] = _ref18;
-                  return second;
-                }).indexOf(phrase) > -1) {
-                  tempLine += (i > 0 && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(prevPhrase || tempLine[tempLine.length - 1] || '') ? ' ' : '') + phrase;
-                  prevPhrase = phrase;
-                  i += b - 1;
-                  return true;
-                }
-                if ((!this.isTtvTranslate || /^[\d\p{sc=Hani}]+$/u.test(phrase) || [...luatnhanNameEntries, ...glossaryEntries].indexOf(phrase) > -1) && Object.prototype.hasOwnProperty.call(dataObj, phrase)) {
-                  if (dataObj[phrase].length > 0) {
-                    tempLine += (i > 0 && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(prevPhrase || tempLine[tempLine.length - 1] || '') ? ' ' : '') + dataObj[phrase];
-                    prevPhrase = dataObj[phrase];
+            a.split('').forEach((b, c) => {
+              if (c === i) {
+                dataLengths.some(d => {
+                  const phrase = a.substring(i, i + d);
+                  if (this.useGlossary && this.prioritizeNameOverVietphrase && glossaryEntries.map(_ref18 => {
+                    let [, second] = _ref18;
+                    return second;
+                  }).indexOf(phrase) > -1) {
+                    tempLine += (i > 0 && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(prevPhrase || tempLine[tempLine.length - 1] || '') ? ' ' : '') + phrase;
+                    prevPhrase = phrase;
+                    i += d - 1;
+                    return true;
                   }
-                  i += b - 1;
-                  return true;
-                }
-                if (b === 1) {
-                  tempLine += (i > 0 && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(a[i]) && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(prevPhrase || '') ? ' ' : '') + a[i];
-                  prevPhrase = '';
-                  return true;
-                }
-                return false;
-              });
-              i += 1;
+                  if ((!this.isTtvTranslate || /^[\d\p{sc=Hani}]+$/u.test(phrase) || [...luatnhanNameEntries, ...glossaryEntries].indexOf(phrase) > -1) && Object.prototype.hasOwnProperty.call(dataObj, phrase)) {
+                    if (dataObj[phrase].length > 0) {
+                      tempLine += (i > 0 && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(prevPhrase || tempLine[tempLine.length - 1] || '') ? ' ' : '') + dataObj[phrase];
+                      prevPhrase = dataObj[phrase];
+                    }
+                    i += d - 1;
+                    return true;
+                  }
+                  if (d === 1) {
+                    tempLine += (i > 0 && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(a[i]) && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(prevPhrase || '') ? ' ' : '') + phrase;
+                    prevPhrase = '';
+                    return true;
+                  }
+                  return false;
+                });
+                i += 1;
+              }
             });
             results.push(tempLine);
           }
