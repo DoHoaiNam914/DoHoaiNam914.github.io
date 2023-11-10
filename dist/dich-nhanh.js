@@ -619,7 +619,7 @@ function updateLanguageSelect(translator, prevTranslator) {
 }
 async function translateText(inputText, translatorOption, targetLanguage, glossaryEnabled) {
   try {
-    const text = translatorOption === Translators.VIETPHRASE && $prioritizeNameOverVietphraseCheck.prop('checked') ? applyGlossaryToText(inputText, translatorOption) : inputText;
+    const text = glossaryEnabled && (translatorOption !== Translators.VIETPHRASE && $prioritizeNameOverVietphraseCheck.prop('checked')) ? applyGlossaryToText(inputText, translatorOption) : inputText;
     let translator = null;
     let sourceLanguage = '';
     switch (translatorOption) {
