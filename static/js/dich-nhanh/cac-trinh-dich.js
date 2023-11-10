@@ -910,8 +910,8 @@ class Vietphrase {
             let tempLine = '';
             let prevPhrase = '';
             let i = 0;
-            console.log(a);
-            a.forEach(() => {
+
+            a.split('').forEach(() => {
               dataLengths.some((b) => {
                 const phrase = a.substring(i, i + b);
 
@@ -930,6 +930,7 @@ class Vietphrase {
                   i += b - 1;
                   return true;
                 }
+
                 if (b === 1) {
                   tempLine += (i > 0 && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(a[i]) && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(prevPhrase || '') ? ' ' : '') + a[i];
                   prevPhrase = '';

@@ -264,16 +264,15 @@ function applyGlossaryToText(text) {
       return first.length;
     }), 1].sort((a, b) => b - a).filter((element, index, array) => element > 0 && index === array.indexOf(element));
     lines.forEach(a => {
-      const chars = a;
-      if (chars.length === 0) {
-        results.push(chars);
+      if (a.length === 0) {
+        results.push(a);
       } else {
         let tempLine = '';
         let prevPhrase = '';
         let i = 0;
-        chars.forEach(() => {
+        a.split('').forEach(() => {
           glossaryLengths.some(b => {
-            const phrase = translator === Translators.DEEPL_TRANSLATE || translator === Translators.GOOGLE_TRANSLATE ? Utils.convertHtmlToText(chars.substring(i, i + b)) : chars.substring(i, i + b);
+            const phrase = translator === Translators.DEEPL_TRANSLATE || translator === Translators.GOOGLE_TRANSLATE ? Utils.convertHtmlToText(a.substring(i, i + b)) : a.substring(i, i + b);
             if (Object.prototype.hasOwnProperty.call(glossary, phrase)) {
               if (glossary[phrase].length > 0) {
                 tempLine += (i > 0 && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(prevPhrase || tempLine[tempLine.length - 1] || '') ? ' ' : '') + getIgnoreTranslationMarkup(phrase, glossary[phrase], translator);
@@ -283,7 +282,7 @@ function applyGlossaryToText(text) {
               return true;
             }
             if (b === 1) {
-              tempLine += (i > 0 && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(chars[i]) && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(prevPhrase || '') ? ' ' : '') + (translator === Translators.DEEPL_TRANSLATE || translator === Translators.GOOGLE_TRANSLATE ? Utils.convertTextToHtml(chars[i]) : chars[i]);
+              tempLine += (i > 0 && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(a[i]) && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(prevPhrase || '') ? ' ' : '') + (translator === Translators.DEEPL_TRANSLATE || translator === Translators.GOOGLE_TRANSLATE ? Utils.convertTextToHtml(a[i]) : a[i]);
               prevPhrase = '';
               return true;
             }

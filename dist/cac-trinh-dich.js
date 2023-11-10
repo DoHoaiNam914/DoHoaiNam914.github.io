@@ -904,7 +904,7 @@ class Vietphrase {
         }
     }
   }
-  translateText(sourceLanugage, targetLanguage, inputText) {
+  async translateText(sourceLanugage, targetLanguage, inputText) {
     try {
       let data = {};
       switch (targetLanguage) {
@@ -990,20 +990,19 @@ class Vietphrase {
         dataEntries = [...(this.useGlossary ? maybePrioritizeNameOverVietphrase : []), ...luatnhanPronounEntries, ...dataEntries];
         const dataObj = Object.fromEntries(dataEntries);
         lines.forEach(a => {
-          const chars = a;
-          if (chars.length === 0) {
-            results.push(chars);
+          if (a.length === 0) {
+            results.push(a);
           } else {
             const glossaryEntriesInLine = glossaryEntries.filter(_ref14 => {
               let [, second] = _ref14;
-              return chars.includes(second);
+              return a.includes(second);
             });
-            const dataLengths = [chars.length, ...(this.useGlossary && this.prioritizeNameOverVietphrase ? glossaryEntriesInLine.map(_ref15 => {
+            const dataLengths = [a.length, ...(this.useGlossary && this.prioritizeNameOverVietphrase ? glossaryEntriesInLine.map(_ref15 => {
               let [, second] = _ref15;
               return second.length;
             }) : []), ...dataEntries.filter(_ref16 => {
               let [first] = _ref16;
-              return chars.includes(first);
+              return a.includes(first);
             }).map(_ref17 => {
               let [first] = _ref17;
               return first.length;
@@ -1011,10 +1010,9 @@ class Vietphrase {
             let tempLine = '';
             let prevPhrase = '';
             let i = 0;
-            console.log(chars);
-            chars.forEach(() => {
+            a.split('').forEach(() => {
               dataLengths.some(b => {
-                const phrase = chars.substring(i, i + b);
+                const phrase = a.substring(i, i + b);
                 if (this.useGlossary && this.prioritizeNameOverVietphrase && glossaryEntries.map(_ref18 => {
                   let [, second] = _ref18;
                   return second;
@@ -1033,7 +1031,7 @@ class Vietphrase {
                   return true;
                 }
                 if (b === 1) {
-                  tempLine += (i > 0 && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(chars[i]) && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(prevPhrase || '') ? ' ' : '') + chars[i];
+                  tempLine += (i > 0 && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(a[i]) && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(prevPhrase || '') ? ' ' : '') + a[i];
                   prevPhrase = '';
                   return true;
                 }

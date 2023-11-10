@@ -273,7 +273,7 @@ function applyGlossaryToText(text, translator = '') {
         let prevPhrase = '';
         let i = 0;
 
-        a.forEach(() => {
+        a.split('').forEach(() => {
           glossaryLengths.some((b) => {
             const phrase = translator === Translators.DEEPL_TRANSLATE || translator === Translators.GOOGLE_TRANSLATE ? Utils.convertHtmlToText(a.substring(i, i + b)) : a.substring(i, i + b);
 
