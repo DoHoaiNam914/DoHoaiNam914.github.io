@@ -1097,7 +1097,7 @@ $('.upper-case-button').on('click', function () {
   if ($targetPairInput.val().length > 0) {
     $targetPairInput.val($targetPairInput.val().split(' ').map((element, index) => {
       const maybeIndexIsSmallerThanAmount = index < $(this).data('amount') ? element.charAt(0).toUpperCase() + element.slice(1) : element.toLowerCase();
-      return element === $(this).data('amount') === '#' ? element.charAt(0).toUpperCase() + element.slice(1) : maybeIndexIsSmallerThanAmount;
+      return $(this).data('amount') === '#' ? element.charAt(0).toUpperCase() + element.slice(1) : maybeIndexIsSmallerThanAmount;
     }).join(' '));
   }
 });
