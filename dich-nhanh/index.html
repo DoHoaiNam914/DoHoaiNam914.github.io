@@ -117,8 +117,6 @@
   </style>
   <script src="/static/lib/LAB.js"></script>
   <script>
-    'use strict';
-
     const scriptsToLoad = [
       '/static/lib/jquery-3.7.1.min.js',
       '/static/lib/jquery.csv.min.js',
@@ -132,11 +130,12 @@
       '/static/js/dich-nhanh/cac-trinh-dich.js',
       '/static/js/dich-nhanh/dich-nhanh.js',
     ];
-    var i = 0;
+    let i = 0;
 
     const labJs = () => {
       if (i < scriptsToLoad.length) {
-        $LAB.script(scriptsToLoad[i]).wait(labJs);
+        $LAB.script(scriptsToLoad[i])
+          .wait(labJs);
         i++;
       }
     };
@@ -150,79 +149,82 @@
      */
 
     (() => {
-      'use strict'
+      'use strict';
 
-      const getStoredTheme = () => localStorage.getItem('theme')
-      const setStoredTheme = theme => localStorage.setItem('theme', theme)
+      const getStoredTheme = () => localStorage.getItem('theme');
+      const setStoredTheme = theme => localStorage.setItem('theme', theme);
 
       const getPreferredTheme = () => {
-        const storedTheme = getStoredTheme()
+        const storedTheme = getStoredTheme();
         if (storedTheme) {
-          return storedTheme
+          return storedTheme;
         }
 
-        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-      }
+        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      };
 
       const setTheme = theme => {
         if (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-          document.documentElement.setAttribute('data-bs-theme', 'dark')
+          document.documentElement.setAttribute('data-bs-theme', 'dark');
         } else {
-          document.documentElement.setAttribute('data-bs-theme', theme)
+          document.documentElement.setAttribute('data-bs-theme', theme);
         }
-      }
+      };
 
-      setTheme(getPreferredTheme())
+      setTheme(getPreferredTheme());
 
       const showActiveTheme = (theme, focus = false) => {
-        const themeSwitcher = document.querySelector('#bd-theme')
+        const themeSwitcher = document.querySelector('#bd-theme');
 
         if (!themeSwitcher) {
-          return
+          return;
         }
 
         // const themeSwitcherText = document.querySelector('#bd-theme-text')
-        const activeThemeIcon = document.querySelector('.theme-icon-active use')
-        const btnToActive = document.querySelector(`[data-bs-theme-value="${theme}"]`)
-        const svgOfActiveBtn = btnToActive.querySelector('svg use').getAttribute('xlink:href')
+        const activeThemeIcon = document.querySelector('.theme-icon-active use');
+        const btnToActive = document.querySelector(`[data-bs-theme-value="${theme}"]`);
+        const svgOfActiveBtn = btnToActive.querySelector('svg use')
+          .getAttribute('xlink:href');
 
-        document.querySelectorAll('[data-bs-theme-value]').forEach(element => {
-          element.classList.remove('active')
-          element.setAttribute('aria-pressed', 'false')
-        })
+        document.querySelectorAll('[data-bs-theme-value]')
+          .forEach(element => {
+            element.classList.remove('active');
+            element.setAttribute('aria-pressed', 'false');
+          });
 
-        btnToActive.classList.add('active')
-        btnToActive.setAttribute('aria-pressed', 'true')
-        activeThemeIcon.setAttribute('href', svgOfActiveBtn)
+        btnToActive.classList.add('active');
+        btnToActive.setAttribute('aria-pressed', 'true');
+        activeThemeIcon.setAttribute('href', svgOfActiveBtn);
         // const themeSwitcherLabel = `${themeSwitcherText.textContent} (${btnToActive.dataset.bsThemeValue})`
         // themeSwitcher.setAttribute('aria-label', themeSwitcherLabel)
 
         if (focus) {
-          themeSwitcher.focus()
+          themeSwitcher.focus();
         }
-      }
+      };
 
-      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
-        const storedTheme = getStoredTheme()
-        if (storedTheme !== 'light' && storedTheme !== 'dark') {
-          setTheme(getPreferredTheme())
-        }
-      })
+      window.matchMedia('(prefers-color-scheme: dark)')
+        .addEventListener('change', () => {
+          const storedTheme = getStoredTheme();
+          if (storedTheme !== 'light' && storedTheme !== 'dark') {
+            setTheme(getPreferredTheme());
+          }
+        });
 
       window.addEventListener('DOMContentLoaded', () => {
-        showActiveTheme(getPreferredTheme())
+        showActiveTheme(getPreferredTheme());
 
         document.querySelectorAll('[data-bs-theme-value]')
-                .forEach(toggle => {
-                  toggle.addEventListener('click', () => {
-                    const theme = toggle.getAttribute('data-bs-theme-value')
-                    setStoredTheme(theme)
-                    setTheme(theme)
-                    showActiveTheme(theme, true)
-                  })
-                })
-      })
-    })()
+          .forEach(toggle => {
+            toggle.addEventListener('click', () => {
+              const theme = toggle.getAttribute('data-bs-theme-value');
+              setStoredTheme(theme);
+              setTheme(theme);
+              showActiveTheme(theme, true);
+            });
+          });
+      });
+    })();
   </script>
 </head>
 <body class="bg-body-tertiary h-100 m-0 p-0 position-relative w-100">
@@ -816,7 +818,7 @@
                 <button type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown"></button>
                 <ul class="dropdown-menu dropdown-scroller">
                   <li>
-                    <button type="button"class="dropdown-item copy-button" data-target="#target-pair-input">Sao chép</button>
+                    <button type="button" class="dropdown-item copy-button" data-target="#target-pair-input">Sao chép</button>
                   </li>
                   <li>
                     <button type="button" class="dropdown-item paste-button" data-target="#target-pair-input">Dán</button>
@@ -825,13 +827,13 @@
                     <hr class="dropdown-divider">
                   </li>
                   <li>
-                    <button type="button"class="dropdown-item translate-button" data-translator="vietphrase" data-lang="pinyin" data-data="pinyins">Chuyển đổi sang Bính âm</button>
+                    <button type="button" class="dropdown-item translate-button" data-translator="vietphrase" data-lang="pinyin" data-data="pinyins">Chuyển đổi sang Bính âm</button>
                   </li>
                   <li>
-                    <button type="button"class="dropdown-item translate-button" data-translator="vietphrase" data-lang="sinoVietnamese">Chuyển đổi sang Hán việt</button>
+                    <button type="button" class="dropdown-item translate-button" data-translator="vietphrase" data-lang="sinoVietnamese">Chuyển đổi sang Hán việt</button>
                   </li>
                   <li>
-                    <button type="button"class="dropdown-item translate-button" data-translator="vietphrase" data-lang="vi">Chuyển đổi sang Vietphrase</button>
+                    <button type="button" class="dropdown-item translate-button" data-translator="vietphrase" data-lang="vi">Chuyển đổi sang Vietphrase</button>
                   </li>
                   <li>
                     <hr class="dropdown-divider">
@@ -840,10 +842,10 @@
                     <button type="button" class="dropdown-item upper-case-button" data-amount="1">Viết hoa 1 từ đơn đầu</button>
                   </li>
                   <li>
-                    <button type="button"class="dropdown-item upper-case-button" data-amount="2">Viết hoa 2 từ đơn đầu</button>
+                    <button type="button" class="dropdown-item upper-case-button" data-amount="2">Viết hoa 2 từ đơn đầu</button>
                   </li>
                   <li>
-                    <button type="button"class="dropdown-item upper-case-button" data-amount="3">Viết hoa 3 từ đơn đầu</button>
+                    <button type="button" class="dropdown-item upper-case-button" data-amount="3">Viết hoa 3 từ đơn đầu</button>
                   </li>
                   <li>
                     <button type="button" class="dropdown-item upper-case-button" data-amount="#">Viết hoa tất cả</button>
@@ -885,7 +887,7 @@
                     <button type="button" class="dropdown-item translate-button" data-translator="papago" data-lang="zh-CN">Papago (Trung (Giản thể))</button>
                   </li>
                   <li>
-                    <button type="button"class="dropdown-item translate-button" data-translator="papago" data-lang="zh-TW">Papago (Trung (Phồn thể))</button>
+                    <button type="button" class="dropdown-item translate-button" data-translator="papago" data-lang="zh-TW">Papago (Trung (Phồn thể))</button>
                   </li>
                   <li>
                     <button type="button" class="dropdown-item translate-button" data-translator="papago" data-lang="vi">Papago (Việt)</button>
