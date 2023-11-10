@@ -1011,16 +1011,17 @@ class Vietphrase {
             let tempLine = '';
             let prevPhrase = '';
             let i = 0;
+            console.log(chars);
             chars.forEach(() => {
-              dataLengths.some(c => {
-                const phrase = chars.substring(i, i + c);
+              dataLengths.some(b => {
+                const phrase = chars.substring(i, i + b);
                 if (this.useGlossary && this.prioritizeNameOverVietphrase && glossaryEntries.map(_ref18 => {
                   let [, second] = _ref18;
                   return second;
                 }).indexOf(phrase) > -1) {
                   tempLine += (i > 0 && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(prevPhrase || tempLine[tempLine.length - 1] || '') ? ' ' : '') + phrase;
                   prevPhrase = phrase;
-                  i += c - 1;
+                  i += b - 1;
                   return true;
                 }
                 if ((!this.isTtvTranslate || /^[\d\p{sc=Hani}]+$/u.test(phrase) || [...luatnhanNameEntries, ...glossaryEntries].indexOf(phrase) > -1) && Object.prototype.hasOwnProperty.call(dataObj, phrase)) {
@@ -1028,10 +1029,10 @@ class Vietphrase {
                     tempLine += (i > 0 && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(prevPhrase || tempLine[tempLine.length - 1] || '') ? ' ' : '') + dataObj[phrase];
                     prevPhrase = dataObj[phrase];
                   }
-                  i += c - 1;
+                  i += b - 1;
                   return true;
                 }
-                if (c === 1) {
+                if (b === 1) {
                   tempLine += (i > 0 && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(chars[i]) && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(prevPhrase || '') ? ' ' : '') + chars[i];
                   prevPhrase = '';
                   return true;

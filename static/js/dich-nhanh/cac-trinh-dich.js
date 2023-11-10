@@ -189,13 +189,10 @@ class DeepLTranslate {
   async translateText(sourceLang, targetLang, text) {
     try {
       return Utils.convertHtmlToText((await $.ajax({
-        data: `text=${text.split(/\n/)
-          .map((element) => encodeURIComponent(element))
-          .join('&text=')}&source_lang=${sourceLang}&target_lang=${targetLang}&tag_handling=xml`,
+        data: `text=${text.split(/\n/).map((element) => encodeURIComponent(element)).join('&text=')}&source_lang=${sourceLang}&target_lang=${targetLang}&tag_handling=xml`,
         method: 'POST',
         url: `https://api-free.deepl.com/v2/translate?auth_key=${this.authKey}`,
-      })).translations.map((element) => element.text)
-        .join('\n'));
+      })).translations.map((element) => element.text).join('\n'));
     } catch (error) {
       console.error('Bản dịch lỗi:', error);
       throw error;
@@ -357,17 +354,13 @@ class GoogleTranslate {
        * Content-Type: application/x-www-form-urlencoded - `q=${querys.split(/\n/).map((sentence) => encodeURIComponent(sentence)).join('&q=')}`
        */
       return Utils.convertHtmlToText((await $.ajax({
-        data: `q=${q.split(/\n/)
-          .map((element) => encodeURIComponent(element))
-          .join('&q=')}`,
+        data: `q=${q.split(/\n/).map((element) => encodeURIComponent(element)).join('&q=')}`,
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
         },
         method: 'POST',
         url: `https://translate.googleapis.com/translate_a/t?anno=3&client=${(this.data._cac || 'te') + (this.data._cam === 'lib' ? '_lib' : '')}&format=html&v=1.0&key${this.apiKey.length > 0 ? `=${this.apiKey}` : ''}&logld=v${this.data.v || ''}&sl=${sl}&tl=${tl}&tc=0&tk=${this.lq(q.replace(/\n/g, ''))}`,
-      })).map((element) => (sl === 'auto' ? element[0] : element))
-        .map((element) => (element.includes('<i>') ? element.replace(/<i>(?:.(?!<\/i>))+.(?=<\/i>)<\/i> <b>((?:.(?!<\/b>))+.(?=<\/b>))<\/b>/g, '$1') : element))
-        .join('\n'));
+      })).map((element) => (sl === 'auto' ? element[0] : element)).map((element) => (element.includes('<i>') ? element.replace(/<i>(?:.(?!<\/i>))+.(?=<\/i>)<\/i> <b>((?:.(?!<\/b>))+.(?=<\/b>))<\/b>/g, '$1') : element)).join('\n'));
     } catch (error) {
       console.error('Bản dịch lỗi:', error);
       throw error;
@@ -395,8 +388,7 @@ class GoogleTranslate {
   }
 
   lq(a) {
-    var b = this.kq()
-        .split('.'),
+    var b = this.kq().split('.'),
       c = Number(b[0]) || 0;
     a = GoogleTranslate.Oo(a);
     for (var d = c, e = 0; e < a.length; e++) {
@@ -575,8 +567,7 @@ class Papago {
           // 'device-type': 'mobile',
           'x-apigw-partnerid': 'papago', /* eslint-disable */
 
-          Authorization: 'PPG ' + this.uuid + ':' + window.CryptoJS.HmacMD5(this.uuid + '\n' + 'https://papago.naver.com/apis/n2mt/translate' + '\n' + timeStamp, this.version)
-            .toString(window.CryptoJS.enc.Base64),
+          Authorization: 'PPG ' + this.uuid + ':' + window.CryptoJS.HmacMD5(this.uuid + '\n' + 'https://papago.naver.com/apis/n2mt/translate' + '\n' + timeStamp, this.version).toString(window.CryptoJS.enc.Base64),
 
           /* eslint-enable */
           Timestamp: timeStamp,
@@ -729,8 +720,7 @@ class MicrosoftTranslator {
        * Authorization: Bearer ${accessToken} - Content-Type: application/json - send(inputText)
        */
       return (await $.ajax({
-        data: JSON.stringify(text.split(/\n/)
-          .map((element) => ({ Text: element }))),
+        data: JSON.stringify(text.split(/\n/).map((element) => ({ Text: element }))),
         dataType: 'json',
         headers: {
           Authorization: `Bearer ${this.accessToken}`,
@@ -738,8 +728,7 @@ class MicrosoftTranslator {
         },
         method: 'POST',
         url: `https://api-edge.cognitive.microsofttranslator.com/translate?api-version=3.0&from=${from}&to=${to}`,
-      })).map(({ translations: [element] }) => element.text)
-        .join('\n');
+      })).map(({ translations: [element] }) => element.text).join('\n');
     } catch (error) {
       console.error('Bản dịch lỗi:', error);
       throw error;
@@ -858,12 +847,9 @@ class Vietphrase {
 
   translatePrioritizeLongVietphraseClusters(data, inputText) {
     try {
-      const text = inputText.split(/\r?\n/)
-        .map((element) => element.trim())
-        .join('\n');
+      const text = inputText.split(/\r?\n/).map((element) => element.trim()).join('\n');
 
-      let dataEntries = Object.entries(data)
-        .filter(([first]) => text.includes(first));
+      let dataEntries = Object.entries(data).filter(([first]) => text.includes(first));
       const glossaryEntries = Object.entries(this.glossary);
 
       let result = text;
@@ -876,12 +862,7 @@ class Vietphrase {
 
         dataEntries.some(([key, value], index, array) => {
           if (!this.isTtvTranslate || /^[\d\p{sc=Hani}]+$/u.test(key) || [...luatnhanNameEntries, ...glossaryEntries].indexOf(key) > -1) {
-            result = result.replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}])${Utils.getRegexEscapedText(key)}(?=${Object.values(this.glossary).join('|')})`, 'gu'), `$1 ${Utils.getRegexEscapedReplacement(value)} `)
-              .replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}])${Utils.getRegexEscapedText(key)}([\\p{Lu}\\p{Ll}\\p{Nd}])`, 'gu'), `$1 ${Utils.getRegexEscapedReplacement(value)} $2`)
-              .replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}])${Utils.getRegexEscapedText(key)}`, 'gu'), `$1 ${Utils.getRegexEscapedReplacement(value)}`)
-              .replace(new RegExp(`${Utils.getRegexEscapedText(key)}([\\p{Lu}\\p{Ll}\\p{Nd}])`, 'gu'), `${Utils.getRegexEscapedReplacement(value)} $1`)
-              .replace(new RegExp(`${Utils.getRegexEscapedText(key)}(?=${Object.values(this.glossary).join('|')})`, 'g'), `${Utils.getRegexEscapedReplacement(value)} `)
-              .replace(new RegExp(Utils.getRegexEscapedText(key), 'g'), Utils.getRegexEscapedReplacement(value));
+            result = result.replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}])${Utils.getRegexEscapedText(key)}(?=${Object.values(this.glossary).join('|')})`, 'gu'), `$1 ${Utils.getRegexEscapedReplacement(value)} `).replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}])${Utils.getRegexEscapedText(key)}([\\p{Lu}\\p{Ll}\\p{Nd}])`, 'gu'), `$1 ${Utils.getRegexEscapedReplacement(value)} $2`).replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}])${Utils.getRegexEscapedText(key)}`, 'gu'), `$1 ${Utils.getRegexEscapedReplacement(value)}`).replace(new RegExp(`${Utils.getRegexEscapedText(key)}([\\p{Lu}\\p{Ll}\\p{Nd}])`, 'gu'), `${Utils.getRegexEscapedReplacement(value)} $1`).replace(new RegExp(`${Utils.getRegexEscapedText(key)}(?=${Object.values(this.glossary).join('|')})`, 'g'), `${Utils.getRegexEscapedReplacement(value)} `).replace(new RegExp(Utils.getRegexEscapedText(key), 'g'), Utils.getRegexEscapedReplacement(value));
           }
 
           if (array.filter(([first]) => result.includes(first)).length === 0) return true;
@@ -900,12 +881,9 @@ class Vietphrase {
 
   translateFromLeftToRight(data, inputText) {
     try {
-      const text = inputText.split(/\r?\n/)
-        .map((element) => element.trim())
-        .join('\n');
+      const text = inputText.split(/\r?\n/).map((element) => element.trim()).join('\n');
 
-      let dataEntries = Object.entries(data)
-        .filter(([first]) => text.includes(first));
+      let dataEntries = Object.entries(data).filter(([first]) => text.includes(first));
       const glossaryEntries = Object.entries(this.glossary);
 
       const lines = text.split(/\n/);
@@ -929,23 +907,20 @@ class Vietphrase {
           } else {
             const glossaryEntriesInLine = glossaryEntries.filter(([, second]) => chars.includes(second));
 
-            const dataLengths = [chars.length, ...this.useGlossary && this.prioritizeNameOverVietphrase ? glossaryEntriesInLine.map(([, second]) => second.length) : [], ...dataEntries.filter(([first]) => chars.includes(first))
-              .map(([first]) => first.length), 1].sort((b, c) => c - b)
-              .filter((element, index, array) => element > 0 && index === array.indexOf(element));
+            const dataLengths = [chars.length, ...this.useGlossary && this.prioritizeNameOverVietphrase ? glossaryEntriesInLine.map(([, second]) => second.length) : [], ...dataEntries.filter(([first]) => chars.includes(first)).map(([first]) => first.length), 1].sort((b, c) => c - b).filter((element, index, array) => element > 0 && index === array.indexOf(element));
 
             let tempLine = '';
             let prevPhrase = '';
             let i = 0;
-
+            console.log(chars);
             chars.forEach(() => {
-              dataLengths.some((c) => {
-                const phrase = chars.substring(i, i + c);
+              dataLengths.some((b) => {
+                const phrase = chars.substring(i, i + b);
 
-                if (this.useGlossary && this.prioritizeNameOverVietphrase && glossaryEntries.map(([, second]) => second)
-                  .indexOf(phrase) > -1) {
+                if (this.useGlossary && this.prioritizeNameOverVietphrase && glossaryEntries.map(([, second]) => second).indexOf(phrase) > -1) {
                   tempLine += (i > 0 && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(prevPhrase || tempLine[tempLine.length - 1] || '') ? ' ' : '') + phrase;
                   prevPhrase = phrase;
-                  i += c - 1;
+                  i += b - 1;
                   return true;
                 }
                 if ((!this.isTtvTranslate || /^[\d\p{sc=Hani}]+$/u.test(phrase) || [...luatnhanNameEntries, ...glossaryEntries].indexOf(phrase) > -1) && Object.prototype.hasOwnProperty.call(dataObj, phrase)) {
@@ -954,10 +929,10 @@ class Vietphrase {
                     prevPhrase = dataObj[phrase];
                   }
 
-                  i += c - 1;
+                  i += b - 1;
                   return true;
                 }
-                if (c === 1) {
+                if (b === 1) {
                   tempLine += (i > 0 && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(chars[i]) && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(prevPhrase || '') ? ' ' : '') + chars[i];
                   prevPhrase = '';
                   return true;
@@ -988,36 +963,31 @@ class Vietphrase {
     const luatnhanPronounEntries = [];
 
     if (this.multiplicationAlgorithm > this.MultiplicationAlgorithm.NOT_APPLICABLE) {
-      Object.entries(this.data.cacLuatnhan)
-        .forEach(([a, b]) => {
-          if (this.useGlossary && this.multiplicationAlgorithm === this.MultiplicationAlgorithm.MULTIPLICATION_BY_PRONOUNS_AND_NAMES && glossaryEntries.length > 0) {
-            Object.entries(this.glossary)
-              .forEach(([c, d]) => {
-                const entriesKey = a.replace(/\{0}/g, Utils.getRegexEscapedReplacement(this.prioritizeNameOverVietphrase ? d : c));
+      Object.entries(this.data.cacLuatnhan).forEach(([a, b]) => {
+        if (this.useGlossary && this.multiplicationAlgorithm === this.MultiplicationAlgorithm.MULTIPLICATION_BY_PRONOUNS_AND_NAMES && glossaryEntries.length > 0) {
+          Object.entries(this.glossary).forEach(([c, d]) => {
+            const entriesKey = a.replace(/\{0}/g, Utils.getRegexEscapedReplacement(this.prioritizeNameOverVietphrase ? d : c));
 
-                if (inputText.includes(entriesKey)) {
-                  luatnhanNameEntries.push([entriesKey, b.replace(/\{0}/g, Utils.getRegexEscapedReplacement(d))]);
-                }
-              });
+            if (inputText.includes(entriesKey)) {
+              luatnhanNameEntries.push([entriesKey, b.replace(/\{0}/g, Utils.getRegexEscapedReplacement(d))]);
+            }
+          });
+        }
+
+        Object.entries(this.data.pronouns).forEach(([c, d]) => {
+          const entriesKey = a.replace(/\{0}/g, Utils.getRegexEscapedReplacement(c));
+
+          if (inputText.includes(entriesKey)) {
+            luatnhanPronounEntries.push([entriesKey, b.replace(/\{0}/g, Utils.getRegexEscapedReplacement(d))]);
           }
-
-          Object.entries(this.data.pronouns)
-            .forEach(([c, d]) => {
-              const entriesKey = a.replace(/\{0}/g, Utils.getRegexEscapedReplacement(c));
-
-              if (inputText.includes(entriesKey)) {
-                luatnhanPronounEntries.push([entriesKey, b.replace(/\{0}/g, Utils.getRegexEscapedReplacement(d))]);
-              }
-            });
         });
+      });
     }
 
     return [luatnhanNameEntries, luatnhanPronounEntries];
   }
 
   getCaseSensitive(text) {
-    return text.split(/\n/)
-      .map((element) => (this.caseSensitive ? element.replace(/(^\s*|(?:[!.:;?]\s+|\s+-\s+|…\s*|[。！．：；？]\s*|['"\p{Ps}\p{Pi}]\s*))(\p{Ll})/gu, (match, p1, p2) => p1 + p2.toUpperCase()) : element))
-      .join('\n');
+    return text.split(/\n/).map((element) => (this.caseSensitive ? element.replace(/(^\s*|(?:[!.:;?]\s+|\s+-\s+|…\s*|[。！．：；？]\s*|['"\p{Ps}\p{Pi}]\s*))(\p{Ll})/gu, (match, p1, p2) => p1 + p2.toUpperCase()) : element)).join('\n');
   }
 }
