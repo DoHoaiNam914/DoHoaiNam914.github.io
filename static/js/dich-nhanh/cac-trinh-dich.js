@@ -846,14 +846,14 @@ class Vietphrase {
   }
 
   translatePrioritizeLongVietphraseClusters(data, inputText) {
+    const text = inputText.split(/\r?\n/).map((element) => element.trim()).join('\n');
+
+    let dataEntries = Object.entries(data).filter(([first]) => text.includes(first));
+    const glossaryEntries = Object.entries(this.glossary);
+
+    let result = text;
+
     try {
-      const text = inputText.split(/\r?\n/).map((element) => element.trim()).join('\n');
-
-      let dataEntries = Object.entries(data).filter(([first]) => text.includes(first));
-      const glossaryEntries = Object.entries(this.glossary);
-
-      let result = text;
-
       if (dataEntries.length > 0 || glossaryEntries.length > 0) {
         const [luatnhanNameEntries, luatnhanPronounEntries] = this.getLuatnhanData(glossaryEntries, text);
         const maybePrioritizeNameOverVietphrase = this.prioritizeNameOverVietphrase ? luatnhanNameEntries : [...luatnhanNameEntries, ...glossaryEntries];
@@ -880,17 +880,17 @@ class Vietphrase {
   }
 
   translateFromLeftToRight(data, inputText) {
+    const text = inputText.split(/\r?\n/).map((element) => element.trim()).join('\n');
+
+    let dataEntries = Object.entries(data).filter(([first]) => text.includes(first));
+    const glossaryEntries = Object.entries(this.glossary);
+
+    const lines = text.split(/\n/);
+    const results = [];
+
+    let result = text;
+
     try {
-      const text = inputText.split(/\r?\n/).map((element) => element.trim()).join('\n');
-
-      let dataEntries = Object.entries(data).filter(([first]) => text.includes(first));
-      const glossaryEntries = Object.entries(this.glossary);
-
-      const lines = text.split(/\n/);
-      const results = [];
-
-      let result = text;
-
       if (dataEntries.length > 0 || glossaryEntries.length > 0) {
         const [luatnhanNameEntries, luatnhanPronounEntries] = this.getLuatnhanData(glossaryEntries, text);
         const maybePrioritizeNameOverVietphrase = this.prioritizeNameOverVietphrase ? luatnhanNameEntries : [...luatnhanNameEntries, ...glossaryEntries];
@@ -903,9 +903,9 @@ class Vietphrase {
           if (a.length === 0) {
             results.push(a);
           } else {
-            const glossaryEntriesInLine = glossaryEntries.filter(([, second]) => a.includes(second));
+            const glossaryEntriesInLine = glossaryEntries.filter(([__, second]) => a.includes(second));
 
-            const dataLengths = [a.length, ...this.useGlossary && this.prioritizeNameOverVietphrase ? glossaryEntriesInLine.map(([, second]) => second.length) : [], ...dataEntries.filter(([first]) => a.includes(first)).map(([first]) => first.length), 1].sort((b, c) => c - b).filter((element, index, array) => element > 0 && index === array.indexOf(element));
+            const dataLengths = [a.length, ...this.useGlossary && this.prioritizeNameOverVietphrase ? glossaryEntriesInLine.map(([__, second]) => second.length) : [], ...dataEntries.filter(([first]) => a.includes(first)).map(([first]) => first.length), 1].sort((b, c) => c - b).filter((element, index, array) => element > 0 && index === array.indexOf(element));
 
             let tempLine = '';
             let prevPhrase = '';
@@ -916,7 +916,7 @@ class Vietphrase {
                 dataLengths.some((d) => {
                   const phrase = a.substring(i, i + d);
 
-                  if (this.useGlossary && this.prioritizeNameOverVietphrase && glossaryEntries.map(([, second]) => second).indexOf(phrase) > -1) {
+                  if (this.useGlossary && this.prioritizeNameOverVietphrase && glossaryEntries.map(([__, second]) => second).indexOf(phrase) > -1) {
                     tempLine += (i > 0 && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(prevPhrase || tempLine[tempLine.length - 1] || '') ? ' ' : '') + phrase;
                     prevPhrase = phrase;
                     i += d - 1;

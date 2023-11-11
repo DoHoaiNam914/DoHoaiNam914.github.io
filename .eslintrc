@@ -8,7 +8,413 @@
   "parserOptions": {
     "ecmaVersion": "latest"
   },
+  // ECMAScript 6+ (ES 2015+) Styles - Start
+  "plugins": [
+    "import"
+  ],
+  "settings": {
+    "import/extensions": [
+      ".js",
+      ".mjs",
+      ".jsx"
+    ]
+  },
+  // ECMAScript 6+ (ES 2015+) Styles - End
   "rules": {
+    // Comments
+    "spaced-comment": [
+      "error",
+      "always",
+      {
+        "line": {
+          "exceptions": [
+            "-",
+            "+"
+          ],
+          "markers": [
+            "=",
+            "!",
+            "/"
+          ]
+          // space here to support sprockets directives, slash for TS /// comments
+        },
+        "block": {
+          "exceptions": [
+            "-",
+            "+"
+          ],
+          "markers": [
+            "=",
+            "!",
+            ":",
+            "::"
+          ],
+          // space here to support sprockets directives and flow comment types
+          "balanced": true
+        }
+      }
+    ],
+    // Whitespace
+    "indent": [
+      "error",
+      2,
+      {
+        "SwitchCase": 1,
+        "VariableDeclarator": 1,
+        "outerIIFEBody": 1,
+        // MemberExpression: null,
+        "FunctionDeclaration": {
+          "parameters": 1,
+          "body": 1
+        },
+        "FunctionExpression": {
+          "parameters": 1,
+          "body": 1
+        },
+        "CallExpression": {
+          "arguments": 1
+        },
+        "ArrayExpression": 1,
+        "ObjectExpression": 1,
+        "ImportDeclaration": 1,
+        "flatTernaryExpressions": false,
+        // list derived from https://github.com/benjamn/ast-types/blob/HEAD/def/jsx.js
+        "ignoredNodes": [
+          "JSXElement",
+          "JSXElement > *",
+          "JSXAttribute",
+          "JSXIdentifier",
+          "JSXNamespacedName",
+          "JSXMemberExpression",
+          "JSXSpreadAttribute",
+          "JSXExpressionContainer",
+          "JSXOpeningElement",
+          "JSXClosingElement",
+          "JSXFragment",
+          "JSXOpeningFragment",
+          "JSXClosingFragment",
+          "JSXText",
+          "JSXEmptyExpression",
+          "JSXSpreadChild"
+        ],
+        "ignoreComments": false
+      }
+    ],
+    "space-before-blocks": "error",
+    "keyword-spacing": [
+      "error",
+      {
+        "before": true,
+        "after": true,
+        "overrides": {
+          "return": {
+            "after": true
+          },
+          "throw": {
+            "after": true
+          },
+          "case": {
+            "after": true
+          }
+        }
+      }
+    ],
+    "space-infix-ops": "error",
+    "eol-last": [
+      "error",
+      "always"
+    ],
+    "newline-per-chained-call": [
+      "off",
+      {
+        "ignoreChainWithDepth": 4
+      }
+    ],
+    // CHANGES: error -> off
+    "no-whitespace-before-property": "error",
+    "padded-blocks": [
+      "error",
+      {
+        "blocks": "never",
+        "classes": "never",
+        "switches": "never"
+      },
+      {
+        "allowSingleLineBlocks": true
+      }
+    ],
+    "no-multiple-empty-lines": [
+      "error",
+      {
+        "max": 1,
+        "maxBOF": 0,
+        "maxEOF": 0
+      }
+    ],
+    "space-in-parens": [
+      "error",
+      "never"
+    ],
+    "array-bracket-spacing": [
+      "error",
+      "never"
+    ],
+    "object-curly-spacing": [
+      "error",
+      "always"
+    ],
+    "max-len": [
+      "warn",
+      100,
+      2,
+      {
+        "ignoreUrls": true,
+        "ignoreComments": false,
+        "ignoreRegExpLiterals": true,
+        "ignoreStrings": true,
+        "ignoreTemplateLiterals": true
+      }
+    ],
+    // CHANGES: error -> warn
+    "block-spacing": [
+      "error",
+      "always"
+    ],
+    "comma-spacing": [
+      "error",
+      {
+        "before": false,
+        "after": true
+      }
+    ],
+    "computed-property-spacing": [
+      "error",
+      "never"
+    ],
+    "func-call-spacing": [
+      "error",
+      "never"
+    ],
+    "key-spacing": [
+      "error",
+      {
+        "beforeColon": false,
+        "afterColon": true
+      }
+    ],
+    "no-trailing-spaces": [
+      "error",
+      {
+        "skipBlankLines": false,
+        "ignoreComments": false
+      }
+    ],
+    // Commas
+    "comma-style": [
+      "error",
+      "last",
+      {
+        "exceptions": {
+          "ArrayExpression": false,
+          "ArrayPattern": false,
+          "ArrowFunctionExpression": false,
+          "CallExpression": false,
+          "FunctionDeclaration": false,
+          "FunctionExpression": false,
+          "ImportDeclaration": false,
+          "ObjectExpression": false,
+          "ObjectPattern": false,
+          "VariableDeclaration": false,
+          "NewExpression": false
+        }
+      }
+    ],
+    "comma-dangle": [
+      "error",
+      {
+        "arrays": "always-multiline",
+        "objects": "always-multiline",
+        "imports": "always-multiline",
+        "exports": "always-multiline",
+        "functions": "always-multiline"
+      }
+    ],
+    // Semicolons
+    "semi": [
+      "error",
+      "always"
+    ],
+    // Naming Conventions
+    "id-length": "off",
+    "camelcase": [
+      "error",
+      {
+        "properties": "never",
+        "ignoreDestructuring": false
+      }
+    ],
+    "new-cap": [
+      "error", {
+      "newIsCap": true,
+      "newIsCapExceptions": [],
+      "capIsNew": false,
+      "capIsNewExceptions": [
+        "Immutable.Map", "Immutable.Set", "Immutable.List"
+      ]
+      }],
+    "no-underscore-dangle": [
+      "warn",
+      {
+        "allow": [],
+        "allowAfterThis": false,
+        "allowAfterSuper": false,
+        "enforceInMethodNames": true
+      }
+    ],
+    // CHANGES: error -> warn
+    // ECMAScript 6+ (ES 2015+) Styles
+    "prefer-arrow-callback": [
+      "error",
+      {
+        "allowNamedFunctions": false,
+        "allowUnboundThis": true
+      }
+    ],
+    "arrow-spacing": [
+      "error",
+      {
+        "before": true,
+        "after": true
+      }
+    ],
+    "arrow-parens": [
+      "error",
+      "always"
+    ],
+    "arrow-body-style": [
+      "error",
+      "as-needed",
+      {
+        "requireReturnForObjectLiteral": false
+      }
+    ],
+    "no-confusing-arrow": [
+      "error",
+      {
+        "allowParens": true
+      }
+    ],
+    "implicit-arrow-linebreak": [
+      "error",
+      "beside"
+    ],
+    "no-useless-constructor": "error",
+    "no-dupe-class-members": "error",
+    "class-methods-use-this": [
+      "error",
+      {
+        "exceptMethods": []
+      }
+    ],
+    "object-shorthand": [
+      "error",
+      "always",
+      {
+        "ignoreConstructors": false,
+        "avoidQuotes": true
+      }
+    ],
+    "prefer-template": "error",
+    "template-curly-spacing": "error",
+    "prefer-destructuring": [
+      "error",
+      {
+        "VariableDeclarator": {
+          "array": false,
+          "object": true
+        },
+        "AssignmentExpression": {
+          "array": true,
+          "object": false
+        }
+      },
+      {
+        "enforceForRenamedProperties": false
+      }
+    ],
+    "default-param-last": "error",
+    // Không xác định
+    "prefer-rest-params": "error",
+    "prefer-const": [
+      "error",
+      {
+        "destructuring": "any",
+        "ignoreReadBeforeAssign": true
+      }
+    ],
+    "no-const-assign": "error",
+    "no-var": "error",
+    "prefer-exponentiation-operator": "error",
+    "no-iterator": "error",
+    "no-restricted-syntax": [
+      "error",
+      {
+        "selector": "ForInStatement",
+        "message": "for..in loops iterate over the entire prototype chain, which is virtually never what you want. Use Object.{keys,values,entries}, and iterate over the resulting array."
+      },
+      {
+        "selector": "ForOfStatement",
+        "message": "iterators/generators require regenerator-runtime, which is too heavyweight for this guide to allow them. Separately, loops should be avoided in favor of array iterations."
+      },
+      {
+        "selector": "LabeledStatement",
+        "message": "Labels are a form of GOTO; using them makes code confusing and hard to maintain and understand."
+      },
+      {
+        "selector": "WithStatement",
+        "message": "`with` is disallowed in strict mode because it makes code impossible to predict and optimize."
+      }
+    ],
+    "generator-star-spacing": [
+      "error",
+      {
+        "before": false,
+        "after": true
+      }
+    ],
+    "no-duplicate-imports": "off",
+    "import/no-duplicates": "error",
+    // Thay thế no-duplicate-imports
+    "import/no-mutable-exports": "error",
+    "import/prefer-default-export": "error",
+    "import/first": "error",
+    "object-curly-newline": [
+      "error",
+      {
+        "ObjectExpression": {
+          "minProperties": 4,
+          "multiline": true,
+          "consistent": true
+        },
+        "ObjectPattern": {
+          "minProperties": 4,
+          "multiline": true,
+          "consistent": true
+        },
+        "ImportDeclaration": {
+          "minProperties": 4,
+          "multiline": true,
+          "consistent": true
+        },
+        "ExportDeclaration": {
+          "minProperties": 4,
+          "multiline": true,
+          "consistent": true
+        }
+      }
+    ],
+    "import/no-webpack-loader-syntax": "error",
+    // Project
     "no-await-in-loop": "warn",
     "no-unused-vars": [
       "warn",
@@ -35,28 +441,28 @@
       {
         "props": true,
         "ignorePropertyModificationsFor": [
-          "acc",
-          // for reduce accumulators
-          "accumulator",
-          // for reduce accumulators
-          "e",
-          // for e.returnvalue
-          "ctx",
-          // for Koa routing
-          "context",
-          // for Koa routing
-          "req",
-          // for Express requests
-          "request",
-          // for Express requests
-          "res",
-          // for Express responses
-          "response",
-          // for Express responses
-          "$scope",
-          // for Angular 1 scopes
-          "staticContext",
-          // for ReactRouter context
+//          "acc",
+//          // for reduce accumulators
+//          "accumulator",
+//          // for reduce accumulators
+//          "e",
+//          // for e.returnvalue
+//          "ctx",
+//          // for Koa routing
+//          "context",
+//          // for Koa routing
+//          "req",
+//          // for Express requests
+//          "request",
+//          // for Express requests
+//          "res",
+//          // for Express responses
+//          "response",
+//          // for Express responses
+//          "$scope",
+//          // for Angular 1 scopes
+//          "staticContext",
+//          // for ReactRouter context
           "array"
         ]
       }
@@ -64,33 +470,6 @@
     "no-return-assign": [
       "warn",
       "always"
-    ],
-    "no-underscore-dangle": [
-      "warn",
-      {
-        "allow": [],
-        "allowAfterThis": false,
-        "allowAfterSuper": false,
-        "enforceInMethodNames": true
-      }
-    ],
-    "max-len": [
-      "warn",
-      100,
-      2,
-      {
-        "ignoreUrls": true,
-        "ignoreComments": false,
-        "ignoreRegExpLiterals": true,
-        "ignoreStrings": true,
-        "ignoreTemplateLiterals": true
-      }
-    ],
-    "newline-per-chained-call": [
-      "off",
-      {
-        "ignoreChainWithDepth": 4
-      }
     ]
   }
 }

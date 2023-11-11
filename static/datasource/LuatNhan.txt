@@ -1,11 +1,8 @@
-﻿
-与{0}为敌为友=cùng {0} là địch là bạn
+﻿与{0}为敌为友=cùng {0} là địch là bạn
 在{0}的面前=trước mặt {0}
 打{0}一顿=đánh {0} một trận
 揍{0}一顿=đánh {0} một trận
-揍了{0}一顿=đánh {0} một trận
 是{0}还是=là {0} hay là
-但是{0}还是=nhưng {0} vẫn là
 教训{0}一顿=giáo huấn {0} một trận
 要{0}当=muốn {0} làm
 {0}自己=chính {0}
@@ -101,7 +98,7 @@
 联合{0}来了=tới liên hợp với {0}
 和{0}商量=thương lượng với {0}
 包在{0}的身上=để {0} lo
-对{0}不利=bất lợi cho {0}
+对{0}不利=gây bất lợi cho {0}
 要对{0}不利=muốn gây bất lợi cho {0}
 关于{0}的消息=tin tức liên quan tới {0}
 不利于{0}的消息=tin tức bất lợi cho {0}
@@ -222,5 +219,5 @@
 帮了{0}一把=giúp {0} một tay
 帮{0}一把=giúp {0} một tay
 在{0}上空=trên bầu trời {0}
-跟在{0}身后=đi theo sau {0}
+
 #

@@ -117,14 +117,16 @@
   </style>
   <script>
     ;(function () {
-        var src = '//cdn.jsdelivr.net/npm/eruda';
-        if (!/eruda=true/.test(window.location) && localStorage.getItem('active-eruda') != 'true') return;
-        document.write('<scr' + 'ipt src="' + src + '"></scr' + 'ipt>');
-        document.write('<scr' + 'ipt>eruda.init();</scr' + 'ipt>');
+      var src = '//cdn.jsdelivr.net/npm/eruda';
+      if (!/eruda=true/.test(window.location) && localStorage.getItem('active-eruda') != 'true') return;
+      document.write('<scr' + 'ipt src="' + src + '"></scr' + 'ipt>');
+      document.write('<scr' + 'ipt>eruda.init();</scr' + 'ipt>');
     })();
   </script>
   <script src="/static/lib/LAB.js"></script>
   <script>
+    'use strict';
+
     const librariesToLoad = [
       '/static/lib/jquery-3.7.1.min.js',
       '/static/lib/jquery.csv.min.js',
@@ -136,15 +138,11 @@
       '/static/js/dich-nhanh/dau-thanh-moi.js',
     ];
 
-    const scriptsToLoad = [...librariesToLoad, .../devMode=true/.test(window.location) ? [
+    const scriptsToLoad = [...librariesToLoad, ...[
       '/static/js/cac-tien-ich.js',
       '/static/js/dich-nhanh/cac-trinh-dich.js',
-      '/static/js/dich-nhanh/dich-nhanh.js',
-    ] : [
-      '/dist/cac-tien-ich.js',
-      '/dist/cac-trinh-dich.js',
-      '/dist/dich-nhanh.js'
-    ]];
+      '/static/js/dich-nhanh/dich-nhanh.js'],
+    ];
 
     let i = 0;
     const labJs = () => {
@@ -200,9 +198,9 @@
         const svgOfActiveBtn = btnToActive.querySelector('svg use').getAttribute('xlink:href');
 
         document.querySelectorAll('[data-bs-theme-value]').forEach(element => {
-            element.classList.remove('active');
-            element.setAttribute('aria-pressed', 'false');
-          });
+          element.classList.remove('active');
+          element.setAttribute('aria-pressed', 'false');
+        });
 
         btnToActive.classList.add('active');
         btnToActive.setAttribute('aria-pressed', 'true');
@@ -216,23 +214,23 @@
       };
 
       window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
-          const storedTheme = getStoredTheme();
-          if (storedTheme !== 'light' && storedTheme !== 'dark') {
-            setTheme(getPreferredTheme());
-          }
-        });
+        const storedTheme = getStoredTheme();
+        if (storedTheme !== 'light' && storedTheme !== 'dark') {
+          setTheme(getPreferredTheme());
+        }
+      });
 
       window.addEventListener('DOMContentLoaded', () => {
         showActiveTheme(getPreferredTheme());
 
         document.querySelectorAll('[data-bs-theme-value]').forEach(toggle => {
-            toggle.addEventListener('click', () => {
-              const theme = toggle.getAttribute('data-bs-theme-value');
-              setStoredTheme(theme);
-              setTheme(theme);
-              showActiveTheme(theme, true);
-            });
+          toggle.addEventListener('click', () => {
+            const theme = toggle.getAttribute('data-bs-theme-value');
+            setStoredTheme(theme);
+            setTheme(theme);
+            showActiveTheme(theme, true);
           });
+        });
       });
     })();
   </script>
@@ -678,8 +676,8 @@
           <hr>
           <h2 class="fs-5">Vietphrase</h2>
           <div class="mb-3">
-            <label for="vietphrases-input" class="form-label">Nhập tệp VietPhrase.txt:</label>
-            <input type="file" class="form-control form-control-sm" id="vietphrases-input" accept="text/plain">
+            <label for="vietphrase-input" class="form-label">Nhập tệp VietPhrase.txt:</label>
+            <input type="file" class="form-control form-control-sm" id="vietphrase-input" accept="text/plain">
           </div>
           <h2 class="fs-6">Thuật toán dịch</h2>
           <div class="form-check form-switch mb-3">
