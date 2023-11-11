@@ -713,7 +713,7 @@ $(document).ready(async () => {
   }
 
   try {
-    let chinesePhienAmWordList = [...specialSinovietnameseMap.map(([a, b, c]) => [a, (Object.fromEntries(specialSinovietnameseMap.filter(([__, d]) => !/\p{sc=Hani}/u.test(d)).map(([d, e, f]) => [d, f ?? e]))[b] ?? c ?? b).split(', ')[0].toLowerCase()]), ...cjkv.nam.map(([first, second]) => [first, second.trimStart().split(', ')[0]]), ...hanData.names.map(([first, second]) => [first, second.split(',').filter((element) => element.length > 0)[0]])];
+    let chinesePhienAmWordList = [...specialSinovietnameseMap.map(([a, b, c]) => [a, (Object.fromEntries(specialSinovietnameseMap.filter(([__, d]) => !/\p{sc=Hani}/u.test(d)).map(([d, e, f]) => [d, f ?? e]))[b] ?? c ?? b).split(', ')[0].toLowerCase()]), ...cjkv.nam.map(([first, second]) => [first, second.trimStart().split(', ')[0]]), ...hanData.names.map(([first, second]) => [first, second.split(/, ?/).filter((element) => element.length > 0)[0]])];
 
     await $.ajax({
       method: 'GET',
