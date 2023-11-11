@@ -1,4 +1,4 @@
-/* global Translators, specialSinovietnameseData, newAccentData, Utils, MicrosoftTranslator, DeepLTranslate, GoogleTranslate, Papago, Vietphrase */
+/* global Translators, specialSinovietnameseData, cjkv, hanData, newAccentData, Utils, MicrosoftTranslator, DeepLTranslate, GoogleTranslate, Papago, Vietphrase */
 const $sourceLanguageSelect = $('#source-language-select');
 const $targetLanguageSelect = $('#target-language-select');
 const $translateButton = $('#translate-button');
@@ -711,7 +711,7 @@ $(document).ready(async () => {
   }
 
   try {
-    let chinesePhienAmWordList = [...specialSinovietnameseData.map(([a, b, c]) => [a, (Object.fromEntries(specialSinovietnameseData.filter(([__, d]) => !/\p{sc=Hani}/u.test(d)).map(([d, e, f]) => [d, f ?? e]))[b] ?? c ?? b).split(', ')[0].toLowerCase()]), ...window.hanData.names.map(([first, second]) => [first, second.split(',').filter((element) => element.length > 0)[0]])];
+    let chinesePhienAmWordList = [...specialSinovietnameseData.map(([a, b, c]) => [a, (Object.fromEntries(specialSinovietnameseData.filter(([__, d]) => !/\p{sc=Hani}/u.test(d)).map(([d, e, f]) => [d, f ?? e]))[b] ?? c ?? b).split(', ')[0].toLowerCase()]), ...cjkv.nam.map(([first, second]) => [first, second.trimStart().split(', ')[0]]), ...hanData.names.map(([first, second]) => [first, second.split(',').filter((element) => element.length > 0)[0]])];
 
     await $.ajax({
       method: 'GET',
