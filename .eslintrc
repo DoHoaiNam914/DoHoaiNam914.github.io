@@ -121,9 +121,10 @@
     ],
     "space-infix-ops": "error",
     "eol-last": [
-      "error",
+      "warn",
       "always"
     ],
+    // CHANGES: error -> warn
     "newline-per-chained-call": [
       "off",
       {
@@ -470,6 +471,9 @@
     "no-return-assign": [
       "warn",
       "always"
-    ]
+    ],
+    // Strict
+    "strict": ["error", "safe"]
+    // CHANGES: never -> safe
   }
 }

@@ -1,3 +1,5 @@
+'use strict';
+
 /* global Translators, specialSinovietnameseMap, cjkv, hanData, newAccentMap, Utils, MicrosoftTranslator, DeepLTranslate, GoogleTranslate, Papago, Vietphrase */
 const $sourceLanguageSelect = $('#source-language-select');
 const $targetLanguageSelect = $('#target-language-select');
