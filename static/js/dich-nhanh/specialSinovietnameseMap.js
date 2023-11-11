@@ -1,6 +1,6 @@
 /* eslint-disable */
 
-const specialSinovietnameseData = [
+const specialSinovietnameseMap = [
   ['骑士长', 'KỴ SĨ TRƯỞNG'],
   ['小姐姐', 'TIỂU TỶ TỶ'],
   ['表姐', 'BIỂU TỶ'],
@@ -14,6 +14,7 @@ const specialSinovietnameseData = [
   ['经济', 'KINH TẾ'],
   ['奇迹', 'KỲ TÍCH'],
   ['领主', 'LÃNH CHỦ'],
+  ['领袖', 'LÃNH TỤ'],
   ['琉璃', 'LƯU LY'],
   ['牡丹', 'MẪU ĐƠN'],
   ['师姐', 'SƯ TỶ'],
@@ -97,6 +98,7 @@ const specialSinovietnameseData = [
   [/* Phổn thể */ '創', '创'],
   ['厅', 'SẢNH'],
   ['生', 'SINH'],
+  ['帅', 'SOÁI' /* Họ */],
   ['山', 'SƠN' /* Họ */],
   ['剂', 'TỄ'],
   ['蔡', 'THÁI, SÁI' /* Họ Thái*/],

@@ -1,4 +1,4 @@
-/* global Translators, specialSinovietnameseData, cjkv, hanData, newAccentData, Utils, MicrosoftTranslator, DeepLTranslate, GoogleTranslate, Papago, Vietphrase */
+/* global Translators, specialSinovietnameseMap, cjkv, hanData, newAccentMap, Utils, MicrosoftTranslator, DeepLTranslate, GoogleTranslate, Papago, Vietphrase */
 const $sourceLanguageSelect = $('#source-language-select');
 const $targetLanguageSelect = $('#target-language-select');
 const $translateButton = $('#translate-button');
@@ -711,7 +711,7 @@ $(document).ready(async () => {
   }
 
   try {
-    let chinesePhienAmWordList = [...specialSinovietnameseData.map(([a, b, c]) => [a, (Object.fromEntries(specialSinovietnameseData.filter(([__, d]) => !/\p{sc=Hani}/u.test(d)).map(([d, e, f]) => [d, f ?? e]))[b] ?? c ?? b).split(', ')[0].toLowerCase()]), ...cjkv.nam.map(([first, second]) => [first, second.trimStart().split(', ')[0]]), ...hanData.names.map(([first, second]) => [first, second.split(',').filter((element) => element.length > 0)[0]])];
+    let chinesePhienAmWordList = [...specialSinovietnameseMap.map(([a, b, c]) => [a, (Object.fromEntries(specialSinovietnameseMap.filter(([__, d]) => !/\p{sc=Hani}/u.test(d)).map(([d, e, f]) => [d, f ?? e]))[b] ?? c ?? b).split(', ')[0].toLowerCase()]), ...cjkv.nam.map(([first, second]) => [first, second.trimStart().split(', ')[0]]), ...hanData.names.map(([first, second]) => [first, second.split(',').filter((element) => element.length > 0)[0]])];
 
     await $.ajax({
       method: 'GET',
@@ -739,7 +739,7 @@ $(document).ready(async () => {
       url: '/static/datasource/Hán việt.txt',
     }).done((data) => chinesePhienAmWordList = [...chinesePhienAmWordList, ...data.split(/\r?\n/).map((element) => element.split('=')).sort((a, b) => b[0].length - a[0].length).map(([first, second]) => [first, second.split('ǀ')[0]]).filter(([first]) => !Object.prototype.hasOwnProperty.call(vietphraseData.chinesePhienAmWords, first))]);
     chinesePhienAmWordList = chinesePhienAmWordList.filter(([first, second], index, array) => first !== '' && !/\p{sc=Latin}/u.test(first) && second != null && !array[first] && (array[first] = 1), {});
-    newAccentData.forEach(([a, b]) => chinesePhienAmWordList = chinesePhienAmWordList.map(([c, d]) => [c, d.replace(new RegExp(a, 'gi'), b)]));
+    newAccentMap.forEach(([a, b]) => chinesePhienAmWordList = chinesePhienAmWordList.map(([c, d]) => [c, d.replace(new RegExp(a, 'gi'), b)]));
     vietphraseData.chinesePhienAmWords = Object.fromEntries(chinesePhienAmWordList);
     console.log('Đã tải xong bộ dữ liệu hán việt (%d)!', chinesePhienAmWordList.length);
     lastSession = {};
