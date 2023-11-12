@@ -980,6 +980,10 @@ $translatorOptions.click(function () {
   localStorage.setItem('dich_nhanh', JSON.stringify(quickTranslateStorage));
   $retranslateButton.click();
 });
+$showOriginalTextSwitch.change(function () {
+  quickTranslateStorage[getOptionId($(this).attr('id'))] = $(this).prop('checked');
+  $retranslateButton.click();
+});
 $vietphraseInput.on('change', function () {
   const reader = new FileReader();
   reader.onload = function () {
