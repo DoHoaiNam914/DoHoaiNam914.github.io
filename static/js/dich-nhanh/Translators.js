@@ -1,3 +1,5 @@
+'use strict';
+
 const Translators = {
   DEEPL_TRANSLATE: 'deeplTranslator',
   GOOGLE_TRANSLATE: 'googleTranslate',

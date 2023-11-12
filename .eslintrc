@@ -5,8 +5,24 @@
     "es6": true,
     "jquery": true
   },
+  "globals": {
+    "Translators": "readonly",
+    "specialSinovietnameseMap": "readonly",
+    "cjkv": "readonly",
+    "hanData": "readonly",
+    "newAccentMap": "readonly",
+    "bootstrap": "readonly",
+    "Utils": "readonly",
+    "MicrosoftTranslator": "readonly",
+    "DeepLTranslate": "readonly",
+    "GoogleTranslate": "readonly",
+    "Papago": "readonly",
+    "Vietphrase": "readonly"
+  },
   "parserOptions": {
-    "ecmaVersion": "latest"
+    "ecmaVersion": "latest",
+    "sourceType": "script"
+    // CHANGES: module -> script
   },
   // ECMAScript 6+ (ES 2015+) Styles - Start
   "plugins": [
@@ -121,10 +137,10 @@
     ],
     "space-infix-ops": "error",
     "eol-last": [
-      "warn",
+      "off",
       "always"
     ],
-    // CHANGES: error -> warn
+    // CHANGES: error -> off
     "newline-per-chained-call": [
       "off",
       {
@@ -255,14 +271,18 @@
       }
     ],
     "new-cap": [
-      "error", {
-      "newIsCap": true,
-      "newIsCapExceptions": [],
-      "capIsNew": false,
-      "capIsNewExceptions": [
-        "Immutable.Map", "Immutable.Set", "Immutable.List"
-      ]
-      }],
+      "error",
+      {
+        "newIsCap": true,
+        "newIsCapExceptions": [],
+        "capIsNew": false,
+        "capIsNewExceptions": [
+          "Immutable.Map",
+          "Immutable.Set",
+          "Immutable.List"
+        ]
+      }
+    ],
     "no-underscore-dangle": [
       "warn",
       {
@@ -385,7 +405,7 @@
     ],
     "no-duplicate-imports": "off",
     "import/no-duplicates": "error",
-    // Thay thế no-duplicate-imports
+    // no-duplicate-imports -> import/no-duplicates
     "import/no-mutable-exports": "error",
     "import/prefer-default-export": "error",
     "import/first": "error",
@@ -417,6 +437,7 @@
     "import/no-webpack-loader-syntax": "error",
     // Project
     "no-await-in-loop": "warn",
+    // error -> warn
     "no-unused-vars": [
       "warn",
       {
@@ -425,6 +446,7 @@
         "ignoreRestSiblings": true
       }
     ],
+    // error -> warn
     "no-use-before-define": [
       "warn",
       {
@@ -433,47 +455,54 @@
         "variables": true
       }
     ],
+    // error -> warn
     "max-classes-per-file": [
       "warn",
       1
     ],
+    // error -> warn
     "no-param-reassign": [
       "error",
       {
         "props": true,
         "ignorePropertyModificationsFor": [
-//          "acc",
-//          // for reduce accumulators
-//          "accumulator",
-//          // for reduce accumulators
-//          "e",
-//          // for e.returnvalue
-//          "ctx",
-//          // for Koa routing
-//          "context",
-//          // for Koa routing
-//          "req",
-//          // for Express requests
-//          "request",
-//          // for Express requests
-//          "res",
-//          // for Express responses
-//          "response",
-//          // for Express responses
-//          "$scope",
-//          // for Angular 1 scopes
-//          "staticContext",
-//          // for ReactRouter context
+          //          "acc",
+          //          // for reduce accumulators
+          //          "accumulator",
+          //          // for reduce accumulators
+          //          "e",
+          //          // for e.returnvalue
+          //          "ctx",
+          //          // for Koa routing
+          //          "context",
+          //          // for Koa routing
+          //          "req",
+          //          // for Express requests
+          //          "request",
+          //          // for Express requests
+          //          "res",
+          //          // for Express responses
+          //          "response",
+          //          // for Express responses
+          //          "$scope",
+          //          // for Angular 1 scopes
+          //          "staticContext",
+          //          // for ReactRouter context
           "array"
         ]
       }
     ],
+    // error -> warn
     "no-return-assign": [
       "warn",
       "always"
     ],
+    // error -> warn
     // Strict
-    "strict": ["error", "safe"]
-    // CHANGES: never -> safe
+    "strict": [
+      "error",
+      "global"
+    ]
+    // CHANGES: error -> warn, never -> global
   }
 }

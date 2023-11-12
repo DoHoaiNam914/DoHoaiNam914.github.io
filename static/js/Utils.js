@@ -1,3 +1,5 @@
+'use strict';
+
 class Utils {
   static CORS_PROXY = 'https://corsproxy.itsdhnam.workers.dev/';
 
@@ -15,7 +17,8 @@ class Utils {
 
   /* eslint-disable */
 
-  static getTrieRegexPatternFromWords(words, prefix = '', suffix = '') {
+  static getTrieRegexPatternFromWords(words,
+    prefix = '', suffix = '') {
     const trieData = {};
 
     for (const word of words) {

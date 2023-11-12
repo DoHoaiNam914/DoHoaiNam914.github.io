@@ -1,6 +1,5 @@
 'use strict';
 
-/* global Translators, specialSinovietnameseMap, cjkv, hanData, newAccentMap, Utils, MicrosoftTranslator, DeepLTranslate, GoogleTranslate, Papago, Vietphrase */
 const $sourceLanguageSelect = $('#source-language-select');
 const $targetLanguageSelect = $('#target-language-select');
 const $translateButton = $('#translate-button');
@@ -31,6 +30,7 @@ const $glossarySwitch = $('#glossary-switch');
 const $glossaryInput = $('#glossary-input');
 const $glossaryType = $('#glossary-type');
 const $sourcePairInput = $('#source-pair-input');
+const $dropdownHasCollapse = $('.dropdown-has-collapse');
 const $targetPairInput = $('#target-pair-input');
 const $addButton = $('#add-button');
 const $removeButton = $('#remove-button');
@@ -1056,8 +1056,26 @@ $sourcePairInput.on('input', async function () {
     $removeButton.addClass('disabled');
   }
 });
-$('.dropdown-toggle').on('click', () => $('.dropdown-scroller').prop('scrollTop', 0));
-$('#source-pair-dropdown').on('mousedown', (event) => event.preventDefault());
+$('#source-pair-dropdown-toggle').on('mousedown', (event) => event.preventDefault());
+$('.dropdown-can-scroll').on('hide.bs.dropdown', function () {
+  $(this).find('.dropdown-menu-scroller').prop('scrollTop', 0);
+});
+$('.dropdown-menu button.dropdown-item').on('click', function () {
+  if ($(this).data('bs-toggle') === 'collapse') return;
+
+  $dropdownHasCollapse.find('.dropdown-menu').each((indexInArray, value) => {
+    if (!$(value).hasClass('show')) return;
+    const bootstrapDropdownHasCollapse = new bootstrap.Dropdown(value);
+    bootstrapDropdownHasCollapse.hide();
+  });
+});
+$dropdownHasCollapse.on('hide.bs.dropdown', function () {
+  $(this).find('.dropdown-menu').find('.collapse').each((indexInArray, value) => {
+    if (!$(value).hasClass('show')) return;
+    const bootstrapCollapseInDropdown = new bootstrap.Collapse(value);
+    bootstrapCollapseInDropdown.hide();
+  });
+});
 $('.define-button').on('click', function () {
   if ($sourcePairInput.val().length > 0) {
     window.open($(this).data('href').replace('{0}', encodeURIComponent(($sourcePairInput.val().substring($sourcePairInput.prop('selectionStart'), $sourcePairInput.prop('selectionEnd')) || $sourcePairInput.val()).substring(0, 30).trim())));
