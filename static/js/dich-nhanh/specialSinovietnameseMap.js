@@ -74,6 +74,7 @@ const specialSinovietnameseMap = [
   ['矿', 'KHOÁNG'],
   ['期', 'KỲ'],
   ['岐', 'KỲ'],
+  ['祈', 'KỲ'],
   ['淇', 'KỲ'],
   ['琪', 'KỲ'],
   ['麒', 'KỲ'],
