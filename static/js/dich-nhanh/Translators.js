@@ -738,7 +738,7 @@ class MicrosoftTranslator {
 }
 
 class Vietphrase {
-  static SOURCE_LANGUAGES = { zh: 'Tiếng Trung' };
+  static SOURCE_LANGUAGES = { zh: 'Chinese' };
 
   static TARGET_LANGUAGES = {
     pinyin: 'Bính âm',

@@ -1067,13 +1067,19 @@ $('.dropdown-can-scroll').on('hide.bs.dropdown', function () {
   $(this).find('.dropdown-menu-scroller').prop('scrollTop', 0);
 });
 $('.dropdown-menu button.dropdown-item').on('click', function () {
-  if ($(this).data('bs-toggle') === 'collapse') return;
-
-  $dropdownHasCollapse.find('.dropdown-menu').each((indexInArray, value) => {
-    if (!$(value).hasClass('show')) return;
-    const bootstrapDropdownHasCollapse = new bootstrap.Dropdown(value);
-    bootstrapDropdownHasCollapse.hide();
-  });
+  if ($(this).data('bs-toggle') === 'collapse') {
+    $dropdownHasCollapse.find('.dropdown-menu').find('.collapse').each((indexInArray, value) => {
+      if (!$(value).hasClass('show')) return;
+      const bootstrapDropdownHasCollapse = new bootstrap.Collapse(value);
+      bootstrapDropdownHasCollapse.hide();
+    });
+  } else {
+    $dropdownHasCollapse.find('.dropdown-menu').each((indexInArray, value) => {
+      if (!$(value).hasClass('show')) return;
+      const bootstrapDropdownHasCollapse = new bootstrap.Dropdown(value);
+      bootstrapDropdownHasCollapse.hide();
+    });
+  }
 });
 $dropdownHasCollapse.on('hide.bs.dropdown', function () {
   $(this).find('.dropdown-menu').find('.collapse').each((indexInArray, value) => {
