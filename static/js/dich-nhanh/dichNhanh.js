@@ -19,6 +19,7 @@ const $alignmentSettingsSwitch = $('#alignment-settings-switch');
 const $translatorOptions = $('.translator-option');
 const $showOriginalTextSwitch = $('#show-original-text-switch');
 const $vietphraseInput = $('#vietphrase-input');
+const $loadDefaultVietPhraseFileSwitch = $('#load-default-vietphrase-file-switch');
 const $prioritizeNameOverVietphraseCheck = $('#prioritize-name-over-vietphrase-check');
 const $translationAlgorithmRadio = $('.option[name="translation-algorithm-radio"]');
 const $multiplicationAlgorithmRadio = $('.option[name="multiplication-algorithm-radio"]');
@@ -773,7 +774,7 @@ $(document).ready(async () => {
     setTimeout(window.location.reload, 5000);
   });
 
-  if (Object.entries(vietphraseData.vietphrases).length === 0) {
+  if ($loadDefaultVietPhraseFileSwitch.prop('checked') && Object.entries(vietphraseData.vietphrases).length === 0) {
     await $.ajax({
       method: 'GET',
       url: '/static/datasource/VietPhrase.txt',
@@ -782,13 +783,14 @@ $(document).ready(async () => {
       vietphraseList = vietphraseList.filter(([first, second], index, array) => first !== '' && second != null && !array[first] && (array[first] = 1), {});
       if ($vietphraseInput.prop('files') == null) return;
       vietphraseData.vietphrases = Object.fromEntries(vietphraseList);
-      console.log('Đã tải xong tệp VietPhrase.txt (%d)!', vietphraseList.length);
+      console.log('Đã tải xong tệp VietPhrase (%d)!', vietphraseList.length);
       lastSession = {};
     }).fail((jqXHR, textStatus, errorThrown) => {
-      console.error('Không tải được tệp VietPhrase.txt:', errorThrown);
+      console.error('Không tải được tệp VietPhrase:', errorThrown);
     });
   }
 
+  $loadDefaultVietPhraseFileSwitch.removeClass('disabled');
   $inputTextarea.trigger('input');
 });
 $(window).on('keydown', (event) => {
@@ -995,10 +997,10 @@ $vietphraseInput.on('change', function () {
   };
   reader.readAsText($(this).prop('files')[0]);
 });
-$prioritizeNameOverVietphraseCheck.change(function () {
-  quickTranslateStorage[getOptionId($(this).attr('id'))] = $(this).prop('checked');
-  localStorage.setItem('dich_nhanh', JSON.stringify(quickTranslateStorage));
-  $retranslateButton.click();
+$loadDefaultVietPhraseFileSwitch.on('change', function () {
+  if (!$(this).hasClass('disabled') && $(this).prop('checked') === true) {
+    if (window.confirm('Bạn có muốn tải lại trang ngay chứ?')) window.location.reload();
+  }
 });
 $resetButton.on('click', () => {
   if (!window.confirm('Bạn có muốn đặt lại tất cả thiết lập chứ?')) return;
