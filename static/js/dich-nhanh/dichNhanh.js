@@ -808,7 +808,11 @@ $(window).on('keydown', (event) => {
     }
   }
 });
-$(visualViewport).resize((event) => $('.textarea').css('max-height', `${event.target.height - ((event.target.width < 1200 ? 23.28703703703703 : 40.33092037228542) / 100) * event.target.height}px`));
+$(visualViewport).resize((event) => {
+  $('.textarea').css('max-height', `${event.target.height - (((event.target.width < 1200 ? 23.28703703703703 : 40.33092037228542) / 100) * event.target.height)}px`);
+  $inputTextarea.css('height', $('.textarea').css('max-height'));
+  $resultTextarea.css('height', $('.textarea').css('max-height'));
+});
 $translateButton.on('click', function () {
   if (translateAbortController != null) {
     translateAbortController.abort();
@@ -841,8 +845,6 @@ $translateButton.on('click', function () {
       $(this).text('Huỷ');
       translateAbortController = new AbortController();
       translateTextarea().finally(() => {
-        $resultTextarea.css('height', 'auto');
-        $resultTextarea.css('height', `${$resultTextarea.prop('scrollHeight')}px`);
         $translateButton.text('Sửa');
         copyButton.data('target', '#result-textarea');
         copyButton.removeClass('disabled');
@@ -1147,8 +1149,6 @@ $glossaryDataList.change(function () {
   }
 });
 $inputTextarea.on('input', function () {
-  $(this).css('height', 'auto');
-  $(this).css('height', `${$(this).prop('scrollHeight')}px`);
   $(visualViewport).resize();
   $('#input-textarea-counter').text($(this).val().length);
 });
