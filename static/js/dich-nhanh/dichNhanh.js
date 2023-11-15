@@ -30,6 +30,7 @@ const $resultTextarea = $('#result-textarea');
 const $glossarySwitch = $('#glossary-switch');
 const $glossaryInput = $('#glossary-input');
 const $glossaryType = $('#glossary-type');
+const $languagesPairSelect = $('#languages-pair-select');
 const $sourcePairInput = $('#source-pair-input');
 const $dropdownHasCollapse = $('.dropdown-has-collapse');
 const $targetPairInput = $('#target-pair-input');
@@ -38,7 +39,7 @@ const $removeButton = $('#remove-button');
 const $glossaryDataList = $('#glossary-data-list');
 const $glossaryName = $('#glossary-name');
 
-const defaultOptions = JSON.parse('{"source_language":"","target_language":"vi","font":"Mặc định","font_size":100,"line_spacing":40,"alignment_settings":true,"translator":"microsoftTranslator","show_original_text":false,"ttvtranslate_mode":false,"translation_algorithm":"0","prioritize_name_over_vietphrase":false,"multiplication_algorithm":"2","glossary":true,"language_pairs":"zh-vi"}');
+const defaultOptions = JSON.parse('{"source_language":"","target_language":"vi","font":"Mặc định","font_size":100,"line_spacing":40,"alignment_settings":true,"translator":"microsoftTranslator","show_original_text":false,"load_default_vietphrase_file":false,"ttvtranslate_mode":false,"translation_algorithm":"0","prioritize_name_over_vietphrase":false,"multiplication_algorithm":"2","glossary":true,"languages_pair":"zh-vi"}');
 
 let quickTranslateStorage = JSON.parse(localStorage.getItem('dich_nhanh')) ?? {};
 let glossary = JSON.parse(localStorage.getItem('glossary')) ?? {};
@@ -184,6 +185,10 @@ function loadAllQuickTranslatorOptions() {
   });
 }
 
+function updateInputTextLength() {
+  $('#input-textarea-counter').text(`${$inputTextarea.val().length}${$inputTextarea.val().length > 0 && ($glossarySwitch.prop('checked') && ($translatorOptions.filter($('.active')).data('id') === Translators.VIETPHRASE ? $prioritizeNameOverVietphraseCheck.prop('checked') && $targetLanguageSelect.val().split('-')[0].toLowerCase() === 'vi' : $sourceLanguageSelect.val().split('-')[0].toLowerCase() === $languagesPairSelect.val().split('-')[0] && $targetLanguageSelect.val().split('-')[0].toLowerCase() === $languagesPairSelect.val().split('-')[1])) ? ` (+${applyGlossaryToText($inputTextarea.val(), $translatorOptions.filter($('.active')).data('id')).length - $inputTextarea.val().length})` : ''}`);
+}
+
 function reloadGlossaryEntries() {
   const entrySelect = document.createElement('select');
 
@@ -239,6 +244,7 @@ function reloadGlossaryEntries() {
   $glossaryDataList.html(entrySelect.innerHTML);
   $glossaryDataList.val('');
   $('#glossary-counter').text(glossaryEntries.length);
+  updateInputTextLength();
   localStorage.setItem('glossary', JSON.stringify(glossary));
 }
 
@@ -395,7 +401,7 @@ async function translateTextarea() {
   const sourceLanguage = $sourceLanguageSelect.val();
   const targetLanguage = $targetLanguageSelect.val();
 
-  const languagePairs = $('#language-pairs-select').val();
+  const languagePairs = $languagesPairSelect.val();
   const glossaryLanguageSource = languagePairs.split('-')[0];
   const glossaryLanguageTarget = languagePairs.split('-')[1];
 
@@ -926,6 +932,7 @@ $options.change(function () {
   localStorage.setItem('dich_nhanh', JSON.stringify(quickTranslateStorage));
 
   if ($(this).hasClass('quick-translate-option')) {
+    updateInputTextLength();
     lastSession = {};
     $retranslateButton.click();
   }
@@ -982,6 +989,7 @@ $translatorOptions.click(function () {
   updateLanguageSelect($(this).data('id'), quickTranslateStorage.translator);
   quickTranslateStorage.translator = $(this).data('id');
   localStorage.setItem('dich_nhanh', JSON.stringify(quickTranslateStorage));
+  updateInputTextLength();
   $retranslateButton.click();
 });
 $showOriginalTextSwitch.change(function () {
@@ -1148,9 +1156,9 @@ $glossaryDataList.change(function () {
     $removeButton.addClass('disabled');
   }
 });
-$inputTextarea.on('input', function () {
+$inputTextarea.on('input', () => {
   $(visualViewport).resize();
-  $('#input-textarea-counter').text($(this).val().length);
+  updateInputTextLength();
 });
 $inputTextarea.on('keypress', (event) => {
   if (event.shiftKey && event.key === 'Enter') $translateButton.click();
