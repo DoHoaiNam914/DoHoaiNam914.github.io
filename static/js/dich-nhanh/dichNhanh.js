@@ -738,16 +738,16 @@ $(document).ready(async () => {
     });
     await $.ajax({
       method: 'GET',
+      url: '/static/datasource/Hán việt.txt',
+    }).done((data) => chinesePhienAmWordList = [...chinesePhienAmWordList, ...data.split(/\r?\n/).map((element) => element.split('=')).sort((a, b) => b[0].length - a[0].length).map(([first, second]) => [first, second.split('ǀ')[0]]).filter(([first]) => !Object.prototype.hasOwnProperty.call(vietphraseData.chinesePhienAmWords, first))]);
+    chinesePhienAmWordList = chinesePhienAmWordList.filter(([first, second], index, array) => first !== '' && !/\p{sc=Latin}/u.test(first) && second != null && !array[first] && (array[first] = 1), {});
+    await $.ajax({
+      method: 'GET',
       url: '/static/datasource/QuickTranslate2020 - ChinesePhienAmWords.txt',
     }).done((data) => {
       chinesePhienAmWordList = [...chinesePhienAmWordList, ...data.split(/\r?\n/).map((element) => element.split('=')).filter(([first]) => !Object.prototype.hasOwnProperty.call(vietphraseData.chinesePhienAmWords, first))];
       vietphraseData.chinesePhienAmWords = Object.fromEntries(chinesePhienAmWordList);
     });
-    await $.ajax({
-      method: 'GET',
-      url: '/static/datasource/Hán việt.txt',
-    }).done((data) => chinesePhienAmWordList = [...chinesePhienAmWordList, ...data.split(/\r?\n/).map((element) => element.split('=')).sort((a, b) => b[0].length - a[0].length).map(([first, second]) => [first, second.split('ǀ')[0]]).filter(([first]) => !Object.prototype.hasOwnProperty.call(vietphraseData.chinesePhienAmWords, first))]);
-    chinesePhienAmWordList = chinesePhienAmWordList.filter(([first, second], index, array) => first !== '' && !/\p{sc=Latin}/u.test(first) && second != null && !array[first] && (array[first] = 1), {});
     newAccentMap.forEach(([a, b]) => chinesePhienAmWordList = chinesePhienAmWordList.map(([c, d]) => [c, d.replace(new RegExp(a, 'gi'), b)]));
     vietphraseData.chinesePhienAmWords = Object.fromEntries(chinesePhienAmWordList);
     console.log('Đã tải xong bộ dữ liệu hán việt (%d)!', chinesePhienAmWordList.length);
