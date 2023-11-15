@@ -783,7 +783,7 @@ $(document).ready(async () => {
   if ($loadDefaultVietPhraseFileSwitch.prop('checked') && Object.entries(vietphraseData.vietphrases).length === 0) {
     await $.ajax({
       method: 'GET',
-      url: '/static/datasource/VietPhrase.txt',
+      url: '/static/datasource/Vietphrase.txt',
     }).done((data) => {
       let vietphraseList = [...data.split(/\r?\n/).map((element) => element.split('=')).filter((element) => element.length === 2).map(([first, second]) => [first, second.split('/')[0].split('|')[0]]), ...Object.entries(vietphraseData.chinesePhienAmWords)];
       vietphraseList = vietphraseList.filter(([first, second], index, array) => first !== '' && second != null && !array[first] && (array[first] = 1), {});
