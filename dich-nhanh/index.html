@@ -116,7 +116,7 @@
     }
 
     .collapse-item::before {
-      content: '- ';
+      content: '> ';
     }
   </style>
   <script>
@@ -786,22 +786,22 @@
                   <li>
                     <button type="button" class="dropdown-item" data-bs-toggle="collapse" data-bs-target="#vietnamese-define-collapse">Tra cứu tiếng Việt</button>
                     <div class="collapse" id="vietnamese-define-collapse">
+                      <button type="button" class="dropdown-item collapse-item define-button" data-href="https://www.google.com.vn/search?q={0}">Google</button>
+                      <button type="button" class="dropdown-item collapse-item define-button" data-href="https://vi.wikipedia.org/w/?search={0}&ns0=1">Wikipedia</button>
                       <button type="button" class="dropdown-item collapse-item define-button" data-href="http://tratu.coviet.vn/hoc-tieng-anh/tu-dien/lac-viet/V-A/{0}.html">Từ điển Việt - Anh</button>
                       <button type="button" class="dropdown-item collapse-item define-button" data-href="http://tratu.coviet.vn/hoc-tieng-anh/tu-dien/lac-viet/V-N/{0}.html">Từ điển Việt - Nhật</button>
                       <button type="button" class="dropdown-item collapse-item define-button" data-href="http://tratu.coviet.vn/hoc-tieng-anh/tu-dien/lac-viet/V-T/{0}.html">Từ điển Việt - Trung</button>
-                      <button type="button" class="dropdown-item collapse-item define-button" data-href="https://www.google.com.vn/search?q={0}">Google</button>
-                      <button type="button" class="dropdown-item collapse-item define-button" data-href="https://vi.wikipedia.org/w/?search={0}&ns0=1">Wikipedia</button>
                     </div>
                   </li>
                   <li>
                     <button type="button" class="dropdown-item" data-bs-toggle="collapse" data-bs-target="#chinese-define-collapse">Tra cứu tiếng Trung Quốc</button>
                     <div class="collapse" id="chinese-define-collapse">
                       <button type="button" class="dropdown-item collapse-item define-button" data-href="http://tratu.coviet.vn/hoc-tieng-trung/tu-dien/lac-viet/T-V/{0}.html">Từ điển Trung - Việt</button>
+                      <button type="button" class="dropdown-item collapse-item define-button" data-href="https://www.baidu.com/s?wd={0}">Baidu</button>
+                      <button type="button" class="dropdown-item collapse-item define-button" data-href="https://baike.baidu.com/item/{0}">Baike</button>
                       <button type="button" class="dropdown-item collapse-item define-button" data-href="https://hvdic.thivien.net/whv/{0}">Từ điển Hán Nôm</button>
                       <button type="button" class="dropdown-item collapse-item define-button" data-href="https://www.mdbg.net/chinese/dictionary?page=worddict&wdqb={0}">CC-CEDICT</button>
                       <button type="button" class="dropdown-item collapse-item define-button" data-href="https://english.dict.naver.com/english-chinese-dictionary/#/search?query={0}">Naver dictionary</button>
-                      <button type="button" class="dropdown-item collapse-item define-button" data-href="https://www.baidu.com/s?wd={0}">Baidu</button>
-                      <button type="button" class="dropdown-item collapse-item define-button" data-href="https://baike.baidu.com/item/{0}">Baike</button>
                     </div>
                   </li>
                   <li>
@@ -816,9 +816,9 @@
                     <button type="button" class="dropdown-item" data-bs-toggle="collapse" data-bs-target="#english-define-collapse">Tra cứu tiếng Anh</button>
                     <div class="collapse" id="english-define-collapse">
                       <button type="button" class="dropdown-item collapse-item define-button" data-href="http://tratu.coviet.vn/hoc-tieng-anh/tu-dien/lac-viet/A-V/{0}.html">Từ điển Anh - Việt</button>
-                      <button type="button" class="dropdown-item collapse-item define-button" data-href="https://dictionary.cambridge.org/vi/dictionary/english-vietnamese/{0}">Cambridge Dictionary</button>
                       <button type="button" class="dropdown-item collapse-item define-button" data-href="https://www.google.com/search?q={0}">Google</button>
                       <button type="button" class="dropdown-item collapse-item define-button" data-href="https://en.wikipedia.org/w/?search={0}&ns0=1">Wikipedia</button>
+                      <button type="button" class="dropdown-item collapse-item define-button" data-href="https://dictionary.cambridge.org/vi/dictionary/english-vietnamese/{0}">Cambridge Dictionary</button>
                     </div>
                   </li>
                   <li>
