@@ -16,7 +16,6 @@ const specialSinovietnameseMap = [
   ['领主', 'LÃNH CHỦ'],
   ['领袖', 'LÃNH TỤ'],
   ['琉璃', 'LƯU LY'],
-  ['牡丹', 'MẪU ĐAN'],
   ['师姐', 'SƯ TỶ'],
   ['神奇', 'THẦN KỲ'],
   ['刺客', 'THÍCH KHÁCH'],
