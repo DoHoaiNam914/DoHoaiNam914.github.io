@@ -1,14 +1,14 @@
 'use strict';
 
 const Translators = {
-  DEEPL_TRANSLATE: 'deeplTranslator',
+  DEEPL_TRANSLATE: 'deeplTranslate',
   GOOGLE_TRANSLATE: 'googleTranslate',
   PAPAGO: 'papago',
   MICROSOFT_TRANSLATOR: 'microsoftTranslator',
   VIETPHRASE: 'vietphrase',
 };
 
-class DeepLTranslate {
+class DeeplTranslate {
   /** https://api-free.deepl.com/v2/languages?type=source */
   static SOURCE_LANGUAGES = [{
     language: '',
@@ -21,7 +21,7 @@ class DeepLTranslate {
   static DETECT_LANGUAGE = '';
 
   static DefaultLanguage = {
-    SOURCE_LANG: DeepLTranslate.DETECT_LANGUAGE,
+    SOURCE_LANG: DeeplTranslate.DETECT_LANGUAGE,
     TARGET_LANG: 'EN-US',
   };
 
@@ -128,23 +128,23 @@ class DeepLTranslate {
   }
 
   static getSourceLangName(languageCode) {
-    return DeepLTranslate.SOURCE_LANGUAGES.filter(({ language }) => language === languageCode)[0].name;
+    return DeeplTranslate.SOURCE_LANGUAGES.filter(({ language }) => language === languageCode)[0].name;
   }
 
   static getTargetLangName(languageCode) {
-    return DeepLTranslate.TARGET_LANGUAGES.filter(({ language }) => language === languageCode)[0].name;
+    return DeeplTranslate.TARGET_LANGUAGES.filter(({ language }) => language === languageCode)[0].name;
   }
 
   static getMappedSourceLanguageCode(translator, languageCode) {
     switch (translator) {
       case Translators.GOOGLE_TRANSLATE: {
-        return DeepLTranslate.GOOGLE_TRANSLATE_MAPPING[languageCode] ?? (Object.prototype.hasOwnProperty.call(GoogleTranslate.SOURCE_LANGUAGES, languageCode) ? languageCode : GoogleTranslate.DefaultLanguage.SL);
+        return DeeplTranslate.GOOGLE_TRANSLATE_MAPPING[languageCode] ?? (Object.prototype.hasOwnProperty.call(GoogleTranslate.SOURCE_LANGUAGES, languageCode) ? languageCode : GoogleTranslate.DefaultLanguage.SL);
       }
       case Translators.PAPAGO: {
-        return DeepLTranslate.PAPAGO_MAPPING[languageCode] ?? (Object.prototype.hasOwnProperty.call(Papago.SOURCE_LANGUAGES, languageCode) ? languageCode : Papago.DefaultLanguage.SOURCE);
+        return DeeplTranslate.PAPAGO_MAPPING[languageCode] ?? (Object.prototype.hasOwnProperty.call(Papago.SOURCE_LANGUAGES, languageCode) ? languageCode : Papago.DefaultLanguage.SOURCE);
       }
       case Translators.MICROSOFT_TRANSLATOR: {
-        return DeepLTranslate.MICROSOFT_TRANSLATOR_MAPPING[languageCode] ?? (Object.prototype.hasOwnProperty.call(MicrosoftTranslator.FROM_LANGUAGES, languageCode) ? languageCode : MicrosoftTranslator.DefaultLanguage.FROM);
+        return DeeplTranslate.MICROSOFT_TRANSLATOR_MAPPING[languageCode] ?? (Object.prototype.hasOwnProperty.call(MicrosoftTranslator.FROM_LANGUAGES, languageCode) ? languageCode : MicrosoftTranslator.DefaultLanguage.FROM);
       }
       case Translators.VIETPHRASE: {
         return Vietphrase.DefaultLanguage.SOURCE_LANGUAGE;
@@ -158,13 +158,13 @@ class DeepLTranslate {
   static getMappedTargetLanguageCode(translator, languageCode) {
     switch (translator) {
       case Translators.GOOGLE_TRANSLATE: {
-        return DeepLTranslate.GOOGLE_TRANSLATE_MAPPING[languageCode] ?? (Object.prototype.hasOwnProperty.call(GoogleTranslate.TARGET_LANGUAGES, languageCode) ? languageCode : GoogleTranslate.DefaultLanguage.TL);
+        return DeeplTranslate.GOOGLE_TRANSLATE_MAPPING[languageCode] ?? (Object.prototype.hasOwnProperty.call(GoogleTranslate.TARGET_LANGUAGES, languageCode) ? languageCode : GoogleTranslate.DefaultLanguage.TL);
       }
       case Translators.PAPAGO: {
-        return DeepLTranslate.PAPAGO_MAPPING[languageCode] ?? (Object.prototype.hasOwnProperty.call(Papago.TARGET_LANGUAGES, languageCode) ? languageCode : Papago.DefaultLanguage.TARGET);
+        return DeeplTranslate.PAPAGO_MAPPING[languageCode] ?? (Object.prototype.hasOwnProperty.call(Papago.TARGET_LANGUAGES, languageCode) ? languageCode : Papago.DefaultLanguage.TARGET);
       }
       case Translators.MICROSOFT_TRANSLATOR: {
-        return DeepLTranslate.MICROSOFT_TRANSLATOR_MAPPING[languageCode] ?? (Object.prototype.hasOwnProperty.call(MicrosoftTranslator.TO_LANGUAGES, languageCode) ? languageCode : MicrosoftTranslator.DefaultLanguage.TO);
+        return DeeplTranslate.MICROSOFT_TRANSLATOR_MAPPING[languageCode] ?? (Object.prototype.hasOwnProperty.call(MicrosoftTranslator.TO_LANGUAGES, languageCode) ? languageCode : MicrosoftTranslator.DefaultLanguage.TO);
       }
       case Translators.VIETPHRASE: {
         return Vietphrase.DefaultLanguage.TARGET_LANGUAGE;
@@ -261,7 +261,7 @@ class GoogleTranslate {
   static getMappedSourceLanguageCode(translator, languageCode) {
     switch (translator) {
       case Translators.DEEPL_TRANSLATE: {
-        return GoogleTranslate.DEEPL_TRANSLATOR_MAPPING.SOURCE_LANGUAGES[languageCode] ?? (DeepLTranslate.SOURCE_LANGUAGES.filter(({ language }) => language === languageCode).length > 0 ? languageCode : DeepLTranslate.DefaultLanguage.SOURCE_LANG);
+        return GoogleTranslate.DEEPL_TRANSLATOR_MAPPING.SOURCE_LANGUAGES[languageCode] ?? (DeeplTranslate.SOURCE_LANGUAGES.filter(({ language }) => language === languageCode).length > 0 ? languageCode : DeeplTranslate.DefaultLanguage.SOURCE_LANG);
       }
       case Translators.PAPAGO: {
         return Object.prototype.hasOwnProperty.call(Papago.SOURCE_LANGUAGES, languageCode) ? languageCode : Papago.DefaultLanguage.SOURCE;
@@ -281,7 +281,7 @@ class GoogleTranslate {
   static getMappedTargetLanguageCode(translator, languageCode) {
     switch (translator) {
       case Translators.DEEPL_TRANSLATE: {
-        return GoogleTranslate.DEEPL_TRANSLATOR_MAPPING.TARGET_LANGUAGES[languageCode] ?? (DeepLTranslate.TARGET_LANGUAGES.filter(({ language }) => language === languageCode).length > 0 ? languageCode : DeepLTranslate.DefaultLanguage.TARGET_LANG);
+        return GoogleTranslate.DEEPL_TRANSLATOR_MAPPING.TARGET_LANGUAGES[languageCode] ?? (DeeplTranslate.TARGET_LANGUAGES.filter(({ language }) => language === languageCode).length > 0 ? languageCode : DeeplTranslate.DefaultLanguage.TARGET_LANG);
       }
       case Translators.PAPAGO: {
         return Object.prototype.hasOwnProperty.call(Papago.TARGET_LANGUAGES, languageCode) ? languageCode : Papago.DefaultLanguage.TARGET;
@@ -502,7 +502,7 @@ class Papago {
   static getMappedSourceLanguageCode(translator, languageCode) {
     switch (translator) {
       case Translators.DEEPL_TRANSLATE: {
-        return Papago.DEEPL_TRANSLATOR_MAPPING.SOURCE_LANGUAGES[languageCode] ?? (DeepLTranslate.SOURCE_LANGUAGES.filter(({ language }) => language === languageCode).length > 0 ? languageCode : DeepLTranslate.DefaultLanguage.SOURCE_LANG);
+        return Papago.DEEPL_TRANSLATOR_MAPPING.SOURCE_LANGUAGES[languageCode] ?? (DeeplTranslate.SOURCE_LANGUAGES.filter(({ language }) => language === languageCode).length > 0 ? languageCode : DeeplTranslate.DefaultLanguage.SOURCE_LANG);
       }
       case Translators.GOOGLE_TRANSLATE: {
         return Papago.GOOGLE_TRANSLATOR_MAPPING[languageCode] ?? Object.prototype.hasOwnProperty.call(Papago.SOURCE_LANGUAGES, languageCode) ? languageCode : GoogleTranslate.DefaultLanguage.SL;
@@ -522,7 +522,7 @@ class Papago {
   static getMappedTargetLanguageCode(translator, languageCode) {
     switch (translator) {
       case Translators.DEEPL_TRANSLATE: {
-        return Papago.DEEPL_TRANSLATOR_MAPPING.TARGET_LANGUAGES[languageCode] ?? (DeepLTranslate.TARGET_LANGUAGES.filter(({ language }) => language === languageCode).length > 0 ? languageCode : DeepLTranslate.DefaultLanguage.TARGET_LANG);
+        return Papago.DEEPL_TRANSLATOR_MAPPING.TARGET_LANGUAGES[languageCode] ?? (DeeplTranslate.TARGET_LANGUAGES.filter(({ language }) => language === languageCode).length > 0 ? languageCode : DeeplTranslate.DefaultLanguage.TARGET_LANG);
       }
       case Translators.GOOGLE_TRANSLATE: {
         return Object.prototype.hasOwnProperty.call(Papago.TARGET_LANGUAGES, languageCode) ? languageCode : GoogleTranslate.DefaultLanguage.TL;
@@ -647,7 +647,7 @@ class MicrosoftTranslator {
   static getMappedSourceLanguageCode(translator, languageCode) {
     switch (translator) {
       case Translators.DEEPL_TRANSLATE: {
-        return MicrosoftTranslator.DEEPL_TRANSLATOR_MAPPING.SOURCE_LANGUAGES[languageCode] ?? (DeepLTranslate.SOURCE_LANGUAGES.filter(({ language }) => language === languageCode).length > 0 ? languageCode : DeepLTranslate.DefaultLanguage.SOURCE_LANG);
+        return MicrosoftTranslator.DEEPL_TRANSLATOR_MAPPING.SOURCE_LANGUAGES[languageCode] ?? (DeeplTranslate.SOURCE_LANGUAGES.filter(({ language }) => language === languageCode).length > 0 ? languageCode : DeeplTranslate.DefaultLanguage.SOURCE_LANG);
       }
       case Translators.GOOGLE_TRANSLATE: {
         return MicrosoftTranslator.GOOGLE_TRANSLATE_MAPPING[languageCode] ?? (Object.prototype.hasOwnProperty.call(GoogleTranslate.SOURCE_LANGUAGES, languageCode) ? languageCode : GoogleTranslate.DefaultLanguage.SL);
@@ -667,7 +667,7 @@ class MicrosoftTranslator {
   static getMappedTargetLanguageCode(translator, languageCode) {
     switch (translator) {
       case Translators.DEEPL_TRANSLATE: {
-        return MicrosoftTranslator.DEEPL_TRANSLATOR_MAPPING.TARGET_LANGUAGES[languageCode] ?? (DeepLTranslate.TARGET_LANGUAGES.filter(({ language }) => language === languageCode).length > 0 ? languageCode : DeepLTranslate.DefaultLanguage.TARGET_LANG);
+        return MicrosoftTranslator.DEEPL_TRANSLATOR_MAPPING.TARGET_LANGUAGES[languageCode] ?? (DeeplTranslate.TARGET_LANGUAGES.filter(({ language }) => language === languageCode).length > 0 ? languageCode : DeeplTranslate.DefaultLanguage.TARGET_LANG);
       }
       case Translators.GOOGLE_TRANSLATE: {
         return MicrosoftTranslator.GOOGLE_TRANSLATE_MAPPING[languageCode] ?? (Object.prototype.hasOwnProperty.call(GoogleTranslate.TARGET_LANGUAGES, languageCode) ? languageCode : GoogleTranslate.DefaultLanguage.TL);
@@ -804,7 +804,7 @@ class Vietphrase {
   static getMappedTargetLanguageCode(translator) {
     switch (translator) {
       case Translators.DEEPL_TRANSLATE: {
-        return DeepLTranslate.DefaultLanguage.TARGET_LANG;
+        return DeeplTranslate.DefaultLanguage.TARGET_LANG;
       }
       default: {
         return 'vi';

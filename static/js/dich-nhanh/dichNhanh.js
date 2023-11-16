@@ -427,7 +427,7 @@ async function translateTextarea() {
 
       switch (translatorOption) {
         case Translators.DEEPL_TRANSLATE: {
-          translator = await new DeepLTranslate().init();
+          translator = await new DeeplTranslate().init();
           break;
         }
         case Translators.GOOGLE_TRANSLATE: {
@@ -497,9 +497,9 @@ function getSourceLanguageSelectOptions(translator) {
 
   switch (translator) {
     case Translators.DEEPL_TRANSLATE: {
-      DeepLTranslate.SOURCE_LANGUAGES.forEach(({ language }) => {
+      DeeplTranslate.SOURCE_LANGUAGES.forEach(({ language }) => {
         const option = document.createElement('option');
-        option.innerText = DeepLTranslate.getSourceLangName(language);
+        option.innerText = DeeplTranslate.getSourceLangName(language);
         option.value = language;
         sourceLanguageSelect.appendChild(option);
       });
@@ -556,9 +556,9 @@ function getTargetLanguageSelectOptions(translator) {
 
   switch (translator) {
     case Translators.DEEPL_TRANSLATE: {
-      DeepLTranslate.TARGET_LANGUAGES.forEach(({ language }) => {
+      DeeplTranslate.TARGET_LANGUAGES.forEach(({ language }) => {
         const option = document.createElement('option');
-        option.innerText = DeepLTranslate.getTargetLangName(language);
+        option.innerText = DeeplTranslate.getTargetLangName(language);
         option.value = language;
         targetLanguageSelect.appendChild(option);
       });
@@ -617,8 +617,8 @@ function updateLanguageSelect(translator, prevTranslator) {
   if (translator !== prevTranslator) {
     switch (prevTranslator) {
       case Translators.DEEPL_TRANSLATE: {
-        sourceLanguage = DeepLTranslate.getMappedSourceLanguageCode(translator, sourceLanguage) ?? sourceLanguage;
-        targetLanguage = DeepLTranslate.getMappedTargetLanguageCode(translator, targetLanguage) ?? targetLanguage;
+        sourceLanguage = DeeplTranslate.getMappedSourceLanguageCode(translator, sourceLanguage) ?? sourceLanguage;
+        targetLanguage = DeeplTranslate.getMappedTargetLanguageCode(translator, targetLanguage) ?? targetLanguage;
         break;
       }
       case Translators.GOOGLE_TRANSLATE: {
@@ -658,8 +658,8 @@ async function translateText(inputText, translatorOption, targetLanguage, glossa
 
     switch (translatorOption) {
       case Translators.DEEPL_TRANSLATE: {
-        translator = await new DeepLTranslate().init();
-        sourceLanguage = DeepLTranslate.DETECT_LANGUAGE;
+        translator = await new DeeplTranslate().init();
+        sourceLanguage = DeeplTranslate.DETECT_LANGUAGE;
         break;
       }
       case Translators.GOOGLE_TRANSLATE: {
