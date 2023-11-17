@@ -30,7 +30,7 @@ const $resultTextarea = $('#result-textarea');
 const $glossarySwitch = $('#glossary-switch');
 const $glossaryInput = $('#glossary-input');
 const $glossaryType = $('#glossary-type');
-const $languagesPairsSelect = $('#language-pairs-select');
+const $languagePairsSelect = $('#language-pairs-select');
 const $sourceEntryInput = $('#source-entry-input');
 const $dropdownHasCollapse = $('.dropdown-has-collapse');
 const $targetEntryInput = $('#target-entry-input');
@@ -248,7 +248,7 @@ function updateInputTextLength() {
 
   const sourceLanguage = $sourceLanguageSelect.val().split('-')[0].toLowerCase();
   const targetLanguage = $targetLanguageSelect.val().split('-')[0].toLowerCase();
-  const languagePairs = $languagesPairsSelect.val().split('-');
+  const languagePairs = $languagePairsSelect.val().split('-');
 
   $('#input-textarea-counter').text(`${inputText.length}${inputText.length > 0 && ($glossarySwitch.prop('checked') && (translator === Translators.VIETPHRASE ? $prioritizeNameOverVietphraseCheck.prop('checked') && targetLanguage === 'vi' : sourceLanguage === languagePairs[0] && targetLanguage === languagePairs[1])) ? ` (+${applyGlossaryToText(inputText, translator).length - inputText.length})` : ''}`);
 }
@@ -409,7 +409,7 @@ async function translateTextarea() {
 
   const sourceLanguage = $sourceLanguageSelect.val();
   const targetLanguage = $targetLanguageSelect.val();
-  const languagePairs = languagePairs.split('-');
+  const languagePairs = $languagesPairsSelectPairsSelect.split('-');
 
   const glossaryEnabled = $glossarySwitch.prop('checked');
 
