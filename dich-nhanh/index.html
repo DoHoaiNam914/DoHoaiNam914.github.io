@@ -741,7 +741,7 @@
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">Bảng thuật ngữ (<span id="glossary-counter">0</span>)</h5>
+          <h5 class="modal-title">Bảng thuật ngữ (<span id="glossary-counter">0</span> mục)</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
         <div class="modal-body">
@@ -768,162 +768,156 @@
             <option value="zh-en">Trung → Anh</option>
             <option value="zh-vi" selected>Trung → Việt</option>
           </select>
-          <div class="row align-items-center mb-3">
-            <div class="col pe-1">
-              <div class="input-group dropdown dropdown-can-scroll dropdown-has-collapse">
-                <input type="text" class="form-control" id="source-pair-input" placeholder="Nguồn">
-                <button type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" id="source-pair-dropdown-toggle" data-bs-toggle="dropdown" data-bs-auto-close="outside"></button>
-                <ul class="dropdown-menu dropdown-menu-scroller">
-                  <li>
-                    <button type="button" class="dropdown-item copy-button" data-target="#source-pair-input">Sao chép</button>
-                  </li>
-                  <li>
-                    <button type="button" class="dropdown-item paste-button" data-target="#source-pair-input">Dán</button>
-                  </li>
-                  <li>
-                    <hr class="dropdown-divider">
-                  </li>
-                  <li>
-                    <button type="button" class="dropdown-item" data-bs-toggle="collapse" data-bs-target="#vietnamese-define-collapse">Tra cứu tiếng Việt</button>
-                    <div class="collapse" id="vietnamese-define-collapse">
-                      <button type="button" class="dropdown-item collapse-item define-button" data-href="https://www.google.com.vn/search?q={0}">Google</button>
-                      <button type="button" class="dropdown-item collapse-item define-button" data-href="https://vi.wikipedia.org/w/?search={0}&ns0=1">Wikipedia</button>
-                      <button type="button" class="dropdown-item collapse-item define-button" data-href="http://tratu.coviet.vn/hoc-tieng-anh/tu-dien/lac-viet/V-A/{0}.html">Từ điển Việt - Anh</button>
-                      <button type="button" class="dropdown-item collapse-item define-button" data-href="http://tratu.coviet.vn/hoc-tieng-anh/tu-dien/lac-viet/V-T/{0}.html">Từ điển Việt - Trung</button>
-                      <button type="button" class="dropdown-item collapse-item define-button" data-href="http://tratu.coviet.vn/hoc-tieng-anh/tu-dien/lac-viet/V-N/{0}.html">Từ điển Việt - Nhật</button>
-                    </div>
-                  </li>
-                  <li>
-                    <button type="button" class="dropdown-item" data-bs-toggle="collapse" data-bs-target="#chinese-define-collapse">Tra cứu tiếng Trung Quốc</button>
-                    <div class="collapse" id="chinese-define-collapse">
-                      <button type="button" class="dropdown-item collapse-item define-button" data-href="http://tratu.coviet.vn/hoc-tieng-trung/tu-dien/lac-viet/T-V/{0}.html">Từ điển Trung - Việt</button>
-                      <button type="button" class="dropdown-item collapse-item define-button" data-href="https://www.baidu.com/s?wd={0}">Baidu</button>
-                      <button type="button" class="dropdown-item collapse-item define-button" data-href="https://baike.baidu.com/item/{0}">Baike</button>
-                      <button type="button" class="dropdown-item collapse-item define-button" data-href="https://hvdic.thivien.net/whv/{0}">Từ điển Hán Nôm</button>
-                      <button type="button" class="dropdown-item collapse-item define-button" data-href="https://www.mdbg.net/chinese/dictionary?page=worddict&wdqb={0}">CC-CEDICT</button>
-                      <button type="button" class="dropdown-item collapse-item define-button" data-href="https://english.dict.naver.com/english-chinese-dictionary/#/search?query={0}">Naver dictionary</button>
-                    </div>
-                  </li>
-                  <li>
-                    <button type="button" class="dropdown-item" data-bs-toggle="collapse" data-bs-target="#japanese-define-collapse">Tra cứu tiếng Nhật</button>
-                    <div class="collapse" id="japanese-define-collapse">
-                      <button type="button" class="dropdown-item collapse-item define-button" data-href="https://tratu.coviet.vn/hoc-tieng-nhat/tu-dien/lac-viet/N-V/{0}.html">Từ điển Nhật - Việt</button>
-                      <button type="button" class="dropdown-item collapse-item define-button" data-href="https://www.google.co.jp/search?q={0}">Google</button>
-                      <button type="button" class="dropdown-item collapse-item define-button" data-href="https://ja.wikipedia.org/w/?search={0}&ns0=1">Wikipedia</button>
-                    </div>
-                  </li>
-                  <li>
-                    <button type="button" class="dropdown-item" data-bs-toggle="collapse" data-bs-target="#english-define-collapse">Tra cứu tiếng Anh</button>
-                    <div class="collapse" id="english-define-collapse">
-                      <button type="button" class="dropdown-item collapse-item define-button" data-href="http://tratu.coviet.vn/hoc-tieng-anh/tu-dien/lac-viet/A-V/{0}.html">Từ điển Anh - Việt</button>
-                      <button type="button" class="dropdown-item collapse-item define-button" data-href="https://www.google.com/search?q={0}">Google</button>
-                      <button type="button" class="dropdown-item collapse-item define-button" data-href="https://en.wikipedia.org/w/?search={0}&ns0=1">Wikipedia</button>
-                      <button type="button" class="dropdown-item collapse-item define-button" data-href="https://dictionary.cambridge.org/vi/dictionary/english-vietnamese/{0}">Cambridge Dictionary</button>
-                    </div>
-                  </li>
-                  <li>
-                    <hr class="dropdown-divider">
-                  </li>
-                  <li>
-                    <button type="button" class="dropdown-item translate-webpage-button" data-href="https://fanyi.baidu.com/#auto/vie/{0}">Baidu Fanyi</button>
-                  </li>
-                  <li>
-                    <button type="button" class="dropdown-item translate-webpage-button" data-href="https://www.deepl.com/translator#auto/en/{0}">DeepL Translate</button>
-                  </li>
-                  <li>
-                    <button type="button" class="dropdown-item translate-webpage-button" data-href="https://translate.google.com/?sl=auto&tl=vi&text={0}&op=translate">Google Dịch</button>
-                  </li>
-                  <li>
-                    <button type="button" class="dropdown-item translate-webpage-button" data-href="https://papago.naver.com/?sk=auto&tk=vi&st={0}">Papago</button>
-                  </li>
-                  <li>
-                    <button type="button" class="dropdown-item translate-webpage-button" data-href="https://www.bing.com/translator?from=auto-detect&to=vi&text={0}">Trình dịch Microsoft Bing</button>
-                  </li>
-                </ul>
-              </div>
-            </div>
-            <div class="col ps-1">
-              <div class="input-group dropdown dropdown-can-scroll dropdown-has-collapse">
-                <input type="text" class="form-control" id="target-pair-input" placeholder="Đích">
-                <button type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" data-bs-auto-close="outside"></button>
-                <ul class="dropdown-menu dropdown-menu-scroller">
-                  <li>
-                    <button type="button" class="dropdown-item copy-button" data-target="#target-pair-input">Sao chép</button>
-                  </li>
-                  <li>
-                    <button type="button" class="dropdown-item paste-button" data-target="#target-pair-input">Dán</button>
-                  </li>
-                  <li>
-                    <hr class="dropdown-divider">
-                  </li>
-                  <li>
-                    <button type="button" class="dropdown-item translate-button" data-translator="vietphrase" data-lang="pinyin" data-data="pinyins">Chuyển đổi sang Bính âm</button>
-                  </li>
-                  <li>
-                    <button type="button" class="dropdown-item translate-button" data-translator="vietphrase" data-lang="sinoVietnamese">Chuyển đổi sang Hán việt</button>
-                  </li>
-                  <li>
-                    <button type="button" class="dropdown-item translate-button" data-translator="vietphrase" data-lang="vi">Chuyển đổi sang Vietphrase</button>
-                  </li>
-                  <li>
-                    <hr class="dropdown-divider">
-                  </li>
-                  <li>
-                    <button type="button" class="dropdown-item upper-case-button" data-amount="1">Viết hoa 1 từ đơn đầu</button>
-                  </li>
-                  <li>
-                    <button type="button" class="dropdown-item upper-case-button" data-amount="2">Viết hoa 2 từ đơn đầu</button>
-                  </li>
-                  <li>
-                    <button type="button" class="dropdown-item upper-case-button" data-amount="3">Viết hoa 3 từ đơn đầu</button>
-                  </li>
-                  <li>
-                    <button type="button" class="dropdown-item upper-case-button" data-amount="#">Viết hoa tất cả</button>
-                  </li>
-                  <li>
-                    <hr class="dropdown-divider">
-                  </li>
-                  <li>
-                    <button type="button" class="dropdown-item" data-bs-toggle="collapse" data-bs-target="#deepl-translate-collapse">DeepL Translate</button>
-                    <div class="collapse" id="deepl-translate-collapse">
-                      <button type="button" class="dropdown-item collapse-item translate-button" data-translator="deeplTranslate" data-lang="EN-US">English</button>
-                      <button type="button" class="dropdown-item collapse-item translate-button" data-translator="deeplTranslate" data-lang="JA">Japanese</button>
-                      <button type="button" class="dropdown-item collapse-item translate-button" data-translator="deeplTranslate" data-lang="ZH">Chinese</button>
-                    </div>
-                  </li>
-                  <li>
-                    <button type="button" class="dropdown-item" data-bs-toggle="collapse" data-bs-target="#google-translate-collapse">Google Dịch</button>
-                    <div class="collapse" id="google-translate-collapse">
-                      <button type="button" class="dropdown-item collapse-item translate-button" data-translator="googleTranslate" data-lang="en">Anh</button>
-                      <button type="button" class="dropdown-item collapse-item translate-button" data-translator="googleTranslate" data-lang="ja">Nhật</button>
-                      <button type="button" class="dropdown-item collapse-item translate-button" data-translator="googleTranslate" data-lang="zh-CN">Trung (Giản thể)</button>
-                      <button type="button" class="dropdown-item collapse-item translate-button" data-translator="googleTranslate" data-lang="zh-TW">Trung (Phồn thể)</button>
-                      <button type="button" class="dropdown-item collapse-item translate-button" data-translator="googleTranslate" data-lang="vi"> Việt</button>
-                    </div>
-                  </li>
-                  <li>
-                    <button type="button" class="dropdown-item" data-bs-toggle="collapse" data-bs-target="#papago-collapse">Papago</button>
-                    <div class="collapse" id="papago-collapse">
-                      <button type="button" class="dropdown-item collapse-item translate-button" data-translator="papago" data-lang="en">Anh</button>
-                      <button type="button" class="dropdown-item collapse-item translate-button" data-translator="papago" data-lang="ja">Nhật</button>
-                      <button type="button" class="dropdown-item collapse-item translate-button" data-translator="papago" data-lang="zh-CN">Trung (Giản thể)</button>
-                      <button type="button" class="dropdown-item collapse-item translate-button" data-translator="papago" data-lang="zh-TW">Trung (Phồn thể)</button>
-                      <button type="button" class="dropdown-item collapse-item translate-button" data-translator="papago" data-lang="vi">Việt</button>
-                    </div>
-                  </li>
-                  <li>
-                    <button type="button" class="dropdown-item" data-bs-toggle="collapse" data-bs-target="#microsoft-translator-collapse">Trình dịch Microsoft</button>
-                    <div class="collapse" id="microsoft-translator-collapse">
-                      <button type="button" class="dropdown-item collapse-item translate-button" data-translator="microsoftTranslator" data-lang="en">Tiếng Anh</button>
-                      <button type="button" class="dropdown-item collapse-item translate-button" data-translator="microsoftTranslator" data-lang="ja">Tiếng Nhật</button>
-                      <button type="button" class="dropdown-item collapse-item translate-button" data-translator="microsoftTranslator" data-lang="vi">Tiếng Việt</button>
-                      <button type="button" class="dropdown-item collapse-item translate-button" data-translator="microsoftTranslator" data-lang="zh-Hans">Tiếng Trung (Giản Thể)</button>
-                      <button type="button" class="dropdown-item collapse-item translate-button" data-translator="microsoftTranslator" data-lang="zh-Hant">Tiếng Trung (Phồn Thể)</button>
-                    </div>
-                  </li>
-                </ul>
-              </div>
-            </div>
+          <div class="input-group mb-3 dropdown dropdown-can-scroll dropdown-has-collapse">
+            <input type="text" class="form-control" id="source-entry-input" placeholder="Mục nguồn">
+            <button type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" id="source-pair-dropdown-toggle" data-bs-toggle="dropdown" data-bs-auto-close="outside"></button>
+            <ul class="dropdown-menu dropdown-menu-scroller">
+              <li>
+                <button type="button" class="dropdown-item copy-button" data-target="#source-pair-input">Sao chép</button>
+              </li>
+              <li>
+                <button type="button" class="dropdown-item paste-button" data-target="#source-pair-input">Dán</button>
+              </li>
+              <li>
+                <hr class="dropdown-divider">
+              </li>
+              <li>
+                <button type="button" class="dropdown-item" data-bs-toggle="collapse" data-bs-target="#vietnamese-define-collapse">Tra cứu tiếng Việt</button>
+                <div class="collapse" id="vietnamese-define-collapse">
+                  <button type="button" class="dropdown-item collapse-item define-button" data-href="https://www.google.com.vn/search?q={0}">Google</button>
+                  <button type="button" class="dropdown-item collapse-item define-button" data-href="https://vi.wikipedia.org/w/?search={0}&ns0=1">Wikipedia</button>
+                  <button type="button" class="dropdown-item collapse-item define-button" data-href="http://tratu.coviet.vn/hoc-tieng-anh/tu-dien/lac-viet/V-A/{0}.html">Từ điển Việt - Anh</button>
+                  <button type="button" class="dropdown-item collapse-item define-button" data-href="http://tratu.coviet.vn/hoc-tieng-anh/tu-dien/lac-viet/V-T/{0}.html">Từ điển Việt - Trung</button>
+                  <button type="button" class="dropdown-item collapse-item define-button" data-href="http://tratu.coviet.vn/hoc-tieng-anh/tu-dien/lac-viet/V-N/{0}.html">Từ điển Việt - Nhật</button>
+                </div>
+              </li>
+              <li>
+                <button type="button" class="dropdown-item" data-bs-toggle="collapse" data-bs-target="#chinese-define-collapse">Tra cứu tiếng Trung Quốc</button>
+                <div class="collapse" id="chinese-define-collapse">
+                  <button type="button" class="dropdown-item collapse-item define-button" data-href="http://tratu.coviet.vn/hoc-tieng-trung/tu-dien/lac-viet/T-V/{0}.html">Từ điển Trung - Việt</button>
+                  <button type="button" class="dropdown-item collapse-item define-button" data-href="https://www.baidu.com/s?wd={0}">Baidu</button>
+                  <button type="button" class="dropdown-item collapse-item define-button" data-href="https://baike.baidu.com/item/{0}">Baike</button>
+                  <button type="button" class="dropdown-item collapse-item define-button" data-href="https://hvdic.thivien.net/whv/{0}">Từ điển Hán Nôm</button>
+                  <button type="button" class="dropdown-item collapse-item define-button" data-href="https://www.mdbg.net/chinese/dictionary?page=worddict&wdqb={0}">CC-CEDICT</button>
+                  <button type="button" class="dropdown-item collapse-item define-button" data-href="https://english.dict.naver.com/english-chinese-dictionary/#/search?query={0}">Naver dictionary</button>
+                </div>
+              </li>
+              <li>
+                <button type="button" class="dropdown-item" data-bs-toggle="collapse" data-bs-target="#japanese-define-collapse">Tra cứu tiếng Nhật</button>
+                <div class="collapse" id="japanese-define-collapse">
+                  <button type="button" class="dropdown-item collapse-item define-button" data-href="https://tratu.coviet.vn/hoc-tieng-nhat/tu-dien/lac-viet/N-V/{0}.html">Từ điển Nhật - Việt</button>
+                  <button type="button" class="dropdown-item collapse-item define-button" data-href="https://www.google.co.jp/search?q={0}">Google</button>
+                  <button type="button" class="dropdown-item collapse-item define-button" data-href="https://ja.wikipedia.org/w/?search={0}&ns0=1">Wikipedia</button>
+                </div>
+              </li>
+              <li>
+                <button type="button" class="dropdown-item" data-bs-toggle="collapse" data-bs-target="#english-define-collapse">Tra cứu tiếng Anh</button>
+                <div class="collapse" id="english-define-collapse">
+                  <button type="button" class="dropdown-item collapse-item define-button" data-href="http://tratu.coviet.vn/hoc-tieng-anh/tu-dien/lac-viet/A-V/{0}.html">Từ điển Anh - Việt</button>
+                  <button type="button" class="dropdown-item collapse-item define-button" data-href="https://www.google.com/search?q={0}">Google</button>
+                  <button type="button" class="dropdown-item collapse-item define-button" data-href="https://en.wikipedia.org/w/?search={0}&ns0=1">Wikipedia</button>
+                  <button type="button" class="dropdown-item collapse-item define-button" data-href="https://dictionary.cambridge.org/vi/dictionary/english-vietnamese/{0}">Cambridge Dictionary</button>
+                </div>
+              </li>
+              <li>
+                <hr class="dropdown-divider">
+              </li>
+              <li>
+                <button type="button" class="dropdown-item translate-webpage-button" data-href="https://fanyi.baidu.com/#auto/vie/{0}">Baidu Fanyi</button>
+              </li>
+              <li>
+                <button type="button" class="dropdown-item translate-webpage-button" data-href="https://www.deepl.com/translator#auto/en/{0}">DeepL Translate</button>
+              </li>
+              <li>
+                <button type="button" class="dropdown-item translate-webpage-button" data-href="https://translate.google.com/?sl=auto&tl=vi&text={0}&op=translate">Google Dịch</button>
+              </li>
+              <li>
+                <button type="button" class="dropdown-item translate-webpage-button" data-href="https://papago.naver.com/?sk=auto&tk=vi&st={0}">Papago</button>
+              </li>
+              <li>
+                <button type="button" class="dropdown-item translate-webpage-button" data-href="https://www.bing.com/translator?from=auto-detect&to=vi&text={0}">Trình dịch Microsoft Bing</button>
+              </li>
+            </ul>
+          </div>
+          <div class="input-group mb-3 dropdown dropdown-can-scroll dropdown-has-collapse">
+            <input type="text" class="form-control" id="target-entry-input" placeholder="Mục đích">
+            <button type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" data-bs-auto-close="outside"></button>
+            <ul class="dropdown-menu dropdown-menu-scroller">
+              <li>
+                <button type="button" class="dropdown-item copy-button" data-target="#target-pair-input">Sao chép</button>
+              </li>
+              <li>
+                <button type="button" class="dropdown-item paste-button" data-target="#target-pair-input">Dán</button>
+              </li>
+              <li>
+                <hr class="dropdown-divider">
+              </li>
+              <li>
+                <button type="button" class="dropdown-item translate-button" data-translator="vietphrase" data-lang="pinyin" data-data="pinyins">Chuyển đổi sang Bính âm</button>
+              </li>
+              <li>
+                <button type="button" class="dropdown-item translate-button" data-translator="vietphrase" data-lang="sinoVietnamese">Chuyển đổi sang Hán việt</button>
+              </li>
+              <li>
+                <button type="button" class="dropdown-item translate-button" data-translator="vietphrase" data-lang="vi">Chuyển đổi sang Vietphrase</button>
+              </li>
+              <li>
+                <hr class="dropdown-divider">
+              </li>
+              <li>
+                <button type="button" class="dropdown-item upper-case-button" data-amount="1">Viết hoa 1 từ đơn đầu</button>
+              </li>
+              <li>
+                <button type="button" class="dropdown-item upper-case-button" data-amount="2">Viết hoa 2 từ đơn đầu</button>
+              </li>
+              <li>
+                <button type="button" class="dropdown-item upper-case-button" data-amount="3">Viết hoa 3 từ đơn đầu</button>
+              </li>
+              <li>
+                <button type="button" class="dropdown-item upper-case-button" data-amount="#">Viết hoa tất cả</button>
+              </li>
+              <li>
+                <hr class="dropdown-divider">
+              </li>
+              <li>
+                <button type="button" class="dropdown-item" data-bs-toggle="collapse" data-bs-target="#deepl-translate-collapse">DeepL Translate</button>
+                <div class="collapse" id="deepl-translate-collapse">
+                  <button type="button" class="dropdown-item collapse-item translate-button" data-translator="deeplTranslate" data-lang="EN-US">English</button>
+                  <button type="button" class="dropdown-item collapse-item translate-button" data-translator="deeplTranslate" data-lang="JA">Japanese</button>
+                  <button type="button" class="dropdown-item collapse-item translate-button" data-translator="deeplTranslate" data-lang="ZH">Chinese</button>
+                </div>
+              </li>
+              <li>
+                <button type="button" class="dropdown-item" data-bs-toggle="collapse" data-bs-target="#google-translate-collapse">Google Dịch</button>
+                <div class="collapse" id="google-translate-collapse">
+                  <button type="button" class="dropdown-item collapse-item translate-button" data-translator="googleTranslate" data-lang="en">Anh</button>
+                  <button type="button" class="dropdown-item collapse-item translate-button" data-translator="googleTranslate" data-lang="ja">Nhật</button>
+                  <button type="button" class="dropdown-item collapse-item translate-button" data-translator="googleTranslate" data-lang="zh-CN">Trung (Giản thể)</button>
+                  <button type="button" class="dropdown-item collapse-item translate-button" data-translator="googleTranslate" data-lang="zh-TW">Trung (Phồn thể)</button>
+                  <button type="button" class="dropdown-item collapse-item translate-button" data-translator="googleTranslate" data-lang="vi"> Việt</button>
+                </div>
+              </li>
+              <li>
+                <button type="button" class="dropdown-item" data-bs-toggle="collapse" data-bs-target="#papago-collapse">Papago</button>
+                <div class="collapse" id="papago-collapse">
+                  <button type="button" class="dropdown-item collapse-item translate-button" data-translator="papago" data-lang="en">Anh</button>
+                  <button type="button" class="dropdown-item collapse-item translate-button" data-translator="papago" data-lang="ja">Nhật</button>
+                  <button type="button" class="dropdown-item collapse-item translate-button" data-translator="papago" data-lang="zh-CN">Trung (Giản thể)</button>
+                  <button type="button" class="dropdown-item collapse-item translate-button" data-translator="papago" data-lang="zh-TW">Trung (Phồn thể)</button>
+                  <button type="button" class="dropdown-item collapse-item translate-button" data-translator="papago" data-lang="vi">Việt</button>
+                </div>
+              </li>
+              <li>
+                <button type="button" class="dropdown-item" data-bs-toggle="collapse" data-bs-target="#microsoft-translator-collapse">Trình dịch Microsoft</button>
+                <div class="collapse" id="microsoft-translator-collapse">
+                  <button type="button" class="dropdown-item collapse-item translate-button" data-translator="microsoftTranslator" data-lang="en">Tiếng Anh</button>
+                  <button type="button" class="dropdown-item collapse-item translate-button" data-translator="microsoftTranslator" data-lang="ja">Tiếng Nhật</button>
+                  <button type="button" class="dropdown-item collapse-item translate-button" data-translator="microsoftTranslator" data-lang="vi">Tiếng Việt</button>
+                  <button type="button" class="dropdown-item collapse-item translate-button" data-translator="microsoftTranslator" data-lang="zh-Hans">Tiếng Trung (Giản Thể)</button>
+                  <button type="button" class="dropdown-item collapse-item translate-button" data-translator="microsoftTranslator" data-lang="zh-Hant">Tiếng Trung (Phồn Thể)</button>
+                </div>
+              </li>
+            </ul>
           </div>
           <button type="submit" class="btn btn-sm btn-success mb-3 disabled" id="add-button">
             <svg class="bi" width="1em" height="1em" fill="currentColor">
@@ -937,10 +931,10 @@
             </svg>
             Xoá
           </button>
-          <select class="form-select mb-3 glossary-data-list" id="glossary-data-list" size="10">
+          <select class="form-select mb-3" id="glossary-entry-list" size="10">
             <option value="" selected>Chọn...</option>
           </select>
-          <button type="button" class="btn btn-sm btn-secondary mb-3 copy-button" data-target="#glossary-data-list">Sao chép</button>
+          <button type="button" class="btn btn-sm btn-secondary mb-3 copy-button" data-target="#glossary-entry-list">Sao chép</button>
         </div>
         <div class="modal-footer">
           <div class="input-group input-group-sm">

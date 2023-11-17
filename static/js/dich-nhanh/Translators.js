@@ -862,7 +862,7 @@ class Vietphrase {
         dataEntries = [...this.useGlossary ? maybePrioritizeNameOverVietphrase : [], ...luatnhanPronounEntries, ...dataEntries].sort((a, b) => b[0].length - a[0].length);
 
         dataEntries.some(([key, value], index, array) => {
-          if (!this.isTtvTranslate || /^[\d\p{sc=Hani}]+$/u.test(key) || [...luatnhanNameEntries, ...glossaryEntries].indexOf(key) > -1) {
+          if (result.includes(key) && (!this.isTtvTranslate || /^[\d\p{sc=Hani}]+$/u.test(key) || [...luatnhanNameEntries, ...glossaryEntries].indexOf(key) > -1)) {
             result = result.replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}])${Utils.getRegexEscapedText(key)}(?=${Object.values(this.glossary).join('|')})`, 'gu'), `$1 ${Utils.getRegexEscapedReplacement(value)} `).replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}])${Utils.getRegexEscapedText(key)}([\\p{Lu}\\p{Ll}\\p{Nd}])`, 'gu'), `$1 ${Utils.getRegexEscapedReplacement(value)} $2`).replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}])${Utils.getRegexEscapedText(key)}`, 'gu'), `$1 ${Utils.getRegexEscapedReplacement(value)}`).replace(new RegExp(`${Utils.getRegexEscapedText(key)}([\\p{Lu}\\p{Ll}\\p{Nd}])`, 'gu'), `${Utils.getRegexEscapedReplacement(value)} $1`).replace(new RegExp(`${Utils.getRegexEscapedText(key)}(?=${Object.values(this.glossary).join('|')})`, 'g'), `${Utils.getRegexEscapedReplacement(value)} `).replace(new RegExp(Utils.getRegexEscapedText(key), 'g'), Utils.getRegexEscapedReplacement(value));
           }
 
