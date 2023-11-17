@@ -307,7 +307,7 @@ function reloadGlossaryEntries() {
 
   $glossaryEntryList.html(entrySelect.innerHTML);
   $glossaryEntryList.val('');
-  $('#glossary-counter').text(glossaryEntries.length);
+  $('#glossary-entry-counter').text(glossaryEntries.length);
   updateInputTextLength();
   localStorage.setItem('glossary', JSON.stringify(glossary));
 }
