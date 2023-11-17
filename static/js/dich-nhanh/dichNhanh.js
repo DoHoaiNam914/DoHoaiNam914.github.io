@@ -323,10 +323,10 @@ function applyGlossaryToText(text, translator = '') {
 function getMaxQueryLengthAndLine(translator, text) {
   switch (translator) {
     case Translators.DEEPL_TRANSLATE:
-      return [32768, 50];
+      return [131072, 50];
 
     case Translators.GOOGLE_TRANSLATE:
-      return [16272, 100];
+      return [6000000, 100];
 
     case Translators.PAPAGO:
       return [3000, 1500];
@@ -450,19 +450,38 @@ async function translateTextarea() {
 
       if (translatorOption === Translators.DEEPL_TRANSLATE && translator.usage.character_count + inputText.length > translator.usage.character_limit) throw console.error(`Lỗi DeepL Translator: Đã đạt đến giới hạn dịch của tài khoản. (${translator.usage.character_count}/${translator.usage.character_limit} ký tự).`);
 
-      if (processText.split(/\r?\n/).length <= MAX_LINE && processText.length <= MAX_LENGTH) {
+      if (processText.split(/\r?\n/).length <= MAX_LINE && (translatorOption === Translators.DEEPL_TRANSLATE ? (new TextEncoder()).encode(`text=${processText.split(/\r?\n/).map((element) => encodeURIComponent(element)).join('&text=')}&source_lang=${sourceLanguage}&target_lang=${targetLanguage}&tag_handling=xml`) : processText).length <= MAX_LENGTH) {
         result = await translator.translateText(sourceLanguage, targetLanguage, processText);
       } else {
         const inputLines = processText.split(/\r?\n/);
         let queryLines = [];
 
-        while (inputLines.length > 0 && queryLines.length + 1 <= MAX_LINE && [...queryLines, inputLines[0]].join('\n').length <= MAX_LENGTH) {
-          if (translateAbortController.signal.aborted) break;
-          queryLines.push(inputLines.shift());
+        switch (translatorOption) {
+          case Translators.DEEPL_TRANSLATE: {
+            while (inputLines.length > 0 && queryLines.length + 1 <= MAX_LINE && (new TextEncoder()).encode(`text=${[...queryLines, inputLines[0]].map((element) => encodeURIComponent(element)).join('&text=')}&source_lang=${sourceLanguage}&target_lang=${targetLanguage}&tag_handling=xml`).length <= MAX_LENGTH) {
+              if (translateAbortController.signal.aborted) break;
+              queryLines.push(inputLines.shift());
 
-          if (inputLines.length === 0 || queryLines.length + 1 >= MAX_LINE || [...queryLines, inputLines[0]].join('\n').length >= MAX_LENGTH) {
-            results.push(await translator.translateText(sourceLanguage, targetLanguage, queryLines.join('\n')));
-            queryLines = [];
+              if (inputLines.length === 0 || queryLines.length + 1 > MAX_LINE || (new TextEncoder()).encode(`text=${[...queryLines, inputLines[0]].map((element) => encodeURIComponent(element)).join('&text=')}&source_lang=${sourceLanguage}&target_lang=${targetLanguage}&tag_handling=xml`).length > MAX_LENGTH) {
+                results.push(await translator.translateText(sourceLanguage, targetLanguage, queryLines.join('\n')));
+                queryLines = [];
+              }
+            }
+
+            break;
+          }
+          default: {
+            while (inputLines.length > 0 && queryLines.length + 1 <= MAX_LINE && [...queryLines, inputLines[0]].join('\n').length <= MAX_LENGTH) {
+              if (translateAbortController.signal.aborted) break;
+              queryLines.push(inputLines.shift());
+
+              if (inputLines.length === 0 || queryLines.length + 1 > MAX_LINE || [...queryLines, inputLines[0]].join('\n').length > MAX_LENGTH) {
+                results.push(await translator.translateText(sourceLanguage, targetLanguage, queryLines.join('\n')));
+                queryLines = [];
+              }
+            }
+
+            break;
           }
         }
 
