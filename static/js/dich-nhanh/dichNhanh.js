@@ -409,7 +409,7 @@ async function translateTextarea() {
 
   const sourceLanguage = $sourceLanguageSelect.val();
   const targetLanguage = $targetLanguageSelect.val();
-  const languagePairs = $languagePairsSelect.split('-');
+  const languagePairs = $languagePairsSelect.val().split('-');
 
   const glossaryEnabled = $glossarySwitch.prop('checked');
 
