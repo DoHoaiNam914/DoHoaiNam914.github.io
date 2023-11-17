@@ -709,20 +709,18 @@
               <label class="form-check-label" for="prioritize-name-over-vietphrase-check">Ưu tiên Name hơn VietPhrase</label>
             </div>
           </div>
-          <div class="mb-3">
-            <h2 class="fs-6">Thuật toán nhân</h2>
-            <div class="form-check">
-              <input type="radio" class="form-check-input option quick-translate-option" id="no-apply-radio" name="multiplication-algorithm-radio" value="0">
-              <label class="form-check-label" for="no-apply-radio">Không áp dụng</label>
-            </div>
-            <div class="form-check">
-              <input type="radio" class="form-check-input option quick-translate-option" id="multiplication-by-pronouns-radio" name="multiplication-algorithm-radio" value="1">
-              <label class="form-check-label" for="multiplication-by-pronouns-radio">Nhân theo Pronouns</label>
-            </div>
-            <div class="form-check">
-              <input type="radio" class="form-check-input option quick-translate-option" id="multiplication-by-pronouns-and-names-radio" name="multiplication-algorithm-radio" value="2" checked>
-              <label class="form-check-label" for="multiplication-by-pronouns-and-names-radio">Nhân theo Pronouns + Names</label>
-            </div>
+          <h2 class="fs-6">Thuật toán nhân</h2>
+          <div class="form-check">
+            <input type="radio" class="form-check-input option quick-translate-option" id="no-apply-radio" name="multiplication-algorithm-radio" value="0">
+            <label class="form-check-label" for="no-apply-radio">Không áp dụng</label>
+          </div>
+          <div class="form-check">
+            <input type="radio" class="form-check-input option quick-translate-option" id="multiplication-by-pronouns-radio" name="multiplication-algorithm-radio" value="1">
+            <label class="form-check-label" for="multiplication-by-pronouns-radio">Nhân theo Pronouns</label>
+          </div>
+          <div class="form-check">
+            <input type="radio" class="form-check-input option quick-translate-option" id="multiplication-by-pronouns-and-names-radio" name="multiplication-algorithm-radio" value="2" checked>
+            <label class="form-check-label" for="multiplication-by-pronouns-and-names-radio">Nhân theo Pronouns + Names</label>
           </div>
         </div>
         <div class="modal-footer">
@@ -762,7 +760,7 @@
             <option value="text/csv">CSV</option>
             <option value="text/plain">Vietphrase</option>
           </select>
-          <select class="form-select mb-3 option quick-translate-option" id="languages-pair-select">
+          <select class="form-select mb-3 option quick-translate-option" id="language-pairs-select">
             <option value="ja-en">Nhật → Anh</option>
             <option value="ja-vi">Nhật → Việt</option>
             <option value="zh-en">Trung → Anh</option>
@@ -770,13 +768,13 @@
           </select>
           <div class="input-group mb-3 dropdown dropdown-can-scroll dropdown-has-collapse">
             <input type="text" class="form-control" id="source-entry-input" placeholder="Mục nguồn">
-            <button type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" id="source-pair-dropdown-toggle" data-bs-toggle="dropdown" data-bs-auto-close="outside"></button>
+            <button type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" id="source-entry-dropdown-toggle" data-bs-toggle="dropdown" data-bs-auto-close="outside"></button>
             <ul class="dropdown-menu dropdown-menu-scroller">
               <li>
-                <button type="button" class="dropdown-item copy-button" data-target="#source-pair-input">Sao chép</button>
+                <button type="button" class="dropdown-item copy-button" data-target="#source-entry-input">Sao chép</button>
               </li>
               <li>
-                <button type="button" class="dropdown-item paste-button" data-target="#source-pair-input">Dán</button>
+                <button type="button" class="dropdown-item paste-button" data-target="#source-entry-input">Dán</button>
               </li>
               <li>
                 <hr class="dropdown-divider">
@@ -844,10 +842,10 @@
             <button type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" data-bs-auto-close="outside"></button>
             <ul class="dropdown-menu dropdown-menu-scroller">
               <li>
-                <button type="button" class="dropdown-item copy-button" data-target="#target-pair-input">Sao chép</button>
+                <button type="button" class="dropdown-item copy-button" data-target="#target-entry-input">Sao chép</button>
               </li>
               <li>
-                <button type="button" class="dropdown-item paste-button" data-target="#target-pair-input">Dán</button>
+                <button type="button" class="dropdown-item paste-button" data-target="#target-entry-input">Dán</button>
               </li>
               <li>
                 <hr class="dropdown-divider">
@@ -934,7 +932,7 @@
           <select class="form-select mb-3" id="glossary-entry-list" size="10">
             <option value="" selected>Chọn...</option>
           </select>
-          <button type="button" class="btn btn-sm btn-secondary mb-3 copy-button" data-target="#glossary-entry-list">Sao chép</button>
+          <button type="button" class="btn btn-sm btn-secondary copy-button" data-target="#glossary-entry-list">Sao chép</button>
         </div>
         <div class="modal-footer">
           <div class="input-group input-group-sm">
