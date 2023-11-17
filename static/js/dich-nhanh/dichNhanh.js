@@ -250,7 +250,9 @@ function updateInputTextLength() {
   const targetLanguage = $targetLanguageSelect.val().split('-')[0].toLowerCase();
   const languagePairs = $languagePairsSelect.val().split('-');
 
-  $('#input-textarea-counter').text(`${inputText.length}${inputText.length > 0 && ($glossarySwitch.prop('checked') && (translator === Translators.VIETPHRASE ? $prioritizeNameOverVietphraseCheck.prop('checked') && targetLanguage === 'vi' : sourceLanguage === languagePairs[0] && targetLanguage === languagePairs[1])) ? ` (+${applyGlossaryToText(inputText, translator).length - inputText.length})` : ''}`);
+  const gapLength = applyGlossaryToText(inputText, translator).length - inputText.length;
+
+  $('#input-textarea-counter').text(`${inputText.length}${inputText.length > 0 && ($glossarySwitch.prop('checked') && (translator === Translators.VIETPHRASE ? $prioritizeNameOverVietphraseCheck.prop('checked') && targetLanguage === 'vi' : sourceLanguage === languagePairs[0] && targetLanguage === languagePairs[1])) && gapLength > 0 ? ` (+${gapLength})` : ''}`);
 }
 
 function reloadGlossaryEntries() {

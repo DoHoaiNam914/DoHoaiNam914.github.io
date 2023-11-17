@@ -15,7 +15,9 @@
       --opt-text-align: justify;
     }
 
-    body, .workspace, .modal-body {
+    body,
+    .workspace,
+    .modal-body {
       overflow-x: hidden;
     }
 
@@ -762,13 +764,13 @@
             <option value="text/csv">CSV</option>
             <option value="text/plain">Vietphrase</option>
           </select>
-          <select class="form-select mb-3 option quick-translate-option" id="language-pairs-select">
+          <select class="form-select form-select-sm mb-3 option quick-translate-option" id="language-pairs-select">
             <option value="ja-en">Nhật → Anh</option>
             <option value="ja-vi">Nhật → Việt</option>
             <option value="zh-en">Trung → Anh</option>
             <option value="zh-vi" selected>Trung → Việt</option>
           </select>
-          <div class="input-group mb-3 dropdown dropdown-can-scroll dropdown-has-collapse">
+          <div class="input-group mb-2 dropstart dropdown-can-scroll dropdown-has-collapse">
             <input type="text" class="form-control" id="source-entry-input" placeholder="Mục nguồn">
             <button type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" id="source-entry-dropdown-toggle" data-bs-toggle="dropdown" data-bs-auto-close="outside"></button>
             <ul class="dropdown-menu dropdown-menu-scroller">
@@ -839,7 +841,7 @@
               </li>
             </ul>
           </div>
-          <div class="input-group mb-3 dropdown dropdown-can-scroll dropdown-has-collapse">
+          <div class="input-group mb-3 dropstart dropdown-can-scroll dropdown-has-collapse">
             <input type="text" class="form-control" id="target-entry-input" placeholder="Mục đích">
             <button type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" data-bs-auto-close="outside"></button>
             <ul class="dropdown-menu dropdown-menu-scroller">
