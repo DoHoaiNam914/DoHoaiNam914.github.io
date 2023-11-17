@@ -8,11 +8,14 @@
   <link rel="stylesheet" href="/static/css/bootstrap.min.css">
   <link rel="stylesheet" href="/static/css/general_style.css">
   <style>
-    body {
+    :root {
       --opt-font-family: Roboto, sans-serif;
       --opt-font-size: 1em;
       --opt-line-height: 1.2em;
       --opt-text-align: justify;
+    }
+
+    body, .workspace, .modal-body {
       overflow-x: hidden;
     }
 
@@ -100,7 +103,6 @@
 
     .modal-body {
       min-height: 500px;
-      overflow-x: hidden;
       scrollbar-width: none;
     }
 
