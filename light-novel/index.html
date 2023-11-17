@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#000">
+  <title>Light Novel - DoHoaiNam Light Novel Pages</title>
+  <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/static/css/general_style.css" rel="stylesheet">
+  <style>
+    html,
+    body {
+      overflow-x: hidden;
+    }
+
+    body {
+      padding-top: 56px;
+    }
+  </style>
+  <script src="/static/lib/LAB.js"></script>
+  <script>
+    $LAB
+    .script('/static/lib/jquery-3.7.1.min.js')
+    .script('/static/lib/bootstrap.bundle.min.js')
+    .script('/static/lib/underscore-umd-min.js').wait()
+    .script('/static/js/thuVien.js').wait(() => (new URLSearchParams(window.location.search)).has('thu-vien') ? volumeLibraryLoader() : bookLibraryLoader());
+  </script>
+</head>
+<body class="bg-light">
+<nav class="navbar fixed-top navbar-dark bg-dark">
+  <div class="container-fluid">
+    <span class="navbar-brand h1 mb-0" href="#">Light Novel</span>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbar">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link" href="/trang-chu">Trang chủ</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link active" aria-current="page" href="#">Light Novel</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/dich-nhanh">Dịch nhanh</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+<main class="container">
+  <div class="py-5 bg-light">
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+      <div class="col">
+        <div class="card shadow-sm" aria-hidden="true">
+          <img src="#" class="card-img-top">
+          <div class="card-body">
+            <h5 class="card-title placeholder-glow">
+              <span class="placeholder col-6"></span>
+            </h5>
+            <p class="card-text placeholder-glow">
+              <span class="placeholder col-7"></span> <span class="placeholder col-4"></span>
+              <span class="placeholder col-4"></span> <span class="placeholder col-6"></span>
+              <span class="placeholder col-8"></span>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+<footer class="my-4 py-3">
+  <ul class="nav justify-content-center border-bottom pb-3 mb-3">
+    <li class="nav-item"><a href="/trang-chu" class="nav-link px-2 text-muted">Trang chủ</a></li>
+    <li class="nav-item"><a href="/light-novel" class="nav-link px-2 text-muted">Light Novel</a>
+    </li>
+  </ul>
+  <p class="text-center text-muted">© 2022 Đỗ Hoài Nam</p>
+</footer>
+</body>
+</html>

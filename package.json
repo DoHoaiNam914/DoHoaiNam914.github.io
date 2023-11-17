@@ -1,0 +1,12 @@
+{
+  "devDependencies": {
+    "@babel/cli": "^7.23.0",
+    "babel-preset-airbnb": "^5.0.0",
+    "eslint": "^8.2.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.25.2"
+  },
+  "dependencies": {
+    "install-peerdeps": "^3.0.3"
+  }
+}
