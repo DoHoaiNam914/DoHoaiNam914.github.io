@@ -41,6 +41,8 @@ const $glossaryName = $('#glossary-name');
 
 const defaultOptions = JSON.parse('{"source_language":"","target_language":"vi","font":"Mặc định","font_size":100,"line_spacing":40,"alignment_settings":true,"translator":"microsoftTranslator","show_original_text":false,"load_default_vietphrase_file":false,"ttvtranslate_mode":false,"translation_algorithm":"0","prioritize_name_over_vietphrase":false,"multiplication_algorithm":"2","glossary":true,"language_pairs":"zh-vi"}');
 
+const SUPPORTED_LANGUAGES = ['', 'EN', 'EN-US', 'JA', 'ZH', 'auto', 'en', 'ja', 'zh-CN', 'zh-TW', 'vi', 'zh-Hans', 'zh-Hant'];
+
 let quickTranslateStorage = JSON.parse(localStorage.getItem('dich_nhanh')) ?? {};
 let glossary = JSON.parse(localStorage.getItem('glossary')) ?? {};
 
@@ -525,6 +527,7 @@ function getSourceLanguageSelectOptions(translator) {
   switch (translator) {
     case Translators.DEEPL_TRANSLATE: {
       DeeplTranslate.SOURCE_LANGUAGES.forEach(({ language }) => {
+        if (SUPPORTED_LANGUAGES.indexOf(language) === -1) return;
         const option = document.createElement('option');
         option.innerText = DeeplTranslate.getSourceLangName(language);
         option.value = language;
@@ -535,6 +538,7 @@ function getSourceLanguageSelectOptions(translator) {
     }
     case Translators.GOOGLE_TRANSLATE: {
       Object.entries(GoogleTranslate.SOURCE_LANGUAGES).forEach(([languageCode]) => {
+        if (SUPPORTED_LANGUAGES.indexOf(languageCode) === -1) return;
         const option = document.createElement('option');
         option.innerText = GoogleTranslate.getSlName(languageCode);
         option.value = languageCode;
@@ -545,6 +549,7 @@ function getSourceLanguageSelectOptions(translator) {
     }
     case Translators.PAPAGO: {
       Object.entries(Papago.SOURCE_LANGUAGES).forEach(([languageCode]) => {
+        if (SUPPORTED_LANGUAGES.indexOf(languageCode) === -1) return;
         const option = document.createElement('option');
         option.innerText = Papago.getSourceName(languageCode);
         option.value = languageCode;
@@ -565,6 +570,7 @@ function getSourceLanguageSelectOptions(translator) {
     }
     default: {
       Object.entries(MicrosoftTranslator.FROM_LANGUAGES).forEach(([languageCode]) => {
+        if (SUPPORTED_LANGUAGES.indexOf(languageCode) === -1) return;
         const option = document.createElement('option');
         option.innerText = MicrosoftTranslator.getFromName(languageCode);
         option.value = languageCode;
@@ -584,6 +590,7 @@ function getTargetLanguageSelectOptions(translator) {
   switch (translator) {
     case Translators.DEEPL_TRANSLATE: {
       DeeplTranslate.TARGET_LANGUAGES.forEach(({ language }) => {
+        if (SUPPORTED_LANGUAGES.indexOf(language) === -1) return;
         const option = document.createElement('option');
         option.innerText = DeeplTranslate.getTargetLangName(language);
         option.value = language;
@@ -594,6 +601,7 @@ function getTargetLanguageSelectOptions(translator) {
     }
     case Translators.GOOGLE_TRANSLATE: {
       Object.entries(GoogleTranslate.TARGET_LANGUAGES).forEach(([languageCode]) => {
+        if (SUPPORTED_LANGUAGES.indexOf(languageCode) === -1) return;
         const option = document.createElement('option');
         option.innerText = GoogleTranslate.getTlName(languageCode);
         option.value = languageCode;
@@ -604,6 +612,7 @@ function getTargetLanguageSelectOptions(translator) {
     }
     case Translators.PAPAGO: {
       Object.entries(Papago.TARGET_LANGUAGES).forEach(([languageCode]) => {
+        if (SUPPORTED_LANGUAGES.indexOf(languageCode) === -1) return;
         const option = document.createElement('option');
         option.innerText = Papago.getTargetName(languageCode);
         option.value = languageCode;
@@ -624,6 +633,7 @@ function getTargetLanguageSelectOptions(translator) {
     }
     default: {
       Object.entries(MicrosoftTranslator.TO_LANGUAGES).forEach(([languageCode]) => {
+        if (SUPPORTED_LANGUAGES.indexOf(languageCode) === -1) return;
         const option = document.createElement('option');
         option.innerText = MicrosoftTranslator.getToName(languageCode);
         option.value = languageCode;
