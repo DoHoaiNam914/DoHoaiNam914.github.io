@@ -16,9 +16,12 @@
     }
 
     body,
-    .workspace,
     .modal-body {
       overflow-x: hidden;
+    }
+
+    .workspace {
+      overflow: hidden;
     }
 
     .viewport {
@@ -66,13 +69,15 @@
       max-height: 577px;
       overflow-wrap: break-word;
       padding: 15px 10px calc(3.25em + 60px);
+      max-width: 1000px;
     }
 
     .textarea {
       font-family: var(--opt-font-family);
       font-size: var(--opt-font-size);
       font-weight: normal;
-      min-height: 53.425925925925924vh !important;
+      height: 59.66907962771458vh;
+      max-height: 430px;
       letter-spacing: 0;
       line-height: var(--opt-line-height);
       margin: 0;
@@ -91,7 +96,6 @@
       }
 
       .textarea {
-        max-width: 1000px;
         padding: 20px;
       }
 
@@ -615,28 +619,28 @@
             </button>
             <ul class="dropdown-menu">
               <li>
-                <button type="submit" class="dropdown-item font-option active">Mặc định (Georgia)</button>
+                <button type="button" class="dropdown-item font-option active">Mặc định (Georgia)</button>
               </li>
               <li>
-                <button type="submit" class="dropdown-item font-option">Times New Roman</button>
+                <button type="button" class="dropdown-item font-option">Times New Roman</button>
               </li>
               <li>
-                <button type="submit" class="dropdown-item font-option">Phông chữ hệ thống</button>
+                <button type="button" class="dropdown-item font-option">Phông chữ hệ thống</button>
               </li>
               <li>
-                <button type="submit" class="dropdown-item font-option">Hiragino Mincho ProN</button>
+                <button type="button" class="dropdown-item font-option">Hiragino Mincho ProN</button>
               </li>
               <li>
-                <button type="submit" class="dropdown-item font-option" data-additional-fonts="Hiragino Mincho ProN">Bookerly</button>
+                <button type="button" class="dropdown-item font-option" data-additional-fonts="Hiragino Mincho ProN">Bookerly</button>
               </li>
               <li>
-                <button type="submit" class="dropdown-item font-option" data-additional-fonts="Hiragino Mincho ProN">Literata</button>
+                <button type="button" class="dropdown-item font-option" data-additional-fonts="Hiragino Mincho ProN">Literata</button>
               </li>
               <li>
-                <button type="submit" class="dropdown-item font-option" data-additional-fonts="Hiragino Mincho Pro">Iowan Old Style</button>
+                <button type="button" class="dropdown-item font-option" data-additional-fonts="Hiragino Mincho Pro">Iowan Old Style</button>
               </li>
               <li>
-                <button type="submit" class="dropdown-item font-option">Crimson Text</button>
+                <button type="button" class="dropdown-item font-option">Crimson Text</button>
               </li>
             </ul>
           </div>
@@ -664,19 +668,19 @@
             </button>
             <ul class="dropdown-menu">
               <li>
-                <button type="submit" class="dropdown-item translator-option" data-id="deeplTranslate">DeepL Translate</button>
+                <button type="button" class="dropdown-item translator-option" data-id="deeplTranslate">DeepL Translate</button>
               </li>
               <li>
-                <button type="submit" class="dropdown-item translator-option" data-id="googleTranslate">Google Dịch</button>
+                <button type="button" class="dropdown-item translator-option active" data-id="googleTranslate">Google Dịch</button>
               </li>
               <li>
-                <button type="submit" class="dropdown-item translator-option" data-id="papago">Papago</button>
+                <button type="button" class="dropdown-item translator-option" data-id="papago">Papago</button>
               </li>
               <li>
-                <button type="submit" class="dropdown-item translator-option active" data-id="microsoftTranslator">Trình dịch Microsoft</button>
+                <button type="button" class="dropdown-item translator-option" data-id="microsoftTranslator">Trình dịch Microsoft</button>
               </li>
               <li>
-                <button type="submit" class="dropdown-item translator-option" data-id="vietphrase">Vietphrase</button>
+                <button type="button" class="dropdown-item translator-option" data-id="vietphrase">Vietphrase</button>
               </li>
             </ul>
           </div>

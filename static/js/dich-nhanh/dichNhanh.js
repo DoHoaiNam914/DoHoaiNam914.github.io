@@ -39,7 +39,7 @@ const $removeButton = $('#remove-button');
 const $glossaryEntryList = $('#glossary-entry-list');
 const $glossaryName = $('#glossary-name');
 
-const defaultOptions = JSON.parse('{"source_language":"","target_language":"vi","font":"Mặc định","font_size":100,"line_spacing":40,"alignment_settings":true,"translator":"microsoftTranslator","show_original_text":false,"load_default_vietphrase_file":false,"ttvtranslate_mode":false,"translation_algorithm":"0","prioritize_name_over_vietphrase":false,"multiplication_algorithm":"2","glossary":true,"language_pairs":"zh-vi"}');
+const defaultOptions = JSON.parse('{"source_language":"","target_language":"vi","font":"Mặc định","font_size":100,"line_spacing":40,"alignment_settings":true,"translator":"googleTranslate","show_original_text":false,"load_default_vietphrase_file":false,"ttvtranslate_mode":false,"translation_algorithm":"0","prioritize_name_over_vietphrase":false,"multiplication_algorithm":"2","glossary":true,"language_pairs":"zh-vi"}');
 
 const SUPPORTED_LANGUAGES = ['', 'EN', 'EN-US', 'JA', 'ZH', 'auto', 'en', 'ja', 'zh-CN', 'zh-TW', 'vi', 'zh-Hans', 'zh-Hant'];
 
@@ -851,12 +851,7 @@ $(window).on('keydown', (event) => {
     }
   }
 });
-$(visualViewport).resize((event) => {
-  $('.textarea').css('max-height', `${event.target.height - (((event.target.width < 1200 ? 23.28703703703703 : 40.33092037228542) / 100) * event.target.height)}px`);
-  $inputTextarea.css('height', $('.textarea').css('max-height'));
-  $resultTextarea.css('height', $('.textarea').css('max-height'));
-});
-$translateButton.on('click', function () {
+$translateButton.on('click', function onClick() {
   if (translateAbortController != null) {
     translateAbortController.abort();
     translateAbortController = null;
@@ -905,7 +900,7 @@ $translateButton.on('click', function () {
     // no default
   }
 });
-$copyButtons.on('click', async function () {
+$copyButtons.on('click', async function onClick() {
   if ($(this).data('target') === '#result-textarea') {
     if (Object.keys(lastSession).length > 0) {
       await navigator.clipboard.writeText(lastSession.result);
@@ -929,7 +924,7 @@ $copyButtons.on('click', async function () {
     target.blur();
   }
 });
-$pasteButtons.on('click', async function () {
+$pasteButtons.on('click', async function onClick() {
   await navigator.clipboard.readText().then((clipText) => {
     if ($(this).data('target') === '#input-textarea') {
       $resultTextarea.prop('scrollTop', 0);
@@ -940,7 +935,7 @@ $pasteButtons.on('click', async function () {
     }
   });
 });
-$retranslateButton.click(function () {
+$retranslateButton.click(function onClick() {
   if (!$(this).hasClass('disabled')) {
     prevScrollTop = $resultTextarea.prop('scrollTop');
     $translateButton.text('Dịch').click();
@@ -950,7 +945,7 @@ $('#glossary-management-button').on('mousedown', () => {
   $glossaryEntryList.val('').change();
   $sourceEntryInput.val(getSelectedTextOrActiveElementText()).trigger('input');
 });
-$options.change(function () {
+$options.change(function onChange() {
   const optionId = getOptionId($(this).attr('name') != null ? $(this).attr('name') : $(this).attr('id'));
   const optionType = getOptionType($(this).attr('name') != null ? $(this).attr('name') : $(this).attr('id'));
 
@@ -974,7 +969,7 @@ $options.change(function () {
     $retranslateButton.click();
   }
 });
-$fontOptions.click(function () {
+$fontOptions.click(function onClick() {
   $fontOptions.removeClass('active');
   $(this).addClass('active');
 
@@ -989,38 +984,38 @@ $fontOptions.click(function () {
   quickTranslateStorage.font = $(this).text().includes('Mặc định') ? $(this).text().match(/(.+) \(/)[1] : $(this).text();
   localStorage.setItem('dich_nhanh', JSON.stringify(quickTranslateStorage));
 });
-$fontSizeRange.on('input', function () {
+$fontSizeRange.on('input', function onInput() {
   $('#font-size-display').val(parseInt($(this).val(), 10));
   $(document.body).css('--opt-font-size', `${parseInt($(this).val(), 10) / 100}rem`);
   quickTranslateStorage[getOptionId($(this).attr('id'))] = parseInt($(this).val(), 10);
 });
-$('#font-size-display').on('change', function () {
+$('#font-size-display').on('change', function onChange() {
   const maybeValueIsBiggerThanMaxValue = $(this).val() > parseInt($fontSizeRange.attr('max'), 10) ? $fontSizeRange.attr('max') : $(this).val();
   $fontSizeRange.val($(this).val() < parseInt($fontSizeRange.attr('min'), 10) ? $fontSizeRange.attr('min') : maybeValueIsBiggerThanMaxValue).change();
 });
-$fontSizeRange.change(function () {
+$fontSizeRange.change(function onChange() {
   $(this).trigger('input');
   localStorage.setItem('dich_nhanh', JSON.stringify(quickTranslateStorage));
 });
-$lineSpacingRange.on('input', function () {
+$lineSpacingRange.on('input', function onInput() {
   $('#line-spacing-display').val(parseInt($(this).val(), 10));
   $(document.body).css('--opt-line-height', `${1 + ((0.5 * parseInt($(this).val(), 10)) / 100)}em`);
   quickTranslateStorage[getOptionId($(this).attr('id'))] = parseInt($(this).val(), 10);
 });
-$('#line-spacing-display').on('change', function () {
+$('#line-spacing-display').on('change', function onChange() {
   const maybeValueIsBiggerThanMaxValue = $(this).val() > parseInt($lineSpacingRange.attr('max'), 10) ? $lineSpacingRange.attr('max') : $(this).val();
   $lineSpacingRange.val($(this).val() < parseInt($lineSpacingRange.attr('min'), 10) ? $lineSpacingRange.attr('min') : maybeValueIsBiggerThanMaxValue).change();
 });
-$lineSpacingRange.change(function () {
+$lineSpacingRange.change(function onChange() {
   $(this).trigger('input');
   localStorage.setItem('dich_nhanh', JSON.stringify(quickTranslateStorage));
 });
-$alignmentSettingsSwitch.change(function () {
+$alignmentSettingsSwitch.change(function onChange() {
   $(document.body).css('--opt-text-align', $(this).prop('checked') ? 'justify' : 'start');
   quickTranslateStorage[getOptionId($(this).attr('id'))] = $(this).prop('checked');
   localStorage.setItem('dich_nhanh', JSON.stringify(quickTranslateStorage));
 });
-$translatorOptions.click(function () {
+$translatorOptions.click(function onClick() {
   $translatorOptions.removeClass('active');
   $(this).addClass('active');
   updateLanguageSelect($(this).data('id'), quickTranslateStorage.translator);
@@ -1029,13 +1024,13 @@ $translatorOptions.click(function () {
   updateInputTextLength();
   $retranslateButton.click();
 });
-$showOriginalTextSwitch.change(function () {
+$showOriginalTextSwitch.change(function onChange() {
   quickTranslateStorage[getOptionId($(this).attr('id'))] = $(this).prop('checked');
   $retranslateButton.click();
 });
-$vietphraseInput.on('change', function () {
+$vietphraseInput.on('change', function onChange() {
   const reader = new FileReader();
-  reader.onload = function () {
+  reader.onload = function onLoad() {
     let vietphraseList = this.result.split(/\r?\n/).map((element) => element.split($vietphraseInput.prop('files')[0].type === 'text/tab-separated-values' ? '\t' : '=')).filter((element) => element.length === 2).map(([first, second]) => [first, second.split('/')[0].split('|')[0]]);
     vietphraseList = [...vietphraseList, ...Object.entries(vietphraseData.chinesePhienAmWords)].filter(([first, second], index, array) => first !== '' && second != null && !array[first] && (array[first] = 1), {});
     vietphraseData.vietphrases = Object.fromEntries(vietphraseList);
@@ -1044,7 +1039,7 @@ $vietphraseInput.on('change', function () {
   };
   reader.readAsText($(this).prop('files')[0]);
 });
-$loadDefaultVietPhraseFileSwitch.on('change', function () {
+$loadDefaultVietPhraseFileSwitch.on('change', function onChange() {
   if (!$(this).hasClass('disabled') && $(this).prop('checked') === true) {
     if (window.confirm('Bạn có muốn tải lại trang ngay chứ?')) window.location.reload();
   }
@@ -1054,10 +1049,10 @@ $resetButton.on('click', () => {
   localStorage.setItem('dich_nhanh', JSON.stringify(defaultOptions));
   if (window.confirm('Bạn có muốn tải lại trang ngay chứ?')) window.location.reload();
 });
-$glossaryInput.on('change', function () {
+$glossaryInput.on('change', function onChange() {
   const reader = new FileReader();
 
-  reader.onload = function () {
+  reader.onload = function onLoad() {
     switch ($glossaryInput.prop('files')[0].type) {
       case GlossaryType.CSV: {
         glossary = $.csv.toObjects(this.result);
@@ -1089,7 +1084,7 @@ $('#clear-button').on('click', () => {
   $glossaryInput.val('');
 });
 $glossaryType.on('change', () => reloadGlossaryEntries());
-$sourceEntryInput.on('input', async function () {
+$sourceEntryInput.on('input', async function onInput() {
   const inputText = $(this).val();
 
   if (inputText.length > 0) {
@@ -1110,10 +1105,10 @@ $sourceEntryInput.on('input', async function () {
   }
 });
 $('#source-entry-dropdown-toggle').on('mousedown', (event) => event.preventDefault());
-$('.dropdown-can-scroll').on('hide.bs.dropdown', function () {
+$('.dropdown-can-scroll').on('hide.bs.dropdown', function onHideBsDropdown() {
   $(this).find('.dropdown-menu-scroller').prop('scrollTop', 0);
 });
-$('.dropdown-menu button.dropdown-item').on('click', function () {
+$('.dropdown-menu button.dropdown-item').on('click', function onClick() {
   if ($(this).data('bs-toggle') === 'collapse') {
     $dropdownHasCollapse.find('.dropdown-menu').find('.collapse').each((indexInArray, value) => {
       if (!$(value).hasClass('show')) return;
@@ -1128,26 +1123,26 @@ $('.dropdown-menu button.dropdown-item').on('click', function () {
     });
   }
 });
-$dropdownHasCollapse.on('hide.bs.dropdown', function () {
+$dropdownHasCollapse.on('hide.bs.dropdown', function onHideBsDropdown() {
   $(this).find('.dropdown-menu').find('.collapse').each((indexInArray, value) => {
     if (!$(value).hasClass('show')) return;
     const bootstrapCollapseInDropdown = new bootstrap.Collapse(value);
     bootstrapCollapseInDropdown.hide();
   });
 });
-$('.define-button').on('click', function () {
+$('.define-button').on('click', function onClick() {
   if ($sourceEntryInput.val().length > 0) {
     window.open($(this).data('href').replace('{0}', encodeURIComponent(($sourceEntryInput.val().substring($sourceEntryInput.prop('selectionStart'), $sourceEntryInput.prop('selectionEnd')) || $sourceEntryInput.val()).substring(0, 30).trim())));
     $sourceEntryInput.blur();
   }
 });
-$('.translate-webpage-button').on('click', function () {
+$('.translate-webpage-button').on('click', function onClick() {
   if ($sourceEntryInput.val().length > 0) {
     window.open($(this).data('href').replace('{0}', encodeURIComponent($sourceEntryInput.val().trimEnd())));
     $sourceEntryInput.blur();
   }
 });
-$('.upper-case-button').on('click', function () {
+$('.upper-case-button').on('click', function onClick() {
   if ($targetEntryInput.val().length > 0) {
     $targetEntryInput.val($targetEntryInput.val().split(' ').map((element, index) => {
       const maybeIndexIsSmallerThanAmount = index < $(this).data('amount') ? element.charAt(0).toUpperCase() + element.slice(1) : element.toLowerCase();
@@ -1155,7 +1150,7 @@ $('.upper-case-button').on('click', function () {
     }).join(' '));
   }
 });
-$('.translate-button').on('click', async function () {
+$('.translate-button').on('click', async function onClick() {
   const inputText = $sourceEntryInput.val();
 
   const translatorOption = $(this).data('translator');
@@ -1183,7 +1178,7 @@ $removeButton.on('click', () => {
     $glossaryEntryList.val('').change();
   }
 });
-$glossaryEntryList.change(function () {
+$glossaryEntryList.change(function onClick() {
   if (Object.prototype.hasOwnProperty.call(glossary, $(this).val())) {
     $sourceEntryInput.val($(this).val()).trigger('input');
     $removeButton.removeClass('disabled');
