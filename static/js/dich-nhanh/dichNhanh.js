@@ -734,6 +734,7 @@ async function translateText(inputText, translatorOption, targetLanguage, glossa
 }
 
 $(document).ready(async () => {
+  $inputTextarea.val(null);
   loadAllQuickTranslatorOptions();
   reloadGlossaryEntries();
 
@@ -836,7 +837,7 @@ $(document).ready(async () => {
     }).done((data) => {
       let vietphraseList = [...data.split(/\r?\n/).map((element) => element.split('=')).filter((element) => element.length === 2).map(([first, second]) => [first, second.split('/')[0].split('|')[0]]), ...Object.entries(vietphraseData.chinesePhienAmWords)];
       vietphraseList = vietphraseList.filter(([first, second], index, array) => first !== '' && second != null && !array[first] && (array[first] = 1), {});
-      if ($vietphraseInput.prop('files') != null) return;
+      if ($vietphraseInput.prop('files').length > 0) return;
       vietphraseData.vietphrases = Object.fromEntries(vietphraseList);
       console.log('Đã tải xong tệp VietPhrase (%d)!', vietphraseList.length);
       lastSession = {};
@@ -846,7 +847,6 @@ $(document).ready(async () => {
   }
 
   $loadDefaultVietPhraseFileSwitch.removeClass('disabled');
-  $inputTextarea.val(null);
   isOnLoad = false;
 });
 
