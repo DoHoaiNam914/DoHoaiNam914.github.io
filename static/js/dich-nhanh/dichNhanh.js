@@ -1007,9 +1007,9 @@ $fontOptions.click(function onClick() {
 });
 
 $fontSizeRange.on('input', function onInput() {
-  $('#font-size-display').val(parseInt($(this).val(), 10));
-  $(document.body).css('--opt-font-size', `${parseInt($(this).val(), 10) / 100}rem`);
-  quickTranslateStorage[getOptionId($(this).attr('id'))] = parseInt($(this).val(), 10);
+  $('#font-size-display').val(parseFloat($(this).val()));
+  $(document.body).css('--opt-font-size', `${parseFloat($(this).val()) / 100}rem`);
+  quickTranslateStorage[getOptionId($(this).attr('id'))] = parseFloat($(this).val());
 });
 
 $('#font-size-display').on('change', function onChange() {
