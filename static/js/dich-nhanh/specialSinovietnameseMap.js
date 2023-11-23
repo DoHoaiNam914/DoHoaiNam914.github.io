@@ -119,6 +119,7 @@ const specialSinovietnameseMap = [
   ['舒', 'THƯ' /* Họ */],
   ['撕', 'TI, TƯ'],
   ['比', 'TỈ'],
+  ['钱', 'TIỀN'],
   ['璇', 'TOÀN'],
   ['治', 'TRỊ'],
   ['朝', 'TRIỀU, TRÀO, TRIÊU', 'TRIÊU'],

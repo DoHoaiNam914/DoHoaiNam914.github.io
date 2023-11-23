@@ -1244,9 +1244,10 @@ $inputTextarea.on('input', () => {
 });
 
 $inputTextarea.on('keydown', (event) => !(event.shiftKey && event.key === 'Enter') || $translateButton.click());
+$resultTextarea.on('keydown', (event) => event.ctrlKey || event.preventDefault());
+$resultTextarea.on('dragstart', (event) => event.preventDefault());
 $resultTextarea.on('cut', (event) => event.preventDefault());
 $resultTextarea.on('paste', (event) => event.preventDefault());
-$resultTextarea.on('keydown', (event) => event.ctrlKey || event.preventDefault());
 
 $resultTextarea.on('dblclick', () => {
   if (Utils.isOnMobile()) return;
