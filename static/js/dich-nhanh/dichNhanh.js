@@ -280,15 +280,20 @@ function reloadGlossaryEntries() {
     glossaryEntries = Object.entries(glossary);
 
     glossaryEntries.forEach(([first, second]) => {
-      const datalistOption = document.createElement('option');
-      datalistOption.innerText = second;
-      datalistOption.value = first;
-      entriesList.appendChild(datalistOption);
+      const option = document.createElement('option');
+      option.innerText = `${first} → ${second}`;
+      option.value = first;
 
-      const selectOption = document.createElement('option');
-      selectOption.innerText = `${first} → ${second}`;
-      selectOption.value = first;
-      entrySelect.appendChild(selectOption);
+      if (Utils.isOnMobile()) {
+        const mobileOption = document.createElement('option');
+        mobileOption.innerText = `${first} → ${second}`;
+        mobileOption.setAttribute('data-value', first);
+        entriesList.appendChild(mobileOption);
+      } else {
+        entriesList.appendChild(option);
+      }
+
+      entrySelect.appendChild(option);
     });
 
     switch ($glossaryType.val()) {
@@ -1145,7 +1150,14 @@ $sourceEntryInput.on('input', async function onInput() {
   const inputText = $(this).val();
 
   if (inputText.length > 0) {
-    if (Object.prototype.hasOwnProperty.call(glossary, inputText)) {
+    const $option = $(`#${$(this).attr('list')} > option:contains(${inputText})`);
+
+    if (Utils.isOnMobile() && $option.length > 0 && inputText === $option.text()) {
+      $(this).val($option.data('value')).trigger('input');
+      return;
+    }
+
+    if (Object.keys(glossary).filter((element) => inputText.includes(element)).length > 0) {
       $targetEntryInput.val(applyGlossaryToText(inputText));
       $glossaryEntrySelect.val(inputText);
     } else {
