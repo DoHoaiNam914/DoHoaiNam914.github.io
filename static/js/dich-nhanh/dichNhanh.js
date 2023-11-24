@@ -1157,11 +1157,11 @@ $sourceEntryInput.on('input', async function onInput() {
       return;
     }
 
-    if (Object.keys(glossary).filter((element) => inputText.includes(element)).length > 0) {
+    if (Object.prototype.hasOwnProperty.call(glossary, inputText)) {
       $targetEntryInput.val(applyGlossaryToText(inputText));
       $glossaryEntrySelect.val(inputText);
     } else {
-      $targetEntryInput.val(/\p{sc=Hani}/u.test(inputText) ? await translateText(inputText, Translators.VIETPHRASE, 'sinoVietnamese', true) : inputText);
+      $targetEntryInput.val(await translateText(inputText, Translators.VIETPHRASE, 'sinoVietnamese', true));
       $glossaryEntrySelect.val('');
     }
 
