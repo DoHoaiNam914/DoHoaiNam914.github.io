@@ -30,7 +30,7 @@
       width: 3.5em;
     }
 
-    .navigator, .modals {
+    .navigator, .badge, .modals {
       -webkit-user-select: none;
       user-select: none;
     }
@@ -540,7 +540,7 @@
   </nav>
   <div class="slide-navbar bg-light-subtle w-100" id="action-navbar">
     <ul class="nav m-auto viewport">
-      <li class="nav-item mx-3">Số lượng ký tự: <span id="input-textarea-counter">0</span></li>
+      <li class="nav-item px-3">Thời gian dịch: <span id="translate-timer">0</span>ms</li>
       <li>
         <button type="button" class="nav-item nav-link copy-button" data-target="#input-textarea">Sao chép</button>
       </li>
@@ -550,7 +550,6 @@
       <li>
         <button type="button" class="nav-item nav-link disabled" id="retranslate-button">Dịch lại</button>
       </li>
-      <li class="nav-item mx-3">Thời gian dịch: <span id="translate-timer">0</span>ms</li>
       <li>
         <button type="button" class="nav-item nav-link" id="glossary-management-button" data-bs-toggle="modal" data-bs-target="#glossary-modal">Quản lý thuật ngữ</button>
       </li>
@@ -561,8 +560,11 @@
   </div>
 </div>
 <main class="container-fluid viewport workspace">
-  <textarea class="form-control textarea" id="input-textarea" placeholder="Viết gì đó tại đây"></textarea>
-  <div class="form-control textarea" id="result-textarea" contenteditable="true" inputmode="none" style="display: none;"></div>
+  <div class="position-relative">
+    <textarea class="form-control textarea" id="input-textarea" placeholder="Viết gì đó tại đây"></textarea>
+    <div class="form-control textarea" id="result-textarea" contenteditable="true" inputmode="none" style="display: none;"></div>
+    <span class="badge text-bg-secondary position-absolute translate-middle top-0 start-50">Số lượng ký tự: <span id="input-textarea-counter">0</span></span>
+  </div>
 </main>
 <div class="modals viewport">
   <div class="modal fade" id="settings-modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
@@ -772,7 +774,8 @@
             <option value="zh-vi" selected>Trung → Việt</option>
           </select>
           <div class="input-group mb-2 dropstart dropdown-can-scroll dropdown-has-collapse">
-            <input type="text" class="form-control" id="source-entry-input" placeholder="Mục nguồn">
+            <input type="text" class="form-control" id="source-entry-input" list="glossary-entries-list" placeholder="Mục nguồn">
+            <datalist id="glossary-entries-list"></datalist>
             <button type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" id="source-entry-dropdown-toggle" data-bs-toggle="dropdown" data-bs-auto-close="outside"></button>
             <ul class="dropdown-menu dropdown-menu-scroller">
               <li>
@@ -859,18 +862,6 @@
                 <hr class="dropdown-divider">
               </li>
               <li>
-                <button type="button" class="dropdown-item translate-button" data-translator="vietphrase" data-lang="pinyin" data-data="pinyins">Chuyển đổi sang Bính âm</button>
-              </li>
-              <li>
-                <button type="button" class="dropdown-item translate-button" data-translator="vietphrase" data-lang="sinoVietnamese">Chuyển đổi sang Hán việt</button>
-              </li>
-              <li>
-                <button type="button" class="dropdown-item translate-button" data-translator="vietphrase" data-lang="vi">Chuyển đổi sang Vietphrase</button>
-              </li>
-              <li>
-                <hr class="dropdown-divider">
-              </li>
-              <li>
                 <button type="button" class="dropdown-item upper-case-button" data-amount="1">Viết hoa 1 từ đơn đầu</button>
               </li>
               <li>
@@ -881,6 +872,18 @@
               </li>
               <li>
                 <button type="button" class="dropdown-item upper-case-button" data-amount="#">Viết hoa tất cả</button>
+              </li>
+              <li>
+                <hr class="dropdown-divider">
+              </li>
+              <li>
+                <button type="button" class="dropdown-item translate-button" data-translator="vietphrase" data-lang="pinyin" data-data="pinyins">Chuyển đổi sang Bính âm</button>
+              </li>
+              <li>
+                <button type="button" class="dropdown-item translate-button" data-translator="vietphrase" data-lang="sinoVietnamese">Chuyển đổi sang Hán việt</button>
+              </li>
+              <li>
+                <button type="button" class="dropdown-item translate-button" data-translator="vietphrase" data-lang="vi">Chuyển đổi sang Vietphrase</button>
               </li>
               <li>
                 <hr class="dropdown-divider">
@@ -937,7 +940,7 @@
             </svg>
             Xoá
           </button>
-          <select class="form-select mb-3" id="glossary-entry-list" size="10">
+          <select class="form-select mb-3" id="glossary-entry-select" size="10">
             <option value="" selected>Chọn...</option>
           </select>
           <button type="button" class="btn btn-sm btn-secondary copy-button" data-target="#glossary-entry-list">Sao chép</button>

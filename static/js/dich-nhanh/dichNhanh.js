@@ -36,7 +36,7 @@ const $dropdownHasCollapse = $('.dropdown-has-collapse');
 const $targetEntryInput = $('#target-entry-input');
 const $addButton = $('#add-button');
 const $removeButton = $('#remove-button');
-const $glossaryEntryList = $('#glossary-entry-list');
+const $glossaryEntrySelect = $('#glossary-entry-select');
 const $glossaryName = $('#glossary-name');
 
 const defaultOptions = JSON.parse('{"source_language":null,"target_language":"vi","font":"Mặc định","font_size":100,"line_spacing":40,"alignment_settings":true,"translator":"googleTranslate","show_original_text":false,"load_default_vietphrase_file":false,"ttvtranslate_mode":false,"translation_algorithm":"0","prioritize_name_over_vietphrase":false,"multiplication_algorithm":"2","glossary":true,"language_pairs":"zh-vi"}');
@@ -262,6 +262,7 @@ function updateInputTextLength() {
 }
 
 function reloadGlossaryEntries() {
+  const entriesList = document.createElement('datalist');
   const entrySelect = document.createElement('select');
 
   const defaultOption = document.createElement('option');
@@ -279,10 +280,15 @@ function reloadGlossaryEntries() {
     glossaryEntries = Object.entries(glossary);
 
     glossaryEntries.forEach(([first, second]) => {
-      const option = document.createElement('option');
-      option.innerText = `${first} → ${second}`;
-      option.value = first;
-      entrySelect.appendChild(option);
+      const datalistOption = document.createElement('option');
+      datalistOption.innerText = second;
+      datalistOption.value = first;
+      entriesList.appendChild(datalistOption);
+
+      const selectOption = document.createElement('option');
+      selectOption.innerText = `${first} → ${second}`;
+      selectOption.value = first;
+      entrySelect.appendChild(selectOption);
     });
 
     switch ($glossaryType.val()) {
@@ -313,8 +319,9 @@ function reloadGlossaryEntries() {
     downloadButton.addClass('disabled');
   }
 
-  $glossaryEntryList.html(entrySelect.innerHTML);
-  $glossaryEntryList.val('');
+  $('#glossary-entries-list').html(entriesList.innerHTML);
+  $glossaryEntrySelect.html(entrySelect.innerHTML);
+  $glossaryEntrySelect.val('');
   $('#glossary-entry-counter').text(glossaryEntries.length);
   updateInputTextLength();
   localStorage.setItem('glossary', JSON.stringify(glossary));
@@ -961,7 +968,7 @@ $retranslateButton.click(function onClick() {
 });
 
 $('#glossary-management-button').on('mousedown', () => {
-  $glossaryEntryList.val('').change();
+  $glossaryEntrySelect.val('').change();
   $sourceEntryInput.val(getSelectedTextOrActiveElementText()).trigger('input');
 });
 
@@ -1017,6 +1024,8 @@ $('#font-size-display').on('change', function onChange() {
   $fontSizeRange.val($(this).val() < parseInt($fontSizeRange.attr('min'), 10) ? $fontSizeRange.attr('min') : maybeValueIsBiggerThanMaxValue).change();
 });
 
+$fontSizeRange.off('change');
+
 $fontSizeRange.change(function onChange() {
   $(this).trigger('input');
   localStorage.setItem('dich_nhanh', JSON.stringify(quickTranslateStorage));
@@ -1033,10 +1042,14 @@ $('#line-spacing-display').on('change', function onChange() {
   $lineSpacingRange.val($(this).val() < parseInt($lineSpacingRange.attr('min'), 10) ? $lineSpacingRange.attr('min') : maybeValueIsBiggerThanMaxValue).change();
 });
 
+$lineSpacingRange.off('change');
+
 $lineSpacingRange.change(function onChange() {
   $(this).trigger('input');
   localStorage.setItem('dich_nhanh', JSON.stringify(quickTranslateStorage));
 });
+
+$alignmentSettingsSwitch.off('change');
 
 $alignmentSettingsSwitch.change(function onChange() {
   $(document.body).css('--opt-text-align', $(this).prop('checked') ? 'justify' : 'start');
@@ -1053,6 +1066,8 @@ $translatorOptions.click(function onClick() {
   updateInputTextLength();
   $retranslateButton.click();
 });
+
+$showOriginalTextSwitch.off('change');
 
 $showOriginalTextSwitch.change(function onChange() {
   quickTranslateStorage[getOptionId($(this).attr('id'))] = $(this).prop('checked');
@@ -1072,6 +1087,8 @@ $vietphraseInput.on('change', function onChange() {
 
   reader.readAsText($(this).prop('files')[0]);
 });
+
+$loadDefaultVietPhraseFileSwitch.off('change');
 
 $loadDefaultVietPhraseFileSwitch.on('change', function onChange() {
   if (!$(this).hasClass('disabled') && $(this).prop('checked') === true) {
@@ -1130,16 +1147,16 @@ $sourceEntryInput.on('input', async function onInput() {
   if (inputText.length > 0) {
     if (Object.prototype.hasOwnProperty.call(glossary, inputText)) {
       $targetEntryInput.val(applyGlossaryToText(inputText));
-      $glossaryEntryList.val(inputText);
+      $glossaryEntrySelect.val(inputText);
     } else {
       $targetEntryInput.val(/\p{sc=Hani}/u.test(inputText) ? await translateText(inputText, Translators.VIETPHRASE, 'sinoVietnamese', true) : inputText);
-      $glossaryEntryList.val('');
+      $glossaryEntrySelect.val('');
     }
 
     $addButton.removeClass('disabled');
     $removeButton.removeClass('disabled');
   } else {
-    $glossaryEntryList.val('').change();
+    $glossaryEntrySelect.val('').change();
     $addButton.addClass('disabled');
     $removeButton.addClass('disabled');
   }
@@ -1210,7 +1227,7 @@ $('.translate-button').on('click', async function onClick() {
 $addButton.on('click', () => {
   glossary[$sourceEntryInput.val().trim()] = $targetEntryInput.val().trim();
   reloadGlossaryEntries();
-  $glossaryEntryList.change();
+  $glossaryEntrySelect.change();
   $glossaryInput.val(null);
 });
 
@@ -1223,11 +1240,11 @@ $removeButton.on('click', () => {
       $sourceEntryInput.trigger('input');
     }
   } else {
-    $glossaryEntryList.val('').change();
+    $glossaryEntrySelect.val('').change();
   }
 });
 
-$glossaryEntryList.change(function onClick() {
+$glossaryEntrySelect.change(function onChange() {
   if (Object.prototype.hasOwnProperty.call(glossary, $(this).val())) {
     $sourceEntryInput.val($(this).val()).trigger('input');
     $removeButton.removeClass('disabled');
