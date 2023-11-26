@@ -262,8 +262,8 @@ function updateInputTextLength() {
 }
 
 function reloadGlossaryEntries() {
-  const entriesList = document.createElement('datalist');
   const entrySelect = document.createElement('select');
+  const entriesList = document.createElement('datalist');
 
   const defaultOption = document.createElement('option');
   defaultOption.innerText = 'Chọn...';
@@ -283,17 +283,16 @@ function reloadGlossaryEntries() {
       const option = document.createElement('option');
       option.innerText = `${first} → ${second}`;
       option.value = first;
+      entrySelect.appendChild(option);
 
       if (Utils.isOnMobile()) {
-        const mobileOption = document.createElement('option');
-        mobileOption.innerText = `${first} → ${second}`;
-        mobileOption.setAttribute('data-value', first);
-        entriesList.appendChild(mobileOption);
+        const optionOnMobile = document.createElement('option');
+        optionOnMobile.innerText = `${first} → ${second}`;
+        optionOnMobile.setAttribute('data-value', first);
+        entriesList.appendChild(optionOnMobile);
       } else {
-        entriesList.appendChild(option);
+        entriesList.appendChild(option.cloneNode(true));
       }
-
-      entrySelect.appendChild(option);
     });
 
     switch ($glossaryType.val()) {
@@ -324,8 +323,8 @@ function reloadGlossaryEntries() {
     downloadButton.addClass('disabled');
   }
 
-  $('#glossary-entries-list').html(entriesList.innerHTML);
   $glossaryEntrySelect.html(entrySelect.innerHTML);
+  $('#glossary-entries-list').html(entriesList.innerHTML);
   $glossaryEntrySelect.val('');
   $('#glossary-entry-counter').text(glossaryEntries.length);
   updateInputTextLength();
@@ -949,7 +948,7 @@ $copyButtons.on('click', async function onClick() {
 
   if (target.val().length > 0) {
     await navigator.clipboard.writeText(target.val());
-    target.blur();
+    $(document.body).focus();
   }
 });
 
@@ -975,6 +974,14 @@ $retranslateButton.click(function onClick() {
 $('#glossary-management-button').on('mousedown', () => {
   $glossaryEntrySelect.val('').change();
   $sourceEntryInput.val(getSelectedTextOrActiveElementText()).trigger('input');
+
+  if (window.getSelection) {
+    window.getSelection().removeAllRanges();
+  } else if (document.selection) {
+    document.selection.empty();
+  }
+
+  $(document.body).focus();
 });
 
 $options.change(function onChange() {
@@ -1207,15 +1214,29 @@ $dropdownHasCollapse.on('hide.bs.dropdown', function onHideBsDropdown() {
 $('.define-button').on('click', function onClick() {
   if ($sourceEntryInput.val().length > 0) {
     window.open($(this).data('href').replace('{0}', encodeURIComponent(($sourceEntryInput.val().substring($sourceEntryInput.prop('selectionStart'), $sourceEntryInput.prop('selectionEnd')) || $sourceEntryInput.val()).substring(0, 30).trim())));
-    $sourceEntryInput.blur();
   }
+
+  if (window.getSelection) {
+    window.getSelection().removeAllRanges();
+  } else if (document.selection) {
+    document.selection.empty();
+  }
+
+  $sourceEntryInput.blur();
 });
 
 $('.translate-webpage-button').on('click', function onClick() {
   if ($sourceEntryInput.val().length > 0) {
     window.open($(this).data('href').replace('{0}', encodeURIComponent($sourceEntryInput.val().trimEnd())));
-    $sourceEntryInput.blur();
   }
+
+  if (window.getSelection) {
+    window.getSelection().removeAllRanges();
+  } else if (document.selection) {
+    document.selection.empty();
+  }
+
+  $sourceEntryInput.blur();
 });
 
 $('.upper-case-button').on('click', function onClick() {
@@ -1272,14 +1293,9 @@ $inputTextarea.on('input', () => {
   updateInputTextLength();
 });
 
-$inputTextarea.on('keydown', (event) => !(event.shiftKey && event.key === 'Enter') || $translateButton.click());
-$resultTextarea.on('keydown', (event) => event.ctrlKey || event.preventDefault());
+$inputTextarea.on('keypress', (event) => !(event.shiftKey && event.key === 'Enter') || $translateButton.click());
+$resultTextarea.on('keydown', (event) => event.ctrlKey || event.key === 'Enter' || event.preventDefault());
 $resultTextarea.on('dragstart', (event) => event.preventDefault());
 $resultTextarea.on('cut', (event) => event.preventDefault());
 $resultTextarea.on('paste', (event) => event.preventDefault());
-
-$resultTextarea.on('dblclick', () => {
-  if (Utils.isOnMobile()) return;
-  $translateButton.click();
-  $inputTextarea.focus();
-});
+$resultTextarea.on('keypress', (event) => event.key !== 'Enter' || $translateButton.click());
