@@ -39,7 +39,7 @@ const $removeButton = $('#remove-button');
 const $glossaryEntrySelect = $('#glossary-entry-select');
 const $glossaryName = $('#glossary-name');
 
-const defaultOptions = JSON.parse('{"source_language":null,"target_language":"vi","font":"Mặc định","font_size":100,"line_spacing":40,"alignment_settings":true,"translator":"googleTranslate","show_original_text":false,"load_default_vietphrase_file":false,"ttvtranslate_mode":false,"translation_algorithm":"0","prioritize_name_over_vietphrase":false,"multiplication_algorithm":"2","glossary":true,"language_pairs":"zh-vi"}');
+const defaultOptions = JSON.parse('{"source_language":"auto","target_language":"vi","font":"Mặc định","font_size":100,"line_spacing":40,"alignment_settings":true,"translator":"googleTranslate","show_original_text":false,"load_default_vietphrase_file":false,"ttvtranslate_mode":false,"translation_algorithm":"0","prioritize_name_over_vietphrase":false,"multiplication_algorithm":"2","glossary":true,"language_pairs":"zh-vi"}');
 
 const SUPPORTED_LANGUAGES = ['', 'EN', 'JA', 'ZH', 'EN-US', 'auto', 'en', 'ja', 'zh-CN', 'zh-TW', 'vi', 'zh-Hans', 'zh-Hant'];
 
@@ -775,7 +775,7 @@ $(document).ready(async () => {
   }
 
   try {
-    let chinesePhienAmWordList = [...specialSinovietnameseMap.map(([a, b, c]) => [a, (Object.fromEntries(specialSinovietnameseMap.filter(([__, d]) => !/\p{sc=Hani}/u.test(d)).map(([d, e, f]) => [d, f ?? e]))[b] ?? c ?? b).split(', ')[0].toLowerCase()]), ...cjkv.nam.map(([first, second]) => [first, second.trimStart().split(/, ?/).filter((element) => element.length > 0)[0]]), ...hanData.names.map(([first, second]) => [first, second.split(',').filter((element) => element.length > 0)[0]])];
+    let chinesePhienAmWordList = [...specialSinovietnameseMap.map(([a, b, c]) => [a, (Object.fromEntries(specialSinovietnameseMap.filter(([__, d]) => !/\p{sc=Hani}/u.test(d)).map(([d, e, f]) => [d, f ?? e]))[b] ?? c ?? b).split(/, | \| /)[0].toLowerCase()]), ...cjkv.nam.map(([first, second]) => [first, second.trimStart().split(/, ?/).filter((element) => element.length > 0)[0]]), ...hanData.names.map(([first, second]) => [first, second.split(',').filter((element) => element.length > 0)[0]])];
 
     await $.ajax({
       method: 'GET',
@@ -804,7 +804,7 @@ $(document).ready(async () => {
       method: 'GET',
       url: '/static/datasource/QuickTranslate2020 - ChinesePhienAmWords.txt',
     }).done((data) => {
-      chinesePhienAmWordList = [...chinesePhienAmWordList, ...data.split(/\r?\n/).map((element) => element.split('=')).filter(([first]) => !Object.prototype.hasOwnProperty.call(vietphraseData.chinesePhienAmWords, first))];
+      chinesePhienAmWordList = [...chinesePhienAmWordList, ...data.split(/\r?\n/).map((element) => element.split('=')).filter(([first]) => !/\p{sc=Latn}/u.test(first) && !Object.prototype.hasOwnProperty.call(vietphraseData.chinesePhienAmWords, first))];
       vietphraseData.chinesePhienAmWords = Object.fromEntries(chinesePhienAmWordList);
     });
 
@@ -1106,6 +1106,7 @@ $loadDefaultVietPhraseFileSwitch.off('change');
 
 $loadDefaultVietPhraseFileSwitch.on('change', function onChange() {
   if (!$(this).hasClass('disabled') && $(this).prop('checked') === true) {
+    quickTranslateStorage[getOptionId($(this).attr('id'))] = $(this).prop('checked');
     if (window.confirm('Bạn có muốn tải lại trang ngay chứ?')) window.location.reload();
   }
 });
