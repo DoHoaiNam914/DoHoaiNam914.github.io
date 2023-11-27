@@ -862,7 +862,7 @@ $(document).ready(async () => {
   isOnLoad = false;
 });
 
-$(window).on('keyup', () => !($(document.activeElement).is('body') && $resultTextarea.is(':visible')) || $resultTextarea.focus());
+$(window).on('keypress', (event) => !($(document.activeElement).is('body') && $resultTextarea.is(':visible') && event.key === 'Enter') || $resultTextarea.focus());
 
 $translateButton.on('click', function onClick() {
   if (translateAbortController != null) {
@@ -1287,7 +1287,7 @@ $inputTextarea.on('input', () => {
   updateInputTextLength();
 });
 
-$inputTextarea.on('keypress', (event) => !(event.shiftKey && event.key === 'Enter') || $translateButton.click());
+$inputTextarea.on('keypress', (event) => !(event.shiftKey && event.key === 'Enter') || ($translateButton.click() && $resultTextarea.focus()));
 $resultTextarea.on('keydown', (event) => event.ctrlKey || event.key === 'Enter' || event.key === 'Home' || event.key === 'End' || event.key === 'PageUp' || event.key === 'PageDown' || event.key === 'ArrowUp' || event.key === 'ArrowLeft' || event.key === 'ArrowDown' || event.key === 'ArrowRight' || event.preventDefault());
 $resultTextarea.on('dragstart', (event) => event.preventDefault());
 $resultTextarea.on('cut', (event) => event.preventDefault());
