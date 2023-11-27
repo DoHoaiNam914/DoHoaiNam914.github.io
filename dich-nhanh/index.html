@@ -147,25 +147,20 @@
       '/static/lib/bootstrap.bundle.min.js',
       '/static/lib/CryptoJS v3.1.2/rollups/hmac-md5.js',
       '/static/lib/CryptoJS v3.1.2/components/enc-base64.js',
-      '/static/lib/hanviet.js',
-      '/static/lib/handict.js',
-      '/static/js/dich-nhanh/specialSinovietnameseMap.js',
-      '/static/js/dich-nhanh/newAccentMap.js',
     ];
 
     const scriptsToLoad = [...librariesToLoad, ...[
       '/static/js/Utils.js',
+      '/static/lib/hanviet.js',
+      '/static/lib/handict.js',
+      '/static/js/dich-nhanh/specialSinovietnameseMap.js',
+      '/static/js/dich-nhanh/newAccentMap.js',
       '/static/js/dich-nhanh/Translators.js',
       '/static/js/dich-nhanh/dichNhanh.js'],
     ];
 
     let i = 0;
-    const labJs = () => {
-      if (i < scriptsToLoad.length) {
-        $LAB.script(scriptsToLoad[i]).wait(labJs);
-        i++;
-      }
-    };
+    const labJs = () => i < scriptsToLoad.length && $LAB.script(scriptsToLoad[i]).wait(() => i++).wait(labJs);
     labJs();
   </script>
   <script>

@@ -34,6 +34,7 @@ const $languagePairsSelect = $('#language-pairs-select');
 const $sourceEntryInput = $('#source-entry-input');
 const $dropdownHasCollapse = $('.dropdown-has-collapse');
 const $targetEntryInput = $('#target-entry-input');
+const $translateButtons = $('.translate-button');
 const $addButton = $('#add-button');
 const $removeButton = $('#remove-button');
 const $glossaryEntrySelect = $('#glossary-entry-select');
@@ -1250,13 +1251,17 @@ $('.upper-case-button').on('click', function onClick() {
   }
 });
 
-$('.translate-button').on('click', async function onClick() {
+$translateButtons.on('click', async function onClick() {
   const inputText = $sourceEntryInput.val();
 
   const translatorOption = $(this).data('translator');
   const targetLanguage = $(this).data('lang');
 
-  if (inputText.length > 0) $targetEntryInput.val(await translateText(inputText, translatorOption, targetLanguage, false));
+  if (inputText.length > 0) {
+    $translateButtons.addClass('disabled');
+    $targetEntryInput.val(await translateText(inputText, translatorOption, targetLanguage, false));
+    $translateButtons.removeClass('disabled');
+  }
 });
 
 $addButton.on('click', () => {
