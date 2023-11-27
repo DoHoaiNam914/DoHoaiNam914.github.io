@@ -862,21 +862,7 @@ $(document).ready(async () => {
   isOnLoad = false;
 });
 
-$(window).on('keydown', (event) => {
-  if ($(document.activeElement).is('body') && $resultTextarea.is(':visible')) {
-    switch (event.key) {
-      case 'Home': {
-        $resultTextarea.prop('scrollTop', 0);
-        break;
-      }
-      case 'End': {
-        $resultTextarea.prop('scrollTop', $resultTextarea.prop('scrollTopMax'));
-        break;
-      }
-      // no default
-    }
-  }
-});
+$(window).on('keyup', () => !($(document.activeElement).is('body') && $resultTextarea.is(':visible')) || $resultTextarea.focus());
 
 $translateButton.on('click', function onClick() {
   if (translateAbortController != null) {
@@ -1107,6 +1093,7 @@ $loadDefaultVietPhraseFileSwitch.off('change');
 $loadDefaultVietPhraseFileSwitch.on('change', function onChange() {
   if (!$(this).hasClass('disabled') && $(this).prop('checked') === true) {
     quickTranslateStorage[getOptionId($(this).attr('id'))] = $(this).prop('checked');
+    localStorage.setItem('dich_nhanh', JSON.stringify(quickTranslateStorage));
     if (window.confirm('Bạn có muốn tải lại trang ngay chứ?')) window.location.reload();
   }
 });
@@ -1301,7 +1288,7 @@ $inputTextarea.on('input', () => {
 });
 
 $inputTextarea.on('keypress', (event) => !(event.shiftKey && event.key === 'Enter') || $translateButton.click());
-$resultTextarea.on('keydown', (event) => event.ctrlKey || event.key === 'Enter' || event.preventDefault());
+$resultTextarea.on('keydown', (event) => event.ctrlKey || event.key === 'Enter' || event.key === 'Home' || event.key === 'End' || event.key === 'PageUp' || event.key === 'PageDown' || event.key === 'ArrowUp' || event.key === 'ArrowLeft' || event.key === 'ArrowDown' || event.key === 'ArrowRight' || event.preventDefault());
 $resultTextarea.on('dragstart', (event) => event.preventDefault());
 $resultTextarea.on('cut', (event) => event.preventDefault());
 $resultTextarea.on('paste', (event) => event.preventDefault());
