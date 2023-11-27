@@ -948,7 +948,6 @@ $copyButtons.on('click', async function onClick() {
 
   if (target.val().length > 0) {
     await navigator.clipboard.writeText(target.val());
-    $(document.body).focus();
   }
 });
 
@@ -983,7 +982,7 @@ $('#glossary-management-button').on('mousedown', () => {
     document.selection.empty();
   }
 
-  $(document.body).focus();
+  $('.textarea').blur();
 });
 
 $options.change(function onChange() {
@@ -1301,4 +1300,4 @@ $resultTextarea.on('keydown', (event) => event.ctrlKey || event.key === 'Enter' 
 $resultTextarea.on('dragstart', (event) => event.preventDefault());
 $resultTextarea.on('cut', (event) => event.preventDefault());
 $resultTextarea.on('paste', (event) => event.preventDefault());
-$resultTextarea.on('keypress', (event) => event.key !== 'Enter' || $translateButton.click());
+$resultTextarea.on('keypress', (event) => event.key !== 'Enter' || ($translateButton.click() && $inputTextarea.focus()));
