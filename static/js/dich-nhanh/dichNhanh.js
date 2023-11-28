@@ -939,17 +939,16 @@ $copyButtons.on('click', async function onClick() {
 });
 
 $pasteButtons.on('click', async function onClick() {
-  if ($($(this).data('target')).val().length === 0 || window.confirm('Dán văn bản mới sẽ khiến văn bản hiện tại bị mất. Bạn chấp nhận chữ?')) {
-    await navigator.clipboard.readText().then((clipText) => {
-      if ($(this).data('target') === '#input-textarea') {
-        $resultTextarea.prop('scrollTop', 0);
-        $($(this).data('target')).val(clipText).trigger('input');
-        $retranslateButton.click();
-      } else {
-        $($(this).data('target')).val(clipText).trigger('input');
-      }
-    });
-  }
+  await navigator.clipboard.readText().then((clipText) => {
+    if ($($(this).data('target')).val().length > 0 && !window.confirm('Dán văn bản mới sẽ khiến văn bản hiện tại bị mất. Bạn chấp nhận chữ?')) return;
+    if ($(this).data('target') === '#input-textarea') {
+      $resultTextarea.prop('scrollTop', 0);
+      $($(this).data('target')).val(clipText).trigger('input');
+      $retranslateButton.click();
+    } else {
+      $($(this).data('target')).val(clipText).trigger('input');
+    }
+  });
 });
 
 $retranslateButton.click(function onClick() {
