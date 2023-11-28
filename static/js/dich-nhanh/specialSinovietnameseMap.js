@@ -118,4 +118,5 @@ const specialSinovietnameseMap = [
   ['场', 'TRƯỜNG'],
   ['司', 'TƯ, TI'],
   ['援', 'VIỆN'],
+  ['夭', 'YỂU'],
 ];
