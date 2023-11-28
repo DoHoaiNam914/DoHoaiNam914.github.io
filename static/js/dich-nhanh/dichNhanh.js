@@ -34,7 +34,7 @@ const $languagePairsSelect = $('#language-pairs-select');
 const $sourceEntryInput = $('#source-entry-input');
 const $dropdownHasCollapse = $('.dropdown-has-collapse');
 const $targetEntryInput = $('#target-entry-input');
-const $translateButtons = $('.translate-button');
+const $translateEntryButtons = $('.translate-entry-button');
 const $addButton = $('#add-button');
 const $removeButton = $('#remove-button');
 const $glossaryEntrySelect = $('#glossary-entry-select');
@@ -438,8 +438,8 @@ async function translateTextarea() {
 
   const [MAX_LENGTH, MAX_LINE] = getMaxQueryLengthAndLine(translatorOption, processText);
 
-  if (processText.split(/\n/).sort((a, b) => b.length - a.length)[0].length > MAX_LENGTH) {
-    throw console.error(`Số lượng từ trong một dòng quá dài (Số lượng từ hợp lệ nhỏ hơn hoặc bằng ${MAX_LENGTH}). [Lưu ý: Khi sử dụng Dynamic Dictionary và Bảo vệ dấu trích đẫn sẽ làm giảm số lượng từ có thể dịch đi.]`);
+  if (translatorOption !== Translators.DEEPL_TRANSLATE && processText.split(/\n/).sort((a, b) => b.length - a.length)[0].length > MAX_LENGTH) {
+    throw console.error(`Số lượng từ trong một dòng quá dài (Số lượng từ hợp lệ nhỏ hơn hoặc bằng ${MAX_LENGTH}).`);
   }
 
   try {
@@ -737,7 +737,7 @@ async function translateText(inputText, translatorOption, targetLanguage, glossa
       }
     }
 
-    if (translatorOption === Translators.DEEPL_TRANSLATE && translator.usage.character_count + text.length > translator.usage.character_limit) throw console.error(`Lỗi DeepL Translator: Đã đạt đến giới hạn dịch của tài khoản. (${translator.usage.character_count}/${translator.usage.character_limit} ký tự).`);
+    if (translatorOption === Translators.DEEPL_TRANSLATE && translator.usage.character_count + text.length > translator.usage.character_limit) return `Lỗi DeepL Translator: Đã đạt đến giới hạn dịch của tài khoản. (${translator.usage.character_count}/${translator.usage.character_limit} ký tự).`;
     return await translator.translateText(sourceLanguage, targetLanguage, text);
   } catch (error) {
     console.error(error);
@@ -757,16 +757,18 @@ $(document).ready(async () => {
       method: 'GET',
       url: '/static/datasource/Unihan_Readings.txt',
     }).done((data) => {
-      pinyinList = data.split(/\r?\n/).filter((element) => element.startsWith('U+')).map((element) => element.substring(2).split(/\t/)).map(([first, second]) => [String.fromCodePoint(parseInt(first, 16)), second]);
+      pinyinList = data.split(/\r?\n/).filter((element) => element.startsWith('U+')).map((element) => element.substring(2).split(/\t/)).filter((element) => element.length === 2).map(([first, second]) => [String.fromCodePoint(parseInt(first, 16)), second]);
       vietphraseData.pinyins = Object.fromEntries(pinyinList);
     });
 
     await $.ajax({
       method: 'GET',
-      url: '/static/datasource/Bính âm.txt',
-    }).done((data) => pinyinList = [...pinyinList, ...data.split(/\r?\n/).map((element) => element.split('=')).sort((a, b) => b[0].length - a[0].length).map(([first, second]) => [first, second.split('ǀ')[0]]).filter(([first]) => !Object.prototype.hasOwnProperty.call(vietphraseData.pinyins, first))]);
+      url: '/static/datasource/chivi/Bính âm.txt',
+    }).done((data) => {
+      pinyinList = [...pinyinList, ...data.split(/\r?\n/).map((element) => element.split('=')).filter((element) => element.length === 2).sort((a, b) => b[0].length - a[0].length).map(([first, second]) => [first, second.split('ǀ')[0]]).filter(([first]) => !Object.prototype.hasOwnProperty.call(vietphraseData.pinyins, first))];
+    });
 
-    pinyinList = pinyinList.filter(([first, second], index, array) => (first !== '' && second != null && !array[first] && (array[first] = 1)), {});
+    pinyinList = pinyinList.filter(([first, second], index, array) => !array[first] && (array[first] = 1), {});
     vietphraseData.pinyins = Object.fromEntries(pinyinList);
     console.log('Đã tải xong bộ dữ liệu bính âm (%d)!', pinyinList.length);
     lastSession = {};
@@ -780,36 +782,24 @@ $(document).ready(async () => {
 
     await $.ajax({
       method: 'GET',
-      url: '/static/datasource/ChinesePhienAmWords của thtgiang.txt',
+      url: '/static/datasource/QuickTranslate2020/ChinesePhienAmWords.txt',
     }).done((data) => {
-      chinesePhienAmWordList = [...chinesePhienAmWordList, ...data.split(/\r?\n/).map((element) => element.split('=')).filter(([first]) => !Object.prototype.hasOwnProperty.call(vietphraseData.chinesePhienAmWords, first))];
-      vietphraseData.chinesePhienAmWords = Object.fromEntries(chinesePhienAmWordList);
+      chinesePhienAmWordList = [...chinesePhienAmWordList, ...data.split(/\r\n/).map((element) => element.split('=')).filter((element) => element.length === 2)];
     });
 
     await $.ajax({
       method: 'GET',
-      url: '/static/datasource/TTV Translate.ChinesePhienAmWords.txt',
+      url: '/static/datasource/chivi/word_hv.txt',
     }).done((data) => {
-      chinesePhienAmWordList = [...chinesePhienAmWordList, ...data.split(/\r?\n/).map((element) => element.split('=')).filter(([first]) => !Object.prototype.hasOwnProperty.call(vietphraseData.chinesePhienAmWords, first))];
-      vietphraseData.chinesePhienAmWords = Object.fromEntries(chinesePhienAmWordList);
+      chinesePhienAmWordList = [...chinesePhienAmWordList, ...data.split(/\n/).map((element) => element.split('=')).filter((element) => element.length === 2 && Array.from(element[0]).length === 1).sort((a, b) => b[0].length - a[0].length).map(([first, second]) => [first, second.split('ǀ')[0]])];
     });
 
-    await $.ajax({
-      method: 'GET',
-      url: '/static/datasource/Hán việt.txt',
-    }).done((data) => chinesePhienAmWordList = [...chinesePhienAmWordList, ...data.split(/\r?\n/).map((element) => element.split('=')).sort((a, b) => b[0].length - a[0].length).map(([first, second]) => [first, second.split('ǀ')[0]]).filter(([first]) => !Object.prototype.hasOwnProperty.call(vietphraseData.chinesePhienAmWords, first))]);
+    chinesePhienAmWordList = chinesePhienAmWordList.filter(([first], index, array) => !array[first] && (array[first] = 1), {});
 
-    chinesePhienAmWordList = chinesePhienAmWordList.filter(([first, second], index, array) => first !== '' && !/\p{sc=Latin}/u.test(first) && second != null && !array[first] && (array[first] = 1), {});
-
-    await $.ajax({
-      method: 'GET',
-      url: '/static/datasource/QuickTranslate2020 - ChinesePhienAmWords.txt',
-    }).done((data) => {
-      chinesePhienAmWordList = [...chinesePhienAmWordList, ...data.split(/\r?\n/).map((element) => element.split('=')).filter(([first]) => !/\p{sc=Latn}/u.test(first) && !Object.prototype.hasOwnProperty.call(vietphraseData.chinesePhienAmWords, first))];
-      vietphraseData.chinesePhienAmWords = Object.fromEntries(chinesePhienAmWordList);
+    newAccentMap.forEach(([a, b]) => {
+      chinesePhienAmWordList = chinesePhienAmWordList.map(([c, d]) => [c, d.replace(new RegExp(a, 'gi'), b)]);
     });
 
-    newAccentMap.forEach(([a, b]) => chinesePhienAmWordList = chinesePhienAmWordList.map(([c, d]) => [c, d.replace(new RegExp(a, 'gi'), b)]));
     vietphraseData.chinesePhienAmWords = Object.fromEntries(chinesePhienAmWordList);
     console.log('Đã tải xong bộ dữ liệu hán việt (%d)!', chinesePhienAmWordList.length);
     lastSession = {};
@@ -820,7 +810,7 @@ $(document).ready(async () => {
 
   await $.ajax({
     method: 'GET',
-    url: '/static/datasource/Pronouns.txt',
+    url: '/static/datasource/Quick Translator/Pronouns.txt',
   }).done((data) => {
     vietphraseData.pronouns = Object.fromEntries(data.split(/\r?\n/).map((element) => element.split('=')).filter((element) => element.length === 2).map(([first, second]) => [first, second.split('/')[0]]));
     console.log('Đã tải xong tệp Pronouns (%d)!', Object.entries(vietphraseData.pronouns).length);
@@ -832,9 +822,9 @@ $(document).ready(async () => {
 
   await $.ajax({
     method: 'GET',
-    url: '/static/datasource/LuatNhan.txt',
+    url: '/static/datasource/Quick Translator/LuatNhan.txt',
   }).done((data) => {
-    vietphraseData.cacLuatnhan = Object.fromEntries(data.split(/\r?\n/).map((element) => element.split('=')).filter((element) => element.length === 2));
+    vietphraseData.cacLuatnhan = Object.fromEntries(data.split(/\r?\n/).filter((element) => !element.startsWith('#')).map((element) => element.split('=')).filter((element) => element.length === 2));
     console.log('Đã tải xong tệp LuatNhan (%d)!', Object.entries(vietphraseData.cacLuatnhan).length);
     lastSession = {};
   }).fail((jqXHR, textStatus, errorThrown) => {
@@ -845,10 +835,10 @@ $(document).ready(async () => {
   if ($loadDefaultVietPhraseFileSwitch.prop('checked') && Object.entries(vietphraseData.vietphrases).length === 0) {
     await $.ajax({
       method: 'GET',
-      url: '/static/datasource/Vietphrase.txt',
+      url: '/static/datasource/Quick Translator/VietPhrase.txt',
     }).done((data) => {
-      let vietphraseList = [...data.split(/\r?\n/).map((element) => element.split('=')).filter((element) => element.length === 2).map(([first, second]) => [first, second.split('/')[0].split('|')[0]]), ...Object.entries(vietphraseData.chinesePhienAmWords)];
-      vietphraseList = vietphraseList.filter(([first, second], index, array) => first !== '' && second != null && !array[first] && (array[first] = 1), {});
+      let vietphraseList = [...data.split(/\r\n/).map((element) => element.split('=')).filter((element) => element.length === 2).map(([first, second]) => [first, second.split(/[/|]/)[0]]), ...Object.entries(vietphraseData.chinesePhienAmWords)];
+      vietphraseList = vietphraseList.filter(([first], index, array) => !array[first] && (array[first] = 1), {});
       if ($vietphraseInput.prop('files').length > 0) return;
       vietphraseData.vietphrases = Object.fromEntries(vietphraseList);
       console.log('Đã tải xong tệp VietPhrase (%d)!', vietphraseList.length);
@@ -1077,8 +1067,8 @@ $vietphraseInput.on('change', function onChange() {
   const reader = new FileReader();
 
   reader.onload = function onLoad() {
-    let vietphraseList = this.result.split(/\r?\n/).map((element) => element.split($vietphraseInput.prop('files')[0].type === 'text/tab-separated-values' ? '\t' : '=')).filter((element) => element.length === 2).map(([first, second]) => [first, second.split('/')[0].split('|')[0]]);
-    vietphraseList = [...vietphraseList, ...Object.entries(vietphraseData.chinesePhienAmWords)].filter(([first, second], index, array) => first !== '' && second != null && !array[first] && (array[first] = 1), {});
+    let vietphraseList = this.result.split(/\r?\n/).map((element) => element.split($vietphraseInput.prop('files')[0].type === 'text/tab-separated-values' ? '\t' : '=')).filter((element) => element.length === 2).map(([first, second]) => [first, second.split(/[/|]/)[0]]);
+    vietphraseList = [...vietphraseList, ...Object.entries(vietphraseData.chinesePhienAmWords)].filter(([first, second], index, array) => !array[first] && (array[first] = 1), {});
     vietphraseData.vietphrases = Object.fromEntries(vietphraseList);
     console.log('Đã tải xong tệp VietPhrase.txt (%d)!', vietphraseList.length);
     lastSession = {};
@@ -1237,16 +1227,16 @@ $('.upper-case-button').on('click', function onClick() {
   }
 });
 
-$translateButtons.on('click', async function onClick() {
+$translateEntryButtons.on('click', async function onClick() {
   const inputText = $sourceEntryInput.val();
 
   const translatorOption = $(this).data('translator');
   const targetLanguage = $(this).data('lang');
 
   if (inputText.length > 0) {
-    $translateButtons.addClass('disabled');
+    $translateEntryButtons.addClass('disabled');
     $targetEntryInput.val(await translateText(inputText, translatorOption, targetLanguage, false));
-    $translateButtons.removeClass('disabled');
+    $translateEntryButtons.removeClass('disabled');
   }
 });
 
