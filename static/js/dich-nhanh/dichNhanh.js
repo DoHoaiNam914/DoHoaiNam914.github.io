@@ -247,7 +247,7 @@ function applyGlossaryToText(text, translator = Translators.VIETPHRASE) {
 
               if (Object.prototype.hasOwnProperty.call(glossaryObj, phrase)) {
                 if (glossaryObj[phrase].length > 0) {
-                  tempLine += (i > 0 && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(prevPhrase || tempLine[tempLine.length - 1] || '') ? ' ' : '') + (translator === Translators.MICROSOFT_TRANSLATOR || translator === Translators.VIETPHRASE || glossary.filter(([first, __, third]) => first === phrase && (third === 'N' || third === 'NNP' || third === 'V' || third === 'ADJ' || third === 'ADV' || third === 'PRT' || third === 'MWE' || third === 'X')).length > 0 ? getIgnoreTranslationMarkup(phrase, glossaryObj[phrase], translator) : glossaryObj[phrase].replace(glossary.filter(([first, __, third]) => first === phrase && (third === 'NNP' || third === 'MWE' || third === 'X')).length > 0 ? / (?=\p{Lu})/gu : / /g, '_'));
+                  tempLine += (i > 0 && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(prevPhrase || tempLine[tempLine.length - 1] || '') ? ' ' : '') + (translator === Translators.MICROSOFT_TRANSLATOR || translator === Translators.VIETPHRASE || glossary.filter(([first, __, third]) => first === phrase && (third === 'NNP' || third === 'MWE' || third === 'X')).length > 0 ? getIgnoreTranslationMarkup(phrase, glossaryObj[phrase], translator) : glossaryObj[phrase].replace(glossary.filter(([first, __, third]) => first === phrase && (third === 'ADJ' || third === 'ADV' || third === 'N' || third === 'PRT' || third === 'SC' || third === 'V')).length > 0 ? / (?=\p{Lu})/gu : / /g, '_'));
                   prevPhrase = glossaryObj[phrase];
                 }
 
@@ -546,7 +546,7 @@ async function translateTextarea() {
 
       if (glossaryEnabled && translatorOption !== Translators.MICROSOFT_TRANSLATOR && translatorOption !== Translators.VIETPHRASE && sourceLanguage.split('-')[0].toLowerCase() === languagePairs[0] && targetLanguage.split('-')[0].toLowerCase() === languagePairs[1] && translatorOption !== Translators.MICROSOFT_TRANSLATOR) {
         glossary.forEach(([__, second, third]) => {
-          result = result.replace(new RegExp(second.replace(third === 'NNP' || third === 'MWE' || third === 'X' ? / (?=\p{Lu})/gu : / /g, '_') , 'g'), second);
+          result = result.replace(new RegExp(second.replace(third === 'NNP' || third === 'MWE' || third === 'X' ? / (?=\p{Lu})/gu : / /g, '_'), 'g'), second);
         });
       }
 
@@ -778,7 +778,7 @@ async function translateText(inputText, translatorOption, targetLanguage, glossa
 
     if (glossaryEnabled && translatorOption !== Translators.MICROSOFT_TRANSLATOR && translatorOption !== Translators.VIETPHRASE) {
       glossary.forEach(([__, second, third]) => {
-        result = result.replace(new RegExp(second.replace(third === 'NNP' || third === 'MWE' || third === 'X' ? / (?=\p{Lu})/gu : / /g, '_') , 'g'), second);
+        result = result.replace(new RegExp(second.replace(third === 'NNP' || third === 'MWE' || third === 'X' ? / (?=\p{Lu})/gu : / /g, '_'), 'g'), second);
       });
     }
 
