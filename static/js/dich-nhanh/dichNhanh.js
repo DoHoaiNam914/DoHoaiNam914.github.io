@@ -547,7 +547,7 @@ async function translateTextarea() {
 
       if (glossaryEnabled && translatorOption !== Translators.MICROSOFT_TRANSLATOR && translatorOption !== Translators.VIETPHRASE && sourceLanguage.split('-')[0].toLowerCase() === languagePairs[0] && targetLanguage.split('-')[0].toLowerCase() === languagePairs[1] && translatorOption !== Translators.MICROSOFT_TRANSLATOR) {
         glossary.forEach(([__, second, third]) => {
-          result = result.replace(new RegExp(second.replace(third === 'NNP' || third === 'MWE' || third === 'X' ? / (?=\p{Lu})/gu : / /g, '_'), 'g'), second);
+          result = result.replace(new RegExp(second.replace(third === 'NNP' || third === 'MWE' || third === 'X' ? / (?=\p{Lu})/gu : / /g, '_'), 'gi'), second);
         });
       }
 
@@ -779,7 +779,7 @@ async function translateText(inputText, translatorOption, targetLanguage, glossa
 
     if (glossaryEnabled && translatorOption !== Translators.MICROSOFT_TRANSLATOR && translatorOption !== Translators.VIETPHRASE) {
       glossary.forEach(([__, second, third]) => {
-        result = result.replace(new RegExp(second.replace(third === 'NNP' || third === 'MWE' || third === 'X' ? / (?=\p{Lu})/gu : / /g, '_'), 'g'), second);
+        result = result.replace(new RegExp(second.replace(third === 'NNP' || third === 'MWE' || third === 'X' ? / (?=\p{Lu})/gu : / /g, '_'), 'gi'), second);
       });
     }
 
