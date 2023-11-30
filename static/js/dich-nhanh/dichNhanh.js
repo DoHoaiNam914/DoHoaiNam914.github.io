@@ -35,7 +35,7 @@ const $sourceEntryInput = $('#source-entry-input');
 const $dropdownHasCollapse = $('.dropdown-has-collapse');
 const $targetEntryInput = $('#target-entry-input');
 const $translateEntryButtons = $('.translate-entry-button');
-const $posTagSelect = $('#pos-tag-select');
+const $tagsetSelect = $('#tagset-select');
 const $addButton = $('#add-button');
 const $removeButton = $('#remove-button');
 const $glossaryEntrySelect = $('#glossary-entry-select');
@@ -81,7 +81,8 @@ const GlossaryType = {
   VIETPHRASE: 'text/plain',
 };
 
-const PosTags = {
+const Tagset = {
+  // Nhãn POS
   N: 0,
   NNP: 1,
   NU: 2,
@@ -108,6 +109,23 @@ const PosTags = {
   FW: 23,
   PUNCT: 24,
   SYM: 25,
+  // Nhãn Constituency
+  NP: 26,
+  VP: 27,
+  AP: 28,
+  RP: 29,
+  PP: 30,
+  QP: 31,
+  MDP: 32,
+  UCP: 33,
+  LST: 34,
+  WHNP: 35,
+  WHAP: 36,
+  WHRP: 37,
+  WHPP: 38,
+  S: 39,
+  SQ: 40,
+  SBAR: 41,
 };
 
 function getOptionId(id) {
@@ -307,7 +325,7 @@ function reloadGlossaryEntries() {
   const glossaryExtension = $('#glossary-extension');
 
   if (glossary.length > 0) {
-    glossary = glossary.filter(([first, second], index, array) => !array[first] && (array[first] = 1), {}).sort((a, b) => PosTags[a[2]] - PosTags[b[2]] || /\p{Lu}/u.test(b[1][0]) - /\p{Lu}/u.test(a[1][0]) || a[0].startsWith(b[0]) || a[1].localeCompare(b[1], 'vi', { ignorePunctuation: true }) || a[0].localeCompare(b[0], 'vi', { ignorePunctuation: true }) || b[0].length - a[0].length).map(([first, second, third]) => [first, second, third ?? 'X']);
+    glossary = glossary.filter(([first, second], index, array) => !array[first] && (array[first] = 1), {}).sort((a, b) => Tagset[a[2]] - Tagset[b[2]] || /\p{Lu}/u.test(b[1][0]) - /\p{Lu}/u.test(a[1][0]) || a[0].startsWith(b[0]) || a[1].localeCompare(b[1], 'vi', { ignorePunctuation: true }) || a[0].localeCompare(b[0], 'vi', { ignorePunctuation: true }) || b[0].length - a[0].length).map(([first, second, third]) => [first, second, third ?? 'X']);
     glossaryObj = Object.fromEntries(glossary.map(([first, second]) => [first, second]));
 
     glossary.forEach(([first, second, third]) => {
@@ -993,7 +1011,7 @@ $retranslateButton.click(function onClick() {
 });
 
 $('#glossary-management-button').on('mousedown', () => {
-  $posTagSelect.val('X');
+  $tagsetSelect.val('X');
   $glossaryEntrySelect.val('').change();
   $sourceEntryInput.val(getSelectedTextOrActiveElementText()).trigger('input');
 
@@ -1191,11 +1209,11 @@ $sourceEntryInput.on('input', async function onInput() {
     if (Object.prototype.hasOwnProperty.call(glossaryObj, inputText)) {
       $targetEntryInput.val(applyGlossaryToText(inputText));
       $glossaryEntrySelect.val(inputText);
-      $posTagSelect.val(glossary.filter(([first]) => first === inputText)[0][2] ?? 'X');
+      $tagsetSelect.val(glossary.filter(([first]) => first === inputText)[0][2] ?? 'X');
     } else {
       $targetEntryInput.val(await translateText(inputText, Translators.VIETPHRASE, 'sinoVietnamese', true));
       $glossaryEntrySelect.val('');
-      $posTagSelect.val('X');
+      $tagsetSelect.val('X');
     }
 
     $addButton.removeClass('disabled');
@@ -1290,7 +1308,7 @@ $translateEntryButtons.on('click', async function onClick() {
 $addButton.on('click', () => {
   if ($sourceEntryInput.val().length === 0) return;
   if (Object.prototype.hasOwnProperty.call(glossaryObj, $sourceEntryInput.val())) glossary.splice(Object.keys(glossaryObj).indexOf($sourceEntryInput.val()), 1);
-  glossary.push([$sourceEntryInput.val().trim(), $targetEntryInput.val().trim(), $posTagSelect.val()]);
+  glossary.push([$sourceEntryInput.val().trim(), $targetEntryInput.val().trim(), $tagsetSelect.val()]);
   reloadGlossaryEntries();
   $glossaryEntrySelect.change();
   $glossaryInput.val(null);
@@ -1316,7 +1334,7 @@ $glossaryEntrySelect.change(function onChange() {
   } else {
     $sourceEntryInput.val(null);
     $targetEntryInput.val(null);
-    $posTagSelect.val('X');
+    $tagsetSelect.val('X');
     $removeButton.addClass('disabled');
   }
 });
