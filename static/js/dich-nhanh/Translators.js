@@ -768,7 +768,7 @@ class Vietphrase {
     this.multiplicationAlgorithm = multiplicationAlgorithm;
     this.isTtvTranslate = isTtvTranslate;
     this.useGlossary = useGlossary;
-    this.glossary = glossary;
+    this.glossary = Object.fromEntries(glossary.map(([first, second]) => [first, second]));
     this.prioritizeNameOverVietphrase = prioritizeNameOverVietphraseCheck;
     this.caseSensitive = caseSensitive;
   }

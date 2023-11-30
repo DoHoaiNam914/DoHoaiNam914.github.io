@@ -35,6 +35,7 @@ const $sourceEntryInput = $('#source-entry-input');
 const $dropdownHasCollapse = $('.dropdown-has-collapse');
 const $targetEntryInput = $('#target-entry-input');
 const $translateEntryButtons = $('.translate-entry-button');
+const $posTagSelect = $('#pos-tag-select');
 const $addButton = $('#add-button');
 const $removeButton = $('#remove-button');
 const $glossaryEntrySelect = $('#glossary-entry-select');
@@ -45,7 +46,7 @@ const defaultOptions = JSON.parse('{"source_language":"auto","target_language":"
 const SUPPORTED_LANGUAGES = ['', 'EN', 'JA', 'ZH', 'EN-US', 'auto', 'en', 'ja', 'zh-CN', 'zh-TW', 'vi', 'zh-Hans', 'zh-Hant'];
 
 let quickTranslateStorage = JSON.parse(localStorage.getItem('dich_nhanh')) ?? {};
-let glossary = JSON.parse(localStorage.getItem('glossary')) ?? {};
+let glossary = JSON.parse(localStorage.getItem('glossary')) ?? [];
 
 const vietphraseData = {
   pinyins: {},
@@ -191,8 +192,8 @@ function loadAllQuickTranslatorOptions() {
   });
 }
 
-function applyGlossaryToText(text, translator = '') {
-  const glossaryEntries = Object.entries(glossary).filter(([first]) => text.includes(first));
+function applyGlossaryToText(text, translator = Translators.VIETPHRASE) {
+  const glossaryEntries = glossary.filter(([first]) => text.includes(first));
   let newText = text;
 
   if (glossaryEntries.length > 0) {
@@ -200,6 +201,7 @@ function applyGlossaryToText(text, translator = '') {
     const results = [];
 
     const glossaryLengths = [...glossaryEntries.map(([first]) => first.length), 1].sort((a, b) => b - a).filter((element, index, array) => element > 0 && index === array.indexOf(element));
+    const glossaryObj = Object.fromEntries(glossary.map(([first, second]) => [first, second]));
 
     lines.forEach((a) => {
       if (a.length === 0) {
@@ -214,10 +216,10 @@ function applyGlossaryToText(text, translator = '') {
             glossaryLengths.some((d) => {
               const phrase = translator === Translators.DEEPL_TRANSLATE || translator === Translators.GOOGLE_TRANSLATE ? Utils.convertHtmlToText(a.substring(i, i + d)) : a.substring(i, i + d);
 
-              if (Object.prototype.hasOwnProperty.call(glossary, phrase)) {
-                if (glossary[phrase].length > 0) {
-                  tempLine += (i > 0 && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(prevPhrase || tempLine[tempLine.length - 1] || '') ? ' ' : '') + getIgnoreTranslationMarkup(phrase, glossary[phrase], translator);
-                  prevPhrase = glossary[phrase];
+              if (Object.prototype.hasOwnProperty.call(glossaryObj, phrase)) {
+                if (glossaryObj[phrase].length > 0) {
+                  tempLine += (i > 0 && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(prevPhrase || tempLine[tempLine.length - 1] || '') ? ' ' : '') + (translator === Translators.MICROSOFT_TRANSLATOR || translator === Translators.VIETPHRASE || glossary.filter(([first, __, third]) => first === phrase && (third === 'NNP' || third === 'X')).length > 0 ? getIgnoreTranslationMarkup(phrase, glossaryObj[phrase], translator) : glossaryObj[phrase].replace(/ /g, '_'));
+                  prevPhrase = glossaryObj[phrase];
                 }
 
                 i += d - 1;
@@ -271,20 +273,17 @@ function reloadGlossaryEntries() {
   defaultOption.value = '';
   entrySelect.appendChild(defaultOption);
 
-  let glossaryEntries = Object.entries(glossary);
-
   const downloadButton = $('#download-button');
   const glossaryExtension = $('#glossary-extension');
 
-  if (glossaryEntries.length > 0) {
-    glossary = Object.fromEntries(glossaryEntries.sort((a, b) => /\p{Lu}/u.test(b[1][0]) - /\p{Lu}/u.test(a[1][0]) || a[0].startsWith(b[0]) || a[1].localeCompare(b[1], 'vi', { ignorePunctuation: true }) || a[0].localeCompare(b[0], 'vi', { ignorePunctuation: true }) || b[0].length - a[0].length));
-    glossaryEntries = Object.entries(glossary);
+  if (glossary.length > 0) {
+    glossary = glossary.filter(([first, second], index, array) => !array[first] && (array[first] = 1), {}).sort((a, b) => /\p{Lu}/u.test(b[1][0]) - /\p{Lu}/u.test(a[1][0]) || a[0].startsWith(b[0]) || a[1].localeCompare(b[1], 'vi', { ignorePunctuation: true }) || a[0].localeCompare(b[0], 'vi', { ignorePunctuation: true }) || b[0].length - a[0].length).map(([first, second, third]) => [first, second, third ?? 'X']);
 
-    glossaryEntries.forEach(([first, second]) => {
+    glossary.forEach(([first, second, third]) => {
       const option = document.createElement('option');
-      option.innerText = `${first} → ${second}`;
+      option.innerText = `[${third}] ${first} → ${second}`;
       option.value = first;
-      entrySelect.appendChild(option);
+      entrySelect.appendChild(option.cloneNode(true));
 
       if (Utils.isOnMobile()) {
         const optionOnMobile = document.createElement('option');
@@ -292,23 +291,24 @@ function reloadGlossaryEntries() {
         optionOnMobile.setAttribute('data-value', first);
         entriesList.appendChild(optionOnMobile);
       } else {
+        option.innerText = `${first} → ${second}`;
         entriesList.appendChild(option.cloneNode(true));
       }
     });
 
     switch ($glossaryType.val()) {
       case GlossaryType.CSV: {
-        glossaryData = $.csv.fromArrays(glossaryEntries);
+        glossaryData = $.csv.fromArrays(glossary);
         glossaryExtension.text('csv');
         break;
       }
       case GlossaryType.VIETPHRASE: {
-        glossaryData = glossaryEntries.map((element) => (element.length > 2 ? element.splice(2, glossary.length - 2) : element).join('=')).join('\n');
+        glossaryData = glossary.map((element) => (element.length > 2 ? element.splice(2, glossary.length - 2) : element).join('=')).join('\n');
         glossaryExtension.text('txt');
         break;
       }
       default: {
-        glossaryData = glossaryEntries.map((element) => (element.length > 2 ? element.splice(2, glossary.length - 2) : element).join('\t')).join('\n');
+        glossaryData = glossary.map((element) => element.join('\t')).join('\n');
         glossaryExtension.text('tsv');
         break;
       }
@@ -327,7 +327,7 @@ function reloadGlossaryEntries() {
   $glossaryEntrySelect.html(entrySelect.innerHTML);
   $('#glossary-entries-list').html(entriesList.innerHTML);
   $glossaryEntrySelect.val('');
-  $('#glossary-entry-counter').text(glossaryEntries.length);
+  $('#glossary-entry-counter').text(glossary.length);
   updateInputTextLength();
   localStorage.setItem('glossary', JSON.stringify(glossary));
 }
@@ -337,13 +337,13 @@ function getIgnoreTranslationMarkup(text, translation, translator) {
     case Translators.DEEPL_TRANSLATE:
     case Translators.GOOGLE_TRANSLATE: {
       // case Translators.PAPAGO:
-      return `<span translate="no">${Utils.convertTextToHtml(translation)}</span>`;
+      return `<span translate="no">${Utils.convertTextToHtml(translation).replace(/ /g, '_')}</span>`;
     }
     case Translators.MICROSOFT_TRANSLATOR: {
       return `<mstrans:dictionary translation="${/\p{sc=Hani}/u.test(text) && /\p{sc=Latn}/u.test(translation) ? ` ${translation} ` : translation}">${text}</mstrans:dictionary>`;
     }
     default: {
-      return translation;
+      return translator !== Translators.VIETPHRASE ? translation.replace(/ /g, '_') : translation;
     }
   }
 }
@@ -512,6 +512,12 @@ async function translateTextarea() {
         }
 
         result = results.join('\n');
+      }
+
+      if (glossaryEnabled && translatorOption !== Translators.MICROSOFT_TRANSLATOR && translatorOption !== Translators.VIETPHRASE && sourceLanguage.split('-')[0].toLowerCase() === languagePairs[0] && targetLanguage.split('-')[0].toLowerCase() === languagePairs[1] && translatorOption !== Translators.MICROSOFT_TRANSLATOR) {
+        glossary.forEach(([__, second]) => {
+          result = result.replace(new RegExp(second.replace(/ /g, '_'), 'g'), second);
+        });
       }
 
       $('#translate-timer').text(Date.now() - startTime);
@@ -738,7 +744,15 @@ async function translateText(inputText, translatorOption, targetLanguage, glossa
     }
 
     if (translatorOption === Translators.DEEPL_TRANSLATE && translator.usage.character_count + text.length > translator.usage.character_limit) return `Lỗi DeepL Translator: Đã đạt đến giới hạn dịch của tài khoản. (${translator.usage.character_count}/${translator.usage.character_limit} ký tự).`;
-    return await translator.translateText(sourceLanguage, targetLanguage, text);
+    let result = await translator.translateText(sourceLanguage, targetLanguage, text);
+
+    if (glossaryEnabled && translatorOption !== Translators.MICROSOFT_TRANSLATOR && translatorOption !== Translators.VIETPHRASE) {
+      glossary.forEach(([__, second]) => {
+        result = result.replace(new RegExp(second.replace(/ /g, '_'), 'g'), second);
+      });
+    }
+
+    return result;
   } catch (error) {
     console.error(error);
     return `Bản dịch thất bại: ${error}`;
@@ -746,7 +760,6 @@ async function translateText(inputText, translatorOption, targetLanguage, glossa
 }
 
 $(document).ready(async () => {
-  $inputTextarea.val(null);
   loadAllQuickTranslatorOptions();
   reloadGlossaryEntries();
 
@@ -949,6 +962,7 @@ $retranslateButton.click(function onClick() {
 });
 
 $('#glossary-management-button').on('mousedown', () => {
+  $posTagSelect.val('X');
   $glossaryEntrySelect.val('').change();
   $sourceEntryInput.val(getSelectedTextOrActiveElementText()).trigger('input');
 
@@ -1099,17 +1113,17 @@ $glossaryInput.on('change', function onChange() {
   reader.onload = function onLoad() {
     switch ($glossaryInput.prop('files')[0].type) {
       case GlossaryType.CSV: {
-        glossary = $.csv.toObjects(this.result);
+        glossary = $.csv.toArrays(this.result);
         $glossaryType.val(GlossaryType.CSV);
         break;
       }
       case GlossaryType.VIETPHRASE: {
-        glossary = Object.fromEntries(this.result.split(/\r?\n/).map((phrase) => phrase.split('=')).filter((phrase) => phrase.length >= 2));
+        glossary = this.result.split(/\r?\n/).map((phrase) => phrase.split('=')).filter((phrase) => phrase.length >= 2);
         $glossaryType.val(GlossaryType.VIETPHRASE);
         break;
       }
       default: {
-        glossary = Object.fromEntries(this.result.split(/\r?\n/).map((phrase) => phrase.split(/\t/)).filter((phrase) => phrase.length >= 2));
+        glossary = this.result.split(/\r?\n/).map((phrase) => phrase.split(/\t/)).filter((phrase) => phrase.length >= 2);
         $glossaryType.val(GlossaryType.TSV);
         break;
       }
@@ -1124,7 +1138,7 @@ $glossaryInput.on('change', function onChange() {
 
 $('#clear-button').on('click', () => {
   if (!window.confirm('Bạn có muốn xoá sạch bảng thuật ngữ chứ?')) return;
-  glossary = {};
+  glossary = [];
   $glossaryName.val(null);
   reloadGlossaryEntries();
   $glossaryInput.val('');
@@ -1134,6 +1148,7 @@ $glossaryType.on('change', () => reloadGlossaryEntries());
 
 $sourceEntryInput.on('input', async function onInput() {
   const inputText = $(this).val();
+  const glossaryObj = Object.fromEntries(glossary.filter(([first, second]) => [first, second]));
 
   if (inputText.length > 0) {
     const $option = $(`#${$(this).attr('list')} > option:contains(${inputText})`);
@@ -1143,12 +1158,14 @@ $sourceEntryInput.on('input', async function onInput() {
       return;
     }
 
-    if (Object.prototype.hasOwnProperty.call(glossary, inputText)) {
+    if (Object.prototype.hasOwnProperty.call(glossaryObj, inputText)) {
       $targetEntryInput.val(applyGlossaryToText(inputText));
       $glossaryEntrySelect.val(inputText);
+      $posTagSelect.val(glossary.filter(([first]) => first === inputText)[0][2] ?? 'X');
     } else {
       $targetEntryInput.val(await translateText(inputText, Translators.VIETPHRASE, 'sinoVietnamese', true));
       $glossaryEntrySelect.val('');
+      $posTagSelect.val('X');
     }
 
     $addButton.removeClass('disabled');
@@ -1241,16 +1258,20 @@ $translateEntryButtons.on('click', async function onClick() {
 });
 
 $addButton.on('click', () => {
-  glossary[$sourceEntryInput.val().trim()] = $targetEntryInput.val().trim();
+  const glossaryObj = Object.fromEntries(glossary.filter(([first, second]) => [first, second]));
+  if (Object.prototype.hasOwnProperty.call(glossaryObj, $sourceEntryInput.val())) glossary.splice(Object.keys(glossaryObj).indexOf($sourceEntryInput.val()), 1);
+  glossary.push([$sourceEntryInput.val().trim(), $targetEntryInput.val().trim(), $posTagSelect.val()]);
   reloadGlossaryEntries();
   $glossaryEntrySelect.change();
   $glossaryInput.val(null);
 });
 
 $removeButton.on('click', () => {
-  if (Object.prototype.hasOwnProperty.call(glossary, $sourceEntryInput.val())) {
+  const glossaryObj = Object.fromEntries(glossary.filter(([first, second]) => [first, second]));
+
+  if (Object.prototype.hasOwnProperty.call(glossaryObj, $sourceEntryInput.val())) {
     if (window.confirm('Bạn có muốn xoá cụm từ này chứ?')) {
-      delete glossary[$sourceEntryInput.val()];
+      glossary.splice(Object.keys(glossaryObj).indexOf($sourceEntryInput.val()), 1);
       reloadGlossaryEntries();
       $glossaryInput.val(null);
       $sourceEntryInput.trigger('input');
@@ -1261,12 +1282,15 @@ $removeButton.on('click', () => {
 });
 
 $glossaryEntrySelect.change(function onChange() {
-  if (Object.prototype.hasOwnProperty.call(glossary, $(this).val())) {
+  const glossaryObj = Object.fromEntries(glossary.filter(([first, second]) => [first, second]));
+
+  if (Object.prototype.hasOwnProperty.call(glossaryObj, $(this).val())) {
     $sourceEntryInput.val($(this).val()).trigger('input');
     $removeButton.removeClass('disabled');
   } else {
     $sourceEntryInput.val(null);
     $targetEntryInput.val(null);
+    $posTagSelect.val('X');
     $removeButton.addClass('disabled');
   }
 });
