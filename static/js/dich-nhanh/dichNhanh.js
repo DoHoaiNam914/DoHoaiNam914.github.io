@@ -218,7 +218,7 @@ function applyGlossaryToText(text, translator = Translators.VIETPHRASE) {
 
               if (Object.prototype.hasOwnProperty.call(glossaryObj, phrase)) {
                 if (glossaryObj[phrase].length > 0) {
-                  tempLine += (i > 0 && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(prevPhrase || tempLine[tempLine.length - 1] || '') ? ' ' : '') + (translator === Translators.MICROSOFT_TRANSLATOR || translator === Translators.VIETPHRASE || glossary.filter(([first, __, third]) => first === phrase && (third === 'NNP' || third === 'X')).length > 0 ? getIgnoreTranslationMarkup(phrase, glossaryObj[phrase], translator) : glossaryObj[phrase].replace(/ /g, '_'));
+                  tempLine += (i > 0 && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(prevPhrase || tempLine[tempLine.length - 1] || '') ? ' ' : '') + (translator === Translators.MICROSOFT_TRANSLATOR || translator === Translators.VIETPHRASE || glossary.filter(([first, __, third]) => first === phrase && (third === 'NNP' || third === 'X')).length > 0 ? getIgnoreTranslationMarkup(phrase, glossaryObj[phrase], translator) : glossaryObj[phrase].replace(/ (?=\p{Lu})/gu, '_'));
                   prevPhrase = glossaryObj[phrase];
                 }
 
@@ -338,13 +338,13 @@ function getIgnoreTranslationMarkup(text, translation, translator) {
     case Translators.DEEPL_TRANSLATE:
     case Translators.GOOGLE_TRANSLATE: {
       // case Translators.PAPAGO:
-      return `<span translate="no">${Utils.convertTextToHtml(translation).replace(/ /g, '_')}</span>`;
+      return `<span translate="no">${Utils.convertTextToHtml(translation.replace(/ (?=\p{Lu})/gu, '_'))}</span>`;
     }
     case Translators.MICROSOFT_TRANSLATOR: {
       return `<mstrans:dictionary translation="${/\p{sc=Hani}/u.test(text) && /\p{sc=Latn}/u.test(translation) ? ` ${translation} ` : translation}">${text}</mstrans:dictionary>`;
     }
     default: {
-      return translator !== Translators.VIETPHRASE ? translation.replace(/ /g, '_') : translation;
+      return translator !== Translators.VIETPHRASE ? translation.replace(/ (?=\p{Lu})/gu, '_') : translation;
     }
   }
 }
@@ -517,7 +517,7 @@ async function translateTextarea() {
 
       if (glossaryEnabled && translatorOption !== Translators.MICROSOFT_TRANSLATOR && translatorOption !== Translators.VIETPHRASE && sourceLanguage.split('-')[0].toLowerCase() === languagePairs[0] && targetLanguage.split('-')[0].toLowerCase() === languagePairs[1] && translatorOption !== Translators.MICROSOFT_TRANSLATOR) {
         glossary.forEach(([__, second]) => {
-          result = result.replace(new RegExp(second.replace(/ /g, '_'), 'g'), second);
+          result = result.replace(new RegExp(second.replace(/ (?=\p{Lu})/gu, '_'), 'g'), second);
         });
       }
 
@@ -749,7 +749,7 @@ async function translateText(inputText, translatorOption, targetLanguage, glossa
 
     if (glossaryEnabled && translatorOption !== Translators.MICROSOFT_TRANSLATOR && translatorOption !== Translators.VIETPHRASE) {
       glossary.forEach(([__, second]) => {
-        result = result.replace(new RegExp(second.replace(/ /g, '_'), 'g'), second);
+        result = result.replace(new RegExp(second.replace(/ (?=\p{Lu})/gu, '_'), 'g'), second);
       });
     }
 
