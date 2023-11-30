@@ -8,6 +8,7 @@ const specialSinovietnameseMap = [
   ['高层', 'CAO TẦNG'],
   ['掌柜', 'CHƯỞNG QUỸ'],
   ['公司', 'CÔNG TY'],
+  ['营养', 'DINH DƯỠNG'],
   ['大将', 'ĐẠI TƯỚNG'],
   ['大姐', 'ĐẠI TỶ'],
   ['团长', 'ĐOÀN TRƯỞNG'],
