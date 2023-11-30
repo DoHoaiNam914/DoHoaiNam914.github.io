@@ -47,6 +47,7 @@ const SUPPORTED_LANGUAGES = ['', 'EN', 'JA', 'ZH', 'EN-US', 'auto', 'en', 'ja', 
 
 let quickTranslateStorage = JSON.parse(localStorage.getItem('dich_nhanh')) ?? {};
 let glossary = JSON.parse(localStorage.getItem('glossary')) ?? [];
+let glossaryObj = Object.fromEntries(glossary.map(([first, second]) => [first, second]));
 
 const vietphraseData = {
   pinyins: {},
@@ -201,7 +202,6 @@ function applyGlossaryToText(text, translator = Translators.VIETPHRASE) {
     const results = [];
 
     const glossaryLengths = [...glossaryEntries.map(([first]) => first.length), 1].sort((a, b) => b - a).filter((element, index, array) => element > 0 && index === array.indexOf(element));
-    const glossaryObj = Object.fromEntries(glossary.map(([first, second]) => [first, second]));
 
     lines.forEach((a) => {
       if (a.length === 0) {
@@ -278,6 +278,7 @@ function reloadGlossaryEntries() {
 
   if (glossary.length > 0) {
     glossary = glossary.filter(([first, second], index, array) => !array[first] && (array[first] = 1), {}).sort((a, b) => /\p{Lu}/u.test(b[1][0]) - /\p{Lu}/u.test(a[1][0]) || a[0].startsWith(b[0]) || a[1].localeCompare(b[1], 'vi', { ignorePunctuation: true }) || a[0].localeCompare(b[0], 'vi', { ignorePunctuation: true }) || b[0].length - a[0].length).map(([first, second, third]) => [first, second, third ?? 'X']);
+    glossaryObj = Object.fromEntries(glossary.map(([first, second]) => [first, second]));
 
     glossary.forEach(([first, second, third]) => {
       const option = document.createElement('option');
@@ -465,7 +466,7 @@ async function translateTextarea() {
           break;
         }
         case Translators.VIETPHRASE: {
-          translator = await new Vietphrase(vietphraseData, $translationAlgorithmRadio.filter('[checked]').val(), $multiplicationAlgorithmRadio.filter('[checked]').val(), $('#ttvtranslate-mode-switch').prop('checked'), glossaryEnabled && targetLanguage === 'vi', glossary, $prioritizeNameOverVietphraseCheck.prop('checked'), true);
+          translator = await new Vietphrase(vietphraseData, $translationAlgorithmRadio.filter('[checked]').val(), $multiplicationAlgorithmRadio.filter('[checked]').val(), $('#ttvtranslate-mode-switch').prop('checked'), glossaryEnabled && targetLanguage === 'vi', glossaryObj, $prioritizeNameOverVietphraseCheck.prop('checked'), true);
           break;
         }
         default: {
@@ -732,7 +733,7 @@ async function translateText(inputText, translatorOption, targetLanguage, glossa
         break;
       }
       case Translators.VIETPHRASE: {
-        translator = await new Vietphrase(vietphraseData, $translationAlgorithmRadio.filter('[checked]').val(), $multiplicationAlgorithmRadio.filter('[checked]').val(), $('#ttvtranslate-mode-switch').prop('checked'), glossaryEnabled, glossary, $prioritizeNameOverVietphraseCheck.prop('checked'));
+        translator = await new Vietphrase(vietphraseData, $translationAlgorithmRadio.filter('[checked]').val(), $multiplicationAlgorithmRadio.filter('[checked]').val(), $('#ttvtranslate-mode-switch').prop('checked'), glossaryEnabled, glossaryObj, $prioritizeNameOverVietphraseCheck.prop('checked'));
         sourceLanguage = Vietphrase.DefaultLanguage.SOURCE_LANGUAGE;
         break;
       }
@@ -1148,7 +1149,6 @@ $glossaryType.on('change', () => reloadGlossaryEntries());
 
 $sourceEntryInput.on('input', async function onInput() {
   const inputText = $(this).val();
-  const glossaryObj = Object.fromEntries(glossary.filter(([first, second]) => [first, second]));
 
   if (inputText.length > 0) {
     const $option = $(`#${$(this).attr('list')} > option:contains(${inputText})`);
@@ -1258,7 +1258,6 @@ $translateEntryButtons.on('click', async function onClick() {
 });
 
 $addButton.on('click', () => {
-  const glossaryObj = Object.fromEntries(glossary.filter(([first, second]) => [first, second]));
   if (Object.prototype.hasOwnProperty.call(glossaryObj, $sourceEntryInput.val())) glossary.splice(Object.keys(glossaryObj).indexOf($sourceEntryInput.val()), 1);
   glossary.push([$sourceEntryInput.val().trim(), $targetEntryInput.val().trim(), $posTagSelect.val()]);
   reloadGlossaryEntries();
@@ -1267,8 +1266,6 @@ $addButton.on('click', () => {
 });
 
 $removeButton.on('click', () => {
-  const glossaryObj = Object.fromEntries(glossary.filter(([first, second]) => [first, second]));
-
   if (Object.prototype.hasOwnProperty.call(glossaryObj, $sourceEntryInput.val())) {
     if (window.confirm('Bạn có muốn xoá cụm từ này chứ?')) {
       glossary.splice(Object.keys(glossaryObj).indexOf($sourceEntryInput.val()), 1);
@@ -1282,8 +1279,6 @@ $removeButton.on('click', () => {
 });
 
 $glossaryEntrySelect.change(function onChange() {
-  const glossaryObj = Object.fromEntries(glossary.filter(([first, second]) => [first, second]));
-
   if (Object.prototype.hasOwnProperty.call(glossaryObj, $(this).val())) {
     $sourceEntryInput.val($(this).val()).trigger('input');
     $removeButton.removeClass('disabled');
