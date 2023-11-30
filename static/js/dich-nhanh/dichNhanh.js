@@ -81,6 +81,35 @@ const GlossaryType = {
   VIETPHRASE: 'text/plain',
 };
 
+const PosTags = {
+  N: 0,
+  NNP: 1,
+  NU: 2,
+  NUX: 3,
+  NUM: 4,
+  NUMX: 5,
+  DET: 6,
+  V: 7,
+  AUX: 8,
+  ADJ: 9,
+  PRO: 10,
+  ADV: 11,
+  PRE: 12,
+  CC: 13,
+  SC: 14,
+  PRT: 15,
+  I: 16,
+  MWE: 17,
+  D: 18,
+  X: 19,
+  Z: 20,
+  y: 21,
+  b: 22,
+  FW: 23,
+  PUNCT: 24,
+  SYM: 25,
+};
+
 function getOptionId(id) {
   return id.match(/(.+)-(?:select|check|radio|switch|range|dropdown)$/)[1].replace(/-/g, '_');
 }
@@ -277,7 +306,7 @@ function reloadGlossaryEntries() {
   const glossaryExtension = $('#glossary-extension');
 
   if (glossary.length > 0) {
-    glossary = glossary.filter(([first, second], index, array) => !array[first] && (array[first] = 1), {}).sort((a, b) => /\p{Lu}/u.test(b[1][0]) - /\p{Lu}/u.test(a[1][0]) || a[0].startsWith(b[0]) || a[1].localeCompare(b[1], 'vi', { ignorePunctuation: true }) || a[0].localeCompare(b[0], 'vi', { ignorePunctuation: true }) || b[0].length - a[0].length).map(([first, second, third]) => [first, second, third ?? 'X']);
+    glossary = glossary.filter(([first, second], index, array) => !array[first] && (array[first] = 1), {}).sort((a, b) => PosTags[a[2]] - PosTags[b[2]] || /\p{Lu}/u.test(b[1][0]) - /\p{Lu}/u.test(a[1][0]) || a[0].startsWith(b[0]) || a[1].localeCompare(b[1], 'vi', { ignorePunctuation: true }) || a[0].localeCompare(b[0], 'vi', { ignorePunctuation: true }) || b[0].length - a[0].length).map(([first, second, third]) => [first, second, third ?? 'X']);
     glossaryObj = Object.fromEntries(glossary.map(([first, second]) => [first, second]));
 
     glossary.forEach(([first, second, third]) => {
@@ -1258,6 +1287,7 @@ $translateEntryButtons.on('click', async function onClick() {
 });
 
 $addButton.on('click', () => {
+  if ($sourceEntryInput.val().length === 0) return;
   if (Object.prototype.hasOwnProperty.call(glossaryObj, $sourceEntryInput.val())) glossary.splice(Object.keys(glossaryObj).indexOf($sourceEntryInput.val()), 1);
   glossary.push([$sourceEntryInput.val().trim(), $targetEntryInput.val().trim(), $posTagSelect.val()]);
   reloadGlossaryEntries();
