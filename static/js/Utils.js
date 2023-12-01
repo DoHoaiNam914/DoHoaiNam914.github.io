@@ -50,9 +50,9 @@ class Utils {
         const recurse = this.getRegexPattern(data[char]);
 
         if (recurse != null) {
-          alternation.push(this.getRegexEscapedText(char) + recurse);
+          alternation.push(this.escapeRegExp(char) + recurse);
         } else {
-          trie.push(this.getRegexEscapedText(char));
+          trie.push(this.escapeRegExp(char));
         }
       } else {
         isNoncapturing = true;
@@ -90,11 +90,11 @@ class Utils {
 
   /* eslint-enable */
 
-  static getRegexEscapedText(text) {
-    return text.replace(/[$()*+\-.\\/?[\]^{|}]/g, '\\$&');
+  static escapeRegExp(text) {
+    return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   }
 
-  static getRegexEscapedReplacement(replacement) {
+  static escapeRegExpReplacement(replacement) {
     return replacement.replace(/\$/g, '$$$&');
   }
 }

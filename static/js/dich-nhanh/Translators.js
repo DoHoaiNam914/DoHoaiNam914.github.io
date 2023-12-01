@@ -863,7 +863,7 @@ class Vietphrase {
 
         dataEntries.some(([key, value], index, array) => {
           if (result.includes(key) && (!this.isTtvTranslate || /^[\d\p{sc=Hani}]+$/u.test(key) || [...luatnhanNameEntries, ...glossaryEntries].indexOf(key) > -1)) {
-            result = result.replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}])${Utils.getRegexEscapedText(key)}(?=${Object.values(this.glossary).join('|')})`, 'gu'), `$1 ${Utils.getRegexEscapedReplacement(value)} `).replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}])${Utils.getRegexEscapedText(key)}([\\p{Lu}\\p{Ll}\\p{Nd}])`, 'gu'), `$1 ${Utils.getRegexEscapedReplacement(value)} $2`).replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}])${Utils.getRegexEscapedText(key)}`, 'gu'), `$1 ${Utils.getRegexEscapedReplacement(value)}`).replace(new RegExp(`${Utils.getRegexEscapedText(key)}([\\p{Lu}\\p{Ll}\\p{Nd}])`, 'gu'), `${Utils.getRegexEscapedReplacement(value)} $1`).replace(new RegExp(`${Utils.getRegexEscapedText(key)}(?=${Object.values(this.glossary).join('|')})`, 'g'), `${Utils.getRegexEscapedReplacement(value)} `).replace(new RegExp(Utils.getRegexEscapedText(key), 'g'), Utils.getRegexEscapedReplacement(value));
+            result = result.replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}])${Utils.getRegexEscapedText(key)}(?=${Object.values(this.glossary).join('|')})`, 'gu'), `$1 ${Utils.escapeRegExpReplacement(value)} `).replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}])${Utils.getRegexEscapedText(key)}([\\p{Lu}\\p{Ll}\\p{Nd}])`, 'gu'), `$1 ${Utils.escapeRegExpReplacement(value)} $2`).replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}])${Utils.getRegexEscapedText(key)}`, 'gu'), `$1 ${Utils.escapeRegExpReplacement(value)}`).replace(new RegExp(`${Utils.getRegexEscapedText(key)}([\\p{Lu}\\p{Ll}\\p{Nd}])`, 'gu'), `${Utils.escapeRegExpReplacement(value)} $1`).replace(new RegExp(`${Utils.getRegexEscapedText(key)}(?=${Object.values(this.glossary).join('|')})`, 'g'), `${Utils.escapeRegExpReplacement(value)} `).replace(new RegExp(Utils.getRegexEscapedText(key), 'g'), Utils.escapeRegExpReplacement(value));
           }
 
           if (array.filter(([first]) => result.includes(first)).length === 0) return true;
@@ -969,19 +969,19 @@ class Vietphrase {
       Object.entries(this.data.cacLuatnhan).forEach(([a, b]) => {
         if (this.useGlossary && this.multiplicationAlgorithm === this.MultiplicationAlgorithm.MULTIPLICATION_BY_PRONOUNS_AND_NAMES && glossaryEntries.length > 0) {
           Object.entries(this.glossary).forEach(([c, d]) => {
-            const entriesKey = a.replace(/\{0}/g, Utils.getRegexEscapedReplacement(this.prioritizeNameOverVietphrase ? d : c));
+            const entriesKey = a.replace(/\{0}/g, Utils.escapeRegExpReplacement(this.prioritizeNameOverVietphrase ? d : c));
 
             if (inputText.includes(entriesKey)) {
-              luatnhanNameEntries.push([entriesKey, b.replace(/\{0}/g, Utils.getRegexEscapedReplacement(d))]);
+              luatnhanNameEntries.push([entriesKey, b.replace(/\{0}/g, Utils.escapeRegExpReplacement(d))]);
             }
           });
         }
 
         Object.entries(this.data.pronouns).forEach(([c, d]) => {
-          const entriesKey = a.replace(/\{0}/g, Utils.getRegexEscapedReplacement(c));
+          const entriesKey = a.replace(/\{0}/g, Utils.escapeRegExpReplacement(c));
 
           if (inputText.includes(entriesKey)) {
-            luatnhanPronounEntries.push([entriesKey, b.replace(/\{0}/g, Utils.getRegexEscapedReplacement(d))]);
+            luatnhanPronounEntries.push([entriesKey, b.replace(/\{0}/g, Utils.escapeRegExpReplacement(d))]);
           }
         });
       });

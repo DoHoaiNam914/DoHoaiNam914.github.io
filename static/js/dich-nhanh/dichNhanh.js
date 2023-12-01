@@ -85,47 +85,48 @@ const Tagset = {
   // Nhãn POS
   N: 0,
   NNP: 1,
-  NU: 2,
-  NUX: 3,
-  NUM: 4,
-  NUMX: 5,
-  DET: 6,
-  V: 7,
-  AUX: 8,
-  ADJ: 9,
-  PRO: 10,
-  ADV: 11,
-  PRE: 12,
-  CC: 13,
-  SC: 14,
-  PRT: 15,
-  I: 16,
-  MWE: 17,
-  D: 18,
-  X: 19,
-  Z: 20,
-  y: 21,
-  b: 22,
-  FW: 23,
-  PUNCT: 24,
-  SYM: 25,
+  NC: 2,
+  NU: 3,
+  NUX: 4,
+  NUM: 5,
+  NUMX: 6,
+  DET: 7,
+  V: 8,
+  AUX: 9,
+  ADJ: 10,
+  PRO: 11,
+  ADV: 12,
+  PRE: 13,
+  CC: 14,
+  SC: 15,
+  PRT: 16,
+  I: 17,
+  MWE: 18,
+  D: 19,
+  X: 20,
+  Z: 21,
+  y: 22,
+  b: 23,
+  FW: 24,
+  PUNCT: 25,
+  SYM: 26,
   // Nhãn Constituency
-  NP: 26,
-  VP: 27,
-  AP: 28,
-  RP: 29,
-  PP: 30,
-  QP: 31,
-  MDP: 32,
-  UCP: 33,
-  LST: 34,
-  WHNP: 35,
-  WHAP: 36,
-  WHRP: 37,
-  WHPP: 38,
-  S: 39,
-  SQ: 40,
-  SBAR: 41,
+  NP: 27,
+  VP: 28,
+  AP: 29,
+  RP: 30,
+  PP: 31,
+  QP: 32,
+  MDP: 33,
+  UCP: 34,
+  LST: 35,
+  WHNP: 36,
+  WHAP: 37,
+  WHRP: 38,
+  WHPP: 39,
+  S: 40,
+  SQ: 41,
+  SBAR: 42,
 };
 
 function getOptionId(id) {
@@ -564,14 +565,14 @@ async function translateTextarea() {
       }
 
       if (glossaryEnabled && translatorOption !== Translators.MICROSOFT_TRANSLATOR && translatorOption !== Translators.VIETPHRASE && sourceLanguage.split('-')[0].toLowerCase() === languagePairs[0] && targetLanguage.split('-')[0].toLowerCase() === languagePairs[1] && translatorOption !== Translators.MICROSOFT_TRANSLATOR) {
-        glossary.sort((a, b) => b[1].length - a[1].length).forEach(([__, second, third]) => {
+        glossary.sort((a, b) => b[1].length - a[1].length).forEach(([__, a, third]) => {
           if (targetLanguage === 'vi') {
-            newAccentMap.forEach(([first, second]) => {
-              result = result.replace(new RegExp(first, 'g'), second);
+            newAccentMap.forEach(([first, b]) => {
+              result = result.replace(new RegExp(first, 'g'), b);
             });
           }
 
-          result = result.replace(new RegExp(second.replace(third === 'NNP' || third === 'MWE' || third === 'X' || third === 'y' || third === 'FW' ? / (?=\p{Lu})/gu : / /g, '_'), 'gi'), second);
+          result = result.replace(new RegExp(a.replace(third === 'NNP' || third === 'MWE' || third === 'X' || third === 'y' || third === 'FW' ? / (?=\p{Lu})/gu : / /g, '_'), 'gi'), a);
         });
       }
 
@@ -802,14 +803,14 @@ async function translateText(inputText, translatorOption, targetLanguage, glossa
     let result = await translator.translateText(sourceLanguage, targetLanguage, text);
 
     if (glossaryEnabled && translatorOption !== Translators.MICROSOFT_TRANSLATOR && translatorOption !== Translators.VIETPHRASE) {
-      glossary.sort((a, b) => b[1].length - a[1].length).forEach(([__, second, third]) => {
+      glossary.sort((a, b) => b[1].length - a[1].length).forEach(([__, a, third]) => {
         if (targetLanguage === 'vi') {
-          newAccentMap.forEach(([first, second]) => {
-            result = result.replace(new RegExp(first, 'g'), second);
+          newAccentMap.forEach(([first, b]) => {
+            result = result.replace(new RegExp(first, 'g'), b);
           });
         }
 
-        result = result.replace(new RegExp(second.replace(third === 'NNP' || third === 'MWE' || third === 'X' || third === 'y' || third === 'FW' ? / (?=\p{Lu})/gu : / /g, '_'), 'gi'), second);
+        result = result.replace(new RegExp(a.replace(third === 'NNP' || third === 'MWE' || third === 'X' || third === 'y' || third === 'FW' ? / (?=\p{Lu})/gu : / /g, '_'), 'gi'), a);
       });
     }
 
@@ -1297,10 +1298,17 @@ $('.translate-webpage-button').on('click', function onClick() {
 
 $('.upper-case-button').on('click', function onClick() {
   if ($targetEntryInput.val().length > 0) {
-    $targetEntryInput.val($targetEntryInput.val().split(' ').map((element, index) => {
-      const maybeIndexIsSmallerThanAmount = index < $(this).data('amount') ? element.charAt(0).toUpperCase() + element.slice(1) : element.toLowerCase();
-      return $(this).data('amount') === '#' ? element.charAt(0).toUpperCase() + element.slice(1) : maybeIndexIsSmallerThanAmount;
-    }).join(' '));
+    let text = $targetEntryInput.val().toLowerCase();
+
+    if ($(this).data('amount') !== '#') {
+      for (let i = 0; i < $(this).data('amount'); i += 1) {
+        text = text.replace(/(^| |\p{P})(\p{Ll})/u, (__, p1, p2) => p1 + p2.toUpperCase());
+      }
+    } else {
+      text = text.replace(/(^| |\p{P})(\p{Ll})/gu, (__, p1, p2) => p1 + p2.toUpperCase());
+    }
+
+    $targetEntryInput.val(text);
   }
 });
 
