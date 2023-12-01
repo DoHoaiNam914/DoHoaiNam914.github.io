@@ -47,7 +47,7 @@ const SUPPORTED_LANGUAGES = ['', 'EN', 'JA', 'ZH', 'EN-US', 'auto', 'en', 'ja', 
 
 let quickTranslateStorage = JSON.parse(localStorage.getItem('dich_nhanh')) ?? {};
 let glossary = JSON.parse(localStorage.getItem('glossary')) ?? [];
-let glossaryObj = Object.fromEntries(glossary.map(([first, second]) => [first, second]));
+let glossaryObj = {};
 
 const vietphraseData = {
   pinyins: {},
@@ -564,7 +564,7 @@ async function translateTextarea() {
       }
 
       if (glossaryEnabled && translatorOption !== Translators.MICROSOFT_TRANSLATOR && translatorOption !== Translators.VIETPHRASE && sourceLanguage.split('-')[0].toLowerCase() === languagePairs[0] && targetLanguage.split('-')[0].toLowerCase() === languagePairs[1] && translatorOption !== Translators.MICROSOFT_TRANSLATOR) {
-        glossary.sort(([__, aSecond], [__, bSecond]) => bSecond.length - aSecond.length).forEach(([__, second, third]) => {
+        glossary.sort((a, b) => b[1].length - a[1].length).forEach(([__, second, third]) => {
           if (targetLanguage === 'vi') {
             newAccentMap.forEach(([first, second]) => {
               result = result.replace(new RegExp(first, 'g'), second);
@@ -802,7 +802,7 @@ async function translateText(inputText, translatorOption, targetLanguage, glossa
     let result = await translator.translateText(sourceLanguage, targetLanguage, text);
 
     if (glossaryEnabled && translatorOption !== Translators.MICROSOFT_TRANSLATOR && translatorOption !== Translators.VIETPHRASE) {
-      glossary.sort(([__, aSecond], [__, bSecond]) => bSecond.length - aSecond.length).forEach(([__, second, third]) => {
+      glossary.sort((a, b) => b[1].length - a[1].length).forEach(([__, second, third]) => {
         if (targetLanguage === 'vi') {
           newAccentMap.forEach(([first, second]) => {
             result = result.replace(new RegExp(first, 'g'), second);
@@ -1174,17 +1174,17 @@ $glossaryInput.on('change', function onChange() {
   reader.onload = function onLoad() {
     switch ($glossaryInput.prop('files')[0].type) {
       case GlossaryType.CSV: {
-        glossary = $.csv.toArrays(this.result);
+        glossary = $.csv.toArrays(this.result).filter((element) => element.length >= 2);
         $glossaryType.val(GlossaryType.CSV);
         break;
       }
       case GlossaryType.VIETPHRASE: {
-        glossary = this.result.split(/\r?\n/).map((phrase) => phrase.split('=')).filter((phrase) => phrase.length >= 2);
+        glossary = this.result.split(/\r?\n/).map((element) => element.split('=')).filter((element) => element.length === 2);
         $glossaryType.val(GlossaryType.VIETPHRASE);
         break;
       }
       default: {
-        glossary = this.result.split(/\r?\n/).map((phrase) => phrase.split(/\t/)).filter((phrase) => phrase.length >= 2);
+        glossary = this.result.split(/\r?\n/).map((element) => element.split(/\t/)).filter((element) => element.length >= 2);
         $glossaryType.val(GlossaryType.TSV);
         break;
       }
