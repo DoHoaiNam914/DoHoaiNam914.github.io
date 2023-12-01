@@ -110,6 +110,7 @@ const specialSinovietnameseMap = [
   ['沁', 'TẨM'],
   ['剂', 'TỄ'],
   ['济', 'TẾ'],
+  ['彩', 'THÁI, THỂ'],
   ['沈', 'THẨM' /* Họ */],
   ['单', 'THIỀN, ĐƠN', 'ĐƠN'],
   ['属', 'THUỘC'],

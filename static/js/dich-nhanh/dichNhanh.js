@@ -564,7 +564,7 @@ async function translateTextarea() {
       }
 
       if (glossaryEnabled && translatorOption !== Translators.MICROSOFT_TRANSLATOR && translatorOption !== Translators.VIETPHRASE && sourceLanguage.split('-')[0].toLowerCase() === languagePairs[0] && targetLanguage.split('-')[0].toLowerCase() === languagePairs[1] && translatorOption !== Translators.MICROSOFT_TRANSLATOR) {
-        glossary.forEach(([__, second, third]) => {
+        glossary.sort(([__, aSecond], [__, bSecond]) => bSecond.length - aSecond.length).forEach(([__, second, third]) => {
           if (targetLanguage === 'vi') {
             newAccentMap.forEach(([first, second]) => {
               result = result.replace(new RegExp(first, 'g'), second);
@@ -802,7 +802,7 @@ async function translateText(inputText, translatorOption, targetLanguage, glossa
     let result = await translator.translateText(sourceLanguage, targetLanguage, text);
 
     if (glossaryEnabled && translatorOption !== Translators.MICROSOFT_TRANSLATOR && translatorOption !== Translators.VIETPHRASE) {
-      glossary.forEach(([__, second, third]) => {
+      glossary.sort(([__, aSecond], [__, bSecond]) => bSecond.length - aSecond.length).forEach(([__, second, third]) => {
         if (targetLanguage === 'vi') {
           newAccentMap.forEach(([first, second]) => {
             result = result.replace(new RegExp(first, 'g'), second);
