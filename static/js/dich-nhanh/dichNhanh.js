@@ -242,11 +242,11 @@ function loadAllQuickTranslatorOptions() {
 }
 
 function isStaticWordOrPhrase(tagset) {
-  return tagset === 'NNP' || tagset === 'MWE' || tagset === 'X' || tagset === 'y' || tagset === 'FW' || tagset === 'NP' || tagset === 'MDP' || tagset === 'WHNP' || tagset === 'WHAP' || tagset === 'WHRP' || tagset === 'WHPP' || tagset === 'S' || tagset === 'SQ' || tagset === 'SBAR';
+  return tagset === 'NNP' || tagset === 'MWE' || tagset === 'X' || tagset === 'y' || tagset === 'FW' || tagset === 'MDP' || tagset === 'WHNP' || tagset === 'WHAP' || tagset === 'WHRP' || tagset === 'WHPP' || tagset === 'S' || tagset === 'SQ' || tagset === 'SBAR';
 }
 
 function isDynamicWordOrPhrase(tagset) {
-  return tagset === 'ADJ' || tagset === 'ADV' || tagset === 'N' || tagset === 'PRT' || tagset === 'SC' || tagset === 'V' || tagset === 'VP' || tagset === 'AP' || tagset === 'RP' || tagset === 'PP' || tagset === 'QP' || tagset === 'UCP';
+  return tagset === 'ADJ' || tagset === 'ADV' || tagset === 'N' || tagset === 'PRT' || tagset === 'SC' || tagset === 'V' || tagset === 'NP' || tagset === 'VP' || tagset === 'AP' || tagset === 'RP' || tagset === 'PP' || tagset === 'QP' || tagset === 'UCP';
 }
 
 function applyGlossaryToText(text, translator = Translators.VIETPHRASE) {
