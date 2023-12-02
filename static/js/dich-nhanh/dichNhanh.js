@@ -241,6 +241,14 @@ function loadAllQuickTranslatorOptions() {
   });
 }
 
+function isStaticWordOrPhrase(tagset) {
+  return tagset === 'NNP' || tagset === 'MWE' || tagset === 'X' || tagset === 'y' || tagset === 'FW' || tagset === 'NP' || tagset === 'MDP' || tagset === 'WHNP' || tagset === 'WHAP' || tagset === 'WHRP' || tagset === 'WHPP' || tagset === 'S' || tagset === 'SQ' || tagset === 'SBAR';
+}
+
+function isDynamicWordOrPhrase(tagset) {
+  return tagset === 'ADJ' || tagset === 'ADV' || tagset === 'N' || tagset === 'PRT' || tagset === 'SC' || tagset === 'V' || tagset === 'VP' || tagset === 'AP' || tagset === 'RP' || tagset === 'PP' || tagset === 'QP' || tagset === 'UCP';
+}
+
 function applyGlossaryToText(text, translator = Translators.VIETPHRASE) {
   const glossaryEntries = glossary.filter(([first]) => text.includes(first));
   let newText = text;
@@ -266,8 +274,8 @@ function applyGlossaryToText(text, translator = Translators.VIETPHRASE) {
 
               if (Object.prototype.hasOwnProperty.call(glossaryObj, phrase)) {
                 if (glossaryObj[phrase].length > 0) {
-                  const maybeNotPos = glossary.filter(([first, __, third]) => first === phrase && (third === 'ADJ' || third === 'ADV' || third === 'N' || third === 'PRT' || third === 'SC' || third === 'V')).length > 0 ? glossaryObj[phrase].replace(/ /g, '_') : glossaryObj[phrase];
-                  tempLine += (i > 0 && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(prevPhrase || tempLine[tempLine.length - 1] || '') ? ' ' : '') + (translator === Translators.MICROSOFT_TRANSLATOR || translator === Translators.VIETPHRASE || glossary.filter(([first, __, third]) => first === phrase && (third === 'NNP' || third === 'MWE' || third === 'X' || third === 'y' || third === 'FW')).length > 0 ? getIgnoreTranslationMarkup(phrase, glossaryObj[phrase], translator) : maybeNotPos);
+                  const maybeNotStaticPos = glossary.filter(([first, __, third]) => first === phrase && isDynamicWordOrPhrase(third)).length > 0 ? glossaryObj[phrase].replace(/ /g, '_') : glossaryObj[phrase];
+                  tempLine += (i > 0 && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(prevPhrase || tempLine[tempLine.length - 1] || '') ? ' ' : '') + (translator === Translators.MICROSOFT_TRANSLATOR || translator === Translators.VIETPHRASE || glossary.filter(([first, __, third]) => first === phrase && isStaticWordOrPhrase(third)).length > 0 ? getIgnoreTranslationMarkup(phrase, glossaryObj[phrase], translator) : maybeNotStaticPos);
                   prevPhrase = glossaryObj[phrase];
                 }
 
@@ -572,7 +580,7 @@ async function translateTextarea() {
             });
           }
 
-          result = result.replace(new RegExp(a.replace(third === 'NNP' || third === 'MWE' || third === 'X' || third === 'y' || third === 'FW' ? / (?=\p{Lu})/gu : / /g, '_'), 'gi'), a);
+          result = result.replace(new RegExp(a.replace(isStaticWordOrPhrase(third) ? / (?=\p{Lu})/gu : / /g, '_'), 'gi'), a);
         });
       }
 
@@ -810,7 +818,7 @@ async function translateText(inputText, translatorOption, targetLanguage, glossa
           });
         }
 
-        result = result.replace(new RegExp(a.replace(third === 'NNP' || third === 'MWE' || third === 'X' || third === 'y' || third === 'FW' ? / (?=\p{Lu})/gu : / /g, '_'), 'gi'), a);
+        result = result.replace(new RegExp(a.replace(isStaticWordOrPhrase(third) ? / (?=\p{Lu})/gu : / /g, '_'), 'gi'), a);
       });
     }
 
