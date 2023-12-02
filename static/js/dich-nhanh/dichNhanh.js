@@ -249,6 +249,22 @@ function isDynamicWordOrPhrase(tagset) {
   return tagset === 'ADJ' || tagset === 'ADV' || tagset === 'N' || tagset === 'PRT' || tagset === 'SC' || tagset === 'V' || tagset === 'NP' || tagset === 'VP' || tagset === 'AP' || tagset === 'RP' || tagset === 'PP' || tagset === 'QP' || tagset === 'UCP';
 }
 
+function getIgnoreTranslationMarkup(text, translation, translator) {
+  switch (translator) {
+    case Translators.DEEPL_TRANSLATE:
+    case Translators.GOOGLE_TRANSLATE: {
+      // case Translators.PAPAGO:
+      return `<span translate="no">${Utils.convertTextToHtml(translation.replace(/ (?=\p{Lu})/gu, '_'))}</span>`;
+    }
+    case Translators.MICROSOFT_TRANSLATOR: {
+      return `<mstrans:dictionary translation="${/\p{sc=Hani}/u.test(text) && /\p{sc=Latn}/u.test(translation) ? ` ${translation.replace(/ (?=\p{Lu})/gu, '_')} ` : translation.replace(/ (?=\p{Lu})/gu, '_')}">${text}</mstrans:dictionary>`;
+    }
+    default: {
+      return translator !== Translators.VIETPHRASE ? translation.replace(/ (?=\p{Lu})/gu, '_') : translation;
+    }
+  }
+}
+
 function applyGlossaryToText(text, translator = Translators.VIETPHRASE) {
   const glossaryEntries = glossary.filter(([first]) => text.includes(first));
   let newText = text;
@@ -388,22 +404,6 @@ function reloadGlossaryEntries() {
   $('#glossary-entry-counter').text(glossary.length);
   updateInputTextLength();
   localStorage.setItem('glossary', JSON.stringify(glossary));
-}
-
-function getIgnoreTranslationMarkup(text, translation, translator) {
-  switch (translator) {
-    case Translators.DEEPL_TRANSLATE:
-    case Translators.GOOGLE_TRANSLATE: {
-      // case Translators.PAPAGO:
-      return `<span translate="no">${Utils.convertTextToHtml(translation.replace(/ (?=\p{Lu})/gu, '_'))}</span>`;
-    }
-    case Translators.MICROSOFT_TRANSLATOR: {
-      return `<mstrans:dictionary translation="${/\p{sc=Hani}/u.test(text) && /\p{sc=Latn}/u.test(translation) ? ` ${translation.replace(/ (?=\p{Lu})/gu, '_')} ` : translation.replace(/ (?=\p{Lu})/gu, '_')}">${text}</mstrans:dictionary>`;
-    }
-    default: {
-      return translator !== Translators.VIETPHRASE ? translation.replace(/ (?=\p{Lu})/gu, '_') : translation;
-    }
-  }
 }
 
 function getMaxQueryLengthAndLine(translator, text) {

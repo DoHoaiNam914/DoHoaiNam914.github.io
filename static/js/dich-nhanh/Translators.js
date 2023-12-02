@@ -193,7 +193,7 @@ class DeeplTranslate {
         data: `text=${text.split(/\n/).map((element) => encodeURIComponent(element)).join('&text=')}&source_lang=${sourceLang}&target_lang=${targetLang}&tag_handling=xml`,
         method: 'POST',
         url: `https://api-free.deepl.com/v2/translate?auth_key=${this.authKey}`,
-      })).translations.map((element) => element.text).join('\n')replace(/</g, '&lt;').replace(/>/g, '&gt;'));
+      })).translations.map((element) => element.text).join('\n').replace(/</g, '&lt;').replace(/>/g, '&gt;'));
     } catch (error) {
       console.error('Bản dịch lỗi:', error);
       throw error;
