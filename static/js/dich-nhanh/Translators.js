@@ -189,11 +189,11 @@ class DeeplTranslate {
 
   async translateText(sourceLang, targetLang, text) {
     try {
-      return /** Utils.convertHtmlToText( */ (await $.ajax({
+      return Utils.convertHtmlToText((await $.ajax({
         data: `text=${text.split(/\n/).map((element) => encodeURIComponent(element)).join('&text=')}&source_lang=${sourceLang}&target_lang=${targetLang}&tag_handling=xml`,
         method: 'POST',
         url: `https://api-free.deepl.com/v2/translate?auth_key=${this.authKey}`,
-      })).translations.map((element) => element.text).join('\n') /** ) */ ;
+      })).translations.map((element) => element.text).join('\n')replace(/</g, '&lt;').replace(/>/g, '&gt;'));
     } catch (error) {
       console.error('Bản dịch lỗi:', error);
       throw error;
@@ -354,14 +354,14 @@ class GoogleTranslate {
        * URL: https://translate.googleapis.com/translate_a/t?anno=3&client=${(_cac || 'te') + (_cam === 'lib' ? '_lib' : '')}&format=html&v=1.0&key=AIzaSyBOti4mM-6x9WDnZIjIeyEU21OpBXqWBgw&logld=v${v || ''}&sl=${sl}&tl=${tl}&tc=0&tk=${lq(querys)}
        * Content-Type: application/x-www-form-urlencoded - `q=${querys.split(/\n/).map((sentence) => encodeURIComponent(sentence)).join('&q=')}`
        */
-      return /** Utils.convertHtmlToText( */ (await $.ajax({
+      return Utils.convertHtmlToText((await $.ajax({
         data: `q=${q.split(/\n/).map((element) => encodeURIComponent(element)).join('&q=')}`,
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
         },
         method: 'POST',
         url: `https://translate.googleapis.com/translate_a/t?anno=3&client=${(this.data._cac || 'te') + (this.data._cam === 'lib' ? '_lib' : '')}&format=html&v=1.0&key${this.apiKey.length > 0 ? `=${this.apiKey}` : ''}&logld=v${this.data.v || ''}&sl=${sl}&tl=${tl}&tc=0&tk=${this.lq(q.replace(/\n/g, ''))}`,
-      })).map((element) => (sl === 'auto' ? element[0] : element)).map((element) => (element.includes('<i>') ? element.replace(/<i>(?:.(?!<\/i>))*.(?=<\/i>)<\/i> ?<b>((?:.(?!<\/b>))*.(?=<\/b>))<\/b>/g, '$1') : element)).join('\n') /** ) */ ;
+      })).map((element) => (sl === 'auto' ? element[0] : element)).map((element) => (element.includes('<i>') ? element.replace(/<i>(?:.(?!<\/i>))*.(?=<\/i>)<\/i>( ?)<b>((?:.(?!<\/b>))*.(?=<\/b>))<\/b>/g, '$1$2') : element)).join('\n').replace(/</g, '&lt;').replace(/>/g, '&gt;'));
     } catch (error) {
       console.error('Bản dịch lỗi:', error);
       throw error;
