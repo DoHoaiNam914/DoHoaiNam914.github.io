@@ -573,7 +573,7 @@ async function translateTextarea() {
       }
 
       if (glossaryEnabled && translatorOption !== Translators.MICROSOFT_TRANSLATOR && translatorOption !== Translators.VIETPHRASE && sourceLanguage.split('-')[0].toLowerCase() === languagePairs[0] && targetLanguage.split('-')[0].toLowerCase() === languagePairs[1] && translatorOption !== Translators.MICROSOFT_TRANSLATOR) {
-        glossary.sort((a, b) => b[1].length - a[1].length).forEach(([__, a, third]) => {
+        glossary.filter(([first]) => inputText.includes(first)).sort((a, b) => b[1].length - a[1].length).forEach(([__, a, third]) => {
           if (targetLanguage === 'vi') {
             newAccentMap.forEach(([first, b]) => {
               result = result.replace(new RegExp(first, 'g'), b);
@@ -811,7 +811,7 @@ async function translateText(inputText, translatorOption, targetLanguage, glossa
     let result = await translator.translateText(sourceLanguage, targetLanguage, text);
 
     if (glossaryEnabled && translatorOption !== Translators.MICROSOFT_TRANSLATOR && translatorOption !== Translators.VIETPHRASE) {
-      glossary.sort((a, b) => b[1].length - a[1].length).forEach(([__, a, third]) => {
+      glossary.filter(([first]) => inputText.includes(first)).sort((a, b) => b[1].length - a[1].length).forEach(([__, a, third]) => {
         if (targetLanguage === 'vi') {
           newAccentMap.forEach(([first, b]) => {
             result = result.replace(new RegExp(first, 'g'), b);
