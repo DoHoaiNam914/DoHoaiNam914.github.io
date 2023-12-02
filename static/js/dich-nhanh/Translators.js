@@ -361,7 +361,7 @@ class GoogleTranslate {
         },
         method: 'POST',
         url: `https://translate.googleapis.com/translate_a/t?anno=3&client=${(this.data._cac || 'te') + (this.data._cam === 'lib' ? '_lib' : '')}&format=html&v=1.0&key${this.apiKey.length > 0 ? `=${this.apiKey}` : ''}&logld=v${this.data.v || ''}&sl=${sl}&tl=${tl}&tc=0&tk=${this.lq(q.replace(/\n/g, ''))}`,
-      })).map((element) => (sl === 'auto' ? element[0] : element)).map((element) => (element.includes('<i>') ? element.replace(/<i>(?:.(?!<\/i>))+.(?=<\/i>)<\/i> ?<b>((?:.(?!<\/b>))+.(?=<\/b>))<\/b>/g, '$1') : element)).join('\n') /** ) */ ;
+      })).map((element) => (sl === 'auto' ? element[0] : element)).map((element) => (element.includes('<i>') ? element.replace(/<i>(?:.(?!<\/i>))*.(?=<\/i>)<\/i> ?<b>((?:.(?!<\/b>))*.(?=<\/b>))<\/b>/g, '$1') : element)).join('\n') /** ) */ ;
     } catch (error) {
       console.error('Bản dịch lỗi:', error);
       throw error;
