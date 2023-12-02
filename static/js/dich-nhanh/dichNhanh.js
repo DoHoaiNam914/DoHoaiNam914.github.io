@@ -580,7 +580,7 @@ async function translateTextarea() {
             });
           }
 
-          result = result.replace(new RegExp(a.replace(isStaticWordOrPhrase(third) ? / (?=\p{Lu})/gu : / /g, '_'), 'gi'), a);
+          if (a.split(' ').length > 1) result = result.replace(new RegExp(a.replace(isStaticWordOrPhrase(third) ? / (?=\p{Lu})/gu : / /g, '_'), 'gi'), a);
         });
       }
 
@@ -818,7 +818,7 @@ async function translateText(inputText, translatorOption, targetLanguage, glossa
           });
         }
 
-        result = result.replace(new RegExp(a.replace(isStaticWordOrPhrase(third) ? / (?=\p{Lu})/gu : / /g, '_'), 'gi'), a);
+        if (a.split(' ').length > 1) result = result.replace(new RegExp(a.replace(isStaticWordOrPhrase(third) ? / (?=\p{Lu})/gu : / /g, '_'), 'gi'), a);
       });
     }
 
