@@ -812,38 +812,9 @@ class Vietphrase {
     }
   }
 
-  async translateText(sourceLanugage, targetLanguage, inputText) {
-    try {
-      let data = {};
-
-      switch (targetLanguage) {
-        case 'pinyin': {
-          data = this.data.pinyins;
-          break;
-        }
-        case 'sinoVietnamese': {
-          data = this.data.chinesePhienAmWords;
-          break;
-        }
-        case 'vi': {
-          data = this.data.vietphrases;
-          break;
-        }
-        // no default
-      }
-
-      switch (this.translationAlgorithm) {
-        case this.TranslationAlgorithms.TRANSLATE_FROM_LEFT_TO_RIGHT: {
-          return this.translateFromLeftToRight(data, inputText);
-        }
-        default: {
-          return this.translatePrioritizeLongVietphraseClusters(data, inputText);
-        }
-      }
-    } catch (error) {
-      console.error('Bản dịch lỗi:', error);
-      throw error;
-    }
+  static getCaseSensitive(text) {
+    // text.split(/\n/).map((element) => (this.caseSensitive ? element.replace(/(^\s*|!(?:" |' | )|\) |\.(?:" |' | )|: |\?(?:" |' | )|\] |\} |。(?:(?:" |' ))?|！(?:(?:" |' ))?|．(?:(?:" |' ))?|？(?:(?:" |' ))?|["'：\p{Ps}\p{Pe}\p{Pi}\p{Pf}])(\p{Ll})/gu, (match, p1, p2) => p1 + p2.toUpperCase()) : element)).join('\n');
+    return text.split(/\n/).map((element) => element.replace(/(^\s*|!(?:" |' | )|\.(?:" |' | )|: |\?(?:" |' | )|。(?:(?:" |' ))?|！(?:(?:" |' ))?|．(?:(?:" |' ))?|？(?:(?:" |' ))?|["'：\p{Pi}\p{Pf}])(\p{Ll})/gu, (match, p1, p2) => p1 + p2.toUpperCase())).join('\n');
   }
 
   translatePrioritizeLongVietphraseClusters(data, inputText) {
@@ -856,13 +827,13 @@ class Vietphrase {
 
     try {
       if (dataEntries.length > 0 || glossaryEntries.length > 0) {
-        const [luatnhanNameEntries, luatnhanPronounEntries] = this.getLuatnhanData(glossaryEntries, text);
-        const maybePrioritizeNameOverVietphrase = this.prioritizeNameOverVietphrase ? luatnhanNameEntries : [...luatnhanNameEntries, ...glossaryEntries];
+        const [nhanByGlossary, nhanByPronoun] = this.getLuatnhanData(glossaryEntries, text);
+        const maybePrioritizeNameOverVietphrase = this.prioritizeNameOverVietphrase ? nhanByGlossary : [...nhanByGlossary, ...glossaryEntries];
 
-        dataEntries = [...this.useGlossary ? maybePrioritizeNameOverVietphrase : [], ...luatnhanPronounEntries, ...dataEntries].sort((a, b) => b[0].length - a[0].length);
+        dataEntries = [...this.useGlossary ? maybePrioritizeNameOverVietphrase : [], ...nhanByPronoun, ...dataEntries].sort((a, b) => b[0].length - a[0].length);
 
         dataEntries.some(([key, value], index, array) => {
-          if (result.includes(key) && (!this.isTtvTranslate || /^[\d\p{sc=Hani}]+$/u.test(key) || [...luatnhanNameEntries, ...glossaryEntries].indexOf(key) > -1)) {
+          if (result.includes(key) && (!this.isTtvTranslate || /^[\d\p{sc=Hani}]+$/u.test(key) || [...nhanByGlossary, ...glossaryEntries].indexOf(key) > -1)) {
             result = result.replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}])${Utils.getRegexEscapedText(key)}(?=${Object.values(this.glossary).join('|')})`, 'gu'), `$1 ${Utils.escapeRegExpReplacement(value)} `).replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}])${Utils.getRegexEscapedText(key)}([\\p{Lu}\\p{Ll}\\p{Nd}])`, 'gu'), `$1 ${Utils.escapeRegExpReplacement(value)} $2`).replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}])${Utils.getRegexEscapedText(key)}`, 'gu'), `$1 ${Utils.escapeRegExpReplacement(value)}`).replace(new RegExp(`${Utils.getRegexEscapedText(key)}([\\p{Lu}\\p{Ll}\\p{Nd}])`, 'gu'), `${Utils.escapeRegExpReplacement(value)} $1`).replace(new RegExp(`${Utils.getRegexEscapedText(key)}(?=${Object.values(this.glossary).join('|')})`, 'g'), `${Utils.escapeRegExpReplacement(value)} `).replace(new RegExp(Utils.getRegexEscapedText(key), 'g'), Utils.escapeRegExpReplacement(value));
           }
 
@@ -870,7 +841,7 @@ class Vietphrase {
           return false;
         });
 
-        result = this.getCaseSensitive(result);
+        if (this.caseSensitive) result = Vietphrase.getCaseSensitive(result);
       }
 
       return result;
@@ -893,12 +864,12 @@ class Vietphrase {
 
     try {
       if (dataEntries.length > 0 || glossaryEntries.length > 0) {
-        const [luatnhanNameEntries, luatnhanPronounEntries] = this.getLuatnhanData(glossaryEntries, text);
-        const maybePrioritizeNameOverVietphrase = this.prioritizeNameOverVietphrase ? luatnhanNameEntries : [...luatnhanNameEntries, ...glossaryEntries];
+        const [nhanByGlossary, nhanByPronoun] = this.getLuatnhanData(glossaryEntries, text);
+        const maybePrioritizeNameOverVietphrase = this.prioritizeNameOverVietphrase ? nhanByGlossary : [...nhanByGlossary, ...glossaryEntries];
 
-        dataEntries = [...this.useGlossary ? maybePrioritizeNameOverVietphrase : [], ...luatnhanPronounEntries, ...dataEntries];
+        dataEntries = [...this.useGlossary ? maybePrioritizeNameOverVietphrase : [], ...nhanByPronoun, ...dataEntries];
 
-        const dataObj = Object.fromEntries(dataEntries);
+        const dataObject = Object.fromEntries(dataEntries);
 
         lines.forEach((a) => {
           if (a.length === 0) {
@@ -924,10 +895,10 @@ class Vietphrase {
                     return true;
                   }
 
-                  if ((!this.isTtvTranslate || /^[\d\p{sc=Hani}]+$/u.test(phrase) || [...luatnhanNameEntries, ...glossaryEntries].indexOf(phrase) > -1) && Object.prototype.hasOwnProperty.call(dataObj, phrase)) {
-                    if (dataObj[phrase].length > 0) {
-                      tempLine += (i > 0 && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(prevPhrase || tempLine[tempLine.length - 1] || '') ? ' ' : '') + dataObj[phrase];
-                      prevPhrase = dataObj[phrase];
+                  if ((!this.isTtvTranslate || /^[\d\p{sc=Hani}]+$/u.test(phrase) || [...nhanByGlossary, ...glossaryEntries].indexOf(phrase) > -1) && Object.prototype.hasOwnProperty.call(dataObject, phrase)) {
+                    if (dataObject[phrase].length > 0) {
+                      tempLine += (i > 0 && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(prevPhrase || tempLine[tempLine.length - 1] || '') ? ' ' : '') + dataObject[phrase];
+                      prevPhrase = dataObject[phrase];
                     }
 
                     i += d - 1;
@@ -951,7 +922,8 @@ class Vietphrase {
           }
         });
 
-        result = this.getCaseSensitive(results.join('\n'));
+        result = results.join('\n');
+        if (this.caseSensitive) result = Vietphrase.getCaseSensitive(result);
       }
 
       return result;
@@ -962,35 +934,65 @@ class Vietphrase {
   }
 
   getLuatnhanData(glossaryEntries, inputText) {
-    const luatnhanNameEntries = [];
-    const luatnhanPronounEntries = [];
+    const nhanByGlossary = [];
+    const nhanByPronoun = [];
 
     if (this.multiplicationAlgorithm > this.MultiplicationAlgorithm.NOT_APPLICABLE) {
-      Object.entries(this.data.cacLuatnhan).forEach(([a, b]) => {
+      Object.entries(this.data.luatNhan).forEach(([a, b]) => {
         if (this.useGlossary && this.multiplicationAlgorithm === this.MultiplicationAlgorithm.MULTIPLICATION_BY_PRONOUNS_AND_NAMES && glossaryEntries.length > 0) {
           Object.entries(this.glossary).forEach(([c, d]) => {
             const entriesKey = a.replace(/\{0}/g, Utils.escapeRegExpReplacement(this.prioritizeNameOverVietphrase ? d : c));
 
             if (inputText.includes(entriesKey)) {
-              luatnhanNameEntries.push([entriesKey, b.replace(/\{0}/g, Utils.escapeRegExpReplacement(d))]);
+              nhanByGlossary.push([entriesKey, b.replace(/\{0}/g, Utils.escapeRegExpReplacement(d))]);
             }
           });
         }
 
-        Object.entries(this.data.pronouns).forEach(([c, d]) => {
+        Object.entries(this.data.pronoun).forEach(([c, d]) => {
           const entriesKey = a.replace(/\{0}/g, Utils.escapeRegExpReplacement(c));
 
           if (inputText.includes(entriesKey)) {
-            luatnhanPronounEntries.push([entriesKey, b.replace(/\{0}/g, Utils.escapeRegExpReplacement(d))]);
+            nhanByPronoun.push([entriesKey, b.replace(/\{0}/g, Utils.escapeRegExpReplacement(d))]);
           }
         });
       });
     }
 
-    return [luatnhanNameEntries, luatnhanPronounEntries];
+    return [nhanByGlossary, nhanByPronoun];
   }
 
-  getCaseSensitive(text) {
-    return text.split(/\n/).map((element) => (this.caseSensitive ? element.replace(/(^\s*|(?:[!.:;?]\s+|\s+-\s+|…\s*|[。！．：；？]\s*|['"\p{Ps}\p{Pi}]\s*))(\p{Ll})/gu, (match, p1, p2) => p1 + p2.toUpperCase()) : element)).join('\n');
+  async translateText(sourceLanugage, targetLanguage, inputText) {
+    try {
+      let data = {};
+
+      switch (targetLanguage) {
+        case 'pinyin': {
+          data = this.data.pinyins;
+          break;
+        }
+        case 'sinoVietnamese': {
+          data = this.data.hanViet;
+          break;
+        }
+        case 'vi': {
+          data = this.data.vietPhrase;
+          break;
+        }
+        // no default
+      }
+
+      switch (this.translationAlgorithm) {
+        case this.TranslationAlgorithms.TRANSLATE_FROM_LEFT_TO_RIGHT: {
+          return this.translateFromLeftToRight(data, inputText);
+        }
+        default: {
+          return this.translatePrioritizeLongVietphraseClusters(data, inputText);
+        }
+      }
+    } catch (error) {
+      console.error('Bản dịch lỗi:', error);
+      throw error;
+    }
   }
 }

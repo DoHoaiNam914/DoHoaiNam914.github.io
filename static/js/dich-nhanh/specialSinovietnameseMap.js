@@ -7,7 +7,7 @@ const specialSinovietnameseMap = [
   ['本体', 'BẢN THỂ'],
   ['表姐', 'BIỂU TỶ'],
   ['高层', 'CAO TẦNG'],
-  ['战斗', 'CHIẾN ĐẤU']
+  ['战斗', 'CHIẾN ĐẤU'],
   ['掌柜', 'CHƯỞNG QUỸ'],
   ['公司', 'CÔNG TY'],
   ['营养', 'DINH DƯỠNG'],

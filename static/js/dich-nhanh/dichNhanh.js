@@ -47,17 +47,17 @@ const SUPPORTED_LANGUAGES = ['', 'EN', 'JA', 'ZH', 'EN-US', 'auto', 'en', 'ja', 
 
 let quickTranslateStorage = JSON.parse(localStorage.getItem('dich_nhanh')) ?? {};
 let glossary = JSON.parse(localStorage.getItem('glossary')) ?? [];
-let glossaryObj = {};
+let glossaryObject = {};
 
-let newAccentObj = {};
-let oldAccentObj = {};
+let newAccentObject = {};
+let oldAccentObject = {};
 
 const vietphraseData = {
   pinyins: {},
-  chinesePhienAmWords: {},
-  vietphrases: {},
-  pronouns: {},
-  cacLuatnhan: {},
+  hanViet: {},
+  vietPhrase: {},
+  pronoun: {},
+  luatNhan: {},
 };
 
 let glossaryData = '';
@@ -290,11 +290,11 @@ function applyGlossaryToText(text, translator = Translators.VIETPHRASE) {
             glossaryLengths.some((d) => {
               const phrase = translator === Translators.DEEPL_TRANSLATE || translator === Translators.GOOGLE_TRANSLATE ? Utils.convertHtmlToText(a.substring(i, i + d)) : a.substring(i, i + d);
 
-              if (Object.prototype.hasOwnProperty.call(glossaryObj, phrase)) {
-                if (glossaryObj[phrase].length > 0) {
-                  const maybeNotStaticPos = glossary.filter(([first, __, third]) => first === phrase && isDynamicWordOrPhrase(third)).length > 0 ? glossaryObj[phrase].replace(/ /g, '_') : glossaryObj[phrase];
-                  tempLine += (i > 0 && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(prevPhrase || tempLine[tempLine.length - 1] || '') ? ' ' : '') + (translator === Translators.MICROSOFT_TRANSLATOR || translator === Translators.VIETPHRASE || glossary.filter(([first, __, third]) => first === phrase && (isStaticWordOrPhrase(third))).length > 0 ? getIgnoreTranslationMarkup(phrase, glossaryObj[phrase], translator) : maybeNotStaticPos);
-                  prevPhrase = glossaryObj[phrase];
+              if (Object.prototype.hasOwnProperty.call(glossaryObject, phrase)) {
+                if (glossaryObject[phrase].length > 0) {
+                  const maybeNotStaticPos = glossary.filter(([first, __, third]) => first === phrase && isDynamicWordOrPhrase(third)).length > 0 ? glossaryObject[phrase].replace(/ /g, '_') : glossaryObject[phrase];
+                  tempLine += (i > 0 && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(prevPhrase || tempLine[tempLine.length - 1] || '') ? ' ' : '') + (translator === Translators.MICROSOFT_TRANSLATOR || translator === Translators.VIETPHRASE || glossary.filter(([first, __, third]) => first === phrase && (isStaticWordOrPhrase(third))).length > 0 ? getIgnoreTranslationMarkup(phrase, glossaryObject[phrase], translator) : maybeNotStaticPos);
+                  prevPhrase = glossaryObject[phrase];
                 }
 
                 i += d - 1;
@@ -353,7 +353,7 @@ function reloadGlossaryEntries() {
 
   if (glossary.length > 0) {
     glossary = glossary.filter(([first, second], index, array) => !array[first] && (array[first] = 1), {}).sort((a, b) => Tagset[a[2]] - Tagset[b[2]] || a[1].localeCompare(b[1], 'vi', { ignorePunctuation: true }) || a[0].localeCompare(b[0], 'vi', { ignorePunctuation: true }) || b[0].length - a[0].length).map(([first, second, third]) => [first, second, third ?? 'X']);
-    glossaryObj = Object.fromEntries(glossary.map(([first, second]) => [first, second]));
+    glossaryObject = Object.fromEntries(glossary.map(([first, second]) => [first, second]));
 
     glossary.forEach(([first, second, third]) => {
       const option = document.createElement('option');
@@ -481,7 +481,7 @@ function buildResult(inputText, result) {
 }
 
 function applyOldAccent(text) {
-  return text.replace(Utils.getTrieRegexPatternFromWords(Object.keys(oldAccentObj)), (match) => oldAccentObj[match] ?? match);
+  return text.replace(Utils.getTrieRegexPatternFromWords(Object.keys(oldAccentObject)), (match) => oldAccentObject[match] ?? match);
 }
 
 async function translateTextarea() {
@@ -528,7 +528,7 @@ async function translateTextarea() {
           break;
         }
         case Translators.VIETPHRASE: {
-          translator = await new Vietphrase(vietphraseData, $translationAlgorithmRadio.filter('[checked]').val(), $multiplicationAlgorithmRadio.filter('[checked]').val(), $('#ttvtranslate-mode-switch').prop('checked'), glossaryEnabled && targetLanguage === 'vi', glossaryObj, $prioritizeNameOverVietphraseCheck.prop('checked'), true);
+          translator = await new Vietphrase(vietphraseData, $translationAlgorithmRadio.filter('[checked]').val(), $multiplicationAlgorithmRadio.filter('[checked]').val(), $('#ttvtranslate-mode-switch').prop('checked'), glossaryEnabled && targetLanguage === 'vi', glossaryObject, $prioritizeNameOverVietphraseCheck.prop('checked'), true);
           break;
         }
         default: {
@@ -797,7 +797,7 @@ async function translateText(inputText, translatorOption, targetLanguage, glossa
         break;
       }
       case Translators.VIETPHRASE: {
-        translator = await new Vietphrase(vietphraseData, $translationAlgorithmRadio.filter('[checked]').val(), $multiplicationAlgorithmRadio.filter('[checked]').val(), $('#ttvtranslate-mode-switch').prop('checked'), glossaryEnabled, glossaryObj, $prioritizeNameOverVietphraseCheck.prop('checked'));
+        translator = await new Vietphrase(vietphraseData, $translationAlgorithmRadio.filter('[checked]').val(), $multiplicationAlgorithmRadio.filter('[checked]').val(), $('#ttvtranslate-mode-switch').prop('checked'), glossaryEnabled, glossaryObject, $prioritizeNameOverVietphraseCheck.prop('checked'));
         sourceLanguage = Vietphrase.DefaultLanguage.SOURCE_LANGUAGE;
         break;
       }
@@ -827,7 +827,7 @@ async function translateText(inputText, translatorOption, targetLanguage, glossa
 }
 
 function applyNewAccent(text) {
-  return text.replace(Utils.getTrieRegexPatternFromWords(newAccentMap.map(([first]) => first)), (match) => newAccentObj[match] ?? match);
+  return text.replace(Utils.getTrieRegexPatternFromWords(newAccentMap.map(([first]) => first)), (match) => newAccentObject[match] ?? match);
 }
 
 $(document).ready(async () => {
@@ -861,8 +861,8 @@ $(document).ready(async () => {
     setTimeout(window.location.reload, 5000);
   }
 
-  newAccentObj = Object.fromEntries(newAccentMap);
-  oldAccentObj = Object.fromEntries(newAccentMap.map(([first, second]) => [second, first]));
+  newAccentObject = Object.fromEntries(newAccentMap);
+  oldAccentObject = Object.fromEntries(newAccentMap.map(([first, second]) => [second, first]));
 
   try {
     let chinesePhienAmWordList = [...specialSinovietnameseMap.map(([a, b, c]) => [a, (Object.fromEntries(specialSinovietnameseMap.filter(([__, d]) => !/\p{sc=Hani}/u.test(d)).map(([d, e, f]) => [d, f ?? e]))[b] ?? c ?? b).split(/, | \| /)[0].toLowerCase()]), ...cjkv.nam.map(([first, second]) => [first, second.trimStart().split(/, ?/).filter((element) => element.length > 0)[0]]), ...hanData.names.map(([first, second]) => [first, second.split(',').filter((element) => element.length > 0)[0]])];
@@ -883,7 +883,7 @@ $(document).ready(async () => {
 
     chinesePhienAmWordList = chinesePhienAmWordList.filter(([first], index, array) => !array[first] && (array[first] = 1), {});
     chinesePhienAmWordList = chinesePhienAmWordList.map(([c, d]) => [c, applyNewAccent(d)]);
-    vietphraseData.chinesePhienAmWords = Object.fromEntries(chinesePhienAmWordList);
+    vietphraseData.hanViet = Object.fromEntries(chinesePhienAmWordList);
     console.log('Đã tải xong bộ dữ liệu hán việt (%d)!', chinesePhienAmWordList.length);
     lastSession = {};
   } catch (error) {
@@ -907,23 +907,23 @@ $(document).ready(async () => {
     method: 'GET',
     url: '/static/datasource/Quick Translator/LuatNhan.txt',
   }).done((data) => {
-    vietphraseData.cacLuatnhan = Object.fromEntries(data.split(/\r?\n/).filter((element) => !element.startsWith('#')).map((element) => element.split('=')).filter((element) => element.length === 2));
-    console.log('Đã tải xong tệp LuatNhan (%d)!', Object.entries(vietphraseData.cacLuatnhan).length);
+    vietphraseData.luatNhan = Object.fromEntries(data.split(/\r?\n/).filter((element) => !element.startsWith('#')).map((element) => element.split('=')).filter((element) => element.length === 2));
+    console.log('Đã tải xong tệp LuatNhan (%d)!', Object.entries(vietphraseData.luatNhan).length);
     lastSession = {};
   }).fail((jqXHR, textStatus, errorThrown) => {
     console.error('Không tải được tệp LuatNhan:', errorThrown);
     setTimeout(window.location.reload, 5000);
   });
 
-  if ($loadDefaultVietPhraseFileSwitch.prop('checked') && Object.entries(vietphraseData.vietphrases).length === 0) {
+  if ($loadDefaultVietPhraseFileSwitch.prop('checked') && Object.entries(vietphraseData.vietPhrase).length === 0) {
     await $.ajax({
       method: 'GET',
       url: '/static/datasource/Quick Translator/VietPhrase.txt',
     }).done((data) => {
-      let vietphraseList = [...data.split(/\r\n/).map((element) => element.split('=')).filter((element) => element.length === 2).map(([first, second]) => [first, second.split(/[/|]/)[0]]), ...Object.entries(vietphraseData.chinesePhienAmWords)];
+      let vietphraseList = [...data.split(/\r\n/).map((element) => element.split('=')).filter((element) => element.length === 2).map(([first, second]) => [first, second.split(/[/|]/)[0]]), ...Object.entries(vietphraseData.hanViet)];
       vietphraseList = vietphraseList.filter(([first], index, array) => !array[first] && (array[first] = 1), {});
       if ($vietphraseInput.prop('files').length > 0) return;
-      vietphraseData.vietphrases = Object.fromEntries(vietphraseList);
+      vietphraseData.vietPhrase = Object.fromEntries(vietphraseList);
       console.log('Đã tải xong tệp VietPhrase (%d)!', vietphraseList.length);
       lastSession = {};
     }).fail((jqXHR, textStatus, errorThrown) => {
@@ -1153,8 +1153,8 @@ $vietphraseInput.on('change', function onChange() {
 
   reader.onload = function onLoad() {
     let vietphraseList = this.result.split(/\r?\n/).map((element) => element.split($vietphraseInput.prop('files')[0].type === 'text/tab-separated-values' ? '\t' : '=')).filter((element) => element.length === 2).map(([first, second]) => [first, second.split(/[/|]/)[0]]);
-    vietphraseList = [...vietphraseList, ...Object.entries(vietphraseData.chinesePhienAmWords)].filter(([first, second], index, array) => !array[first] && (array[first] = 1), {});
-    vietphraseData.vietphrases = Object.fromEntries(vietphraseList);
+    vietphraseList = [...vietphraseList, ...Object.entries(vietphraseData.hanViet)].filter(([first, second], index, array) => !array[first] && (array[first] = 1), {});
+    vietphraseData.vietPhrase = Object.fromEntries(vietphraseList);
     console.log('Đã tải xong tệp VietPhrase.txt (%d)!', vietphraseList.length);
     lastSession = {};
   };
@@ -1228,7 +1228,7 @@ $sourceEntryInput.on('input', async function onInput() {
       return;
     }
 
-    if (Object.prototype.hasOwnProperty.call(glossaryObj, inputText)) {
+    if (Object.prototype.hasOwnProperty.call(glossaryObject, inputText)) {
       $targetEntryInput.val(applyGlossaryToText(inputText));
       $glossaryEntrySelect.val(inputText);
       $tagsetSelect.val(glossary.filter(([first]) => first === inputText)[0][2] ?? 'X');
@@ -1336,7 +1336,7 @@ $translateEntryButtons.on('click', async function onClick() {
 
 $addButton.on('click', () => {
   if ($sourceEntryInput.val().length === 0) return;
-  if (Object.prototype.hasOwnProperty.call(glossaryObj, $sourceEntryInput.val())) glossary.splice(Object.keys(glossaryObj).indexOf($sourceEntryInput.val()), 1);
+  if (Object.prototype.hasOwnProperty.call(glossaryObject, $sourceEntryInput.val())) glossary.splice(Object.keys(glossaryObject).indexOf($sourceEntryInput.val()), 1);
   glossary.push([$sourceEntryInput.val().trim(), $targetEntryInput.val().trim(), $tagsetSelect.val()]);
   reloadGlossaryEntries();
   $glossaryEntrySelect.change();
@@ -1344,9 +1344,9 @@ $addButton.on('click', () => {
 });
 
 $removeButton.on('click', () => {
-  if (Object.prototype.hasOwnProperty.call(glossaryObj, $sourceEntryInput.val())) {
+  if (Object.prototype.hasOwnProperty.call(glossaryObject, $sourceEntryInput.val())) {
     if (window.confirm('Bạn có muốn xoá cụm từ này chứ?')) {
-      glossary.splice(Object.keys(glossaryObj).indexOf($sourceEntryInput.val()), 1);
+      glossary.splice(Object.keys(glossaryObject).indexOf($sourceEntryInput.val()), 1);
       reloadGlossaryEntries();
       $glossaryInput.val(null);
       $sourceEntryInput.trigger('input');
@@ -1357,7 +1357,7 @@ $removeButton.on('click', () => {
 });
 
 $glossaryEntrySelect.change(function onChange() {
-  if (Object.prototype.hasOwnProperty.call(glossaryObj, $(this).val())) {
+  if (Object.prototype.hasOwnProperty.call(glossaryObject, $(this).val())) {
     $sourceEntryInput.val($(this).val()).trigger('input');
     $removeButton.removeClass('disabled');
   } else {
