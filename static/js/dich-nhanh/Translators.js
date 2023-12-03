@@ -193,7 +193,7 @@ class DeeplTranslate {
         data: `text=${text.split(/\n/).map((element) => encodeURIComponent(element)).join('&text=')}&source_lang=${sourceLang}&target_lang=${targetLang}&tag_handling=xml`,
         method: 'POST',
         url: `https://api-free.deepl.com/v2/translate?auth_key=${this.authKey}`,
-      })).translations.map((element) => element.text).join('\n').replace(/</g, '&lt;').replace(/>/g, '&gt;'));
+      })).translations.map((element) => element.text).join('\n'));
     } catch (error) {
       console.error('Bản dịch lỗi:', error);
       throw error;
@@ -360,8 +360,8 @@ class GoogleTranslate {
           'Content-Type': 'application/x-www-form-urlencoded',
         },
         method: 'POST',
-        url: `https://translate.googleapis.com/translate_a/t?anno=3&client=${(this.data._cac || 'te') + (this.data._cam === 'lib' ? '_lib' : '')}&format=html&v=1.0&key${this.apiKey.length > 0 ? `=${this.apiKey}` : ''}&logld=v${this.data.v || ''}&sl=${sl}&tl=${tl}&tc=0&tk=${this.lq(q.replace(/\n/g, ''))}`,
-      })).map((element) => (sl === 'auto' ? element[0] : element)).map((element) => (element.includes('<i>') ? element.replace(/<i>(?:.(?!<\/i>))*.(?=<\/i>)<\/i>( ?)<b>((?:.(?!<\/b>))*.(?=<\/b>))<\/b>/g, '$1$2') : element)).join('\n').replace(/</g, '&lt;').replace(/>/g, '&gt;'));
+        url: `https://translate.googleapis.com/translate_a/t?anno=2&client=${(this.data._cac || 'te') + (this.data._cam === 'lib' ? '_lib' : '')}&format=html&v=1.0&key${this.apiKey.length > 0 ? `=${this.apiKey}` : ''}&logld=v${this.data.v || ''}&sl=${sl}&tl=${tl}&tc=0&tk=${this.lq(q.replace(/\n/g, ''))}`,
+      })).map((element) => (sl === 'auto' ? element[0] : element)).join('\n'));
     } catch (error) {
       console.error('Bản dịch lỗi:', error);
       throw error;

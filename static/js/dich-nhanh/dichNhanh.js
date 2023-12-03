@@ -49,6 +49,9 @@ let quickTranslateStorage = JSON.parse(localStorage.getItem('dich_nhanh')) ?? {}
 let glossary = JSON.parse(localStorage.getItem('glossary')) ?? [];
 let glossaryObj = {};
 
+let newAccentObj = {};
+let oldAccentObj = {};
+
 const vietphraseData = {
   pinyins: {},
   chinesePhienAmWords: {},
@@ -254,13 +257,13 @@ function getIgnoreTranslationMarkup(text, translation, translator) {
     case Translators.DEEPL_TRANSLATE:
     case Translators.GOOGLE_TRANSLATE: {
       // case Translators.PAPAGO:
-      return `<span translate="no">${Utils.convertTextToHtml(translation.replace(/ (?=\p{Lu})/gu, '_'))}</span>`;
+      return `<span translate="no">${Utils.convertTextToHtml(translation.replace(/ /gu, '_'))}</span>`;
     }
     case Translators.MICROSOFT_TRANSLATOR: {
-      return `<mstrans:dictionary translation="${/\p{sc=Hani}/u.test(text) && /\p{sc=Latn}/u.test(translation) ? ` ${translation.replace(/ (?=\p{Lu})/gu, '_')} ` : translation.replace(/ (?=\p{Lu})/gu, '_')}">${text}</mstrans:dictionary>`;
+      return `<mstrans:dictionary translation="${/\p{sc=Hani}/u.test(text) && /\p{sc=Latn}/u.test(translation) ? ` ${translation.replace(/ /gu, '_')} ` : translation.replace(/ (?=\p{Lu})/gu, '_')}">${text}</mstrans:dictionary>`;
     }
     default: {
-      return translator !== Translators.VIETPHRASE ? translation.replace(/ (?=\p{Lu})/gu, '_') : translation;
+      return translator !== Translators.VIETPHRASE ? translation.replace(/ /gu, '_') : translation;
     }
   }
 }
@@ -291,7 +294,7 @@ function applyGlossaryToText(text, translator = Translators.VIETPHRASE) {
               if (Object.prototype.hasOwnProperty.call(glossaryObj, phrase)) {
                 if (glossaryObj[phrase].length > 0) {
                   const maybeNotStaticPos = glossary.filter(([first, __, third]) => first === phrase && isDynamicWordOrPhrase(third)).length > 0 ? glossaryObj[phrase].replace(/ /g, '_') : glossaryObj[phrase];
-                  tempLine += (i > 0 && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(prevPhrase || tempLine[tempLine.length - 1] || '') ? ' ' : '') + (translator === Translators.MICROSOFT_TRANSLATOR || translator === Translators.VIETPHRASE || glossary.filter(([first, __, third]) => first === phrase && isStaticWordOrPhrase(third)).length > 0 ? getIgnoreTranslationMarkup(phrase, glossaryObj[phrase], translator) : maybeNotStaticPos);
+                  tempLine += (i > 0 && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(prevPhrase || tempLine[tempLine.length - 1] || '') ? ' ' : '') + (translator === Translators.MICROSOFT_TRANSLATOR || translator === Translators.VIETPHRASE || glossary.filter(([first, __, third]) => first === phrase && (isStaticWordOrPhrase(third))).length > 0 ? getIgnoreTranslationMarkup(phrase, glossaryObj[phrase], translator) : maybeNotStaticPos);
                   prevPhrase = glossaryObj[phrase];
                 }
 
@@ -446,7 +449,7 @@ function buildResult(inputText, result) {
             const paragraph = document.createElement('p');
             let textNode = document.createTextNode(resultLines[i]);
 
-            if (resultLines[i].length !== inputLines[i + lostLineFixedNumber].length) {
+            if (resultLines[i] !== inputLines[i + lostLineFixedNumber]) {
               const idiomaticText = document.createElement('i');
               const linebreak = document.createElement('br');
               idiomaticText.innerText = inputLines[i + lostLineFixedNumber];
@@ -478,6 +481,10 @@ function buildResult(inputText, result) {
   }
 }
 
+function applyOldAccent(text) {
+  return text.replace(Utils.getTrieRegexPatternFromWords(Object.keys(oldAccentObj)), (match) => oldAccentObj[match] ?? match);
+}
+
 async function translateTextarea() {
   const startTime = Date.now();
 
@@ -491,8 +498,7 @@ async function translateTextarea() {
 
   const glossaryEnabled = $glossarySwitch.prop('checked');
 
-  let processText = glossaryEnabled && (translatorOption === Translators.VIETPHRASE ? $prioritizeNameOverVietphraseCheck.prop('checked') && targetLanguage === 'vi' : sourceLanguage.split('-')[0].toLowerCase() === languagePairs[0] && targetLanguage.split('-')[0].toLowerCase() === languagePairs[1]) ? applyGlossaryToText(inputText, translatorOption) : inputText;
-  processText = glossaryEnabled && (translatorOption === Translators.DEEPL_TRANSLATE || translatorOption === Translators.GOOGLE_TRANSLATE) && sourceLanguage.split('-')[0].toLowerCase() === languagePairs[0] && targetLanguage.split('-')[0].toLowerCase() === languagePairs[1] ? Utils.convertHtmlToText(processText) : processText;
+  const processText = glossaryEnabled && (translatorOption === Translators.VIETPHRASE ? $prioritizeNameOverVietphraseCheck.prop('checked') && targetLanguage === 'vi' : sourceLanguage.split('-')[0].toLowerCase() === languagePairs[0] && targetLanguage.split('-')[0].toLowerCase() === languagePairs[1]) ? applyGlossaryToText(inputText, translatorOption) : inputText;
 
   const [MAX_LENGTH, MAX_LINE] = getMaxQueryLengthAndLine(translatorOption, processText);
 
@@ -573,14 +579,9 @@ async function translateTextarea() {
       }
 
       if (glossaryEnabled && translatorOption !== Translators.MICROSOFT_TRANSLATOR && translatorOption !== Translators.VIETPHRASE && sourceLanguage.split('-')[0].toLowerCase() === languagePairs[0] && targetLanguage.split('-')[0].toLowerCase() === languagePairs[1] && translatorOption !== Translators.MICROSOFT_TRANSLATOR) {
-        glossary.filter(([first]) => inputText.includes(first)).sort((a, b) => b[1].length - a[1].length).forEach(([__, a, third]) => {
-          if (targetLanguage === 'vi') {
-            newAccentMap.forEach(([first, b]) => {
-              result = result.replace(new RegExp(first, 'g'), b);
-            });
-          }
-
-          if (a.split(' ').length > 1) result = result.replace(new RegExp(a.replace(isStaticWordOrPhrase(third) ? / (?=\p{Lu})/gu : / /g, '_'), 'gi'), a);
+        glossary.filter(([first]) => inputText.includes(first)).sort((a, b) => b[1].length - a[1].length).forEach(([__, second]) => {
+          const key = second.replace(/ /g, '_');
+          if (second.split(' ').length >= 2) result = result.replace(Utils.getTrieRegexPatternFromWords([key, applyOldAccent(key)]), (match) => match[0] + second.substring(1));
         });
       }
 
@@ -811,14 +812,9 @@ async function translateText(inputText, translatorOption, targetLanguage, glossa
     let result = await translator.translateText(sourceLanguage, targetLanguage, text);
 
     if (glossaryEnabled && translatorOption !== Translators.MICROSOFT_TRANSLATOR && translatorOption !== Translators.VIETPHRASE) {
-      glossary.filter(([first]) => inputText.includes(first)).sort((a, b) => b[1].length - a[1].length).forEach(([__, a, third]) => {
-        if (targetLanguage === 'vi') {
-          newAccentMap.forEach(([first, b]) => {
-            result = result.replace(new RegExp(first, 'g'), b);
-          });
-        }
-
-        if (a.split(' ').length > 1) result = result.replace(new RegExp(a.replace(isStaticWordOrPhrase(third) ? / (?=\p{Lu})/gu : / /g, '_'), 'gi'), a);
+      glossary.filter(([first]) => inputText.includes(first)).sort((a, b) => b[1].length - a[1].length).forEach(([__, second]) => {
+        const key = second.replace(/ /g, '_');
+        if (second.split(' ').length >= 2) result = result.replace(Utils.getTrieRegexPatternFromWords([key, applyOldAccent(key)]), (match) => match[0] + second.substring(1));
       });
     }
 
@@ -827,6 +823,10 @@ async function translateText(inputText, translatorOption, targetLanguage, glossa
     console.error(error);
     return `Bản dịch thất bại: ${error}`;
   }
+}
+
+function applyNewAccent(text) {
+  return text.replace(Utils.getTrieRegexPatternFromWords(newAccentMap.map(([first]) => first)), (match) => newAccentObj[match] ?? match);
 }
 
 $(document).ready(async () => {
@@ -860,6 +860,9 @@ $(document).ready(async () => {
     setTimeout(window.location.reload, 5000);
   }
 
+  newAccentObj = Object.fromEntries(newAccentMap);
+  oldAccentObj = Object.fromEntries(newAccentMap.map(([first, second]) => [second, first]));
+
   try {
     let chinesePhienAmWordList = [...specialSinovietnameseMap.map(([a, b, c]) => [a, (Object.fromEntries(specialSinovietnameseMap.filter(([__, d]) => !/\p{sc=Hani}/u.test(d)).map(([d, e, f]) => [d, f ?? e]))[b] ?? c ?? b).split(/, | \| /)[0].toLowerCase()]), ...cjkv.nam.map(([first, second]) => [first, second.trimStart().split(/, ?/).filter((element) => element.length > 0)[0]]), ...hanData.names.map(([first, second]) => [first, second.split(',').filter((element) => element.length > 0)[0]])];
 
@@ -878,11 +881,7 @@ $(document).ready(async () => {
     });
 
     chinesePhienAmWordList = chinesePhienAmWordList.filter(([first], index, array) => !array[first] && (array[first] = 1), {});
-
-    newAccentMap.forEach(([a, b]) => {
-      chinesePhienAmWordList = chinesePhienAmWordList.map(([c, d]) => [c, d.replace(new RegExp(a, 'g'), b)]);
-    });
-
+    chinesePhienAmWordList = chinesePhienAmWordList.map(([c, d]) => [c, applyNewAccent(d)]);
     vietphraseData.chinesePhienAmWords = Object.fromEntries(chinesePhienAmWordList);
     console.log('Đã tải xong bộ dữ liệu hán việt (%d)!', chinesePhienAmWordList.length);
     lastSession = {};
@@ -933,6 +932,7 @@ $(document).ready(async () => {
 
   $loadDefaultVietPhraseFileSwitch.removeClass('disabled');
   isOnLoad = false;
+  updateInputTextLength();
 });
 
 $(window).on('keypress', (event) => !($(document.activeElement).is('body') && $resultTextarea.is(':visible') && event.key === 'Enter') || $resultTextarea.focus());

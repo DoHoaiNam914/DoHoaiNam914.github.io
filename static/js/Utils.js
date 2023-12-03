@@ -21,8 +21,7 @@ class Utils {
 
   /* eslint-disable */
 
-  static getTrieRegexPatternFromWords(words,
-    prefix = '', suffix = '') {
+  static getTrieRegexPatternFromWords(words, prefix = '', suffix = '') {
     const trieData = {};
 
     for (const word of words) {
@@ -36,11 +35,11 @@ class Utils {
       referenceData[''] = 1;
     }
 
-    return prefix + this.getRegexPattern(trieData) + suffix;
+    return new RegExp(prefix + this.getRegexPattern(trieData) + suffix, 'g');
   }
 
   static getRegexPattern(data) {
-    if (data.hasOwnProperty('') && Object.keys(data).length === 1) return '';
+    if (data.hasOwnProperty('') && Object.keys(data).length === 1) return null;
     const alternation = [];
     const trie = [];
     let isNoncapturing = false;
@@ -95,6 +94,6 @@ class Utils {
   }
 
   static escapeRegExpReplacement(replacement) {
-    return replacement.replace(/\$/g, '$$$&');
+    return replacement.replace(/\$[&`'\d]/g, '$$$&');
   }
 }
