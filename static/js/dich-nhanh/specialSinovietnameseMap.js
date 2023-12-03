@@ -14,6 +14,7 @@ const specialSinovietnameseMap = [
   ['大姐', 'ĐẠI TỶ'],
   ['团长', 'ĐOÀN TRƯỞNG'],
   ['皇朝', 'HOÀNG TRIỀU'],
+  ['学姐', 'HỌC TỶ'],
   ['会长', 'HỘI TRƯỞNG'],
   ['乡长', 'HƯƠNG TRƯỞNG'],
   ['右相', 'HỮU TƯỚNG'],
