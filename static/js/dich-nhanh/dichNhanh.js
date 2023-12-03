@@ -256,14 +256,13 @@ function getIgnoreTranslationMarkup(text, translation, translator) {
   switch (translator) {
     case Translators.DEEPL_TRANSLATE:
     case Translators.GOOGLE_TRANSLATE: {
-      // case Translators.PAPAGO:
-      return `<span translate="no">${Utils.convertTextToHtml(translation.replace(/ /gu, '_'))}</span>`;
+      return `<span translate="no">${Utils.convertTextToHtml(translation.replace(/ /g, '_'))}</span>`;
     }
     case Translators.MICROSOFT_TRANSLATOR: {
-      return `<mstrans:dictionary translation="${/\p{sc=Hani}/u.test(text) && /\p{sc=Latn}/u.test(translation) ? ` ${translation.replace(/ /gu, '_')} ` : translation.replace(/ (?=\p{Lu})/gu, '_')}">${text}</mstrans:dictionary>`;
+      return `<mstrans:dictionary translation="${/\p{sc=Hani}/u.test(text) && /\p{sc=Latn}/u.test(translation) ? ` ${translation.replace(/ /g, '_')} ` : translation.replace(/ /g, '_')}">${text}</mstrans:dictionary>`;
     }
     default: {
-      return translator !== Translators.VIETPHRASE ? translation.replace(/ /gu, '_') : translation;
+      return translator !== Translators.VIETPHRASE ? translation.replace(/ /g, '_') : translation;
     }
   }
 }
@@ -581,7 +580,8 @@ async function translateTextarea() {
       if (glossaryEnabled && translatorOption !== Translators.MICROSOFT_TRANSLATOR && translatorOption !== Translators.VIETPHRASE && sourceLanguage.split('-')[0].toLowerCase() === languagePairs[0] && targetLanguage.split('-')[0].toLowerCase() === languagePairs[1] && translatorOption !== Translators.MICROSOFT_TRANSLATOR) {
         glossary.filter(([first]) => inputText.includes(first)).sort((a, b) => b[1].length - a[1].length).forEach(([__, second]) => {
           const key = second.replace(/ /g, '_');
-          if (second.split(' ').length >= 2) result = result.replace(Utils.getTrieRegexPatternFromWords([key, applyOldAccent(key)]), (match) => match[0] + second.substring(1));
+          const oldAccentKey = applyOldAccent(key);
+          if (second.split(' ').length >= 2) result = result.replace(Utils.getTrieRegexPatternFromWords([key, key[0].toLowerCase() + key.substring(1), key[0].toUpperCase() + key.substring(1), oldAccentKey, oldAccentKey[0].toLowerCase() + oldAccentKey.substring(1), oldAccentKey[0].toUpperCase() + oldAccentKey.substring(1)]), (match) => match[0] + second.substring(1));
         });
       }
 
@@ -814,7 +814,8 @@ async function translateText(inputText, translatorOption, targetLanguage, glossa
     if (glossaryEnabled && translatorOption !== Translators.MICROSOFT_TRANSLATOR && translatorOption !== Translators.VIETPHRASE) {
       glossary.filter(([first]) => inputText.includes(first)).sort((a, b) => b[1].length - a[1].length).forEach(([__, second]) => {
         const key = second.replace(/ /g, '_');
-        if (second.split(' ').length >= 2) result = result.replace(Utils.getTrieRegexPatternFromWords([key, applyOldAccent(key)]), (match) => match[0] + second.substring(1));
+        const oldAccentKey = applyOldAccent(key);
+        if (second.split(' ').length >= 2) result = result.replace(Utils.getTrieRegexPatternFromWords([key, key[0].toLowerCase() + key.substring(1), key[0].toUpperCase() + key.substring(1), oldAccentKey, oldAccentKey[0].toLowerCase() + oldAccentKey.substring(1), oldAccentKey[0].toUpperCase() + oldAccentKey.substring(1)]), (match) => match[0] + second.substring(1));
       });
     }
 

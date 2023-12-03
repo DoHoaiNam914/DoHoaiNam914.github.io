@@ -7,6 +7,7 @@ const specialSinovietnameseMap = [
   ['本体', 'BẢN THỂ'],
   ['表姐', 'BIỂU TỶ'],
   ['高层', 'CAO TẦNG'],
+  ['战斗', 'CHIẾN ĐẤU']
   ['掌柜', 'CHƯỞNG QUỸ'],
   ['公司', 'CÔNG TY'],
   ['营养', 'DINH DƯỠNG'],
@@ -39,6 +40,7 @@ const specialSinovietnameseMap = [
   ['族长', 'TỘC TRƯỞNG'],
   ['重天', 'TRÙNG THIÊN'],
   ['传奇', 'TRUYỀN KỲ'],
+  ['传送', 'TRUYỀN TỐNG'],
   ['长辈', 'TRƯỞNG BỐI'],
   ['长老', 'TRƯỞNG LÃO'],
   ['将领', 'TƯỚNG LĨNH'],
