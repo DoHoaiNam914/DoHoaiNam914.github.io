@@ -96,10 +96,12 @@
 @font-face {
   font-family: 'Hiragino Mincho Pro';
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/HiraMinProN-W3-AlphaNum-02.otf) format('opentype');
+  unicode-range: U+3000-303F, U+3040-309F, U+30A0-30FF, U+FF00-FFEF, U+4E00-9FAF;
 }
 
 @font-face {
   font-family: 'Hiragino Mincho Pro';
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/HiraMinProN-W6-AlphaNum-04.otf) format('opentype');
   font-weight: bold;
+  unicode-range: U+3000-303F, U+3040-309F, U+30A0-30FF, U+FF00-FFEF, U+4E00-9FAF;
 }

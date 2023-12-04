@@ -168,7 +168,7 @@ function getCurrentOptions() {
 
           switch (optionId) {
             case 'font': {
-              data.font = selectedValue.text().includes('Mặc định') ? selectedValue.text().match(/(.+) \(/)[1] : selectedValue.text();
+              data.font = selectedValue.text();
               break;
             }
             case 'translator': {
@@ -1075,15 +1075,15 @@ $fontOptions.click(function onClick() {
   $fontOptions.removeClass('active');
   $(this).addClass('active');
 
-  if (!$(this).text().includes('Mặc định')) {
-    $(document.body).css('--opt-font-family', `${$(this).text().includes(' ') ? `'${$(this).text()}'` : $(this).text()}, ${$(this).data('additional-fonts') != null && $(this).data('additional-fonts').length > 0 ? `${$(this).text().includes(' ') ? `'${$(this).data('additional-fonts')}'` : $(this).data('additional-fonts')}, serif` : 'serif'}`);
+  if ($(this).text() !== 'Mặc định') {
+    $(document.body).css('--opt-font-family', `${$(this).text().includes(' ') ? `'${$(this).text()}'` : $(this).text()}, ${$(this).data('additional-fonts') != null && $(this).data('additional-fonts').length > 0 ? `${$(this).data('additional-fonts').split(', ').map((element) => (element.includes(' ') ? `'${element}'` : element)).join(', ')}, serif` : 'serif'}`);
   } else if ($(this).text() === 'Phông chữ hệ thống') {
     $(document.body).css('--opt-font-family', 'var(--system-font-family)');
   } else {
-    $(document.body).css('--opt-font-family', 'Georgia, serif');
+    $(document.body).css('--opt-font-family', '');
   }
 
-  quickTranslateStorage.font = $(this).text().includes('Mặc định') ? $(this).text().match(/(.+) \(/)[1] : $(this).text();
+  quickTranslateStorage.font = $(this).text();
   localStorage.setItem('dich_nhanh', JSON.stringify(quickTranslateStorage));
 });
 

@@ -8,8 +8,27 @@
   <link rel="stylesheet" href="/static/css/bootstrap.min.css">
   <link rel="stylesheet" href="/static/css/general_style.css">
   <style>
+    @import '/static/css/fonts.css';
+
     :root {
-      --opt-font-family: Roboto, sans-serif;
+      /* Default font-stacks */
+      --oldStyleTf: "Iowan Old Style", "Sitka Text", Palatino, "Book Antiqua", serif;
+      --modernTf: Athelas, Constantia, Georgia, serif;
+      --sansTf: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      --humanistTf: Seravek, Calibri, Roboto, Arial, sans-serif;
+      --monospaceTf: "Andale Mono", Consolas, monospace;
+
+      --japaneseFontFamily: "游ゴシック体", YuGothic, "ヒラギノ丸ゴ", "Hiragino Sans", "Yu Gothic UI", "Meiryo UI", "MS Gothic", Roboto, Noto, "Noto Sans CJK JP", sans-serif;
+      --serif-ja: "ＭＳ Ｐ明朝", "MS PMincho", "Hiragino Mincho Pro", "ヒラギノ明朝 Pro W3", "游明朝", "YuMincho", "ＭＳ 明朝", "MS Mincho", "Hiragino Mincho ProN", serif;
+      --sans-serif-ja: "ＭＳ Ｐゴシック", "MS PGothic", "Hiragino Kaku Gothic Pro W3", "ヒラギノ角ゴ Pro W3", "Hiragino Sans GB", "ヒラギノ角ゴシック W3", "游ゴシック", "YuGothic", "ＭＳ ゴシック", "MS Gothic", "Hiragino Sans", sans-serif;
+      --serif-ja-v: "ＭＳ 明朝", "MS Mincho", "Hiragino Mincho Pro", "ヒラギノ明朝 Pro W3", "游明朝", "YuMincho", "ＭＳ Ｐ明朝", "MS PMincho", "Hiragino Mincho ProN", serif;
+      --sans-serif-ja-v: "ＭＳ ゴシック", "MS Gothic", "Hiragino Kaku Gothic Pro W3", "ヒラギノ角ゴ Pro W3", "Hiragino Sans GB", "ヒラギノ角ゴシック W3", "游ゴシック", "YuGothic", "ＭＳ Ｐゴシック", "MS PGothic", "Hiragino Sans", sans-serif;
+
+      --chineseFontFamily: "方体", "PingFang SC", "黑体", "Heiti SC", "Microsoft JhengHei UI", "Microsoft JhengHei", Roboto, Noto, "Noto Sans CJK SC", sans-serif;
+      --taiwanFontFamily: "方體", "PingFang TC", "黑體", "Heiti TC", "Microsoft JhengHei UI", "Microsoft JhengHei", Roboto, Noto, "Noto Sans CJK TC", sans-serif;
+      --hongKongFontFamily: "方體", "PingFang HK", "方體", "PingFang TC", "黑體", "Heiti TC", "Microsoft JhengHei UI", "Microsoft JhengHei", Roboto, Noto, "Noto Sans CJK TC", sans-serif;
+
+      --opt-font-family: 'Iowan Old Style', 'Sitka Text', Palatino, 'Book Antiqua', 游ゴシック体, YuGothic, ヒラギノ丸ゴ, 'Hiragino Sans', 'Yu Gothic UI', 'Meiryo UI', 'MS Gothic', Roboto, Noto, 'Noto Sans CJK JP', serif;
       --opt-font-size: 1em;
       --opt-line-height: 1.2em;
       --opt-text-align: justify;
@@ -72,6 +91,7 @@
     }
 
     .textarea {
+      /*--lineHeightCompensation: 1.167;*/
       font-family: var(--opt-font-family);
       font-size: var(--opt-font-size);
       font-weight: normal;
@@ -614,13 +634,16 @@
             </button>
             <ul class="dropdown-menu">
               <li>
-                <button type="button" class="dropdown-item font-option active">Mặc định (Georgia)</button>
+                <button type="button" class="dropdown-item font-option active">Mặc định</button>
               </li>
               <li>
                 <button type="button" class="dropdown-item font-option">Times New Roman</button>
               </li>
               <li>
                 <button type="button" class="dropdown-item font-option">Phông chữ hệ thống</button>
+              </li>
+              <li>
+                <button type="button" class="dropdown-item font-option active">Georgia</button>
               </li>
               <li>
                 <button type="button" class="dropdown-item font-option">Hiragino Mincho ProN</button>
@@ -783,23 +806,20 @@
                 <hr class="dropdown-divider">
               </li>
               <li>
-                <button type="button" class="dropdown-item" data-bs-toggle="collapse" data-bs-target="#vietnamese-define-collapse">Tra cứu tiếng Việt</button>
-                <div class="collapse" id="vietnamese-define-collapse">
-                  <button type="button" class="dropdown-item collapse-item define-button" data-href="https://www.google.com.vn/search?q={0}">Google</button>
-                  <button type="button" class="dropdown-item collapse-item define-button" data-href="https://vi.wikipedia.org/w/?search={0}&ns0=1">Wikipedia</button>
-                  <button type="button" class="dropdown-item collapse-item define-button" data-href="http://tratu.coviet.vn/hoc-tieng-anh/tu-dien/lac-viet/V-A/{0}.html">Từ điển Việt - Anh</button>
-                  <button type="button" class="dropdown-item collapse-item define-button" data-href="http://tratu.coviet.vn/hoc-tieng-anh/tu-dien/lac-viet/V-T/{0}.html">Từ điển Việt - Trung</button>
-                  <button type="button" class="dropdown-item collapse-item define-button" data-href="http://tratu.coviet.vn/hoc-tieng-anh/tu-dien/lac-viet/V-N/{0}.html">Từ điển Việt - Nhật</button>
-                </div>
+                <button type="button" class="dropdown-item collapse-item define-button" data-href="https://www.google.com.vn/search?q={0}">Google</button>
+              </li>
+              <li>
+                <button type="button" class="dropdown-item collapse-item define-button" data-href="https://vi.wikipedia.org/w/?search={0}&ns0=1">Wikipedia</button>
               </li>
               <li>
                 <button type="button" class="dropdown-item" data-bs-toggle="collapse" data-bs-target="#chinese-define-collapse">Tra cứu tiếng Trung Quốc</button>
                 <div class="collapse" id="chinese-define-collapse">
                   <button type="button" class="dropdown-item collapse-item define-button" data-href="http://tratu.coviet.vn/hoc-tieng-trung/tu-dien/lac-viet/T-V/{0}.html">Từ điển Trung - Việt</button>
+                  <button type="button" class="dropdown-item collapse-item define-button" data-href="https://hanzii.net/search/word/{0}?hl=vi">Hanzii</button>
                   <button type="button" class="dropdown-item collapse-item define-button" data-href="https://www.baidu.com/s?wd={0}">Baidu</button>
                   <button type="button" class="dropdown-item collapse-item define-button" data-href="https://baike.baidu.com/item/{0}">Baike</button>
+                  <button type="button" class="dropdown-item collapse-item define-button" data-href="http://nomfoundation.org/nom-tools/Nom-Lookup-Tool/Nom-Lookup-Tool?uiLang=vn&inputText={0}">Tra cứu chữ Nôm</button>
                   <button type="button" class="dropdown-item collapse-item define-button" data-href="https://hvdic.thivien.net/whv/{0}">Từ điển Hán Nôm</button>
-                  <button type="button" class="dropdown-item collapse-item define-button" data-href="https://hanzii.net/search/word/{0}?hl=vi">Hanzii</button>
                   <button type="button" class="dropdown-item collapse-item define-button" data-href="https://www.mdbg.net/chinese/dictionary?page=worddict&wdqb={0}">CC-CEDICT</button>
                   <button type="button" class="dropdown-item collapse-item define-button" data-href="https://english.dict.naver.com/english-chinese-dictionary/#/search?query={0}">Naver dictionary</button>
                 </div>
@@ -808,19 +828,19 @@
                 <button type="button" class="dropdown-item" data-bs-toggle="collapse" data-bs-target="#japanese-define-collapse">Tra cứu tiếng Nhật</button>
                 <div class="collapse" id="japanese-define-collapse">
                   <button type="button" class="dropdown-item collapse-item define-button" data-href="https://tratu.coviet.vn/hoc-tieng-nhat/tu-dien/lac-viet/N-V/{0}.html">Từ điển Nhật - Việt</button>
+                  <button type="button" class="dropdown-item collapse-item define-button" data-href="https://mazii.net/vi-VN/search/word/javi/{0}">Mazii</button>
                   <button type="button" class="dropdown-item collapse-item define-button" data-href="https://www.google.co.jp/search?q={0}">Google</button>
                   <button type="button" class="dropdown-item collapse-item define-button" data-href="https://ja.wikipedia.org/w/?search={0}&ns0=1">Wikipedia</button>
-                  <button type="button" class="dropdown-item collapse-item define-button" data-href="https://mazii.net/vi-VN/search/word/javi/{0}">Mazii</button>
                 </div>
               </li>
               <li>
                 <button type="button" class="dropdown-item" data-bs-toggle="collapse" data-bs-target="#english-define-collapse">Tra cứu tiếng Anh</button>
                 <div class="collapse" id="english-define-collapse">
                   <button type="button" class="dropdown-item collapse-item define-button" data-href="http://tratu.coviet.vn/hoc-tieng-anh/tu-dien/lac-viet/A-V/{0}.html">Từ điển Anh - Việt</button>
+                  <button type="button" class="dropdown-item collapse-item define-button" data-href="https://dunno.ai/search/word/{0}?hl=vi">Dunno</button>
                   <button type="button" class="dropdown-item collapse-item define-button" data-href="https://www.google.com/search?q={0}">Google</button>
                   <button type="button" class="dropdown-item collapse-item define-button" data-href="https://en.wikipedia.org/w/?search={0}&ns0=1">Wikipedia</button>
                   <button type="button" class="dropdown-item collapse-item define-button" data-href="https://dictionary.cambridge.org/vi/dictionary/english-vietnamese/{0}">Cambridge Dictionary</button>
-                  <button type="button" class="dropdown-item collapse-item define-button" data-href="https://dunno.ai/search/word/{0}?hl=vi">Dunno</button>
                 </div>
               </li>
               <li>
