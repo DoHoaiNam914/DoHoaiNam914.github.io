@@ -813,8 +813,8 @@ class Vietphrase {
   }
 
   static getCaseSensitive(text) {
-    // text.split(/\n/).map((element) => (this.caseSensitive ? element.replace(/(^\s*|!(?:" |' | )|\) |\.(?:" |' | )|: |\?(?:" |' | )|\] |\} |。(?:(?:" |' ))?|！(?:(?:" |' ))?|．(?:(?:" |' ))?|？(?:(?:" |' ))?|["'：\p{Ps}\p{Pe}\p{Pi}\p{Pf}])(\p{Ll})/gu, (match, p1, p2) => p1 + p2.toUpperCase()) : element)).join('\n');
-    return text.split(/\n/).map((element) => element.replace(/(^\s*|!(?:" |' | )|\.(?:" |' | )|: |\?(?:" |' | )|。(?:(?:" |' ))?|！(?:(?:" |' ))?|．(?:(?:" |' ))?|？(?:(?:" |' ))?|["'：\p{Pi}\p{Pf}])(\p{Ll})/gu, (match, p1, p2) => p1 + p2.toUpperCase())).join('\n');
+    // text.split(/\n/).map((element) => (this.caseSensitive ? element.replace(/(^\s*|!(?:" |' | )|\) |\.(?:" |' | )|: |\?(?:" |' | )|\] |\} |’ |” |。(?:(?:" |' ))?|！(?:(?:" |' ))?|．(?:(?:" |' ))?|？(?:(?:" |' ))?|["'：\p{Ps}\p{Pe}\p{Pi}\p{Pf}])(\p{Ll})/gu, (match, p1, p2) => p1 + p2.toUpperCase()) : element)).join('\n');
+    return text.split(/\n/).map((element) => element.replace(/(^\s*|!(?:" |' | )|\.(?:" |' | )|: |\?(?:" |' | )|’ |” |。(?:(?:" |' ))?|！(?:(?:" |' ))?|．(?:(?:" |' ))?|？(?:(?:" |' ))?|["'：\p{Pi}\p{Pf}])(\p{Ll})/gu, (match, p1, p2) => p1 + p2.toUpperCase())).join('\n');
   }
 
   translatePrioritizeLongVietphraseClusters(data, inputText) {
