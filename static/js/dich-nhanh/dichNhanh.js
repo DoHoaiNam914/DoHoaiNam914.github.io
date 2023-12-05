@@ -43,7 +43,7 @@ const $removeButton = $('#remove-button');
 const $glossaryEntrySelect = $('#glossary-entry-select');
 const $glossaryName = $('#glossary-name');
 
-const defaultOptions = JSON.parse('{"source_language":"auto","target_language":"vi","font":"Mặc định","font_size":100,"line_spacing":40,"alignment_settings":true,"translator":"googleTranslate","show_original_text":false,"load_default_vietphrase_file":false,"ttvtranslate_mode":false,"translation_algorithm":"0","prioritize_name_over_vietphrase":false,"multiplication_algorithm":"2","glossary":true,"language_pairs":"zh-vi"}');
+const defaultOptions = JSON.parse('{"source_language":"auto","target_language":"vi","font":"Mặc định","font_size":100,"line_spacing":40,"alignment_settings":true,"translator":"googleTranslate","show_original_text":false,"load_default_vietphrase_file":false,"translation_algorithm":"0","prioritize_name_over_vietphrase":false,"multiplication_algorithm":"2","glossary":true,"language_pairs":"zh-vi"}');
 
 const SUPPORTED_LANGUAGES = ['', 'EN', 'JA', 'ZH', 'EN-US', 'auto', 'en', 'ja', 'zh-CN', 'zh-TW', 'vi', 'zh-Hans', 'zh-Hant'];
 
@@ -530,7 +530,7 @@ async function translateTextarea() {
           break;
         }
         case Translators.VIETPHRASE: {
-          translator = await new Vietphrase(vietphraseData, $translationAlgorithmRadio.filter('[checked]').val(), $multiplicationAlgorithmRadio.filter('[checked]').val(), $('#ttvtranslate-mode-switch').prop('checked'), glossaryEnabled && targetLanguage === 'vi', glossaryObject, $prioritizeNameOverVietphraseCheck.prop('checked'), true);
+          translator = await new Vietphrase(vietphraseData, $translationAlgorithmRadio.filter('[checked]').val(), $multiplicationAlgorithmRadio.filter('[checked]').val(), glossaryEnabled && targetLanguage === 'vi', glossaryObject, $prioritizeNameOverVietphraseCheck.prop('checked'), true);
           break;
         }
         default: {
@@ -799,7 +799,7 @@ async function translateText(inputText, translatorOption, targetLanguage, glossa
         break;
       }
       case Translators.VIETPHRASE: {
-        translator = await new Vietphrase(vietphraseData, $translationAlgorithmRadio.filter('[checked]').val(), $multiplicationAlgorithmRadio.filter('[checked]').val(), $('#ttvtranslate-mode-switch').prop('checked'), glossaryEnabled, glossaryObject, $prioritizeNameOverVietphraseCheck.prop('checked'));
+        translator = await new Vietphrase(vietphraseData, $translationAlgorithmRadio.filter('[checked]').val(), $multiplicationAlgorithmRadio.filter('[checked]').val(), glossaryEnabled, glossaryObject, $prioritizeNameOverVietphraseCheck.prop('checked'));
         sourceLanguage = Vietphrase.DefaultLanguage.SOURCE_LANGUAGE;
         break;
       }
@@ -833,6 +833,7 @@ function applyNewAccent(text) {
 }
 
 $(document).ready(async () => {
+  $('input').val(null);
   loadAllQuickTranslatorOptions();
   reloadGlossaryEntries();
 
@@ -893,7 +894,7 @@ $(document).ready(async () => {
     setTimeout(window.location.reload, 5000);
   }
 
-  if ($loadDefaultVietPhraseFileSwitch.prop('checked') && Object.entries(vietphraseData.vietPhrase).length === 0) {
+  if ($loadDefaultVietPhraseFileSwitch.prop('checked')) {
     $.ajax({
       method: 'GET',
       url: '/static/datasource/Quick Translator/VietPhrase.txt',
@@ -909,37 +910,37 @@ $(document).ready(async () => {
     }).fail((jqXHR, textStatus, errorThrown) => {
       console.error('Không tải được tệp VietPhrase:', errorThrown);
     });
+
+    $.ajax({
+      method: 'GET',
+      url: '/static/datasource/Quick Translator/LuatNhan.txt',
+    }).done((data) => {
+      if ($luatNhanInput.prop('files').length > 0) return;
+      vietphraseData.luatNhan = Object.fromEntries(data.split(/\r?\n/).filter((element) => !element.startsWith('#')).map((element) => element.split('=')).filter((element) => element.length === 2));
+      const $luatNhanEntryCounter = $('#luat-nhan-entry-counter');
+      $luatNhanEntryCounter.text(Object.keys(vietphraseData.luatNhan).length);
+      console.log(`Đã tải xong tệp LuatNhan (${$luatNhanEntryCounter.text()})!`);
+      lastSession = {};
+    }).fail((jqXHR, textStatus, errorThrown) => {
+      console.error('Không tải được tệp LuatNhan:', errorThrown);
+      setTimeout(window.location.reload, 5000);
+    });
+
+    $.ajax({
+      method: 'GET',
+      url: '/static/datasource/Quick Translator/Pronouns.txt',
+    }).done((data) => {
+      if ($pronounInput.prop('files').length > 0) return;
+      vietphraseData.pronoun = Object.fromEntries(data.split(/\r?\n/).map((element) => element.split('=')).filter((element) => element.length === 2).map(([first, second]) => [first, second.split('/')[0]]));
+      const $pronounEntryCounter = $('#pronoun-entry-counter');
+      $pronounEntryCounter.text(Object.keys(vietphraseData.pronoun).length);
+      console.log(`Đã tải xong tệp Pronouns (${$pronounEntryCounter.text()})!`);
+      lastSession = {};
+    }).fail((jqXHR, textStatus, errorThrown) => {
+      console.error('Không tải được tệp Pronouns:', errorThrown);
+      setTimeout(window.location.reload, 5000);
+    });
   }
-
-  $.ajax({
-    method: 'GET',
-    url: '/static/datasource/Quick Translator/LuatNhan.txt',
-  }).done((data) => {
-    if ($luatNhanInput.prop('files').length > 0) return;
-    vietphraseData.luatNhan = Object.fromEntries(data.split(/\r?\n/).filter((element) => !element.startsWith('#')).map((element) => element.split('=')).filter((element) => element.length === 2));
-    const $luatNhanEntryCounter = $('#luat-nhan-entry-counter');
-    $luatNhanEntryCounter.text(Object.keys(vietphraseData.luatNhan).length);
-    console.log(`Đã tải xong tệp LuatNhan (${$luatNhanEntryCounter.text()})!`);
-    lastSession = {};
-  }).fail((jqXHR, textStatus, errorThrown) => {
-    console.error('Không tải được tệp LuatNhan:', errorThrown);
-    setTimeout(window.location.reload, 5000);
-  });
-
-  $.ajax({
-    method: 'GET',
-    url: '/static/datasource/Quick Translator/Pronouns.txt',
-  }).done((data) => {
-    if ($pronounInput.prop('files').length > 0) return;
-    vietphraseData.pronoun = Object.fromEntries(data.split(/\r?\n/).map((element) => element.split('=')).filter((element) => element.length === 2).map(([first, second]) => [first, second.split('/')[0]]));
-    const $pronounEntryCounter = $('#pronoun-entry-counter');
-    $pronounEntryCounter.text(Object.keys(vietphraseData.pronoun).length);
-    console.log(`Đã tải xong tệp Pronouns (${$pronounEntryCounter.text()})!`);
-    lastSession = {};
-  }).fail((jqXHR, textStatus, errorThrown) => {
-    console.error('Không tải được tệp Pronouns:', errorThrown);
-    setTimeout(window.location.reload, 5000);
-  });
 
   $loadDefaultVietPhraseFileSwitch.removeClass('disabled');
   isOnLoad = false;
@@ -1162,8 +1163,8 @@ $vietPhraseInput.on('change', function onChange() {
   const reader = new FileReader();
 
   reader.onload = function onLoad() {
-    let vietphraseList = this.result.split(/\r?\n/).map((element) => element.split($vietPhraseInput.prop('files')[0].type === 'text/tab-separated-values' ? '\t' : '=')).filter((element) => element.length === 2).map(([first, second]) => [first, second.split(/[/|]/)[0]]);
-    vietphraseList = [...vietphraseList, ...Object.entries(vietphraseData.hanViet)].filter(([first, second], index, array) => !array[first] && (array[first] = 1), {});
+    let vietphraseList = this.result.split(/\r?\n/).map((element) => element.split('=')).filter((element) => element.length === 2).map(([first, second]) => [first, second.split(/[/|]/)[0]]);
+    vietphraseList = [...vietphraseList, ...Object.entries(vietphraseData.hanViet)].filter(([first], index, array) => !array[first] && (array[first] = 1), {});
     vietphraseData.vietPhrase = Object.fromEntries(vietphraseList);
     const $vietPhraseEntryCounter = $('#viet-phrase-entry-counter');
     $vietPhraseEntryCounter.text(vietphraseList.length);
@@ -1177,10 +1178,10 @@ $vietPhraseInput.on('change', function onChange() {
 $loadDefaultVietPhraseFileSwitch.off('change');
 
 $loadDefaultVietPhraseFileSwitch.on('change', function onChange() {
-  if (!$(this).hasClass('disabled') && $(this).prop('checked') === true) {
+  if (!$(this).hasClass('disabled')) {
     quickTranslateStorage[getOptionId($(this).attr('id'))] = $(this).prop('checked');
     localStorage.setItem('dich_nhanh', JSON.stringify(quickTranslateStorage));
-    if (window.confirm('Bạn có muốn tải lại trang ngay chứ?')) window.location.reload();
+    if ($(this).prop('checked') === true && window.confirm('Bạn có muốn tải lại trang ngay chứ?')) window.location.reload();
   }
 });
 
