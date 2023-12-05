@@ -709,12 +709,12 @@
           <hr>
           <h2 class="fs-5">Vietphrase</h2>
           <div class="mb-3">
-            <label for="vietphrase-input" class="form-label">Nhập tệp VietPhrase:</label>
-            <input type="file" class="form-control form-control-sm" id="vietphrase-input" accept="text/plain">
+            <label for="viet-phrase-input" class="form-label">Nhập tệp VietPhrase: <span id="viet-phrase-entry-counter">0</span> mục</label>
+            <input type="file" class="form-control form-control-sm" id="viet-phrase-input" accept="text/plain">
           </div>
           <div class="form-check form-switch mb-3">
-            <input type="checkbox" class="form-check-input option disabled" id="load-default-vietphrase-file-switch" role="switch">
-            <label class="form-check-label" for="load-default-vietphrase-file-switch">Tải tệp VietPhrase mặc định</label>
+            <input type="checkbox" class="form-check-input option disabled" id="load-default-viet-phrase-file-switch" role="switch">
+            <label class="form-check-label" for="load-default-viet-phrase-file-switch">Tải tệp VietPhrase mặc định</label>
           </div>
           <h2 class="fs-6">Thuật toán dịch</h2>
           <div class="form-check form-switch mb-3">
@@ -736,6 +736,14 @@
             </div>
           </div>
           <h2 class="fs-6">Thuật toán nhân</h2>
+          <div class="mb-3">
+            <label for="luat-nhan-input" class="form-label">Nhập tệp LuatNhan: <span id="luat-nhan-entry-counter">0</span> mục</label>
+            <input type="file" class="form-control form-control-sm" id="luat-nhan-input" accept="text/plain">
+          </div>
+          <div class="mb-3">
+            <label for="pronoun-input" class="form-label">Nhập tệp Pronouns: <span id="pronoun-entry-counter">0</span> mục</label>
+            <input type="file" class="form-control form-control-sm" id="pronoun-input" accept="text/plain">
+          </div>
           <div class="form-check">
             <input type="radio" class="form-check-input option quick-translate-option" id="no-apply-radio" name="multiplication-algorithm-radio" value="0">
             <label class="form-check-label" for="no-apply-radio">Không áp dụng</label>

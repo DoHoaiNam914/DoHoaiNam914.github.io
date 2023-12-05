@@ -8,9 +8,10 @@ const $copyButtons = $('.copy-button');
 const $pasteButtons = $('.paste-button');
 const $retranslateButton = $('#retranslate-button');
 
-const $resetButton = $('#reset-button');
-
 const $options = $('.option');
+
+const $inputTextarea = $('#input-textarea');
+const $resultTextarea = $('#result-textarea');
 
 const $fontOptions = $('.font-option');
 const $fontSizeRange = $('#font-size-range');
@@ -18,14 +19,15 @@ const $lineSpacingRange = $('#line-spacing-range');
 const $alignmentSettingsSwitch = $('#alignment-settings-switch');
 const $translatorOptions = $('.translator-option');
 const $showOriginalTextSwitch = $('#show-original-text-switch');
-const $vietphraseInput = $('#vietphrase-input');
-const $loadDefaultVietPhraseFileSwitch = $('#load-default-vietphrase-file-switch');
+const $vietPhraseInput = $('#viet-phrase-input');
+const $loadDefaultVietPhraseFileSwitch = $('#load-default-viet-phrase-file-switch');
+const $luatNhanInput = $('#luat-nhan-input');
+const $pronounInput = $('#pronoun-input');
 const $prioritizeNameOverVietphraseCheck = $('#prioritize-name-over-vietphrase-check');
 const $translationAlgorithmRadio = $('.option[name="translation-algorithm-radio"]');
 const $multiplicationAlgorithmRadio = $('.option[name="multiplication-algorithm-radio"]');
 
-const $inputTextarea = $('#input-textarea');
-const $resultTextarea = $('#result-textarea');
+const $resetButton = $('#reset-button');
 
 const $glossarySwitch = $('#glossary-switch');
 const $glossaryInput = $('#glossary-input');
@@ -56,8 +58,8 @@ const vietphraseData = {
   pinyins: {},
   hanViet: {},
   vietPhrase: {},
-  pronoun: {},
   luatNhan: {},
+  pronoun: {},
 };
 
 let glossaryData = '';
@@ -854,7 +856,7 @@ $(document).ready(async () => {
 
     pinyinList = pinyinList.filter(([first, second], index, array) => !array[first] && (array[first] = 1), {});
     vietphraseData.pinyins = Object.fromEntries(pinyinList);
-    console.log('Đã tải xong bộ dữ liệu bính âm (%d)!', pinyinList.length);
+    console.log(`Đã tải xong bộ dữ liệu bính âm (${pinyinList.length})!`);
     lastSession = {};
   } catch (error) {
     console.error('Không thể tải bộ dữ liệu bính âm:', error);
@@ -884,52 +886,60 @@ $(document).ready(async () => {
     chinesePhienAmWordList = chinesePhienAmWordList.filter(([first], index, array) => !array[first] && (array[first] = 1), {});
     chinesePhienAmWordList = chinesePhienAmWordList.map(([c, d]) => [c, applyNewAccent(d)]);
     vietphraseData.hanViet = Object.fromEntries(chinesePhienAmWordList);
-    console.log('Đã tải xong bộ dữ liệu hán việt (%d)!', chinesePhienAmWordList.length);
+    console.log(`Đã tải xong bộ dữ liệu hán việt (${chinesePhienAmWordList.length})!`);
     lastSession = {};
   } catch (error) {
     console.error('Không thể tải bộ dữ liệu hán việt:', error);
     setTimeout(window.location.reload, 5000);
   }
 
-  await $.ajax({
-    method: 'GET',
-    url: '/static/datasource/Quick Translator/Pronouns.txt',
-  }).done((data) => {
-    vietphraseData.pronouns = Object.fromEntries(data.split(/\r?\n/).map((element) => element.split('=')).filter((element) => element.length === 2).map(([first, second]) => [first, second.split('/')[0]]));
-    console.log('Đã tải xong tệp Pronouns (%d)!', Object.entries(vietphraseData.pronouns).length);
-    lastSession = {};
-  }).fail((jqXHR, textStatus, errorThrown) => {
-    console.error('Không tải được tệp Pronouns:', errorThrown);
-    setTimeout(window.location.reload, 5000);
-  });
+  if ($loadDefaultVietPhraseFileSwitch.prop('checked') && Object.entries(vietphraseData.vietPhrase).length === 0) {
+    $.ajax({
+      method: 'GET',
+      url: '/static/datasource/Quick Translator/VietPhrase.txt',
+    }).done((data) => {
+      let vietphraseList = [...data.split(/\r\n/).map((element) => element.split('=')).filter((element) => element.length === 2).map(([first, second]) => [first, second.split(/[/|]/)[0]]), ...Object.entries(vietphraseData.hanViet)];
+      vietphraseList = vietphraseList.filter(([first], index, array) => !array[first] && (array[first] = 1), {});
+      if ($vietPhraseInput.prop('files').length > 0) return;
+      vietphraseData.vietPhrase = Object.fromEntries(vietphraseList);
+      const $vietPhraseEntryCounter = $('#viet-phrase-entry-counter');
+      $vietPhraseEntryCounter.text(vietphraseList.length);
+      console.log(`Đã tải xong tệp VietPhrase (${$vietPhraseEntryCounter.text()})!`);
+      lastSession = {};
+    }).fail((jqXHR, textStatus, errorThrown) => {
+      console.error('Không tải được tệp VietPhrase:', errorThrown);
+    });
+  }
 
-  await $.ajax({
+  $.ajax({
     method: 'GET',
     url: '/static/datasource/Quick Translator/LuatNhan.txt',
   }).done((data) => {
+    if ($luatNhanInput.prop('files').length > 0) return;
     vietphraseData.luatNhan = Object.fromEntries(data.split(/\r?\n/).filter((element) => !element.startsWith('#')).map((element) => element.split('=')).filter((element) => element.length === 2));
-    console.log('Đã tải xong tệp LuatNhan (%d)!', Object.entries(vietphraseData.luatNhan).length);
+    const $luatNhanEntryCounter = $('#luat-nhan-entry-counter');
+    $luatNhanEntryCounter.text(Object.keys(vietphraseData.luatNhan).length);
+    console.log(`Đã tải xong tệp LuatNhan (${$luatNhanEntryCounter.text()})!`);
     lastSession = {};
   }).fail((jqXHR, textStatus, errorThrown) => {
     console.error('Không tải được tệp LuatNhan:', errorThrown);
     setTimeout(window.location.reload, 5000);
   });
 
-  if ($loadDefaultVietPhraseFileSwitch.prop('checked') && Object.entries(vietphraseData.vietPhrase).length === 0) {
-    await $.ajax({
-      method: 'GET',
-      url: '/static/datasource/Quick Translator/VietPhrase.txt',
-    }).done((data) => {
-      let vietphraseList = [...data.split(/\r\n/).map((element) => element.split('=')).filter((element) => element.length === 2).map(([first, second]) => [first, second.split(/[/|]/)[0]]), ...Object.entries(vietphraseData.hanViet)];
-      vietphraseList = vietphraseList.filter(([first], index, array) => !array[first] && (array[first] = 1), {});
-      if ($vietphraseInput.prop('files').length > 0) return;
-      vietphraseData.vietPhrase = Object.fromEntries(vietphraseList);
-      console.log('Đã tải xong tệp VietPhrase (%d)!', vietphraseList.length);
-      lastSession = {};
-    }).fail((jqXHR, textStatus, errorThrown) => {
-      console.error('Không tải được tệp VietPhrase:', errorThrown);
-    });
-  }
+  $.ajax({
+    method: 'GET',
+    url: '/static/datasource/Quick Translator/Pronouns.txt',
+  }).done((data) => {
+    if ($pronounInput.prop('files').length > 0) return;
+    vietphraseData.pronoun = Object.fromEntries(data.split(/\r?\n/).map((element) => element.split('=')).filter((element) => element.length === 2).map(([first, second]) => [first, second.split('/')[0]]));
+    const $pronounEntryCounter = $('#pronoun-entry-counter');
+    $pronounEntryCounter.text(Object.keys(vietphraseData.pronoun).length);
+    console.log(`Đã tải xong tệp Pronouns (${$pronounEntryCounter.text()})!`);
+    lastSession = {};
+  }).fail((jqXHR, textStatus, errorThrown) => {
+    console.error('Không tải được tệp Pronouns:', errorThrown);
+    setTimeout(window.location.reload, 5000);
+  });
 
   $loadDefaultVietPhraseFileSwitch.removeClass('disabled');
   isOnLoad = false;
@@ -1148,14 +1158,16 @@ $showOriginalTextSwitch.change(function onChange() {
   $retranslateButton.click();
 });
 
-$vietphraseInput.on('change', function onChange() {
+$vietPhraseInput.on('change', function onChange() {
   const reader = new FileReader();
 
   reader.onload = function onLoad() {
-    let vietphraseList = this.result.split(/\r?\n/).map((element) => element.split($vietphraseInput.prop('files')[0].type === 'text/tab-separated-values' ? '\t' : '=')).filter((element) => element.length === 2).map(([first, second]) => [first, second.split(/[/|]/)[0]]);
+    let vietphraseList = this.result.split(/\r?\n/).map((element) => element.split($vietPhraseInput.prop('files')[0].type === 'text/tab-separated-values' ? '\t' : '=')).filter((element) => element.length === 2).map(([first, second]) => [first, second.split(/[/|]/)[0]]);
     vietphraseList = [...vietphraseList, ...Object.entries(vietphraseData.hanViet)].filter(([first, second], index, array) => !array[first] && (array[first] = 1), {});
     vietphraseData.vietPhrase = Object.fromEntries(vietphraseList);
-    console.log('Đã tải xong tệp VietPhrase.txt (%d)!', vietphraseList.length);
+    const $vietPhraseEntryCounter = $('#viet-phrase-entry-counter');
+    $vietPhraseEntryCounter.text(vietphraseList.length);
+    console.log(`Đã tải xong tệp ${$vietPhraseInput.prop('files')[0].name} (${$vietPhraseEntryCounter.text()})!`);
     lastSession = {};
   };
 
@@ -1170,6 +1182,34 @@ $loadDefaultVietPhraseFileSwitch.on('change', function onChange() {
     localStorage.setItem('dich_nhanh', JSON.stringify(quickTranslateStorage));
     if (window.confirm('Bạn có muốn tải lại trang ngay chứ?')) window.location.reload();
   }
+});
+
+$luatNhanInput.on('change', function onChange() {
+  const reader = new FileReader();
+
+  reader.onload = function onLoad() {
+    vietphraseData.luatNhan = Object.fromEntries(this.result.split(/\r?\n/).filter((element) => !element.startsWith('#')).map((element) => element.split('=')).filter((element) => element.length === 2));
+    const $luatNhanEntryCounter = $('#luat-nhan-entry-counter');
+    $luatNhanEntryCounter.text(Object.keys(vietphraseData.luatNhan).length);
+    console.log(`Đã tải xong tệp ${$luatNhanInput.prop('files')[0].name} (${$luatNhanEntryCounter.text()})!`);
+    lastSession = {};
+  };
+
+  reader.readAsText($(this).prop('files')[0]);
+});
+
+$pronounInput.on('change', function onChange() {
+  const reader = new FileReader();
+
+  reader.onload = function onLoad() {
+    vietphraseData.pronoun = Object.fromEntries(this.result.split(/\r?\n/).map((element) => element.split('=')).filter((element) => element.length === 2).map(([first, second]) => [first, second.split('/')[0]]));
+    const $pronounEntryCounter = $('#pronoun-entry-counter');
+    $pronounEntryCounter.text(Object.keys(vietphraseData.pronoun).length);
+    console.log(`Đã tải xong tệp ${$pronounInput.prop('files')[0].name} (${$pronounEntryCounter.text()})!`);
+    lastSession = {};
+  };
+
+  reader.readAsText($(this).prop('files')[0]);
 });
 
 $resetButton.on('click', () => {
