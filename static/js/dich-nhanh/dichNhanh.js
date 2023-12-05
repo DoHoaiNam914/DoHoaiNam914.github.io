@@ -148,8 +148,8 @@ function getCurrentOptions() {
   try {
     $options.each((index, element) => {
       const option = $(element);
-      const optionId = getOptionId(option.attr('name') != null ? option.attr('name') : option.attr('id'));
-      const optionType = getOptionType(option.attr('name') != null ? option.attr('name') : option.attr('id'));
+      const optionId = getOptionId(option.attr('name') ?? option.attr('id'));
+      const optionType = getOptionType(option.attr('name') ?? option.attr('id'));
 
       switch (optionType) {
         case OptionTypes.RADIO: {
@@ -200,8 +200,8 @@ function loadAllQuickTranslatorOptions() {
 
   $options.each((index) => {
     const option = $options.eq(index);
-    const optionId = getOptionId(option.attr('name') != null ? option.attr('name') : option.attr('id'));
-    const optionType = getOptionType(option.attr('name') != null ? option.attr('name') : option.attr('id'));
+    const optionId = getOptionId(option.attr('name') ?? option.attr('id'));
+    const optionType = getOptionType(option.attr('name') ?? option.attr('id'));
 
     switch (optionType) {
       case OptionTypes.RADIO: {
@@ -833,7 +833,7 @@ function applyNewAccent(text) {
 }
 
 $(document).ready(async () => {
-  $('input').val(null);
+  $('input[type="file"]').val(null);
   loadAllQuickTranslatorOptions();
   reloadGlossaryEntries();
 
@@ -874,7 +874,7 @@ $(document).ready(async () => {
       method: 'GET',
       url: '/static/datasource/QuickTranslate2020/ChinesePhienAmWords.txt',
     }).done((data) => {
-      chinesePhienAmWordList = [...chinesePhienAmWordList, ...data.split(/\r\n/).map((element) => element.split('=')).filter((element) => element.length === 2)];
+      chinesePhienAmWordList = [...chinesePhienAmWordList, ...data.split(/\r\n/).map((element) => element.split('=')).filter((element) => element.length === 2 && !/\p{sc=Latn}/u.test(element[0]))];
     });
 
     await $.ajax({
