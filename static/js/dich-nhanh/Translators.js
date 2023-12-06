@@ -752,7 +752,7 @@ class Vietphrase {
   };
 
   TranslationAlgorithms = {
-    PRIORITIZE_LONG_VIETPHRASE_CLUSTERS: '0',
+    PRIORITIZE_LONG_VIET_PHRASE_CLUSTERS: '0',
     TRANSLATE_FROM_LEFT_TO_RIGHT: '1',
   };
 
@@ -762,14 +762,14 @@ class Vietphrase {
     MULTIPLICATION_BY_PRONOUNS_AND_NAMES: '2',
   };
 
-  constructor(data, translationAlgorithm, multiplicationAlgorithm, useGlossary = false, glossary = {}, prioritizeNameOverVietphraseCheck = false, caseSensitive = false) {
+  constructor(data, translationAlgorithm, multiplicationAlgorithm, useGlossary = false, glossary = {}, prioritizeNameOverVietPhraseCheck = false, autocapitalize = false) {
     this.data = data;
     this.translationAlgorithm = translationAlgorithm;
     this.multiplicationAlgorithm = multiplicationAlgorithm;
     this.useGlossary = useGlossary;
     this.glossary = glossary;
-    this.prioritizeNameOverVietphrase = prioritizeNameOverVietphraseCheck;
-    this.caseSensitive = caseSensitive;
+    this.prioritizeNameOverVietPhrase = prioritizeNameOverVietPhraseCheck;
+    this.autocapitalize = autocapitalize;
   }
 
   static getSourceLanguageName(languageCode) {
@@ -822,7 +822,7 @@ class Vietphrase {
       luatNhanEntries.forEach(([a, b]) => {
         if (this.useGlossary && this.multiplicationAlgorithm === this.MultiplicationAlgorithm.MULTIPLICATION_BY_PRONOUNS_AND_NAMES && glossaryEntries.length > 0) {
           glossaryEntries.filter(([c]) => inputText.includes(a.replace(/\{0}/g, Utils.escapeRegExpReplacement(c)))).forEach(([c, d]) => {
-            const entriesKey = a.replace(/\{0}/g, Utils.escapeRegExpReplacement(this.prioritizeNameOverVietphrase ? d : c));
+            const entriesKey = a.replace(/\{0}/g, Utils.escapeRegExpReplacement(this.prioritizeNameOverVietPhrase ? d : c));
 
             if (inputText.includes(entriesKey)) {
               nhanByGlossary.push([entriesKey, b.replace(/\{0}/g, Utils.escapeRegExpReplacement(d))]);
@@ -839,12 +839,12 @@ class Vietphrase {
     return [nhanByGlossary, nhanByPronoun];
   }
 
-  static getCaseSensitive(text) {
+  static getCapitalizeText(text) {
     // text.split(/\n/).map((element) => (this.caseSensitive ? element.replace(/(^\s*|!(?:" |' | )|\) |\.(?:" |' | )|: |\?(?:" |' | )|\] |\} |’ |” |。(?:(?:" |' ))?|！(?:(?:" |' ))?|．(?:(?:" |' ))?|？(?:(?:" |' ))?|["'：\p{Ps}\p{Pe}\p{Pi}\p{Pf}])(\p{Ll})/gu, (match, p1, p2) => p1 + p2.toUpperCase()) : element)).join('\n');
     return text.split(/\n/).map((element) => element.replace(/(^\s*|!(?:" |' | )|\.(?:" |' | )|: |\?(?:" |' | )|’ |” |。(?:(?:" |' ))?|！(?:(?:" |' ))?|．(?:(?:" |' ))?|？(?:(?:" |' ))?|["'：\p{Pi}\p{Pf}])(\p{Ll})/gu, (match, p1, p2) => p1 + p2.toUpperCase())).join('\n');
   }
 
-  translatePrioritizeLongVietphraseClusters(data, inputText) {
+  translatePrioritizeLongVietPhraseClusters(data, inputText) {
     const text = inputText.split(/\r?\n/).map((element) => element.trim()).join('\n');
 
     let dataEntries = Object.entries(data).filter(([key]) => text.includes(key));
@@ -855,12 +855,12 @@ class Vietphrase {
     try {
       if (dataEntries.length > 0 || glossaryEntries.length > 0) {
         const [nhanByGlossary, nhanByPronoun] = this.getLuatnhanData(glossaryEntries, text);
-        const maybePrioritizeNameOverVietphrase = this.prioritizeNameOverVietphrase ? nhanByGlossary : [...nhanByGlossary, ...glossaryEntries];
+        const maybePrioritizeNameOverVietPhrase = this.prioritizeNameOverVietPhrase ? nhanByGlossary : [...nhanByGlossary, ...glossaryEntries];
 
-        dataEntries = [...this.useGlossary ? maybePrioritizeNameOverVietphrase : [], ...nhanByPronoun, ...dataEntries].sort((a, b) => b[0].length - a[0].length);
+        dataEntries = [...this.useGlossary ? maybePrioritizeNameOverVietPhrase : [], ...nhanByPronoun, ...dataEntries].sort((a, b) => b[0].length - a[0].length);
 
         dataEntries.some(([a, value], index, array) => {
-          if (result.includes(a) && ((this.useGlossary && !this.prioritizeNameOverVietphrase && Object.prototype.hasOwnProperty.call(this.glossary, a)) || Array.from(a).every((element) => Object.prototype.hasOwnProperty.call(this.data.hanViet, element) || (Object.prototype.hasOwnProperty.call(this.data.vietPhrase, element) && /^\p{P}$/u.test(element))) || [...nhanByGlossary, ...glossaryEntries].indexOf(a) > -1)) {
+          if (result.includes(a) && ((this.useGlossary && !this.prioritizeNameOverVietPhrase && Object.prototype.hasOwnProperty.call(this.glossary, a)) || Array.from(a).every((element) => Object.prototype.hasOwnProperty.call(this.data.hanViet, element) || (Object.prototype.hasOwnProperty.call(this.data.vietPhrase, element) && /^\p{P}$/u.test(element))) || [...nhanByGlossary, ...glossaryEntries].indexOf(a) > -1)) {
             result = result.replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}])${Utils.escapeRegExp(a)}(?=${Object.values(this.glossary).join('|')})`, 'gu'), `$1 ${Utils.escapeRegExpReplacement(value)} `)
               .replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}])${Utils.escapeRegExp(a)}([\\p{Lu}\\p{Ll}\\p{Nd}])`, 'gu'), `$1 ${Utils.escapeRegExpReplacement(value)} $2`)
               .replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}])${Utils.escapeRegExp(a)}`, 'gu'), `$1 ${Utils.escapeRegExpReplacement(value)}`)
@@ -873,7 +873,7 @@ class Vietphrase {
           return false;
         });
 
-        if (this.caseSensitive) result = Vietphrase.getCaseSensitive(result);
+        if (this.autocapitalize) result = Vietphrase.getCapitalizeText(result);
       }
 
       return result;
@@ -897,9 +897,9 @@ class Vietphrase {
     try {
       if (dataEntries.length > 0 || glossaryEntries.length > 0) {
         const [nhanByGlossary, nhanByPronoun] = this.getLuatnhanData(glossaryEntries, text);
-        const maybePrioritizeNameOverVietphrase = this.prioritizeNameOverVietphrase ? nhanByGlossary : [...nhanByGlossary, ...glossaryEntries];
+        const maybePrioritizeNameOverVietPhrase = this.prioritizeNameOverVietPhrase ? nhanByGlossary : [...nhanByGlossary, ...glossaryEntries];
 
-        dataEntries = [...this.useGlossary ? maybePrioritizeNameOverVietphrase : [], ...nhanByPronoun, ...dataEntries];
+        dataEntries = [...this.useGlossary ? maybePrioritizeNameOverVietPhrase : [], ...nhanByPronoun, ...dataEntries];
 
         const dataObject = Object.fromEntries(dataEntries);
 
@@ -909,7 +909,7 @@ class Vietphrase {
           } else {
             const glossaryEntriesInLine = glossaryEntries.filter(([__, second]) => a.includes(second));
 
-            const dataLengths = [a.length, ...this.useGlossary && this.prioritizeNameOverVietphrase ? glossaryEntriesInLine.map(([__, second]) => second.length) : [], ...dataEntries.filter(([key]) => a.includes(key)).map(([key]) => key.length), 1].sort((b, c) => c - b).filter((element, index, array) => element > 0 && index === array.indexOf(element));
+            const dataLengths = [a.length, ...this.useGlossary && this.prioritizeNameOverVietPhrase ? glossaryEntriesInLine.map(([__, second]) => second.length) : [], ...dataEntries.filter(([key]) => a.includes(key)).map(([key]) => key.length), 1].sort((b, c) => c - b).filter((element, index, array) => element > 0 && index === array.indexOf(element));
 
             let tempLine = '';
             let prevPhrase = '';
@@ -920,14 +920,14 @@ class Vietphrase {
                 dataLengths.some((d) => {
                   const phrase = a.substring(i, i + d);
 
-                  if (this.useGlossary && this.prioritizeNameOverVietphrase && glossaryEntries.map(([__, second]) => second).indexOf(phrase) > -1) {
+                  if (this.useGlossary && this.prioritizeNameOverVietPhrase && glossaryEntries.map(([__, second]) => second).indexOf(phrase) > -1) {
                     tempLine += (i > 0 && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(prevPhrase || tempLine[tempLine.length - 1]) ? ' ' : '') + phrase;
                     prevPhrase = phrase;
                     i += d - 1;
                     return true;
                   }
 
-                  if (((this.useGlossary && !this.prioritizeNameOverVietphrase && Object.prototype.hasOwnProperty.call(this.glossary, phrase)) || Array.from(phrase).every((element) => Object.prototype.hasOwnProperty.call(this.data.hanViet, element) || (Object.prototype.hasOwnProperty.call(this.data.vietPhrase, element) && /^\p{P}$/u.test(element))) || [...nhanByGlossary, ...glossaryEntries].indexOf(phrase) > -1) && Object.prototype.hasOwnProperty.call(dataObject, phrase)) {
+                  if (((this.useGlossary && !this.prioritizeNameOverVietPhrase && Object.prototype.hasOwnProperty.call(this.glossary, phrase)) || Array.from(phrase).every((element) => Object.prototype.hasOwnProperty.call(this.data.hanViet, element) || (Object.prototype.hasOwnProperty.call(this.data.vietPhrase, element) && /^\p{P}$/u.test(element))) || [...nhanByGlossary, ...glossaryEntries].indexOf(phrase) > -1) && Object.prototype.hasOwnProperty.call(dataObject, phrase)) {
                     if (dataObject[phrase].length > 0) {
                       tempLine += (i > 0 && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(prevPhrase || tempLine[tempLine.length - 1]) ? ' ' : '') + dataObject[phrase];
                       prevPhrase = dataObject[phrase];
@@ -955,7 +955,7 @@ class Vietphrase {
         });
 
         result = results.join('\n');
-        if (this.caseSensitive) result = Vietphrase.getCaseSensitive(result);
+        if (this.autocapitalize) result = Vietphrase.getCapitalizeText(result);
       }
 
       return result;
@@ -985,14 +985,14 @@ class Vietphrase {
         // no default
       }
 
-      if (Object.keys(data).length === 0) throw console.error('Vui lòng nhập tệp VietPhrase.txt hoặc bật tuỳ chọn [Tải tệp VietPhrase mặc định] và tải lại trang!');
+      if (Object.keys(data).length === 0) return 'Vui lòng nhập tệp VietPhrase.txt hoặc bật tuỳ chọn [Tải tệp VietPhrase mặc định] và tải lại trang!';
 
       switch (this.translationAlgorithm) {
         case this.TranslationAlgorithms.TRANSLATE_FROM_LEFT_TO_RIGHT: {
           return this.translateFromLeftToRight(data, inputText);
         }
         default: {
-          return this.translatePrioritizeLongVietphraseClusters(data, inputText);
+          return this.translatePrioritizeLongVietPhraseClusters(data, inputText);
         }
       }
     } catch (error) {

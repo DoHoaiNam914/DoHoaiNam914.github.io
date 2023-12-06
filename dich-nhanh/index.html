@@ -708,13 +708,13 @@
           </div>
           <hr>
           <h2 class="fs-5">Vietphrase</h2>
-          <div class="mb-3">
-            <label for="viet-phrase-input" class="form-label">Nhập tệp VietPhrase: <span id="viet-phrase-entry-counter">0</span> mục</label>
-            <input type="file" class="form-control form-control-sm" id="viet-phrase-input" accept="text/plain">
-          </div>
           <div class="form-check form-switch mb-3">
             <input type="checkbox" class="form-check-input option disabled" id="load-default-viet-phrase-file-switch" role="switch">
             <label class="form-check-label" for="load-default-viet-phrase-file-switch">Tải tệp VietPhrase mặc định</label>
+          </div>
+          <div class="mb-3">
+            <label for="viet-phrase-input" class="form-label">Nhập tệp VietPhrase: <span id="viet-phrase-entry-counter">0</span> mục</label>
+            <input type="file" class="form-control form-control-sm" id="viet-phrase-input" accept="text/plain">
           </div>
           <h2 class="fs-6">Thuật toán dịch</h2>
           <div class="mb-3">
@@ -727,8 +727,8 @@
               <label class="form-check-label" for="translate-from-left-to-right-radio">Dịch từ trái sang phải</label>
             </div>
             <div class="form-check">
-              <input type="checkbox" class="form-check-input option quick-translate-option" id="prioritize-name-over-vietphrase-check">
-              <label class="form-check-label" for="prioritize-name-over-vietphrase-check">Ưu tiên Name hơn VietPhrase</label>
+              <input type="checkbox" class="form-check-input option quick-translate-option" id="prioritize-name-over-viet-phrase-check">
+              <label class="form-check-label" for="prioritize-name-over-viet-phrase-check">Ưu tiên Name hơn VietPhrase</label>
             </div>
           </div>
           <h2 class="fs-6">Thuật toán nhân</h2>
@@ -750,7 +750,7 @@
           </div>
           <div class="form-check">
             <input type="radio" class="form-check-input option quick-translate-option" id="multiplication-by-pronouns-and-names-radio" name="multiplication-algorithm-radio" value="2" checked>
-            <label class="form-check-label" for="multiplication-by-pronouns-and-names-radio">Nhân theo Pronouns + Names</label>
+            <label class="form-check-label" for="multiplication-by-pronouns-and-names-radio">Nhân theo Pronouns + Names (Glossary)</label>
           </div>
         </div>
         <div class="modal-footer">
