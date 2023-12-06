@@ -1320,7 +1320,7 @@ $dropdownHasCollapse.on('hide.bs.dropdown', function onHideBsDropdown() {
 
 $('.define-button').on('click', function onClick() {
   if ($sourceEntryInput.val().length > 0) {
-    window.open($(this).data('href').replace('{0}', encodeURIComponent(($sourceEntryInput.val().substring($sourceEntryInput.prop('selectionStart'), $sourceEntryInput.prop('selectionEnd')) || $sourceEntryInput.val()).substring(0, 30).trim())));
+    window.open($(this).data('href').replace('{0}', encodeURIComponent(($sourceEntryInput.val().substring($sourceEntryInput.prop('selectionStart'), $sourceEntryInput.prop('selectionEnd')) || $sourceEntryInput.val()) /** .substring(0, 30) */ .trim())));
   }
 
   if (window.getSelection) {
