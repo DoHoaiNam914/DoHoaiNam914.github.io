@@ -1270,11 +1270,11 @@ $sourceEntryInput.on('input', async function onInput() {
     }
 
     if (Object.prototype.hasOwnProperty.call(glossaryObject, inputText)) {
-      $targetEntryInput.val(applyGlossaryToText(inputText));
-      $glossaryEntrySelect.val(inputText);
+      $targetEntryInput.val(applyGlossaryToText(inputText.trim()));
+      $glossaryEntrySelect.val(inputText.trim());
       $tagsetSelect.val(glossary.filter(([first]) => first === inputText)[0][2] ?? 'X');
     } else {
-      $targetEntryInput.val(await translateText(inputText, Translators.VIETPHRASE, 'sinoVietnamese', true));
+      $targetEntryInput.val((await translateText(inputText, Translators.VIETPHRASE, 'sinoVietnamese', true)).trim());
       $glossaryEntrySelect.val('');
       $tagsetSelect.val('X');
     }
