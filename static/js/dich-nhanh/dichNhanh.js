@@ -376,17 +376,17 @@ function reloadGlossaryEntries() {
 
     switch ($glossaryType.val()) {
       case GlossaryType.CSV: {
-        glossaryData = $.csv.fromArrays(glossary);
+        glossaryData = $.csv.fromArrays([...glossary].sort((a, b) => Tagset[a[2]] - Tagset[b[2]] || b[0].length - a[0].length || b[1].length - a[1].length));
         glossaryExtension.text('csv');
         break;
       }
       case GlossaryType.VIETPHRASE: {
-        glossaryData = glossary.map(([first, second]) => [first, second]).map((element) => element.join('=')).join('\n');
+        glossaryData = glossary.sort((a, b) => b[0].length - a[0].length || b[1].length - a[1].length).map(([first, second]) => [first, second].join('=')).join('\n');
         glossaryExtension.text('txt');
         break;
       }
       default: {
-        glossaryData = glossary.map((element) => element.join('\t')).join('\n');
+        glossaryData = [...glossary].sort((a, b) => Tagset[a[2]] - Tagset[b[2]] || b[0].length - a[0].length || b[1].length - a[1].length).map((element) => element.join('\t')).join('\n');
         glossaryExtension.text('tsv');
         break;
       }
