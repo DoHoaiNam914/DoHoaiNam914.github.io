@@ -1262,9 +1262,9 @@ $sourceEntryInput.on('input', async function onInput() {
   const inputText = $(this).val();
 
   if (inputText.length > 0) {
-    const $option = $(`#${$(this).attr('list')} > option:contains(${inputText})`);
+    const $option = $(`#${$(this).attr('list')} > option`).filter((__, element) => inputText === element.innerText);
 
-    if (Utils.isOnMobile() && $option.length > 0 && inputText === $option.text()) {
+    if (Utils.isOnMobile() && $option.length > 0) {
       $(this).val($option.data('value')).trigger('input');
       return;
     }
