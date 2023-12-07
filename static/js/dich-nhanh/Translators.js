@@ -687,7 +687,6 @@ class MicrosoftTranslator {
   static async fetchAccessToken() {
     try {
       return await $.ajax({
-        dataType: 'text',
         method: 'GET',
         url: 'https://edge.microsoft.com/translate/auth',
       });
@@ -722,13 +721,12 @@ class MicrosoftTranslator {
        */
       return (await $.ajax({
         data: JSON.stringify(text.split(/\n/).map((element) => ({ Text: element }))),
-        dataType: 'json',
         headers: {
           Authorization: `Bearer ${this.accessToken}`,
           'Content-Type': 'application/json',
         },
         method: 'POST',
-        url: `https://api-edge.cognitive.microsofttranslator.com/translate?api-version=3.0&from=${from}&to=${to}`,
+        url: `https://api-edge.cognitive.microsofttranslator.com/translate?from=${from}&to=${to}&api-version=3.0`,
       })).map(({ translations: [element] }) => element.text).join('\n');
     } catch (error) {
       console.error('Bản dịch lỗi:', error);
