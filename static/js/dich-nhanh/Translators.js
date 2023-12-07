@@ -809,14 +809,14 @@ class Vietphrase {
     }
   }
 
-  getLuatnhanData(glossaryEntries, inputText) {
+  loadLuatNhanData(targetLanguage, glossaryEntries, inputText) {
     const luatNhanEntries = Object.entries(this.data.luatNhan).filter(([key]) => Utils.getTrieRegexPatternFromWords(key.split('{0}')).test(inputText));
     const pronounEntries = Object.entries(this.data.pronoun).filter(([key]) => inputText.includes(key));
 
     const nhanByGlossary = [];
     const nhanByPronoun = [];
 
-    if (this.multiplicationAlgorithm > this.MultiplicationAlgorithm.NOT_APPLICABLE) {
+    if (this.multiplicationAlgorithm > this.MultiplicationAlgorithm.NOT_APPLICABLE && targetLanguage === 'vi') {
       luatNhanEntries.forEach(([a, b]) => {
         if (this.useGlossary && this.multiplicationAlgorithm === this.MultiplicationAlgorithm.MULTIPLICATION_BY_PRONOUNS_AND_NAMES && glossaryEntries.length > 0) {
           glossaryEntries.filter(([c]) => inputText.includes(a.replace(/\{0}/g, Utils.escapeRegExpReplacement(c)))).forEach(([c, d]) => {
@@ -842,7 +842,7 @@ class Vietphrase {
     return text.split(/\n/).map((element) => element.replace(/(^\s*|!(?:" |' | )|\.(?:" |' | )|: |\?(?:" |' | )|’ |” |。(?:(?:" |' ))?|！(?:(?:" |' ))?|．(?:(?:" |' ))?|？(?:(?:" |' ))?|["'：\p{Pi}\p{Pf}])(\p{Ll})/gu, (match, p1, p2) => p1 + p2.toUpperCase())).join('\n');
   }
 
-  translatePrioritizeLongVietPhraseClusters(data, inputText) {
+  translatePrioritizeLongVietPhraseClusters(targetLanguage, data, inputText) {
     const text = inputText.split(/\r?\n/).map((element) => element.trim()).join('\n');
 
     let dataEntries = Object.entries(data).filter(([key]) => text.includes(key));
@@ -852,7 +852,7 @@ class Vietphrase {
 
     try {
       if (dataEntries.length > 0 || glossaryEntries.length > 0) {
-        const [nhanByGlossary, nhanByPronoun] = this.getLuatnhanData(glossaryEntries, text);
+        const [nhanByGlossary, nhanByPronoun] = this.loadLuatNhanData(targetLanguage, glossaryEntries, text);
         const maybePrioritizeNameOverVietPhrase = this.prioritizeNameOverVietPhrase ? nhanByGlossary : [...nhanByGlossary, ...glossaryEntries];
 
         dataEntries = [...this.useGlossary ? maybePrioritizeNameOverVietPhrase : [], ...nhanByPronoun, ...dataEntries].sort((a, b) => b[0].length - a[0].length);
@@ -881,7 +881,7 @@ class Vietphrase {
     }
   }
 
-  translateFromLeftToRight(data, inputText) {
+  translateFromLeftToRight(targetLanguage, data, inputText) {
     const text = inputText.split(/\r?\n/).map((element) => element.trim()).join('\n');
 
     let dataEntries = Object.entries(data).filter(([key]) => text.includes(key));
@@ -894,7 +894,7 @@ class Vietphrase {
 
     try {
       if (dataEntries.length > 0 || glossaryEntries.length > 0) {
-        const [nhanByGlossary, nhanByPronoun] = this.getLuatnhanData(glossaryEntries, text);
+        const [nhanByGlossary, nhanByPronoun] = this.loadLuatNhanData(targetLanguage, glossaryEntries, text);
         const maybePrioritizeNameOverVietPhrase = this.prioritizeNameOverVietPhrase ? nhanByGlossary : [...nhanByGlossary, ...glossaryEntries];
 
         dataEntries = [...this.useGlossary ? maybePrioritizeNameOverVietPhrase : [], ...nhanByPronoun, ...dataEntries];
@@ -987,10 +987,10 @@ class Vietphrase {
 
       switch (this.translationAlgorithm) {
         case this.TranslationAlgorithms.TRANSLATE_FROM_LEFT_TO_RIGHT: {
-          return this.translateFromLeftToRight(data, inputText);
+          return this.translateFromLeftToRight(targetLanguage, data, inputText);
         }
         default: {
-          return this.translatePrioritizeLongVietPhraseClusters(data, inputText);
+          return this.translatePrioritizeLongVietPhraseClusters(targetLanguage, data, inputText);
         }
       }
     } catch (error) {

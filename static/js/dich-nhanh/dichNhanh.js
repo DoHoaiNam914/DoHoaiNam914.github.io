@@ -1046,7 +1046,7 @@ $retranslateButton.click(function onClick() {
 $('#glossary-management-button').on('mousedown', () => {
   $tagsetSelect.val('X');
   $glossaryEntrySelect.val('').change();
-  $sourceEntryInput.val(getSelectedTextOrActiveElementText()).trigger('input');
+  $sourceEntryInput.val(getSelectedTextOrActiveElementText().replace(/\n/g, ' ').trim()).trigger('input');
 
   if (window.getSelection) {
     window.getSelection().removeAllRanges();
@@ -1415,8 +1415,19 @@ $inputTextarea.on('input', () => {
 });
 
 $inputTextarea.on('keypress', (event) => !(event.shiftKey && event.key === 'Enter') || ($translateButton.click() && $resultTextarea.focus()));
-$resultTextarea.on('keydown', (event) => event.ctrlKey || event.key === 'Enter' || event.key === 'Home' || event.key === 'End' || event.key === 'PageUp' || event.key === 'PageDown' || event.key === 'ArrowUp' || event.key === 'ArrowLeft' || event.key === 'ArrowDown' || event.key === 'ArrowRight' || event.preventDefault());
-$resultTextarea.on('dragstart', (event) => event.preventDefault());
+$resultTextarea.on('keydown', (event) => {
+  const allowKey = [
+    'Escape', 'F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10', 'F11', 'F12', 'PrintScreen', 'ScrollLock', 'Pause', 'Cancel',
+    'Insert', 'Home', 'PageUp', 'NumLock',
+    'Tab', 'Enter', 'End', 'PageDown',
+    'CapsLock',
+    'Shift', 'ArrowUp',
+    'Control', 'Meta', 'Alt', 'ContextMenu', 'ArrowLeft', 'ArrowDown', 'ArrowRight',
+  ];
+
+  return event.ctrlKey || allowKey.some((element) => event.key === element) || event.preventDefault();
+});
+$resultTextarea.on('drop', (event) => event.preventDefault());
 $resultTextarea.on('cut', (event) => event.preventDefault());
 $resultTextarea.on('paste', (event) => event.preventDefault());
-$resultTextarea.on('keypress', (event) => event.key !== 'Enter' || ($translateButton.click() && $inputTextarea.focus()));
+$resultTextarea.on('keypress', (event) => event.key !== 'Enter' || (event.preventDefault() && $translateButton.click() && $inputTextarea.focus()));
