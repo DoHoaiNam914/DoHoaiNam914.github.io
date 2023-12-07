@@ -579,7 +579,7 @@ async function translateTextarea() {
         result = results.join('\n');
       }
 
-      if (glossaryEnabled && translatorOption !== Translators.MICROSOFT_TRANSLATOR && translatorOption !== Translators.VIETPHRASE && sourceLanguage.split('-')[0].toLowerCase() === languagePairs[0] && targetLanguage.split('-')[0].toLowerCase() === languagePairs[1] && translatorOption !== Translators.MICROSOFT_TRANSLATOR) {
+      if (glossaryEnabled && translatorOption !== Translators.VIETPHRASE && sourceLanguage.split('-')[0].toLowerCase() === languagePairs[0] && targetLanguage.split('-')[0].toLowerCase() === languagePairs[1]) {
         glossary.filter(([first]) => inputText.includes(first)).sort((a, b) => b[1].length - a[1].length).forEach(([__, second]) => {
           const key = second.replace(/ /g, '_');
           const oldAccentKey = applyOldAccent(key);
@@ -813,7 +813,7 @@ async function translateText(inputText, translatorOption, targetLanguage, glossa
     if (translatorOption === Translators.DEEPL_TRANSLATE && translator.usage.character_count + text.length > translator.usage.character_limit) return `Lỗi DeepL Translator: Đã đạt đến giới hạn dịch của tài khoản. (${translator.usage.character_count}/${translator.usage.character_limit} ký tự).`;
     let result = await translator.translateText(sourceLanguage, targetLanguage, text);
 
-    if (glossaryEnabled && translatorOption !== Translators.MICROSOFT_TRANSLATOR && translatorOption !== Translators.VIETPHRASE) {
+    if (glossaryEnabled && translatorOption !== Translators.VIETPHRASE) {
       glossary.filter(([first]) => inputText.includes(first)).sort((a, b) => b[1].length - a[1].length).forEach(([__, second]) => {
         const key = second.replace(/ /g, '_');
         const oldAccentKey = applyOldAccent(key);
