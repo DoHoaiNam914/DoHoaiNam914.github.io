@@ -1181,7 +1181,7 @@ $loadDefaultVietPhraseFileSwitch.on('change', function onChange() {
   if (!$(this).hasClass('disabled')) {
     quickTranslateStorage[getOptionId($(this).attr('id'))] = $(this).prop('checked');
     localStorage.setItem('dich_nhanh', JSON.stringify(quickTranslateStorage));
-    if ($(this).prop('checked') === true && window.confirm('Bạn có muốn tải lại trang ngay chứ?')) window.location.reload();
+    if ($(this).prop('checked') === true && (Object.keys(vietPhraseData.vietPhrase).length === 0 || Object.keys(vietPhraseData.luatNhan).length === 0 || Object.keys(vietPhraseData.pronoun).length === 0) && window.confirm('Bạn có muốn tải lại trang ngay chứ?')) window.location.reload();
   }
 });
 
@@ -1320,7 +1320,7 @@ $dropdownHasCollapse.on('hide.bs.dropdown', function onHideBsDropdown() {
 
 $('.define-button').on('click', function onClick() {
   if ($sourceEntryInput.val().length > 0) {
-    window.open($(this).data('href').replace('{0}', encodeURIComponent(($sourceEntryInput.val().substring($sourceEntryInput.prop('selectionStart'), $sourceEntryInput.prop('selectionEnd')) || $sourceEntryInput.val()) /** .substring(0, 30) */ .trim())));
+    window.open($(this).data('href').replace('{0}', encodeURIComponent(($sourceEntryInput.val().substring($sourceEntryInput.prop('selectionStart'), $sourceEntryInput.prop('selectionEnd')) || $sourceEntryInput.val()).trim() /** .substring(0, 30) */)));
   }
 
   if (window.getSelection) {
