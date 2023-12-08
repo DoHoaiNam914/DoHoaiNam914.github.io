@@ -277,7 +277,7 @@ function applyGlossaryToText(text, translator = Translators.VIETPHRASE) {
     const lines = text.split(/\n/);
     const results = [];
 
-    const glossaryLengths = [...glossaryEntries.map(([first]) => first.length), 1].sort((a, b) => b - a).filter((element, index, array) => element > 0 && index === array.indexOf(element));
+    const glossaryLengths = [...glossaryEntries.map(([first]) => first.length), 1].toSorted((a, b) => b - a).filter((element, index, array) => element > 0 && index === array.indexOf(element));
 
     lines.forEach((a) => {
       if (a.length === 0) {
@@ -354,7 +354,7 @@ function reloadGlossaryEntries() {
   const glossaryExtension = $('#glossary-extension');
 
   if (glossary.length > 0) {
-    glossary = glossary.filter(([first, second], index, array) => !array[first] && (array[first] = 1), {}).sort((a, b) => Tagset[a[2]] - Tagset[b[2]] || a[1].localeCompare(b[1], 'vi', { ignorePunctuation: true }) || a[0].localeCompare(b[0], 'vi', { ignorePunctuation: true }) || b[0].length - a[0].length).map(([first, second, third]) => [first, second, third ?? 'X']);
+    glossary = glossary.filter(([first, second], index, array) => !array[first] && (array[first] = 1), {}).toSorted((a, b) => Tagset[a[2]] - Tagset[b[2]] || a[1].localeCompare(b[1], 'vi', { ignorePunctuation: true }) || a[0].localeCompare(b[0], 'vi', { ignorePunctuation: true }) || b[0].concat(`\t${b[1]}`).length - a[0].concat(`\t${a[1]}`).length).map(([first, second, third]) => [first, second, third ?? 'X']);
     glossaryObject = Object.fromEntries(glossary.map(([first, second]) => [first, second]));
 
     glossary.forEach(([first, second, third]) => {
@@ -376,17 +376,17 @@ function reloadGlossaryEntries() {
 
     switch ($glossaryType.val()) {
       case GlossaryType.CSV: {
-        glossaryData = $.csv.fromArrays([...glossary].sort((a, b) => Tagset[a[2]] - Tagset[b[2]] || b[0].length - a[0].length || b[1].length - a[1].length));
+        glossaryData = $.csv.fromArrays(glossary.toSorted((a, b) => Tagset[a[2]] - Tagset[b[2]] || b[0].concat(`\t${b[1]}`).length - a[0].concat(`\t${a[1]}`).length || a[1].localeCompare(b[1], 'vi', { ignorePunctuation: true }) || a[0].localeCompare(b[0], 'vi', { ignorePunctuation: true })));
         glossaryExtension.text('csv');
         break;
       }
       case GlossaryType.VIETPHRASE: {
-        glossaryData = glossary.sort((a, b) => b[0].length - a[0].length || b[1].length - a[1].length).map(([first, second]) => [first, second].join('=')).join('\n');
+        glossaryData = glossary.toSorted((a, b) => b[0].length - a[0].length || b[1].length - a[1].length || a[1].localeCompare(b[1], 'vi', { ignorePunctuation: true }) || a[0].localeCompare(b[0], 'vi', { ignorePunctuation: true })).map(([first, second]) => [first, second].join('=')).join('\n');
         glossaryExtension.text('txt');
         break;
       }
       default: {
-        glossaryData = [...glossary].sort((a, b) => Tagset[a[2]] - Tagset[b[2]] || b[0].length - a[0].length || b[1].length - a[1].length).map((element) => element.join('\t')).join('\n');
+        glossaryData = glossary.toSorted((a, b) => Tagset[a[2]] - Tagset[b[2]] || b[0].concat(`\t${b[1]}`).length - a[0].concat(`\t${a[1]}`).length || a[1].localeCompare(b[1], 'vi', { ignorePunctuation: true }) || a[0].localeCompare(b[0], 'vi', { ignorePunctuation: true })).map((element) => element.join('\t')).join('\n');
         glossaryExtension.text('tsv');
         break;
       }
@@ -503,7 +503,7 @@ async function translateTextarea() {
 
   const [MAX_LENGTH, MAX_LINE] = getMaxQueryLengthAndLine(translatorOption, processText);
 
-  if (translatorOption !== Translators.DEEPL_TRANSLATE && processText.split(/\n/).sort((a, b) => b.length - a.length)[0].length > MAX_LENGTH) {
+  if (translatorOption !== Translators.DEEPL_TRANSLATE && processText.split(/\n/).toSorted((a, b) => b.length - a.length)[0].length > MAX_LENGTH) {
     throw console.error(`Số lượng từ trong một dòng quá dài (Số lượng từ hợp lệ nhỏ hơn hoặc bằng ${MAX_LENGTH}).`);
   }
 
@@ -580,7 +580,7 @@ async function translateTextarea() {
       }
 
       if (glossaryEnabled && translatorOption !== Translators.VIETPHRASE && sourceLanguage.split('-')[0].toLowerCase() === languagePairs[0] && targetLanguage.split('-')[0].toLowerCase() === languagePairs[1]) {
-        glossary.filter(([first]) => inputText.includes(first)).sort((a, b) => b[1].length - a[1].length).forEach(([__, second]) => {
+        glossary.filter(([first]) => inputText.includes(first)).toSorted((a, b) => b[1].length - a[1].length).forEach(([__, second]) => {
           const key = second.replace(/ /g, '_');
           const oldAccentKey = applyOldAccent(key);
           if (second.split(' ').length >= 2) result = result.replace(Utils.getTrieRegexPatternFromWords([key, key[0].toLowerCase() + key.substring(1), key[0].toUpperCase() + key.substring(1), oldAccentKey, oldAccentKey[0].toLowerCase() + oldAccentKey.substring(1), oldAccentKey[0].toUpperCase() + oldAccentKey.substring(1)]), (match) => match[0] + second.substring(1));
@@ -814,7 +814,7 @@ async function translateText(inputText, translatorOption, targetLanguage, glossa
     let result = await translator.translateText(sourceLanguage, targetLanguage, text);
 
     if (glossaryEnabled && translatorOption !== Translators.VIETPHRASE) {
-      glossary.filter(([first]) => inputText.includes(first)).sort((a, b) => b[1].length - a[1].length).forEach(([__, second]) => {
+      glossary.filter(([first]) => inputText.includes(first)).toSorted((a, b) => b[1].length - a[1].length).forEach(([__, second]) => {
         const key = second.replace(/ /g, '_');
         const oldAccentKey = applyOldAccent(key);
         if (second.split(' ').length >= 2) result = result.replace(Utils.getTrieRegexPatternFromWords([key, key[0].toLowerCase() + key.substring(1), key[0].toUpperCase() + key.substring(1), oldAccentKey, oldAccentKey[0].toLowerCase() + oldAccentKey.substring(1), oldAccentKey[0].toUpperCase() + oldAccentKey.substring(1)]), (match) => match[0] + second.substring(1));
@@ -852,7 +852,7 @@ $(document).ready(async () => {
       method: 'GET',
       url: '/static/datasource/chivi/Bính âm.txt',
     }).done((data) => {
-      pinyinList = [...pinyinList, ...data.split(/\r?\n/).map((element) => element.split('=')).filter((element) => element.length === 2).sort((a, b) => b[0].length - a[0].length).map(([first, second]) => [first, second.split('ǀ')[0]]).filter(([first]) => !Object.prototype.hasOwnProperty.call(vietPhraseData.pinyins, first))];
+      pinyinList = [...pinyinList, ...data.split(/\r?\n/).map((element) => element.split('=')).filter((element) => element.length === 2).toSorted((a, b) => b[0].length - a[0].length).map(([first, second]) => [first, second.split('ǀ')[0]]).filter(([first]) => !Object.prototype.hasOwnProperty.call(vietPhraseData.pinyins, first))];
     });
 
     pinyinList = pinyinList.filter(([first, second], index, array) => !array[first] && (array[first] = 1), {});
@@ -881,7 +881,7 @@ $(document).ready(async () => {
       method: 'GET',
       url: '/static/datasource/chivi/word_hv.txt',
     }).done((data) => {
-      chinesePhienAmWordList = [...chinesePhienAmWordList, ...data.split(/\n/).map((element) => element.split('=')).filter((element) => element.length === 2 && Array.from(element[0]).length === 1).sort((a, b) => b[0].length - a[0].length).map(([first, second]) => [first, second.split('ǀ')[0]])];
+      chinesePhienAmWordList = [...chinesePhienAmWordList, ...data.split(/\n/).map((element) => element.split('=')).filter((element) => element.length === 2 && Array.from(element[0]).length === 1).toSorted((a, b) => b[0].length - a[0].length).map(([first, second]) => [first, second.split('ǀ')[0]])];
     });
 
     chinesePhienAmWordList = chinesePhienAmWordList.filter(([first], index, array) => !array[first] && (array[first] = 1), {});
