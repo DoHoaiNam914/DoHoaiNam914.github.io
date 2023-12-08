@@ -1430,4 +1430,4 @@ $resultTextarea.on('keydown', (event) => {
 $resultTextarea.on('drop', (event) => event.preventDefault());
 $resultTextarea.on('cut', (event) => event.preventDefault());
 $resultTextarea.on('paste', (event) => event.preventDefault());
-$resultTextarea.on('keypress', (event) => event.key !== 'Enter' || (event.preventDefault() && $translateButton.click() && $inputTextarea.focus()));
+$resultTextarea.on('keypress', (event) => event.key !== 'Enter' || ($translateButton.click() && $inputTextarea.focus() && event.preventDefault()));
