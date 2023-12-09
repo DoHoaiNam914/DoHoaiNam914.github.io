@@ -1047,6 +1047,7 @@ $('#glossary-management-button').on('mousedown', () => {
   $tagsetSelect.val('X');
   $glossaryEntrySelect.val('').change();
   $sourceEntryInput.val(getSelectedTextOrActiveElementText().replace(/\n/g, ' ').trim()).trigger('input');
+  $sourceEntryInput.prop('scrollLeft', 0);
 
   if (window.getSelection) {
     window.getSelection().removeAllRanges();
@@ -1271,10 +1272,12 @@ $sourceEntryInput.on('input', async function onInput() {
 
     if (Object.prototype.hasOwnProperty.call(glossaryObject, inputText)) {
       $targetEntryInput.val(applyGlossaryToText(inputText.trim()));
+      $targetEntryInput.prop('scrollLeft', 0);
       $glossaryEntrySelect.val(inputText.trim());
       $tagsetSelect.val(glossary.filter(([first]) => first === inputText)[0][2] ?? 'X');
     } else {
       $targetEntryInput.val((await translateText(inputText, Translators.VIETPHRASE, 'sinoVietnamese', true)).trim());
+      $targetEntryInput.prop('scrollLeft', 0);
       $glossaryEntrySelect.val('');
       $tagsetSelect.val('X');
     }
@@ -1359,6 +1362,7 @@ $('.upper-case-button').on('click', function onClick() {
     }
 
     $targetEntryInput.val(text);
+    $targetEntryInput.prop('scrollLeft', 0);
   }
 });
 
@@ -1370,7 +1374,10 @@ $translateEntryButtons.on('click', async function onClick() {
 
   if (inputText.length > 0) {
     $translateEntryButtons.addClass('disabled');
+    $sourceEntryInput.attr('readonly', true);
     $targetEntryInput.val(await translateText(inputText, translatorOption, targetLanguage, false));
+    $targetEntryInput.prop('scrollLeft', 0);
+    $sourceEntryInput.removeAttr('readonly');
     $translateEntryButtons.removeClass('disabled');
   }
 });
