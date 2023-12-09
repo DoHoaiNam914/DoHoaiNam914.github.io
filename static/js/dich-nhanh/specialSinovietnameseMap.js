@@ -28,6 +28,7 @@ const specialSinovietnameseMap = [
   ['领袖', 'LÃNH TỤ'],
   ['御使', 'NGỰ SỨ'],
   ['御姐', 'NGỰ TỶ'],
+  ['任务', 'NHIỆM VỤ'],
   ['玻璃', 'PHA LÊ'],
   ['副本', 'PHÓ BẢN'],
   ['服从', 'PHỤC TÙNG'],
