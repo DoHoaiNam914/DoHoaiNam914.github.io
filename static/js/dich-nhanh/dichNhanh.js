@@ -83,7 +83,7 @@ const OptionTypes = {
 const GlossaryType = {
   TSV: 'text/tab-separated-values',
   CSV: 'text/csv',
-  VIETPHRASE: 'text/plain',
+  NAMES: 'text/plain',
 };
 
 const Tagset = {
@@ -115,7 +115,7 @@ const Tagset = {
   FW: 24,
   PUNCT: 25,
   SYM: 26,
-  // Nhãn Constituency
+  // Nhãn thành phần cú pháp
   NP: 27,
   VP: 28,
   AP: 29,
@@ -380,7 +380,7 @@ function reloadGlossaryEntries() {
         glossaryExtension.text('csv');
         break;
       }
-      case GlossaryType.VIETPHRASE: {
+      case GlossaryType.NAMES: {
         glossaryData = glossary.toSorted((a, b) => b[0].length - a[0].length || b[1].length - a[1].length || a[1].localeCompare(b[1], 'vi', { ignorePunctuation: true }) || a[0].localeCompare(b[0], 'vi', { ignorePunctuation: true })).map(([first, second]) => [first, second].join('=')).join('\n');
         glossaryExtension.text('txt');
         break;
@@ -1230,9 +1230,9 @@ $glossaryInput.on('change', function onChange() {
         $glossaryType.val(GlossaryType.CSV);
         break;
       }
-      case GlossaryType.VIETPHRASE: {
+      case GlossaryType.NAMES: {
         glossary = this.result.split(/\r?\n/).map((element) => element.split('=')).filter((element) => element.length === 2);
-        $glossaryType.val(GlossaryType.VIETPHRASE);
+        $glossaryType.val(GlossaryType.NAMES);
         break;
       }
       default: {
