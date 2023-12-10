@@ -120,6 +120,7 @@ class BaiduFanyi {
     }
   }
 
+  // eslint-disable-next-line class-methods-use-this
   async translateText(from, to, query) {
     try {
       let queryDataFrom = from;
@@ -501,40 +502,6 @@ class GoogleTranslate {
     }
   }
 
-  async translateText(sl, tl, q) {
-    try {
-      /**
-       * Google translate Widget
-       * Method: POST
-       * URL: https://translate.googleapis.com/translate_a/t?anno=3&client=te&format=html&v=1.0&key&logld=v${version}&sl=${sl}&tl=${tl}&tc=0&tk=${lq(querys)}
-       * `q=${querys.split(/\n/).map((sentence) => encodeURIComponent(sentence)).join('&q=')}`
-       *
-       * Google Translate
-       * Method: GET
-       * URL: https://translate.googleapis.com/translate_a/single?client=gtx&sl=${sl}&tl=${tl}&hl=vi&dt=t&dt=bd&dj=1&q=${encodeURIComponent(querys)}
-       *
-       * Google Translate Websites
-       * Method: POST
-       * URL: https://translate.googleapis.com/translate_a/t?anno=3&client=wt_lib&format=html&v=1.0&key=&logld=v${version}&sl=${sl}&tl=${tl}&tc=0&tk=${lq(querys)}
-       * Content-Type: application/x-www-form-urlencoded - `q=${querys.split(/\n/).map((sentence) => encodeURIComponent(sentence)).join('&q=')}`
-       *
-       * Google Chrome
-       * Method: POST
-       * URL: https://translate.googleapis.com/translate_a/t?anno=3&client=${(_cac || 'te') + (_cam === 'lib' ? '_lib' : '')}&format=html&v=1.0&key=AIzaSyBOti4mM-6x9WDnZIjIeyEU21OpBXqWBgw&logld=v${v || ''}&sl=${sl}&tl=${tl}&tc=0&tk=${lq(querys)}
-       * Content-Type: application/x-www-form-urlencoded - `q=${querys.split(/\n/).map((sentence) => encodeURIComponent(sentence)).join('&q=')}`
-       */
-      return Utils.convertHtmlToText((await $.ajax({
-        data: `q=${q.split(/\n/).map((element) => encodeURIComponent(element)).join('&q=')}`,
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        method: 'POST',
-        url: `https://translate.googleapis.com/translate_a/t?anno=2&client=${(this.data._cac || 'te') + (this.data._cam === 'lib' ? '_lib' : '')}&format=html&v=1.0&key${this.apiKey.length > 0 ? `=${this.apiKey}` : ''}&logld=v${this.data.v || ''}&sl=${sl}&tl=${tl}&tc=0&tk=${this.lq(q.replace(/\n/g, ''))}`,
-      })).map((element) => (sl === 'auto' ? element[0] : element)).join('\n'));
-    } catch (error) {
-      console.error('Bản dịch lỗi:', error);
-      throw error;
-    }
-  }
-
   /* eslint-disable */
 
   static Oo(a) {
@@ -570,6 +537,40 @@ class GoogleTranslate {
   }
 
   /* eslint-enable */
+
+  async translateText(sl, tl, q) {
+    try {
+      /**
+       * Google translate Widget
+       * Method: POST
+       * URL: https://translate.googleapis.com/translate_a/t?anno=3&client=te&format=html&v=1.0&key&logld=v${version}&sl=${sl}&tl=${tl}&tc=0&tk=${lq(querys)}
+       * `q=${querys.split(/\n/).map((sentence) => encodeURIComponent(sentence)).join('&q=')}`
+       *
+       * Google Translate
+       * Method: GET
+       * URL: https://translate.googleapis.com/translate_a/single?client=gtx&sl=${sl}&tl=${tl}&hl=vi&dt=t&dt=bd&dj=1&q=${encodeURIComponent(querys)}
+       *
+       * Google Translate Websites
+       * Method: POST
+       * URL: https://translate.googleapis.com/translate_a/t?anno=3&client=wt_lib&format=html&v=1.0&key=&logld=v${version}&sl=${sl}&tl=${tl}&tc=0&tk=${lq(querys)}
+       * Content-Type: application/x-www-form-urlencoded - `q=${querys.split(/\n/).map((sentence) => encodeURIComponent(sentence)).join('&q=')}`
+       *
+       * Google Chrome
+       * Method: POST
+       * URL: https://translate.googleapis.com/translate_a/t?anno=3&client=${(_cac || 'te') + (_cam === 'lib' ? '_lib' : '')}&format=html&v=1.0&key=AIzaSyBOti4mM-6x9WDnZIjIeyEU21OpBXqWBgw&logld=v${v || ''}&sl=${sl}&tl=${tl}&tc=0&tk=${lq(querys)}
+       * Content-Type: application/x-www-form-urlencoded - `q=${querys.split(/\n/).map((sentence) => encodeURIComponent(sentence)).join('&q=')}`
+       */
+      return Utils.convertHtmlToText((await $.ajax({
+        data: `q=${q.split(/\n/).map((element) => encodeURIComponent(element)).join('&q=')}`,
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        method: 'POST',
+        url: `https://translate.googleapis.com/translate_a/t?anno=2&client=${(this.data._cac || 'te') + (this.data._cam === 'lib' ? '_lib' : '')}&format=html&v=1.0&key${this.apiKey.length > 0 ? `=${this.apiKey}` : ''}&logld=v${this.data.v || ''}&sl=${sl}&tl=${tl}&tc=0&tk=${this.lq(q.replace(/\n/g, ''))}`,
+      })).map((element) => (sl === 'auto' ? element[0] : element)).join('\n'));
+    } catch (error) {
+      console.error('Bản dịch lỗi:', error);
+      throw error;
+    }
+  }
 }
 
 class Papago {
@@ -648,8 +649,8 @@ class Papago {
     'zh-TW': 'zh-Hant',
   };
 
-  constructor() {
-    this.uuid = crypto.randomUUID();
+  constructor(uuid) {
+    this.uuid = uuid;
   }
 
   async init() {

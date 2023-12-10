@@ -51,6 +51,8 @@ let quickTranslateStorage = JSON.parse(localStorage.getItem('dich_nhanh')) ?? {}
 let glossary = JSON.parse(localStorage.getItem('glossary')) ?? [];
 let glossaryObject = {};
 
+const uuid = crypto.randomUUID();
+
 let newAccentObject = {};
 let oldAccentObject = {};
 
@@ -534,7 +536,7 @@ async function translateTextarea() {
           break;
         }
         case Translators.PAPAGO: {
-          translator = await new Papago().init();
+          translator = await new Papago(uuid).init();
           break;
         }
         case Translators.VIETPHRASE: {
