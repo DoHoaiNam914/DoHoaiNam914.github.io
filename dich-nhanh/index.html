@@ -686,6 +686,9 @@
             </button>
             <ul class="dropdown-menu">
               <li>
+                <button type="button" class="dropdown-item translator-option" data-id="baiduFanyi">Baidu Fanyi</button>
+              </li>
+              <li>
                 <button type="button" class="dropdown-item translator-option" data-id="deeplTranslate">DeepL Translate</button>
               </li>
               <li>
@@ -912,6 +915,16 @@
                 <hr class="dropdown-divider">
               </li>
               <li>
+                <button type="button" class="dropdown-item" data-bs-toggle="collapse" data-bs-target="#baidu-fanyi-collapse">Baidu Fanyi</button>
+                <div class="collapse" id="baidu-fanyi-collapse">
+                  <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="baiduFanyi" data-lang="jp">Japanese</button>
+                  <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="baiduFanyi" data-lang="en">English</button>
+                  <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="baiduFanyi" data-lang="vie">Vietnamese</button>
+                  <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="baiduFanyi" data-lang="zh">Chinese</button>
+                  <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="baiduFanyi" data-lang="cht">Traditional Chinese</button>
+                </div>
+              </li>
+              <li>
                 <button type="button" class="dropdown-item" data-bs-toggle="collapse" data-bs-target="#deepl-translate-collapse">DeepL Translate</button>
                 <div class="collapse" id="deepl-translate-collapse">
                   <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="deeplTranslate" data-lang="EN-US">English</button>
@@ -926,7 +939,7 @@
                   <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="googleTranslate" data-lang="ja">Nhật</button>
                   <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="googleTranslate" data-lang="zh-CN">Trung (Giản thể)</button>
                   <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="googleTranslate" data-lang="zh-TW">Trung (Phồn thể)</button>
-                  <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="googleTranslate" data-lang="vi"> Việt</button>
+                  <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="googleTranslate" data-lang="vi">Việt</button>
                 </div>
               </li>
               <li>

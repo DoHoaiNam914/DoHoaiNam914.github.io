@@ -295,7 +295,7 @@ function applyGlossaryToText(text, translator = Translators.VIETPHRASE) {
               if (Object.prototype.hasOwnProperty.call(glossaryObject, phrase)) {
                 if (glossaryObject[phrase].length > 0) {
                   const maybeNotStaticPos = glossary.filter(([first, __, third]) => first === phrase && isDynamicWordOrPhrase(third)).length > 0 ? glossaryObject[phrase].replace(/ /g, '_') : glossaryObject[phrase];
-                  tempLine += (i > 0 && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(prevPhrase || tempLine[tempLine.length - 1] || '') ? ' ' : '') + (translator === Translators.MICROSOFT_TRANSLATOR || translator === Translators.VIETPHRASE || glossary.filter(([first, __, third]) => first === phrase && (isStaticWordOrPhrase(third))).length > 0 ? getIgnoreTranslationMarkup(phrase, glossaryObject[phrase], translator) : maybeNotStaticPos);
+                  tempLine += (i > 0 && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(prevPhrase || tempLine[tempLine.length - 1] || '') ? ' ' : '') + ([Translators.MICROSOFT_TRANSLATOR, Translators.VIETPHRASE].some((element) => translator === element) || glossary.filter(([first, __, third]) => first === phrase && (isStaticWordOrPhrase(third))).length > 0 ? getIgnoreTranslationMarkup(phrase, glossaryObject[phrase], translator) : maybeNotStaticPos);
                   prevPhrase = glossaryObject[phrase];
                 }
 
@@ -332,8 +332,8 @@ function updateInputTextLength() {
 
   const translator = $translatorOptions.filter($('.active')).data('id');
 
-  const sourceLanguage = $sourceLanguageSelect.val().split('-')[0].toLowerCase();
-  const targetLanguage = $targetLanguageSelect.val().split('-')[0].toLowerCase();
+  const sourceLanguage = $sourceLanguageSelect.val().split('-')[0].toLowerCase().replace('jp', 'ja').replace('vie', 'vi').replace('cht', 'zh');
+  const targetLanguage = $targetLanguageSelect.val().split('-')[0].toLowerCase().replace('jp', 'ja').replace('vie', 'vi').replace('cht', 'zh');
   const languagePairs = $languagePairsSelect.val().split('-');
 
   const gapLength = applyGlossaryToText(inputText, translator).length - inputText.length;
@@ -412,20 +412,24 @@ function reloadGlossaryEntries() {
 
 function getMaxQueryLengthAndLine(translator, text) {
   switch (translator) {
-    case Translators.DEEPL_TRANSLATE:
+    case Translators.BAIDU_FANYI: {
+      return [1000, 31];
+    }
+    case Translators.DEEPL_TRANSLATE: {
       return [131072, 50];
-
-    case Translators.GOOGLE_TRANSLATE:
+    }
+    case Translators.GOOGLE_TRANSLATE: {
       return [6000000, 100];
-
-    case Translators.PAPAGO:
+    }
+    case Translators.PAPAGO: {
       return [3000, 1500];
-
-    case Translators.MICROSOFT_TRANSLATOR:
+    }
+    case Translators.MICROSOFT_TRANSLATOR: {
       return [50000, 1000];
-
-    default:
+    }
+    default: {
       return [applyGlossaryToText(text).length, text.split(/\n/).length];
+    }
   }
 }
 
@@ -499,7 +503,7 @@ async function translateTextarea() {
 
   const glossaryEnabled = $glossarySwitch.prop('checked');
 
-  const processText = glossaryEnabled && (translatorOption === Translators.VIETPHRASE ? $prioritizeNameOverVietPhraseCheck.prop('checked') && targetLanguage === 'vi' : sourceLanguage.split('-')[0].toLowerCase() === languagePairs[0] && targetLanguage.split('-')[0].toLowerCase() === languagePairs[1]) ? applyGlossaryToText(inputText, translatorOption) : inputText;
+  const processText = glossaryEnabled && (translatorOption === Translators.VIETPHRASE ? $prioritizeNameOverVietPhraseCheck.prop('checked') && targetLanguage === 'vi' : sourceLanguage.split('-')[0].toLowerCase().replace('jp', 'ja').replace('vie', 'vi').replace('cht', 'zh') === languagePairs[0] && targetLanguage.split('-')[0].toLowerCase().replace('jp', 'ja').replace('vie', 'vi').replace('cht', 'zh') === languagePairs[1]) ? applyGlossaryToText(inputText, translatorOption) : inputText;
 
   const [MAX_LENGTH, MAX_LINE] = getMaxQueryLengthAndLine(translatorOption, processText);
 
@@ -517,6 +521,10 @@ async function translateTextarea() {
       let translator = null;
 
       switch (translatorOption) {
+        case Translators.BAIDU_FANYI: {
+          translator = new BaiduFanyi();
+          break;
+        }
         case Translators.DEEPL_TRANSLATE: {
           translator = await new DeeplTranslate().init();
           break;
@@ -530,7 +538,7 @@ async function translateTextarea() {
           break;
         }
         case Translators.VIETPHRASE: {
-          translator = await new Vietphrase(vietPhraseData, $translationAlgorithmRadio.filter('[checked]').val(), $multiplicationAlgorithmRadio.filter('[checked]').val(), glossaryEnabled && targetLanguage === 'vi', glossaryObject, $prioritizeNameOverVietPhraseCheck.prop('checked'), true);
+          translator = new Vietphrase(vietPhraseData, $translationAlgorithmRadio.filter('[checked]').val(), $multiplicationAlgorithmRadio.filter('[checked]').val(), glossaryEnabled && targetLanguage === 'vi', glossaryObject, $prioritizeNameOverVietPhraseCheck.prop('checked'), true);
           break;
         }
         default: {
@@ -579,7 +587,7 @@ async function translateTextarea() {
         result = results.join('\n');
       }
 
-      if (glossaryEnabled && translatorOption !== Translators.VIETPHRASE && sourceLanguage.split('-')[0].toLowerCase() === languagePairs[0] && targetLanguage.split('-')[0].toLowerCase() === languagePairs[1]) {
+      if (glossaryEnabled && translatorOption !== Translators.VIETPHRASE && sourceLanguage.split('-')[0].toLowerCase().replace('jp', 'ja').replace('vie', 'vi').replace('cht', 'zh') === languagePairs[0] && targetLanguage.split('-')[0].toLowerCase().replace('jp', 'ja').replace('vie', 'vi').replace('cht', 'zh') === languagePairs[1]) {
         glossary.filter(([first]) => inputText.includes(first)).toSorted((a, b) => b[1].length - a[1].length).forEach(([__, second]) => {
           const key = second.replace(/ /g, '_');
           const oldAccentKey = applyOldAccent(key);
@@ -614,6 +622,16 @@ function getSourceLanguageSelectOptions(translator) {
   const sourceLanguageSelect = document.createElement('select');
 
   switch (translator) {
+    case Translators.BAIDU_FANYI: {
+      Object.entries(BaiduFanyi.FROM_LANGUAGES).forEach(([languageCode]) => {
+        const option = document.createElement('option');
+        option.innerText = BaiduFanyi.getFromName(languageCode);
+        option.value = languageCode;
+        sourceLanguageSelect.appendChild(option);
+      });
+
+      break;
+    }
     case Translators.DEEPL_TRANSLATE: {
       DeeplTranslate.SOURCE_LANGUAGES.forEach(({ language }) => {
         if (SUPPORTED_LANGUAGES.indexOf(language) === -1) return;
@@ -677,6 +695,16 @@ function getTargetLanguageSelectOptions(translator) {
   const targetLanguageSelect = document.createElement('select');
 
   switch (translator) {
+    case Translators.BAIDU_FANYI: {
+      Object.entries(BaiduFanyi.TO_LANGUAGES).forEach(([languageCode]) => {
+        const option = document.createElement('option');
+        option.innerText = BaiduFanyi.getToName(languageCode);
+        option.value = languageCode;
+        targetLanguageSelect.appendChild(option);
+      });
+
+      break;
+    }
     case Translators.DEEPL_TRANSLATE: {
       DeeplTranslate.TARGET_LANGUAGES.forEach(({ language }) => {
         if (SUPPORTED_LANGUAGES.indexOf(language) === -1) return;
@@ -742,6 +770,11 @@ function updateLanguageSelect(translator, prevTranslator) {
 
   if (translator !== prevTranslator) {
     switch (prevTranslator) {
+      case Translators.BAIDU_FANYI: {
+        sourceLanguage = BaiduFanyi.getMappedSourceLanguageCode(translator, sourceLanguage) ?? sourceLanguage;
+        targetLanguage = BaiduFanyi.getMappedTargetLanguageCode(translator, targetLanguage) ?? targetLanguage;
+        break;
+      }
       case Translators.DEEPL_TRANSLATE: {
         sourceLanguage = DeeplTranslate.getMappedSourceLanguageCode(translator, sourceLanguage) ?? sourceLanguage;
         targetLanguage = DeeplTranslate.getMappedTargetLanguageCode(translator, targetLanguage) ?? targetLanguage;
@@ -783,6 +816,11 @@ async function translateText(inputText, translatorOption, targetLanguage, glossa
     let sourceLanguage = '';
 
     switch (translatorOption) {
+      case Translators.BAIDU_FANYI: {
+        translator = new BaiduFanyi();
+        sourceLanguage = BaiduFanyi.AUTOMATIC_DETECTION;
+        break;
+      }
       case Translators.DEEPL_TRANSLATE: {
         translator = await new DeeplTranslate().init();
         sourceLanguage = DeeplTranslate.DETECT_LANGUAGE;

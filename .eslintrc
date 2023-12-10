@@ -7,17 +7,18 @@
   },
   "globals": {
     "Translators": "readonly",
+    "Utils": "readonly",
+    "BaiduFanyi": "readonly",
+    "DeeplTranslate": "readonly",
+    "MicrosoftTranslator": "readonly",
+    "GoogleTranslate": "readonly",
+    "Papago": "readonly",
+    "Vietphrase": "readonly",
+    "newAccentMap": "readonly",
     "specialSinovietnameseMap": "readonly",
     "cjkv": "readonly",
     "hanData": "readonly",
-    "newAccentMap": "readonly",
-    "bootstrap": "readonly",
-    "Utils": "readonly",
-    "MicrosoftTranslator": "readonly",
-    "DeeplTranslate": "readonly",
-    "GoogleTranslate": "readonly",
-    "Papago": "readonly",
-    "Vietphrase": "readonly"
+    "bootstrap": "readonly"
   },
   "parserOptions": {
     "ecmaVersion": "latest",
