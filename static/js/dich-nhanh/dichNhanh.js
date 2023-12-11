@@ -1313,7 +1313,7 @@ $sourceEntryInput.on('input', async function onInput() {
     if (Object.prototype.hasOwnProperty.call(glossaryObject, inputText)) {
       $targetEntryInput.val(applyGlossaryToText(inputText.trim()));
       $targetEntryInput.prop('scrollLeft', 0);
-      $glossaryEntrySelect.val(inputText.trim());
+      $glossaryEntrySelect.val(inputText.trim()).scrollIntoView();
       $tagsetSelect.val(glossary.filter(([first]) => first === inputText)[0][2] ?? 'X');
     } else {
       $targetEntryInput.val((await translateText(inputText, Translators.VIETPHRASE, 'sinoVietnamese', true)).trim());
@@ -1326,6 +1326,7 @@ $sourceEntryInput.on('input', async function onInput() {
     $removeButton.removeClass('disabled');
   } else {
     $glossaryEntrySelect.val('').change();
+    $glossaryEntrySelect.prop('scrollTop', 0);
     $addButton.addClass('disabled');
     $removeButton.addClass('disabled');
   }
