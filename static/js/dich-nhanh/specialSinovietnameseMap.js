@@ -67,6 +67,7 @@ const specialSinovietnameseMap = [
   ['无相', 'VÔ TƯỚNG'],
   ['王朝', 'VƯƠNG TRIỀU'],
   ['怖', 'BỐ'],
+  ['干', 'CAN'],
   ['只', 'CHÍCH'],
   ['正', 'CHÍNH' /* Họ */],
   ['政', 'CHÍNH'],
