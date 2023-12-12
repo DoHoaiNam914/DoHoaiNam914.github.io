@@ -1315,7 +1315,7 @@ $sourceEntryInput.on('input', async function onInput() {
       $targetEntryInput.prop('scrollLeft', 0);
       $glossaryEntrySelect.val(inputText.trim())
       $tagsetSelect.val(glossary.filter(([first]) => first === inputText)[0][2] ?? 'X');
-      $glossaryEntrySelect.scrollIntoView(true);
+      if (!Utils.isOnMobile()) $glossaryEntrySelect.scrollIntoView(true);
     } else {
       $targetEntryInput.val((await translateText(inputText, Translators.VIETPHRASE, 'sinoVietnamese', true)).trim());
       $targetEntryInput.prop('scrollLeft', 0);
@@ -1327,7 +1327,7 @@ $sourceEntryInput.on('input', async function onInput() {
     $removeButton.removeClass('disabled');
   } else {
     $glossaryEntrySelect.val('').change();
-    $glossaryEntrySelect.prop('scrollTop', 0);
+    if (!Utils.isOnMobile()) $glossaryEntrySelect.prop('scrollTop', 0);
     $addButton.addClass('disabled');
     $removeButton.addClass('disabled');
   }
