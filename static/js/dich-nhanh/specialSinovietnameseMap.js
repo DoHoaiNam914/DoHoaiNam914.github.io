@@ -13,7 +13,7 @@ const specialSinovietnameseMap = [
   ['营养', 'DINH DƯỠNG'],
   ['大将', 'ĐẠI TƯỚNG'],
   ['大姐', 'ĐẠI TỶ'],
-  ]'道长', 'ĐẠO TRƯỞNG'],
+  ['道长', 'ĐẠO TRƯỞNG'],
   ['团长', 'ĐOÀN TRƯỞNG'],
   ['队长', 'ĐỘI TRƯỞNG'],
   ['降临', 'GIÁNG LÂM'],
