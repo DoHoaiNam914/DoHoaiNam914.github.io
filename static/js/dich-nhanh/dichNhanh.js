@@ -1313,9 +1313,9 @@ $sourceEntryInput.on('input', async function onInput() {
     if (Object.prototype.hasOwnProperty.call(glossaryObject, inputText)) {
       $targetEntryInput.val(applyGlossaryToText(inputText.trim()));
       $targetEntryInput.prop('scrollLeft', 0);
-      $glossaryEntrySelect.val(inputText.trim())
+      $glossaryEntrySelect.val(inputText.trim());
       $tagsetSelect.val(glossary.filter(([first]) => first === inputText)[0][2] ?? 'X');
-      if (!Utils.isOnMobile()) $glossaryEntrySelect.scrollIntoView(true);
+      if (!Utils.isOnMobile()) $glossaryEntrySelect[0].scrollIntoView(true);
     } else {
       $targetEntryInput.val((await translateText(inputText, Translators.VIETPHRASE, 'sinoVietnamese', true)).trim());
       $targetEntryInput.prop('scrollLeft', 0);
