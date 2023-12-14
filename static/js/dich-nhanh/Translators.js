@@ -1005,27 +1005,17 @@ class Vietphrase {
   }
 
   loadLuatNhanData(targetLanguage, glossaryEntries, inputText) {
-    const luatNhanEntries = Object.entries(this.data.luatNhan).filter(([key]) => Utils.getTrieRegexPatternFromWords(key.split('{0}')).test(inputText));
-    const pronounEntries = Object.entries(this.data.pronoun).filter(([key]) => inputText.includes(key));
-
-    const nhanByGlossary = [];
-    const nhanByPronoun = [];
+    let nhanByGlossary = glossaryEntries;
+    let nhanByPronoun = Object.entries(this.data.pronoun).filter(([key]) => inputText.includes(key));
+    const luatNhanEntries = Object.entries(this.data.luatNhan).filter(([a, b]) => (this.useGlossary && this.multiplicationAlgorithm === this.MultiplicationAlgorithm.MULTIPLICATION_BY_PRONOUNS_AND_NAMES && glossaryEntries.length > 0 && nhanByGlossary.filter(([c, d]) => inputText.includes(a.replace(/\{0}/g, Utils.escapeRegExpReplacement(this.prioritizeNameOverVietPhrase ? d : c)))).length > 0) || nhanByPronoun.filter(([c]) => inputText.includes(a.replace(/\{0}/g, Utils.escapeRegExpReplacement(c)))));
 
     if (this.multiplicationAlgorithm > this.MultiplicationAlgorithm.NOT_APPLICABLE && targetLanguage === 'vi') {
       luatNhanEntries.forEach(([a, b]) => {
         if (this.useGlossary && this.multiplicationAlgorithm === this.MultiplicationAlgorithm.MULTIPLICATION_BY_PRONOUNS_AND_NAMES && glossaryEntries.length > 0) {
-          glossaryEntries.filter(([c]) => inputText.includes(a.replace(/\{0}/g, Utils.escapeRegExpReplacement(c)))).forEach(([c, d]) => {
-            const entriesKey = a.replace(/\{0}/g, Utils.escapeRegExpReplacement(this.prioritizeNameOverVietPhrase ? d : c));
-
-            if (inputText.includes(entriesKey)) {
-              nhanByGlossary.push([entriesKey, b.replace(/\{0}/g, Utils.escapeRegExpReplacement(d))]);
-            }
-          });
+          nhanByGlossary = nhanByGlossary.filter(([c, d]) => inputText.includes(a.replace(/\{0}/g, Utils.escapeRegExpReplacement(this.prioritizeNameOverVietPhrase ? d : c)))).forEach(([c, d]) => [a.replace(/\{0}/g, Utils.escapeRegExpReplacement(this.prioritizeNameOverVietPhrase ? d : c)), b.replace(/\{0}/g, Utils.escapeRegExpReplacement(d))]);
         }
 
-        pronounEntries.filter(([c]) => inputText.includes(a.replace(/\{0}/g, Utils.escapeRegExpReplacement(c)))).forEach(([c, d]) => {
-          nhanByPronoun.push([a.replace(/\{0}/g, Utils.escapeRegExpReplacement(c)), b.replace(/\{0}/g, Utils.escapeRegExpReplacement(d))]);
-        });
+        nhanByPronoun = nhanByPronoun.filter(([c]) => inputText.includes(a.replace(/\{0}/g, Utils.escapeRegExpReplacement(c)))).map(([c, d]) => [a.replace(/\{0}/g, Utils.escapeRegExpReplacement(c)), b.replace(/\{0}/g, Utils.escapeRegExpReplacement(d))]);
       });
     }
 
