@@ -2,6 +2,7 @@
 
 const specialSinovietnameseMap = [
   ['骑士长', 'KỴ SĨ TRƯỞNG'],
+  ['联合国', 'LIÊN HIỆP QUỐC'],
   ['小姐姐', 'TIỂU TỶ TỶ'],
   ['长公主', 'TRƯỞNG CÔNG CHÚA'],
   ['本我', 'BẢN NGÃ'],

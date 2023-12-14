@@ -133,7 +133,7 @@ class BaiduFanyi {
         })).lan;
       }
 
-      return JSON.parse((await $.ajax({
+      return query.replace(/\n/g, '').length > 0 ? JSON.parse((await $.ajax({
         data: JSON.stringify({
           query,
           from: queryDataFrom,
@@ -146,7 +146,7 @@ class BaiduFanyi {
         headers: { 'Content-Type': 'application/json' },
         method: 'POST',
         url: `${Utils.CORS_PROXY}https://fanyi.baidu.com/ait/text/translate`,
-      })).split(/\n/).filter((element) => element.includes('"event":"Translating"'))[0].replace(/^data: /, '')).data.list.map((element) => element.dst).join('\n');
+      })).split(/\n/).filter((element) => element.includes('"event":"Translating"'))[0].replace(/^data: /, '')).data.list.map((element) => element.dst).join('\n') : query;
     } catch (error) {
       console.error('Bản dịch lỗi:', error);
       throw error;
