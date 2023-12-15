@@ -1297,7 +1297,7 @@ $('#clear-button').on('click', () => {
   $glossaryInput.val('');
 });
 
-$glossaryType.on('change', () => reloadGlossaryEntries());
+$glossaryType.on('change', reloadGlossaryEntries);
 
 $sourceEntryInput.on('input', async function onInput() {
   const inputText = $(this).val();
@@ -1313,9 +1313,14 @@ $sourceEntryInput.on('input', async function onInput() {
     if (Object.prototype.hasOwnProperty.call(glossaryObject, inputText)) {
       $targetEntryInput.val(applyGlossaryToText(inputText.trim()));
       $targetEntryInput.prop('scrollLeft', 0);
-      $glossaryEntrySelect.val(inputText.trim());
+
+      if (Utils.isOnMobile()) {
+        $glossaryEntrySelect.val(inputText.trim());
+      } else {
+        $glossaryEntrySelect.val(inputText.trim()).scrollIntoView(true);
+      }
+
       $tagsetSelect.val(glossary.filter(([first]) => first === inputText)[0][2] ?? 'X');
-      if (!Utils.isOnMobile()) $glossaryEntrySelect[0].scrollIntoView(true);
     } else {
       $targetEntryInput.val((await translateText(inputText, Translators.VIETPHRASE, 'sinoVietnamese', true)).trim());
       $targetEntryInput.prop('scrollLeft', 0);
@@ -1333,6 +1338,8 @@ $sourceEntryInput.on('input', async function onInput() {
   }
 });
 
+$sourceEntryInput.on('keypress', (event) => event.key !== 'Enter' || $targetEntryInput.focus());
+$targetEntryInput.on('keypress', (event) => event.key !== 'Enter' || $addButton.click());
 $('#source-entry-dropdown-toggle').on('mousedown', (event) => event.preventDefault());
 
 $('.dropdown-can-scroll').on('hide.bs.dropdown', function onHideBsDropdown() {
@@ -1424,7 +1431,7 @@ $translateEntryButtons.on('click', async function onClick() {
   }
 });
 
-$addButton.on('click', () => {
+$addButton.click(() => {
   if ($sourceEntryInput.val().length === 0) return;
   if (Object.prototype.hasOwnProperty.call(glossaryObject, $sourceEntryInput.val())) glossary.splice(Object.keys(glossaryObject).indexOf($sourceEntryInput.val()), 1);
   glossary.push([$sourceEntryInput.val().trim(), $targetEntryInput.val().trim(), $tagsetSelect.val()]);
@@ -1457,6 +1464,8 @@ $glossaryEntrySelect.change(function onChange() {
     $removeButton.addClass('disabled');
   }
 });
+
+$glossaryName.on('change', reloadGlossaryEntries);
 
 $inputTextarea.on('input', () => {
   $(visualViewport).resize();
