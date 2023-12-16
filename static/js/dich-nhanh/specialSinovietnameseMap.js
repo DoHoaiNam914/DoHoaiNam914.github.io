@@ -77,6 +77,7 @@ const specialSinovietnameseMap = [
   ['武徒', 'võ đồ'],
   ['武者', 'võ giả'],
   ['武学', 'võ học'],
+  ['武技', 'võ kỹ'],
   ['武师', 'võ sư'],
   ['武圣', 'võ thánh'],
   ['无相', 'vô tướng'],
