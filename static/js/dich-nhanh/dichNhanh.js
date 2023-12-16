@@ -13,6 +13,8 @@ const $options = $('.option');
 const $inputTextarea = $('#input-textarea');
 const $resultTextarea = $('#result-textarea');
 
+const $glossaryManagementButton = $('#glossary-management-button');
+
 const $fontOptions = $('.font-option');
 const $fontSizeRange = $('#font-size-range');
 const $lineSpacingRange = $('#line-spacing-range');
@@ -1083,9 +1085,10 @@ $retranslateButton.click(function onClick() {
   }
 });
 
-$('#glossary-management-button').on('mousedown', () => {
+$glossaryManagementButton.on('mousedown', () => {
   $tagsetSelect.val('X');
   $glossaryEntrySelect.val('').change();
+  if (!Utils.isOnMobile()) $glossaryEntrySelect.prop('scrollTop', 0);
   $sourceEntryInput.val(getSelectedTextOrActiveElementText().replace(/\n/g, ' ').trim()).trigger('input');
   $sourceEntryInput.prop('scrollLeft', 0);
 
@@ -1313,11 +1316,10 @@ $sourceEntryInput.on('input', async function onInput() {
     if (Object.prototype.hasOwnProperty.call(glossaryObject, inputText)) {
       $targetEntryInput.val(applyGlossaryToText(inputText.trim()));
       $targetEntryInput.prop('scrollLeft', 0);
+      $glossaryEntrySelect.val(inputText.trim());
 
-      if (Utils.isOnMobile()) {
-        $glossaryEntrySelect.val(inputText.trim());
-      } else {
-        $glossaryEntrySelect.val(inputText.trim()).scrollIntoView(true);
+      if (!Utils.isOnMobile()) {
+        $glossaryEntrySelect.find(`option[value="${inputText.trim()}"]`)[0].scrollIntoView(true);
       }
 
       $tagsetSelect.val(glossary.filter(([first]) => first === inputText)[0][2] ?? 'X');
@@ -1339,6 +1341,17 @@ $sourceEntryInput.on('input', async function onInput() {
 });
 
 $sourceEntryInput.on('keypress', (event) => event.key !== 'Enter' || $targetEntryInput.focus());
+
+$targetEntryInput.on('input', function onInput() {
+  if ($(this).val().length > 0) {
+    $addButton.removeClass('disabled');
+    $removeButton.removeClass('disabled');
+  } else {
+    $addButton.addClass('disabled');
+    $removeButton.addClass('disabled');
+  }
+});
+
 $targetEntryInput.on('keypress', (event) => event.key !== 'Enter' || $addButton.click());
 $('#source-entry-dropdown-toggle').on('mousedown', (event) => event.preventDefault());
 
@@ -1490,4 +1503,4 @@ $resultTextarea.on('keydown', (event) => {
 $resultTextarea.on('drop', (event) => event.preventDefault());
 $resultTextarea.on('cut', (event) => event.preventDefault());
 $resultTextarea.on('paste', (event) => event.preventDefault());
-$resultTextarea.on('keypress', (event) => event.key !== 'Enter' || ($translateButton.click() && $inputTextarea.focus() && event.preventDefault()));
+$resultTextarea.on('keypress', (event) => event.key !== 'Enter' || (((event.shiftKey && $glossaryManagementButton.trigger('mousedown') && $glossaryManagementButton.click()) || (event.ctrlKey && $retranslateButton.click()) || ($translateButton.click() && $inputTextarea.focus())) && event.preventDefault()));

@@ -1007,7 +1007,7 @@ class Vietphrase {
   loadLuatNhanData(targetLanguage, glossaryEntries, inputText) {
     let nhanByGlossary = glossaryEntries;
     let nhanByPronoun = Object.entries(this.data.pronoun).filter(([key]) => inputText.includes(key));
-    const luatNhanEntries = Object.entries(this.data.luatNhan);
+    const luatNhanEntries = Object.entries(this.data.luatNhan).filter(([key]) => key.split('{0}').every((element) => inputText.includes(element)));
 
     if (this.multiplicationAlgorithm > this.MultiplicationAlgorithm.NOT_APPLICABLE && targetLanguage === 'vi') {
       luatNhanEntries.filter(([a]) => (this.useGlossary && this.multiplicationAlgorithm === this.MultiplicationAlgorithm.MULTIPLICATION_BY_PRONOUNS_AND_NAMES && glossaryEntries.length > 0 && nhanByGlossary.filter(([c, d]) => inputText.includes(a.replace(/\{0}/g, Utils.escapeRegExpReplacement(this.prioritizeNameOverVietPhrase ? d : c)))).length > 0) || nhanByPronoun.filter(([c]) => inputText.includes(a.replace(/\{0}/g, Utils.escapeRegExpReplacement(c))))).forEach(([a, b]) => {
