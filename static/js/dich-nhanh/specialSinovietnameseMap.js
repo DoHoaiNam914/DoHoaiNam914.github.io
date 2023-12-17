@@ -3,6 +3,7 @@
 const specialSinovietnameseMap = [
   ['骑士长', 'kỵ sĩ trưởng'],
   ['联合国', 'liên hiệp quốc'],
+  ['少家主', 'thiếu gia chủ'],
   ['小姐姐', 'tiểu tỷ tỷ'],
   ['长公主', 'trưởng công chủ'],
   ['本我', 'bản ngã'],
@@ -13,6 +14,7 @@ const specialSinovietnameseMap = [
   ['战斗', 'chiến đấu'],
   ['掌柜', 'chưởng quỹ'],
   ['公司', 'công ty'],
+  ['基本', 'cơ bản'],
   ['营养', 'dinh dưỡng'],
   ['大家', 'đại gia' /* Fix lỗi */],
   ['大将', 'đại tướng'],
