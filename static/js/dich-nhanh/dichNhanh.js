@@ -515,6 +515,8 @@ async function translateTextarea() {
     throw console.error(`Số lượng từ trong một dòng quá dài (Số lượng từ hợp lệ nhỏ hơn hoặc bằng ${MAX_LENGTH}).`);
   }
 
+  let translator = null;
+
   try {
     let result = '';
 
@@ -522,7 +524,6 @@ async function translateTextarea() {
       result = lastSession.result;
     } else {
       const results = [];
-      let translator = null;
 
       switch (translatorOption) {
         case Translators.BAIDU_FANYI: {
@@ -616,6 +617,8 @@ async function translateTextarea() {
     $resultTextarea.html(paragraph);
     lastSession = {};
   }
+
+  translator = null;
 }
 
 function getSelectedTextOrActiveElementText() {
@@ -814,9 +817,10 @@ function updateLanguageSelect(translator, prevTranslator) {
 }
 
 async function translateText(inputText, translatorOption, targetLanguage, glossaryEnabled) {
+  let translator = null;
+
   try {
     const text = glossaryEnabled && (translatorOption !== Translators.VIETPHRASE || $prioritizeNameOverVietPhraseCheck.prop('checked')) ? applyGlossaryToText(inputText, translatorOption) : inputText;
-    let translator = null;
     let sourceLanguage = '';
 
     switch (translatorOption) {
@@ -868,6 +872,8 @@ async function translateText(inputText, translatorOption, targetLanguage, glossa
     console.error(error);
     return `Bản dịch thất bại: ${error}`;
   }
+
+  translator = null;
 }
 
 function applyNewAccent(text) {
