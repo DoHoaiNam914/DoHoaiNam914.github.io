@@ -995,7 +995,17 @@ $(document).ready(async () => {
   updateInputTextLength();
 });
 
-$(window).on('keypress', (event) => !($(document.activeElement).is('body') && $resultTextarea.is(':visible') && event.key === 'Enter') || $resultTextarea.focus());
+$(window).on('keydown', (event) => (!$resultTextarea.is(':visible') || !event.ctrlKey || event.key !== 'r') || ($retranslateButton.click() && event.preventDefault()));
+
+$(window).on('keypress', (event) => {
+  if ($(document.activeElement).is('body') && event.key === 'Enter') {
+    if ($resultTextarea.is(':visible')) {
+      $resultTextarea.focus();
+    } else {
+      $translateButton.click();
+    }
+  }
+});
 
 $translateButton.on('click', function onClick() {
   if (translateAbortController != null) {
@@ -1509,4 +1519,4 @@ $resultTextarea.on('keydown', (event) => {
 $resultTextarea.on('drop', (event) => event.preventDefault());
 $resultTextarea.on('cut', (event) => event.preventDefault());
 $resultTextarea.on('paste', (event) => event.preventDefault());
-$resultTextarea.on('keypress', (event) => event.key !== 'Enter' || (((event.shiftKey && $glossaryManagementButton.trigger('mousedown') && $glossaryManagementButton.click()) || (event.ctrlKey && $retranslateButton.click()) || ($translateButton.click() && $inputTextarea.focus())) && event.preventDefault()));
+$resultTextarea.on('keypress', (event) => event.key !== 'Enter' || (((event.ctrlKey && $glossaryManagementButton.trigger('mousedown') && $glossaryManagementButton.click()) || ($translateButton.click() && $inputTextarea.focus())) && event.preventDefault()));
