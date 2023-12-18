@@ -73,6 +73,7 @@ const specialSinovietnameseMap = [
   ['将领', 'tướng lĩnh'],
   ['将军', 'tướng quân'],
   ['将士', 'tướng sĩ'],
+  ['姐弟', 'tỷ đệ'],
   ['姐妹', 'tỷ muội'],
   ['姐夫', 'tỷ phu'],
   ['姐姐', 'tỷ tỷ'],
