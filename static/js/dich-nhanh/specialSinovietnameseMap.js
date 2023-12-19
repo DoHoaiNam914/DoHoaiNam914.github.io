@@ -63,6 +63,7 @@ const specialSinovietnameseMap = [
   ['时光', 'thời quang'],
   ['时装', 'thời trang'],
   ['仙长', 'tiên trưởng'],
+  ['宗师', 'tôn sư'],
   ['族长', 'tộc trưởng'],
   ['重天', 'trùng thiên'],
   ['传奇', 'truyền kỳ'],

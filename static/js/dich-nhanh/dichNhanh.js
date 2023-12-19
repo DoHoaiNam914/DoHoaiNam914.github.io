@@ -417,7 +417,7 @@ function reloadGlossaryEntries() {
 function getMaxQueryLengthAndLine(translator, text) {
   switch (translator) {
     case Translators.BAIDU_FANYI: {
-      return [1000, 31];
+      return [1000, 90];
     }
     case Translators.DEEPL_TRANSLATE: {
       return [131072, 50];
