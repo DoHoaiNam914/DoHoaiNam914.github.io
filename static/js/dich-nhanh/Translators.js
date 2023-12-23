@@ -1017,6 +1017,9 @@ class Vietphrase {
 
         nhanByPronoun = [...nhanByPronoun, ...nhanByPronoun.filter(([c]) => inputText.includes(a.replace(/\{0}/g, Utils.escapeRegExpReplacement(c)))).map(([c, d]) => [a.replace(/\{0}/g, Utils.escapeRegExpReplacement(c)), b.replace(/\{0}/g, Utils.escapeRegExpReplacement(d))])];
       });
+    } else {
+      nhanByGlossary = [];
+      nhanByPronoun = [];
     }
 
     return [nhanByGlossary, nhanByPronoun];
