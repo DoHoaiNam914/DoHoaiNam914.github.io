@@ -13,7 +13,7 @@ const $options = $('.option');
 const $inputTextarea = $('#input-textarea');
 const $resultTextarea = $('#result-textarea');
 
-const $glossaryManagementButton = $('#glossary-management-button');
+const $glossaryManagerButton = $('#glossary-manager-button');
 
 const $fontOptions = $('.font-option');
 const $fontSizeRange = $('#font-size-range');
@@ -1101,10 +1101,10 @@ $retranslateButton.click(function onClick() {
   }
 });
 
-$glossaryManagementButton.on('mousedown', () => {
+$glossaryManagerButton.on('mousedown', () => {
   $tagsetSelect.val('X');
   $glossaryEntrySelect.val('').change();
-  if (!Utils.isOnMobile()) $glossaryEntrySelect.prop('scrollTop', 0);
+  if (!Utils.isOnMobile()) $glossaryEntrySelect.find(`option[value=""]`)[0].scrollIntoView(true);
   $sourceEntryInput.val(getSelectedTextOrActiveElementText().replace(/\n/g, ' ').trim()).trigger('input');
   $sourceEntryInput.prop('scrollLeft', 0);
 
@@ -1333,11 +1333,7 @@ $sourceEntryInput.on('input', async function onInput() {
       $targetEntryInput.val(applyGlossaryToText(inputText.trim()));
       $targetEntryInput.prop('scrollLeft', 0);
       $glossaryEntrySelect.val(inputText.trim());
-
-      if (!Utils.isOnMobile()) {
-        $glossaryEntrySelect.find(`option[value="${inputText.trim()}"]`)[0].scrollIntoView(true);
-      }
-
+      if (!Utils.isOnMobile()) $glossaryEntrySelect.find(`option[value="${inputText.trim()}"]`)[0].scrollIntoView(true);
       $tagsetSelect.val(glossary.filter(([first]) => first === inputText)[0][2] ?? 'X');
     } else {
       $targetEntryInput.val((await translateText(inputText, Translators.VIETPHRASE, 'sinoVietnamese', true)).trim());
@@ -1519,4 +1515,4 @@ $resultTextarea.on('keydown', (event) => {
 $resultTextarea.on('drop', (event) => event.preventDefault());
 $resultTextarea.on('cut', (event) => event.preventDefault());
 $resultTextarea.on('paste', (event) => event.preventDefault());
-$resultTextarea.on('keypress', (event) => event.key !== 'Enter' || (((event.ctrlKey && $glossaryManagementButton.trigger('mousedown') && $glossaryManagementButton.click()) || ($translateButton.click() && $inputTextarea.focus())) && event.preventDefault()));
+$resultTextarea.on('keypress', (event) => event.key !== 'Enter' || (((event.ctrlKey && $glossaryManagerButton.trigger('mousedown') && $glossaryManagerButton.click()) || ($translateButton.click() && $inputTextarea.focus())) && event.preventDefault()));
