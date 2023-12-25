@@ -1059,6 +1059,29 @@ class Vietphrase {
           return false;
         });
 
+        result = result.replace(/·/g, ' ')
+          .replace(/、(?!(?:[\p{Zs}\p{P}]|$))/gu, ', ')
+          .replace(/、/g, ',')
+          .replace(/。(?!(?:[\p{Zs}\p{P}]|$))/gu, '. ')
+          .replace(/。/g, '.')
+          .replace(/([^\p{Zs}]+)【/gu, '$1 [')
+          .replace(/【/g, '[')
+          .replace(/】(?!(?:\p{Zs}|$))/gu, '] ')
+          .replace(/】/g, ']')
+          .replace(/！(?!(?:[\p{Zs}\p{P}]|$))/gu, '! ')
+          .replace(/！/g, '!')
+          .replace(/([^\p{Zs}]+)（/gu, '$1 (')
+          .replace(/（/g, '(')
+          .replace(/）(?!(?:\p{Zs}|$))/gu, ')')
+          .replace(/）/g, ')')
+          .replace(/，(?!(?:[\p{Zs}\p{P}]|$))/gu, ', ')
+          .replace(/，/g, ',')
+          .replace(/：(?!(?:[\p{Zs}\p{P}]|$))/gu, ': ')
+          .replace(/：/g, ':')
+          .replace(/；(?!(?:[\p{Zs}\p{P}]|$))/gu, '; ')
+          .replace(/；/g, ';')
+          .replace(/？(?!(?:[\p{Zs}\p{P}]|$))/gu, '? ')
+          .replace(/？/g, '?');
         if (this.autocapitalize) result = Vietphrase.getCapitalizeText(result);
       }
 
@@ -1140,7 +1163,29 @@ class Vietphrase {
           }
         });
 
-        result = results.join('\n');
+        result = results.join('\n').replace(/·/g, ' ')
+          .replace(/、(?!(?:[\p{Zs}\p{P}]|$))/gu, ', ')
+          .replace(/、/g, ',')
+          .replace(/。(?!(?:[\p{Zs}\p{P}]|$))/gu, '. ')
+          .replace(/。/g, '.')
+          .replace(/([^\p{Zs}]+)【/gu, '$1 [')
+          .replace(/【/g, '[')
+          .replace(/】(?!(?:\p{Zs}|$))/gu, '] ')
+          .replace(/】/g, ']')
+          .replace(/！(?!(?:[\p{Zs}\p{P}]|$))/gu, '! ')
+          .replace(/！/g, '!')
+          .replace(/([^\p{Zs}]+)（/gu, '$1 (')
+          .replace(/（/g, '(')
+          .replace(/）(?!(?:\p{Zs}|$))/gu, ')')
+          .replace(/）/g, ')')
+          .replace(/，(?!(?:[\p{Zs}\p{P}]|$))/gu, ', ')
+          .replace(/，/g, ',')
+          .replace(/：(?!(?:[\p{Zs}\p{P}]|$))/gu, ': ')
+          .replace(/：/g, ':')
+          .replace(/；(?!(?:[\p{Zs}\p{P}]|$))/gu, '; ')
+          .replace(/；/g, ';')
+          .replace(/？(?!(?:[\p{Zs}\p{P}]|$))/gu, '? ')
+          .replace(/？/g, '?');
         if (this.autocapitalize) result = Vietphrase.getCapitalizeText(result);
       }
 
