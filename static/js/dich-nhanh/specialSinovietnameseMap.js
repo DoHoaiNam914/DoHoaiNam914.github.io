@@ -147,6 +147,7 @@ const specialSinovietnameseMap = [
   ['辇', 'LIÊN'],
   ['仑', 'LUÂN'],
   ['累', 'LUỸ, LUỴ'],
+  ['良', 'LƯƠNG'],
   ['吕', 'LỮ, LÃ', 'LÃ'],
   ['璃', '', 'ly | li | lê' /* Hanzii */],
   ['妈', 'MA'],

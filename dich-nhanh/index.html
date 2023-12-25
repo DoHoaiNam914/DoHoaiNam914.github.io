@@ -28,7 +28,7 @@
       --taiwanFontFamily: "方體", "PingFang TC", "黑體", "Heiti TC", "Microsoft JhengHei UI", "Microsoft JhengHei", Roboto, Noto, "Noto Sans CJK TC", sans-serif;
       --hongKongFontFamily: "方體", "PingFang HK", "方體", "PingFang TC", "黑體", "Heiti TC", "Microsoft JhengHei UI", "Microsoft JhengHei", Roboto, Noto, "Noto Sans CJK TC", sans-serif;
 
-      --opt-font-family: 'Iowan Old Style', 'Sitka Text', Palatino, 'Book Antiqua', 游ゴシック体, YuGothic, ヒラギノ丸ゴ, 'Hiragino Sans', 'Yu Gothic UI', 'Meiryo UI', 'MS Gothic', Roboto, Noto, 'Noto Sans CJK JP', serif;
+      --opt-font-family: Roboto, sans-serif;
       --opt-font-size: 1em;
       --opt-line-height: 1.2em;
       --opt-text-align: justify;
@@ -145,6 +145,10 @@
 
     .collapse-item::before {
       content: '> ';
+    }
+
+    .glossary-entries {
+      font-family: var(--opt-font-family);
     }
   </style>
   <script>
@@ -637,28 +641,25 @@
                 <button type="button" class="dropdown-item font-option active">Mặc định</button>
               </li>
               <li>
-                <button type="button" class="dropdown-item font-option">Times New Roman</button>
+                <button type="button" class="dropdown-item font-option" data-additional-fonts="serif">Times New Roman</button>
               </li>
               <li>
                 <button type="button" class="dropdown-item font-option">Phông chữ hệ thống</button>
               </li>
               <li>
-                <button type="button" class="dropdown-item font-option">Georgia</button>
+                <button type="button" class="dropdown-item font-option" data-additional-fonts="Hiragino Mincho ProN, serif">Literata</button>
               </li>
               <li>
-                <button type="button" class="dropdown-item font-option">Hiragino Mincho ProN</button>
+                <button type="button" class="dropdown-item font-option" data-additional-fonts="serif">Georgia</button>
               </li>
               <li>
-                <button type="button" class="dropdown-item font-option" data-additional-fonts="Hiragino Mincho ProN">Bookerly</button>
+                <button type="button" class="dropdown-item font-option" data-additional-fonts="Hiragino Mincho ProN, serif">Bookerly</button>
               </li>
               <li>
-                <button type="button" class="dropdown-item font-option" data-additional-fonts="Hiragino Mincho ProN">Literata</button>
+                <button type="button" class="dropdown-item font-option" data-additional-fonts="Hiragino Mincho Pro, serif">Iowan Old Style</button>
               </li>
               <li>
-                <button type="button" class="dropdown-item font-option" data-additional-fonts="Hiragino Mincho Pro">Iowan Old Style</button>
-              </li>
-              <li>
-                <button type="button" class="dropdown-item font-option">Crimson Text</button>
+                <button type="button" class="dropdown-item font-option" data-additional-fonts="serif">Crimson Text</button>
               </li>
             </ul>
           </div>
@@ -1025,7 +1026,7 @@
             </svg>
             Xoá
           </button>
-          <select class="form-select mb-3" id="glossary-entry-select" size="10">
+          <select class="form-select mb-3 glossary-entries" id="glossary-entry-select" size="10">
             <option value="" selected>Chọn...</option>
           </select>
           <button type="button" class="btn btn-sm btn-secondary copy-button" data-target="#glossary-entry-list">Sao chép</button>

@@ -1147,7 +1147,7 @@ $fontOptions.click(function onClick() {
   $(this).addClass('active');
 
   if ($(this).text() !== 'Mặc định') {
-    $(document.body).css('--opt-font-family', `${$(this).text().includes(' ') ? `'${$(this).text()}'` : $(this).text()}, ${$(this).data('additional-fonts') != null && $(this).data('additional-fonts').length > 0 ? `${$(this).data('additional-fonts').split(', ').map((element) => (element.includes(' ') ? `'${element}'` : element)).join(', ')}, serif` : 'serif'}`);
+    $(document.body).css('--opt-font-family', `${$(this).text().includes(' ') ? `'${$(this).text()}'` : $(this).text()}, ${$(this).data('additional-fonts') != null && $(this).data('additional-fonts').length > 0 ? `${$(this).data('additional-fonts').split(', ').map((element) => (element.includes(' ') ? `'${element}'` : element)).join(', ')}` : ''}`);
   } else if ($(this).text() === 'Phông chữ hệ thống') {
     $(document.body).css('--opt-font-family', 'var(--system-font-family)');
   } else {
