@@ -265,7 +265,7 @@ function getIgnoreTranslationMarkup(text, translation, translator) {
       return `<span translate="no">${Utils.convertTextToHtml(translation.replace(/ /g, '_'))}</span>`;
     }
     case Translators.MICROSOFT_TRANSLATOR: {
-      return `<mstrans:dictionary translation="${/\p{sc=Hani}/u.test(text) && /\p{sc=Latn}/u.test(translation) ? ` ${translation.replace(/ /g, '_')} ` : translation.replace(/ /g, '_')}">${text}</mstrans:dictionary>`;
+      return `<mstrans:dictionary translation="${/\p{Script=Hani}/u.test(text) && /\p{Script=Latn}/u.test(translation) ? ` ${translation.replace(/ /g, '_')} ` : translation.replace(/ /g, '_')}">${text}</mstrans:dictionary>`;
     }
     default: {
       return translator !== Translators.VIETPHRASE ? translation.replace(/ /g, '_') : translation;
@@ -916,13 +916,13 @@ $(document).ready(async () => {
   oldAccentObject = Object.fromEntries(newAccentMap.map(([first, second]) => [second, first]));
 
   try {
-    let chinesePhienAmWordList = [...specialSinovietnameseMap.map(([a, b, c]) => [a, (Object.fromEntries(specialSinovietnameseMap.filter(([__, d]) => !/\p{sc=Hani}/u.test(d)).map(([d, e, f]) => [d, f ?? e]))[b] ?? c ?? b).split(/, | \| /)[0].toLowerCase()]), ...cjkv.nam.map(([first, second]) => [first, second.trimStart().split(/, ?/).filter((element) => element.length > 0)[0]]), ...hanData.names.map(([first, second]) => [first, second.split(',').filter((element) => element.length > 0)[0]])];
+    let chinesePhienAmWordList = [...specialSinovietnameseMap.map(([a, b, c]) => [a, (Object.fromEntries(specialSinovietnameseMap.filter(([__, d]) => !/\p{Script=Hani}/u.test(d)).map(([d, e, f]) => [d, f ?? e]))[b] ?? c ?? b).split(/, | \| /)[0].toLowerCase()]), ...cjkv.nam.map(([first, second]) => [first, second.trimStart().split(/, ?/).filter((element) => element.length > 0)[0]]), ...hanData.names.map(([first, second]) => [first, second.split(',').filter((element) => element.length > 0)[0]])];
 
     await $.ajax({
       method: 'GET',
       url: '/static/datasource/QuickTranslate2020/ChinesePhienAmWords.txt',
     }).done((data) => {
-      chinesePhienAmWordList = [...chinesePhienAmWordList, ...data.split(/\r\n/).map((element) => element.split('=')).filter((element) => element.length === 2 && !/\p{sc=Latn}/u.test(element[0]))];
+      chinesePhienAmWordList = [...chinesePhienAmWordList, ...data.split(/\r\n/).map((element) => element.split('=')).filter((element) => element.length === 2 && !/\p{Script=Latn}/u.test(element[0]))];
     });
 
     await $.ajax({
