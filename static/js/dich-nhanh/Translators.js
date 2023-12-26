@@ -1040,8 +1040,7 @@ class Vietphrase {
   }
 
   static getCapitalizeText(text) {
-    // text.split(/\n/).map((element) => (this.caseSensitive ? element.replace(/(^\s*[\p{Ps}\p{Pi}]*|!(?:" |' | )|\) |\.(?:" |' | )|: |\?(?:" |' | )|\] |\} |’ |” |。(?:(?:" |' ))?|！(?:(?:" |' ))?|．(?:(?:" |' ))?|？(?:(?:" |' ))?|["'：\p{Ps}\p{Pe}\p{Pi}\p{Pf}])(\p{Ll})/gu, (match, p1, p2) => p1 + p2.toUpperCase()) : element)).join('\n');
-    return text.split(/\n/).map((element) => element.replace(/(^\s*[\p{Ps}\p{Pi}]*|!(?:" |' | )|\.(?:" |' | )|: |\?(?:" |' | )|’ |” |。(?:(?:" |' ))?|！(?:(?:" |' ))?|．(?:(?:" |' ))?|？(?:(?:" |' ))?|["'：\p{Pi}\p{Pf}])(\p{Ll})/gu, (match, p1, p2) => p1 + p2.toUpperCase())).join('\n');
+    return text.split(/\n/).map((element) => element.replace(/(^[\p{P}\p{Z}]*|[!.?] |[、。！，.？])(\p{Ll})/gu, (match, p1, p2) => p1 + p2.toUpperCase())).join('\n');
   }
 
   translatePrioritizeLongVietPhraseClusters(targetLanguage, data, inputText) {
