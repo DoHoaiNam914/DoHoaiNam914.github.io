@@ -1074,7 +1074,7 @@ class Vietphrase {
         });
 
         result = result.replace(/[、。！，：？](?!(?:[\p{Zs}\p{P}]|$))/gu, (match) => `${this.PUNCTUATIONS[match]} `)
-          .replace(/(\P{Zs}+)[【（]/gu, (match, p1) => `${p1} ${this.PUNCTUATIONS[match]}`)
+          .replace(/(\P{Zs}+)[【（]/gu, (__, p1, p2) => `${p1} ${this.PUNCTUATIONS[p2]}`)
           .replace(/[】）](?!(?:\p{Zs}|$))/gu, (match) => `${this.PUNCTUATIONS[match]} `)
           .replace(/[·、。【】！（），：？]/g, (match) => this.PUNCTUATIONS[match]);
         if (this.autocapitalize) result = Vietphrase.getCapitalizeText(result);
@@ -1159,7 +1159,7 @@ class Vietphrase {
         });
 
         result = results.join('\n').replace(/[、。！，：？](?!(?:[\p{Zs}\p{P}]|$))/gu, (match) => `${this.PUNCTUATIONS[match]} `)
-          .replace(/([^\p{Zs}]+)[【（]/gu, (match, p1) => `${p1} ${this.PUNCTUATIONS[match]}`)
+          .replace(/(\P{Zs}+)[【（]/gu, (__, p1, p2) => `${p1} ${this.PUNCTUATIONS[p2]}`)
           .replace(/[】）](?!(?:\p{Zs}|$))/gu, (match) => `${this.PUNCTUATIONS[match]} `)
           .replace(/[·、。【】！（），：？]/g, (match) => this.PUNCTUATIONS[match]);
         if (this.autocapitalize) result = Vietphrase.getCapitalizeText(result);

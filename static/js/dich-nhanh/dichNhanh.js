@@ -515,15 +515,13 @@ async function translateTextarea() {
     throw console.error(`Số lượng từ trong một dòng quá dài (Số lượng từ hợp lệ nhỏ hơn hoặc bằng ${MAX_LENGTH}).`);
   }
 
-  let translator = null;
-
   try {
     let result = '';
 
     if (Object.keys(lastSession).length > 0 && lastSession.inputText === processText && lastSession.translatorOption === translatorOption && lastSession.sourceLanguage === sourceLanguage && lastSession.targetLanguage === targetLanguage) {
       result = lastSession.result;
     } else {
-      const results = [];
+      let translator = null;
 
       switch (translatorOption) {
         case Translators.BAIDU_FANYI: {
@@ -553,6 +551,7 @@ async function translateTextarea() {
       }
 
       if (translatorOption === Translators.DEEPL_TRANSLATE && translator.usage.character_count + inputText.length > translator.usage.character_limit) throw console.error(`Lỗi DeepL Translator: Đã đạt đến giới hạn dịch của tài khoản. (${translator.usage.character_count}/${translator.usage.character_limit} ký tự).`);
+      const results = [];
 
       if (processText.split(/\r?\n/).length <= MAX_LINE && (translatorOption === Translators.DEEPL_TRANSLATE ? (new TextEncoder()).encode(`text=${processText.split(/\r?\n/).map((element) => encodeURIComponent(element)).join('&text=')}&source_lang=${sourceLanguage}&target_lang=${targetLanguage}&tag_handling=xml`) : processText).length <= MAX_LENGTH) {
         result = await translator.translateText(sourceLanguage, targetLanguage, processText);
@@ -617,8 +616,6 @@ async function translateTextarea() {
     $resultTextarea.html(paragraph);
     lastSession = {};
   }
-
-  translator = null;
 }
 
 function getSelectedTextOrActiveElementText() {
@@ -817,10 +814,9 @@ function updateLanguageSelect(translator, prevTranslator) {
 }
 
 async function translateText(inputText, translatorOption, targetLanguage, glossaryEnabled) {
-  let translator = null;
-
   try {
     const text = glossaryEnabled && (translatorOption !== Translators.VIETPHRASE || $prioritizeNameOverVietPhraseCheck.prop('checked')) ? applyGlossaryToText(inputText, translatorOption) : inputText;
+    let translator = null;
     let sourceLanguage = '';
 
     switch (translatorOption) {
@@ -872,8 +868,6 @@ async function translateText(inputText, translatorOption, targetLanguage, glossa
     console.error(error);
     return `Bản dịch thất bại: ${error}`;
   }
-
-  translator = null;
 }
 
 function applyNewAccent(text) {
