@@ -495,14 +495,14 @@ function applyOldAccent(text) {
 }
 
 function getFormattedText(inputText) {
-  let formattedText = inputText.replace(/(^[^"]*)"/gu, '$1“')
-    .replace(/((?:“|”|‘)[^"]*)"(?=[^"]*$|[^“"]*(?:“|”|‘))/g, '$1”')
-    .replace(/(\S)"/g, '$1”')
-    .replace(/"/g, '“')
-    .replace(/(^[^'])'/gu, '$1‘$2')
-    .replace(/((?:‘|’|“)[^']*)'(?=[^']*$|[^‘']*(?:‘|’|“))/g, '$1’')
-    .replace(/(\S)'/g, '$1’')
-    .replace(/'/g, '‘'); // Thay thế "nháy kép thẳng" bằng “nháy kép cong”
+  let formattedText = inputText.replace(/\b"/g, '”')
+    .replace(/^"|"\b/g, '“')
+    .replace(/([\s\p{Ps}])"/gu, '$1“')
+    .replace(/"/g, '”')
+    .replace(/\b'/g, '’')
+    .replace(/^'|'\b/g, '‘')
+    .replace(/([\s\p{Ps}])'/gu, '$1‘')
+    .replace(/'/g, '’'); // Thay thế "nháy kép thẳng" bằng “nháy kép cong”
   formattedText = formattedText.replace(/1\/2/g, '½')
     .replace(/(\D)1\/2(?!\d)/g, '$1½')
     .replace(/(\D)1\/3(?!\d)/g, '$1⅓')
