@@ -494,6 +494,32 @@ function applyOldAccent(text) {
   return text.replace(Utils.getTrieRegexPatternFromWords(Object.keys(oldAccentObject)), (match) => oldAccentObject[match] ?? match);
 }
 
+function getFormattedText(inputText) {
+  let formattedText = inputText.replace(/(^[^"]*)"/gu, '$1“')
+    .replace(/((?:“|”|‘)[^"]*)"(?=[^"]*$|[^“"]*(?:“|”|‘))/g, '$1”')
+    .replace(/(\S)"/g, '$1”')
+    .replace(/"/g, '“')
+    .replace(/(^[^'])'/gu, '$1‘$2')
+    .replace(/((?:‘|’|“)[^']*)'(?=[^']*$|[^‘']*(?:‘|’|“))/g, '$1’')
+    .replace(/(\S)'/g, '$1’')
+    .replace(/'/g, '‘'); // Thay thế "nháy kép thẳng" bằng “nháy kép cong”
+  formattedText = formattedText.replace(/1\/2/g, '½')
+    .replace(/(\D)1\/2(?!\d)/g, '$1½')
+    .replace(/(\D)1\/3(?!\d)/g, '$1⅓')
+    .replace(/(\D)1\/4(?!\d)/g, '$1¼')
+    .replace(/(\D)1\/5(?!\d)/g, '$1⅕')
+    .replace(/(\D)1\/6(?!\d)/g, '$1⅙')
+    .replace(/(\D)1\/7(?!\d)/g, '$1⅐')
+    .replace(/(\D)1\/8(?!\d)/g, '$1⅛')
+    .replace(/(\D)2\/3(?!\d)/g, '$1⅔')
+    .replace(/(\D)2\/5(?!\d)/g, '$1⅖')
+    .replace(/(\D)3\/8(?!\d)/g, '$1⅜')
+    .replace(/(\D)7\/8(?!\d)/g, '$1⅞'); // Thay thế phân số (1/2) bằng ký tự phân số (½)
+  formattedText = formattedText.replace(/( )-(?= )/g, '$1–')
+    .replace(/[\d\p{L}]--[\d\p{L}]/g, '—'); // Thay thế gạch nối (--) với dấu gạch (—)
+  return formattedText;
+}
+
 async function translateTextarea() {
   const startTime = Date.now();
 
@@ -599,6 +625,7 @@ async function translateTextarea() {
         });
       }
 
+      result = getFormattedText(result);
       $('#translate-timer').text(Date.now() - startTime);
       lastSession.inputText = processText;
       lastSession.translatorOption = translatorOption;
@@ -863,6 +890,7 @@ async function translateText(inputText, translatorOption, targetLanguage, glossa
       });
     }
 
+    result = getFormattedText(result);
     return result;
   } catch (error) {
     console.error(error);
@@ -1098,7 +1126,7 @@ $retranslateButton.click(function onClick() {
 $glossaryManagerButton.on('mousedown', () => {
   $tagsetSelect.val('X');
   $glossaryEntrySelect.val('').change();
-  if (!Utils.isOnMobile()) $glossaryEntrySelect.find(`option[value=""]`)[0].scrollIntoView(true);
+  if (!Utils.isOnMobile()) $glossaryEntrySelect.find('option[value=""]')[0].scrollIntoView(true);
   $sourceEntryInput.val(getSelectedTextOrActiveElementText().replace(/\n/g, ' ').trim()).trigger('input');
   $sourceEntryInput.prop('scrollLeft', 0);
 

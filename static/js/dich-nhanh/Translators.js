@@ -951,20 +951,6 @@ class Vietphrase {
     MULTIPLICATION_BY_PRONOUNS_AND_NAMES: '2',
   };
 
-  PUNCTUATIONS = {
-    '·': ' ',
-    '、': ',',
-    '。': '.',
-    '【': '[',
-    '】': ']',
-    '！': '!',
-    '（': '(',
-    '）': ')',
-    '，': ',',
-    '：': ':',
-    '？': '?',
-  };
-
   constructor(data, translationAlgorithm, multiplicationAlgorithm, useGlossary = false, glossary = {}, prioritizeNameOverVietPhraseCheck = false, autocapitalize = false) {
     this.data = data;
     this.translationAlgorithm = translationAlgorithm;
@@ -1040,8 +1026,27 @@ class Vietphrase {
   }
 
   static getCapitalizeText(text) {
-    // text.split(/\n/).map((element) => (this.caseSensitive ? element.replace(/(^\s*[\p{Ps}\p{Pi}]*|!(?:" |' | )|\) |\.(?:" |' | )|: |\?(?:" |' | )|\] |\} |’ |” |。(?:(?:" |' ))?|！(?:(?:" |' ))?|．(?:(?:" |' ))?|？(?:(?:" |' ))?|["'：\p{Ps}\p{Pe}\p{Pi}\p{Pf}])(\p{Ll})/gu, (match, p1, p2) => p1 + p2.toUpperCase()) : element)).join('\n');
-    return text.split(/\n/).map((element) => element.replace(/(^\s*[\p{Ps}\p{Pi}]*|!(?:" |' | )|\.(?:" |' | )|: |\?(?:" |' | )|’ |” |。(?:(?:" |' ))?|！(?:(?:" |' ))?|．(?:(?:" |' ))?|？(?:(?:" |' ))?|["'：\p{Pi}\p{Pf}])(\p{Ll})/gu, (match, p1, p2) => p1 + p2.toUpperCase())).join('\n');
+    return text.split(/\n/).map((element) => element.replace(/(^[\p{P}\p{Z}]*|[!.?] |[、。！，.？])(\p{Ll})/gu, (__, p1, p2) => p1 + p2.toUpperCase())).join('\n');
+  }
+
+  static getFormattedText(inputText) {
+    const PUNCTUATIONS = {
+      '·': ' ',
+      '、': ',',
+      '。': '.',
+      '【': '[',
+      '】': ']',
+      '！': '!',
+      '（': '(',
+      '）': ')',
+      '，': ',',
+      '：': ':',
+      '？': '?',
+    };
+
+    return inputText.replace(/[”…、。】！），：？](?![\p{Pc}\p{Pd}\p{Pe}\p{Pf}\p{Po}\s]|$)/gu, (match) => `${PUNCTUATIONS[match] ?? match} `)
+      .replace(/(\S)([“【（])/gu, (__, p1, p2) => `${p1} ${PUNCTUATIONS[p2] ?? p2}`)
+      .replace(/[·、。【】！（），：？]/g, (match) => PUNCTUATIONS[match] ?? match);
   }
 
   translatePrioritizeLongVietPhraseClusters(targetLanguage, data, inputText) {
@@ -1073,9 +1078,7 @@ class Vietphrase {
           return false;
         });
 
-        result = result.replace(/[”、。】！），：？](?![\p{P}\p{Zs}]|$)/gu, (match) => `${this.PUNCTUATIONS[match] ?? match} `)
-          .replace(/(\P{Zs})([“【（])/gu, (__, p1, p2) => `${p1} ${this.PUNCTUATIONS[p2] ?? p2}`)
-          .replace(/[·、。【】！（），：？]/g, (match) => this.PUNCTUATIONS[match] ?? match);
+        result = Vietphrase.getFormattedText(result);
         if (this.autocapitalize) result = Vietphrase.getCapitalizeText(result);
       }
 
@@ -1157,9 +1160,7 @@ class Vietphrase {
           }
         });
 
-        result = results.join('\n').replace(/[”、。】！），：？](?![\p{P}\p{Zs}]|$)/gu, (match) => `${this.PUNCTUATIONS[match] ?? match} `)
-          .replace(/(\P{Zs})([“【（])/gu, (__, p1, p2) => `${p1} ${this.PUNCTUATIONS[p2] ?? p2}`)
-          .replace(/[·、。【】！（），：？]/g, (match) => this.PUNCTUATIONS[match] ?? match);
+        result = Vietphrase.getFormattedText(results.join('\n'));
         if (this.autocapitalize) result = Vietphrase.getCapitalizeText(result);
       }
 

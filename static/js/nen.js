@@ -5,13 +5,13 @@ const Colors = {
   SEPIA: 'sepia',
   CREAM: 'cream',
   GRAY: 'gray',
-  BLACK: 'black'
+  BLACK: 'black',
 };
 
-$('#background-select').change(function () {
+$('#background-select').change(function onChange() {
   if (this.value !== Colors.WHITE) {
-    if ($(document.documentElement).attr('style') != undefined) {
-      Object.values(Colors).forEach(function (code) {
+    if ($(document.documentElement).attr('style') != null) {
+      Object.values(Colors).forEach((code) => {
         if ($(document.documentElement).attr('style').includes(code)) {
           $(document.documentElement).attr('style', $(document.documentElement).attr('style').replace(new RegExp(`\s?${code}-background;`), ''));
         }
@@ -21,8 +21,8 @@ $('#background-select').change(function () {
     } else {
       $(document.documentElement).attr('style', `${this.value}-background;`);
     }
-  } else if ($(document.documentElement).attr('style') != undefined) {
-    Object.values(Colors).forEach(function (code) {
+  } else if ($(document.documentElement).attr('style') != null) {
+    Object.values(Colors).forEach((code) => {
       if ($(document.documentElement).attr('style').includes(code)) {
         $(document.documentElement).attr('style', $(document.documentElement).attr('style').replace(new RegExp(`\s?${code}-background;`, 'g'), ''));
       }
