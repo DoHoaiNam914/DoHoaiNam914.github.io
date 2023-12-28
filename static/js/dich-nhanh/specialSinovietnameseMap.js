@@ -18,6 +18,7 @@ const specialSinovietnameseMap = [
   ['公司', 'công ty'],
   ['基本', 'cơ bản'],
   ['营养', 'dinh dưỡng'],
+  ['叶家', 'Diệp gia'],
   ['大将', 'đại tướng'],
   ['大姐', 'đại tỷ'],
   ['道长', 'đạo trưởng'],
