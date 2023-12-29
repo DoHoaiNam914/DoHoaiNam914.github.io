@@ -203,6 +203,8 @@ const specialSinovietnameseMap = [
   ['纵', 'TUNG'],
   ['司', 'TƯ, TI'],
   ['蔷', 'TƯỜNG'],
+  ['碗', 'UYỂN'],
+  ['哟', 'ƯỚC'],
   ['援', 'VIỆN'],
   ['夭', 'YỂU'],
 ];
