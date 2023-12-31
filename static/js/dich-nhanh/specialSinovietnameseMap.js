@@ -65,6 +65,7 @@ const specialSinovietnameseMap = [
   ['施主', 'thí chủ'],
   ['时代', 'thời đại'],
   ['时间', 'thời gian'],
+  ['时刻', 'thời khắc'],
   ['时空', 'thời không'],
   ['时光', 'thời quang'],
   ['时装', 'thời trang'],
