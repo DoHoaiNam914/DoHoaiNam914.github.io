@@ -1,6 +1,7 @@
 /* eslint-disable */
 
 const specialSinovietnameseMap = [
+  ['叶小姐', 'Diệp tiểu thư'],
   ['骑士长', 'kỵ sĩ trưởng'],
   ['联合国', 'liên hiệp quốc'],
   ['魔法使', 'ma pháp sứ'],
@@ -9,6 +10,7 @@ const specialSinovietnameseMap = [
   ['长公主', 'trưởng công chủ'],
   ['本我', 'bản ngã'],
   ['本体', 'bản thể'],
+  ['本田', 'Bản Điền', /* Họ */],
   ['表姐', 'biểu tỷ'],
   ['高岭', 'cao lãnh'],
   ['高层', 'cao tầng'],
@@ -88,6 +90,7 @@ const specialSinovietnameseMap = [
   ['姐姐', 'tỷ tỷ'],
   ['物理', 'vật lý'],
   ['武道', 'võ đạo'],
+  ['武斗', 'võ đấu'],
   ['武徒', 'võ đồ'],
   ['武者', 'võ giả'],
   ['武学', 'võ học'],
