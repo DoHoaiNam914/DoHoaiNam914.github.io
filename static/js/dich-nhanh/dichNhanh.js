@@ -959,7 +959,7 @@ $(document).ready(async () => {
   if ($loadDefaultVietPhraseFileSwitch.prop('checked')) {
     $.ajax({
       method: 'GET',
-      url: '/static/datasource/Quick Translator/VietPhrase.txt',
+      url: '/static/datasource/ttvtranslate/VietPhrase.txt',
     }).done((data) => {
       let vietPhraseList = [...data.split(/\r\n/).map((element) => element.split('=')).filter((element) => element.length === 2).map(([first, second]) => [first, second.split(/[/|]/)[0]]), ...Object.entries(vietPhraseData.hanViet)];
       vietPhraseList = vietPhraseList.filter(([first], index, array) => !array[first] && (array[first] = 1), {});
@@ -971,36 +971,6 @@ $(document).ready(async () => {
       lastSession = {};
     }).fail((jqXHR, textStatus, errorThrown) => {
       console.error('Không tải được tệp VietPhrase:', errorThrown);
-    });
-
-    $.ajax({
-      method: 'GET',
-      url: '/static/datasource/Quick Translator/LuatNhan.txt',
-    }).done((data) => {
-      if ($luatNhanInput.prop('files').length > 0) return;
-      vietPhraseData.luatNhan = Object.fromEntries(data.split(/\r?\n/).filter((element) => !element.startsWith('#')).map((element) => element.split('=')).filter((element) => element.length === 2));
-      const $luatNhanEntryCounter = $('#luat-nhan-entry-counter');
-      $luatNhanEntryCounter.text(Object.keys(vietPhraseData.luatNhan).length);
-      console.log(`Đã tải xong tệp LuatNhan (${$luatNhanEntryCounter.text()})!`);
-      lastSession = {};
-    }).fail((jqXHR, textStatus, errorThrown) => {
-      console.error('Không tải được tệp LuatNhan:', errorThrown);
-      setTimeout(window.location.reload, 5000);
-    });
-
-    $.ajax({
-      method: 'GET',
-      url: '/static/datasource/Quick Translator/Pronouns.txt',
-    }).done((data) => {
-      if ($pronounInput.prop('files').length > 0) return;
-      vietPhraseData.pronoun = Object.fromEntries(data.split(/\r?\n/).map((element) => element.split('=')).filter((element) => element.length === 2).map(([first, second]) => [first, second.split('/')[0]]));
-      const $pronounEntryCounter = $('#pronoun-entry-counter');
-      $pronounEntryCounter.text(Object.keys(vietPhraseData.pronoun).length);
-      console.log(`Đã tải xong tệp Pronouns (${$pronounEntryCounter.text()})!`);
-      lastSession = {};
-    }).fail((jqXHR, textStatus, errorThrown) => {
-      console.error('Không tải được tệp Pronouns:', errorThrown);
-      setTimeout(window.location.reload, 5000);
     });
   }
 
