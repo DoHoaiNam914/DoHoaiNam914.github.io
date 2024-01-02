@@ -961,7 +961,7 @@ $(document).ready(async () => {
       method: 'GET',
       url: '/static/datasource/ttvtranslate/VietPhrase.txt',
     }).done((data) => {
-      let vietPhraseList = [...data.split(/\r\n/).map((element) => element.split('=')).filter((element) => element.length === 2).map(([first, second]) => [first, second.split(/[/|]/)[0]]), ...Object.entries(vietPhraseData.hanViet)];
+      let vietPhraseList = [...data.split(/\n/).map((element) => element.split('=')).filter((element) => element.length === 2).map(([first, second]) => [first, second.split(/[/|]/)[0]]), ...Object.entries(vietPhraseData.hanViet)];
       vietPhraseList = vietPhraseList.filter(([first], index, array) => !array[first] && (array[first] = 1), {});
       if ($vietPhraseInput.prop('files').length > 0) return;
       vietPhraseData.vietPhrase = Object.fromEntries(vietPhraseList);
