@@ -951,13 +951,14 @@ class Vietphrase {
     MULTIPLICATION_BY_PRONOUNS_AND_NAMES: '2',
   };
 
-  constructor(data, translationAlgorithm, multiplicationAlgorithm, useGlossary = false, glossary = {}, prioritizeNameOverVietPhraseCheck = false, autocapitalize = false) {
+  constructor(data, translationAlgorithm, multiplicationAlgorithm, useGlossary = false, glossary = {}, prioritizeNameOverVietPhraseCheck = false, addDeLeZhao = false, autocapitalize = false) {
     this.data = data;
     this.translationAlgorithm = translationAlgorithm;
     this.multiplicationAlgorithm = multiplicationAlgorithm;
     this.useGlossary = useGlossary;
     this.glossary = glossary;
     this.prioritizeNameOverVietPhrase = prioritizeNameOverVietPhraseCheck;
+    this.addDeLeZhao = addDeLeZhao;
     this.autocapitalize = autocapitalize;
   }
 
@@ -1171,7 +1172,7 @@ class Vietphrase {
     }
   }
 
-  async translateText(sourceLanugage, targetLanguage, inputText) {
+  async translateText(__, targetLanguage, inputText) {
     try {
       let data = {};
 
@@ -1192,6 +1193,18 @@ class Vietphrase {
       }
 
       if (Object.keys(data).length === 0) return 'Vui lòng nhập tệp VietPhrase.txt hoặc bật tuỳ chọn [Tải tệp VietPhrase mặc định] và tải lại trang!';
+
+      if (targetLanguage === 'vi') {
+        if (this.addDeLeZhao) {
+          data['的'] = this.data.hanViet['的'];
+          data['了'] = this.data.hanViet['了'];
+          data['着'] = this.data.hanViet['着'];
+        } else {
+          data['的'] = '';
+          data['了'] = '';
+          data['着'] = '';
+        }
+      }
 
       switch (this.translationAlgorithm) {
         case this.TranslationAlgorithms.TRANSLATE_FROM_LEFT_TO_RIGHT: {

@@ -21,12 +21,13 @@ const $lineSpacingRange = $('#line-spacing-range');
 const $alignmentSettingsSwitch = $('#alignment-settings-switch');
 const $translatorOptions = $('.translator-option');
 const $showOriginalTextSwitch = $('#show-original-text-switch');
-const $vietPhraseInput = $('#viet-phrase-input');
 const $loadDefaultVietPhraseFileSwitch = $('#load-default-viet-phrase-file-switch');
-const $luatNhanInput = $('#luat-nhan-input');
-const $pronounInput = $('#pronoun-input');
+const $vietPhraseInput = $('#viet-phrase-input');
+const $addDeLeZhaoCheck = $('#add-de-le-zhao-check');
 const $prioritizeNameOverVietPhraseCheck = $('#prioritize-name-over-viet-phrase-check');
 const $translationAlgorithmRadio = $('.option[name="translation-algorithm-radio"]');
+const $luatNhanInput = $('#luat-nhan-input');
+const $pronounInput = $('#pronoun-input');
 const $multiplicationAlgorithmRadio = $('.option[name="multiplication-algorithm-radio"]');
 
 const $resetButton = $('#reset-button');
@@ -860,7 +861,7 @@ async function translateText(inputText, translatorOption, targetLanguage, glossa
         break;
       }
       case Translators.VIETPHRASE: {
-        translator = await new Vietphrase(vietPhraseData, $translationAlgorithmRadio.filter('[checked]').val(), $multiplicationAlgorithmRadio.filter('[checked]').val(), glossaryEnabled, glossaryObject, $prioritizeNameOverVietPhraseCheck.prop('checked'));
+        translator = await new Vietphrase(vietPhraseData, $translationAlgorithmRadio.filter('[checked]').val(), $multiplicationAlgorithmRadio.filter('[checked]').val(), glossaryEnabled, glossaryObject, $prioritizeNameOverVietPhraseCheck.prop('checked'), $addDeLeZhaoCheck.prop('checked'));
         sourceLanguage = Vietphrase.DefaultLanguage.SOURCE_LANGUAGE;
         break;
       }
