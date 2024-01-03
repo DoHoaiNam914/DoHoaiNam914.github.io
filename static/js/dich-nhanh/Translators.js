@@ -1045,7 +1045,7 @@ class Vietphrase {
     };
 
     return inputText.replace(/[’”…、。】！），：？](?![\p{Pc}\p{Pd}\p{Pe}\p{Pf}\p{Po}\s]|$)/gu, (match) => `${PUNCTUATIONS[match] ?? match} `)
-      .replace(/([\s\p{Ps}\p{Pi}])([‘“【（])/gu, (__, p1, p2) => `${p1} ${PUNCTUATIONS[p2] ?? p2}`)
+      .replace(/([^\s\p{Ps}\p{Pi}])([‘“【（])/gu, (__, p1, p2) => `${p1} ${PUNCTUATIONS[p2] ?? p2}`)
       .replace(/[、。【】！（），：？]/g, (match) => PUNCTUATIONS[match] ?? match)
       .replace(/ ?· ?/g, '');
   }

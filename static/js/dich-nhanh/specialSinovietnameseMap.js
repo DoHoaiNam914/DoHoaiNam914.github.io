@@ -81,6 +81,7 @@ const specialSinovietnameseMap = [
   ['宗师', 'tôn sư'],
   ['族长', 'tộc trưởng'],
   ['重天', 'trùng thiên'],
+  ['传音', 'truyền âm'],
   ['传道', 'truyền đạo'],
   ['传奇', 'truyền kỳ'],
   ['传说', 'truyền thuyết'],
