@@ -19,6 +19,7 @@ const $fontOptions = $('.font-option');
 const $fontSizeRange = $('#font-size-range');
 const $lineSpacingRange = $('#line-spacing-range');
 const $alignmentSettingsSwitch = $('#alignment-settings-switch');
+const $formatSettingsSwitch = $('#format-settings-switch');
 const $translatorOptions = $('.translator-option');
 const $showOriginalTextSwitch = $('#show-original-text-switch');
 const $loadDefaultVietPhraseFileSwitch = $('#load-default-viet-phrase-file-switch');
@@ -46,7 +47,7 @@ const $removeButton = $('#remove-button');
 const $glossaryEntrySelect = $('#glossary-entry-select');
 const $glossaryName = $('#glossary-name');
 
-const defaultOptions = JSON.parse('{"source_language":"auto","target_language":"vi","font":"Mặc định","font_size":100,"line_spacing":40,"alignment_settings":true,"translator":"googleTranslate","show_original_text":false,"load_default_viet_phrase_file":false,"add_de_le_zhao":false,"translation_algorithm":"0","prioritize_name_over_viet_phrase":false,"multiplication_algorithm":"2","glossary":true,"language_pairs":"zh-vi"}');
+const defaultOptions = JSON.parse('{"source_language":"auto","target_language":"vi","font":"Mặc định","font_size":100,"line_spacing":40,"alignment_settings":true,"format_settings":false,"translator":"googleTranslate","show_original_text":false,"load_default_viet_phrase_file":false,"add_de_le_zhao":false,"translation_algorithm":"0","prioritize_name_over_viet_phrase":false,"multiplication_algorithm":"2","glossary":true,"language_pairs":"zh-vi"}');
 
 const SUPPORTED_LANGUAGES = ['', 'EN', 'JA', 'ZH', 'EN-US', 'auto', 'en', 'ja', 'zh-CN', 'zh-TW', 'vi', 'zh-Hans', 'zh-Hant'];
 
@@ -603,7 +604,6 @@ async function translateTextarea() {
         });
       }
 
-      result = getFormattedText(result);
       $('#translate-timer').text(Date.now() - startTime);
       lastSession.inputText = processText;
       lastSession.translatorOption = translatorOption;
@@ -613,7 +613,7 @@ async function translateTextarea() {
     }
 
     if (translateAbortController.signal.aborted) return;
-    $resultTextarea.html(buildResult($inputTextarea.val(), result));
+    $resultTextarea.html(buildResult($inputTextarea.val(), getFormattedText(result)));
   } catch (error) {
     console.error(error);
     const paragraph = document.createElement('p');
@@ -868,7 +868,6 @@ async function translateText(inputText, translatorOption, targetLanguage, glossa
       });
     }
 
-    result = getFormattedText(result);
     return result;
   } catch (error) {
     console.error(error);
@@ -1168,6 +1167,22 @@ $alignmentSettingsSwitch.off('change');
 
 $alignmentSettingsSwitch.change(function onChange() {
   $(document.body).css('--opt-text-align', $(this).prop('checked') ? 'justify' : 'start');
+  quickTranslateStorage[getOptionId($(this).attr('id'))] = $(this).prop('checked');
+  localStorage.setItem('dich_nhanh', JSON.stringify(quickTranslateStorage));
+});
+
+$alignmentSettingsSwitch.off('change');
+
+$alignmentSettingsSwitch.change(function onChange() {
+  $(document.body).css('--opt-text-align', $(this).prop('checked') ? 'justify' : 'start');
+  quickTranslateStorage[getOptionId($(this).attr('id'))] = $(this).prop('checked');
+  localStorage.setItem('dich_nhanh', JSON.stringify(quickTranslateStorage));
+});
+
+$formatSettingsSwitch.off('change');
+
+$formatSettingsSwitch.change(function onChange() {
+  $retranslateButton.click();
   quickTranslateStorage[getOptionId($(this).attr('id'))] = $(this).prop('checked');
   localStorage.setItem('dich_nhanh', JSON.stringify(quickTranslateStorage));
 });

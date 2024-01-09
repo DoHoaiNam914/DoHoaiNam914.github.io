@@ -1044,8 +1044,8 @@ class Vietphrase {
       '？': '?',
     };
 
-    return inputText.replace(/[’”…、。】！），：？](?![\p{Pc}\p{Pd}\p{Pe}\p{Pf}\p{Po}\s]|$)/gu, (match) => `${PUNCTUATIONS[match] ?? match} `)
-      .replace(/([^\s\p{Ps}\p{Pi}])([‘“【（])/gu, (__, p1, p2) => `${p1} ${PUNCTUATIONS[p2] ?? p2}`)
+    return inputText.replace(/[…、。】！），：？](?![\p{Pc}\p{Pd}\p{Pe}\p{Pf}\p{Po}\s]|$)/gu, (match) => `${PUNCTUATIONS[match] ?? match} `)
+      .replace(/([^\s\p{Ps}\p{Pi}])([【（])/gu, (__, p1, p2) => `${p1} ${PUNCTUATIONS[p2] ?? p2}`)
       .replace(/[、。【】！（），：？]/g, (match) => PUNCTUATIONS[match] ?? match)
       .replace(/·/g, ' ');
   }
@@ -1067,10 +1067,10 @@ class Vietphrase {
 
         dataEntries.some(([a, value], index, array) => {
           if (result.includes(a) && ((this.useGlossary && !this.prioritizeNameOverVietPhrase && Object.prototype.hasOwnProperty.call(this.glossary, a)) || Array.from(a).every((element) => Object.prototype.hasOwnProperty.call(this.data.hanViet, element) || (Object.prototype.hasOwnProperty.call(this.data.vietPhrase, element) && /^\p{P}$/u.test(element))) || [...nhanByGlossary, ...glossaryEntries].indexOf(a) > -1) && a !== '·') {
-            result = result.replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}\\p{Po}])${Utils.escapeRegExp(a)}(?=${Object.values(this.glossary).join('|')})`, 'gu'), `$1 ${Utils.escapeRegExpReplacement(value)} `)
-              .replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}\\p{Po}])${Utils.escapeRegExp(a)}([\\p{Lu}\\p{Ll}\\p{Nd}])`, 'gu'), `$1 ${Utils.escapeRegExpReplacement(value)} $2`)
-              .replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}\\p{Po}])${Utils.escapeRegExp(a)}`, 'gu'), `$1 ${Utils.escapeRegExpReplacement(value)}`)
-              .replace(new RegExp(`${Utils.escapeRegExp(a)}([\\p{Lu}\\p{Ll}\\p{Nd}])`, 'gu'), `${Utils.escapeRegExpReplacement(value)} $1`)
+            result = result.replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}’”]$)${Utils.escapeRegExp(a)}(?=${Object.values(this.glossary).join('|')})`, 'gu'), `$1 ${Utils.escapeRegExpReplacement(value)} `)
+              .replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}’”])${Utils.escapeRegExp(a)}(?=[\\p{Lu}\\p{Ll}\\p{Nd}‘“])`, 'gu'), `$1 ${Utils.escapeRegExpReplacement(value)} `)
+              .replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}’”])${Utils.escapeRegExp(a)}`, 'gu'), `$1 ${Utils.escapeRegExpReplacement(value)}`)
+              .replace(new RegExp(`${Utils.escapeRegExp(a)}([\\p{Lu}\\p{Ll}\\p{Nd}‘“])`, 'gu'), `${Utils.escapeRegExpReplacement(value)} $1`)
               .replace(new RegExp(`${Utils.escapeRegExp(a)}(?=${Object.values(this.glossary).join('|')})`, 'g'), `${Utils.escapeRegExpReplacement(value)} `)
               .replace(new RegExp(Utils.escapeRegExp(a), 'g'), Utils.escapeRegExpReplacement(value));
           }
@@ -1128,7 +1128,7 @@ class Vietphrase {
                   const phrase = a.substring(i, i + d);
 
                   if (this.useGlossary && this.prioritizeNameOverVietPhrase && glossaryEntries.map(([__, second]) => second).indexOf(phrase) > -1) {
-                    tempLine += (i > 0 && /[\p{Lu}\p{Ll}\p{Nd}\p{Po}]/u.test(prevPhrase || tempLine[tempLine.length - 1]) ? ' ' : '') + phrase;
+                    tempLine += (i > 0 && /[\p{Lu}\p{Ll}\p{Nd}’”]/u.test(prevPhrase || tempLine[tempLine.length - 1]) ? ' ' : '') + phrase;
                     prevPhrase = phrase;
                     i += d - 1;
                     return true;
@@ -1136,7 +1136,7 @@ class Vietphrase {
 
                   if (((this.useGlossary && !this.prioritizeNameOverVietPhrase && Object.prototype.hasOwnProperty.call(this.glossary, phrase)) || Array.from(phrase).every((element) => Object.prototype.hasOwnProperty.call(this.data.hanViet, element) || (Object.prototype.hasOwnProperty.call(this.data.vietPhrase, element) && /^\p{P}$/u.test(element))) || [...nhanByGlossary, ...glossaryEntries].indexOf(phrase) > -1) && Object.prototype.hasOwnProperty.call(dataObject, phrase) && phrase !== '·') {
                     if (dataObject[phrase].length > 0) {
-                      tempLine += (i > 0 && /[\p{Lu}\p{Ll}\p{Nd}\p{Po}]/u.test(prevPhrase || tempLine[tempLine.length - 1]) ? ' ' : '') + dataObject[phrase];
+                      tempLine += (i > 0 && /[\p{Lu}\p{Ll}\p{Nd}’”]/u.test(prevPhrase || tempLine[tempLine.length - 1]) ? ' ' : '') + dataObject[phrase];
                       prevPhrase = dataObject[phrase];
                     }
 
@@ -1145,7 +1145,7 @@ class Vietphrase {
                   }
 
                   if (d === 1) {
-                    tempLine += (prevPhrase.length > 0 && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(a[i]) && /[\p{Lu}\p{Ll}\p{Nd}]/u.test(prevPhrase) ? ' ' : '') + phrase;
+                    tempLine += (prevPhrase.length > 0 && /[\p{Lu}\p{Ll}\p{Nd}‘“]/u.test(a[i]) && /[\p{Lu}\p{Ll}\p{Nd}’”]/u.test(prevPhrase) ? ' ' : '') + phrase;
                     prevPhrase = '';
                     return true;
                   }
