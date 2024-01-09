@@ -120,23 +120,6 @@ const Tagset = {
   FW: 24,
   PUNCT: 25,
   SYM: 26,
-  // Nhãn thành phần cú pháp
-  NP: 27,
-  VP: 28,
-  AP: 29,
-  RP: 30,
-  PP: 31,
-  QP: 32,
-  MDP: 33,
-  UCP: 34,
-  LST: 35,
-  WHNP: 36,
-  WHAP: 37,
-  WHRP: 38,
-  WHPP: 39,
-  S: 40,
-  SQ: 41,
-  SBAR: 42,
 };
 
 function getOptionId(id) {
@@ -251,12 +234,14 @@ function loadAllQuickTranslatorOptions() {
   });
 }
 
-function isStaticWordOrPhrase(tagset) {
-  return tagset === 'NNP' || tagset === 'MWE' || tagset === 'X' || tagset === 'y' || tagset === 'FW' || tagset === 'MDP' || tagset === 'WHNP' || tagset === 'WHAP' || tagset === 'WHRP' || tagset === 'WHPP' || tagset === 'S' || tagset === 'SQ' || tagset === 'SBAR';
+function isStaticWordOrPhrase(tag) {
+  const tagset = ['NNP', 'NC', 'MWE', 'X', 'y', 'FW'];
+  return tagset.some((element) => tag === element);
 }
 
-function isDynamicWordOrPhrase(tagset) {
-  return tagset === 'ADJ' || tagset === 'ADV' || tagset === 'N' || tagset === 'PRT' || tagset === 'SC' || tagset === 'V' || tagset === 'NP' || tagset === 'VP' || tagset === 'AP' || tagset === 'RP' || tagset === 'PP' || tagset === 'QP' || tagset === 'UCP';
+function isDynamicWordOrPhrase(tag) {
+  const tagset = ['N', 'NU', 'NUX', 'NUM', 'NUMX', 'DET', 'V', 'AUX', 'ADJ', 'PRO', 'ADV', 'PRE', 'PRE', 'CC', 'SC', 'PRT', 'I', 'D', 'Z', 'b', 'PUNCT', 'SYM'];
+  return tagset.some((element) => tag === element);
 }
 
 function getIgnoreTranslationMarkup(text, translation, translator) {
@@ -418,7 +403,7 @@ function reloadGlossaryEntries() {
 function getMaxQueryLengthAndLine(translator, text) {
   switch (translator) {
     case Translators.BAIDU_FANYI: {
-      return [1000, 90];
+      return [1000, 20];
     }
     case Translators.DEEPL_TRANSLATE: {
       return [131072, 50];
@@ -438,12 +423,34 @@ function getMaxQueryLengthAndLine(translator, text) {
   }
 }
 
+function applyOldAccent(text) {
+  return text.replace(Utils.getTrieRegexPatternFromWords(Object.keys(oldAccentObject)), (match) => oldAccentObject[match] ?? match);
+}
+
+function getFormattedText(inputText) {
+  let formattedText = inputText.replace(/\b"/g, '”')
+    .replace(/^"|"\b/g, '“')
+    .replace(/([\s\p{Ps}])"/gu, '$1“')
+    .replace(/"/g, '”')
+    .replace(/\b'/g, '’')
+    .replace(/^'|'\b/g, '‘')
+    .replace(/([\s\p{Ps}])'/gu, '$1‘')
+    .replace(/'/g, '’'); // Thay thế "nháy kép thẳng" bằng “nháy kép cong”
+  formattedText = formattedText.replace(/1\/2/g, '½')
+    .replace(/(\D)1\/2(?!\d)/g, '$1½')
+    .replace(/(\D)1\/4(?!\d)/g, '$1¼')
+    .replace(/(\D)3\/4(?!\d)/g, '$1¾'); // Thay thế phân số (1/2) bằng ký tự phân số (½)
+  formattedText = formattedText.replace(/( )-(?= |$)/g, '$1–')
+    .replace(/([\d\p{L}])--(?=[\d\p{L}]|$)/gu, '$1—'); // Thay thế gạch nối (--) với dấu gạch (—)
+  return $('#format-settings-switch').prop('checked') ? formattedText : inputText;
+}
+
 function buildResult(inputText, result) {
   try {
     const resultDiv = document.createElement('div');
 
     const inputLines = inputText.split(/\r?\n/).map((element) => element.trim());
-    const resultLines = result.split(/\r?\n/).map((element) => element.trim());
+    const resultLines = result.split(/\n/).map((element) => element.trim());
 
     if ($showOriginalTextSwitch.prop('checked') && result !== 'Vui lòng nhập tệp VietPhrase.txt hoặc bật tuỳ chọn [Tải tệp VietPhrase mặc định] và tải lại trang!') {
       let lostLineFixedNumber = 0;
@@ -489,28 +496,6 @@ function buildResult(inputText, result) {
     console.error('Lỗi hiển thị bản dịch:', error);
     throw error.toString();
   }
-}
-
-function applyOldAccent(text) {
-  return text.replace(Utils.getTrieRegexPatternFromWords(Object.keys(oldAccentObject)), (match) => oldAccentObject[match] ?? match);
-}
-
-function getFormattedText(inputText) {
-  let formattedText = inputText.replace(/\b"/g, '”')
-    .replace(/^"|"\b/g, '“')
-    .replace(/([\s\p{Ps}])"/gu, '$1“')
-    .replace(/"/g, '”')
-    .replace(/\b'/g, '’')
-    .replace(/^'|'\b/g, '‘')
-    .replace(/([\s\p{Ps}])'/gu, '$1‘')
-    .replace(/'/g, '’'); // Thay thế "nháy kép thẳng" bằng “nháy kép cong”
-  formattedText = formattedText.replace(/1\/2/g, '½')
-    .replace(/(\D)1\/2(?!\d)/g, '$1½')
-    .replace(/(\D)1\/4(?!\d)/g, '$1¼')
-    .replace(/(\D)3\/4(?!\d)/g, '$1¾'); // Thay thế phân số (1/2) bằng ký tự phân số (½)
-  formattedText = formattedText.replace(/( )-(?= |$)/g, '$1–')
-    .replace(/([\d\p{L}])--(?=[\d\p{L}]|$)/gu, '$1—'); // Thay thế gạch nối (--) với dấu gạch (—)
-  return formattedText;
 }
 
 async function translateTextarea() {
