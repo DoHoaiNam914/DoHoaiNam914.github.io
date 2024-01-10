@@ -468,13 +468,19 @@ function buildResult(inputText, result) {
             let textNode = document.createTextNode(resultLines[i]);
 
             if (resultLines[i] !== inputLines[i + lostLineFixedNumber]) {
-              const idiomaticText = document.createElement('i');
-              const linebreak = document.createElement('br');
-              idiomaticText.innerText = inputLines[i + lostLineFixedNumber];
-              paragraph.appendChild(idiomaticText);
-              paragraph.appendChild(linebreak.cloneNode(true));
-              textNode = document.createElement('b');
-              textNode.innerText = resultLines[i];
+
+              if ($formatSettingsSwitch.prop('checked')) {
+                const originalText = document.createTextNode(inputLines[i + lostLineFixedNumber]);
+                paragraph.appendChild(originalText);
+                textNode = document.createElement('i');
+                textNode.innerText = resultLines[i];
+              } else {
+                const idiomaticText = document.createElement('i');
+                idiomaticText.innerText = inputLines[i + lostLineFixedNumber];
+                paragraph.appendChild(idiomaticText);
+                textNode = document.createElement('b');
+                textNode.innerText = resultLines[i];
+              }
             }
 
             paragraph.appendChild(textNode);

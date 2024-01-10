@@ -23,6 +23,7 @@ const specialSinovietnameseMap = [
   ['乾国', 'Càn quốc'],
   ['营养', 'dinh dưỡng'],
   ['叶家', 'Diệp gia'],
+  ['多重', 'đa trùng'],
   ['大将', 'đại tướng'],
   ['大姐', 'đại tỷ'],
   ['道长', 'đạo trưởng'],
