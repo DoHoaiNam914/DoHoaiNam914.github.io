@@ -468,10 +468,8 @@ function buildResult(inputText, result) {
             let textNode = document.createTextNode(resultLines[i]);
 
             if (resultLines[i] !== inputLines[i + lostLineFixedNumber]) {
-
               if ($formatSettingsSwitch.prop('checked')) {
-                const originalText = document.createTextNode(inputLines[i + lostLineFixedNumber]);
-                paragraph.appendChild(originalText);
+                paragraph.appendChild(document.createTextNode(inputLines[i + lostLineFixedNumber]));
                 textNode = document.createElement('i');
                 textNode.innerText = resultLines[i];
               } else {
@@ -481,6 +479,8 @@ function buildResult(inputText, result) {
                 textNode = document.createElement('b');
                 textNode.innerText = resultLines[i];
               }
+              
+              paragraph.innerText += textNode.innerText.length > 0 ? ' ' : '';
             }
 
             paragraph.appendChild(textNode);
