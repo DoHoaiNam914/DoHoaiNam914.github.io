@@ -428,24 +428,6 @@ function applyOldAccent(text) {
   return text.replace(Utils.getTrieRegexPatternFromWords(Object.keys(oldAccentObject)), (match) => oldAccentObject[match] ?? match);
 }
 
-function getFormattedText(inputText) {
-  let formattedText = inputText.replace(/\b"/g, '”')
-    .replace(/^"|"\b/g, '“')
-    .replace(/([\s\p{Ps}])"/gu, '$1“')
-    .replace(/"/g, '”')
-    .replace(/\b'/g, '’')
-    .replace(/^'|'\b/g, '‘')
-    .replace(/([\s\p{Ps}])'/gu, '$1‘')
-    .replace(/'/g, '’'); // Thay thế "nháy kép thẳng" bằng “nháy kép cong”
-  formattedText = formattedText.replace(/1\/2/g, '½')
-    .replace(/(\D)1\/2(?!\d)/g, '$1½')
-    .replace(/(\D)1\/4(?!\d)/g, '$1¼')
-    .replace(/(\D)3\/4(?!\d)/g, '$1¾'); // Thay thế phân số (1/2) bằng ký tự phân số (½)
-  formattedText = formattedText.replace(/( )-(?= |$)/g, '$1–')
-    .replace(/([\d\p{L}])--(?=[\d\p{L}]|$)/gu, '$1—'); // Thay thế gạch nối (--) với dấu gạch (—)
-  return $('#format-settings-switch').prop('checked') ? formattedText : inputText;
-}
-
 function buildResult(inputText, result) {
   try {
     const resultDiv = document.createElement('div');
@@ -469,18 +451,21 @@ function buildResult(inputText, result) {
 
             if (resultLines[i] !== inputLines[i + lostLineFixedNumber]) {
               if ($formatSettingsSwitch.prop('checked')) {
-                paragraph.appendChild(document.createTextNode(inputLines[i + lostLineFixedNumber]));
-                textNode = document.createElement('i');
-                textNode.innerText = resultLines[i];
+                const idiomaticText = document.createElement('i');
+                idiomaticText.innerText = inputLines[i + lostLineFixedNumber];
+                paragraph.appendChild(idiomaticText);
+
+                if (textNode.innerText.length > 0) {
+                  paragraph.appendChild(document.createElement('br'));
+                }
               } else {
                 const idiomaticText = document.createElement('i');
                 idiomaticText.innerText = inputLines[i + lostLineFixedNumber];
                 paragraph.appendChild(idiomaticText);
                 textNode = document.createElement('b');
                 textNode.innerText = resultLines[i];
+                paragraph.inneHTML += textNode.innerText.length > 0 ? ' ' : '';
               }
-              
-              paragraph.innerText += textNode.innerText.length > 0 ? ' ' : '';
             }
 
             paragraph.appendChild(textNode);
@@ -619,7 +604,7 @@ async function translateTextarea() {
     }
 
     if (translateAbortController.signal.aborted) return;
-    $resultTextarea.html(buildResult($inputTextarea.val(), getFormattedText(result)));
+    $resultTextarea.html(buildResult($inputTextarea.val(), result));
   } catch (error) {
     console.error(error);
     const paragraph = document.createElement('p');
