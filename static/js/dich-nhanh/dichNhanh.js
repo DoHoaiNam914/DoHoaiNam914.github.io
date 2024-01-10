@@ -455,7 +455,7 @@ function buildResult(inputText, result) {
                 idiomaticText.innerText = inputLines[i + lostLineFixedNumber];
                 paragraph.appendChild(idiomaticText);
 
-                if (textNode.innerText.length > 0) {
+                if (resultLines[i].length > 0) {
                   paragraph.appendChild(document.createElement('br'));
                 }
               } else {
@@ -464,7 +464,7 @@ function buildResult(inputText, result) {
                 paragraph.appendChild(idiomaticText);
                 textNode = document.createElement('b');
                 textNode.innerText = resultLines[i];
-                paragraph.inneHTML += textNode.innerText.length > 0 ? ' ' : '';
+                paragraph.innerHTML += resultLines[i].length > 0 ? ' ' : '';
               }
             }
 
