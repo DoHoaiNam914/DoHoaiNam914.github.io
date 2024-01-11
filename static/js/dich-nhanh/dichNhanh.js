@@ -1140,7 +1140,7 @@ $fontSizeRange.change(function onChange() {
 
 $lineSpacingRange.on('input', function onInput() {
   const $lineSpacingDisplay = $('#line-spacing-display');
-  $(this).val(parseFloat$(this).val()).toFixed($lineSpacingDisplay.val().includes('.') ? $lineSpacingDisplay.val().split('.')[1].length : 0));
+  $(this).val(parseFloat($(this).val()).toFixed($lineSpacingDisplay.val().includes('.') ? $lineSpacingDisplay.val().split('.')[1].length : 0));
   $lineSpacingDisplay.val(parseInt($(this).val(), 10));
   $(document.body).css('--opt-line-height', `${1 + ((0.5 * parseInt($(this).val(), 10)) / 100)}em`);
   quickTranslateStorage[getOptionId($(this).attr('id'))] = parseInt($(this).val(), 10);
