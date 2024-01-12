@@ -584,6 +584,8 @@ async function translateTextarea() {
           }
         }
 
+        
+        if (translateAbortController.signal.aborted) return;
         result = results.join('\n');
       }
 
@@ -595,6 +597,7 @@ async function translateTextarea() {
         });
       }
 
+      if (translateAbortController.signal.aborted) return;
       $('#translate-timer').text(Date.now() - startTime);
       lastSession.inputText = processText;
       lastSession.translatorOption = translatorOption;

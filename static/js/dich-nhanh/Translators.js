@@ -51,12 +51,14 @@ class BaiduFanyi {
   };
 
   static GOOGLE_TRANSLATE_MAPPING = {
+    jp: 'ja',
     vie: 'vi',
     zh: 'zh-CN',
     cht: 'zh-CN',
   };
 
   static PAPAGO_MAPPING = {
+    jp: 'ja',
     vie: 'vi',
     zh: 'zh-CN',
     cht: 'zh-TW',
@@ -64,6 +66,7 @@ class BaiduFanyi {
 
   static MICROSOFT_TRANSLATOR_MAPPING = {
     auto: '',
+    jp: 'ja',
     vie: 'vi',
     zh: 'zh-Hans',
     cht: 'zh-Hant',
@@ -88,6 +91,9 @@ class BaiduFanyi {
       case Translators.PAPAGO: {
         return BaiduFanyi.PAPAGO_MAPPING[languageCode] ?? (Object.prototype.hasOwnProperty.call(Papago.SOURCE_LANGUAGES, languageCode) ? languageCode : Papago.DefaultLanguage.SOURCE);
       }
+      case Translators.MICROSOFT_TRANSLATOR: {
+        return BaiduFanyi.MICROSOFT_TRANSLATOR_MAPPING[languageCode] ?? (Object.prototype.hasOwnProperty.call(MicrosoftTranslator.FROM_LANGUAGES, languageCode) ? languageCode : MicrosoftTranslator.DefaultLanguage.FROM);
+      }
       case Translators.VIETPHRASE: {
         return Vietphrase.DefaultLanguage.SOURCE_LANGUAGE;
       }
@@ -109,7 +115,7 @@ class BaiduFanyi {
         return BaiduFanyi.PAPAGO_MAPPING[languageCode] ?? (Object.prototype.hasOwnProperty.call(Papago.TARGET_LANGUAGES, languageCode) ? languageCode : Papago.DefaultLanguage.TARGET);
       }
       case Translators.MICROSOFT_TRANSLATOR: {
-        return BaiduFanyi.MICROSOFT_TRANSLATOR_MAPPING[languageCode] ?? (Object.prototype.hasOwnProperty.call(MicrosoftTranslator.FROM_LANGUAGES, languageCode) ? languageCode : MicrosoftTranslator.DefaultLanguage.FROM);
+        return BaiduFanyi.MICROSOFT_TRANSLATOR_MAPPING[languageCode] ?? (Object.prototype.hasOwnProperty.call(MicrosoftTranslator.TO_LANGUAGES, languageCode) ? languageCode : MicrosoftTranslator.DefaultLanguage.TO);
       }
       case Translators.VIETPHRASE: {
         return Vietphrase.DefaultLanguage.TARGET_LANGUAGE;
@@ -641,8 +647,6 @@ class Papago {
     },
   };
 
-  static GOOGLE_TRANSLATOR_MAPPING = { 'zh-TW': 'zh-CN' };
-
   static MICROSOFT_TRANSLATOR_MAPPING = {
     auto: '',
     'zh-CN': 'zh-Hans',
@@ -681,7 +685,8 @@ class Papago {
         return Papago.DEEPL_TRANSLATOR_MAPPING.SOURCE_LANGUAGES[languageCode] ?? (DeeplTranslate.SOURCE_LANGUAGES.filter(({ language }) => language === languageCode).length > 0 ? languageCode : DeeplTranslate.DefaultLanguage.SOURCE_LANG);
       }
       case Translators.GOOGLE_TRANSLATE: {
-        return Papago.GOOGLE_TRANSLATOR_MAPPING[languageCode] ?? Object.prototype.hasOwnProperty.call(Papago.SOURCE_LANGUAGES, languageCode) ? languageCode : GoogleTranslate.DefaultLanguage.SL;
+        const maybeIsChineseTraditional = languageCode === 'zh-TW' ? 'zh-CN' : GoogleTranslate.DefaultLanguage.SL;
+        return Object.prototype.hasOwnProperty.call(GoogleTranslate.SOURCE_LANGUAGES, languageCode) ? languageCode : maybeIsChineseTraditional;
       }
       case Translators.MICROSOFT_TRANSLATOR: {
         return Papago.MICROSOFT_TRANSLATOR_MAPPING[languageCode] ?? (Object.prototype.hasOwnProperty.call(MicrosoftTranslator.FROM_LANGUAGES, languageCode) ? languageCode : MicrosoftTranslator.DefaultLanguage.FROM);
@@ -832,7 +837,7 @@ class MicrosoftTranslator {
   static getMappedSourceLanguageCode(translator, languageCode) {
     switch (translator) {
       case Translators.BAIDU_FANYI: {
-        return BaiduFanyi.BAIDU_FANYI_MAPPING[languageCode] ?? (Object.prototype.hasOwnProperty.call(BaiduFanyi.FROM_LANGUAGES, languageCode) ? languageCode : BaiduFanyi.DefaultLanguage.FROM);
+        return MicrosoftTranslator.BAIDU_FANYI_MAPPING[languageCode] ?? (Object.prototype.hasOwnProperty.call(BaiduFanyi.FROM_LANGUAGES, languageCode) ? languageCode : BaiduFanyi.DefaultLanguage.FROM);
       }
       case Translators.DEEPL_TRANSLATE: {
         return MicrosoftTranslator.DEEPL_TRANSLATOR_MAPPING.SOURCE_LANGUAGES[languageCode] ?? (DeeplTranslate.SOURCE_LANGUAGES.filter(({ language }) => language === languageCode).length > 0 ? languageCode : DeeplTranslate.DefaultLanguage.SOURCE_LANG);
@@ -855,7 +860,7 @@ class MicrosoftTranslator {
   static getMappedTargetLanguageCode(translator, languageCode) {
     switch (translator) {
       case Translators.BAIDU_FANYI: {
-        return BaiduFanyi.BAIDU_FANYI_MAPPING[languageCode] ?? (Object.prototype.hasOwnProperty.call(BaiduFanyi.TO_LANGUAGES, languageCode) ? languageCode : BaiduFanyi.DefaultLanguage.TO);
+        return MicrosoftTranslator.BAIDU_FANYI_MAPPING[languageCode] ?? (Object.prototype.hasOwnProperty.call(BaiduFanyi.TO_LANGUAGES, languageCode) ? languageCode : BaiduFanyi.DefaultLanguage.TO);
       }
       case Translators.DEEPL_TRANSLATE: {
         return MicrosoftTranslator.DEEPL_TRANSLATOR_MAPPING.TARGET_LANGUAGES[languageCode] ?? (DeeplTranslate.TARGET_LANGUAGES.filter(({ language }) => language === languageCode).length > 0 ? languageCode : DeeplTranslate.DefaultLanguage.TARGET_LANG);
@@ -1065,13 +1070,14 @@ class Vietphrase {
 
         dataEntries = [...this.useGlossary ? maybePrioritizeNameOverVietPhrase : [], ...nhanByPronoun, ...dataEntries].toSorted((a, b) => b[0].length - a[0].length);
 
-        dataEntries.some(([a, value], index, array) => {
+        dataEntries.some(([a, value], __, array) => {
           if (result.includes(a) && ((this.useGlossary && !this.prioritizeNameOverVietPhrase && Object.prototype.hasOwnProperty.call(this.glossary, a)) || Array.from(a).every((element) => Object.prototype.hasOwnProperty.call(this.data.hanViet, element) || (Object.prototype.hasOwnProperty.call(this.data.vietPhrase, element) && /^\p{P}$/u.test(element))) || [...nhanByGlossary, ...glossaryEntries].indexOf(a) > -1) && a !== '·') {
-            result = result.replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}’”]$)${Utils.escapeRegExp(a)}(?=${Object.values(this.glossary).join('|')})`, 'gu'), `$1 ${Utils.escapeRegExpReplacement(value)} `)
-              .replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}’”])${Utils.escapeRegExp(a)}(?=[\\p{Lu}\\p{Ll}\\p{Nd}‘“])`, 'gu'), `$1 ${Utils.escapeRegExpReplacement(value)} `)
-              .replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}’”])${Utils.escapeRegExp(a)}`, 'gu'), `$1 ${Utils.escapeRegExpReplacement(value)}`)
-              .replace(new RegExp(`${Utils.escapeRegExp(a)}([\\p{Lu}\\p{Ll}\\p{Nd}‘“])`, 'gu'), `${Utils.escapeRegExpReplacement(value)} $1`)
-              .replace(new RegExp(`${Utils.escapeRegExp(a)}(?=${Object.values(this.glossary).join('|')})`, 'g'), `${Utils.escapeRegExpReplacement(value)} `)
+            // console.log(`${a}: ${value}`, 1, (new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}’”])${Utils.escapeRegExp(a)}${Object.keys(this.glossary).length > 0 ? `(?=${Object.values(this.glossary).join('|')})` : '(?=[\\p{Lu}\\p{Ll}\\p{Nd}‘“])'}`, 'gu')).test(result), 2, (new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}’”])${Utils.escapeRegExp(a)}(?=[\\p{Lu}\\p{Ll}\\p{Nd}‘“])`, 'gu')).test(result), 3, (new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}’”])${Utils.escapeRegExp(a)}`, 'gu')).test(result), 4, (new RegExp(`${Utils.escapeRegExp(a)}${Object.keys(this.glossary).length > 0 ? `(?=${Object.values(this.glossary).join('|')})` : '(?=[\\p{Lu}\\p{Ll}\\p{Nd}‘“])'}`, 'g')).test(result), 5, (new RegExp(`${Utils.escapeRegExp(a)}(?=[\\p{Lu}\\p{Ll}\\p{Nd}‘“])`, 'gu')).test(result), 6, (new RegExp(Utils.escapeRegExp(a), 'g')).test(result));
+            result = result.replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}’”])${Utils.escapeRegExp(a)}${Object.keys(this.glossary).length > 0 ? `(?=${Object.values(this.glossary).join('|')})` : '(?=[\\p{Lu}\\p{Ll}\\p{Nd}‘“])'}`, 'gu'), `$1 ${Utils.escapeRegExpReplacement(value)}${value.length > 0 ? ' ' : ''}`)
+              .replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}’”])${Utils.escapeRegExp(a)}(?=[\\p{Lu}\\p{Ll}\\p{Nd}‘“])`, 'gu'), `$1 ${Utils.escapeRegExpReplacement(value)}${value.length > 0 ? ' ' : ''}`)
+              .replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd}’”])${Utils.escapeRegExp(a)}`, 'gu'), `$1${value.length > 0 ? ` ${Utils.escapeRegExpReplacement(value)}` : ''}`)
+              .replace(new RegExp(`${Utils.escapeRegExp(a)}${Object.keys(this.glossary).length > 0 ? `(?=${Object.values(this.glossary).join('|')})` : '(?=[\\p{Lu}\\p{Ll}\\p{Nd}‘“])'}`, 'gu'), `${Utils.escapeRegExpReplacement(value)}${value.length > 0 ? ' ' : ''}`)
+              .replace(new RegExp(`${Utils.escapeRegExp(a)}(?=[\\p{Lu}\\p{Ll}\\p{Nd}‘“])`, 'gu'), `${Utils.escapeRegExpReplacement(value)}${value.length > 0 ? ' ' : ''}`)
               .replace(new RegExp(Utils.escapeRegExp(a), 'g'), Utils.escapeRegExpReplacement(value));
           }
 
