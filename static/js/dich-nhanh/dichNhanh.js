@@ -286,7 +286,7 @@ function applyGlossaryToText(text, translator = Translators.VIETPHRASE) {
               if (Object.prototype.hasOwnProperty.call(glossaryObject, phrase)) {
                 if (glossaryObject[phrase].length > 0) {
                   const maybeNotStaticPos = glossary.filter(([first, __, third]) => first === phrase && isDynamicWordOrPhrase(third)).length > 0 ? glossaryObject[phrase].replace(/ /g, '_') : glossaryObject[phrase];
-                  tempLine += (i > 0 && /[\p{Lu}\p{Ll}\p{Nd})]}’”]/u.test(prevPhrase || tempLine[tempLine.length - 1] || '') ? ' ' : '') + ([Translators.MICROSOFT_TRANSLATOR, Translators.VIETPHRASE].some((element) => translator === element) || glossary.filter(([first, __, third]) => first === phrase && (isStaticWordOrPhrase(third))).length > 0 ? getIgnoreTranslationMarkup(phrase, glossaryObject[phrase], translator) : maybeNotStaticPos);
+                  tempLine += (i > 0 && /[\p{Lu}\p{Ll}\p{Nd})\]}’”]/u.test(prevPhrase || tempLine[tempLine.length - 1] || '') ? ' ' : '') + ([Translators.MICROSOFT_TRANSLATOR, Translators.VIETPHRASE].some((element) => translator === element) || glossary.filter(([first, __, third]) => first === phrase && (isStaticWordOrPhrase(third))).length > 0 ? getIgnoreTranslationMarkup(phrase, glossaryObject[phrase], translator) : maybeNotStaticPos);
                   prevPhrase = glossaryObject[phrase];
                 }
 
@@ -295,7 +295,7 @@ function applyGlossaryToText(text, translator = Translators.VIETPHRASE) {
               }
 
               if (d === 1) {
-                tempLine += (prevPhrase.length > 0 && /[\p{Lu}\p{Ll}\p{Nd}([{‘“]/u.test(a[i]) && /[\p{Lu}\p{Ll}\p{Nd})]}’”]/u.test(prevPhrase) ? ' ' : '') + (translator === Translators.DEEPL_TRANSLATE || translator === Translators.GOOGLE_TRANSLATE ? Utils.convertTextToHtml(phrase) : phrase);
+                tempLine += (prevPhrase.length > 0 && /[\p{Lu}\p{Ll}\p{Nd}([{‘“]/u.test(a[i]) && /[\p{Lu}\p{Ll}\p{Nd})\]}’”]/u.test(prevPhrase) ? ' ' : '') + (translator === Translators.DEEPL_TRANSLATE || translator === Translators.GOOGLE_TRANSLATE ? Utils.convertTextToHtml(phrase) : phrase);
                 prevPhrase = '';
                 return true;
               }

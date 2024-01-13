@@ -35,26 +35,26 @@
 
 @font-face {
   font-family: 'Bookerly';
-  src: url(https://github.com/DoHoaiNam914/CDN/raw/main/phong-chu/BookerlyLCD_Rg.ttf) format('truetype');
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/BookerlyLCD_Rg.ttf) format('truetype');
 }
 
 @font-face {
   font-family: 'Bookerly';
   font-style: italic;
-  src: url(https://github.com/DoHoaiNam914/CDN/raw/main/phong-chu/BookerlyLCD_It.ttf) format('truetype');
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/BookerlyLCD_It.ttf) format('truetype');
 }
 
 @font-face {
   font-family: 'Bookerly';
   font-weight: bold;
-  src: url(https://github.com/DoHoaiNam914/CDN/raw/main/phong-chu/BookerlyLCD_Bd.ttf) format('truetype');
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/BookerlyLCD_Bd.ttf) format('truetype');
 }
 
 @font-face {
   font-family: 'Bookerly';
   font-style: italic;
   font-weight: bold;
-  src: url(https://github.com/DoHoaiNam914/CDN/raw/main/phong-chu/BookerlyLCD_BdIt.ttf) format('truetype');
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/BookerlyLCD_BdIt.ttf) format('truetype');
 }
 
 /* Literata */
