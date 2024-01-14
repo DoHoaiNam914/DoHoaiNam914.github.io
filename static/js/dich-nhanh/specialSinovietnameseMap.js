@@ -123,7 +123,7 @@ const specialSinovietnameseMap = [
   ['正', 'CHÍNH' /* Họ */],
   ['政', 'CHÍNH'],
   ['锤', 'CHUỲ'],
-  // ['贾', 'CỔ, GIẢ' /* Họ Giả */],
+  ['骷', 'CÔ'],
   ['机', 'CƠ'],
   ['玑', 'CƠ'],
   ['畸', 'CƠ'],
