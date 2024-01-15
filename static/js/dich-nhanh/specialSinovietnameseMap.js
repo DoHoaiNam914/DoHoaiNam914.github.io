@@ -173,6 +173,7 @@ const specialSinovietnameseMap = [
   ['骑', 'KỴ'],
   ['辇', 'LIÊN'],
   ['仑', 'LUÂN'],
+  ['胧', 'LUNG'],
   ['累', 'LUỸ, LUỴ'],
   ['良', 'LƯƠNG'],
   ['吕', 'LỮ, LÃ', 'LÃ'],
