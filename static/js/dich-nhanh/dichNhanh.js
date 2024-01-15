@@ -432,30 +432,30 @@ function buildResult(inputText, result) {
   try {
     const resultDiv = document.createElement('div');
 
-    const inputLines = inputText.split(/\r?\n/).map((element) => element.trim());
-    const resultLines = result.split(/\n/).map((element) => element.trim());
+    const inputLines = inputText.split(/\r?\n/).map((element) => element.trimStart());
+    const resultLines = result.split(/\n/).map((element) => element.trimStart());
 
     if ($showOriginalTextSwitch.prop('checked') && result !== 'Vui lòng nhập tệp VietPhrase.txt hoặc bật tuỳ chọn [Tải tệp VietPhrase mặc định] và tải lại trang!') {
       let lostLineFixedNumber = 0;
 
       for (let i = 0; i < inputLines.length; i += 1) {
         if (i + lostLineFixedNumber < resultLines.length) {
-          if (inputLines[i + lostLineFixedNumber].length === 0 && resultLines[i].length > 0) {
+          if (inputLines[i + lostLineFixedNumber].trim().length === 0 && resultLines[i].trim().length > 0) {
             lostLineFixedNumber += 1;
             i -= 1;
-          } else if ($translatorOptions.filter($('.active')).data('id') === Translators.PAPAGO && resultLines[i].length === 0 && inputLines[i + lostLineFixedNumber].length > 0) {
+          } else if ($translatorOptions.filter($('.active')).data('id') === Translators.PAPAGO && resultLines[i].trim().length === 0 && inputLines[i + lostLineFixedNumber].trim().length > 0) {
             lostLineFixedNumber -= 1;
           } else {
             const paragraph = document.createElement('p');
             let textNode = document.createTextNode(resultLines[i]);
 
-            if (resultLines[i] !== inputLines[i + lostLineFixedNumber]) {
+            if (resultLines[i].trim() !== inputLines[i + lostLineFixedNumber].trim()) {
               if ($formatSettingsSwitch.prop('checked')) {
                 const idiomaticText = document.createElement('i');
                 idiomaticText.innerText = inputLines[i + lostLineFixedNumber];
                 paragraph.appendChild(idiomaticText);
 
-                if (resultLines[i].length > 0) {
+                if (resultLines[i].trim().length > 0) {
                   paragraph.appendChild(document.createElement('br'));
                 }
               } else {
@@ -464,7 +464,7 @@ function buildResult(inputText, result) {
                 paragraph.appendChild(idiomaticText);
                 textNode = document.createElement('b');
                 textNode.innerText = resultLines[i];
-                paragraph.innerHTML += resultLines[i].length > 0 ? ' ' : '';
+                paragraph.innerHTML += resultLines[i].trim().length > 0 ? ' ' : '';
               }
             }
 

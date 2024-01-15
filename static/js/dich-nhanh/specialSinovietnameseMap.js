@@ -65,6 +65,7 @@ const specialSinovietnameseMap = [
   ['神使', 'thần sứ'],
   ['神将', 'thần tướng'],
   ['刺客', 'thích khách'],
+  ['天朝', 'thiên triều'],
   ['天使', 'thiên sứ'],
   ['天相', 'thiên tướng'],
   ['禅师', 'thiền sư'],
