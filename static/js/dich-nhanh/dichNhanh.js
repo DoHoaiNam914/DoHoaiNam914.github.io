@@ -1109,9 +1109,9 @@ $fontOptions.click(function onClick() {
   $fontOptions.removeClass('active');
   $(this).addClass('active');
 
-  if ($(this).text() !== 'Mặc định') {
-    $(document.body).css('--opt-font-family', `${$(this).text().includes(' ') ? `'${$(this).text()}'` : $(this).text()}, ${$(this).data('additional-fonts') != null && $(this).data('additional-fonts').length > 0 ? `${$(this).data('additional-fonts').split(', ').map((element) => (element.includes(' ') ? `'${element}'` : element)).join(', ')}` : ''}`);
-  } else if ($(this).text() === 'Phông chữ hệ thống') {
+  if ($(this).data('additional-fonts') != null) {
+    $(document.body).css('--opt-font-family', `${$(this).text().includes(' ') ? `'${$(this).text()}'` : $(this).text()}, ${$(this).data('additional-fonts').length > 0 ? `${$(this).data('additional-fonts').split(', ').map((element) => (element.includes(' ') ? `'${element}'` : element)).join(', ')}` : ''}`);
+  } else if ($(this).data('additional-fonts') == null) {
     $(document.body).css('--opt-font-family', 'var(--system-font-family)');
   } else {
     $(document.body).css('--opt-font-family', '');
@@ -1123,7 +1123,7 @@ $fontOptions.click(function onClick() {
 
 $fontSizeRange.on('input', function onInput() {
   const $fontSizeDisplay = $('#font-size-display');
-  $(this).val(parseFloat($(this).val()).toFixed($fontSizeDisplay.val().includes ('.') ? $fontSizeDisplay.val().split('.')[1].length : 0));
+  $(this).val(parseFloat($(this).val()).toFixed($fontSizeDisplay.val().includes('.') ? $fontSizeDisplay.val().split('.')[1].length : 0));
   $fontSizeDisplay.val(parseFloat($(this).val()));
   $(document.body).css('--opt-font-size', `${parseFloat($(this).val()) / 100}rem`);
   quickTranslateStorage[getOptionId($(this).attr('id'))] = parseFloat($(this).val());
