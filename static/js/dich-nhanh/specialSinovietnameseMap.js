@@ -60,6 +60,7 @@ const specialSinovietnameseMap = [
   ['使者', 'sứ giả'],
   ['使魔', 'sứ ma'],
   ['山本', 'Sơn Bản' /* Họ Yamamoto */],
+  ['操纵', 'thao túng'],
   ['亲传', 'thân truyền'],
   ['神奇', 'thần kỳ'],
   ['神使', 'thần sứ'],

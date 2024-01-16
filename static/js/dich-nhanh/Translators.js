@@ -962,6 +962,7 @@ class Vietphrase {
     this.multiplicationAlgorithm = multiplicationAlgorithm;
     this.useGlossary = useGlossary;
     this.glossary = glossary;
+    this.glossaryObject = Object.fromEntries(this.glossary.map(([first, second]) => [first, second]));
     this.prioritizeNameOverVietPhrase = prioritizeNameOverVietPhraseCheck;
     this.addDeLeZhao = addDeLeZhao;
     this.autocapitalize = autocapitalize;
@@ -1011,7 +1012,7 @@ class Vietphrase {
   }
 
   loadLuatNhanData(targetLanguage, glossaryEntries, inputText) {
-    let nhanByGlossary = glossaryEntries;
+    let nhanByGlossary = glossaryEntries.filter(([a]) => glossary.some(([b, __, c]) => a === b && c === 'NNP'));
     let nhanByPronoun = Object.entries(this.data.pronoun).filter(([key]) => inputText.includes(key));
     const luatNhanEntries = Object.entries(this.data.luatNhan).filter(([key]) => key.split('{0}').every((element) => inputText.includes(element)));
 
@@ -1059,7 +1060,7 @@ class Vietphrase {
     const text = inputText.split(/\r?\n/).map((element) => element.trim()).join('\n');
 
     let dataEntries = Object.entries(data).filter(([key]) => text.includes(key));
-    const glossaryEntries = Object.entries(this.glossary);
+    const glossaryEntries = this.glossaryObject;
 
     let result = text;
 
@@ -1071,12 +1072,12 @@ class Vietphrase {
         dataEntries = [...this.useGlossary ? maybePrioritizeNameOverVietPhrase : [], ...nhanByPronoun, ...dataEntries].toSorted((a, b) => b[0].length - a[0].length);
 
         dataEntries.some(([a, value], __, array) => {
-          if (result.includes(a) && ((this.useGlossary && !this.prioritizeNameOverVietPhrase && Object.prototype.hasOwnProperty.call(this.glossary, a)) || Array.from(a).every((element) => Object.prototype.hasOwnProperty.call(this.data.hanViet, element) || (Object.prototype.hasOwnProperty.call(this.data.vietPhrase, element) && /^\p{P}$/u.test(element))) || [...nhanByGlossary, ...glossaryEntries].indexOf(a) > -1) && a !== '·') {
-            // console.log(`${a}: ${value}`, 1, (new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd})\\]}’”])${Utils.escapeRegExp(a)}${this.useGlossary && Object.keys(this.glossary).length > 0 ? `(?=${Object.values(this.glossary).join('|')})` : '(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])'}`, 'gu')).test(result), 2, (new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd})\\]}’”])${Utils.escapeRegExp(a)}(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])`, 'gu')).test(result), 3, (new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd})\\]}’”])${Utils.escapeRegExp(a)}`, 'gu')).test(result), 4, (new RegExp(`${Utils.escapeRegExp(a)}${this.useGlossary && Object.keys(this.glossary).length > 0 ? `(?=${Object.values(this.glossary).join('|')})` : '(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])'}`, 'gu')).test(result), 5, (new RegExp(`${Utils.escapeRegExp(a)}(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])`, 'gu')).test(result), 6, (new RegExp(Utils.escapeRegExp(a), 'g')).test(result));
-            result = result.replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd})\\]}’”])${Utils.escapeRegExp(a)}${this.useGlossary && Object.keys(this.glossary).length > 0 ? `(?=${Object.values(this.glossary).join('|')})` : '(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])'}`, 'gu'), `$1 ${Utils.escapeRegExpReplacement(value)}${value.length > 0 ? ' ' : ''}`)
+          if (result.includes(a) && ((this.useGlossary && !this.prioritizeNameOverVietPhrase && Object.prototype.hasOwnProperty.call(this.glossaryObject, a)) || Array.from(a).every((element) => Object.prototype.hasOwnProperty.call(this.data.hanViet, element) || (Object.prototype.hasOwnProperty.call(this.data.vietPhrase, element) && /^\p{P}$/u.test(element))) || [...nhanByGlossary, ...glossaryEntries].indexOf(a) > -1) && a !== '·') {
+            // console.log(`${a}: ${value}`, 1, (new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd})\\]}’”])${Utils.escapeRegExp(a)}${this.useGlossary && this.glossary.length > 0 ? `(?=${Object.values(this.glossaryObject).join('|')})` : '(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])'}`, 'gu')).test(result), 2, (new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd})\\]}’”])${Utils.escapeRegExp(a)}(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])`, 'gu')).test(result), 3, (new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd})\\]}’”])${Utils.escapeRegExp(a)}`, 'gu')).test(result), 4, (new RegExp(`${Utils.escapeRegExp(a)}${this.useGlossary && this.glossary.length > 0 ? `(?=${Object.values(this.glossaryObject).join('|')})` : '(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])'}`, 'gu')).test(result), 5, (new RegExp(`${Utils.escapeRegExp(a)}(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])`, 'gu')).test(result), 6, (new RegExp(Utils.escapeRegExp(a), 'g')).test(result));
+            result = result.replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd})\\]}’”])${Utils.escapeRegExp(a)}${this.useGlossary && this.glossary.length > 0 ? `(?=${Object.values(this.glossaryObject).join('|')})` : '(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])'}`, 'gu'), `$1 ${Utils.escapeRegExpReplacement(value)}${value.length > 0 ? ' ' : ''}`)
               .replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd})\\]}’”])${Utils.escapeRegExp(a)}(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])`, 'gu'), `$1 ${Utils.escapeRegExpReplacement(value)}${value.length > 0 ? ' ' : ''}`)
               .replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{Nd})\\]}’”])${Utils.escapeRegExp(a)}`, 'gu'), `$1${value.length > 0 ? ` ${Utils.escapeRegExpReplacement(value)}` : ''}`)
-              .replace(new RegExp(`${Utils.escapeRegExp(a)}${this.useGlossary && Object.keys(this.glossary).length > 0 ? `(?=${Object.values(this.glossary).join('|')})` : '(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])'}`, 'gu'), `${Utils.escapeRegExpReplacement(value)}${value.length > 0 ? ' ' : ''}`)
+              .replace(new RegExp(`${Utils.escapeRegExp(a)}${this.useGlossary && this.glossary.length > 0 ? `(?=${Object.values(this.glossaryObject).join('|')})` : '(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])'}`, 'gu'), `${Utils.escapeRegExpReplacement(value)}${value.length > 0 ? ' ' : ''}`)
               .replace(new RegExp(`${Utils.escapeRegExp(a)}(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])`, 'gu'), `${Utils.escapeRegExpReplacement(value)}${value.length > 0 ? ' ' : ''}`)
               .replace(new RegExp(Utils.escapeRegExp(a), 'g'), Utils.escapeRegExpReplacement(value));
           }
@@ -1100,7 +1101,7 @@ class Vietphrase {
     const text = inputText.split(/\r?\n/).map((element) => element.trim()).join('\n');
 
     let dataEntries = Object.entries(data).filter(([key]) => text.includes(key));
-    const glossaryEntries = Object.entries(this.glossary);
+    const glossaryEntries = this.glossary.map(([first, second]) => [first, second]);
 
     const lines = text.split(/\n/);
     const results = [];
@@ -1140,7 +1141,7 @@ class Vietphrase {
                     return true;
                   }
 
-                  if (((this.useGlossary && !this.prioritizeNameOverVietPhrase && Object.prototype.hasOwnProperty.call(this.glossary, phrase)) || Array.from(phrase).every((element) => Object.prototype.hasOwnProperty.call(this.data.hanViet, element) || (Object.prototype.hasOwnProperty.call(this.data.vietPhrase, element) && /^\p{P}$/u.test(element))) || [...nhanByGlossary, ...glossaryEntries].indexOf(phrase) > -1) && Object.prototype.hasOwnProperty.call(dataObject, phrase) && phrase !== '·') {
+                  if (((this.useGlossary && !this.prioritizeNameOverVietPhrase && Object.prototype.hasOwnProperty.call(this.glossaryObject, phrase)) || Array.from(phrase).every((element) => Object.prototype.hasOwnProperty.call(this.data.hanViet, element) || (Object.prototype.hasOwnProperty.call(this.data.vietPhrase, element) && /^\p{P}$/u.test(element))) || [...nhanByGlossary, ...glossaryEntries].indexOf(phrase) > -1) && Object.prototype.hasOwnProperty.call(dataObject, phrase) && phrase !== '·') {
                     if (dataObject[phrase].length > 0) {
                       tempLine += (i > 0 && /[\p{Lu}\p{Ll}\p{Nd})\]}’”]/u.test(prevPhrase || tempLine[tempLine.length - 1]) ? ' ' : '') + dataObject[phrase];
                       prevPhrase = dataObject[phrase];
