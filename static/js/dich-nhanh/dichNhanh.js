@@ -40,6 +40,7 @@ const $languagePairsSelect = $('#language-pairs-select');
 const $sourceEntryInput = $('#source-entry-input');
 const $dropdownHasCollapse = $('.dropdown-has-collapse');
 const $targetEntryInput = $('#target-entry-input');
+const $targetEntryTextarea = $('#target-entry-textarea');
 const $translateEntryButtons = $('.translate-entry-button');
 const $tagsetSelect = $('#tagset-select');
 const $addButton = $('#add-button');
@@ -1313,14 +1314,12 @@ $sourceEntryInput.on('input', async function onInput() {
     }
 
     if (Object.prototype.hasOwnProperty.call(glossaryObject, inputText)) {
-      $targetEntryInput.val(applyGlossaryToText(inputText.trim()));
-      $targetEntryInput.prop('scrollLeft', 0);
+      $targetEntryInput.val(applyGlossaryToText(inputText.trim())).trigger('input');
       $glossaryEntrySelect.val(inputText.trim());
       if (!Utils.isOnMobile()) $glossaryEntrySelect.find(`option[value="${inputText.trim()}"]`)[0].scrollIntoView(true);
       $tagsetSelect.val(glossary.filter(([first]) => first === inputText)[0][2] ?? 'X');
     } else {
-      $targetEntryInput.val((await translateText(inputText, Translators.VIETPHRASE, 'sinoVietnamese', true)).trim());
-      $targetEntryInput.prop('scrollLeft', 0);
+      $targetEntryInput.val((await translateText(inputText, Translators.VIETPHRASE, 'sinoVietnamese', true)).trim()).trigger('input');
       $glossaryEntrySelect.val('');
       $tagsetSelect.val('X');
     }
@@ -1337,17 +1336,28 @@ $sourceEntryInput.on('input', async function onInput() {
 
 $sourceEntryInput.on('keypress', (event) => event.key !== 'Enter' || $targetEntryInput.focus());
 
-$targetEntryInput.on('input', function onInput() {
-  if ($(this).val().length > 0) {
-    $addButton.removeClass('disabled');
-    $removeButton.removeClass('disabled');
-  } else {
-    $addButton.addClass('disabled');
-    $removeButton.addClass('disabled');
-  }
+$targetEntryInput.on('focusin', function onFocusIn() {
+  $(this).hide();
+  $targetEntryTextarea.show();
+  $targetEntryTextarea.focus();
 });
 
-$targetEntryInput.on('keypress', (event) => event.key !== 'Enter' || $addButton.click());
+$targetEntryInput.on('input', function onInput() {
+  $targetEntryTextarea.val($(this).val());
+  $targetEntryInput.prop('scrollLeft', 0);
+});
+
+$targetEntryTextarea.on('focusout', function onFocusOut() {
+  $(this).prop('scrollTop', 0);
+  $(this).hide();
+  $targetEntryInput.show();
+});
+
+$targetEntryTextarea.on('input', function onInput() {
+  $targetEntryInput.val($(this).val()).trigger('input');
+});
+
+$targetEntryTextarea.on('keypress', (event) => event.key !== 'Enter' || ($addButton.click() && event.preventDefault()));
 $('#source-entry-dropdown-toggle').on('mousedown', (event) => event.preventDefault());
 
 $('.dropdown-can-scroll').on('hide.bs.dropdown', function onHideBsDropdown() {
@@ -1418,8 +1428,7 @@ $('.upper-case-button').on('click', function onClick() {
       text = text.replace(/(^| |\p{P})(\p{Ll})/gu, (__, p1, p2) => p1 + p2.toUpperCase());
     }
 
-    $targetEntryInput.val(text);
-    $targetEntryInput.prop('scrollLeft', 0);
+    $targetEntryInput.val(text).trigger('input');
   }
 });
 
@@ -1432,8 +1441,7 @@ $translateEntryButtons.on('click', async function onClick() {
   if (inputText.length > 0) {
     $translateEntryButtons.addClass('disabled');
     $sourceEntryInput.attr('readonly', true);
-    $targetEntryInput.val(await translateText(inputText, translatorOption, targetLanguage, false));
-    $targetEntryInput.prop('scrollLeft', 0);
+    $targetEntryInput.val(await translateText(inputText, translatorOption, targetLanguage, false)).trigger('input');
     $sourceEntryInput.removeAttr('readonly');
     $translateEntryButtons.removeClass('disabled');
   }
@@ -1446,6 +1454,8 @@ $addButton.click(() => {
   reloadGlossaryEntries();
   $glossaryEntrySelect.change();
   $glossaryInput.val(null);
+  $addButton.addClass('disabled');
+  $removeButton.addClass('disabled');
 });
 
 $removeButton.on('click', () => {
@@ -1467,7 +1477,7 @@ $glossaryEntrySelect.change(function onChange() {
     $removeButton.removeClass('disabled');
   } else {
     $sourceEntryInput.val(null);
-    $targetEntryInput.val(null);
+    $targetEntryInput.val(null).trigger('input');
     $tagsetSelect.val('X');
     $removeButton.addClass('disabled');
   }

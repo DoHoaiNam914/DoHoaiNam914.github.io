@@ -12,7 +12,7 @@
 }
 
 :root {
-    --baseFontFamily: "Iowan Old Style", serif;
+    --baseFontFamily: "New York", serif;
 
     --lineHeightCompensation: 1;
 
@@ -115,29 +115,29 @@
    Fonts
  */
 
-@font-face {
-    font-family: 'Iowan Old Style';
-    src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/IowanOldStyle-Roman.ttf) format('truetype');
-}
-
-@font-face {
-    font-family: 'Iowan Old Style';
+ @font-face {
+    font-family: 'New York';
+    src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/NewYork.ttf) format('truetype');
+  }
+  
+  @font-face {
+    font-family: 'New York';
     font-style: italic;
-    src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/IowanOldStyle-Italic.ttf) format('truetype');
-}
-
-@font-face {
-    font-family: 'Iowan Old Style';
+    src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/NewYorkItalic.ttf) format('truetype');
+  }
+  
+  @font-face {
+    font-family: 'New York';
     font-weight: bold;
-    src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/IowanOldStyle-Bold.ttf) format('truetype');
-}
-
-@font-face {
-    font-family: 'Iowan Old Style';
+    src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/NewYork.ttf) format('truetype');
+  }
+  
+  @font-face {
+    font-family: 'New York';
     font-style: italic;
     font-weight: bold;
-    src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/IowanOldStyle-BoldItalic.ttf) format('truetype');
-}
+    src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/NewYorkItalic.ttf) format('truetype');
+  }
 
 /* 
    HTML5 SR Patch
