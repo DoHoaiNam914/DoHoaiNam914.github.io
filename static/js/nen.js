@@ -13,7 +13,7 @@ $('#background-select').change(function onChange() {
     if ($(document.documentElement).attr('style') != null) {
       Object.values(Colors).forEach((code) => {
         if ($(document.documentElement).attr('style').includes(code)) {
-          $(document.documentElement).attr('style', $(document.documentElement).attr('style').replace(new RegExp(`\s?${code}-background;`), ''));
+          $(document.documentElement).attr('style', $(document.documentElement).attr('style').replace(new RegExp(`\\s?${code}-background;`), ''));
         }
       });
 
@@ -24,7 +24,7 @@ $('#background-select').change(function onChange() {
   } else if ($(document.documentElement).attr('style') != null) {
     Object.values(Colors).forEach((code) => {
       if ($(document.documentElement).attr('style').includes(code)) {
-        $(document.documentElement).attr('style', $(document.documentElement).attr('style').replace(new RegExp(`\s?${code}-background;`, 'g'), ''));
+        $(document.documentElement).attr('style', $(document.documentElement).attr('style').replace(new RegExp(`\\s?${code}-background;`, 'g'), ''));
       }
     });
 
