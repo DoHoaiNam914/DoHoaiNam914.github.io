@@ -956,7 +956,7 @@ class Vietphrase {
     MULTIPLICATION_BY_PRONOUNS_AND_NAMES: '2',
   };
 
-  constructor(data, translationAlgorithm, multiplicationAlgorithm, useGlossary = false, glossary = {}, prioritizeNameOverVietPhraseCheck = false, addDeLeZhao = false, autocapitalize = false) {
+  constructor(data, translationAlgorithm, multiplicationAlgorithm, useGlossary = false, glossary = [], prioritizeNameOverVietPhraseCheck = false, addDeLeZhao = false, autocapitalize = false) {
     this.data = data;
     this.translationAlgorithm = translationAlgorithm;
     this.multiplicationAlgorithm = multiplicationAlgorithm;

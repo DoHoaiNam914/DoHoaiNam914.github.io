@@ -840,7 +840,7 @@ async function translateText(inputText, translatorOption, targetLanguage, glossa
         break;
       }
       case Translators.VIETPHRASE: {
-        translator = await new Vietphrase(vietPhraseData, $translationAlgorithmRadio.filter('[checked]').val(), $multiplicationAlgorithmRadio.filter('[checked]').val(), glossaryEnabled, glossaryObject, $prioritizeNameOverVietPhraseCheck.prop('checked'), $addDeLeZhaoSwitch.prop('checked'));
+        translator = await new Vietphrase(vietPhraseData, $translationAlgorithmRadio.filter('[checked]').val(), $multiplicationAlgorithmRadio.filter('[checked]').val(), glossaryEnabled, glossary, $prioritizeNameOverVietPhraseCheck.prop('checked'), $addDeLeZhaoSwitch.prop('checked'));
         sourceLanguage = Vietphrase.DefaultLanguage.SOURCE_LANGUAGE;
         break;
       }
