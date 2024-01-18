@@ -15,6 +15,7 @@ const $resultTextarea = $('#result-textarea');
 
 const $glossaryManagerButton = $('#glossary-manager-button');
 
+const $themeOptions = $('.theme-option');
 const $fontOptions = $('.font-option');
 const $fontSizeRange = $('#font-size-range');
 const $lineSpacingRange = $('#line-spacing-range');
@@ -159,6 +160,10 @@ function getCurrentOptions() {
           const selectedValue = option.find('.dropdown-menu > li > .active');
 
           switch (optionId) {
+            case 'theme': {
+              data.theme = selectedValue.text();
+              break;
+            }
             case 'font': {
               data.font = selectedValue.text();
               break;
@@ -215,6 +220,10 @@ function loadAllQuickTranslatorOptions() {
         const values = option.find('.dropdown-menu > li > .dropdown-item');
 
         switch (optionId) {
+          case 'theme': {
+            values.filter(`:contains(${quickTranslateStorage[optionId]})`).click();
+            break;
+          }
           case 'font': {
             values.filter(`:contains(${quickTranslateStorage[optionId]})`).click();
             break;
@@ -1104,6 +1113,19 @@ $options.change(function onChange() {
     lastSession = {};
     $retranslateButton.click();
   }
+});
+
+$themeOptions.click(function onClick() {
+  $themeOptions.removeClass('active');
+  $(this).addClass('active');
+
+  $('.textarea').css({
+    color: $(this).data('foreground-color') ?? null,
+    'background-color': $(this).data('background-color') ?? null,
+  });
+
+  quickTranslateStorage.theme = $(this).text();
+  localStorage.setItem('dich_nhanh', JSON.stringify(quickTranslateStorage));
 });
 
 $fontOptions.click(function onClick() {
