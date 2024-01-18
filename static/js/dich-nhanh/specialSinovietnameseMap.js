@@ -16,6 +16,7 @@ const specialSinovietnameseMap = [
   ['本田', 'Bản Điền' /* Họ Honda */],
   ['高岭', 'cao lãnh'],
   ['高层', 'cao tầng'],
+  ['禁忌', 'cấm kỵ'],
   ['战斗', 'chiến đấu'],
   ['战将', 'chiến tướng'],
   ['掌柜', 'chưởng quỹ'],
