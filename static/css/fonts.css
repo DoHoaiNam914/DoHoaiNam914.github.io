@@ -164,10 +164,6 @@
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/SF%20Pro%20Text/SF-Pro-Text-BoldItalic.otf) format('opentype');
 }
 
-/* Canela Text Trial */
-
-@import url('https://fonts.cdnfonts.com/css/canela-text-trial');
-
 /* Proxima Nova Rg */
 
 @font-face {
