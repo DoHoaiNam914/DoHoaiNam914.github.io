@@ -47,6 +47,7 @@ const specialSinovietnameseMap = [
   ['计划', 'kế hoạch'],
   ['领袖', 'lãnh tụ'],
   ['魔将', 'ma tướng'],
+  ['美丽', 'mỹ lệ'],
   ['银行', 'ngân hàng'],
   ['外号', 'ngoại hiệu'],
   ['御使', 'ngự sứ'],
