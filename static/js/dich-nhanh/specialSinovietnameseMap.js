@@ -159,6 +159,7 @@ const specialSinovietnameseMap = [
   ['洞', 'ĐỘNG'],
   ['郝', 'HÁCH' /* Họ */],
   ['唏', 'HI'],
+  ['峡', 'HIỆP'],
   ['叶', 'HIỆP, DIỆP' /* Họ Nghiệp */],
   ['校', 'HIỆU'],
   ['靴', 'HOA'],
