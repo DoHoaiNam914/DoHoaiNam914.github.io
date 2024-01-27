@@ -53,6 +53,8 @@ const defaultOptions = JSON.parse('{"source_language":"auto","target_language":"
 
 const SUPPORTED_LANGUAGES = ['', 'EN', 'JA', 'ZH', 'EN-US', 'auto', 'en', 'ja', 'zh-CN', 'zh-TW', 'vi', 'zh-Hans', 'zh-Hant'];
 
+let isLoaded = false;
+
 let quickTranslateStorage = JSON.parse(localStorage.getItem('dich_nhanh')) ?? {};
 let glossary = JSON.parse(localStorage.getItem('glossary')) ?? [];
 let glossaryObject = {};
@@ -71,8 +73,6 @@ const vietPhraseData = {
 };
 
 let glossaryData = '';
-
-let isOnLoad = true;
 
 let translateAbortController = null;
 let prevScrollTop = 0;
@@ -328,7 +328,6 @@ function applyGlossaryToText(text, translator = Translators.VIETPHRASE) {
 }
 
 function updateInputTextLength() {
-  if (isOnLoad) return;
   const inputText = $inputTextarea.val();
 
   const translator = $translatorOptions.filter($('.active')).data('id');
@@ -407,7 +406,7 @@ function reloadGlossaryEntries() {
   $('#glossary-entries-list').html(entriesList.innerHTML);
   $glossaryEntrySelect.val('');
   $('#glossary-entry-counter').text(glossary.length);
-  updateInputTextLength();
+  if (isLoaded) updateInputTextLength();
   localStorage.setItem('glossary', JSON.stringify(glossary));
 }
 
@@ -964,9 +963,11 @@ $(document).ready(async () => {
   }
 
   $loadDefaultVietPhraseFileSwitch.removeClass('disabled');
-  isOnLoad = false;
+  isLoaded = true;
   updateInputTextLength();
 });
+
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => $themeOptions.filter('.active').click());
 
 $(window).on('keydown', (event) => (!$resultTextarea.is(':visible') || !event.ctrlKey || event.key !== 'r') || ($retranslateButton.click() && event.preventDefault()));
 
@@ -1090,6 +1091,8 @@ $glossaryManagerButton.on('mousedown', () => {
   $('.textarea').blur();
 });
 
+$('[data-bs-theme-value]').on('click', () => $themeOptions.filter('.active').click());
+
 $options.change(function onChange() {
   const optionId = getOptionId($(this).attr('name') != null ? $(this).attr('name') : $(this).attr('id'));
   const optionType = getOptionType($(this).attr('name') != null ? $(this).attr('name') : $(this).attr('id'));
@@ -1118,11 +1121,31 @@ $options.change(function onChange() {
 $themeOptions.click(function onClick() {
   $themeOptions.removeClass('active');
   $(this).addClass('active');
+  const isDarkMode = $('#bd-theme').next().find('.active').data('bs-theme-value') === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : $('#bd-theme').next().find('.active').data('bs-theme-value') === 'dark';
 
   $('.textarea').css({
-    color: $(this).data('foreground-color') ?? '',
-    'background-color': $(this).data('background-color') ?? '',
+    'background-color': $(this).data('dark-background-color') != null && isDarkMode ? $(this).data('dark-background-color') : ($(this).data('background-color') ?? ''),
+    color: $(this).data('dark-foreground-color') != null && isDarkMode ? $(this).data('dark-foreground-color') : ($(this).data('foreground-color') ?? ''),
+    'font-weight': $(this).data('font-weight') ?? '',
   });
+
+  if (isLoaded === true) {
+    if ($(this).data('font') != null) {
+      $fontOptions.filter(`:contains('${$(this).data('font')}')`).click();
+    }
+
+    if ($(this).data('font-size') != null) {
+      $fontSizeRange.val($(this).data('font-size')).change();
+    }
+
+    if ($(this).data('line-height') != null) {
+      $lineSpacingRange.val($(this).data('line-height')).change();
+    }
+
+    if ($(this).data('text-justify') === true) {
+      $alignmentSettingsSwitch.prop('checked', $(this).data('text-justify')).change();
+    }
+  }
 
   quickTranslateStorage.theme = $(this).text();
   localStorage.setItem('dich_nhanh', JSON.stringify(quickTranslateStorage));
@@ -1146,8 +1169,8 @@ $fontOptions.click(function onClick() {
 
 $fontSizeRange.on('input', function onInput() {
   const $fontSizeDisplay = $('#font-size-display');
-  $(this).val(parseFloat($(this).val()).toFixed($fontSizeDisplay.val().includes('.') ? $fontSizeDisplay.val().split('.')[1].length : 0));
   $fontSizeDisplay.val(parseFloat($(this).val()));
+  $(this).val(parseFloat($(this).val()).toFixed($fontSizeDisplay.val().includes('.') ? $fontSizeDisplay.val().split('.')[1].length : 0));
   $(document.body).css('--opt-font-size', `${parseFloat($(this).val()) / 100}rem`);
   quickTranslateStorage[getOptionId($(this).attr('id'))] = parseFloat($(this).val());
 });
@@ -1166,8 +1189,8 @@ $fontSizeRange.change(function onChange() {
 
 $lineSpacingRange.on('input', function onInput() {
   const $lineSpacingDisplay = $('#line-spacing-display');
-  $(this).val(parseFloat($(this).val()).toFixed($lineSpacingDisplay.val().includes('.') ? $lineSpacingDisplay.val().split('.')[1].length : 0));
   $lineSpacingDisplay.val(parseInt($(this).val(), 10));
+  $(this).val(parseFloat($(this).val()).toFixed($lineSpacingDisplay.val().includes('.') ? $lineSpacingDisplay.val().split('.')[1].length : 0));
   $(document.body).css('--opt-line-height', `${1 + ((0.5 * parseInt($(this).val(), 10)) / 100)}em`);
   quickTranslateStorage[getOptionId($(this).attr('id'))] = parseInt($(this).val(), 10);
 });
