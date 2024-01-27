@@ -63,6 +63,7 @@ const specialSinovietnameseMap = [
   ['使者', 'sứ giả'],
   ['使魔', 'sứ ma'],
   ['师姐', 'sư tỷ'],
+  ['成长', 'thành trưởng'],
   ['操纵', 'thao túng'],
   ['神奇', 'thần kỳ'],
   ['神使', 'thần sứ'],
