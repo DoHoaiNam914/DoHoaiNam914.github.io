@@ -1185,7 +1185,7 @@ $themeOptions.click(function onClick() {
   });
 
   if (isLoaded === true) {
-    if ($fontOptions.filter('.active').text() === 'Mặc định') $fontOptions.filter('.active').click();
+    $fontOptions.filter('.active').click();
 
     if ($(this).data('font-size') != null) {
       $fontSizeRange.val($(this).data('font-size')).change();
@@ -1207,18 +1207,19 @@ $themeOptions.click(function onClick() {
 $fontOptions.click(function onClick() {
   $fontOptions.removeClass('active');
   $(this).addClass('active');
-  const currentTheme = $themeOptions.filter('.active');
+  const $currentTheme = $themeOptions.filter('.active');
 
   if ($(this).data('fallback-font') != null) {
     $(document.body).css('--opt-font-family', `${$(this).text().includes(' ') ? `'${$(this).text()}'` : $(this).text()}, ${$(this).data('fallback-font').length > 0 ? `${$(this).data('fallback-font').split(', ').map((element) => (element.includes(' ') ? `'${element}'` : element)).join(', ')}` : ''}`);
   } else if ($(this).text() === 'Phông chữ hệ thống') {
     $(document.body).css('--opt-font-family', 'var(--system-font-family)');
-  } else if (currentTheme.data('font') != null) {
-    $(document.body).css('--opt-font-family', currentTheme.data('font').split(', ').map((element) => (element.includes(' ') ? `'${element}'` : element)).join(', '));
+  } else if ($currentTheme.data('font') != null) {
+    $(document.body).css('--opt-font-family', $currentTheme.data('font').split(', ').map((element) => (element.includes(' ') ? `'${element}'` : element)).join(', '));
   } else {
     $(document.body).css('--opt-font-family', '');
   }
 
+  $('.textarea').css('font-weight', $currentTheme.text() === 'Apple Sách - Nguyên bản' && $(this).text().startsWith('PingFang ') ? 500 : ($currentTheme.data('font-weight') ?? ''));
   quickTranslateStorage.font = $(this).text();
   localStorage.setItem('dich_nhanh', JSON.stringify(quickTranslateStorage));
 });
