@@ -199,6 +199,24 @@
 
 @font-face {
   font-family: 'Hiragino Mincho Pro';
-  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Hiragino%20Mincho%20Pro/HiraMinProN-W6-AlphaNum-04.otf) format('opentype');
   font-weight: bold;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Hiragino%20Mincho%20Pro/HiraMinProN-W6-AlphaNum-04.otf) format('opentype');
+}
+
+/* PingFang SC */
+
+@font-face {
+  font-family: 'PingFang SC Medium';
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/PingFang%20SC/pingfang%20sc-medium.otf) format('opentype');
+}
+
+@font-face {
+  font-family: 'PingFang SC';
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/PingFang%20SC/pingfang%20sc-regular.otf) format('opentype');
+}
+
+@font-face {
+  font-family: 'PingFang SC';
+  font-weight: bold;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/PingFang%20SC/pingfang%20sc-bold.otf) format('opentype');
 }

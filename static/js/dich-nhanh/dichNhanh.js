@@ -332,9 +332,42 @@ function updateInputTextLength() {
 
   const translator = $translatorOptions.filter($('.active')).data('id');
 
-  const sourceLanguage = $sourceLanguageSelect.val().split('-')[0].toLowerCase().replace('jp', 'ja').replace('vie', 'vi').replace('cht', 'zh');
-  const targetLanguage = $targetLanguageSelect.val().split('-')[0].toLowerCase().replace('jp', 'ja').replace('vie', 'vi').replace('cht', 'zh');
+  let sourceLanguage = $sourceLanguageSelect.val();
+  let targetLanguage = $targetLanguageSelect.val();
   const languagePairs = $languagePairsSelect.val().split('-');
+
+  switch (translator) {
+    case Translators.BAIDU_FANYI: {
+      sourceLanguage = BaiduFanyi.getMappedSourceLanguageCode(Translators.GOOGLE_TRANSLATE, sourceLanguage).split('-')[0].toLowerCase();
+      targetLanguage = BaiduFanyi.getMappedTargetLanguageCode(Translators.GOOGLE_TRANSLATE, targetLanguage).split('-')[0].toLowerCase();
+      break;
+    }
+    case Translators.DEEPL_TRANSLATE: {
+      sourceLanguage = DeeplTranslate.getMappedSourceLanguageCode(Translators.GOOGLE_TRANSLATE, sourceLanguage).split('-')[0].toLowerCase();
+      targetLanguage = DeeplTranslate.getMappedTargetLanguageCode(Translators.GOOGLE_TRANSLATE, targetLanguage).split('-')[0].toLowerCase();
+      break;
+    }
+    case Translators.PAPAGO: {
+      sourceLanguage = Papago.getMappedSourceLanguageCode(Translators.GOOGLE_TRANSLATE, sourceLanguage).split('-')[0].toLowerCase();
+      targetLanguage = Papago.getMappedTargetLanguageCode(Translators.GOOGLE_TRANSLATE, targetLanguage).split('-')[0].toLowerCase();
+      break;
+    }
+    case Translators.MICROSOFT_TRANSLATOR: {
+      sourceLanguage = MicrosoftTranslator.getMappedSourceLanguageCode(Translators.GOOGLE_TRANSLATE, sourceLanguage).split('-')[0].toLowerCase();
+      targetLanguage = MicrosoftTranslator.getMappedTargetLanguageCode(Translators.GOOGLE_TRANSLATE, targetLanguage).split('-')[0].toLowerCase();
+      break;
+    }
+    case Translators.VIETPHRASE: {
+      sourceLanguage = Vietphrase.getMappedSourceLanguageCode(Translators.GOOGLE_TRANSLATE).split('-')[0].toLowerCase();
+      targetLanguage = Vietphrase.getMappedTargetLanguageCode(Translators.GOOGLE_TRANSLATE).split('-')[0].toLowerCase();
+      break;
+    }
+    default: {
+      sourceLanguage = GoogleTranslate.getMappedSourceLanguageCode(Translators.GOOGLE_TRANSLATE, sourceLanguage).split('-')[0].toLowerCase();
+      targetLanguage = GoogleTranslate.getMappedTargetLanguageCode(Translators.GOOGLE_TRANSLATE, targetLanguage).split('-')[0].toLowerCase();
+      break;
+    }
+  }
 
   const gapLength = applyGlossaryToText(inputText, translator).length - inputText.length;
 
@@ -509,10 +542,38 @@ async function translateTextarea() {
   const sourceLanguage = $sourceLanguageSelect.val();
   const targetLanguage = $targetLanguageSelect.val();
   const languagePairs = $languagePairsSelect.val().split('-');
+  let isPairing = false;
+
+  switch (translatorOption) {
+    case Translators.BAIDU_FANYI: {
+      isPairing = BaiduFanyi.getMappedSourceLanguageCode(Translators.GOOGLE_TRANSLATE, sourceLanguage).split('-')[0].toLowerCase() === languagePairs[0] && BaiduFanyi.getMappedTargetLanguageCode(Translators.GOOGLE_TRANSLATE, targetLanguage).split('-')[0].toLowerCase() === languagePairs[1];
+      break;
+    }
+    case Translators.DEEPL_TRANSLATE: {
+      isPairing = DeeplTranslate.getMappedSourceLanguageCode(Translators.GOOGLE_TRANSLATE, sourceLanguage).split('-')[0].toLowerCase() === languagePairs[0] && DeeplTranslate.getMappedTargetLanguageCode(Translators.GOOGLE_TRANSLATE, targetLanguage).split('-')[0].toLowerCase() === languagePairs[1];
+      break;
+    }
+    case Translators.PAPAGO: {
+      isPairing = Papago.getMappedSourceLanguageCode(Translators.GOOGLE_TRANSLATE, sourceLanguage).split('-')[0].toLowerCase() === languagePairs[0] && Papago.getMappedTargetLanguageCode(Translators.GOOGLE_TRANSLATE, targetLanguage).split('-')[0].toLowerCase() === languagePairs[1];
+      break;
+    }
+    case Translators.MICROSOFT_TRANSLATOR: {
+      isPairing = MicrosoftTranslator.getMappedSourceLanguageCode(Translators.GOOGLE_TRANSLATE, sourceLanguage).split('-')[0].toLowerCase() === languagePairs[0] && MicrosoftTranslator.getMappedTargetLanguageCode(Translators.GOOGLE_TRANSLATE, targetLanguage).split('-')[0].toLowerCase() === languagePairs[1];
+      break;
+    }
+    case Translators.VIETPHRASE: {
+      isPairing = Vietphrase.getMappedSourceLanguageCode(Translators.GOOGLE_TRANSLATE, sourceLanguage).split('-')[0].toLowerCase() === languagePairs[0] && Vietphrase.getMappedTargetLanguageCode(Translators.GOOGLE_TRANSLATE, targetLanguage).split('-')[0].toLowerCase() === languagePairs[1];
+      break;
+    }
+    default: {
+      isPairing = GoogleTranslate.getMappedSourceLanguageCode(Translators.GOOGLE_TRANSLATE, sourceLanguage).split('-')[0].toLowerCase() === languagePairs[0] && GoogleTranslate.getMappedTargetLanguageCode(Translators.GOOGLE_TRANSLATE, targetLanguage).split('-')[0].toLowerCase() === languagePairs[1];
+      break;
+    }
+  }
 
   const glossaryEnabled = $glossarySwitch.prop('checked');
 
-  const processText = glossaryEnabled && (translatorOption === Translators.VIETPHRASE ? $prioritizeNameOverVietPhraseCheck.prop('checked') && targetLanguage === 'vi' : sourceLanguage.split('-')[0].toLowerCase().replace('jp', 'ja').replace('vie', 'vi').replace('cht', 'zh') === languagePairs[0] && targetLanguage.split('-')[0].toLowerCase().replace('jp', 'ja').replace('vie', 'vi').replace('cht', 'zh') === languagePairs[1]) ? applyGlossaryToText(inputText, translatorOption) : inputText;
+  const processText = glossaryEnabled && (translatorOption === Translators.VIETPHRASE ? $prioritizeNameOverVietPhraseCheck.prop('checked') && targetLanguage === 'vi' : isPairing) ? applyGlossaryToText(inputText, translatorOption) : inputText;
 
   const [MAX_LENGTH, MAX_LINE] = getMaxQueryLengthAndLine(translatorOption, processText);
 
@@ -537,12 +598,12 @@ async function translateTextarea() {
           translator = await new DeeplTranslate().init();
           break;
         }
-        case Translators.GOOGLE_TRANSLATE: {
-          translator = await new GoogleTranslate().init();
-          break;
-        }
         case Translators.PAPAGO: {
           translator = await new Papago(uuid).init();
+          break;
+        }
+        case Translators.MICROSOFT_TRANSLATOR: {
+          translator = await new MicrosoftTranslator().init();
           break;
         }
         case Translators.VIETPHRASE: {
@@ -550,7 +611,7 @@ async function translateTextarea() {
           break;
         }
         default: {
-          translator = await new MicrosoftTranslator().init();
+          translator = await new GoogleTranslate().init();
           break;
         }
       }
@@ -593,12 +654,11 @@ async function translateTextarea() {
           }
         }
 
-        
         if (translateAbortController.signal.aborted) return;
         result = results.join('\n');
       }
 
-      if (glossaryEnabled && translatorOption !== Translators.VIETPHRASE && sourceLanguage.split('-')[0].toLowerCase().replace('jp', 'ja').replace('vie', 'vi').replace('cht', 'zh') === languagePairs[0] && targetLanguage.split('-')[0].toLowerCase().replace('jp', 'ja').replace('vie', 'vi').replace('cht', 'zh') === languagePairs[1]) {
+      if (glossaryEnabled && translatorOption !== Translators.VIETPHRASE && isPairing) {
         glossary.filter(([first]) => inputText.includes(first)).toSorted((a, b) => b[1].length - a[1].length).forEach(([__, second]) => {
           const key = second.replace(/ /g, '_');
           const oldAccentKey = applyOldAccent(key);
@@ -655,22 +715,22 @@ function getSourceLanguageSelectOptions(translator) {
 
       break;
     }
-    case Translators.GOOGLE_TRANSLATE: {
-      Object.entries(GoogleTranslate.SOURCE_LANGUAGES).forEach(([languageCode]) => {
+    case Translators.PAPAGO: {
+      Object.entries(Papago.SOURCE_LANGUAGES).forEach(([languageCode]) => {
         if (SUPPORTED_LANGUAGES.indexOf(languageCode) === -1) return;
         const option = document.createElement('option');
-        option.innerText = GoogleTranslate.getSlName(languageCode);
+        option.innerText = Papago.getSourceName(languageCode);
         option.value = languageCode;
         sourceLanguageSelect.appendChild(option);
       });
 
       break;
     }
-    case Translators.PAPAGO: {
-      Object.entries(Papago.SOURCE_LANGUAGES).forEach(([languageCode]) => {
+    case Translators.MICROSOFT_TRANSLATOR: {
+      Object.entries(MicrosoftTranslator.FROM_LANGUAGES).forEach(([languageCode]) => {
         if (SUPPORTED_LANGUAGES.indexOf(languageCode) === -1) return;
         const option = document.createElement('option');
-        option.innerText = Papago.getSourceName(languageCode);
+        option.innerText = MicrosoftTranslator.getFromName(languageCode);
         option.value = languageCode;
         sourceLanguageSelect.appendChild(option);
       });
@@ -688,10 +748,10 @@ function getSourceLanguageSelectOptions(translator) {
       break;
     }
     default: {
-      Object.entries(MicrosoftTranslator.FROM_LANGUAGES).forEach(([languageCode]) => {
+      Object.entries(GoogleTranslate.SOURCE_LANGUAGES).forEach(([languageCode]) => {
         if (SUPPORTED_LANGUAGES.indexOf(languageCode) === -1) return;
         const option = document.createElement('option');
-        option.innerText = MicrosoftTranslator.getFromName(languageCode);
+        option.innerText = GoogleTranslate.getSlName(languageCode);
         option.value = languageCode;
         sourceLanguageSelect.appendChild(option);
       });
@@ -728,22 +788,22 @@ function getTargetLanguageSelectOptions(translator) {
 
       break;
     }
-    case Translators.GOOGLE_TRANSLATE: {
-      Object.entries(GoogleTranslate.TARGET_LANGUAGES).forEach(([languageCode]) => {
+    case Translators.PAPAGO: {
+      Object.entries(Papago.TARGET_LANGUAGES).forEach(([languageCode]) => {
         if (SUPPORTED_LANGUAGES.indexOf(languageCode) === -1) return;
         const option = document.createElement('option');
-        option.innerText = GoogleTranslate.getTlName(languageCode);
+        option.innerText = Papago.getTargetName(languageCode);
         option.value = languageCode;
         targetLanguageSelect.appendChild(option);
       });
 
       break;
     }
-    case Translators.PAPAGO: {
-      Object.entries(Papago.TARGET_LANGUAGES).forEach(([languageCode]) => {
+    case Translators.MICROSOFT_TRANSLATOR: {
+      Object.entries(MicrosoftTranslator.TO_LANGUAGES).forEach(([languageCode]) => {
         if (SUPPORTED_LANGUAGES.indexOf(languageCode) === -1) return;
         const option = document.createElement('option');
-        option.innerText = Papago.getTargetName(languageCode);
+        option.innerText = MicrosoftTranslator.getToName(languageCode);
         option.value = languageCode;
         targetLanguageSelect.appendChild(option);
       });
@@ -761,10 +821,10 @@ function getTargetLanguageSelectOptions(translator) {
       break;
     }
     default: {
-      Object.entries(MicrosoftTranslator.TO_LANGUAGES).forEach(([languageCode]) => {
+      Object.entries(GoogleTranslate.TARGET_LANGUAGES).forEach(([languageCode]) => {
         if (SUPPORTED_LANGUAGES.indexOf(languageCode) === -1) return;
         const option = document.createElement('option');
-        option.innerText = MicrosoftTranslator.getToName(languageCode);
+        option.innerText = GoogleTranslate.getTlName(languageCode);
         option.value = languageCode;
         targetLanguageSelect.appendChild(option);
       });
@@ -783,23 +843,23 @@ function updateLanguageSelect(translator, prevTranslator) {
   if (translator !== prevTranslator) {
     switch (prevTranslator) {
       case Translators.BAIDU_FANYI: {
-        sourceLanguage = BaiduFanyi.getMappedSourceLanguageCode(translator, sourceLanguage) ?? sourceLanguage;
-        targetLanguage = BaiduFanyi.getMappedTargetLanguageCode(translator, targetLanguage) ?? targetLanguage;
+        sourceLanguage = BaiduFanyi.getMappedSourceLanguageCode(translator, sourceLanguage);
+        targetLanguage = BaiduFanyi.getMappedTargetLanguageCode(translator, targetLanguage);
         break;
       }
       case Translators.DEEPL_TRANSLATE: {
-        sourceLanguage = DeeplTranslate.getMappedSourceLanguageCode(translator, sourceLanguage) ?? sourceLanguage;
-        targetLanguage = DeeplTranslate.getMappedTargetLanguageCode(translator, targetLanguage) ?? targetLanguage;
-        break;
-      }
-      case Translators.GOOGLE_TRANSLATE: {
-        sourceLanguage = GoogleTranslate.getMappedSourceLanguageCode(translator, sourceLanguage) ?? sourceLanguage;
-        targetLanguage = GoogleTranslate.getMappedTargetLanguageCode(translator, targetLanguage) ?? targetLanguage;
+        sourceLanguage = DeeplTranslate.getMappedSourceLanguageCode(translator, sourceLanguage);
+        targetLanguage = DeeplTranslate.getMappedTargetLanguageCode(translator, targetLanguage);
         break;
       }
       case Translators.PAPAGO: {
-        sourceLanguage = Papago.getMappedSourceLanguageCode(translator, sourceLanguage) ?? sourceLanguage;
-        targetLanguage = Papago.getMappedTargetLanguageCode(translator, targetLanguage) ?? targetLanguage;
+        sourceLanguage = Papago.getMappedSourceLanguageCode(translator, sourceLanguage);
+        targetLanguage = Papago.getMappedTargetLanguageCode(translator, targetLanguage);
+        break;
+      }
+      case Translators.MICROSOFT_TRANSLATOR: {
+        sourceLanguage = MicrosoftTranslator.getMappedSourceLanguageCode(translator, sourceLanguage);
+        targetLanguage = MicrosoftTranslator.getMappedTargetLanguageCode(translator, targetLanguage);
         break;
       }
       case Translators.VIETPHRASE: {
@@ -808,8 +868,8 @@ function updateLanguageSelect(translator, prevTranslator) {
         break;
       }
       default: {
-        sourceLanguage = MicrosoftTranslator.getMappedSourceLanguageCode(translator, sourceLanguage) ?? sourceLanguage;
-        targetLanguage = MicrosoftTranslator.getMappedTargetLanguageCode(translator, targetLanguage) ?? targetLanguage;
+        sourceLanguage = GoogleTranslate.getMappedSourceLanguageCode(translator, sourceLanguage);
+        targetLanguage = GoogleTranslate.getMappedTargetLanguageCode(translator, targetLanguage);
         break;
       }
     }
@@ -838,14 +898,14 @@ async function translateText(inputText, translatorOption, targetLanguage, glossa
         sourceLanguage = DeeplTranslate.DETECT_LANGUAGE;
         break;
       }
-      case Translators.GOOGLE_TRANSLATE: {
-        translator = await new GoogleTranslate().init();
-        sourceLanguage = GoogleTranslate.DETECT_LANGUAGE;
-        break;
-      }
       case Translators.PAPAGO: {
         translator = await new Papago().init();
         sourceLanguage = Papago.DETECT_LANGUAGE;
+        break;
+      }
+      case Translators.MICROSOFT_TRANSLATOR: {
+        translator = await new MicrosoftTranslator().init();
+        sourceLanguage = MicrosoftTranslator.AUTODETECT;
         break;
       }
       case Translators.VIETPHRASE: {
@@ -854,8 +914,8 @@ async function translateText(inputText, translatorOption, targetLanguage, glossa
         break;
       }
       default: {
-        translator = await new MicrosoftTranslator().init();
-        sourceLanguage = MicrosoftTranslator.AUTODETECT;
+        translator = await new GoogleTranslate().init();
+        sourceLanguage = GoogleTranslate.DETECT_LANGUAGE;
         break;
       }
     }
@@ -1098,6 +1158,7 @@ $options.change(function onChange() {
   const optionType = getOptionType($(this).attr('name') != null ? $(this).attr('name') : $(this).attr('id'));
 
   if (optionType !== OptionTypes.SELECT && optionType !== OptionTypes.CHECK && optionType !== OptionTypes.RADIO && optionType !== OptionTypes.SWITCH) return;
+
   if (optionType === OptionTypes.RADIO) {
     $options.filter(`[name="${$(this).attr('name')}"]`).removeAttr('checked');
     $(this).attr('checked', true);
@@ -1129,11 +1190,9 @@ $themeOptions.click(function onClick() {
     'font-weight': $(this).data('font-weight') ?? '',
   });
 
-  if (isLoaded === true) {
-    if ($(this).data('font') != null) {
-      $fontOptions.filter(`:contains('${$(this).data('font')}')`).click();
-    }
+  if ($fontOptions.filter('.active').text() === 'Mặc định') $fontOptions.filter('.active').click();
 
+  if (isLoaded === true) {
     if ($(this).data('font-size') != null) {
       $fontSizeRange.val($(this).data('font-size')).change();
     }
@@ -1142,8 +1201,8 @@ $themeOptions.click(function onClick() {
       $lineSpacingRange.val($(this).data('line-height')).change();
     }
 
-    if ($(this).data('text-justify') === true) {
-      $alignmentSettingsSwitch.prop('checked', $(this).data('text-justify')).change();
+    if ($(this).data('text-align') != null) {
+      $alignmentSettingsSwitch.prop('checked', $(this).data('text-align') === 'justify').change();
     }
   }
 
@@ -1154,11 +1213,14 @@ $themeOptions.click(function onClick() {
 $fontOptions.click(function onClick() {
   $fontOptions.removeClass('active');
   $(this).addClass('active');
+  const currentThemeFonts = $themeOptions.filter('.active').data('font');
 
-  if ($(this).data('additional-fonts') != null) {
-    $(document.body).css('--opt-font-family', `${$(this).text().includes(' ') ? `'${$(this).text()}'` : $(this).text()}, ${$(this).data('additional-fonts').length > 0 ? `${$(this).data('additional-fonts').split(', ').map((element) => (element.includes(' ') ? `'${element}'` : element)).join(', ')}` : ''}`);
-  } else if ($(this).data('additional-fonts') == null) {
+  if ($(this).data('fallback-font') != null) {
+    $(document.body).css('--opt-font-family', `${$(this).text().includes(' ') ? `'${$(this).text()}'` : $(this).text()}, ${$(this).data('fallback-font').length > 0 ? `${$(this).data('fallback-font').split(', ').map((element) => (element.includes(' ') ? `'${element}'` : element)).join(', ')}` : ''}`);
+  } else if ($(this).text() === 'Phông chữ hệ thống') {
     $(document.body).css('--opt-font-family', 'var(--system-font-family)');
+  } else if (currentThemeFonts != null) {
+    $(document.body).css('--opt-font-family', currentThemeFonts.split(', ').map((element) => (element.includes(' ') ? `'${element}'` : element)).join(', '));
   } else {
     $(document.body).css('--opt-font-family', '');
   }
