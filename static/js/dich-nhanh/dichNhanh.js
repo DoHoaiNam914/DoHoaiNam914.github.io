@@ -160,10 +160,7 @@ function getCurrentOptions() {
           const selectedValue = option.find('.dropdown-menu > li > .active');
 
           switch (optionId) {
-            case 'theme': {
-              data.theme = selectedValue.text();
-              break;
-            }
+            case 'theme':
             case 'font': {
               data.font = selectedValue.text();
               break;
@@ -220,10 +217,7 @@ function loadAllQuickTranslatorOptions() {
         const values = option.find('.dropdown-menu > li > .dropdown-item');
 
         switch (optionId) {
-          case 'theme': {
-            values.filter(`:contains(${quickTranslateStorage[optionId]})`).click();
-            break;
-          }
+          case 'theme':
           case 'font': {
             values.filter(`:contains(${quickTranslateStorage[optionId]})`).click();
             break;
