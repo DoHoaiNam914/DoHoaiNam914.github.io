@@ -1213,8 +1213,8 @@ $fontOptions.click(function onClick() {
     $(document.body).css('--opt-font-family', `${$(this).text().includes(' ') ? `'${$(this).text()}'` : $(this).text()}, ${$(this).data('fallback-font').length > 0 ? `${$(this).data('fallback-font').split(', ').map((element) => (element.includes(' ') ? `'${element}'` : element)).join(', ')}` : ''}`);
   } else if ($(this).text() === 'Phông chữ hệ thống') {
     $(document.body).css('--opt-font-family', 'var(--system-font-family)');
-  } else if ($currentTheme.data('font') != null) {
-    $(document.body).css('--opt-font-family', $currentTheme.data('font').split(', ').map((element) => (element.includes(' ') ? `'${element}'` : element)).join(', '));
+  } else if ($currentTheme.data('font-family') != null) {
+    $(document.body).css('--opt-font-family', $currentTheme.data('font-family').split(', ').map((element) => (element.includes(' ') ? `'${element}'` : element)).join(', '));
   } else {
     $(document.body).css('--opt-font-family', '');
   }
