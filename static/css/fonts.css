@@ -86,6 +86,38 @@
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/New%20York/NewYorkItalic.ttf) format('truetype');
 }
 
+/* Hiragino Mincho Pro */
+
+@font-face {
+  font-family: 'Hiragino Mincho Pro';
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Hiragino%20Mincho%20Pro/HiraMinProN-W3-AlphaNum-02.otf) format('opentype');
+}
+
+@font-face {
+  font-family: 'Hiragino Mincho Pro';
+  font-weight: bold;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Hiragino%20Mincho%20Pro/HiraMinProN-W6-AlphaNum-04.otf) format('opentype');
+}
+
+/* PingFang SC */
+
+@font-face {
+  font-family: 'PingFang SC';
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/PingFang%20SC/pingfang%20sc-regular.otf) format('opentype');
+}
+
+@font-face {
+  font-family: 'PingFang SC';
+  font-weight: 500;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/PingFang%20SC/pingfang%20sc-medium.otf) format('opentype');
+}
+
+@font-face {
+  font-family: 'PingFang SC';
+  font-weight: bold;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/PingFang%20SC/pingfang%20sc-bold.otf) format('opentype');
+}
+
 /* Publico Text Web */
 
 @font-face {
@@ -188,35 +220,4 @@
   font-style: italic;
   font-weight: bold;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Proxima%20Nova%20Rg/Proxima%20Nova%20Bold%20Italic.otf) format('opentype');
-}
-
-/* Hiragino Mincho Pro */
-
-@font-face {
-  font-family: 'Hiragino Mincho Pro';
-  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Hiragino%20Mincho%20Pro/HiraMinProN-W3-AlphaNum-02.otf) format('opentype');
-}
-
-@font-face {
-  font-family: 'Hiragino Mincho Pro';
-  font-weight: bold;
-  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Hiragino%20Mincho%20Pro/HiraMinProN-W6-AlphaNum-04.otf) format('opentype');
-}
-
-/* PingFang SC */
-
-@font-face {
-  font-family: 'PingFang SC Medium';
-  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/PingFang%20SC/pingfang%20sc-medium.otf) format('opentype');
-}
-
-@font-face {
-  font-family: 'PingFang SC';
-  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/PingFang%20SC/pingfang%20sc-regular.otf) format('opentype');
-}
-
-@font-face {
-  font-family: 'PingFang SC';
-  font-weight: bold;
-  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/PingFang%20SC/pingfang%20sc-bold.otf) format('opentype');
 }
