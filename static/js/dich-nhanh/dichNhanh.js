@@ -1168,7 +1168,7 @@ $options.change(function onChange() {
 
   if ($(this).hasClass('quick-translate-option')) {
     updateInputTextLength();
-    lastSession = {};
+    if (optionType === OptionTypes.RADIO) lastSession = {};
     $retranslateButton.click();
   }
 });
