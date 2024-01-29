@@ -1210,13 +1210,13 @@ $fontOptions.click(function onClick() {
   const $currentTheme = $themeOptions.filter('.active');
 
   if ($(this).data('fallback-font') != null) {
-    $(document.body).css('--opt-font-family', `${$(this).text().includes(' ') ? `'${$(this).text()}'` : $(this).text()}, ${$(this).data('fallback-font').length > 0 ? `${$(this).data('fallback-font').split(', ').map((element) => (element.includes(' ') ? `'${element}'` : element)).join(', ')}` : ''}`);
-  } else if ($(this).text() === 'Phông chữ hệ thống') {
-    $(document.body).css('--opt-font-family', 'var(--system-font-family)');
+    $(document.documentElement).css('--opt-font-family', `${$(this).text().includes(' ') ? `'${$(this).text()}'` : $(this).text()}, ${$(this).data('fallback-font').length > 0 ? `${$(this).data('fallback-font').split(', ').map((element) => (element.includes(' ') ? `'${element}'` : element)).join(', ')}` : ''}`);
+  } else if ($(this).data('font-stacks') != null) {
+    $(document.documentElement).css('--opt-font-family', $(this).data('font-stacks').split(', ').map((element) => `var(--${element})`).join(', '));
   } else if ($currentTheme.data('font-family') != null) {
-    $(document.body).css('--opt-font-family', $currentTheme.data('font-family').split(', ').map((element) => (element.includes(' ') ? `'${element}'` : element)).join(', '));
+    $(document.documentElement).css('--opt-font-family', $currentTheme.data('font-family').split(', ').map((element) => (element.includes(' ') ? `'${element}'` : element)).join(', '));
   } else {
-    $(document.body).css('--opt-font-family', '');
+    $(document.documentElement).css('--opt-font-family', '');
   }
 
   $('.textarea').css('font-weight', $currentTheme.text() === 'Apple Sách - Nguyên bản' && $(this).text().startsWith('PingFang ') ? 500 : ($currentTheme.data('font-weight') ?? ''));
@@ -1228,7 +1228,7 @@ $fontSizeRange.on('input', function onInput() {
   const $fontSizeDisplay = $('#font-size-display');
   $fontSizeDisplay.val(parseFloat($(this).val()));
   $(this).val(parseFloat($(this).val()).toFixed($fontSizeDisplay.val().includes('.') ? $fontSizeDisplay.val().split('.')[1].length : 0));
-  $(document.body).css('--opt-font-size', `${parseFloat($(this).val()) / 100}rem`);
+  $(document.documentElement).css('--opt-font-size', `${parseFloat($(this).val()) / 100}rem`);
   quickTranslateStorage[getOptionId($(this).attr('id'))] = parseFloat($(this).val());
 });
 
@@ -1248,7 +1248,7 @@ $lineSpacingRange.on('input', function onInput() {
   const $lineSpacingDisplay = $('#line-spacing-display');
   $lineSpacingDisplay.val(parseInt($(this).val(), 10));
   $(this).val(parseFloat($(this).val()).toFixed($lineSpacingDisplay.val().includes('.') ? $lineSpacingDisplay.val().split('.')[1].length : 0));
-  $(document.body).css('--opt-line-height', `${1 + ((0.5 * parseInt($(this).val(), 10)) / 100)}em`);
+  $(document.documentElement).css('--opt-line-height', `${1 + ((0.5 * parseInt($(this).val(), 10)) / 100)}em`);
   quickTranslateStorage[getOptionId($(this).attr('id'))] = parseInt($(this).val(), 10);
 });
 
@@ -1267,7 +1267,7 @@ $lineSpacingRange.change(function onChange() {
 $alignmentSettingsSwitch.off('change');
 
 $alignmentSettingsSwitch.change(function onChange() {
-  $(document.body).css('--opt-text-align', $(this).prop('checked') ? 'justify' : 'start');
+  $(document.documentElement).css('--opt-text-align', $(this).prop('checked') ? 'justify' : 'start');
   quickTranslateStorage[getOptionId($(this).attr('id'))] = $(this).prop('checked');
   localStorage.setItem('dich_nhanh', JSON.stringify(quickTranslateStorage));
 });
@@ -1275,7 +1275,7 @@ $alignmentSettingsSwitch.change(function onChange() {
 $alignmentSettingsSwitch.off('change');
 
 $alignmentSettingsSwitch.change(function onChange() {
-  $(document.body).css('--opt-text-align', $(this).prop('checked') ? 'justify' : 'start');
+  $(document.documentElement).css('--opt-text-align', $(this).prop('checked') ? 'justify' : 'start');
   quickTranslateStorage[getOptionId($(this).attr('id'))] = $(this).prop('checked');
   localStorage.setItem('dich_nhanh', JSON.stringify(quickTranslateStorage));
 });
