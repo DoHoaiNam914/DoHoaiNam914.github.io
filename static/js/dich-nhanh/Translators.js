@@ -1060,7 +1060,7 @@ class Vietphrase {
     const text = inputText.split(/\r?\n/).map((element) => element.trim()).join('\n');
 
     let dataEntries = Object.entries(data).filter(([key]) => text.includes(key));
-    const glossaryEntries = this.glossaryObject;
+    const glossaryEntries = this.glossary.map(([first, second]) => [first, second]);
 
     let result = text;
 
