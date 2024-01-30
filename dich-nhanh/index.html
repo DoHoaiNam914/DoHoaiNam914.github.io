@@ -148,7 +148,7 @@
       content: '> ';
     }
 
-    .glossary-entries {
+    .text-font {
       font-family: var(--opt-font-family);
     }
   </style>
@@ -787,7 +787,7 @@
             <option value="zh-vi" selected>Trung → Việt</option>
           </select>
           <div class="input-group mb-2 dropstart dropdown-can-scroll dropdown-has-collapse">
-            <input type="text" class="form-control" id="source-entry-input" list="glossary-entries-list" placeholder="Mục nguồn">
+            <input type="text" class="form-control text-font" id="source-entry-input" list="glossary-entries-list" placeholder="Mục nguồn">
             <datalist id="glossary-entries-list"></datalist>
             <button type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" id="source-entry-dropdown-toggle" data-bs-toggle="dropdown" data-bs-auto-close="outside"></button>
             <ul class="dropdown-menu dropdown-menu-scroller">
@@ -865,8 +865,8 @@
             </ul>
           </div>
           <div class="input-group mb-3 dropstart dropdown-can-scroll dropdown-has-collapse">
-            <input type="text" class="form-control" id="target-entry-input" placeholder="Mục đích">
-            <textarea class="form-control" id="target-entry-textarea" placeholder="Mục đích" style="display: none;"></textarea>
+            <input type="text" class="form-control text-font" id="target-entry-input" placeholder="Mục đích">
+            <textarea class="form-control text-font" id="target-entry-textarea" placeholder="Mục đích" style="display: none;"></textarea>
             <button type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" data-bs-auto-close="outside"></button>
             <ul class="dropdown-menu dropdown-menu-scroller">
               <li>
@@ -996,7 +996,7 @@
             </svg>
             Xoá
           </button>
-          <select class="form-select mb-3 glossary-entries" id="glossary-entry-select" size="10">
+          <select class="form-select mb-3 text-font" id="glossary-entry-select" size="10">
             <option value="" selected>Chọn...</option>
           </select>
           <button type="button" class="btn btn-sm btn-secondary copy-button" data-target="#glossary-entry-list">Sao chép</button>
