@@ -1,30 +1,28 @@
 'use strict';
 
 const Colors = {
-  WHITE: 'white',
+  DAY: 'day',
+  NIGHT: 'night',
   SEPIA: 'sepia',
-  CREAM: 'cream',
-  GRAY: 'gray',
-  BLACK: 'black',
 };
 
 $('#background-select').change(function onChange() {
-  if (this.value !== Colors.WHITE) {
+  if ($(this).val() !== Colors.WHITE) {
     if ($(document.documentElement).attr('style') != null) {
       Object.values(Colors).forEach((code) => {
         if ($(document.documentElement).attr('style').includes(code)) {
-          $(document.documentElement).attr('style', $(document.documentElement).attr('style').replace(new RegExp(`\\s?${code}-background;`), ''));
+          $(document.documentElement).attr('style', $(document.documentElement).attr('style').replace(new RegExp(`\\s?readium-${code}-on;`), ''));
         }
       });
 
-      $(document.documentElement).attr('style', $(document.documentElement).attr('style').concat(` ${this.value}-background;`));
+      $(document.documentElement).attr('style', $(document.documentElement).attr('style').concat(` readium-${$(this).val()}-on;`));
     } else {
-      $(document.documentElement).attr('style', `${this.value}-background;`);
+      $(document.documentElement).attr('style', `${$(this).val()}-background;`);
     }
   } else if ($(document.documentElement).attr('style') != null) {
     Object.values(Colors).forEach((code) => {
       if ($(document.documentElement).attr('style').includes(code)) {
-        $(document.documentElement).attr('style', $(document.documentElement).attr('style').replace(new RegExp(`\\s?${code}-background;`, 'g'), ''));
+        $(document.documentElement).attr('style', $(document.documentElement).attr('style').replace(new RegExp(`\\s?readium-${code}-on;`, 'g'), ''));
       }
     });
 
@@ -32,6 +30,4 @@ $('#background-select').change(function onChange() {
       $(document.documentElement).removeAttr('style');
     }
   }
-
-  localStorage.setItem('background', this.value);
 });

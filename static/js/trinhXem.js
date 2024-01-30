@@ -42,19 +42,17 @@ $(document).ready(function () {
 $('#view-select').change(function () {
   if (this.value !== 'pagination') {
     if ($(document.documentElement).attr('style') != undefined) {
-      $(document.documentElement).attr('style', $(document.documentElement).attr('style').concat(' vertical-view;'));
+      $(document.documentElement).attr('style', $(document.documentElement).attr('style').concat(' readium-scroll-on;'));
     } else {
       $(document.documentElement).attr('style', 'vertical-view;');
     }
   } else if ($(document.documentElement).attr('style') != undefined) {
-    $(document.documentElement).attr('style', $(document.documentElement).attr('style').replace(new RegExp('\s?vertical-view;', 'g'), ''));
+    $(document.documentElement).attr('style', $(document.documentElement).attr('style').replace(/\s?readium-scroll-on;/g, ''));
 
     if ($(document.documentElement).attr('style') == '') {
       $(document.documentElement).removeAttr('style');
     }
   }
-
-  localStorage.setItem('view', this.value);
 });
 
 function j_novelLoader(book, volume, spine) {
@@ -76,7 +74,7 @@ function j_novelLoader(book, volume, spine) {
 <meta name="viewport" content="initial-scale=1, user-scalable=0, maximum-scale=1">`);
         const stylesheetHref = $('link[rel="stylesheet"]').attr('href').replace('..', `./${book}/${volume}`);
         $('link[rel="stylesheet"]').remove();
-        $(document.head).append('<link rel="stylesheet" href="/static/css/styles/trinh-xem-before.css">');
+        $(document.head).append('<link rel="stylesheet" href="/static/css/styles/ReadiumCSS-before.css">');
         $.get({
           async: false,
           crossDomain: false,
@@ -91,12 +89,12 @@ function j_novelLoader(book, volume, spine) {
           $(document.head).append(stylesheet);
         });
         $(document.head).append('<link rel="stylesheet" href="/static/css/styles/patches/j-novelclub_patch.css">');
-        $(document.head).append('<link rel="stylesheet" href="/static/css/styles/trinh-xem-after.css">');
+        $(document.head).append('<link rel="stylesheet" href="/static/css/styles/ReadiumCSS-after.css">');
 
         $('#view-select').val(localStorage.getItem('view') ?? 'vertical').change()
         $LAB.setOptions({AlwaysPreserveOrder: true})
         .script('/static/lib/jquery-3.7.1.min.js')
-        .script('/static/js/nen.js').wait(() => $('#background-select').val(localStorage.getItem('background') || Colors.SEPIA).change());
+        .script('/static/js/nen.js').wait(() => $('#mode-select').val(localStorage.getItem('background') || Colors.SEPIA).change());
       }
 
       const copyButton = document.createElement('button');
@@ -142,7 +140,7 @@ function yenpressLoader(book, volume, spine) {
 <meta name="viewport" content="initial-scale=1, user-scalable=0, maximum-scale=1">`);
         const stylesheetHref = $('link[rel="stylesheet"]').attr('href').replace('..', `./${book}/${volume}`);
         $('link[rel="stylesheet"]').remove();
-        $(document.head).append('<link rel="stylesheet" href="/static/css/styles/trinh-xem-before.css">');
+        $(document.head).append('<link rel="stylesheet" href="/static/css/styles/ReadiumCSS-before.css">');
         $.get({
           async: false,
           crossDomain: false,
@@ -157,12 +155,12 @@ function yenpressLoader(book, volume, spine) {
           $(document.head).append(stylesheet);
         });
         $(document.head).append(`<link rel="stylesheet" href="/static/css/styles/patches/${book}_patch.css">`);
-        $(document.head).append('<link rel="stylesheet" href="/static/css/styles/trinh-xem-after.css">');
+        $(document.head).append('<link rel="stylesheet" href="/static/css/styles/ReadiumCSS-after.css">');
 
         $('#view-select').val(localStorage.getItem('view') ?? 'vertical').change()
         $LAB.setOptions({AlwaysPreserveOrder: true})
         .script('/static/lib/jquery-3.7.1.min.js')
-        .script('/static/js/nen.js').wait(() => $('#background-select').val(localStorage.getItem('background') ?? Colors.SEPIA).change());
+        .script('/static/js/nen.js').wait(() => $('#mode-select').val(localStorage.getItem('background') ?? Colors.SEPIA).change());
       }
 
       const copyButton = document.createElement('button');
@@ -190,59 +188,53 @@ function yenpressLoader(book, volume, spine) {
 }
 
 function customLoader(book, volume, spine) {
-  switch (`${book}_${volume}`) {
-    case 'tenseislime_20':
-    case 'chua-te-bong-toi_06':
-    case 'tenseislime_21':
-      for (let i = 0; i < spine.length; i++) {
-        const spineHref = spine[i];
-        const spineId = spineHref.replace(/xhtml\/(.+)\.xhtml/, '$1');
+  for (let i = 0; i < spine.length; i++) {
+    const spineHref = spine[i];
+    const spineId = spineHref.replace(/xhtml\/(.+)\.xhtml/, '$1');
 
-        $.get({
-          async: false,
-          crossDomain: false,
-          url: `./${book}/${volume}/${spineHref}`
-        }).done(function (data) {
-          if ((`${book}_${volume}` === 'tenseislime_20' && i === 4) || (`${book}_${volume}` === 'chua-te-bong-toi_06' && i === 7) || (`${book}_${volume}` === 'tenseislime_21' && i === 5)) {
-            $(document.documentElement).addClass('hltr');
-            $(document.documentElement).attr('lang', $(data).find('html').attr('xml:lang'));
-            $(document.head).html($(data).find('head').html());
-            $('meta[content="text/html; charset=UTF-8"]').replaceWith(`<meta charset="UTF-8">
+    $.get({
+      async: false,
+      crossDomain: false,
+      url: `./${book}/${volume}/${spineHref}`
+    }).done(function (data) {
+      if ((`${book}_${volume}` === 'tenseislime_20' && i === 4) || (`${book}_${volume}` === 'chua-te-bong-toi_06' && i === 7) || (`${book}_${volume}` === 'tenseislime_21' && i === 5)) {
+        $(document.documentElement).addClass('hltr');
+        $(document.documentElement).attr('lang', $(data).find('html').attr('xml:lang'));
+        $(document.head).html($(data).find('head').html());
+        $('meta[content="text/html; charset=UTF-8"]').replaceWith(`<meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="initial-scale=1, user-scalable=0, maximum-scale=1">`);
-            const stylesheet = $('link[rel="stylesheet"]').prop('outerHTML').replace('..', `./${book}/${volume}`);
-            $('link[rel="stylesheet"]').remove();
-            $(document.head).append('<link rel="stylesheet" href="/static/css/styles/trinh-xem-before.css">');
-            $(document.head).append(stylesheet);
-            $(document.head).append('<link rel="stylesheet" href="/static/css/styles/trinh-xem-after.css">');
+        const stylesheet = $('link[rel="stylesheet"]').prop('outerHTML').replace('..', `./${book}/${volume}`);
+        $('link[rel="stylesheet"]').remove();
+        $(document.head).append('<link rel="stylesheet" href="/static/css/styles/cjk-horizontal/ReadiumCSS-before.css">');
+        $(document.head).append(stylesheet);
+        $(document.head).append('<link rel="stylesheet" href="/static/css/styles/ReadiumCSS-ebpaj_fonts_patch.css">');
+        $(document.head).append('<link rel="stylesheet" href="/static/css/styles/cjk-horizontal/ReadiumCSS-after.css">');
 
-            $('#view-select').val(localStorage.getItem('view') ?? 'vertical').change()
-            $LAB.setOptions({AlwaysPreserveOrder: true})
-            .script('/static/lib/jquery-3.7.1.min.js')
-            .script('/static/js/nen.js').wait(() => $('#background-select').val(localStorage.getItem('background') || Colors.SEPIA).change());
-          }
-
-          const copyButton = document.createElement('button');
-          copyButton.className = 'copy-button';
-          copyButton.innerText = 'Sao chép';
-          copyButton.onclick = function () {
-            navigator.clipboard.writeText(this.nextSibling.innerText);
-          };
-
-          $(document.body).append('\n', copyButton, `<div class="body"${!data.toString().includes('id="' + spineId + '"') ? ` id="${spineId}"` : ''}>${$(data).find('body').html().replace(/<rt>\p{scx=Hira}+<\/rt>/gu, '').replace(/<rt>(\p{scx=Kana}+)<\/rt>/gu, '（$1）')}</div>\n\n`);
-          $('div.body').last().addClass($(data).find('body').attr('class'));
-        });
+        $LAB.setOptions({AlwaysPreserveOrder: true})
+        .script('/static/lib/jquery-3.7.1.min.js')
+        .script('/static/js/nen.js');
       }
 
-      $('image').each(function () {
-        $(this).attr('xlink:href', $(this).attr('xlink:href').replace('..', `https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/light-novel/${book}/${volume}/item`));
-      });
+      const copyButton = document.createElement('button');
+      copyButton.className = 'copy-button';
+      copyButton.innerText = 'Sao chép';
+      copyButton.onclick = function () {
+        navigator.clipboard.writeText(this.nextSibling.innerText);
+      };
 
-      $('img').each(function () {
-        $(this).attr('src', $(this).attr('src').replace('..', `https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/light-novel/${book}/${volume}/item`));
-      });
-      break;
+      $(document.body).append('\n', copyButton, `<div class="body"${!data.toString().includes('id="' + spineId + '"') ? ` id="${spineId}"` : ''}>${$(data).find('body').html().replace(/<rt>\p{scx=Hira}+<\/rt>/gu, '').replace(/<rt>(\p{scx=Kana}+)<\/rt>/gu, '（$1）')}</div>\n\n`);
+      $('div.body').last().addClass($(data).find('body').attr('class'));
+    });
   }
+
+  $('image').each(function () {
+    $(this).attr('xlink:href', $(this).attr('xlink:href').replace('..', `https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/light-novel/${book}/${volume}/item`));
+  });
+
+  $('img').each(function () {
+    $(this).attr('src', $(this).attr('src').replace('..', `https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/light-novel/${book}/${volume}/item`));
+  });
 
   if (performance.navigation.type === performance.navigation.TYPE_RELOAD && window.location.hash != undefined) {
     window.location.hash = '';
