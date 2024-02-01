@@ -6,6 +6,7 @@ const specialSinovietnameseMap = [
   ['骑士长', 'kỵ sĩ trưởng'],
   ['联合国', 'liên hiệp quốc'],
   ['魔法使', 'ma pháp sứ'],
+  ['审判长', 'thẩm phán trưởng'],
   ['少家主', 'thiếu gia chủ'],
   ['小姐姐', 'tiểu tỷ tỷ'],
   ['长公主', 'trưởng công chủ'],
