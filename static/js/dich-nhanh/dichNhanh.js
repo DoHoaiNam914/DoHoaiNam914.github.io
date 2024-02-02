@@ -483,28 +483,23 @@ function buildResult(inputText, result) {
             lostLineFixedNumber -= 1;
           } else {
             const paragraph = document.createElement('p');
-            let textNode = document.createTextNode(resultLines[i]);
 
-            if (resultLines[i].trim() !== inputLines[i + lostLineFixedNumber].trim()) {
-              if ($formatSettingsSwitch.prop('checked')) {
-                const idiomaticText = document.createElement('i');
-                idiomaticText.innerText = inputLines[i + lostLineFixedNumber];
-                paragraph.appendChild(idiomaticText);
-
-                if (resultLines[i].trim().length > 0) {
-                  paragraph.appendChild(document.createElement('br'));
-                }
-              } else {
-                const idiomaticText = document.createElement('i');
-                idiomaticText.innerText = inputLines[i + lostLineFixedNumber];
-                paragraph.appendChild(idiomaticText);
-                textNode = document.createElement('b');
-                textNode.innerText = resultLines[i];
-                paragraph.innerHTML += resultLines[i].trim().length > 0 ? ' ' : '';
-              }
+            if ($formatSettingsSwitch.prop('checked')) {
+              const idiomaticText = document.createElement('i');
+              idiomaticText.innerText = inputLines[i + lostLineFixedNumber];
+              paragraph.appendChild(idiomaticText);
+              resultDiv.appendChild(paragraph.cloneNode(true));
+            } else {
+              const idiomaticText = document.createElement('i');
+              idiomaticText.innerText = inputLines[i + lostLineFixedNumber];
+              paragraph.appendChild(idiomaticText);
+              paragraph.innerHTML += resultLines[i].trim().length > 0 ? ' ' : '';
+              const attentionText = document.createElement('b');
+              attentionText.innerText = resultLines[i];
+              paragraph.appendChild(attentionText);
             }
 
-            paragraph.appendChild(textNode);
+            paragraph.innerText = resultLines[i];
             resultDiv.appendChild(paragraph);
           }
         } else if (i + lostLineFixedNumber < inputLines.length) {
