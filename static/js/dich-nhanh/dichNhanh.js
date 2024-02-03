@@ -476,10 +476,10 @@ function buildResult(inputText, result) {
 
       for (let i = 0; i < inputLines.length; i += 1) {
         if (i + lostLineFixedNumber < resultLines.length) {
-          if (inputLines[i + lostLineFixedNumber].trim().length === 0 && resultLines[i].trim().length > 0) {
+          if (inputLines[i + lostLineFixedNumber].trim().replace(/^\s+$/, '').length === 0 && resultLines[i].trim().replace(/^\s+$/, '').length > 0) {
             lostLineFixedNumber += 1;
             i -= 1;
-          } else if ([Translators.BAIDU_FANYI, Translators.PAPAGO].some((element) => $translatorOptions.filter($('.active')).data('id') === element) && resultLines[i].trim().length === 0 && inputLines[i + lostLineFixedNumber].trim().length > 0) {
+          } else if ($translatorOptions.filter($('.active')).data('id') === Translators.PAPAGO && resultLines[i].trim().replace(/^\s+$/, '').length === 0 && inputLines[i + lostLineFixedNumber].trim().replace(/^\s+$/, '').length > 0) {
             lostLineFixedNumber -= 1;
           } else {
             const paragraph = document.createElement('p');
@@ -493,7 +493,7 @@ function buildResult(inputText, result) {
               const idiomaticText = document.createElement('i');
               idiomaticText.innerText = inputLines[i + lostLineFixedNumber];
               paragraph.appendChild(idiomaticText);
-              paragraph.innerText += resultLines[i].trim().length > 0 ? ' ' : '';
+              paragraph.innerText += resultLines[i].trim().replace(/^\s+$/, '').length > 0 ? ' ' : '';
               const attentionText = document.createElement('b');
               attentionText.innerText = resultLines[i];
               paragraph.appendChild(attentionText);
