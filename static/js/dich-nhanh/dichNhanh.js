@@ -479,7 +479,7 @@ function buildResult(inputText, result) {
           if (inputLines[i + lostLineFixedNumber].trim().length === 0 && resultLines[i].trim().length > 0) {
             lostLineFixedNumber += 1;
             i -= 1;
-          } else if ($translatorOptions.filter($('.active')).data('id') === Translators.PAPAGO && resultLines[i].trim().length === 0 && inputLines[i + lostLineFixedNumber].trim().length > 0) {
+          } else if ([Translators.BAIDU_FANYI, Translators.PAPAGO].some((element) => $translatorOptions.filter($('.active')).data('id') === element) && resultLines[i].trim().length === 0 && inputLines[i + lostLineFixedNumber].trim().length > 0) {
             lostLineFixedNumber -= 1;
           } else {
             const paragraph = document.createElement('p');
@@ -493,7 +493,7 @@ function buildResult(inputText, result) {
               const idiomaticText = document.createElement('i');
               idiomaticText.innerText = inputLines[i + lostLineFixedNumber];
               paragraph.appendChild(idiomaticText);
-              paragraph.innerHTML += resultLines[i].trim().length > 0 ? ' ' : '';
+              paragraph.innerText += resultLines[i].trim().length > 0 ? ' ' : '';
               const attentionText = document.createElement('b');
               attentionText.innerText = resultLines[i];
               paragraph.appendChild(attentionText);
@@ -514,7 +514,7 @@ function buildResult(inputText, result) {
       resultDiv.innerHTML = `<p>${resultLines.map(Utils.convertTextToHtml).join('</p><p>')}</p>`;
     }
 
-    return resultDiv.innerHTML.replace(/<p><\/p>/g, '<br>');
+    return resultDiv.innerHTML.replace(/(<p>)(<\/p>)/g, '$1<br>$2');
   } catch (error) {
     console.error('Lỗi hiển thị bản dịch:', error);
     throw error.toString();
