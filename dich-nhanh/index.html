@@ -800,16 +800,15 @@
                 <hr class="dropdown-divider">
               </li>
               <li>
-                <button type="button" class="dropdown-item define-button" data-href="https://www.google.com.vn/search?q={0}">Google</button>
-              </li>
-              <li>
-                <button type="button" class="dropdown-item define-button" data-href="https://vi.wikipedia.org/w/?search={0}&ns0=1">Wikipedia</button>
-              </li>
-              <li>
-                <button type="button" class="dropdown-item define-button" data-href="https://www.google.com/search?q=define:{0}">Google Dictionary</button>
-              </li>
-              <li>
-                <button type="button" class="dropdown-item define-button" data-href="https://hanlp.hankcs.com/en/demos/?text={0}">HanLP</button>
+                <button type="button" class="dropdown-item" data-bs-toggle="collapse" data-bs-target="#general-define-collapse">Tra cứu chung</button>
+                <div class="collapse" id="general-define-collapse">
+                  <button type="button" class="dropdown-item collapse-item define-button" data-href="https://coccoc.com/search?query=define:{0}">Cốc Cốc Học tập - Từ điển</button>
+                  <button type="button" class="dropdown-item define-button" data-href="https://www.google.com/search?q=define:{0}">Google Dictionary</button>
+                  <button type="button" class="dropdown-item collapse-item define-button" data-href="https://coccoc.com/search?query={0}">Cốc Cốc</button>
+                  <button type="button" class="dropdown-item collapse-item define-button" data-href="https://www.google.com.vn/search?q={0}">Google</button>
+                  <button type="button" class="dropdown-item collapse-item define-button" data-href="https://vi.wikipedia.org/w/?search={0}&ns0=1">Wikipedia</button>
+                  <button type="button" class="dropdown-item collapse-item define-button" data-href="https://hanlp.hankcs.com/en/demos/?text={0}">HanLP</button>
+                </div>
               </li>
               <li>
                 <button type="button" class="dropdown-item" data-bs-toggle="collapse" data-bs-target="#chinese-define-collapse">Tra cứu tiếng Trung Quốc</button>
