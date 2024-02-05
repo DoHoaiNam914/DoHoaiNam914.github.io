@@ -33,6 +33,7 @@ const specialSinovietnameseMap = [
   ['道长', 'đạo trưởng'],
   ['斗者', 'đấu giả'],
   ['斗气', 'đấu khí'],
+  ['斗破', 'đấu phá'],
   ['斗士', 'đấu sĩ'],
   ['团长', 'đoàn trưởng'],
   ['队长', 'đội trưởng'],
