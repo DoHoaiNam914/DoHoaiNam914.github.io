@@ -958,11 +958,11 @@ class Vietphrase {
 
   constructor(data, translationAlgorithm, multiplicationAlgorithm, useGlossary = false, glossary = [], prioritizeNameOverVietPhraseCheck = false, addDeLeZhao = false, autocapitalize = false) {
     this.data = data;
-    this.data.vietPhrase = { ...this.data.vietPhrase, ...Object.fromEntries(glossary.filter(([__, ____, element]) => ['N', 'NU', 'NUX', 'NUM', 'NUMX', 'DET', 'V', 'AUX', 'ADJ', 'PRO', 'ADV', 'PRE', 'PRE', 'CC', 'SC', 'PRT', 'I', 'D', 'Z', 'b', 'PUNCT', 'SYM'].indexOf(element) >= 0).map(([first, second]) => [first, second])) };
+    this.data.vietPhrase = { ...this.data.vietPhrase, ...Object.fromEntries(glossary.filter(([__, ___, element]) => ['N', 'NU', 'NUX', 'NUM', 'NUMX', 'DET', 'V', 'AUX', 'ADJ', 'PRO', 'ADV', 'PRE', 'PRE', 'CC', 'SC', 'PRT', 'I', 'D', 'Z', 'b', 'PUNCT', 'SYM'].indexOf(element) >= 0).map(([first, second]) => [first, second])) };
     this.translationAlgorithm = translationAlgorithm;
     this.multiplicationAlgorithm = multiplicationAlgorithm;
     this.useGlossary = useGlossary;
-    this.glossary = glossary.filter(([__, ____, element]) => ['NNP', 'NC', 'MWE', 'X', 'y', 'FW'].indexOf(element) >= 0).map(([first, second]) => [first, second]);
+    this.glossary = glossary.filter(([__, ___, element]) => ['NNP', 'NC', 'MWE', 'X', 'y', 'FW'].indexOf(element) >= 0).map(([first, second]) => [first, second]);
     this.glossaryObject = Object.fromEntries(this.glossary);
     this.prioritizeNameOverVietPhrase = prioritizeNameOverVietPhraseCheck;
     this.addDeLeZhao = addDeLeZhao;
