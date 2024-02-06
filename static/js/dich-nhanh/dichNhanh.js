@@ -91,7 +91,7 @@ const OptionTypes = {
 const GlossaryType = {
   TSV: 'text/tab-separated-values',
   CSV: 'text/csv',
-  NAMES: 'text/plain',
+  VIETPHRASE: 'text/plain',
 };
 
 const Tagset = {
@@ -265,7 +265,7 @@ function getIgnoreTranslationMarkup(text, translation, translator) {
 }
 
 function applyGlossaryToText(text, translator = Translators.VIETPHRASE) {
-  const glossaryEntries = glossary.filter(([__, __, element]) => translator !== Translators.VIETPHRASE || ['NNP', 'NC', 'MWE', 'X', 'y', 'FW'].indexOf(element) >= 0).filter(([first]) => text.includes(first));
+  const glossaryEntries = glossary.filter(([__, ____, element]) => translator !== Translators.VIETPHRASE || ['NNP', 'NC', 'MWE', 'X', 'y', 'FW'].indexOf(element) >= 0).filter(([first]) => text.includes(first));
   let newText = text;
 
   if (glossaryEntries.length > 0) {
@@ -407,8 +407,23 @@ function reloadGlossaryEntries() {
         glossaryExtension.text('csv');
         break;
       }
-      case GlossaryType.NAMES: {
+      case GlossaryType.VIETPHRASE: {
         glossaryData = glossary.toSorted((a, b) => b[0].length - a[0].length || b[1].length - a[1].length || a[1].localeCompare(b[1], 'vi', { ignorePunctuation: true }) || a[0].localeCompare(b[0], 'vi', { ignorePunctuation: true })).map(([first, second]) => [first, second].join('=')).join('\n');
+        glossaryExtension.text('txt');
+        break;
+      }
+      case 'VietPhrase': {
+        glossaryData = [...Object.entries(vietPhraseData.vietPhrase), ...glossary.filter(([__, ____, element]) => isDynamicWordOrPhrase(element)).toSorted((a, b) => b[0].length - a[0].length || b[1].length - a[1].length || a[1].localeCompare(b[1], 'vi', { ignorePunctuation: true }) || a[0].localeCompare(b[0], 'vi', { ignorePunctuation: true }))].map(([first, second]) => [first, second].join('=')).join('\n');
+        glossaryExtension.text('txt');
+        break;
+      }
+      case 'Names': {
+        glossaryData = glossary.filter(([__, ____, element]) => isStaticWordOrPhrase(element)).toSorted((a, b) => b[0].length - a[0].length || b[1].length - a[1].length || a[1].localeCompare(b[1], 'vi', { ignorePunctuation: true }) || a[0].localeCompare(b[0], 'vi', { ignorePunctuation: true })).map(([first, second]) => [first, second].join('=')).join('\n');
+        glossaryExtension.text('txt');
+        break;
+      }
+      case 'STV': {
+        glossaryData = glossary.filter(([__, ____, element]) => isStaticWordOrPhrase(element)).toSorted((a, b) => a[0].length - b[0].length || a[1].length - b[1].length || a[1].localeCompare(b[1], 'vi', { ignorePunctuation: true }) || a[0].localeCompare(b[0], 'vi', { ignorePunctuation: true })).map(([first, second]) => [first, second].join('=')).join('\n');
         glossaryExtension.text('txt');
         break;
       }
@@ -419,7 +434,7 @@ function reloadGlossaryEntries() {
       }
     }
 
-    downloadButton.attr('href', URL.createObjectURL(new Blob([glossaryData], { type: `${$glossaryType};charset=UTF-8` })));
+    downloadButton.attr('href', URL.createObjectURL(new Blob([glossaryData.split(/\n/).map((element) => ($glossaryType.val() === 'STV' ? element.replace(/^\$/g, '') : element)).join('\n')], { type: `${['VietPhrase', 'Names', 'STV'].indexOf($glossaryType.val()) >= 0 ? GlossaryType.VIETPHRASE : $glossaryType.val()};charset=UTF-8` })));
     downloadButton.attr('download', `${$glossaryName.val().length > 0 ? $glossaryName.val() : $glossaryName.attr('placeholder')}.${glossaryExtension.text()}`);
     downloadButton.removeClass('disabled');
   } else {
@@ -1370,9 +1385,9 @@ $glossaryInput.on('change', function onChange() {
         $glossaryType.val(GlossaryType.CSV);
         break;
       }
-      case GlossaryType.NAMES: {
+      case GlossaryType.VIETPHRASE: {
         glossary = this.result.split(/\r?\n/).map((element) => element.split('=')).filter((element) => element.length === 2);
-        $glossaryType.val(GlossaryType.NAMES);
+        $glossaryType.val(GlossaryType.TSV);
         break;
       }
       default: {
