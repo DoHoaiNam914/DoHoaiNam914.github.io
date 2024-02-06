@@ -958,11 +958,12 @@ class Vietphrase {
 
   constructor(data, translationAlgorithm, multiplicationAlgorithm, useGlossary = false, glossary = [], prioritizeNameOverVietPhraseCheck = false, addDeLeZhao = false, autocapitalize = false) {
     this.data = data;
+    this.data.vietPhrase = { ...this.data.vietPhrase, ...Object.fromEntries(glossary.filter(([__, ___, element]) => ['N', 'NU', 'NUX', 'NUM', 'NUMX', 'DET', 'V', 'AUX', 'ADJ', 'PRO', 'ADV', 'PRE', 'PRE', 'CC', 'SC', 'PRT', 'I', 'D', 'Z', 'b', 'PUNCT', 'SYM'].indexOf(element) >= 0).map(([first, second]) => [first, second])) };
     this.translationAlgorithm = translationAlgorithm;
     this.multiplicationAlgorithm = multiplicationAlgorithm;
     this.useGlossary = useGlossary;
-    this.glossary = glossary;
-    this.glossaryObject = Object.fromEntries(this.glossary.map(([first, second]) => [first, second]));
+    this.glossary = glossary.filter(([__, ___, element]) => ['NNP', 'NC', 'MWE', 'X', 'y', 'FW'].indexOf(element) >= 0).map(([first, second]) => [first, second]);
+    this.glossaryObject = Object.fromEntries(this.glossary);
     this.prioritizeNameOverVietPhrase = prioritizeNameOverVietPhraseCheck;
     this.addDeLeZhao = addDeLeZhao;
     this.autocapitalize = autocapitalize;
@@ -1012,12 +1013,11 @@ class Vietphrase {
   }
 
   loadLuatNhanData(targetLanguage, glossaryEntries, inputText) {
-    let nhanByGlossary = glossaryEntries.filter(([a]) => glossary.some(([b, __, c]) => a === b && c === 'NNP'));
+    let nhanByGlossary = glossaryEntries;
     let nhanByPronoun = Object.entries(this.data.pronoun).filter(([key]) => inputText.includes(key));
-    const luatNhanEntries = Object.entries(this.data.luatNhan).filter(([key]) => key.split('{0}').every((element) => inputText.includes(element)));
 
     if (this.multiplicationAlgorithm > this.MultiplicationAlgorithm.NOT_APPLICABLE && targetLanguage === 'vi') {
-      luatNhanEntries.filter(([a]) => (this.useGlossary && this.multiplicationAlgorithm === this.MultiplicationAlgorithm.MULTIPLICATION_BY_PRONOUNS_AND_NAMES && glossaryEntries.length > 0 && nhanByGlossary.filter(([c, d]) => inputText.includes(a.replace(/\{0}/g, Utils.escapeRegExpReplacement(this.prioritizeNameOverVietPhrase ? d : c)))).length > 0) || nhanByPronoun.filter(([c]) => inputText.includes(a.replace(/\{0}/g, Utils.escapeRegExpReplacement(c))))).forEach(([a, b]) => {
+      Object.entries(this.data.luatNhan).filter(([key]) => key.split('{0}').every((element) => inputText.includes(element))).filter(([a]) => (this.useGlossary && this.multiplicationAlgorithm === this.MultiplicationAlgorithm.MULTIPLICATION_BY_PRONOUNS_AND_NAMES && glossaryEntries.length > 0 && nhanByGlossary.filter(([c, d]) => inputText.includes(a.replace(/\{0}/g, Utils.escapeRegExpReplacement(this.prioritizeNameOverVietPhrase ? d : c)))).length > 0) || nhanByPronoun.filter(([c]) => inputText.includes(a.replace(/\{0}/g, Utils.escapeRegExpReplacement(c))))).forEach(([a, b]) => {
         if (this.useGlossary && this.multiplicationAlgorithm === this.MultiplicationAlgorithm.MULTIPLICATION_BY_PRONOUNS_AND_NAMES && glossaryEntries.length > 0) {
           nhanByGlossary = [...nhanByGlossary, ...nhanByGlossary.filter(([c, d]) => inputText.includes(a.replace(/\{0}/g, Utils.escapeRegExpReplacement(this.prioritizeNameOverVietPhrase ? d : c)))).map(([c, d]) => [a.replace(/\{0}/g, Utils.escapeRegExpReplacement(this.prioritizeNameOverVietPhrase ? d : c)), b.replace(/\{0}/g, Utils.escapeRegExpReplacement(d))])];
         }
@@ -1060,7 +1060,7 @@ class Vietphrase {
     const text = inputText.split(/\r?\n/).map((element) => element.trim()).join('\n');
 
     let dataEntries = Object.entries(data).filter(([key]) => text.includes(key));
-    const glossaryEntries = this.glossary.map(([first, second]) => [first, second]);
+    const glossaryEntries = this.glossary;
 
     let result = text;
 
@@ -1114,7 +1114,7 @@ class Vietphrase {
     const text = inputText.split(/\r?\n/).map((element) => element.trim()).join('\n');
 
     let dataEntries = Object.entries(data).filter(([key]) => text.includes(key));
-    const glossaryEntries = this.glossary.map(([first, second]) => [first, second]);
+    const glossaryEntries = this.glossary;
 
     const lines = text.split(/\n/);
     const results = [];

@@ -241,12 +241,12 @@ function loadAllQuickTranslatorOptions() {
 
 function isStaticWordOrPhrase(tag) {
   const tagset = ['NNP', 'NC', 'MWE', 'X', 'y', 'FW'];
-  return tagset.some((element) => tag === element);
+  return tagset.indexOf(tag) >= 0;
 }
 
 function isDynamicWordOrPhrase(tag) {
   const tagset = ['N', 'NU', 'NUX', 'NUM', 'NUMX', 'DET', 'V', 'AUX', 'ADJ', 'PRO', 'ADV', 'PRE', 'PRE', 'CC', 'SC', 'PRT', 'I', 'D', 'Z', 'b', 'PUNCT', 'SYM'];
-  return tagset.some((element) => tag === element);
+  return tagset.indexOf(tag) >= 0;
 }
 
 function getIgnoreTranslationMarkup(text, translation, translator) {
@@ -265,7 +265,7 @@ function getIgnoreTranslationMarkup(text, translation, translator) {
 }
 
 function applyGlossaryToText(text, translator = Translators.VIETPHRASE) {
-  const glossaryEntries = glossary.filter(([first]) => text.includes(first));
+  const glossaryEntries = glossary.filter(([__, ___, element]) => translator !== Translators.VIETPHRASE || ['NNP', 'NC', 'MWE', 'X', 'y', 'FW'].indexOf(element) >= 0).filter(([first]) => text.includes(first));
   let newText = text;
 
   if (glossaryEntries.length > 0) {
