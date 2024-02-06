@@ -264,8 +264,8 @@ function getIgnoreTranslationMarkup(text, translation, translator) {
   }
 }
 
-function applyGlossaryToText(text, translator = Translators.VIETPHRASE) {
-  const glossaryEntries = glossary.filter(([__, ___, element]) => translator !== Translators.VIETPHRASE || ['NNP', 'NC', 'MWE', 'X', 'y', 'FW'].indexOf(element) >= 0).filter(([first]) => text.includes(first));
+function applyGlossaryToText(text, translator = Translators.VIETPHRASE, isProperOnly = true) {
+  const glossaryEntries = glossary.filter(([__, ___, element]) => !isProperOnly || translator !== Translators.VIETPHRASE || ['NNP', 'NC', 'MWE', 'X', 'y', 'FW'].indexOf(element) >= 0).filter(([first]) => text.includes(first));
   let newText = text;
 
   if (glossaryEntries.length > 0) {
@@ -1426,7 +1426,7 @@ $sourceEntryInput.on('input', async function onInput() {
     }
 
     if (Object.prototype.hasOwnProperty.call(glossaryObject, inputText)) {
-      $targetEntryInput.val(applyGlossaryToText(inputText.trim())).trigger('input');
+      $targetEntryInput.val(applyGlossaryToText(inputText.trim(), Translators.VIETPHRASE, false)).trigger('input');
       $glossaryEntrySelect.val(inputText.trim());
       if (!Utils.isOnMobile()) $glossaryEntrySelect.find(`option[value="${inputText.trim()}"]`)[0].scrollIntoView(true);
       $tagsetSelect.val(glossary.filter(([first]) => first === inputText)[0][2] ?? 'X');

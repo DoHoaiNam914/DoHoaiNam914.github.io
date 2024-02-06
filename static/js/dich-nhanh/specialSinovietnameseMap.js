@@ -231,6 +231,7 @@ const specialSinovietnameseMap = [
   ['沈', 'THẨM' /* Họ */],
   ['单', 'THIỀN, ĐƠN', 'ĐƠN'],
   ['兔', 'THỐ'],
+  ['驯', 'THUẦN'],
   ['属', 'THUỘC'],
   ['姐', 'THƯ'],
   ['舒', 'THƯ' /* Họ */],
@@ -251,6 +252,7 @@ const specialSinovietnameseMap = [
   ['蔷', 'TƯỜNG'],
   ['碗', 'UYỂN'],
   ['哟', 'ƯỚC'],
+  ['掣', 'XIẾT'],
   ['援', 'VIỆN'],
   ['夭', 'YỂU'],
 ];
