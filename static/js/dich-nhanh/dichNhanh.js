@@ -265,7 +265,8 @@ function getIgnoreTranslationMarkup(text, translation, translator) {
 }
 
 function applyGlossaryToText(text, translator = Translators.VIETPHRASE, isProperOnly = true) {
-  const glossaryEntries = glossary.filter(([__, ___, element]) => !isProperOnly || translator !== Translators.VIETPHRASE || ['NNP', 'NC', 'MWE', 'X', 'y', 'FW'].indexOf(element) >= 0).filter(([first]) => text.includes(first));
+  const glossaryEntries = glossary.filter(([__, ___, third]) => !isProperOnly || translator !== Translators.VIETPHRASE || ['NNP', 'NC', 'MWE', 'X', 'y', 'FW'].indexOf(third) >= 0).filter(([first]) => text.includes(first)).map(([first, second, third]) => [first.toLowerCase(), second, third]);
+  const glossaryObj = Object.fromEntries(glossaryEntries.map(([first, second]) => [first.toLowerCase(), second]));
   let newText = text;
 
   if (glossaryEntries.length > 0) {
@@ -285,13 +286,15 @@ function applyGlossaryToText(text, translator = Translators.VIETPHRASE, isProper
         a.split('').forEach((b, c) => {
           if (c === i) {
             glossaryLengths.some((d) => {
-              const phrase = translator === Translators.DEEPL_TRANSLATE || translator === Translators.GOOGLE_TRANSLATE ? Utils.convertHtmlToText(a.substring(i, i + d)) : a.substring(i, i + d);
+              let phrase = translator === Translators.DEEPL_TRANSLATE || translator === Translators.GOOGLE_TRANSLATE ? Utils.convertHtmlToText(a.substring(i, i + d)) : a.substring(i, i + d);
 
-              if (Object.prototype.hasOwnProperty.call(glossaryObject, phrase)) {
-                if (glossaryObject[phrase].length > 0) {
-                  const maybeNotStaticPos = glossary.filter(([first, __, third]) => first === phrase && isDynamicWordOrPhrase(third)).length > 0 ? glossaryObject[phrase].replace(/ /g, '_') : glossaryObject[phrase];
-                  tempLine += (i > 0 && /[\p{Lu}\p{Ll}\p{Nd})\]}’”]/u.test(prevPhrase || tempLine[tempLine.length - 1] || '') ? ' ' : '') + ([Translators.MICROSOFT_TRANSLATOR, Translators.VIETPHRASE].some((element) => translator === element) || glossary.filter(([first, __, third]) => first === phrase && (isStaticWordOrPhrase(third))).length > 0 ? getIgnoreTranslationMarkup(phrase, glossaryObject[phrase], translator) : maybeNotStaticPos);
-                  prevPhrase = glossaryObject[phrase];
+              if (Object.prototype.hasOwnProperty.call(glossaryObj, phrase.toLowerCase())) {
+                phrase = phrase.toLowerCase();
+
+                if (glossaryObj[phrase].length > 0) {
+                  const maybeNotStaticPos = glossary.filter(([first, __, third]) => first === phrase && isDynamicWordOrPhrase(third)).length > 0 ? glossaryObj[phrase].replace(/ /g, '_') : glossaryObj[phrase];
+                  tempLine += (i > 0 && /[\p{Lu}\p{Ll}\p{Nd})\]}’”]/u.test(prevPhrase || tempLine[tempLine.length - 1] || '') ? ' ' : '') + ([Translators.MICROSOFT_TRANSLATOR, Translators.VIETPHRASE].some((element) => translator === element) || glossary.filter(([first, __, third]) => first === phrase && (isStaticWordOrPhrase(third))).length > 0 ? getIgnoreTranslationMarkup(phrase, glossaryObj[phrase], translator) : maybeNotStaticPos);
+                  prevPhrase = glossaryObj[phrase];
                 }
 
                 i += d - 1;
@@ -381,7 +384,7 @@ function reloadGlossaryEntries() {
   const glossaryExtension = $('#glossary-extension');
 
   if (glossary.length > 0) {
-    glossary = glossary.filter(([first, second], index, array) => !array[first] && (array[first] = 1), {}).toSorted((a, b) => Tagset[a[2]] - Tagset[b[2]] || a[1].localeCompare(b[1], 'vi', { ignorePunctuation: true }) || a[0].localeCompare(b[0], 'vi', { ignorePunctuation: true }) || b[0].concat(`\t${b[1]}`).length - a[0].concat(`\t${a[1]}`).length).map(([first, second, third]) => [first, second, third ?? 'X']);
+    glossary = glossary.filter(([first], __, array) => !array[first] && (array[first] = 1), {}).toSorted((a, b) => Tagset[a[2]] - Tagset[b[2]] || a[1].localeCompare(b[1], 'vi', { ignorePunctuation: true }) || a[0].localeCompare(b[0], 'vi', { ignorePunctuation: true }) || b[0].concat(`\t${b[1]}`).length - a[0].concat(`\t${a[1]}`).length).map(([first, second, third]) => [first, second, third ?? 'X']);
     glossaryObject = Object.fromEntries(glossary.map(([first, second]) => [first, second]));
 
     glossary.forEach(([first, second, third]) => {
@@ -413,17 +416,17 @@ function reloadGlossaryEntries() {
         break;
       }
       case 'VietPhrase': {
-        glossaryData = [...Object.entries(vietPhraseData.vietPhrase), ...glossary.filter(([__, ___, element]) => isDynamicWordOrPhrase(element)).toSorted((a, b) => b[0].length - a[0].length || b[1].length - a[1].length || a[1].localeCompare(b[1], 'vi', { ignorePunctuation: true }) || a[0].localeCompare(b[0], 'vi', { ignorePunctuation: true }))].map(([first, second]) => [first, second].join('=')).join('\n');
+        glossaryData = [...Object.entries(vietPhraseData.vietPhrase), ...glossary.filter(([__, ___, third]) => isDynamicWordOrPhrase(third)).toSorted((a, b) => b[0].length - a[0].length || b[1].length - a[1].length || a[1].localeCompare(b[1], 'vi', { ignorePunctuation: true }) || a[0].localeCompare(b[0], 'vi', { ignorePunctuation: true }))].map(([first, second]) => [first, second].join('=')).join('\n');
         glossaryExtension.text('txt');
         break;
       }
       case 'Names': {
-        glossaryData = glossary.filter(([__, ___, element]) => isStaticWordOrPhrase(element)).toSorted((a, b) => b[0].length - a[0].length || b[1].length - a[1].length || a[1].localeCompare(b[1], 'vi', { ignorePunctuation: true }) || a[0].localeCompare(b[0], 'vi', { ignorePunctuation: true })).map(([first, second]) => [first, second].join('=')).join('\n');
+        glossaryData = glossary.filter(([__, ___, third]) => isStaticWordOrPhrase(third)).toSorted((a, b) => b[0].length - a[0].length || b[1].length - a[1].length || a[1].localeCompare(b[1], 'vi', { ignorePunctuation: true }) || a[0].localeCompare(b[0], 'vi', { ignorePunctuation: true })).map(([first, second]) => [first, second].join('=')).join('\n');
         glossaryExtension.text('txt');
         break;
       }
       case 'STV': {
-        glossaryData = glossary.filter(([__, ___, element]) => isStaticWordOrPhrase(element)).toSorted((a, b) => a[0].length - b[0].length || a[1].length - b[1].length || a[1].localeCompare(b[1], 'vi', { ignorePunctuation: true }) || a[0].localeCompare(b[0], 'vi', { ignorePunctuation: true })).map(([first, second]) => [first, second].join('=')).join('\n');
+        glossaryData = glossary.filter(([__, ___, third]) => isStaticWordOrPhrase(third)).toSorted((a, b) => a[0].length - b[0].length || a[1].length - b[1].length || a[1].localeCompare(b[1], 'vi', { ignorePunctuation: true }) || a[0].localeCompare(b[0], 'vi', { ignorePunctuation: true })).map(([first, second]) => [first, second].join('=')).join('\n');
         glossaryExtension.text('txt');
         break;
       }
