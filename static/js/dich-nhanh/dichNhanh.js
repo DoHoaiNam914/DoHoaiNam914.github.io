@@ -580,7 +580,7 @@ async function translateTextarea() {
 
   const glossaryEnabled = $glossarySwitch.prop('checked');
 
-  const processText = glossaryEnabled && (translatorOption === Translators.VIETPHRASE ? $prioritizeNameOverVietPhraseCheck.prop('checked') && targetLanguage === 'vi' : isPairing) ? applyGlossaryToText(inputText, translatorOption) : inputText;
+  const processText = glossaryEnabled && (translatorOption === Translators.VIETPHRASE ? $prioritizeNameOverVietPhraseCheck.prop('checked') && targetLanguage === 'vi' : isPairing) ? applyGlossaryToText(inputText, translatorOption, false) : inputText;
 
   const [MAX_LENGTH, MAX_LINE] = getMaxQueryLengthAndLine(translatorOption, processText);
 
@@ -591,7 +591,7 @@ async function translateTextarea() {
   try {
     let result = '';
 
-    if (Object.keys(lastSession).length > 0 && lastSession.inputText === applyGlossaryToText(processText, Translators.VIETPHRASE, translatorOption !== Translators.VIETPHRASE) && lastSession.translatorOption === translatorOption && lastSession.sourceLanguage === sourceLanguage && lastSession.targetLanguage === targetLanguage) {
+    if (Object.keys(lastSession).length > 0 && lastSession.inputText === processText && lastSession.translatorOption === translatorOption && lastSession.sourceLanguage === sourceLanguage && lastSession.targetLanguage === targetLanguage) {
       result = lastSession.result;
     } else {
       let translator = null;
@@ -675,7 +675,7 @@ async function translateTextarea() {
 
       if (translateAbortController.signal.aborted) return;
       $('#translate-timer').text(Date.now() - startTime);
-      lastSession.inputText = applyGlossaryToText(processText, Translators.VIETPHRASE, translatorOption !== Translators.VIETPHRASE);
+      lastSession.inputText = processText;
       lastSession.translatorOption = translatorOption;
       lastSession.sourceLanguage = sourceLanguage;
       lastSession.targetLanguage = targetLanguage;
@@ -890,7 +890,7 @@ function updateLanguageSelect(translator, prevTranslator) {
 
 async function translateText(inputText, translatorOption, targetLanguage, glossaryEnabled) {
   try {
-    const text = glossaryEnabled && (translatorOption !== Translators.VIETPHRASE || $prioritizeNameOverVietPhraseCheck.prop('checked')) ? applyGlossaryToText(inputText, translatorOption, translatorOption !== Translators.VIETPHRASE) : inputText;
+    const text = glossaryEnabled && (translatorOption !== Translators.VIETPHRASE || $prioritizeNameOverVietPhraseCheck.prop('checked')) ? applyGlossaryToText(inputText, translatorOption, false) : inputText;
     let translator = null;
     let sourceLanguage = '';
 
