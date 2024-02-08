@@ -1147,7 +1147,7 @@ class Vietphrase {
                 dataLengths.some((d) => {
                   let phrase = a.substring(i, i + d);
 
-                  if (this.useGlossary && this.prioritizeNameOverVietPhrase && glossaryEntries.map(([__, second]) => second).indexOf(phrase) > -1) {
+                  if (this.useGlossary && this.prioritizeNameOverVietPhrase && glossaryEntries.map(([__, second]) => second).indexOf(phrase.toLowerCase()) > -1) {
                     tempLine += (i > 0 && /[\p{Lu}\p{Ll}\p{Nd})\]}’”]/u.test(prevPhrase || tempLine[tempLine.length - 1]) ? ' ' : '') + phrase;
                     prevPhrase = phrase;
                     i += d - 1;
