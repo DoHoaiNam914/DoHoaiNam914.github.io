@@ -1505,7 +1505,8 @@ $dropdownHasCollapse.on('hide.bs.dropdown', function onHideBsDropdown() {
 
 $('.define-button').on('click', function onClick() {
   if ($sourceEntryInput.val().length > 0) {
-    window.open($(this).data('href').replace('{0}', encodeURIComponent(($sourceEntryInput.val().substring($sourceEntryInput.prop('selectionStart'), $sourceEntryInput.prop('selectionEnd')) || $sourceEntryInput.val()).trim() /** .substring(0, 30) */)), '_blank', 'width=1000,height=577');
+    const defineContent = ($sourceEntryInput.val().substring($sourceEntryInput.prop('selectionStart'), $sourceEntryInput.prop('selectionEnd')) || $sourceEntryInput.val()).trim() /** .substring(0, 30) */;
+    window.open($(this).data('href').replace('{0}', $(this).hasClass('define-char-code-button') ? defineContent.codePointAt() : encodeURIComponent(defineContent)), '_blank', 'width=1000,height=577');
   }
 
   if (window.getSelection) {
