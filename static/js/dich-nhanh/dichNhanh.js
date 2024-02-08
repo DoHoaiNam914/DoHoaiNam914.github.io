@@ -265,7 +265,7 @@ function getIgnoreTranslationMarkup(text, translation, translator) {
 }
 
 function applyGlossaryToText(text, translator = Translators.VIETPHRASE, isProperOnly = true) {
-  const glossaryEntries = glossary.filter(([__, ___, element]) => !isProperOnly || translator !== Translators.VIETPHRASE || ['NNP', 'NC', 'MWE', 'X', 'y', 'FW'].indexOf(element) >= 0).filter(([first]) => text.includes(first));
+  const glossaryEntries = glossary.filter(([__, ___, third]) => !isProperOnly || translator !== Translators.VIETPHRASE || ['NNP', 'NC', 'MWE', 'X', 'y', 'FW'].indexOf(third) >= 0).filter(([first]) => text.includes(first));
   let newText = text;
 
   if (glossaryEntries.length > 0) {
@@ -363,7 +363,7 @@ function updateInputTextLength() {
     }
   }
 
-  const gapLength = applyGlossaryToText(inputText, translator).length - inputText.length;
+  const gapLength = applyGlossaryToText(inputText, translator, translator !== Translators.VIETPHRASE).length - inputText.length;
 
   $('#input-textarea-counter').text(`${inputText.length}${inputText.length > 0 && ($glossarySwitch.prop('checked') && (translator === Translators.VIETPHRASE ? $prioritizeNameOverVietPhraseCheck.prop('checked') && targetLanguage === 'vi' : sourceLanguage === languagePairs[0] && targetLanguage === languagePairs[1])) && gapLength > 0 ? ` (+${gapLength})` : ''}`);
 }
@@ -470,7 +470,7 @@ function getMaxQueryLengthAndLine(translator, text) {
       return [50000, 1000];
     }
     default: {
-      return [applyGlossaryToText(text).length, text.split(/\n/).length];
+      return [applyGlossaryToText(text, Translators.VIETPHRASE, false).length, text.split(/\n/).length];
     }
   }
 }
@@ -588,7 +588,7 @@ async function translateTextarea() {
   try {
     let result = '';
 
-    if (Object.keys(lastSession).length > 0 && lastSession.inputText === processText && lastSession.translatorOption === translatorOption && lastSession.sourceLanguage === sourceLanguage && lastSession.targetLanguage === targetLanguage) {
+    if (Object.keys(lastSession).length > 0 && lastSession.inputText === applyGlossaryToText(processText, Translators.VIETPHRASE, translatorOption !== Translators.VIETPHRASE) && lastSession.translatorOption === translatorOption && lastSession.sourceLanguage === sourceLanguage && lastSession.targetLanguage === targetLanguage) {
       result = lastSession.result;
     } else {
       let translator = null;
@@ -672,7 +672,7 @@ async function translateTextarea() {
 
       if (translateAbortController.signal.aborted) return;
       $('#translate-timer').text(Date.now() - startTime);
-      lastSession.inputText = processText;
+      lastSession.inputText = applyGlossaryToText(processText, Translators.VIETPHRASE, translatorOption !== Translators.VIETPHRASE);
       lastSession.translatorOption = translatorOption;
       lastSession.sourceLanguage = sourceLanguage;
       lastSession.targetLanguage = targetLanguage;
@@ -887,7 +887,7 @@ function updateLanguageSelect(translator, prevTranslator) {
 
 async function translateText(inputText, translatorOption, targetLanguage, glossaryEnabled) {
   try {
-    const text = glossaryEnabled && (translatorOption !== Translators.VIETPHRASE || $prioritizeNameOverVietPhraseCheck.prop('checked')) ? applyGlossaryToText(inputText, translatorOption) : inputText;
+    const text = glossaryEnabled && (translatorOption !== Translators.VIETPHRASE || $prioritizeNameOverVietPhraseCheck.prop('checked')) ? applyGlossaryToText(inputText, translatorOption, translatorOption !== Translators.VIETPHRASE) : inputText;
     let translator = null;
     let sourceLanguage = '';
 
