@@ -203,6 +203,7 @@ const specialSinovietnameseMap = [
   ['玫', 'MAI'],
   ['牦', 'MAO'],
   ['闹', 'NÁO'],
+  ['垠', 'NGẦN'],
   ['荛', 'NGHIÊU'],
   ['鼋', 'NGUYÊN'],
   ['琊', 'NHA'],
