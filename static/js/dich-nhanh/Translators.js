@@ -1131,12 +1131,12 @@ class Vietphrase {
         const dataObject = Object.fromEntries(dataEntries);
 
         lines.forEach((a) => {
-          if (a.length === 0) {
+          if (Array.from(a).length === 0) {
             results.push(a);
           } else {
             const glossaryEntriesInLine = glossaryEntries.filter(([__, second]) => a.includes(second));
 
-            const dataLengths = [a.length, ...this.useGlossary && this.prioritizeNameOverVietPhrase ? glossaryEntriesInLine.map(([__, second]) => second.length) : [], ...dataEntries.filter(([key]) => a.includes(key)).map(([key]) => key.length), 1].toSorted((b, c) => c - b).filter((element, index, array) => element > 0 && index === array.indexOf(element));
+            const dataLengths = [Array.from(a).length, ...this.useGlossary && this.prioritizeNameOverVietPhrase ? glossaryEntriesInLine.map(([__, second]) => Array.from(second).length) : [], ...dataEntries.filter(([key]) => a.includes(key)).map(([key]) => Array.from(key).length), 1].toSorted((b, c) => c - b).filter((element, index, array) => element > 0 && index === array.indexOf(element));
 
             let tempLine = '';
             let i = 0;
@@ -1164,7 +1164,7 @@ class Vietphrase {
                   }
 
                   if (d === 1) {
-                    tempLine += (prevPhrase.length > 0 && /[\p{Lu}\p{Ll}\p{Nd}(([{‘“]/u.test(a[i]) && /[\p{Lu}\p{Ll}\p{Nd})\]}’”]/u.test(tempLine[tempLine.length - 1]) ? ' ' : '') + phrase;
+                    tempLine += (Array.from(tempLine).length > 0 && /[\p{Lu}\p{Ll}\p{Nd}(([{‘“]/u.test(a[i]) && /[\p{Lu}\p{Ll}\p{Nd})\]}’”]/u.test(tempLine[tempLine.length - 1]) ? ' ' : '') + phrase;
                     return true;
                   }
 
