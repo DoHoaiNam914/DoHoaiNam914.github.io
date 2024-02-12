@@ -1139,6 +1139,7 @@ class Vietphrase {
             const dataLengths = [Array.from(a).length, ...this.useGlossary && this.prioritizeNameOverVietPhrase ? glossaryEntriesInLine.map(([__, second]) => Array.from(second).length) : [], ...dataEntries.filter(([key]) => a.includes(key)).map(([key]) => Array.from(key).length), 1].toSorted((b, c) => c - b).filter((element, index, array) => element > 0 && index === array.indexOf(element));
 
             let tempLine = '';
+            let prevPhrase = '';
             let i = 0;
 
             Array.from(a).forEach((b, c) => {
@@ -1146,8 +1147,9 @@ class Vietphrase {
                 dataLengths.some((d) => {
                   let phrase = a.substring(i, i + d);
 
-                  if (this.useGlossary && this.prioritizeNameOverVietPhrase && glossaryEntries.map(([__, second]) => second).indexOf(phrase.toLowerCase()) > -1) {
+                  if (this.useGlossary && this.prioritizeNameOverVietPhrase && glossaryEntries.map(([__, second]) => second).indexOf(phrase) >= 0) {
                     tempLine += (i > 0 && /[\p{Lu}\p{Ll}\p{Nd})\]}’”]/u.test(tempLine[tempLine.length - 1]) ? ' ' : '') + phrase;
+                    prevPhrase = phrase;
                     i += d - 1;
                     return true;
                   }
@@ -1159,12 +1161,14 @@ class Vietphrase {
                       tempLine += (i > 0 && /[\p{Lu}\p{Ll}\p{Nd})\]}’”]/u.test(tempLine[tempLine.length - 1]) ? ' ' : '') + dataObject[phrase];
                     }
 
+                    prevPhrase = dataObject[phrase];
                     i += d - 1;
                     return true;
                   }
 
                   if (d === 1) {
-                    tempLine += (Array.from(tempLine).length > 0 && /[\p{Lu}\p{Ll}\p{Nd}(([{‘“]/u.test(a[i]) && /[\p{Lu}\p{Ll}\p{Nd})\]}’”]/u.test(tempLine[tempLine.length - 1]) ? ' ' : '') + phrase;
+                    tempLine += (Array.from(tempLine).length > 0 && /[\p{Lu}\p{Ll}\p{Nd}(([{‘“]/u.test(a[i]) && /[\p{Lu}\p{Ll}\p{Nd})\]}’”]/u.test(prevPhrase) ? ' ' : '') + phrase;
+                    prevPhrase = '';
                     return true;
                   }
 

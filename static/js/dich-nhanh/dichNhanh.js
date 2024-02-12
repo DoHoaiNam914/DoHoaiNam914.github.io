@@ -280,6 +280,7 @@ function applyGlossaryToText(text, translator = Translators.VIETPHRASE, isProper
         results.push(a);
       } else {
         let tempLine = '';
+        let prevPhrase = '';
         let i = 0;
 
         Array.from(a).forEach((b, c) => {
@@ -295,12 +296,14 @@ function applyGlossaryToText(text, translator = Translators.VIETPHRASE, isProper
                   tempLine += (i > 0 && /[\p{Lu}\p{Ll}\p{Nd})\]}’”]/u.test(tempLine[tempLine.length - 1]) ? ' ' : '') + ([Translators.MICROSOFT_TRANSLATOR, Translators.VIETPHRASE].some((element) => translator === element) || glossary.filter(([first, __, third]) => first === phrase && (isStaticWordOrPhrase(third))).length > 0 ? getIgnoreTranslationMarkup(phrase, glossaryObj[phrase], translator) : maybeNotStaticPos);
                 }
 
+                prevPhrase = glossaryObj[phrase];
                 i += d - 1;
                 return true;
               }
 
               if (d === 1) {
-                tempLine += (Array.from(tempLine).length > 0 && /[\p{Lu}\p{Ll}\p{Nd}([{‘“]/u.test(a[i]) && /[\p{Lu}\p{Ll}\p{Nd})\]}’”]/u.test(tempLine[tempLine.length - 1]) ? ' ' : '') + (translator === Translators.DEEPL_TRANSLATE || translator === Translators.GOOGLE_TRANSLATE ? Utils.convertTextToHtml(phrase) : phrase);
+                tempLine += (Array.from(tempLine).length > 0 && /[\p{Lu}\p{Ll}\p{Nd}([{‘“]/u.test(a[i]) && /[\p{Lu}\p{Ll}\p{Nd})\]}’”]/u.test(prevPhrase) ? ' ' : '') + (translator === Translators.DEEPL_TRANSLATE || translator === Translators.GOOGLE_TRANSLATE ? Utils.convertTextToHtml(phrase) : phrase);
+                prevPhrase = '';
                 return true;
               }
 
