@@ -280,7 +280,6 @@ function applyGlossaryToText(text, translator = Translators.VIETPHRASE, isProper
         results.push(a);
       } else {
         let tempLine = '';
-        let prevPhrase = '';
         let i = 0;
 
         a.split('').forEach((b, c) => {
@@ -289,12 +288,11 @@ function applyGlossaryToText(text, translator = Translators.VIETPHRASE, isProper
               let phrase = translator === Translators.DEEPL_TRANSLATE || translator === Translators.GOOGLE_TRANSLATE ? Utils.convertHtmlToText(a.substring(i, i + d)) : a.substring(i, i + d);
 
               if (Object.prototype.hasOwnProperty.call(glossaryObj, phrase.toLowerCase())) {
-                phrase = phrase.toLowerCase();
+                phrase = translator === Translators.DEEPL_TRANSLATE || translator === Translators.GOOGLE_TRANSLATE ? Utils.convertHtmlToText(a.substring(i, i + d).toLowerCase()) : a.substring(i, i + d).toLowerCase();
 
-                if (glossaryObj[phrase].length > 0) {
+                if (Array.from(glossaryObj[phrase]).length > 0) {
                   const maybeNotStaticPos = glossary.filter(([first, __, third]) => first === phrase && isDynamicWordOrPhrase(third)).length > 0 ? glossaryObj[phrase].replace(/ /g, '_') : glossaryObj[phrase];
-                  tempLine += (i > 0 && /[\p{Lu}\p{Ll}\p{Nd})\]}’”]/u.test(prevPhrase || tempLine[tempLine.length - 1] || '') ? ' ' : '') + ([Translators.MICROSOFT_TRANSLATOR, Translators.VIETPHRASE].some((element) => translator === element) || glossary.filter(([first, __, third]) => first === phrase && (isStaticWordOrPhrase(third))).length > 0 ? getIgnoreTranslationMarkup(phrase, glossaryObj[phrase], translator) : maybeNotStaticPos);
-                  prevPhrase = glossaryObj[phrase];
+                  tempLine += (i > 0 && /[\p{Lu}\p{Ll}\p{Nd})\]}’”]/u.test(tempLine[tempLine.length - 1]) ? ' ' : '') + ([Translators.MICROSOFT_TRANSLATOR, Translators.VIETPHRASE].some((element) => translator === element) || glossary.filter(([first, __, third]) => first === phrase && (isStaticWordOrPhrase(third))).length > 0 ? getIgnoreTranslationMarkup(phrase, glossaryObj[phrase], translator) : maybeNotStaticPos);
                 }
 
                 i += d - 1;
@@ -302,8 +300,7 @@ function applyGlossaryToText(text, translator = Translators.VIETPHRASE, isProper
               }
 
               if (d === 1) {
-                tempLine += (prevPhrase.length > 0 && /[\p{Lu}\p{Ll}\p{Nd}([{‘“]/u.test(a[i]) && /[\p{Lu}\p{Ll}\p{Nd})\]}’”]/u.test(prevPhrase) ? ' ' : '') + (translator === Translators.DEEPL_TRANSLATE || translator === Translators.GOOGLE_TRANSLATE ? Utils.convertTextToHtml(phrase) : phrase);
-                prevPhrase = '';
+                tempLine += (tempLine.length > 0 && /[\p{Lu}\p{Ll}\p{Nd}([{‘“]/u.test(a[i]) && /[\p{Lu}\p{Ll}\p{Nd})\]}’”]/u.test(tempLine[tempLine.length - 1]) ? ' ' : '') + (translator === Translators.DEEPL_TRANSLATE || translator === Translators.GOOGLE_TRANSLATE ? Utils.convertTextToHtml(phrase) : phrase);
                 return true;
               }
 
@@ -360,8 +357,8 @@ function updateInputTextLength() {
       break;
     }
     default: {
-      sourceLanguage = GoogleTranslate.getMappedSourceLanguageCode(Translators.GOOGLE_TRANSLATE, sourceLanguage).split('-')[0].toLowerCase();
-      targetLanguage = GoogleTranslate.getMappedTargetLanguageCode(Translators.GOOGLE_TRANSLATE, targetLanguage).split('-')[0].toLowerCase();
+      sourceLanguage = sourceLanguage.split('-')[0].toLowerCase();
+      targetLanguage = targetLanguage.split('-')[0].toLowerCase();
       break;
     }
   }

@@ -1139,7 +1139,6 @@ class Vietphrase {
             const dataLengths = [a.length, ...this.useGlossary && this.prioritizeNameOverVietPhrase ? glossaryEntriesInLine.map(([__, second]) => second.length) : [], ...dataEntries.filter(([key]) => a.includes(key)).map(([key]) => key.length), 1].toSorted((b, c) => c - b).filter((element, index, array) => element > 0 && index === array.indexOf(element));
 
             let tempLine = '';
-            let prevPhrase = '';
             let i = 0;
 
             Array.from(a).forEach((b, c) => {
@@ -1148,8 +1147,7 @@ class Vietphrase {
                   let phrase = a.substring(i, i + d);
 
                   if (this.useGlossary && this.prioritizeNameOverVietPhrase && glossaryEntries.map(([__, second]) => second).indexOf(phrase.toLowerCase()) > -1) {
-                    tempLine += (i > 0 && /[\p{Lu}\p{Ll}\p{Nd})\]}’”]/u.test(prevPhrase || tempLine[tempLine.length - 1]) ? ' ' : '') + phrase;
-                    prevPhrase = phrase;
+                    tempLine += (i > 0 && /[\p{Lu}\p{Ll}\p{Nd})\]}’”]/u.test(tempLine[tempLine.length - 1]) ? ' ' : '') + phrase;
                     i += d - 1;
                     return true;
                   }
@@ -1157,9 +1155,8 @@ class Vietphrase {
                   if (((this.useGlossary && !this.prioritizeNameOverVietPhrase && Object.prototype.hasOwnProperty.call(this.glossaryObject, phrase.toLowerCase())) || Array.from(phrase).every((element) => Object.prototype.hasOwnProperty.call(this.data.hanViet, element) || (Object.prototype.hasOwnProperty.call(this.data.vietPhrase, element) && /^\p{P}$/u.test(element))) || [...nhanByGlossary, ...glossaryEntries].indexOf(phrase) > -1) && Object.prototype.hasOwnProperty.call(dataObject, phrase) && phrase !== '·') {
                     phrase = this.useGlossary && !this.prioritizeNameOverVietPhrase && Object.prototype.hasOwnProperty.call(this.glossaryObject, phrase.toLowerCase()) ? phrase.toLowerCase() : phrase;
 
-                    if (dataObject[phrase].length > 0) {
-                      tempLine += (i > 0 && /[\p{Lu}\p{Ll}\p{Nd})\]}’”]/u.test(prevPhrase || tempLine[tempLine.length - 1]) ? ' ' : '') + dataObject[phrase];
-                      prevPhrase = dataObject[phrase];
+                    if (Array.from(dataObject[phrase]).length > 0) {
+                      tempLine += (i > 0 && /[\p{Lu}\p{Ll}\p{Nd})\]}’”]/u.test(tempLine[tempLine.length - 1]) ? ' ' : '') + dataObject[phrase];
                     }
 
                     i += d - 1;
@@ -1167,8 +1164,7 @@ class Vietphrase {
                   }
 
                   if (d === 1) {
-                    tempLine += (prevPhrase.length > 0 && /[\p{Lu}\p{Ll}\p{Nd}(([{‘“]/u.test(a[i]) && /[\p{Lu}\p{Ll}\p{Nd})\]}’”]/u.test(prevPhrase) ? ' ' : '') + phrase;
-                    prevPhrase = '';
+                    tempLine += (prevPhrase.length > 0 && /[\p{Lu}\p{Ll}\p{Nd}(([{‘“]/u.test(a[i]) && /[\p{Lu}\p{Ll}\p{Nd})\]}’”]/u.test(tempLine[tempLine.length - 1]) ? ' ' : '') + phrase;
                     return true;
                   }
 
