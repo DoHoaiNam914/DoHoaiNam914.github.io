@@ -266,7 +266,7 @@ function getIgnoreTranslationMarkup(text, translation, translator) {
 
 function applyGlossaryToText(text, translator = Translators.VIETPHRASE, isProperOnly = true) {
   const glossaryEntries = glossary.filter(([__, ___, third]) => !isProperOnly || translator !== Translators.VIETPHRASE || ['NNP', 'NC', 'MWE', 'X', 'y', 'FW'].indexOf(third) >= 0).filter(([first]) => text.includes(first)).map(([first, second, third]) => [first.toLowerCase(), second, third]);
-  const glossaryObj = Object.fromEntries(glossaryEntries.map(([first, second]) => [first.toLowerCase(), second]));
+  const glossaryObj = Object.fromEntries(glossaryEntries.map(([first, second]) => [first, second]));
   let newText = text;
 
   if (glossaryEntries.length > 0) {
@@ -289,8 +289,8 @@ function applyGlossaryToText(text, translator = Translators.VIETPHRASE, isProper
               let phrase = translator === Translators.DEEPL_TRANSLATE || translator === Translators.GOOGLE_TRANSLATE ? Utils.convertHtmlToText(a.substring(i, i + d)) : a.substring(i, i + d);
               const lastCharInLine = Array.from(tempLine).length > 0 ? Array.from(tempLine)[Array.from(tempLine).length - 1] : '';
 
-              if (Object.prototype.hasOwnProperty.call(glossaryObj, phrase.toLowerCase())) {
-                phrase = translator === Translators.DEEPL_TRANSLATE || translator === Translators.GOOGLE_TRANSLATE ? Utils.convertHtmlToText(a.substring(i, i + d).toLowerCase()) : a.substring(i, i + d).toLowerCase();
+              if (Object.prototype.hasOwnProperty.call(glossaryObj, phrase.toUpperCase())) {
+                phrase = translator === Translators.DEEPL_TRANSLATE || translator === Translators.GOOGLE_TRANSLATE ? Utils.convertHtmlToText(a.substring(i, i + d).toUpperCase()) : a.substring(i, i + d).toUpperCase();
 
                 if (glossaryObj[phrase] !== '') {
                   const maybeNotStaticPos = glossary.filter(([first, __, third]) => first === phrase && isDynamicWordOrPhrase(third)).length > 0 ? glossaryObj[phrase].replace(/ /g, '_') : glossaryObj[phrase];
