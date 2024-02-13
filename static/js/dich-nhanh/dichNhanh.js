@@ -1009,12 +1009,11 @@ $(document).ready(async () => {
       chinesePhienAmWordList = [...chinesePhienAmWordList, ...vietPhraseData.chivi.filter((element) => Array.from(element[0]).length === 1).toSorted((a, b) => b[0].length - a[0].length).map(([first, second]) => [first, second.split('ǀ')[0]])];
     });
 
-    await $.ajax({
+    $.ajax({
       method: 'GET',
       url: '/static/datasource/QuickTranslate2020/ChinesePhienAmWords.txt',
     }).done((data) => {
       vietPhraseData.quickTranslate2020 = data.split(/\r\n/).map((element) => element.split('='));
-      chinesePhienAmWordList = [...chinesePhienAmWordList, ...vietPhraseData.quickTranslate2020];
     });
 
     chinesePhienAmWordList = [...chinesePhienAmWordList, ...hanData.names.map(([first, second]) => [first, second.split(',').filter((element) => element.length > 0)[0]])];
