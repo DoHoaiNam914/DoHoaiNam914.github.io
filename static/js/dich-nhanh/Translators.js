@@ -958,15 +958,20 @@ class Vietphrase {
 
   constructor(data, translationAlgorithm, multiplicationAlgorithm, useGlossary = false, glossary = [], prioritizeNameOverVietPhraseCheck = false, addDeLeZhao = false, autocapitalize = false) {
     this.data = data;
-    this.data.vietPhrase = { ...this.data.vietPhrase, ...Object.fromEntries(glossary.filter(([__, ___, third]) => ['N', 'NU', 'NUX', 'NUM', 'NUMX', 'DET', 'V', 'AUX', 'ADJ', 'PRO', 'ADV', 'PRE', 'PRE', 'CC', 'SC', 'PRT', 'I', 'D', 'Z', 'b', 'PUNCT', 'SYM'].indexOf(third) >= 0).map(([first, second]) => [first, second])) };
     this.translationAlgorithm = translationAlgorithm;
     this.multiplicationAlgorithm = multiplicationAlgorithm;
     this.useGlossary = useGlossary;
-    this.glossary = glossary.filter(([__, ___, third]) => ['NNP', 'NC', 'MWE', 'X', 'y', 'FW'].indexOf(third) >= 0).map(([first, second]) => [first.toLowerCase(), second]);
-    this.glossaryObject = Object.fromEntries(this.glossary);
+    this.glossary = glossary.map(([first, second, third]) => [first.toLowerCase(), second, third]);
+    this.glossaryObject = Object.fromEntries(this.glossary.map(([first, second]) => [first, second]));
     this.prioritizeNameOverVietPhrase = prioritizeNameOverVietPhraseCheck;
     this.addDeLeZhao = addDeLeZhao;
     this.autocapitalize = autocapitalize;
+
+    this.staticGlossary = this.glossary.filter(([__, ___, third]) => ['NNP', 'NC', 'MWE', 'X', 'y', 'FW'].indexOf(third) >= 0).map(([first, second]) => [first, second]);
+    this.staticGlossaryObject = Object.fromEntries(this.staticGlossary);
+    this.dynamicGlossary = this.glossary.filter(([__, ___, third]) => ['N', 'NU', 'NUX', 'NUM', 'NUMX', 'DET', 'V', 'AUX', 'ADJ', 'PRO', 'ADV', 'PRE', 'PRE', 'CC', 'SC', 'PRT', 'I', 'D', 'Z', 'b', 'PUNCT', 'SYM'].indexOf(third) >= 0).map(([first, second]) => [first, second]);
+    this.dynamicGlossaryObject = Object.fromEntries(this.dynamicGlossary);
+    this.data.vietPhrase = { ...this.data.vietPhrase, ...this.dynamicGlossaryObject };
   }
 
   static getSourceLanguageName(languageCode) {
@@ -1146,7 +1151,7 @@ class Vietphrase {
               if (c === i) {
                 dataLengths.some((d) => {
                   let phrase = a.substring(i, i + d);
-                  const lastCharInLine = Array.from(tempLine).length > 0 ? Array.from(tempLine)[Array.from(tempLine).length - 1] : '';
+                  const lastCharInLine = Array.from(tempLine).length > 0 ? Array.from(tempLine)[Array.from(tempLine).length - 1] : '';console.log(tempLine, lastCharInLine);
 
                   if (this.useGlossary && this.prioritizeNameOverVietPhrase && glossaryEntries.map(([__, second]) => second).indexOf(phrase) >= 0) {
                     tempLine += (Array.from(tempLine).length > 0 && /[\p{Lu}\p{Ll}\p{Nd})\]}’”]/u.test(lastCharInLine) ? ' ' : '') + phrase;

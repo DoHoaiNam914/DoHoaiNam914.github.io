@@ -385,7 +385,7 @@ function reloadGlossaryEntries() {
   const glossaryExtension = $('#glossary-extension');
 
   if (glossary.length > 0) {
-    glossary = glossary.filter(([first], __, array) => !array[first] && (array[first] = 1), {}).toSorted((a, b) => Tagset[a[2]] - Tagset[b[2]] || a[1].localeCompare(b[1], 'vi', { ignorePunctuation: true }) || a[0].localeCompare(b[0], 'vi', { ignorePunctuation: true }) || b[0].concat(`\t${b[1]}`).length - a[0].concat(`\t${a[1]}`).length).map(([first, second, third]) => [first, second, third ?? 'X']);
+    glossary = glossary.filter(([first], __, array) => !array[first] && (array[first] = 1), {}).toSorted((a, b) => Tagset[a[2]] - Tagset[b[2]] || a[1].localeCompare(b[1], 'vi', { ignorePunctuation: true }) || a[0].localeCompare(b[0], 'vi', { sensitivity: 'accent', ignorePunctuation: true }) || b[0].concat(`\t${b[1]}`).length - a[0].concat(`\t${a[1]}`).length).map(([first, second, third]) => [first.trim().replace(/^\s+|\s+$/g, '').toUpperCase(), second, third ?? 'X']);
     glossaryObject = Object.fromEntries(glossary.map(([first, second]) => [first, second]));
 
     glossary.forEach(([first, second, third]) => {
@@ -1582,7 +1582,7 @@ $translateEntryButtons.on('click', async function onClick() {
 $addButton.click(() => {
   if ($sourceEntryInput.val().length === 0) return;
   if (Object.prototype.hasOwnProperty.call(glossaryObject, $sourceEntryInput.val())) glossary.splice(Object.keys(glossaryObject).indexOf($sourceEntryInput.val()), 1);
-  glossary.push([$sourceEntryInput.val().trim(), $targetEntryInput.val().trim(), $tagsetSelect.val()]);
+  glossary.push([$sourceEntryInput.val().trim().replace(/^\s+|\s+$/g, '').toUpperCase(), $targetEntryInput.val().trim(), $tagsetSelect.val()]);
   reloadGlossaryEntries();
   $glossaryEntrySelect.change();
   $glossaryInput.val(null);
