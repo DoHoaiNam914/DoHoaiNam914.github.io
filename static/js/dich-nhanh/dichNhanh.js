@@ -291,12 +291,12 @@ function applyGlossaryToText(text, translator = Translators.VIETPHRASE, isProper
               if (Object.prototype.hasOwnProperty.call(glossaryObj, phrase.toLowerCase())) {
                 phrase = translator === Translators.DEEPL_TRANSLATE || translator === Translators.GOOGLE_TRANSLATE ? Utils.convertHtmlToText(a.substring(i, i + d).toLowerCase()) : a.substring(i, i + d).toLowerCase();
 
-                if (Array.from(glossaryObj[phrase]).length > 0) {
+                if (glossaryObj[phrase] !== '') {
                   const maybeNotStaticPos = glossary.filter(([first, __, third]) => first === phrase && isDynamicWordOrPhrase(third)).length > 0 ? glossaryObj[phrase].replace(/ /g, '_') : glossaryObj[phrase];
                   tempLine += (i > 0 && /[\p{Lu}\p{Ll}\p{Nd})\]}’”]/u.test(tempLine[tempLine.length - 1]) ? ' ' : '') + ([Translators.MICROSOFT_TRANSLATOR, Translators.VIETPHRASE].some((element) => translator === element) || glossary.filter(([first, __, third]) => first === phrase && (isStaticWordOrPhrase(third))).length > 0 ? getIgnoreTranslationMarkup(phrase, glossaryObj[phrase], translator) : maybeNotStaticPos);
+                  prevPhrase = glossaryObj[phrase];
                 }
 
-                prevPhrase = glossaryObj[phrase];
                 i += d - 1;
                 return true;
               }

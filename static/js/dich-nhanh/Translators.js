@@ -1156,8 +1156,12 @@ class Vietphrase {
 
                   if (((this.useGlossary && !this.prioritizeNameOverVietPhrase && Object.prototype.hasOwnProperty.call(this.glossaryObject, phrase.toLowerCase())) || Array.from(phrase).every((element) => Object.prototype.hasOwnProperty.call(this.data.hanViet, element) || (Object.prototype.hasOwnProperty.call(this.data.vietPhrase, element) && /^\p{P}$/u.test(element))) || [...nhanByGlossary, ...glossaryEntries].indexOf(phrase) > -1) && Object.prototype.hasOwnProperty.call(dataObject, phrase) && phrase !== '·') {
                     phrase = this.useGlossary && !this.prioritizeNameOverVietPhrase && Object.prototype.hasOwnProperty.call(this.glossaryObject, phrase.toLowerCase()) ? phrase.toLowerCase() : phrase;
-                    tempLine += (i > 0 && /[\p{Lu}\p{Ll}\p{Nd})\]}’”]/u.test(tempLine[tempLine.length - 1]) ? ' ' : '') + dataObject[phrase];
-                    prevPhrase = dataObject[phrase];
+
+                    if (dataObject[phrase] !== '') {
+                      tempLine += (i > 0 && /[\p{Lu}\p{Ll}\p{Nd})\]}’”]/u.test(tempLine[tempLine.length - 1]) ? ' ' : '') + dataObject[phrase];
+                      prevPhrase = dataObject[phrase];
+                    }
+
                     i += d - 1;
                     return true;
                   }
