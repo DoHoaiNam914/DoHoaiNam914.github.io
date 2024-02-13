@@ -972,7 +972,7 @@ $(document).ready(async () => {
       pinyinList = [...pinyinList, ...data.split(/\r?\n/).map((element) => element.split('=')).filter((element) => element.length === 2).toSorted((a, b) => b[0].length - a[0].length).map(([first, second]) => [first, second.split('ǀ')[0]]).filter(([first]) => !Object.prototype.hasOwnProperty.call(vietPhraseData.pinyins, first))];
     });
 
-    pinyinList = pinyinList.filter(([first, second], index, array) => !array[first] && (array[first] = 1), {});
+    pinyinList = pinyinList.filter(([first], __, array) => !array[first] && (array[first] = 1), {});
     vietPhraseData.pinyins = Object.fromEntries(pinyinList);
     console.log(`Đã tải xong bộ dữ liệu bính âm (${pinyinList.length})!`);
     lastSession = {};
@@ -989,9 +989,9 @@ $(document).ready(async () => {
 
     await $.ajax({
       method: 'GET',
-      url: '/static/datasource/QuickTranslate2020/ChinesePhienAmWords.txt',
+      url: '/static/datasource/Quick Translator/ChinesePhienAmWords.txt',
     }).done((data) => {
-      chinesePhienAmWordList = [...chinesePhienAmWordList, ...data.split(/\r\n/).map((element) => element.split('=')).filter((element) => element.length === 2 && !/\p{Script=Latn}/u.test(element[0]))];
+      chinesePhienAmWordList = [...chinesePhienAmWordList, ...data.split(/\r\n/).map((element) => element.split('=')).filter((element) => element.length === 2)];
     });
 
     await $.ajax({
@@ -1001,7 +1001,14 @@ $(document).ready(async () => {
       chinesePhienAmWordList = [...chinesePhienAmWordList, ...data.split(/\n/).map((element) => element.split('=')).filter((element) => element.length === 2 && Array.from(element[0]).length === 1).toSorted((a, b) => b[0].length - a[0].length).map(([first, second]) => [first, second.split('ǀ')[0]])];
     });
 
-    chinesePhienAmWordList = chinesePhienAmWordList.filter(([first], index, array) => !array[first] && (array[first] = 1), {});
+    await $.ajax({
+      method: 'GET',
+      url: '/static/datasource/vn.tangthuvien.ttvtranslate/ChinesePhienAmWords.txt',
+    }).done((data) => {
+      chinesePhienAmWordList = [...chinesePhienAmWordList, ...data.split(/\n/).map((element) => element.split('=')).filter((element) => element.length === 2)];
+    });
+
+    chinesePhienAmWordList = chinesePhienAmWordList.filter(([first], __, array) => !array[first] && (array[first] = 1), {});
     chinesePhienAmWordList = chinesePhienAmWordList.map(([c, d]) => [c, applyNewAccent(d)]);
     vietPhraseData.hanViet = Object.fromEntries(chinesePhienAmWordList);
     console.log(`Đã tải xong bộ dữ liệu hán việt (${chinesePhienAmWordList.length})!`);
@@ -1014,7 +1021,7 @@ $(document).ready(async () => {
   if ($loadDefaultVietPhraseFileSwitch.prop('checked')) {
     $.ajax({
       method: 'GET',
-      url: '/static/datasource/ttvtranslate/VietPhrase.txt',
+      url: '/static/datasource/vn.tangthuvien.ttvtranslate/VietPhrase.txt',
     }).done((data) => {
       let vietPhraseList = [...data.split(/\n/).map((element) => element.split('=')).filter((element) => element.length === 2).map(([first, second]) => [first, second.split(/[/|]/)[0]]), ...Object.entries(vietPhraseData.hanViet)];
       vietPhraseList = vietPhraseList.filter(([first], index, array) => !array[first] && (array[first] = 1), {});
