@@ -1146,9 +1146,10 @@ class Vietphrase {
               if (c === i) {
                 dataLengths.some((d) => {
                   let phrase = a.substring(i, i + d);
+                  const lastCharInLine = Array.from(tempLine).length > 0 ? Array.from(tempLine)[Array.from(tempLine).length - 1] : '';
 
                   if (this.useGlossary && this.prioritizeNameOverVietPhrase && glossaryEntries.map(([__, second]) => second).indexOf(phrase) >= 0) {
-                    tempLine += (i > 0 && /[\p{Lu}\p{Ll}\p{Nd})\]}’”]/u.test(tempLine[tempLine.length - 1]) ? ' ' : '') + phrase;
+                    tempLine += (Array.from(tempLine).length > 0 && /[\p{Lu}\p{Ll}\p{Nd})\]}’”]/u.test(lastCharInLine) ? ' ' : '') + phrase;
                     prevPhrase = phrase;
                     i += d - 1;
                     return true;
@@ -1158,7 +1159,7 @@ class Vietphrase {
                     phrase = this.useGlossary && !this.prioritizeNameOverVietPhrase && Object.prototype.hasOwnProperty.call(this.glossaryObject, phrase.toLowerCase()) ? phrase.toLowerCase() : phrase;
 
                     if (dataObject[phrase] !== '') {
-                      tempLine += (i > 0 && /[\p{Lu}\p{Ll}\p{Nd})\]}’”]/u.test(tempLine[tempLine.length - 1]) ? ' ' : '') + dataObject[phrase];
+                      tempLine += (Array.from(tempLine).length > 0 && /[\p{Lu}\p{Ll}\p{Nd})\]}’”]/u.test(lastCharInLine) ? ' ' : '') + dataObject[phrase];
                       prevPhrase = dataObject[phrase];
                     }
 
