@@ -954,61 +954,70 @@ $(document).ready(async () => {
   loadAllQuickTranslatorOptions();
   reloadGlossaryEntries();
 
-  try {
-    let pinyinList = [];
-
-    await $.ajax({
-      method: 'GET',
-      url: '/static/datasource/Unihan_Readings.txt',
-    }).done((data) => {
-      pinyinList = data.split(/\r?\n/).filter((element) => element.startsWith('U+')).map((element) => element.substring(2).split(/\t/)).filter((element) => element.length === 2).map(([first, second]) => [String.fromCodePoint(parseInt(first, 16)), second]);
-      vietPhraseData.pinyins = Object.fromEntries(pinyinList);
-    });
-
-    await $.ajax({
-      method: 'GET',
-      url: '/static/datasource/chivi/Bính âm.txt',
-    }).done((data) => {
-      pinyinList = [...pinyinList, ...data.split(/\r?\n/).map((element) => element.split('=')).filter((element) => element.length === 2).toSorted((a, b) => b[0].length - a[0].length).map(([first, second]) => [first, second.split('ǀ')[0]]).filter(([first]) => !Object.prototype.hasOwnProperty.call(vietPhraseData.pinyins, first))];
-    });
-
+  $.ajax({
+    method: 'GET',
+    url: '/static/datasource/Unihan_Readings.txt',
+  }).done((data) => {
+    let pinyinList = data.split(/\r?\n/).filter((element) => element.startsWith('U+')).map((element) => element.substring(2).split(/\t/)).filter((element) => element.length === 2).map(([first, second]) => [String.fromCodePoint(parseInt(first, 16)), second]);
     pinyinList = pinyinList.filter(([first], __, array) => !array[first] && (array[first] = 1), {});
     vietPhraseData.pinyins = Object.fromEntries(pinyinList);
     console.log(`Đã tải xong bộ dữ liệu bính âm (${pinyinList.length})!`);
     lastSession = {};
-  } catch (error) {
-    console.error('Không thể tải bộ dữ liệu bính âm:', error);
+  }).fail((__, ___, errorThrown) => {
+    console.error('Không thể tải bộ dữ liệu bính âm:', errorThrown);
     setTimeout(window.location.reload, 5000);
-  }
+  });
 
   newAccentObject = Object.fromEntries(newAccentMap);
   oldAccentObject = Object.fromEntries(newAccentMap.map(([first, second]) => [second, first]));
 
   try {
-    let chinesePhienAmWordList = [...specialSinovietnameseMap.map(([a, b, c]) => [a, (Object.fromEntries(specialSinovietnameseMap.filter(([__, d]) => !/\p{Script=Hani}/u.test(d)).map(([d, e, f]) => [d, f ?? e]))[b] ?? c ?? b).split(/, | \| /)[0].toLowerCase()]), ...cjkv.nam.map(([first, second]) => [first, second.trimStart().split(/, ?/).filter((element) => element.length > 0)[0]]), ...hanData.names.map(([first, second]) => [first, second.split(',').filter((element) => element.length > 0)[0]])];
-
-    await $.ajax({
-      method: 'GET',
-      url: '/static/datasource/Quick Translator/ChinesePhienAmWords.txt',
-    }).done((data) => {
-      chinesePhienAmWordList = [...chinesePhienAmWordList, ...data.split(/\r\n/).map((element) => element.split('=')).filter((element) => element.length === 2)];
-    });
-
-    await $.ajax({
-      method: 'GET',
-      url: '/static/datasource/chivi/word_hv.txt',
-    }).done((data) => {
-      chinesePhienAmWordList = [...chinesePhienAmWordList, ...data.split(/\n/).map((element) => element.split('=')).filter((element) => element.length === 2 && Array.from(element[0]).length === 1).toSorted((a, b) => b[0].length - a[0].length).map(([first, second]) => [first, second.split('ǀ')[0]])];
-    });
+    let chinesePhienAmWordList = specialSinovietnameseMap.map(([a, b, c]) => [a, (Object.fromEntries(specialSinovietnameseMap.filter(([__, d]) => !/\p{Script=Hani}/u.test(d)).map(([d, e, f]) => [d, f ?? e]))[b] ?? c ?? b).split(/, | \| /)[0].toLowerCase()]);
 
     await $.ajax({
       method: 'GET',
       url: '/static/datasource/vn.tangthuvien.ttvtranslate/ChinesePhienAmWords.txt',
     }).done((data) => {
-      chinesePhienAmWordList = [...chinesePhienAmWordList, ...data.split(/\n/).map((element) => element.split('=')).filter((element) => element.length === 2)];
+      vietPhraseData.ttvtranslate = data.split(/\n/).map((element) => element.split('='));
+      chinesePhienAmWordList = [...chinesePhienAmWordList, ...vietPhraseData.ttvtranslate];
     });
 
-    chinesePhienAmWordList = chinesePhienAmWordList.filter(([first], __, array) => !array[first] && (array[first] = 1), {});
+    await $.ajax({
+      method: 'GET',
+      url: '/static/datasource/Data của thtgiang/ChinesePhienAmWords.txt',
+    }).done((data) => {
+      vietPhraseData.dataByThtgiang = data.split(/\r\n/).map((element) => element.split('='));
+      chinesePhienAmWordList = [...chinesePhienAmWordList, ...vietPhraseData.dataByThtgiang];
+    });
+
+    await $.ajax({
+      method: 'GET',
+      url: '/static/datasource/Quick Translator/ChinesePhienAmWords.txt',
+    }).done((data) => {
+      vietPhraseData.quickTranslator = data.split(/\r\n/).map((element) => element.split('='));
+      chinesePhienAmWordList = [...chinesePhienAmWordList, ...vietPhraseData.quickTranslator];
+    });
+
+    chinesePhienAmWordList = [...chinesePhienAmWordList, ...cjkv.nam.map(([first, second]) => [first, second.trimStart().split(/, ?/).filter((element) => element.length > 0)[0]])];
+
+    await $.ajax({
+      method: 'GET',
+      url: '/static/datasource/Chivi/word_hv.txt',
+    }).done((data) => {
+      vietPhraseData.chivi = data.split(/\n/).map((element) => element.split('='));
+      chinesePhienAmWordList = [...chinesePhienAmWordList, ...vietPhraseData.chivi.filter((element) => Array.from(element[0]).length === 1).toSorted((a, b) => b[0].length - a[0].length).map(([first, second]) => [first, second.split('ǀ')[0]])];
+    });
+
+    await $.ajax({
+      method: 'GET',
+      url: '/static/datasource/QuickTranslate2020/ChinesePhienAmWords.txt',
+    }).done((data) => {
+      vietPhraseData.quickTranslate2020 = data.split(/\r\n/).map((element) => element.split('='));
+      chinesePhienAmWordList = [...chinesePhienAmWordList, ...vietPhraseData.quickTranslate2020];
+    });
+
+    chinesePhienAmWordList = [...chinesePhienAmWordList, ...hanData.names.map(([first, second]) => [first, second.split(',').filter((element) => element.length > 0)[0]])];
+    chinesePhienAmWordList = chinesePhienAmWordList.filter(([first, second]) => first != null && first !== '' && second != null).filter(([first], __, array) => !array[first] && (array[first] = 1), {});
     chinesePhienAmWordList = chinesePhienAmWordList.map(([c, d]) => [c, applyNewAccent(d)]);
     vietPhraseData.hanViet = Object.fromEntries(chinesePhienAmWordList);
     console.log(`Đã tải xong bộ dữ liệu hán việt (${chinesePhienAmWordList.length})!`);
@@ -1031,7 +1040,7 @@ $(document).ready(async () => {
       $vietPhraseEntryCounter.text(vietPhraseList.length);
       console.log(`Đã tải xong tệp VietPhrase (${$vietPhraseEntryCounter.text()})!`);
       lastSession = {};
-    }).fail((jqXHR, textStatus, errorThrown) => {
+    }).fail((__, ___, errorThrown) => {
       console.error('Không tải được tệp VietPhrase:', errorThrown);
     });
   }
