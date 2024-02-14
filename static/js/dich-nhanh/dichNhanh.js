@@ -241,12 +241,12 @@ function loadAllQuickTranslatorOptions() {
 
 function isStaticWordOrPhrase(tag) {
   const tagset = ['NNP', 'NC', 'MWE', 'X', 'y', 'FW'];
-  return tagset.indexOf(tag) >= 0;
+  return tagset.includes(tag);
 }
 
 function isDynamicWordOrPhrase(tag) {
   const tagset = ['N', 'NU', 'NUX', 'NUM', 'NUMX', 'DET', 'V', 'AUX', 'ADJ', 'PRO', 'ADV', 'PRE', 'PRE', 'CC', 'SC', 'PRT', 'I', 'D', 'Z', 'b', 'PUNCT', 'SYM'];
-  return tagset.indexOf(tag) >= 0;
+  return tagset.includes(tag);
 }
 
 function getIgnoreTranslationMarkup(text, translation, translator) {
@@ -265,7 +265,7 @@ function getIgnoreTranslationMarkup(text, translation, translator) {
 }
 
 function applyGlossaryToText(text, translator = Translators.VIETPHRASE, isProperOnly = true) {
-  const glossaryEntries = glossary.filter(([__, ___, third]) => !isProperOnly || translator !== Translators.VIETPHRASE || ['NNP', 'NC', 'MWE', 'X', 'y', 'FW'].indexOf(third) >= 0).filter(([first]) => text.includes(first)).map(([first, second, third]) => [first.toLowerCase(), second, third]);
+  const glossaryEntries = glossary.filter(([__, ___, third]) => !isProperOnly || translator !== Translators.VIETPHRASE || ['NNP', 'NC', 'MWE', 'X', 'y', 'FW'].includes(third)).filter(([first]) => text.includes(first)).map(([first, second, third]) => [first.toLowerCase(), second, third]);
   const glossaryMapper = new Map(glossaryEntries.map(([first, second]) => [first, second]));
   let newText = text;
 
@@ -714,7 +714,7 @@ function getSourceLanguageSelectOptions(translator) {
     }
     case Translators.DEEPL_TRANSLATE: {
       DeeplTranslate.SOURCE_LANGUAGES.forEach(({ language }) => {
-        if (SUPPORTED_LANGUAGES.indexOf(language) === -1) return;
+        if (!SUPPORTED_LANGUAGES.includes(language)) return;
         const option = document.createElement('option');
         option.innerText = DeeplTranslate.getSourceLangName(language);
         option.value = language;
@@ -725,7 +725,7 @@ function getSourceLanguageSelectOptions(translator) {
     }
     case Translators.PAPAGO: {
       Object.entries(Papago.SOURCE_LANGUAGES).forEach(([languageCode]) => {
-        if (SUPPORTED_LANGUAGES.indexOf(languageCode) === -1) return;
+        if (!SUPPORTED_LANGUAGES.includes(languageCode)) return;
         const option = document.createElement('option');
         option.innerText = Papago.getSourceName(languageCode);
         option.value = languageCode;
@@ -736,7 +736,7 @@ function getSourceLanguageSelectOptions(translator) {
     }
     case Translators.MICROSOFT_TRANSLATOR: {
       Object.entries(MicrosoftTranslator.FROM_LANGUAGES).forEach(([languageCode]) => {
-        if (SUPPORTED_LANGUAGES.indexOf(languageCode) === -1) return;
+        if (!SUPPORTED_LANGUAGES.includes(languageCode)) return;
         const option = document.createElement('option');
         option.innerText = MicrosoftTranslator.getFromName(languageCode);
         option.value = languageCode;
@@ -757,7 +757,7 @@ function getSourceLanguageSelectOptions(translator) {
     }
     default: {
       Object.entries(GoogleTranslate.SOURCE_LANGUAGES).forEach(([languageCode]) => {
-        if (SUPPORTED_LANGUAGES.indexOf(languageCode) === -1) return;
+        if (!SUPPORTED_LANGUAGES.includes(languageCode)) return;
         const option = document.createElement('option');
         option.innerText = GoogleTranslate.getSlName(languageCode);
         option.value = languageCode;
