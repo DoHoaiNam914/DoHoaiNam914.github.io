@@ -961,7 +961,7 @@ class Vietphrase {
     this.translationAlgorithm = translationAlgorithm;
     this.multiplicationAlgorithm = multiplicationAlgorithm;
     this.useGlossary = useGlossary;
-    this.glossary = Array.prototype.map.call(glossary, ([first, second, third]) =) [first.toUpperCase(), second, third]);
+    this.glossary = Array.prototype.map.call(glossary, ([first, second, third]) => [first.toUpperCase(), second, third]);
     this.glossaryMap = new Map(Array.prototype.map.call(this.glossary, ([first, second]) => [first, second]));
     this.prioritizeNameOverVietPhrase = prioritizeNameOverVietPhraseCheck;
     this.addDeLeZhao = addDeLeZhao;
