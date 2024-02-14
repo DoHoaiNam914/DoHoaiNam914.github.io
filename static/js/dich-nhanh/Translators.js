@@ -971,7 +971,7 @@ class Vietphrase {
     this.staticGlossaryMap = new Map(this.staticGlossary);
     this.dynamicGlossary = this.glossary.filter(([__, ___, third]) => ['N', 'NU', 'NUX', 'NUM', 'NUMX', 'DET', 'V', 'AUX', 'ADJ', 'PRO', 'ADV', 'PRE', 'PRE', 'CC', 'SC', 'PRT', 'I', 'D', 'Z', 'b', 'PUNCT', 'SYM'].includes(third)).map(([first, second]) => [first, second]);
     this.dynamicGlossaryMap = new Map(this.dynamicGlossary);
-    this.data.vietPhrase = new Map([...this.data.vietPhrase].concat([...this.dynamicGlossaryMap]));
+    this.data.vietPhrase = new Map(Array.prototype.concat.call([...this.data.vietPhrase], [...this.dynamicGlossaryMap]));
   }
 
   static getSourceLanguageName(languageCode) {
@@ -1072,9 +1072,9 @@ class Vietphrase {
     try {
       if (dataEntries.length > 0 || glossaryEntries.length > 0) {
         const [nhanByGlossary, nhanByPronoun] = this.loadLuatNhanData(targetLanguage, glossaryEntries, text);
-        const maybePrioritizeNameOverVietPhrase = this.prioritizeNameOverVietPhrase ? nhanByGlossary : nhanByGlossary.concat(glossaryEntries);
+        const maybePrioritizeNameOverVietPhrase = this.prioritizeNameOverVietPhrase ? nhanByGlossary : Array.prototype.concat.call(nhanByGlossary, glossaryEntries);
 
-        dataEntries = (this.useGlossary ? maybePrioritizeNameOverVietPhrase : []).concat(nhanByPronoun, dataEntries).toSorted((a, b) => b[0].length - a[0].length);
+        dataEntries = Array.prototype.concat.call((this.useGlossary ? maybePrioritizeNameOverVietPhrase : []), nhanByPronoun, dataEntries).toSorted((a, b) => b[0].length - a[0].length);
 
         dataEntries.some(([a, value], __, array) => {
           if (result.includes(a) && (((this.useGlossary && !this.prioritizeNameOverVietPhrase && Map.prototype.has.call(this.glossaryMap, a.toUpperCase())) || Array.from(a).every((element) => Map.prototype.has.call(this.data.hanViet, element) || (Map.prototype.has.call(this.data.vietPhrase, element) && /^\p{P}$/u.test(element))) || Array.prototype.includes.call(Array.prototype.concat.call(nhanByGlossary, glossaryEntries), a)) && a !== '·')) {
@@ -1127,9 +1127,9 @@ class Vietphrase {
     try {
       if (dataEntries.length > 0 || glossaryEntries.length > 0) {
         const [nhanByGlossary, nhanByPronoun] = this.loadLuatNhanData(targetLanguage, glossaryEntries, text);
-        const maybePrioritizeNameOverVietPhrase = this.prioritizeNameOverVietPhrase ? nhanByGlossary : nhanByGlossary.concat(glossaryEntries);
+        const maybePrioritizeNameOverVietPhrase = this.prioritizeNameOverVietPhrase ? nhanByGlossary : Array.prototype.concat.call(nhanByGlossary, glossaryEntries);
 
-        dataEntries = (this.useGlossary ? maybePrioritizeNameOverVietPhrase : []).concat(nhanByPronoun, dataEntries);
+        dataEntries = Array.prototype.concat.call((this.useGlossary ? maybePrioritizeNameOverVietPhrase : []), nhanByPronoun, dataEntries);
 
         const dataMap = new Map(dataEntries);
 

@@ -980,7 +980,7 @@ $(document).ready(async () => {
       url: '/static/datasource/vn.tangthuvien.ttvtranslate/ChinesePhienAmWords.txt',
     }).done((data) => {
       vietPhraseData.ttvtranslate = data.split(/\n/).map((element) => element.split('='));
-      chinesePhienAmWordList = chinesePhienAmWordList.concat(vietPhraseData.ttvtranslate);
+      chinesePhienAmWordList = Array.prototype.concat.call(chinesePhienAmWordList, vietPhraseData.ttvtranslate);
     });
 
     await $.ajax({
@@ -988,7 +988,7 @@ $(document).ready(async () => {
       url: '/static/datasource/Data của thtgiang/ChinesePhienAmWords.txt',
     }).done((data) => {
       vietPhraseData.dataByThtgiang = data.split(/\r\n/).map((element) => element.split('='));
-      chinesePhienAmWordList = chinesePhienAmWordList.concat(vietPhraseData.dataByThtgiang);
+      chinesePhienAmWordList = Array.prototype.concat.call(chinesePhienAmWordList, vietPhraseData.dataByThtgiang);
     });
 
     await $.ajax({
@@ -996,17 +996,17 @@ $(document).ready(async () => {
       url: '/static/datasource/Quick Translator/ChinesePhienAmWords.txt',
     }).done((data) => {
       vietPhraseData.quickTranslator = data.split(/\r\n/).map((element) => element.split('='));
-      chinesePhienAmWordList = chinesePhienAmWordList.concat(vietPhraseData.quickTranslator);
+      chinesePhienAmWordList = Array.prototype.concat.call(chinesePhienAmWordList, vietPhraseData.quickTranslator);
     });
 
-    chinesePhienAmWordList = chinesePhienAmWordList.concat(cjkv.nam.map(([first, second]) => [first, second.trimStart().split(/, ?/).filter((element) => element.length > 0)[0]]));
+    chinesePhienAmWordList = Array.prototype.concat.call(chinesePhienAmWordList, cjkv.nam.map(([first, second]) => [first, second.trimStart().split(/, ?/).filter((element) => element.length > 0)[0]]));
 
     await $.ajax({
       method: 'GET',
       url: '/static/datasource/Chivi/word_hv.txt',
     }).done((data) => {
       vietPhraseData.chivi = data.split(/\n/).map((element) => element.split('='));
-      chinesePhienAmWordList = chinesePhienAmWordList.concat(vietPhraseData.chivi.filter(([first]) => Array.from(first).length === 1).toSorted((a, b) => b[0].length - a[0].length).map(([first, second]) => [first, second.split('ǀ')[0]]));
+      chinesePhienAmWordList = Array.prototype.concat.call(chinesePhienAmWordList, vietPhraseData.chivi.filter(([first]) => Array.from(first).length === 1).toSorted((a, b) => b[0].length - a[0].length).map(([first, second]) => [first, second.split('ǀ')[0]]));
     });
 
     $.ajax({
@@ -1016,7 +1016,7 @@ $(document).ready(async () => {
       vietPhraseData.quickTranslate2020 = data.split(/\r\n/).map((element) => element.split('='));
     });
 
-    chinesePhienAmWordList = chinesePhienAmWordList.concat(hanData.names.map(([first, second]) => [first, second.split(',').filter((element) => element.length > 0)[0]]));
+    chinesePhienAmWordList = Array.prototype.concat.call(chinesePhienAmWordList, hanData.names.map(([first, second]) => [first, second.split(',').filter((element) => element.length > 0)[0]]));
     chinesePhienAmWordList = chinesePhienAmWordList.filter(([first, second]) => first != null && first !== '' && second != null).filter(([first], __, array) => !array[first] && (array[first] = 1), {});
     chinesePhienAmWordList = chinesePhienAmWordList.map(([c, d]) => [c, applyNewAccent(d)]);
     vietPhraseData.hanViet = new Map(chinesePhienAmWordList);
@@ -1032,7 +1032,7 @@ $(document).ready(async () => {
       method: 'GET',
       url: '/static/datasource/vn.tangthuvien.ttvtranslate/VietPhrase.txt',
     }).done((data) => {
-      let vietPhraseList = data.split(/\n/).map((element) => element.split('=')).filter((element) => element.length === 2).map(([first, second]) => [first, second.split(/[/|]/)[0]]).concat([...vietPhraseData.hanViet]);
+      let vietPhraseList = Array.prototype.concat.call(data.split(/\n/).map((element) => element.split('=')).filter((element) => element.length === 2).map(([first, second]) => [first, second.split(/[/|]/)[0]]), [...vietPhraseData.hanViet]);
       vietPhraseList = vietPhraseList.filter(([first], __, array) => !array[first] && (array[first] = 1), {});
       if ($vietPhraseInput.prop('files').length > 0) return;
       vietPhraseData.vietPhrase = new Map(vietPhraseList);
@@ -1339,7 +1339,7 @@ $vietPhraseInput.on('change', function onChange() {
 
   reader.onload = function onLoad() {
     let vietPhraseList = this.result.split(/\r?\n/).map((element) => element.split('=')).filter((element) => element.length === 2).map(([first, second]) => [first, second.split(/[/|]/)[0]]);
-    vietPhraseList = vietPhraseList.concat([...vietPhraseData.hanViet]).filter(([first], index, array) => !array[first] && (array[first] = 1), {});
+    vietPhraseList = Array.prototype.concat.call(vietPhraseList, [...vietPhraseData.hanViet]).filter(([first], index, array) => !array[first] && (array[first] = 1), {});
     vietPhraseData.vietPhrase = new Map(vietPhraseList);
     const $vietPhraseEntryCounter = $('#viet-phrase-entry-counter');
     $vietPhraseEntryCounter.text(vietPhraseList.length);
