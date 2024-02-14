@@ -265,7 +265,7 @@ function getIgnoreTranslationMarkup(text, translation, translator) {
 }
 
 function applyGlossaryToText(text, translator = Translators.VIETPHRASE, isProperOnly = true) {
-  const glossaryEntries = glossary.filter(([__, ___, third]) => !isProperOnly || translator !== Translators.VIETPHRASE || ['NNP', 'NC', 'MWE', 'X', 'y', 'FW'].includes(third)).filter(([first]) => text.includes(first)).map(([first, second, third]) => [first.toLowerCase(), second, third]);
+  const glossaryEntries = glossary.filter(([__, ___, third]) => !isProperOnly || translator !== Translators.VIETPHRASE || ['NNP', 'NC', 'MWE', 'X', 'y', 'FW'].includes(third)).filter(([first]) => text.includes(first)).map(([first.toUpperCase(), second, third]) => [first.toLowerCase(), second, third]);
   const glossaryMapper = new Map(glossaryEntries.map(([first, second]) => [first, second]));
   let newText = text;
 
@@ -385,7 +385,7 @@ function reloadGlossaryEntries() {
   const glossaryExtension = $('#glossary-extension');
 
   if (glossary.length > 0) {
-    glossary = glossary.filter(([first], __, array) => !array[first] && (array[first] = 1), {}).toSorted((a, b) => Tagset[a[2]] - Tagset[b[2]] || a[1].localeCompare(b[1], 'vi', { ignorePunctuation: true }) || a[0].localeCompare(b[0], 'vi', { sensitivity: 'accent', ignorePunctuation: true }) || b[0].concat(`\t${b[1]}`).length - a[0].concat(`\t${a[1]}`).length).map(([first, second, third]) => [first.trim().replace(/^\s+|\s+$/g, '').toUpperCase(), second, third ?? 'X']);
+    glossary = glossary.filter(([first], __, array) => !array[first] && (array[first] = 1), {}).toSorted((a, b) => Tagset[a[2]] - Tagset[b[2]] || a[1].localeCompare(b[1], 'vi', { ignorePunctuation: true }) || a[0].localeCompare(b[0], 'vi', { sensitivity: 'accent', ignorePunctuation: true }) || b[0].concat(`\t${b[1]}`).length - a[0].concat(`\t${a[1]}`).length).map(([first, second, third]) => [first.trim().replace(/^\s+|\s+$/g, ''), second, third ?? 'X']);
     glossaryMap = new Map(glossary.map(([first, second]) => [first, second]));
 
     glossary.forEach(([first, second, third]) => {
@@ -1581,8 +1581,8 @@ $translateEntryButtons.on('click', async function onClick() {
 
 $addButton.click(() => {
   if ($sourceEntryInput.val().length === 0) return;
-  if (Map.prototype.has.call(glossaryMap, $sourceEntryInput.val())) glossary.splice(Array.from(glossaryMap, ([first]) => first).indexOf($sourceEntryInput.val()), 1);
-  glossary.push([$sourceEntryInput.val().trim().replace(/^\s+|\s+$/g, '').toUpperCase(), $targetEntryInput.val().trim(), $tagsetSelect.val()]);
+  if (Map.prototype.has.call(glossaryMap, $sourceEntryInput.val())) glossary.splice(Array.from(glossaryMap, ([first]) => first.toUpperCase()).indexOf($sourceEntryInput.val().toUpperCase()), 1);
+  glossary.push([$sourceEntryInput.val().trim().replace(/^\s+|\s+$/g, ''), $targetEntryInput.val().trim(), $tagsetSelect.val()]);
   reloadGlossaryEntries();
   $glossaryEntrySelect.change();
   $glossaryInput.val(null);
@@ -1593,7 +1593,7 @@ $addButton.click(() => {
 $removeButton.on('click', () => {
   if (Map.prototype.has.call(glossaryMap, $sourceEntryInput.val())) {
     if (window.confirm('Bạn có muốn xoá cụm từ này chứ?')) {
-      glossary.splice(Array.from(glossaryMap, ([first]) => first).indexOf($sourceEntryInput.val()), 1);
+      glossary.splice(Array.from(glossaryMap, ([first]) => first.toUpperCase()).indexOf($sourceEntryInput.val().toUpperCase()), 1);
       reloadGlossaryEntries();
       $glossaryInput.val(null);
       $sourceEntryInput.trigger('input');

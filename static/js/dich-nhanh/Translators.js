@@ -961,15 +961,15 @@ class Vietphrase {
     this.translationAlgorithm = translationAlgorithm;
     this.multiplicationAlgorithm = multiplicationAlgorithm;
     this.useGlossary = useGlossary;
-    this.glossary = glossary;
-    this.glossaryMap = new Map(this.glossary.map(([first, second]) => [first, second]));
+    this.glossary = Array.prototype.map.call(glossary, ([first, second, third]) =) [first.toUpperCase(), second, third]);
+    this.glossaryMap = new Map(Array.prototype.map.call(this.glossary, ([first, second]) => [first, second]));
     this.prioritizeNameOverVietPhrase = prioritizeNameOverVietPhraseCheck;
     this.addDeLeZhao = addDeLeZhao;
     this.autocapitalize = autocapitalize;
 
-    this.staticGlossary = this.glossary.filter(([__, ___, third]) => ['NNP', 'NC', 'MWE', 'X', 'y', 'FW'].includes(third)).map(([first, second]) => [first, second]);
+    this.staticGlossary = Array.prototype.map.call(Array.prototype.filter.call(this.glossary, ([__, ___, third]) => Array.prototype.includes.call(['NNP', 'NC', 'MWE', 'X', 'y', 'FW'], third)), ([first, second]) => [first, second]);
     this.staticGlossaryMap = new Map(this.staticGlossary);
-    this.dynamicGlossary = this.glossary.filter(([__, ___, third]) => ['N', 'NU', 'NUX', 'NUM', 'NUMX', 'DET', 'V', 'AUX', 'ADJ', 'PRO', 'ADV', 'PRE', 'PRE', 'CC', 'SC', 'PRT', 'I', 'D', 'Z', 'b', 'PUNCT', 'SYM'].includes(third)).map(([first, second]) => [first, second]);
+    this.dynamicGlossary = Array.prototype.map.call(Array.prototype.filter.call(this.glossary, ([__, ___, third]) => Array.prototype.includes.call(['N', 'NU', 'NUX', 'NUM', 'NUMX', 'DET', 'V', 'AUX', 'ADJ', 'PRO', 'ADV', 'PRE', 'PRE', 'CC', 'SC', 'PRT', 'I', 'D', 'Z', 'b', 'PUNCT', 'SYM'], third)), ([first, second]) => [first, second]);
     this.dynamicGlossaryMap = new Map(this.dynamicGlossary);
     this.data.vietPhrase = new Map(Array.prototype.concat.call([...this.data.vietPhrase], [...this.dynamicGlossaryMap]));
   }
