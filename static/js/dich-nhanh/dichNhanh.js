@@ -259,7 +259,7 @@ function getIgnoreTranslationMarkup(text, translation, translator) {
       return `<mstrans:dictionary translation="${/\p{Script=Hani}/u.test(text) && /\p{Script=Latn}/u.test(translation) ? ` ${translation.replace(/ /g, '_')} ` : translation.replace(/ /g, '_')}">${text}</mstrans:dictionary>`;
     }
     default: {
-      return translator !== Translators.VIETPHRASE ? translation.replace(/ /g, '_') : translation;
+      return [Translators.BAIDU_FANYI, Translators.VIETPHRASE].every((element) => translator !== element) ? translation.replace(/ /g, '_') : translation;
     }
   }
 }
@@ -294,7 +294,7 @@ function applyGlossaryToText(text, translator = Translators.VIETPHRASE, isProper
 
                 if (Map.prototype.get.call(glossaryMapper, phrase) !== '') {
                   const maybeNotStaticPos = glossary.filter(([first, __, third]) => first === phrase && isDynamicWordOrPhrase(third)).length > 0 ? Map.prototype.get.call(glossaryMapper, phrase).replace(/ /g, '_') : Map.prototype.get.call(glossaryMapper, phrase);
-                  tempLine += (Array.from(tempLine).length > 0 && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]/u.test(lastCharInLine) ? ' ' : '') + ([Translators.MICROSOFT_TRANSLATOR, Translators.VIETPHRASE].some((element) => translator === element) || glossary.filter(([first, __, third]) => first === phrase && (isStaticWordOrPhrase(third))).length > 0 ? getIgnoreTranslationMarkup(phrase, Map.prototype.get.call(glossaryMapper, phrase), translator) : maybeNotStaticPos);
+                  tempLine += (Array.from(tempLine).length > 0 && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]/u.test(lastCharInLine) ? ' ' : '') + ([Translators.BAIDU_FANYI, Translators.MICROSOFT_TRANSLATOR, Translators.VIETPHRASE].some((element) => translator === element) || glossary.filter(([first, __, third]) => first === phrase && (isStaticWordOrPhrase(third))).length > 0 ? getIgnoreTranslationMarkup(phrase, Map.prototype.get.call(glossaryMapper, phrase), translator) : maybeNotStaticPos);
                   prevPhrase = Map.prototype.get.call(glossaryMapper, phrase);
                 }
 
