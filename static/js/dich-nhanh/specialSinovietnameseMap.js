@@ -47,6 +47,7 @@ const specialSinovietnameseMap = [
   ['乡长', 'hương trưởng'],
   ['右相', 'hữu tướng'],
   ['计划', 'kế hoạch'],
+  ['乐园', 'lạc viên'],
   ['领主', 'lãnh chủ'],
   ['领地', 'lãnh địa'],
   ['领袖', 'lãnh tụ'],
