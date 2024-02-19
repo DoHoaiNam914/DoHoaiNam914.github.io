@@ -1038,7 +1038,7 @@ class Vietphrase {
   }
 
   static getCapitalizeText(text) {
-    return text.split(/\n/).map((element) => element.replace(/(^[\p{P}\p{Z}]*|[!.?] |[、。！，.？])(\p{Ll})/gu, (__, p1, p2) => p1 + p2.toUpperCase())).join('\n');
+    return text.split(/\n/).map((element) => element.replace(/(^[\p{P}\p{Z}]*|[!.?)\]’”] |(?:^| )[([{‘“]|[。【】！（）.？])(\p{Ll})/gu, (__, p1, p2) => p1 + p2.toUpperCase())).join('\n');
   }
 
   static getFormattedText(inputText) {
@@ -1217,8 +1217,6 @@ class Vietphrase {
         }
         // no default
       }
-
-      if (data.size === 0) return 'Vui lòng nhập tệp VietPhrase.txt hoặc bật tuỳ chọn [Tải tệp VietPhrase mặc định] và tải lại trang!';
 
       if (targetLanguage === 'vi') {
         if (this.addDeLeZhao) {
