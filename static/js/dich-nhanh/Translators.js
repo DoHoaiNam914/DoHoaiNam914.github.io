@@ -83,7 +83,7 @@ class BaiduFanyi {
   static getMappedSourceLanguageCode(translator, languageCode) {
     switch (translator) {
       case Translators.DEEPL_TRANSLATE: {
-        return BaiduFanyi.DEEPL_TRANSLATOR_MAPPING.SOURCE_LANGUAGES[languageCode] ?? (Array.prototype.filter.call(DeeplTranslate.SOURCE_LANGUAGES, ({ language }) => language === languageCode).length > 0 ? languageCode : DeeplTranslate.DefaultLanguage.SOURCE_LANG);
+        return BaiduFanyi.DEEPL_TRANSLATOR_MAPPING.SOURCE_LANGUAGES[languageCode] ?? (DeeplTranslate.SOURCE_LANGUAGES.filter(({ language }) => language === languageCode).length > 0 ? languageCode : DeeplTranslate.DefaultLanguage.SOURCE_LANG);
       }
       case Translators.GOOGLE_TRANSLATE: {
         return BaiduFanyi.GOOGLE_TRANSLATE_MAPPING[languageCode] ?? (Object.hasOwn(GoogleTranslate.SOURCE_LANGUAGES, languageCode) ? languageCode : GoogleTranslate.DefaultLanguage.SL);
@@ -106,7 +106,7 @@ class BaiduFanyi {
   static getMappedTargetLanguageCode(translator, languageCode) {
     switch (translator) {
       case Translators.DEEPL_TRANSLATE: {
-        return BaiduFanyi.DEEPL_TRANSLATOR_MAPPING.TARGET_LANGUAGES[languageCode] ?? (Array.prototype.filter.call(DeeplTranslate.TARGET_LANGUAGES, ({ language }) => language === languageCode).length > 0 ? languageCode : DeeplTranslate.DefaultLanguage.TARGET_LANG);
+        return BaiduFanyi.DEEPL_TRANSLATOR_MAPPING.TARGET_LANGUAGES[languageCode] ?? (DeeplTranslate.TARGET_LANGUAGES.filter(({ language }) => language === languageCode).length > 0 ? languageCode : DeeplTranslate.DefaultLanguage.TARGET_LANG);
       }
       case Translators.GOOGLE_TRANSLATE: {
         return BaiduFanyi.GOOGLE_TRANSLATE_MAPPING[languageCode] ?? (Object.hasOwn(GoogleTranslate.TARGET_LANGUAGES, languageCode) ? languageCode : GoogleTranslate.DefaultLanguage.TL);
@@ -139,7 +139,7 @@ class BaiduFanyi {
         })).lan;
       }
 
-      return query.replace(/\n/g, '').length > 0 ? (JSON.parse(Array.prototype.filter.call((await $.ajax({
+      return query.replace(/\n/g, '').length > 0 ? (JSON.parse((await $.ajax({
         data: JSON.stringify({
           query,
           from: queryDataFrom,
@@ -151,8 +151,8 @@ class BaiduFanyi {
         }),
         headers: { 'Content-Type': 'application/json' },
         method: 'POST',
-        url: Array.prototype.map.call(`${Utils.CORS_PROXY}https://fanyi.baidu.com/ait/text/translate`,
-      })).split(/\n/), (element) => element.includes('"event":"Translating"'))[0].replace(/^data: /, '')).data.list, (element) => element.dst).join('\n') ?? query) : query;
+        url: `${Utils.CORS_PROXY}https://fanyi.baidu.com/ait/text/translate`,
+      })).split(/\n/).filter((element) => element.includes('"event":"Translating"'))[0].replace(/^data: /, '')).data.list.map((element) => element.dst).join('\n') ?? query) : query;
     } catch (error) {
       console.error('Bản dịch lỗi:', error);
       throw error;
@@ -287,11 +287,11 @@ class DeeplTranslate {
   }
 
   static getSourceLangName(languageCode) {
-    return Array.prototype.filter.call(DeeplTranslate.SOURCE_LANGUAGES, ({ language }) => language === languageCode)[0].name;
+    return DeeplTranslate.SOURCE_LANGUAGES.filter(({ language }) => language === languageCode)[0].name;
   }
 
   static getTargetLangName(languageCode) {
-    return Array.prototype.filter.call(DeeplTranslate.TARGET_LANGUAGES, ({ language }) => language === languageCode)[0].name;
+    return DeeplTranslate.TARGET_LANGUAGES.filter(({ language }) => language === languageCode)[0].name;
   }
 
   static getMappedSourceLanguageCode(translator, languageCode) {
@@ -354,11 +354,11 @@ class DeeplTranslate {
 
   async translateText(sourceLang, targetLang, text) {
     try {
-      return Utils.convertHtmlToText(Array.prototype.map.call((await $.ajax({
-        data: `text=${Array.prototype.map.call(text.split(/\n/), (element) => encodeURIComponent(element)).join('&text=')}&source_lang=${sourceLang}&target_lang=${targetLang}&tag_handling=xml`,
+      return Utils.convertHtmlToText((await $.ajax({
+        data: `text=${text.split(/\n/).map((element) => encodeURIComponent(element)).join('&text=')}&source_lang=${sourceLang}&target_lang=${targetLang}&tag_handling=xml`,
         method: 'POST',
         url: `https://api-free.deepl.com/v2/translate?auth_key=${this.authKey}`,
-      })).translations, (element) => element.text).join('\n'));
+      })).translations.map((element) => element.text).join('\n'));
     } catch (error) {
       console.error('Bản dịch lỗi:', error);
       throw error;
@@ -436,7 +436,7 @@ class GoogleTranslate {
         return GoogleTranslate.BAIDU_FANYI_MAPPING[languageCode] ?? (Object.hasOwn(BaiduFanyi.FROM_LANGUAGES, languageCode) ? languageCode : BaiduFanyi.DefaultLanguage.FROM);
       }
       case Translators.DEEPL_TRANSLATE: {
-        return GoogleTranslate.DEEPL_TRANSLATOR_MAPPING.SOURCE_LANGUAGES[languageCode] ?? (Array.prototype.filter.call(DeeplTranslate.SOURCE_LANGUAGES, ({ language }) => language === languageCode).length > 0 ? languageCode : DeeplTranslate.DefaultLanguage.SOURCE_LANG);
+        return GoogleTranslate.DEEPL_TRANSLATOR_MAPPING.SOURCE_LANGUAGES[languageCode] ?? (DeeplTranslate.SOURCE_LANGUAGES.filter(({ language }) => language === languageCode).length > 0 ? languageCode : DeeplTranslate.DefaultLanguage.SOURCE_LANG);
       }
       case Translators.PAPAGO: {
         return Object.hasOwn(Papago.SOURCE_LANGUAGES, languageCode) ? languageCode : Papago.DefaultLanguage.SOURCE;
@@ -459,7 +459,7 @@ class GoogleTranslate {
         return GoogleTranslate.BAIDU_FANYI_MAPPING[languageCode] ?? (Object.hasOwn(BaiduFanyi.TO_LANGUAGES, languageCode) ? languageCode : BaiduFanyi.DefaultLanguage.TO);
       }
       case Translators.DEEPL_TRANSLATE: {
-        return GoogleTranslate.DEEPL_TRANSLATOR_MAPPING.TARGET_LANGUAGES[languageCode] ?? (Array.prototype.filter.call(DeeplTranslate.TARGET_LANGUAGES, ({ language }) => language === languageCode).length > 0 ? languageCode : DeeplTranslate.DefaultLanguage.TARGET_LANG);
+        return GoogleTranslate.DEEPL_TRANSLATOR_MAPPING.TARGET_LANGUAGES[languageCode] ?? (DeeplTranslate.TARGET_LANGUAGES.filter(({ language }) => language === languageCode).length > 0 ? languageCode : DeeplTranslate.DefaultLanguage.TARGET_LANG);
       }
       case Translators.PAPAGO: {
         return Object.hasOwn(Papago.TARGET_LANGUAGES, languageCode) ? languageCode : Papago.DefaultLanguage.TARGET;
@@ -550,7 +550,7 @@ class GoogleTranslate {
        * Google translate Widget
        * Method: POST
        * URL: https://translate.googleapis.com/translate_a/t?anno=3&client=te&format=html&v=1.0&key&logld=v${version}&sl=${sl}&tl=${tl}&tc=0&tk=${lq(querys)}
-       * `q=${Array.prototype.map.call(querys.split(/\n/), (sentence) => encodeURIComponent(sentence)).join('&q=')}`
+       * `q=${querys.split(/\n/).map((sentence) => encodeURIComponent(sentence)).join('&q=')}`
        *
        * Google Translate
        * Method: GET
@@ -559,19 +559,19 @@ class GoogleTranslate {
        * Google Translate Websites
        * Method: POST
        * URL: https://translate.googleapis.com/translate_a/t?anno=3&client=wt_lib&format=html&v=1.0&key=&logld=v${version}&sl=${sl}&tl=${tl}&tc=0&tk=${lq(querys)}
-       * Content-Type: application/x-www-form-urlencoded - `q=${Array.prototype.map.call(querys.split(/\n/), (sentence) => encodeURIComponent(sentence)).join('&q=')}`
+       * Content-Type: application/x-www-form-urlencoded - `q=${querys.split(/\n/).map((sentence) => encodeURIComponent(sentence)).join('&q=')}`
        *
        * Google Chrome
        * Method: POST
        * URL: https://translate.googleapis.com/translate_a/t?anno=3&client=${(_cac || 'te') + (_cam === 'lib' ? '_lib' : '')}&format=html&v=1.0&key=AIzaSyBOti4mM-6x9WDnZIjIeyEU21OpBXqWBgw&logld=v${v || ''}&sl=${sl}&tl=${tl}&tc=0&tk=${lq(querys)}
-       * Content-Type: application/x-www-form-urlencoded - `q=${Array.prototype.map.call(querys.split(/\n/), (sentence) => encodeURIComponent(sentence)).join('&q=')}`
+       * Content-Type: application/x-www-form-urlencoded - `q=${querys.split(/\n/).map((sentence) => encodeURIComponent(sentence)).join('&q=')}`
        */
-      return Utils.convertHtmlToText(Array.prototype.map.call((await $.ajax({
-        data: `q=${Array.prototype.map.call(q.split(/\n/), (element) => encodeURIComponent(element)).join('&q=')}`,
+      return Utils.convertHtmlToText((await $.ajax({
+        data: `q=${q.split(/\n/).map((element) => encodeURIComponent(element)).join('&q=')}`,
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         method: 'POST',
         url: `https://translate.googleapis.com/translate_a/t?anno=2&client=${(this.data._cac || 'te') + (this.data._cam === 'lib' ? '_lib' : '')}&format=html&v=1.0&key${this.apiKey.length > 0 ? `=${this.apiKey}` : ''}&logld=v${this.data.v || ''}&sl=${sl}&tl=${tl}&tc=0&tk=${this.lq(q.replace(/\n/g, ''))}`,
-      })), (element) => (sl === 'auto' ? element[0] : element)).join('\n'));
+      })).filter((element) => (sl === 'auto' ? element[0] : element)).join('\n'));
     } catch (error) {
       console.error('Bản dịch lỗi:', error);
       throw error;
@@ -682,7 +682,7 @@ class Papago {
         return Papago.BAIDU_FANYI_MAPPING[languageCode] ?? (Object.hasOwn(BaiduFanyi.FROM_LANGUAGES, languageCode) ? languageCode : BaiduFanyi.DefaultLanguage.FROM);
       }
       case Translators.DEEPL_TRANSLATE: {
-        return Papago.DEEPL_TRANSLATOR_MAPPING.SOURCE_LANGUAGES[languageCode] ?? (Array.prototype.filter.call(DeeplTranslate.SOURCE_LANGUAGES, ({ language }) => language === languageCode).length > 0 ? languageCode : DeeplTranslate.DefaultLanguage.SOURCE_LANG);
+        return Papago.DEEPL_TRANSLATOR_MAPPING.SOURCE_LANGUAGES[languageCode] ?? (DeeplTranslate.SOURCE_LANGUAGES.filter(({ language }) => language === languageCode).length > 0 ? languageCode : DeeplTranslate.DefaultLanguage.SOURCE_LANG);
       }
       case Translators.GOOGLE_TRANSLATE: {
         const maybeIsChineseTraditional = languageCode === 'zh-TW' ? 'zh-CN' : GoogleTranslate.DefaultLanguage.SL;
@@ -706,7 +706,7 @@ class Papago {
         return Papago.BAIDU_FANYI_MAPPING[languageCode] ?? (Object.hasOwn(BaiduFanyi.TO_LANGUAGES, languageCode) ? languageCode : BaiduFanyi.DefaultLanguage.TO);
       }
       case Translators.DEEPL_TRANSLATE: {
-        return Papago.DEEPL_TRANSLATOR_MAPPING.TARGET_LANGUAGES[languageCode] ?? (Array.prototype.filter.call(DeeplTranslate.TARGET_LANGUAGES, ({ language }) => language === languageCode).length > 0 ? languageCode : DeeplTranslate.DefaultLanguage.TARGET_LANG);
+        return Papago.DEEPL_TRANSLATOR_MAPPING.TARGET_LANGUAGES[languageCode] ?? (DeeplTranslate.TARGET_LANGUAGES.filter(({ language }) => language === languageCode).length > 0 ? languageCode : DeeplTranslate.DefaultLanguage.TARGET_LANG);
       }
       case Translators.GOOGLE_TRANSLATE: {
         return Object.hasOwn(Papago.TARGET_LANGUAGES, languageCode) ? languageCode : GoogleTranslate.DefaultLanguage.TL;
@@ -840,7 +840,7 @@ class MicrosoftTranslator {
         return MicrosoftTranslator.BAIDU_FANYI_MAPPING[languageCode] ?? (Object.hasOwn(BaiduFanyi.FROM_LANGUAGES, languageCode) ? languageCode : BaiduFanyi.DefaultLanguage.FROM);
       }
       case Translators.DEEPL_TRANSLATE: {
-        return MicrosoftTranslator.DEEPL_TRANSLATOR_MAPPING.SOURCE_LANGUAGES[languageCode] ?? (Array.prototype.filter.call(DeeplTranslate.SOURCE_LANGUAGES, ({ language }) => language === languageCode).length > 0 ? languageCode : DeeplTranslate.DefaultLanguage.SOURCE_LANG);
+        return MicrosoftTranslator.DEEPL_TRANSLATOR_MAPPING.SOURCE_LANGUAGES[languageCode] ?? (DeeplTranslate.SOURCE_LANGUAGES.filter(({ language }) => language === languageCode).length > 0 ? languageCode : DeeplTranslate.DefaultLanguage.SOURCE_LANG);
       }
       case Translators.GOOGLE_TRANSLATE: {
         return MicrosoftTranslator.GOOGLE_TRANSLATE_MAPPING[languageCode] ?? (Object.hasOwn(GoogleTranslate.SOURCE_LANGUAGES, languageCode) ? languageCode : GoogleTranslate.DefaultLanguage.SL);
@@ -863,7 +863,7 @@ class MicrosoftTranslator {
         return MicrosoftTranslator.BAIDU_FANYI_MAPPING[languageCode] ?? (Object.hasOwn(BaiduFanyi.TO_LANGUAGES, languageCode) ? languageCode : BaiduFanyi.DefaultLanguage.TO);
       }
       case Translators.DEEPL_TRANSLATE: {
-        return MicrosoftTranslator.DEEPL_TRANSLATOR_MAPPING.TARGET_LANGUAGES[languageCode] ?? (Array.prototype.filter.call(DeeplTranslate.TARGET_LANGUAGES, ({ language }) => language === languageCode).length > 0 ? languageCode : DeeplTranslate.DefaultLanguage.TARGET_LANG);
+        return MicrosoftTranslator.DEEPL_TRANSLATOR_MAPPING.TARGET_LANGUAGES[languageCode] ?? (DeeplTranslate.TARGET_LANGUAGES.filter(({ language }) => language === languageCode).length > 0 ? languageCode : DeeplTranslate.DefaultLanguage.TARGET_LANG);
       }
       case Translators.GOOGLE_TRANSLATE: {
         return MicrosoftTranslator.GOOGLE_TRANSLATE_MAPPING[languageCode] ?? (Object.hasOwn(GoogleTranslate.TARGET_LANGUAGES, languageCode) ? languageCode : GoogleTranslate.DefaultLanguage.TL);
@@ -915,15 +915,15 @@ class MicrosoftTranslator {
        * URL: https://api-edge.cognitive.microsofttranslator.com/translate?from=${sourceLanguage}&to=${targetLanguage}&api-version=3.0&includeSentenceLength=true
        * Authorization: Bearer ${accessToken} - Content-Type: application/json - send(inputText)
        */
-      return Array.prototype.map.call(await $.ajax({
-        data: JSON.stringify(Array.prototype.map.call(text.split(/\n/), (element) => ({ Text: element }))),
+      return (await $.ajax({
+        data: JSON.stringify(text.split(/\n/).map((element) => ({ Text: element }))),
         headers: {
           Authorization: `Bearer ${this.accessToken}`,
           'Content-Type': 'application/json',
         },
         method: 'POST',
         url: `https://api-edge.cognitive.microsofttranslator.com/translate?from=${from}&to=${to}&api-version=3.0`,
-      }), ({ translations: [element] }) => element.text).join('\n');
+      })).map(({ translations: [element] }) => element.text).join('\n');
     } catch (error) {
       console.error('Bản dịch lỗi:', error);
       throw error;
@@ -962,16 +962,16 @@ class Vietphrase {
     this.multiplicationAlgorithm = multiplicationAlgorithm;
     this.useGlossary = useGlossary;
     this.glossary = glossary;
-    this.glossaryMap = new Map(Array.prototype.map.call(this.glossary, ([first, second]) => [first.toUpperCase(), second]));
+    this.glossaryMap = new Map(this.glossary.map(([first, second]) => [first.toUpperCase(), second]));
     this.prioritizeNameOverVietPhrase = prioritizeNameOverVietPhraseCheck;
     this.addDeLeZhao = addDeLeZhao;
     this.autocapitalize = autocapitalize;
 
-    this.staticGlossary = Array.prototype.map.call(Array.prototype.filter.call(this.glossary, ([__, ___, third]) => Array.prototype.includes.call(['NNP', 'NC', 'MWE', 'X', 'y', 'FW'], third)), ([first, second]) => [first, second]);
-    this.staticGlossaryMap = new Map(Array.prototype.map.call(this.staticGlossary, ([first, second]) => [first.toUpperCase(), second]));
-    this.dynamicGlossary = Array.prototype.map.call(Array.prototype.filter.call(this.glossary, ([__, ___, third]) => Array.prototype.includes.call(['N', 'NU', 'NUX', 'NUM', 'NUMX', 'DET', 'V', 'AUX', 'ADJ', 'PRO', 'ADV', 'PRE', 'PRE', 'CC', 'SC', 'PRT', 'I', 'D', 'Z', 'b', 'PUNCT', 'SYM'], third)), ([first, second]) => [first, second]);
-    this.dynamicGlossaryMap = new Map(Array.prototype.map.call(this.dynamicGlossary, ([first, second]) => [first.toUpperCase(), second]));
-    this.data.vietPhrase = new Map(Array.prototype.concat.call([...this.data.vietPhrase], [...this.dynamicGlossaryMap]));
+    // this.staticGlossary = this.glossary.filter(([__, ___, third]) => ['NNP', 'NC', 'MWE', 'X', 'y', 'FW'].includes(third)).map(([first, second]) => [first, second]);
+    // this.staticGlossaryMap = new Map(this.staticGlossary.map(([first, second]) => [first.toUpperCase(), second]));
+    // this.dynamicGlossary = this.glossary.filter(([__, ___, third]) => ['N', 'NU', 'NUX', 'NUM', 'NUMX', 'DET', 'V', 'AUX', 'ADJ', 'PRO', 'ADV', 'PRE', 'PRE', 'CC', 'SC', 'PRT', 'I', 'D', 'Z', 'b', 'PUNCT', 'SYM'].includes(third)).map(([first, second]) => [first, second]);
+    // this.dynamicGlossaryMap = new Map(this.dynamicGlossary.map(([first, second]) => [first.toUpperCase(), second]));
+    // this.data.vietPhrase = new Map([...this.data.vietPhrase].concat([...this.dynamicGlossaryMap]));
   }
 
   static getSourceLanguageName(languageCode) {
@@ -1019,15 +1019,15 @@ class Vietphrase {
 
   loadLuatNhanData(targetLanguage, glossaryEntries, inputText) {
     let nhanByGlossary = glossaryEntries;
-    let nhanByPronoun = Array.prototype.filter.call([...this.data.pronoun], ([first]) => inputText.includes(first));
+    let nhanByPronoun = [...this.data.pronoun].filter(([first]) => inputText.includes(first));
 
     if (this.multiplicationAlgorithm > this.MultiplicationAlgorithm.NOT_APPLICABLE && targetLanguage === 'vi') {
-      Array.prototype.filter.call(Array.prototype.filter.call([...this.data.luatNhan], ([first]) => first.split('{0}').every((element) => inputText.includes(element))), ([a]) => (this.useGlossary && this.multiplicationAlgorithm === this.MultiplicationAlgorithm.MULTIPLICATION_BY_PRONOUNS_AND_NAMES && glossaryEntries.length > 0 && Array.prototype.filter.call(nhanByGlossary, ([c, d]) => inputText.toUpperCase().includes(a.replace(/\{0}/g, Utils.escapeRegExpReplacement(this.prioritizeNameOverVietPhrase ? d : c)).toUpperCase())).length > 0) || Array.prototype.filter.call(nhanByPronoun, ([c]) => inputText.includes(a.replace(/\{0}/g, Utils.escapeRegExpReplacement(c))))).forEach(([a, b]) => {
+      [...this.data.luatNhan].filter(([first]) => first.split('{0}').every((element) => inputText.includes(element))).filter(([a]) => (this.useGlossary && this.multiplicationAlgorithm === this.MultiplicationAlgorithm.MULTIPLICATION_BY_PRONOUNS_AND_NAMES && glossaryEntries.length > 0 && nhanByGlossary.filter(([c, d]) => inputText.toUpperCase().includes(a.replace(/\{0}/g, Utils.escapeRegExpReplacement(this.prioritizeNameOverVietPhrase ? d : c)).toUpperCase())).length > 0) || nhanByPronoun.filter(([c]) => inputText.includes(a.replace(/\{0}/g, Utils.escapeRegExpReplacement(c))))).forEach(([a, b]) => {
         if (this.useGlossary && this.multiplicationAlgorithm === this.MultiplicationAlgorithm.MULTIPLICATION_BY_PRONOUNS_AND_NAMES && glossaryEntries.length > 0) {
-          nhanByGlossary = [...nhanByGlossary, ...Array.prototype.map.call(Array.prototype.filter.call(nhanByGlossary, ([c, d]) => inputText.toUpperCase().includes(a.replace(/\{0}/g, Utils.escapeRegExpReplacement(this.prioritizeNameOverVietPhrase ? d : c)).toUpperCase())), ([c, d]) => [a.replace(/\{0}/g, Utils.escapeRegExpReplacement(this.prioritizeNameOverVietPhrase ? d : c)), b.replace(/\{0}/g, Utils.escapeRegExpReplacement(d))])];
+          nhanByGlossary = [...nhanByGlossary, ...nhanByGlossary.filter(([c, d]) => inputText.toUpperCase().includes(a.replace(/\{0}/g, Utils.escapeRegExpReplacement(this.prioritizeNameOverVietPhrase ? d : c)).toUpperCase())).map(([c, d]) => [a.replace(/\{0}/g, Utils.escapeRegExpReplacement(this.prioritizeNameOverVietPhrase ? d : c)), b.replace(/\{0}/g, Utils.escapeRegExpReplacement(d))])];
         }
 
-        nhanByPronoun = [...nhanByPronoun, ...Array.prototype.map.call(Array.prototype.filter.call(nhanByPronoun, ([c]) => inputText.includes(a.replace(/\{0}/g, Utils.escapeRegExpReplacement(c)))), ([c, d]) => [a.replace(/\{0}/g, Utils.escapeRegExpReplacement(c)), b.replace(/\{0}/g, Utils.escapeRegExpReplacement(d))])];
+        nhanByPronoun = [...nhanByPronoun, ...nhanByPronoun.filter(([c]) => inputText.includes(a.replace(/\{0}/g, Utils.escapeRegExpReplacement(c)))).map(([c, d]) => [a.replace(/\{0}/g, Utils.escapeRegExpReplacement(c)), b.replace(/\{0}/g, Utils.escapeRegExpReplacement(d))])];
       });
     } else {
       nhanByGlossary = [];
@@ -1038,7 +1038,7 @@ class Vietphrase {
   }
 
   static getCapitalizeText(text) {
-    return Array.prototype.map.call(text.split(/\n/), (element) => element.replace(/(^[\p{P}\p{Z}]*|[!.?)\]’”] |(?:^| )[([{‘“]|[。【】！（）.？])(\p{Ll})/gu, (__, p1, p2) => p1 + p2.toUpperCase())).join('\n');
+    return text.split(/\n/).map((element) => element.replace(/(^[\p{P}\p{Z}]*|[!.?)\]’”] |(?:^| )[([{‘“]|[。【】！（）.？])(\p{Ll})/gu, (__, p1, p2) => p1 + p2.toUpperCase())).join('\n');
   }
 
   static getFormattedText(inputText) {
@@ -1062,9 +1062,9 @@ class Vietphrase {
   }
 
   translatePrioritizeLongVietPhraseClusters(targetLanguage, data, inputText) {
-    const text = Array.prototype.map.call(inputText.split(/\r?\n/), (element) => element.trim()).join('\n');
+    const text = inputText.split(/\r?\n/).map((element) => element.trim()).join('\n');
 
-    let dataEntries = Array.prototype.filter.call([...data], ([first]) => text.toUpperCase().includes(first.toUpperCase()));
+    let dataEntries = [...data].filter(([first]) => text.toUpperCase().includes(first.toUpperCase()));
     const glossaryEntries = this.glossary;
 
     let result = text;
@@ -1072,12 +1072,12 @@ class Vietphrase {
     try {
       if (dataEntries.length > 0 || glossaryEntries.length > 0) {
         const [nhanByGlossary, nhanByPronoun] = this.loadLuatNhanData(targetLanguage, glossaryEntries, text);
-        const maybePrioritizeNameOverVietPhrase = this.prioritizeNameOverVietPhrase ? nhanByGlossary : Array.prototype.concat.call(nhanByGlossary, glossaryEntries);
+        const maybePrioritizeNameOverVietPhrase = this.prioritizeNameOverVietPhrase ? nhanByGlossary : nhanByGlossary.concat(glossaryEntries);
 
-        dataEntries = Array.prototype.concat.call((this.useGlossary ? maybePrioritizeNameOverVietPhrase : []), nhanByPronoun, dataEntries).toSorted((a, b) => b[0].length - a[0].length);
+        dataEntries = (this.useGlossary ? maybePrioritizeNameOverVietPhrase : []).concat(nhanByPronoun, dataEntries).toSorted((a, b) => b[0].length - a[0].length);
 
         dataEntries.some(([a, value], __, array) => {
-          if (result.toUpperCase().includes(a.toUpperCase()) && (((this.useGlossary && !this.prioritizeNameOverVietPhrase && Map.prototype.has.call(this.glossaryMap, a.toUpperCase())) || Array.from(a).every((element) => Map.prototype.has.call(this.data.hanViet, element) || (Map.prototype.has.call(this.data.vietPhrase, element) && /^\p{P}$/u.test(element))) || Array.prototype.includes.call(Array.prototype.concat.call(nhanByGlossary, Array.prototype.map.call(glossaryEntries, ([first, second]) => [first.toUpperCase(), second])), a)) && a !== '·')) {
+          if (result.toUpperCase().includes(a.toUpperCase()) && (((this.useGlossary && !this.prioritizeNameOverVietPhrase && this.glossaryMap.has(a.toUpperCase())) || [...a].every((element) => this.data.hanViet.has(element) || (this.data.vietPhrase.has(element) && /^\p{P}$/u.test(element))) || nhanByGlossary.concat(glossaryEntries.map(([first, second]) => [first.toUpperCase(), second])).includes(a)) && a !== '·')) {
             // console.log(`${a}: ${value}`, `${(new RegExp(`${Utils.escapeRegExp(a)}${Utils.escapeRegExp(a)}${this.useGlossary && this.glossary.length > 0 ? `(?=${Object.values(this.glossaryObject).join('|')})` : '(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])'}`, 'giu')).test(result)},
             //   ${(new RegExp(`([\\p{Lu}\\p{Ll}\\p{M}\\p{Nd})\\]}’”])${Utils.escapeRegExp(a)}${this.useGlossary && this.glossary.length > 0 ? `(?=${Object.values(this.glossaryObject).join('|')})` : '(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])'}`, 'giu')).test(result)},
             //   ${(new RegExp(`${Utils.escapeRegExp(a)}${Utils.escapeRegExp(a)}(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])`, 'gu')).test(result)}
@@ -1098,7 +1098,7 @@ class Vietphrase {
               .replace(new RegExp(Utils.escapeRegExp(a), 'g'), Utils.escapeRegExpReplacement(value));
           }
 
-          if (Array.prototype.filter.call(array, ([b]) => result.toUpperCase().includes(b.toUpperCase())).length === 0) return true;
+          if (array.filter(([b]) => result.toUpperCase().includes(b.toUpperCase())).length === 0) return true;
           return false;
         });
 
@@ -1114,9 +1114,9 @@ class Vietphrase {
   }
 
   translateFromLeftToRight(targetLanguage, data, inputText) {
-    const text = Array.prototype.map.call(inputText.split(/\r?\n/), (element) => element.trim()).join('\n');
+    const text = inputText.split(/\r?\n/).map((element) => element.trim()).join('\n');
 
-    let dataEntries = Array.prototype.filter.call([...data], ([first]) => text.includes(first));
+    let dataEntries = [...data].filter(([first]) => text.includes(first));
     const glossaryEntries = this.glossary;
 
     const lines = text.split(/\n/);
@@ -1127,43 +1127,46 @@ class Vietphrase {
     try {
       if (dataEntries.length > 0 || glossaryEntries.length > 0) {
         const [nhanByGlossary, nhanByPronoun] = this.loadLuatNhanData(targetLanguage, glossaryEntries, text);
-        const maybePrioritizeNameOverVietPhrase = this.prioritizeNameOverVietPhrase ? nhanByGlossary : Array.prototype.concat.call(nhanByGlossary, glossaryEntries);
+        const maybePrioritizeNameOverVietPhrase = this.prioritizeNameOverVietPhrase ? nhanByGlossary : nhanByGlossary.concat(glossaryEntries);
 
-        dataEntries = Array.prototype.concat.call((this.useGlossary ? maybePrioritizeNameOverVietPhrase : []), nhanByPronoun, dataEntries);
+        dataEntries = (this.useGlossary ? maybePrioritizeNameOverVietPhrase : []).concat(nhanByPronoun, dataEntries);
 
         const dataMap = new Map(dataEntries);
 
         lines.forEach((a) => {
-          if (Array.from(a).length === 0) {
+          const chars = [...a];
+
+          if (chars.length === 0) {
             results.push(a);
           } else {
-            const glossaryEntriesInLine = Array.prototype.filter.call(glossaryEntries, ([__, second]) => a.includes(second));
+            const glossaryEntriesInLine = glossaryEntries.filter(([__, second]) => a.includes(second));
 
-            const dataLengths = [Array.from(a).length, ...this.useGlossary && this.prioritizeNameOverVietPhrase ? Array.prototype.map.call(glossaryEntriesInLine, ([__, second]) => Array.from(second).length) : [], ...Array.prototype.filter.call(Array.prototype.map.call(Array.prototype.filter.call(dataEntries, ([first]) => this.useGlossary && !this.prioritizeNameOverVietPhrase && Map.prototype.has.call(this.glossaryMap, first.toUpperCase()) ? a.toUpperCase().includes(first.toUpperCase()) : a.includes(first)), ([first]) => Array.from(first).length), 1].toSorted((b, c) => c - b), (element, index, array) => element > 0 && index === array.indexOf(element));
+            const dataLengths = [chars.length, ...this.useGlossary && this.prioritizeNameOverVietPhrase ? glossaryEntriesInLine.map(([__, second]) => [...second].length) : [], ...dataEntries.filter(([first]) => this.useGlossary && !this.prioritizeNameOverVietPhrase && this.glossaryMap.has(first.toUpperCase()) ? a.toUpperCase().includes(first.toUpperCase()) : a.includes(first)).map(([first]) => [...first].length), 1].toSorted((b, c) => c - b).filter((element, index, array) => element > 0 && index === array.indexOf(element));
 
             let tempLine = '';
             let prevPhrase = '';
             let i = 0;
 
-            Array.from(a).forEach((__, c) => {
+            chars.forEach((__, c) => {
               if (c === i) {
                 dataLengths.some((d) => {
                   let phrase = a.substring(i, i + d);
-                  const lastCharInLine = Array.from(tempLine).length > 0 ? Array.from(tempLine)[Array.from(tempLine).length - 1] : '';
+                  const charsInTempLine = [...tempLine];
+                  const lastCharInTempLine = charsInTempLine.length > 0 ? charsInTempLine[charsInTempLine.length - 1] : '';
 
-                  if (this.useGlossary && this.prioritizeNameOverVietPhrase && Array.prototype.map.call(glossaryEntries, ([__, second]) => second).includes(phrase)) {
-                    tempLine += (Array.from(tempLine).length > 0 && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]/u.test(lastCharInLine) ? ' ' : '') + phrase;
+                  if (this.useGlossary && this.prioritizeNameOverVietPhrase && glossaryEntries.map(([__, second]) => second).includes(phrase)) {
+                    tempLine += (charsInTempLine.length > 0 && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]/u.test(lastCharInTempLine) ? ' ' : '') + phrase;
                     prevPhrase = phrase;
                     i += d - 1;
                     return true;
                   }
 
-                  if (((this.useGlossary && !this.prioritizeNameOverVietPhrase && Map.prototype.has.call(this.glossaryMap, phrase.toUpperCase())) || Array.from(phrase).every((element) => Map.prototype.has.call(this.data.hanViet, element) || (Map.prototype.has.call(this.data.vietPhrase, element) && /^\p{P}$/u.test(element))) || Array.prototype.includes.call(Array.prototype.concat.call(nhanByGlossary, Array.prototype.map.call(glossaryEntries, ([first, second]) => [first.toUpperCase(), second])), phrase)) && Map.prototype.has.call(dataMap, phrase) && phrase !== '·') {
-                    phrase = this.useGlossary && !this.prioritizeNameOverVietPhrase && Map.prototype.has.call(this.glossaryMap, phrase.toUpperCase()) ? phrase.toUpperCase() : phrase;
+                  if (((this.useGlossary && !this.prioritizeNameOverVietPhrase && this.glossaryMap.has(phrase.toUpperCase())) || [...phrase].every((element) => this.data.hanViet.has(element) || (this.data.vietPhrase.has(element) && /^\p{P}$/u.test(element))) || nhanByGlossary.concat(glossaryEntries.map(([first, second]) => [first.toUpperCase(), second])).includes(phrase)) && dataMap.has(phrase) && phrase !== '·') {
+                    phrase = this.useGlossary && !this.prioritizeNameOverVietPhrase && this.glossaryMap.has(phrase.toUpperCase()) ? phrase.toUpperCase() : phrase;
 
-                    if (Map.prototype.get.call(dataMap, phrase) !== '') {
-                      tempLine += (Array.from(tempLine).length > 0 && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]/u.test(lastCharInLine) ? ' ' : '') + Map.prototype.get.call(dataMap, phrase);
-                      prevPhrase = Map.prototype.get.call(dataMap, phrase);
+                    if (dataMap.get(phrase) !== '') {
+                      tempLine += (charsInTempLine.length > 0 && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]/u.test(lastCharInTempLine) ? ' ' : '') + dataMap.get(phrase);
+                      prevPhrase = dataMap.get(phrase);
                     }
 
                     i += d - 1;
@@ -1171,7 +1174,7 @@ class Vietphrase {
                   }
 
                   if (d === 1) {
-                    tempLine += (Array.from(tempLine).length > 0 && /[\p{Lu}\p{Ll}\p{Nd}(([{‘“]/u.test(a[i]) && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]/u.test(prevPhrase) ? ' ' : '') + phrase;
+                    tempLine += (charsInTempLine.length > 0 && /[\p{Lu}\p{Ll}\p{Nd}(([{‘“]/u.test(a[i]) && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]/u.test(prevPhrase) ? ' ' : '') + phrase;
                     prevPhrase = '';
                     return true;
                   }
@@ -1220,13 +1223,13 @@ class Vietphrase {
 
       if (targetLanguage === 'vi') {
         if (this.addDeLeZhao) {
-          Map.prototype.set.call(data, '的', Map.prototype.get.call(this.data.hanViet, '的'));
-          Map.prototype.set.call(data, '了', Map.prototype.get.call(this.data.hanViet, '了'));
-          Map.prototype.set.call(data, '着', Map.prototype.get.call(this.data.hanViet, '着'));
+          data.set('的', this.data.hanViet.get('的'));
+          data.set('了', this.data.hanViet.get('了'));
+          data.set('着', this.data.hanViet.get('着'));
         } else {
-          Map.prototype.set.call(data, '的', '');
-          Map.prototype.set.call(data, '了', '');
-          Map.prototype.set.call(data, '着', '');
+          data.set('的', '');
+          data.set('了', '');
+          data.set('着', '');
         }
       }
 
