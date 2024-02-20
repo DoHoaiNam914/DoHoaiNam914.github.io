@@ -265,8 +265,8 @@ function getIgnoreTranslationMarkup(text, translation, translator) {
 }
 
 function applyGlossaryToText(text, translator = Translators.VIETPHRASE, isProperOnly = true) {
-  const glossaryEntries = glossary.filter(([__, ___, third]) => !isProperOnly || translator !== Translators.VIETPHRASE || ['NNP', 'NC', 'MWE', 'X', 'y', 'FW'].includes(third)).filter(([first]) => text.includes(first)).map(([first, second, third]) => [first.toUpperCase(), second, third]);
-  const glossaryMapper = new Map(glossaryEntries.map(([first, second]) => [first, second]));
+  const glossaryEntries = glossary.filter(([__, ___, third]) => !isProperOnly || translator !== Translators.VIETPHRASE || ['NNP', 'NC', 'MWE', 'X', 'y', 'FW'].includes(third)).filter(([first]) => text.includes(first));
+  const glossaryMapper = new Map(glossaryEntries.map(([first, second]) => [first.toUpperCase(), second]));
   let newText = text;
 
   if (glossaryEntries.length > 0) {
