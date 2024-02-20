@@ -265,7 +265,7 @@ function getIgnoreTranslationMarkup(text, translation, translator) {
 }
 
 function applyGlossaryToText(text, translator = Translators.VIETPHRASE, isProperOnly = true) {
-  const glossaryEntries = glossary.filter(([__, ___, third]) => !isProperOnly || translator !== Translators.VIETPHRASE || ['NNP', 'NC', 'MWE', 'X', 'y', 'FW'].includes(third)).filter(([first]) => text.includes(first));
+  const glossaryEntries = glossary.filter(([__, ___, third]) => !isProperOnly || translator !== Translators.VIETPHRASE || ['NNP', 'NC', 'MWE', 'X', 'y', 'FW'].includes(third)).filter(([first]) => text.toUpperCase().includes(first.toUpperCase()));
   const glossaryMapper = new Map(glossaryEntries.map(([first, second]) => [first.toUpperCase(), second]));
   let newText = text;
 
@@ -286,15 +286,15 @@ function applyGlossaryToText(text, translator = Translators.VIETPHRASE, isProper
         Array.from(a).forEach((b, c) => {
           if (c === i) {
             glossaryLengths.some((d) => {
-              let phrase = translator === Translators.DEEPL_TRANSLATE || translator === Translators.GOOGLE_TRANSLATE ? Utils.convertHtmlToText(a.substring(i, i + d)) : a.substring(i, i + d);
+              let phrase = translator === Translators.DEEPL_TRANSLATE || translator === Translators.GOOGLE_TRANSLATE ? Utils.convertHtmlToText(a.substring(i, i + d)) : a.substring(i, i + d);console.log(phrase);
               const lastCharInLine = Array.from(tempLine).length > 0 ? Array.from(tempLine)[Array.from(tempLine).length - 1] : '';
 
               if (Map.prototype.get.call(glossaryMapper, phrase.toUpperCase())) {
-                phrase = translator === Translators.DEEPL_TRANSLATE || translator === Translators.GOOGLE_TRANSLATE ? Utils.convertHtmlToText(a.substring(i, i + d).toUpperCase()) : a.substring(i, i + d).toUpperCase();
+                phrase = translator === Translators.DEEPL_TRANSLATE || translator === Translators.GOOGLE_TRANSLATE ? Utils.convertHtmlToText(a.substring(i, i + d).toUpperCase()) : a.substring(i, i + d).toUpperCase();console.log(phrase);
 
                 if (Map.prototype.get.call(glossaryMapper, phrase) !== '') {
                   const maybeNotStaticPos = glossary.filter(([first, __, third]) => first === phrase && isDynamicWordOrPhrase(third)).length > 0 ? Map.prototype.get.call(glossaryMapper, phrase).replace(/ /g, '_') : Map.prototype.get.call(glossaryMapper, phrase);
-                  tempLine += (Array.from(tempLine).length > 0 && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]/u.test(lastCharInLine) ? ' ' : '') + ([Translators.BAIDU_FANYI, Translators.MICROSOFT_TRANSLATOR, Translators.VIETPHRASE].some((element) => translator === element) || glossary.filter(([first, __, third]) => first === phrase && (isStaticWordOrPhrase(third))).length > 0 ? getIgnoreTranslationMarkup(phrase, Map.prototype.get.call(glossaryMapper, phrase), translator) : maybeNotStaticPos);
+                  tempLine += (Array.from(tempLine).length > 0 && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]/u.test(lastCharInLine) ? ' ' : '') + ([Translators.BAIDU_FANYI, Translators.MICROSOFT_TRANSLATOR, Translators.VIETPHRASE].some((element) => translator === element) || glossary.filter(([first, __, third]) => first === phrase && (isStaticWordOrPhrase(third))).length > 0 ? getIgnoreTranslationMarkup(phrase, Map.prototype.get.call(glossaryMapper, phrase), translator) : maybeNotStaticPos);console.log(tempLine);
                   prevPhrase = Map.prototype.get.call(glossaryMapper, phrase);
                 }
 
@@ -1434,7 +1434,7 @@ $('#clear-button').on('click', () => {
 $glossaryType.on('change', reloadGlossaryEntries);
 
 $sourceEntryInput.on('input', async function onInput() {
-  const inputText = $(this).val();
+  let inputText = $(this).val();
 
   if (inputText.length > 0) {
     const $option = $(`#${$(this).attr('list')} > option`).filter((__, element) => inputText === element.innerText);
@@ -1445,8 +1445,10 @@ $sourceEntryInput.on('input', async function onInput() {
     }
 
     if (Map.prototype.has.call(glossaryMap, inputText)) {
-      $targetEntryInput.val(applyGlossaryToText(inputText.trim(), Translators.VIETPHRASE, false)).trigger('input');
-      $glossaryEntrySelect.val(inputText.trim());
+      inputText = glossary.filter(([first]) => first.toUpperCase() === inputText.toUpperCase().trim())[0][0]
+      $(this).val(inputText);
+      $targetEntryInput.val(applyGlossaryToText(inputText, Translators.VIETPHRASE, false)).trigger('input');
+      $glossaryEntrySelect.val(inputText);
       if (!Utils.isOnMobile()) $glossaryEntrySelect.find(`option[value="${inputText.trim()}"]`)[0].scrollIntoView(true);
       $tagsetSelect.val(glossary.filter(([first]) => first === inputText)[0][2] ?? 'X');
     } else {
