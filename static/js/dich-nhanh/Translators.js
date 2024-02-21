@@ -1078,22 +1078,22 @@ class Vietphrase {
 
         dataEntries.some(([a, value], __, array) => {
           if (result.toUpperCase().includes(a.toUpperCase()) && (((this.useGlossary && !this.prioritizeNameOverVietPhrase && this.glossaryMap.has(a.toUpperCase())) || [...a].every((element) => this.data.hanViet.has(element) || (this.data.vietPhrase.has(element) && /^\p{P}$/u.test(element))) || nhanByGlossary.concat(glossaryEntries.map(([first, second]) => [first.toUpperCase(), second])).includes(a)) && a !== '·')) {
-            // console.log(`${a}: ${value}`, `${(new RegExp(`${Utils.escapeRegExp(a)}${Utils.escapeRegExp(a)}${this.useGlossary && this.glossary.length > 0 ? `(?=${Object.values(this.glossaryObject).join('|')})` : '(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])'}`, 'giu')).test(result)},
-            //   ${(new RegExp(`([\\p{Lu}\\p{Ll}\\p{M}\\p{Nd})\\]}’”])${Utils.escapeRegExp(a)}${this.useGlossary && this.glossary.length > 0 ? `(?=${Object.values(this.glossaryObject).join('|')})` : '(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])'}`, 'giu')).test(result)},
+            // console.log(`${a}: ${value}`, `${(new RegExp(`${Utils.escapeRegExp(a)}${Utils.escapeRegExp(a)}${this.useGlossary && this.glossary.length > 0 ? `(?=${Array.from(this.glossaryMap, ([__, second]) => second).join('|')})` : '(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])'}`, 'giu')).test(result)},
+            //   ${(new RegExp(`([\\p{Lu}\\p{Ll}\\p{M}\\p{Nd})\\]}’”])${Utils.escapeRegExp(a)}${this.useGlossary && this.glossary.length > 0 ? `(?=${Array.from(this.glossaryMap, ([__, second]) => second).join('|')})` : '(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])'}`, 'giu')).test(result)},
             //   ${(new RegExp(`${Utils.escapeRegExp(a)}${Utils.escapeRegExp(a)}(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])`, 'gu')).test(result)}
             //   ${(new RegExp(`([\\p{Lu}\\p{Ll}\\p{M}\\p{Nd})\\]}’”])${Utils.escapeRegExp(a)}(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])`, 'gu')).test(result)},
             //   ${(new RegExp(`(${Utils.escapeRegExp(a)})?${Utils.escapeRegExp(a)}`, 'g')).test(result)}
             //   ${(new RegExp(`([\\p{Lu}\\p{Ll}\\p{M}\\p{Nd})\\]}’”])${Utils.escapeRegExp(a)}`, 'gu')).test(result)},
-            //   ${(new RegExp(`${Utils.escapeRegExp(a)}${this.useGlossary && this.glossary.length > 0 ? `(?=${Object.values(this.glossaryObject).join('|')})` : '(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])'}`, 'giu')).test(result)},
+            //   ${(new RegExp(`${Utils.escapeRegExp(a)}${this.useGlossary && this.glossary.length > 0 ? `(?=${Array.from(this.glossaryMap, ([__, second]) => second).join('|')})` : '(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])'}`, 'giu')).test(result)},
             //   ${(new RegExp(`${Utils.escapeRegExp(a)}(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])`, 'gu')).test(result)}
             //   ${(new RegExp(Utils.escapeRegExp(a), 'g')).test(result)}`);
-            result = result.replace(new RegExp(`${Utils.escapeRegExp(a)}${Utils.escapeRegExp(a)}${this.useGlossary && this.glossary.length > 0 ? `(?=${Object.values(this.glossaryMap).join('|')})` : '(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])'}`, 'giu'), `${Utils.escapeRegExpReplacement(value)} ${Utils.escapeRegExpReplacement(value)}${value.length > 0 ? ' ' : ''}`)
-              .replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{M}\\p{Nd})\\]}’”])${Utils.escapeRegExp(a)}${this.useGlossary && this.glossary.length > 0 ? `(?=${Object.values(this.glossaryMap).join('|')})` : '(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])'}`, 'giu'), `$1 ${Utils.escapeRegExpReplacement(value)}${value.length > 0 ? ' ' : ''}`)
+            result = result.replace(new RegExp(`${Utils.escapeRegExp(a)}${Utils.escapeRegExp(a)}${this.useGlossary && this.glossary.length > 0 ? `(?=${Array.from(this.glossaryMap, ([__, second]) => second).join('|')})` : '(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])'}`, 'giu'), `${Utils.escapeRegExpReplacement(value)} ${Utils.escapeRegExpReplacement(value)}${value.length > 0 ? ' ' : ''}`)
+              .replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{M}\\p{Nd})\\]}’”])${Utils.escapeRegExp(a)}${this.useGlossary && this.glossary.length > 0 ? `(?=${Array.from(this.glossaryMap, ([__, second]) => second).join('|')})` : '(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])'}`, 'giu'), `$1 ${Utils.escapeRegExpReplacement(value)}${value.length > 0 ? ' ' : ''}`)
               .replace(new RegExp(`${Utils.escapeRegExp(a)}${Utils.escapeRegExp(a)}(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])`, 'gu'), `${Utils.escapeRegExpReplacement(value)} ${Utils.escapeRegExpReplacement(value)}${value.length > 0 ? ' ' : ''}`)
               .replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{M}\\p{Nd})\\]}’”])${Utils.escapeRegExp(a)}(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])`, 'gu'), `$1 ${Utils.escapeRegExpReplacement(value)}${value.length > 0 ? ' ' : ''}`)
               .replace(new RegExp(`${Utils.escapeRegExp(a)}${Utils.escapeRegExp(a)}`, 'g'), `${Utils.escapeRegExpReplacement(value)} ${Utils.escapeRegExpReplacement(value)}`)
               .replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{M}\\p{Nd})\\]}’”])${Utils.escapeRegExp(a)}`, 'gu'), `$1${value.length > 0 ? ` ${Utils.escapeRegExpReplacement(value)}` : ''}`)
-              .replace(new RegExp(`${Utils.escapeRegExp(a)}${this.useGlossary && this.glossary.length > 0 ? `(?=${Object.values(this.glossaryMap).join('|')})` : '(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])'}`, 'giu'), `${Utils.escapeRegExpReplacement(value)}${value.length > 0 ? ' ' : ''}`)
+              .replace(new RegExp(`${Utils.escapeRegExp(a)}${this.useGlossary && this.glossary.length > 0 ? `(?=${Array.from(this.glossaryMap, ([__, second]) => second).join('|')})` : '(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])'}`, 'giu'), `${Utils.escapeRegExpReplacement(value)}${value.length > 0 ? ' ' : ''}`)
               .replace(new RegExp(`${Utils.escapeRegExp(a)}(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])`, 'gu'), `${Utils.escapeRegExpReplacement(value)}${value.length > 0 ? ' ' : ''}`)
               .replace(new RegExp(Utils.escapeRegExp(a), 'g'), Utils.escapeRegExpReplacement(value));
           }
@@ -1117,7 +1117,7 @@ class Vietphrase {
     const text = inputText.split(/\r?\n/).map((element) => element.trim()).join('\n');
 
     let dataEntries = [...data].filter(([first]) => text.includes(first));
-    const glossaryEntries = this.glossary;
+    const glossaryEntries = [...glossaryMap];
 
     const lines = text.split(/\n/);
     const results = [];

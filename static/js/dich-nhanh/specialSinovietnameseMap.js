@@ -61,6 +61,7 @@ const specialSinovietnameseMap = [
   ['任务', 'nhiệm vụ'],
   ['玻璃', 'pha lê'],
   ['副本', 'phó bản'],
+  ['封号', 'phong hiệu'],
   ['府邸', 'phủ đệ'],
   ['服从', 'phục tùng'],
   ['管理', 'quản lí'],
