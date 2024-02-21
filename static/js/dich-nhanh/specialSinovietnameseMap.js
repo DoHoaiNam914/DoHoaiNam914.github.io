@@ -184,6 +184,7 @@ const specialSinovietnameseMap = [
   [/* Giản thể */ '坏', 'HOẠI'],
   [/* Kanji */ '壊', '坏'],
   ['县', 'HUYỆN'],
+  ['蹊', 'KHÊ'],
   ['挑', 'KHIÊU'],
   ['矿', 'KHOÁNG'],
   ['灰', 'KHÔI'],

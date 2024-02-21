@@ -1502,14 +1502,13 @@ $('.dropdown-menu button.dropdown-item').on('click', function onClick() {
 
 $dropdownHasCollapse.on('hide.bs.dropdown', function onHideBsDropdown() {
   $(this).find('.dropdown-menu').find('.collapse').each((indexInArray, value) => {
+    const bootstrapCollapseInDropdown = new bootstrap.Collapse(value);
+
     if ($(value).hasClass('show-by-default') && !$(value).hasClass('show')) {
       bootstrapCollapseInDropdown.show();
-      return;
+    } else if (!$(value).hasClass('show-by-default')) {
+      bootstrapCollapseInDropdown.hide();
     }
-
-    if (!$(value).hasClass('show') || $(value).hasClass('show-by-default')) return;
-    const bootstrapCollapseInDropdown = new bootstrap.Collapse(value);
-    bootstrapCollapseInDropdown.hide();
   });
 });
 
