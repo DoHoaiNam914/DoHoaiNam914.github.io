@@ -1493,9 +1493,10 @@ $('.dropdown-menu button.dropdown-item').on('click', function onClick() {
     });
   } else {
     $dropdownHasCollapse.find('.dropdown-menu').each((indexInArray, value) => {
-      if (!$(value).hasClass('show')) return;
-      const bootstrapDropdownHasCollapse = new bootstrap.Dropdown(value);
-      bootstrapDropdownHasCollapse.hide();
+      if (!$(value).hasClass('show-by-default') && $(value).hasClass('show')) {
+        const bootstrapDropdownHasCollapse = new bootstrap.Dropdown(value);
+        bootstrapDropdownHasCollapse.hide();
+      }
     });
   }
 });
