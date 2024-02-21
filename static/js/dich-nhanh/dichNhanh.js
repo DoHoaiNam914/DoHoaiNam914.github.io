@@ -1501,15 +1501,19 @@ $('.dropdown-menu button.dropdown-item').on('click', function onClick() {
   }
 });
 
+$dropdownHasCollapse.on('show.bs.dropdown', function onHideBsDropdown() {
+  $(this).find('.dropdown-menu').find('.collapse').each((indexInArray, value) => {
+    if (!$(value).hasClass('show-by-default') || $(value).hasClass('show')) return;
+    const bootstrapCollapseInDropdown = new bootstrap.Collapse(value);
+    bootstrapCollapseInDropdown.show();
+  });
+});
+
 $dropdownHasCollapse.on('hide.bs.dropdown', function onHideBsDropdown() {
   $(this).find('.dropdown-menu').find('.collapse').each((indexInArray, value) => {
+    if ($(value).hasClass('show-by-default') || !$(value).hasClass('show')) return;
     const bootstrapCollapseInDropdown = new bootstrap.Collapse(value);
-
-    if ($(value).hasClass('show-by-default') && !$(value).hasClass('show')) {
-      bootstrapCollapseInDropdown.show();
-    } else if (!$(value).hasClass('show-by-default') && $(value).hasClass('show')) {
-      bootstrapCollapseInDropdown.hide();
-    }
+    bootstrapCollapseInDropdown.hide();
   });
 });
 
