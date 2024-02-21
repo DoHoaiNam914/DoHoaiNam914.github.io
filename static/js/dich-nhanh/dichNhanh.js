@@ -1562,7 +1562,7 @@ $translateEntryButtons.on('click', async function onClick() {
   if (inputText.length > 0) {
     $translateEntryButtons.addClass('disabled');
     $sourceEntryInput.attr('readonly', true);
-    $targetEntryTextarea.val(await translateText(inputText, translatorOption, targetLanguage, false)).trigger('input');
+    $targetEntryTextarea.val(await translateText(inputText, translatorOption, targetLanguage, $(this).data('glossary') != null && Boolean($(this).data('glossary')) !== false)).trigger('input');
     $sourceEntryInput.removeAttr('readonly');
     $translateEntryButtons.removeClass('disabled');
   }

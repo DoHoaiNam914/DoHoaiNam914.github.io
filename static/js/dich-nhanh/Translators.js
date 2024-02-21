@@ -1022,9 +1022,9 @@ class Vietphrase {
     let nhanByPronoun = [...this.data.pronoun].filter(([first]) => inputText.includes(first));
 
     if (this.multiplicationAlgorithm > this.MultiplicationAlgorithm.NOT_APPLICABLE && targetLanguage === 'vi') {
-      [...this.data.luatNhan].filter(([first]) => first.split('{0}').every((element) => inputText.includes(element))).filter(([a]) => (this.useGlossary && this.multiplicationAlgorithm === this.MultiplicationAlgorithm.MULTIPLICATION_BY_PRONOUNS_AND_NAMES && glossaryEntries.length > 0 && nhanByGlossary.filter(([c, d]) => inputText.toUpperCase().includes(a.replace(/\{0}/g, Utils.escapeRegExpReplacement(this.prioritizeNameOverVietPhrase ? d : c)).toUpperCase())).length > 0) || nhanByPronoun.filter(([c]) => inputText.includes(a.replace(/\{0}/g, Utils.escapeRegExpReplacement(c))))).forEach(([a, b]) => {
+      [...this.data.luatNhan].filter(([first]) => first.split('{0}').every((element) => inputText.includes(element))).filter(([a]) => (this.useGlossary && this.multiplicationAlgorithm === this.MultiplicationAlgorithm.MULTIPLICATION_BY_PRONOUNS_AND_NAMES && glossaryEntries.length > 0 && nhanByGlossary.filter(([b, c]) => inputText.toUpperCase().includes(a.replace(/\{0}/g, Utils.escapeRegExpReplacement(this.prioritizeNameOverVietPhrase ? c : b)).toUpperCase())).length > 0) || nhanByPronoun.filter(([c]) => inputText.includes(a.replace(/\{0}/g, Utils.escapeRegExpReplacement(c))))).forEach(([a, b]) => {
         if (this.useGlossary && this.multiplicationAlgorithm === this.MultiplicationAlgorithm.MULTIPLICATION_BY_PRONOUNS_AND_NAMES && glossaryEntries.length > 0) {
-          nhanByGlossary = [...nhanByGlossary, ...nhanByGlossary.filter(([c, d]) => inputText.toUpperCase().includes(a.replace(/\{0}/g, Utils.escapeRegExpReplacement(this.prioritizeNameOverVietPhrase ? d : c)).toUpperCase())).map(([c, d]) => [a.replace(/\{0}/g, Utils.escapeRegExpReplacement(this.prioritizeNameOverVietPhrase ? d : c)), b.replace(/\{0}/g, Utils.escapeRegExpReplacement(d))])];
+          nhanByGlossary = [...nhanByGlossary, ...nhanByGlossary.filter(([c, d]) => inputText.toUpperCase().includes(a.replace(/\{0}/g, Utils.escapeRegExpReplacement(this.prioritizeNameOverVietPhrase ? d : c)).toUpperCase())).map(([c, d]) => [a.replace(/\{0}/g, Utils.escapeRegExpReplacement(this.prioritizeNameOverVietPhrase ? d : c)).toUpperCase(), b.replace(/\{0}/g, Utils.escapeRegExpReplacement(d))])];
         }
 
         nhanByPronoun = [...nhanByPronoun, ...nhanByPronoun.filter(([c]) => inputText.includes(a.replace(/\{0}/g, Utils.escapeRegExpReplacement(c)))).map(([c, d]) => [a.replace(/\{0}/g, Utils.escapeRegExpReplacement(c)), b.replace(/\{0}/g, Utils.escapeRegExpReplacement(d))])];
@@ -1076,29 +1076,29 @@ class Vietphrase {
 
         dataEntries = (this.useGlossary ? maybePrioritizeNameOverVietPhrase : []).concat(nhanByPronoun, dataEntries).toSorted((a, b) => b[0].length - a[0].length);
 
-        dataEntries.some(([a, value], __, array) => {
-          if (result.toUpperCase().includes(a.toUpperCase()) && (((this.useGlossary && !this.prioritizeNameOverVietPhrase && this.glossaryMap.has(a.toUpperCase())) || [...a].every((element) => this.data.hanViet.has(element) || (this.data.vietPhrase.has(element) && /^\p{P}$/u.test(element))) || nhanByGlossary.concat(glossaryEntries.map(([first, second]) => [first.toUpperCase(), second])).includes(a)) && a !== '·')) {
-            // console.log(`${a}: ${value}`, `${(new RegExp(`${Utils.escapeRegExp(a)}${Utils.escapeRegExp(a)}${this.useGlossary && this.glossary.length > 0 ? `(?=${Array.from(this.glossaryMap, ([__, second]) => second).join('|')})` : '(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])'}`, 'giu')).test(result)},
-            //   ${(new RegExp(`([\\p{Lu}\\p{Ll}\\p{M}\\p{Nd})\\]}’”])${Utils.escapeRegExp(a)}${this.useGlossary && this.glossary.length > 0 ? `(?=${Array.from(this.glossaryMap, ([__, second]) => second).join('|')})` : '(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])'}`, 'giu')).test(result)},
-            //   ${(new RegExp(`${Utils.escapeRegExp(a)}${Utils.escapeRegExp(a)}(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])`, 'gu')).test(result)}
-            //   ${(new RegExp(`([\\p{Lu}\\p{Ll}\\p{M}\\p{Nd})\\]}’”])${Utils.escapeRegExp(a)}(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])`, 'gu')).test(result)},
-            //   ${(new RegExp(`(${Utils.escapeRegExp(a)})?${Utils.escapeRegExp(a)}`, 'g')).test(result)}
-            //   ${(new RegExp(`([\\p{Lu}\\p{Ll}\\p{M}\\p{Nd})\\]}’”])${Utils.escapeRegExp(a)}`, 'gu')).test(result)},
-            //   ${(new RegExp(`${Utils.escapeRegExp(a)}${this.useGlossary && this.glossary.length > 0 ? `(?=${Array.from(this.glossaryMap, ([__, second]) => second).join('|')})` : '(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])'}`, 'giu')).test(result)},
-            //   ${(new RegExp(`${Utils.escapeRegExp(a)}(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])`, 'gu')).test(result)}
-            //   ${(new RegExp(Utils.escapeRegExp(a), 'g')).test(result)}`);
-            result = result.replace(new RegExp(`${Utils.escapeRegExp(a)}${Utils.escapeRegExp(a)}${this.useGlossary && this.glossary.length > 0 ? `(?=${Array.from(this.glossaryMap, ([__, second]) => second).join('|')})` : '(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])'}`, 'giu'), `${Utils.escapeRegExpReplacement(value)} ${Utils.escapeRegExpReplacement(value)}${value.length > 0 ? ' ' : ''}`)
-              .replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{M}\\p{Nd})\\]}’”])${Utils.escapeRegExp(a)}${this.useGlossary && this.glossary.length > 0 ? `(?=${Array.from(this.glossaryMap, ([__, second]) => second).join('|')})` : '(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])'}`, 'giu'), `$1 ${Utils.escapeRegExpReplacement(value)}${value.length > 0 ? ' ' : ''}`)
-              .replace(new RegExp(`${Utils.escapeRegExp(a)}${Utils.escapeRegExp(a)}(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])`, 'gu'), `${Utils.escapeRegExpReplacement(value)} ${Utils.escapeRegExpReplacement(value)}${value.length > 0 ? ' ' : ''}`)
-              .replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{M}\\p{Nd})\\]}’”])${Utils.escapeRegExp(a)}(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])`, 'gu'), `$1 ${Utils.escapeRegExpReplacement(value)}${value.length > 0 ? ' ' : ''}`)
-              .replace(new RegExp(`${Utils.escapeRegExp(a)}${Utils.escapeRegExp(a)}`, 'g'), `${Utils.escapeRegExpReplacement(value)} ${Utils.escapeRegExpReplacement(value)}`)
-              .replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{M}\\p{Nd})\\]}’”])${Utils.escapeRegExp(a)}`, 'gu'), `$1${value.length > 0 ? ` ${Utils.escapeRegExpReplacement(value)}` : ''}`)
-              .replace(new RegExp(`${Utils.escapeRegExp(a)}${this.useGlossary && this.glossary.length > 0 ? `(?=${Array.from(this.glossaryMap, ([__, second]) => second).join('|')})` : '(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])'}`, 'giu'), `${Utils.escapeRegExpReplacement(value)}${value.length > 0 ? ' ' : ''}`)
-              .replace(new RegExp(`${Utils.escapeRegExp(a)}(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])`, 'gu'), `${Utils.escapeRegExpReplacement(value)}${value.length > 0 ? ' ' : ''}`)
-              .replace(new RegExp(Utils.escapeRegExp(a), 'g'), Utils.escapeRegExpReplacement(value));
+        dataEntries.some(([a, b], __, array) => {
+          if (result.toUpperCase().includes(a.toUpperCase()) && (((this.useGlossary && !this.prioritizeNameOverVietPhrase && this.glossaryMap.has(a.toUpperCase())) || [...a].every((element) => this.data.hanViet.has(element) || (this.data.vietPhrase.has(element) && /^\p{P}$/u.test(element))) || nhanByGlossary.concat(glossaryEntries.map(([c, d]) => [c.toUpperCase(), d])).includes(this.glossaryMap.has(a.toUpperCase()) ? a.toUpperCase() : a)) && a !== '·')) {
+            // console.log(`${a}: ${value}`, `${(new RegExp(`${Utils.escapeRegExp(a)}${Utils.escapeRegExp(a)}${this.useGlossary && this.glossary.length > 0 ? `(?=${Array.from(this.glossaryMap, ([___, second]) => second).join('|')})` : '(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])'}`, 'giu')).test(result)},
+            //   ${(new RegExp(`([\\p{Lu}\\p{Ll}\\p{M}\\p{Nd})\\]}’”])${Utils.escapeRegExp(a)}${this.useGlossary && this.glossary.length > 0 ? `(?=${Array.from(this.glossaryMap, ([___, second]) => second).join('|')})` : '(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])'}`, 'giu')).test(result)},
+            //   ${(new RegExp(`${Utils.escapeRegExp(a)}${Utils.escapeRegExp(a)}(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])`, this.useGlossary && !this.prioritizeNameOverVietPhrase && this.glossaryMap.has(a.toUpperCase()) ? 'giu' : 'gu')).test(result)}
+            //   ${(new RegExp(`([\\p{Lu}\\p{Ll}\\p{M}\\p{Nd})\\]}’”])${Utils.escapeRegExp(a)}(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])`, this.useGlossary && !this.prioritizeNameOverVietPhrase && this.glossaryMap.has(a.toUpperCase()) ? 'giu' : 'gu')).test(result)},
+            //   ${(new RegExp(`(${Utils.escapeRegExp(a)})?${Utils.escapeRegExp(a)}`, this.useGlossary && !this.prioritizeNameOverVietPhrase && this.glossaryMap.has(a.toUpperCase()) ? 'gi' : 'g')).test(result)}
+            //   ${(new RegExp(`([\\p{Lu}\\p{Ll}\\p{M}\\p{Nd})\\]}’”])${Utils.escapeRegExp(a)}`, this.useGlossary && !this.prioritizeNameOverVietPhrase && this.glossaryMap.has(a.toUpperCase()) ? 'giu' : 'gu')).test(result)},
+            //   ${(new RegExp(`${Utils.escapeRegExp(a)}${this.useGlossary && this.glossary.length > 0 ? `(?=${Array.from(this.glossaryMap, ([___, second]) => second).join('|')})` : '(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])'}`, 'giu')).test(result)},
+            //   ${(new RegExp(`${Utils.escapeRegExp(a)}(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])`, this.useGlossary && !this.prioritizeNameOverVietPhrase && this.glossaryMap.has(a.toUpperCase()) ? 'giu' : 'gu')).test(result)}
+            //   ${(new RegExp(Utils.escapeRegExp(a), this.useGlossary && !this.prioritizeNameOverVietPhrase && this.glossaryMap.has(a.toUpperCase()) ? 'gi' : 'g')).test(result)}`);
+            result = result.replace(new RegExp(`${Utils.escapeRegExp(a)}${Utils.escapeRegExp(a)}${this.useGlossary && this.glossary.length > 0 ? `(?=${Array.from(this.glossaryMap, ([___, second]) => second).join('|')})` : '(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])'}`, 'giu'), `${Utils.escapeRegExpReplacement(b)} ${Utils.escapeRegExpReplacement(b)}${b.length > 0 ? ' ' : ''}`)
+              .replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{M}\\p{Nd})\\]}’”])${Utils.escapeRegExp(a)}${this.useGlossary && this.glossary.length > 0 ? `(?=${Array.from(this.glossaryMap, ([___, second]) => second).join('|')})` : '(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])'}`, 'giu'), `$1 ${Utils.escapeRegExpReplacement(b)}${b.length > 0 ? ' ' : ''}`)
+              .replace(new RegExp(`${Utils.escapeRegExp(a)}${Utils.escapeRegExp(a)}(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])`, this.useGlossary && !this.prioritizeNameOverVietPhrase && this.glossaryMap.has(a.toUpperCase()) ? 'giu' : 'gu'), `${Utils.escapeRegExpReplacement(b)} ${Utils.escapeRegExpReplacement(b)}${b.length > 0 ? ' ' : ''}`)
+              .replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{M}\\p{Nd})\\]}’”])${Utils.escapeRegExp(a)}(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])`, this.useGlossary && !this.prioritizeNameOverVietPhrase && this.glossaryMap.has(a.toUpperCase()) ? 'giu' : 'gu'), `$1 ${Utils.escapeRegExpReplacement(b)}${b.length > 0 ? ' ' : ''}`)
+              .replace(new RegExp(`${Utils.escapeRegExp(a)}${Utils.escapeRegExp(a)}`, this.useGlossary && !this.prioritizeNameOverVietPhrase && this.glossaryMap.has(a.toUpperCase()) ? 'gi' : 'g'), `${Utils.escapeRegExpReplacement(b)} ${Utils.escapeRegExpReplacement(b)}`)
+              .replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{M}\\p{Nd})\\]}’”])${Utils.escapeRegExp(a)}`, this.useGlossary && !this.prioritizeNameOverVietPhrase && this.glossaryMap.has(a.toUpperCase()) ? 'giu' : 'gu'), `$1${b.length > 0 ? ` ${Utils.escapeRegExpReplacement(b)}` : ''}`)
+              .replace(new RegExp(`${Utils.escapeRegExp(a)}${this.useGlossary && this.glossary.length > 0 ? `(?=${Array.from(this.glossaryMap, ([___, second]) => second).join('|')})` : '(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])'}`, 'giu'), `${Utils.escapeRegExpReplacement(b)}${b.length > 0 ? ' ' : ''}`)
+              .replace(new RegExp(`${Utils.escapeRegExp(a)}(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])`, this.useGlossary && !this.prioritizeNameOverVietPhrase && this.glossaryMap.has(a.toUpperCase()) ? 'giu' : 'gu'), `${Utils.escapeRegExpReplacement(b)}${b.length > 0 ? ' ' : ''}`)
+              .replace(new RegExp(Utils.escapeRegExp(a), this.useGlossary && !this.prioritizeNameOverVietPhrase && this.glossaryMap.has(a.toUpperCase()) ? 'gi' : 'g'), Utils.escapeRegExpReplacement(b));
           }
 
-          if (array.filter(([b]) => result.toUpperCase().includes(b.toUpperCase())).length === 0) return true;
+          if (array.filter(([c]) => result.toUpperCase().includes(c.toUpperCase())).length === 0) return true;
           return false;
         });
 
@@ -1117,7 +1117,7 @@ class Vietphrase {
     const text = inputText.split(/\r?\n/).map((element) => element.trim()).join('\n');
 
     let dataEntries = [...data].filter(([first]) => text.includes(first));
-    const glossaryEntries = [...glossaryMap];
+    const glossaryEntries = [...this.glossaryMap];
 
     const lines = text.split(/\n/);
     const results = [];
@@ -1139,29 +1139,29 @@ class Vietphrase {
           if (chars.length === 0) {
             results.push(a);
           } else {
-            const glossaryEntriesInLine = glossaryEntries.filter(([__, second]) => a.includes(second));
+            const glossaryEntriesInLine = glossaryEntries.filter(([__, b]) => a.includes(b));
 
-            const dataLengths = [chars.length, ...this.useGlossary && this.prioritizeNameOverVietPhrase ? glossaryEntriesInLine.map(([__, second]) => [...second].length) : [], ...dataEntries.filter(([first]) => this.useGlossary && !this.prioritizeNameOverVietPhrase && this.glossaryMap.has(first.toUpperCase()) ? a.toUpperCase().includes(first.toUpperCase()) : a.includes(first)).map(([first]) => [...first].length), 1].toSorted((b, c) => c - b).filter((element, index, array) => element > 0 && index === array.indexOf(element));
+            const dataLengths = [chars.length, ...this.useGlossary && this.prioritizeNameOverVietPhrase ? glossaryEntriesInLine.map(([__, b]) => [...b].length) : [], ...dataEntries.filter(([b]) => (this.useGlossary && !this.prioritizeNameOverVietPhrase && this.glossaryMap.has(b.toUpperCase()) ? a.toUpperCase().includes(b.toUpperCase()) : a.includes(b))).map(([b]) => [...b].length), 1].toSorted((b, c) => c - b).filter((element, index, array) => element > 0 && index === array.indexOf(element));
 
             let tempLine = '';
             let prevPhrase = '';
             let i = 0;
 
-            chars.forEach((__, c) => {
-              if (c === i) {
-                dataLengths.some((d) => {
-                  let phrase = a.substring(i, i + d);
+            chars.forEach((__, b) => {
+              if (b === i) {
+                dataLengths.some((c) => {
+                  let phrase = a.substring(i, i + c);
                   const charsInTempLine = [...tempLine];
                   const lastCharInTempLine = charsInTempLine.length > 0 ? charsInTempLine[charsInTempLine.length - 1] : '';
 
-                  if (this.useGlossary && this.prioritizeNameOverVietPhrase && glossaryEntries.map(([__, second]) => second).includes(phrase)) {
+                  if (this.useGlossary && this.prioritizeNameOverVietPhrase && glossaryEntries.map(([___, d]) => d).includes(phrase)) {
                     tempLine += (charsInTempLine.length > 0 && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]/u.test(lastCharInTempLine) ? ' ' : '') + phrase;
                     prevPhrase = phrase;
-                    i += d - 1;
+                    i += c - 1;
                     return true;
                   }
 
-                  if (((this.useGlossary && !this.prioritizeNameOverVietPhrase && this.glossaryMap.has(phrase.toUpperCase())) || [...phrase].every((element) => this.data.hanViet.has(element) || (this.data.vietPhrase.has(element) && /^\p{P}$/u.test(element))) || nhanByGlossary.concat(glossaryEntries.map(([first, second]) => [first.toUpperCase(), second])).includes(phrase)) && dataMap.has(phrase) && phrase !== '·') {
+                  if (((this.useGlossary && !this.prioritizeNameOverVietPhrase && this.glossaryMap.has(phrase.toUpperCase())) || [...phrase].every((element) => this.data.hanViet.has(element) || (this.data.vietPhrase.has(element) && /^\p{P}$/u.test(element))) || nhanByGlossary.concat(glossaryEntries.map(([first, second]) => [first.toUpperCase(), second])).includes(this.glossaryMap.has(phrase.toUpperCase()) ? phrase.toUpperCase() : phrase)) && dataMap.has(phrase.toUpperCase()) && phrase !== '·') {
                     phrase = this.useGlossary && !this.prioritizeNameOverVietPhrase && this.glossaryMap.has(phrase.toUpperCase()) ? phrase.toUpperCase() : phrase;
 
                     if (dataMap.get(phrase) !== '') {
@@ -1169,11 +1169,11 @@ class Vietphrase {
                       prevPhrase = dataMap.get(phrase);
                     }
 
-                    i += d - 1;
+                    i += c - 1;
                     return true;
                   }
 
-                  if (d === 1) {
+                  if (c === 1) {
                     tempLine += (charsInTempLine.length > 0 && /[\p{Lu}\p{Ll}\p{Nd}(([{‘“]/u.test(a[i]) && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]/u.test(prevPhrase) ? ' ' : '') + phrase;
                     prevPhrase = '';
                     return true;
