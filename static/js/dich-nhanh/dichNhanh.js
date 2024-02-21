@@ -1504,7 +1504,12 @@ $dropdownHasCollapse.on('hide.bs.dropdown', function onHideBsDropdown() {
   $(this).find('.dropdown-menu').find('.collapse').each((indexInArray, value) => {
     if (!$(value).hasClass('show')) return;
     const bootstrapCollapseInDropdown = new bootstrap.Collapse(value);
-    bootstrapCollapseInDropdown.hide();
+
+    if ($(value).hasClass('show-by-default')) {
+      bootstrapCollapseInDropdown.show();
+    } else {
+      bootstrapCollapseInDropdown.hide();
+    }
   });
 });
 
