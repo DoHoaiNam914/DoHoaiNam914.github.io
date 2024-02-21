@@ -1506,7 +1506,7 @@ $dropdownHasCollapse.on('hide.bs.dropdown', function onHideBsDropdown() {
 
     if ($(value).hasClass('show-by-default') && !$(value).hasClass('show')) {
       bootstrapCollapseInDropdown.show();
-    } else if (!$(value).hasClass('show-by-default')) {
+    } else if (!$(value).hasClass('show-by-default') && $(value).hasClass('show')) {
       bootstrapCollapseInDropdown.hide();
     }
   });
