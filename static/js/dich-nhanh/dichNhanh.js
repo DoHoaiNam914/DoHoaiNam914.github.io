@@ -1419,6 +1419,7 @@ $glossaryInput.on('change', function onChange() {
 
     $glossaryName.val($glossaryInput.prop('files')[0].name.split('.').slice(0, $glossaryInput.prop('files')[0].name.split('.').length - 1).join('.'));
     reloadGlossaryEntries();
+    $sourceEntryInput.trigger('input');
   };
 
   reader.readAsText($(this).prop('files')[0]);
