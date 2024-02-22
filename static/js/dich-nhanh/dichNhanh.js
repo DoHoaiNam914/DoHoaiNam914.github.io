@@ -1493,17 +1493,16 @@ $('.dropdown-menu button.dropdown-item').on('click', function onClick() {
     });
   } else {
     $dropdownHasCollapse.find('.dropdown-menu').each((indexInArray, value) => {
-      if (!$(value).hasClass('show-by-default') && $(value).hasClass('show')) {
-        const bootstrapDropdownHasCollapse = new bootstrap.Dropdown(value);
-        bootstrapDropdownHasCollapse.hide();
-      }
+      if (!$(value).hasClass('show')) return;
+      const bootstrapDropdownHasCollapse = new bootstrap.Dropdown(value);
+      bootstrapDropdownHasCollapse.hide();
     });
   }
 });
 
 $dropdownHasCollapse.on('show.bs.dropdown', function onHideBsDropdown() {
-  $(this).find('.dropdown-menu').find('.collapse').each((indexInArray, value) => {
-    if (!$(value).hasClass('show-by-default') || $(value).hasClass('show')) return;
+  $(this).find('.dropdown-menu').find('.collapse.show-by-default').each((indexInArray, value) => {
+    if ($(value).hasClass('show')) return;
     const bootstrapCollapseInDropdown = new bootstrap.Collapse(value);
     bootstrapCollapseInDropdown.show();
   });
@@ -1511,7 +1510,8 @@ $dropdownHasCollapse.on('show.bs.dropdown', function onHideBsDropdown() {
 
 $dropdownHasCollapse.on('hide.bs.dropdown', function onHideBsDropdown() {
   $(this).find('.dropdown-menu').find('.collapse').each((indexInArray, value) => {
-    if ($(value).hasClass('show-by-default') || !$(value).hasClass('show')) return;
+    if ($(value).hasClass('show-by-default')) return;
+    if (!$(value).hasClass('show')) return;
     const bootstrapCollapseInDropdown = new bootstrap.Collapse(value);
     bootstrapCollapseInDropdown.hide();
   });
