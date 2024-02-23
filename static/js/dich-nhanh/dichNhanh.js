@@ -1428,7 +1428,7 @@ $glossaryInput.on('change', function onChange() {
 $('#clear-button').on('click', () => {
   if (!window.confirm('Bạn có muốn xoá sạch bảng thuật ngữ chứ?')) return;
   glossary = [];
-  glossaryMap = new Map(glossary);
+  glossaryMap = new Map();
   $glossaryName.val(null);
   reloadGlossaryEntries();
   $glossaryInput.val('');
