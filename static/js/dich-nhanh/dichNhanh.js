@@ -516,7 +516,6 @@ function buildResult(inputText, result) {
               idiomaticText.innerText = inputLines[i + lostLineFixedNumber];
               paragraph.appendChild(idiomaticText);
               paragraph.innerText += resultLines[i].trim().replace(/^\s+$/, '').length > 0 ? ' ' : '';
-              resultDiv.appendChild(paragraph.cloneNode(true));
               const attentionText = document.createElement('b');
               attentionText.innerText = resultLines[i];
               paragraph.appendChild(attentionText);
