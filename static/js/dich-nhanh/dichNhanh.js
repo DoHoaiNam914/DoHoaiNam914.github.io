@@ -509,18 +509,20 @@ function buildResult(inputText, result) {
               idiomaticText.innerText = inputLines[i + lostLineFixedNumber];
               paragraph.appendChild(idiomaticText);
               resultDiv.appendChild(paragraph.cloneNode(true));
+              paragraph.innerText = resultLines[i];
+              resultDiv.appendChild(paragraph.cloneNode(true));
             } else {
               const idiomaticText = document.createElement('i');
               idiomaticText.innerText = inputLines[i + lostLineFixedNumber];
               paragraph.appendChild(idiomaticText);
               paragraph.innerText += resultLines[i].trim().replace(/^\s+$/, '').length > 0 ? ' ' : '';
+              resultDiv.appendChild(paragraph.cloneNode(true));
               const attentionText = document.createElement('b');
               attentionText.innerText = resultLines[i];
               paragraph.appendChild(attentionText);
+              resultDiv.appendChild(paragraph.cloneNode(true));
             }
 
-            paragraph.innerText = resultLines[i];
-            resultDiv.appendChild(paragraph);
           }
         } else if (i + lostLineFixedNumber < inputLines.length) {
           const paragraph = document.createElement('p');

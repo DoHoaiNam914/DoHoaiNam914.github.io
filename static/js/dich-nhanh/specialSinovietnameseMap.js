@@ -218,6 +218,7 @@ const specialSinovietnameseMap = [
   ['妈', 'MA'],
   ['玫', 'MAI'],
   ['牦', 'MAO'],
+  ['茗', 'MINH'],
   ['奻', null, 'nữ' /* Đỗ Hoài Nam */],
   ['闹', 'NÁO'],
   ['垠', 'NGẦN'],
