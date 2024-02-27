@@ -122,6 +122,23 @@ const Tagset = {
   FW: 24,
   PUNCT: 25,
   SYM: 26,
+  // Nhãn thành phần cú pháp
+  NP: 27,
+  VP: 28,
+  AP: 29,
+  RP: 30,
+  PP: 31,
+  QP: 32,
+  MDP: 33,
+  UCP: 34,
+  LST: 35,
+  WHNP: 36,
+  WHAP: 37,
+  WHRP: 38,
+  WHPP: 39,
+  S: 40,
+  SQ: 41,
+  SBAR: 42,
 };
 
 function getOptionId(id) {
@@ -239,12 +256,12 @@ function loadAllQuickTranslatorOptions() {
 }
 
 function isStaticWordOrPhrase(tag) {
-  const tagset = ['NNP', 'NC', 'MWE', 'X', 'y', 'FW'];
+  const tagset = ['NNP', 'NC', 'MWE', 'X', 'y', 'FW', 'S', 'SQ', 'SBAR'];
   return tagset.includes(tag);
 }
 
 function isDynamicWordOrPhrase(tag) {
-  const tagset = ['N', 'NU', 'NUX', 'NUM', 'NUMX', 'DET', 'V', 'AUX', 'ADJ', 'PRO', 'ADV', 'PRE', 'PRE', 'CC', 'SC', 'PRT', 'I', 'D', 'Z', 'b', 'PUNCT', 'SYM'];
+  const tagset = ['N', 'NU', 'NUX', 'NUM', 'NUMX', 'DET', 'V', 'AUX', 'ADJ', 'PRO', 'ADV', 'PRE', 'PRE', 'CC', 'SC', 'PRT', 'I', 'D', 'Z', 'b', 'PUNCT', 'SYM', 'NP', 'VP', 'AP', 'RP', 'PP', 'QP', 'MDP', 'UCP', 'LST', 'WHNP', 'WHAP', 'WHRP', 'WHPP'];
   return tagset.includes(tag);
 }
 

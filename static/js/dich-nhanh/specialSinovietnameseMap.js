@@ -99,6 +99,7 @@ const specialSinovietnameseMap = [
   ['时装', 'thời trang'],
   ['上将', 'thượng tướng'],
   ['司职', 'ti chức'],
+  ['比武', 'tỉ võ'],
   ['仙长', 'tiên trưởng'],
   ['仙将', 'tiên tướng'],
   ['族长', 'tộc trưởng'],
