@@ -1450,6 +1450,7 @@ $sourceEntryInput.on('input', async function onInput() {
 
     if (glossaryMap.has(inputText)) {
       $targetEntryTextarea.val(applyGlossaryToText(inputText, Translators.VIETPHRASE, false)).trigger('input');
+      $targetEntryTextarea.prop('scrollTop', 0);
       $tagsetSelect.val(glossary.filter(([first]) => first === inputText)[0][2] ?? 'X');
       $glossaryEntrySelect.val(inputText);
 
@@ -1461,6 +1462,7 @@ $sourceEntryInput.on('input', async function onInput() {
       }
     } else {
       $targetEntryTextarea.val((await translateText(inputText, Translators.VIETPHRASE, 'sinoVietnamese', true)).trim()).trigger('input');
+      $targetEntryTextarea.prop('scrollTop', 0);
       $tagsetSelect.val('X');
       $glossaryEntrySelect.val('');
     }
@@ -1561,6 +1563,7 @@ $('.upper-case-button').on('click', function onClick() {
     }
 
     $targetEntryTextarea.val(text).trigger('input');
+    $targetEntryTextarea.prop('scrollTop', 0);
   }
 });
 
@@ -1574,6 +1577,7 @@ $translateEntryButtons.on('click', async function onClick() {
     $translateEntryButtons.addClass('disabled');
     $sourceEntryInput.attr('readonly', true);
     $targetEntryTextarea.val(await translateText(inputText, translatorOption, targetLanguage, $(this).data('glossary') != null && Boolean($(this).data('glossary')) !== false)).trigger('input');
+    $targetEntryTextarea.prop('scrollTop', 0);
     $sourceEntryInput.removeAttr('readonly');
     $translateEntryButtons.removeClass('disabled');
   }
@@ -1609,6 +1613,7 @@ $glossaryEntrySelect.change(function onChange() {
     $removeButton.removeClass('disabled');
   } else {
     $sourceEntryInput.val(null);
+    $targetEntryTextarea.prop('scrollTop', 0);
     $targetEntryTextarea.val(null).trigger('input');
     $tagsetSelect.val('X');
     $removeButton.addClass('disabled');
