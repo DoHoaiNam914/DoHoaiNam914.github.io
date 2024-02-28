@@ -522,15 +522,18 @@ function buildResult(inputText, result) {
             let paragraph = document.createElement('p');
 
             if ($formatSettingsSwitch.prop('checked')) {
-              const idiomaticText = document.createElement('i');
-              idiomaticText.innerText = originalLines[i + lostLineFixedNumber];
-              paragraph.appendChild(idiomaticText);
-              if (i > 0) paragraph.classList.add('line-spacing');
-              resultDiv.appendChild(paragraph.cloneNode(true));
-              paragraph = document.createElement('p');
+              if (originalLines[i + lostLineFixedNumber].length > 0) {
+                const idiomaticText = document.createElement('i');
+                idiomaticText.innerText = originalLines[i + lostLineFixedNumber];
+                paragraph.appendChild(idiomaticText);
+                if (i > 0) paragraph.classList.add('line-spacing');
+                resultDiv.appendChild(paragraph.cloneNode(true));
+                paragraph = document.createElement('p');
+              }
+
               paragraph.innerText = resultLines[i];
               resultDiv.appendChild(paragraph.cloneNode(true));
-            } else {
+            } else if (originalLines[i + lostLineFixedNumber].length > 0) {
               const idiomaticText = document.createElement('i');
               idiomaticText.innerText = originalLines[i + lostLineFixedNumber];
               paragraph.appendChild(idiomaticText);
@@ -539,6 +542,9 @@ function buildResult(inputText, result) {
               attentionText.innerText = resultLines[i];
               paragraph.appendChild(attentionText);
               resultDiv.appendChild(paragraph.cloneNode(true));
+            } else {
+              paragraph.innerText = resultLines[i];
+              resultDiv.appendChild(paragraph);
             }
           }
         } else if (i + lostLineFixedNumber < originalLines.length) {
