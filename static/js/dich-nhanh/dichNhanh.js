@@ -505,32 +505,34 @@ function buildResult(inputText, result) {
   try {
     const resultDiv = document.createElement('div');
 
-    const inputLines = inputText.split(/\r?\n/).map((element) => element.trimStart());
+    const originalLines = inputText.split(/\r?\n/).map((element) => element.trimStart());
     const resultLines = result.split(/\n/).map((element) => element.trimStart());
 
     if ($showOriginalTextSwitch.prop('checked') && result !== 'Vui lòng nhập tệp VietPhrase.txt hoặc bật tuỳ chọn [Tải tệp VietPhrase mặc định] và tải lại trang!') {
       let lostLineFixedNumber = 0;
 
-      for (let i = 0; i < inputLines.length; i += 1) {
+      for (let i = 0; i < originalLines.length; i += 1) {
         if (i + lostLineFixedNumber < resultLines.length) {
-          if (inputLines[i + lostLineFixedNumber].trim().replace(/^\s+$/, '').length === 0 && resultLines[i].trim().replace(/^\s+$/, '').length > 0) {
+          if (originalLines[i + lostLineFixedNumber].trim().replace(/^\s+$/, '').length === 0 && resultLines[i].trim().replace(/^\s+$/, '').length > 0) {
             lostLineFixedNumber += 1;
             i -= 1;
-          } else if ($translatorOptions.filter($('.active')).data('id') === Translators.PAPAGO && resultLines[i].trim().replace(/^\s+$/, '').length === 0 && inputLines[i + lostLineFixedNumber].trim().replace(/^\s+$/, '').length > 0) {
+          } else if ($translatorOptions.filter($('.active')).data('id') === Translators.PAPAGO && resultLines[i].trim().replace(/^\s+$/, '').length === 0 && originalLines[i + lostLineFixedNumber].trim().replace(/^\s+$/, '').length > 0) {
             lostLineFixedNumber -= 1;
           } else {
-            const paragraph = document.createElement('p');
+            let paragraph = document.createElement('p');
 
             if ($formatSettingsSwitch.prop('checked')) {
               const idiomaticText = document.createElement('i');
-              idiomaticText.innerText = inputLines[i + lostLineFixedNumber];
+              idiomaticText.innerText = originalLines[i + lostLineFixedNumber];
               paragraph.appendChild(idiomaticText);
+              if (i > 0) paragraph.classList.add('line-spacing');
               resultDiv.appendChild(paragraph.cloneNode(true));
+              paragraph = document.createElement('p');
               paragraph.innerText = resultLines[i];
               resultDiv.appendChild(paragraph.cloneNode(true));
             } else {
               const idiomaticText = document.createElement('i');
-              idiomaticText.innerText = inputLines[i + lostLineFixedNumber];
+              idiomaticText.innerText = originalLines[i + lostLineFixedNumber];
               paragraph.appendChild(idiomaticText);
               paragraph.innerText += resultLines[i].trim().replace(/^\s+$/, '').length > 0 ? ' ' : '';
               const attentionText = document.createElement('b');
@@ -538,12 +540,11 @@ function buildResult(inputText, result) {
               paragraph.appendChild(attentionText);
               resultDiv.appendChild(paragraph.cloneNode(true));
             }
-
           }
-        } else if (i + lostLineFixedNumber < inputLines.length) {
+        } else if (i + lostLineFixedNumber < originalLines.length) {
           const paragraph = document.createElement('p');
           const idiomaticText = document.createElement('i');
-          idiomaticText.innerText = inputLines[i + lostLineFixedNumber];
+          idiomaticText.innerText = originalLines[i + lostLineFixedNumber];
           paragraph.appendChild(idiomaticText);
           resultDiv.appendChild(paragraph);
         }
@@ -1651,10 +1652,10 @@ $resultTextarea.on('keydown', (event) => {
     'Control', 'Meta', 'Alt', 'ContextMenu', 'ArrowLeft', 'ArrowDown', 'ArrowRight',
   ];
 
-  return event.ctrlKey || allowKey.some((element) => event.key === element) || event.preventDefault();
+  return event.ctrlKey || (event.key === 'Escape' && document.activeElement.blur()) || allowKey.some((element) => event.key === element) || event.preventDefault();
 });
 
 $resultTextarea.on('drop', (event) => event.preventDefault());
 $resultTextarea.on('cut', (event) => event.preventDefault());
 $resultTextarea.on('paste', (event) => event.preventDefault());
-$resultTextarea.on('keypress', (event) => event.key !== 'Enter' || (((event.ctrlKey && $glossaryManagerButton.trigger('mousedown') && $glossaryManagerButton.click()) || ($translateButton.click() && $inputTextarea.focus())) && event.preventDefault()));
+$resultTextarea.on('keypress', (event) => (event.key !== 'Enter' || ((event.ctrlKey && $glossaryManagerButton.trigger('mousedown') && $glossaryManagerButton.click()) || ($translateButton.click() && $inputTextarea.focus()))) && event.preventDefault());
