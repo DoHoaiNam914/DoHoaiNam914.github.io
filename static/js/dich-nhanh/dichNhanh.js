@@ -267,15 +267,11 @@ function isDynamicWordOrPhrase(tag) {
 
 function getIgnoreTranslationMarkup(text, translation, translator) {
   switch (translator) {
-    case Translators.DEEPL_TRANSLATE:
-    case Translators.GOOGLE_TRANSLATE: {
-      return translation /* `<span translate="no">${Utils.convertTextToHtml(translation.replace(/ /g, '_'))}</span>` */;
-    }
     case Translators.MICROSOFT_TRANSLATOR: {
       return `<mstrans:dictionary translation="${/\p{Script=Hani}/u.test(text) && /\p{Script=Latn}/u.test(translation) ? ` ${translation.replace(/ /g, '_')} ` : translation.replace(/ /g, '_')}">${text}</mstrans:dictionary>`;
     }
     default: {
-      return [Translators.VIETPHRASE].every((element) => translator !== element) ? translation.replace(/ /g, '_') : translation;
+      return [Translators.DEEPL_TRANSLATE, Translators.VIETPHRASE].every((element) => translator !== element) ? translation.replace(/ /g, '_') : translation;
     }
   }
 }
@@ -607,7 +603,7 @@ async function translateTextarea() {
 
   const glossaryEnabled = $glossarySwitch.prop('checked');
 
-  const processText = glossaryEnabled && translatorOption !== Translators.BAIDU_FANYI && (translatorOption === Translators.VIETPHRASE ? $prioritizeNameOverVietPhraseCheck.prop('checked') && targetLanguage === 'vi' : isPairing) ? applyGlossaryToText(inputText, translatorOption, false) : inputText;
+  const processText = glossaryEnabled && [Translators.BAIDU_FANYI, Translators.GOOGLE_TRANSLATETranslators.PAPAGO].every((element) => translatorOption !== element) && (translatorOption === Translators.VIETPHRASE ? $prioritizeNameOverVietPhraseCheck.prop('checked') && targetLanguage === 'vi' : isPairing) ? applyGlossaryToText(inputText, translatorOption, false) : inputText;
 
   const [MAX_LENGTH, MAX_LINE] = getMaxQueryLengthAndLine(translatorOption, processText);
 
@@ -917,7 +913,7 @@ function updateLanguageSelect(translator, prevTranslator) {
 
 async function translateText(inputText, translatorOption, targetLanguage, glossaryEnabled) {
   try {
-    const text = glossaryEnabled && translatorOption !== Translators.BAIDU_FANYI && (translatorOption !== Translators.VIETPHRASE || $prioritizeNameOverVietPhraseCheck.prop('checked')) ? applyGlossaryToText(inputText, translatorOption, false) : inputText;
+    const text = glossaryEnabled && [Translators.BAIDU_FANYI, Translators.GOOGLE_TRANSLATE, Translators.PAPAGO].every((element) => translatorOption !== element) && (translatorOption !== Translators.VIETPHRASE || $prioritizeNameOverVietPhraseCheck.prop('checked')) ? applyGlossaryToText(inputText, translatorOption, false) : inputText;
     let translator = null;
     let sourceLanguage = '';
 
