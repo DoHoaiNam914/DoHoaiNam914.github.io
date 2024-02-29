@@ -275,7 +275,7 @@ function getIgnoreTranslationMarkup(text, translation, translator) {
       return `<mstrans:dictionary translation="${/\p{Script=Hani}/u.test(text) && /\p{Script=Latn}/u.test(translation) ? ` ${translation.replace(/ /g, '_')} ` : translation.replace(/ /g, '_')}">${text}</mstrans:dictionary>`;
     }
     default: {
-      return [Translators.BAIDU_FANYI, Translators.VIETPHRASE].every((element) => translator !== element) ? translation.replace(/ /g, '_') : translation;
+      return [Translators.VIETPHRASE].every((element) => translator !== element) ? translation.replace(/ /g, '_') : translation;
     }
   }
 }
@@ -312,7 +312,7 @@ function applyGlossaryToText(text, translator = Translators.VIETPHRASE, isProper
 
                 if (glossaryMapper.get(phrase) !== '') {
                   const maybeNotStaticPos = glossary.filter(([first, __, third]) => first === phrase && isDynamicWordOrPhrase(third)).length > 0 ? glossaryMapper.get(phrase).replace(/ /g, '_') : glossaryMapper.get(phrase);
-                  tempLine += (charsInTempLine.length > 0 && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]/u.test(lastCharInLine) ? ' ' : '') + ([Translators.BAIDU_FANYI, Translators.MICROSOFT_TRANSLATOR, Translators.VIETPHRASE].some((element) => translator === element) || glossary.filter(([first, __, third]) => first === phrase && (isStaticWordOrPhrase(third))).length > 0 ? getIgnoreTranslationMarkup(phrase, glossaryMapper.get(phrase), translator) : maybeNotStaticPos);
+                  tempLine += (charsInTempLine.length > 0 && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]/u.test(lastCharInLine) ? ' ' : '') + ([Translators.MICROSOFT_TRANSLATOR, Translators.VIETPHRASE].some((element) => translator === element) || glossary.filter(([first, __, third]) => first === phrase && (isStaticWordOrPhrase(third))).length > 0 ? getIgnoreTranslationMarkup(phrase, glossaryMapper.get(phrase), translator) : maybeNotStaticPos);
                   prevPhrase = glossaryMapper.get(phrase);
                 }
 
@@ -607,7 +607,7 @@ async function translateTextarea() {
 
   const glossaryEnabled = $glossarySwitch.prop('checked');
 
-  const processText = glossaryEnabled && (translatorOption === Translators.VIETPHRASE ? $prioritizeNameOverVietPhraseCheck.prop('checked') && targetLanguage === 'vi' : isPairing) ? applyGlossaryToText(inputText, translatorOption, false) : inputText;
+  const processText = glossaryEnabled && translatorOption !== Translators.BAIDU_FANYI && (translatorOption === Translators.VIETPHRASE ? $prioritizeNameOverVietPhraseCheck.prop('checked') && targetLanguage === 'vi' : isPairing) ? applyGlossaryToText(inputText, translatorOption, false) : inputText;
 
   const [MAX_LENGTH, MAX_LINE] = getMaxQueryLengthAndLine(translatorOption, processText);
 
@@ -917,7 +917,7 @@ function updateLanguageSelect(translator, prevTranslator) {
 
 async function translateText(inputText, translatorOption, targetLanguage, glossaryEnabled) {
   try {
-    const text = glossaryEnabled && (translatorOption !== Translators.VIETPHRASE || $prioritizeNameOverVietPhraseCheck.prop('checked')) ? applyGlossaryToText(inputText, translatorOption, false) : inputText;
+    const text = glossaryEnabled && translatorOption !== Translators.BAIDU_FANYI && (translatorOption !== Translators.VIETPHRASE || $prioritizeNameOverVietPhraseCheck.prop('checked')) ? applyGlossaryToText(inputText, translatorOption, false) : inputText;
     let translator = null;
     let sourceLanguage = '';
 
