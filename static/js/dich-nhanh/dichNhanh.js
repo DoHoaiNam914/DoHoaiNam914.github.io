@@ -269,7 +269,7 @@ function getIgnoreTranslationMarkup(text, translation, translator) {
   switch (translator) {
     case Translators.DEEPL_TRANSLATE:
     case Translators.GOOGLE_TRANSLATE: {
-      return `<span translate="no">${Utils.convertTextToHtml(translation.replace(/ /g, '_'))}</span>`;
+      return translation /* `<span translate="no">${Utils.convertTextToHtml(translation.replace(/ /g, '_'))}</span>` */;
     }
     case Translators.MICROSOFT_TRANSLATOR: {
       return `<mstrans:dictionary translation="${/\p{Script=Hani}/u.test(text) && /\p{Script=Latn}/u.test(translation) ? ` ${translation.replace(/ /g, '_')} ` : translation.replace(/ /g, '_')}">${text}</mstrans:dictionary>`;
