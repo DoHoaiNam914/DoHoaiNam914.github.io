@@ -526,7 +526,7 @@ function buildResult(inputText, result) {
                 const idiomaticText = document.createElement('i');
                 idiomaticText.innerText = originalLines[i + lostLineFixedNumber];
                 paragraph.appendChild(idiomaticText);
-                if (i > 0) paragraph.classList.add('line-spacing');
+                if (i > 0 && resultLines[i - 1].length > 0) paragraph.classList.add('line-spacing');
                 resultDiv.appendChild(paragraph.cloneNode(true));
                 paragraph = document.createElement('p');
               }
