@@ -268,10 +268,10 @@ function isDynamicWordOrPhrase(tag) {
 function getIgnoreTranslationMarkup(text, translation, translator) {
   switch (translator) {
     case Translators.MICROSOFT_TRANSLATOR: {
-      return `<mstrans:dictionary translation="${/\p{Script=Hani}/u.test(text) && /\p{Script=Latn}/u.test(translation) ? ` ${translation.replace(/ /g, '_')} ` : translation.replace(/ /g, '_')}">${text}</mstrans:dictionary>`;
+      return `<mstrans:dictionary translation="${translation}">${text}</mstrans:dictionary>`;
     }
     default: {
-      return [Translators.DEEPL_TRANSLATE, Translators.VIETPHRASE].every((element) => translator !== element) ? translation.replace(/ /g, '_') : translation;
+      return translation;
     }
   }
 }
@@ -308,7 +308,7 @@ function applyGlossaryToText(text, translator = Translators.VIETPHRASE, isProper
 
                 if (glossaryMapper.get(phrase) !== '') {
                   const maybeNotStaticPos = glossary.filter(([first, __, third]) => first === phrase && isDynamicWordOrPhrase(third)).length > 0 ? glossaryMapper.get(phrase).replace(/ /g, '_') : glossaryMapper.get(phrase);
-                  tempLine += (charsInTempLine.length > 0 && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]/u.test(lastCharInLine) ? ' ' : '') + ([Translators.GOOGLE_TRANSLATE, Translators.MICROSOFT_TRANSLATOR, Translators.VIETPHRASE].some((element) => translator === element) || glossary.filter(([first, __, third]) => first === phrase && (isStaticWordOrPhrase(third))).length > 0 ? getIgnoreTranslationMarkup(phrase, glossaryMapper.get(phrase), translator) : maybeNotStaticPos);
+                  tempLine += (charsInTempLine.length > 0 && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]/u.test(lastCharInLine) ? ' ' : '') + ([Translators.DEEPL_TRANSLATE, Translators.GOOGLE_TRANSLATE, Translators.MICROSOFT_TRANSLATOR, Translators.VIETPHRASE].some((element) => translator === element) || glossary.filter(([first, __, third]) => first === phrase && (isStaticWordOrPhrase(third))).length > 0 ? getIgnoreTranslationMarkup(phrase, glossaryMapper.get(phrase), translator) : maybeNotStaticPos);
                   prevPhrase = glossaryMapper.get(phrase);
                 }
 
