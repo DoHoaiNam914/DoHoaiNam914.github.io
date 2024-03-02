@@ -20,6 +20,7 @@ const specialSinovietnameseMap = [
   ['禁忌', 'cấm kị'],
   ['战斗', 'chiến đấu'],
   ['战将', 'chiến tướng'],
+  ['主任', 'chủ nhiệm'],
   ['掌柜', 'chưởng quỹ'],
   ['公司', 'công ti'],
   ['基本', 'cơ bản'],
