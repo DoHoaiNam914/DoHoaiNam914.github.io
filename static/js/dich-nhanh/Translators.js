@@ -272,7 +272,7 @@ class DeeplTranslate {
   };
 
   constructor() {
-    this.authKey = 'a4b25ba2-b628-fa56-916e-b323b16502de:fx';
+    this.authKey = '0c9649a5-e8f6-632a-9c42-a9eee160c330:fx';
   }
 
   async init() {
