@@ -129,20 +129,20 @@ class BaiduFanyi {
   // eslint-disable-next-line class-methods-use-this
   async translateText(from, to, query) {
     try {
-      let queryDataFrom = from;
-
-      if (queryDataFrom === 'auto') {
-        queryDataFrom = (await $.ajax({
+      if (from === 'auto' && this.from == null) {
+        this.from = (await $.ajax({
           data: `query=${encodeURIComponent(query)}`,
           method: 'POST',
           url: `${Utils.CORS_PROXY}https://fanyi.baidu.com/langdetect`,
         })).lan;
+      } else {
+        this.from = from;
       }
 
       return query.replace(/\n/g, '').length > 0 ? (JSON.parse((await $.ajax({
         data: JSON.stringify({
           query,
-          from: queryDataFrom,
+          from: this.from,
           to,
           reference: '',
           corpusIds: [],
