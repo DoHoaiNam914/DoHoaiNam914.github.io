@@ -1180,11 +1180,10 @@ $retranslateButton.click(function onClick() {
 });
 
 $glossaryManagerButton.on('mousedown', () => {
-  $tagsetSelect.val('X');
   $glossaryEntrySelect.val('').change();
-  if (!Utils.isOnMobile()) $glossaryEntrySelect.find('option[value=""]')[0].scrollIntoView(true);
-  $sourceEntryInput.val(getSelectedTextOrActiveElementText().replace(/\n/g, ' ').trim()).trigger('input');
   $sourceEntryInput.prop('scrollLeft', 0);
+  $tagsetSelect.val('X');
+  $sourceEntryInput.val(getSelectedTextOrActiveElementText().replace(/\n/g, ' ').trim()).trigger('input');
 
   if (window.getSelection) {
     window.getSelection().removeAllRanges();
@@ -1459,6 +1458,7 @@ $glossaryType.on('change', reloadGlossaryEntries);
 $sourceEntryInput.on('input', async function onInput() {
   const inputText = (new Map(glossary.map(([first]) => [first.toUpperCase(), first]))).get($(this).val().toUpperCase().trim()) ?? $(this).val();
   $(this).val(inputText);
+  $targetEntryTextarea.prop('scrollTop', 0);
 
   if (inputText.length > 0) {
     const $option = $(`#${$(this).attr('list')} > option`).filter((__, element) => inputText === element.innerText);
@@ -1470,7 +1470,6 @@ $sourceEntryInput.on('input', async function onInput() {
 
     if (glossaryMap.has(inputText)) {
       $targetEntryTextarea.val(applyGlossaryToText(inputText, Translators.VIETPHRASE, false)).trigger('input');
-      $targetEntryTextarea.prop('scrollTop', 0);
       $tagsetSelect.val(glossary.filter(([first]) => first === inputText)[0][2] ?? 'X');
       $glossaryEntrySelect.val(inputText);
 
@@ -1491,7 +1490,7 @@ $sourceEntryInput.on('input', async function onInput() {
     $removeButton.removeClass('disabled');
   } else {
     $glossaryEntrySelect.val('').change();
-    if (!Utils.isOnMobile()) $glossaryEntrySelect.prop('scrollTop', 0);
+    $glossaryEntrySelect.prop('scrollTop', 0);
     $addButton.addClass('disabled');
     $removeButton.addClass('disabled');
   }

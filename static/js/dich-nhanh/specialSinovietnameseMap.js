@@ -256,6 +256,7 @@ const specialSinovietnameseMap = [
   ['烬', 'TẦN'],
   ['剂', 'TỄ'],
   ['济', 'TẾ'],
+  ['采', 'THÁI'],
   ['彩', 'THÁI, THỂ'],
   ['沈', 'THẨM' /* Họ */],
   ['单', 'THIỀN, ĐƠN', 'ĐƠN'],
