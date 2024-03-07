@@ -107,7 +107,6 @@ const specialSinovietnameseMap = [
   ['仙长', 'tiên trưởng'],
   ['仙将', 'tiên tướng'],
   ['族长', 'tộc trưởng'],
-  ['宗师', 'tôn sư'],
   ['朝圣', 'triều thánh'],
   ['重叠', 'trùng điệp'],
   ['重生', 'trùng sinh'],
