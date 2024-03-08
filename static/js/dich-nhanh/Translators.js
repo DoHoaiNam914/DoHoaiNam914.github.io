@@ -128,35 +128,44 @@ class BaiduFanyi {
 
   // eslint-disable-next-line class-methods-use-this
   async translateText(from, to, query) {
-    try {
-      if (from === 'auto' && this.from == null) {
-        this.from = (await $.ajax({
-          data: `query=${encodeURIComponent(query)}`,
-          method: 'POST',
-          url: `${Utils.CORS_PROXY}https://fanyi.baidu.com/langdetect`,
-        })).lan;
-      } else {
-        this.from = from;
-      }
+    let result = query;
 
-      return query.replace(/\n/g, '').length > 0 ? (JSON.parse((await $.ajax({
-        data: JSON.stringify({
-          query,
-          from: this.from,
-          to,
-          reference: '',
-          corpusIds: [],
-          qcSettings: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11'],
-          domain: 'common',
-        }),
-        headers: { 'Content-Type': 'application/json' },
-        method: 'POST',
-        url: `${Utils.CORS_PROXY}https://fanyi.baidu.com/ait/text/translate`,
-      })).split(/\n/).filter((element) => element.includes('"event":"Translating"'))[0].replace(/^data: /, '')).data.list.map((element) => element.dst).join('\n') ?? query) : query;
-    } catch (error) {
-      console.error('Bản dịch lỗi:', error);
-      throw error;
+    if (query.replace(/\n/g, '').length > 0) {
+      let response = '';
+
+      try {
+        if (from === 'auto' && this.from == null) {
+          this.from = (await $.ajax({
+            data: `query=${encodeURIComponent(query)}`,
+            method: 'POST',
+            url: `${Utils.CORS_PROXY}https://fanyi.baidu.com/langdetect`,
+          })).lan;
+        } else {
+          this.from = from;
+        }
+
+        response = JSON.parse((await $.ajax({
+          data: JSON.stringify({
+            query,
+            from: this.from,
+            to,
+            reference: '',
+            corpusIds: [],
+            qcSettings: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11'],
+            domain: 'common',
+          }),
+          headers: { 'Content-Type': 'application/json' },
+          method: 'POST',
+          url: `${Utils.CORS_PROXY}https://fanyi.baidu.com/ait/text/translate`,
+        })).split(/\n/).filter((element) => element.includes('"event":"Translating"'))[0].replace(/^data: /, ''));
+        result = response.data != null ? response.data.list.map((element) => element.dst).join('\n') : query;
+      } catch (error) {
+        console.error('Bản dịch lỗi:', error);
+        throw error;
+      }
     }
+
+    return result;
   }
 }
 
