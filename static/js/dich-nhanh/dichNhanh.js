@@ -456,6 +456,7 @@ function reloadGlossaryEntries() {
     downloadButton.attr('download', `${$glossaryName.val().length > 0 ? $glossaryName.val() : $glossaryName.attr('placeholder')}.${glossaryExtension.text()}`);
     downloadButton.removeClass('disabled');
   } else {
+    glossaryMap = new Map();
     glossaryData = '';
     downloadButton.removeAttr('href');
     downloadButton.removeAttr('download');
