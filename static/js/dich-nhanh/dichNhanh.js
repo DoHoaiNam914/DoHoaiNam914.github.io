@@ -1041,7 +1041,7 @@ $(document).ready(async () => {
 
     chinesePhienAmWordList = chinesePhienAmWordList.concat(hanData.names.map(([first, second]) => [first, second.split(',').filter((element) => element.length > 0)[0]]));
     chinesePhienAmWordList = chinesePhienAmWordList.filter(([first, second]) => first != null && first !== '' && second != null).filter(([first], __, array) => !array[first] && (array[first] = 1), {});
-    chinesePhienAmWordList = chinesePhienAmWordList.map(([c, d]) => [c, specialSinovietnameseMap.map(([e]) => e).includes(c) ? applyNewAccent(d) : d]);
+    chinesePhienAmWordList = chinesePhienAmWordList.map(([c, d]) => [c, !specialSinovietnameseMap.map(([e]) => e).includes(c) ? applyNewAccent(d) : d]);
     vietPhraseData.hanViet = new Map(chinesePhienAmWordList);
     console.log(`Đã tải xong bộ dữ liệu hán việt (${chinesePhienAmWordList.length})!`);
     lastSession = {};
