@@ -241,6 +241,7 @@ const specialSinovietnameseMap = [
   ['琊', 'NHA'],
   ['刃', 'NHẪN'],
   ['儿', 'NHI'],
+  ['蒅', null, 'nhiễm' /* Đỗ Hoài Nam */],
   ['袅', 'NIỄU'],
   ['宁', 'NINH' /* Họ Ninh */],
   ['苧', 'NINH'],
