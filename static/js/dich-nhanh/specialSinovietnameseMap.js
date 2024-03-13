@@ -218,6 +218,8 @@ const specialSinovietnameseMap = [
   ['技', 'KỸ'],
   ['记', 'KÝ'],
   ['骑', 'KỴ'],
+  ['铝', 'LÃ'],
+  ['狸', 'LI' /* Fix ChinesePhienAmWords */],
   ['离', 'LI' /* Họ Ly */ /* Fix ChinesePhienAmWords */],
   ['李', 'LÍ' /* Họ */ /* Fix ChinesePhienAmWords */],
   ['里', 'LÍ' /* Họ */ /* Fix ChinesePhienAmWords */],
