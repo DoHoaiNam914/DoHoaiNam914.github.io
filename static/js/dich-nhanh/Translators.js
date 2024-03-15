@@ -54,7 +54,7 @@ class BaiduFanyi {
     jp: 'ja',
     vie: 'vi',
     zh: 'zh-CN',
-    cht: 'zh-CN',
+    cht: 'zh-TW',
   };
 
   static PAPAGO_MAPPING = {
@@ -694,7 +694,7 @@ class Papago {
         return Papago.DEEPL_TRANSLATOR_MAPPING.SOURCE_LANGUAGES[languageCode] ?? (DeeplTranslate.SOURCE_LANGUAGES.filter(({ language }) => language === languageCode).length > 0 ? languageCode : DeeplTranslate.DefaultLanguage.SOURCE_LANG);
       }
       case Translators.GOOGLE_TRANSLATE: {
-        const maybeIsChineseTraditional = languageCode === 'zh-TW' ? 'zh-CN' : GoogleTranslate.DefaultLanguage.SL;
+        const maybeIsChineseTraditional = languageCode === 'zh-TW' ? 'zh-TW' : GoogleTranslate.DefaultLanguage.SL;
         return Object.hasOwn(GoogleTranslate.SOURCE_LANGUAGES, languageCode) ? languageCode : maybeIsChineseTraditional;
       }
       case Translators.MICROSOFT_TRANSLATOR: {
