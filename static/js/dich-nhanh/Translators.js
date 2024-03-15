@@ -131,8 +131,6 @@ class BaiduFanyi {
     let result = query;
 
     if (query.replace(/\n/g, '').length > 0) {
-      let response = '';
-
       try {
         if (from === 'auto' && this.from == null) {
           this.from = (await $.ajax({
@@ -144,7 +142,7 @@ class BaiduFanyi {
           this.from = from;
         }
 
-        response = JSON.parse((await $.ajax({
+        let response = (await $.ajax({
           data: JSON.stringify({
             query,
             from: this.from,
@@ -157,7 +155,9 @@ class BaiduFanyi {
           headers: { 'Content-Type': 'application/json' },
           method: 'POST',
           url: `${Utils.CORS_PROXY}https://fanyi.baidu.com/ait/text/translate`,
-        })).split(/\n/).filter((element) => element.includes('"event":"Translating"'))[0].replace(/^data: /, ''));
+        })).split(/\n/).filter((element) => element.includes('"event":"Translating"'));
+
+        response = response.length > 0 ? JSON.parse(response[0].replace(/^data: /, '')) : {};
         result = response.data != null ? response.data.list.map((element) => element.dst).join('\n') : query;
       } catch (error) {
         console.error('Bản dịch lỗi:', error);
