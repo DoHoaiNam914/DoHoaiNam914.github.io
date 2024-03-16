@@ -1032,7 +1032,7 @@ $(document).ready(async () => {
       chinesePhienAmWordList = chinesePhienAmWordList.concat(vietPhraseData.chivi.filter(([first]) => [...first].length === 1).toSorted((a, b) => b[0].length - a[0].length).map(([first, second]) => [first, second.split('ǀ')[0]]));
     });
 
-    $.ajax({
+    await $.ajax({
       method: 'GET',
       url: '/static/datasource/QuickTranslate2020/ChinesePhienAmWords.txt',
     }).done((data) => {
@@ -1051,21 +1051,67 @@ $(document).ready(async () => {
   }
 
   if ($loadDefaultVietPhraseFileSwitch.prop('checked')) {
-    $.ajax({
-      method: 'GET',
-      url: '/static/datasource/vn.tangthuvien.ttvtranslate/VietPhrase.txt',
-    }).done((data) => {
-      let vietPhraseList = data.split(/\n/).map((element) => element.split('=')).filter((element) => element.length === 2).map(([first, second]) => [first, second.split(/[/|]/)[0]]).concat([...vietPhraseData.hanViet]);
-      vietPhraseList = vietPhraseList.filter(([first], __, array) => !array[first] && (array[first] = 1), {});
-      if ($vietPhraseInput.prop('files').length > 0) return;
-      vietPhraseData.vietPhrase = new Map(vietPhraseList);
-      const $vietPhraseEntryCounter = $('#viet-phrase-entry-counter');
-      $vietPhraseEntryCounter.text(vietPhraseList.length);
-      console.log(`Đã tải xong tệp VietPhrase (${$vietPhraseEntryCounter.text()})!`);
-      lastSession = {};
-    }).fail((__, ___, errorThrown) => {
-      console.error('Không tải được tệp VietPhrase:', errorThrown);
-    });
+    if (!Utils.isOnMobile()) {
+      await $.ajax({
+        method: 'GET',
+        url: '/static/datasource/Data của thtgiang.txt',
+      }).done((data) => {
+        let vietPhraseList = data.split(/\n/).map((element) => element.split('=')).filter((element) => element.length === 2).map(([first, second]) => [first, second.split(/[/|]/)[0]]).concat([...vietPhraseData.hanViet]);
+        vietPhraseList = vietPhraseList.filter(([first], __, array) => !array[first] && (array[first] = 1), {});
+        if ($vietPhraseInput.prop('files').length > 0) return;
+        vietPhraseData.vietPhrase = new Map(vietPhraseList);
+        const $vietPhraseEntryCounter = $('#viet-phrase-entry-counter');
+        $vietPhraseEntryCounter.text(vietPhraseList.length);
+        console.log(`Đã tải xong tệp VietPhrase (${$vietPhraseEntryCounter.text()})!`);
+        lastSession = {};
+      }).fail((__, ___, errorThrown) => {
+        console.error('Không tải được tệp VietPhrase:', errorThrown);
+      });
+
+      $.ajax({
+        method: 'GET',
+        url: '/static/datasource/Data của thtgiang/LuatNhan.txt',
+      }).done((data) => {
+        if ($vietPhraseInput.prop('files').length > 0) return;
+        vietPhraseData.luatNhan = new Map(data.split(/\r?\n/).filter((element) => !element.startsWith('#')).map((element) => element.split('=')).filter((element) => element.length === 2));
+        const $luatNhanEntryCounter = $('#luat-nhan-entry-counter');
+        $luatNhanEntryCounter.text(vietPhraseData.luatNhan.size);
+        console.log(`Đã tải xong tệp LuatNhan (${$luatNhanEntryCounter.text()})!`);
+        lastSession = {};
+      }).fail((__, ___, errorThrown) => {
+        console.error('Không tải được tệp LuatNhan:', errorThrown);
+      });
+
+      $.ajax({
+        method: 'GET',
+        url: '/static/datasource/Data của thtgiang/Pronouns.txt',
+      }).done((data) => {
+        if ($vietPhraseInput.prop('files').length > 0) return;
+        vietPhraseData.pronoun = new Map(data.split(/\r?\n/).map((element) => element.split('=')).filter((element) => element.length === 2).map(([first, second]) => [first, second.split('/')[0]]));
+        const $pronounEntryCounter = $('#pronoun-entry-counter');
+        $pronounEntryCounter.text(vietPhraseData.pronoun.size);
+        console.log(`Đã tải xong tệp Pronouns (${$pronounEntryCounter.text()})!`);
+        lastSession = {};
+      }).fail((__, ___, errorThrown) => {
+        console.error('Không tải được tệp Pronouns:', errorThrown);
+      });
+    } else {
+      await $.ajax({
+        method: 'GET',
+        url: '/static/datasource/vn.tangthuvien.ttvtranslate/VietPhrase.txt',
+      }).done((data) => {
+        let vietPhraseList = data.split(/\n/).map((element) => element.split('=')).filter((element) => element.length === 2).map(([first, second]) => [first, second.split(/[/|]/)[0]]).concat([...vietPhraseData.hanViet]);
+        vietPhraseList = vietPhraseList.filter(([first], __, array) => !array[first] && (array[first] = 1), {});
+        if ($vietPhraseInput.prop('files').length > 0) return;
+        vietPhraseData.vietPhrase = new Map(vietPhraseList);
+        const $vietPhraseEntryCounter = $('#viet-phrase-entry-counter');
+        $vietPhraseEntryCounter.text(vietPhraseList.length);
+        console.log(`Đã tải xong tệp VietPhrase (${$vietPhraseEntryCounter.text()})!`);
+        lastSession = {};
+      }).fail((__, ___, errorThrown) => {
+        console.error('Không tải được tệp VietPhrase:', errorThrown);
+      });
+    }
   }
 
   $loadDefaultVietPhraseFileSwitch.removeClass('disabled');
