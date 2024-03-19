@@ -235,6 +235,7 @@ const specialSinovietnameseMap = [
   ['璃', '', 'ly | li | lê' /* Hanzii */],
   ['妈', 'MA'],
   ['玫', 'MAI'],
+  ['曼', 'MAN'],
   ['牦', 'MAO'],
   ['茗', 'MINH'],
   ['美', 'MĨ' /* Fix ChinesePhienAmWords */],
