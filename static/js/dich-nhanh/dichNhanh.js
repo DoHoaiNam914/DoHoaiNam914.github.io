@@ -1056,7 +1056,7 @@ $(document).ready(async () => {
         method: 'GET',
         url: '/static/datasource/Data của thtgiang.txt',
       }).done((data) => {
-        let vietPhraseList = data.split(/\n/).map((element) => element.split('=')).filter((element) => element.length === 2).map(([first, second]) => [first, second.split(/[/|]/)[0]]).concat([...vietPhraseData.hanViet]);
+        let vietPhraseList = data.split(/\r\n/).map((element) => element.split('=')).filter((element) => element.length === 2).map(([first, second]) => [first, second.split(/[/|]/)[0]]).concat([...vietPhraseData.hanViet]);
         vietPhraseList = vietPhraseList.filter(([first], __, array) => !array[first] && (array[first] = 1), {});
         if ($vietPhraseInput.prop('files').length > 0) return;
         vietPhraseData.vietPhrase = new Map(vietPhraseList);
