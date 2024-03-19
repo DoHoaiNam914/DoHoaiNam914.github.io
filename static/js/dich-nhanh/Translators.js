@@ -1244,10 +1244,10 @@ class Vietphrase {
 
       switch (this.translationAlgorithm) {
         case this.TranslationAlgorithms.TRANSLATE_FROM_LEFT_TO_RIGHT: {
-          return this.translateFromLeftToRight(targetLanguage, data, inputText.replace(/(\p{sc=Hani}) (?=\p{sc=Hani})/g, '$1 '));
+          return this.translateFromLeftToRight(targetLanguage, data, inputText.replace(/(\p{sc=Hani}) (?=\p{sc=Hani})/gu, '$1 '));
         }
         default: {
-          return this.translatePrioritizeLongVietPhraseClusters(targetLanguage, data, inputText.replace(/(\p{sc=Hani}) (?=\p{sc=Hani})/g, '$1: '));
+          return this.translatePrioritizeLongVietPhraseClusters(targetLanguage, data, inputText.replace(/(\p{sc=Hani}) (?=\p{sc=Hani})/gu, '$1: '));
         }
       }
     } catch (error) {
