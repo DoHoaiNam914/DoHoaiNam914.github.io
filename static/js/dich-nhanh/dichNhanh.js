@@ -587,7 +587,7 @@ async function translateTextarea() {
           break;
         }
         case Translators.VIETPHRASE: {
-          translator = new Vietphrase(vietPhraseData, $translationAlgorithmRadio.filter('[checked]').val(), $multiplicationAlgorithmRadio.filter('[checked]').val(), glossaryEnabled && targetLanguage === 'vi', [...glossary, ...[...vietPhraseData.name]].filter(([first], __, array) => inputText.toLowerCase().includes(first.toLowerCase()) && !array[first] && (array[first] = 1), {}), $prioritizeNameOverVietPhraseCheck.prop('checked'), $addDeLeZhaoSwitch.prop('checked'), true);
+          translator = new Vietphrase(vietPhraseData, $translationAlgorithmRadio.filter('[checked]').val(), $multiplicationAlgorithmRadio.filter('[checked]').val(), glossaryEnabled && targetLanguage === 'vi', glossary, $prioritizeNameOverVietPhraseCheck.prop('checked'), $addDeLeZhaoSwitch.prop('checked'), true);
           break;
         }
         default: {
@@ -888,7 +888,7 @@ async function translateText(inputText, translatorOption, targetLanguage, glossa
         break;
       }
       case Translators.VIETPHRASE: {
-        translator = await new Vietphrase(vietPhraseData, $translationAlgorithmRadio.filter('[checked]').val(), $multiplicationAlgorithmRadio.filter('[checked]').val(), glossaryEnabled, [...glossary, ...[...vietPhraseData.name]].filter(([first], __, array) => inputText.toLowerCase().includes(first.toLowerCase()) && !array[first] && (array[first] = 1), {}), $prioritizeNameOverVietPhraseCheck.prop('checked'), $addDeLeZhaoSwitch.prop('checked'));
+        translator = await new Vietphrase(vietPhraseData, $translationAlgorithmRadio.filter('[checked]').val(), $multiplicationAlgorithmRadio.filter('[checked]').val(), glossaryEnabled, glossary, $prioritizeNameOverVietPhraseCheck.prop('checked'), $addDeLeZhaoSwitch.prop('checked'));
         sourceLanguage = Vietphrase.DefaultLanguage.SOURCE_LANGUAGE;
         break;
       }
@@ -1525,7 +1525,7 @@ $sourceEntryInput.on('input', async function onInput() {
         modalBody.prop('scrollTop', prevModalBodyScrollTop);
       }
     } else {
-      $targetEntryTextarea.val((await translateText(inputText, Translators.VIETPHRASE, 'sinoVietnamese', true)).trim()).trigger('input');
+      $translateEntryButtons.filter('[data-translator="vietphrase"][data-lang="sinoVietnamese"][data-glossary="true"]').click();
       $targetEntryTextarea.prop('scrollTop', 0);
       $glossaryEntrySelect.val('');
     }
@@ -1630,7 +1630,7 @@ $('.upper-case-button').on('click', function onClick() {
   }
 });
 
-$translateEntryButtons.on('click', async function onClick() {
+$translateEntryButtons.click(async function onClick() {
   const inputText = $sourceEntryInput.val();
 
   const translatorOption = $(this).data('translator');
