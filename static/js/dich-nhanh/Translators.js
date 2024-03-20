@@ -1255,7 +1255,7 @@ class Vietphrase {
         }
         default: {
           let prefilterText = inputText.toLowerCase();
-          return this.translatePrioritizeLongVietPhraseClusters(targetLanguage, data.filter(([first]) => prefilterText.toLowerCase().includes(first.toLowerCase()) && (prefilterText = prefilterText.replaceAll(first.toLowerCase(), '\n'))), inputText);
+          return this.translatePrioritizeLongVietPhraseClusters(targetLanguage, data.toSorted((a, b) => b[0].length - a[0].length).filter(([first]) => prefilterText.toLowerCase().includes(first.toLowerCase()) && (prefilterText = prefilterText.replaceAll(first.toLowerCase(), '\n'))), inputText);
         }
       }
     } catch (error) {
