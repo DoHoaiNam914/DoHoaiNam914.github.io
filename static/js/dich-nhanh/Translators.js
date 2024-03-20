@@ -1224,13 +1224,13 @@ class Vietphrase {
           break;
         }
         case 'vi': {
-          data = this.data.vietPhrase;
+          data = this.data.vietPhrase.size > 0 ? this.data.vietPhrase : this.data.hanViet;
           break;
         }
         // no default
       }
 
-      if (targetLanguage === 'vi') {
+      if (targetLanguage === 'vi' && this.data.vietPhrase.size > 0) {
         if (this.addDeLeZhao) {
           data.set('的', this.data.hanViet.get('的'));
           data.set('了', this.data.hanViet.get('了'));
