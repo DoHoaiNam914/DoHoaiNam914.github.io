@@ -155,7 +155,7 @@ class BaiduFanyi {
           headers: { 'Content-Type': 'application/json' },
           method: 'POST',
           url: `${Utils.CORS_PROXY}https://fanyi.baidu.com/ait/text/translate`,
-        })).split(/\n/).filter((element) => element.includes('"event":"Translating"'));
+        })).split('\n').filter((element) => element.includes('"event":"Translating"'));
 
         response = response.length > 0 ? JSON.parse(response[0].replace(/^data: /, '')) : {};
         result = response.data != null ? response.data.list.map((element) => element.dst).join('\n') : query;
@@ -364,7 +364,7 @@ class DeeplTranslate {
   async translateText(sourceLang, targetLang, text) {
     try {
       return Utils.convertHtmlToText((await $.ajax({
-        data: `text=${text.split(/\n/).map((element) => encodeURIComponent(element)).join('&text=')}&source_lang=${sourceLang}&target_lang=${targetLang}&tag_handling=xml`,
+        data: `text=${text.split('\n').map((element) => encodeURIComponent(element)).join('&text=')}&source_lang=${sourceLang}&target_lang=${targetLang}&tag_handling=xml`,
         method: 'POST',
         url: `https://api-free.deepl.com/v2/translate?auth_key=${this.authKey}`,
       })).translations.map((element) => element.text).join('\n'));
@@ -559,7 +559,7 @@ class GoogleTranslate {
        * Google translate Widget
        * Method: POST
        * URL: https://translate.googleapis.com/translate_a/t?anno=3&client=te&format=html&v=1.0&key&logld=v${version}&sl=${sl}&tl=${tl}&tc=0&tk=${lq(querys)}
-       * `q=${querys.split(/\n/).map((sentence) => encodeURIComponent(sentence)).join('&q=')}`
+       * `q=${querys.split('\n').map((sentence) => encodeURIComponent(sentence)).join('&q=')}`
        *
        * Google Translate
        * Method: GET
@@ -568,15 +568,15 @@ class GoogleTranslate {
        * Google Translate Websites
        * Method: POST
        * URL: https://translate.googleapis.com/translate_a/t?anno=3&client=wt_lib&format=html&v=1.0&key=&logld=v${version}&sl=${sl}&tl=${tl}&tc=0&tk=${lq(querys)}
-       * Content-Type: application/x-www-form-urlencoded - `q=${querys.split(/\n/).map((sentence) => encodeURIComponent(sentence)).join('&q=')}`
+       * Content-Type: application/x-www-form-urlencoded - `q=${querys.split('\n').map((sentence) => encodeURIComponent(sentence)).join('&q=')}`
        *
        * Google Chrome
        * Method: POST
        * URL: https://translate.googleapis.com/translate_a/t?anno=3&client=${(_cac || 'te') + (_cam === 'lib' ? '_lib' : '')}&format=html&v=1.0&key=AIzaSyBOti4mM-6x9WDnZIjIeyEU21OpBXqWBgw&logld=v${v || ''}&sl=${sl}&tl=${tl}&tc=0&tk=${lq(querys)}
-       * Content-Type: application/x-www-form-urlencoded - `q=${querys.split(/\n/).map((sentence) => encodeURIComponent(sentence)).join('&q=')}`
+       * Content-Type: application/x-www-form-urlencoded - `q=${querys.split('\n').map((sentence) => encodeURIComponent(sentence)).join('&q=')}`
        */
       return Utils.convertHtmlToText((await $.ajax({
-        data: `q=${q.split(/\n/).map((element) => encodeURIComponent(element)).join('&q=')}`,
+        data: `q=${q.split('\n').map((element) => encodeURIComponent(element)).join('&q=')}`,
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         method: 'POST',
         url: `https://translate.googleapis.com/translate_a/t?anno=2&client=${(this.data._cac || 'te') + (this.data._cam === 'lib' ? '_lib' : '')}&format=html&v=1.0&key${this.apiKey.length > 0 ? `=${this.apiKey}` : ''}&logld=v${this.data.v || ''}&sl=${sl}&tl=${tl}&tc=0&tk=${this.lq(q.replace(/\n/g, ''))}`,
@@ -925,7 +925,7 @@ class MicrosoftTranslator {
        * Authorization: Bearer ${accessToken} - Content-Type: application/json - send(inputText)
        */
       return (await $.ajax({
-        data: JSON.stringify(text.split(/\n/).map((element) => ({ Text: element }))),
+        data: JSON.stringify(text.split('\n').map((element) => ({ Text: element }))),
         headers: {
           Authorization: `Bearer ${this.accessToken}`,
           'Content-Type': 'application/json',
@@ -975,12 +975,6 @@ class Vietphrase {
     this.prioritizeNameOverVietPhrase = prioritizeNameOverVietPhraseCheck;
     this.addDeLeZhao = addDeLeZhao;
     this.autocapitalize = autocapitalize;
-
-    // this.staticGlossary = this.glossary.filter(([__, ___, third]) => ['NNP', 'NC', 'MWE', 'X', 'y', 'FW'].includes(third)).map(([first, second]) => [first, second]);
-    // this.staticGlossaryMap = new Map(this.staticGlossary.map(([first, second]) => [first.toUpperCase(), second]));
-    // this.dynamicGlossary = this.glossary.filter(([__, ___, third]) => ['N', 'NU', 'NUX', 'NUM', 'NUMX', 'DET', 'V', 'AUX', 'ADJ', 'PRO', 'ADV', 'PRE', 'PRE', 'CC', 'SC', 'PRT', 'I', 'D', 'Z', 'b', 'PUNCT', 'SYM'].includes(third)).map(([first, second]) => [first, second]);
-    // this.dynamicGlossaryMap = new Map(this.dynamicGlossary.map(([first, second]) => [first.toUpperCase(), second]));
-    // this.data.vietPhrase = new Map([...this.data.vietPhrase].concat([...this.dynamicGlossaryMap]));
   }
 
   static getSourceLanguageName(languageCode) {
@@ -1047,7 +1041,7 @@ class Vietphrase {
   }
 
   static getCapitalizeText(text) {
-    return text.split(/\n/).map((element) => element.replace(/(^[\p{P}\p{Z}]*|[!.?)\]’”] |(?:^| )[([{‘“]|[。【】！（）.？])(\p{Ll})/gu, (__, p1, p2) => p1 + p2.toUpperCase())).join('\n');
+    return text.split('\n').map((element) => element.replace(/(^[\p{P}\p{Z}]*|[!.?)\]’”] |(?:^| )[([{‘“]|[。【】！（）.？])(\p{Ll})/gu, (__, p1, p2) => p1 + p2.toUpperCase())).join('\n');
   }
 
   static getFormattedText(inputText) {
@@ -1073,7 +1067,7 @@ class Vietphrase {
   translatePrioritizeLongVietPhraseClusters(targetLanguage, data, inputText) {
     const text = inputText.split(/\r?\n/).map((element) => element.trim()).join('\n');
 
-    let dataEntries = [...data].filter(([first]) => text.toUpperCase().includes(first.toUpperCase()));
+    let dataEntries = [...data].filter(([first]) => text.toLowerCase().includes(first.toLowerCase()));
     const glossaryEntries = this.glossary;
 
     let result = text;
@@ -1098,10 +1092,13 @@ class Vietphrase {
             //   ${(new RegExp(Utils.escapeRegExp(a), this.useGlossary && !this.prioritizeNameOverVietPhrase && this.glossaryMap.has(a.toUpperCase()) ? 'gi' : 'g')).test(result)}`);
             result = result.replace(new RegExp(`${Utils.escapeRegExp(a)}${Utils.escapeRegExp(a)}${this.useGlossary && this.glossary.length > 0 ? `(?=${Array.from(this.glossaryMap, ([___, second]) => second).join('|')})` : '(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])'}`, 'giu'), `${Utils.escapeRegExpReplacement(b)} ${Utils.escapeRegExpReplacement(b)}${b.length > 0 ? ' ' : ''}`)
               .replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{M}\\p{Nd})\\]}’”])${Utils.escapeRegExp(a)}${this.useGlossary && this.glossary.length > 0 ? `(?=${Array.from(this.glossaryMap, ([___, second]) => second).join('|')})` : '(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])'}`, 'giu'), `$1 ${Utils.escapeRegExpReplacement(b)}${b.length > 0 ? ' ' : ''}`)
+              .replace(new RegExp(` +${Utils.escapeRegExp(a)}${this.useGlossary && this.glossary.length > 0 ? `(?=${Array.from(this.glossaryMap, ([___, second]) => second).join('|')})` : '(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])'}`, 'giu'), b.length > 0 ? ` - ${Utils.escapeRegExpReplacement(b)}` : '')
               .replace(new RegExp(`${Utils.escapeRegExp(a)}${Utils.escapeRegExp(a)}(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])`, this.useGlossary && !this.prioritizeNameOverVietPhrase && this.glossaryMap.has(a.toUpperCase()) ? 'giu' : 'gu'), `${Utils.escapeRegExpReplacement(b)} ${Utils.escapeRegExpReplacement(b)}${b.length > 0 ? ' ' : ''}`)
               .replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{M}\\p{Nd})\\]}’”])${Utils.escapeRegExp(a)}(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])`, this.useGlossary && !this.prioritizeNameOverVietPhrase && this.glossaryMap.has(a.toUpperCase()) ? 'giu' : 'gu'), `$1 ${Utils.escapeRegExpReplacement(b)}${b.length > 0 ? ' ' : ''}`)
+              .replace(new RegExp(` +${Utils.escapeRegExp(a)}(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])`, this.useGlossary && !this.prioritizeNameOverVietPhrase && this.glossaryMap.has(a.toUpperCase()) ? 'giu' : 'gu'), b.length > 0 ? ` - ${Utils.escapeRegExpReplacement(b)}` : '')
               .replace(new RegExp(`${Utils.escapeRegExp(a)}${Utils.escapeRegExp(a)}`, this.useGlossary && !this.prioritizeNameOverVietPhrase && this.glossaryMap.has(a.toUpperCase()) ? 'gi' : 'g'), `${Utils.escapeRegExpReplacement(b)} ${Utils.escapeRegExpReplacement(b)}`)
               .replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{M}\\p{Nd})\\]}’”])${Utils.escapeRegExp(a)}`, this.useGlossary && !this.prioritizeNameOverVietPhrase && this.glossaryMap.has(a.toUpperCase()) ? 'giu' : 'gu'), `$1${b.length > 0 ? ` ${Utils.escapeRegExpReplacement(b)}` : ''}`)
+              .replace(new RegExp(` +${Utils.escapeRegExp(a)}`, this.useGlossary && !this.prioritizeNameOverVietPhrase && this.glossaryMap.has(a.toUpperCase()) ? 'gi' : 'g'), b.length > 0 ? ` - ${Utils.escapeRegExpReplacement(b)}` : '')
               .replace(new RegExp(`${Utils.escapeRegExp(a)}${this.useGlossary && this.glossary.length > 0 ? `(?=${Array.from(this.glossaryMap, ([___, second]) => second).join('|')})` : '(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])'}`, 'giu'), `${Utils.escapeRegExpReplacement(b)}${b.length > 0 ? ' ' : ''}`)
               .replace(new RegExp(`${Utils.escapeRegExp(a)}(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])`, this.useGlossary && !this.prioritizeNameOverVietPhrase && this.glossaryMap.has(a.toUpperCase()) ? 'giu' : 'gu'), `${Utils.escapeRegExpReplacement(b)}${b.length > 0 ? ' ' : ''}`)
               .replace(new RegExp(Utils.escapeRegExp(a), this.useGlossary && !this.prioritizeNameOverVietPhrase && this.glossaryMap.has(a.toUpperCase()) ? 'gi' : 'g'), Utils.escapeRegExpReplacement(b));
@@ -1125,10 +1122,10 @@ class Vietphrase {
   translateFromLeftToRight(targetLanguage, data, inputText) {
     const text = inputText.split(/\r?\n/).map((element) => element.trim()).join('\n');
 
-    let dataEntries = [...data].filter(([first]) => text.includes(first));
+    let dataEntries = [...data].filter(([first]) => text.toLowerCase().includes(first.toLowerCase()));
     const glossaryEntries = [...this.glossaryMap];
 
-    const lines = text.split(/\n/);
+    const lines = text.split('\n');
     const results = [];
 
     let result = text;
@@ -1174,7 +1171,7 @@ class Vietphrase {
                     phrase = this.useGlossary && !this.prioritizeNameOverVietPhrase && this.glossaryMap.has(phrase.toUpperCase()) ? phrase.toUpperCase() : phrase;
 
                     if (dataMap.get(phrase) !== '') {
-                      tempLine += (charsInTempLine.length > 0 && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]/u.test(lastCharInTempLine) ? ' ' : '') + dataMap.get(phrase);
+                      tempLine += (charsInTempLine.length > 0 && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]/u.test(lastCharInTempLine) ? ' ' : '') + (/\p{sc=Hani}/u.test(a[i - 2]) && a[i - 1] === ' ' ? '- ' : '') + dataMap.get(phrase);
                       prevPhrase = dataMap.get(phrase);
                     }
 

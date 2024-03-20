@@ -700,7 +700,7 @@
           <hr>
           <h2 class="fs-5">Vietphrase</h2>
           <div class="form-check form-switch mb-3">
-            <input type="checkbox" class="form-check-input option disabled" id="load-default-viet-phrase-file-switch" role="switch">
+            <input type="checkbox" class="form-check-input option disabled" id="load-default-viet-phrase-file-switch" role="switch" checked>
             <label class="form-check-label" for="load-default-viet-phrase-file-switch">Tải tệp VietPhrase mặc định</label>
           </div>
           <div class="mb-3">
@@ -710,6 +710,17 @@
           <div class="form-check form-switch mb-3">
             <input type="checkbox" class="form-check-input option quick-translate-option" id="add-de-le-zhao-switch">
             <label class="form-check-label" for="add-de-le-zhao-switch">Thêm đích, liễu, trứ</label>
+          </div>
+          <div class="mb-3">
+            <label for="name-input" class="form-label">Nhập tệp Names: <span id="name-entry-counter">0</span> mục</label>
+            <div class="input-group input-group-sm">
+              <input type="file" class="form-control" id="name-input" accept="text/plain">
+              <button type="submit" class="btn btn-outline-danger position-relative" id="clear-name-button">
+                <svg class="bi" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor">
+                  <use xlink:href="#x-lg"></use>
+                </svg>
+              </button>
+            </div>
           </div>
           <h2 class="fs-6">Thuật toán dịch</h2>
           <div class="mb-3">
@@ -729,11 +740,25 @@
           <h2 class="fs-6">Thuật toán nhân</h2>
           <div class="mb-3">
             <label for="luat-nhan-input" class="form-label">Nhập tệp LuatNhan: <span id="luat-nhan-entry-counter">0</span> mục</label>
-            <input type="file" class="form-control form-control-sm" id="luat-nhan-input" accept="text/plain">
+            <div class="input-group input-group-sm">
+              <input type="file" class="form-control" id="luat-nhan-input" accept="text/plain">
+              <button type="submit" class="btn btn-outline-danger position-relative" id="clear-luat-nhan-button">
+                <svg class="bi" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor">
+                  <use xlink:href="#x-lg"></use>
+                </svg>
+              </button>
+            </div>
           </div>
           <div class="mb-3">
             <label for="pronoun-input" class="form-label">Nhập tệp Pronouns: <span id="pronoun-entry-counter">0</span> mục</label>
-            <input type="file" class="form-control form-control-sm" id="pronoun-input" accept="text/plain">
+            <div class="input-group input-group-sm">
+              <input type="file" class="form-control" id="pronoun-input" accept="text/plain">
+              <button type="submit" class="btn btn-outline-danger position-relative" id="clear-name-button">
+                <svg class="bi" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor">
+                  <use xlink:href="#x-lg"></use>
+                </svg>
+              </button>
+            </div>
           </div>
           <div class="form-check">
             <input type="radio" class="form-check-input option quick-translate-option" id="no-apply-radio" name="multiplication-algorithm-radio" value="0">
@@ -780,18 +805,21 @@
             </button>
           </div>
           <select class="form-select form-select-sm mb-3" id="glossary-type">
-            <option value="text/tab-separated-values" selected>TSV</option>
+            <option value="text/tab-separated-values">TSV</option>
             <option value="text/csv">CSV</option>
-            <option value="text/plain">Vietphrase</option>
-            <option value="VietPhrase">VietPhrase</option>
-            <option value="Names">Names</option>
-            <option value="STV">Names (Sáng Tác Việt)</option>
+            <option value="text/plain" selected>Vietphrase</option>
+          </select>
+          <select class="form-select form-select-sm mb-3" id="vietphrase-type">
+            <option>QuickTranslate Without Sorting</option>
+            <option>QuickTranslate</option>
+            <option selected>TTV Translate</option>
+            <option>Sáng Tác Việt</option>
           </select>
           <select class="form-select form-select-sm mb-3 option quick-translate-option" id="language-pairs-select">
             <option value="ja-en">Nhật → Anh</option>
             <option value="ja-vi">Nhật → Việt</option>
-            <option value="zh-en">Hoa → Anh</option>
-            <option value="zh-vi" selected>Hoa → Việt</option>
+            <option value="zh-en">Trung → Anh</option>
+            <option value="zh-vi" selected>Trung → Việt</option>
           </select>
           <div class="input-group mb-2 dropstart dropdown-can-scroll dropdown-has-collapse">
             <input type="text" class="form-control text-font" id="source-entry-input" list="glossary-entries-list" placeholder="Mục nguồn">
@@ -827,7 +855,7 @@
                 </div>
               </li>
               <li>
-                <button type="button" class="dropdown-item" data-bs-toggle="collapse" data-bs-target="#chinese-define-collapse">Tra cứu tiếng Hoa</button>
+                <button type="button" class="dropdown-item" data-bs-toggle="collapse" data-bs-target="#chinese-define-collapse">Tra cứu tiếng Trung</button>
                 <div class="collapse" id="chinese-define-collapse">
                   <button type="button" class="dropdown-item collapse-item define-button" data-href="http://tratu.coviet.vn/hoc-tieng-trung/tu-dien/lac-viet/T-V/{0}.html">Từ điển Trung - Việt</button>
                   <button type="button" class="dropdown-item collapse-item define-button" data-href="https://hanzii.net/search/word/{0}?hl=vi">Hanzii</button>
@@ -957,55 +985,6 @@
               </li>
             </ul>
           </div>
-          <select class="form-select mb-3" id="tagset-select">
-            <optgroup label="Nhãn POS">
-              <option value="N">[N] Danh từ chung và tổ hợp từ có thính chất như danh từ</option>
-              <option value="NNP">[NNP] Danh từ riêng</option>
-              <option value="NC">[NC] Danh từ loại thể</option>
-              <option value="NU">[NU] Danh từ chỉ đơn vị đo lường, tiền tệ</option>
-              <option value="NUX">[NUX] Tổ hợp danh từ chỉ đơn vị mở rộng</option>
-              <option value="NUM">[NUM] Số từ</option>
-              <option value="NUMX">[NUMX] Số từ mở rộng</option>
-              <option value="DET">[DET] Lượng từ, từ định lượng, định từ</option>
-              <option value="V">[V] Động từ và tổ hợp từ có thính chất như động từ</option>
-              <option value="AUX">[AUX] Trợ từ, hệ từ LÀ</option>
-              <option value="ADJ">[ADJ] Tính từ và tổ hợp có thính chất như tính từ</option>
-              <option value="PRO">[PRO] Đại từ</option>
-              <option value="ADV">[ADV] Phụ từ và tổ hợp có thính chất như phụ từ, bổ nghĩa cho động từ, tính từ</option>
-              <option value="PRE">[PRE] Giới từ</option>
-              <option value="CC">[CC] Liên từ phối hợp</option>
-              <option value="SC">[SC] Liên từ phụ thuộc và tổ hợp từ có thính chất như liên từ phụ thuôc</option>
-              <option value="PRT">[PRT] Trợ từ và tổ hợp từ có thính chất như trợ từ</option>
-              <option value="I">[I] Cảm từ</option>
-              <option value="MWE">[MWE] Ngữ cố định/thành ngữ</option>
-              <option value="D">[D] Tổ hợp từ biểu thị ý nghĩa tục tĩu</option>
-              <option value="X" selected>[X] Tổ hợp từ không thể xác định từ loại</option>
-              <option value="Z">[Z] Yếu tố cấu tạo từ</option>
-              <option value="y">[y] Từ viết tắt</option>
-              <option value="b">[b] Từ vay mượn</option>
-              <option value="FW">[FW] Từ nguyên dạng tiếng nước ngoài</option>
-              <option value="PUNCT">[PUNCT] Dấu câu</option>
-              <option value="SYM">[SYM] Kí hiệu</option>
-            </optgroup>
-            <optgroup label="Nhãn thành phần cú pháp">
-              <option value="NP">[NP] Cụm danh từ</option>
-              <option value="VP">[VP] Cụm động từ</option>
-              <option value="AP">[AP] Cụm tính từ</option>
-              <option value="RP">[RP] Cụm phụ từ</option>
-              <option value="PP">[PP] Cụm giới từ</option>
-              <option value="QP">[QP] Cụm từ chỉ số lượng</option>
-              <option value="MDP">[MDP] Cụm từ tình thái</option>
-              <option value="UCP">[UCP] Cụm từ gồm hai hay nhiều thành phần không cùng loại được nối với nhau bằng liên từ đẳng lập</option>
-              <option value="LST">[LST] Cụm từ đánh dấu đầu mục của danh sách</option>
-              <option value="WHNP">[WHNP] Cụm danh từ nghi vấn (ai, cái gì, con gì, v.v.)</option>
-              <option value="WHAP">[WHAP] Cụm tính từ nghi vấn (lạnh thế nào, đẹp ra sao, v.v.)</option>
-              <option value="WHRP">[WHRP] Cụm từ nghi vấn dùng khi hỏi về thời gian, nơi chốn, v.v.</option>
-              <option value="WHPP">[WHPP] Cụm giới từ nghi vấn (với ai, bằng cách nào, v.v.)</option>
-              <option value="S">[S] Câu trần thuật (khẳng định hoặc phủ định)</option>
-              <option value="SQ">[SQ] Câu hỏi</option>
-              <option value="SBAR">[SBAR] Mệnh đề phụ kết (bổ nghĩa cho danh từ, động từ, và tính từ)</option>
-            </optgroup>
-          </select>
           <button type="submit" class="btn btn-sm btn-success mb-3 disabled" id="add-button">
             <svg class="bi" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor">
               <use xlink:href="#plus"></use>
