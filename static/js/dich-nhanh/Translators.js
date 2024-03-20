@@ -1065,11 +1065,9 @@ class Vietphrase {
   }
 
   translatePrioritizeLongVietPhraseClusters(targetLanguage, data, inputText) {
-    console.log(`3 ${Date.now() - this.startTime}`);
     const text = inputText.split(/\r?\n/).map((element) => element.trim()).join('\n');
 
     let dataEntries = data;
-    console.log(`4 ${Date.now() - this.startTime}`);
     const glossaryEntries = this.glossary;
 
     let result = text;
@@ -1081,7 +1079,6 @@ class Vietphrase {
 
         dataEntries = (this.useGlossary ? maybePrioritizeNameOverVietPhrase : []).concat(nhanByPronoun, dataEntries).toSorted((a, b) => b[0].length - a[0].length);
 
-        console.log(`5 ${Date.now() - this.startTime}`);
         result = Vietphrase.getFormattedText(result.split('\n').map((element) => {
           let returnText = element;
           let prefilterElement = element.toLowerCase();
@@ -1123,7 +1120,6 @@ class Vietphrase {
         if (this.autocapitalize) result = Vietphrase.getCapitalizeText(result);
       }
 
-      console.log(`6 ${Date.now() - this.startTime}`);
       return result;
     } catch (error) {
       console.error(error);
@@ -1220,8 +1216,6 @@ class Vietphrase {
   }
 
   async translateText(__, targetLanguage, inputText) {
-    this.startTime = Date.now();
-
     try {
       let data = new Map();
 
@@ -1253,17 +1247,15 @@ class Vietphrase {
         }
       }
 
-      console.log(`1 ${Date.now() - this.startTime}`);
-      let prefilterText = inputText.toLowerCase();
-      data = [...data].filter(([first]) => prefilterText.toLowerCase().includes(first.toLowerCase()) && (prefilterText = prefilterText.replaceAll(first.toLowerCase(), '\n')));
-      console.log(`2 ${Date.now() - this.startTime}`);
+      data = [...data];
 
       switch (this.translationAlgorithm) {
         case this.TranslationAlgorithms.TRANSLATE_FROM_LEFT_TO_RIGHT: {
           return this.translateFromLeftToRight(targetLanguage, data, inputText);
         }
         default: {
-          return this.translatePrioritizeLongVietPhraseClusters(targetLanguage, data, inputText);
+          let prefilterText = inputText.toLowerCase();
+          return this.translatePrioritizeLongVietPhraseClusters(targetLanguage, data.filter(([first]) => prefilterText.toLowerCase().includes(first.toLowerCase()) && (prefilterText = prefilterText.replaceAll(first.toLowerCase(), '\n'))), inputText);
         }
       }
     } catch (error) {
