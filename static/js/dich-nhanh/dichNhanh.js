@@ -230,8 +230,8 @@ function getIgnoreTranslationMarkup(text, translation, translator) {
   }
 }
 
-function applyNameToText(text, translator = Translators.VIETPHRASE, names = vietPhraseData.namePhu) {
-  const nameEntries = (translator === Translators.VIETPHRASE ? names : vietPhraseData.namePhu).filter(([first]) => text.toLowerCase().includes(first.toLowerCase()));
+function applyNameToText(text, translator = Translators.VIETPHRASE, ) {
+  const nameEntries = (translator === Translators.VIETPHRASE ? vietPhraseData.name.concat(vietPhraseData.namePhu) : vietPhraseData.namePhu).filter(([first]) => text.toLowerCase().includes(first.toLowerCase()));
   const nameMap = new Map(nameEntries.map(([first, second]) => [first.toUpperCase(), second]));
 
   let result = text;
@@ -440,9 +440,8 @@ async function translateTextarea() {
   }
 
   const glossaryEnabled = $glossarySwitch.prop('checked');
-  const names = glossary.concat(vietPhraseData.name.filter(([first]) => glossary.length < 1 || !(new RegExp(Utils.getTrieRegexPatternFromWords([...glossaryMap.keys()]))).test(first)));
 
-  const processText = glossaryEnabled && [Translators.BAIDU_FANYI, Translators.PAPAGO].every((element) => translatorOption !== element) && (translatorOption === Translators.VIETPHRASE ? $prioritizeNameOverVietPhraseCheck.prop('checked') && targetLanguage === 'vi' : isPairing) ? applyNameToText(inputText, translatorOption, names) : inputText;
+  const processText = glossaryEnabled && [Translators.BAIDU_FANYI, Translators.PAPAGO].every((element) => translatorOption !== element) && (translatorOption === Translators.VIETPHRASE ? $prioritizeNameOverVietPhraseCheck.prop('checked') && targetLanguage === 'vi' : isPairing) ? applyNameToText(inputText, translatorOption) : inputText;
 
   const [MAX_LENGTH, MAX_LINE] = getMaxQueryLengthAndLine(translatorOption, processText);
 
@@ -758,8 +757,7 @@ function updateLanguageSelect(translator, prevTranslator) {
 
 async function translateText(inputText, translatorOption, targetLanguage, glossaryEnabled) {
   try {
-    const names = combineGlossary;
-    const text = glossaryEnabled && [Translators.BAIDU_FANYI, Translators.PAPAGO].every((element) => translatorOption !== element) && (translatorOption !== Translators.VIETPHRASE || $prioritizeNameOverVietPhraseCheck.prop('checked')) ? applyNameToText(inputText, translatorOption, names) : inputText;
+    const text = glossaryEnabled && [Translators.BAIDU_FANYI, Translators.PAPAGO].every((element) => translatorOption !== element) && (translatorOption !== Translators.VIETPHRASE || $prioritizeNameOverVietPhraseCheck.prop('checked')) ? applyNameToText(inputText, translatorOption) : inputText;
     let translator = null;
     let sourceLanguage = '';
 
@@ -888,9 +886,10 @@ function reloadGlossaryEntries() {
   const downloadButton = $('#download-button');
   const glossaryExtension = $('#glossary-extension');
 
+  const glossaryList = $glossaryListSelect.val();
   let currentGlossaryCounter = null;
 
-  switch ($glossaryListSelect.val()) {
+  switch (glossaryList) {
     case 'Names': {
       glossary = vietPhraseData.namePhu;
       currentGlossaryCounter = null;
@@ -988,7 +987,7 @@ function reloadGlossaryEntries() {
   $('#glossary-entries-list').html(entriesList.innerHTML);
   $glossaryEntrySelect.val('');
 
-  switch ($glossaryListSelect.val()) {
+  switch (glossaryList) {
     case 'Names': {
       vietPhraseData.namePhu = glossary;
       break;
@@ -1019,6 +1018,7 @@ function reloadGlossaryEntries() {
   }));
 
   glossaryStorage = localStorage.getItem('glossary');
+  if (glossaryList !== 'Names') $glossaryListSelect.val('Names').change();
 }
 
 $(document).ready(async () => {

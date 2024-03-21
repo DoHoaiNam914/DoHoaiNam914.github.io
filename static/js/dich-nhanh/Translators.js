@@ -1132,13 +1132,13 @@ class Vietphrase {
         const [nhanByName, nhanByPronoun] = this.loadLuatNhanData(targetLanguage, nameEntries, text);
 
         dataEntries = dataEntries.concat(nhanByPronoun, this.nameEnabled && this.prioritizeNameOverVietPhrase ? nhanByName : []);
-        nameEntries = !this.prioritizeNameOverVietPhrase ? nameEntries.concat(nhanByName) : [];
+        nameEntries = !this.prioritizeNameOverVietPhrase ? nameEntries.concat(nhanByName) : nameEntries;
 
         const dataMap = new Map(dataEntries);
         const nameMap = new Map(nameEntries);
 
         const dataLength = [...dataMap.keys(), ...nameMap.keys()].reduce((accumulator, currentValue) => Math.max(accumulator, currentValue.length), 1);
-        const combinedData = dataEntries.concat(nameEntries);
+        const combinedData = nameEntries.concat(dataEntries).filter(([first], __, array) => !array[first] && (array[first] = 1), {});
 
         lines.forEach((a) => {
           const chars = [...a];
@@ -1223,9 +1223,9 @@ class Vietphrase {
     this.prioritizeNameOverVietPhrase = prioritizeNameOverVietPhrase;
     this.autocapitalize = autocapitalize;
     this.data = data;
-    this.name = this.data.name.concat(this.data.namePhu).filter(([first]) => inputText.toLowerCase().includes(first.toLowerCase()));
+    this.name = this.data.name.concat(this.data.namePhu);
+    this.name = (this.prioritizeNameOverVietPhrase ? this.name.map(([__, second]) => [second, second]) : this.name).filter(([first]) => inputText.toLowerCase().includes(first.toLowerCase()));
     this.nameMap = new Map(this.name.map(([first, second]) => [first.toUpperCase(), second]));
-    this.name = this.prioritizeNameOverVietPhrase ? this.name.map(([__, second]) => [second, second]) : this.name
     this.nameEnabled = (nameEnabled && this.name.some(([first, second]) => inputText.toLowerCase().includes(first) || inputText.includes(second))) || false;
 
     try {
