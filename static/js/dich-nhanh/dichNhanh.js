@@ -43,6 +43,7 @@ const $glossarySwitch = $('#glossary-switch');
 const $glossaryInput = $('#glossary-input');
 const $glossaryType = $('#glossary-type');
 const $languagePairsSelect = $('#language-pairs-select');
+const $glossaryListSelect = $('#glossary-list-select');
 const $sourceEntryInput = $('#source-entry-input');
 const $dropdownHasCollapse = $('.dropdown-has-collapse');
 const $targetEntryTextarea = $('#target-entry-textarea');
@@ -59,8 +60,7 @@ const SUPPORTED_LANGUAGES = ['', 'EN', 'JA', 'ZH', 'EN-US', 'auto', 'en', 'ja', 
 let isLoaded = false;
 
 let quickTranslateStorage = JSON.parse(localStorage.getItem('dich_nhanh')) ?? {};
-let glossary = JSON.parse(localStorage.getItem('glossary')) ?? [];
-let glossaryMap = new Map();
+let glossaryStorage = JSON.parse(localStorage.getItem('glossary')) ?? {};
 
 const uuid = crypto.randomUUID();
 
@@ -70,11 +70,18 @@ let oldAccentObject = {};
 const vietPhraseData = {
   pinyins: new Map(),
   hanViet: new Map(),
-  vietPhrase: new Map(),
-  name: new Map(),
-  luatNhan: new Map(),
-  pronoun: new Map(),
+  vietPhrase: [],
+  vietPhrasePhu: glossaryStorage.vietPhrase ?? [],
+  name: [],
+  namePhu: glossaryStorage.name ?? [],
+  luatNhan: glossaryStorage.luatNhan ?? [],
+  pronoun: glossaryStorage.pronoun ?? [],
 };
+
+let glossary = [];
+let glossaryMap = new Map();
+let combineGlossary = [];
+let combineGlossaryMap = new Map();
 
 let glossaryData = '';
 
@@ -223,19 +230,21 @@ function getIgnoreTranslationMarkup(text, translation, translator) {
   }
 }
 
-function applyGlossaryToText(text, translator = Translators.VIETPHRASE) {
-  const glossaryEntries = glossary.filter(([first]) => text.toLowerCase().includes(first.toLowerCase()));
-  const glossaryMapper = new Map(glossaryEntries.map(([first, second]) => [first.toUpperCase(), second]));
-  let newText = text;
+function applyNameToText(text, translator = Translators.VIETPHRASE, names = vietPhraseData.namePhu) {
+  const nameEntries = (translator === Translators.VIETPHRASE ? names : vietPhraseData.namePhu).filter(([first]) => text.toLowerCase().includes(first.toLowerCase()));
+  const nameMap = new Map(nameEntries.map(([first, second]) => [first.toUpperCase(), second]));
 
-  if (glossaryEntries.length > 0) {
+  let result = text;
+
+  if (nameEntries.length > 0) {
     const lines = text.split('\n');
-    const results = [];
+    const nameLength = [...nameMap.keys()].reduce((accumulator, currentValue) => Math.max(accumulator, currentValue.length), 1);
 
-    const glossaryLengths = [...glossaryEntries.map(([first]) => [...first].length), 1].toSorted((a, b) => b - a).filter((element, index, array) => element > 0 && index === array.indexOf(element));
+    const results = [];
 
     lines.forEach((a) => {
       const chars = [...a];
+
       if (chars.length === 0) {
         results.push(a);
       } else {
@@ -243,181 +252,57 @@ function applyGlossaryToText(text, translator = Translators.VIETPHRASE) {
         let prevPhrase = '';
         let i = 0;
 
-        chars.forEach((b, c) => {
-          if (c === i) {
-            glossaryLengths.some((d) => {
-              let phrase = translator === Translators.DEEPL_TRANSLATE || translator === Translators.GOOGLE_TRANSLATE ? Utils.convertHtmlToText(a.substring(i, i + d)) : a.substring(i, i + d);
-              const charsInTempLine = [...tempLine];
-              const lastCharInLine = charsInTempLine.length > 0 ? charsInTempLine[charsInTempLine.length - 1] : '';
+        while (i < chars.length) {
+          let length = chars.length > nameLength ? nameLength : chars.length;
 
-              if (glossaryMapper.has(phrase.toUpperCase())) {
-                phrase = translator === Translators.DEEPL_TRANSLATE || translator === Translators.GOOGLE_TRANSLATE ? Utils.convertHtmlToText(a.substring(i, i + d).toUpperCase()) : a.substring(i, i + d).toUpperCase();
+          while (length > 0) {
+            let phrase = translator === Translators.DEEPL_TRANSLATE || translator === Translators.GOOGLE_TRANSLATE ? Utils.convertHtmlToText(a.substring(i, i + length)) : a.substring(i, i + length);
+            length = nameEntries.reduce((accumulator, [first]) => (phrase.toLowerCase().startsWith(first.toLowerCase()) ? Math.max(accumulator, first.length) : accumulator), 1);
+            phrase = translator === Translators.DEEPL_TRANSLATE || translator === Translators.GOOGLE_TRANSLATE ? Utils.convertHtmlToText(a.substring(i, i + length)) : a.substring(i, i + length);
+            const remainText = chars.slice(i);
 
-                if (glossaryMapper.get(phrase) !== '') {
-                  tempLine += (charsInTempLine.length > 0 && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]/u.test(lastCharInLine) ? ' ' : '') + (translator === Translators.VIETPHRASE && /\p{sc=Hani}/u.test(a[i - 2]) && a[i - 1] === ' ' ? '- ' : '') + (getIgnoreTranslationMarkup(phrase, glossaryMapper.get(phrase).replace(/(^| |\p{P})(\p{Ll})/u, (match, p1, p2) => (/\p{sc=Hani}/u.test(a[i - 2]) && a[i - 1] === ' ' ? p1 + p2.toUpperCase() : match)), translator));
-                  prevPhrase = glossaryMapper.get(phrase);
-                }
+            const charsInTempLine = [...tempLine];
 
-                i += d - 1;
-                return true;
+            if (nameMap.has(phrase.toUpperCase())) {
+              phrase = translator === Translators.DEEPL_TRANSLATE || translator === Translators.GOOGLE_TRANSLATE ? Utils.convertHtmlToText(a.substring(i, i + length).toUpperCase()) : phrase.toUpperCase();
+              const phraseResult = nameMap.get(phrase);
+
+              if (phraseResult !== '') {
+                const hasSpaceSperator = /[\d\p{sc=Hani}]/u.test(a[i - 2]) && a[i - 1] === ' ';
+                tempLine += (charsInTempLine.length > 0 && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(charsInTempLine) ? ' ' : '') + (translator === Translators.VIETPHRASE && hasSpaceSperator ? '- ' : '') + (getIgnoreTranslationMarkup(phrase, phraseResult.replace(/(^| |\p{P})(\p{Ll})/u, (match, p1, p2) => (hasSpaceSperator ? p1 + p2.toUpperCase() : match)), translator));
+                prevPhrase = phraseResult;
               }
 
-              if (d === 1) {
-                tempLine += (charsInTempLine.length > 0 && /[\p{Lu}\p{Ll}\p{Nd}([{‘“]/u.test(a[i]) && /[\p{Lu}\p{Ll}\p{Nd})\]}’”]/u.test(prevPhrase) ? ' ' : '') + (translator === Translators.DEEPL_TRANSLATE || translator === Translators.GOOGLE_TRANSLATE ? Utils.convertTextToHtml(phrase) : phrase);
-                prevPhrase = '';
-                return true;
-              }
+              i += length - 1;
+              break;
+            }
 
-              return false;
-            });
+            if (length === 1) {
+              length = remainText.reduce((accumulator, __, currentIndex) => {
+                const maybeZeroRemainText = remainText.slice(currentIndex + 1).length === 0 ? remainText.length : currentIndex;
+                return accumulator === 0 && remainText.slice(currentIndex + 1).length !== 0 && nameEntries.some(([first]) => remainText.slice(currentIndex).join('').toLowerCase().startsWith(first.toLowerCase())) ? maybeZeroRemainText : accumulator;
+              }, 0) || length;
 
-            i += 1;
+              tempLine += (charsInTempLine.length > 0 && /[\p{Lu}\p{Ll}\p{Nd}([{‘“]/u.test(a[i]) && /[\p{Lu}\p{Ll}\p{Nd})\]}’”]$/u.test(prevPhrase) ? ' ' : '') + (translator === Translators.DEEPL_TRANSLATE || translator === Translators.GOOGLE_TRANSLATE ? Utils.convertTextToHtml(chars.slice(i, i + length).join('')) : chars.slice(i, i + length).join(''));
+              prevPhrase = '';
+              i += length - 1;
+              break;
+            }
+
+            length -= 1;
           }
-        });
+
+          i += 1;
+        }
 
         results.push(tempLine);
       }
     });
 
-    newText = results.join('\n');
+    result = results.join('\n');
   }
 
-  return newText;
-}
-
-function updateInputTextLength() {
-  const inputText = $inputTextarea.val();
-
-  const translator = $translatorOptions.filter($('.active')).data('id');
-
-  let sourceLanguage = $sourceLanguageSelect.val();
-  let targetLanguage = $targetLanguageSelect.val();
-  const languagePairs = $languagePairsSelect.val().split('-');
-
-  switch (translator) {
-    case Translators.BAIDU_FANYI: {
-      sourceLanguage = BaiduFanyi.getMappedSourceLanguageCode(Translators.GOOGLE_TRANSLATE, sourceLanguage).split('-')[0].toLowerCase();
-      targetLanguage = BaiduFanyi.getMappedTargetLanguageCode(Translators.GOOGLE_TRANSLATE, targetLanguage).split('-')[0].toLowerCase();
-      break;
-    }
-    case Translators.DEEPL_TRANSLATE: {
-      sourceLanguage = DeeplTranslate.getMappedSourceLanguageCode(Translators.GOOGLE_TRANSLATE, sourceLanguage).split('-')[0].toLowerCase();
-      targetLanguage = DeeplTranslate.getMappedTargetLanguageCode(Translators.GOOGLE_TRANSLATE, targetLanguage).split('-')[0].toLowerCase();
-      break;
-    }
-    case Translators.PAPAGO: {
-      sourceLanguage = Papago.getMappedSourceLanguageCode(Translators.GOOGLE_TRANSLATE, sourceLanguage).split('-')[0].toLowerCase();
-      targetLanguage = Papago.getMappedTargetLanguageCode(Translators.GOOGLE_TRANSLATE, targetLanguage).split('-')[0].toLowerCase();
-      break;
-    }
-    case Translators.MICROSOFT_TRANSLATOR: {
-      sourceLanguage = MicrosoftTranslator.getMappedSourceLanguageCode(Translators.GOOGLE_TRANSLATE, sourceLanguage).split('-')[0].toLowerCase();
-      targetLanguage = MicrosoftTranslator.getMappedTargetLanguageCode(Translators.GOOGLE_TRANSLATE, targetLanguage).split('-')[0].toLowerCase();
-      break;
-    }
-    case Translators.VIETPHRASE: {
-      sourceLanguage = Vietphrase.getMappedSourceLanguageCode(Translators.GOOGLE_TRANSLATE).split('-')[0].toLowerCase();
-      targetLanguage = Vietphrase.getMappedTargetLanguageCode(Translators.GOOGLE_TRANSLATE).split('-')[0].toLowerCase();
-      break;
-    }
-    default: {
-      sourceLanguage = sourceLanguage.split('-')[0].toLowerCase();
-      targetLanguage = targetLanguage.split('-')[0].toLowerCase();
-      break;
-    }
-  }
-
-  const gapLength = applyGlossaryToText(inputText, translator).length - inputText.length;
-
-  $('#input-textarea-counter').text(`${inputText.length}${inputText.length > 0 && ($glossarySwitch.prop('checked') && (translator === Translators.VIETPHRASE ? $prioritizeNameOverVietPhraseCheck.prop('checked') && targetLanguage === 'vi' : sourceLanguage === languagePairs[0] && targetLanguage === languagePairs[1])) && gapLength > 0 ? ` (+${gapLength})` : ''}`);
-}
-
-function reloadGlossaryEntries() {
-  const entrySelect = document.createElement('select');
-  const entriesList = document.createElement('datalist');
-
-  const defaultOption = document.createElement('option');
-  defaultOption.innerText = 'Chọn...';
-  defaultOption.value = '';
-  entrySelect.appendChild(defaultOption);
-
-  const downloadButton = $('#download-button');
-  const glossaryExtension = $('#glossary-extension');
-
-  if (glossary.length > 0) {
-    glossary = glossary.filter(([first], __, array) => !array[first] && (array[first] = 1), {}).toSorted((a, b) => a[1].localeCompare(b[1], 'vi', { ignorePunctuation: true }) || a[0].localeCompare(b[0], 'vi', { sensitivity: 'accent', ignorePunctuation: true }) || b[0].concat(`\t${b[1]}`).length - a[0].concat(`\t${a[1]}`).length).map(([first, second]) => [first.trim().replace(/^\s+|\s+$/g, ''), second]);
-    glossaryMap = new Map(glossary.map(([first, second]) => [first, second]));
-
-    glossary.forEach(([first, second]) => {
-      const option = document.createElement('option');
-      option.innerText = `${first} → ${second}`;
-      option.value = first;
-      entrySelect.appendChild(option.cloneNode(true));
-
-      if (Utils.isOnMobile()) {
-        const optionOnMobile = document.createElement('option');
-        optionOnMobile.innerText = `${first} → ${second}`;
-        optionOnMobile.setAttribute('data-value', first);
-        entriesList.appendChild(optionOnMobile);
-      } else {
-        option.innerText = `${first} → ${second}`;
-        entriesList.appendChild(option.cloneNode(true));
-      }
-    });
-
-    switch ($glossaryType.val()) {
-      case GlossaryType.CSV: {
-        glossaryData = $.csv.fromArrays(glossary.toSorted((a, b) => b[0].length - a[0].length || b[1].length - a[1].length || a[1].localeCompare(b[1], 'vi', { ignorePunctuation: true }) || a[0].localeCompare(b[0], 'vi', { ignorePunctuation: true })));
-        glossaryExtension.text('csv');
-        break;
-      }
-      case GlossaryType.VIETPHRASE: {
-        switch ($('#vietphrase-type').val()) {
-          case 'QuickTranslate Without Sorting': {
-            glossaryData = `\ufeff${glossary.map((element) => element.join('=')).join('\r\n')}`;
-            break;
-          }
-          case 'QuickTranslate': {
-            glossaryData = `\ufeff${glossary.toSorted((a, b) => b[0].length - a[0].length || a[0].localeCompare(b[0])).map((element) => element.join('=')).join('\r\n')}`;
-            break;
-          }
-          case 'Sáng Tác Việt': {
-            glossaryData = glossary.map(([first, second]) => [first.replace(/^/, '$'), second]).toSorted((a, b) => (a.charAt(0) === '#' ? -1 : a[0].length - b[0].length)).map((element) => element.join('=')).join('\n');
-            break;
-          }
-          default: {
-            glossaryData = glossary.map((element) => element.join('=')).join('\n');
-            break;
-          }
-        }
-
-        glossaryExtension.text('txt');
-        break;
-      }
-      default: {
-        glossaryData = glossary.toSorted((a, b) => b[0].concat(`\t${b[1]}`).length - a[0].concat(`\t${a[1]}`).length || a[1].localeCompare(b[1], 'vi', { ignorePunctuation: true }) || a[0].localeCompare(b[0], 'vi', { ignorePunctuation: true })).map((element) => element.join('\t')).join('\n');
-        glossaryExtension.text('tsv');
-        break;
-      }
-    }
-
-    downloadButton.attr('href', URL.createObjectURL(new Blob([glossaryData], { type: `${$glossaryType.val()}; charset=UTF-8` })));
-    downloadButton.attr('download', `${$glossaryName.val().length > 0 ? $glossaryName.val() : $glossaryName.attr('placeholder')}.${glossaryExtension.text()}`);
-    downloadButton.removeClass('disabled');
-  } else {
-    glossaryMap = new Map();
-    glossaryData = '';
-    downloadButton.removeAttr('href');
-    downloadButton.removeAttr('download');
-    downloadButton.addClass('disabled');
-  }
-
-  $glossaryEntrySelect.html(entrySelect.innerHTML);
-  $('#glossary-entries-list').html(entriesList.innerHTML);
-  $glossaryEntrySelect.val('');
-  $('#glossary-entry-counter').text(glossary.length);
-  if (isLoaded) updateInputTextLength();
-  localStorage.setItem('glossary', JSON.stringify(glossary));
+  return result;
 }
 
 function getMaxQueryLengthAndLine(translator, text) {
@@ -438,7 +323,7 @@ function getMaxQueryLengthAndLine(translator, text) {
       return [50000, 1000];
     }
     default: {
-      return [applyGlossaryToText(text, Translators.VIETPHRASE).length, text.split('\n').length];
+      return [applyNameToText(text, Translators.VIETPHRASE).length, text.split('\n').length];
     }
   }
 }
@@ -552,8 +437,9 @@ async function translateTextarea() {
   }
 
   const glossaryEnabled = $glossarySwitch.prop('checked');
+  const names = glossary.concat(vietPhraseData.name.filter(([first]) => glossary.length < 1 || !(new RegExp(Utils.getTrieRegexPatternFromWords([...glossaryMap.keys()]))).test(first)));
 
-  const processText = glossaryEnabled && [Translators.BAIDU_FANYI, Translators.PAPAGO].every((element) => translatorOption !== element) && (translatorOption === Translators.VIETPHRASE ? $prioritizeNameOverVietPhraseCheck.prop('checked') && targetLanguage === 'vi' : isPairing) ? applyGlossaryToText(inputText, translatorOption) : inputText;
+  const processText = glossaryEnabled && [Translators.BAIDU_FANYI, Translators.PAPAGO].every((element) => translatorOption !== element) && (translatorOption === Translators.VIETPHRASE ? $prioritizeNameOverVietPhraseCheck.prop('checked') && targetLanguage === 'vi' : isPairing) ? applyNameToText(inputText, translatorOption, names) : inputText;
 
   const [MAX_LENGTH, MAX_LINE] = getMaxQueryLengthAndLine(translatorOption, processText);
 
@@ -587,7 +473,7 @@ async function translateTextarea() {
           break;
         }
         case Translators.VIETPHRASE: {
-          translator = new Vietphrase(vietPhraseData, $translationAlgorithmRadio.filter('[checked]').val(), $multiplicationAlgorithmRadio.filter('[checked]').val(), glossaryEnabled && targetLanguage === 'vi', glossary, $prioritizeNameOverVietPhraseCheck.prop('checked'), $addDeLeZhaoSwitch.prop('checked'), true);
+          translator = new Vietphrase();
           break;
         }
         default: {
@@ -597,13 +483,21 @@ async function translateTextarea() {
       }
 
       if (translatorOption === Translators.DEEPL_TRANSLATE && translator.usage.character_count + inputText.length > translator.usage.character_limit) throw console.error(`Lỗi DeepL Translator: Đã đạt đến giới hạn dịch của tài khoản. (${translator.usage.character_count}/${translator.usage.character_limit} ký tự).`);
-      const results = [];
 
       if (processText.split(/\r?\n/).length <= MAX_LINE && (translatorOption === Translators.DEEPL_TRANSLATE ? (new TextEncoder()).encode(`text=${processText.split(/\r?\n/).map((element) => encodeURIComponent(element)).join('&text=')}&source_lang=${sourceLanguage}&target_lang=${targetLanguage}&tag_handling=xml`) : processText).length <= MAX_LENGTH) {
-        result = await translator.translateText(sourceLanguage, targetLanguage, processText);
+        switch (translatorOption) {
+          case Translators.VIETPHRASE: {
+            result = await translator.translateText(sourceLanguage, targetLanguage, processText, $translationAlgorithmRadio.filter('[checked]').val(), $multiplicationAlgorithmRadio.filter('[checked]').val(), $prioritizeNameOverVietPhraseCheck.prop('checked'), $addDeLeZhaoSwitch.prop('checked'), true, vietPhraseData, glossaryEnabled && targetLanguage === 'vi');
+            break;
+          }
+          default: {
+            result = await translator.translateText(sourceLanguage, targetLanguage, processText);
+          }
+        }
       } else {
         const inputLines = processText.split(/\r?\n/);
         let queryLines = [];
+        const results = [];
 
         switch (translatorOption) {
           case Translators.DEEPL_TRANSLATE: {
@@ -629,7 +523,6 @@ async function translateTextarea() {
                 queryLines = [];
               }
             }
-
             break;
           }
         }
@@ -639,7 +532,7 @@ async function translateTextarea() {
       }
 
       if (glossaryEnabled && translatorOption !== Translators.VIETPHRASE && isPairing) {
-        glossary.filter(([first]) => inputText.includes(first)).toSorted((a, b) => b[1].length - a[1].length).forEach(([__, second]) => {
+        Vietphrase.namePhu.filter(([first]) => inputText.includes(first)).toSorted((a, b) => b[1].length - a[1].length).forEach(([__, second]) => {
           const oldAccentKey = applyOldAccent(second);
           if (second.split(' ').length >= 2) result = result.replace(Utils.getTrieRegexPatternFromWords([second, second[0].toLowerCase() + second.substring(1), second[0].toUpperCase() + second.substring(1), oldAccentKey, oldAccentKey[0].toLowerCase() + oldAccentKey.substring(1), oldAccentKey[0].toUpperCase() + oldAccentKey.substring(1)]), (match) => match[0] + second.substring(1));
         });
@@ -862,7 +755,8 @@ function updateLanguageSelect(translator, prevTranslator) {
 
 async function translateText(inputText, translatorOption, targetLanguage, glossaryEnabled) {
   try {
-    const text = glossaryEnabled && [Translators.BAIDU_FANYI, Translators.PAPAGO].every((element) => translatorOption !== element) && (translatorOption !== Translators.VIETPHRASE || $prioritizeNameOverVietPhraseCheck.prop('checked')) ? applyGlossaryToText(inputText, translatorOption) : inputText;
+    const names = combineGlossary;
+    const text = glossaryEnabled && [Translators.BAIDU_FANYI, Translators.PAPAGO].every((element) => translatorOption !== element) && (translatorOption !== Translators.VIETPHRASE || $prioritizeNameOverVietPhraseCheck.prop('checked')) ? applyNameToText(inputText, translatorOption, names) : inputText;
     let translator = null;
     let sourceLanguage = '';
 
@@ -888,7 +782,7 @@ async function translateText(inputText, translatorOption, targetLanguage, glossa
         break;
       }
       case Translators.VIETPHRASE: {
-        translator = await new Vietphrase(vietPhraseData, $translationAlgorithmRadio.filter('[checked]').val(), $multiplicationAlgorithmRadio.filter('[checked]').val(), glossaryEnabled, glossary, $prioritizeNameOverVietPhraseCheck.prop('checked'), $addDeLeZhaoSwitch.prop('checked'));
+        translator = await new Vietphrase();
         sourceLanguage = Vietphrase.DefaultLanguage.SOURCE_LANGUAGE;
         break;
       }
@@ -900,10 +794,21 @@ async function translateText(inputText, translatorOption, targetLanguage, glossa
     }
 
     if (translatorOption === Translators.DEEPL_TRANSLATE && translator.usage.character_count + text.length > translator.usage.character_limit) return `Lỗi DeepL Translator: Đã đạt đến giới hạn dịch của tài khoản. (${translator.usage.character_count}/${translator.usage.character_limit} ký tự).`;
-    let result = await translator.translateText(sourceLanguage, targetLanguage, text);
+
+    let result = text;
+
+    switch (translatorOption) {
+      case Translators.VIETPHRASE: {
+        result = await translator.translateText(sourceLanguage, targetLanguage, text, $translationAlgorithmRadio.filter('[checked]').val(), $multiplicationAlgorithmRadio.filter('[checked]').val(), $prioritizeNameOverVietPhraseCheck.prop('checked'), $addDeLeZhaoSwitch.prop('checked'), false, vietPhraseData, glossaryEnabled);
+        break;
+      }
+      default: {
+        result = await translator.translateText(sourceLanguage, targetLanguage, text);
+      }
+    }
 
     if (glossaryEnabled && translatorOption !== Translators.VIETPHRASE) {
-      glossary.filter(([first]) => inputText.includes(first)).toSorted((a, b) => b[1].length - a[1].length).forEach(([__, second]) => {
+      combineGlossary.filter(([first]) => inputText.includes(first)).toSorted((a, b) => b[1].length - a[1].length).forEach(([__, second]) => {
         const oldAccentKey = applyOldAccent(second);
         if (second.split(' ').length >= 2) result = result.replace(Utils.getTrieRegexPatternFromWords([second, second[0].toLowerCase() + second.substring(1), second[0].toUpperCase() + second.substring(1), oldAccentKey, oldAccentKey[0].toLowerCase() + oldAccentKey.substring(1), oldAccentKey[0].toUpperCase() + oldAccentKey.substring(1)]), (match) => match[0] + second.substring(1));
       });
@@ -920,24 +825,202 @@ function applyNewAccent(text) {
   return text.replace(Utils.getTrieRegexPatternFromWords(newAccentMap.map(([first]) => first)), (match) => newAccentObject[match] ?? match);
 }
 
+function updateInputTextLength() {
+  const inputText = $inputTextarea.val();
+  if (inputText.length === 0) return;
+
+  const translator = $translatorOptions.filter($('.active')).data('id');
+
+  let sourceLanguage = $sourceLanguageSelect.val();
+  let targetLanguage = $targetLanguageSelect.val();
+  const languagePairs = $languagePairsSelect.val().split('-');
+
+  switch (translator) {
+    case Translators.BAIDU_FANYI: {
+      sourceLanguage = BaiduFanyi.getMappedSourceLanguageCode(Translators.GOOGLE_TRANSLATE, sourceLanguage).split('-')[0].toLowerCase();
+      targetLanguage = BaiduFanyi.getMappedTargetLanguageCode(Translators.GOOGLE_TRANSLATE, targetLanguage).split('-')[0].toLowerCase();
+      break;
+    }
+    case Translators.DEEPL_TRANSLATE: {
+      sourceLanguage = DeeplTranslate.getMappedSourceLanguageCode(Translators.GOOGLE_TRANSLATE, sourceLanguage).split('-')[0].toLowerCase();
+      targetLanguage = DeeplTranslate.getMappedTargetLanguageCode(Translators.GOOGLE_TRANSLATE, targetLanguage).split('-')[0].toLowerCase();
+      break;
+    }
+    case Translators.PAPAGO: {
+      sourceLanguage = Papago.getMappedSourceLanguageCode(Translators.GOOGLE_TRANSLATE, sourceLanguage).split('-')[0].toLowerCase();
+      targetLanguage = Papago.getMappedTargetLanguageCode(Translators.GOOGLE_TRANSLATE, targetLanguage).split('-')[0].toLowerCase();
+      break;
+    }
+    case Translators.MICROSOFT_TRANSLATOR: {
+      sourceLanguage = MicrosoftTranslator.getMappedSourceLanguageCode(Translators.GOOGLE_TRANSLATE, sourceLanguage).split('-')[0].toLowerCase();
+      targetLanguage = MicrosoftTranslator.getMappedTargetLanguageCode(Translators.GOOGLE_TRANSLATE, targetLanguage).split('-')[0].toLowerCase();
+      break;
+    }
+    case Translators.VIETPHRASE: {
+      sourceLanguage = Vietphrase.getMappedSourceLanguageCode(Translators.GOOGLE_TRANSLATE).split('-')[0].toLowerCase();
+      targetLanguage = Vietphrase.getMappedTargetLanguageCode(Translators.GOOGLE_TRANSLATE).split('-')[0].toLowerCase();
+      break;
+    }
+    default: {
+      sourceLanguage = sourceLanguage.split('-')[0].toLowerCase();
+      targetLanguage = targetLanguage.split('-')[0].toLowerCase();
+      break;
+    }
+  }
+
+  const gapLength = applyNameToText(inputText, translator).length - inputText.length;
+
+  $('#input-textarea-counter').text(`${inputText.length}${inputText.length > 0 && ($glossarySwitch.prop('checked') && (translator === Translators.VIETPHRASE ? $prioritizeNameOverVietPhraseCheck.prop('checked') && targetLanguage === 'vi' : sourceLanguage === languagePairs[0] && targetLanguage === languagePairs[1])) && gapLength > 0 ? ` (+${gapLength})` : ''}`);
+}
+
+function reloadGlossaryEntries() {
+  const entrySelect = document.createElement('select');
+  const entriesList = document.createElement('datalist');
+
+  const defaultOption = document.createElement('option');
+  defaultOption.innerText = 'Chọn...';
+  defaultOption.value = '';
+  entrySelect.appendChild(defaultOption);
+
+  const downloadButton = $('#download-button');
+  const glossaryExtension = $('#glossary-extension');
+
+  let currentGlossaryCounter = null;
+
+  switch ($glossaryListSelect.val()) {
+    case 'Names': {
+      glossary = vietPhraseData.namePhu;
+      currentGlossaryCounter = null;
+      break;
+    }
+    case 'LuatNhan': {
+      glossary = vietPhraseData.luatNhan;
+      currentGlossaryCounter = $luatNhanEntryCounter;
+      break;
+    }
+    case 'Pronouns': {
+      glossary = vietPhraseData.pronoun;
+      currentGlossaryCounter = $pronounEntryCounter;
+      break;
+    }
+    default: {
+      glossary = vietPhraseData.vietPhrasePhu;
+      currentGlossaryCounter = null;
+      break;
+    }
+  }
+
+  glossary = glossary.filter(([first], __, array) => !array[first] && (array[first] = 1), {}).toSorted((a, b) => a[1].localeCompare(b[1], 'vi', { ignorePunctuation: true }) || a[0].localeCompare(b[0], 'vi', { sensitivity: 'accent', ignorePunctuation: true }) || b.join('\t').length - a.join('\t').length).map(([first, second]) => [first.trim().replace(/^\s+|\s+$/g, ''), second]);
+  glossaryMap = new Map(glossary);
+
+  const maybeVietPhraseList = $glossaryListSelect.val() === 'VietPhrase' ? combineGlossary.concat(vietPhraseData.vietPhrase.filter(([first]) => glossary.length < 1 || !Utils.getTrieRegexPatternFromWords([...glossaryMap.keys()]).test(first))) : glossary;
+  combineGlossary = $glossaryListSelect.val() === 'Names' ? glossary.concat(vietPhraseData.name.filter(([first]) => glossary.length < 1 || !Utils.getTrieRegexPatternFromWords([...glossaryMap.keys()]).test(first))) : maybeVietPhraseList;
+  combineGlossaryMap = new Map(combineGlossary);
+
+  if (glossary.length > 0) {
+    glossary.forEach(([first, second]) => {
+      const option = document.createElement('option');
+      option.innerText = `${first} → ${second}`;
+      option.value = first;
+      entrySelect.appendChild(option.cloneNode(true));
+
+      if (Utils.isOnMobile()) {
+        const optionOnMobile = document.createElement('option');
+        optionOnMobile.innerText = `${first} → ${second}`;
+        optionOnMobile.setAttribute('data-value', first);
+        entriesList.appendChild(optionOnMobile);
+      } else {
+        option.innerText = `${first} → ${second}`;
+        entriesList.appendChild(option.cloneNode(true));
+      }
+    });
+
+    switch ($glossaryType.val()) {
+      case GlossaryType.CSV: {
+        glossaryData = $.csv.fromArrays(glossary.toSorted((a, b) => b[0].length - a[0].length || b[1].length - a[1].length || a[1].localeCompare(b[1], 'vi', { ignorePunctuation: true }) || a[0].localeCompare(b[0], 'vi', { ignorePunctuation: true })));
+        glossaryExtension.text('csv');
+        break;
+      }
+      case GlossaryType.VIETPHRASE: {
+        switch ($('#vietphrase-type').val()) {
+          case 'QuickTranslate Without Sorting': {
+            glossaryData = `\ufeff${glossary.map((element) => element.join('=')).join('\r\n')}`;
+            break;
+          }
+          case 'QuickTranslate': {
+            glossaryData = `\ufeff${glossary.toSorted((a, b) => b[0].length - a[0].length || a[0].localeCompare(b[0])).map((element) => element.join('=')).join('\r\n')}`;
+            break;
+          }
+          case 'Sáng Tác Việt': {
+            glossaryData = glossary.map(([first, second]) => [first.replace(/^/, '$'), second]).toSorted((a, b) => (a.charAt(0) === '#' ? -1 : a[0].length - b[0].length)).map((element) => element.join('=')).join('\n');
+            break;
+          }
+          default: {
+            glossaryData = glossary.map((element) => element.join('=')).join('\n');
+            break;
+          }
+        }
+
+        glossaryExtension.text('txt');
+        break;
+      }
+      default: {
+        glossaryData = glossary.toSorted((a, b) => b[0].concat(`\t${b[1]}`).length - a[0].concat(`\t${a[1]}`).length || a[1].localeCompare(b[1], 'vi', { ignorePunctuation: true }) || a[0].localeCompare(b[0], 'vi', { ignorePunctuation: true })).map((element) => element.join('\t')).join('\n');
+        glossaryExtension.text('tsv');
+        break;
+      }
+    }
+
+    downloadButton.attr('href', URL.createObjectURL(new Blob([glossaryData], { type: `${$glossaryType.val()}; charset=UTF-8` })));
+    downloadButton.attr('download', `${$glossaryName.val().length > 0 ? $glossaryName.val() : $glossaryName.attr('placeholder')}.${glossaryExtension.text()}`);
+    downloadButton.removeClass('disabled');
+  } else {
+    glossaryData = '';
+    downloadButton.removeAttr('href');
+    downloadButton.removeAttr('download');
+    downloadButton.addClass('disabled');
+  }
+
+  $glossaryEntrySelect.html(entrySelect.innerHTML);
+  $('#glossary-entries-list').html(entriesList.innerHTML);
+  $glossaryEntrySelect.val('');
+
+  switch ($glossaryListSelect.val()) {
+    case 'Names': {
+      vietPhraseData.namePhu = glossary;
+      break;
+    }
+    case 'LuatNhan': {
+      vietPhraseData.luatNhan = glossary;
+      break;
+    }
+    case 'Pronouns': {
+      vietPhraseData.pronoun = glossary;
+      break;
+    }
+    default: {
+      vietPhraseData.vietPhrasePhu = glossary;
+      break;
+    }
+  }
+
+  if (currentGlossaryCounter != null) currentGlossaryCounter.text(combineGlossary.length);
+  $('#glossary-entry-counter').text(glossary.length);
+  if (isLoaded) updateInputTextLength();
+
+  localStorage.setItem('glossary', JSON.stringify({
+    vietPhrase: vietPhraseData.vietPhrasePhu,
+    name: vietPhraseData.namePhu,
+    luatNhan: vietPhraseData.luatNhan,
+    pronoun: vietPhraseData.pronoun,
+  }));
+
+  glossaryStorage = localStorage.getItem('glossary');
+}
+
 $(document).ready(async () => {
   $('input[type="file"]').val(null);
   loadAllQuickTranslatorOptions();
-  reloadGlossaryEntries();
-
-  $.ajax({
-    method: 'GET',
-    url: '/static/datasource/Unihan_Readings.txt',
-  }).done((data) => {
-    let pinyinList = data.split(/\r?\n/).filter((element) => element.startsWith('U+')).map((element) => element.substring(2).split(/\t/)).filter((element) => element.length === 2).map(([first, second]) => [String.fromCodePoint(parseInt(first, 16)), second]);
-    pinyinList = pinyinList.filter(([first], __, array) => !array[first] && (array[first] = 1), {});
-    vietPhraseData.pinyins = new Map(pinyinList);
-    console.log(`Đã tải xong bộ dữ liệu bính âm (${pinyinList.length})!`);
-    lastSession = {};
-  }).fail((__, ___, errorThrown) => {
-    console.error('Không thể tải bộ dữ liệu bính âm:', errorThrown);
-    setTimeout(window.location.reload, 5000);
-  });
 
   newAccentObject = Object.fromEntries(newAccentMap);
   oldAccentObject = Object.fromEntries(newAccentMap.map(([first, second]) => [second, first]));
@@ -1001,66 +1084,47 @@ $(document).ready(async () => {
     if (!Utils.isOnMobile()) {
       await $.ajax({
         method: 'GET',
-        url: '/static/datasource/Data của thtgiang.txt',
+        url: '/static/datasource/Data của thtgiang/Pronouns.txt',
       }).done((data) => {
-        let vietPhraseList = data.split(/\r\n/).map((element) => element.split('=')).filter((element) => element.length === 2).map(([first, second]) => [first, second.split(/[/|]/)[0]]).concat([...vietPhraseData.hanViet]);
-        vietPhraseList = vietPhraseList.filter(([first], __, array) => !array[first] && (array[first] = 1), {});
-        if ($vietPhraseInput.prop('files').length > 0) return;
-        vietPhraseData.vietPhrase = new Map(vietPhraseList);
-        $vietPhraseEntryCounter.text(vietPhraseList.length);
-        console.log(`Đã tải xong tệp VietPhrase (${$vietPhraseEntryCounter.text()})!`);
+        if (vietPhraseData.pronoun.length === 0) vietPhraseData.pronoun = data.split(/\r\n/).map((element) => element.split('=')).filter((element) => element.length === 2).map(([first, second]) => [first, second.split('/')[0]]);
+        $pronounEntryCounter.text(vietPhraseData.pronoun.length);
+        console.log(`Đã tải xong tệp Pronouns (${$pronounEntryCounter.text()})!`);
         lastSession = {};
       }).fail((__, ___, errorThrown) => {
-        console.error('Không tải được tệp VietPhrase:', errorThrown);
+        console.error('Không tải được tệp Pronouns:', errorThrown);
       });
 
-      // await $.ajax({
-      //   method: 'GET',
-      //   url: '/static/datasource/Data của thtgiang/Names.txt',
-      // }).done((data) => {
-      //   if ($nameInput.prop('files').length > 0) return;
-      //   vietPhraseData.name = new Map(data.split(/\r\n/).map((element) => element.split('=')).filter((element) => element.length === 2));
-      //   $nameEntryCounter.text(vietPhraseData.name.size);
-      //   console.log(`Đã tải xong tệp Names (${$nameEntryCounter.text()})!`);
-      //   lastSession = {};
-      // }).fail((__, ___, errorThrown) => {
-      //   console.error('Không tải được tệp Names:', errorThrown);
-      // });
-
-      $.ajax({
+      await $.ajax({
         method: 'GET',
         url: '/static/datasource/Data của thtgiang/LuatNhan.txt',
       }).done((data) => {
-        if ($luatNhanInput.prop('files').length > 0) return;
-        vietPhraseData.luatNhan = new Map(data.split(/\r\n/).filter((element) => !element.startsWith('#')).map((element) => element.split('=')).filter((element) => element.length === 2));
-        $luatNhanEntryCounter.text(vietPhraseData.luatNhan.size);
+        if (vietPhraseData.luatNhan.length === 0) vietPhraseData.luatNhan = data.split(/\r\n/).filter((element) => !element.startsWith('#')).map((element) => element.split('=')).filter((element) => element.length === 2);
+        $luatNhanEntryCounter.text(vietPhraseData.luatNhan.length);
         console.log(`Đã tải xong tệp LuatNhan (${$luatNhanEntryCounter.text()})!`);
         lastSession = {};
       }).fail((__, ___, errorThrown) => {
         console.error('Không tải được tệp LuatNhan:', errorThrown);
       });
 
-      $.ajax({
-        method: 'GET',
-        url: '/static/datasource/Data của thtgiang/Pronouns.txt',
-      }).done((data) => {
-        if ($pronounInput.prop('files').length > 0) return;
-        vietPhraseData.pronoun = new Map(data.split(/\r\n/).map((element) => element.split('=')).filter((element) => element.length === 2).map(([first, second]) => [first, second.split('/')[0]]));
-        $pronounEntryCounter.text(vietPhraseData.pronoun.size);
-        console.log(`Đã tải xong tệp Pronouns (${$pronounEntryCounter.text()})!`);
-        lastSession = {};
-      }).fail((__, ___, errorThrown) => {
-        console.error('Không tải được tệp Pronouns:', errorThrown);
-      });
-    } else {
       await $.ajax({
         method: 'GET',
-        url: '/static/datasource/vn.tangthuvien.ttvtranslate/VietPhrase.txt',
+        url: '/static/datasource/Data của thtgiang/Names.txt',
       }).done((data) => {
-        let vietPhraseList = data.split('\n').map((element) => element.split('=')).filter((element) => element.length === 2).map(([first, second]) => [first, second.split(/[/|]/)[0]]).concat([...vietPhraseData.hanViet]);
+        vietPhraseData.name = data.split(/\r\n/).map((element) => element.split('=')).filter((element) => element.length === 2);
+        $nameEntryCounter.text(vietPhraseData.name.length);
+        console.log(`Đã tải xong tệp Names (${$nameEntryCounter.text()})!`);
+        lastSession = {};
+      }).fail((__, ___, errorThrown) => {
+        console.error('Không tải được tệp Names:', errorThrown);
+      });
+
+      await $.ajax({
+        method: 'GET',
+        url: '/static/datasource/Data của thtgiang.txt',
+      }).done((data) => {
+        let vietPhraseList = data.split(/\r\n/).map((element) => element.split('=')).filter((element) => element.length === 2).map(([first, second]) => [first, second.split(/[/|]/)[0]]).concat([...vietPhraseData.hanViet]);
         vietPhraseList = vietPhraseList.filter(([first], __, array) => !array[first] && (array[first] = 1), {});
-        if ($vietPhraseInput.prop('files').length > 0) return;
-        vietPhraseData.vietPhrase = new Map(vietPhraseList);
+        vietPhraseData.vietPhrase = vietPhraseList;
         $vietPhraseEntryCounter.text(vietPhraseList.length);
         console.log(`Đã tải xong tệp VietPhrase (${$vietPhraseEntryCounter.text()})!`);
         lastSession = {};
@@ -1068,20 +1132,53 @@ $(document).ready(async () => {
         console.error('Không tải được tệp VietPhrase:', errorThrown);
       });
 
-      // await $.ajax({
-      //   method: 'GET',
-      //   url: '/static/datasource/vn.tangthuvien.ttvtranslate/Names.txt',
-      // }).done((data) => {
-      //   if ($nameInput.prop('files').length > 0) return;
-      //   vietPhraseData.name = new Map(data.split('\n').map((element) => element.split('=')).filter((element) => element.length === 2));
-      //   $nameEntryCounter.text(vietPhraseData.name.size);
-      //   console.log(`Đã tải xong tệp Names (${$nameEntryCounter.text()})!`);
-      //   lastSession = {};
-      // }).fail((__, ___, errorThrown) => {
-      //   console.error('Không tải được tệp Names:', errorThrown);
-      // });
+      reloadGlossaryEntries();
+    } else {
+      await $.ajax({
+        method: 'GET',
+        url: '/static/datasource/vn.tangthuvien.ttvtranslate/Names.txt',
+      }).done((data) => {
+        vietPhraseData.name = data.split('\n').map((element) => element.split('=')).filter((element) => element.length === 2);
+        $nameEntryCounter.text(vietPhraseData.name.length);
+        console.log(`Đã tải xong tệp Names (${$nameEntryCounter.text()})!`);
+        lastSession = {};
+      }).fail((__, ___, errorThrown) => {
+        console.error('Không tải được tệp Names:', errorThrown);
+      });
+
+      await $.ajax({
+        method: 'GET',
+        url: '/static/datasource/vn.tangthuvien.ttvtranslate/VietPhrase.txt',
+      }).done((data) => {
+        let vietPhraseList = data.split('\n').map((element) => element.split('=')).filter((element) => element.length === 2).map(([first, second]) => [first, second.split(/[/|]/)[0]]).concat([...vietPhraseData.hanViet]);
+        vietPhraseList = vietPhraseList.filter(([first], __, array) => !array[first] && (array[first] = 1), {});
+        vietPhraseData.vietPhrase = vietPhraseList;
+        $vietPhraseEntryCounter.text(vietPhraseList.length);
+        console.log(`Đã tải xong tệp VietPhrase (${$vietPhraseEntryCounter.text()})!`);
+        lastSession = {};
+      }).fail((__, ___, errorThrown) => {
+        console.error('Không tải được tệp VietPhrase:', errorThrown);
+      });
+
+      reloadGlossaryEntries();
     }
+  } else {
+    reloadGlossaryEntries();
   }
+
+  $.ajax({
+    method: 'GET',
+    url: '/static/datasource/Unihan_Readings.txt',
+  }).done((data) => {
+    let pinyinList = data.split(/\r?\n/).filter((element) => element.startsWith('U+')).map((element) => element.substring(2).split(/\t/)).filter((element) => element.length === 2).map(([first, second]) => [String.fromCodePoint(parseInt(first, 16)), second]);
+    pinyinList = pinyinList.filter(([first], __, array) => !array[first] && (array[first] = 1), {});
+    vietPhraseData.pinyins = new Map(pinyinList);
+    console.log(`Đã tải xong bộ dữ liệu bính âm (${pinyinList.length})!`);
+    lastSession = {};
+  }).fail((__, ___, errorThrown) => {
+    console.error('Không thể tải bộ dữ liệu bính âm:', errorThrown);
+    setTimeout(window.location.reload, 5000);
+  });
 
   $loadDefaultVietPhraseFileSwitch.removeClass('disabled');
   isLoaded = true;
@@ -1196,9 +1293,10 @@ $retranslateButton.click(function onClick() {
 });
 
 $glossaryManagerButton.on('mousedown', () => {
-  $glossaryEntrySelect.val('').change();
+  $glossaryListSelect.val('Names').change();
   $sourceEntryInput.prop('scrollLeft', 0);
-  $sourceEntryInput.val(getSelectedTextOrActiveElementText().replace(/\n/g, ' ').trim()).trigger('input');
+  $glossaryEntrySelect.val('').change();
+  if (getSelectedTextOrActiveElementText().length > 0) $sourceEntryInput.val(getSelectedTextOrActiveElementText().replace(/\n/g, ' ').trim()).trigger('input');
 
   if (window.getSelection) {
     window.getSelection().removeAllRanges();
@@ -1375,9 +1473,10 @@ $vietPhraseInput.on('change', function onChange() {
   reader.onload = function onLoad() {
     let vietPhraseList = this.result.split(/\r?\n/).map((element) => element.split('=')).filter((element) => element.length === 2).map(([first, second]) => [first, second.split(/[/|]/)[0]]);
     vietPhraseList = vietPhraseList.concat([...vietPhraseData.hanViet]).filter(([first], __, array) => !array[first] && (array[first] = 1), {});
-    vietPhraseData.vietPhrase = new Map(vietPhraseList);
+    vietPhraseData.vietPhrase = vietPhraseList;
     $vietPhraseEntryCounter.text(vietPhraseList.length);
     console.log(`Đã tải xong tệp ${$vietPhraseInput.prop('files')[0].name} (${$vietPhraseEntryCounter.text()})!`);
+    reloadGlossaryEntries();
     lastSession = {};
   };
 
@@ -1388,9 +1487,10 @@ $nameInput.on('change', function onChange() {
   const reader = new FileReader();
 
   reader.onload = function onLoad() {
-    vietPhraseData.name = new Map(this.result.split(/\r?\n/).map((element) => element.split('=')).filter((element) => element.length === 2));
+    vietPhraseData.name = this.result.split(/\r?\n/).map((element) => element.split('=')).filter((element) => element.length === 2);
     $nameEntryCounter.text(vietPhraseData.name.size);
     console.log(`Đã tải xong tệp Names (${$nameEntryCounter.text()})!`);
+    reloadGlossaryEntries();
     lastSession = {};
   };
 
@@ -1399,8 +1499,9 @@ $nameInput.on('change', function onChange() {
 
 $('#clear-name-button').on('click', () => {
   if (!window.confirm('Bạn có muốn xoá sạch bảng thuật ngữ chứ?')) return;
-  vietPhraseData.name = new Map();
-  $nameEntryCounter.text(vietPhraseData.name.size);
+  vietPhraseData.name = [];
+  $nameEntryCounter.text(vietPhraseData.name.length);
+  reloadGlossaryEntries();
   lastSession = {};
 });
 
@@ -1418,7 +1519,7 @@ $luatNhanInput.on('change', function onChange() {
   const reader = new FileReader();
 
   reader.onload = function onLoad() {
-    vietPhraseData.luatNhan = new Map(this.result.split(/\r?\n/).filter((element) => !element.startsWith('#')).map((element) => element.split('=')).filter((element) => element.length === 2));
+    vietPhraseData.luatNhan = this.result.split(/\r?\n/).filter((element) => !element.startsWith('#')).map((element) => element.split('=')).filter((element) => element.length === 2);
     $luatNhanEntryCounter.text(vietPhraseData.luatNhan.size);
     console.log(`Đã tải xong tệp ${$luatNhanInput.prop('files')[0].name} (${$luatNhanEntryCounter.text()})!`);
     lastSession = {};
@@ -1429,8 +1530,8 @@ $luatNhanInput.on('change', function onChange() {
 
 $('#clear-luat-nhan-button').on('click', () => {
   if (!window.confirm('Bạn có muốn xoá sạch LuatNhan chứ?')) return;
-  vietPhraseData.luatNhan = new Map();
-  $luatNhanEntryCounter.text(vietPhraseData.luatNhan.size);
+  vietPhraseData.luatNhan = [];
+  $luatNhanEntryCounter.text(vietPhraseData.luatNhan.length);
   lastSession = {};
 });
 
@@ -1438,8 +1539,8 @@ $pronounInput.on('change', function onChange() {
   const reader = new FileReader();
 
   reader.onload = function onLoad() {
-    vietPhraseData.pronoun = new Map(this.result.split(/\r?\n/).map((element) => element.split('=')).filter((element) => element.length === 2).map(([first, second]) => [first, second.split('/')[0]]));
-    $pronounEntryCounter.text(vietPhraseData.pronoun.size);
+    vietPhraseData.pronoun = this.result.split(/\r?\n/).map((element) => element.split('=')).filter((element) => element.length === 2).map(([first, second]) => [first, second.split('/')[0]]);
+    $pronounEntryCounter.text(vietPhraseData.pronoun.length);
     console.log(`Đã tải xong tệp ${$pronounInput.prop('files')[0].name} (${$pronounEntryCounter.text()})!`);
     lastSession = {};
   };
@@ -1449,8 +1550,8 @@ $pronounInput.on('change', function onChange() {
 
 $('#clear-pronoun-button').on('click', () => {
   if (!window.confirm('Bạn có muốn xoá sạch Pronoun chứ?')) return;
-  vietPhraseData.pronoun = new Map();
-  $pronounEntryCounter.text(vietPhraseData.pronoun.size);
+  vietPhraseData.pronoun = [];
+  $pronounEntryCounter.text(vietPhraseData.pronoun.length);
   lastSession = {};
 });
 
@@ -1466,17 +1567,17 @@ $glossaryInput.on('change', function onChange() {
   reader.onload = function onLoad() {
     switch ($glossaryInput.prop('files')[0].type) {
       case GlossaryType.CSV: {
-        glossary = $.csv.toArrays(this.result).filter((element) => element.length >= 2);
+        vietPhraseData.namePhu = $.csv.toArrays(this.result).filter((element) => element.length >= 2);
         $glossaryType.val(GlossaryType.CSV);
         break;
       }
       case GlossaryType.VIETPHRASE: {
-        glossary = this.result.split(/\r?\n/).map((element) => element.split('=')).filter((element) => element.length === 2);
+        vietPhraseData.namePhu = this.result.split(/\r?\n/).map((element) => element.split('=')).filter((element) => element.length === 2);
         $glossaryType.val(GlossaryType.TSV);
         break;
       }
       default: {
-        glossary = this.result.split(/\r?\n/).map((element) => element.split(/\t/)).filter((element) => element.length >= 2);
+        vietPhraseData.namePhu = this.result.split(/\r?\n/).map((element) => element.split(/\t/)).filter((element) => element.length >= 2);
         $glossaryType.val(GlossaryType.TSV);
         break;
       }
@@ -1493,7 +1594,6 @@ $glossaryInput.on('change', function onChange() {
 $('#clear-glossary-button').on('click', () => {
   if (!window.confirm('Bạn có muốn xoá sạch bảng thuật ngữ chứ?')) return;
   glossary = [];
-  glossaryMap = new Map();
   $glossaryName.val(null);
   reloadGlossaryEntries();
   $glossaryInput.val('');
@@ -1501,8 +1601,13 @@ $('#clear-glossary-button').on('click', () => {
 
 $glossaryType.on('change', reloadGlossaryEntries);
 
+$glossaryListSelect.change(() => {
+  reloadGlossaryEntries();
+  $sourceEntryInput.trigger('input');
+});
+
 $sourceEntryInput.on('input', async function onInput() {
-  const inputText = (new Map(glossary.map(([first]) => [first.toUpperCase(), first]))).get($(this).val().toUpperCase().trim()) ?? $(this).val();
+  const inputText = (new Map(combineGlossary.map(([first]) => [first.toUpperCase(), first]))).get($(this).val().toUpperCase().trim()) ?? $(this).val();
   $(this).val(inputText);
   $targetEntryTextarea.prop('scrollTop', 0);
 
@@ -1514,9 +1619,9 @@ $sourceEntryInput.on('input', async function onInput() {
       return;
     }
 
-    if (glossaryMap.has(inputText)) {
-      $targetEntryTextarea.val(applyGlossaryToText(inputText, Translators.VIETPHRASE)).trigger('input');
-      $glossaryEntrySelect.val(inputText);
+    if (combineGlossaryMap.has(inputText)) {
+      $targetEntryTextarea.val(applyNameToText(inputText, Translators.VIETPHRASE, combineGlossary)).trigger('input');
+      if (glossaryMap.has(inputText)) $glossaryEntrySelect.val(inputText);
 
       if (!Utils.isOnMobile()) {
         const modalBody = $('#glossary-modal .modal-body');
@@ -1525,13 +1630,13 @@ $sourceEntryInput.on('input', async function onInput() {
         modalBody.prop('scrollTop', prevModalBodyScrollTop);
       }
     } else {
-      $translateEntryButtons.filter('[data-translator="vietphrase"][data-lang="sinoVietnamese"][data-glossary="true"]').click();
+      $translateEntryButtons.filter(`[data-translator="vietphrase"][data-lang="${$glossaryListSelect.val() === 'VietPhrase' ? 'vi' : 'sinoVietnamese'}"][data-glossary="true"]`).click();
       $targetEntryTextarea.prop('scrollTop', 0);
       $glossaryEntrySelect.val('');
     }
 
     $addButton.removeClass('disabled');
-    $removeButton.removeClass('disabled');
+    if (!glossaryMap.has(inputText)) $removeButton.removeClass('disabled');
   } else {
     $glossaryEntrySelect.val('').change();
     $glossaryEntrySelect.prop('scrollTop', 0);
@@ -1671,13 +1776,13 @@ $removeButton.on('click', () => {
 });
 
 $glossaryEntrySelect.change(function onChange() {
-  if (glossaryMap.has($(this).val())) {
+  if ($(this).val().length > 0 && combineGlossaryMap.has($(this).val())) {
     $sourceEntryInput.val($(this).val()).trigger('input');
     $removeButton.removeClass('disabled');
   } else {
     $sourceEntryInput.val(null);
     $targetEntryTextarea.prop('scrollTop', 0);
-    $targetEntryTextarea.val(null).trigger('input');
+    $targetEntryTextarea.val(null);
     $removeButton.addClass('disabled');
   }
 });

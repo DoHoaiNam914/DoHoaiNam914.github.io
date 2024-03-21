@@ -712,7 +712,7 @@
             <label class="form-check-label" for="add-de-le-zhao-switch">Thêm đích, liễu, trứ</label>
           </div>
           <div class="mb-3">
-            <label for="name-input" class="form-label">Nhập tệp Names (Đang làm...): <span id="name-entry-counter">0</span> mục</label>
+            <label for="name-input" class="form-label">Nhập tệp Names: <span id="name-entry-counter">0</span> mục</label>
             <div class="input-group input-group-sm">
               <input type="file" class="form-control" id="name-input" accept="text/plain">
               <button type="submit" class="btn btn-outline-danger position-relative" id="clear-name-button">
@@ -770,7 +770,7 @@
           </div>
           <div class="form-check">
             <input type="radio" class="form-check-input option quick-translate-option" id="multiplication-by-pronouns-and-names-radio" name="multiplication-algorithm-radio" value="2" checked>
-            <label class="form-check-label" for="multiplication-by-pronouns-and-names-radio">Nhân theo Pronouns + Names (Glossary)</label>
+            <label class="form-check-label" for="multiplication-by-pronouns-and-names-radio">Nhân theo Pronouns + Names</label>
           </div>
         </div>
         <div class="modal-footer">
@@ -820,6 +820,12 @@
             <option value="ja-vi">Nhật → Việt</option>
             <option value="zh-en">Trung → Anh</option>
             <option value="zh-vi" selected>Trung → Việt</option>
+          </select>
+          <select class="form-select form-select-sm mb-3" id="glossary-list-select">
+            <option>VietPhrase</option>
+            <option selected>Names</option>
+            <option>LuatNhan</option>
+            <option>Pronouns</option>
           </select>
           <div class="input-group mb-2 dropstart dropdown-can-scroll dropdown-has-collapse">
             <input type="text" class="form-control text-font" id="source-entry-input" list="glossary-entries-list" placeholder="Mục nguồn">
