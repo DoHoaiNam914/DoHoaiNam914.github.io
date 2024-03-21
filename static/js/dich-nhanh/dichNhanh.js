@@ -257,8 +257,8 @@ function applyNameToText(text, translator = Translators.VIETPHRASE, names = viet
 
           while (length > 0) {
             let phrase = translator === Translators.DEEPL_TRANSLATE || translator === Translators.GOOGLE_TRANSLATE ? Utils.convertHtmlToText(a.substring(i, i + length)) : a.substring(i, i + length);
-            const foundName = nameEntries.find(([first]) => phrase.toLowerCase().startsWith(first.toLowerCase())).sort((a, b) => b.length - a.length);
-            length = foundName ? foundName[0].length : 1;
+            const foundName = nameEntries.find(([first]) => phrase.toLowerCase().startsWith(first.toLowerCase()));
+            length = foundName ? foundName.sort((a, b) => b.length - a.length)[0].length : 1;
             phrase = translator === Translators.DEEPL_TRANSLATE || translator === Translators.GOOGLE_TRANSLATE ? Utils.convertHtmlToText(a.substring(i, i + length)) : a.substring(i, i + length);
             const remainText = chars.slice(i);
 

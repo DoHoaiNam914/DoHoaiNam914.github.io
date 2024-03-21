@@ -1155,8 +1155,8 @@ class Vietphrase {
 
               while (length > 0) {
                 let phrase = chars.slice(i, i + length).join('');
-                const foundName = combinedData.find(([first]) => phrase.toLowerCase().startsWith(first.toLowerCase())).sort((a, b) => b.length - a.length);
-                length = foundName ? foundName[0].length : 1;
+                const foundName = combinedData.find(([first]) => phrase.toLowerCase().startsWith(first.toLowerCase()));
+                length = foundName ? foundName.sort((a, b) => b.length - a.length)[0].length : 1;
                 phrase = chars.slice(i, i + length).join('');
                 const remainText = chars.slice(i);
 
