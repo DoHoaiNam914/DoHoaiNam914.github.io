@@ -1293,10 +1293,11 @@ $retranslateButton.click(function onClick() {
 });
 
 $glossaryManagerButton.on('mousedown', () => {
-  $glossaryListSelect.val('Names').change();
+  if (!isLoaded) return;
   $sourceEntryInput.prop('scrollLeft', 0);
   $glossaryEntrySelect.val('').change();
-  if (getSelectedTextOrActiveElementText().length > 0) $sourceEntryInput.val(getSelectedTextOrActiveElementText().replace(/\n/g, ' ').trim()).trigger('input');
+  $glossaryListSelect.val('Names').change();
+  $sourceEntryInput.val(getSelectedTextOrActiveElementText().replace(/\n/g, ' ').trim()).trigger('input');
 
   if (window.getSelection) {
     window.getSelection().removeAllRanges();
