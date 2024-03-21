@@ -401,6 +401,7 @@ function buildResult(inputText, result) {
 }
 
 async function translateTextarea() {
+  $glossaryListSelect.val('Names').change();
   const startTime = Date.now();
 
   const inputText = $inputTextarea.val();
@@ -757,6 +758,7 @@ function updateLanguageSelect(translator, prevTranslator) {
 
 async function translateText(inputText, translatorOption, targetLanguage, glossaryEnabled) {
   try {
+    $glossaryListSelect.val('Names').change();
     const text = glossaryEnabled && [Translators.BAIDU_FANYI, Translators.PAPAGO].every((element) => translatorOption !== element) && (translatorOption !== Translators.VIETPHRASE || $prioritizeNameOverVietPhraseCheck.prop('checked')) ? applyNameToText(inputText, translatorOption) : inputText;
     let translator = null;
     let sourceLanguage = '';
@@ -827,6 +829,7 @@ function applyNewAccent(text) {
 }
 
 function updateInputTextLength() {
+  $glossaryListSelect.val('Names').change();
   const inputText = $inputTextarea.val();
   if (inputText.length === 0) return;
 
@@ -1018,7 +1021,6 @@ function reloadGlossaryEntries() {
   }));
 
   glossaryStorage = localStorage.getItem('glossary');
-  if (glossaryList !== 'Names') $glossaryListSelect.val('Names').change();
 }
 
 $(document).ready(async () => {
