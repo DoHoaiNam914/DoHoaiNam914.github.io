@@ -1218,12 +1218,12 @@ class Vietphrase {
     }
   }
 
-  async translateText(__, targetLanguage, inputText, translationAlgorithm, multiplicationAlgorithm, prioritizeNameOverVietPhrase, addDeLeZhao, autocapitalize, data, nameEnabled) {
+  async translateText(__, targetLanguage, inputText, translationAlgorithm, multiplicationAlgorithm, prioritizeNameOverVietPhrase, addDeLeZhao, autocapitalize, data, nameEnabled, glossary) {
     this.multiplicationAlgorithm = multiplicationAlgorithm;
     this.prioritizeNameOverVietPhrase = prioritizeNameOverVietPhrase;
     this.autocapitalize = autocapitalize;
     this.data = data;
-    this.name = this.data.name.concat(this.data.namePhu);
+    this.name = this.data.name.concat(this.data.namePhu, glossary);
     this.name = (this.prioritizeNameOverVietPhrase ? this.name.map(([__, second]) => [second, second]) : this.name).filter(([first]) => inputText.toLowerCase().includes(first.toLowerCase()));
     this.nameMap = new Map(this.name.map(([first, second]) => [first.toUpperCase(), second]));
     this.nameEnabled = (nameEnabled && this.name.some(([first, second]) => inputText.toLowerCase().includes(first) || inputText.includes(second))) || false;

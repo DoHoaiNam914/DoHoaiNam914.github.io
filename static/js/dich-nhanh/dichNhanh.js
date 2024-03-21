@@ -230,8 +230,8 @@ function getIgnoreTranslationMarkup(text, translation, translator) {
   }
 }
 
-function applyNameToText(text, translator = Translators.VIETPHRASE, ) {
-  const nameEntries = (translator === Translators.VIETPHRASE ? vietPhraseData.name.concat(vietPhraseData.namePhu) : vietPhraseData.namePhu).filter(([first]) => text.toLowerCase().includes(first.toLowerCase()));
+function applyNameToText(text, translator = Translators.VIETPHRASE, name = vietPhraseData.name.concat(vietPhraseData.namePhu)) {
+  const nameEntries = (translator === Translators.VIETPHRASE ? name : vietPhraseData.namePhu).filter(([first]) => text.toLowerCase().includes(first.toLowerCase()));
   const nameMap = new Map(nameEntries.map(([first, second]) => [first.toUpperCase(), second]));
 
   let result = text;
@@ -401,7 +401,6 @@ function buildResult(inputText, result) {
 }
 
 async function translateTextarea() {
-  $glossaryListSelect.val('Names').change();
   const startTime = Date.now();
 
   const inputText = $inputTextarea.val();
@@ -758,8 +757,7 @@ function updateLanguageSelect(translator, prevTranslator) {
 
 async function translateText(inputText, translatorOption, targetLanguage, glossaryEnabled) {
   try {
-    $glossaryListSelect.val('Names').change();
-    const text = glossaryEnabled && [Translators.BAIDU_FANYI, Translators.PAPAGO].every((element) => translatorOption !== element) && (translatorOption !== Translators.VIETPHRASE || $prioritizeNameOverVietPhraseCheck.prop('checked')) ? applyNameToText(inputText, translatorOption) : inputText;
+    const text = glossaryEnabled && [Translators.BAIDU_FANYI, Translators.PAPAGO].every((element) => translatorOption !== element) ? applyNameToText(inputText, translatorOption, glossary) : inputText;
     let translator = null;
     let sourceLanguage = '';
 
@@ -802,7 +800,7 @@ async function translateText(inputText, translatorOption, targetLanguage, glossa
 
     switch (translatorOption) {
       case Translators.VIETPHRASE: {
-        result = await translator.translateText(sourceLanguage, targetLanguage, text, $translationAlgorithmRadio.filter('[checked]').val(), $multiplicationAlgorithmRadio.filter('[checked]').val(), $prioritizeNameOverVietPhraseCheck.prop('checked'), $addDeLeZhaoSwitch.prop('checked'), false, vietPhraseData, glossaryEnabled);
+        result = await translator.translateText(sourceLanguage, targetLanguage, text, $translationAlgorithmRadio.filter('[checked]').val(), $multiplicationAlgorithmRadio.filter('[checked]').val(), $prioritizeNameOverVietPhraseCheck.prop('checked'), $addDeLeZhaoSwitch.prop('checked'), false, vietPhraseData, glossaryEnabled, glossary);
         break;
       }
       default: {
@@ -811,7 +809,7 @@ async function translateText(inputText, translatorOption, targetLanguage, glossa
     }
 
     if (glossaryEnabled && translatorOption !== Translators.VIETPHRASE) {
-      combineGlossary.filter(([first]) => inputText.includes(first)).toSorted((a, b) => b[1].length - a[1].length).forEach(([__, second]) => {
+      vietPhraseData.namePhu.filter(([first]) => inputText.includes(first)).toSorted((a, b) => b[1].length - a[1].length).forEach(([__, second]) => {
         const oldAccentKey = applyOldAccent(second);
         if (second.split(' ').length >= 2) result = result.replace(Utils.getTrieRegexPatternFromWords([second, second[0].toLowerCase() + second.substring(1), second[0].toUpperCase() + second.substring(1), oldAccentKey, oldAccentKey[0].toLowerCase() + oldAccentKey.substring(1), oldAccentKey[0].toUpperCase() + oldAccentKey.substring(1)]), (match) => match[0] + second.substring(1));
       });
@@ -829,7 +827,6 @@ function applyNewAccent(text) {
 }
 
 function updateInputTextLength() {
-  $glossaryListSelect.val('Names').change();
   const inputText = $inputTextarea.val();
   if (inputText.length === 0) return;
 
@@ -918,8 +915,8 @@ function reloadGlossaryEntries() {
   glossary = glossary.filter(([first], __, array) => !array[first] && (array[first] = 1), {}).toSorted((a, b) => a[1].localeCompare(b[1], 'vi', { ignorePunctuation: true }) || a[0].localeCompare(b[0], 'vi', { sensitivity: 'accent', ignorePunctuation: true }) || b.join('\t').length - a.join('\t').length).map(([first, second]) => [first.trim().replace(/^\s+|\s+$/g, ''), second]);
   glossaryMap = new Map(glossary);
 
-  const maybeVietPhraseList = $glossaryListSelect.val() === 'VietPhrase' ? vietPhraseData.vietPhrase.filter(([first]) => glossary.length < 1 || !Utils.getTrieRegexPatternFromWords([...glossaryMap.keys()]).test(first)).concat(glossary) : glossary;
-  combineGlossary = $glossaryListSelect.val() === 'Names' ? vietPhraseData.name.filter(([first]) => glossary.length < 1 || !Utils.getTrieRegexPatternFromWords([...glossaryMap.keys()]).test(first)).concat(glossary) : maybeVietPhraseList;
+  const maybeVietPhraseList = glossaryList === 'VietPhrase' ? vietPhraseData.vietPhrase.filter(([first]) => glossary.length < 1 || !Utils.getTrieRegexPatternFromWords([...glossaryMap.keys()]).test(first)).concat(glossary) : glossary;
+  combineGlossary = glossaryList === 'Names' ? vietPhraseData.name.filter(([first]) => glossary.length < 1 || !Utils.getTrieRegexPatternFromWords([...glossaryMap.keys()]).test(first)).concat(glossary) : maybeVietPhraseList;
   combineGlossaryMap = new Map(combineGlossary);
 
   if (glossary.length > 0) {
@@ -1607,14 +1604,10 @@ $('#clear-glossary-button').on('click', () => {
 
 $glossaryType.on('change', reloadGlossaryEntries);
 
-$glossaryListSelect.change(() => {
-  reloadGlossaryEntries();
-  $sourceEntryInput.trigger('input');
-});
+$glossaryListSelect.change(() => reloadGlossaryEntries());
 
 $sourceEntryInput.on('input', async function onInput() {
-  const inputText = (new Map(combineGlossary.map(([first]) => [first.toUpperCase(), first]))).get($(this).val().toUpperCase().trim()) ?? $(this).val();
-  $(this).val(inputText);
+  const inputText = (new Map(glossary.map(([first]) => [first.toUpperCase(), first]))).get($(this).val().toUpperCase().trim()) ?? $(this).val();
   $targetEntryTextarea.prop('scrollTop', 0);
 
   if (inputText.length > 0) {
@@ -1625,9 +1618,9 @@ $sourceEntryInput.on('input', async function onInput() {
       return;
     }
 
-    if (combineGlossaryMap.has(inputText)) {
-      $targetEntryTextarea.val(applyNameToText(inputText, Translators.VIETPHRASE, combineGlossary)).trigger('input');
-      if (glossaryMap.has(inputText)) $glossaryEntrySelect.val(inputText);
+    if (glossaryMap.has(inputText)) {
+      $targetEntryTextarea.val(applyNameToText(inputText, Translators.VIETPHRASE, glossary)).trigger('input');
+      $glossaryEntrySelect.val(inputText);
 
       if (!Utils.isOnMobile()) {
         const modalBody = $('#glossary-modal .modal-body');
