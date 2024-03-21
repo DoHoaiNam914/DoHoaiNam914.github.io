@@ -252,47 +252,51 @@ function applyNameToText(text, translator = Translators.VIETPHRASE, names = viet
         let prevPhrase = '';
         let i = 0;
 
-        while (i < chars.length) {
-          let length = Math.min(chars.length, nameLength);
+        chars.forEach((__, ix) => {
+          if (ix === i) {
+            let length = Math.min(chars.length, nameLength);
 
-          while (length > 0) {
-            let phrase = translator === Translators.DEEPL_TRANSLATE || translator === Translators.GOOGLE_TRANSLATE ? Utils.convertHtmlToText(a.substring(i, i + length)) : a.substring(i, i + length);
-            const foundName = nameEntries.find(([first]) => phrase.toLowerCase().startsWith(first.toLowerCase()));
-            length = foundName ? foundName.sort((a, b) => b.length - a.length)[0].length : 1;
-            phrase = translator === Translators.DEEPL_TRANSLATE || translator === Translators.GOOGLE_TRANSLATE ? Utils.convertHtmlToText(a.substring(i, i + length)) : a.substring(i, i + length);
-            const remainText = chars.slice(i);
+            [...Array(length).keys()].map((element) => element + 1).reverse().some((lengthx) => {
+              if (lengthx === length) {
+                let phrase = translator === Translators.DEEPL_TRANSLATE || translator === Translators.GOOGLE_TRANSLATE ? Utils.convertHtmlToText(a.substring(i, i + length)) : a.substring(i, i + length);
+                const foundName = nameEntries.toSorted((a, b) => b[0].length - a[0].length).find(([first]) => phrase.toLowerCase().startsWith(first.toLowerCase()));
+                length = foundName ? foundName[0].length : 1;
+                phrase = translator === Translators.DEEPL_TRANSLATE || translator === Translators.GOOGLE_TRANSLATE ? Utils.convertHtmlToText(a.substring(i, i + length)) : a.substring(i, i + length);
 
-            const charsInTempLine = [...tempLine];
+                const charsInTempLine = [...tempLine];
 
-            if (nameMap.has(phrase.toUpperCase())) {
-              phrase = translator === Translators.DEEPL_TRANSLATE || translator === Translators.GOOGLE_TRANSLATE ? Utils.convertHtmlToText(a.substring(i, i + length).toUpperCase()) : phrase.toUpperCase();
-              const phraseResult = nameMap.get(phrase);
+                if (nameMap.has(phrase.toUpperCase())) {
+                  phrase = translator === Translators.DEEPL_TRANSLATE || translator === Translators.GOOGLE_TRANSLATE ? Utils.convertHtmlToText(a.substring(i, i + length).toUpperCase()) : phrase.toUpperCase();
+                  const phraseResult = nameMap.get(phrase);
 
-              if (phraseResult !== '') {
-                const hasSpaceSperator = /[\d\p{sc=Hani}]/u.test(a[i - 2]) && a[i - 1] === ' ';
-                tempLine += (charsInTempLine.length > 0 && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(charsInTempLine) ? ' ' : '') + (translator === Translators.VIETPHRASE && hasSpaceSperator ? '- ' : '') + (getIgnoreTranslationMarkup(phrase, phraseResult.replace(/(^| |\p{P})(\p{Ll})/u, (match, p1, p2) => (hasSpaceSperator ? p1 + p2.toUpperCase() : match)), translator));
-                prevPhrase = phraseResult;
+                  if (phraseResult !== '') {
+                    const hasSpaceSperator = /[\d\p{sc=Hani}]/u.test(a[i - 2]) && a[i - 1] === ' ';
+                    tempLine += (charsInTempLine.length > 0 && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(charsInTempLine) ? ' ' : '') + (translator === Translators.VIETPHRASE && hasSpaceSperator ? '- ' : '') + (getIgnoreTranslationMarkup(phrase, phraseResult.replace(/(^| |\p{P})(\p{Ll})/u, (match, p1, p2) => (hasSpaceSperator ? p1 + p2.toUpperCase() : match)), translator));
+                    prevPhrase = phraseResult;
+                  }
+
+                  i += length - 1;
+                  return true;
+                }
+
+                if (length === 1) {
+                  const remainText = chars.slice(i);
+                  const nextIndex = remainText.findIndex((__, index) => nameEntries.some(([first]) => remainText.slice(index).join('').toLowerCase().startsWith(first.toLowerCase())));
+                  length = nextIndex !== -1 ? nextIndex : length;
+
+                  tempLine += (charsInTempLine.length > 0 && /[\p{Lu}\p{Ll}\p{Nd}([{‘“]/u.test(a[i]) && /[\p{Lu}\p{Ll}\p{Nd})\]}’”]$/u.test(prevPhrase) ? ' ' : '') + (translator === Translators.DEEPL_TRANSLATE || translator === Translators.GOOGLE_TRANSLATE ? Utils.convertTextToHtml(chars.slice(i, i + length).join('')) : chars.slice(i, i + length).join(''));
+                  prevPhrase = '';
+                  i += length - 1;
+                  return true;
+                }
+
+                return false;
               }
+            });
 
-              i += length - 1;
-              break;
-            }
-
-            if (length === 1) {
-              const nextIndex = remainText.findIndex((__, index) => nameEntries.some(([first]) => remainText.slice(index).join('').toLowerCase().startsWith(first.toLowerCase())));
-              length = nextIndex !== -1 ? nextIndex : length;
-
-              tempLine += (charsInTempLine.length > 0 && /[\p{Lu}\p{Ll}\p{Nd}([{‘“]/u.test(a[i]) && /[\p{Lu}\p{Ll}\p{Nd})\]}’”]$/u.test(prevPhrase) ? ' ' : '') + (translator === Translators.DEEPL_TRANSLATE || translator === Translators.GOOGLE_TRANSLATE ? Utils.convertTextToHtml(chars.slice(i, i + length).join('')) : chars.slice(i, i + length).join(''));
-              prevPhrase = '';
-              i += length - 1;
-              break;
-            }
-
-            length -= 1;
+            i += 1;
           }
-
-          i += 1;
-        }
+        });
 
         results.push(tempLine);
       }
@@ -912,8 +916,8 @@ function reloadGlossaryEntries() {
   glossary = glossary.filter(([first], __, array) => !array[first] && (array[first] = 1), {}).toSorted((a, b) => a[1].localeCompare(b[1], 'vi', { ignorePunctuation: true }) || a[0].localeCompare(b[0], 'vi', { sensitivity: 'accent', ignorePunctuation: true }) || b.join('\t').length - a.join('\t').length).map(([first, second]) => [first.trim().replace(/^\s+|\s+$/g, ''), second]);
   glossaryMap = new Map(glossary);
 
-  const maybeVietPhraseList = $glossaryListSelect.val() === 'VietPhrase' ? combineGlossary.concat(vietPhraseData.vietPhrase.filter(([first]) => glossary.length < 1 || !Utils.getTrieRegexPatternFromWords([...glossaryMap.keys()]).test(first))) : glossary;
-  combineGlossary = $glossaryListSelect.val() === 'Names' ? glossary.concat(vietPhraseData.name.filter(([first]) => glossary.length < 1 || !Utils.getTrieRegexPatternFromWords([...glossaryMap.keys()]).test(first))) : maybeVietPhraseList;
+  const maybeVietPhraseList = $glossaryListSelect.val() === 'VietPhrase' ? vietPhraseData.vietPhrase.filter(([first]) => glossary.length < 1 || !Utils.getTrieRegexPatternFromWords([...glossaryMap.keys()]).test(first)).concat(glossary) : glossary;
+  combineGlossary = $glossaryListSelect.val() === 'Names' ? vietPhraseData.name.filter(([first]) => glossary.length < 1 || !Utils.getTrieRegexPatternFromWords([...glossaryMap.keys()]).test(first)).concat(glossary) : maybeVietPhraseList;
   combineGlossaryMap = new Map(combineGlossary);
 
   if (glossary.length > 0) {
@@ -1636,7 +1640,7 @@ $sourceEntryInput.on('input', async function onInput() {
     }
 
     $addButton.removeClass('disabled');
-    if (!glossaryMap.has(inputText)) $removeButton.removeClass('disabled');
+    $removeButton.removeClass('disabled');
   } else {
     $glossaryEntrySelect.val('').change();
     $glossaryEntrySelect.prop('scrollTop', 0);
@@ -1776,7 +1780,7 @@ $removeButton.on('click', () => {
 });
 
 $glossaryEntrySelect.change(function onChange() {
-  if ($(this).val().length > 0 && combineGlossaryMap.has($(this).val())) {
+  if ($(this).val().length > 0 && glossaryMap.has($(this).val())) {
     $sourceEntryInput.val($(this).val()).trigger('input');
     $removeButton.removeClass('disabled');
   } else {

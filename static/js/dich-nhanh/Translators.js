@@ -1013,9 +1013,9 @@ class Vietphrase {
     let nhanByPronoun = [...this.data.pronoun].filter(([first]) => inputText.includes(first));
 
     if (this.multiplicationAlgorithm > this.MultiplicationAlgorithm.NOT_APPLICABLE && targetLanguage === 'vi') {
-      [...this.data.luatNhan].filter(([first]) => first.split('{0}').every((element) => inputText.includes(element))).filter(([a]) => (this.nameEnabled && this.multiplicationAlgorithm === this.MultiplicationAlgorithm.MULTIPLICATION_BY_PRONOUNS_AND_NAMES && nameEntries.length > 0 && nhanByName.filter(([b, c]) => inputText.toUpperCase().includes(a.replace(/\{0}/g, Utils.escapeRegExpReplacement(this.prioritizeNameOverVietPhrase ? c : b)).toUpperCase())).length > 0) || nhanByPronoun.filter(([c]) => inputText.includes(a.replace(/\{0}/g, Utils.escapeRegExpReplacement(c))))).forEach(([a, b]) => {
+      [...this.data.luatNhan].filter(([first]) => first.split('{0}').every((element) => inputText.includes(element))).filter(([a]) => (this.nameEnabled && this.multiplicationAlgorithm === this.MultiplicationAlgorithm.MULTIPLICATION_BY_PRONOUNS_AND_NAMES && nameEntries.length > 0 && nhanByName.filter(([b, c]) => inputText.toUpperCase().includes(a.replace(/\{0}/g, Utils.escapeRegExpReplacement(b)).toUpperCase())).length > 0) || nhanByPronoun.filter(([c]) => inputText.includes(a.replace(/\{0}/g, Utils.escapeRegExpReplacement(c))))).forEach(([a, b]) => {
         if (this.nameEnabled && this.multiplicationAlgorithm === this.MultiplicationAlgorithm.MULTIPLICATION_BY_PRONOUNS_AND_NAMES && nameEntries.length > 0) {
-          nhanByName = [...nhanByName, ...nhanByName.filter(([c, d]) => inputText.toUpperCase().includes(a.replace(/\{0}/g, Utils.escapeRegExpReplacement(this.prioritizeNameOverVietPhrase ? d : c)).toUpperCase())).map(([c, d]) => [a.replace(/\{0}/g, Utils.escapeRegExpReplacement(this.prioritizeNameOverVietPhrase ? d : c)).toUpperCase(), b.replace(/\{0}/g, Utils.escapeRegExpReplacement(d))])];
+          nhanByName = [...nhanByName, ...nhanByName.filter(([c, d]) => inputText.toUpperCase().includes(a.replace(/\{0}/g, Utils.escapeRegExpReplacement(c)).toUpperCase())).map(([c, d]) => [a.replace(/\{0}/g, Utils.escapeRegExpReplacement(c)).toUpperCase(), b.replace(/\{0}/g, Utils.escapeRegExpReplacement(d))])];
         }
 
         nhanByPronoun = [...nhanByPronoun, ...nhanByPronoun.filter(([c]) => inputText.includes(a.replace(/\{0}/g, Utils.escapeRegExpReplacement(c)))).map(([c, d]) => [a.replace(/\{0}/g, Utils.escapeRegExpReplacement(c)), b.replace(/\{0}/g, Utils.escapeRegExpReplacement(d))])];
@@ -1150,54 +1150,58 @@ class Vietphrase {
             let prevPhrase = '';
             let i = 0;
 
-            while (i < chars.length) {
-              let length = Math.min(chars.length, dataLength);
+            chars.forEach((__, ix) => {
+              if (ix === i) {
+                let length = Math.min(chars.length, dataLength);
 
-              while (length > 0) {
-                let phrase = chars.slice(i, i + length).join('');
-                const foundName = combinedData.find(([first]) => phrase.toLowerCase().startsWith(first.toLowerCase()));
-                length = foundName ? foundName.sort((a, b) => b.length - a.length)[0].length : 1;
-                phrase = chars.slice(i, i + length).join('');
-                const remainText = chars.slice(i);
+                [...Array(length).keys()].map((element) => element + 1).reverse().some((lengthx) => {
+                  if (lengthx === length) {
+                    let phrase = chars.slice(i, i + length).join('');
+                    const foundName = combinedData.toSorted((a, b) => b[0].length - a[0].length).find(([first]) => phrase.toLowerCase().startsWith(first.toLowerCase()));
+                    length = foundName ? foundName[0].length : 1;
+                    phrase = chars.slice(i, i + length).join('');
 
-                const charsInTempLine = [...tempLine];
+                    const charsInTempLine = [...tempLine];
 
-                if (this.prioritizeNameOverVietPhrase && nameEntries.map(([___, second]) => second).includes(phrase)) {
-                  tempLine += (charsInTempLine.length > 0 && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(charsInTempLine) ? ' ' : '') + phrase;
-                  prevPhrase = phrase;
-                  i += length - 1;
-                  break;
-                }
+                    if (this.nameEnabled && this.prioritizeNameOverVietPhrase && nameEntries.map(([___, second]) => second).includes(phrase)) {
+                      tempLine += (charsInTempLine.length > 0 && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(charsInTempLine) ? ' ' : '') + phrase;
+                      prevPhrase = phrase;
+                      i += length - 1;
+                      return true;
+                    }
 
-                if ((!this.prioritizeNameOverVietPhrase && nameMap.has(phrase.toUpperCase())) || (([...phrase].every((element) => this.data.hanViet.has(element) || (dataMap.has(element) && /^\p{P}$/u.test(element))) || nhanByName.concat(nameEntries.map(([first, second]) => [first.toUpperCase(), second])).includes(this.nameMap.has(phrase.toUpperCase()) ? phrase.toUpperCase() : phrase)) && dataMap.has(phrase.toUpperCase()) && phrase !== '·')) {
-                  phrase = this.nameEnabled && !this.prioritizeNameOverVietPhrase && this.nameMap.has(phrase.toUpperCase()) ? phrase.toUpperCase() : phrase;
-                  const phraseResult = nameMap.get(phrase.toUpperCase()) ?? dataMap.get(phrase);
+                    if (((this.nameEnabled && !this.prioritizeNameOverVietPhrase && nameMap.has(phrase.toUpperCase())) || dataMap.has(phrase.toUpperCase())) && phrase !== '·') {
+                      phrase = phrase.toUpperCase();
+                      const phraseResult = nameMap.get(phrase) ?? dataMap.get(phrase);
 
-                  if (phraseResult !== '') {
-                    const hasSpaceSperator = /[\d\p{sc=Hani}]/u.test(a[i - 2]) && a[i - 1] === ' ';
-                    tempLine += (charsInTempLine.length > 0 && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(charsInTempLine) ? ' ' : '') + (hasSpaceSperator ? '- ' : '') + phraseResult.replace(/(^| |\p{P})(\p{Ll})/u, (match, p1, p2) => (hasSpaceSperator ? p1 + p2.toUpperCase() : match));
-                    prevPhrase = phraseResult;
+                      if (phraseResult !== '') {
+                        const hasSpaceSperator = /[\d\p{sc=Hani}]/u.test(a[i - 2]) && a[i - 1] === ' ';
+                        tempLine += (charsInTempLine.length > 0 && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(charsInTempLine) ? ' ' : '') + (hasSpaceSperator ? '- ' : '') + phraseResult.replace(/(^| |\p{P})(\p{Ll})/u, (match, p1, p2) => (hasSpaceSperator ? p1 + p2.toUpperCase() : match));
+                        prevPhrase = phraseResult;
+                      }
+
+                      i += length - 1;
+                      return true;
+                    }
+
+                    if (length === 1) {
+                      const remainText = chars.slice(i);
+                      const nextIndex = remainText.findIndex((__, index) => combinedData.some(([first]) => remainText.slice(index).join('').toLowerCase().startsWith(first.toLowerCase())));
+                      length = nextIndex !== -1 ? nextIndex : length;
+
+                      tempLine += (charsInTempLine.length > 0 && /[\p{Lu}\p{Ll}\p{Nd}(([{‘“]/u.test(a[i]) && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(prevPhrase) ? ' ' : '') + chars.slice(i, i + length).join('');
+                      prevPhrase = '';
+                      i += length - 1;
+                      return true;
+                    }
+
+                    return false;
                   }
+                });
 
-                  i += length - 1;
-                  break;
-                }
-
-                if (length === 1) {
-                  const nextIndex = remainText.findIndex((__, index) => combinedData.some(([first]) => remainText.slice(index).join('').toLowerCase().startsWith(first.toLowerCase())));
-                  length = nextIndex !== -1 ? nextIndex : length;
-
-                  tempLine += (charsInTempLine.length > 0 && /[\p{Lu}\p{Ll}\p{Nd}(([{‘“]/u.test(a[i]) && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(prevPhrase) ? ' ' : '') + chars.slice(i, i + length).join('');
-                  prevPhrase = '';
-                  i += length - 1;
-                  break;
-                }
-
-                length -= 1;
+                i += 1;
               }
-
-              i += 1;
-            }
+            });
 
             results.push(tempLine);
           }
@@ -1219,9 +1223,10 @@ class Vietphrase {
     this.prioritizeNameOverVietPhrase = prioritizeNameOverVietPhrase;
     this.autocapitalize = autocapitalize;
     this.data = data;
-    this.name = nameEnabled ? this.data.name.concat(this.data.namePhu).map(([first, second]) => [first.toUpperCase(), second]) : [];
+    this.name = this.data.name.concat(this.data.namePhu).filter(([first]) => inputText.toLowerCase().includes(first.toLowerCase()));
+    this.nameMap = new Map(this.name.map(([first, second]) => [first.toUpperCase(), second]));
+    this.name = this.prioritizeNameOverVietPhrase ? this.name.map(([__, second]) => [second, second]) : this.name
     this.nameEnabled = (nameEnabled && this.name.some(([first, second]) => inputText.toLowerCase().includes(first) || inputText.includes(second))) || false;
-    this.nameMap = new Map(this.name);
 
     try {
       let dataMap = new Map();
@@ -1258,11 +1263,11 @@ class Vietphrase {
 
       switch (translationAlgorithm) {
         case this.TranslationAlgorithms.TRANSLATE_FROM_LEFT_TO_RIGHT: {
-          return this.translateFromLeftToRight(targetLanguage, dataMap, inputText);
+          return this.translateFromLeftToRight(targetLanguage, dataMap.filter(([first]) => inputText.toLowerCase().includes(first.toLowerCase())), inputText);
         }
         default: {
           let prefilterText = inputText.toLowerCase();
-          return this.translatePrioritizeLongVietPhraseClusters(targetLanguage, dataMap.toSorted((a, b) => b[0].length - a[0].length).filter(([first]) => prefilterText.toLowerCase().includes(first.toLowerCase()) && (prefilterText = prefilterText.replaceAll(first.toLowerCase(), '\n'))), inputText);
+          return this.translatePrioritizeLongVietPhraseClusters(targetLanguage, dataMap.toSorted((a, b) => b[0].length - a[0].length).filter(([first]) => prefilterText.includes(first.toLowerCase()) && (prefilterText = prefilterText.replaceAll(first.toLowerCase(), '\n'))), inputText);
         }
       }
     } catch (error) {
