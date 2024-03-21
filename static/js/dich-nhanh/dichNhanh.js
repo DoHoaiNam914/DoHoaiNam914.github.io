@@ -253,11 +253,12 @@ function applyNameToText(text, translator = Translators.VIETPHRASE, names = viet
         let i = 0;
 
         while (i < chars.length) {
-          let length = chars.length > nameLength ? nameLength : chars.length;
+          let length = Math.min(chars.length, nameLength);
 
           while (length > 0) {
             let phrase = translator === Translators.DEEPL_TRANSLATE || translator === Translators.GOOGLE_TRANSLATE ? Utils.convertHtmlToText(a.substring(i, i + length)) : a.substring(i, i + length);
-            length = nameEntries.reduce((accumulator, [first]) => (phrase.toLowerCase().startsWith(first.toLowerCase()) ? Math.max(accumulator, first.length) : accumulator), 1);
+            const foundName = nameEntries.find(([first]) => phrase.toLowerCase().startsWith(first.toLowerCase())).sort((a, b) => b.length - a.length);
+            length = foundName ? foundName[0].length : 1;
             phrase = translator === Translators.DEEPL_TRANSLATE || translator === Translators.GOOGLE_TRANSLATE ? Utils.convertHtmlToText(a.substring(i, i + length)) : a.substring(i, i + length);
             const remainText = chars.slice(i);
 
@@ -278,10 +279,8 @@ function applyNameToText(text, translator = Translators.VIETPHRASE, names = viet
             }
 
             if (length === 1) {
-              length = remainText.reduce((accumulator, __, currentIndex) => {
-                const maybeZeroRemainText = remainText.slice(currentIndex + 1).length === 0 ? remainText.length : currentIndex;
-                return accumulator === 0 && remainText.slice(currentIndex + 1).length !== 0 && nameEntries.some(([first]) => remainText.slice(currentIndex).join('').toLowerCase().startsWith(first.toLowerCase())) ? maybeZeroRemainText : accumulator;
-              }, 0) || length;
+              const nextIndex = remainText.findIndex((__, index) => nameEntries.some(([first]) => remainText.slice(index).join('').toLowerCase().startsWith(first.toLowerCase())));
+              length = nextIndex !== -1 ? nextIndex : length;
 
               tempLine += (charsInTempLine.length > 0 && /[\p{Lu}\p{Ll}\p{Nd}([{‘“]/u.test(a[i]) && /[\p{Lu}\p{Ll}\p{Nd})\]}’”]$/u.test(prevPhrase) ? ' ' : '') + (translator === Translators.DEEPL_TRANSLATE || translator === Translators.GOOGLE_TRANSLATE ? Utils.convertTextToHtml(chars.slice(i, i + length).join('')) : chars.slice(i, i + length).join(''));
               prevPhrase = '';

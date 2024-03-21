@@ -1138,6 +1138,7 @@ class Vietphrase {
         const nameMap = new Map(nameEntries);
 
         const dataLength = [...dataMap.keys(), ...nameMap.keys()].reduce((accumulator, currentValue) => Math.max(accumulator, currentValue.length), 1);
+        const combinedData = dataEntries.concat(nameEntries);
 
         lines.forEach((a) => {
           const chars = [...a];
@@ -1150,11 +1151,12 @@ class Vietphrase {
             let i = 0;
 
             while (i < chars.length) {
-              let length = dataLength < chars.length ? dataLength : chars.length;
+              let length = Math.min(chars.length, dataLength);
 
               while (length > 0) {
                 let phrase = chars.slice(i, i + length).join('');
-                length = dataEntries.concat(nameEntries).reduce((accumulator, [first]) => (phrase.toLowerCase().startsWith(first.toLowerCase()) ? Math.max(accumulator, first.length) : accumulator), 1);
+                const foundName = combinedData.find(([first]) => phrase.toLowerCase().startsWith(first.toLowerCase())).sort((a, b) => b.length - a.length);
+                length = foundName ? foundName[0].length : 1;
                 phrase = chars.slice(i, i + length).join('');
                 const remainText = chars.slice(i);
 
@@ -1182,10 +1184,8 @@ class Vietphrase {
                 }
 
                 if (length === 1) {
-                  length = remainText.reduce((accumulator, __, currentIndex) => {
-                    const maybeZeroRemainText = remainText.slice(currentIndex + 1).length === 0 ? remainText.length : currentIndex;
-                    return accumulator === 0 && remainText.slice(currentIndex + 1).length !== 0 && dataEntries.concat(nameEntries).some(([first]) => remainText.slice(currentIndex).join('').toLowerCase().startsWith(first.toLowerCase())) ? maybeZeroRemainText : accumulator;
-                  }, 0) || length;
+                  const nextIndex = remainText.findIndex((__, index) => combinedData.some(([first]) => remainText.slice(index).join('').toLowerCase().startsWith(first.toLowerCase())));
+                  length = nextIndex !== -1 ? nextIndex : length;
 
                   tempLine += (charsInTempLine.length > 0 && /[\p{Lu}\p{Ll}\p{Nd}(([{‘“]/u.test(a[i]) && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(prevPhrase) ? ' ' : '') + chars.slice(i, i + length).join('');
                   prevPhrase = '';
