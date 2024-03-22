@@ -183,6 +183,7 @@ const specialSinovietnameseMap = [
   ['兖', 'DUYỄN'],
   ['台', 'ĐÀI' /* Họ */],
   ['抬', 'ĐÀI'],
+  ['斗', 'ĐẨU, ĐẤU' /* Fix ChinesePhienAmWords */],
   ['侄', 'ĐIỆT'],
   ['顶', 'ĐỈNH'],
   ['锻', 'ĐOÀN'],
