@@ -238,7 +238,7 @@ function applyNameToText(text, translator = Translators.VIETPHRASE, name = vietP
 
   if (nameEntries.length > 0) {
     const lines = text.split('\n');
-    const nameLengths = [...nameMap.keys()].reduce((accumulator, currentValue) => !accumulator.includes(currentValue) ? accumulator.concat(currentValue.length).sort((a, b) => b - a) : accumulator, [1]);
+    const nameLengths = [...nameMap.keys()].reduce((accumulator, currentValue) => (!accumulator.includes(currentValue) ? accumulator.concat(currentValue.length).sort((a, b) => b - a) : accumulator), [1]);
 
     const results = [];
 
@@ -248,22 +248,61 @@ function applyNameToText(text, translator = Translators.VIETPHRASE, name = vietP
       if (chars.length === 0) {
         results.push(a);
       } else {
-        let tempLine = '';
-        let prevPhrase = '';
-        let i = 0;
+        switch ($('#haha').val()) {
+          case 'NEW': {
+            let prevPhrase = '';
+            let i = 0;
 
-        chars.forEach((__, ix) => {
-          if (ix === i) {
-            let length = Math.min(chars.length, nameLengths[0]);
+            results.push(chars.reduce((accumulator, __, currentIndex) => {
+              let tempLine = accumulator;
 
-            nameLengths.filter((element) => element <= length).some((lengthx) => {
-              if (lengthx === length) {
+              if (currentIndex === i) {
+                let length = Math.min(chars.length, nameLengths[0]);
+
+                const foundPhrase = nameEntries.toSorted((b, c) => c[0].length - b[0].length).find(([first]) => {
+                  const phrase = chars.slice(i).join('');
+                  return first.length > 0 && phrase.toLowerCase().startsWith(first.toLowerCase());
+                });
+
+                if (foundPhrase) {
+                  const [key, values] = foundPhrase;
+                  const value = !nameMap.has(key) ? values.split(/[/|]/)[0] : values;
+                  length = key.length;
+
+                  const charsInTempLine = [...tempLine];
+
+                  if (value !== '') {
+                    const hasSpaceSperator = /[\d\p{sc=Hani}]/u.test(a[i - 2]) && a[i - 1] === ' ';
+                    tempLine += (charsInTempLine.length > 0 && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(charsInTempLine[charsInTempLine.length - 1]) ? ' ' : '') + (hasSpaceSperator ? '- ' : '') + value.replace(/(^| |\p{P})(\p{Ll})/u, (match, p1, p2) => (hasSpaceSperator ? p1 + p2.toUpperCase() : match));
+                    prevPhrase = value;
+                  }
+                } else {
+                  length = 1;
+                  tempLine += (accumulator.length > 0 && /[\p{Lu}\p{Ll}\p{Nd}(([{‘“]/u.test(a[i]) && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(prevPhrase) ? ' ' : '') + chars.slice(i, i + length).join('');
+                  prevPhrase = '';
+                }
+
+                i += length;
+              }
+
+              return tempLine;
+            }, '') || a);
+            break;
+          }
+          default: {
+            let tempLine = '';
+            let prevPhrase = '';
+
+            for (let i = 0; i < chars.length; i += 1) {
+              for (let j = 0; j < nameLengths.length; j += 1) {
+                const length = Math.min(chars.length, nameLengths[j]);
                 let phrase = translator === Translators.DEEPL_TRANSLATE || translator === Translators.GOOGLE_TRANSLATE ? Utils.convertHtmlToText(a.substring(i, i + length)) : a.substring(i, i + length);
-                const foundName = nameEntries.toSorted((a, b) => b[0].length - a[0].length).find(([first]) => phrase.toLowerCase().startsWith(first.toLowerCase()));
-                length = foundName ? foundName[0].length : 1;
-                phrase = translator === Translators.DEEPL_TRANSLATE || translator === Translators.GOOGLE_TRANSLATE ? Utils.convertHtmlToText(a.substring(i, i + length)) : a.substring(i, i + length);
+                // const foundName = nameEntries.toSorted((d, e) => e[0].length - d[0].length).find(([first]) => first.length > 0 && phrase.toLowerCase().startsWith(first.toLowerCase()));
+                // length = foundName ? foundName[0].length : 1;
+                // phrase = translator === Translators.DEEPL_TRANSLATE || translator === Translators.GOOGLE_TRANSLATE ? Utils.convertHtmlToText(a.substring(i, i + length)) : a.substring(i, i + length);
 
                 const charsInTempLine = [...tempLine];
+                const lastCharInTempLine = charsInTempLine[charsInTempLine.length - 1];
 
                 if (nameMap.has(phrase.toUpperCase())) {
                   phrase = translator === Translators.DEEPL_TRANSLATE || translator === Translators.GOOGLE_TRANSLATE ? Utils.convertHtmlToText(a.substring(i, i + length).toUpperCase()) : phrase.toUpperCase();
@@ -271,36 +310,32 @@ function applyNameToText(text, translator = Translators.VIETPHRASE, name = vietP
 
                   if (phraseResult !== '') {
                     const hasSpaceSperator = /[\d\p{sc=Hani}]/u.test(a[i - 2]) && a[i - 1] === ' ';
-                    tempLine += (charsInTempLine.length > 0 && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(charsInTempLine) ? ' ' : '') + (translator === Translators.VIETPHRASE && hasSpaceSperator ? '- ' : '') + (getIgnoreTranslationMarkup(phrase, phraseResult.replace(/(^| |\p{P})(\p{Ll})/u, (match, p1, p2) => (hasSpaceSperator ? p1 + p2.toUpperCase() : match)), translator));
+                    tempLine += (charsInTempLine.length > 0 && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(lastCharInTempLine) ? ' ' : '') + (translator === Translators.VIETPHRASE && hasSpaceSperator ? '- ' : '') + (getIgnoreTranslationMarkup(phrase, phraseResult.replace(/(^| |\p{P})(\p{Ll})/u, (match, p1, p2) => (hasSpaceSperator ? p1 + p2.toUpperCase() : match)), translator));
                     prevPhrase = phraseResult;
                   }
 
                   i += length - 1;
-                  return true;
+                  break;
                 }
 
                 if (length === 1) {
-                  /* const remainText = chars.slice(i);
-                  const nextIndex = remainText.findIndex((__, index) => nameEntries.some(([first]) => remainText.slice(index).join('').toLowerCase().startsWith(first.toLowerCase())));
-                  length = nextIndex !== -1 ? nextIndex : length;
-                  phrase = chars.slice(i, i + length).join(''); */
+                  // const remainText = chars.slice(i);
+                  // const nextIndex = remainText.findIndex((__, index) => nameEntries.some(([first]) => remainText.slice(index).join('').toLowerCase().startsWith(first.toLowerCase())));
+                  // length = nextIndex !== -1 ? nextIndex : length;
+                  // phrase = chars.slice(i, i + length).join('');
 
                   tempLine += (charsInTempLine.length > 0 && /[\p{Lu}\p{Ll}\p{Nd}([{‘“]/u.test(a[i]) && /[\p{Lu}\p{Ll}\p{Nd})\]}’”]$/u.test(prevPhrase) ? ' ' : '') + (translator === Translators.DEEPL_TRANSLATE || translator === Translators.GOOGLE_TRANSLATE ? Utils.convertTextToHtml(chars.slice(i, i + length).join('')) : phrase);
                   prevPhrase = '';
-                  // i += length - 1;
-                  return true;
+                  i += length - 1;
+                  break;
                 }
-
-                length -= 1;
-                return false;
               }
-            });
+            }
 
-            i += 1;
+            results.push(tempLine);
+            break;
           }
-        });
-
-        results.push(tempLine);
+        }
       }
     });
 
@@ -444,8 +479,9 @@ async function translateTextarea() {
   const glossaryEnabled = $glossarySwitch.prop('checked');
 
   const processText = glossaryEnabled && [Translators.BAIDU_FANYI, Translators.PAPAGO].every((element) => translatorOption !== element) && (translatorOption === Translators.VIETPHRASE ? $prioritizeNameOverVietPhraseCheck.prop('checked') && targetLanguage === 'vi' : isPairing) ? applyNameToText(inputText, translatorOption) : inputText;
+  const processTextToCheck = glossaryEnabled && translatorOption === Translators.VIETPHRASE && targetLanguage === 'vi' && !$prioritizeNameOverVietPhraseCheck.prop('checked') ? applyNameToText(inputText, translatorOption) : processText;
 
-  const [MAX_LENGTH, MAX_LINE] = getMaxQueryLengthAndLine(translatorOption, processText);
+  const [MAX_LENGTH, MAX_LINE] = getMaxQueryLengthAndLine(translatorOption, processTextToCheck);
 
   if (translatorOption !== Translators.DEEPL_TRANSLATE && processText.split('\n').toSorted((a, b) => b.length - a.length)[0].length > MAX_LENGTH) {
     throw console.error(`Số lượng từ trong một dòng quá dài (Số lượng từ hợp lệ nhỏ hơn hoặc bằng ${MAX_LENGTH}).`);
@@ -454,7 +490,7 @@ async function translateTextarea() {
   try {
     let result = '';
 
-    if (Object.keys(lastSession).length > 0 && lastSession.inputText === processText && lastSession.translatorOption === translatorOption && lastSession.sourceLanguage === sourceLanguage && lastSession.targetLanguage === targetLanguage) {
+    if (Object.keys(lastSession).length > 0 && lastSession.inputText === processTextToCheck && lastSession.translatorOption === translatorOption && lastSession.sourceLanguage === sourceLanguage && lastSession.targetLanguage === targetLanguage) {
       result = lastSession.result;
     } else {
       let translator = null;
@@ -499,6 +535,7 @@ async function translateTextarea() {
           }
         }
       } else {
+        console.log(processText.split(/\r?\n/).length, MAX_LINE, processText.length, MAX_LENGTH);
         const inputLines = processText.split(/\r?\n/);
         let queryLines = [];
         const results = [];
@@ -544,7 +581,7 @@ async function translateTextarea() {
 
       if (translateAbortController.signal.aborted) return;
       $('#translate-timer').text(Date.now() - startTime);
-      lastSession.inputText = processText;
+      lastSession.inputText = processTextToCheck;
       lastSession.translatorOption = translatorOption;
       lastSession.sourceLanguage = sourceLanguage;
       lastSession.targetLanguage = targetLanguage;
@@ -802,7 +839,7 @@ async function translateText(inputText, translatorOption, targetLanguage, glossa
 
     switch (translatorOption) {
       case Translators.VIETPHRASE: {
-        result = await translator.translateText(sourceLanguage, targetLanguage, text, $translationAlgorithmRadio.filter('[checked]').val(), $multiplicationAlgorithmRadio.filter('[checked]').val(), $prioritizeNameOverVietPhraseCheck.prop('checked'), $addDeLeZhaoSwitch.prop('checked'), false, vietPhraseData, glossaryEnabled, glossary);
+        result = await translator.translateText(sourceLanguage, targetLanguage, text, $translationAlgorithmRadio.filter('[checked]').val(), $multiplicationAlgorithmRadio.filter('[checked]').val(), true, $addDeLeZhaoSwitch.prop('checked'), false, vietPhraseData, glossaryEnabled, glossary);
         break;
       }
       default: {
@@ -1084,6 +1121,20 @@ $(document).ready(async () => {
     setTimeout(window.location.reload, 5000);
   }
 
+  $.ajax({
+    method: 'GET',
+    url: '/static/datasource/Unihan_Readings.txt',
+  }).done((data) => {
+    let pinyinList = data.split(/\r?\n/).filter((element) => element.startsWith('U+')).map((element) => element.substring(2).split(/\t/)).filter((element) => element.length === 2).map(([first, second]) => [String.fromCodePoint(parseInt(first, 16)), second]);
+    pinyinList = pinyinList.filter(([first], __, array) => !array[first] && (array[first] = 1), {});
+    vietPhraseData.pinyins = new Map(pinyinList);
+    console.log(`Đã tải xong bộ dữ liệu bính âm (${pinyinList.length})!`);
+    lastSession = {};
+  }).fail((__, ___, errorThrown) => {
+    console.error('Không thể tải bộ dữ liệu bính âm:', errorThrown);
+    setTimeout(window.location.reload, 5000);
+  });
+
   if ($loadDefaultVietPhraseFileSwitch.prop('checked')) {
     if (!Utils.isOnMobile()) {
       await $.ajax({
@@ -1126,7 +1177,7 @@ $(document).ready(async () => {
         method: 'GET',
         url: '/static/datasource/Data của thtgiang.txt',
       }).done((data) => {
-        let vietPhraseList = data.split(/\r\n/).map((element) => element.split('=')).filter((element) => element.length === 2).map(([first, second]) => [first, second.split(/[/|]/)[0]]).concat([...vietPhraseData.hanViet]);
+        let vietPhraseList = data.split(/\r\n/).map((element) => element.split('=')).filter((element) => element.length === 2).map(([first, second]) => [first, second]).concat([...vietPhraseData.hanViet]);
         vietPhraseList = vietPhraseList.filter(([first], __, array) => !array[first] && (array[first] = 1), {});
         vietPhraseData.vietPhrase = vietPhraseList;
         $vietPhraseEntryCounter.text(vietPhraseList.length);
@@ -1169,20 +1220,6 @@ $(document).ready(async () => {
   } else {
     reloadGlossaryEntries();
   }
-
-  $.ajax({
-    method: 'GET',
-    url: '/static/datasource/Unihan_Readings.txt',
-  }).done((data) => {
-    let pinyinList = data.split(/\r?\n/).filter((element) => element.startsWith('U+')).map((element) => element.substring(2).split(/\t/)).filter((element) => element.length === 2).map(([first, second]) => [String.fromCodePoint(parseInt(first, 16)), second]);
-    pinyinList = pinyinList.filter(([first], __, array) => !array[first] && (array[first] = 1), {});
-    vietPhraseData.pinyins = new Map(pinyinList);
-    console.log(`Đã tải xong bộ dữ liệu bính âm (${pinyinList.length})!`);
-    lastSession = {};
-  }).fail((__, ___, errorThrown) => {
-    console.error('Không thể tải bộ dữ liệu bính âm:', errorThrown);
-    setTimeout(window.location.reload, 5000);
-  });
 
   $loadDefaultVietPhraseFileSwitch.removeClass('disabled');
   isLoaded = true;
@@ -1692,7 +1729,7 @@ $dropdownHasCollapse.on('hide.bs.dropdown', function onHideBsDropdown() {
 
 $('.define-button').on('click', function onClick() {
   if ($sourceEntryInput.val().length > 0) {
-    const defineContent = ($sourceEntryInput.val().substring($sourceEntryInput.prop('selectionStart'), $sourceEntryInput.prop('selectionEnd')) || $sourceEntryInput.val()).trim() /** .substring(0, 30) */;
+    const defineContent = ($sourceEntryInput.val().substring($sourceEntryInput.prop('selectionStart'), $sourceEntryInput.prop('selectionEnd')) || $sourceEntryInput.val()).trim(); // .substring(0, 30)
     window.open($(this).data('href').replace('{0}', $(this).data('type') != null && $(this).data('type') === 'codePoint' ? defineContent.codePointAt() : encodeURIComponent(defineContent)), '_blank', 'width=1000,height=577');
   }
 
