@@ -1232,6 +1232,7 @@ $(window).on('keypress', (event) => {
 });
 
 $translateButton.on('click', function onClick() {
+  if (!isLoaded) return;
   if (translateAbortController != null) {
     translateAbortController.abort();
     translateAbortController = null;
@@ -1765,6 +1766,7 @@ $('.upper-case-button').on('click', function onClick() {
 });
 
 $translateEntryButtons.click(async function onClick() {
+  if (!isLoaded) return;
   const inputText = $sourceEntryInput.val();
 
   const translatorOption = $(this).data('translator');
