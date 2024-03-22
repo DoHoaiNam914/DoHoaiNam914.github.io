@@ -1130,8 +1130,8 @@ class Vietphrase {
         const dataMap = new Map(dataEntries);
         const nameMap = new Map(nameEntries);
 
-        const dataLengths = [...dataMap.keys(), ...nameMap.keys()].reduce((accumulator, currentValue) => (!accumulator.includes(currentValue) ? accumulator.concat(currentValue.length).sort((a, b) => b - a) : accumulator), [1]);
-        const combineDataEntries = $('#haha').val() === 'NEW' ? nameEntries.concat(dataEntries).filter(([first], __, array) => !array[first] && (array[first] = 1), {}) : [];
+        const combineDataEntries = nameEntries.concat(dataEntries).filter(([first], __, array) => !array[first] && (array[first] = 1), {});
+        const dataLengths = combineDataEntries.reduce((accumulator, [first]) => (!accumulator.includes(first.length) ? accumulator.concat(first.length).sort((a, b) => b - a) : accumulator), [1]);
 
         lines.forEach((a) => {
           const chars = [...a];
@@ -1194,9 +1194,10 @@ class Vietphrase {
                     let phrase = chars.slice(i, i + length).join('');
 
                     const charsInTempLine = [...tempLine];
+                    const couldUpperCaseKey = !(this.prioritizeNameOverVietPhrase && nameMap.has(phrase));
 
-                    if (((this.nameEnabled && nameMap.has(phrase.toUpperCase())) || dataMap.has(phrase.toUpperCase())) && phrase !== '·') {
-                      phrase = phrase.toUpperCase();
+                    if (((this.nameEnabled && nameMap.has(couldUpperCaseKey ? phrase.toUpperCase() : phrase)) || dataMap.has(phrase.toUpperCase())) && phrase !== '·') {
+                      phrase = couldUpperCaseKey ? phrase.toUpperCase() : phrase;
                       const phraseResult = nameMap.get(phrase) ?? dataMap.get(phrase).split(/[/|]/)[0];
 
                       if (nameMap.has(phrase) && this.prioritizeNameOverVietPhrase) {
@@ -1245,9 +1246,9 @@ class Vietphrase {
     this.autocapitalize = autocapitalize;
     this.data = data;
     this.name = this.data.name.concat(this.data.namePhu, glossary);
-    this.name = (this.prioritizeNameOverVietPhrase ? this.name.map(([___, second]) => [second, second]) : this.name).filter(([first]) => inputText.toLowerCase().includes(first.toLowerCase()));
-    this.nameMap = new Map(this.name.map(([first, second]) => [first.toUpperCase(), second]));
-    this.nameEnabled = (nameEnabled && this.name.some(([first, second]) => inputText.toLowerCase().includes(first) || inputText.includes(second))) || false;
+    this.name = (this.prioritizeNameOverVietPhrase ? this.name.map(([___, second]) => [second, second]) : this.name.map(([first, second]) => [first.toUpperCase(), second])).filter(([first]) => inputText.toLowerCase().includes(first.toLowerCase()));
+    this.nameMap = new Map(this.name);
+    this.nameEnabled = (nameEnabled && this.name.length > 0) || false;
 
     try {
       let dataMap = new Map();

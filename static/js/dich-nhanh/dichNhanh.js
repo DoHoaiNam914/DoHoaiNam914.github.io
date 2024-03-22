@@ -238,7 +238,7 @@ function applyNameToText(text, translator = Translators.VIETPHRASE, name = vietP
 
   if (nameEntries.length > 0) {
     const lines = text.split('\n');
-    const nameLengths = [...nameMap.keys()].reduce((accumulator, currentValue) => (!accumulator.includes(currentValue) ? accumulator.concat(currentValue.length).sort((a, b) => b - a) : accumulator), [1]);
+    const nameLengths = nameEntries.reduce((accumulator, [first]) => (!accumulator.includes(first.length) ? accumulator.concat(first.length).sort((a, b) => b - a) : accumulator), [1]);
 
     const results = [];
 
