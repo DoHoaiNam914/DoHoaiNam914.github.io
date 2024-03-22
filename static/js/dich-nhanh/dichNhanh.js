@@ -1774,7 +1774,7 @@ $translateEntryButtons.click(async function onClick() {
 
 $addButton.click(() => {
   if ($sourceEntryInput.val().length === 0) return;
-  if (glossaryMap.has($sourceEntryInput.val())) glossary.splice(Array.from(glossaryMap, ([first]) => first.toUpperCase()).indexOf($sourceEntryInput.val().toUpperCase()), 1);
+  if (glossaryMap.has($sourceEntryInput.val())) glossary.splice(glossary.findIndex([first]) => first.toUpperCase() === $sourceEntryInput.val().toUpperCase()), 1);
   glossary.push([$sourceEntryInput.val().trim().replace(/^\s+|\s+$/g, ''), $targetEntryTextarea.val().trim()]);
   reloadGlossaryEntries();
   $glossaryEntrySelect.change();
@@ -1785,12 +1785,11 @@ $addButton.click(() => {
 
 $removeButton.on('click', () => {
   if (glossaryMap.has($sourceEntryInput.val())) {
-    if (window.confirm('Bạn có muốn xoá cụm từ này chứ?')) {
-      glossary.splice(Array.from(glossaryMap, ([first]) => first.toUpperCase()).indexOf($sourceEntryInput.val().toUpperCase()), 1);
-      reloadGlossaryEntries();
-      $glossaryInput.val(null);
-      $sourceEntryInput.trigger('input');
-    }
+    if (!window.confirm('Bạn có muốn xoá cụm từ này chứ?')) return;
+    glossary.splice(glossary.findIndex([first]) => first.toUpperCase() === $sourceEntryInput.val().toUpperCase()), 1);
+    reloadGlossaryEntries();
+    $glossaryInput.val(null);
+    $sourceEntryInput.trigger('input');
   } else {
     $glossaryEntrySelect.val('').change();
   }
