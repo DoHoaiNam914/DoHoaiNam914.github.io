@@ -297,9 +297,6 @@ function applyNameToText(text, translator = Translators.VIETPHRASE, name = vietP
               for (let j = 0; j < nameLengths.length; j += 1) {
                 const length = Math.min(chars.length, nameLengths[j]);
                 let phrase = translator === Translators.DEEPL_TRANSLATE || translator === Translators.GOOGLE_TRANSLATE ? Utils.convertHtmlToText(a.substring(i, i + length)) : a.substring(i, i + length);
-                // const foundName = nameEntries.toSorted((d, e) => e[0].length - d[0].length).find(([first]) => first.length > 0 && phrase.toLowerCase().startsWith(first.toLowerCase()));
-                // length = foundName ? foundName[0].length : 1;
-                // phrase = translator === Translators.DEEPL_TRANSLATE || translator === Translators.GOOGLE_TRANSLATE ? Utils.convertHtmlToText(a.substring(i, i + length)) : a.substring(i, i + length);
 
                 const charsInTempLine = [...tempLine];
                 const lastCharInTempLine = charsInTempLine[charsInTempLine.length - 1];
@@ -319,14 +316,8 @@ function applyNameToText(text, translator = Translators.VIETPHRASE, name = vietP
                 }
 
                 if (length === 1) {
-                  // const remainText = chars.slice(i);
-                  // const nextIndex = remainText.findIndex((__, index) => nameEntries.some(([first]) => remainText.slice(index).join('').toLowerCase().startsWith(first.toLowerCase())));
-                  // length = nextIndex !== -1 ? nextIndex : length;
-                  // phrase = chars.slice(i, i + length).join('');
-
-                  tempLine += (charsInTempLine.length > 0 && /[\p{Lu}\p{Ll}\p{Nd}([{‘“]/u.test(a[i]) && /[\p{Lu}\p{Ll}\p{Nd})\]}’”]$/u.test(prevPhrase) ? ' ' : '') + (translator === Translators.DEEPL_TRANSLATE || translator === Translators.GOOGLE_TRANSLATE ? Utils.convertTextToHtml(chars.slice(i, i + length).join('')) : phrase);
+                  tempLine += (charsInTempLine.length > 0 && /[\p{Lu}\p{Ll}\p{Nd}([{‘“]/u.test(a[i]) && /[\p{Lu}\p{Ll}\p{Nd})\]}’”]$/u.test(prevPhrase) ? ' ' : '') + (translator === Translators.DEEPL_TRANSLATE || translator === Translators.GOOGLE_TRANSLATE ? Utils.convertTextToHtml(phrase) : phrase);
                   prevPhrase = '';
-                  i += length - 1;
                   break;
                 }
               }

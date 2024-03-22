@@ -1131,7 +1131,7 @@ class Vietphrase {
         const nameMap = new Map(nameEntries);
 
         const dataLengths = [...dataMap.keys(), ...nameMap.keys()].reduce((accumulator, currentValue) => (!accumulator.includes(currentValue) ? accumulator.concat(currentValue.length).sort((a, b) => b - a) : accumulator), [1]);
-        const combineDataEntries = nameEntries.concat(dataEntries).filter(([first], __, array) => !array[first] && (array[first] = 1), {});
+        const combineDataEntries = $('#haha').val() === 'NEW' ? nameEntries.concat(dataEntries).filter(([first], __, array) => !array[first] && (array[first] = 1), {}) : [];
 
         lines.forEach((a) => {
           const chars = [...a];
@@ -1192,9 +1192,6 @@ class Vietphrase {
                   for (let j = 0; j < dataLengths.length; j += 1) {
                     const length = Math.min(chars.length, dataLengths[j]);
                     let phrase = chars.slice(i, i + length).join('');
-                    // const foundPhrase = combineDataEntries.toSorted((d, e) => e[0].length - d[0].length).find(([first]) => first.length > 0 && phrase.toLowerCase().startsWith(first.toLowerCase()));
-                    // length = foundPhrase ? foundPhrase[0].length : 1;
-                    // phrase = chars.slice(i, i + length).join('');
 
                     const charsInTempLine = [...tempLine];
 
@@ -1216,11 +1213,6 @@ class Vietphrase {
                     }
 
                     if (length === 1) {
-                      // const remainText = chars.slice(i);
-                      // const nextIndex = remainText.findIndex((__, index) => combinedData.some(([first]) => remainText.slice(index).join('').toLowerCase().startsWith(first.toLowerCase())));
-                      // length = nextIndex !== -1 ? nextIndex : length;
-                      // phrase = chars.slice(i, i + length).join('');
-
                       tempLine += (charsInTempLine.length > 0 && /[\p{Lu}\p{Ll}\p{Nd}(([{‘“]/u.test(a[i]) && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(prevPhrase) ? ' ' : '') + phrase;
                       prevPhrase = '';
                       i += length - 1;
