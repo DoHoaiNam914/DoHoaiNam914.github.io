@@ -1137,8 +1137,7 @@ class Vietphrase {
         const dataMap = new Map(dataEntries);
         const nameMap = new Map(nameEntries);
 
-        const dataLength = [...dataMap.keys(), ...nameMap.keys()].reduce((accumulator, currentValue) => Math.max(accumulator, currentValue.length), 1);
-        const combinedData = nameEntries.concat(dataEntries).filter(([first], __, array) => !array[first] && (array[first] = 1), {});
+        const dataLengths = [...dataMap.keys(), ...nameMap.keys()].reduce((accumulator, currentValue) => !accumulator.includes(currentValue) ? accumulator.concat(currentValue.length).sort((a, b) => b - a) : accumulator, [1]);
 
         lines.forEach((a) => {
           const chars = [...a];
@@ -1152,18 +1151,18 @@ class Vietphrase {
 
             chars.forEach((__, ix) => {
               if (ix === i) {
-                let length = Math.min(chars.length, dataLength);
+                let length = Math.min(chars.length, dataLengths[0]);
 
-                [...Array(length).keys()].map((element) => element + 1).reverse().some((lengthx) => {
+                dataLengths.filter((element) => element <= length).some((lengthx) => {
                   if (lengthx === length) {
                     let phrase = chars.slice(i, i + length).join('');
-                    const foundName = combinedData.toSorted((a, b) => b[0].length - a[0].length).find(([first]) => phrase.toLowerCase().startsWith(first.toLowerCase()));
+                    /* const foundName = combinedData.toSorted((a, b) => b[0].length - a[0].length).find(([first]) => phrase.toLowerCase().startsWith(first.toLowerCase()));
                     length = foundName ? foundName[0].length : 1;
-                    phrase = chars.slice(i, i + length).join('');
+                    phrase = chars.slice(i, i + length).join(''); */
 
                     const charsInTempLine = [...tempLine];
 
-                    if (this.nameEnabled && this.prioritizeNameOverVietPhrase && nameEntries.map(([___, second]) => second).includes(phrase)) {
+                    if (this.nameEnabled && this.prioritizeNameOverVietPhrase && nameEntries.map(([first]) => first).includes(phrase)) {
                       tempLine += (charsInTempLine.length > 0 && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(charsInTempLine) ? ' ' : '') + phrase;
                       prevPhrase = phrase;
                       i += length - 1;
@@ -1185,16 +1184,18 @@ class Vietphrase {
                     }
 
                     if (length === 1) {
-                      const remainText = chars.slice(i);
+                      /* const remainText = chars.slice(i);
                       const nextIndex = remainText.findIndex((__, index) => combinedData.some(([first]) => remainText.slice(index).join('').toLowerCase().startsWith(first.toLowerCase())));
                       length = nextIndex !== -1 ? nextIndex : length;
+                      phrase = chars.slice(i, i + length).join(''); */
 
-                      tempLine += (charsInTempLine.length > 0 && /[\p{Lu}\p{Ll}\p{Nd}(([{‘“]/u.test(a[i]) && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(prevPhrase) ? ' ' : '') + chars.slice(i, i + length).join('');
+                      tempLine += (charsInTempLine.length > 0 && /[\p{Lu}\p{Ll}\p{Nd}(([{‘“]/u.test(a[i]) && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(prevPhrase) ? ' ' : '') + phrase;
                       prevPhrase = '';
-                      i += length - 1;
+                      //i += length - 1;
                       return true;
                     }
 
+                    length -= 1;
                     return false;
                   }
                 });
@@ -1218,7 +1219,7 @@ class Vietphrase {
     }
   }
 
-  async translateText(__, targetLanguage, inputText, translationAlgorithm, multiplicationAlgorithm, prioritizeNameOverVietPhrase, addDeLeZhao, autocapitalize, data, nameEnabled, glossary) {
+  async translateText(__, targetLanguage, inputText, translationAlgorithm, multiplicationAlgorithm, prioritizeNameOverVietPhrase, addDeLeZhao, autocapitalize, data, nameEnabled, glossary = []) {
     this.multiplicationAlgorithm = multiplicationAlgorithm;
     this.prioritizeNameOverVietPhrase = prioritizeNameOverVietPhrase;
     this.autocapitalize = autocapitalize;
@@ -1242,21 +1243,22 @@ class Vietphrase {
         }
         case 'vi': {
           dataMap = new Map((this.data.vietPhrase.length > 0 ? this.data.vietPhrase : [...this.data.hanViet]).concat(this.data.vietPhrasePhu).map(([first, second]) => [first.toUpperCase(), second]));
+
+          if (this.data.vietPhrase.concat(this.data.vietPhrasePhu).length > 0) {
+            if (addDeLeZhao) {
+              dataMap.set('的', this.data.hanViet.get('的'));
+              dataMap.set('了', this.data.hanViet.get('了'));
+              dataMap.set('着', this.data.hanViet.get('着'));
+            } else {
+              dataMap.set('的', '');
+              dataMap.set('了', '');
+              dataMap.set('着', '');
+            }
+          }
+
           break;
         }
         // no default
-      }
-
-      if (targetLanguage === 'vi' && this.data.vietPhrase.length > 0) {
-        if (addDeLeZhao) {
-          dataMap.set('的', this.data.hanViet.get('的'));
-          dataMap.set('了', this.data.hanViet.get('了'));
-          dataMap.set('着', this.data.hanViet.get('着'));
-        } else {
-          dataMap.set('的', '');
-          dataMap.set('了', '');
-          dataMap.set('着', '');
-        }
       }
 
       dataMap = [...dataMap];

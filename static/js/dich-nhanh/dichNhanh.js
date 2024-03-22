@@ -238,7 +238,7 @@ function applyNameToText(text, translator = Translators.VIETPHRASE, name = vietP
 
   if (nameEntries.length > 0) {
     const lines = text.split('\n');
-    const nameLength = [...nameMap.keys()].reduce((accumulator, currentValue) => Math.max(accumulator, currentValue.length), 1);
+    const nameLengths = [...nameMap.keys()].reduce((accumulator, currentValue) => !accumulator.includes(currentValue) ? accumulator.concat(currentValue.length).sort((a, b) => b - a) : accumulator, [1]);
 
     const results = [];
 
@@ -254,9 +254,9 @@ function applyNameToText(text, translator = Translators.VIETPHRASE, name = vietP
 
         chars.forEach((__, ix) => {
           if (ix === i) {
-            let length = Math.min(chars.length, nameLength);
+            let length = Math.min(chars.length, nameLengths[0]);
 
-            [...Array(length).keys()].map((element) => element + 1).reverse().some((lengthx) => {
+            nameLengths.filter((element) => element <= length).some((lengthx) => {
               if (lengthx === length) {
                 let phrase = translator === Translators.DEEPL_TRANSLATE || translator === Translators.GOOGLE_TRANSLATE ? Utils.convertHtmlToText(a.substring(i, i + length)) : a.substring(i, i + length);
                 const foundName = nameEntries.toSorted((a, b) => b[0].length - a[0].length).find(([first]) => phrase.toLowerCase().startsWith(first.toLowerCase()));
@@ -280,16 +280,18 @@ function applyNameToText(text, translator = Translators.VIETPHRASE, name = vietP
                 }
 
                 if (length === 1) {
-                  const remainText = chars.slice(i);
+                  /* const remainText = chars.slice(i);
                   const nextIndex = remainText.findIndex((__, index) => nameEntries.some(([first]) => remainText.slice(index).join('').toLowerCase().startsWith(first.toLowerCase())));
                   length = nextIndex !== -1 ? nextIndex : length;
+                  phrase = chars.slice(i, i + length).join(''); */
 
-                  tempLine += (charsInTempLine.length > 0 && /[\p{Lu}\p{Ll}\p{Nd}([{‘“]/u.test(a[i]) && /[\p{Lu}\p{Ll}\p{Nd})\]}’”]$/u.test(prevPhrase) ? ' ' : '') + (translator === Translators.DEEPL_TRANSLATE || translator === Translators.GOOGLE_TRANSLATE ? Utils.convertTextToHtml(chars.slice(i, i + length).join('')) : chars.slice(i, i + length).join(''));
+                  tempLine += (charsInTempLine.length > 0 && /[\p{Lu}\p{Ll}\p{Nd}([{‘“]/u.test(a[i]) && /[\p{Lu}\p{Ll}\p{Nd})\]}’”]$/u.test(prevPhrase) ? ' ' : '') + (translator === Translators.DEEPL_TRANSLATE || translator === Translators.GOOGLE_TRANSLATE ? Utils.convertTextToHtml(chars.slice(i, i + length).join('')) : phrase);
                   prevPhrase = '';
-                  i += length - 1;
+                  // i += length - 1;
                   return true;
                 }
 
+                length -= 1;
                 return false;
               }
             });
@@ -326,7 +328,7 @@ function getMaxQueryLengthAndLine(translator, text) {
       return [50000, 1000];
     }
     default: {
-      return [applyNameToText(text, Translators.VIETPHRASE).length, text.split('\n').length];
+      return [text.length, text.split('\n').length];
     }
   }
 }
@@ -869,7 +871,7 @@ function updateInputTextLength() {
     }
   }
 
-  const gapLength = applyNameToText(inputText, translator).length - inputText.length;
+  const gapLength = applyNameToText(inputText, translator, vietPhraseData.namePhu).length - inputText.length;
 
   $('#input-textarea-counter').text(`${inputText.length}${inputText.length > 0 && ($glossarySwitch.prop('checked') && (translator === Translators.VIETPHRASE ? $prioritizeNameOverVietPhraseCheck.prop('checked') && targetLanguage === 'vi' : sourceLanguage === languagePairs[0] && targetLanguage === languagePairs[1])) && gapLength > 0 ? ` (+${gapLength})` : ''}`);
 }
