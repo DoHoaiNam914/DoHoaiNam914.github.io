@@ -1013,9 +1013,9 @@ class Vietphrase {
     let nhanByPronoun = this.data.pronoun.map(([first, second]) => [first, second.split(/[/|]/)[0]]).filter(([first]) => inputText.includes(first));
 
     if (this.multiplicationAlgorithm > this.MultiplicationAlgorithm.NOT_APPLICABLE && targetLanguage === 'vi') {
-      [...this.data.luatNhan].filter(([first]) => first.split('{0}').every((element) => inputText.includes(element))).filter(([a]) => (this.nameEnabled && this.multiplicationAlgorithm === this.MultiplicationAlgorithm.MULTIPLICATION_BY_PRONOUNS_AND_NAMES && nameEntries.length > 0 && nhanByName.filter(([b, c]) => inputText.toUpperCase().includes(a.replace(/\{0}/g, Utils.escapeRegExpReplacement(b)).toUpperCase())).length > 0) || nhanByPronoun.filter(([c]) => inputText.includes(a.replace(/\{0}/g, Utils.escapeRegExpReplacement(c))))).forEach(([a, b]) => {
+      [...this.data.luatNhan].filter(([first]) => first.split('{0}').every((element) => inputText.includes(element))).filter(([a]) => (this.nameEnabled && this.multiplicationAlgorithm === this.MultiplicationAlgorithm.MULTIPLICATION_BY_PRONOUNS_AND_NAMES && nameEntries.length > 0 && nhanByName.filter(([b, c]) => inputText.includes(a.replace(/\{0}/g, Utils.escapeRegExpReplacement(b)))).length > 0) || nhanByPronoun.filter(([c]) => inputText.includes(a.replace(/\{0}/g, Utils.escapeRegExpReplacement(c))))).forEach(([a, b]) => {
         if (this.nameEnabled && this.multiplicationAlgorithm === this.MultiplicationAlgorithm.MULTIPLICATION_BY_PRONOUNS_AND_NAMES && nameEntries.length > 0) {
-          nhanByName = [...nhanByName, ...nhanByName.filter(([c, d]) => inputText.toUpperCase().includes(a.replace(/\{0}/g, Utils.escapeRegExpReplacement(c)).toUpperCase())).map(([c, d]) => [a.replace(/\{0}/g, Utils.escapeRegExpReplacement(c)).toUpperCase(), b.replace(/\{0}/g, Utils.escapeRegExpReplacement(d))])];
+          nhanByName = [...nhanByName, ...nhanByName.filter(([c, d]) => inputText.includes(a.replace(/\{0}/g, Utils.escapeRegExpReplacement(c)))).map(([c, d]) => [a.replace(/\{0}/g, Utils.escapeRegExpReplacement(c)), b.replace(/\{0}/g, Utils.escapeRegExpReplacement(d))])];
         }
 
         nhanByPronoun = [...nhanByPronoun, ...nhanByPronoun.filter(([c]) => inputText.includes(a.replace(/\{0}/g, Utils.escapeRegExpReplacement(c)))).map(([c, d]) => [a.replace(/\{0}/g, Utils.escapeRegExpReplacement(c)), b.replace(/\{0}/g, Utils.escapeRegExpReplacement(d))])];
@@ -1056,7 +1056,7 @@ class Vietphrase {
     const text = inputText.split(/\r?\n/).map((element) => element.trim()).join('\n');
 
     let dataEntries = data;
-    let nameEntries = this.name;
+    let nameEntries = [...this.nameMap];
 
     let result = text;
 
@@ -1113,7 +1113,7 @@ class Vietphrase {
     const text = inputText.split(/\r?\n/).map((element) => element.trim()).join('\n');
 
     let dataEntries = data;
-    let nameEntries = this.name;
+    let nameEntries = [...this.nameMap];
 
     const lines = text.split('\n');
     const results = [];
@@ -1246,8 +1246,8 @@ class Vietphrase {
     this.autocapitalize = autocapitalize;
     this.data = data;
     this.name = this.data.name.concat(this.data.namePhu, glossary);
-    this.name = (this.prioritizeNameOverVietPhrase ? this.name.map(([___, second]) => [second, second]) : this.name.map(([first, second]) => [first.toUpperCase(), second])).filter(([first]) => inputText.toLowerCase().includes(first.toLowerCase()));
-    this.nameMap = new Map(this.name);
+    this.name = (this.prioritizeNameOverVietPhrase ? this.name.map(([___, second]) => [second, second]) : this.name).filter(([first]) => inputText.toLowerCase().includes(first.toLowerCase()));
+    this.nameMap = new Map(this.name.map(([first, second]) => [!this.prioritizeNameOverVietPhrase ? first.toUpperCase() : first, second]));
     this.nameEnabled = (nameEnabled && this.name.length > 0) || false;
 
     try {

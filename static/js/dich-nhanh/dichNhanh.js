@@ -914,7 +914,7 @@ function reloadGlossaryEntries() {
   const downloadButton = $('#download-button');
   const glossaryExtension = $('#glossary-extension');
 
-  glossary = glossary.filter(([first], __, array) => !array[first] && (array[first] = 1), {}).toSorted((a, b) => a[1].localeCompare(b[1], 'vi', { ignorePunctuation: true }) || a[0].localeCompare(b[0], 'vi', { sensitivity: 'accent', ignorePunctuation: true }) || b.join('\t').length - a.join('\t').length).map(([first, second]) => [first.trim().replace(/^\s+|\s+$/g, ''), second]);
+  glossary = glossary.filter(([first], __, array) => !array[first] && (array[first] = 1), {}).toSorted((a, b) => a[1].localeCompare(b[1], 'vi', { ignorePunctuation: true }) || a[0].localeCompare(b[0], 'vi', { sensitivity: 'accent', ignorePunctuation: true }) || b.join('\t').length - a.join('\t').length).map(([first, second]) => [first.trim(), second]);
   glossaryMap = new Map(glossary);
 
   const glossaryList = $glossaryListSelect.val();
@@ -1774,8 +1774,9 @@ $translateEntryButtons.click(async function onClick() {
 
 $addButton.click(() => {
   if ($sourceEntryInput.val().length === 0) return;
-  if (glossaryMap.has($sourceEntryInput.val())) glossary.splice(glossary.findIndex([first]) => first.toUpperCase() === $sourceEntryInput.val().toUpperCase()), 1);
-  glossary.push([$sourceEntryInput.val().trim().replace(/^\s+|\s+$/g, ''), $targetEntryTextarea.val().trim()]);
+  if (glossaryMap.has($sourceEntryInput.val())) glossaryMap.delete($sourceEntryInput.val());
+  glossaryMap.set($sourceEntryInput.val().trim(), $targetEntryTextarea.val().trim());
+  glossary = [...glossaryMap];
   reloadGlossaryEntries();
   $glossaryEntrySelect.change();
   $glossaryInput.val(null);
@@ -1786,7 +1787,8 @@ $addButton.click(() => {
 $removeButton.on('click', () => {
   if (glossaryMap.has($sourceEntryInput.val())) {
     if (!window.confirm('Bạn có muốn xoá cụm từ này chứ?')) return;
-    glossary.splice(glossary.findIndex([first]) => first.toUpperCase() === $sourceEntryInput.val().toUpperCase()), 1);
+    glossaryMap.delete($sourceEntryInput.val());
+    glossary = [...glossaryMap];
     reloadGlossaryEntries();
     $glossaryInput.val(null);
     $sourceEntryInput.trigger('input');
