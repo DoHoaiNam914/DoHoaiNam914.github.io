@@ -1132,7 +1132,7 @@ $(document).ready(async () => {
         method: 'GET',
         url: '/static/datasource/Data của thtgiang/Pronouns.txt',
       }).done((data) => {
-        if (vietPhraseData.pronoun.length === 0) vietPhraseData.pronoun = data.split(/\r\n/).map((element) => element.split('=')).filter((element) => element.length === 2).map(([first, second]) => [first, second.split('/')[0]]);
+        if (vietPhraseData.pronoun.length === 0) vietPhraseData.pronoun = data.split(/\r\n/).map((element) => element.split('=')).filter((element) => element.length === 2).map(([first, second]) => [first, second]);
         $pronounEntryCounter.text(vietPhraseData.pronoun.length);
         console.log(`Đã tải xong tệp Pronouns (${$pronounEntryCounter.text()})!`);
         lastSession = {};
@@ -1573,7 +1573,7 @@ $pronounInput.on('change', function onChange() {
   const reader = new FileReader();
 
   reader.onload = function onLoad() {
-    vietPhraseData.pronoun = this.result.split(/\r?\n/).map((element) => element.split('=')).filter((element) => element.length === 2).map(([first, second]) => [first, second.split('/')[0]]);
+    vietPhraseData.pronoun = this.result.split(/\r?\n/).map((element) => element.split('=')).filter((element) => element.length === 2).map(([first, second]) => [first, second]);
     $pronounEntryCounter.text(vietPhraseData.pronoun.length);
     console.log(`Đã tải xong tệp ${$pronounInput.prop('files')[0].name} (${$pronounEntryCounter.text()})!`);
     lastSession = {};
