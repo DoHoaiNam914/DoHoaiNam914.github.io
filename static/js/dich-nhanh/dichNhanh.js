@@ -1837,3 +1837,8 @@ $resultTextarea.on('drop', (event) => event.preventDefault());
 $resultTextarea.on('cut', (event) => event.preventDefault());
 $resultTextarea.on('paste', (event) => event.preventDefault());
 $resultTextarea.on('keypress', (event) => (event.key !== 'Enter' || ((event.ctrlKey && $glossaryManagerButton.trigger('mousedown') && $glossaryManagerButton.click()) || ($translateButton.click() && $inputTextarea.focus()))) && event.preventDefault());
+
+$('#haha').on('change', () => {
+  lastSession = {};
+  $retranslateButton.click();
+});
