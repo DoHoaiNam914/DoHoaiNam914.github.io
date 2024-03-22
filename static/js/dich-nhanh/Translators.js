@@ -1010,7 +1010,7 @@ class Vietphrase {
 
   loadLuatNhanData(targetLanguage, nameEntries, inputText) {
     let nhanByName = nameEntries;
-    let nhanByPronoun = this.data.pronoun.map(([first, second]) => [first, second.split('/')[0]]).filter(([first]) => inputText.includes(first));
+    let nhanByPronoun = this.data.pronoun.map(([first, second]) => [first, second.split(/[/|]/)[0]]).filter(([first]) => inputText.includes(first));
 
     if (this.multiplicationAlgorithm > this.MultiplicationAlgorithm.NOT_APPLICABLE && targetLanguage === 'vi') {
       [...this.data.luatNhan].filter(([first]) => first.split('{0}').every((element) => inputText.includes(element))).filter(([a]) => (this.nameEnabled && this.multiplicationAlgorithm === this.MultiplicationAlgorithm.MULTIPLICATION_BY_PRONOUNS_AND_NAMES && nameEntries.length > 0 && nhanByName.filter(([b, c]) => inputText.toUpperCase().includes(a.replace(/\{0}/g, Utils.escapeRegExpReplacement(b)).toUpperCase())).length > 0) || nhanByPronoun.filter(([c]) => inputText.includes(a.replace(/\{0}/g, Utils.escapeRegExpReplacement(c))))).forEach(([a, b]) => {
@@ -1157,7 +1157,7 @@ class Vietphrase {
 
                     if (foundPhrase) {
                       const [key, values] = foundPhrase;
-                      const value = !nameMap.has(key) ? values.split(/[/|]/)[0] : values;
+                      const value = values.split(/[/|]/)[0];
                       length = key.length;
 
                       const charsInTempLine = [...tempLine];
@@ -1198,7 +1198,7 @@ class Vietphrase {
 
                     if (((this.nameEnabled && nameMap.has(couldUpperCaseKey ? phrase.toUpperCase() : phrase)) || dataMap.has(phrase.toUpperCase())) && phrase !== '·') {
                       phrase = couldUpperCaseKey ? phrase.toUpperCase() : phrase;
-                      const phraseResult = nameMap.get(phrase) ?? dataMap.get(phrase).split(/[/|]/)[0];
+                      const phraseResult = (nameMap.get(phrase) ?? dataMap.get(phrase)).split(/[/|]/)[0];
 
                       if (nameMap.has(phrase) && this.prioritizeNameOverVietPhrase) {
                         tempLine += (charsInTempLine.length > 0 && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(charsInTempLine) ? ' ' : '') + phrase;

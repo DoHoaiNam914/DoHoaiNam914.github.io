@@ -264,7 +264,7 @@ function applyNameToText(text, translator = Translators.VIETPHRASE, name = vietP
 
                 if (foundPhrase) {
                   const [key, values] = foundPhrase;
-                  const value = !nameMap.has(key) ? values.split(/[/|]/)[0] : values;
+                  const value = values.split(/[/|]/)[0];
                   length = key.length;
 
                   const charsInTempLine = [...tempLine];
@@ -301,7 +301,7 @@ function applyNameToText(text, translator = Translators.VIETPHRASE, name = vietP
 
                 if (nameMap.has(phrase.toUpperCase())) {
                   phrase = translator === Translators.DEEPL_TRANSLATE || translator === Translators.GOOGLE_TRANSLATE ? Utils.convertHtmlToText(a.substring(i, i + length).toUpperCase()) : phrase.toUpperCase();
-                  const phraseResult = nameMap.get(phrase);
+                  const phraseResult = nameMap.get(phrase).split(/[/|]/)[0];
 
                   if (phraseResult !== '') {
                     const hasSpaceSperator = /[\d\p{sc=Hani}]/u.test(a[i - 2]) && a[i - 1] === ' ';
