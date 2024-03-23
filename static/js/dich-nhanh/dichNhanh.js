@@ -1459,8 +1459,6 @@ $translatorOptions.click(function onClick() {
   $retranslateButton.click();
 });
 
-$showOriginalTextSwitch.off('change');
-
 $showOriginalTextSwitch.change(function onChange() {
   quickTranslateStorage[getOptionId($(this).attr('id'))] = $(this).prop('checked');
   $retranslateButton.click();
