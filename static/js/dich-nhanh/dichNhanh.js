@@ -1486,7 +1486,7 @@ $nameInput.on('change', function onChange() {
 
   reader.onload = function onLoad() {
     vietPhraseData.name = this.result.split(/\r?\n/).map((element) => element.split('=')).filter((element) => element.length === 2);
-    $nameEntryCounter.text(vietPhraseData.name.size);
+    $nameEntryCounter.text(vietPhraseData.name.length);
     console.log(`Đã tải xong tệp Names (${$nameEntryCounter.text()})!`);
     $glossaryListSelect.val('Names').change();
   };
