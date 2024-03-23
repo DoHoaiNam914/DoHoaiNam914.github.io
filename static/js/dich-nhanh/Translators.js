@@ -1244,10 +1244,10 @@ class Vietphrase {
     this.prioritizeNameOverVietPhrase = prioritizeNameOverVietPhrase;
     this.autocapitalize = autocapitalize;
     this.data = data;
-    this.name = nameEnabled ? this.data.name.concat(this.data.namePhu, glossary) : [];
+    this.nameEnabled = nameEnabled;
+    this.name = this.nameEnabled ? this.data.name.concat(this.data.namePhu, glossary) : [];
     this.name = (this.prioritizeNameOverVietPhrase ? this.name.map(([___, second]) => [second, second]) : this.name).filter(([first]) => inputText.toLowerCase().includes(first.toLowerCase()));
     this.nameMap = new Map(this.name.map(([first, second]) => [!this.prioritizeNameOverVietPhrase ? first.toUpperCase() : first, second]));
-    this.nameEnabled = nameEnabled;
 
     try {
       let dataMap = new Map();
