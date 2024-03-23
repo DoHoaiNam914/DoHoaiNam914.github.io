@@ -1046,9 +1046,9 @@ class Vietphrase {
       '？': '?',
     };
 
-    return inputText.replace(/(?:[…、。】！），：？]|\.\.\.)(?![\p{Pc}\p{Pd}\p{Pe}\p{Pf}\p{Po}\s]|$)/gu, (match) => `${PUNCTUATIONS[match] ?? match} `)
+    return inputText.replace(/(?:[】！）]|\.\.\.)(?![\p{Pc}\p{Pd}\p{Pe}\p{Pf}\p{Po}\s]|$)/gu, (match) => `${PUNCTUATIONS[match] ?? match} `)
       .replace(/([^\s\p{Ps}\p{Pi}])([【（])/gu, (__, p1, p2) => `${p1} ${PUNCTUATIONS[p2] ?? p2}`)
-      .replace(/[、。【】！（），：？]/g, (match) => PUNCTUATIONS[match] ?? match)
+      .replace(/[…、。【】！（），：？]/g, (match) => PUNCTUATIONS[match] ?? match)
       .replace(/·/g, ' ');
   }
 
@@ -1081,13 +1081,13 @@ class Vietphrase {
             if (returnText.toLowerCase().includes(b.toLowerCase()) && ((this.nameEnabled && nameMap.has(b.toUpperCase())) || dataMap.has(b.toUpperCase())) && b !== '·') {
               const phraseResult = c.split(/[/|]/)[0];
               returnText = returnText.replace(new RegExp(`${Utils.escapeRegExp(b)}${Utils.escapeRegExp(b)}${this.nameEnabled && nameEntries.length > 0 ? `(?=${nameEntries.map(([___, second]) => second).join('|')})` : '(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])'}`, 'giu'), `${Utils.escapeRegExpReplacement(phraseResult)} ${Utils.escapeRegExpReplacement(phraseResult)}${phraseResult.length > 0 ? ' ' : ''}`)
-                .replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{M}\\p{Nd})\\]}’”])${Utils.escapeRegExp(b)}${this.nameEnabled && nameEntries.length > 0 ? `(?=${nameEntries.map(([___, second]) => second).join('|')})` : '(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])'}`, 'giu'), `$1 ${Utils.escapeRegExpReplacement(phraseResult)}${phraseResult.length > 0 ? ' ' : ''}`)
+                .replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{M}\\p{Nd}\\p{Po})\\]}’”])${Utils.escapeRegExp(b)}${this.nameEnabled && nameEntries.length > 0 ? `(?=${nameEntries.map(([___, second]) => second).join('|')})` : '(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])'}`, 'giu'), `$1 ${Utils.escapeRegExpReplacement(phraseResult)}${phraseResult.length > 0 ? ' ' : ''}`)
                 .replace(new RegExp(` +${Utils.escapeRegExp(b)}${this.nameEnabled && nameEntries.length > 0 ? `(?=${nameEntries.map(([___, second]) => second).join('|')})` : '(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])'}`, 'giu'), phraseResult.length > 0 ? ` - ${Utils.escapeRegExpReplacement(phraseResult).replace(/(^| |\p{P})(\p{Ll})/u, (___, p1, p2) => p1 + p2.toUpperCase())}` : '')
                 .replace(new RegExp(`${Utils.escapeRegExp(b)}${Utils.escapeRegExp(b)}(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])`, this.nameEnabled && !this.prioritizeNameOverVietPhrase && nameMap.has(b.toUpperCase()) ? 'giu' : 'gu'), `${Utils.escapeRegExpReplacement(phraseResult)} ${Utils.escapeRegExpReplacement(phraseResult)}${phraseResult.length > 0 ? ' ' : ''}`)
-                .replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{M}\\p{Nd})\\]}’”])${Utils.escapeRegExp(b)}(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])`, this.nameEnabled && !this.prioritizeNameOverVietPhrase && nameMap.has(b.toUpperCase()) ? 'giu' : 'gu'), `$1 ${Utils.escapeRegExpReplacement(phraseResult)}${phraseResult.length > 0 ? ' ' : ''}`)
+                .replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{M}\\p{Nd}\\p{Po})\\]}’”])${Utils.escapeRegExp(b)}(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])`, this.nameEnabled && !this.prioritizeNameOverVietPhrase && nameMap.has(b.toUpperCase()) ? 'giu' : 'gu'), `$1 ${Utils.escapeRegExpReplacement(phraseResult)}${phraseResult.length > 0 ? ' ' : ''}`)
                 .replace(new RegExp(` +${Utils.escapeRegExp(b)}(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])`, this.nameEnabled && !this.prioritizeNameOverVietPhrase && nameMap.has(b.toUpperCase()) ? 'giu' : 'gu'), phraseResult.length > 0 ? ` - ${Utils.escapeRegExpReplacement(phraseResult).replace(/(^| |\p{P})(\p{Ll})/u, (___, p1, p2) => p1 + p2.toUpperCase())}` : '')
                 .replace(new RegExp(`${Utils.escapeRegExp(b)}${Utils.escapeRegExp(b)}`, this.nameEnabled && !this.prioritizeNameOverVietPhrase && nameMap.has(b.toUpperCase()) ? 'gi' : 'g'), `${Utils.escapeRegExpReplacement(phraseResult)} ${Utils.escapeRegExpReplacement(phraseResult)}`)
-                .replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{M}\\p{Nd})\\]}’”])${Utils.escapeRegExp(b)}`, this.nameEnabled && !this.prioritizeNameOverVietPhrase && nameMap.has(b.toUpperCase()) ? 'giu' : 'gu'), `$1${phraseResult.length > 0 ? ` ${Utils.escapeRegExpReplacement(phraseResult)}` : ''}`)
+                .replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{M}\\p{Nd}\\p{Po})\\]}’”])${Utils.escapeRegExp(b)}`, this.nameEnabled && !this.prioritizeNameOverVietPhrase && nameMap.has(b.toUpperCase()) ? 'giu' : 'gu'), `$1${phraseResult.length > 0 ? ` ${Utils.escapeRegExpReplacement(phraseResult)}` : ''}`)
                 .replace(new RegExp(` +${Utils.escapeRegExp(b)}`, this.nameEnabled && !this.prioritizeNameOverVietPhrase && nameMap.has(b.toUpperCase()) ? 'gi' : 'g'), phraseResult.length > 0 ? ` - ${Utils.escapeRegExpReplacement(phraseResult).replace(/(^| |\p{P})(\p{Ll})/u, (___, p1, p2) => p1 + p2.toUpperCase())}` : '')
                 .replace(new RegExp(`${Utils.escapeRegExp(b)}${this.nameEnabled && nameEntries.length > 0 ? `(?=${nameEntries.map(([___, second]) => second).join('|')})` : '(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])'}`, 'giu'), `${Utils.escapeRegExpReplacement(phraseResult)}${phraseResult.length > 0 ? ' ' : ''}`)
                 .replace(new RegExp(`${Utils.escapeRegExp(b)}(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])`, this.nameEnabled && !this.prioritizeNameOverVietPhrase && nameMap.has(b.toUpperCase()) ? 'giu' : 'gu'), `${Utils.escapeRegExpReplacement(phraseResult)}${phraseResult.length > 0 ? ' ' : ''}`)
@@ -1165,11 +1165,11 @@ class Vietphrase {
                       const lastCharInTempLine = charsInTempLine[charsInTempLine.length - 1];
 
                       if (this.prioritizeNameOverVietPhrase && this.nameMap.has(key)) {
-                        tempLine += (charsInTempLine.length > 0 && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(lastCharInTempLine) ? ' ' : '') + key;
+                        tempLine += (charsInTempLine.length > 0 && /[\p{Lu}\p{Ll}\p{M}\p{Nd}\p{Po})\]}’”]$/u.test(lastCharInTempLine) ? ' ' : '') + key;
                         prevPhrase = key;
                       } else if (value !== '') {
                         const hasSpaceSperator = /[\d\p{sc=Hani}]/u.test(a[i - 2]) && a[i - 1] === ' ';
-                        tempLine += (accumulator.length > 0 && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(lastCharInTempLine) ? ' ' : '') + (hasSpaceSperator ? '- ' : '') + value.replace(/(^| |\p{P})(\p{Ll})/u, (match, p1, p2) => (hasSpaceSperator ? p1 + p2.toUpperCase() : match));
+                        tempLine += (accumulator.length > 0 && /[\p{Lu}\p{Ll}\p{M}\p{Nd}\p{Po})\]}’”]$/u.test(lastCharInTempLine) ? ' ' : '') + (hasSpaceSperator ? '- ' : '') + value.replace(/(^| |\p{P})(\p{Ll})/u, (match, p1, p2) => (hasSpaceSperator ? p1 + p2.toUpperCase() : match));
                         prevPhrase = value;
                       }
                     } else {
@@ -1202,11 +1202,11 @@ class Vietphrase {
                       const phraseResult = (nameMap.get(phrase) ?? dataMap.get(phrase)).split(/[/|]/)[0];
 
                       if (nameMap.has(phrase) && this.prioritizeNameOverVietPhrase) {
-                        tempLine += (charsInTempLine.length > 0 && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(charsInTempLine) ? ' ' : '') + phrase;
+                        tempLine += (charsInTempLine.length > 0 && /[\p{Lu}\p{Ll}\p{M}\p{Nd}\p{Po})\]}’”]$/u.test(charsInTempLine) ? ' ' : '') + phrase;
                         prevPhrase = phrase;
                       } else if (phraseResult !== '') {
                         const hasSpaceSperator = /[\d\p{sc=Hani}]/u.test(a[i - 2]) && a[i - 1] === ' ';
-                        tempLine += (charsInTempLine.length > 0 && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(charsInTempLine) ? ' ' : '') + (hasSpaceSperator ? '- ' : '') + phraseResult.replace(/(^| |\p{P})(\p{Ll})/u, (match, p1, p2) => (hasSpaceSperator ? p1 + p2.toUpperCase() : match));
+                        tempLine += (charsInTempLine.length > 0 && /[\p{Lu}\p{Ll}\p{M}\p{Nd}\p{Po})\]}’”]$/u.test(charsInTempLine) ? ' ' : '') + (hasSpaceSperator ? '- ' : '') + phraseResult.replace(/(^| |\p{P})(\p{Ll})/u, (match, p1, p2) => (hasSpaceSperator ? p1 + p2.toUpperCase() : match));
                         prevPhrase = phraseResult;
                       }
 
