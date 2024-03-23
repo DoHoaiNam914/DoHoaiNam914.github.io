@@ -1154,8 +1154,6 @@ $(document).ready(async () => {
       }).fail((__, ___, errorThrown) => {
         console.error('Không tải được tệp VietPhrase:', errorThrown);
       });
-
-      reloadGlossaryEntries();
     } else {
       await $.ajax({
         method: 'GET',
@@ -1182,13 +1180,10 @@ $(document).ready(async () => {
       }).fail((__, ___, errorThrown) => {
         console.error('Không tải được tệp VietPhrase:', errorThrown);
       });
-
-      reloadGlossaryEntries();
     }
-  } else {
-    reloadGlossaryEntries();
   }
 
+  $glossaryListSelect.val('Names').change();
   $loadDefaultVietPhraseFileSwitch.removeClass('disabled');
   isLoaded = true;
   updateInputTextLength();
@@ -1487,7 +1482,6 @@ $vietPhraseInput.on('change', function onChange() {
     vietPhraseData.vietPhrase = vietPhraseList;
     $vietPhraseEntryCounter.text(vietPhraseList.length);
     console.log(`Đã tải xong tệp ${$vietPhraseInput.prop('files')[0].name} (${$vietPhraseEntryCounter.text()})!`);
-    reloadGlossaryEntries();
     lastSession = {};
   };
 
@@ -1501,8 +1495,7 @@ $nameInput.on('change', function onChange() {
     vietPhraseData.name = this.result.split(/\r?\n/).map((element) => element.split('=')).filter((element) => element.length === 2);
     $nameEntryCounter.text(vietPhraseData.name.size);
     console.log(`Đã tải xong tệp Names (${$nameEntryCounter.text()})!`);
-    reloadGlossaryEntries();
-    lastSession = {};
+    $glossaryListSelect.val('Names').change();
   };
 
   reader.readAsText($(this).prop('files')[0]);
@@ -1512,8 +1505,7 @@ $('#clear-name-button').on('click', () => {
   if (!window.confirm('Bạn có muốn xoá sạch bảng thuật ngữ chứ?')) return;
   vietPhraseData.name = [];
   $nameEntryCounter.text(vietPhraseData.name.length);
-  reloadGlossaryEntries();
-  lastSession = {};
+  $glossaryListSelect.val('Names').change();
 });
 
 $loadDefaultVietPhraseFileSwitch.off('change');
@@ -1538,12 +1530,6 @@ $luatNhanInput.on('change', function onChange() {
   reader.readAsText($(this).prop('files')[0]);
 });
 
-$('#clear-luat-nhan-button').on('click', () => {
-  if (!window.confirm('Bạn có muốn xoá sạch LuatNhan chứ?')) return;
-  vietPhraseData.luatNhan = [];
-  lastSession = {};
-});
-
 $pronounInput.on('change', function onChange() {
   const reader = new FileReader();
 
@@ -1554,12 +1540,6 @@ $pronounInput.on('change', function onChange() {
   };
 
   reader.readAsText($(this).prop('files')[0]);
-});
-
-$('#clear-pronoun-button').on('click', () => {
-  if (!window.confirm('Bạn có muốn xoá sạch Pronoun chứ?')) return;
-  vietPhraseData.pronoun = [];
-  lastSession = {};
 });
 
 $resetButton.on('click', () => {
@@ -1574,17 +1554,17 @@ $glossaryInput.on('change', function onChange() {
   reader.onload = function onLoad() {
     switch ($glossaryInput.prop('files')[0].type) {
       case GlossaryType.CSV: {
-        vietPhraseData.namePhu = $.csv.toArrays(this.result).filter((element) => element.length >= 2);
+        glossary = $.csv.toArrays(this.result).filter((element) => element.length >= 2);
         $glossaryType.val(GlossaryType.CSV);
         break;
       }
       case GlossaryType.VIETPHRASE: {
-        vietPhraseData.namePhu = this.result.split(/\r?\n/).map((element) => element.split('=')).filter((element) => element.length === 2);
-        $glossaryType.val(GlossaryType.TSV);
+        glossary = this.result.split(/\r?\n/).map((element) => element.split('=')).filter((element) => element.length === 2);
+        $glossaryType.val(GlossaryType.VIETPHRASE);
         break;
       }
       default: {
-        vietPhraseData.namePhu = this.result.split(/\r?\n/).map((element) => element.split(/\t/)).filter((element) => element.length >= 2);
+        glossary = this.result.split(/\r?\n/).map((element) => element.split(/\t/)).filter((element) => element.length >= 2);
         $glossaryType.val(GlossaryType.TSV);
         break;
       }
