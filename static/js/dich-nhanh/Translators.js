@@ -1172,7 +1172,7 @@ class Vietphrase {
                       }
                     } else {
                       length = 1;
-                      tempLine += (accumulator.length > 0 && /[\p{Lu}\p{Ll}\p{Nd}(([{‘“]/u.test(a[i]) && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(prevPhrase) || /[\p{Po})\]}’”]$/u.test(tempLine)) ? ' ' : '') + chars.slice(i, i + length).join('');
+                      tempLine += (accumulator.length > 0 && /[\p{Lu}\p{Ll}\p{Nd}(([{‘“]/u.test(a[i]) && (/[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(prevPhrase) || /[\p{Po})\]}’”]$/u.test(tempLine)) ? ' ' : '') + chars.slice(i, i + length).join('');
                       prevPhrase = '';
                     }
 
@@ -1213,7 +1213,7 @@ class Vietphrase {
                     }
 
                     if (length === 1) {
-                      tempLine += (charsInTempLine.length > 0 && /[\p{Lu}\p{Ll}\p{Nd}(([{‘“]/u.test(a[i]) && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(prevPhrase) || /[\p{Po})\]}’”]$/u.test(tempLine)) ? ' ' : '') + phrase;
+                      tempLine += (charsInTempLine.length > 0 && /[\p{Lu}\p{Ll}\p{Nd}(([{‘“]/u.test(a[i]) && (/[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(prevPhrase) || /[\p{Po})\]}’”]$/u.test(tempLine)) ? ' ' : '') + phrase;
                       prevPhrase = '';
                       i += length - 1;
                       break;
