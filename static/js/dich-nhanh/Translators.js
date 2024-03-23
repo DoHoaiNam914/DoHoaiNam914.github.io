@@ -1015,10 +1015,10 @@ class Vietphrase {
     if (this.multiplicationAlgorithm > this.MultiplicationAlgorithm.NOT_APPLICABLE && targetLanguage === 'vi') {
       [...this.data.luatNhan].filter(([first]) => first.split('{0}').every((element) => inputText.includes(element))).filter(([a]) => (this.nameEnabled && this.multiplicationAlgorithm === this.MultiplicationAlgorithm.MULTIPLICATION_BY_PRONOUNS_AND_NAMES && nameEntries.length > 0 && nhanByName.filter(([b, c]) => inputText.includes(a.replace(/\{0}/g, Utils.escapeRegExpReplacement(b)))).length > 0) || nhanByPronoun.filter(([c]) => inputText.includes(a.replace(/\{0}/g, Utils.escapeRegExpReplacement(c))))).forEach(([a, b]) => {
         if (this.nameEnabled && this.multiplicationAlgorithm === this.MultiplicationAlgorithm.MULTIPLICATION_BY_PRONOUNS_AND_NAMES && nameEntries.length > 0) {
-          nhanByName = [...nhanByName, ...nhanByName.filter(([c, d]) => inputText.includes(a.replace(/\{0}/g, Utils.escapeRegExpReplacement(c)))).map(([c, d]) => [a.replace(/\{0}/g, Utils.escapeRegExpReplacement(c)), b.replace(/\{0}/g, Utils.escapeRegExpReplacement(d))])];
+          nhanByName = [...nhanByName, ...nhanByName.map(([c, d]) => [a.replace(/\{0}/g, Utils.escapeRegExpReplacement(c)), b.replace(/\{0}/g, Utils.escapeRegExpReplacement(d))])];
         }
 
-        nhanByPronoun = [...nhanByPronoun, ...nhanByPronoun.filter(([c]) => inputText.includes(a.replace(/\{0}/g, Utils.escapeRegExpReplacement(c)))).map(([c, d]) => [a.replace(/\{0}/g, Utils.escapeRegExpReplacement(c)), b.replace(/\{0}/g, Utils.escapeRegExpReplacement(d))])];
+        nhanByPronoun = [...nhanByPronoun, ...nhanByPronoun.map(([c, d]) => [a.replace(/\{0}/g, Utils.escapeRegExpReplacement(c)), b.replace(/\{0}/g, Utils.escapeRegExpReplacement(d))])];
       });
     } else {
       nhanByName = [];
@@ -1150,7 +1150,7 @@ class Vietphrase {
                   if (currentIndex === i) {
                     let length = Math.min(chars.length, dataLengths[0]);
 
-                    const foundPhrase = combineDataEntries.toSorted((b, c) => c[0].length - b[0].length).find(([first]) => {
+                    const foundPhrase = combineDataEntries.filter(([first]) => a.toLowerCase().includes(first.toLowerCase())).toSorted((b, c) => c[0].length - b[0].length).find(([first]) => {
                       const phrase = chars.slice(i).join('');
                       return first.length > 0 && phrase.toLowerCase().startsWith(first.toLowerCase());
                     });
@@ -1244,7 +1244,7 @@ class Vietphrase {
     this.prioritizeNameOverVietPhrase = prioritizeNameOverVietPhrase;
     this.autocapitalize = autocapitalize;
     this.data = data;
-    this.name = nameEnabled ? this.data.name.concat(this.data.namePhu, glossary) : [false];
+    this.name = nameEnabled ? this.data.name.concat(this.data.namePhu, glossary) : [];
     this.name = (this.prioritizeNameOverVietPhrase ? this.name.map(([___, second]) => [second, second]) : this.name).filter(([first]) => inputText.toLowerCase().includes(first.toLowerCase()));
     this.nameMap = new Map(this.name.map(([first, second]) => [!this.prioritizeNameOverVietPhrase ? first.toUpperCase() : first, second]));
     this.nameEnabled = nameEnabled;
