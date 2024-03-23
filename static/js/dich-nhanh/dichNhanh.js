@@ -78,8 +78,6 @@ const vietPhraseData = {
 
 let glossary = [];
 let glossaryMap = new Map();
-let combineGlossary = [];
-let combineGlossaryMap = new Map();
 
 let glossaryData = '';
 
@@ -918,10 +916,6 @@ function reloadGlossaryEntries() {
   glossaryMap = new Map(glossary);
 
   const glossaryList = $glossaryListSelect.val();
-
-  const maybeVietPhraseList = glossaryList === 'VietPhrase' ? vietPhraseData.vietPhrase.filter(([first]) => glossary.length < 1 || !Utils.getTrieRegexPatternFromWords([...glossaryMap.keys()]).test(first)).concat(glossary) : glossary;
-  combineGlossary = glossaryList === 'Names' ? vietPhraseData.name.filter(([first]) => glossary.length < 1 || !Utils.getTrieRegexPatternFromWords([...glossaryMap.keys()]).test(first)).concat(glossary) : maybeVietPhraseList;
-  combineGlossaryMap = new Map(combineGlossary);
 
   if (glossary.length > 0) {
     glossary.forEach(([first, second]) => {
