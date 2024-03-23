@@ -560,7 +560,7 @@ async function translateTextarea() {
       }
 
       if (glossaryEnabled && translatorOption !== Translators.VIETPHRASE && isPairing) {
-        Vietphrase.namePhu.filter(([first]) => inputText.includes(first)).toSorted((a, b) => b[1].length - a[1].length).forEach(([__, second]) => {
+        vietPhraseData.namePhu.filter(([first]) => inputText.includes(first)).toSorted((a, b) => b[1].length - a[1].length).forEach(([__, second]) => {
           const oldAccentKey = applyOldAccent(second);
           if (second.split(' ').length >= 2) result = result.replace(Utils.getTrieRegexPatternFromWords([second, second[0].toLowerCase() + second.substring(1), second[0].toUpperCase() + second.substring(1), oldAccentKey, oldAccentKey[0].toLowerCase() + oldAccentKey.substring(1), oldAccentKey[0].toUpperCase() + oldAccentKey.substring(1)]), (match) => match[0] + second.substring(1));
         });

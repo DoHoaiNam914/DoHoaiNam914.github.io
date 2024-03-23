@@ -286,6 +286,7 @@ const specialSinovietnameseMap = [
   ['姐', 'THƯ'],
   ['实', 'THỰC'],
   ['撕', 'TI, TƯ'],
+  ['蚍', 'TÌ'  /* Fix ChinesePhienAmWords */],
   ['比', 'TỈ'],
   ['霹', 'TỊCH'],
   ['钱', 'TIỀN'],
