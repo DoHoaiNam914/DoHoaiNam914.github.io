@@ -152,6 +152,7 @@ const specialSinovietnameseMap = [
   ['永传', 'vĩnh truyền'],
   ['王朝', 'vương triều'],
   ['称号', 'xưng hiệu'],
+  ['爸', 'BÁ'],
   ['霸', 'BÁ'],
   ['沛', 'BÁI'],
   ['捕', 'BỔ'],

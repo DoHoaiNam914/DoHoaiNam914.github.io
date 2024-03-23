@@ -1064,7 +1064,8 @@ class Vietphrase {
       if (dataEntries.length > 0 || nameEntries.length > 0) {
         const [nhanByName, nhanByPronoun] = this.loadLuatNhanData(targetLanguage, nameEntries, text);
 
-        dataEntries = dataEntries.concat(nhanByPronoun, this.nameEnabled && this.prioritizeNameOverVietPhrase ? nhanByName : []).toSorted((a, b) => b[0].length - a[0].length);
+        dataEntries = dataEntries.toSorted((a, b) => b[0].length - a[0].length);
+        nameEntries = nameEntries.concat(nhanByPronoun, nhanByName).toSorted((a, b) => b[0].length - a[0].length);
         nameEntries = !this.prioritizeNameOverVietPhrase ? nameEntries.concat(nhanByName) : nameEntries;
 
         const dataMap = new Map(dataEntries);
@@ -1124,8 +1125,8 @@ class Vietphrase {
       if (dataEntries.length > 0 || nameEntries.length > 0) {
         const [nhanByName, nhanByPronoun] = this.loadLuatNhanData(targetLanguage, nameEntries, text);
 
-        dataEntries = dataEntries.concat(nhanByPronoun, this.nameEnabled && this.prioritizeNameOverVietPhrase ? nhanByName : []);
-        nameEntries = !this.prioritizeNameOverVietPhrase ? nameEntries.concat(nhanByName) : nameEntries;
+        dataEntries = dataEntries;
+        nameEntries = nameEntries.concat(nhanByPronoun, nhanByName);
 
         const dataMap = new Map(dataEntries);
         const nameMap = new Map(nameEntries);
@@ -1248,7 +1249,7 @@ class Vietphrase {
     this.name = this.data.name.concat(this.data.namePhu, glossary);
     this.name = (this.prioritizeNameOverVietPhrase ? this.name.map(([___, second]) => [second, second]) : this.name).filter(([first]) => inputText.toLowerCase().includes(first.toLowerCase()));
     this.nameMap = new Map(this.name.map(([first, second]) => [!this.prioritizeNameOverVietPhrase ? first.toUpperCase() : first, second]));
-    this.nameEnabled = (nameEnabled && this.name.length > 0) || false;
+    this.nameEnabled = nameEnabled;
 
     try {
       let dataMap = new Map();
