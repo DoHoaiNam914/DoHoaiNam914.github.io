@@ -1,13 +1,3 @@
 {
-  "presets": [["airbnb", {
-    "targets": {
-      "chrome": 107,
-      "ios": 12,
-      "edge": 106,
-      "firefox": 106,
-      "opera": 92,
-      "safari": 14
-    },
-    "transformRuntime": false
-  }]]
+  "presets": [["airbnb"]]
 }

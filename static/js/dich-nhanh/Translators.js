@@ -1025,7 +1025,7 @@ class Vietphrase {
       nhanByPronoun = [];
     }
 
-    return [nhanByName, nhanByPronoun];
+    return [nhanByName, nhanByPronoun.filter((a) => !this.data.pronoun.some((b) => b === a))];
   }
 
   static getCapitalizeText(text) {
@@ -1113,7 +1113,7 @@ class Vietphrase {
   translateFromLeftToRight(targetLanguage, data, inputText) {
     const text = inputText.split(/\r?\n/).map((element) => element.trim()).join('\n');
 
-    let dataEntries = data;
+    const dataEntries = data;
     let nameEntries = [...this.nameMap];
 
     const lines = text.split('\n');
@@ -1125,7 +1125,6 @@ class Vietphrase {
       if (dataEntries.length > 0 || nameEntries.length > 0) {
         const [nhanByName, nhanByPronoun] = this.loadLuatNhanData(targetLanguage, nameEntries, text);
 
-        dataEntries = dataEntries;
         nameEntries = nameEntries.concat(nhanByPronoun, nhanByName);
 
         const dataMap = new Map(dataEntries);
