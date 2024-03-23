@@ -1204,7 +1204,6 @@ $(window).on('keypress', (event) => {
 });
 
 $translateButton.on('click', function onClick() {
-  if (!isLoaded) return;
   if (translateAbortController != null) {
     translateAbortController.abort();
     translateAbortController = null;

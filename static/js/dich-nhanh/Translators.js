@@ -1025,7 +1025,7 @@ class Vietphrase {
       nhanByPronoun = [];
     }
 
-    return [nhanByName, nhanByPronoun.filter((a) => !this.data.pronoun.some((b) => b === a))];
+    return [nhanByName, nhanByPronoun.filter(([a]) => !this.data.pronoun.some(([b]) => b === a))];
   }
 
   static getCapitalizeText(text) {
@@ -1161,19 +1161,18 @@ class Vietphrase {
                       length = key.length;
 
                       const charsInTempLine = [...tempLine];
-                      const lastCharInTempLine = charsInTempLine[charsInTempLine.length - 1];
 
                       if (this.prioritizeNameOverVietPhrase && this.nameMap.has(key)) {
-                        tempLine += (charsInTempLine.length > 0 && /[\p{Lu}\p{Ll}\p{M}\p{Nd}\p{Po})\]}’”]$/u.test(lastCharInTempLine) ? ' ' : '') + key;
+                        tempLine += (charsInTempLine.length > 0 && /[\p{Lu}\p{Ll}\p{M}\p{Nd}\p{Po})\]}’”]$/u.test(tempLine) ? ' ' : '') + key;
                         prevPhrase = key;
                       } else if (value !== '') {
                         const hasSpaceSperator = /[\d\p{sc=Hani}]/u.test(a[i - 2]) && a[i - 1] === ' ';
-                        tempLine += (accumulator.length > 0 && /[\p{Lu}\p{Ll}\p{M}\p{Nd}\p{Po})\]}’”]$/u.test(lastCharInTempLine) ? ' ' : '') + (hasSpaceSperator ? '- ' : '') + value.replace(/(^| |\p{P})(\p{Ll})/u, (match, p1, p2) => (hasSpaceSperator ? p1 + p2.toUpperCase() : match));
+                        tempLine += (accumulator.length > 0 && /[\p{Lu}\p{Ll}\p{M}\p{Nd}\p{Po})\]}’”]$/u.test(tempLine) ? ' ' : '') + (hasSpaceSperator ? '- ' : '') + value.replace(/(^| |\p{P})(\p{Ll})/u, (match, p1, p2) => (hasSpaceSperator ? p1 + p2.toUpperCase() : match));
                         prevPhrase = value;
                       }
                     } else {
                       length = 1;
-                      tempLine += (accumulator.length > 0 && /[\p{Lu}\p{Ll}\p{Nd}(([{‘“]/u.test(a[i]) && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(prevPhrase) ? ' ' : '') + chars.slice(i, i + length).join('');
+                      tempLine += (accumulator.length > 0 && /[\p{Lu}\p{Ll}\p{Nd}(([{‘“]/u.test(a[i]) && /[\p{Lu}\p{Ll}\p{M}\p{Nd}\p{Po})\]}’”]$/u.test(prevPhrase || tempLine) ? ' ' : '') + chars.slice(i, i + length).join('');
                       prevPhrase = '';
                     }
 
@@ -1201,11 +1200,11 @@ class Vietphrase {
                       const phraseResult = (nameMap.get(phrase) ?? dataMap.get(phrase)).split(/[/|]/)[0];
 
                       if (nameMap.has(phrase) && this.prioritizeNameOverVietPhrase) {
-                        tempLine += (charsInTempLine.length > 0 && /[\p{Lu}\p{Ll}\p{M}\p{Nd}\p{Po})\]}’”]$/u.test(charsInTempLine) ? ' ' : '') + phrase;
+                        tempLine += (charsInTempLine.length > 0 && /[\p{Lu}\p{Ll}\p{M}\p{Nd}\p{Po})\]}’”]$/u.test(tempLine) ? ' ' : '') + phrase;
                         prevPhrase = phrase;
                       } else if (phraseResult !== '') {
                         const hasSpaceSperator = /[\d\p{sc=Hani}]/u.test(a[i - 2]) && a[i - 1] === ' ';
-                        tempLine += (charsInTempLine.length > 0 && /[\p{Lu}\p{Ll}\p{M}\p{Nd}\p{Po})\]}’”]$/u.test(charsInTempLine) ? ' ' : '') + (hasSpaceSperator ? '- ' : '') + phraseResult.replace(/(^| |\p{P})(\p{Ll})/u, (match, p1, p2) => (hasSpaceSperator ? p1 + p2.toUpperCase() : match));
+                        tempLine += (charsInTempLine.length > 0 && /[\p{Lu}\p{Ll}\p{M}\p{Nd}\p{Po})\]}’”]$/u.test(tempLine) ? ' ' : '') + (hasSpaceSperator ? '- ' : '') + phraseResult.replace(/(^| |\p{P})(\p{Ll})/u, (match, p1, p2) => (hasSpaceSperator ? p1 + p2.toUpperCase() : match));
                         prevPhrase = phraseResult;
                       }
 
@@ -1214,7 +1213,7 @@ class Vietphrase {
                     }
 
                     if (length === 1) {
-                      tempLine += (charsInTempLine.length > 0 && /[\p{Lu}\p{Ll}\p{Nd}(([{‘“]/u.test(a[i]) && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(prevPhrase) ? ' ' : '') + phrase;
+                      tempLine += (charsInTempLine.length > 0 && /[\p{Lu}\p{Ll}\p{Nd}(([{‘“]/u.test(a[i]) && /[\p{Lu}\p{Ll}\p{M}\p{Nd}\p{Po})\]}’”]$/u.test(prevPhrase || tempLine) ? ' ' : '') + phrase;
                       prevPhrase = '';
                       i += length - 1;
                       break;
@@ -1245,7 +1244,7 @@ class Vietphrase {
     this.prioritizeNameOverVietPhrase = prioritizeNameOverVietPhrase;
     this.autocapitalize = autocapitalize;
     this.data = data;
-    this.name = this.data.name.concat(this.data.namePhu, glossary);
+    this.name = nameEnabled ? this.data.name.concat(this.data.namePhu, glossary) : [false];
     this.name = (this.prioritizeNameOverVietPhrase ? this.name.map(([___, second]) => [second, second]) : this.name).filter(([first]) => inputText.toLowerCase().includes(first.toLowerCase()));
     this.nameMap = new Map(this.name.map(([first, second]) => [!this.prioritizeNameOverVietPhrase ? first.toUpperCase() : first, second]));
     this.nameEnabled = nameEnabled;
