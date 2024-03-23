@@ -69,11 +69,11 @@ const vietPhraseData = {
   pinyins: new Map(),
   hanViet: new Map(),
   vietPhrase: [],
-  vietPhrasePhu: glossaryStorage.vietPhrase ?? [],
+  vietPhrasePhu: [],
   name: [],
-  namePhu: glossaryStorage.name ?? [],
-  luatNhan: glossaryStorage.luatNhan ?? [],
-  pronoun: glossaryStorage.pronoun ?? [],
+  namePhu: [],
+  luatNhan: [],
+  pronoun: [],
 };
 
 let glossary = [];
@@ -1027,6 +1027,11 @@ function reloadGlossaryEntries() {
 $(document).ready(async () => {
   $('input[type="file"]').val(null);
   loadAllQuickTranslatorOptions();
+
+  vietPhraseData.pronoun = glossaryStorage.pronoun ?? [];
+  vietPhraseData.luatNhan = glossaryStorage.luatNhan ?? [];
+  vietPhraseData.namePhu = glossaryStorage.name ?? [];
+  vietPhraseData.vietPhrasePhu = glossaryStorage.vietPhrase ?? [];
 
   newAccentObject = Object.fromEntries(newAccentMap);
   oldAccentObject = Object.fromEntries(newAccentMap.map(([first, second]) => [second, first]));
