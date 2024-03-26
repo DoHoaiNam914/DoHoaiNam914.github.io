@@ -1578,6 +1578,7 @@ $('#clear-glossary-button').on('click', () => {
 });
 
 $glossaryType.on('change', reloadGlossaryEntries);
+$('#vietphrase-type').on('change', reloadGlossaryEntries);
 
 $glossaryListSelect.change(function onChange() {
   switch ($(this).val()) {
