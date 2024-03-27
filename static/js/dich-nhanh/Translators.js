@@ -1075,9 +1075,10 @@ class Vietphrase {
         const combineDataEntries = nameEntries.concat(dataEntries).filter(([first], __, array) => !array[first] && (array[first] = 1), {});
 
         result = Vietphrase.getFormattedText(result.split('\n').map((a) => {
+          const chars = [...a];
           let returnText = a;
 
-          if (chars.length > 0 || chars.some((b) => this.data.hanViet.has(b))) {
+          if (chars.length > 0 && chars.some((b) => this.data.hanViet.has(b))) {
             let prefilterElement = a.toLowerCase();
   
             combineDataEntries.filter(([first]) => prefilterElement.toLowerCase().includes(first.toLowerCase()) && (prefilterElement = prefilterElement.replaceAll(first.toLowerCase(), '\n'))).some(([b, c], __, array) => {
