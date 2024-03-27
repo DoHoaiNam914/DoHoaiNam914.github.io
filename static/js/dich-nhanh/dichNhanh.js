@@ -254,11 +254,7 @@ function applyNameToText(text, translator = Translators.VIETPHRASE, name = vietP
 
               if (currentIndex === i) {
                 let length = Math.min(chars.length, nameLengths[0]);
-
-                const foundPhrase = nameEntries.toSorted((b, c) => c[0].length - b[0].length).find(([first]) => {
-                  const phrase = chars.slice(i).join('');
-                  return first.length > 0 && phrase.toLowerCase().startsWith(first.toLowerCase());
-                });
+                const foundPhrase = nameEntries.toSorted((b, c) => c[0].length - b[0].length).find(([first]) => first.length > 0 && chars.slice(i).join('').toLowerCase().startsWith(first.toLowerCase()));
 
                 if (foundPhrase) {
                   const [key, values] = foundPhrase;
