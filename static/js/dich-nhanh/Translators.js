@@ -1077,7 +1077,7 @@ class Vietphrase {
         result = Vietphrase.getFormattedText(result.split('\n').map((a) => {
           let returnText = a;
 
-          if (chars.length > 0 || chars.some((b) => this.data.hanViet.has(b)) {
+          if (chars.length > 0 || chars.some((b) => this.data.hanViet.has(b))) {
             let prefilterElement = a.toLowerCase();
   
             combineDataEntries.filter(([first]) => prefilterElement.toLowerCase().includes(first.toLowerCase()) && (prefilterElement = prefilterElement.replaceAll(first.toLowerCase(), '\n'))).some(([b, c], __, array) => {
@@ -1140,7 +1140,7 @@ class Vietphrase {
         lines.forEach((a) => {
           const chars = [...a];
 
-          if (chars.length === 0 || !chars.every((b) => this.data.hanViet.has(b)) {
+          if (chars.length === 0 || !chars.every((b) => this.data.hanViet.has(b))) {
             results.push(a);
           } else {
             switch ($('#haha').val()) {
