@@ -61,7 +61,7 @@ $(document).ready(async () => {
               method: 'GET',
               url: `${Utils.CORS_PROXY}http://nguyendu.com.free.fr/hanviet/hv_tim${first === 'Word' ? 'tukep_ndv.php?wordid' : 'chu_ndv.php?unichar'}=${second}`,
             }).done((b) => {
-              $(document.body).append($(b)[19].innerHTML.replaceAll(/ onmouseover="return o_lib\('\p{sc=Hani}'\);"/gu, '').replaceAll(' onmouseout="nd();"', '').replaceAll(/(href|src)="/g, '$&http://nguyendu.com.free.fr/hanviet/').replaceAll(`
+              $(document.body).append($(b)[19].innerHTML.replaceAll(/(href|src)="/g, '$&http://nguyendu.com.free.fr/hanviet/').replaceAll(`
 function init()
 {
 	loadAd();
