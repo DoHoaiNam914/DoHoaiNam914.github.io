@@ -1158,7 +1158,7 @@ class Vietphrase {
                     const foundPhrase = combineDataEntries.filter(([first]) => a.toLowerCase().includes(first.toLowerCase())).toSorted((b, c) => c[0].length - b[0].length).find(([first]) => {
                       const phrase = chars.slice(i).join('');
                       const couldUpperCaseKey = !(this.prioritizeNameOverVietPhrase && nameMap.has(phrase));
-                      return first.length > 0 && phrase.toLowerCase().startsWith(first.toLowerCase()) && (nameMap.has(couldUpperCaseKey ? phrase.toUpperCase() : phrase) || (dataMap.has(phrase.toUpperCase()) && [...phrase].every((element) => this.data.hanViet.has(element)))) && phrase !== '·');
+                      return first.length > 0 && phrase.toLowerCase().startsWith(first.toLowerCase()) && (nameMap.has(couldUpperCaseKey ? phrase.toUpperCase() : phrase) || (dataMap.has(phrase.toUpperCase()) && [...phrase].every((element) => this.data.hanViet.has(element)))) && phrase !== '·';
                     });
 
                     if (foundPhrase) {
