@@ -56,7 +56,7 @@ $(document).ready(async () => {
           method: 'GET',
           url: `${Utils.CORS_PROXY}http://nguyendu.com.free.fr/hanviet/ajax.php?query=${encodeURIComponent(define)}&methode=normal`,
         }).done((a) => {
-          a.split('|').map((element) => element.split(':')).filter((element) => element.length === 3).forEach(async ([first, second]) => {
+          a.split('|').map((element) => element.split(':')).filter((element) => element.length >= 2).forEach(async ([first, second]) => {
             await $.ajax({
               method: 'GET',
               url: `${Utils.CORS_PROXY}http://nguyendu.com.free.fr/hanviet/hv_tim${first === 'Word' ? 'tukep_ndv.php?wordid' : 'chu_ndv.php?unichar'}=${second}`,
@@ -125,8 +125,12 @@ function loadAd()
           dataList.filter(([first]) => containsPhrase.includes(first) || first.toLowerCase().startsWith(define) || first.toLowerCase().endsWith(define) || first.toLowerCase().includes(define)).sort((a, b) => containsPhrase.includes(b[0]) - containsPhrase.includes(b[0]) || b[0].toLowerCase().startsWith(define) - a[0].toLowerCase().startsWith(define) || b[0].toLowerCase().endsWith(define) - a[0].toLowerCase().endsWith(define) || b[0].toLowerCase().includes(`${define} `) - a[0].toLowerCase().includes(`${define} `) || b[0].toLowerCase().includes(` ${define}`) - a[0].toLowerCase().includes(` ${define}`)).forEach(([first, second]) => {
             sectionHeading.innerText = first;
             $(document.body).append(sectionHeading.cloneNode(true));
-            paragraph.innerText = second;
-            $(document.body).append(paragraph.cloneNode(true));
+
+            second.split('\n').forEach((element) => {
+              paragraph.innerText = element;
+              $(document.body).append(paragraph.cloneNode(true));
+            });
+
             $(document.body).append(document.createElement('hr'));
           });
         });
