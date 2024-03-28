@@ -1130,7 +1130,8 @@ class Vietphrase {
       if (dataEntries.length > 0 || nameEntries.length > 0) {
         const [nhanByName, nhanByPronoun] = this.loadLuatNhanData(targetLanguage, nameEntries, text);
 
-        nameEntries = nameEntries.concat(nhanByPronoun, nhanByName);
+        const combineNhanEntries = nhanByPronoun.concat(nhanByName);
+        nameEntries = nameEntries.concat(combineNhanEntries);
 
         const dataMap = new Map(dataEntries);
         const nameMap = new Map(nameEntries);
@@ -1144,6 +1145,8 @@ class Vietphrase {
           if (chars.length === 0 || !chars.some((b) => this.data.hanViet.has(b))) {
             results.push(a);
           } else {
+            const combineNhanKeys = combineNhanEntries.map(([first]) => first.toLowerCase()).filter((b) => a.includes(b));
+
             switch ($('#haha').val()) {
               case 'NEW': {
                 let prevPhrase = '';
@@ -1157,7 +1160,7 @@ class Vietphrase {
 
                     const foundPhrase = combineDataEntries.filter(([first]) => a.toLowerCase().includes(first.toLowerCase())).toSorted((b, c) => c[0].length - b[0].length).find(([first]) => {
                       const remainChars = chars.slice(i).join('');
-                      return first.length > 0 && first !== '·' && remainChars.toLowerCase().startsWith(first.toLowerCase());
+                      return first.length > 0 && first !== '·' && (combineNhanKeys.every((element) => !remainChars.toLowerCase().startsWith(element.toLowerCase())) ? remainChars.toLowerCase().startsWith(first.toLowerCase()) : combineNhanKeys.includes(first.toLowerCase()));
                     });
 
                     const charsInTempLine = [...tempLine];
@@ -1201,7 +1204,7 @@ class Vietphrase {
                     const charsInTempLine = [...tempLine];
                     const couldUpperCaseKey = !this.prioritizeNameOverVietPhrase || (nameMap.has(phrase.toUpperCase()) && !this.nameMap.has(phrase));
 
-                    if ((nameMap.has(couldUpperCaseKey ? phrase.toUpperCase() : phrase) || (dataMap.has(phrase.toUpperCase()) && [...phrase].every((element) => this.data.hanViet.has(element)))) && phrase !== '·') {
+                    if ((nameMap.has(couldUpperCaseKey ? phrase.toUpperCase() : phrase) || (dataMap.has(phrase.toUpperCase()) && [...phrase].every((element) => this.data.hanViet.has(element)) && combineNhanKeys.every((element) => !phrase.toLowerCase().startsWith(element.toLowerCase())))) && phrase !== '·') {
                       phrase = couldUpperCaseKey ? phrase.toUpperCase() : phrase;
                       const phraseResult = (nameMap.get(phrase) ?? dataMap.get(phrase)).split(/[/|]/)[0];
 
