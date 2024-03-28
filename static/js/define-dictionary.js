@@ -56,12 +56,12 @@ $(document).ready(async () => {
           method: 'GET',
           url: `${Utils.CORS_PROXY}http://nguyendu.com.free.fr/hanviet/ajax.php?query=${encodeURIComponent(define)}&methode=normal`,
         }).done((a) => {
-          a.split('|').map((element) => element.split(':')).filter((element) => element.length >= 2).forEach(async ([first, second]) => {
+          a.split('|').map((element) => element.split(':')).filter((element) => element.length === 3).forEach(async ([first, second]) => {
             await $.ajax({
               method: 'GET',
               url: `${Utils.CORS_PROXY}http://nguyendu.com.free.fr/hanviet/hv_tim${first === 'Word' ? 'tukep_ndv.php?wordid' : 'chu_ndv.php?unichar'}=${second}`,
             }).done((b) => {
-              $(document.body).append($(b)[19].innerHTML.replaceAll(/(href|src)="/g, '$&http://nguyendu.com.free.fr/hanviet/').replaceAll(`
+              $(document.body).append($(b)[first === 'Word' ? 19 : 31].innerHTML.replaceAll(/(href|src)="/g, '$&http://nguyendu.com.free.fr/hanviet/').replaceAll(`
 function init()
 {
 	loadAd();
