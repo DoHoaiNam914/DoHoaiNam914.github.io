@@ -20,7 +20,7 @@ $(document).ready(async () => {
           method: 'GET',
           url: '/static/datasource/cjkvmap.txt',
         }).done((data) => {
-          data.split(/\r|\n/).map((element) => element.split('|')).filter(([first, second]) => [...define].some((element) => first.toLowerCase() === element) || define.split(' ').some((a) => second.split('/')[0].toLowerCase().split(', ').some((b) => b === a))).sort((a, b) => [...define].indexOf(a[0]) - [...define].indexOf(b[0]) || define.split(' ').indexOf(b[1].split('/')[0].toLowerCase().split(', ').filter((element) => define.includes(element))) - define.split(' ').indexOf(a[1].split('/')[0].toLowerCase().split(', ').filter((element) => define.includes(element)))).forEach(([first, second, third]) => {
+          data.split(/\r?\n|\r/).map((element) => element.split('|')).filter(([first, second]) => [...define].some((element) => first.toLowerCase() === element) || define.split(' ').some((a) => second.split('/')[0].toLowerCase().split(', ').some((b) => b === a))).sort((a, b) => [...define].indexOf(a[0]) - [...define].indexOf(b[0]) || define.split(' ').indexOf(b[1].split('/')[0].toLowerCase().split(', ').filter((element) => define.includes(element))) - define.split(' ').indexOf(a[1].split('/')[0].toLowerCase().split(', ').filter((element) => define.includes(element)))).forEach(([first, second, third]) => {
             sectionHeading.innerText = first;
             $(document.body).append(sectionHeading.cloneNode(true));
 
@@ -39,8 +39,8 @@ $(document).ready(async () => {
             paragraph.innerText += ` ${pinyin}`;
             $(document.body).append(paragraph.cloneNode(true));
 
-            third.split('/ ').forEach((element) => {
-              paragraph.innerText = element;
+            third.split(/\*?\/ /).forEach((element) => {
+              paragraph.innerHTML = Utils.convertTextToHtml(element).replaceAll(/{([^}]+)}/g, '<b>$1</b>').replaceAll(/\[(\p{sc=Hani})\]/gu, '<a href="/dich-nhanh/tra-tu-dien.html?dictionary=thieuchuu&define=$1">$1</a>');
               $(document.body).append(paragraph.cloneNode(true));
             });
 

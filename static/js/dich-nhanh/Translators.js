@@ -1080,7 +1080,7 @@ class Vietphrase {
 
           if (chars.length > 0 && chars.some((b) => this.data.hanViet.has(b))) {
             let prefilterElement = a.toLowerCase();
-  
+
             combineDataEntries.filter(([first]) => prefilterElement.toLowerCase().includes(first.toLowerCase()) && (prefilterElement = prefilterElement.replaceAll(first.toLowerCase(), '\n'))).some(([b, c], __, array) => {
               if (returnText.toLowerCase().includes(b.toLowerCase()) && ((this.nameEnabled && nameMap.has(b.toUpperCase())) || dataMap.has(b.toUpperCase())) && b !== '·') {
                 const phraseResult = c.split(/[/|]/)[0];
@@ -1097,7 +1097,7 @@ class Vietphrase {
                   .replace(new RegExp(`${Utils.escapeRegExp(b)}(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])`, this.nameEnabled && !this.prioritizeNameOverVietPhrase && nameMap.has(b.toUpperCase()) ? 'giu' : 'gu'), `${Utils.escapeRegExpReplacement(phraseResult)}${phraseResult.length > 0 ? ' ' : ''}`)
                   .replace(new RegExp(Utils.escapeRegExp(b), this.nameEnabled && !this.prioritizeNameOverVietPhrase && nameMap.has(b.toUpperCase()) ? 'gi' : 'g'), Utils.escapeRegExpReplacement(phraseResult));
               }
-  
+
               return false;
             });
           }
