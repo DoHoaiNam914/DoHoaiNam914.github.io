@@ -303,6 +303,7 @@ const specialSinovietnameseMap = [
   ['沼','TRẢO'],
   ['治', null, 'trị | trì' /* Hanzii */],
   ['住', 'TRÚ'],
+  ['着', 'TRƯỚC, CHIÊU'],
   ['场', 'TRƯỜNG'],
   ['纵', 'TUNG'],
   ['祟', 'TUỴ'],
