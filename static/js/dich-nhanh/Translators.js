@@ -1157,7 +1157,7 @@ class Vietphrase {
 
                     const foundPhrase = combineDataEntries.filter(([first]) => a.toLowerCase().includes(first.toLowerCase())).toSorted((b, c) => c[0].length - b[0].length).find(([first]) => {
                       const remainChars = chars.slice(i).join('');
-                      return first.length > 0 && remainChars.toLowerCase().startsWith(first.toLowerCase()) && first !== '·';
+                      return first.length > 0 && first !== '·' && remainChars.toLowerCase().startsWith(first.toLowerCase());
                     });
 
                     const charsInTempLine = [...tempLine];
@@ -1167,7 +1167,7 @@ class Vietphrase {
                       const value = values.split(/[/|]/)[0];
                       length = key.length;
 
-                      if (this.nameMap.has(key) && this.prioritizeNameOverVietPhrase) {
+                      if (this.prioritizeNameOverVietPhrase && this.nameMap.has(key)) {
                         tempLine += (charsInTempLine.length > 0 && /^[\p{Lu}\p{Ll}\p{Nd}(([{‘“]/u.test(key) && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(prevPhrase) ? ' ' : '') + key;
                         prevPhrase = key;
                       } else if (value !== '') {
@@ -1204,9 +1204,8 @@ class Vietphrase {
                     if ((nameMap.has(couldUpperCaseKey ? phrase.toUpperCase() : phrase) || (dataMap.has(phrase.toUpperCase()) && [...phrase].every((element) => this.data.hanViet.has(element)))) && phrase !== '·') {
                       phrase = couldUpperCaseKey ? phrase.toUpperCase() : phrase;
                       const phraseResult = (nameMap.get(phrase) ?? dataMap.get(phrase)).split(/[/|]/)[0];
-                      console.log(phrase, phraseResult);
 
-                      if (this.nameMap.has(phrase) && this.prioritizeNameOverVietPhrase) {
+                      if (this.prioritizeNameOverVietPhrase && this.nameMap.has(phrase)) {
                         tempLine += (charsInTempLine.length > 0 && /^[\p{Lu}\p{Ll}\p{Nd}(([{‘“]/u.test(phrase) && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(prevPhrase) ? ' ' : '') + phrase;
                         prevPhrase = phrase;
                       } else if (phraseResult !== '') {
