@@ -1013,7 +1013,7 @@ $(document).ready(async () => {
 
     await $.ajax({
       method: 'GET',
-      url: '/static/datasource/vn.tangthuvien.ttvtranslate-1.2.2/ChinesePhienAmWords.txt',
+      url: '/static/datasource/ttvtranslate/ChinesePhienAmWords.txt',
     }).done((data) => {
       vietPhraseData.ttvtranslate = data.split('\n').map((element) => element.split('='));
       chinesePhienAmWordList = chinesePhienAmWordList.concat(vietPhraseData.ttvtranslate);
@@ -1081,28 +1081,6 @@ $(document).ready(async () => {
     if (!Utils.isOnMobile()) {
       await $.ajax({
         method: 'GET',
-        url: '/static/datasource/Data của thtgiang (đọc README)/Pronouns.txt',
-      }).done((data) => {
-        if (vietPhraseData.pronoun.length === 0) vietPhraseData.pronoun = data.split(/\r\n/).map((element) => element.split('=')).filter((element) => element.length === 2).map(([first, second]) => [first, second]);
-        console.log(`Đã tải xong tệp Pronouns (${vietPhraseData.pronoun.length})!`);
-        lastSession = {};
-      }).fail((__, ___, errorThrown) => {
-        console.error('Không tải được tệp Pronouns:', errorThrown);
-      });
-
-      await $.ajax({
-        method: 'GET',
-        url: '/static/datasource/Data của thtgiang (đọc README)/LuatNhan.txt',
-      }).done((data) => {
-        if (vietPhraseData.luatNhan.length === 0) vietPhraseData.luatNhan = data.split(/\r\n/).filter((element) => !element.startsWith('#')).map((element) => element.split('=')).filter((element) => element.length === 2);
-        console.log(`Đã tải xong tệp LuatNhan (${vietPhraseData.luatNhan.length})!`);
-        lastSession = {};
-      }).fail((__, ___, errorThrown) => {
-        console.error('Không tải được tệp LuatNhan:', errorThrown);
-      });
-
-      await $.ajax({
-        method: 'GET',
         url: '/static/datasource/Data của thtgiang (đọc README)/Names.txt',
       }).done((data) => {
         vietPhraseData.name = data.split(/\r\n/).map((element) => element.split('=')).filter((element) => element.length === 2);
@@ -1129,7 +1107,7 @@ $(document).ready(async () => {
     } else {
       await $.ajax({
         method: 'GET',
-        url: '/static/datasource/vn.tangthuvien.ttvtranslate-1.2.2/Names.txt',
+        url: '/static/datasource/ttvtranslate/Names.txt',
       }).done((data) => {
         vietPhraseData.name = data.split('\n').map((element) => element.split('=')).filter((element) => element.length === 2);
         $nameEntryCounter.text(vietPhraseData.name.length);
@@ -1141,7 +1119,7 @@ $(document).ready(async () => {
 
       await $.ajax({
         method: 'GET',
-        url: '/static/datasource/vn.tangthuvien.ttvtranslate-1.2.2/VietPhrase.txt',
+        url: '/static/datasource/ttvtranslate/VietPhrase.txt',
       }).done((data) => {
         let vietPhraseList = data.split('\n').map((element) => element.split('=')).filter((element) => element.length === 2).map(([first, second]) => [first, second.split(/[/|]/)[0]]).concat([...vietPhraseData.hanViet]);
         vietPhraseList = vietPhraseList.filter(([first], __, array) => !array[first] && (array[first] = 1), {});
