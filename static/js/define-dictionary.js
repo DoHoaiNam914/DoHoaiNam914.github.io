@@ -126,7 +126,7 @@ function loadAd()
             sectionHeading.innerText = first;
             $(document.body).append(sectionHeading.cloneNode(true));
 
-            second.split('\n').forEach((element) => {
+            second.split('\\n').forEach((element) => {
               paragraph.innerText = element;
               $(document.body).append(paragraph.cloneNode(true));
             });
