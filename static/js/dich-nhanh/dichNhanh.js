@@ -256,16 +256,16 @@ function applyNameToText(text, translator = Translators.VIETPHRASE, name = vietP
                 let length = Math.min(chars.length, nameLengths[0]);
                 const foundPhrase = nameEntries.toSorted((b, c) => c[0].length - b[0].length).find(([first]) => first.length > 0 && chars.slice(i).join('').toLowerCase().startsWith(first.toLowerCase()));
 
+                const charsInTempLine = [...tempLine];
+
                 if (foundPhrase) {
                   const [key, values] = foundPhrase;
                   const value = values.split(/[/|]/)[0];
                   length = key.length;
 
-                  const charsInTempLine = [...tempLine];
-
                   if (value !== '') {
                     const hasSpaceSperator = /[\d\p{sc=Hani}]/u.test(a[i - 2]) && a[i - 1] === ' ';
-                    tempLine += (charsInTempLine.length > 0 && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}…’”、。！，：；？]$/u.test(tempLine) ? ' ' : '') + (hasSpaceSperator ? '- ' : '') + value.replace(/(^| |\p{P})(\p{Ll})/u, (match, p1, p2) => (hasSpaceSperator ? p1 + p2.toUpperCase() : match));
+                    tempLine += (charsInTempLine.length > 0 && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}…’”、。！，：；？]$/u.test(tempLine) ? ' ' : '') + (hasSpaceSperator ? '- ' : '') + value.replace(/(^| |\p{P})(\p{Ll})/u, (match, p1, p2) => (translator === Translators.VIETPHRASE && hasSpaceSperator ? p1 + p2.toUpperCase() : match));
                     prevPhrase = value;
                   }
                 } else {
@@ -291,7 +291,6 @@ function applyNameToText(text, translator = Translators.VIETPHRASE, name = vietP
                 let phrase = translator === Translators.DEEPL_TRANSLATE || translator === Translators.GOOGLE_TRANSLATE ? Utils.convertHtmlToText(a.substring(i, i + length)) : a.substring(i, i + length);
 
                 const charsInTempLine = [...tempLine];
-                const lastCharInTempLine = charsInTempLine[charsInTempLine.length - 1];
 
                 if (nameMap.has(phrase.toUpperCase())) {
                   phrase = translator === Translators.DEEPL_TRANSLATE || translator === Translators.GOOGLE_TRANSLATE ? Utils.convertHtmlToText(a.substring(i, i + length).toUpperCase()) : phrase.toUpperCase();
@@ -299,7 +298,7 @@ function applyNameToText(text, translator = Translators.VIETPHRASE, name = vietP
 
                   if (phraseResult !== '') {
                     const hasSpaceSperator = /[\d\p{sc=Hani}]/u.test(a[i - 2]) && a[i - 1] === ' ';
-                    tempLine += (charsInTempLine.length > 0 && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(lastCharInTempLine) ? ' ' : '') + (translator === Translators.VIETPHRASE && hasSpaceSperator ? '- ' : '') + (getIgnoreTranslationMarkup(phrase, phraseResult.replace(/(^| |\p{P})(\p{Ll})/u, (match, p1, p2) => (hasSpaceSperator ? p1 + p2.toUpperCase() : match)), translator));
+                    tempLine += (charsInTempLine.length > 0 && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}…’”、。！，：；？]$/u.test(tempLine) ? ' ' : '') + (translator === Translators.VIETPHRASE && hasSpaceSperator ? '- ' : '') + (getIgnoreTranslationMarkup(phrase, phraseResult.replace(/(^| |\p{P})(\p{Ll})/u, (match, p1, p2) => (hasSpaceSperator ? p1 + p2.toUpperCase() : match)), translator));
                     prevPhrase = phraseResult;
                   }
 

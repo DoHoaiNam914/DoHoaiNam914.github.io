@@ -1160,12 +1160,12 @@ class Vietphrase {
                       return first.length > 0 && phrase.toLowerCase().startsWith(first.toLowerCase()) && phrase !== '·';
                     });
 
+                    const charsInTempLine = [...tempLine];
+
                     if (foundPhrase) {
                       const [key, values] = foundPhrase;
                       const value = values.split(/[/|]/)[0];
                       length = key.length;
-
-                      const charsInTempLine = [...tempLine];
 
                       if (this.prioritizeNameOverVietPhrase && this.nameMap.has(key)) {
                         tempLine += (charsInTempLine.length > 0 && /^[\p{Lu}\p{Ll}\p{Nd}(([{‘“]/u.test(phrase) && (/[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(prevPhrase) || /[)\]}…’”、。！，：；？]$/u.test(tempLine)) ? ' ' : '') + key;
