@@ -1167,7 +1167,7 @@ class Vietphrase {
                       const value = values.split(/[/|]/)[0];
                       length = key.length;
 
-                      if (this.prioritizeNameOverVietPhrase && this.nameMap.has(key)) {
+                      if (this.nameMap.has(key) && this.prioritizeNameOverVietPhrase) {
                         tempLine += (charsInTempLine.length > 0 && /^[\p{Lu}\p{Ll}\p{Nd}(([{‘“]/u.test(key) && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(prevPhrase) ? ' ' : '') + key;
                         prevPhrase = key;
                       } else if (value !== '') {
@@ -1199,13 +1199,14 @@ class Vietphrase {
                     let phrase = chars.slice(i, i + length).join('');
 
                     const charsInTempLine = [...tempLine];
-                    const couldUpperCaseKey = !this.prioritizeNameOverVietPhrase || !(!nameMap.has(phrase) && this.nameMap.has(phrase.toUpperCase()));
+                    const couldUpperCaseKey = !this.prioritizeNameOverVietPhrase || (nameMap.has(phrase.toUpperCase()) && !this.nameMap.has(phrase));
 
                     if ((nameMap.has(couldUpperCaseKey ? phrase.toUpperCase() : phrase) || (dataMap.has(phrase.toUpperCase()) && [...phrase].every((element) => this.data.hanViet.has(element)))) && phrase !== '·') {
                       phrase = couldUpperCaseKey ? phrase.toUpperCase() : phrase;
                       const phraseResult = (nameMap.get(phrase) ?? dataMap.get(phrase)).split(/[/|]/)[0];
+                      console.log(phrase, phraseResult);
 
-                      if (nameMap.has(phrase) && this.prioritizeNameOverVietPhrase) {
+                      if (this.nameMap.has(phrase) && this.prioritizeNameOverVietPhrase) {
                         tempLine += (charsInTempLine.length > 0 && /^[\p{Lu}\p{Ll}\p{Nd}(([{‘“]/u.test(phrase) && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(prevPhrase) ? ' ' : '') + phrase;
                         prevPhrase = phrase;
                       } else if (phraseResult !== '') {
@@ -1251,7 +1252,8 @@ class Vietphrase {
     this.autocapitalize = autocapitalize;
     this.data = data;
     this.nameEnabled = nameEnabled;
-    this.name = this.nameEnabled ? this.data.name.concat(this.data.namePhu, glossary) : [];
+    const maybeUseGlossary = !this.nameEnabled || glossary.length === 0 ? glossary : this.data.name.concat(this.data.namePhu);
+    this.name = this.nameEnabled ? maybeUseGlossary : [];
     this.name = (this.prioritizeNameOverVietPhrase ? this.name.map(([___, second]) => [second, second]) : this.name).filter(([first]) => inputText.toLowerCase().includes(first.toLowerCase()));
     this.nameMap = new Map(this.name.map(([first, second]) => [!this.prioritizeNameOverVietPhrase ? first.toUpperCase() : first, second]));
 

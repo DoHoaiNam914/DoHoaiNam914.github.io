@@ -31,8 +31,6 @@ const $nameEntryCounter = $('#name-entry-counter');
 const $nameInput = $('#name-input');
 const $prioritizeNameOverVietPhraseCheck = $('#prioritize-name-over-viet-phrase-check');
 const $translationAlgorithmRadio = $('.option[name="translation-algorithm-radio"]');
-const $luatNhanInput = $('#luat-nhan-input');
-const $pronounInput = $('#pronoun-input');
 const $multiplicationAlgorithmRadio = $('.option[name="multiplication-algorithm-radio"]');
 
 const $resetButton = $('#reset-button');
@@ -518,7 +516,6 @@ async function translateTextarea() {
           }
         }
       } else {
-        console.log(processText.split(/\r?\n/).length, MAX_LINE, processText.length, MAX_LENGTH);
         const inputLines = processText.split(/\r?\n/);
         let queryLines = [];
         const results = [];
@@ -553,13 +550,6 @@ async function translateTextarea() {
 
         if (translateAbortController.signal.aborted) return;
         result = results.join('\n');
-      }
-
-      if (glossaryEnabled && translatorOption !== Translators.VIETPHRASE && isPairing) {
-        vietPhraseData.namePhu.filter(([first]) => inputText.includes(first)).toSorted((a, b) => b[1].length - a[1].length).forEach(([__, second]) => {
-          const oldAccentKey = applyOldAccent(second);
-          if (second.split(' ').length >= 2) result = result.replace(Utils.getTrieRegexPatternFromWords([second, second[0].toLowerCase() + second.substring(1), second[0].toUpperCase() + second.substring(1), oldAccentKey, oldAccentKey[0].toLowerCase() + oldAccentKey.substring(1), oldAccentKey[0].toUpperCase() + oldAccentKey.substring(1)]), (match) => match[0] + second.substring(1));
-        });
       }
 
       if (translateAbortController.signal.aborted) return;
@@ -779,7 +769,7 @@ function updateLanguageSelect(translator, prevTranslator) {
 
 async function translateText(inputText, translatorOption, targetLanguage, glossaryEnabled) {
   try {
-    const text = glossaryEnabled && [Translators.BAIDU_FANYI, Translators.PAPAGO].every((element) => translatorOption !== element) ? applyNameToText(inputText, translatorOption) : inputText;
+    const text = glossaryEnabled && [Translators.BAIDU_FANYI, Translators.PAPAGO].every((element) => translatorOption !== element) ? applyNameToText(inputText, translatorOption, glossary) : inputText;
     let translator = null;
     let sourceLanguage = '';
 
@@ -822,19 +812,12 @@ async function translateText(inputText, translatorOption, targetLanguage, glossa
 
     switch (translatorOption) {
       case Translators.VIETPHRASE: {
-        result = await translator.translateText(sourceLanguage, targetLanguage, text, $translationAlgorithmRadio.filter('[checked]').val(), $multiplicationAlgorithmRadio.filter('[checked]').val(), true, $addDeLeZhaoSwitch.prop('checked'), false, vietPhraseData, glossaryEnabled);
+        result = await translator.translateText(sourceLanguage, targetLanguage, text, $translationAlgorithmRadio.filter('[checked]').val(), $multiplicationAlgorithmRadio.filter('[checked]').val(), true, $addDeLeZhaoSwitch.prop('checked'), false, vietPhraseData, glossaryEnabled, glossary);
         break;
       }
       default: {
         result = await translator.translateText(sourceLanguage, targetLanguage, text);
       }
-    }
-
-    if (glossaryEnabled && translatorOption !== Translators.VIETPHRASE) {
-      vietPhraseData.namePhu.filter(([first]) => inputText.includes(first)).toSorted((a, b) => b[1].length - a[1].length).forEach(([__, second]) => {
-        const oldAccentKey = applyOldAccent(second);
-        if (second.split(' ').length >= 2) result = result.replace(Utils.getTrieRegexPatternFromWords([second, second[0].toLowerCase() + second.substring(1), second[0].toUpperCase() + second.substring(1), oldAccentKey, oldAccentKey[0].toLowerCase() + oldAccentKey.substring(1), oldAccentKey[0].toUpperCase() + oldAccentKey.substring(1)]), (match) => match[0] + second.substring(1));
-      });
     }
 
     return result;
@@ -1505,30 +1488,6 @@ $loadDefaultVietPhraseFileSwitch.on('change', function onChange() {
   }
 });
 
-$luatNhanInput.on('change', function onChange() {
-  const reader = new FileReader();
-
-  reader.onload = function onLoad() {
-    vietPhraseData.luatNhan = this.result.split(/\r?\n/).filter((element) => !element.startsWith('#')).map((element) => element.split('=')).filter((element) => element.length === 2);
-    console.log(`Đã tải xong tệp ${$luatNhanInput.prop('files')[0].name} (${vietPhraseData.luatNhan.length})!`);
-    lastSession = {};
-  };
-
-  reader.readAsText($(this).prop('files')[0]);
-});
-
-$pronounInput.on('change', function onChange() {
-  const reader = new FileReader();
-
-  reader.onload = function onLoad() {
-    vietPhraseData.pronoun = this.result.split(/\r?\n/).map((element) => element.split('=')).filter((element) => element.length === 2).map(([first, second]) => [first, second]);
-    console.log(`Đã tải xong tệp ${$pronounInput.prop('files')[0].name} (${vietPhraseData.pronoun.length})!`);
-    lastSession = {};
-  };
-
-  reader.readAsText($(this).prop('files')[0]);
-});
-
 $resetButton.on('click', () => {
   if (!window.confirm('Bạn có muốn đặt lại tất cả thiết lập chứ?')) return;
   localStorage.setItem('dich_nhanh', JSON.stringify(defaultOptions));
@@ -1599,7 +1558,7 @@ $glossaryListSelect.change(function onChange() {
   }
 
   reloadGlossaryEntries();
-  $sourceEntryInput.trigger('input');
+  if ($sourceEntryInput.val().length > 0) $translateEntryButtons.filter(`[data-translator="vietphrase"][data-lang="${['VietPhrase', 'LuatNhan', 'Pronouns'].some((element) => $(this).val() === element) ? 'vi' : 'sinoVietnamese'}"][data-glossary="true"]`).click();
 });
 
 $sourceEntryInput.on('input', async function onInput() {
@@ -1625,7 +1584,7 @@ $sourceEntryInput.on('input', async function onInput() {
         modalBody.prop('scrollTop', prevModalBodyScrollTop);
       }
     } else {
-      $translateEntryButtons.filter(`[data-translator="vietphrase"][data-lang="${['VietPhrase', 'LuatNhan', 'Pronouns'].some((element) => $glossaryListSelect.val() === element) ? 'vi' : 'sinoVietnamese'}"][data-glossary="true"]`).click();
+      $translateEntryButtons.filter('[data-translator="vietphrase"][data-lang="sinoVietnamese"][data-glossary="true"]').click();
       $targetEntryTextarea.prop('scrollTop', 0);
       $glossaryEntrySelect.val('');
     }
