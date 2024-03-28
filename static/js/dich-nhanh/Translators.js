@@ -1168,7 +1168,7 @@ class Vietphrase {
                       const charsInTempLine = [...tempLine];
 
                       if (this.prioritizeNameOverVietPhrase && this.nameMap.has(key)) {
-                        tempLine += (charsInTempLine.length > 0 && /[\p{Lu}\p{Ll}\p{M}\p{Nd}\p{Po})\]}’”]$/u.test(tempLine) ? ' ' : '') + key;
+                        tempLine += (charsInTempLine.length > 0 && /^[\p{Lu}\p{Ll}\p{Nd}(([{‘“]/u.test(phrase) && (/[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(prevPhrase) || /[\p{Po})\]}’”]$/u.test(tempLine)) ? ' ' : '') + key;
                         prevPhrase = key;
                       } else if (value !== '') {
                         const hasSpaceSperator = /[\d\p{sc=Hani}]/u.test(a[i - 2]) && a[i - 1] === ' ';
@@ -1177,7 +1177,7 @@ class Vietphrase {
                       }
                     } else {
                       length = 1;
-                      tempLine += (accumulator.length > 0 && /[\p{Lu}\p{Ll}\p{Nd}(([{‘“]/u.test(a[i]) && (/[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(prevPhrase) || /[\p{Po})\]}’”]$/u.test(tempLine)) ? ' ' : '') + chars.slice(i, i + length).join('');
+                      tempLine += (accumulator.length > 0 && /^[\p{Lu}\p{Ll}\p{Nd}(([{‘“]/u.test(phrase) && (/[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(prevPhrase) || /[\p{Po})\]}’”]$/u.test(tempLine)) ? ' ' : '') + chars.slice(i, i + length).join('');
                       prevPhrase = '';
                     }
 
@@ -1205,7 +1205,7 @@ class Vietphrase {
                       const phraseResult = (nameMap.get(phrase) ?? dataMap.get(phrase)).split(/[/|]/)[0];
 
                       if (nameMap.has(phrase) && this.prioritizeNameOverVietPhrase) {
-                        tempLine += (charsInTempLine.length > 0 && /[\p{Lu}\p{Ll}\p{M}\p{Nd}\p{Po})\]}’”]$/u.test(tempLine) ? ' ' : '') + phrase;
+                        tempLine += (charsInTempLine.length > 0 && /^[\p{Lu}\p{Ll}\p{Nd}(([{‘“]/u.test(phrase) && (/[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(prevPhrase) || /[\p{Po})\]}’”]$/u.test(tempLine)) ? ' ' : '') + phrase;
                         prevPhrase = phrase;
                       } else if (phraseResult !== '') {
                         const hasSpaceSperator = /[\d\p{sc=Hani}]/u.test(a[i - 2]) && a[i - 1] === ' ';
@@ -1218,7 +1218,7 @@ class Vietphrase {
                     }
 
                     if (length === 1) {
-                      tempLine += (charsInTempLine.length > 0 && /[\p{Lu}\p{Ll}\p{Nd}(([{‘“]/u.test(a[i]) && (/[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(prevPhrase) || /[\p{Po})\]}’”]$/u.test(tempLine)) ? ' ' : '') + phrase;
+                      tempLine += (charsInTempLine.length > 0 && /^[\p{Lu}\p{Ll}\p{Nd}(([{‘“]/u.test(phrase) && (/[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(prevPhrase) || /[\p{Po})\]}’”]$/u.test(tempLine)) ? ' ' : '') + phrase;
                       prevPhrase = '';
                       i += length - 1;
                       break;
