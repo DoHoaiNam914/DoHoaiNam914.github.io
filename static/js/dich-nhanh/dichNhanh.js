@@ -270,7 +270,8 @@ function applyNameToText(text, translator = Translators.VIETPHRASE, name = vietP
                   }
                 } else {
                   length = 1;
-                  tempLine += (charsInTempLine.length > 0 && /^[\p{Lu}\p{Ll}\p{Nd}(([{‘“]/u.test(phrase) && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(prevPhrase) ? ' ' : '') + chars.slice(i, i + length).join('');
+                  const phrase = chars.slice(i, i + length).join('');
+                  tempLine += (charsInTempLine.length > 0 && /^[\p{Lu}\p{Ll}\p{Nd}(([{‘“]/u.test(phrase) && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(prevPhrase) ? ' ' : '') + phrase;
                   prevPhrase = '';
                 }
 
@@ -778,7 +779,7 @@ function updateLanguageSelect(translator, prevTranslator) {
 
 async function translateText(inputText, translatorOption, targetLanguage, glossaryEnabled) {
   try {
-    const text = glossaryEnabled && [Translators.BAIDU_FANYI, Translators.PAPAGO].every((element) => translatorOption !== element) ? applyNameToText(inputText, translatorOption, glossary) : inputText;
+    const text = glossaryEnabled && [Translators.BAIDU_FANYI, Translators.PAPAGO].every((element) => translatorOption !== element) ? applyNameToText(inputText, translatorOption) : inputText;
     let translator = null;
     let sourceLanguage = '';
 
@@ -821,7 +822,7 @@ async function translateText(inputText, translatorOption, targetLanguage, glossa
 
     switch (translatorOption) {
       case Translators.VIETPHRASE: {
-        result = await translator.translateText(sourceLanguage, targetLanguage, text, $translationAlgorithmRadio.filter('[checked]').val(), $multiplicationAlgorithmRadio.filter('[checked]').val(), true, $addDeLeZhaoSwitch.prop('checked'), false, vietPhraseData, glossaryEnabled, glossary);
+        result = await translator.translateText(sourceLanguage, targetLanguage, text, $translationAlgorithmRadio.filter('[checked]').val(), $multiplicationAlgorithmRadio.filter('[checked]').val(), true, $addDeLeZhaoSwitch.prop('checked'), false, vietPhraseData, glossaryEnabled);
         break;
       }
       default: {
@@ -1559,6 +1560,7 @@ $glossaryInput.on('change', function onChange() {
     $glossaryName.val($glossaryInput.prop('files')[0].name.split('.').slice(0, $glossaryInput.prop('files')[0].name.split('.').length - 1).join('.'));
     reloadGlossaryEntries();
     $sourceEntryInput.trigger('input');
+    lastSession = {};
   };
 
   reader.readAsText($(this).prop('files')[0]);
@@ -1570,6 +1572,7 @@ $('#clear-glossary-button').on('click', () => {
   $glossaryName.val(null);
   reloadGlossaryEntries();
   $glossaryInput.val('');
+  lastSession = {};
 });
 
 $glossaryType.on('change', reloadGlossaryEntries);
@@ -1754,6 +1757,7 @@ $addButton.click(() => {
   $glossaryInput.val(null);
   $addButton.addClass('disabled');
   $removeButton.addClass('disabled');
+  lastSession = {};
 });
 
 $removeButton.on('click', () => {
@@ -1764,6 +1768,7 @@ $removeButton.on('click', () => {
     reloadGlossaryEntries();
     $glossaryInput.val(null);
     $sourceEntryInput.trigger('input');
+    lastSession = {};
   } else {
     $glossaryEntrySelect.val('').change();
   }

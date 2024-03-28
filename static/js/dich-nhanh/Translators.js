@@ -1156,8 +1156,8 @@ class Vietphrase {
                     let length = Math.min(chars.length, dataLengths[0]);
 
                     const foundPhrase = combineDataEntries.filter(([first]) => a.toLowerCase().includes(first.toLowerCase())).toSorted((b, c) => c[0].length - b[0].length).find(([first]) => {
-                      const phrase = chars.slice(i).join('');
-                      return first.length > 0 && phrase.toLowerCase().startsWith(first.toLowerCase()) && phrase !== '·';
+                      const remainChars = chars.slice(i).join('');
+                      return first.length > 0 && remainChars.toLowerCase().startsWith(first.toLowerCase()) && first !== '·';
                     });
 
                     const charsInTempLine = [...tempLine];
@@ -1168,7 +1168,7 @@ class Vietphrase {
                       length = key.length;
 
                       if (this.prioritizeNameOverVietPhrase && this.nameMap.has(key)) {
-                        tempLine += (charsInTempLine.length > 0 && /^[\p{Lu}\p{Ll}\p{Nd}(([{‘“]/u.test(phrase) && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(prevPhrase) ? ' ' : '') + key;
+                        tempLine += (charsInTempLine.length > 0 && /^[\p{Lu}\p{Ll}\p{Nd}(([{‘“]/u.test(key) && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(prevPhrase) ? ' ' : '') + key;
                         prevPhrase = key;
                       } else if (value !== '') {
                         const hasSpaceSperator = /[\d\p{sc=Hani}]/u.test(a[i - 2]) && a[i - 1] === ' ';
@@ -1177,7 +1177,8 @@ class Vietphrase {
                       }
                     } else {
                       length = 1;
-                      tempLine += (charsInTempLine.length > 0 && /^[\p{Lu}\p{Ll}\p{Nd}(([{‘“]/u.test(phrase) && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(prevPhrase) ? ' ' : '') + chars.slice(i, i + length).join('');
+                      const phrase = chars.slice(i, i + length).join('');
+                      tempLine += (charsInTempLine.length > 0 && /^[\p{Lu}\p{Ll}\p{Nd}(([{‘“]/u.test(phrase) && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(prevPhrase) ? ' ' : '') + phrase;
                       prevPhrase = '';
                     }
 
