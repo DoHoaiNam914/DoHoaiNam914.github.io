@@ -1011,7 +1011,6 @@ function reloadGlossaryEntries() {
   }));
 
   glossaryStorage = localStorage.getItem('glossary');
-  lastSession = {};
 }
 
 $(document).ready(async () => {
