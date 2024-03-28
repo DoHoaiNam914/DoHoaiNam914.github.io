@@ -35,9 +35,9 @@ const $multiplicationAlgorithmRadio = $('.option[name="multiplication-algorithm-
 
 const $resetButton = $('#reset-button');
 
-const $glossarySwitch = $('#glossary-switch');
+const $nameSwitch = $('#name-switch');
 const $glossaryInput = $('#glossary-input');
-const $glossaryType = $('#glossary-type');
+const $glossaryTypeSelect = $('#glossary-type-select');
 const $languagePairsSelect = $('#language-pairs-select');
 const $glossaryListSelect = $('#glossary-list-select');
 const $sourceEntryInput = $('#source-entry-input');
@@ -49,7 +49,7 @@ const $removeButton = $('#remove-button');
 const $glossaryEntrySelect = $('#glossary-entry-select');
 const $glossaryName = $('#glossary-name');
 
-const defaultOptions = JSON.parse('{"source_language":"auto","target_language":"vi","font":"Mặc định","font_size":100,"line_spacing":40,"alignment_settings":true,"format_settings":true,"translator":"googleTranslate","show_original_text":false,"load_default_viet_phrase_file":true,"add_de_le_zhao":false,"translation_algorithm":"0","prioritize_name_over_viet_phrase":false,"multiplication_algorithm":"2","glossary":true,"language_pairs":"zh-vi"}');
+const defaultOptions = JSON.parse('{"source_language":"auto","target_language":"vi","font":"Mặc định","font_size":100,"line_spacing":40,"alignment_settings":true,"format_settings":true,"translator":"googleTranslate","show_original_text":false,"load_default_viet_phrase_file":true,"add_de_le_zhao":false,"translation_algorithm":"0","prioritize_name_over_viet_phrase":false,"multiplication_algorithm":"2","name":true,"glossary_type":"text/plain","language_pairs":"zh-vi"}');
 
 const SUPPORTED_LANGUAGES = ['', 'EN', 'JA', 'ZH', 'EN-US', 'auto', 'en', 'ja', 'zh-CN', 'zh-TW', 'vi', 'zh-Hans', 'zh-Hant'];
 
@@ -457,10 +457,10 @@ async function translateTextarea() {
     }
   }
 
-  const glossaryEnabled = $glossarySwitch.prop('checked');
+  const nameEnabled = $nameSwitch.prop('checked');
 
-  const processText = glossaryEnabled && [Translators.BAIDU_FANYI, Translators.PAPAGO].every((element) => translatorOption !== element) && (translatorOption === Translators.VIETPHRASE ? $prioritizeNameOverVietPhraseCheck.prop('checked') && targetLanguage === 'vi' : isPairing) ? applyNameToText(inputText, translatorOption) : inputText;
-  const processTextToCheck = glossaryEnabled && translatorOption === Translators.VIETPHRASE && targetLanguage === 'vi' && !$prioritizeNameOverVietPhraseCheck.prop('checked') ? applyNameToText(inputText, translatorOption) : processText;
+  const processText = nameEnabled && [Translators.BAIDU_FANYI, Translators.PAPAGO].every((element) => translatorOption !== element) && (translatorOption === Translators.VIETPHRASE ? $prioritizeNameOverVietPhraseCheck.prop('checked') && targetLanguage === 'vi' : isPairing) ? applyNameToText(inputText, translatorOption) : inputText;
+  const processTextToCheck = nameEnabled && translatorOption === Translators.VIETPHRASE && targetLanguage === 'vi' && !$prioritizeNameOverVietPhraseCheck.prop('checked') ? applyNameToText(inputText, translatorOption) : processText;
 
   const [MAX_LENGTH, MAX_LINE] = getMaxQueryLengthAndLine(translatorOption, processTextToCheck);
 
@@ -508,7 +508,7 @@ async function translateTextarea() {
       if (processText.split(/\r?\n/).length <= MAX_LINE && (translatorOption === Translators.DEEPL_TRANSLATE ? (new TextEncoder()).encode(`text=${processText.split(/\r?\n/).map((element) => encodeURIComponent(element)).join('&text=')}&source_lang=${sourceLanguage}&target_lang=${targetLanguage}&tag_handling=xml`) : processText).length <= MAX_LENGTH) {
         switch (translatorOption) {
           case Translators.VIETPHRASE: {
-            result = await translator.translateText(sourceLanguage, targetLanguage, processText, $translationAlgorithmRadio.filter('[checked]').val(), $multiplicationAlgorithmRadio.filter('[checked]').val(), $prioritizeNameOverVietPhraseCheck.prop('checked'), $addDeLeZhaoSwitch.prop('checked'), true, vietPhraseData, glossaryEnabled && targetLanguage === 'vi');
+            result = await translator.translateText(sourceLanguage, targetLanguage, processText, $translationAlgorithmRadio.filter('[checked]').val(), $multiplicationAlgorithmRadio.filter('[checked]').val(), $prioritizeNameOverVietPhraseCheck.prop('checked'), $addDeLeZhaoSwitch.prop('checked'), true, vietPhraseData, nameEnabled && targetLanguage === 'vi');
             break;
           }
           default: {
@@ -876,7 +876,7 @@ function updateInputTextLength() {
 
   const gapLength = applyNameToText(inputText, translator, vietPhraseData.namePhu).length - inputText.length;
 
-  $('#input-textarea-counter').text(`${inputText.length}${inputText.length > 0 && ($glossarySwitch.prop('checked') && (translator === Translators.VIETPHRASE ? $prioritizeNameOverVietPhraseCheck.prop('checked') && targetLanguage === 'vi' : sourceLanguage === languagePairs[0] && targetLanguage === languagePairs[1])) && gapLength > 0 ? ` (+${gapLength})` : ''}`);
+  $('#input-textarea-counter').text(`${inputText.length}${inputText.length > 0 && ($nameSwitch.prop('checked') && (translator === Translators.VIETPHRASE ? $prioritizeNameOverVietPhraseCheck.prop('checked') && targetLanguage === 'vi' : sourceLanguage === languagePairs[0] && targetLanguage === languagePairs[1])) && gapLength > 0 ? ` (+${gapLength})` : ''}`);
 }
 
 function reloadGlossaryEntries() {
@@ -914,7 +914,7 @@ function reloadGlossaryEntries() {
       }
     });
 
-    switch ($glossaryType.val()) {
+    switch ($glossaryTypeSelect.val()) {
       case GlossaryType.CSV: {
         glossaryData = $.csv.fromArrays(glossary.toSorted((a, b) => b[0].length - a[0].length || b[1].length - a[1].length || a[1].localeCompare(b[1], 'vi', { ignorePunctuation: true }) || a[0].localeCompare(b[0], 'vi', { ignorePunctuation: true })));
         glossaryExtension.text('csv');
@@ -950,7 +950,7 @@ function reloadGlossaryEntries() {
       }
     }
 
-    downloadButton.attr('href', URL.createObjectURL(new Blob([glossaryData], { type: `${$glossaryType.val()}; charset=UTF-8` })));
+    downloadButton.attr('href', URL.createObjectURL(new Blob([glossaryData], { type: `${$glossaryTypeSelect.val()}; charset=UTF-8` })));
     downloadButton.attr('download', `${$glossaryName.val().length > 0 ? $glossaryName.val() : $glossaryName.attr('placeholder')}.${glossaryExtension.text()}`);
     downloadButton.removeClass('disabled');
   } else {
@@ -1010,6 +1010,8 @@ $(document).ready(async () => {
 
   try {
     let chinesePhienAmWordList = specialSinovietnameseMap.map(([a, b, c]) => [a, (new Map(specialSinovietnameseMap.filter(([__, d]) => !/\p{Script=Hani}/u.test(d)).map(([d, e, f]) => [d, f ?? e])).get(b) ?? c ?? b).split(/, | \| /)[0].toLowerCase()]);
+    chinesePhienAmWordList = chinesePhienAmWordList.concat(cjkv.nam.map(([first, second]) => [first, second.trimStart().split(/, ?/).filter((element) => element.length > 0)[0]]));
+    chinesePhienAmWordList = chinesePhienAmWordList.concat(hanData.names.map(([first, second]) => [first, second.split(',').filter((element) => element.length > 0)[0]]));
 
     await $.ajax({
       method: 'GET',
@@ -1021,38 +1023,20 @@ $(document).ready(async () => {
 
     await $.ajax({
       method: 'GET',
-      url: '/static/datasource/Data của thtgiang (đọc README)/ChinesePhienAmWords.txt',
-    }).done((data) => {
-      vietPhraseData.dataOfThtgiangReadReadme = data.split(/\r\n/).map((element) => element.split('='));
-      chinesePhienAmWordList = chinesePhienAmWordList.concat(vietPhraseData.dataOfThtgiangReadReadme);
-    });
-
-    await $.ajax({
-      method: 'GET',
       url: '/static/datasource/Quick Translator/ChinesePhienAmWords.txt',
     }).done((data) => {
       vietPhraseData.quickTranslator = data.split(/\r\n/).map((element) => element.split('='));
       chinesePhienAmWordList = chinesePhienAmWordList.concat(vietPhraseData.quickTranslator);
     });
 
-    chinesePhienAmWordList = chinesePhienAmWordList.concat(cjkv.nam.map(([first, second]) => [first, second.trimStart().split(/, ?/).filter((element) => element.length > 0)[0]]));
-
     await $.ajax({
       method: 'GET',
-      url: '/static/datasource/Chivi/word_hv.txt',
+      url: '/static/datasource/Data của thtgiang (đọc README)/ChinesePhienAmWords.txt',
     }).done((data) => {
-      vietPhraseData.chivi = data.split('\n').map((element) => element.split('='));
-      chinesePhienAmWordList = chinesePhienAmWordList.concat(vietPhraseData.chivi.filter(([first]) => [...first].length === 1).toSorted((a, b) => b[0].length - a[0].length).map(([first, second]) => [first, second.split('ǀ')[0]]));
+      vietPhraseData.dataOfThtgiangReadReadme = data.split(/\r\n/).map((element) => element.split('='));
+      chinesePhienAmWordList = chinesePhienAmWordList.concat(vietPhraseData.dataOfThtgiangReadReadme);
     });
 
-    await $.ajax({
-      method: 'GET',
-      url: '/static/datasource/net5.0-windows/ChinesePhienAmWords.txt',
-    }).done((data) => {
-      vietPhraseData.quickTranslate2020 = data.split(/\r\n/).map((element) => element.split('='));
-    });
-
-    chinesePhienAmWordList = chinesePhienAmWordList.concat(hanData.names.map(([first, second]) => [first, second.split(',').filter((element) => element.length > 0)[0]]));
     chinesePhienAmWordList = chinesePhienAmWordList.filter(([first, second]) => first != null && first !== '' && second != null).filter(([first], __, array) => !array[first] && (array[first] = 1), {});
     chinesePhienAmWordList = chinesePhienAmWordList.map(([c, d]) => [c, !specialSinovietnameseMap.map(([e]) => e).includes(c) ? applyNewAccent(d) : d]);
     vietPhraseData.hanViet = new Map(chinesePhienAmWordList);
@@ -1479,17 +1463,17 @@ $glossaryInput.on('change', function onChange() {
     switch ($glossaryInput.prop('files')[0].type) {
       case GlossaryType.CSV: {
         glossary = $.csv.toArrays(this.result).filter((element) => element.length >= 2);
-        $glossaryType.val(GlossaryType.CSV);
+        $glossaryTypeSelect.val(GlossaryType.CSV);
         break;
       }
       case GlossaryType.VIETPHRASE: {
         glossary = this.result.split(/\r?\n/).map((element) => element.split('=')).filter((element) => element.length === 2);
-        $glossaryType.val(GlossaryType.VIETPHRASE);
+        $glossaryTypeSelect.val(GlossaryType.VIETPHRASE);
         break;
       }
       default: {
         glossary = this.result.split(/\r?\n/).map((element) => element.split(/\t/)).filter((element) => element.length >= 2);
-        $glossaryType.val(GlossaryType.TSV);
+        $glossaryTypeSelect.val(GlossaryType.TSV);
         break;
       }
     }
@@ -1512,7 +1496,7 @@ $('#clear-glossary-button').on('click', () => {
   lastSession = {};
 });
 
-$glossaryType.on('change', reloadGlossaryEntries);
+$glossaryTypeSelect.on('change', reloadGlossaryEntries);
 $('#vietphrase-type').on('change', reloadGlossaryEntries);
 
 $glossaryListSelect.change(function onChange() {
