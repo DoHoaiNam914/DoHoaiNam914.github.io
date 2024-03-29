@@ -4,7 +4,7 @@ $(document).ready(async () => {
   const searchParams = new URLSearchParams(window.location.search);
 
   const dictionary = searchParams.get('dictionary') ?? 'lac-viet';
-  const define = searchParams.get('define').toLowerCase() ?? '';
+  const define = searchParams.get('define').trim().replaceAll(/^\s+|\s+$/g, '').toLowerCase() ?? '';
   const sectionHeading = document.createElement('h1');
   let paragraph = document.createElement('p');
 
@@ -113,7 +113,7 @@ function loadAd()
           method: 'GET',
           url: dictionaryUrl,
         }).done((data) => {
-          const dataList = data.split('\n').map((element) => element.split('\t'));
+          const dataList = data.split('\n').map((element) => element.split('\t')).filter((element) => element.length === 2);
           const chars = [...define];
           const containsPhrase = [];
 
