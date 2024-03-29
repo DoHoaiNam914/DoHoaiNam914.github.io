@@ -989,6 +989,7 @@ function reloadGlossaryEntries() {
   }));
 
   glossaryStorage = localStorage.getItem('glossary');
+  $glossaryInput.val(null);
 }
 
 $(document).ready(async () => {
@@ -1486,7 +1487,6 @@ $('#clear-glossary-button').on('click', () => {
   glossary = [];
   $glossaryName.val(null);
   reloadGlossaryEntries();
-  $glossaryInput.val('');
   lastSession = {};
 });
 
@@ -1670,7 +1670,6 @@ $addButton.click(() => {
   glossary = [...glossaryMap];
   reloadGlossaryEntries();
   $glossaryEntrySelect.change();
-  $glossaryInput.val(null);
   $addButton.addClass('disabled');
   $removeButton.addClass('disabled');
   lastSession = {};
@@ -1682,7 +1681,6 @@ $removeButton.on('click', () => {
     glossaryMap.delete($sourceEntryInput.val());
     glossary = [...glossaryMap];
     reloadGlossaryEntries();
-    $glossaryInput.val(null);
     $sourceEntryInput.trigger('input');
     lastSession = {};
   } else {
