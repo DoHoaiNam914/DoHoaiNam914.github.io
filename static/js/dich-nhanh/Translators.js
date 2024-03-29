@@ -1203,7 +1203,7 @@ class Vietphrase {
                     const charsInTempLine = [...tempLine];
                     const couldUpperCaseKey = !this.prioritizeNameOverVietPhrase || (nameMap.has(phrase.toUpperCase()) && !this.nameMap.has(phrase));
 
-                    if ((nameMap.has(couldUpperCaseKey ? phrase.toUpperCase() : phrase) || (dataMap.has(phrase.toUpperCase()) && [...phrase].every((element) => this.data.hanViet.has(element)) && nameKeys.every((element) => !phrase.toLowerCase().startsWith(element.toLowerCase())))) && phrase !== '·') {
+                    if ((nameMap.has(couldUpperCaseKey ? phrase.toUpperCase() : phrase) || (dataMap.has(phrase.toUpperCase()) && [...phrase].some((element) => this.data.hanViet.has(element)) && nameKeys.every((element) => !phrase.toLowerCase().startsWith(element.toLowerCase())))) && phrase !== '·') {
                       phrase = couldUpperCaseKey ? phrase.toUpperCase() : phrase;
                       const phraseResult = (nameMap.get(phrase) ?? dataMap.get(phrase)).split(/[/|]/)[0];
 
@@ -1253,10 +1253,9 @@ class Vietphrase {
     this.autocapitalize = autocapitalize;
     this.data = data;
     this.nameEnabled = nameEnabled;
-    const maybeUseGlossary = !this.nameEnabled || glossary.length === 0 ? glossary : this.data.name.concat(this.data.namePhu);
-    this.name = this.nameEnabled ? maybeUseGlossary : [];
-    this.name = (this.prioritizeNameOverVietPhrase ? this.name.map(([___, second]) => [second, second]) : this.name).filter(([first]) => inputText.toLowerCase().includes(first.toLowerCase()));
-    this.nameMap = new Map(this.name.map(([first, second]) => [!this.prioritizeNameOverVietPhrase ? first.toUpperCase() : first, second]));
+    this.name = this.nameEnabled ? this.data.name.concat(this.data.namePhu, this.nameEnabled && glossary.length === 0 ? glossary : []) : [];
+    this.name = this.name.map(([first, second]) => [this.prioritizeNameOverVietPhrase ? second : first.toUpperCase(), second]).filter(([first]) => inputText.toLowerCase().includes(first.toLowerCase()));
+    this.nameMap = new Map(this.name);
 
     try {
       let dataMap = new Map();
