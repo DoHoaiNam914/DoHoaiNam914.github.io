@@ -113,12 +113,12 @@ function loadAd()
           method: 'GET',
           url: dictionaryUrl,
         }).done((data) => {
-          const dataList = data.split('\n').map((element) => element.split('\t'));
-          const chars = /[p{sc=Hani}\p{sc=Hira}\p{sc=Kana}]/u.test(define) ? [...define] : define.split(' ');
+          const dataList = data.split('\n').map((element) => element.split('\t')).filter((element) => element.length === 2);
+          const charsAndPhrases = define.split(' ').flatMap((element) => /[p{sc=Hani}\p{sc=Hira}\p{sc=Kana}]/u.test(element) ? [...element] : element);
           const containsPhrase = [];
 
-          for (let i = 0; i < chars.length; i += 1) {
-            const foundPhrase = dataList.toSorted((a, b) => b[0].length - a[0].length).find(([first]) => chars.slice(i).join(' ').startsWith(first.toLowerCase()) || chars.slice(i).join('').startsWith(first.toLowerCase()));
+          for (let i = 0; i < charsAndPhrases.length; i += 1) {
+            const foundPhrase = dataList.toSorted((a, b) => b[0].length - a[0].length).find(([first]) => charsAndPhrases.slice(i).join(' ').startsWith(first.toLowerCase()) || charsAndPhrases.slice(i).join('').startsWith(first.toLowerCase()));
             if (foundPhrase) containsPhrase.push(foundPhrase[0]);
           }
 
