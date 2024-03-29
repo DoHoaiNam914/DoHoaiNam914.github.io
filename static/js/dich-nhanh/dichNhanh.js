@@ -1446,7 +1446,7 @@ $loadDefaultVietPhraseFileSwitch.on('change', function onChange() {
   if (!$(this).hasClass('disabled')) {
     quickTranslateStorage[getOptionId($(this).attr('id'))] = $(this).prop('checked');
     localStorage.setItem('dich_nhanh', JSON.stringify(quickTranslateStorage));
-    if ($(this).prop('checked') === true && (vietPhraseData.vietPhrase.size === 0 || vietPhraseData.luatNhan.size === 0 || vietPhraseData.pronoun.size === 0) && window.confirm('Bạn có muốn tải lại trang ngay chứ?')) window.location.reload();
+    if ($(this).prop('checked') === true && window.confirm('Bạn có muốn tải lại trang ngay chứ?')) window.location.reload();
   }
 });
 
