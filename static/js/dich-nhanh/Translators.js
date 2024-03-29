@@ -1156,11 +1156,9 @@ class Vietphrase {
 
                   if (currentIndex === i) {
                     let length = Math.min(chars.length, dataLengths[0]);
-
-                    const foundPhrase = combineDataEntries.filter(([first]) => a.toLowerCase().includes(first.toLowerCase())).toSorted((b, c) => c[0].length - b[0].length).find(([first]) => {
-                      const remainChars = chars.slice(i).join('');
-                      return first.length > 0 && first !== '·' && (nameKeys.every((element) => !remainChars.toLowerCase().startsWith(element.toLowerCase())) ? remainChars.toLowerCase().startsWith(first.toLowerCase()) : nameKeys.includes(first.toLowerCase()));
-                    });
+                    const remainChars = chars.slice(i).join('');
+                    const isNameOrNhan = nameKeys.every((element) => !remainChars.toLowerCase().startsWith(element.toLowerCase()));
+                    const foundPhrase = combineDataEntries.filter(([first]) => a.toLowerCase().includes(first.toLowerCase())).toSorted((b, c) => c[0].length - b[0].length).find(([first]) => first.length > 0 && first !== '·' && (isNameOrNhan ? remainChars.toLowerCase().startsWith(first.toLowerCase()) : nameKeys.includes(first.toLowerCase())));
 
                     const charsInTempLine = [...tempLine];
 
@@ -1203,7 +1201,7 @@ class Vietphrase {
                     const charsInTempLine = [...tempLine];
                     const couldUpperCaseKey = !this.prioritizeNameOverVietPhrase || (nameMap.has(phrase.toUpperCase()) && !this.nameMap.has(phrase));
 
-                    if ((nameMap.has(couldUpperCaseKey ? phrase.toUpperCase() : phrase) || (dataMap.has(phrase.toUpperCase()) && [...phrase].some((element) => this.data.hanViet.has(element)) && nameKeys.every((element) => !phrase.toLowerCase().startsWith(element.toLowerCase())))) && phrase !== '·') {
+                    if (phrase.length > 0 && (nameMap.has(couldUpperCaseKey ? phrase.toUpperCase() : phrase) || (dataMap.has(phrase.toUpperCase()) && nameKeys.every((element) => !phrase.toLowerCase().startsWith(element.toLowerCase())))) && phrase !== '·') {
                       phrase = couldUpperCaseKey ? phrase.toUpperCase() : phrase;
                       const phraseResult = (nameMap.get(phrase) ?? dataMap.get(phrase)).split(/[/|]/)[0];
 
@@ -1253,8 +1251,8 @@ class Vietphrase {
     this.autocapitalize = autocapitalize;
     this.data = data;
     this.nameEnabled = nameEnabled;
-    this.name = this.nameEnabled ? this.data.name.concat(this.data.namePhu, glossary.length > 0 ? glossary : []) : [];
-    this.name = this.name.map(([first, second]) => [this.prioritizeNameOverVietPhrase ? second : first.toUpperCase(), second]).filter(([first]) => inputText.toLowerCase().includes(first.toLowerCase()));
+    this.name = this.nameEnabled ? this.data.name.concat(glossary.length > 0 ? glossary : this.data.namePhu) : [];
+    this.name = this.name.map(([first, second]) => [this.prioritizeNameOverVietPhrase ? second : first.toUpperCase(), second]).filter(([first]) => first.length > 0 && inputText.toLowerCase().includes(first.toLowerCase()));
     this.nameMap = new Map(this.name);
 
     try {
@@ -1293,11 +1291,11 @@ class Vietphrase {
 
       switch (translationAlgorithm) {
         case this.TranslationAlgorithms.TRANSLATE_FROM_LEFT_TO_RIGHT: {
-          return this.translateFromLeftToRight(targetLanguage, dataMap.filter(([first]) => inputText.toLowerCase().includes(first.toLowerCase())), inputText);
+          return this.translateFromLeftToRight(targetLanguage, dataMap.filter(([first]) => first.length > 0 && inputText.toLowerCase().includes(first.toLowerCase())), inputText);
         }
         default: {
           let prefilterText = inputText.toLowerCase();
-          return this.translatePrioritizeLongVietPhraseClusters(targetLanguage, dataMap.toSorted((a, b) => b[0].length - a[0].length).filter(([first]) => prefilterText.includes(first.toLowerCase()) && (prefilterText = prefilterText.replaceAll(first.toLowerCase(), '\n'))), inputText);
+          return this.translatePrioritizeLongVietPhraseClusters(targetLanguage, dataMap.toSorted((a, b) => b[0].length - a[0].length).filter(([first]) => first.length > 0 && prefilterText.includes(first.toLowerCase()) && (prefilterText = prefilterText.replaceAll(first.toLowerCase(), '\n'))), inputText);
         }
       }
     } catch (error) {

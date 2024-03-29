@@ -20,7 +20,7 @@ $(document).ready(async () => {
           method: 'GET',
           url: '/static/datasource/cjkvmap.txt',
         }).done((data) => {
-          data.split(/\r?\n|\r/).map((element) => element.split('|')).filter(([first, second]) => [...define].some((element) => first.toLowerCase() === element) || define.split(' ').some((a) => second.split('/')[0].toLowerCase().split(', ').some((b) => b === a))).sort((a, b) => [...define].indexOf(a[0]) - [...define].indexOf(b[0]) || define.split(' ').indexOf(b[1].split('/')[0].toLowerCase().split(', ').filter((element) => define.includes(element))) - define.split(' ').indexOf(a[1].split('/')[0].toLowerCase().split(', ').filter((element) => define.includes(element)))).forEach(([first, second, third]) => {
+          data.split(/\r?\n|\r/).map((element) => element.split('|')).filter(([first, second, third]) => [...define].some((element) => first.toLowerCase() === element) || define.split(' ').some((a) => second.split('/')[0].toLowerCase().split(', ').some((b) => b === a) || (define.length >= 2 && third.toLowerCase().includes(define)))).sort((a, b) => [...define].indexOf(a[0]) - [...define].indexOf(b[0]) || define.split(' ').indexOf(b[1].split('/')[0].toLowerCase().split(', ').filter((element) => define.includes(element))[0]) - define.split(' ').indexOf(a[1].split('/')[0].toLowerCase().split(', ').filter((element) => define.includes(element))[0])).forEach(([first, second, third]) => {
             sectionHeading.innerText = first;
             $(document.body).append(sectionHeading.cloneNode(true));
 
@@ -122,7 +122,7 @@ function loadAd()
             if (foundPhrase) containsPhrase.push(foundPhrase[0]);
           }
 
-          dataList.filter(([first]) => containsPhrase.includes(first) || first.toLowerCase().startsWith(define) || first.toLowerCase().endsWith(define) || first.toLowerCase().includes(define)).sort((a, b) => containsPhrase.includes(b[0]) - containsPhrase.includes(b[0]) || b[0].toLowerCase().startsWith(define) - a[0].toLowerCase().startsWith(define) || b[0].toLowerCase().endsWith(define) - a[0].toLowerCase().endsWith(define) || b[0].toLowerCase().includes(`${define} `) - a[0].toLowerCase().includes(`${define} `) || b[0].toLowerCase().includes(` ${define}`) - a[0].toLowerCase().includes(` ${define}`)).forEach(([first, second]) => {
+          dataList.filter(([first, second]) => containsPhrase.includes(first) || first.toLowerCase().startsWith(define) || first.toLowerCase().endsWith(define) || (define.length >= 2 && second.toLowerCase().includes(define))).sort((a, b) => containsPhrase.includes(b[0]) - containsPhrase.includes(b[0]) || b[0].toLowerCase().startsWith(define) - a[0].toLowerCase().startsWith(define) || b[0].toLowerCase().endsWith(define) - a[0].toLowerCase().endsWith(define)).forEach(([first, second]) => {
             sectionHeading.innerText = first;
             $(document.body).append(sectionHeading.cloneNode(true));
 
