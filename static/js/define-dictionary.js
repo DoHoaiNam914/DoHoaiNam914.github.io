@@ -20,7 +20,20 @@ $(document).ready(async () => {
           method: 'GET',
           url: '/static/datasource/cjkvmap.txt',
         }).done((data) => {
-          data.split(/\r?\n|\r/).map((element) => element.split('|')).filter(([first, second, third]) => (/\p{sc=Hani}/u.test(define) ? [...define].some((element) => first.toLowerCase() === element) : define.split(' ').some((a) => second.split('/')[0].toLowerCase().split(', ').some((b) => b === a))) || (define.length >= 2 && third.toLowerCase().includes(define))).forEach(([first, second, third]) => {
+          const dataList = data.split(/\r?\n|\r/).map((element) => element.split('|')).filter((element) => element.length === 3);
+          const charsAndPhrases = define.split(' ').flatMap((element) => (/[\p{sc=Hani}\p{sc=Hira}\p{sc=Kana}]+/u.test(element) ? [...element] : element));
+          const containsPhrase = [];
+
+          for (let i = 0; i < charsAndPhrases.length; i += 1) {
+            const charOrPhrase = charsAndPhrases.slice(i).join(' ');
+            const foundPhrase = dataList.toSorted((a, b) => b[0].length - a[0].length).filter(([first, second, third]) => {
+              const sinovietnamesePronunciations = second.split('/')[0].map((element) => element.split(', '));
+              return sinovietnamesePronunciations.some((element) => charOrPhrase === element.toLowerCase() || (charOrPhrase.length >= 2 && (charOrPhrase.startsWith(first.toLowerCase())))) || first.toLowerCase() === charOrPhrase || (charOrPhrase.length >= 2 && (charOrPhrase.startsWith(first.toLowerCase()) || charOrPhrase.endsWith(first.toLowerCase()) || third.toLowerCase().includes(charOrPhrase)));
+            }).map(([first]) => first);
+            if (foundPhrase) containsPhrase.push(...foundPhrase);
+          }
+
+          dataList.filter(([first]) => containsPhrase.includes(first.toLowerCase())).toSorted((a, b) => b[0].toLowerCase() === define - a[0].toLowerCase() === define).forEach(([first, second, third]) => {
             sectionHeading.innerText = first;
             $(document.body).append(sectionHeading.cloneNode(true));
 
@@ -114,15 +127,16 @@ function loadAd()
           url: dictionaryUrl,
         }).done((data) => {
           const dataList = data.split('\n').map((element) => element.split('\t')).filter((element) => element.length === 2);
-          const charsAndPhrases = define.split(' ').flatMap((element) => /[p{sc=Hani}\p{sc=Hira}\p{sc=Kana}]/u.test(element) ? [...element] : element);
+          const charsAndPhrases = define.split(' ').flatMap((element) => (/[\p{sc=Hani}\p{sc=Hira}\p{sc=Kana}]+/u.test(element) ? [...element] : element));
           const containsPhrase = [];
 
           for (let i = 0; i < charsAndPhrases.length; i += 1) {
-            const foundPhrase = dataList.toSorted((a, b) => b[0].length - a[0].length).find(([first]) => charsAndPhrases.slice(i).join(' ').startsWith(first.toLowerCase()) || charsAndPhrases.slice(i).join('').startsWith(first.toLowerCase()));
-            if (foundPhrase) containsPhrase.push(foundPhrase[0]);
+            const charOrPhrase = charsAndPhrases.slice(i).join(' ');
+            const foundPhrase = dataList.toSorted((a, b) => b[0].length - a[0].length).filter(([first, second]) => first.toLowerCase() === charOrPhrase || (charOrPhrase.length >= 2 && (charOrPhrase.startsWith(first.toLowerCase()) || charOrPhrase.endsWith(first.toLowerCase()) || second.toLowerCase().includes(charOrPhrase)))).map(([first]) => first);
+            if (foundPhrase) containsPhrase.push(...foundPhrase);
           }
 
-          dataList.filter(([first, second]) => containsPhrase.includes(first) || first.toLowerCase().startsWith(define) || first.toLowerCase().endsWith(define) || (define.length >= 2 && second.toLowerCase().includes(define))).forEach(([first, second]) => {
+          dataList.filter(([first]) => containsPhrase.includes(first.toLowerCase())).toSorted((a, b) => (b[0].toLowerCase() === define) - (a[0].toLowerCase() === define)).forEach(([first, second]) => {
             sectionHeading.innerText = first;
             $(document.body).append(sectionHeading.cloneNode(true));
 
