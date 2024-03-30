@@ -1003,7 +1003,8 @@ $(document).ready(async () => {
 
   vietPhraseData.pronoun = glossaryStorage.pronoun ?? [];
   vietPhraseData.luatNhan = glossaryStorage.luatNhan ?? [];
-  vietPhraseData.namePhu = glossaryStorage.name ?? [];
+  vietPhraseData.name = glossaryStorage.name ?? [];
+  vietPhraseData.namePhu = glossaryStorage.namePhu ?? [];
   vietPhraseData.vietPhrasePhu = glossaryStorage.vietPhrase ?? [];
 
   newAccentObject = Object.fromEntries(newAccentMap);
