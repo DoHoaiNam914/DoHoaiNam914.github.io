@@ -25,11 +25,13 @@ $(document).ready(async () => {
           const containsPhrase = [];
 
           for (let i = 0; i < charsAndPhrases.length; i += 1) {
-            const charOrPhrase = charsAndPhrases.slice(i).join(' ');
+            const charOrPhrase = charsAndPhrases[i];
+
             const foundPhrase = dataList.toSorted((a, b) => b[0].length - a[0].length).filter(([first, second, third]) => {
               const sinovietnamesePronunciations = second.split('/')[0].map((element) => element.split(', '));
               return sinovietnamesePronunciations.some((element) => charOrPhrase === element.toLowerCase() || (charOrPhrase.length >= 2 && (charOrPhrase.startsWith(first.toLowerCase())))) || first.toLowerCase() === charOrPhrase || (charOrPhrase.length >= 2 && (charOrPhrase.startsWith(first.toLowerCase()) || charOrPhrase.endsWith(first.toLowerCase()) || third.toLowerCase().includes(charOrPhrase)));
             }).map(([first]) => first);
+
             if (foundPhrase) containsPhrase.push(...foundPhrase);
           }
 
@@ -131,7 +133,7 @@ function loadAd()
           const containsPhrase = [];
 
           for (let i = 0; i < charsAndPhrases.length; i += 1) {
-            const charOrPhrase = charsAndPhrases.slice(i).join(' ');
+            const charOrPhrase = charsAndPhrases[i];
             const foundPhrase = dataList.toSorted((a, b) => b[0].length - a[0].length).filter(([first, second]) => first.toLowerCase() === charOrPhrase || (charOrPhrase.length >= 2 && (charOrPhrase.startsWith(first.toLowerCase()) || charOrPhrase.endsWith(first.toLowerCase()) || second.toLowerCase().includes(charOrPhrase)))).map(([first]) => first);
             if (foundPhrase) containsPhrase.push(...foundPhrase);
           }
