@@ -22,10 +22,11 @@ $(document).ready(async () => {
         }).done((data) => {
           const dataList = data.split(/\r?\n|\r/).map((element) => element.split('|')).filter((element) => element.length === 3);
           const charsAndPhrases = define.split(' ').flatMap((element) => (/[\p{sc=Hani}\p{sc=Hira}\p{sc=Kana}]+/u.test(element) ? [...element] : element));
+          let separator = ''; 
           const containsPhrase = [];
 
           for (let i = 0; i < charsAndPhrases.length; i += 1) {
-            const charOrPhrase = charsAndPhrases[i];
+            const charOrPhrase = charsAndPhrases.slice(i).join(separator);
 
             const foundPhrase = dataList.toSorted((a, b) => b[0].length - a[0].length).filter(([first, second, third]) => {
               const sinovietnamesePronunciations = second.split('/')[0].map((element) => element.split(', '));
@@ -33,6 +34,11 @@ $(document).ready(async () => {
             }).map(([first]) => first);
 
             if (foundPhrase) containsPhrase.push(...foundPhrase);
+
+            if (separator === '') {
+              separator = ' ';
+              i = -1;
+            }
           }
 
           dataList.filter(([first]) => containsPhrase.includes(first.toLowerCase())).toSorted((a, b) => b[0].toLowerCase() === define - a[0].toLowerCase() === define).forEach(([first, second, third]) => {
@@ -129,13 +135,19 @@ function loadAd()
           url: dictionaryUrl,
         }).done((data) => {
           const dataList = data.split('\n').map((element) => element.split('\t')).filter((element) => element.length === 2);
-          const charsAndPhrases = define.split(' ').flatMap((element) => (/[\p{sc=Hani}\p{sc=Hira}\p{sc=Kana}]+/u.test(element) ? [...element] : element));
+          const charsAndPhrases = define.split(' ').flatMap((element) => (/[\p{sc=Hani}\p{sc=Hira}\p{sc=Kana}]/u.test(element) ? [...element] : element));
+          let separator = ''; 
           const containsPhrase = [];
 
           for (let i = 0; i < charsAndPhrases.length; i += 1) {
-            const charOrPhrase = charsAndPhrases[i];
+            const charOrPhrase = charsAndPhrases.slice(i).join(separator);
             const foundPhrase = dataList.toSorted((a, b) => b[0].length - a[0].length).filter(([first, second]) => first.toLowerCase() === charOrPhrase || (charOrPhrase.length >= 2 && (charOrPhrase.startsWith(first.toLowerCase()) || charOrPhrase.endsWith(first.toLowerCase()) || second.toLowerCase().includes(charOrPhrase)))).map(([first]) => first);
             if (foundPhrase) containsPhrase.push(...foundPhrase);
+
+            if (separator === '') {
+              separator = ' ';
+              i = -1;
+            }
           }
 
           dataList.filter(([first]) => containsPhrase.includes(first.toLowerCase())).toSorted((a, b) => (b[0].toLowerCase() === define) - (a[0].toLowerCase() === define)).forEach(([first, second]) => {
