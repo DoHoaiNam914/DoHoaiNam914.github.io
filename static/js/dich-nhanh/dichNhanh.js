@@ -36,6 +36,7 @@ const $resetButton = $('#reset-button');
 const $nameSwitch = $('#name-switch');
 const $glossaryInput = $('#glossary-input');
 const $glossaryTypeSelect = $('#glossary-type-select');
+const $vietPhraseType = $('#viet-phrase-type-select');
 const $languagePairsSelect = $('#language-pairs-select');
 const $glossaryListSelect = $('#glossary-list-select');
 const $sourceEntryInput = $('#source-entry-input');
@@ -882,7 +883,7 @@ function reloadGlossaryEntries() {
   entrySelect.appendChild(defaultOption);
 
   const downloadButton = $('#download-button');
-  const glossaryExtension = $('#glossary-extension');
+  const $glossaryExtension = $('#glossary-extension');
 
   glossary = glossary.filter(([first], __, array) => !array[first] && (array[first] = 1), {}).toSorted((a, b) => a[1].localeCompare(b[1], 'vi', { ignorePunctuation: true }) || a[0].localeCompare(b[0], 'vi', { sensitivity: 'accent', ignorePunctuation: true }) || b.join('\t').length - a.join('\t').length).map(([first, second]) => [first.trim(), second]);
   glossaryMap = new Map(glossary);
@@ -911,12 +912,12 @@ function reloadGlossaryEntries() {
 
     switch ($glossaryTypeSelect.val()) {
       case GlossaryType.CSV: {
-        glossaryData = $.csv.fromArrays(glossary.toSorted((a, b) => b[0].length - a[0].length || b[1].length - a[1].length || a[1].localeCompare(b[1], 'vi', { ignorePunctuation: true }) || a[0].localeCompare(b[0], 'vi', { ignorePunctuation: true })));
-        glossaryExtension.text('csv');
+        glossaryData = $.csv.fromArrays(glossary.toSorted((a, b) => b[0].concat(`\t${b[1]}`).length - a[0].concat(`\t${a[1]}`).length || a[1].localeCompare(b[1], 'vi', { ignorePunctuation: true }) || a[0].localeCompare(b[0], 'vi', { ignorePunctuation: true })));
+        $glossaryExtension.text('csv');
         break;
       }
       case GlossaryType.VIETPHRASE: {
-        switch ($('#vietphrase-type').val()) {
+        switch ($vietPhraseType.val()) {
           case 'QuickTranslate Without Sorting': {
             glossaryData = `\ufeff${glossary.map((element) => element.join('=')).join('\r\n')}`;
             break;
@@ -926,7 +927,7 @@ function reloadGlossaryEntries() {
             break;
           }
           case 'Sáng Tác Việt': {
-            glossaryData = glossary.map(([first, second]) => [first.replace(/^/, '$'), second]).toSorted((a, b) => (a.charAt(0) === '#' ? -1 : a[0].length - b[0].length)).map((element) => element.join('=')).join('\n');
+            glossaryData = glossary.toSorted((a, b) => a[0].length - b[0].length).map((element) => element.join('=')).join('\n');
             break;
           }
           default: {
@@ -935,24 +936,24 @@ function reloadGlossaryEntries() {
           }
         }
 
-        glossaryExtension.text('txt');
+        $glossaryExtension.text('txt');
         break;
       }
       default: {
         glossaryData = glossary.toSorted((a, b) => b[0].concat(`\t${b[1]}`).length - a[0].concat(`\t${a[1]}`).length || a[1].localeCompare(b[1], 'vi', { ignorePunctuation: true }) || a[0].localeCompare(b[0], 'vi', { ignorePunctuation: true })).map((element) => element.join('\t')).join('\n');
-        glossaryExtension.text('tsv');
+        $glossaryExtension.text('tsv');
         break;
       }
     }
 
-    downloadButton.attr('href', URL.createObjectURL(new Blob([glossaryData], { type: `${$glossaryTypeSelect.val()}; charset=UTF-8` })));
-    downloadButton.attr('download', `${$glossaryName.val().length > 0 ? $glossaryName.val() : $glossaryName.attr('placeholder')}.${glossaryExtension.text()}`);
-    downloadButton.removeClass('disabled');
+    $downloadButton.attr('href', URL.createObjectURL(new Blob([glossaryData], { type: `${$glossaryTypeSelect.val()}; charset=UTF-8` })));
+    $downloadButton.attr('download', `${$glossaryName.val().length > 0 ? $glossaryName.val() : $glossaryName.attr('placeholder')}.${$glossaryExtension.text()}`);
+    $downloadButton.removeClass('disabled');
   } else {
     glossaryData = '';
-    downloadButton.removeAttr('href');
-    downloadButton.removeAttr('download');
-    downloadButton.addClass('disabled');
+    $downloadButton.removeAttr('href');
+    $downloadButton.removeAttr('download');
+    $downloadButton.addClass('disabled');
   }
 
   $glossaryEntrySelect.html(entrySelect.innerHTML);
@@ -1454,7 +1455,7 @@ $('#clear-glossary-button').on('click', () => {
 });
 
 $glossaryTypeSelect.on('change', reloadGlossaryEntries);
-$('#vietphrase-type').on('change', reloadGlossaryEntries);
+$vietPhraseType.on('change', reloadGlossaryEntries);
 
 $glossaryListSelect.change(function onChange() {
   switch ($(this).val()) {
