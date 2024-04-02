@@ -1539,13 +1539,13 @@ $('.dropdown-can-scroll').on('hide.bs.dropdown', function onHideBsDropdown() {
 
 $('.dropdown-menu button.dropdown-item').on('click', function onClick() {
   if ($(this).data('bs-toggle') === 'collapse') {
-    $dropdownHasCollapse.find('.dropdown-menu').find('.collapse').each((indexInArray, value) => {
+    $dropdownHasCollapse.find('.dropdown-menu').find('.collapse').each((__, value) => {
       if (!$(value).hasClass('show')) return;
       const bootstrapDropdownHasCollapse = new bootstrap.Collapse(value);
       bootstrapDropdownHasCollapse.hide();
     });
   } else {
-    $dropdownHasCollapse.find('.dropdown-menu').each((indexInArray, value) => {
+    $dropdownHasCollapse.find('.dropdown-menu').each((__, value) => {
       if (!$(value).hasClass('show')) return;
       const bootstrapDropdownHasCollapse = new bootstrap.Dropdown(value);
       bootstrapDropdownHasCollapse.hide();
@@ -1554,20 +1554,9 @@ $('.dropdown-menu button.dropdown-item').on('click', function onClick() {
 });
 
 $dropdownHasCollapse.on('show.bs.dropdown', function onHideBsDropdown() {
-  $(this).find('.dropdown-menu').find('.collapse.show-by-default').each((indexInArray, value) => {
-    if ($(value).hasClass('show')) return;
-    const bootstrapCollapseInDropdown = new bootstrap.Collapse(value);
-    bootstrapCollapseInDropdown.show();
-  });
-});
-
-$dropdownHasCollapse.on('hide.bs.dropdown', function onHideBsDropdown() {
-  $(this).find('.dropdown-menu').find('.collapse').each((indexInArray, value) => {
-    if ($(value).hasClass('show-by-default')) return;
-    if (!$(value).hasClass('show')) return;
-    const bootstrapCollapseInDropdown = new bootstrap.Collapse(value);
-    bootstrapCollapseInDropdown.hide();
-  });
+  if ($(this).find('.dropdown-menu').find('.collapse').toArray().some((element) => $(element).hasClass('show'))) return;
+  const bootstrapCollapseInDropdown = new bootstrap.Collapse($(this).find('.dropdown-menu').find('.collapse.show-by-default')[0]);
+  bootstrapCollapseInDropdown.show();
 });
 
 $('.define-button').on('click', function onClick() {

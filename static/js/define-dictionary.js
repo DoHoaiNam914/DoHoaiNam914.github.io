@@ -29,7 +29,8 @@ $(document).ready(async () => {
             const charOrPhrase = charsAndPhrases.slice(i).join(separator);
 
             const foundPhrase = dataList.toSorted((a, b) => b[0].length - a[0].length).filter(([first, second, third]) => {
-              const sinovietnamesePronunciations = second.split('/')[0].map((element) => element.split(', '));
+              const sinovietnamesePronunciations = second.split('/')[0].split(', ');
+              if (sinovietnamesePronunciations.some((element) => charOrPhrase === element.toLowerCase())) console.log('1');
               return sinovietnamesePronunciations.some((element) => charOrPhrase === element.toLowerCase() || (charOrPhrase.length >= 2 && (charOrPhrase.startsWith(first.toLowerCase())))) || first.toLowerCase() === charOrPhrase || (charOrPhrase.length >= 2 && (charOrPhrase.startsWith(first.toLowerCase()) || charOrPhrase.endsWith(first.toLowerCase()) || third.toLowerCase().includes(charOrPhrase)));
             }).map(([first]) => first);
 
@@ -136,7 +137,7 @@ function loadAd()
         }).done((data) => {
           const dataList = data.split('\n').map((element) => element.split('\t')).filter((element) => element.length === 2);
           const charsAndPhrases = define.split(' ').flatMap((element) => (/[\p{sc=Hani}\p{sc=Hira}\p{sc=Kana}]/u.test(element) ? [...element] : element));
-          let separator = ''; 
+          let separator = '';
           const containsPhrase = [];
 
           for (let i = 0; i < charsAndPhrases.length; i += 1) {
