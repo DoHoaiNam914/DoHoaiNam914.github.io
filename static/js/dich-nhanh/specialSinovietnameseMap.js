@@ -118,6 +118,7 @@ const specialSinovietnameseMap = [
   ['朝廷', 'triều đình'],
   ['朝圣', 'triều thánh'],
   ['重叠', 'trùng điệp'],
+  ['重瞳', 'trùng đồng'],
   ['重启', 'trùng khải'],
   ['重生', 'trùng sinh'],
   ['重天', 'trùng thiên'],
