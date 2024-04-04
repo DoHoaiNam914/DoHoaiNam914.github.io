@@ -1013,7 +1013,7 @@ class Vietphrase {
     let nhanByPronoun = this.data.pronoun.map(([first, second]) => [first, second.split(/[/|]/)[0]]).filter(([first]) => inputText.includes(first));
 
     if (this.multiplicationAlgorithm > this.MultiplicationAlgorithm.NOT_APPLICABLE && targetLanguage === 'vi') {
-      [...this.data.luatNhan].filter(([first]) => inputText.match(new RegExp(first.replace(/{0}/, '.+'))).forEach(([a, b]) => {
+      [...this.data.luatNhan].filter(([first]) => inputText.match(new RegExp(Utils.escapeRegExp(first).replace(/\{0}/, '.+')))).forEach(([a, b]) => {
         if (this.nameEnabled && this.multiplicationAlgorithm === this.MultiplicationAlgorithm.MULTIPLICATION_BY_PRONOUNS_AND_NAMES && nameEntries.length > 0) {
           nhanByName = [...nhanByName, ...nhanByName.map(([c, d]) => [a.replace(/\{0}/, Utils.escapeRegExpReplacement(c)), b.replace(/\{0}/, Utils.escapeRegExpReplacement(d))])];
         }
