@@ -213,6 +213,7 @@ const specialSinovietnameseMap = [
   ['县', 'HUYỆN'],
   ['蹊', 'KHÊ'],
   ['挑', 'KHIÊU'],
+  ['跨', 'KHOA'],
   ['矿', 'KHOÁNG'],
   ['灰', 'KHÔI'],
   ['绮', 'KHỞI'],

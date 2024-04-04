@@ -1069,7 +1069,7 @@ $(document).ready(async () => {
         method: 'GET',
         url: '/static/datasource/Data của thtgiang (đọc README)/VietPhrase.txt',
       }).done((data) => {
-        let vietPhraseList = data.split(/\r\n/).map((element) => element.split('=')).filter((element) => element.length === 2).map(([first, second]) => [first, second]).concat([...vietPhraseData.hanViet]);
+        let vietPhraseList = data.split(/\r\n/).filter((element) => !(element == null || element === '') && !element.startsWith('#') && element.split('=').length === 2).map((element) => element.split('=')).concat([...vietPhraseData.hanViet]);
         vietPhraseList = vietPhraseList.filter(([first], __, array) => first.length > 0 && !array[first] && (array[first] = 1), {});
         vietPhraseData.vietPhrase = vietPhraseList;
         $vietPhraseEntryCounter.text(vietPhraseList.length);
@@ -1083,7 +1083,7 @@ $(document).ready(async () => {
         method: 'GET',
         url: '/static/datasource/ttvtranslate/VietPhrase.txt',
       }).done((data) => {
-        let vietPhraseList = data.split('\n').map((element) => element.split('=')).filter((element) => element.length === 2).map(([first, second]) => [first, second.split(/[/|]/)[0]]).concat([...vietPhraseData.hanViet]);
+        let vietPhraseList = data.split('\n').filter((element) => !(element == null || element === '') && !element.startsWith('#') && element.split('=').length === 2).map((element) => element.split('=')).concat([...vietPhraseData.hanViet]);
         vietPhraseList = vietPhraseList.filter(([first], __, array) => first.length > 0 && !array[first] && (array[first] = 1), {});
         vietPhraseData.vietPhrase = vietPhraseList;
         $vietPhraseEntryCounter.text(vietPhraseList.length);
@@ -1388,7 +1388,7 @@ $vietPhraseInput.on('change', function onChange() {
   const reader = new FileReader();
 
   reader.onload = function onLoad() {
-    let vietPhraseList = this.result.split(/\r?\n/).map((element) => element.split('=')).filter((element) => element.length === 2).map(([first, second]) => [first, second.split(/[/|]/)[0]]);
+    let vietPhraseList = this.result.split(/\r?\n/).filter((element) => !(element == null || element === '') && !element.startsWith('#') && element.split('=').length === 2).map((element) => element.split('=')).map(([first, second]) => [first, second.split(/[/|]/)[0]]);
     vietPhraseList = vietPhraseList.concat([...vietPhraseData.hanViet]).filter(([first], __, array) => first.length > 0 && !array[first] && (array[first] = 1), {});
     vietPhraseData.vietPhrase = vietPhraseList;
     $vietPhraseEntryCounter.text(vietPhraseList.length);
@@ -1426,7 +1426,7 @@ $glossaryInput.on('change', function onChange() {
         break;
       }
       case GlossaryType.VIETPHRASE: {
-        glossary = this.result.split(/\r?\n/).map((element) => element.split('=')).filter((element) => element.length === 2);
+        glossary = this.result.split(/\r?\n/).filter((element) => !(element == null || element === '') && !element.startsWith('#') && element.split('=').length === 2).map((element) => element.split('='));
         $glossaryTypeSelect.val(GlossaryType.VIETPHRASE);
         break;
       }
