@@ -1013,12 +1013,12 @@ class Vietphrase {
     let nhanByPronoun = this.data.pronoun.map(([first, second]) => [first, second.split(/[/|]/)[0]]).filter(([first]) => inputText.includes(first));
 
     if (this.multiplicationAlgorithm > this.MultiplicationAlgorithm.NOT_APPLICABLE && targetLanguage === 'vi') {
-      [...this.data.luatNhan].filter(([first]) => first.split('{0}').every((element) => inputText.includes(element))).filter(([a]) => (this.nameEnabled && this.multiplicationAlgorithm === this.MultiplicationAlgorithm.MULTIPLICATION_BY_PRONOUNS_AND_NAMES && nameEntries.length > 0 && nhanByName.filter(([b, c]) => inputText.includes(a.replace(/\{0}/g, Utils.escapeRegExpReplacement(b)))).length > 0) || nhanByPronoun.filter(([c]) => inputText.includes(a.replace(/\{0}/g, Utils.escapeRegExpReplacement(c))))).forEach(([a, b]) => {
+      [...this.data.luatNhan].filter(([first]) => inputText.match(new RegExp(first.replace(/{0}/, '.+'))).forEach(([a, b]) => {
         if (this.nameEnabled && this.multiplicationAlgorithm === this.MultiplicationAlgorithm.MULTIPLICATION_BY_PRONOUNS_AND_NAMES && nameEntries.length > 0) {
-          nhanByName = [...nhanByName, ...nhanByName.map(([c, d]) => [a.replace(/\{0}/g, Utils.escapeRegExpReplacement(c)), b.replace(/\{0}/g, Utils.escapeRegExpReplacement(d))])];
+          nhanByName = [...nhanByName, ...nhanByName.map(([c, d]) => [a.replace(/\{0}/, Utils.escapeRegExpReplacement(c)), b.replace(/\{0}/, Utils.escapeRegExpReplacement(d))])];
         }
 
-        nhanByPronoun = [...nhanByPronoun, ...nhanByPronoun.map(([c, d]) => [a.replace(/\{0}/g, Utils.escapeRegExpReplacement(c)), b.replace(/\{0}/g, Utils.escapeRegExpReplacement(d))])];
+        nhanByPronoun = [...nhanByPronoun, ...nhanByPronoun.map(([c, d]) => [a.replace(/\{0}/, Utils.escapeRegExpReplacement(c)), b.replace(/\{0}/, Utils.escapeRegExpReplacement(d))])];
       });
     } else {
       nhanByName = [];
@@ -1029,7 +1029,7 @@ class Vietphrase {
   }
 
   static getCapitalizeText(text) {
-    return text.split('\n').map((element) => element.replace(/(^[\p{P}\p{Z}]*|[!.?)\]’”] |(?:^| )[([{‘“]|[。【】！（）.？])(\p{Ll})/gu, (__, p1, p2) => p1 + p2.toUpperCase())).join('\n');
+    return text.split('\n').map((element) => element.replace(/(^[\p{P}\p{Z}]*|[!.?] )(\p{Ll})/gu, (__, p1, p2) => p1 + p2.toUpperCase())).join('\n');
   }
 
   static getFormattedText(inputText) {
