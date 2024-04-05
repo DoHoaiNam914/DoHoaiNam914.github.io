@@ -1213,8 +1213,8 @@ $glossaryManagerButton.on('mousedown', () => {
   if (!isLoaded) return;
   $sourceEntryInput.prop('scrollLeft', 0);
   $targetEntryTextarea.prop('scrollTop', 0);
-  $glossaryEntrySelect.val('').change();
-  $glossaryListSelect.val('Names2').change();
+  if ($glossaryEntrySelect.val() !== '') $glossaryEntrySelect.val('').change();
+  if ($glossaryListSelect.val() !== 'Names2') $glossaryListSelect.val('Names2').change();
   $sourceEntryInput.val(getSelectedTextOrActiveElementText().replace(/\n/g, ' ').trim()).trigger('input');
 
   if (window.getSelection) {
@@ -1537,9 +1537,9 @@ $('.dropdown-can-scroll').on('hide.bs.dropdown', function onHideBsDropdown() {
   $(this).find('.dropdown-menu-scroller').prop('scrollTop', 0);
 });
 
-$('.dropdown-menu button.dropdown-item').on('click', function onClick() {
+$dropdownHasCollapse.find('.dropdown-menu button.dropdown-item').on('click', function onClick() {
   if ($(this).data('bs-toggle') === 'collapse') {
-    $dropdownHasCollapse.find('.dropdown-menu').find('.collapse').each((__, value) => {
+    $(this).parent().parent().find('.collapse').each((__, value) => {
       if (!$(value).hasClass('show')) return;
       const bootstrapDropdownHasCollapse = new bootstrap.Collapse(value);
       bootstrapDropdownHasCollapse.hide();

@@ -126,6 +126,7 @@ const specialSinovietnameseMap = [
   ['传道', 'truyền đạo'],
   ['传唤', 'truyền hoán'],
   ['传奇', 'truyền kỳ'],
+  ['传人', 'truyền nhân'],
   ['传讯', 'truyền tấn'],
   ['传说', 'truyền thuyết'],
   ['传承', 'truyền thừa'],
