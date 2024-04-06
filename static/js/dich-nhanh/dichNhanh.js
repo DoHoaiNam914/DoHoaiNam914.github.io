@@ -1211,10 +1211,10 @@ $retranslateButton.click(function onClick() {
 
 $glossaryManagerButton.on('mousedown', () => {
   if (!isLoaded) return;
+  if ($glossaryListSelect.val() !== 'Names2') $glossaryListSelect.val('Names2').change();
   $sourceEntryInput.prop('scrollLeft', 0);
   $targetEntryTextarea.prop('scrollTop', 0);
   $glossaryEntrySelect.val('').change();
-  if ($glossaryListSelect.val() !== 'Names2') $glossaryListSelect.val('Names2').change();
   $sourceEntryInput.val(getSelectedTextOrActiveElementText().replace(/\n/g, ' ').trim()).trigger('input');
 
   if (window.getSelection) {
