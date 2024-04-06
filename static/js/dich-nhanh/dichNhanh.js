@@ -1483,7 +1483,6 @@ $glossaryListSelect.change(function onChange() {
 
   reloadGlossaryEntries();
   $sourceEntryInput.trigger('input');
-  if ($sourceEntryInput.val().length > 0) $translateEntryButtons.filter(`[data-translator="vietphrase"][data-lang="${['VietPhrase', 'LuatNhan', 'Pronouns'].some((element) => $(this).val() === element) ? 'vi' : 'sinoVietnamese'}"][data-glossary="true"]`).click();
 });
 
 $sourceEntryInput.on('input', async function onInput() {
