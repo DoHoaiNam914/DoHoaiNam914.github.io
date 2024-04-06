@@ -1,4 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,200..900;1,7..72,200..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&display=swap');
 
 /* Bookerly */
 
@@ -187,6 +189,21 @@
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/SF%20Pro%20Text/SF-Pro-Text-BoldItalic.otf) format('opentype');
 }
 
+/* Canela */
+
+@font-face {
+  font-display: swap;
+  font-family: 'Canela';
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Canela/Canela.ttf) format('truetype');
+}
+
+@font-face {
+  font-display: swap;
+  font-family: 'Canela';
+  font-weight: bold;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Canela/Canela-Bold.ttf) format('truetype');
+}
+
 /* Proxima Nova Rg */
 
 @font-face {
@@ -234,8 +251,6 @@
 
 /* Literata */
 
-@import url('https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,200..900;1,7..72,200..900&display=swap');
-
 /* Hiragino Mincho */
 
 @font-face {
@@ -253,4 +268,17 @@
 
 /* Crimson Text */
 
-@import url('https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&display=swap');
+/* Chalkboard SE */
+
+@font-face {
+  font-display: swap;
+  font-family: 'Chalkboard SE';
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Chalkboard%20SE/ChalkboardSE-Regular-02.ttf) format('truetype');
+}
+
+@font-face {
+  font-display: swap;
+  font-family: 'Chalkboard SE';
+  font-weight: bold;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Chalkboard%20SE/ChalkboardSE-Bold-03.ttf) format('truetype');
+}
