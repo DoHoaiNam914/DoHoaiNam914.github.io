@@ -1554,6 +1554,7 @@ $dropdownHasCollapse.find('.dropdown-menu button.dropdown-item').on('click', fun
 
 $dropdownHasCollapse.on('show.bs.dropdown', function onHideBsDropdown() {
   if ($(this).find('.dropdown-menu').find('.collapse').toArray().some((element) => $(element).hasClass('show'))) return;
+  if ($(this).find('.dropdown-menu').find('.collapse.show-by-default').length === 0) return;
   const bootstrapCollapseInDropdown = new bootstrap.Collapse($(this).find('.dropdown-menu').find('.collapse.show-by-default')[0]);
   bootstrapCollapseInDropdown.show();
 });
