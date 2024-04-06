@@ -1508,7 +1508,7 @@ $sourceEntryInput.on('input', async function onInput() {
         modalBody.prop('scrollTop', prevModalBodyScrollTop);
       }
     } else {
-      $translateEntryButtons.filter('[data-translator="vietphrase"][data-lang="sinoVietnamese"][data-glossary="true"]').click();
+      $translateEntryButtons.filter(`[data-translator="vietphrase"][data-lang="${$(this).val() === 'VietPhrase' ? 'vi' : 'sinoVietnamese'}"][data-glossary="true"]`).click();
       $targetEntryTextarea.prop('scrollTop', 0);
       $glossaryEntrySelect.val('');
     }
