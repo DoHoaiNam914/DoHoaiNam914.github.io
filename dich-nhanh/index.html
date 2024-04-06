@@ -143,9 +143,14 @@
 
       .dropdown-menu-scroller {
         height: 16em;
-        scrollbar-width: none;
+        -ms-overflow-style: none;
         overflow-x: hidden;
+        scrollbar-width: none;
         white-space: nowrap;
+      }
+
+      .dropdown-menu-scroller::-webkit-scrollbar {
+        display: none;
       }
 
       .collapse-item::before {
