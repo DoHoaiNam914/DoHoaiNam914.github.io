@@ -1213,7 +1213,7 @@ $glossaryManagerButton.on('mousedown', () => {
   if (!isLoaded) return;
   $sourceEntryInput.prop('scrollLeft', 0);
   $targetEntryTextarea.prop('scrollTop', 0);
-  if ($glossaryEntrySelect.val() !== '') $glossaryEntrySelect.val('').change();
+  $glossaryEntrySelect.val('').change();
   if ($glossaryListSelect.val() !== 'Names2') $glossaryListSelect.val('Names2').change();
   $sourceEntryInput.val(getSelectedTextOrActiveElementText().replace(/\n/g, ' ').trim()).trigger('input');
 
