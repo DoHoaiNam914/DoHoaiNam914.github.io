@@ -1166,7 +1166,7 @@ class Vietphrase {
                       const value = values.split(/[/|]/)[0];
                       length = key.length;
 
-                      if (this.prioritizeNameOverVietPhrase && Object.hasOwn(this.nameObject, key)) {
+                      if (this.prioritizeNameOverVietPhrase && this.nameMap.has(key)) {
                         tempLine += (charsInTempLine.length > 0 && /^[\p{Lu}\p{Ll}\p{Nd}(([{‘“]/u.test(key) && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(prevPhrase) ? ' ' : '') + key;
                         prevPhrase = key;
                       } else if (value !== '') {
@@ -1198,13 +1198,13 @@ class Vietphrase {
                     let phrase = chars.slice(i, i + length).join('');
 
                     const charsInTempLine = [...tempLine];
-                    const couldUpperCaseKey = !this.prioritizeNameOverVietPhrase || (Object.hasOwn(nameObject, phrase.toUpperCase()) && !Object.hasOwn(this.nameObject, phrase));
+                    const couldUpperCaseKey = !this.prioritizeNameOverVietPhrase || (Object.hasOwn(nameObject, phrase.toUpperCase()) && !this.nameMap.has(phrase));
 
                     if (phrase.length > 0 && (Object.hasOwn(nameObject, couldUpperCaseKey ? phrase.toUpperCase() : phrase) || (/\p{sc=Hani}/u.test(phrase) && Object.hasOwn(dataObject, phrase.toUpperCase()) && nameKeys.every((element) => !phrase.toLowerCase().startsWith(element.toLowerCase())))) && phrase !== '·') {
                       phrase = !couldUpperCaseKey ? phrase : phrase.toUpperCase();
                       const phraseResult = (nameObject[phrase] ?? dataObject[phrase]).split(/[/|]/)[0];
 
-                      if (this.prioritizeNameOverVietPhrase && Object.hasOwn(this.nameObject, phrase)) {
+                      if (this.prioritizeNameOverVietPhrase && this.nameMap.has(phrase)) {
                         tempLine += (charsInTempLine.length > 0 && /^[\p{Lu}\p{Ll}\p{Nd}(([{‘“]/u.test(phrase) && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(prevPhrase) ? ' ' : '') + phrase;
                         prevPhrase = phrase;
                       } else if (phraseResult !== '') {
@@ -1252,7 +1252,7 @@ class Vietphrase {
     this.nameEnabled = nameEnabled;
     this.name = this.nameEnabled ? this.data.name.concat(glossary.length > 0 ? glossary : this.data.namePhu) : [];
     this.name = this.name.map(([first, second]) => [this.prioritizeNameOverVietPhrase ? second : first.toUpperCase(), second]).filter(([first]) => first != null && first.length > 0 && inputText.toLowerCase().includes(first.toLowerCase()));
-    this.nameObject = Object.fromEntries(this.name);
+    this.nameMap = new Map(this.name);
 
     try {
       let dataList = {};
@@ -1267,7 +1267,7 @@ class Vietphrase {
           break;
         }
         case 'vi': {
-          dataList = Object.fromEntries((this.data.vietPhrase.length > 0 ? this.data.vietPhrase : Object.entries(this.data.hanViet)).concat(this.data.vietPhrasePhu).map(([first, second]) => [first.toUpperCase(), second]));
+          dataList = new Map((this.data.vietPhrase.length > 0 ? this.data.vietPhrase : Object.entries(this.data.hanViet)).concat(this.data.vietPhrasePhu).map(([first, second]) => [first.toUpperCase(), second]));
 
           if (this.data.vietPhrase.concat(this.data.vietPhrasePhu).length > 0) {
             if (addDeLeZhao) {
@@ -1286,7 +1286,7 @@ class Vietphrase {
         // no default
       }
 
-      dataList = Object.entries(dataList);
+      dataList = [...dataList];
 
       switch (translationAlgorithm) {
         case this.TranslationAlgorithms.TRANSLATE_FROM_LEFT_TO_RIGHT: {
