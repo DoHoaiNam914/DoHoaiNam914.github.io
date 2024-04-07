@@ -187,6 +187,7 @@ const specialSinovietnameseMap = [
   ['摇', 'DAO'],
   ['遥', 'DAO'],
   ['焰', 'DIỆM'],
+  ['焱', 'DIỆM'],
   ['延', 'DIÊN' /* Họ */],
   ['杳', 'DIỂU'],
   ['尹', 'DOÃN' /* Họ */],

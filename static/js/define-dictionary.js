@@ -28,11 +28,7 @@ $(document).ready(async () => {
           for (let i = 0; i < charsAndPhrases.length; i += 1) {
             const charOrPhrase = charsAndPhrases.slice(i).join(separator);
 
-            const foundPhrase = dataList.toSorted((a, b) => b[0].length - a[0].length).filter(([first, second, third]) => {
-              const sinovietnamesePronunciations = second.split('/')[0].split(', ');
-              if (sinovietnamesePronunciations.some((element) => charOrPhrase === element.toLowerCase())) console.log('1');
-              return sinovietnamesePronunciations.some((element) => charOrPhrase === element.toLowerCase() || (charOrPhrase.length >= 2 && (charOrPhrase.startsWith(first.toLowerCase())))) || first.toLowerCase() === charOrPhrase || (charOrPhrase.length >= 2 && (charOrPhrase.startsWith(first.toLowerCase()) || charOrPhrase.endsWith(first.toLowerCase()) || third.toLowerCase().includes(charOrPhrase)));
-            }).map(([first]) => first);
+            const foundPhrase = dataList.toSorted((a, b) => b[0].length - a[0].length).filter(([first, second, third]) => second.split('/')[0].split(', ').some((element) => charOrPhrase === element.toLowerCase() || (charOrPhrase.length >= 2 && (charOrPhrase.startsWith(element.toLowerCase())))) || first.toLowerCase() === charOrPhrase || (charOrPhrase.length >= 2 && (charOrPhrase.startsWith(first.toLowerCase()) || charOrPhrase.endsWith(first.toLowerCase()) || third.toLowerCase().includes(charOrPhrase)))).map(([first]) => first);
 
             if (foundPhrase) containsPhrase.push(...foundPhrase);
 
@@ -42,7 +38,7 @@ $(document).ready(async () => {
             }
           }
 
-          dataList.filter(([first]) => containsPhrase.includes(first.toLowerCase())).toSorted((a, b) => b[0].toLowerCase() === define - a[0].toLowerCase() === define).forEach(([first, second, third]) => {
+          dataList.filter(([first]) => containsPhrase.includes(first.toLowerCase())).toSorted((a, b) => b[1].split('/')[0].split(', ').some((element) => define === element.toLowerCase() || (define.split(' ').length >= 2 && (define.startsWith(element.toLowerCase())))) - a[1].split('/')[0].split(', ').some((element) => define === element.toLowerCase() || (define.split(' ').length >= 2 && (define.startsWith(element.toLowerCase())))) || (b[0].toLowerCase() === define) - (a[0].toLowerCase() === define) || define.startsWith(b[0].toLowerCase()) - define.startsWith(a[0].toLowerCase()) || define.endsWith(b[0].toLowerCase()) - define.endsWith(a[0].toLowerCase())).forEach(([first, second, third]) => {
             sectionHeading.innerText = first;
             $(document.body).append(sectionHeading.cloneNode(true));
 
@@ -151,7 +147,7 @@ function loadAd()
             }
           }
 
-          dataList.filter(([first]) => containsPhrase.includes(first.toLowerCase())).toSorted((a, b) => (b[0].toLowerCase() === define) - (a[0].toLowerCase() === define)).forEach(([first, second]) => {
+          dataList.filter(([first]) => containsPhrase.includes(first.toLowerCase())).toSorted((a, b) => (b[0].toLowerCase() === define) - (a[0].toLowerCase() === define) || define.startsWith(b[0].toLowerCase()) - define.startsWith(a[0].toLowerCase()) || define.endsWith(b[0].toLowerCase()) - define.endsWith(a[0].toLowerCase())).forEach(([first, second]) => {
             sectionHeading.innerText = first;
             $(document.body).append(sectionHeading.cloneNode(true));
 

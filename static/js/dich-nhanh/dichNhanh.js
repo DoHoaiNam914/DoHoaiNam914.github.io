@@ -540,6 +540,7 @@ async function translateTextarea() {
           }
         }
 
+        translator = null;
         if (translateAbortController.signal.aborted) return;
         result = results.join('\n');
       }
@@ -812,6 +813,7 @@ async function translateText(inputText, translatorOption, targetLanguage, glossa
       }
     }
 
+    translator = null;
     return result;
   } catch (error) {
     console.error(error);
