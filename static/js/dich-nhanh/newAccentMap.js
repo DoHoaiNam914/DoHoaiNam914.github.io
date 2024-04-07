@@ -14,3 +14,5 @@ const newAccentMap = [
   ['Úy', 'Uý'], ['Ùy', 'Uỳ'], ['Ủy', 'Uỷ'], ['Ũy', 'Uỹ'], ['Ụy', 'Uỵ'], // UY
   ['ÚY', 'UÝ'], ['ÙY', 'UỲ'], ['ỦY', 'UỶ'], ['ŨY', 'UỸ'], ['ỤY', 'UỴ'],
 ];
+
+const newAccentObject = Object.fromEntries(newAccentMap);

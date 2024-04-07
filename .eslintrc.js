@@ -145,6 +145,7 @@ module.exports = {
     Papago: 'readonly',
     Vietphrase: 'readonly',
     newAccentMap: 'readonly',
+    newAccentObject: 'readonly',
     specialSinovietnameseMap: 'readonly',
     cjkv: 'readonly',
     hanData: 'readonly',

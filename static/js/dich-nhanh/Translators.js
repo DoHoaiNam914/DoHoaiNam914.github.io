@@ -1057,7 +1057,7 @@ class Vietphrase {
     const text = inputText.split(/\r?\n/).map((element) => element.trim()).join('\n');
 
     let dataEntries = data;
-    let nameEntries = [...this.nameMap];
+    let nameEntries = this.name;
 
     let result = text;
 
@@ -1069,8 +1069,7 @@ class Vietphrase {
         nameEntries = nameEntries.concat(nhanByPronoun, nhanByName).toSorted((a, b) => b[0].length - a[0].length);
         nameEntries = !this.prioritizeNameOverVietPhrase ? nameEntries.concat(nhanByName) : nameEntries;
 
-        const dataMap = new Map(dataEntries);
-        const nameMap = new Map(nameEntries);
+        const nameObject = Object.fromEntries(nameEntries);
 
         const combineDataEntries = nameEntries.concat(dataEntries).filter(([first], __, array) => !array[first] && (array[first] = 1), {});
 
@@ -1078,7 +1077,7 @@ class Vietphrase {
           const chars = [...a];
           let returnText = a;
 
-          if (chars.length > 0 && chars.some((b) => this.data.hanViet.has(b))) {
+          if (chars.length > 0 && chars.some((b) => Object.hasOwn(this.data.hanViet, b))) {
             let prefilterElement = a.toLowerCase();
 
             combineDataEntries.filter(([first]) => first !== '·' && /\p{sc=Hani}/u.test(first) && prefilterElement.includes(first.toLowerCase()) && (prefilterElement = prefilterElement.replaceAll(first.toLowerCase(), '\n'))).some(([a, b]) => {
@@ -1087,15 +1086,15 @@ class Vietphrase {
                 returnText = returnText.replace(new RegExp(`${Utils.escapeRegExp(a)}${Utils.escapeRegExp(a)}${this.nameEnabled && nameEntries.length > 0 ? `(?=${nameEntries.map(([___, second]) => second).join('|')})` : '(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])'}`, 'giu'), `${Utils.escapeRegExpReplacement(phraseResult)} ${Utils.escapeRegExpReplacement(phraseResult)}${phraseResult.length > 0 ? ' ' : ''}`)
                   .replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{M}\\p{Nd})\\]}’”])${Utils.escapeRegExp(a)}${this.nameEnabled && nameEntries.length > 0 ? `(?=${nameEntries.map(([___, second]) => second).join('|')})` : '(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])'}`, 'giu'), `$1 ${Utils.escapeRegExpReplacement(phraseResult)}${phraseResult.length > 0 ? ' ' : ''}`)
                   .replace(new RegExp(` +${Utils.escapeRegExp(a)}${this.nameEnabled && nameEntries.length > 0 ? `(?=${nameEntries.map(([___, d]) => d).join('|')})` : '(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])'}`, 'giu'), phraseResult.length > 0 ? ` - ${Utils.escapeRegExpReplacement(phraseResult).replace(/^([ \p{P}]*)(\p{Ll})/u, (___, p1, p2) => p1 + p2.toUpperCase())}` : '')
-                  .replace(new RegExp(`${Utils.escapeRegExp(a)}${Utils.escapeRegExp(a)}(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])`, this.nameEnabled && !this.prioritizeNameOverVietPhrase && nameMap.has(a.toUpperCase()) ? 'giu' : 'gu'), `${Utils.escapeRegExpReplacement(phraseResult)} ${Utils.escapeRegExpReplacement(phraseResult)}${phraseResult.length > 0 ? ' ' : ''}`)
-                  .replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{M}\\p{Nd})\\]}’”])${Utils.escapeRegExp(a)}(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])`, this.nameEnabled && !this.prioritizeNameOverVietPhrase && nameMap.has(a.toUpperCase()) ? 'giu' : 'gu'), `$1 ${Utils.escapeRegExpReplacement(phraseResult)}${phraseResult.length > 0 ? ' ' : ''}`)
-                  .replace(new RegExp(` +${Utils.escapeRegExp(a)}(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])`, this.nameEnabled && !this.prioritizeNameOverVietPhrase && nameMap.has(a.toUpperCase()) ? 'giu' : 'gu'), phraseResult.length > 0 ? ` - ${Utils.escapeRegExpReplacement(phraseResult).replace(/^([ \p{P}]*)(\p{Ll})/u, (___, p1, p2) => p1 + p2.toUpperCase())}` : '')
-                  .replace(new RegExp(`${Utils.escapeRegExp(a)}${Utils.escapeRegExp(a)}`, this.nameEnabled && !this.prioritizeNameOverVietPhrase && nameMap.has(a.toUpperCase()) ? 'gi' : 'g'), `${Utils.escapeRegExpReplacement(phraseResult)} ${Utils.escapeRegExpReplacement(phraseResult)}`)
-                  .replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{M}\\p{Nd})\\]}’”])${Utils.escapeRegExp(a)}`, this.nameEnabled && !this.prioritizeNameOverVietPhrase && nameMap.has(a.toUpperCase()) ? 'giu' : 'gu'), `$1${phraseResult.length > 0 ? ` ${Utils.escapeRegExpReplacement(phraseResult)}` : ''}`)
-                  .replace(new RegExp(` +${Utils.escapeRegExp(a)}`, this.nameEnabled && !this.prioritizeNameOverVietPhrase && nameMap.has(a.toUpperCase()) ? 'gi' : 'g'), phraseResult.length > 0 ? ` - ${Utils.escapeRegExpReplacement(phraseResult).replace(/^([ \p{P}]*)(\p{Ll})/u, (___, p1, p2) => p1 + p2.toUpperCase())}` : '')
+                  .replace(new RegExp(`${Utils.escapeRegExp(a)}${Utils.escapeRegExp(a)}(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])`, this.nameEnabled && !this.prioritizeNameOverVietPhrase && Object.hasOwn(nameObject, a.toUpperCase()) ? 'giu' : 'gu'), `${Utils.escapeRegExpReplacement(phraseResult)} ${Utils.escapeRegExpReplacement(phraseResult)}${phraseResult.length > 0 ? ' ' : ''}`)
+                  .replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{M}\\p{Nd})\\]}’”])${Utils.escapeRegExp(a)}(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])`, this.nameEnabled && !this.prioritizeNameOverVietPhrase && Object.hasOwn(nameObject, a.toUpperCase()) ? 'giu' : 'gu'), `$1 ${Utils.escapeRegExpReplacement(phraseResult)}${phraseResult.length > 0 ? ' ' : ''}`)
+                  .replace(new RegExp(` +${Utils.escapeRegExp(a)}(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])`, this.nameEnabled && !this.prioritizeNameOverVietPhrase && Object.hasOwn(nameObject, a.toUpperCase()) ? 'giu' : 'gu'), phraseResult.length > 0 ? ` - ${Utils.escapeRegExpReplacement(phraseResult).replace(/^([ \p{P}]*)(\p{Ll})/u, (___, p1, p2) => p1 + p2.toUpperCase())}` : '')
+                  .replace(new RegExp(`${Utils.escapeRegExp(a)}${Utils.escapeRegExp(a)}`, this.nameEnabled && !this.prioritizeNameOverVietPhrase && Object.hasOwn(nameObject, a.toUpperCase()) ? 'gi' : 'g'), `${Utils.escapeRegExpReplacement(phraseResult)} ${Utils.escapeRegExpReplacement(phraseResult)}`)
+                  .replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{M}\\p{Nd})\\]}’”])${Utils.escapeRegExp(a)}`, this.nameEnabled && !this.prioritizeNameOverVietPhrase && Object.hasOwn(nameObject, a.toUpperCase()) ? 'giu' : 'gu'), `$1${phraseResult.length > 0 ? ` ${Utils.escapeRegExpReplacement(phraseResult)}` : ''}`)
+                  .replace(new RegExp(` +${Utils.escapeRegExp(a)}`, this.nameEnabled && !this.prioritizeNameOverVietPhrase && Object.hasOwn(nameObject, a.toUpperCase()) ? 'gi' : 'g'), phraseResult.length > 0 ? ` - ${Utils.escapeRegExpReplacement(phraseResult).replace(/^([ \p{P}]*)(\p{Ll})/u, (___, p1, p2) => p1 + p2.toUpperCase())}` : '')
                   .replace(new RegExp(`${Utils.escapeRegExp(a)}${this.nameEnabled && nameEntries.length > 0 ? `(?=${nameEntries.map(([___, d]) => d).join('|')})` : '(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])'}`, 'giu'), `${Utils.escapeRegExpReplacement(phraseResult)}${phraseResult.length > 0 ? ' ' : ''}`)
-                  .replace(new RegExp(`${Utils.escapeRegExp(a)}(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])`, this.nameEnabled && !this.prioritizeNameOverVietPhrase && nameMap.has(a.toUpperCase()) ? 'giu' : 'gu'), `${Utils.escapeRegExpReplacement(phraseResult)}${phraseResult.length > 0 ? ' ' : ''}`)
-                  .replace(new RegExp(Utils.escapeRegExp(a), this.nameEnabled && !this.prioritizeNameOverVietPhrase && nameMap.has(a.toUpperCase()) ? 'gi' : 'g'), Utils.escapeRegExpReplacement(phraseResult));
+                  .replace(new RegExp(`${Utils.escapeRegExp(a)}(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])`, this.nameEnabled && !this.prioritizeNameOverVietPhrase && Object.hasOwn(nameObject, a.toUpperCase()) ? 'giu' : 'gu'), `${Utils.escapeRegExpReplacement(phraseResult)}${phraseResult.length > 0 ? ' ' : ''}`)
+                  .replace(new RegExp(Utils.escapeRegExp(a), this.nameEnabled && !this.prioritizeNameOverVietPhrase && Object.hasOwn(nameObject, a.toUpperCase()) ? 'gi' : 'g'), Utils.escapeRegExpReplacement(phraseResult));
               }
 
               return false;
@@ -1119,7 +1118,7 @@ class Vietphrase {
     const text = inputText.split(/\r?\n/).map((element) => element.trim()).join('\n');
 
     const dataEntries = data;
-    let nameEntries = [...this.nameMap];
+    let nameEntries = this.name;
 
     const lines = text.split('\n');
     const results = [];
@@ -1132,8 +1131,8 @@ class Vietphrase {
 
         nameEntries = nameEntries.concat(nhanByPronoun, nhanByName);
 
-        const dataMap = new Map(dataEntries);
-        const nameMap = new Map(nameEntries);
+        const dataObject = Object.fromEntries(dataEntries);
+        const nameObject = Object.fromEntries(nameEntries);
 
         const combineDataEntries = nameEntries.concat(dataEntries).filter(([first], __, array) => !array[first] && (array[first] = 1), {});
         const dataLengths = combineDataEntries.reduce((accumulator, [first]) => (!accumulator.includes(first.length) ? accumulator.concat(first.length).sort((a, b) => b - a) : accumulator), [1]);
@@ -1141,7 +1140,7 @@ class Vietphrase {
         lines.forEach((a) => {
           const chars = [...a];
 
-          if (chars.length === 0 || !chars.some((b) => this.data.hanViet.has(b))) {
+          if (chars.length === 0 || !chars.some((b) => Object.hasOwn(this.data.hanViet, b))) {
             results.push(a);
           } else {
             const nameKeys = nameEntries.map(([first]) => first.toLowerCase()).filter((b) => a.includes(b));
@@ -1167,7 +1166,7 @@ class Vietphrase {
                       const value = values.split(/[/|]/)[0];
                       length = key.length;
 
-                      if (this.prioritizeNameOverVietPhrase && this.nameMap.has(key)) {
+                      if (this.prioritizeNameOverVietPhrase && Object.hasOwn(this.nameObject, key)) {
                         tempLine += (charsInTempLine.length > 0 && /^[\p{Lu}\p{Ll}\p{Nd}(([{‘“]/u.test(key) && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(prevPhrase) ? ' ' : '') + key;
                         prevPhrase = key;
                       } else if (value !== '') {
@@ -1199,13 +1198,13 @@ class Vietphrase {
                     let phrase = chars.slice(i, i + length).join('');
 
                     const charsInTempLine = [...tempLine];
-                    const couldUpperCaseKey = !this.prioritizeNameOverVietPhrase || (nameMap.has(phrase.toUpperCase()) && !this.nameMap.has(phrase));
+                    const couldUpperCaseKey = !this.prioritizeNameOverVietPhrase || (Object.hasOwn(nameObject, phrase.toUpperCase()) && !Object.hasOwn(this.nameObject, phrase));
 
-                    if (phrase.length > 0 && (nameMap.has(couldUpperCaseKey ? phrase.toUpperCase() : phrase) || (/\p{sc=Hani}/u.test(phrase) && dataMap.has(phrase.toUpperCase()) && nameKeys.every((element) => !phrase.toLowerCase().startsWith(element.toLowerCase())))) && phrase !== '·') {
+                    if (phrase.length > 0 && (Object.hasOwn(nameObject, couldUpperCaseKey ? phrase.toUpperCase() : phrase) || (/\p{sc=Hani}/u.test(phrase) && Object.hasOwn(dataObject, phrase.toUpperCase()) && nameKeys.every((element) => !phrase.toLowerCase().startsWith(element.toLowerCase())))) && phrase !== '·') {
                       phrase = !couldUpperCaseKey ? phrase : phrase.toUpperCase();
-                      const phraseResult = (nameMap.get(phrase) ?? dataMap.get(phrase)).split(/[/|]/)[0];
+                      const phraseResult = (nameObject[phrase] ?? dataObject[phrase]).split(/[/|]/)[0];
 
-                      if (this.prioritizeNameOverVietPhrase && this.nameMap.has(phrase)) {
+                      if (this.prioritizeNameOverVietPhrase && Object.hasOwn(this.nameObject, phrase)) {
                         tempLine += (charsInTempLine.length > 0 && /^[\p{Lu}\p{Ll}\p{Nd}(([{‘“]/u.test(phrase) && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(prevPhrase) ? ' ' : '') + phrase;
                         prevPhrase = phrase;
                       } else if (phraseResult !== '') {
@@ -1253,32 +1252,32 @@ class Vietphrase {
     this.nameEnabled = nameEnabled;
     this.name = this.nameEnabled ? this.data.name.concat(glossary.length > 0 ? glossary : this.data.namePhu) : [];
     this.name = this.name.map(([first, second]) => [this.prioritizeNameOverVietPhrase ? second : first.toUpperCase(), second]).filter(([first]) => first != null && first.length > 0 && inputText.toLowerCase().includes(first.toLowerCase()));
-    this.nameMap = new Map(this.name);
+    this.nameObject = Object.fromEntries(this.name);
 
     try {
-      let dataMap = new Map();
+      let dataList = {};
 
       switch (targetLanguage) {
         case 'pinyin': {
-          dataMap = this.data.pinyins;
+          dataList = this.data.pinyins;
           break;
         }
         case 'sinoVietnamese': {
-          dataMap = this.data.hanViet;
+          dataList = this.data.hanViet;
           break;
         }
         case 'vi': {
-          dataMap = new Map((this.data.vietPhrase.length > 0 ? this.data.vietPhrase : [...this.data.hanViet]).concat(this.data.vietPhrasePhu).map(([first, second]) => [first.toUpperCase(), second]));
+          dataList = Object.fromEntries((this.data.vietPhrase.length > 0 ? this.data.vietPhrase : [...this.data.hanViet]).concat(this.data.vietPhrasePhu).map(([first, second]) => [first.toUpperCase(), second]));
 
           if (this.data.vietPhrase.concat(this.data.vietPhrasePhu).length > 0) {
             if (addDeLeZhao) {
-              dataMap.set('的', this.data.hanViet.get('的'));
-              dataMap.set('了', this.data.hanViet.get('了'));
-              dataMap.set('着', this.data.hanViet.get('着'));
+              dataList['的'] = this.data.hanViet['的'];
+              dataList['了'] = this.data.hanViet['了'];
+              dataList['着'] = this.data.hanViet['着'];
             } else {
-              dataMap.set('的', '');
-              dataMap.set('了', '');
-              dataMap.set('着', '');
+              dataList['的'] = '';
+              dataList['了'] = '';
+              dataList['着'] = '';
             }
           }
 
@@ -1287,15 +1286,15 @@ class Vietphrase {
         // no default
       }
 
-      dataMap = [...dataMap];
+      dataList = Object.entries(dataList);
 
       switch (translationAlgorithm) {
         case this.TranslationAlgorithms.TRANSLATE_FROM_LEFT_TO_RIGHT: {
-          return this.translateFromLeftToRight(targetLanguage, dataMap.filter(([first]) => first.length > 0 && inputText.toLowerCase().includes(first.toLowerCase())), inputText);
+          return this.translateFromLeftToRight(targetLanguage, dataList.filter(([first]) => first.length > 0 && inputText.toLowerCase().includes(first.toLowerCase())), inputText);
         }
         default: {
           let prefilterText = inputText.toLowerCase();
-          return this.translatePrioritizeLongVietPhraseClusters(targetLanguage, dataMap.toSorted((a, b) => b[0].length - a[0].length).filter(([first]) => first.length > 0 && prefilterText.includes(first.toLowerCase()) && (prefilterText = prefilterText.replaceAll(first.toLowerCase(), '\n'))), inputText);
+          return this.translatePrioritizeLongVietPhraseClusters(targetLanguage, dataList.toSorted((a, b) => b[0].length - a[0].length).filter(([first]) => first.length > 0 && prefilterText.includes(first.toLowerCase()) && (prefilterText = prefilterText.replaceAll(first.toLowerCase(), '\n'))), inputText);
         }
       }
     } catch (error) {
