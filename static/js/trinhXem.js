@@ -91,7 +91,7 @@ function j_novelLoader(book, volume, spine) {
         $(document.head).append('<link rel="stylesheet" href="/static/css/styles/patches/j-novelclub_patch.css">');
         $(document.head).append('<link rel="stylesheet" href="/static/css/styles/ReadiumCSS-after.css">');
 
-        $('#view-select').val(localStorage.getItem('view') ?? 'vertical').change()
+        $('#view-select').val(localStorage.getItem('view') ?? 'pagination').change()
         $LAB.setOptions({AlwaysPreserveOrder: true})
         .script('/static/lib/jquery-3.7.1.min.js')
         .script('/static/js/nen.js').wait(() => $('#mode-select').val(localStorage.getItem('background') || Colors.SEPIA).change());
@@ -157,7 +157,7 @@ function yenpressLoader(book, volume, spine) {
         $(document.head).append(`<link rel="stylesheet" href="/static/css/styles/patches/${book}_patch.css">`);
         $(document.head).append('<link rel="stylesheet" href="/static/css/styles/ReadiumCSS-after.css">');
 
-        $('#view-select').val(localStorage.getItem('view') ?? 'vertical').change()
+        $('#view-select').val(localStorage.getItem('view') ?? 'pagination').change()
         $LAB.setOptions({AlwaysPreserveOrder: true})
         .script('/static/lib/jquery-3.7.1.min.js')
         .script('/static/js/nen.js').wait(() => $('#mode-select').val(localStorage.getItem('background') ?? Colors.SEPIA).change());
