@@ -1267,7 +1267,7 @@ class Vietphrase {
           break;
         }
         case 'vi': {
-          dataList = Object.fromEntries((this.data.vietPhrase.length > 0 ? this.data.vietPhrase : [...this.data.hanViet]).concat(this.data.vietPhrasePhu).map(([first, second]) => [first.toUpperCase(), second]));
+          dataList = Object.fromEntries((this.data.vietPhrase.length > 0 ? this.data.vietPhrase : Object.entries(this.data.hanViet)).concat(this.data.vietPhrasePhu).map(([first, second]) => [first.toUpperCase(), second]));
 
           if (this.data.vietPhrase.concat(this.data.vietPhrasePhu).length > 0) {
             if (addDeLeZhao) {
