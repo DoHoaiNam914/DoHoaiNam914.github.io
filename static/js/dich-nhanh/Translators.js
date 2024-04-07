@@ -1249,7 +1249,7 @@ class Vietphrase {
     this.data = data;
     this.nameEnabled = nameEnabled;
     this.nameMap = new Map((this.nameEnabled ? this.data.name.concat(glossary.length > 0 ? glossary : this.data.namePhu) : []).map(([first, second]) => [this.prioritizeNameOverVietPhrase ? second : first.toUpperCase(), second]).filter(([first]) => first != null && first.length > 0 && inputText.toLowerCase().includes(first.toLowerCase())));
-    this.name = [...this.nameMap]
+    this.name = [...this.nameMap];
 
     try {
       let dataArray = {};
@@ -1264,7 +1264,7 @@ class Vietphrase {
           break;
         }
         case 'vi': {
-          dataArray = new Map((this.data.vietPhrase.length > 0 ? this.data.vietPhrase : Object.entries(this.data.hanViet)).concat(this.data.vietPhrase.concat(this.data.vietPhrasePhu).length > 0 ? [['的', addDeLeZhao ? this.data.hanViet.['的'] : ''], ['了', addDeLeZhao ? this.data.hanViet['了'] : ''], ['着', addDeLeZhao ? this.data.hanViet['着'] : '']] : [], this.data.vietPhrasePhu).map(([first, second]) => [first.toUpperCase(), second]));
+          dataArray = new Map((this.data.vietPhrase.length > 0 ? this.data.vietPhrase : Object.entries(this.data.hanViet)).concat(this.data.vietPhrase.concat(this.data.vietPhrasePhu).length > 0 ? [['的', addDeLeZhao ? this.data.hanViet['的'] : ''], ['了', addDeLeZhao ? this.data.hanViet['了'] : ''], ['着', addDeLeZhao ? this.data.hanViet['着'] : '']] : [], this.data.vietPhrasePhu).map(([first, second]) => [first.toUpperCase(), second]));
           break;
         }
         // no default
