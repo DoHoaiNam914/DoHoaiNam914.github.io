@@ -1009,9 +1009,10 @@ $(document).ready(async () => {
   vietPhraseData.vietPhrasePhu = glossaryStorage.vietPhrase ?? [];
 
   newAccentObject = Object.fromEntries(newAccentMap);
+  let chinesePhienAmWordList = [];
 
   try {
-    let chinesePhienAmWordList = specialSinovietnameseMap.map(([a, b, c]) => [a, (new Map(specialSinovietnameseMap.filter(([__, d]) => !/\p{Script=Hani}/u.test(d)).map(([d, e, f]) => [d, f ?? e])).get(b) ?? c ?? b).split(/, | \| /)[0].toLowerCase()]);
+    chinesePhienAmWordList = chinesePhienAmWordList.concat(specialSinovietnameseMap.map(([a, b, c]) => [a, (new Map(specialSinovietnameseMap.filter(([__, d]) => !/\p{Script=Hani}/u.test(d)).map(([d, e, f]) => [d, f ?? e])).get(b) ?? c ?? b).split(/, | \| /)[0].toLowerCase()]));
     chinesePhienAmWordList = chinesePhienAmWordList.concat(cjkv.nam.map(([first, second]) => [first, second.trimStart().split(/, ?/).filter((element) => element.length > 0)[0]]));
     chinesePhienAmWordList = chinesePhienAmWordList.concat(hanData.names.map(([first, second]) => [first, second.split(',').filter((element) => element.length > 0)[0]]));
 
@@ -1027,7 +1028,7 @@ $(document).ready(async () => {
       method: 'GET',
       url: '/static/datasource/Quick Translator/ChinesePhienAmWords.txt',
     }).done((data) => {
-      vietPhraseData.quickTranslator = data.split(/\r\n/).map((element) => element.split('='));
+      vietPhraseData.quickTranslator = data.split('\r\n').map((element) => element.split('='));
       chinesePhienAmWordList = chinesePhienAmWordList.concat(vietPhraseData.quickTranslator);
     });
 
@@ -1035,12 +1036,11 @@ $(document).ready(async () => {
       method: 'GET',
       url: '/static/datasource/Data của thtgiang (đọc README)/ChinesePhienAmWords.txt',
     }).done((data) => {
-      vietPhraseData.dataOfThtgiangReadReadme = data.split(/\r\n/).map((element) => element.split('='));
+      vietPhraseData.dataOfThtgiangReadReadme = data.split('\r\n').map((element) => element.split('='));
       chinesePhienAmWordList = chinesePhienAmWordList.concat(vietPhraseData.dataOfThtgiangReadReadme);
     });
 
-    chinesePhienAmWordList = chinesePhienAmWordList.filter((element) => element.length === 2).filter(([first], __, array) => first.length > 0 && !array[first] && (array[first] = 1), {});
-    chinesePhienAmWordList = chinesePhienAmWordList.map(([c, d]) => [c, !specialSinovietnameseMap.map(([e]) => e).includes(c) ? applyNewAccent(d) : d]);
+    chinesePhienAmWordList = chinesePhienAmWordList.filter((element, __, array) => element.join('=').length > 0 && element.length === 2 && !array[element[0]] && (array[element[0]] = 1), {}).map(([c, d]) => [c, !specialSinovietnameseMap.map(([e]) => e).includes(c) ? applyNewAccent(d) : d]);
     vietPhraseData.hanViet = new Map(chinesePhienAmWordList);
     console.log(`Đã tải xong bộ dữ liệu hán việt (${chinesePhienAmWordList.length})!`);
     lastSession = {};
@@ -1053,10 +1053,17 @@ $(document).ready(async () => {
     method: 'GET',
     url: '/static/datasource/Unihan_Readings.txt',
   }).done((data) => {
-    let pinyinList = data.split(/\r?\n/).filter((element) => element.startsWith('U+')).map((element) => element.substring(2).split(/\t/)).filter((element) => element.length === 2).map(([first, second]) => [String.fromCodePoint(parseInt(first, 16)), second]);
-    pinyinList = pinyinList.filter(([first], __, array) => first.length > 0 && !array[first] && (array[first] = 1), {});
-    vietPhraseData.pinyins = new Map(pinyinList);
-    console.log(`Đã tải xong bộ dữ liệu bính âm (${pinyinList.length})!`);
+    vietPhraseData.pinyins = new Map([...data.split('\n').reduce((accumulator, currentValue) => {
+      if (currentValue.length === 0 || currentValue.startsWith('#')) return accumulator;
+      const arrayEntry = [String.fromCodePoint(parseInt(currentValue.substring(2).split('\t')[0], 16)), currentValue.split('\t')[1]];
+
+      if (arrayEntry.length === 2 && !accumulator.has(arrayEntry[0])) {
+        accumulator.add(arrayEntry);
+      }
+
+      return accumulator;
+    }, new Set())]);
+    console.log(`Đã tải xong bộ dữ liệu bính âm (${vietPhraseData.pinyins.size})!`);
     lastSession = {};
   }).fail((__, ___, errorThrown) => {
     console.error('Không thể tải bộ dữ liệu bính âm:', errorThrown);
@@ -1069,10 +1076,18 @@ $(document).ready(async () => {
         method: 'GET',
         url: '/static/datasource/Data của thtgiang (đọc README)/VietPhrase.txt',
       }).done((data) => {
-        let vietPhraseList = data.split(/\r\n/).filter((element) => !(element == null || element === '') && !element.startsWith('#') && element.split('=').length === 2).map((element) => element.split('=')).concat([...vietPhraseData.hanViet]);
-        vietPhraseList = vietPhraseList.filter(([first], __, array) => first.length > 0 && !array[first] && (array[first] = 1), {});
-        vietPhraseData.vietPhrase = vietPhraseList;
-        $vietPhraseEntryCounter.text(vietPhraseList.length);
+        vietPhraseData.vietPhrase = [...data.split('\r\n').reduce((accumulator, currentValue) => {
+          if (currentValue.length === 0) return accumulator;
+          const arrayEntry = currentValue.split('=');
+
+          if (arrayEntry.length === 2 && !accumulator.has(arrayEntry[0])) {
+            accumulator.add(arrayEntry);
+          }
+
+          return accumulator;
+        }, new Set()), ...chinesePhienAmWordList];
+
+        $vietPhraseEntryCounter.text(vietPhraseData.vietPhrase.length);
         console.log(`Đã tải xong tệp VietPhrase (${$vietPhraseEntryCounter.text()})!`);
         lastSession = {};
       }).fail((__, ___, errorThrown) => {
@@ -1083,10 +1098,18 @@ $(document).ready(async () => {
         method: 'GET',
         url: '/static/datasource/ttvtranslate/VietPhrase.txt',
       }).done((data) => {
-        let vietPhraseList = data.split('\n').filter((element) => !(element == null || element === '') && !element.startsWith('#') && element.split('=').length === 2).map((element) => element.split('=')).concat([...vietPhraseData.hanViet]);
-        vietPhraseList = vietPhraseList.filter(([first], __, array) => first.length > 0 && !array[first] && (array[first] = 1), {});
-        vietPhraseData.vietPhrase = vietPhraseList;
-        $vietPhraseEntryCounter.text(vietPhraseList.length);
+        vietPhraseData.vietPhrase = [...data.split('\n').reduce((accumulator, currentValue) => {
+          if (currentValue.length === 0) return accumulator;
+          const arrayEntry = currentValue.split('=');
+
+          if (arrayEntry.length === 2 && !accumulator.has(arrayEntry[0])) {
+            accumulator.add(arrayEntry);
+          }
+
+          return accumulator;
+        }, new Set()), ...chinesePhienAmWordList];
+
+        $vietPhraseEntryCounter.text(vietPhraseData.vietPhrase.length);
         console.log(`Đã tải xong tệp VietPhrase (${$vietPhraseEntryCounter.text()})!`);
         lastSession = {};
       }).fail((__, ___, errorThrown) => {
@@ -1388,10 +1411,17 @@ $vietPhraseInput.on('change', function onChange() {
   const reader = new FileReader();
 
   reader.onload = function onLoad() {
-    let vietPhraseList = this.result.split(/\r?\n/).filter((element) => !(element == null || element === '') && !element.startsWith('#') && element.split('=').length === 2).map((element) => element.split('=')).map(([first, second]) => [first, second.split(/[/|]/)[0]]);
-    vietPhraseList = vietPhraseList.concat([...vietPhraseData.hanViet]).filter(([first], __, array) => first.length > 0 && !array[first] && (array[first] = 1), {});
-    vietPhraseData.vietPhrase = vietPhraseList;
-    $vietPhraseEntryCounter.text(vietPhraseList.length);
+    vietPhraseData.vietPhrase = [...this.result.split(/\r?\n|\r/).reduce((accumulator, currentValue) => {
+      if (currentValue.length === 0) return accumulator;
+      const arrayEntry = currentValue.split('=');
+
+      if (arrayEntry.length === 2 && !accumulator.has(arrayEntry[0])) {
+        accumulator.add(arrayEntry);
+      }
+
+      return accumulator;
+    }, new Set()), ...vietPhraseData.hanViet];
+    $vietPhraseEntryCounter.text(vietPhraseData.vietPhrase.length);
     console.log(`Đã tải xong tệp ${$vietPhraseInput.prop('files')[0].name} (${$vietPhraseEntryCounter.text()})!`);
     lastSession = {};
   };
@@ -1426,18 +1456,27 @@ $glossaryInput.on('change', function onChange() {
         break;
       }
       case GlossaryType.VIETPHRASE: {
-        glossary = this.result.split(/\r?\n/).filter((element) => !(element == null || element === '') && !element.startsWith('#') && element.split('=').length === 2).map((element) => element.split('='));
+        glossary = [...this.result.split(/\r?\n|\r/).reduce((accumulator, currentValue) => {
+          if (currentValue.length === 0 || !$glossaryListSelect.val() === 'LuatNhan' || currentValue.startsWith('#')) return accumulator;
+          const arrayEntry = currentValue.split('=');
+
+          if (arrayEntry.length === 2 && !accumulator.has(arrayEntry[0])) {
+            accumulator.add(arrayEntry);
+          }
+
+          return accumulator;
+        }, new Set())];
+
         $glossaryTypeSelect.val(GlossaryType.VIETPHRASE);
         break;
       }
       default: {
-        glossary = this.result.split(/\r?\n/).map((element) => element.split(/\t/)).filter((element) => element.length >= 2);
+        glossary = this.result.split(/\r?\n|\r/).map((element) => element.split(/\t/)).filter((element) => element.length >= 2);
         $glossaryTypeSelect.val(GlossaryType.TSV);
         break;
       }
     }
 
-    $glossaryName.val($glossaryInput.prop('files')[0].name.split('.').slice(0, $glossaryInput.prop('files')[0].name.split('.').length - 1).join('.'));
     reloadGlossaryEntries();
     $sourceEntryInput.trigger('input');
     lastSession = {};
