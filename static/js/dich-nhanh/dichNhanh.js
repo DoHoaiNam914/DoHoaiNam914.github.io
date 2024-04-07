@@ -1236,7 +1236,6 @@ $retranslateButton.click(function onClick() {
 
 $glossaryManagerButton.on('mousedown', () => {
   if (!isLoaded) return;
-  if ($glossaryListSelect.val() !== 'Names2') $glossaryListSelect.val('Names2').change();
   $sourceEntryInput.prop('scrollLeft', 0);
   $targetEntryTextarea.prop('scrollTop', 0);
   $glossaryEntrySelect.val('').change();
@@ -1667,7 +1666,7 @@ $translateEntryButtons.click(async function onClick() {
 
 $addButton.click(() => {
   if ($sourceEntryInput.val().length === 0) return;
-  if (Object.hasOwn(glossaryObject, $sourceEntryInput.val())) glossaryObject.delete($sourceEntryInput.val());
+  if (Object.hasOwn(glossaryObject, $sourceEntryInput.val())) delete glossaryObject[$sourceEntryInput.val()];
   glossaryObject[$sourceEntryInput.val().trim()] = $targetEntryTextarea.val().trim();
   glossary = Object.entries(glossaryObject);
   reloadGlossaryEntries();

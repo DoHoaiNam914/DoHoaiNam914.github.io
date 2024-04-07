@@ -1256,15 +1256,15 @@ class Vietphrase {
 
       switch (targetLanguage) {
         case 'pinyin': {
-          dataArray = Object.entries(this.data.pinyins);
+          dataArray = this.data.pinyins;
           break;
         }
         case 'sinoVietnamese': {
-          dataArray = Object.entries(this.data.hanViet);
+          dataArray = this.data.hanViet;
           break;
         }
         case 'vi': {
-          dataArray = new Map((this.data.vietPhrase.length > 0 ? this.data.vietPhrase : Object.entries(this.data.hanViet)).concat(this.data.vietPhrase.concat(this.data.vietPhrasePhu).length > 0 ? [['的', addDeLeZhao ? this.data.hanViet['的'] : ''], ['了', addDeLeZhao ? this.data.hanViet['了'] : ''], ['着', addDeLeZhao ? this.data.hanViet['着'] : '']] : [], this.data.vietPhrasePhu).map(([first, second]) => [first.toUpperCase(), second]));
+          dataArray = Object.fromEntries((this.data.vietPhrase.length > 0 ? this.data.vietPhrase : Object.entries(this.data.hanViet)).concat(this.data.vietPhrase.concat(this.data.vietPhrasePhu).length > 0 ? [['的', addDeLeZhao ? this.data.hanViet['的'] : ''], ['了', addDeLeZhao ? this.data.hanViet['了'] : ''], ['着', addDeLeZhao ? this.data.hanViet['着'] : '']] : [], this.data.vietPhrasePhu).map(([first, second]) => [first.toUpperCase(), second]));
           break;
         }
         // no default
@@ -1272,11 +1272,11 @@ class Vietphrase {
 
       switch (translationAlgorithm) {
         case this.TranslationAlgorithms.TRANSLATE_FROM_LEFT_TO_RIGHT: {
-          return this.translateFromLeftToRight(targetLanguage, [...dataArray].filter(([first]) => first.length > 0 && inputText.toLowerCase().includes(first.toLowerCase())), inputText);
+          return this.translateFromLeftToRight(targetLanguage, Object.entries(dataArray).filter(([first]) => first.length > 0 && inputText.toLowerCase().includes(first.toLowerCase())), inputText);
         }
         default: {
           let prefilterText = inputText.toLowerCase();
-          return this.translatePrioritizeLongVietPhraseClusters(targetLanguage, [...dataArray].toSorted((a, b) => b[0].length - a[0].length).filter(([first]) => first.length > 0 && prefilterText.includes(first.toLowerCase()) && (prefilterText = prefilterText.replaceAll(first.toLowerCase(), '\n'))), inputText);
+          return this.translatePrioritizeLongVietPhraseClusters(targetLanguage, Object.entries(dataArray).toSorted((a, b) => b[0].length - a[0].length).filter(([first]) => first.length > 0 && prefilterText.includes(first.toLowerCase()) && (prefilterText = prefilterText.replaceAll(first.toLowerCase(), '\n'))), inputText);
         }
       }
     } catch (error) {
