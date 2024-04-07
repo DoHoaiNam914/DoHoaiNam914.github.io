@@ -1085,7 +1085,7 @@ $(document).ready(async () => {
           }
 
           return accumulator;
-        }, new Map()), ...chinesePhienAmWordList];
+        }, new Map()), ...chinesePhienAmWordList].filter(([first], __, array) => !array[first] && (array[first] = 1), {});
 
         $vietPhraseEntryCounter.text(vietPhraseData.vietPhrase.length);
         console.log(`Đã tải xong tệp VietPhrase (${$vietPhraseEntryCounter.text()})!`);
@@ -1107,7 +1107,7 @@ $(document).ready(async () => {
           }
 
           return accumulator;
-        }, new Map()), ...chinesePhienAmWordList];
+        }, new Map()), ...chinesePhienAmWordList].filter(([first], __, array) => !array[first] && (array[first] = 1), {});
 
         $vietPhraseEntryCounter.text(vietPhraseData.vietPhrase.length);
         console.log(`Đã tải xong tệp VietPhrase (${$vietPhraseEntryCounter.text()})!`);
@@ -1421,7 +1421,7 @@ $vietPhraseInput.on('change', function onChange() {
       }
 
       return accumulator;
-    }, new Map()), ...vietPhraseData.hanViet];
+    }, new Map()), ...Object.entries(vietPhraseData.hanViet)].filter(([first], __, array) => !array[first] && (array[first] = 1), {});
     $vietPhraseEntryCounter.text(vietPhraseData.vietPhrase.length);
     console.log(`Đã tải xong tệp ${$vietPhraseInput.prop('files')[0].name} (${$vietPhraseEntryCounter.text()})!`);
     lastSession = {};
