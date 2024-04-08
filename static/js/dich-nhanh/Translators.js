@@ -1067,7 +1067,7 @@ class Vietphrase {
       const dataArray = data.toSorted((a, b) => b[0].length - a[0].length);
 
       if (nameArray.concat(dataArray).length > 0) {
-        const nameObject = Object.fromEntries(nameArray);
+        const nameMap = Object.fromEntries(nameArray);
 
         const combineDatas = nameArray.concat(dataArray).filter(([first], __, array) => !array[first] && (array[first] = 1), {});
 
@@ -1084,15 +1084,15 @@ class Vietphrase {
                 returnText = returnText.replace(new RegExp(`${Utils.escapeRegExp(a)}${Utils.escapeRegExp(a)}${this.nameEnabled && nameArray.length > 0 ? `(?=${nameArray.map(([___, second]) => second).join('|')})` : '(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])'}`, 'giu'), `${Utils.escapeRegExpReplacement(phraseResult)} ${Utils.escapeRegExpReplacement(phraseResult)}${phraseResult.length > 0 ? ' ' : ''}`)
                   .replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{M}\\p{Nd})\\]}’”])${Utils.escapeRegExp(a)}${this.nameEnabled && nameArray.length > 0 ? `(?=${nameArray.map(([___, second]) => second).join('|')})` : '(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])'}`, 'giu'), `$1 ${Utils.escapeRegExpReplacement(phraseResult)}${phraseResult.length > 0 ? ' ' : ''}`)
                   .replace(new RegExp(` +${Utils.escapeRegExp(a)}${this.nameEnabled && nameArray.length > 0 ? `(?=${nameArray.map(([___, d]) => d).join('|')})` : '(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])'}`, 'giu'), phraseResult.length > 0 ? ` - ${Utils.escapeRegExpReplacement(phraseResult).replace(/^([ \p{P}]*)(\p{Ll})/u, (___, p1, p2) => p1 + p2.toUpperCase())}` : '')
-                  .replace(new RegExp(`${Utils.escapeRegExp(a)}${Utils.escapeRegExp(a)}(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])`, this.nameEnabled && !this.prioritizeNameOverVietPhrase && Object.hasOwn(nameObject, a.toUpperCase()) ? 'giu' : 'gu'), `${Utils.escapeRegExpReplacement(phraseResult)} ${Utils.escapeRegExpReplacement(phraseResult)}${phraseResult.length > 0 ? ' ' : ''}`)
-                  .replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{M}\\p{Nd})\\]}’”])${Utils.escapeRegExp(a)}(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])`, this.nameEnabled && !this.prioritizeNameOverVietPhrase && Object.hasOwn(nameObject, a.toUpperCase()) ? 'giu' : 'gu'), `$1 ${Utils.escapeRegExpReplacement(phraseResult)}${phraseResult.length > 0 ? ' ' : ''}`)
-                  .replace(new RegExp(` +${Utils.escapeRegExp(a)}(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])`, this.nameEnabled && !this.prioritizeNameOverVietPhrase && Object.hasOwn(nameObject, a.toUpperCase()) ? 'giu' : 'gu'), phraseResult.length > 0 ? ` - ${Utils.escapeRegExpReplacement(phraseResult).replace(/^([ \p{P}]*)(\p{Ll})/u, (___, p1, p2) => p1 + p2.toUpperCase())}` : '')
-                  .replace(new RegExp(`${Utils.escapeRegExp(a)}${Utils.escapeRegExp(a)}`, this.nameEnabled && !this.prioritizeNameOverVietPhrase && Object.hasOwn(nameObject, a.toUpperCase()) ? 'gi' : 'g'), `${Utils.escapeRegExpReplacement(phraseResult)} ${Utils.escapeRegExpReplacement(phraseResult)}`)
-                  .replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{M}\\p{Nd})\\]}’”])${Utils.escapeRegExp(a)}`, this.nameEnabled && !this.prioritizeNameOverVietPhrase && Object.hasOwn(nameObject, a.toUpperCase()) ? 'giu' : 'gu'), `$1${phraseResult.length > 0 ? ` ${Utils.escapeRegExpReplacement(phraseResult)}` : ''}`)
-                  .replace(new RegExp(` +${Utils.escapeRegExp(a)}`, this.nameEnabled && !this.prioritizeNameOverVietPhrase && Object.hasOwn(nameObject, a.toUpperCase()) ? 'gi' : 'g'), phraseResult.length > 0 ? ` - ${Utils.escapeRegExpReplacement(phraseResult).replace(/^([ \p{P}]*)(\p{Ll})/u, (___, p1, p2) => p1 + p2.toUpperCase())}` : '')
+                  .replace(new RegExp(`${Utils.escapeRegExp(a)}${Utils.escapeRegExp(a)}(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])`, this.nameEnabled && !this.prioritizeNameOverVietPhrase && nameMap.has(a.toUpperCase()) ? 'giu' : 'gu'), `${Utils.escapeRegExpReplacement(phraseResult)} ${Utils.escapeRegExpReplacement(phraseResult)}${phraseResult.length > 0 ? ' ' : ''}`)
+                  .replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{M}\\p{Nd})\\]}’”])${Utils.escapeRegExp(a)}(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])`, this.nameEnabled && !this.prioritizeNameOverVietPhrase && nameMap.has(a.toUpperCase()) ? 'giu' : 'gu'), `$1 ${Utils.escapeRegExpReplacement(phraseResult)}${phraseResult.length > 0 ? ' ' : ''}`)
+                  .replace(new RegExp(` +${Utils.escapeRegExp(a)}(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])`, this.nameEnabled && !this.prioritizeNameOverVietPhrase && nameMap.has(a.toUpperCase()) ? 'giu' : 'gu'), phraseResult.length > 0 ? ` - ${Utils.escapeRegExpReplacement(phraseResult).replace(/^([ \p{P}]*)(\p{Ll})/u, (___, p1, p2) => p1 + p2.toUpperCase())}` : '')
+                  .replace(new RegExp(`${Utils.escapeRegExp(a)}${Utils.escapeRegExp(a)}`, this.nameEnabled && !this.prioritizeNameOverVietPhrase && nameMap.has(a.toUpperCase()) ? 'gi' : 'g'), `${Utils.escapeRegExpReplacement(phraseResult)} ${Utils.escapeRegExpReplacement(phraseResult)}`)
+                  .replace(new RegExp(`([\\p{Lu}\\p{Ll}\\p{M}\\p{Nd})\\]}’”])${Utils.escapeRegExp(a)}`, this.nameEnabled && !this.prioritizeNameOverVietPhrase && nameMap.has(a.toUpperCase()) ? 'giu' : 'gu'), `$1${phraseResult.length > 0 ? ` ${Utils.escapeRegExpReplacement(phraseResult)}` : ''}`)
+                  .replace(new RegExp(` +${Utils.escapeRegExp(a)}`, this.nameEnabled && !this.prioritizeNameOverVietPhrase && nameMap.has(a.toUpperCase()) ? 'gi' : 'g'), phraseResult.length > 0 ? ` - ${Utils.escapeRegExpReplacement(phraseResult).replace(/^([ \p{P}]*)(\p{Ll})/u, (___, p1, p2) => p1 + p2.toUpperCase())}` : '')
                   .replace(new RegExp(`${Utils.escapeRegExp(a)}${this.nameEnabled && nameArray.length > 0 ? `(?=${nameArray.map(([___, d]) => d).join('|')})` : '(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])'}`, 'giu'), `${Utils.escapeRegExpReplacement(phraseResult)}${phraseResult.length > 0 ? ' ' : ''}`)
-                  .replace(new RegExp(`${Utils.escapeRegExp(a)}(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])`, this.nameEnabled && !this.prioritizeNameOverVietPhrase && Object.hasOwn(nameObject, a.toUpperCase()) ? 'giu' : 'gu'), `${Utils.escapeRegExpReplacement(phraseResult)}${phraseResult.length > 0 ? ' ' : ''}`)
-                  .replace(new RegExp(Utils.escapeRegExp(a), this.nameEnabled && !this.prioritizeNameOverVietPhrase && Object.hasOwn(nameObject, a.toUpperCase()) ? 'gi' : 'g'), Utils.escapeRegExpReplacement(phraseResult));
+                  .replace(new RegExp(`${Utils.escapeRegExp(a)}(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])`, this.nameEnabled && !this.prioritizeNameOverVietPhrase && nameMap.has(a.toUpperCase()) ? 'giu' : 'gu'), `${Utils.escapeRegExpReplacement(phraseResult)}${phraseResult.length > 0 ? ' ' : ''}`)
+                  .replace(new RegExp(Utils.escapeRegExp(a), this.nameEnabled && !this.prioritizeNameOverVietPhrase && nameMap.has(a.toUpperCase()) ? 'gi' : 'g'), Utils.escapeRegExpReplacement(phraseResult));
               }
 
               return false;
@@ -1129,8 +1129,8 @@ class Vietphrase {
       nameArray = nameArray.concat(nhanByPronoun, nhanByName);
 
       if (nameArray.concat(dataArray).length > 0) {
-        const dataObject = Object.fromEntries(dataArray);
-        const nameObject = Object.fromEntries(nameArray);
+        const dataMap = new Map(dataArray);
+        const nameMap = new Map(nameArray);
 
         const combineDatas = nameArray.concat(dataArray).filter(([first], __, array) => !array[first] && (array[first] = 1), {});
         const dataLengths = combineDatas.reduce((accumulator, [first]) => (!accumulator.includes(first.length) ? accumulator.concat(first.length).sort((a, b) => b - a) : accumulator), [1]);
@@ -1164,7 +1164,7 @@ class Vietphrase {
                       const value = values.split(/[/|]/)[0];
                       length = key.length;
 
-                      if (this.prioritizeNameOverVietPhrase && this.nameMap.has(key)) {
+                      if (this.prioritizeNameOverVietPhrase && Object.hasOwn(this.nameObject, key)) {
                         tempLine += (charsInTempLine.length > 0 && /^[\p{Lu}\p{Ll}\p{Nd}(([{‘“]/u.test(key) && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(prevPhrase) ? ' ' : '') + key;
                         prevPhrase = key;
                       } else if (value !== '') {
@@ -1196,13 +1196,13 @@ class Vietphrase {
                     let phrase = chars.slice(i, i + length).join('');
 
                     const charsInTempLine = [...tempLine];
-                    const couldUpperCaseKey = !this.prioritizeNameOverVietPhrase || (Object.hasOwn(nameObject, phrase.toUpperCase()) && !this.nameMap.has(phrase));
+                    const couldUpperCaseKey = !this.prioritizeNameOverVietPhrase || (nameMap.has(phrase.toUpperCase()) && !Object.hasOwn(this.nameObject, phrase));
 
-                    if (phrase.length > 0 && (Object.hasOwn(nameObject, couldUpperCaseKey ? phrase.toUpperCase() : phrase) || (/\p{sc=Hani}/u.test(phrase) && Object.hasOwn(dataObject, phrase.toUpperCase()) && nameKeys.every((element) => !phrase.toLowerCase().startsWith(element.toLowerCase())))) && phrase !== '·') {
+                    if (phrase.length > 0 && (nameMap.has(couldUpperCaseKey ? phrase.toUpperCase() : phrase) || (/\p{sc=Hani}/u.test(phrase) && dataMap.has(phrase.toUpperCase()) && nameKeys.every((element) => !phrase.toLowerCase().startsWith(element.toLowerCase())))) && phrase !== '·') {
                       phrase = !couldUpperCaseKey ? phrase : phrase.toUpperCase();
-                      const phraseResult = (nameObject[phrase] ?? dataObject[phrase]).split(/[/|]/)[0];
+                      const phraseResult = (nameMap.get(phrase) ?? dataMap.get(phrase)).split(/[/|]/)[0];
 
-                      if (this.prioritizeNameOverVietPhrase && this.nameMap.has(phrase)) {
+                      if (this.prioritizeNameOverVietPhrase && Object.hasOwn(this.nameObject, phrase)) {
                         tempLine += (charsInTempLine.length > 0 && /^[\p{Lu}\p{Ll}\p{Nd}(([{‘“]/u.test(phrase) && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(prevPhrase) ? ' ' : '') + phrase;
                         prevPhrase = phrase;
                       } else if (phraseResult !== '') {
@@ -1248,8 +1248,8 @@ class Vietphrase {
     this.autocapitalize = autocapitalize;
     this.data = data;
     this.nameEnabled = nameEnabled;
-    this.nameMap = new Map((this.nameEnabled ? this.data.name.concat(glossary.length > 0 ? glossary : this.data.namePhu) : []).map(([first, second]) => [this.prioritizeNameOverVietPhrase ? second : first.toUpperCase(), second]).filter(([first]) => first != null && first.length > 0 && inputText.toLowerCase().includes(first.toLowerCase())));
-    this.name = [...this.nameMap];
+    this.nameObject = Object.fromEntries((this.nameEnabled ? this.data.name.concat(glossary.length > 0 ? glossary : this.data.namePhu) : []).map(([first, second]) => [this.prioritizeNameOverVietPhrase ? second : first.toUpperCase(), second]).filter(([first]) => first != null && first.length > 0 && inputText.toLowerCase().includes(first.toLowerCase())));
+    this.name = Object.entries(this.nameObject);
 
     try {
       let dataArray = {};
