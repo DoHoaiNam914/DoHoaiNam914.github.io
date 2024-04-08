@@ -1217,6 +1217,10 @@ $copyButtons.on('click', async function onClick() {
 
 $pasteButtons.on('click', async function onClick() {
   await navigator.clipboard.readText().then((clipText) => {
+    if (clipText === $($(this).data('target')).val()) return;
+    $($(this).data('target')).prop('scrollLeft', 0);
+    $($(this).data('target')).prop('scrollTop', 0);
+
     if ($(this).data('target') === '#input-textarea') {
       $resultTextarea.prop('scrollTop', 0);
       $($(this).data('target')).val(clipText).trigger('input');
