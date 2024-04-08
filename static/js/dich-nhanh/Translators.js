@@ -1067,7 +1067,7 @@ class Vietphrase {
       const dataArray = data.toSorted((a, b) => b[0].length - a[0].length);
 
       if (nameArray.concat(dataArray).length > 0) {
-        const nameMap = Object.fromEntries(nameArray);
+        const nameMap = new Map(nameArray);
 
         const combineDatas = nameArray.concat(dataArray).filter(([first], __, array) => !array[first] && (array[first] = 1), {});
 
