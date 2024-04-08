@@ -1025,7 +1025,7 @@ class Vietphrase {
       nhanByPronoun = [];
     }
 
-    return [nhanByName, nhanByPronoun.filter(([a]) => !this.data.pronoun.some(([b]) => b === a))];
+    return [nhanByName.toSorted((a, b) => b[0].length - a[0].length), nhanByPronoun.toSorted((a, b) => b[0].length - a[0].length).filter(([a]) => !this.data.pronoun.some(([b]) => b === a))];
   }
 
   static getCapitalizeText(text) {
@@ -1075,7 +1075,7 @@ class Vietphrase {
           const chars = [...a];
           let returnText = a;
 
-          if (chars.length > 0 && chars.some((b) => Object.hasOwn(this.data.hanViet, b))) {
+          if (chars.length > 0 && chars.some((b) => this.data.hanViet.has(b))) {
             let prefilterElement = a.toLowerCase();
 
             combineDatas.filter(([first]) => first !== '·' && /\p{sc=Hani}/u.test(first) && prefilterElement.includes(first.toLowerCase()) && (prefilterElement = prefilterElement.replaceAll(first.toLowerCase(), '\n'))).some(([a, b]) => {
@@ -1138,7 +1138,7 @@ class Vietphrase {
         lines.forEach((a) => {
           const chars = [...a];
 
-          if (chars.length === 0 || !chars.some((b) => Object.hasOwn(this.data.hanViet, b))) {
+          if (chars.length === 0 || !chars.some((b) => this.data.hanViet.has(b))) {
             results.push(a);
           } else {
             const nameKeys = nameArray.map(([first]) => first.toLowerCase()).filter((b) => a.includes(b));
@@ -1256,15 +1256,15 @@ class Vietphrase {
 
       switch (targetLanguage) {
         case 'pinyin': {
-          dataArray = this.data.pinyins;
+          dataArray = [...this.data.pinyins];
           break;
         }
         case 'sinoVietnamese': {
-          dataArray = this.data.hanViet;
+          dataArray = [...this.data.hanViet];
           break;
         }
         case 'vi': {
-          dataArray = Object.fromEntries((this.data.vietPhrase.length > 0 ? this.data.vietPhrase : Object.entries(this.data.hanViet)).concat(this.data.vietPhrase.concat(this.data.vietPhrasePhu).length > 0 ? [['的', addDeLeZhao ? this.data.hanViet['的'] : ''], ['了', addDeLeZhao ? this.data.hanViet['了'] : ''], ['着', addDeLeZhao ? this.data.hanViet['着'] : '']] : [], this.data.vietPhrasePhu).map(([first, second]) => [first.toUpperCase(), second]));
+          dataArray = Object.entries(Object.fromEntries((this.data.vietPhrase.length > 0 ? this.data.vietPhrase : [...this.data.hanViet]).concat(this.data.vietPhrase.concat(this.data.vietPhrasePhu).length > 0 ? [['的', addDeLeZhao ? this.data.hanViet.get('的') : ''], ['了', addDeLeZhao ? this.data.hanViet.get('了') : ''], ['着', addDeLeZhao ? this.data.hanViet.get('着') : '']] : [], this.data.vietPhrasePhu).map(([first, second]) => [first.toUpperCase(), second])));
           break;
         }
         // no default
@@ -1272,11 +1272,11 @@ class Vietphrase {
 
       switch (translationAlgorithm) {
         case this.TranslationAlgorithms.TRANSLATE_FROM_LEFT_TO_RIGHT: {
-          return this.translateFromLeftToRight(targetLanguage, Object.entries(dataArray).filter(([first]) => first.length > 0 && inputText.toLowerCase().includes(first.toLowerCase())), inputText);
+          return this.translateFromLeftToRight(targetLanguage, dataArray.filter(([first]) => first.length > 0 && inputText.toLowerCase().includes(first.toLowerCase())), inputText);
         }
         default: {
           let prefilterText = inputText.toLowerCase();
-          return this.translatePrioritizeLongVietPhraseClusters(targetLanguage, Object.entries(dataArray).toSorted((a, b) => b[0].length - a[0].length).filter(([first]) => first.length > 0 && prefilterText.includes(first.toLowerCase()) && (prefilterText = prefilterText.replaceAll(first.toLowerCase(), '\n'))), inputText);
+          return this.translatePrioritizeLongVietPhraseClusters(targetLanguage, dataArray.toSorted((a, b) => b[0].length - a[0].length).filter(([first]) => first.length > 0 && prefilterText.includes(first.toLowerCase()) && (prefilterText = prefilterText.replaceAll(first.toLowerCase(), '\n'))), inputText);
         }
       }
     } catch (error) {

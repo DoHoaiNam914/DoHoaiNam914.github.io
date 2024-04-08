@@ -60,8 +60,8 @@ let glossaryStorage = JSON.parse(localStorage.getItem('glossary')) ?? {};
 const uuid = crypto.randomUUID();
 
 const vietPhraseData = {
-  pinyins: {},
-  hanViet: {},
+  pinyins: new Map(),
+  hanViet: new Map(),
   vietPhrase: [],
   vietPhrasePhu: [],
   name: [],
@@ -987,11 +987,11 @@ function reloadGlossaryEntries() {
   if (isLoaded) updateInputTextLength();
 
   localStorage.setItem('glossary', JSON.stringify({
-    vietPhrase: vietPhraseData.vietPhrasePhu,
-    name: vietPhraseData.name,
-    namePhu: vietPhraseData.namePhu,
-    luatNhan: vietPhraseData.luatNhan,
-    pronoun: vietPhraseData.pronoun,
+    vietPhrase: vietPhraseData.vietPhrasePhu.length < 5000 ? vietPhraseData.vietPhrasePhu : [],
+    name: vietPhraseData.name.length < 5000 ? vietPhraseData.name : [],
+    namePhu: vietPhraseData.namePhu.length < 5000 ? vietPhraseData.namePhu : [],
+    luatNhan: vietPhraseData.luatNhan.length < 5000 ? vietPhraseData.luatNhan : [],
+    pronoun: vietPhraseData.pronoun.length < 5000 ? vietPhraseData.pronoun : [],
   }));
 
   glossaryStorage = localStorage.getItem('glossary');
@@ -1040,7 +1040,7 @@ $(document).ready(async () => {
     });
 
     chinesePhienAmWordList = chinesePhienAmWordList.filter((element, __, array) => element.join('=').length > 0 && element.length === 2 && !array[element[0]] && (array[element[0]] = 1), {}).map(([c, d]) => [c, !specialSinovietnameseMap.map(([e]) => e).includes(c) ? applyNewAccent(d) : d]);
-    vietPhraseData.hanViet = Object.fromEntries(chinesePhienAmWordList);
+    vietPhraseData.hanViet = new Map(chinesePhienAmWordList);
     console.log(`Đã tải xong bộ dữ liệu hán việt (${chinesePhienAmWordList.length})!`);
     lastSession = {};
   } catch (error) {
@@ -1053,31 +1053,30 @@ $(document).ready(async () => {
     url: '/static/datasource/Unihan_Readings.txt',
   }).done((data) => {
     vietPhraseData.pinyins = data.split('\n').reduce((accumulator, currentValue) => {
-      const tempAccumulator = accumulator;
-      if (currentValue.length === 0 || currentValue.startsWith('#')) return tempAccumulator;
+      if (currentValue.length === 0 || currentValue.startsWith('#')) return accumulator;
       const arrayEntry = [String.fromCodePoint(parseInt(currentValue.substring(2).split('\t')[0], 16)), currentValue.split('\t')[1]];
 
-      if (arrayEntry.length === 2 && !Object.hasOwn(tempAccumulator, arrayEntry[0])) {
-        const [first, second] = arrayEntry;
-        tempAccumulator[first] = second;
+      if (arrayEntry.length === 2 && !accumulator.has(arrayEntry[0])) {
+        accumulator.set(arrayEntry[0], arrayEntry[1]);
       }
 
-      return tempAccumulator;
-    }, {});
+      return accumulator;
+    }, new Map());
 
-    console.log(`Đã tải xong bộ dữ liệu bính âm (${Object.keys(vietPhraseData.pinyins).length})!`);
+    console.log(`Đã tải xong bộ dữ liệu bính âm (${vietPhraseData.pinyins.size})!`);
     lastSession = {};
   }).fail((__, ___, errorThrown) => {
     console.error('Không thể tải bộ dữ liệu bính âm:', errorThrown);
     setTimeout(window.location.reload, 5000);
   });
 
-  if ($loadDefaultVietPhraseFileSwitch.prop('checked')) {
+  if ($loadDefaultVietPhraseFileSwitch.prop('checked') && $vietPhraseInput.prop('files').length === 0) {
     if (!Utils.isOnMobile()) {
-      await $.ajax({
+      $.ajax({
         method: 'GET',
         url: '/static/datasource/Data của thtgiang (đọc README)/VietPhrase.txt',
       }).done((data) => {
+        if ($vietPhraseInput.prop('files').length > 0) return;
         vietPhraseData.vietPhrase = [...data.split('\r\n').reduce((accumulator, currentValue) => {
           if (currentValue.length === 0) return accumulator;
           const arrayEntry = currentValue.split('=');
@@ -1087,7 +1086,7 @@ $(document).ready(async () => {
           }
 
           return accumulator;
-        }, new Map()), ...chinesePhienAmWordList].filter(([first], __, array) => !array[first] && (array[first] = 1), {});
+        }, new Map())].filter(([first], __, array) => !array[first] && (array[first] = 1), {});
 
         $vietPhraseEntryCounter.text(vietPhraseData.vietPhrase.length);
         console.log(`Đã tải xong tệp VietPhrase (${$vietPhraseEntryCounter.text()})!`);
@@ -1096,10 +1095,11 @@ $(document).ready(async () => {
         console.error('Không tải được tệp VietPhrase:', errorThrown);
       });
     } else {
-      await $.ajax({
+      $.ajax({
         method: 'GET',
         url: '/static/datasource/ttvtranslate/VietPhrase.txt',
       }).done((data) => {
+        if ($vietPhraseInput.prop('files').length > 0) return;
         vietPhraseData.vietPhrase = [...data.split('\n').reduce((accumulator, currentValue) => {
           if (currentValue.length === 0) return accumulator;
           const arrayEntry = currentValue.split('=');
@@ -1109,7 +1109,7 @@ $(document).ready(async () => {
           }
 
           return accumulator;
-        }, new Map()), ...chinesePhienAmWordList].filter(([first], __, array) => !array[first] && (array[first] = 1), {});
+        }, new Map())].filter(([first], __, array) => !array[first] && (array[first] = 1), {});
 
         $vietPhraseEntryCounter.text(vietPhraseData.vietPhrase.length);
         console.log(`Đã tải xong tệp VietPhrase (${$vietPhraseEntryCounter.text()})!`);
@@ -1422,7 +1422,7 @@ $vietPhraseInput.on('change', function onChange() {
       }
 
       return accumulator;
-    }, new Map()), ...Object.entries(vietPhraseData.hanViet)].filter(([first], __, array) => !array[first] && (array[first] = 1), {});
+    }, new Map())].filter(([first], __, array) => !array[first] && (array[first] = 1), {});
     $vietPhraseEntryCounter.text(vietPhraseData.vietPhrase.length);
     console.log(`Đã tải xong tệp ${$vietPhraseInput.prop('files')[0].name} (${$vietPhraseEntryCounter.text()})!`);
     lastSession = {};
@@ -1528,7 +1528,7 @@ $glossaryListSelect.change(function onChange() {
 });
 
 $sourceEntryInput.on('input', async function onInput() {
-  const inputText = (Object.fromEntries(glossary.map(([first]) => [first.toUpperCase(), first])))[$(this).val().toUpperCase()] ?? $(this).val();
+  const inputText = (new Map(glossary.map(([first]) => [first.toUpperCase(), first]))).get($(this).val().toUpperCase()) ?? $(this).val();
   $targetEntryTextarea.prop('scrollTop', 0);
 
   if (inputText.length > 0) {
@@ -1666,7 +1666,6 @@ $translateEntryButtons.click(async function onClick() {
 
 $addButton.click(() => {
   if ($sourceEntryInput.val().length === 0) return;
-  if (Object.hasOwn(glossaryObject, $sourceEntryInput.val())) delete glossaryObject[$sourceEntryInput.val()];
   glossaryObject[$sourceEntryInput.val().trim()] = $targetEntryTextarea.val().trim();
   glossary = Object.entries(glossaryObject);
   reloadGlossaryEntries();
