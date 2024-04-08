@@ -1272,7 +1272,7 @@ class Vietphrase {
 
       switch (translationAlgorithm) {
         case this.TranslationAlgorithms.TRANSLATE_FROM_LEFT_TO_RIGHT: {
-          return this.translateFromLeftToRight(targetLanguage, dataArray, inputText);
+          return this.translateFromLeftToRight(targetLanguage, inputText.split('\n').length === 1 ? dataArray.filter(([first]) => first.length > 0 && inputText.includes(first.toLowerCase())) : dataArray, inputText);
         }
         default: {
           let prefilterText = inputText.toLowerCase();
