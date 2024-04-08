@@ -1,6 +1,7 @@
 /* eslint-disable */
 
 const specialSinovietnameseMap = [
+  ['虾兵蟹将', 'hà binh giải tướng'],
   ['骑士长', 'kỵ sĩ trưởng'],
   ['联合国', 'liên hiệp quốc'],
   ['魔法使', 'ma pháp sứ'],
