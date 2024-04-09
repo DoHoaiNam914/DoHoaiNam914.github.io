@@ -1242,7 +1242,7 @@ class Vietphrase {
     }
   }
 
-  function removeAccents(pinyin) {
+  static removeAccents(pinyin) {
     const accentsMap = {
       'ā': 'a', 'á': 'a', 'ǎ': 'a', 'à': 'a',
       'ē': 'e', 'é': 'e', 'ě': 'e', 'è': 'e',
@@ -1271,7 +1271,7 @@ class Vietphrase {
 
       switch (targetLanguage) {
         case 'pinyin': {
-          dataArray = !pinyinAccents ? [...this.data.pinyins].map(([first, second]) => [first, removeAccents(second)]) : [...this.data.pinyins];
+          dataArray = !pinyinAccents ? [...this.data.pinyins].map(([first, second]) => [first, Vietphrase.removeAccents(second)]) : [...this.data.pinyins];
           break;
         }
         case 'sinoVietnamese': {
