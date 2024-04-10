@@ -760,8 +760,9 @@ function updateLanguageSelect(translator, prevTranslator) {
   $targetLanguageSelect.val(targetLanguage).change();
 }
 
-async function translateText(inputText, translatorOption, targetLanguage, glossaryEnabled, pinyinAccents = true) {
+async function translateText(inputText, translatorOption, targetLanguage, glossaryEnabled, useToneMarks = true) {
   try {
+    console.log(useToneMarks);
     const text = glossaryEnabled && [Translators.BAIDU_FANYI, Translators.PAPAGO].every((element) => translatorOption !== element) ? applyNameToText(inputText, translatorOption, glossary) : inputText;
     let translator = null;
     let sourceLanguage = '';
@@ -805,7 +806,7 @@ async function translateText(inputText, translatorOption, targetLanguage, glossa
 
     switch (translatorOption) {
       case Translators.VIETPHRASE: {
-        result = await translator.translateText(sourceLanguage, targetLanguage, text, $translationAlgorithmRadio.filter('[checked]').val(), $multiplicationAlgorithmRadio.filter('[checked]').val(), true, $addDeLeZhaoSwitch.prop('checked'), false, vietPhraseData, glossaryEnabled, glossary, pinyinAccents);
+        result = await translator.translateText(sourceLanguage, targetLanguage, text, $translationAlgorithmRadio.filter('[checked]').val(), $multiplicationAlgorithmRadio.filter('[checked]').val(), true, $addDeLeZhaoSwitch.prop('checked'), false, vietPhraseData, glossaryEnabled, glossary, useToneMarks);
         break;
       }
       default: {
@@ -1661,7 +1662,7 @@ $translateEntryButtons.click(async function onClick() {
   if (inputText.length > 0) {
     $translateEntryButtons.addClass('disabled');
     $sourceEntryInput.attr('readonly', true);
-    $targetEntryTextarea.val(await translateText(inputText, translatorOption, targetLanguage, $(this).data('glossary') != null && Boolean($(this).data('glossary')) !== false), $(this).data('pinyin-format') !== 'noAccents').trigger('input');
+    $targetEntryTextarea.val(await translateText(inputText, translatorOption, targetLanguage, $(this).data('glossary') != null && Boolean($(this).data('glossary')) !== false, Boolean($(this).data('no-tone-mark')) === false)).trigger('input');
     $targetEntryTextarea.prop('scrollTop', 0);
     $sourceEntryInput.removeAttr('readonly');
     $translateEntryButtons.removeClass('disabled');

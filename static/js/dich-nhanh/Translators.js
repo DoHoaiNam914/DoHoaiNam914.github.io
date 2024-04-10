@@ -1257,7 +1257,7 @@ class Vietphrase {
     return pinyin.replaceAll(/[āáǎàēéěèīíǐìōóǒòūúǔùüǖǘǚǜńň]/g, (match) => accentsMap[match]);
   }
 
-  async translateText(__, targetLanguage, inputText, translationAlgorithm, multiplicationAlgorithm, prioritizeNameOverVietPhrase, addDeLeZhao, autocapitalize, data, nameEnabled, glossary = [], pinyinAccents = true) {
+  async translateText(__, targetLanguage, inputText, translationAlgorithm, multiplicationAlgorithm, prioritizeNameOverVietPhrase, addDeLeZhao, autocapitalize, data, nameEnabled, glossary = [], useToneMarks = true) {
     this.multiplicationAlgorithm = multiplicationAlgorithm;
     this.prioritizeNameOverVietPhrase = prioritizeNameOverVietPhrase;
     this.autocapitalize = autocapitalize;
@@ -1271,7 +1271,7 @@ class Vietphrase {
 
       switch (targetLanguage) {
         case 'pinyin': {
-          dataArray = !pinyinAccents ? [...this.data.pinyins].map(([first, second]) => [first, Vietphrase.removeAccents(second)]) : [...this.data.pinyins];
+          dataArray = !useToneMarks ? [...this.data.pinyins].map(([first, second]) => [first, Vietphrase.removeAccents(second)]) : [...this.data.pinyins];
           break;
         }
         case 'sinoVietnamese': {
