@@ -1075,7 +1075,7 @@ class Vietphrase {
           const chars = [...a];
           let returnText = a;
 
-          if (chars.length > 0 && chars.some((b) => this.data.hanViet.has(b))) {
+          if (chars.length > 0 && chars.some((b) => this.data.pinyins.has(b))) {
             let prefilterElement = a.toLowerCase();
 
             combineDatas.filter(([first]) => first !== '·' && /\p{sc=Hani}/u.test(first) && prefilterElement.includes(first.toLowerCase()) && (prefilterElement = prefilterElement.replaceAll(first.toLowerCase(), '\n'))).some(([a, b]) => {
@@ -1138,7 +1138,7 @@ class Vietphrase {
         lines.forEach((a) => {
           const chars = [...a];
 
-          if (chars.length === 0 || !chars.some((b) => this.data.hanViet.has(b))) {
+          if (chars.length === 0 || !chars.some((b) => this.data.pinyins.has(b))) {
             results.push(a);
           } else {
             const nameKeys = nameArray.map(([first]) => first.toLowerCase()).filter((b) => a.includes(b));
