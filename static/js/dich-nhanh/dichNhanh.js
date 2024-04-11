@@ -1294,7 +1294,7 @@ $themeOptions.click(function onClick() {
     'font-weight': $(this).data('font-weight') ?? '',
   });
 
-  if (isLoaded === true) {
+  if (isLoaded) {
     $fontOptions.filter('.active').click();
 
     if ($(this).data('font-size') != null) {
@@ -1529,7 +1529,7 @@ $glossaryListSelect.change(function onChange() {
   }
 
   reloadGlossaryEntries();
-  if (window.confirm('Bạn có muốn chuyển đổi lại chứ?')) $sourceEntryInput.trigger('input');
+  if (isLoaded && window.confirm('Bạn có muốn chuyển đổi lại chứ?')) $sourceEntryInput.trigger('input');
 });
 
 $sourceEntryInput.on('input', async function onInput() {
