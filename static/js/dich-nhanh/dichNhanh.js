@@ -1529,7 +1529,7 @@ $glossaryListSelect.change(function onChange() {
   }
 
   reloadGlossaryEntries();
-  if (isLoaded && $sourceEntryInput.val().length > 0 && window.confirm('Bạn có muốn chuyển đổi lại chứ?')) $sourceEntryInput.trigger('input');
+  if (isLoaded && (Object.hasOwn(glossaryObject, $sourceEntryInput.val()) || window.confirm('Bạn có muốn chuyển đổi lại chứ?'))) $sourceEntryInput.trigger('input');
 });
 
 $sourceEntryInput.on('input', async function onInput() {
