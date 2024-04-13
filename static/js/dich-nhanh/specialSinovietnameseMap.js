@@ -1,7 +1,8 @@
 /* eslint-disable */
 
 const specialSinovietnameseMap = [
-  ['虾兵蟹将', 'hà binh giải tướng'],
+  ['虾兵蟹将', 'HÀ BINH GIẢI TƯỚNG'],
+  ['开天辟地', 'KHAI THIÊN TỊCH ĐỊA'],
   ['俱乐部', 'câu lạc bộ'],
   ['骑士长', 'kỵ sĩ trưởng'],
   ['联合国', 'liên hiệp quốc'],
@@ -83,6 +84,7 @@ const specialSinovietnameseMap = [
   ['使魔', 'sứ ma'],
   ['师姐', 'sư tỷ'],
   ['三本', 'Tam Bản' /* Họ Mitsumoto */],
+  ['层次', 'tầng thứ'],
   ['成长', 'thành trưởng'],
   ['操纵', 'thao túng'],
   ['神使', 'thần sứ'],
@@ -200,6 +202,7 @@ const specialSinovietnameseMap = [
   ['兖', 'DUYỄN'],
   ['台', 'ĐÀI' /* Họ */],
   ['抬', 'ĐÀI'],
+  ['娣', 'ĐỆ'],
   ['侄', 'ĐIỆT'],
   ['顶', 'ĐỈNH'],
   ['锻', 'ĐOÀN'],
@@ -298,6 +301,7 @@ const specialSinovietnameseMap = [
   ['霹', 'TỊCH'],
   ['钱', 'TIỀN'],
   ['箭', 'TIỄN'],
+  ['羡', 'TIỄN'],
   ['筱', 'TIÊU'],
   ['啸', 'TIẾU'],
   ['静', 'TỊNH, TĨNH', 'TĨNH' /* Họ Tịnh */],
