@@ -48,7 +48,7 @@ const $removeButton = $('#remove-button');
 const $glossaryEntrySelect = $('#glossary-entry-select');
 const $glossaryName = $('#glossary-name');
 
-const defaultOptions = JSON.parse('{"source_language":"auto","target_language":"vi","font":"Mặc định","font_size":100,"line_spacing":40,"alignment_settings":true,"format_settings":true,"translator":"googleTranslate","show_original_text":false,"load_default_viet_phrase_file":true,"add_de_le_zhao":false,"translation_algorithm":"0","prioritize_name_over_viet_phrase":false,"multiplication_algorithm":"2","name":true,"glossary_type":"text/plain","language_pairs":"zh-vi"}');
+const defaultOptions = JSON.parse('{"source_language":"","target_language":"vi","font":"Mặc định","font_size":100,"line_spacing":40,"alignment_settings":true,"format_settings":true,"translator":"microsoftTranslator","show_original_text":false,"load_default_viet_phrase_file":true,"add_de_le_zhao":false,"translation_algorithm":"0","prioritize_name_over_viet_phrase":false,"multiplication_algorithm":"2","name":true,"glossary_type":"text/plain","language_pairs":"zh-vi"}');
 
 const SUPPORTED_LANGUAGES = ['', 'EN', 'JA', 'ZH', 'EN-US', 'auto', 'en', 'ja', 'zh-CN', 'zh-TW', 'vi', 'zh-Hans', 'zh-Hant'];
 
@@ -1043,7 +1043,6 @@ $(document).ready(async () => {
     chinesePhienAmWordList = chinesePhienAmWordList.filter((element, __, array) => element.join('=').length > 0 && element.length === 2 && !array[element[0]] && (array[element[0]] = 1), {}).map(([c, d]) => [c, !specialSinovietnameseMap.map(([e]) => e).includes(c) ? applyNewAccent(d) : d]);
     vietPhraseData.hanViet = new Map(chinesePhienAmWordList);
     console.log(`Đã tải xong bộ dữ liệu hán việt (${chinesePhienAmWordList.length})!`);
-    lastSession = {};
   } catch (error) {
     console.error('Không thể tải bộ dữ liệu hán việt:', error);
     setTimeout(window.location.reload, 5000);
@@ -1125,6 +1124,7 @@ $(document).ready(async () => {
   $loadDefaultVietPhraseFileSwitch.removeClass('disabled');
   isLoaded = true;
   updateInputTextLength();
+  lastSession = {};
   console.log('Đã tải xong!');
 });
 
@@ -1241,9 +1241,6 @@ $retranslateButton.click(function onClick() {
 
 $glossaryManagerButton.on('mousedown', () => {
   if (!isLoaded) return;
-  $sourceEntryInput.prop('scrollLeft', 0);
-  $targetEntryTextarea.prop('scrollTop', 0);
-  $glossaryEntrySelect.val('').change();
   $sourceEntryInput.val(getSelectedTextOrActiveElementText().replace(/\n/g, ' ').trim()).trigger('input');
 
   if (window.getSelection) {
@@ -1452,6 +1449,12 @@ $resetButton.on('click', () => {
   if (window.confirm('Bạn có muốn tải lại trang ngay chứ?')) window.location.reload();
 });
 
+$('#glossary-modal').on('hide.bs.modal', () => {
+  $sourceEntryInput.prop('scrollLeft', 0);
+  $targetEntryTextarea.prop('scrollTop', 0);
+  $glossaryEntrySelect.val('').change();
+});
+
 $glossaryInput.on('change', function onChange() {
   const reader = new FileReader();
 
@@ -1469,7 +1472,7 @@ $glossaryInput.on('change', function onChange() {
           const arrayEntry = currentValue.split('=');
 
           if (arrayEntry.length === 2 && !accumulator.has(arrayEntry[0])) {
-            accumulator.set(arrayEntry[0], arrayEntry[1]);
+            accumulator.set(arrayEntry[0], arrayEntry[1].split(/[/|]/)[0]);
           }
 
           return accumulator;
@@ -1501,8 +1504,13 @@ $('#clear-glossary-button').on('click', () => {
   lastSession = {};
 });
 
-$glossaryTypeSelect.on('change', reloadGlossaryEntries);
-$vietPhraseType.on('change', reloadGlossaryEntries);
+$glossaryTypeSelect.on('change', () => {
+  reloadGlossaryEntries();
+});
+
+$vietPhraseType.on('change', () => {
+  reloadGlossaryEntries();
+});
 
 $glossaryListSelect.change(function onChange() {
   switch ($(this).val()) {
@@ -1570,14 +1578,27 @@ $sourceEntryInput.on('input', async function onInput() {
   }
 });
 
-$targetEntryTextarea.on('keypress', (event) => event.key !== 'Enter' || ($targetEntryTextarea.focus() && event.preventDefault()));
+$targetEntryTextarea.on('keypress', (event) => {
+  if (event.key === 'Enter') {
+    $targetEntryTextarea.focus();
+    event.preventDefault();
+  }
+});
 
 $targetEntryTextarea.on('input', function onInput() {
   $(this).val($(this).val().replace(/\n/g, ' '));
 });
 
-$targetEntryTextarea.on('keypress', (event) => event.key !== 'Enter' || ($addButton.click() && event.preventDefault()));
-$('#source-entry-dropdown-toggle').on('mousedown', (event) => event.preventDefault());
+$targetEntryTextarea.on('keypress', (event) => {
+  if (event.key === 'Enter') {
+    $addButton.click();
+    event.preventDefault();
+  }
+});
+
+$('#source-entry-dropdown-toggle').on('mousedown', (event) => {
+  event.preventDefault();
+});
 
 $('.dropdown-scrollable').on('hide.bs.dropdown', function onHideBsDropdown() {
   $(this).find('.dropdown-menu').prop('scrollTop', 0);
@@ -1677,7 +1698,6 @@ $addButton.click(() => {
   $glossaryEntrySelect.change();
   $addButton.addClass('disabled');
   $removeButton.addClass('disabled');
-  lastSession = {};
 });
 
 $removeButton.on('click', () => {
@@ -1687,7 +1707,6 @@ $removeButton.on('click', () => {
     glossary = Object.entries(glossaryObject);
     reloadGlossaryEntries();
     $sourceEntryInput.trigger('input');
-    lastSession = {};
   } else {
     $glossaryEntrySelect.val('').change();
   }
@@ -1705,9 +1724,21 @@ $glossaryEntrySelect.change(function onChange() {
   }
 });
 
-$glossaryName.on('change', reloadGlossaryEntries);
-$inputTextarea.on('input', () => updateInputTextLength());
-$inputTextarea.on('keypress', (event) => !(event.shiftKey && event.key === 'Enter') || ($translateButton.click() && $resultTextarea.focus()));
+$glossaryName.on('change', () => {
+  reloadGlossaryEntries();
+});
+
+$inputTextarea.on('input', () => {
+  updateInputTextLength();
+});
+
+$inputTextarea.on('keypress', (event) => {
+  if (event.shiftKey && event.key === 'Enter') {
+    $translateButton.click();
+    $resultTextarea.focus();
+    event.preventDefault();
+  }
+});
 
 $resultTextarea.on('keydown', (event) => {
   const allowKey = [
@@ -1722,9 +1753,22 @@ $resultTextarea.on('keydown', (event) => {
   return event.ctrlKey || (event.key === 'Escape' && document.activeElement.blur()) || allowKey.some((element) => event.key === element) || event.preventDefault();
 });
 
-$resultTextarea.on('drop', (event) => event.preventDefault());
-$resultTextarea.on('cut', (event) => event.preventDefault());
-$resultTextarea.on('paste', (event) => event.preventDefault());
+$resultTextarea.on('drag', (event) => {
+  event.preventDefault();
+});
+
+$resultTextarea.on('drop', (event) => {
+  event.preventDefault();
+});
+
+$resultTextarea.on('cut', (event) => {
+  event.preventDefault();
+});
+
+$resultTextarea.on('paste', (event) => {
+  event.preventDefault();
+});
+
 $resultTextarea.on('keypress', (event) => (event.key !== 'Enter' || ((event.ctrlKey && $glossaryManagerButton.trigger('mousedown') && $glossaryManagerButton.click()) || ($translateButton.click() && $inputTextarea.focus()))) && event.preventDefault());
 
 $('#haha').on('change', () => {

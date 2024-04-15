@@ -289,12 +289,12 @@
               <div class="row m-0 w-100">
                 <div class="col ps-0">
                   <select class="form-select option quick-translate-option" id="source-language-select">
-                    <option value="auto" selected>Phát hiện ngôn ngữ</option>
+                    <option value="" selected>Tự phát hiện</option>
                   </select>
                 </div>
                 <div class="col">
                   <select class="form-select option quick-translate-option" id="target-language-select">
-                    <option value="vi" selected>Việt</option>
+                    <option value="vi" selected>Tiếng Việt</option>
                   </select>
                 </div>
               </div>
@@ -688,13 +688,13 @@
                     <button type="button" class="dropdown-item translator-option" data-id="deeplTranslate">DeepL Translate</button>
                   </li>
                   <li>
-                    <button type="button" class="dropdown-item translator-option active" data-id="googleTranslate">Google Dịch</button>
+                    <button type="button" class="dropdown-item translator-option" data-id="googleTranslate">Google Dịch</button>
                   </li>
                   <li>
                     <button type="button" class="dropdown-item translator-option" data-id="papago">Papago</button>
                   </li>
                   <li>
-                    <button type="button" class="dropdown-item translator-option" data-id="microsoftTranslator">Trình dịch Microsoft</button>
+                    <button type="button" class="dropdown-item translator-option active" data-id="microsoftTranslator">Trình dịch Microsoft</button>
                   </li>
                   <li>
                     <button type="button" class="dropdown-item translator-option" data-id="vietphrase">Vietphrase</button>
@@ -757,7 +757,7 @@
                 <svg class="bi" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor">
                   <use xlink:href="#arrow-counterclockwise"></use>
                 </svg>
-                Reset
+                Thiết lập lại
               </button>
             </div>
           </div>
@@ -832,6 +832,7 @@
                       <button type="button" class="dropdown-item collapse-item define-button" data-href="https://www.google.com/search?q=define%3A{0}">Google Dictionary</button>
                       <button type="button" class="dropdown-item collapse-item define-button" data-href="https://coccoc.com/search?query={0}">Cốc Cốc</button>
                       <button type="button" class="dropdown-item collapse-item define-button" data-href="https://www.google.com/search?q={0}">Google</button>
+                      <button type="button" class="dropdown-item collapse-item define-button" data-href="https://vi.wikipedia.org/w/?search={0}&ns0=1">Wikipedia tiếng Việt</button>
                       <button type="button" class="dropdown-item collapse-item define-button" data-href="https://en.wikipedia.org/w/?search={0}&ns0=1">Wikipedia</button>
                     </div>
                   </li>
@@ -846,10 +847,11 @@
                       <button type="button" class="dropdown-item collapse-item define-button" data-href="https://hvdic.thivien.net/whv/{0}">Từ điển Hán Nôm</button>
                       <button type="button" class="dropdown-item collapse-item define-button" data-href="https://www.mdbg.net/chinese/dictionary?page=worddict&wdqb={0}">CC-CEDICT</button>
                       <button type="button" class="dropdown-item collapse-item define-button" data-href="https://english.dict.naver.com/english-chinese-dictionary/#/search?query={0}">Naver dictionary</button>
+                      <button type="button" class="dropdown-item collapse-item define-button" data-href="https://www.google.com/search?q=define%3A{0}">Google Dictionary</button>
                       <button type="button" class="dropdown-item collapse-item define-button" data-href="https://coccoc.com/search?query={0}">Cốc Cốc</button>
                       <button type="button" class="dropdown-item collapse-item define-button" data-href="https://www.baidu.com/s?wd={0}">Baidu</button>
+                      <button type="button" class="dropdown-item collapse-item define-button" data-href="https://zh.wikipedia.org/w/?search={0}&ns0=1">维基百科</button>
                       <button type="button" class="dropdown-item collapse-item define-button" data-href="https://baike.baidu.com/item/{0}">Baike</button>
-                      <button type="button" class="dropdown-item collapse-item define-button" data-href="https://zh.wikipedia.org/w/?search={0}&ns0=1">Wikipedia</button>
                     </div>
                   </li>
                   <li>
@@ -857,9 +859,10 @@
                     <div class="collapse" id="japanese-define-collapse">
                       <button type="button" class="dropdown-item collapse-item define-button" data-href="/dich-nhanh/tra-tu-dien.html?dictionary=lac-viet&dict=N-V&define={0}">Từ điển Nhật - Việt</button>
                       <button type="button" class="dropdown-item collapse-item define-button" data-href="https://mazii.net/vi-VN/search/word/javi/{0}">Mazii</button>
+                      <button type="button" class="dropdown-item collapse-item define-button" data-href="https://www.google.co.jp/search?q=define%3A{0}">Google Dictionary</button>
                       <button type="button" class="dropdown-item collapse-item define-button" data-href="https://coccoc.com/search?query={0}">Cốc Cốc</button>
                       <button type="button" class="dropdown-item collapse-item define-button" data-href="https://www.google.co.jp/search?q={0}">Google</button>
-                      <button type="button" class="dropdown-item collapse-item define-button" data-href="https://ja.wikipedia.org/w/?search={0}&ns0=1">Wikipedia</button>
+                      <button type="button" class="dropdown-item collapse-item define-button" data-href="https://ja.wikipedia.org/w/?search={0}&ns0=1">ウィキペディア</button>
                     </div>
                   </li>
                   <li>
