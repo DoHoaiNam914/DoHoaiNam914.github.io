@@ -138,6 +138,7 @@ const specialSinovietnameseMap = [
   ['长辈', 'trưởng bối'],
   ['长老', 'trưởng lão'],
   ['长官', 'trưởng quan'],
+  ['长孙', 'trưởng tôn' /* Họ */],
   ['长姐', 'trưởng tỷ'],
   ['将领', 'tướng lĩnh'],
   ['将军', 'tướng quân'],

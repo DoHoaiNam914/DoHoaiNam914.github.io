@@ -1579,8 +1579,8 @@ $targetEntryTextarea.on('input', function onInput() {
 $targetEntryTextarea.on('keypress', (event) => event.key !== 'Enter' || ($addButton.click() && event.preventDefault()));
 $('#source-entry-dropdown-toggle').on('mousedown', (event) => event.preventDefault());
 
-$('.dropdown-can-scroll').on('hide.bs.dropdown', function onHideBsDropdown() {
-  $(this).find('.dropdown-menu-scroller').prop('scrollTop', 0);
+$('.dropdown-scrollable').on('hide.bs.dropdown', function onHideBsDropdown() {
+  $(this).find('.dropdown-menu').prop('scrollTop', 0);
 });
 
 $dropdownHasCollapse.find('.dropdown-menu button.dropdown-item').on('click', function onClick() {

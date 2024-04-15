@@ -141,7 +141,7 @@
         width: 5em;
       }
 
-      .dropdown-menu-scroller {
+      .dropdown-scrollable > .dropdown-menu {
         height: 16em;
         -ms-overflow-style: none;
         overflow-x: hidden;
@@ -149,7 +149,7 @@
         white-space: nowrap;
       }
 
-      .dropdown-menu-scroller::-webkit-scrollbar {
+      .dropdown-scrollable > .dropdown-menu::-webkit-scrollbar {
         display: none;
       }
 
@@ -377,9 +377,9 @@
                   </li>
                 </ul>
               </div>
-              <div class="dropdown mb-3 option" id="theme-dropdown">
+              <div class="dropdown dropdown-scrollable mb-3 option" id="theme-dropdown">
                 <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown">Thay đổi chủ đề</button>
-                <ul class="dropdown-menu dropdown-menu-scroller">
+                <ul class="dropdown-menu">
                   <li>
                     <button type="button" class="dropdown-item theme-option active">Giao diện Bootstrap</button>
                   </li>
@@ -539,14 +539,14 @@
                   </li>
                 </ul>
               </div>
-              <div class="dropdown mb-3 option" id="font-dropdown">
+              <div class="dropdown dropdown-scrollable mb-3 option" id="font-dropdown">
                 <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
                   <svg class="bi" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor">
                     <use xlink:href="#fonts"></use>
                   </svg>
                   Phông chữ
                 </button>
-                <ul class="dropdown-menu dropdown-menu-scroller">
+                <ul class="dropdown-menu">
                   <li>
                     <button type="button" class="dropdown-item font-option active">Mặc định</button>
                   </li>
@@ -807,11 +807,11 @@
                 <option>LuatNhan</option>
                 <option>Pronouns</option>
               </select>
-              <div class="input-group mb-2 dropstart dropdown-can-scroll dropdown-has-collapse">
+              <div class="input-group mb-2 dropstart dropdown-scrollable dropdown-has-collapse">
                 <input type="text" class="form-control text-font" id="source-entry-input" list="glossary-entries-list" placeholder="Mục nguồn">
                 <datalist id="glossary-entries-list"></datalist>
                 <button type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" id="source-entry-dropdown-toggle" data-bs-toggle="dropdown" data-bs-auto-close="outside"></button>
-                <ul class="dropdown-menu dropdown-menu-scroller">
+                <ul class="dropdown-menu">
                   <li>
                     <button type="button" class="dropdown-item copy-button" data-target="#source-entry-input">Sao chép</button>
                   </li>
@@ -882,10 +882,10 @@
                   </li>
                 </ul>
               </div>
-              <div class="input-group mb-3 dropstart dropdown-can-scroll dropdown-has-collapse">
+              <div class="input-group mb-3 dropstart dropdown-scrollable dropdown-has-collapse">
                 <textarea class="form-control text-font" id="target-entry-textarea" placeholder="Mục đích" spellcheck="false"></textarea>
                 <button type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" data-bs-auto-close="outside"></button>
-                <ul class="dropdown-menu dropdown-menu-scroller">
+                <ul class="dropdown-menu">
                   <li>
                     <button type="button" class="dropdown-item copy-button" data-target="#target-entry-textarea">Sao chép</button>
                   </li>
