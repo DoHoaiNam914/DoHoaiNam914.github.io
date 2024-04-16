@@ -238,81 +238,39 @@ function applyNameToText(text, translator = Translators.VIETPHRASE, name = vietP
       if (chars.length === 0) {
         results.push(a);
       } else {
-        switch ($('#haha').val()) {
-          case 'NEW': {
-            let prevPhrase = '';
-            let i = 0;
+        let tempLine = '';
+        let prevPhrase = '';
 
-            results.push(chars.reduce((accumulator, __, currentIndex) => {
-              let tempLine = accumulator;
+        for (let i = 0; i < chars.length; i += 1) {
+          for (let j = 0; j < nameLengths.length; j += 1) {
+            const length = Math.min(chars.length, nameLengths[j]);
+            let phrase = translator === Translators.DEEPL_TRANSLATE || translator === Translators.GOOGLE_TRANSLATE ? Utils.convertHtmlToText(a.substring(i, i + length)) : a.substring(i, i + length);
 
-              if (currentIndex === i) {
-                let length = Math.min(chars.length, nameLengths[0]);
-                const foundPhrase = nameEntries.toSorted((b, c) => c[0].length - b[0].length).find(([first]) => first.length > 0 && chars.slice(i).join('').toLowerCase().startsWith(first.toLowerCase()));
+            const charsInTempLine = [...tempLine];
 
-                const charsInTempLine = [...tempLine];
+            if (Object.hasOwn(nameObject, phrase.toUpperCase())) {
+              phrase = translator === Translators.DEEPL_TRANSLATE || translator === Translators.GOOGLE_TRANSLATE ? Utils.convertHtmlToText(a.substring(i, i + length).toUpperCase()) : phrase.toUpperCase();
+              const phraseResult = nameObject[phrase].split(/[/|]/)[0];
 
-                if (foundPhrase) {
-                  const [key, values] = foundPhrase;
-                  const value = values.split(/[/|]/)[0];
-                  length = key.length;
-
-                  if (value !== '') {
-                    const hasSpaceSperator = /[\d\p{sc=Hani}]/u.test(a[i - 2]) && a[i - 1] === ' ';
-                    tempLine += (charsInTempLine.length > 0 && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(tempLine) ? ' ' : '') + (hasSpaceSperator ? '- ' : '') + value.replace(/^([ \p{P}]*)(\p{Ll})/u, (match, p1, p2) => (translator === Translators.VIETPHRASE && hasSpaceSperator ? p1 + p2.toUpperCase() : match));
-                    prevPhrase = value;
-                  }
-                } else {
-                  length = 1;
-                  const phrase = chars.slice(i, i + length).join('');
-                  tempLine += (charsInTempLine.length > 0 && /^[\p{Lu}\p{Ll}\p{Nd}(([{‘“]/u.test(phrase) && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(prevPhrase) ? ' ' : '') + phrase;
-                  prevPhrase = '';
-                }
-
-                i += length;
+              if (phraseResult !== '') {
+                const hasSpaceSperator = /[\d\p{sc=Hani}]/u.test(a[i - 2]) && a[i - 1] === ' ';
+                tempLine += (charsInTempLine.length > 0 && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(tempLine) ? ' ' : '') + (translator === Translators.VIETPHRASE && hasSpaceSperator ? '- ' : '') + (getIgnoreTranslationMarkup(phrase, phraseResult.replace(/^([ \p{P}]*)(\p{Ll})/u, (match, p1, p2) => (hasSpaceSperator ? p1 + p2.toUpperCase() : match)), translator));
+                prevPhrase = phraseResult;
               }
 
-              return tempLine;
-            }, '') || a);
-            break;
-          }
-          default: {
-            let tempLine = '';
-            let prevPhrase = '';
-
-            for (let i = 0; i < chars.length; i += 1) {
-              for (let j = 0; j < nameLengths.length; j += 1) {
-                const length = Math.min(chars.length, nameLengths[j]);
-                let phrase = translator === Translators.DEEPL_TRANSLATE || translator === Translators.GOOGLE_TRANSLATE ? Utils.convertHtmlToText(a.substring(i, i + length)) : a.substring(i, i + length);
-
-                const charsInTempLine = [...tempLine];
-
-                if (Object.hasOwn(nameObject, phrase.toUpperCase())) {
-                  phrase = translator === Translators.DEEPL_TRANSLATE || translator === Translators.GOOGLE_TRANSLATE ? Utils.convertHtmlToText(a.substring(i, i + length).toUpperCase()) : phrase.toUpperCase();
-                  const phraseResult = nameObject[phrase].split(/[/|]/)[0];
-
-                  if (phraseResult !== '') {
-                    const hasSpaceSperator = /[\d\p{sc=Hani}]/u.test(a[i - 2]) && a[i - 1] === ' ';
-                    tempLine += (charsInTempLine.length > 0 && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(tempLine) ? ' ' : '') + (translator === Translators.VIETPHRASE && hasSpaceSperator ? '- ' : '') + (getIgnoreTranslationMarkup(phrase, phraseResult.replace(/^([ \p{P}]*)(\p{Ll})/u, (match, p1, p2) => (hasSpaceSperator ? p1 + p2.toUpperCase() : match)), translator));
-                    prevPhrase = phraseResult;
-                  }
-
-                  i += length - 1;
-                  break;
-                }
-
-                if (length === 1) {
-                  tempLine += (charsInTempLine.length > 0 && /[\p{Lu}\p{Ll}\p{Nd}([{‘“]/u.test(a[i]) && /[\p{Lu}\p{Ll}\p{Nd})\]}’”]$/u.test(prevPhrase) ? ' ' : '') + (translator === Translators.DEEPL_TRANSLATE || translator === Translators.GOOGLE_TRANSLATE ? Utils.convertTextToHtml(phrase) : phrase);
-                  prevPhrase = '';
-                  break;
-                }
-              }
+              i += length - 1;
+              break;
             }
 
-            results.push(tempLine);
-            break;
+            if (length === 1) {
+              tempLine += (charsInTempLine.length > 0 && /[\p{Lu}\p{Ll}\p{Nd}([{‘“]/u.test(a[i]) && /[\p{Lu}\p{Ll}\p{Nd})\]}’”]$/u.test(prevPhrase) ? ' ' : '') + (translator === Translators.DEEPL_TRANSLATE || translator === Translators.GOOGLE_TRANSLATE ? Utils.convertTextToHtml(phrase) : phrase);
+              prevPhrase = '';
+              break;
+            }
           }
         }
+
+        results.push(tempLine);
       }
     });
 
@@ -1770,8 +1728,3 @@ $resultTextarea.on('paste', (event) => {
 });
 
 $resultTextarea.on('keypress', (event) => (event.key !== 'Enter' || ((event.ctrlKey && $glossaryManagerButton.trigger('mousedown') && $glossaryManagerButton.click()) || ($translateButton.click() && $inputTextarea.focus()))) && event.preventDefault());
-
-$('#haha').on('change', () => {
-  lastSession = {};
-  $retranslateButton.click();
-});

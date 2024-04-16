@@ -1132,8 +1132,7 @@ class Vietphrase {
         const dataMap = new Map(dataArray);
         const nameMap = new Map(nameArray);
 
-        const combineDatas = nameArray.concat(dataArray).filter(([first], __, array) => !array[first] && (array[first] = 1), {});
-        const dataLengths = combineDatas.reduce((accumulator, [first]) => (!accumulator.includes(first.length) ? accumulator.concat(first.length).sort((a, b) => b - a) : accumulator), [1]);
+        const dataLengths = nameArray.concat(dataArray).reduce((accumulator, [first]) => (!accumulator.includes(first.length) ? accumulator.concat(first.length).sort((a, b) => b - a) : accumulator), [1]);
 
         lines.forEach((a) => {
           const chars = [...a];
@@ -1142,92 +1141,44 @@ class Vietphrase {
             results.push(a);
           } else {
             const nameKeys = nameArray.map(([first]) => first.toLowerCase()).filter((b) => a.includes(b));
+            let tempLine = '';
+            let prevPhrase = '';
 
-            switch ($('#haha').val()) {
-              case 'NEW': {
-                let prevPhrase = '';
-                let i = 0;
+            for (let i = 0; i < chars.length; i += 1) {
+              for (let j = 0; j < dataLengths.length; j += 1) {
+                const length = Math.min(chars.length, dataLengths[j]);
+                let phrase = chars.slice(i, i + length).join('');
 
-                results.push(chars.reduce((accumulator, __, currentIndex) => {
-                  let tempLine = accumulator;
+                const charsInTempLine = [...tempLine];
+                const couldUpperCaseKey = !this.prioritizeNameOverVietPhrase || (nameMap.has(phrase.toUpperCase()) && !Object.hasOwn(this.nameObject, phrase));
 
-                  if (currentIndex === i) {
-                    let length = Math.min(chars.length, dataLengths[0]);
-                    const remainChars = chars.slice(i).join('');
-                    const isNameAndNhan = nameKeys.every((element) => !remainChars.toLowerCase().startsWith(element.toLowerCase()));
-                    const foundPhrase = combineDatas.filter(([first]) => /\p{sc=Hani}/u.test(first) && a.toLowerCase().includes(first.toLowerCase())).toSorted((b, c) => c[0].length - b[0].length).find(([first]) => first.length > 0 && first !== '·' && (isNameAndNhan ? remainChars.toLowerCase().startsWith(first.toLowerCase()) : nameKeys.includes(first.toLowerCase())));
+                if (phrase.length > 0 && (nameMap.has(couldUpperCaseKey ? phrase.toUpperCase() : phrase) || (/\p{sc=Hani}/u.test(phrase) && dataMap.has(phrase.toUpperCase()) && nameKeys.every((element) => !phrase.toLowerCase().startsWith(element.toLowerCase())))) && phrase !== '·') {
+                  phrase = !couldUpperCaseKey ? phrase : phrase.toUpperCase();
+                  const phraseResult = (nameMap.get(phrase) ?? dataMap.get(phrase)).split(/[/|]/)[0];
 
-                    const charsInTempLine = [...tempLine];
-
-                    if (foundPhrase) {
-                      const [key, values] = foundPhrase;
-                      const value = values.split(/[/|]/)[0];
-                      length = key.length;
-
-                      if (this.prioritizeNameOverVietPhrase && Object.hasOwn(this.nameObject, key)) {
-                        tempLine += (charsInTempLine.length > 0 && /^[\p{Lu}\p{Ll}\p{Nd}(([{‘“]/u.test(key) && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(prevPhrase) ? ' ' : '') + key;
-                        prevPhrase = key;
-                      } else if (value !== '') {
-                        const hasSpaceSperator = /[\d\p{sc=Hani}]/u.test(a[i - 2]) && a[i - 1] === ' ';
-                        tempLine += (charsInTempLine.length > 0 && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(tempLine) ? ' ' : '') + (hasSpaceSperator ? '- ' : '') + value.replace(/^([ \p{P}]*)(\p{Ll})/u, (match, p1, p2) => (hasSpaceSperator ? p1 + p2.toUpperCase() : match));
-                        prevPhrase = value;
-                      }
-                    } else {
-                      length = 1;
-                      const phrase = chars.slice(i, i + length).join('');
-                      tempLine += (charsInTempLine.length > 0 && /^[\p{Lu}\p{Ll}\p{Nd}(([{‘“]/u.test(phrase) && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(prevPhrase) ? ' ' : '') + phrase;
-                      prevPhrase = '';
-                    }
-
-                    i += length;
+                  if (this.prioritizeNameOverVietPhrase && Object.hasOwn(this.nameObject, phrase)) {
+                    tempLine += (charsInTempLine.length > 0 && /^[\p{Lu}\p{Ll}\p{Nd}(([{‘“]/u.test(phrase) && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(prevPhrase) ? ' ' : '') + phrase;
+                    prevPhrase = phrase;
+                  } else if (phraseResult !== '') {
+                    const hasSpaceSperator = /[\d\p{sc=Hani}]/u.test(a[i - 2]) && a[i - 1] === ' ';
+                    tempLine += (charsInTempLine.length > 0 && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(tempLine) ? ' ' : '') + (hasSpaceSperator ? '- ' : '') + phraseResult.replace(/^([ \p{P}]*)(\p{Ll})/u, (match, p1, p2) => (hasSpaceSperator ? p1 + p2.toUpperCase() : match));
+                    prevPhrase = phraseResult;
                   }
 
-                  return tempLine;
-                }, '') || a);
-                break;
-              }
-              default: {
-                let tempLine = '';
-                let prevPhrase = '';
-
-                for (let i = 0; i < chars.length; i += 1) {
-                  for (let j = 0; j < dataLengths.length; j += 1) {
-                    const length = Math.min(chars.length, dataLengths[j]);
-                    let phrase = chars.slice(i, i + length).join('');
-
-                    const charsInTempLine = [...tempLine];
-                    const couldUpperCaseKey = !this.prioritizeNameOverVietPhrase || (nameMap.has(phrase.toUpperCase()) && !Object.hasOwn(this.nameObject, phrase));
-
-                    if (phrase.length > 0 && (nameMap.has(couldUpperCaseKey ? phrase.toUpperCase() : phrase) || (/\p{sc=Hani}/u.test(phrase) && dataMap.has(phrase.toUpperCase()) && nameKeys.every((element) => !phrase.toLowerCase().startsWith(element.toLowerCase())))) && phrase !== '·') {
-                      phrase = !couldUpperCaseKey ? phrase : phrase.toUpperCase();
-                      const phraseResult = (nameMap.get(phrase) ?? dataMap.get(phrase)).split(/[/|]/)[0];
-
-                      if (this.prioritizeNameOverVietPhrase && Object.hasOwn(this.nameObject, phrase)) {
-                        tempLine += (charsInTempLine.length > 0 && /^[\p{Lu}\p{Ll}\p{Nd}(([{‘“]/u.test(phrase) && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(prevPhrase) ? ' ' : '') + phrase;
-                        prevPhrase = phrase;
-                      } else if (phraseResult !== '') {
-                        const hasSpaceSperator = /[\d\p{sc=Hani}]/u.test(a[i - 2]) && a[i - 1] === ' ';
-                        tempLine += (charsInTempLine.length > 0 && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(tempLine) ? ' ' : '') + (hasSpaceSperator ? '- ' : '') + phraseResult.replace(/^([ \p{P}]*)(\p{Ll})/u, (match, p1, p2) => (hasSpaceSperator ? p1 + p2.toUpperCase() : match));
-                        prevPhrase = phraseResult;
-                      }
-
-                      i += length - 1;
-                      break;
-                    }
-
-                    if (length === 1) {
-                      tempLine += (charsInTempLine.length > 0 && /^[\p{Lu}\p{Ll}\p{Nd}(([{‘“]/u.test(phrase) && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(prevPhrase) ? ' ' : '') + phrase;
-                      prevPhrase = '';
-                      i += length - 1;
-                      break;
-                    }
-                  }
+                  i += length - 1;
+                  break;
                 }
 
-                results.push(tempLine);
-                break;
+                if (length === 1) {
+                  tempLine += (charsInTempLine.length > 0 && /^[\p{Lu}\p{Ll}\p{Nd}(([{‘“]/u.test(phrase) && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(prevPhrase) ? ' ' : '') + phrase;
+                  prevPhrase = '';
+                  i += length - 1;
+                  break;
+                }
               }
             }
+
+            results.push(tempLine);
           }
         });
 
