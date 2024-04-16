@@ -1035,16 +1035,7 @@ $(document).ready(async () => {
         url: '/static/datasource/Data của thtgiang (đọc README)/VietPhrase.txt',
       }).done((data) => {
         if ($vietPhraseInput.prop('files').length > 0) return;
-        vietPhraseData.vietPhrase = [...data.split('\r\n').reduce((accumulator, currentValue) => {
-          if (currentValue.length === 0) return accumulator;
-          const arrayEntry = currentValue.split('=');
-
-          if (arrayEntry.length === 2 && !accumulator.has(arrayEntry[0])) {
-            accumulator.set(arrayEntry[0], arrayEntry[1]);
-          }
-
-          return accumulator;
-        }, new Map())].filter(([first], __, array) => !array[first] && (array[first] = 1), {});
+        vietPhraseData.vietPhrase = data.split('\r\n').filter((element) => element.length > 0 && element.split('=').length === 2).map((element) => element.split('=')).filter(([first], __, array) => !array[first] && (array[first] = 1), {});
 
         $vietPhraseEntryCounter.text(vietPhraseData.vietPhrase.length);
         console.log(`Đã tải xong tệp VietPhrase (${$vietPhraseEntryCounter.text()})!`);
@@ -1058,16 +1049,7 @@ $(document).ready(async () => {
         url: '/static/datasource/ttvtranslate/VietPhrase.txt',
       }).done((data) => {
         if ($vietPhraseInput.prop('files').length > 0) return;
-        vietPhraseData.vietPhrase = [...data.split('\n').reduce((accumulator, currentValue) => {
-          if (currentValue.length === 0) return accumulator;
-          const arrayEntry = currentValue.split('=');
-
-          if (arrayEntry.length === 2 && !accumulator.has(arrayEntry[0])) {
-            accumulator.set(arrayEntry[0], arrayEntry[1]);
-          }
-
-          return accumulator;
-        }, new Map())].filter(([first], __, array) => !array[first] && (array[first] = 1), {});
+        vietPhraseData.vietPhrase = data.split('\n').filter((element) => element.length > 0 && element.split('=').length === 2).map((element) => element.split('=')).filter(([first], __, array) => !array[first] && (array[first] = 1), {});
 
         $vietPhraseEntryCounter.text(vietPhraseData.vietPhrase.length);
         console.log(`Đã tải xong tệp VietPhrase (${$vietPhraseEntryCounter.text()})!`);
@@ -1372,17 +1354,7 @@ $vietPhraseInput.on('change', function onChange() {
   const reader = new FileReader();
 
   reader.onload = function onLoad() {
-    vietPhraseData.vietPhrase = [...this.result.split(/\r?\n|\r/).reduce((accumulator, currentValue) => {
-      const tempAccumulator = accumulator;
-      if (currentValue.length === 0) return tempAccumulator;
-      const arrayEntry = currentValue.split('=');
-
-      if (arrayEntry.length === 2 && !accumulator.has(arrayEntry[0])) {
-        accumulator.set(arrayEntry[0], arrayEntry[1]);
-      }
-
-      return accumulator;
-    }, new Map())].filter(([first], __, array) => !array[first] && (array[first] = 1), {});
+    vietPhraseData.vietPhrase = this.result.split(/\r?\n|\r/).filter((element) => element.length > 0 && element.split('=').length === 2).map((element) => element.split('=')).filter(([first], __, array) => !array[first] && (array[first] = 1), {});
     $vietPhraseEntryCounter.text(vietPhraseData.vietPhrase.length);
     console.log(`Đã tải xong tệp ${$vietPhraseInput.prop('files')[0].name} (${$vietPhraseEntryCounter.text()})!`);
     lastSession = {};
@@ -1424,17 +1396,7 @@ $glossaryInput.on('change', function onChange() {
         break;
       }
       case GlossaryType.VIETPHRASE: {
-        glossary = [...this.result.split(/\r?\n|\r/).reduce((accumulator, currentValue) => {
-          const tempAccumulator = accumulator;
-          if (currentValue.length === 0 || !$glossaryListSelect.val() === 'LuatNhan' || currentValue.startsWith('#')) return tempAccumulator;
-          const arrayEntry = currentValue.split('=');
-
-          if (arrayEntry.length === 2 && !accumulator.has(arrayEntry[0])) {
-            accumulator.set(arrayEntry[0], arrayEntry[1].split(/[/|]/)[0]);
-          }
-
-          return accumulator;
-        }, new Map())];
+        glossary = this.result.split(/\r?\n|\r/).filter((element) => element.length > 0 && ($glossaryListSelect.val() !== 'LuatNhan' || !element.startsWith('#')) && element.split('=').length === 2).map((element) => element.split('=')).filter(([first], __, array) => !array[first] && (array[first] = 1), {});
 
         $glossaryTypeSelect.val(GlossaryType.VIETPHRASE);
         break;
