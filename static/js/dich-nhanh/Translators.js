@@ -1265,20 +1265,22 @@ class Vietphrase {
       switch (translationAlgorithm) {
         case this.TranslationAlgorithms.TRANSLATE_FROM_LEFT_TO_RIGHT: {
           result = this.translateFromLeftToRight(targetLanguage, inputText.split('\n').length === 1 ? dataArray.filter(([first]) => first.length > 0 && inputText.includes(first.toLowerCase())) : dataArray, inputText);
+          break;
         }
         default: {
           let prefilterText = inputText.toLowerCase();
           result = this.translatePrioritizeLongVietPhraseClusters(targetLanguage, dataArray.toSorted((a, b) => b[0].length - a[0].length).filter(([first]) => first.length > 0 && prefilterText.includes(first.toLowerCase()) && (prefilterText = prefilterText.replaceAll(first.toLowerCase(), '\n'))), inputText);
+          break;
         }
       }
 
       dataArray = null;
+      this.data = null;
       return result;
     } catch (error) {
+      this.data = null;
       console.error('Bản dịch lỗi:', error);
       throw error;
     }
-
-    this.data = null;
   }
 }
