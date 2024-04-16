@@ -498,8 +498,6 @@ async function translateTextarea() {
           }
         }
 
-        translator = null;
-        if (translateAbortController.signal.aborted) return;
         result = results.join('\n');
       }
 
@@ -720,7 +718,6 @@ function updateLanguageSelect(translator, prevTranslator) {
 
 async function translateText(inputText, translatorOption, targetLanguage, glossaryEnabled, useToneMarks = true) {
   try {
-    console.log(useToneMarks);
     const text = glossaryEnabled && [Translators.BAIDU_FANYI, Translators.PAPAGO].every((element) => translatorOption !== element) ? applyNameToText(inputText, translatorOption, glossary) : inputText;
     let translator = null;
     let sourceLanguage = '';
@@ -772,7 +769,6 @@ async function translateText(inputText, translatorOption, targetLanguage, glossa
       }
     }
 
-    translator = null;
     return result;
   } catch (error) {
     console.error(error);
@@ -945,15 +941,15 @@ function reloadGlossaryEntries() {
   $('#glossary-entry-counter').text(glossary.length);
   if (isLoaded) updateInputTextLength();
 
-  localStorage.setItem('glossary', JSON.stringify({
+  glossaryStorage = {
     vietPhrase: vietPhraseData.vietPhrasePhu.length < 5000 ? vietPhraseData.vietPhrasePhu : [],
     name: vietPhraseData.name.length < 5000 ? vietPhraseData.name : [],
     namePhu: vietPhraseData.namePhu.length < 5000 ? vietPhraseData.namePhu : [],
     luatNhan: vietPhraseData.luatNhan.length < 5000 ? vietPhraseData.luatNhan : [],
     pronoun: vietPhraseData.pronoun.length < 5000 ? vietPhraseData.pronoun : [],
-  }));
+  };
 
-  glossaryStorage = localStorage.getItem('glossary');
+  localStorage.setItem('glossary', JSON.stringify(glossaryStorage));
   $glossaryInput.val(null);
 }
 

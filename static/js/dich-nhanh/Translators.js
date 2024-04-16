@@ -1064,12 +1064,12 @@ class Vietphrase {
       const [nhanByName, nhanByPronoun] = this.loadLuatNhanData(targetLanguage, nameArray, text);
 
       nameArray = nameArray.concat(nhanByPronoun, !this.prioritizeNameOverVietPhrase ? nhanByName : []).toSorted((a, b) => b[0].length - a[0].length);
-      const dataArray = data.toSorted((a, b) => b[0].length - a[0].length);
+      let dataArray = data.toSorted((a, b) => b[0].length - a[0].length);
 
       if (nameArray.concat(dataArray).length > 0) {
-        const nameMap = new Map(nameArray);
+        let nameMap = new Map(nameArray);
 
-        const combineDatas = nameArray.concat(dataArray).filter(([first], __, array) => !array[first] && (array[first] = 1), {});
+        let combineDatas = nameArray.concat(dataArray).filter(([first], __, array) => !array[first] && (array[first] = 1), {});
 
         result = Vietphrase.getFormattedText(result.split('\n').map((a) => {
           const chars = [...a];
@@ -1102,9 +1102,13 @@ class Vietphrase {
           return returnText;
         }).join('\n'));
 
+        nameMap = null;
+        combineDatas = null;
         if (this.autocapitalize) result = Vietphrase.getCapitalizeText(result);
       }
 
+      nameArray = null;
+      dataArray = null;
       return result;
     } catch (error) {
       console.error(error);
@@ -1121,7 +1125,7 @@ class Vietphrase {
     let result = text;
 
     try {
-      const dataArray = data;
+      let dataArray = data;
       let nameArray = this.name;
 
       const [nhanByName, nhanByPronoun] = this.loadLuatNhanData(targetLanguage, nameArray, text);
@@ -1129,8 +1133,8 @@ class Vietphrase {
       nameArray = nameArray.concat(nhanByPronoun, nhanByName);
 
       if (nameArray.concat(dataArray).length > 0) {
-        const dataMap = new Map(dataArray);
-        const nameMap = new Map(nameArray);
+        let dataMap = new Map(dataArray);
+        let nameMap = new Map(nameArray);
 
         const dataLengths = nameArray.concat(dataArray).reduce((accumulator, [first]) => (!accumulator.includes(first.length) ? accumulator.concat(first.length).sort((a, b) => b - a) : accumulator), [1]);
 
@@ -1182,10 +1186,14 @@ class Vietphrase {
           }
         });
 
+        dataMap = null;
+        nameMap = null;
         result = Vietphrase.getFormattedText(results.join('\n'));
         if (this.autocapitalize) result = Vietphrase.getCapitalizeText(result);
       }
 
+      dataArray = null;
+      nameArray = null;
       return result;
     } catch (error) {
       console.error(error);
@@ -1238,7 +1246,7 @@ class Vietphrase {
     this.name = Object.entries(this.nameObject);
 
     try {
-      let dataArray = {};
+      let dataArray = [];
 
       switch (targetLanguage) {
         case 'pinyin': {
@@ -1256,18 +1264,25 @@ class Vietphrase {
         // no default
       }
 
+      let result = inputText;
+
       switch (translationAlgorithm) {
         case this.TranslationAlgorithms.TRANSLATE_FROM_LEFT_TO_RIGHT: {
-          return this.translateFromLeftToRight(targetLanguage, inputText.split('\n').length === 1 ? dataArray.filter(([first]) => first.length > 0 && inputText.includes(first.toLowerCase())) : dataArray, inputText);
+          result = this.translateFromLeftToRight(targetLanguage, inputText.split('\n').length === 1 ? dataArray.filter(([first]) => first.length > 0 && inputText.includes(first.toLowerCase())) : dataArray, inputText);
         }
         default: {
           let prefilterText = inputText.toLowerCase();
-          return this.translatePrioritizeLongVietPhraseClusters(targetLanguage, dataArray.toSorted((a, b) => b[0].length - a[0].length).filter(([first]) => first.length > 0 && prefilterText.includes(first.toLowerCase()) && (prefilterText = prefilterText.replaceAll(first.toLowerCase(), '\n'))), inputText);
+          result = this.translatePrioritizeLongVietPhraseClusters(targetLanguage, dataArray.toSorted((a, b) => b[0].length - a[0].length).filter(([first]) => first.length > 0 && prefilterText.includes(first.toLowerCase()) && (prefilterText = prefilterText.replaceAll(first.toLowerCase(), '\n'))), inputText);
         }
       }
+
+      dataArray = null;
+      return result;
     } catch (error) {
       console.error('Bản dịch lỗi:', error);
       throw error;
     }
+
+    this.data = null;
   }
 }
