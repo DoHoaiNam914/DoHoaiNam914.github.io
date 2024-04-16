@@ -96,7 +96,7 @@ const GlossaryType = {
 };
 
 function getOptionId(id) {
-  return id.match(/(.+)-(?:select|check|radio|switch|range|dropdown)$/)[1].replace(/-/g, '_');
+  return id.match(/(.+)-(?:select|check|radio|switch|range|dropdown)$/)[1].replaceAll(/-/g, '_');
 }
 
 function getOptionType(id) {
@@ -253,8 +253,7 @@ function applyNameToText(text, translator = Translators.VIETPHRASE, name = vietP
               const phraseResult = nameObject[phrase].split(/[/|]/)[0];
 
               if (phraseResult !== '') {
-                const hasSpaceSperator = /[\d\p{sc=Hani}]/u.test(a[i - 2]) && a[i - 1] === ' ';
-                tempLine += (charsInTempLine.length > 0 && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(tempLine) ? ' ' : '') + (translator === Translators.VIETPHRASE && hasSpaceSperator ? '- ' : '') + (getIgnoreTranslationMarkup(phrase, phraseResult.replace(/^([ \p{P}]*)(\p{Ll})/u, (match, p1, p2) => (hasSpaceSperator ? p1 + p2.toUpperCase() : match)), translator));
+                tempLine += (charsInTempLine.length > 0 && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]/u.test(charsInTempLine[charsInTempLine.length - 1]) ? ' ' : '') + getIgnoreTranslationMarkup(phrase, phraseResult, translator);
                 prevPhrase = phraseResult;
               }
 
@@ -339,7 +338,7 @@ function buildResult(inputText, result) {
               const idiomaticText = document.createElement('i');
               idiomaticText.innerText = originalLines[i + lostLineFixedNumber];
               paragraph.appendChild(idiomaticText);
-              paragraph.innerText += resultLines[i].trim().replace(/^\s+$/, '').length > 0 ? ' ' : '';
+              paragraph.innerText += resultLines[i].trim().length > 0 ? ' ' : '';
               const attentionText = document.createElement('b');
               attentionText.innerText = resultLines[i];
               paragraph.appendChild(attentionText);
@@ -361,7 +360,7 @@ function buildResult(inputText, result) {
       resultDiv.innerHTML = `<p>${resultLines.map(Utils.convertTextToHtml).join('</p><p>')}</p>`;
     }
 
-    return resultDiv.innerHTML.replace(/(<p>)(<\/p>)/g, '$1<br>$2');
+    return resultDiv.innerHTML.replaceAll(/(<p>)(<\/p>)/g, '$1<br>$2');
   } catch (error) {
     console.error('Lỗi hiển thị bản dịch:', error);
     throw error.toString();
@@ -777,7 +776,7 @@ async function translateText(inputText, translatorOption, targetLanguage, glossa
 }
 
 function applyNewAccent(text) {
-  return text.replace(Utils.getTrieRegexPatternFromWords(newAccentMap.map(([first]) => first)), (match) => newAccentObject[match] ?? match);
+  return text.replaceAll(Utils.getTrieRegexPatternFromWords(newAccentMap.map(([first]) => first)), (match) => newAccentObject[match] ?? match);
 }
 
 function updateInputTextLength() {
@@ -1106,7 +1105,7 @@ $translateButton.on('click', function onClick() {
       if ($inputTextarea.val().length === 0) break;
       copyButton.addClass('disabled');
       $('#action-navbar .paste-button').addClass('disabled');
-      $resultTextarea.html($resultTextarea.html().split(/<br>|<\/p><p>/).map((element, index) => (index === 0 ? `Đang dịch...${element.slice(12).replace(/./g, ' ')}` : element.replace(/./g, ' '))).join('<br>'));
+      $resultTextarea.html($resultTextarea.html().split(/<br>|<\/p><p>/).map((element, index) => (index === 0 ? `Đang dịch...${element.slice(12).replaceAll(/./g, ' ')}` : element.replaceAll(/./g, ' '))).join('<br>'));
       $inputTextarea.hide();
       $resultTextarea.show();
       $(this).text('Huỷ');
@@ -1179,7 +1178,7 @@ $retranslateButton.click(function onClick() {
 
 $glossaryManagerButton.on('mousedown', () => {
   if (!isLoaded) return;
-  $sourceEntryInput.val(getSelectedTextOrActiveElementText().replace(/\n/g, ' ').trim()).trigger('input');
+  $sourceEntryInput.val(getSelectedTextOrActiveElementText().replaceAll(/\n/g, ' ').trim()).trigger('input');
 
   if (window.getSelection) {
     window.getSelection().removeAllRanges();
@@ -1504,7 +1503,7 @@ $targetEntryTextarea.on('keypress', (event) => {
 });
 
 $targetEntryTextarea.on('input', function onInput() {
-  $(this).val($(this).val().replace(/\n/g, ' '));
+  $(this).val($(this).val().replaceAll(/\n/g, ' '));
 });
 
 $targetEntryTextarea.on('keypress', (event) => {
@@ -1580,10 +1579,10 @@ $('.upper-case-button').on('click', function onClick() {
 
     if ($(this).data('amount') !== '#') {
       for (let i = 0; i < $(this).data('amount'); i += 1) {
-        text = text.replace(/(^| |\p{P})(\p{Ll})/u, (__, p1, p2) => p1 + p2.toUpperCase());
+        text = text.replace(/(^|\s|\p{P})(\p{Ll})/u, (__, p1, p2) => p1 + p2.toUpperCase());
       }
     } else {
-      text = text.replace(/(^| |\p{P})(\p{Ll})/gu, (__, p1, p2) => p1 + p2.toUpperCase());
+      text = text.replaceAll(/(^|\s|\p{P})(\p{Ll})/gu, (__, p1, p2) => p1 + p2.toUpperCase());
     }
 
     $targetEntryTextarea.val(text).trigger('input');
