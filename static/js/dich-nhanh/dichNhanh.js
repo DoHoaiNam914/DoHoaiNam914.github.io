@@ -829,8 +829,8 @@ function updateInputTextLength() {
 }
 
 function reloadGlossaryEntries() {
-  const entrySelect = document.createElement('select');
-  const entriesList = document.createElement('datalist');
+  let entrySelect = document.createElement('select');
+  let entriesList = document.createElement('datalist');
 
   const defaultOption = document.createElement('option');
   defaultOption.innerText = 'Chọn...';
@@ -912,8 +912,10 @@ function reloadGlossaryEntries() {
   }
 
   $glossaryEntrySelect.html(entrySelect.innerHTML);
+  entrySelect = null;
   $('#glossary-entries-list').html(entriesList.innerHTML);
-  $glossaryEntrySelect.val('');
+  entriesList = null;
+  $glossaryEntrySelect.val(defaultOption.value);
 
   switch (glossaryList) {
     case 'Names': {
