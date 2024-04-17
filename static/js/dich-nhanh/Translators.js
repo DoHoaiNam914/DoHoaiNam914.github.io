@@ -1236,7 +1236,7 @@ class Vietphrase {
     this.multiplicationAlgorithm = multiplicationAlgorithm;
     this.prioritizeNameOverVietPhrase = prioritizeNameOverVietPhrase;
     this.autocapitalize = autocapitalize;
-    this.data = data;
+    this.data = { ...data };
     this.nameEnabled = nameEnabled;
     this.nameObject = Object.fromEntries((this.nameEnabled ? this.data.name.concat(glossary.length > 0 ? glossary : this.data.namePhu) : []).map(([first, second]) => [this.prioritizeNameOverVietPhrase ? second : first.toUpperCase(), second]).filter(([first]) => first != null && first.length > 0 && inputText.toLowerCase().includes(first.toLowerCase())));
     this.data.name = Object.entries(this.nameObject);
