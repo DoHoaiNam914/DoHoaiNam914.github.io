@@ -84,7 +84,6 @@
       .workspace {
         line-height: 1.2em;
         font-size: 1em;
-        max-height: 577px;
         overflow-wrap: break-word;
         padding: 11.25pt 3.75pt calc(3.25em + 45pt);
         max-width: 1000px;
@@ -94,8 +93,8 @@
         font-family: var(--opt-font-family);
         font-size: var(--opt-font-size);
         font-weight: normal;
-        height: 59.66907962771458vh;
-        max-height: 430px;
+        height: 69vh;
+        max-height: 69vh;
         letter-spacing: 0;
         line-height:  1.6;
         line-height: var(--opt-line-height);
@@ -112,10 +111,13 @@
       @media screen and (min-width: 75rem) {
 
         .workspace {
+          max-height: 577px;
           padding: 25px 0 calc(3.25em + 70px);
         }
 
         .textarea {
+          height: 59.66907962771458vh;
+          max-height: 430px;
           padding: 20px;
         }
 
@@ -846,7 +848,7 @@
                       <button type="button" class="dropdown-item collapse-item define-button" data-href="https://www.google.com/search?q=define%3A{0}">Google Dictionary</button>
                       <button type="button" class="dropdown-item collapse-item define-button" data-href="https://coccoc.com/search?query={0}">Cốc Cốc</button>
                       <button type="button" class="dropdown-item collapse-item define-button" data-href="https://www.baidu.com/s?wd={0}">Baidu</button>
-                      <button type="button" class="dropdown-item collapse-item define-button" data-href="https://zh.wikipedia.org/w/?search={0}&ns0=1">Weiji Baike</button>
+                      <button type="button" class="dropdown-item collapse-item define-button" data-href="https://zh.wikipedia.org/w/?search={0}&ns0=1">Wikipedia</button>
                       <button type="button" class="dropdown-item collapse-item define-button" data-href="https://baike.baidu.com/item/{0}">Baidu Baike</button>
                     </div>
                   </li>
