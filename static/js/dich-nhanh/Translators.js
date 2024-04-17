@@ -1059,7 +1059,7 @@ class Vietphrase {
     let result = text;
 
     try {
-      let nameArray = this.name;
+      let nameArray = this.data.name;
 
       const [nhanByName, nhanByPronoun] = this.loadLuatNhanData(targetLanguage, nameArray, text);
 
@@ -1123,7 +1123,7 @@ class Vietphrase {
 
     try {
       let dataArray = data;
-      let nameArray = this.name;
+      let nameArray = this.data.name;
 
       const [nhanByName, nhanByPronoun] = this.loadLuatNhanData(targetLanguage, nameArray, text);
 
@@ -1239,7 +1239,7 @@ class Vietphrase {
     this.data = data;
     this.nameEnabled = nameEnabled;
     this.nameObject = Object.fromEntries((this.nameEnabled ? this.data.name.concat(glossary.length > 0 ? glossary : this.data.namePhu) : []).map(([first, second]) => [this.prioritizeNameOverVietPhrase ? second : first.toUpperCase(), second]).filter(([first]) => first != null && first.length > 0 && inputText.toLowerCase().includes(first.toLowerCase())));
-    this.name = Object.entries(this.nameObject);
+    this.data.name = Object.entries(this.nameObject);
 
     try {
       let dataArray = [];
@@ -1276,9 +1276,11 @@ class Vietphrase {
 
       dataArray = null;
       this.data = null;
+      this.nameObject = null;
       return result;
     } catch (error) {
       this.data = null;
+      this.nameObject = null;
       console.error('Bản dịch lỗi:', error);
       throw error;
     }

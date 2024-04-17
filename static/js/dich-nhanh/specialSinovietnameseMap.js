@@ -66,6 +66,7 @@ const specialSinovietnameseMap = [
   ['灵长', 'linh trưởng'],
   ['魔将', 'ma tướng'],
   ['美丽', 'mĩ lệ'],
+  ['明朝', 'Minh triều'],
   ['银行', 'ngân hàng'],
   ['外号', 'ngoại hiệu'],
   ['御使', 'ngự sứ'],

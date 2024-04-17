@@ -11,6 +11,11 @@
       @import '/static/css/fonts.css';
 
       :root {
+        --opt-font-family: serif;
+        --opt-font-size: 1em;
+        --opt-line-height: 1.2em;
+        --opt-text-align: start;
+
         /* Default font-stacks */
         --oldStyleTf: "Iowan Old Style", "Sitka Text", Palatino, "Book Antiqua", serif;
         --modernTf: Athelas, Constantia, Georgia, serif;
@@ -27,11 +32,6 @@
         --chineseFontFamily: "方体", "PingFang SC", "黑体", "Heiti SC", "Microsoft JhengHei UI", "Microsoft JhengHei", Roboto, Noto, "Noto Sans CJK SC", sans-serif;
         --taiwanFontFamily: "方體", "PingFang TC", "黑體", "Heiti TC", "Microsoft JhengHei UI", "Microsoft JhengHei", Roboto, Noto, "Noto Sans CJK TC", sans-serif;
         --hongKongFontFamily: "方體", "PingFang HK", "方體", "PingFang TC", "黑體", "Heiti TC", "Microsoft JhengHei UI", "Microsoft JhengHei", Roboto, Noto, "Noto Sans CJK TC", sans-serif;
-
-        --opt-font-family: serif;
-        --opt-font-size: 1em;
-        --opt-line-height: 1.2em;
-        --opt-text-align: start;
       }
 
       body,
@@ -190,8 +190,8 @@
         '/static/lib/hanviet.js',
         '/static/lib/handict.js',
         '/static/js/dich-nhanh/specialSinovietnameseMap.js',
-        '/static/js/dich-nhanh/newAccentMap.js',
         '/static/js/dich-nhanh/Translators.js',
+        '/static/js/newAccentMap.js',
         '/static/js/dich-nhanh/dichNhanh.js'],
       ];
 
@@ -799,11 +799,11 @@
                 <option value="zh-vi" selected>Trung → Việt</option>
               </select>
               <select class="form-select form-select-sm mb-3" id="glossary-list-select">
-                <option>VietPhrase</option>
-                <option>Names</option>
-                <option selected>Names2</option>
-                <option>LuatNhan</option>
-                <option>Pronouns</option>
+                <option value="vietPhrasePhu">VietPhrase2</option>
+                <option value="name">Names</option>
+                <option value="namePhu" selected>Names2</option>
+                <option value="luatNhan">LuatNhan</option>
+                <option value="pronoun">Pronouns</option>
               </select>
               <div class="input-group mb-2 dropstart dropdown-scrollable dropdown-has-collapse">
                 <input type="text" class="form-control text-font" id="source-entry-input" list="glossary-entries-list" placeholder="Mục nguồn">

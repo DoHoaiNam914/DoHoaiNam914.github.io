@@ -2,11 +2,11 @@
 
 $(document).ready(async () => {
   const searchParams = new URLSearchParams(window.location.search);
+  let paragraph = document.createElement('p');
 
   const dictionary = searchParams.get('dictionary') ?? 'lac-viet';
-  const define = searchParams.get('define').trim().replaceAll(/^\s+|\s+$/g, '').toLowerCase() ?? '';
+  let define = (searchParams.get('define') ?? '').trim().replaceAll(/^\s+|\s+$/g, '').toLowerCase();
   const sectionHeading = document.createElement('h1');
-  let paragraph = document.createElement('p');
 
   if (define.length > 0) {
     sectionHeading.innerText = `Từ khoá: ${define}`;
@@ -21,16 +21,19 @@ $(document).ready(async () => {
           url: '/static/datasource/cjkvmap.txt',
         }).done((data) => {
           const dataList = data.split(/\r?\n|\r/).map((element) => element.split('|')).filter((element) => element.length === 3);
+          define = define.replaceAll(new RegExp(`${Utils.getTrieRegexPatternFromWords(Object.keys(oldAccentObject)).source}(?= |$)`, 'g'), (match) => oldAccentObject[match] ?? match);
           const charsAndPhrases = define.split(' ').flatMap((element) => (/[\p{sc=Hani}\p{sc=Hira}\p{sc=Kana}]+/u.test(element) ? [...element] : element));
-          let separator = ''; 
+          let separator = '';
           const containsPhrase = [];
 
           for (let i = 0; i < charsAndPhrases.length; i += 1) {
             const charOrPhrase = charsAndPhrases.slice(i).join(separator);
+            const foundPhrase = dataList.toSorted((a, b) => b[0].length - a[0].length).reduce((accumulator, [first, second, third]) => {
+              if (!containsPhrase.includes(first) && (second.split('/')[0].split(', ').some((a) => charsAndPhrases.filter((b) => /^\p{Ll}+$/u.test(b)).some((b) => b === a.toLowerCase())) || first.toLowerCase() === charOrPhrase || (charsAndPhrases.slice(i).length >= 2 && (charOrPhrase.startsWith(first.toLowerCase()) || charOrPhrase.endsWith(first.toLowerCase()) || third.toLowerCase().includes(charOrPhrase))))) accumulator.push(first);
+              return accumulator;
+            }, []);
 
-            const foundPhrase = dataList.toSorted((a, b) => b[0].length - a[0].length).filter(([first, second, third]) => second.split('/')[0].split(', ').some((element) => charOrPhrase === element.toLowerCase() || (charOrPhrase.length >= 2 && (charOrPhrase.startsWith(element.toLowerCase())))) || first.toLowerCase() === charOrPhrase || (charOrPhrase.length >= 2 && (charOrPhrase.startsWith(first.toLowerCase()) || charOrPhrase.endsWith(first.toLowerCase()) || third.toLowerCase().includes(charOrPhrase)))).map(([first]) => first);
-
-            if (foundPhrase) containsPhrase.push(...foundPhrase);
+            if (foundPhrase.length > 0) containsPhrase.push(...foundPhrase);
 
             if (separator === '') {
               separator = ' ';
@@ -69,6 +72,8 @@ $(document).ready(async () => {
         break;
       }
       case 'td': {
+        define = define.replaceAll(new RegExp(`${Utils.getTrieRegexPatternFromWords(Object.keys(oldAccentObject)).source}(?= |$)`, 'g'), (match) => oldAccentObject[match] ?? match);
+
         $.ajax({
           async: false,
           method: 'GET',
@@ -82,7 +87,7 @@ $(document).ready(async () => {
               $(document.body).append($(b)[first === 'Word' ? 19 : 31].innerHTML.replaceAll(/(href|src)="/g, '$&http://nguyendu.com.free.fr/hanviet/').replaceAll(`
 function init()
 {
-	loadAd();
+  loadAd();
 }
 function loadAd()
 {
@@ -131,15 +136,19 @@ function loadAd()
           method: 'GET',
           url: dictionaryUrl,
         }).done((data) => {
-          const dataList = data.split('\n').map((element) => element.split('\t')).filter((element) => element.length === 2);
+          const dataList = data.split('\n').filter((element) => !element.startsWith('##')).map((element) => element.split('\t')).filter((element) => element.length === 2);
           const charsAndPhrases = define.split(' ').flatMap((element) => (/[\p{sc=Hani}\p{sc=Hira}\p{sc=Kana}]/u.test(element) ? [...element] : element));
           let separator = '';
           const containsPhrase = [];
 
           for (let i = 0; i < charsAndPhrases.length; i += 1) {
             const charOrPhrase = charsAndPhrases.slice(i).join(separator);
-            const foundPhrase = dataList.toSorted((a, b) => b[0].length - a[0].length).filter(([first, second]) => first.toLowerCase() === charOrPhrase || (charOrPhrase.length >= 2 && (charOrPhrase.startsWith(first.toLowerCase()) || charOrPhrase.endsWith(first.toLowerCase()) || second.toLowerCase().includes(charOrPhrase)))).map(([first]) => first);
-            if (foundPhrase) containsPhrase.push(...foundPhrase);
+            const foundPhrase = dataList.toSorted((a, b) => b[0].length - a[0].length).reduce((accumulator, [first, second]) => {
+              if (!containsPhrase.includes(first) && (first.toLowerCase() === charOrPhrase || (charsAndPhrases.slice(i).length >= 2 && (charOrPhrase.startsWith(first.toLowerCase()) || charOrPhrase.endsWith(first.toLowerCase()) || second.toLowerCase().includes(charOrPhrase))))) accumulator.push(first);
+              return accumulator;
+            }, []);
+
+            if (foundPhrase.length > 0) containsPhrase.push(...foundPhrase);
 
             if (separator === '') {
               separator = ' ';
@@ -164,7 +173,13 @@ function loadAd()
       }
     }
   } else {
-    paragraph.innerText = 'Vui lòng điền từ cần tra vào tham số "define" để tra từ';
+    paragraph.innerText = 'Cách dùng: ?dictionary=lac-viet&dict=T-V&define=hello';
+    $(document.body).append(paragraph.cloneNode(true));
+    paragraph.innerText = '?dictionary = { Từ điển Lạc Việt: lac-viet, Hán Việt tự điển: thieuchuu, Hán Việt Từ Điển Trích Dẫn: td }';
+    $(document.body).append(paragraph.cloneNode(true));
+    paragraph.innerText = '?dictionary=lac-viet&dict = { Anh - Việt: A-V, Việt - Anh: V-A, Nhật - Việt: N-V, Việt - Nhật: V-N, Trung - Việt: T-V, Việt - Trung: V-T }';
+    $(document.body).append(paragraph.cloneNode(true));
+    paragraph.innerText = 'Vui lòng điền từ cần tra vào tham số "define" trên thanh địa chỉ để tra từ.';
     $(document.body).append(paragraph.cloneNode(true));
   }
 });
