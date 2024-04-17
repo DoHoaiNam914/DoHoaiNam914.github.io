@@ -55,7 +55,7 @@ const SUPPORTED_LANGUAGES = ['', 'EN', 'JA', 'ZH', 'EN-US', 'auto', 'en', 'ja', 
 let isLoaded = false;
 
 let quickTranslateStorage = JSON.parse(localStorage.getItem('dich_nhanh')) ?? {};
-const glossaryStorage = JSON.parse(localStorage.getItem('glossary')) ?? {};
+let glossaryStorage = JSON.parse(localStorage.getItem('glossary')) ?? {};
 
 const uuid = crypto.randomUUID();
 
