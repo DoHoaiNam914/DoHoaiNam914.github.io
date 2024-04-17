@@ -1025,6 +1025,7 @@ class Vietphrase {
       nhanByPronoun = [];
     }
 
+    delete this.data.luatNhan;
     return [nhanByName.toSorted((a, b) => b[0].length - a[0].length), nhanByPronoun.toSorted((a, b) => b[0].length - a[0].length).filter(([a]) => !this.data.pronoun.some(([b]) => b === a))];
   }
 
@@ -1239,6 +1240,7 @@ class Vietphrase {
     this.data = { ...data };
     this.nameEnabled = nameEnabled;
     this.nameObject = Object.fromEntries((this.nameEnabled ? this.data.name.concat(glossary.length > 0 ? glossary : this.data.namePhu) : []).map(([first, second]) => [this.prioritizeNameOverVietPhrase ? second : first.toUpperCase(), second]).filter(([first]) => first != null && first.length > 0 && inputText.toLowerCase().includes(first.toLowerCase())));
+    delete this.data.namePhu;
     this.data.name = Object.entries(this.nameObject);
 
     try {
@@ -1260,11 +1262,12 @@ class Vietphrase {
         // no default
       }
 
+      delete this.data.namePhu;
       let result = inputText;
 
       switch (translationAlgorithm) {
         case this.TranslationAlgorithms.TRANSLATE_FROM_LEFT_TO_RIGHT: {
-          result = this.translateFromLeftToRight(targetLanguage, inputText.split('\n').length === 1 ? dataArray.filter(([first]) => first.length > 0 && inputText.includes(first.toLowerCase())) : dataArray, inputText);
+          result = this.translateFromLeftToRight(targetLanguage, inputText.split('\n').length === 1 || Utils.isOnMobile() ? dataArray.filter(([first]) => first.length > 0 && inputText.includes(first.toLowerCase())) : dataArray, inputText);
           break;
         }
         default: {

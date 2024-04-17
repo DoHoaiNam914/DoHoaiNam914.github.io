@@ -146,6 +146,7 @@ module.exports = {
     Vietphrase: 'readonly',
     newAccentMap: 'readonly',
     newAccentObject: 'readonly',
+    oldAccentObject: 'readonly',
     specialSinovietnameseMap: 'readonly',
     cjkv: 'readonly',
     hanData: 'readonly',
