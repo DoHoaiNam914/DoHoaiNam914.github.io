@@ -911,11 +911,11 @@ function reloadGlossaryEntries() {
   if (isLoaded) updateInputTextLength();
 
   glossaryStorage = {
-    vietPhrasePhu: glossary.vietPhrasePhu.length < 5000 ? vietPhraseData.vietPhrasePhu : [],
-    name: glossary.name.length < 5000 ? vietPhraseData.name : [],
-    namePhu: glossary.namePhu.length < 5000 ? vietPhraseData.namePhu : [],
-    luatNhan: glossary.luatNhan.length < 5000 ? vietPhraseData.luatNhan : [],
-    pronoun: glossary.pronoun.length < 5000 ? vietPhraseData.pronoun : [],
+    vietPhrasePhu: glossary.vietPhrasePhu.length < 5000 ? glossary.vietPhrasePhu : [],
+    name: glossary.name.length < 5000 ? glossary.name : [],
+    namePhu: glossary.namePhu.length < 5000 ? glossary.namePhu : [],
+    luatNhan: glossary.luatNhan.length < 5000 ? glossary.luatNhan : [],
+    pronoun: glossary.pronoun.length < 5000 ? glossary.pronoun : [],
   };
 
   localStorage.setItem('glossary', JSON.stringify(glossaryStorage));
