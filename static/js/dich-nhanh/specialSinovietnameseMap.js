@@ -178,6 +178,7 @@ const specialSinovietnameseMap = [
   ['怖', 'BỐ'],
   ['侼', null, 'bột' /* Đỗ Hoài Nam */],
   ['赑', 'BỊ'],
+  ['咖', 'CA'],
   ['干', 'CAN'],
   ['赣', 'CÁN'],
   ['薅', 'CAO'],

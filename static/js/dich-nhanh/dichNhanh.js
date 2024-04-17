@@ -455,7 +455,7 @@ async function translateTextarea() {
       if (processText.split(/\r?\n/).length <= MAX_LINE && (translatorOption === Translators.DEEPL_TRANSLATE ? (new TextEncoder()).encode(`text=${processText.split(/\r?\n/).map((element) => encodeURIComponent(element)).join('&text=')}&source_lang=${sourceLanguage}&target_lang=${targetLanguage}&tag_handling=xml`) : processText).length <= MAX_LENGTH) {
         switch (translatorOption) {
           case Translators.VIETPHRASE: {
-            result = await currentTranslator.translateText(sourceLanguage, targetLanguage, processText, $translationAlgorithmRadio.filter('[checked]').val(), $multiplicationAlgorithmRadio.filter('[checked]').val(), $prioritizeNameOverVietPhraseCheck.prop('checked'), $addDeLeZhaoSwitch.prop('checked'), true, glossary, nameEnabled && targetLanguage === 'vi');
+            result = await currentTranslator.translateText(sourceLanguage, targetLanguage, processText, $translationAlgorithmRadio.filter('[checked]').val(), $multiplicationAlgorithmRadio.filter('[checked]').val(), $prioritizeNameOverVietPhraseCheck.prop('checked'), $addDeLeZhaoSwitch.prop('checked'), true, [], nameEnabled && targetLanguage === 'vi');
             break;
           }
           default: {
@@ -910,7 +910,14 @@ function reloadGlossaryEntries() {
   $('#glossary-entry-counter').text(glossary[glossaryList].length);
   if (isLoaded) updateInputTextLength();
 
-  glossaryStorage[glossaryList] = glossary[glossaryList];
+  glossaryStorage = {
+    vietPhrasePhu: glossary.vietPhrasePhu.length < 5000 ? vietPhraseData.vietPhrasePhu : [],
+    name: glossary.name.length < 5000 ? vietPhraseData.name : [],
+    namePhu: glossary.namePhu.length < 5000 ? vietPhraseData.namePhu : [],
+    luatNhan: glossary.luatNhan.length < 5000 ? vietPhraseData.luatNhan : [],
+    pronoun: glossary.pronoun.length < 5000 ? vietPhraseData.pronoun : [],
+  };
+
   localStorage.setItem('glossary', JSON.stringify(glossaryStorage));
   $glossaryInput.val(null);
 }
@@ -946,7 +953,7 @@ $(document).ready(async () => {
       const arrayEntry = currentValue.substring(2).split('\t').map((element, index) => (index === 0 ? String.fromCodePoint(parseInt(element, 16)) : element));
 
       if (arrayEntry.length === 3 && arrayEntry[1] === 'kMandarin' && !accumulator.has(arrayEntry[0])) {
-        accumulator.set(arrayEntry[0], arrayEntry[2]);
+        accumulator.set(arrayEntry[0], arrayEntry[2].split(' ')[0]);
       }
 
       return accumulator;
