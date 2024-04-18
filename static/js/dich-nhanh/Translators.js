@@ -1273,11 +1273,12 @@ class Vietphrase {
           break;
         }
         case 'kunYomi': {
-          dataArray = (!useToneMarks ? [...this.data.pinyins].map(([first, second]) => [first, Vietphrase.removeAccents(second)]) : [...this.data.pinyins]).concat(this.data.romajis, this.data.onYomis, this.data.kunYomis);
+          dataArray = {
+          dataArray = this.data.kunYomis.concat(this.data.onYomis, this.data.romajis).filter(([first], __, array) => !array[first] && (array[first] = 1), {});
           break;
         }
         case 'onYomi': {
-          dataArray = (!useToneMarks ? [...this.data.pinyins].map(([first, second]) => [first, Vietphrase.removeAccents(second)]) : [...this.data.pinyins]).concat(this.data.romajis, this.data.kunYomis, this.data.onYomis);
+          dataArray = this.data.onYomis.concat(this.data.kunYomis, this.data.romajis).filter(([first], __, array) => !array[first] && (array[first] = 1), {});
           delete this.data.kunYomis;
           break;
         }
