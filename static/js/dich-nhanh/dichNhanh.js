@@ -55,12 +55,320 @@ const SUPPORTED_LANGUAGES = ['', 'EN', 'JA', 'ZH', 'EN-US', 'auto', 'en', 'ja', 
 let isLoaded = false;
 
 let quickTranslateStorage = JSON.parse(localStorage.getItem('dich_nhanh')) ?? {};
-let glossaryStorage = JSON.parse(localStorage.getItem('glossary')) ?? {};
+const glossaryStorage = JSON.parse(localStorage.getItem('glossary')) ?? {};
 
 const uuid = crypto.randomUUID();
 
 let glossary = {
+  simplified: [],
+  traditional: [],
   pinyins: new Map(),
+  romajis: [
+    ['ぁ', '~a'],
+    ['あ', 'a'],
+    ['ぃ', '~i'],
+    ['い', 'i'],
+    ['ぅ', '~u'],
+    ['う', 'u'],
+    ['ぇ', '~e'],
+    ['え', 'e'],
+    ['ぉ', '~o'],
+    ['お', 'o'],
+    ['か', 'ka'],
+    ['か', 'ga'],
+    ['きゃ', 'kya'],
+    ['きゅ', 'kyu'],
+    ['きょ', 'kyo'],
+    ['き', 'ki'],
+    ['ぎゃ', 'gya'],
+    ['ぎゅ', 'gyu'],
+    ['ぎょ', 'gyo'],
+    ['ぎ', 'gi'],
+    ['く', 'ku'],
+    ['ぐ', 'gu'],
+    ['け', 'ke'],
+    ['げ', 'ge'],
+    ['こ', 'ko'],
+    ['ご', 'go'],
+    ['さ', 'sa'],
+    ['ざ', 'za'],
+    ['しゃ', 'sha'],
+    ['しゅ', 'shu'],
+    ['しょ', 'sho'],
+    ['し', 'shi'],
+    ['じゃ', 'ja'],
+    ['じゅ', 'ju'],
+    ['じょ', 'jo'],
+    ['じ', 'ji'],
+    ['す', 'su'],
+    ['ず', 'zu'],
+    ['せ', 'se'],
+    ['ぜ', 'ze'],
+    ['そ', 'so'],
+    ['ぞ', 'zo'],
+    ['た', 'ta'],
+    ['だ', 'da'],
+    ['ちゃ', 'cha'],
+    ['ちゅ', 'chu'],
+    ['ちょ', 'cho'],
+    ['ち', 'chi'],
+    ['ぢゃ', 'dja'],
+    ['ぢゅ', 'dju'],
+    ['ぢょ', 'djo'],
+    ['ぢ', 'dji'],
+    ['っ', '~tsu'],
+    ['つ', 'tsu'],
+    ['づ', 'dzu'],
+    ['て', 'te'],
+    ['で', 'de'],
+    ['と', 'to'],
+    ['ど', 'do'],
+    ['な', 'na'],
+    ['にゃ', 'nya'],
+    ['にゅ', 'nyu'],
+    ['にょ', 'nyo'],
+    ['に', 'ni'],
+    ['ぬ', 'nu'],
+    ['ね', 'ne'],
+    ['の', 'no'],
+    ['は', 'wa', 'ha'],
+    ['ば', 'ba'],
+    ['ぱ', 'pa'],
+    ['ひゃ', 'hya'],
+    ['ひゅ', 'hyu'],
+    ['ひょ', 'hyo'],
+    ['ひ', 'hi'],
+    ['びゃ', 'bya'],
+    ['びゅ', 'byu'],
+    ['びょ', 'byo'],
+    ['び', 'bi'],
+    ['ぴゃ', 'pya'],
+    ['ぴゅ', 'pyu'],
+    ['ぴょ', 'pyo'],
+    ['ぴ', 'pi'],
+    ['ふ', 'fu'],
+    ['ぶ', 'bu'],
+    ['ぷ', 'pu'],
+    ['へ', 'e', 'he'],
+    ['べ', 'be'],
+    ['ぺ', 'pe'],
+    ['ほ', 'ho'],
+    ['ぼ', 'bo'],
+    ['ぽ', 'po'],
+    ['ま', 'ma'],
+    ['みゃ', 'mya'],
+    ['みゅ', 'myu'],
+    ['みょ', 'myo'],
+    ['み', 'mi'],
+    ['む', 'mu'],
+    ['め', 'me'],
+    ['も', 'mo'],
+    ['ゃ', '~ya'],
+    ['や', 'ya'],
+    ['ゅ', '~yu'],
+    ['ゆ', 'yu'],
+    ['ょ', '~yo'],
+    ['よ', 'yo'],
+    ['ら', 'ra'],
+    ['りゃ', 'rya'],
+    ['りゅ', 'ryu'],
+    ['りょ', 'ryo'],
+    ['り', 'ri'],
+    ['る', 'ru'],
+    ['れ', 're'],
+    ['ろ', 'ro'],
+    ['ゎ', '~wa'],
+    ['わ', 'wa'],
+    ['ゐ', 'wi'],
+    ['ゑ', 'we'],
+    ['を', 'o', 'wo'],
+    ['ん', 'n'],
+    ['ゔ', 'vu'],
+    ['ゕ', '~ka'],
+    ['ゖ', '~ke'],
+
+    ['ァ', '~a'],
+    ['ア', 'a'],
+    ['ィ', '~i'],
+    ['イェ', 'ye'],
+    ['イ', 'i'],
+    ['ゥ', '~u'],
+    ['ウ', 'u'],
+    ['ェ', '~e'],
+    ['エ', 'e'],
+    ['ォ', '~o'],
+    ['オ', 'o'],
+    ['カ', 'ka'],
+    ['ガ', 'ga'],
+    ['キャ', 'kya'],
+    ['キュ', 'kyu'],
+    ['キョ', 'kyo'],
+    ['キ', 'ki'],
+    ['ギャ', 'gya'],
+    ['ギュ', 'gyu'],
+    ['ギョ', 'gyo'],
+    ['ギ', 'gi'],
+    ['ク', 'ku'],
+    ['グ', 'gu'],
+    ['ケァ', 'kwa'],
+    ['ケィ', 'kwi'],
+    ['ケェ', 'kwe'],
+    ['ケォ', 'kwo'],
+    ['ケ', 'ke'],
+    ['ケァ', 'gwa'],
+    ['ケィ', 'gwi'],
+    ['ケェ', 'gwe'],
+    ['ケォ', 'gwo'],
+    ['ゲ', 'ge'],
+    ['コ', 'ko'],
+    ['ゴ', 'go'],
+    ['サ', 'sa'],
+    ['ザ', 'za'],
+    ['シェ', 'she'],
+    ['シャ', 'sha'],
+    ['シュ', 'shu'],
+    ['ショ', 'sho'],
+    ['シ', 'shi'],
+    ['ジェ', 'je'],
+    ['ジャ', 'ja'],
+    ['ジュ', 'ju'],
+    ['ジョ', 'jo'],
+    ['ジ', 'ji'],
+    ['スィ', 'swi'],
+    ['ス', 'su'],
+    ['ズィ', 'zwi'],
+    ['ズ', 'zu'],
+    ['セ', 'se'],
+    ['ゼ', 'ze'],
+    ['ソ', 'so'],
+    ['ゾ', 'zo'],
+    ['タ', 'ta'],
+    ['ダ', 'da'],
+    ['チェ', 'che'],
+    ['チャ', 'cha'],
+    ['チュ', 'chu'],
+    ['チョ', 'cho'],
+    ['チ', 'chi'],
+    ['ヂャ', 'dja'],
+    ['ヂュ', 'dju'],
+    ['ヂョ', 'djo'],
+    ['ヂ', 'dji'],
+    ['ッ', '~tsu'],
+    ['ツァ', 'tsa'],
+    ['ツィ', 'tsi'],
+    ['ツェ', 'tse'],
+    ['ツォ', 'tso'],
+    ['ツ', 'tsu'],
+    ['ヅ', 'dzu'],
+    ['ティ', 'ti'],
+    ['テゥ', 'tu'],
+    ['テュ', 'tyu'],
+    ['テ', 'te'],
+    ['ティ', 'di'],
+    ['テゥ', 'du'],
+    ['テュ', 'dyu'],
+    ['デ', 'de'],
+    ['ト', 'to'],
+    ['ド', 'do'],
+    ['ナ', 'na'],
+    ['ニャ', 'nya'],
+    ['ニュ', 'nyu'],
+    ['ニョ', 'nyo'],
+    ['ニ', 'ni'],
+    ['ヌ', 'nu'],
+    ['ネ', 'ne'],
+    ['ノ', 'no'],
+    ['ハ', 'ha'],
+    ['バ', 'ba'],
+    ['パ', 'pa'],
+    ['ヒャ', 'hya'],
+    ['ヒュ', 'hyu'],
+    ['ヒョ', 'hyo'],
+    ['ヒ', 'hi'],
+    ['ビャ', 'bya'],
+    ['ビュ', 'byu'],
+    ['ビョ', 'byo'],
+    ['ビ', 'bi'],
+    ['ピャ', 'pya'],
+    ['ピュ', 'pyu'],
+    ['ピョ', 'pyo'],
+    ['ピ', 'pi'],
+    ['ファ', 'fa'],
+    ['フィ', 'fi'],
+    ['フェ', 'fe'],
+    ['フォ', 'fo'],
+    ['フュ', 'fyu'],
+    ['フ', 'fu'],
+    ['ブ', 'bu'],
+    ['プ', 'pu'],
+    ['ヘ', 'e', 'he'],
+    ['ベ', 'be'],
+    ['ペ', 'pe'],
+    ['ホ', 'ho'],
+    ['ボ', 'bo'],
+    ['ポ', 'po'],
+    ['マ', 'ma'],
+    ['ミャ', 'mya'],
+    ['ミュ', 'myu'],
+    ['ミョ', 'myo'],
+    ['ミ', 'mi'],
+    ['ム', 'mu'],
+    ['メ', 'me'],
+    ['モ', 'mo'],
+    ['ャ', '~ya'],
+    ['ヤ', 'ya'],
+    ['ュ', '~yu'],
+    ['ユ', 'yu'],
+    ['ョ', '~yo'],
+    ['ヨ', 'yo'],
+    ['ラ', 'ra'],
+    ['リャ', 'rya'],
+    ['リュ', 'ryu'],
+    ['リョ', 'ryo'],
+    ['リ', 'ri'],
+    ['ル', 'ru'],
+    ['レ', 're'],
+    ['ロ', 'ro'],
+    ['ヮ', '~wa'],
+    ['ワ', 'wa'],
+    ['ヰ', 'wi'],
+    ['ヱ', 'we'],
+    ['ヲ', 'o', 'wo'],
+    ['ン', 'n'],
+    ['ヴァ', 'va'],
+    ['ヴィ', 'vi'],
+    ['ヴェ', 've'],
+    ['ヴォ', 'vo'],
+    ['ヴャ', 'vya'],
+    ['ヴュ', 'vyu'],
+    ['ヴョ', 'vyo'],
+    ['ヴ', 'vu'],
+    ['ヵ', '~ka'],
+    ['ヶ', '~ke'],
+    // ['ヷ', 'va'],
+    // ['ヸ', 'vi'],
+    // ['ヹ', 've'],
+    // ['ヺ', 'vo'],
+
+    ['ㇰ', '~ku'],
+    ['ㇱ', '~shi'],
+    ['ㇲ', '~su'],
+    ['ㇳ', '~to'],
+    ['ㇴ', '~ne'],
+    ['ㇵ', '~ha'],
+    ['ㇶ', '~hi'],
+    ['ㇷ', '~fu'],
+    ['ㇸ', '~he'],
+    ['ㇹ', '~ho'],
+    ['ㇺ', '~mu'],
+    ['ㇻ', '~ra'],
+    ['ㇼ', '~ri'],
+    ['ㇽ', '~ru'],
+    ['ㇾ', '~re'],
+    ['ㇿ', '~ro'],
+  ],
+  kunYomis: [],
+  onYomis: [],
   hanViet: new Map(),
   vietPhrase: [],
   vietPhrasePhu: [],
@@ -228,7 +536,7 @@ function applyNameToText(text, translator = Translators.VIETPHRASE, name = gloss
 
   if (nameEntries.length > 0) {
     const lines = text.split('\n');
-    const nameLengths = nameEntries.reduce((accumulator, [first]) => (!accumulator.includes(first.length) ? accumulator.concat(first.length).sort((a, b) => b - a) : accumulator), [1]);
+    const nameLengths = nameEntries.reduce((accumulator, [first]) => (!accumulator.includes(first.length) ? accumulator.concat(first.length) : accumulator), [1]).sort((a, b) => b - a);
 
     const results = [];
 
@@ -909,15 +1217,7 @@ function reloadGlossaryEntries() {
   $glossaryEntrySelect.val(defaultOption.value);
   $('#glossary-entry-counter').text(glossary[glossaryList].length);
   if (isLoaded) updateInputTextLength();
-
-  glossaryStorage = {
-    vietPhrasePhu: glossary.vietPhrasePhu.length < 5000 ? glossary.vietPhrasePhu : [],
-    name: glossary.name.length < 5000 ? glossary.name : [],
-    namePhu: glossary.namePhu.length < 5000 ? glossary.namePhu : [],
-    luatNhan: glossary.luatNhan.length < 5000 ? glossary.luatNhan : [],
-    pronoun: glossary.pronoun.length < 5000 ? glossary.pronoun : [],
-  };
-
+  glossaryStorage[glossaryList] = glossary[glossaryList].length < 5000 ? glossary[glossaryList] : [];
   localStorage.setItem('glossary', JSON.stringify(glossaryStorage));
   $glossaryInput.val(null);
 }
@@ -928,15 +1228,33 @@ $(document).ready(async () => {
 
   glossary = { ...glossary, ...glossaryStorage };
 
-  let chinesePhienAmWordList = [];
+  await $.ajax({
+    method: 'GET',
+    url: '/static/datasource/Unihan_Variants.txt',
+  }).done((data) => {
+    const array = data.split('\n').filter((element) => element.length !== 0 && !element.startsWith('#')).map((element) => element.split('\t'));
+
+    glossary.traditional = array.filter((element) => element.length === 3 && element[1] === 'kTraditionalVariant').map(([first, __, third]) => [String.fromCodePoint(parseInt(first.substring(2), 16)), String.fromCodePoint(parseInt(third.substring(2), 16))]);
+    console.info(`Đã tải xong bộ dữ liệu phổn thể (${glossary.traditional.length})!`);
+
+    glossary.simplified = array.filter((element) => element.length === 3 && element[1] === 'kSimplifiedVariant').map(([first, __, third]) => [String.fromCodePoint(parseInt(first.substring(2), 16)), String.fromCodePoint(parseInt(third.substring(2), 16))]);
+    console.info(`Đã tải xong bộ dữ liệu giản thể (${glossary.simplified.length})!`);
+
+    lastSession = {};
+  }).fail((__, ___, errorThrown) => {
+    console.error('Không thể tải bộ dữ liệu phổn thể:', errorThrown);
+    setTimeout(() => {
+      window.location.reload();
+    }, 5000);
+  });
 
   try {
-    chinesePhienAmWordList = chinesePhienAmWordList.concat(specialSinovietnameseMap.map(([a, b, c]) => [a, (Object.fromEntries(specialSinovietnameseMap.filter(([__, d]) => !/\p{Script=Hani}/u.test(d)).map(([d, e, f]) => [d, f ?? e]))[b] ?? c ?? b).split(/, | \| /)[0].toLowerCase()]));
+    let chinesePhienAmWordList = specialSinovietnameseMap.map(([a, b, c]) => [a, (Object.fromEntries(specialSinovietnameseMap.filter(([__, d]) => !/\p{Script=Hani}/u.test(d)).map(([d, e, f]) => [d, f ?? e]))[b] ?? c ?? b).split(/, | \| /)[0].toLowerCase()]);
     chinesePhienAmWordList = chinesePhienAmWordList.concat(cjkv.nam.map(([first, second]) => [first, second.split(',').filter((element) => element.length > 0)[0].trimStart().replaceAll(Utils.getTrieRegexPatternFromWords(Object.keys(newAccentObject)), (match) => newAccentObject[match] ?? match)]));
     chinesePhienAmWordList = chinesePhienAmWordList.concat(hanData.names.map(([first, second]) => [first, second.split(',').filter((element) => element.length > 0)[0].replaceAll(Utils.getTrieRegexPatternFromWords(Object.keys(newAccentObject)), (match) => newAccentObject[match] ?? match)]));
     chinesePhienAmWordList = chinesePhienAmWordList.filter((element, __, array) => element.join('=').length > 0 && element.length === 2 && !array[element[0]] && (array[element[0]] = 1), {});
     glossary.hanViet = new Map(chinesePhienAmWordList);
-    console.log(`Đã tải xong bộ dữ liệu hán việt (${chinesePhienAmWordList.length})!`);
+    console.info(`Đã tải xong bộ dữ liệu hán việt (${chinesePhienAmWordList.length})!`);
   } catch (error) {
     console.error('Không thể tải bộ dữ liệu hán việt:', error);
     setTimeout(() => {
@@ -944,7 +1262,7 @@ $(document).ready(async () => {
     }, 5000);
   }
 
-  $.ajax({
+  await $.ajax({
     method: 'GET',
     url: '/static/datasource/Unihan_Readings.txt',
   }).done((data) => {
@@ -959,7 +1277,15 @@ $(document).ready(async () => {
       return accumulator;
     }, new Map());
 
-    console.log(`Đã tải xong bộ dữ liệu bính âm (${glossary.pinyins.size})!`);
+    console.info(`Đã tải xong bộ dữ liệu bính âm (${glossary.pinyins.size})!`);
+
+    const array = data.split('\n').filter((element) => element.length !== 0 && !element.startsWith('#')).map((element) => element.split('\t'));
+
+    glossary.kunYomis = array.filter((element) => element.length === 3 && element[1] === 'kJapaneseKun').map(([first, __, third]) => [String.fromCodePoint(parseInt(first.substring(2), 16)), third.split(' ')[0].toLowerCase()]);
+    console.info(`Đã tải xong bộ dữ liệu Kun'yomi (${glossary.kunYomis.length})!`);
+    glossary.onYomis = array.filter((element) => element.length === 3 && element[1] === 'kJapaneseOn').map(([first, __, third]) => [String.fromCodePoint(parseInt(first.substring(2), 16)), third.split(' ')[0].toLowerCase()]);
+    console.info(`Đã tải xong bộ dữ liệu On'yomi (${glossary.onYomis.length})!`);
+
     lastSession = {};
   }).fail((__, ___, errorThrown) => {
     console.error('Không thể tải bộ dữ liệu bính âm:', errorThrown);
@@ -970,7 +1296,7 @@ $(document).ready(async () => {
 
   if ($loadDefaultVietPhraseFileSwitch.prop('checked') && $vietPhraseInput.prop('files').length === 0) {
     if (!Utils.isOnMobile()) {
-      $.ajax({
+      await $.ajax({
         method: 'GET',
         url: '/static/datasource/Data của thtgiang (đọc README)/VietPhrase.txt',
       }).done((data) => {
@@ -978,13 +1304,13 @@ $(document).ready(async () => {
         glossary.vietPhrase = data.split('\r\n').filter((element) => element.length > 0 && element.split('=').length === 2).map((element) => element.split('=')).filter(([first], __, array) => !array[first] && (array[first] = 1), {});
 
         $vietPhraseEntryCounter.text(glossary.vietPhrase.length);
-        console.log(`Đã tải xong tệp VietPhrase (${$vietPhraseEntryCounter.text()})!`);
+        console.info(`Đã tải xong tệp VietPhrase (${$vietPhraseEntryCounter.text()})!`);
         lastSession = {};
       }).fail((__, ___, errorThrown) => {
         console.error('Không tải được tệp VietPhrase:', errorThrown);
       });
     } else {
-      $.ajax({
+      await $.ajax({
         method: 'GET',
         url: '/static/datasource/ttvtranslate/VietPhrase.txt',
       }).done((data) => {
@@ -992,7 +1318,7 @@ $(document).ready(async () => {
         glossary.vietPhrase = data.split('\n').filter((element) => element.length > 0 && element.split('=').length === 2).map((element) => element.split('=')).filter(([first], __, array) => !array[first] && (array[first] = 1), {});
 
         $vietPhraseEntryCounter.text(glossary.vietPhrase.length);
-        console.log(`Đã tải xong tệp VietPhrase (${$vietPhraseEntryCounter.text()})!`);
+        console.info(`Đã tải xong tệp VietPhrase (${$vietPhraseEntryCounter.text()})!`);
         lastSession = {};
       }).fail((__, ___, errorThrown) => {
         console.error('Không tải được tệp VietPhrase:', errorThrown);
@@ -1296,7 +1622,7 @@ $vietPhraseInput.on('change', function onChange() {
   reader.onload = function onLoad() {
     glossary.vietPhrase = this.result.split(/\r?\n|\r/).filter((element) => element.length > 0 && element.split('=').length === 2).map((element) => element.split('=')).filter(([first], __, array) => !array[first] && (array[first] = 1), {});
     $vietPhraseEntryCounter.text(glossary.vietPhrase.length);
-    console.log(`Đã tải xong tệp ${$vietPhraseInput.prop('files')[0].name} (${$vietPhraseEntryCounter.text()})!`);
+    console.info(`Đã tải xong tệp ${$vietPhraseInput.prop('files')[0].name} (${$vietPhraseEntryCounter.text()})!`);
     lastSession = {};
   };
 

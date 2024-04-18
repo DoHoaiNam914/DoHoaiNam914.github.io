@@ -944,7 +944,11 @@ class Vietphrase {
   static SOURCE_LANGUAGES = { zh: 'Chinese' };
 
   static TARGET_LANGUAGES = {
+    simplified: 'Giản thể',
+    traditional: 'Phổn thể',
     pinyin: 'Bính âm',
+    kunYomi: 'Kun\'yomi',
+    onYomi: 'On\'yomi',
     sinoVietnamese: 'Hán Việt',
     vi: 'Vietphrase',
   };
@@ -1072,7 +1076,7 @@ class Vietphrase {
 
         let combineDatas = nameArray.concat(dataArray).filter(([first], __, array) => !array[first] && (array[first] = 1), {});
 
-        result = Vietphrase.getFormattedText(result.split('\n').map((a) => {
+        result = result.split('\n').map((a) => {
           const chars = [...a];
           let returnText = a;
 
@@ -1098,11 +1102,15 @@ class Vietphrase {
           }
 
           return returnText;
-        }).join('\n'));
+        }).join('\n');
 
         nameMap = null;
         combineDatas = null;
-        if (this.autocapitalize) result = Vietphrase.getCapitalizeText(result);
+
+        if (['simplified', 'traditional'].every((element) => targetLanguage !== element)) {
+          result = Vietphrase.getFormattedText(result);
+          if (this.autocapitalize) result = Vietphrase.getCapitalizeText(result);
+        }
       }
 
       nameArray = null;
@@ -1134,7 +1142,7 @@ class Vietphrase {
         let dataMap = new Map(dataArray);
         let nameMap = new Map(nameArray);
 
-        const dataLengths = nameArray.concat(dataArray).reduce((accumulator, [first]) => (!accumulator.includes(first.length) ? accumulator.concat(first.length).sort((a, b) => b - a) : accumulator), [1]);
+        const dataLengths = nameArray.concat(dataArray).reduce((accumulator, [first]) => (!accumulator.includes(first.length) ? accumulator.concat(first.length) : accumulator), [1]).sort((a, b) => b - a);
 
         lines.forEach((a) => {
           const chars = [...a];
@@ -1185,8 +1193,13 @@ class Vietphrase {
 
         dataMap = null;
         nameMap = null;
-        result = Vietphrase.getFormattedText(results.join('\n'));
-        if (this.autocapitalize) result = Vietphrase.getCapitalizeText(result);
+
+        if (['simplified', 'traditional'].every((element) => targetLanguage !== element)) {
+          result = Vietphrase.getFormattedText(results.join('\n'));
+          if (this.autocapitalize) result = Vietphrase.getCapitalizeText(result);
+        } else {
+          result = results.join('\n');
+        }
       }
 
       dataArray = null;
@@ -1247,8 +1260,25 @@ class Vietphrase {
       let dataArray = [];
 
       switch (targetLanguage) {
+        case 'simplified': {
+          dataArray = this.data.simplified;
+          break;
+        }
+        case 'traditional': {
+          dataArray = this.data.traditional;
+          break;
+        }
         case 'pinyin': {
           dataArray = !useToneMarks ? [...this.data.pinyins].map(([first, second]) => [first, Vietphrase.removeAccents(second)]) : [...this.data.pinyins];
+          break;
+        }
+        case 'kunYomi': {
+          dataArray = (!useToneMarks ? [...this.data.pinyins].map(([first, second]) => [first, Vietphrase.removeAccents(second)]) : [...this.data.pinyins]).concat(this.data.romajis, this.data.onYomis, this.data.kunYomis);
+          break;
+        }
+        case 'onYomi': {
+          dataArray = (!useToneMarks ? [...this.data.pinyins].map(([first, second]) => [first, Vietphrase.removeAccents(second)]) : [...this.data.pinyins]).concat(this.data.romajis, this.data.kunYomis, this.data.onYomis);
+          delete this.data.kunYomis;
           break;
         }
         case 'sinoVietnamese': {
@@ -1256,18 +1286,22 @@ class Vietphrase {
           break;
         }
         case 'vi': {
-          dataArray = Object.entries(Object.fromEntries([...this.data.hanViet].concat(this.data.vietPhrase.length > 0 ? this.data.vietPhrase : [], this.data.vietPhrase.concat(this.data.vietPhrasePhu).length > 0 ? [['的', addDeLeZhao ? this.data.hanViet.get('的') : ''], ['了', addDeLeZhao ? this.data.hanViet.get('了') : ''], ['着', addDeLeZhao ? this.data.hanViet.get('着') : '']] : [], this.data.vietPhrasePhu).map(([first, second]) => [first.toUpperCase(), second])));
+          dataArray = Object.entries(Object.fromEntries(this.data.romajis.concat(this.data.kunYomis, this.data.onYomis, [...this.data.hanViet], this.data.vietPhrase.length > 0 ? this.data.vietPhrase : [], this.data.vietPhrase.concat(this.data.vietPhrasePhu).length > 0 ? [['的', addDeLeZhao ? this.data.hanViet.get('的') : ''], ['了', addDeLeZhao ? this.data.hanViet.get('了') : ''], ['着', addDeLeZhao ? this.data.hanViet.get('着') : '']] : [], this.data.vietPhrasePhu).map(([first, second]) => [first.toUpperCase(), second])));
           break;
         }
         // no default
       }
 
       delete this.data.namePhu;
+      delete this.data.hanViet;
+      delete this.data.romajis;
+      delete this.data.onYomis;
+
       let result = inputText;
 
       switch (translationAlgorithm) {
         case this.TranslationAlgorithms.TRANSLATE_FROM_LEFT_TO_RIGHT: {
-          result = this.translateFromLeftToRight(targetLanguage, inputText.split('\n').length === 1 || Utils.isOnMobile() ? dataArray.filter(([first]) => first.length > 0 && inputText.includes(first.toLowerCase())) : dataArray, inputText);
+          result = this.translateFromLeftToRight(targetLanguage, inputText.split('\n').length === 1 ? dataArray.filter(([first]) => first.length > 0 && inputText.includes(first.toLowerCase())) : dataArray, inputText);
           break;
         }
         default: {
