@@ -1273,7 +1273,6 @@ class Vietphrase {
           break;
         }
         case 'kunYomi': {
-          dataArray = {
           dataArray = this.data.kunYomis.concat(this.data.onYomis, this.data.romajis).filter(([first], __, array) => !array[first] && (array[first] = 1), {});
           break;
         }
