@@ -186,13 +186,13 @@
       ];
 
       const scriptsToLoad = [...librariesToLoad, ...[
-        '/static/js/Utils.js',
-        '/static/lib/hanviet.js',
-        '/static/lib/handict.js',
-        '/static/js/dich-nhanh/specialSinovietnameseMap.js',
-        '/static/js/dich-nhanh/Translators.js',
-        '/static/js/newAccentMap.js',
-        '/static/js/dich-nhanh/dichNhanh.js'],
+          '/static/js/Utils.js',
+          '/static/lib/hanviet.js',
+          '/static/lib/handict.js',
+          '/static/js/dich-nhanh/Translators.js',
+          '/static/js/newAccentMap.js',
+          '/static/js/dich-nhanh/dichNhanh.js',
+        ],
       ];
 
       let i = 0;
@@ -709,9 +709,15 @@
               </div>
               <hr>
               <h2 class="fs-5">Vietphrase</h2>
-              <div class="form-check form-switch mb-3">
-                <input type="checkbox" class="form-check-input option disabled" id="load-default-viet-phrase-file-switch" role="switch" checked>
-                <label class="form-check-label" for="load-default-viet-phrase-file-switch">Tải tệp VietPhrase mặc định</label>
+              <div class="mb-3">
+                <label class="form-label" for="default-viet-phrase-file-select">Tệp VietPhrase mặc định:</label>
+                <select class="form-select form-select-sm option" id="default-viet-phrase-file-select">
+                  <option value="0">Không</option>
+                  <option value="1">Quick Translator</option>
+                  <option value="2">Data của thtgiang</option>
+                  <option value="3" selected>TTV Translate (Android)</option>
+                  <option value="4" selected>TTV Translate (iOS)</option>
+                </select>
               </div>
               <div class="mb-3">
                 <label for="viet-phrase-input" class="form-label">Nhập tệp VietPhrase: <span id="viet-phrase-entry-counter">0</span> mục</label>
@@ -799,6 +805,7 @@
                 <option value="zh-vi" selected>Trung → Việt</option>
               </select>
               <select class="form-select form-select-sm mb-3" id="glossary-list-select">
+                <option value="specialSinoVietnamese">Hán-Việt đặc biệt</option>
                 <option value="vietPhrasePhu">VietPhrase2</option>
                 <option value="name">Names</option>
                 <option value="namePhu" selected>Names2</option>
@@ -837,9 +844,9 @@
                     <button type="button" class="dropdown-item" data-bs-toggle="collapse" data-bs-target="#chinese-define-collapse">Tra cứu tiếng Trung</button>
                     <div class="collapse" id="chinese-define-collapse">
                       <button type="button" class="dropdown-item collapse-item define-button" data-href="/dich-nhanh/tra-tu-dien.html?dictionary=lac-viet&dict=T-V&define={0}">Từ điển Trung - Việt</button>
+                      <button type="button" class="dropdown-item collapse-item define-button" data-href="https://hanzii.net/search/word/{0}?hl=vi">Hanzii</button>
                       <button type="button" class="dropdown-item collapse-item define-button" data-href="/dich-nhanh/tra-tu-dien.html?dictionary=thieuchuu&define={0}">Hán Việt Tự Điển Thiều Chửu</button>
                       <button type="button" class="dropdown-item collapse-item define-button" data-href="/dich-nhanh/tra-tu-dien.html?dictionary=td&define={0}">Từ Điển Hán Việt Trích Dẫn</button>
-                      <button type="button" class="dropdown-item collapse-item define-button" data-href="https://hanzii.net/search/word/{0}?hl=vi">Hanzii</button>
                       <button type="button" class="dropdown-item collapse-item define-button" data-href="http://nomfoundation.org/nom-tools/Nom-Lookup-Tool/Nom-Lookup-Tool?uiLang=vn&inputText={0}">Tra cứu chữ Nôm</button>
                       <button type="button" class="dropdown-item collapse-item define-button" data-href="https://hvdic.thivien.net/whv/{0}">Từ điển Hán Nôm</button>
                       <button type="button" class="dropdown-item collapse-item define-button" data-href="https://www.mdbg.net/chinese/dictionary?page=worddict&wdqb={0}">CC-CEDICT</button>
