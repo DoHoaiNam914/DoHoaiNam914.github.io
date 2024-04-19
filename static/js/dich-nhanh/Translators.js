@@ -947,9 +947,9 @@ class Vietphrase {
     simplified: 'Giản thể',
     traditional: 'Phổn thể',
     pinyin: 'Bính âm',
-    kunYomi: 'Kun\'yomi',
-    onYomi: 'On\'yomi',
-    sinoVietnamese: 'Hán Việt',
+    KunYomi: 'Kun\'yomi',
+    OnYomi: 'On\'yomi',
+    SinoVietnamese: 'Hán Việt',
     vi: 'Vietphrase',
   };
 
@@ -1255,8 +1255,8 @@ class Vietphrase {
     this.nameObject = Object.fromEntries((this.nameEnabled ? this.data.name.concat(glossary.length > 0 ? glossary : this.data.namePhu) : []).map(([first, second]) => [this.prioritizeNameOverVietPhrase ? second : first.toUpperCase(), second]).filter(([first]) => first != null && first.length > 0 && inputText.toLowerCase().includes(first.toLowerCase())));
     delete this.data.namePhu;
     this.data.name = Object.entries(this.nameObject);
-    this.data.hanViet = new Map([...this.data.specialSinoVietnamese, ...this.data.hanViet].filter(([first], __, array) => !array[first] && (array[first] = 1), {}));
-    delete this.data.specialSinoVietnamese;
+    this.data.hanViet = new Map([...this.data.specialSinoVietnameses, ...this.data.hanViet].filter(([first], __, array) => !array[first] && (array[first] = 1), {}));
+    delete this.data.specialSinoVietnameses;
 
     try {
       let dataArray = [];
@@ -1274,21 +1274,21 @@ class Vietphrase {
           dataArray = !useToneMarks ? [...this.data.pinyins].map(([first, second]) => [first, Vietphrase.removeAccents(second)]) : [...this.data.pinyins];
           break;
         }
-        case 'kunYomi': {
-          dataArray = this.data.kunYomis.concat(this.data.onYomis, this.data.romajis).filter(([first], __, array) => !array[first] && (array[first] = 1), {});
+        case 'KunYomi': {
+          dataArray = this.data.KunYomis.concat(this.data.OnYomis, this.data.romajis).filter(([first], __, array) => !array[first] && (array[first] = 1), {});
           break;
         }
-        case 'onYomi': {
-          dataArray = this.data.onYomis.concat(this.data.kunYomis, this.data.romajis).filter(([first], __, array) => !array[first] && (array[first] = 1), {});
-          delete this.data.kunYomis;
+        case 'OnYomi': {
+          dataArray = this.data.OnYomis.concat(this.data.KunYomis, this.data.romajis).filter(([first], __, array) => !array[first] && (array[first] = 1), {});
+          delete this.data.KunYomis;
           break;
         }
-        case 'sinoVietnamese': {
+        case 'SinoVietnamese': {
           dataArray = [...this.data.hanViet];
           break;
         }
         case 'vi': {
-          dataArray = Object.entries(Object.fromEntries(this.data.romajis.concat(this.data.kunYomis, this.data.onYomis, [...this.data.hanViet], this.data.vietPhrase.length > 0 ? this.data.vietPhrase : [], this.data.vietPhrase.concat(this.data.vietPhrasePhu).length > 0 ? [['的', addDeLeZhao ? this.data.hanViet.get('的') : ''], ['了', addDeLeZhao ? this.data.hanViet.get('了') : ''], ['着', addDeLeZhao ? this.data.hanViet.get('着') : '']] : [], this.data.vietPhrasePhu).map(([first, second]) => [first.toUpperCase(), second])));
+          dataArray = Object.entries(Object.fromEntries(this.data.romajis.concat(this.data.KunYomis, this.data.OnYomis, [...this.data.hanViet], this.data.vietPhrase.length > 0 ? this.data.vietPhrase : [], this.data.vietPhrase.concat(this.data.vietPhrasePhu).length > 0 ? [['的', addDeLeZhao ? this.data.hanViet.get('的') : ''], ['了', addDeLeZhao ? this.data.hanViet.get('了') : ''], ['着', addDeLeZhao ? this.data.hanViet.get('着') : '']] : [], this.data.vietPhrasePhu).map(([first, second]) => [first.toUpperCase(), second])));
           break;
         }
         // no default
@@ -1297,7 +1297,7 @@ class Vietphrase {
       delete this.data.namePhu;
       delete this.data.hanViet;
       delete this.data.romajis;
-      delete this.data.onYomis;
+      delete this.data.OnYomis;
 
       let result = inputText;
 

@@ -367,10 +367,10 @@ let glossary = {
     ['ㇾ', '~re'],
     ['ㇿ', '~ro'],
   ],
-  kunYomis: [],
-  onYomis: [],
+  KunYomis: [],
+  OnYomis: [],
   hanViet: new Map(),
-  specialSinoVietnamese: [
+  SinoVietnameses: [
     ['虾兵蟹将', 'HÀ BINH GIẢI TƯỚNG'],
     ['开天辟地', 'KHAI THIÊN TỊCH ĐỊA'],
     ['俱乐部', 'câu lạc bộ'],
@@ -1616,10 +1616,10 @@ $(document).ready(async () => {
 
     const array = data.split('\n').filter((element) => element.length !== 0 && !element.startsWith('#')).map((element) => element.split('\t'));
 
-    glossary.kunYomis = array.filter((element) => element.length === 3 && element[1] === 'kJapaneseKun').map(([first, __, third]) => [String.fromCodePoint(parseInt(first.substring(2), 16)), third.split(' ')[0].toLowerCase()]);
-    console.info(`Đã tải xong bộ dữ liệu Kun'yomi (${glossary.kunYomis.length})!`);
-    glossary.onYomis = array.filter((element) => element.length === 3 && element[1] === 'kJapaneseOn').map(([first, __, third]) => [String.fromCodePoint(parseInt(first.substring(2), 16)), third.split(' ')[0].toLowerCase()]);
-    console.info(`Đã tải xong bộ dữ liệu On'yomi (${glossary.onYomis.length})!`);
+    glossary.KunYomis = array.filter((element) => element.length === 3 && element[1] === 'kJapaneseKun').map(([first, __, third]) => [String.fromCodePoint(parseInt(first.substring(2), 16)), third.split(' ')[0].toLowerCase()]);
+    console.info(`Đã tải xong bộ dữ liệu Kun'yomi (${glossary.KunYomis.length})!`);
+    glossary.OnYomis = array.filter((element) => element.length === 3 && element[1] === 'kJapaneseOn').map(([first, __, third]) => [String.fromCodePoint(parseInt(first.substring(2), 16)), third.split(' ')[0].toLowerCase()]);
+    console.info(`Đã tải xong bộ dữ liệu On'yomi (${glossary.OnYomis.length})!`);
     lastSession = {};
   }).fail((__, ___, errorThrown) => {
     console.error('Không thể tải bộ dữ liệu bính âm:', errorThrown);
