@@ -1255,6 +1255,8 @@ class Vietphrase {
     this.nameObject = Object.fromEntries((this.nameEnabled ? this.data.name.concat(glossary.length > 0 ? glossary : this.data.namePhu) : []).map(([first, second]) => [this.prioritizeNameOverVietPhrase ? second : first.toUpperCase(), second]).filter(([first]) => first != null && first.length > 0 && inputText.toLowerCase().includes(first.toLowerCase())));
     delete this.data.namePhu;
     this.data.name = Object.entries(this.nameObject);
+    this.data.hanViet = new Map([...this.data.specialSinoVietnamese, ...this.data.hanViet].filter(([first], __, array) => !array[first] && (array[first] = 1), {}));
+    delete this.data.specialSinoVietnamese;
 
     try {
       let dataArray = [];
