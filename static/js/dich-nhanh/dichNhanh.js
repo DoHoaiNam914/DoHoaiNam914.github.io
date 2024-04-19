@@ -369,7 +369,7 @@ let glossary = {
   ],
   KunYomis: [],
   OnYomis: [],
-  hanViet: new Map(),
+  hanViet: [],
   SinoVietnameses: [
     ['虾兵蟹将', 'HÀ BINH GIẢI TƯỚNG'],
     ['开天辟地', 'KHAI THIÊN TỊCH ĐỊA'],
@@ -1588,7 +1588,7 @@ $(document).ready(async () => {
     let chinesePhienAmWordList = cjkv.nam.map(([first, second]) => [first, second.split(',').filter((element) => element.length > 0)[0].trimStart().replaceAll(Utils.getTrieRegexPatternFromWords(Object.keys(newAccentObject)), (match) => newAccentObject[match] ?? match)]);
     chinesePhienAmWordList = chinesePhienAmWordList.concat(hanData.names.map(([first, second]) => [first, second.split(',').filter((element) => element.length > 0)[0].replaceAll(Utils.getTrieRegexPatternFromWords(Object.keys(newAccentObject)), (match) => newAccentObject[match] ?? match)]));
     chinesePhienAmWordList = chinesePhienAmWordList.filter((element, __, array) => element.join('=').length > 0 && element.length === 2 && !array[element[0]] && (array[element[0]] = 1), {});
-    glossary.hanViet = new Map(chinesePhienAmWordList);
+    glossary.hanViet = chinesePhienAmWordList;
     console.info(`Đã tải xong bộ dữ liệu hán việt (${chinesePhienAmWordList.length})!`);
   } catch (error) {
     console.error('Không thể tải bộ dữ liệu hán việt:', error);
