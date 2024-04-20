@@ -1280,7 +1280,6 @@ class Vietphrase {
         }
         case 'OnYomi': {
           dataArray = this.data.OnYomis.concat(this.data.KunYomis, this.data.romajis).filter(([first], __, array) => !array[first] && (array[first] = 1), {});
-          delete this.data.KunYomis;
           break;
         }
         case 'SinoVietnamese': {
@@ -1297,6 +1296,7 @@ class Vietphrase {
       delete this.data.namePhu;
       delete this.data.hanViet;
       delete this.data.romajis;
+      delete this.data.KunYomis;
       delete this.data.OnYomis;
 
       let result = inputText;

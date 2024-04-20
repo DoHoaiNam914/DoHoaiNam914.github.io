@@ -1578,7 +1578,7 @@ $(document).ready(async () => {
     console.info(`Đã tải xong bộ dữ liệu giản thể (${glossary.simplified.length})!`);
     lastSession = {};
   }).fail((__, ___, errorThrown) => {
-    console.error('Không thể tải bộ dữ liệu phổn thể:', errorThrown);
+    console.error('Không thể tải bộ dữ liệu phổn thể và phổn thể:', errorThrown);
     setTimeout(() => {
       window.location.reload();
     }, 5000);
@@ -1622,7 +1622,7 @@ $(document).ready(async () => {
     console.info(`Đã tải xong bộ dữ liệu On'yomi (${glossary.OnYomis.length})!`);
     lastSession = {};
   }).fail((__, ___, errorThrown) => {
-    console.error('Không thể tải bộ dữ liệu bính âm:', errorThrown);
+    console.error('Không thể tải bộ dữ liệu bính âm, Kun\'yomi và On\'yomi:', errorThrown);
     setTimeout(() => {
       window.location.reload();
     }, 5000);
