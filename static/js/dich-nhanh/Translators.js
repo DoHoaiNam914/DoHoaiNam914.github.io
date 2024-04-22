@@ -1286,6 +1286,7 @@ class Vietphrase {
       ['古武', 'cổ võ'],
       ['公司', 'công ti'],
       ['基本', 'cơ bản'],
+      ['局长', 'cục trưởng'],
       ['营养', 'dinh dưỡng'],
       ['多重', 'đa trùng'],
       ['大将', 'đại tướng'],
