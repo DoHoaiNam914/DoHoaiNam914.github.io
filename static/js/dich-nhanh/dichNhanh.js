@@ -1412,8 +1412,7 @@ $retranslateButton.click(function onClick() {
 });
 
 $glossaryManagerButton.on('mousedown', () => {
-  if (!isLoaded) return;
-  $sourceEntryInput.val(getSelectedTextOrActiveElementText().replaceAll(/\n/g, ' ').trim()).trigger('input');
+  $sourceEntryInput.val(getSelectedTextOrActiveElementText().replaceAll(/\n/g, ' ').trim());
 
   if (window.getSelection) {
     window.getSelection().removeAllRanges();
@@ -1676,6 +1675,10 @@ $resetButton.on('click', () => {
   if (window.confirm('Bạn có muốn tải lại trang ngay chứ?')) window.location.reload();
 });
 
+$('#glossary-modal').on('shown.bs.modal', () => {
+  $sourceEntryInput.trigger('input');
+});
+
 $('#glossary-modal').on('hide.bs.modal', () => {
   $sourceEntryInput.prop('scrollLeft', 0);
   $targetEntryTextarea.prop('scrollTop', 0);
@@ -1888,6 +1891,7 @@ $addButton.click(() => {
   glossaryObject[$sourceEntryInput.val().trim()] = $targetEntryTextarea.val().trim();
   glossary[$glossaryListSelect.val()] = Object.entries(glossaryObject);
   reloadGlossaryEntries();
+  if ($translatorOptions.filter($('.active')).data('id') === Translators.VIETPHRASE && !$glossaryListSelect.val().startsWith('Names')) lastSession = {};
   $glossaryEntrySelect.change();
   $addButton.addClass('disabled');
   $removeButton.addClass('disabled');
@@ -1899,6 +1903,7 @@ $removeButton.on('click', () => {
     delete glossaryObject[$sourceEntryInput.val()];
     glossary[$glossaryListSelect.val()] = Object.entries(glossaryObject);
     reloadGlossaryEntries();
+    if ($translatorOptions.filter($('.active')).data('id') === Translators.VIETPHRASE && !$glossaryListSelect.val().startsWith('Names')) lastSession = {};
     $sourceEntryInput.trigger('input');
   } else {
     $glossaryEntrySelect.val('').change();
@@ -1914,6 +1919,13 @@ $glossaryEntrySelect.change(function onChange() {
     $targetEntryTextarea.prop('scrollTop', 0);
     $targetEntryTextarea.val(null);
     $removeButton.addClass('disabled');
+  }
+
+  if (!Utils.isOnMobile()) {
+    const modalBody = $('#glossary-modal .modal-body');
+    const prevModalBodyScrollTop = modalBody.prop('scrollTop');
+    $(this).prop('options')[$(this).prop('selectedIndex')].scrollIntoView({ block: 'center' });
+    modalBody.prop('scrollTop', prevModalBodyScrollTop);
   }
 });
 
