@@ -530,7 +530,8 @@ function getIgnoreTranslationMarkup(text, translation, translator) {
 }
 
 function applyNameToText(text, translator = Translators.VIETPHRASE, name = glossary.name.concat(glossary.namePhu), multiple = false) {
-  const nameEntries = (translator === Translators.VIETPHRASE ? name : glossary.namePhu).filter(([first]) => text.toLowerCase().includes(first.toLowerCase()));
+  let nameEntries = translator === Translators.VIETPHRASE ? name : glossary.namePhu;
+  if (inputText.split('\n').length > 1) nameEntries = nameEntries.filter(([first]) => text.toLowerCase().includes(first.toLowerCase()));
   const nameObject = Object.fromEntries(nameEntries.map(([first, second]) => [first.toUpperCase(), second]));
 
   let result = text;
