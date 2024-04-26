@@ -529,7 +529,7 @@ function getIgnoreTranslationMarkup(text, translation, translator) {
   }
 }
 
-function applyNameToText(text, translator = Translators.VIETPHRASE, name = glossary.name.concat(glossary.namePhu)) {
+function applyNameToText(text, translator = Translators.VIETPHRASE, name = glossary.name.concat(glossary.namePhu), multiple = false) {
   const nameEntries = (translator === Translators.VIETPHRASE ? name : glossary.namePhu).filter(([first]) => text.toLowerCase().includes(first.toLowerCase()));
   const nameObject = Object.fromEntries(nameEntries.map(([first, second]) => [first.toUpperCase(), second]));
 
@@ -559,7 +559,8 @@ function applyNameToText(text, translator = Translators.VIETPHRASE, name = gloss
 
             if (Object.hasOwn(nameObject, phrase.toUpperCase())) {
               phrase = translator === Translators.DEEPL_TRANSLATE || translator === Translators.GOOGLE_TRANSLATE ? Utils.convertHtmlToText(a.substring(i, i + length).toUpperCase()) : phrase.toUpperCase();
-              const phraseResult = nameObject[phrase].split(/[/|]/)[0];
+              let phraseResult = nameObject[phrase];
+              if (!multiple || translator !== Translators.VIETPHRASE) phraseResult = phraseResult.split(/[/|]/)[0];
 
               if (phraseResult !== '') {
                 tempLine += (charsInTempLine.length > 0 && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]/u.test(charsInTempLine[charsInTempLine.length - 1]) ? ' ' : '') + getIgnoreTranslationMarkup(phrase, phraseResult, translator);
@@ -1683,6 +1684,8 @@ $('#glossary-modal').on('hide.bs.modal', () => {
   $sourceEntryInput.prop('scrollLeft', 0);
   $targetEntryTextarea.prop('scrollTop', 0);
   $glossaryEntrySelect.val('').change();
+  $addButton.addClass('disabled');
+  $removeButton.addClass('disabled');
 });
 
 $glossaryInput.on('change', function onChange() {
@@ -1749,7 +1752,7 @@ $sourceEntryInput.on('input', async function onInput() {
     }
 
     if (Object.hasOwn(glossaryObject, inputText)) {
-      $targetEntryTextarea.val(applyNameToText(inputText, Translators.VIETPHRASE, glossary[$glossaryListSelect.val()])).trigger('input');
+      $targetEntryTextarea.val(applyNameToText(inputText, Translators.VIETPHRASE, glossary[$glossaryListSelect.val()], true)).trigger('input');
       if (glossary[$glossaryListSelect.val()].length < 5000) $glossaryEntrySelect.val(inputText);
 
       if (!Utils.isOnMobile()) {
