@@ -1363,6 +1363,7 @@ class Vietphrase {
       ['长辈', 'trưởng bối'],
       ['长老', 'trưởng lão'],
       ['长官', 'trưởng quan'],
+      ['长孙', 'trưởng tôn'],
       ['长子', 'trưởng tử'],
       ['四重', 'tứ trùng'],
       ['将领', 'tướng lĩnh'],
