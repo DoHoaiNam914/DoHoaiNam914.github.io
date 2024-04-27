@@ -1069,7 +1069,7 @@ class Vietphrase {
       const [nhanByName, nhanByPronoun] = this.loadLuatNhanData(targetLanguage, nameArray, text);
 
       nameArray = nameArray.concat(nhanByPronoun, !this.prioritizeNameOverVietPhrase ? nhanByName : []).toSorted((a, b) => b[0].length - a[0].length);
-      let dataArray = datatoSorted((a, b) => b[0].length - a[0].length);
+      let dataArray = data.toSorted((a, b) => b[0].length - a[0].length);
 
       if (nameArray.concat(dataArray).length > 0) {
         let nameMap = new Map(nameArray);
