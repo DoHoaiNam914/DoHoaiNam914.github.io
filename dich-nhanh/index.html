@@ -60,8 +60,8 @@
       }
 
       .slide-navbar > .nav {
-        display: flex;
         -webkit-flex-wrap: nowrap;
+        display: flex;
         flex-wrap: nowrap;
         scrollbar-width: none;
         overflow-y: hidden;
@@ -92,10 +92,11 @@
       .textarea {
         font-family: var(--opt-font-family);
         font-size: var(--opt-font-size);
+        font-variant: normal;
         font-weight: normal;
         height: 69vh;
+        hyphens: none;
         max-height: 69vh;
-        letter-spacing: 0;
         line-height:  1.6;
         line-height: var(--opt-line-height);
         margin: 0;
@@ -103,9 +104,11 @@
         overflow-x: hidden;
         padding: 3.75pt;
         text-align: var(--opt-text-align);
-        text-rendering: optimizeLegibility;
+        text-align-last: left;
+        text-decoration: none;
+        text-indent: 0;
+        text-transform: none;
         widows: 1;
-        word-spacing: 0;
       }
 
       @media screen and (min-width: 75rem) {
@@ -124,9 +127,11 @@
       }
 
       .textarea > p {
-        display: block;
-        margin: 0;
         -webkit-user-select: auto;
+        display: block;
+        margin: 0 0 4px;
+        page-break-after: auto;
+        page-break-before: auto;
         user-select: auto;
       }
 
@@ -144,8 +149,8 @@
       }
 
       .dropdown-scrollable > .dropdown-menu {
-        height: 16em;
         -ms-overflow-style: none;
+        height: 16em;
         overflow-x: hidden;
         scrollbar-width: none;
         white-space: nowrap;
