@@ -531,7 +531,7 @@ function getIgnoreTranslationMarkup(text, translation, translator) {
 
 function applyNameToText(text, translator = Translators.VIETPHRASE, name = glossary.name.concat(glossary.namePhu), multiple = false) {
   let nameEntries = (translator === Translators.VIETPHRASE ? name : glossary.namePhu).map(([first, second]) => [first.toUpperCase(), second]);
-  if (text.split('\n').length > 1) nameEntries = nameEntries.filter(([first]) => text.toLowerCase().includes(first.toLowerCase()));
+  nameEntries = nameEntries.filter(([first]) => text.toLowerCase().includes(first.toLowerCase()));
   const nameObject = Object.fromEntries(nameEntries);
 
   let result = text;
@@ -543,7 +543,7 @@ function applyNameToText(text, translator = Translators.VIETPHRASE, name = gloss
     const results = [];
 
     lines.forEach((a) => {
-      const chars = [...a];
+      const chars = a.split(/(?:)/u);
 
       if (chars.length === 0) {
         results.push(a);
@@ -556,12 +556,12 @@ function applyNameToText(text, translator = Translators.VIETPHRASE, name = gloss
             const length = Math.min(chars.length, nameLengths[j]);
             let phrase = translator === Translators.DEEPL_TRANSLATE || translator === Translators.GOOGLE_TRANSLATE ? Utils.convertHtmlToText(a.substring(i, i + length)) : a.substring(i, i + length);
 
-            const charsInTempLine = [...tempLine];
+            const charsInTempLine = tempLine.split(/(?:)/u);
 
             if (Object.hasOwn(nameObject, phrase.toUpperCase())) {
               phrase = translator === Translators.DEEPL_TRANSLATE || translator === Translators.GOOGLE_TRANSLATE ? Utils.convertHtmlToText(a.substring(i, i + length).toUpperCase()) : phrase.toUpperCase();
               let phraseResult = nameObject[phrase];
-              if (!multiple || translator !== Translators.VIETPHRASE) phraseResult = phraseResult.split(/[/|]/)[0];
+              if (!multiple || translator !== Translators.VIETPHRASE) [phraseResult] = phraseResult.split(/[/|]/);
 
               if (phraseResult !== '') {
                 tempLine += (charsInTempLine.length > 0 && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]/u.test(charsInTempLine[charsInTempLine.length - 1]) ? ' ' : '') + getIgnoreTranslationMarkup(phrase, phraseResult, translator);
@@ -1895,7 +1895,7 @@ $addButton.click(() => {
   glossaryObject[$sourceEntryInput.val().trim()] = $targetEntryTextarea.val().trim();
   glossary[$glossaryListSelect.val()] = Object.entries(glossaryObject);
   reloadGlossaryEntries();
-  if ($translatorOptions.filter($('.active')).data('id') === Translators.VIETPHRASE && !$glossaryListSelect.val().startsWith('Names')) lastSession = {};
+  if ($translatorOptions.filter($('.active')).data('id') === Translators.VIETPHRASE) lastSession = {};
   $glossaryEntrySelect.change();
   $addButton.addClass('disabled');
   $removeButton.addClass('disabled');
@@ -1907,7 +1907,7 @@ $removeButton.on('click', () => {
     delete glossaryObject[$sourceEntryInput.val()];
     glossary[$glossaryListSelect.val()] = Object.entries(glossaryObject);
     reloadGlossaryEntries();
-    if ($translatorOptions.filter($('.active')).data('id') === Translators.VIETPHRASE && !$glossaryListSelect.val().startsWith('Names')) lastSession = {};
+    if ($translatorOptions.filter($('.active')).data('id') === Translators.VIETPHRASE) lastSession = {};
     $sourceEntryInput.trigger('input');
   } else {
     $glossaryEntrySelect.val('').change();

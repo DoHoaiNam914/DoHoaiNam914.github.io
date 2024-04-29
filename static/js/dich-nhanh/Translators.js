@@ -1145,7 +1145,7 @@ class Vietphrase {
         const dataLengths = nameArray.concat(dataArray).reduce((accumulator, [first]) => (!accumulator.includes(first.length) ? accumulator.concat(first.length) : accumulator), [1]).sort((a, b) => b - a);
 
         lines.forEach((a) => {
-          const chars = [...a];
+          const chars = a.split(/(?:)/u);
 
           if (chars.length === 0 || !chars.some((b) => this.data.pinyins.has(b))) {
             results.push(a);
@@ -1159,7 +1159,7 @@ class Vietphrase {
                 const length = Math.min(chars.length, dataLengths[j]);
                 let phrase = chars.slice(i, i + length).join('');
 
-                const charsInTempLine = [...tempLine];
+                const charsInTempLine = tempLine.split(/(?:)/u);
                 const couldUpperCaseKey = !this.prioritizeNameOverVietPhrase || (nameMap.has(phrase.toUpperCase()) && !Object.hasOwn(this.nameObject, phrase));
 
                 if (phrase.length > 0 && (nameMap.has(couldUpperCaseKey ? phrase.toUpperCase() : phrase) || (/\p{sc=Hani}/u.test(phrase) && dataMap.has(phrase.toUpperCase()) && nameKeys.every((element) => !phrase.toLowerCase().startsWith(element.toLowerCase())))) && phrase !== '·') {
