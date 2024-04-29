@@ -1895,7 +1895,7 @@ $addButton.click(() => {
   glossaryObject[$sourceEntryInput.val().trim()] = $targetEntryTextarea.val().trim();
   glossary[$glossaryListSelect.val()] = Object.entries(glossaryObject);
   reloadGlossaryEntries();
-  if ($translatorOptions.filter($('.active')).data('id') === Translators.VIETPHRASE) lastSession = {};
+  if ($translatorOptions.filter($('.active')).data('id') === Translators.VIETPHRASE && !$glossaryListSelect.val().startsWith('name')) lastSession = {};
   $glossaryEntrySelect.change();
   $addButton.addClass('disabled');
   $removeButton.addClass('disabled');
@@ -1907,7 +1907,7 @@ $removeButton.on('click', () => {
     delete glossaryObject[$sourceEntryInput.val()];
     glossary[$glossaryListSelect.val()] = Object.entries(glossaryObject);
     reloadGlossaryEntries();
-    if ($translatorOptions.filter($('.active')).data('id') === Translators.VIETPHRASE) lastSession = {};
+    if ($translatorOptions.filter($('.active')).data('id') === Translators.VIETPHRASE && !$glossaryListSelect.val().startsWith('name')) lastSession = {};
     $sourceEntryInput.trigger('input');
   } else {
     $glossaryEntrySelect.val('').change();
