@@ -1310,6 +1310,7 @@ class Vietphrase {
       ['任务', 'nhiệm vụ'],
       ['女仆', 'nữ bộc'],
       ['玻璃', 'pha lê'],
+      ['缥缈', 'phiêu miểu'],
       ['副本', 'phó bản'],
       ['封号', 'phong hiệu'],
       ['府邸', 'phủ để'],
