@@ -1441,13 +1441,15 @@ $fontOptions.click(function onClick() {
   $(this).addClass('active');
   const $currentTheme = $themeOptions.filter('.active');
   const fontName = $(this).text().replace(/^\([^)]+\) /, '');
+  const fallbackFont = $(this).data('fallback-font');
+  const themeFont = $currentTheme.data('font-family');
 
-  if ($(this).data('fallback-font') != null) {
-    $(document.documentElement).css('--opt-font-family', `${fontName.includes(' ') ? `'${fontName}'` : fontName}, ${$currentTheme.data('font-family') != null ? $currentTheme.data('font-family') : `${$(this).data('fallback-font').split(', ').map((element) => (element.includes(' ') ? `'${element}'` : element)).join(', ')}`}`);
+  if (fallbackFont != null) {
+    $(document.documentElement).css('--opt-font-family', `${fontName.includes(' ') ? `'${fontName}'` : fontName}, ${themeFont != null ? themeFont.split(', ').map((element) => (element.includes(' ') ? `'${element}'` : element)).join(', ') : `${fallbackFont.split(', ').map((element) => (element.includes(' ') ? `'${element}'` : element)).join(', ')}`}`);
   } else if ($(this).data('font-stacks') != null) {
     $(document.documentElement).css('--opt-font-family', $(this).data('font-stacks').split(', ').map((element) => `var(--${element})`).join(', '));
-  } else if ($currentTheme.data('font-family') != null) {
-    $(document.documentElement).css('--opt-font-family', $currentTheme.data('font-family').split(', ').map((element) => (element.includes(' ') ? `'${element}'` : element)).join(', '));
+  } else if (themeFont != null) {
+    $(document.documentElement).css('--opt-font-family', themeFont.split(', ').map((element) => (element.includes(' ') ? `'${element}'` : element)).join(', '));
   } else {
     $(document.documentElement).css('--opt-font-family', '');
   }
