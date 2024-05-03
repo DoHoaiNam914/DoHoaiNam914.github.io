@@ -1440,9 +1440,10 @@ $fontOptions.click(function onClick() {
   $fontOptions.removeClass('active');
   $(this).addClass('active');
   const $currentTheme = $themeOptions.filter('.active');
+  const fontName = $(this).text().replace(/^\([^)]+\) /, '');
 
   if ($(this).data('fallback-font') != null) {
-    $(document.documentElement).css('--opt-font-family', `${$(this).text().includes(' ') ? `'${$(this).text()}'` : $(this).text()}, ${$(this).data('fallback-font').length > 0 ? `${$(this).data('fallback-font').split(', ').map((element) => (element.includes(' ') ? `'${element}'` : element)).join(', ')}` : ''}`);
+    $(document.documentElement).css('--opt-font-family', `${fontName.includes(' ') ? `'${fontName}'` : fontName}, ${$currentTheme.data('font-family') != null ? $currentTheme.data('font-family') : `${$(this).data('fallback-font').split(', ').map((element) => (element.includes(' ') ? `'${element}'` : element)).join(', ')}`}`);
   } else if ($(this).data('font-stacks') != null) {
     $(document.documentElement).css('--opt-font-family', $(this).data('font-stacks').split(', ').map((element) => `var(--${element})`).join(', '));
   } else if ($currentTheme.data('font-family') != null) {
@@ -1451,7 +1452,7 @@ $fontOptions.click(function onClick() {
     $(document.documentElement).css('--opt-font-family', '');
   }
 
-  $('.textarea').css('font-weight', $currentTheme.text() === 'Apple Sách - Nguyên bản' && $(this).text().startsWith('PingFang ') ? 500 : ($currentTheme.data('font-weight') ?? ''));
+  $('.textarea').css('font-weight', $currentTheme.text() === 'Apple Sách - Nguyên bản' && fontName.startsWith('PingFang ') ? 500 : ($currentTheme.data('font-weight') ?? ''));
   quickTranslateStorage.font = $(this).text();
   localStorage.setItem('dich_nhanh', JSON.stringify(quickTranslateStorage));
 });
