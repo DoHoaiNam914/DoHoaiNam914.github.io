@@ -1495,6 +1495,7 @@ class Vietphrase {
       ['柠', 'NINH'],
       ['奻', null, 'nữ'/* Đỗ Hoài Nam */],
       ['樊', 'PHÀN'/* Họ */],
+      ['浦', 'PHỐ'/* Họ */],
       ['缚', 'PHỌC'],
       ['仆', 'PHỐC, BỘC'],
       ['绾', 'QUÁN'],
