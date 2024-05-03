@@ -16,7 +16,7 @@ const $resultTextarea = $('#result-textarea');
 const $glossaryManagerButton = $('#glossary-manager-button');
 
 const $themeOptions = $('.theme-option');
-const $fontOptions = $('.font-option');
+const $fontStackText = $('#font-stack-text');
 const $fontSizeRange = $('#font-size-range');
 const $lineSpacingRange = $('#line-spacing-range');
 const $alignmentSettingsSwitch = $('#alignment-settings-switch');
@@ -48,7 +48,7 @@ const $removeButton = $('#remove-button');
 const $glossaryEntrySelect = $('#glossary-entry-select');
 const $glossaryName = $('#glossary-name');
 
-const defaultOptions = JSON.parse('{"source_language":"","target_language":"vi","font":"Mặc định","font_size":100,"line_spacing":40,"alignment_settings":true,"format_settings":true,"translator":"microsoftTranslator","show_original_text":false,"default-viet-phrase-file-select":"3","add_de_le_zhao":false,"translation_algorithm":"0","prioritize_name_over_viet_phrase":false,"multiplication_algorithm":"2","name":true,"glossary_type":"text/plain","language_pairs":"zh-vi"}');
+const defaultOptions = JSON.parse('{"source_language":"","target_language":"vi","font-stack":"","font_size":100,"line_spacing":40,"alignment_settings":true,"format_settings":true,"translator":"microsoftTranslator","show_original_text":false,"default-viet-phrase-file-select":"3","add_de_le_zhao":false,"translation_algorithm":"0","prioritize_name_over_viet_phrase":false,"multiplication_algorithm":"2","name":true,"glossary_type":"text/plain","language_pairs":"zh-vi"}');
 
 const SUPPORTED_LANGUAGES = ['', 'EN', 'JA', 'ZH', 'EN-US', 'auto', 'en', 'ja', 'zh-CN', 'zh-TW', 'vi', 'zh-Hans', 'zh-Hant'];
 
@@ -390,11 +390,12 @@ let prevScrollTop = 0;
 let lastSession = {};
 
 const OptionTypes = {
-  SELECT: 'select',
   CHECK: 'check',
-  RADIO: 'radio',
   SWITCH: 'switch',
+  RADIO: 'radio',
   RANGE: 'range',
+  TEXT: 'text',
+  SELECT: 'select',
   DROPDOWN: 'dropdown',
 };
 
@@ -405,11 +406,11 @@ const GlossaryType = {
 };
 
 function getOptionId(id) {
-  return id.match(/(.+)-(?:select|check|radio|switch|range|dropdown)$/)[1].replaceAll(/-/g, '_');
+  return id.match(/(.+)-(?:check|switch|radio|range|text|select|dropdown)$/)[1].replaceAll(/-/g, '_');
 }
 
 function getOptionType(id) {
-  return id.match(/.+-(select|check|radio|switch|range|dropdown)$/)[1];
+  return id.match(/.+-(check|switch|radio|range|text|select|dropdown)$/)[1];
 }
 
 function getCurrentOptions() {
@@ -422,13 +423,13 @@ function getCurrentOptions() {
       const optionType = getOptionType(option.attr('name') ?? option.attr('id'));
 
       switch (optionType) {
-        case OptionTypes.RADIO: {
-          if (option.prop('checked') === true) data[optionId] = option.val();
-          break;
-        }
         case OptionTypes.CHECK:
         case OptionTypes.SWITCH: {
           data[optionId] = option.prop('checked');
+          break;
+        }
+        case OptionTypes.RADIO: {
+          if (option.prop('checked') === true) data[optionId] = option.val();
           break;
         }
         case OptionTypes.RANGE: {
@@ -473,19 +474,20 @@ function loadAllQuickTranslatorOptions() {
     const option = $options.eq(index);
     const optionId = getOptionId(option.attr('name') ?? option.attr('id'));
     const optionType = getOptionType(option.attr('name') ?? option.attr('id'));
+    if (optionId === 'font-stack') console.log(quickTranslateStorage[optionId]);
 
     switch (optionType) {
+      case OptionTypes.CHECK:
+      case OptionTypes.SWITCH: {
+        option.attr('checked', quickTranslateStorage[optionId]).change();
+        break;
+      }
       case OptionTypes.RADIO: {
         if (option.val() === quickTranslateStorage[optionId]) {
           $(`.option[name="${option.attr('name')}"]`).removeAttr('checked');
           option.attr('checked', true);
         }
 
-        break;
-      }
-      case OptionTypes.CHECK:
-      case OptionTypes.SWITCH: {
-        option.attr('checked', quickTranslateStorage[optionId]).change();
         break;
       }
       case OptionTypes.RANGE: {
@@ -1416,9 +1418,9 @@ $themeOptions.click(function onClick() {
     'font-weight': $(this).data('font-weight') ?? '',
   });
 
-  if (isLoaded) {
-    $fontOptions.filter('.active').click();
+  $fontStackText.val($(this).data('font-family') ?? '').change();
 
+  if (isLoaded) {
     if ($(this).data('font-size') != null) {
       $fontSizeRange.val($(this).data('font-size')).change();
     }
@@ -1432,31 +1434,20 @@ $themeOptions.click(function onClick() {
     }
   }
 
-  quickTranslateStorage.theme = $(this).text();
+  quickTranslateStorage[getOptionId($(this).parent().parent().parent().attr('id'))] = $(this).text();
   localStorage.setItem('dich_nhanh', JSON.stringify(quickTranslateStorage));
 });
 
-$fontOptions.click(function onClick() {
-  $fontOptions.removeClass('active');
-  $(this).addClass('active');
-  const $currentTheme = $themeOptions.filter('.active');
-  const fontName = $(this).text().replace(/^\([^)]+\) /, '');
-  const fallbackFont = $(this).data('fallback-font');
-  const themeFont = $currentTheme.data('font-family');
+$fontStackText.change(function onChange() {
+  const value = $(this).val().split(', ').map((element) => element.replace(/^\([^)]+\) /, ''));
+  $(this).val(value.join(', '));
 
-  if (fallbackFont != null) {
-    $(document.documentElement).css('--opt-font-family', `${fontName.includes(' ') ? `'${fontName}'` : fontName}, ${themeFont != null ? themeFont.split(', ').map((element) => (element.includes(' ') ? `'${element}'` : element)).join(', ') : `${fallbackFont.split(', ').map((element) => (element.includes(' ') ? `'${element}'` : element)).join(', ')}`}`);
-  } else if ($(this).data('font-stacks') != null) {
-    $(document.documentElement).css('--opt-font-family', $(this).data('font-stacks').split(', ').map((element) => `var(--${element})`).join(', '));
-  } else if (themeFont != null) {
-    $(document.documentElement).css('--opt-font-family', themeFont.split(', ').map((element) => (element.includes(' ') ? `'${element}'` : element)).join(', '));
-  } else {
-    $(document.documentElement).css('--opt-font-family', '');
-  }
+  $(document.documentElement).css('--opt-font-family', value.map((element) => {
+    const maybeFontStacks = element.startsWith('--') ? `var(${element})` : element;
+    return element.includes(' ') ? `'${element}'` : maybeFontStacks;
+  }).join(', '));
 
-  $('.textarea').css('font-weight', $currentTheme.text() === 'Apple Sách - Nguyên bản' && fontName.startsWith('PingFang ') ? 500 : ($currentTheme.data('font-weight') ?? ''));
-  quickTranslateStorage.font = $(this).text();
-  localStorage.setItem('dich_nhanh', JSON.stringify(quickTranslateStorage));
+  quickTranslateStorage[getOptionId($(this).attr('id'))] = value.join(', ');
 });
 
 $fontSizeRange.on('input', function onInput() {
@@ -1527,7 +1518,7 @@ $translatorOptions.click(function onClick() {
   $translatorOptions.removeClass('active');
   $(this).addClass('active');
   updateLanguageSelect($(this).data('id'), quickTranslateStorage.translator);
-  quickTranslateStorage.translator = $(this).data('id');
+  quickTranslateStorage[getOptionId($(this).parent().parent().parent().attr('id'))] = $(this).data('id');
   localStorage.setItem('dich_nhanh', JSON.stringify(quickTranslateStorage));
   $inputTextarea.trigger('input');
   $retranslateButton.click();
