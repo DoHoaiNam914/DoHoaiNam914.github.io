@@ -1012,25 +1012,22 @@ class Vietphrase {
     }
   }
 
-  loadLuatNhanData(targetLanguage, nameEntries, inputText) {
-    let nhanByName = nameEntries;
-    let nhanByPronoun = this.data.pronoun.map(([first, second]) => [first, second.split(/[/|]/)[0]]).filter(([first]) => inputText.includes(first));
+  loadLuatNhanData(targetLanguage, nameArray, inputText) {
+    let nhanByName = [];
+    let nhanByPronoun = [];
 
     if (this.multiplicationAlgorithm > this.MultiplicationAlgorithm.NOT_APPLICABLE && targetLanguage === 'vi') {
-      this.data.luatNhan.filter(([first]) => inputText.match(new RegExp(Utils.escapeRegExp(first).replace(/\{0}/, '.+')))).forEach(([a, b]) => {
+      this.data.luatNhan.filter(([first]) => inputText.match(new RegExp(Utils.escapeRegExp(first).replace('\\{0\\}', '.+')))).forEach(([a, b]) => {
         if (this.nameEnabled && this.multiplicationAlgorithm === this.MultiplicationAlgorithm.MULTIPLICATION_BY_PRONOUNS_AND_NAMES && nameEntries.length > 0) {
-          nhanByName = [...nhanByName, ...nhanByName.map(([c, d]) => [a.replace(/\{0}/, Utils.escapeRegExpReplacement(c)), b.replace(/\{0}/, Utils.escapeRegExpReplacement(d))])];
+          nhanByName = [...nhanByName, ...nameArray.map(([c, d]) => [a.replace('{0}', c), b.replace('{0}', d)])];
         }
 
-        nhanByPronoun = [...nhanByPronoun, ...nhanByPronoun.map(([c, d]) => [a.replace(/\{0}/, Utils.escapeRegExpReplacement(c)), b.replace(/\{0}/, Utils.escapeRegExpReplacement(d))])];
+        nhanByPronoun = [...nhanByPronoun, ...this.data.pronoun.map(([c, d]) => [a.replace('{0}', c), b.replace('{0}', d)])];
       });
-    } else {
-      nhanByName = [];
-      nhanByPronoun = [];
     }
 
     delete this.data.luatNhan;
-    return [nhanByName.toSorted((a, b) => b[0].length - a[0].length), nhanByPronoun.toSorted((a, b) => b[0].length - a[0].length).filter(([a]) => !this.data.pronoun.some(([b]) => b === a))];
+    return [nhanByName.toSorted((a, b) => b[0].length - a[0].length), nhanByPronoun.toSorted((a, b) => b[0].length - a[0].length)];
   }
 
   static getCapitalizeText(text) {
@@ -1255,7 +1252,7 @@ class Vietphrase {
     this.nameObject = Object.fromEntries((this.nameEnabled ? this.data.name.concat(glossary.length > 0 ? glossary : this.data.namePhu) : []).map(([first, second]) => [this.prioritizeNameOverVietPhrase ? second : first.toUpperCase(), second]).filter(([first]) => first != null && first.length > 0 && inputText.toLowerCase().includes(first.toLowerCase())));
     delete this.data.namePhu;
     this.data.name = Object.entries(this.nameObject);
-    this.data.hanViet = new Map(this.data.SinoVietnameses.concat([
+    this.data.hanViet = new Map(this.data.SinoVietnameses.map(([first, second]) => [first, second.toLowerCase()]).concat([
       ['俱乐部', 'câu lạc bộ'],
       ['小姐姐', 'tiểu tỷ tỷ'],
       ['安乐', 'an lạc'],
