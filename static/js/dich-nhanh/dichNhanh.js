@@ -1447,7 +1447,10 @@ $fontStackText.change(function onChange() {
     return element.includes(' ') ? `'${element}'` : maybeFontStacks;
   }).join(', '));
 
+  const $currentTheme = $themeOptions.filter('.active');
+  $('.textarea').css('font-weight', ['Apple Sách - Nguyên bản', 'Google Play Sách'].some((element) => $currentTheme.text().startsWith(element)) && value.some((element) => element.startsWith('PingFang ')) ? 500 : ($currentTheme.data('font-weight') ?? ''));
   quickTranslateStorage[getOptionId($(this).attr('id'))] = value.join(', ');
+  localStorage.setItem('dich_nhanh', JSON.stringify(quickTranslateStorage));
 });
 
 $fontSizeRange.on('input', function onInput() {
