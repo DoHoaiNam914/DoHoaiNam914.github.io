@@ -1418,9 +1418,9 @@ $themeOptions.click(function onClick() {
     'font-weight': $(this).data('font-weight') ?? '',
   });
 
-  $fontStackText.val($(this).data('font-family') ?? '').change();
-
   if (isLoaded) {
+    $fontStackText.val($(this).data('font-family') ?? '').change();
+
     if ($(this).data('font-size') != null) {
       $fontSizeRange.val($(this).data('font-size')).change();
     }
