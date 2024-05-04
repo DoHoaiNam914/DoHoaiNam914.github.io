@@ -1440,17 +1440,17 @@ $themeOptions.click(function onClick() {
 });
 
 $fontStackText.change(function onChange() {
-  const value = $(this).val().split(', ').map((element) => element.replace(/^\([^)]+\) /, ''));
-  $(this).val(value.join(', '));
+  const value = $(this).val();
+  $(this).val(value);
 
-  $(document.documentElement).css('--opt-font-family', value.map((element) => {
+  $(document.documentElement).css('--opt-font-family', value.split(', ').map((element) => {
     const maybeFontStacks = element.startsWith('--') ? `var(${element})` : element;
     return element.includes(' ') ? `'${element}'` : maybeFontStacks;
   }).join(', '));
 
   const $currentTheme = $themeOptions.filter('.active');
-  $('.textarea').css('font-weight', ['Apple Sách - Nguyên bản', 'Google Play Sách'].some((element) => $currentTheme.text().startsWith(element)) && value.some((element) => element.startsWith('PingFang ')) ? 500 : ($currentTheme.data('font-weight') ?? ''));
-  quickTranslateStorage[getOptionId($(this).attr('id'))] = value.join(', ');
+  $('.textarea').css('font-weight', ['Apple Sách - Nguyên bản', 'Google Play Sách'].some((element) => $currentTheme.text().startsWith(element)) && value.split(', ').some((element) => element.startsWith('PingFang ')) ? 500 : ($currentTheme.data('font-weight') ?? ''));
+  quickTranslateStorage[getOptionId($(this).attr('id'))] = value;
   localStorage.setItem('dich_nhanh', JSON.stringify(quickTranslateStorage));
 });
 
