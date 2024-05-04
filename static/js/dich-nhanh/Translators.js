@@ -1550,7 +1550,7 @@ class Vietphrase {
       ['掣', 'XIẾT'],
       ['冲', 'XUNG'],
       ['夭', 'YỂU'],
-    ].map(([a, b, c], __, array) => [a, (Object.fromEntries(array.filter(([___, d]) => !/\p{Script=Hani}/u.test(d)).map(([d, e, f]) => [d, f ?? e]))[b] ?? c ?? b).split(/, | \| /)[0].toLowerCase()]), this.data.hanViet).filter(([first], __, array) => !array[first] && (array[first] = 1), {}));
+    ].map(([a, b, c], ___, array) => [a, (Object.fromEntries(array.filter(([___, d]) => !/\p{Script=Hani}/u.test(d)).map(([d, e, f]) => [d, f ?? e]))[b] ?? c ?? b).split(/, | \| /)[0].toLowerCase()]), this.data.hanViet).filter(([first], __, array) => !array[first] && (array[first] = 1), {}));
     delete this.data.specialSinoVietnameses;
 
     try {
