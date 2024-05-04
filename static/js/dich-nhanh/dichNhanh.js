@@ -490,7 +490,8 @@ function loadAllQuickTranslatorOptions() {
 
         break;
       }
-      case OptionTypes.RANGE: {
+      case OptionTypes.RANGE:
+      case OptionTypes.TEXT: {
         option.val(quickTranslateStorage[optionId]).change();
         break;
       }
@@ -1727,7 +1728,7 @@ $sourceEntryInput.on('input', async function onInput() {
   }
 });
 
-$targetEntryTextarea.on('keypress', (event) => {
+$sourceEntryInput.on('keypress', (event) => {
   if (event.key === 'Enter') {
     $targetEntryTextarea.focus();
     event.preventDefault();
