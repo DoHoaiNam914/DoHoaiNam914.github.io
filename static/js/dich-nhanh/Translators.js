@@ -1022,7 +1022,7 @@ class Vietphrase {
           nhanByName = [...nhanByName, ...nameArray.map(([c, d]) => [a.replace('{0}', c), b.replace('{0}', d)])];
         }
 
-        nhanByPronoun = [...nhanByPronoun, ...this.data.pronoun.map(([c, d]) => [a.replace('{0}', c), b.replace('{0}', d)])];
+        nhanByPronoun = [...nhanByPronoun, ...this.data.pronoun.map(([c, d]) => [a.replace('{0}', c), b.replace('{0}', d.split(/[/|]/)[0]])];
       });
     }
 
