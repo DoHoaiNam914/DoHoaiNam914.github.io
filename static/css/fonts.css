@@ -53,35 +53,35 @@
   unicode-range: U+0020-007F, U+0080-00FF, U+0100-017F, U+0180-024F, U+0370-03FF, U+0400-04FF, U+0500-052F;
 }
 
-/* Chalkboard SE */
+/* ChalkboardSE */
 
 @font-face {
   font-display: swap;
-  font-family: 'Chalkboard SE';
+  font-family: 'ChalkboardSE';
   src: local('Chalkboard SE'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Chalkboard%20SE/ChalkboardSE-Regular-02.ttf) format('truetype');
   unicode-range: U+0020-007F, U+0080-00FF, U+0100-017F, U+0180-024F;
 }
 
 @font-face {
   font-display: swap;
-  font-family: 'Chalkboard SE';
+  font-family: 'ChalkboardSE';
   font-weight: bold;
   src: local('Chalkboard SE'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Chalkboard%20SE/ChalkboardSE-Bold-03.ttf) format('truetype');
   unicode-range: U+0020-007F, U+0080-00FF, U+0100-017F, U+0180-024F;
 }
 
-/* Charter */
+/* Charter BT */
 
 @font-face {
   font-display: swap;
-  font-family: 'Charter';
+  font-family: 'Charter BT';
   src: local('Charter'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Charter/Charter%20Regular.ttf) format('truetype');
   unicode-range: U+0020-007F, U+0080-00FF;
 }
 
 @font-face {
   font-display: swap;
-  font-family: 'Charter';
+  font-family: 'Charter BT';
   font-style: italic;
   src: local('Charter'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Charter/Charter%20Italic.ttf) format('truetype');
   unicode-range: U+0020-007F, U+0080-00FF;
@@ -89,7 +89,7 @@
 
 @font-face {
   font-display: swap;
-  font-family: 'Charter';
+  font-family: 'Charter BT';
   font-weight: bold;
   src: local('Charter'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Charter/Charter%20Bold.ttf) format('truetype');
   unicode-range: U+0020-007F, U+0080-00FF;
@@ -97,7 +97,7 @@
 
 @font-face {
   font-display: swap;
-  font-family: 'Charter';
+  font-family: 'Charter BT';
   font-style: italic;
   font-weight: bold;
   src: local('Charter'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Charter/Charter%20Bold%20Italic.ttf) format('truetype');
@@ -123,20 +123,20 @@
   unicode-range: U+3000-303F, U+3040-309F, U+30A0-30FF, U+FF00-FFEF, U+4E00-9FAF;
 }
 
-/* Hiragino Mincho Pro */
+/* HiraMinPro */
 
 @font-face {
   font-display: swap;
-  font-family: 'Hiragino Mincho Pro';
-  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Hiragino%20Mincho%20Pro/HiraMinProN-W3-AlphaNum-02.otf) format('opentype');
+  font-family: 'HiraMinPro';
+  src: local('Hiragino Mincho Pro'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Hiragino%20Mincho%20Pro/HiraMinProN-W3-AlphaNum-02.otf) format('opentype');
   unicode-range: U+3000-303F, U+3040-309F, U+30A0-30FF, U+FF00-FFEF, U+4E00-9FAF;
 }
 
 @font-face {
   font-display: swap;
-  font-family: 'Hiragino Mincho Pro';
+  font-family: 'HiraMinPro';
   font-weight: bold;
-  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Hiragino%20Mincho%20Pro/HiraMinProN-W6-AlphaNum-04.otf) format('opentype');
+  src: local('Hiragino Mincho Pro'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Hiragino%20Mincho%20Pro/HiraMinProN-W6-AlphaNum-04.otf) format('opentype');
   unicode-range: U+3000-303F, U+3040-309F, U+30A0-30FF, U+FF00-FFEF, U+4E00-9FAF;
 }
 
@@ -144,14 +144,14 @@
 
 @font-face {
   font-display: swap;
-  font-family: 'Hiragino Mincho ProN';
+  font-family: 'HiraMinProN';
   src: local('Hiragino Mincho ProN'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Hiragino%20Mincho%20ProN/HiraMinProN-W3-AlphaNum-01.otf) format('opentype');
   /* unicode-range: U+3000-303F, U+3040-309F, U+30A0-30FF, U+FF00-FFEF, U+4E00-9FAF; */
 }
 
 @font-face {
   font-display: swap;
-  font-family: 'Hiragino Mincho ProN';
+  font-family: 'HiraMinProN';
   font-weight: bold;
   src: local('Hiragino Mincho ProN'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Hiragino%20Mincho%20ProN/HiraMinProN-W6-AlphaNum-03.otf) format('opentype');
   /* unicode-range: U+3000-303F, U+3040-309F, U+30A0-30FF, U+FF00-FFEF, U+4E00-9FAF; */
@@ -227,18 +227,18 @@
   unicode-range: U+0020-007F, U+0080-00FF, U+0100-017F, U+0180-024F;
 }
 
-/* PingFang SC */
+/* pingfang sc */
 
 @font-face {
   font-display: swap;
-  font-family: 'PingFang SC';
+  font-family: 'pingfang sc';
   src: local('PingFang SC'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/PingFang%20SC/pingfang%20sc-regular.otf) format('opentype');
   unicode-range: U+3000-303F, U+3040-309F, U+30A0-30FF, U+FF00-FFEF, U+4E00-9FAF;
 }
 
 @font-face {
   font-display: swap;
-  font-family: 'PingFang SC';
+  font-family: 'pingfang sc';
   font-weight: 500;
   src: local('PingFang SC'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/PingFang%20SC/pingfang%20sc-medium.otf) format('opentype');
   unicode-range: U+3000-303F, U+3040-309F, U+30A0-30FF, U+FF00-FFEF, U+4E00-9FAF;
@@ -246,7 +246,7 @@
 
 @font-face {
   font-display: swap;
-  font-family: 'PingFang SC';
+  font-family: 'pingfang sc';
   font-weight: bold;
   src: local('PingFang SC'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/PingFang%20SC/pingfang%20sc-bold.otf) format('opentype');
   unicode-range: U+3000-303F, U+3040-309F, U+30A0-30FF, U+FF00-FFEF, U+4E00-9FAF;
