@@ -62,7 +62,7 @@ const uuid = crypto.randomUUID();
 let glossary = {
   simplified: [],
   traditional: [],
-  pinyins: new Map(),
+  pinyins: [],
   romajis: [
     ['ぁ', '~a'],
     ['あ', 'a'],
@@ -345,10 +345,10 @@ let glossary = {
     ['ヴ', 'vu'],
     ['ヵ', '~ka'],
     ['ヶ', '~ke'],
-    // ['ヷ', 'va'],
-    // ['ヸ', 'vi'],
-    // ['ヹ', 've'],
-    // ['ヺ', 'vo'],
+    ['ヷ', 'va'],
+    ['ヸ', 'vi'],
+    ['ヹ', 've'],
+    ['ヺ', 'vo'],
 
     ['ㇰ', '~ku'],
     ['ㇱ', '~shi'],
@@ -567,7 +567,7 @@ function applyNameToText(text, translator = Translators.VIETPHRASE, name = gloss
               if (!multiple || translator !== Translators.VIETPHRASE) [phraseResult] = phraseResult.split(/[/|]/);
 
               if (phraseResult !== '') {
-                tempLine += (charsInTempLine.length > 0 && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]/u.test(charsInTempLine[charsInTempLine.length - 1]) ? ' ' : '') + getIgnoreTranslationMarkup(phrase, phraseResult, translator);
+                tempLine += (charsInTempLine.length > 0 && (/[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]/u.test(charsInTempLine[charsInTempLine.length - 1]) || prevPhrase.length === 0) ? ' ' : '') + getIgnoreTranslationMarkup(phrase, phraseResult, translator);
                 prevPhrase = phraseResult;
               }
 
@@ -628,10 +628,10 @@ function buildResult(inputText, result) {
 
       for (let i = 0; i < originalLines.length; i += 1) {
         if (i + lostLineFixedNumber < resultLines.length) {
-          if (originalLines[i + lostLineFixedNumber].trim().replace(/^\s+$/, '').length === 0 && resultLines[i].trim().replace(/^\s+$/, '').length > 0) {
+          if (originalLines[i + lostLineFixedNumber].trim().replace(/^\s+/, '').length === 0 && resultLines[i].trim().replace(/^\s+/, '').length > 0) {
             lostLineFixedNumber += 1;
             i -= 1;
-          } else if ($translatorOptions.filter($('.active')).data('id') === Translators.PAPAGO && resultLines[i].trim().replace(/^\s+$/, '').length === 0 && originalLines[i + lostLineFixedNumber].trim().replace(/^\s+$/, '').length > 0) {
+          } else if ($translatorOptions.filter($('.active')).data('id') === Translators.PAPAGO && resultLines[i].trim().replace(/^\s+/, '').length === 0 && originalLines[i + lostLineFixedNumber].trim().replace(/^\s+/, '').length > 0) {
             lostLineFixedNumber -= 1;
           } else {
             let paragraph = document.createElement('p');
@@ -1222,17 +1222,7 @@ $(document).ready(async () => {
     method: 'GET',
     url: '/static/datasource/Unihan_Readings.txt',
   }).done((data) => {
-    glossary.pinyins = data.split('\n').reduce((accumulator, currentValue) => {
-      if (currentValue.length === 0 || currentValue.startsWith('#')) return accumulator;
-      const arrayEntry = currentValue.substring(2).split('\t').map((element, index) => (index === 0 ? String.fromCodePoint(parseInt(element, 16)) : element));
-
-      if (arrayEntry.length === 3 && arrayEntry[1] === 'kMandarin' && !accumulator.has(arrayEntry[0])) {
-        accumulator.set(arrayEntry[0], arrayEntry[2].split(' ')[0]);
-      }
-
-      return accumulator;
-    }, new Map());
-
+    glossary.pinyins = data.split('\n').filter((element) => element.length !== 0 && !element.startsWith('#') && element.split('\t')[1] === 'kMandarin').map((element) => element.split('\t')).map(([first, __, third]) => [String.fromCodePoint(parseInt(first.substring(2), 16)), third.split(' ')[0]]);
     console.info(`Đã tải xong bộ dữ liệu bính âm (${glossary.pinyins.size})!`);
 
     const array = data.split('\n').filter((element) => element.length !== 0 && !element.startsWith('#')).map((element) => element.split('\t'));
@@ -1420,19 +1410,10 @@ $themeOptions.click(function onClick() {
   });
 
   if (isLoaded) {
-    $fontStackText.val($(this).data('font-family') ?? '').change();
-
-    if ($(this).data('font-size') != null) {
-      $fontSizeRange.val($(this).data('font-size')).change();
-    }
-
-    if ($(this).data('line-height') != null) {
-      $lineSpacingRange.val($(this).data('line-height')).change();
-    }
-
-    if ($(this).data('text-align') != null) {
-      $alignmentSettingsSwitch.prop('checked', $(this).data('text-align') === 'justify').change();
-    }
+    if ($fontStackText.val().length === 0) $fontStackText.val($(this).data('font-family') ?? '').change();
+    if ($(this).data('font-size') != null) $fontSizeRange.val($(this).data('font-size')).change();
+    if ($(this).data('line-height') != null) $lineSpacingRange.val($(this).data('line-height')).change();
+    if ($(this).data('text-align') != null) $alignmentSettingsSwitch.prop('checked', $(this).data('text-align') === 'justify').change();
   }
 
   quickTranslateStorage[getOptionId($(this).parent().parent().parent().attr('id'))] = $(this).text();
@@ -1440,16 +1421,17 @@ $themeOptions.click(function onClick() {
 });
 
 $fontStackText.change(function onChange() {
-  const value = $(this).val();
+  const values = $(this).val().split(/, */);
+  $(this).val(values.join(', '));
 
-  $(document.documentElement).css('--opt-font-family', value.split(/, */).map((element) => {
+  $(document.documentElement).css('--opt-font-family', values.map((element) => {
     const maybeFontStacks = element.startsWith('--') ? `var(${element})` : element;
     return element.includes(' ') ? `'${element}'` : maybeFontStacks;
   }).join(', '));
 
   const $currentTheme = $themeOptions.filter('.active');
-  $('.textarea').css('font-weight', ['Apple Sách - Nguyên bản', 'Google Play Sách'].some((element) => $currentTheme.text().startsWith(element)) && value.split(/, */).some((element) => element.startsWith('PingFang ')) ? 500 : ($currentTheme.data('font-weight') ?? ''));
-  quickTranslateStorage[getOptionId($(this).attr('id'))] = value;
+  $('.textarea').css('font-weight', ['Apple Sách - Nguyên bản', 'Google Play Sách'].some((element) => $currentTheme.text().startsWith(element)) && values.some((element) => element.toLowerCase().startsWith('pingfang ')) ? 500 : ($currentTheme.data('font-weight') ?? ''));
+  quickTranslateStorage[getOptionId($(this).attr('id'))] = values.join(', ');
   localStorage.setItem('dich_nhanh', JSON.stringify(quickTranslateStorage));
 });
 
