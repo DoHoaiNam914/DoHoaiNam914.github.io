@@ -1177,7 +1177,7 @@ class Vietphrase {
 
                 if (length === 1) {
                   tempLine += (charsInTempLine.length > 0 && /^[\p{Lu}\p{Ll}\p{Nd}(([{‘“]/u.test(phrase) && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(prevPhrase) ? ' ' : '') + phrase;
-                  prevPhrase = '';
+                  prevPhrase = /\p{P}/u.test(phrase) ? phrase : '';
                   i += length - 1;
                   break;
                 }

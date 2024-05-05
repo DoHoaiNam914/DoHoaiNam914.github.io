@@ -577,7 +577,7 @@ function applyNameToText(text, translator = Translators.VIETPHRASE, name = gloss
 
             if (length === 1) {
               tempLine += (charsInTempLine.length > 0 && /[\p{Lu}\p{Ll}\p{Nd}([{‘“]/u.test(a[i]) && /[\p{Lu}\p{Ll}\p{Nd})\]}’”]$/u.test(prevPhrase) ? ' ' : '') + (translator === Translators.DEEPL_TRANSLATE || translator === Translators.GOOGLE_TRANSLATE ? Utils.convertTextToHtml(phrase) : phrase);
-              prevPhrase = '';
+              prevPhrase = /\p{P}/u.test(phrase) ? phrase : '';
               break;
             }
           }
