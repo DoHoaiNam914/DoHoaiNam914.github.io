@@ -567,7 +567,7 @@ function applyNameToText(text, translator = Translators.VIETPHRASE, name = gloss
               if (!multiple || translator !== Translators.VIETPHRASE) [phraseResult] = phraseResult.split(/[/|]/);
 
               if (phraseResult !== '') {
-                tempLine += (charsInTempLine.length > 0 && (/[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]/u.test(charsInTempLine[charsInTempLine.length - 1]) || prevPhrase.length === 0) ? ' ' : '') + getIgnoreTranslationMarkup(phrase, phraseResult, translator);
+                tempLine += (charsInTempLine.length > 0 && (/[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(charsInTempLine[charsInTempLine.length - 1]) || prevPhrase.length === 0) ? ' ' : '') + getIgnoreTranslationMarkup(phrase, phraseResult, translator);
                 prevPhrase = phraseResult;
               }
 
@@ -577,7 +577,7 @@ function applyNameToText(text, translator = Translators.VIETPHRASE, name = gloss
 
             if (length === 1) {
               tempLine += (charsInTempLine.length > 0 && /[\p{Lu}\p{Ll}\p{Nd}([{‘“]/u.test(a[i]) && /[\p{Lu}\p{Ll}\p{Nd})\]}’”]$/u.test(prevPhrase) ? ' ' : '') + (translator === Translators.DEEPL_TRANSLATE || translator === Translators.GOOGLE_TRANSLATE ? Utils.convertTextToHtml(phrase) : phrase);
-              prevPhrase = /\p{P}/u.test(phrase) ? phrase : '';
+              prevPhrase = /[^\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(phrase) ? phrase : '';
               break;
             }
           }

@@ -1164,10 +1164,10 @@ class Vietphrase {
                   const phraseResult = (nameMap.get(phrase) ?? dataMap.get(phrase)).split(/[/|]/)[0].trim();
 
                   if (this.prioritizeNameOverVietPhrase && Object.hasOwn(this.nameObject, phrase)) {
-                    tempLine += (charsInTempLine.length > 0 && /^[\p{Lu}\p{Ll}\p{Nd}(([{‘“]/u.test(phrase) && (/[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(prevPhrase) || prevPhrase.length === 0) ? ' ' : '') + phrase;
+                    tempLine += (charsInTempLine.length > 0 && /^[\p{Lu}\p{Ll}\p{Nd}(([{‘“]/u.test(phrase) && (/[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(charsInTempLine[charsInTempLine.length - 1]) || prevPhrase.length === 0) ? ' ' : '') + phrase;
                     prevPhrase = phrase;
                   } else if (phraseResult !== '') {
-                    tempLine += (charsInTempLine.length > 0 && (/[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]/u.test(charsInTempLine[charsInTempLine.length - 1]) || prevPhrase.length === 0) ? ' ' : '') + phraseResult;
+                    tempLine += (charsInTempLine.length > 0 && (/[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(charsInTempLine[charsInTempLine.length - 1]) || prevPhrase.length === 0) ? ' ' : '') + phraseResult;
                     prevPhrase = phraseResult;
                   }
 
@@ -1177,7 +1177,7 @@ class Vietphrase {
 
                 if (length === 1) {
                   tempLine += (charsInTempLine.length > 0 && /^[\p{Lu}\p{Ll}\p{Nd}(([{‘“]/u.test(phrase) && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(prevPhrase) ? ' ' : '') + phrase;
-                  prevPhrase = /\p{P}/u.test(phrase) ? phrase : '';
+                  prevPhrase = /[^\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(phrase) ? phrase : '';
                   i += length - 1;
                   break;
                 }
@@ -1280,6 +1280,7 @@ class Vietphrase {
       ['道长', 'đạo trưởng'],
       ['斗气', 'đấu khí'],
       ['斗士', 'đấu sĩ'],
+      ['点数', 'điểm số'],
       ['团长', 'đoàn trưởng'],
       ['队长', 'đội trưởng'],
       ['降临', 'giáng lâm'],
