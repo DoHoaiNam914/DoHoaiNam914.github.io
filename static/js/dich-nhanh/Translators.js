@@ -1243,7 +1243,7 @@ class Vietphrase {
     return pinyin.replaceAll(/[āáǎàēéěèīíǐìōóǒòūúǔùüǖǘǚǜńň]/g, (match) => accentsMap[match]);
   }
 
-  async translateText(__, targetLanguage, inputText, translationAlgorithm, multiplicationAlgorithm, prioritizeNameOverVietPhrase, addDeLeZhao, autocapitalize, data, nameEnabled, glossary = [], useToneMarks = true) {
+  async translateText(__, targetLanguage, inputText, translationAlgorithm, multiplicationAlgorithm, prioritizeNameOverVietPhrase, addDeLeZhao, autocapitalize, data, nameEnabled, glossary = []) {
     this.multiplicationAlgorithm = multiplicationAlgorithm;
     this.prioritizeNameOverVietPhrase = prioritizeNameOverVietPhrase;
     this.autocapitalize = autocapitalize;
@@ -1568,7 +1568,7 @@ class Vietphrase {
           break;
         }
         case 'pinyin': {
-          dataArray = this.data.romajis.concat(!useToneMarks ? this.data.pinyins.map(([first, second]) => [first, Vietphrase.removeAccents(second)]) : this.data.pinyins);
+          dataArray = this.data.romajis.concat(this.data.pinyins.map(([first, second]) => [first, Vietphrase.removeAccents(second)]));
           break;
         }
         case 'KunYomi': {

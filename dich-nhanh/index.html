@@ -840,19 +840,23 @@
                     <button type="button" class="dropdown-item upper-case-button" data-amount="#">Viết hoa tất cả</button>
                   </li>
                   <li>
+                    <button type="button" class="dropdown-item" data-bs-toggle="collapse" data-bs-target="#convert-collapse">Convert</button>
+                    <div class="collapse" id="convert-collapse">
+                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="vietphrase" data-lang="simplified">Giản thể</button>
+                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="vietphrase" data-lang="traditional">Phổn thể</button>
+                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="vietphrase" data-lang="pinyin">Bính âm</button>
+                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="vietphrase" data-lang="KunYomi">Kun'yomi</button>
+                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="vietphrase" data-lang="OnYomi">On'yomi</button>
+                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="vietphrase" data-lang="SinoVietnamese">Hán-Việt</button>
+                    </div>
+                  </li>
+                  <li>
                     <hr class="dropdown-divider">
                   </li>
                   <li>
                     <button type="button" class="dropdown-item" data-bs-toggle="collapse" data-bs-target="#vietphrase-collapse">Vietphrase</button>
                     <div class="collapse show-by-default" id="vietphrase-collapse">
-                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="vietphrase" data-lang="simplified">Giản thể</button>
-                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="vietphrase" data-lang="traditional">Phổn thể</button>
-                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="vietphrase" data-lang="pinyin">Bính âm</button>
-                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="vietphrase" data-lang="pinyin" data-no-tone-mark="true">Bính âm (Không dấu thanh)</button>
-                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="vietphrase" data-lang="KunYomi">Kun'yomi</button>
-                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="vietphrase" data-lang="OnYomi">On'yomi</button>
-                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="vietphrase" data-lang="SinoVietnamese">Hán-Việt</button>
-                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="vietphrase" data-lang="SinoVietnamese" data-glossary="true">Hán-Việt với Names</button>
+                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="vietphrase" data-lang="SinoVietnamese" data-glossary="true">Names</button>
                       <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="vietphrase" data-lang="vi">Vietphrase</button>
                       <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="vietphrase" data-lang="vi" data-glossary="true">Vietphrase với Names</button>
                     </div>

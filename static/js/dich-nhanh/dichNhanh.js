@@ -1027,7 +1027,7 @@ function updateLanguageSelect(translator, prevTranslator) {
   $targetLanguageSelect.val(targetLanguage).change();
 }
 
-async function translateText(inputText, translatorOption, targetLanguage, glossaryEnabled, useToneMarks = true) {
+async function translateText(inputText, translatorOption, targetLanguage, glossaryEnabled) {
   try {
     const text = glossaryEnabled && [Translators.BAIDU_FANYI, Translators.PAPAGO].every((element) => translatorOption !== element) ? applyNameToText(inputText, translatorOption, glossary[$glossaryListSelect.val()]) : inputText;
     let sourceLanguage = '';
@@ -1066,12 +1066,11 @@ async function translateText(inputText, translatorOption, targetLanguage, glossa
     }
 
     if (translatorOption === Translators.DEEPL_TRANSLATE && currentTranslator.usage.character_count + text.length > currentTranslator.usage.character_limit) return `Lỗi DeepL Translator: Đã đạt đến giới hạn dịch của tài khoản. (${currentTranslator.usage.character_count}/${currentTranslator.usage.character_limit} ký tự).`;
-
     let result = text;
 
     switch (translatorOption) {
       case Translators.VIETPHRASE: {
-        result = await currentTranslator.translateText(sourceLanguage, targetLanguage, text, $translationAlgorithmRadio.filter('[checked]').val(), $multiplicationAlgorithmRadio.filter('[checked]').val(), true, $addDeLeZhaoSwitch.prop('checked'), false, glossary, glossaryEnabled, glossary[$glossaryListSelect.val()], useToneMarks);
+        result = await currentTranslator.translateText(sourceLanguage, targetLanguage, text, $translationAlgorithmRadio.filter('[checked]').val(), $multiplicationAlgorithmRadio.filter('[checked]').val(), true, $addDeLeZhaoSwitch.prop('checked'), false, glossary, glossaryEnabled, glossary[$glossaryListSelect.val()]);
         break;
       }
       default: {
@@ -1430,7 +1429,7 @@ $fontStackText.change(function onChange() {
   }).join(', '));
 
   const $currentTheme = $themeOptions.filter('.active');
-  $('.textarea').css('font-weight', ['Apple Sách - Nguyên bản', 'Google Play Sách'].some((element) => $currentTheme.text().startsWith(element)) && values.some((element) => element.toLowerCase().startsWith('pingfang ')) ? 500 : ($currentTheme.data('font-weight') ?? ''));
+  $('.textarea').css('font-weight', ['Apple Sách - Nguyên bản', 'Google Play Sách'].some((element) => $currentTheme.text().startsWith(element)) && values.some((element) => element.toLowerCase().startsWith('pingfang')) ? 500 : ($currentTheme.data('font-weight') ?? ''));
   quickTranslateStorage[getOptionId($(this).attr('id'))] = values.join(', ');
   localStorage.setItem('dich_nhanh', JSON.stringify(quickTranslateStorage));
 });
@@ -1814,7 +1813,7 @@ $translateEntryButtons.click(async function onClick() {
   if (inputText.length > 0) {
     $translateEntryButtons.addClass('disabled');
     $sourceEntryInput.attr('readonly', true);
-    $targetEntryTextarea.val(await translateText(inputText, translatorOption, targetLanguage, $(this).data('glossary') != null && Boolean($(this).data('glossary')) !== false, Boolean($(this).data('no-tone-mark')) === false)).trigger('input');
+    $targetEntryTextarea.val(await translateText(inputText, translatorOption, targetLanguage, $(this).data('glossary') != null && Boolean($(this).data('glossary')) !== false)).trigger('input');
     $targetEntryTextarea.prop('scrollTop', 0);
     $sourceEntryInput.removeAttr('readonly');
     $translateEntryButtons.removeClass('disabled');
