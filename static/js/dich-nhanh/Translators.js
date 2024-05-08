@@ -1084,19 +1084,17 @@ class Vietphrase {
             let couldUpperCaseKey = (element) => !this.prioritizeNameOverVietPhrase || (nameMap.has(element.toUpperCase()) && !Object.hasOwn(this.nameObject, element));
 
             combineDatas.filter(([first]) => first !== '·' && /[\p{sc=Hani}\p{sc=Hira}\p{sc=Kana}]/u.test(first) && (!couldUpperCaseKey(first) ? prefilterElement.includes(first) : prefilterElement.toLowerCase().includes(first.toLowerCase())) && (prefilterElement = !couldUpperCaseKey(first) ? prefilterElement.replaceAll(first, '\n') : prefilterElement.toLowerCase().replaceAll(first.toLowerCase(), '\n'))).some(([c, d]) => {
-              couldUpperCaseKey = couldUpperCaseKey(c);
-
-              if (!couldUpperCaseKey ? returnText.includes(c) : returnText.toLowerCase().includes(c.toLowerCase())) {
+              if (!couldUpperCaseKey(c) ? returnText.includes(c) : returnText.toLowerCase().includes(c.toLowerCase())) {
                 const phraseResult = d.split(/[/|]/)[0].trim();
                 returnText = returnText.replaceAll(new RegExp(`${Utils.escapeRegExp(c)}${Utils.escapeRegExp(c)}${this.nameEnabled && nameArray.length > 0 ? `(?=${nameArray.map(([___, second]) => second).join('|')})` : '(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])'}`, 'giu'), `${Utils.escapeRegExpReplacement(phraseResult)} ${Utils.escapeRegExpReplacement(phraseResult)}${phraseResult.length > 0 ? ' ' : ''}`)
                   .replaceAll(new RegExp(`([\\p{Lu}\\p{Ll}\\p{M}\\p{Nd})\\]}’”])${Utils.escapeRegExp(c)}${this.nameEnabled && nameArray.length > 0 ? `(?=${nameArray.map(([___, second]) => second).join('|')})` : '(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])'}`, 'giu'), `$1 ${Utils.escapeRegExpReplacement(phraseResult)}${phraseResult.length > 0 ? ' ' : ''}`)
-                  .replaceAll(new RegExp(`${Utils.escapeRegExp(c)}${Utils.escapeRegExp(c)}(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])`, !couldUpperCaseKey ? 'gu' : 'giu'), `${Utils.escapeRegExpReplacement(phraseResult)} ${Utils.escapeRegExpReplacement(phraseResult)}${phraseResult.length > 0 ? ' ' : ''}`)
-                  .replaceAll(new RegExp(`([\\p{Lu}\\p{Ll}\\p{M}\\p{Nd})\\]}’”])${Utils.escapeRegExp(c)}(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])`, !couldUpperCaseKey ? 'gu' : 'giu'), `$1 ${Utils.escapeRegExpReplacement(phraseResult)}${phraseResult.length > 0 ? ' ' : ''}`)
-                  .replaceAll(new RegExp(`${Utils.escapeRegExp(c)}${Utils.escapeRegExp(c)}`, !couldUpperCaseKey ? 'g' : 'gi'), `${Utils.escapeRegExpReplacement(phraseResult)} ${Utils.escapeRegExpReplacement(phraseResult)}`)
-                  .replaceAll(new RegExp(`([\\p{Lu}\\p{Ll}\\p{M}\\p{Nd})\\]}’”])${Utils.escapeRegExp(c)}`, !couldUpperCaseKey ? 'gu' : 'giu'), `$1${phraseResult.length > 0 ? ` ${Utils.escapeRegExpReplacement(phraseResult)}` : ''}`)
+                  .replaceAll(new RegExp(`${Utils.escapeRegExp(c)}${Utils.escapeRegExp(c)}(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])`, !couldUpperCaseKey(c) ? 'gu' : 'giu'), `${Utils.escapeRegExpReplacement(phraseResult)} ${Utils.escapeRegExpReplacement(phraseResult)}${phraseResult.length > 0 ? ' ' : ''}`)
+                  .replaceAll(new RegExp(`([\\p{Lu}\\p{Ll}\\p{M}\\p{Nd})\\]}’”])${Utils.escapeRegExp(c)}(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])`, !couldUpperCaseKey(c) ? 'gu' : 'giu'), `$1 ${Utils.escapeRegExpReplacement(phraseResult)}${phraseResult.length > 0 ? ' ' : ''}`)
+                  .replaceAll(new RegExp(`${Utils.escapeRegExp(c)}${Utils.escapeRegExp(c)}`, !couldUpperCaseKey(c) ? 'g' : 'gi'), `${Utils.escapeRegExpReplacement(phraseResult)} ${Utils.escapeRegExpReplacement(phraseResult)}`)
+                  .replaceAll(new RegExp(`([\\p{Lu}\\p{Ll}\\p{M}\\p{Nd})\\]}’”])${Utils.escapeRegExp(c)}`, !couldUpperCaseKey(c) ? 'gu' : 'giu'), `$1${phraseResult.length > 0 ? ` ${Utils.escapeRegExpReplacement(phraseResult)}` : ''}`)
                   .replaceAll(new RegExp(`${Utils.escapeRegExp(c)}${this.nameEnabled && nameArray.length > 0 ? `(?=${nameArray.map(([___, e]) => e).join('|')})` : '(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])'}`, 'giu'), `${Utils.escapeRegExpReplacement(phraseResult)}${phraseResult.length > 0 ? ' ' : ''}`)
-                  .replaceAll(new RegExp(`${Utils.escapeRegExp(c)}(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])`, !couldUpperCaseKey ? 'gu' : 'giu'), `${Utils.escapeRegExpReplacement(phraseResult)}${phraseResult.length > 0 ? ' ' : ''}`)
-                  .replaceAll(new RegExp(Utils.escapeRegExp(c), !couldUpperCaseKey ? 'g' : 'gi'), Utils.escapeRegExpReplacement(phraseResult));
+                  .replaceAll(new RegExp(`${Utils.escapeRegExp(c)}(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])`, !couldUpperCaseKey(c) ? 'gu' : 'giu'), `${Utils.escapeRegExpReplacement(phraseResult)}${phraseResult.length > 0 ? ' ' : ''}`)
+                  .replaceAll(new RegExp(Utils.escapeRegExp(c), !couldUpperCaseKey(c) ? 'g' : 'gi'), Utils.escapeRegExpReplacement(phraseResult));
               }
 
               return false;
