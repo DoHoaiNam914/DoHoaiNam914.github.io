@@ -727,9 +727,7 @@ async function translateTextarea() {
 
   const [MAX_LENGTH, MAX_LINE] = getMaxQueryLengthAndLine(translatorOption, processTextToCheck);
 
-  if (translatorOption !== Translators.DEEPL_TRANSLATE && processText.split('\n').toSorted((a, b) => b.length - a.length)[0].length > MAX_LENGTH) {
-    throw console.error(`Số lượng từ trong một dòng quá dài (Số lượng từ hợp lệ nhỏ hơn hoặc bằng ${MAX_LENGTH}).`);
-  }
+  if (translatorOption !== Translators.DEEPL_TRANSLATE && processText.split('\n').toSorted((a, b) => b.length - a.length)[0].length > MAX_LENGTH) throw console.error(`Số lượng từ trong một dòng quá dài (Số lượng từ hợp lệ nhỏ hơn hoặc bằng ${MAX_LENGTH}).`);
 
   try {
     let result = '';
@@ -737,33 +735,6 @@ async function translateTextarea() {
     if (Object.keys(lastSession).length > 0 && lastSession.inputText === processTextToCheck && lastSession.translatorOption === translatorOption && lastSession.sourceLanguage === sourceLanguage && lastSession.targetLanguage === targetLanguage) {
       result = lastSession.result;
     } else {
-      switch (translatorOption) {
-        case Translators.BAIDU_FANYI: {
-          currentTranslator = new BaiduFanyi();
-          break;
-        }
-        case Translators.DEEPL_TRANSLATE: {
-          currentTranslator = await new DeeplTranslate().init();
-          break;
-        }
-        case Translators.PAPAGO: {
-          currentTranslator = await new Papago(uuid).init();
-          break;
-        }
-        case Translators.MICROSOFT_TRANSLATOR: {
-          currentTranslator = await new MicrosoftTranslator().init();
-          break;
-        }
-        case Translators.VIETPHRASE: {
-          currentTranslator = new Vietphrase();
-          break;
-        }
-        default: {
-          currentTranslator = await new GoogleTranslate().init();
-          break;
-        }
-      }
-
       if (translatorOption === Translators.DEEPL_TRANSLATE && currentTranslator.usage.character_count + inputText.length > currentTranslator.usage.character_limit) throw console.error(`Lỗi DeepL Translator: Đã đạt đến giới hạn dịch của tài khoản. (${currentTranslator.usage.character_count}/${currentTranslator.usage.character_limit} ký tự).`);
 
       if (processText.split(/\r?\n/).length <= MAX_LINE && (translatorOption === Translators.DEEPL_TRANSLATE ? (new TextEncoder()).encode(`text=${processText.split(/\r?\n/).map((element) => encodeURIComponent(element)).join('&text=')}&source_lang=${sourceLanguage}&target_lang=${targetLanguage}&tag_handling=xml`) : processText).length <= MAX_LENGTH) {
@@ -1031,50 +1002,51 @@ async function translateText(inputText, translatorOption, targetLanguage, glossa
   try {
     const text = glossaryEnabled && [Translators.BAIDU_FANYI, Translators.PAPAGO].every((element) => translatorOption !== element) ? applyNameToText(inputText, translatorOption, glossary[$glossaryListSelect.val()]) : inputText;
     let sourceLanguage = '';
+    let translator = null;
 
     switch (translatorOption) {
       case Translators.BAIDU_FANYI: {
-        currentTranslator = new BaiduFanyi();
+        translator = new BaiduFanyi();
         sourceLanguage = BaiduFanyi.AUTOMATIC_DETECTION;
         break;
       }
       case Translators.DEEPL_TRANSLATE: {
-        currentTranslator = await new DeeplTranslate().init();
+        translator = await new DeeplTranslate().init();
         sourceLanguage = DeeplTranslate.DETECT_LANGUAGE;
         break;
       }
+      case Translators.GOOGLE_TRANSLATE: {
+        translator = await new GoogleTranslate().init();
+        sourceLanguage = GoogleTranslate.DETECT_LANGUAGE;
+        break;
+      }
       case Translators.PAPAGO: {
-        currentTranslator = await new Papago().init();
+        translator = await new Papago().init();
         sourceLanguage = Papago.DETECT_LANGUAGE;
         break;
       }
-      case Translators.MICROSOFT_TRANSLATOR: {
-        currentTranslator = await new MicrosoftTranslator().init();
-        sourceLanguage = MicrosoftTranslator.AUTODETECT;
-        break;
-      }
       case Translators.VIETPHRASE: {
-        currentTranslator = await new Vietphrase();
+        translator = await new Vietphrase();
         sourceLanguage = Vietphrase.DefaultLanguage.SOURCE_LANGUAGE;
         break;
       }
       default: {
-        currentTranslator = await new GoogleTranslate().init();
-        sourceLanguage = GoogleTranslate.DETECT_LANGUAGE;
+        translator = await new MicrosoftTranslator().init();
+        sourceLanguage = MicrosoftTranslator.AUTODETECT;
         break;
       }
     }
 
-    if (translatorOption === Translators.DEEPL_TRANSLATE && currentTranslator.usage.character_count + text.length > currentTranslator.usage.character_limit) return `Lỗi DeepL Translator: Đã đạt đến giới hạn dịch của tài khoản. (${currentTranslator.usage.character_count}/${currentTranslator.usage.character_limit} ký tự).`;
+    if (translatorOption === Translators.DEEPL_TRANSLATE && translator.usage.character_count + text.length > translator.usage.character_limit) return `Lỗi DeepL Translator: Đã đạt đến giới hạn dịch của tài khoản. (${translator.usage.character_count}/${translator.usage.character_limit} ký tự).`;
     let result = text;
 
     switch (translatorOption) {
       case Translators.VIETPHRASE: {
-        result = await currentTranslator.translateText(sourceLanguage, targetLanguage, text, $translationAlgorithmRadio.filter('[checked]').val(), $multiplicationAlgorithmRadio.filter('[checked]').val(), true, $addDeLeZhaoSwitch.prop('checked'), false, glossary, glossaryEnabled, glossary[$glossaryListSelect.val()]);
+        result = await translator.translateText(sourceLanguage, targetLanguage, text, $translationAlgorithmRadio.filter('[checked]').val(), $multiplicationAlgorithmRadio.filter('[checked]').val(), true, $addDeLeZhaoSwitch.prop('checked'), false, glossary, glossaryEnabled, glossary[$glossaryListSelect.val()]);
         break;
       }
       default: {
-        result = await currentTranslator.translateText(sourceLanguage, targetLanguage, text);
+        result = await translator.translateText(sourceLanguage, targetLanguage, text);
       }
     }
 
@@ -1498,10 +1470,38 @@ $formatSettingsSwitch.change(function onChange() {
   localStorage.setItem('dich_nhanh', JSON.stringify(quickTranslateStorage));
 });
 
-$translatorOptions.click(function onClick() {
+$translatorOptions.click(async function onClick() {
   $translatorOptions.removeClass('active');
   $(this).addClass('active');
   updateLanguageSelect($(this).data('id'), quickTranslateStorage.translator);
+
+  switch ($(this).data('id')) {
+    case Translators.BAIDU_FANYI: {
+      currentTranslator = new BaiduFanyi();
+      break;
+    }
+    case Translators.DEEPL_TRANSLATE: {
+      currentTranslator = await new DeeplTranslate().init();
+      break;
+    }
+    case Translators.GOOGLE_TRANSLATE: {
+      currentTranslator = await new GoogleTranslate().init();
+      break;
+    }
+    case Translators.PAPAGO: {
+      currentTranslator = await new Papago(uuid).init();
+      break;
+    }
+    case Translators.VIETPHRASE: {
+      currentTranslator = new Vietphrase();
+      break;
+    }
+    default: {
+      currentTranslator = await new MicrosoftTranslator().init();
+      break;
+    }
+  }
+
   quickTranslateStorage[getOptionId($(this).parent().parent().parent().attr('id'))] = $(this).data('id');
   localStorage.setItem('dich_nhanh', JSON.stringify(quickTranslateStorage));
   $inputTextarea.trigger('input');
