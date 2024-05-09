@@ -1191,10 +1191,10 @@ $(document).ready(async () => {
   }).done((data) => {
     const array = data.split('\n').filter((element) => element.length !== 0 && !element.startsWith('#')).map((element) => element.split('\t'));
 
-    glossary.traditional = array.filter((element) => element.length === 3 && element[1] === 'kTraditionalVariant').map(([first, __, third]) => [String.fromCodePoint(parseInt(first.substring(2), 16)), third.split(' ').filter((element) => element !== first).map((element) => String.fromCodePoint(parseInt(element.substring(2), 16)))[0]]);
+    glossary.traditional = array.filter((element) => element.length === 3 && element[1] === 'kTraditionalVariant').map(([first, __, third]) => [String.fromCodePoint(parseInt(first.substring(2), 16)), third.split(' ').filter((element) => third.split(' '). length === 1 || element !== first).map((element) => String.fromCodePoint(parseInt(element.substring(2), 16)))[0]]);
     console.info(`Đã tải xong bộ dữ liệu phổn thể (${glossary.traditional.length})!`);
 
-    glossary.simplified = array.filter((element) => element.length === 3 && element[1] === 'kSimplifiedVariant').map(([first, __, third]) => [String.fromCodePoint(parseInt(first.substring(2), 16)), third.split(' ').filter((element) => element !== first).map((element) => String.fromCodePoint(parseInt(element.substring(2), 16)))[0]]);
+    glossary.simplified = array.filter((element) => element.length === 3 && element[1] === 'kSimplifiedVariant').map(([first, __, third]) => [String.fromCodePoint(parseInt(first.substring(2), 16)), third.split(' ').filter((element) => third.split(' '). length === 1 || element !== first).map((element) => String.fromCodePoint(parseInt(element.substring(2), 16)))[0]]);
     console.info(`Đã tải xong bộ dữ liệu giản thể (${glossary.simplified.length})!`);
     lastSession = {};
   }).fail((__, ___, errorThrown) => {
