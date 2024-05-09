@@ -1594,7 +1594,7 @@ class Vietphrase {
           break;
         }
         case 'vi': {
-          this.essences = Object.fromEntries(this.data.romajis.concat(this.data.KunYomis, this.data.OnYomis, [...this.data.hanViet]);
+          this.essences = Object.fromEntries(this.data.romajis.concat(this.data.KunYomis, this.data.OnYomis, [...this.data.hanViet]));
           dataArray = Object.entries(Object.fromEntries(this.data.romajis.concat(this.data.KunYomis, this.data.OnYomis, [...this.data.hanViet], this.data.vietPhrase.length > 0 ? this.data.vietPhrase : [], this.data.vietPhrase.concat(this.data.vietPhrasePhu).length > 0 ? [['的', addDeLeZhao ? this.data.hanViet.get('的') : ''], ['了', addDeLeZhao ? this.data.hanViet.get('了') : ''], ['着', addDeLeZhao ? this.data.hanViet.get('着') : '']] : [], this.data.vietPhrasePhu).map(([first, second]) => [first.toUpperCase(), second])));
           break;
         }
