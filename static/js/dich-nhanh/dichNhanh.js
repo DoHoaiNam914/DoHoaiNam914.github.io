@@ -440,7 +440,10 @@ function getCurrentOptions() {
           const selectedValue = option.find('.dropdown-menu > li > .active');
 
           switch (optionId) {
-            case 'theme':
+            case 'theme': {
+              data.theme = selectedValue.text();
+              break;
+            }
             case 'translator': {
               data.translator = selectedValue.data('id');
               break;
@@ -495,7 +498,10 @@ function loadAllQuickTranslatorOptions() {
         const values = option.find('.dropdown-menu > li > .dropdown-item');
 
         switch (optionId) {
-          case 'theme':
+          case 'theme': {
+            values.filter(`:contains(${quickTranslateStorage[optionId]})`).click();
+            break;
+          }
           case 'translator': {
             values.filter(`[data-id="${quickTranslateStorage[optionId]}"]`).click();
             break;
