@@ -50,7 +50,7 @@ const $glossaryName = $('#glossary-name');
 
 const defaultOptions = JSON.parse('{"source_language":"","target_language":"vi","font-stack":"","font_size":100,"line_spacing":40,"alignment_settings":true,"format_settings":true,"translator":"microsoftTranslator","show_original_text":false,"default-viet-phrase-file-select":"3","add_de_le_zhao":false,"translation_algorithm":"0","prioritize_name_over_viet_phrase":false,"multiplication_algorithm":"2","name":true,"glossary_type":"text/plain","language_pairs":"zh-vi"}');
 
-const SUPPORTED_LANGUAGES = ['', 'EN', 'JA', 'ZH', 'EN-US', 'auto', 'en', 'ja', 'zh-CN', 'zh-TW', 'vi', 'zh-Hans', 'zh-Hant'];
+const SUPPORTED_LANGUAGES = ['', 'EN', 'JA', 'ZH', 'EN-US', 'auto', 'en', 'ja', 'zh-CN', 'zh-TW', 'vi', 'yue', 'zh-Hans', 'zh-Hant'];
 
 let isLoaded = false;
 

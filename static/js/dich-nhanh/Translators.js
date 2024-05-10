@@ -19,6 +19,7 @@ class BaiduFanyi {
     vie: 'Vietnamese',
     zh: 'Chinese',
     cht: 'Traditional Chinese',
+    yue: 'Cantonese',
   };
 
   static TO_LANGUAGES = {
@@ -27,6 +28,7 @@ class BaiduFanyi {
     vie: 'Vietnamese',
     zh: 'Chinese',
     cht: 'Traditional Chinese',
+    yue: 'Cantonese',
   };
 
   static AUTOMATIC_DETECTION = 'auto';
@@ -43,12 +45,14 @@ class BaiduFanyi {
       en: 'EN',
       zh: 'ZH',
       cht: 'ZH',
+      yue: 'ZH',
     },
     TARGET_LANGUAGES: {
       jp: 'JA',
       en: 'EN-US',
       zh: 'ZH',
       cht: 'ZH',
+      yue: 'ZH',
     },
   };
 
@@ -57,6 +61,7 @@ class BaiduFanyi {
     vie: 'vi',
     zh: 'zh-CN',
     cht: 'zh-TW',
+    yue: 'zh-TW',
   };
 
   static PAPAGO_MAPPING = {
@@ -64,6 +69,7 @@ class BaiduFanyi {
     vie: 'vi',
     zh: 'zh-CN',
     cht: 'zh-TW',
+    yue: 'zh-TW',
   };
 
   static MICROSOFT_TRANSLATOR_MAPPING = {
@@ -803,12 +809,14 @@ class MicrosoftTranslator {
     SOURCE_LANGUAGES: {
       en: 'EN',
       ja: 'JA',
+      'yue': 'ZH',
       'zh-Hans': 'ZH',
       'zh-Hant': 'ZH',
     },
     TARGET_LANGUAGES: {
       en: 'EN-US',
       ja: 'JA',
+      'yue': 'ZH',
       'zh-Hans': 'ZH',
       'zh-Hant': 'ZH',
     },
@@ -816,12 +824,14 @@ class MicrosoftTranslator {
 
   static GOOGLE_TRANSLATE_MAPPING = {
     '': 'auto',
+    'yue': 'zh-TW',
     'zh-Hans': 'zh-CN',
     'zh-Hant': 'zh-TW',
   };
 
   static PAPAGO_MAPPING = {
     '': 'auto',
+    'yue': 'zh-TW',
     'zh-Hans': 'zh-CN',
     'zh-Hant': 'zh-TW',
   };
