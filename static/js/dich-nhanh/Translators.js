@@ -20,6 +20,7 @@ class BaiduFanyi {
     zh: 'Chinese',
     cht: 'Traditional Chinese',
     yue: 'Cantonese',
+    wyw: 'Classical Chinese',
   };
 
   static TO_LANGUAGES = {
@@ -29,6 +30,7 @@ class BaiduFanyi {
     zh: 'Chinese',
     cht: 'Traditional Chinese',
     yue: 'Cantonese',
+    wyw: 'Classical Chinese',
   };
 
   static AUTOMATIC_DETECTION = 'auto';
@@ -46,6 +48,7 @@ class BaiduFanyi {
       zh: 'ZH',
       cht: 'ZH',
       yue: 'ZH',
+      wyw: 'ZH',
     },
     TARGET_LANGUAGES: {
       jp: 'JA',
@@ -53,6 +56,7 @@ class BaiduFanyi {
       zh: 'ZH',
       cht: 'ZH',
       yue: 'ZH',
+      wyw: 'ZH',
     },
   };
 
@@ -62,6 +66,7 @@ class BaiduFanyi {
     zh: 'zh-CN',
     cht: 'zh-TW',
     yue: 'zh-TW',
+    wyw: 'ZH',
   };
 
   static PAPAGO_MAPPING = {
@@ -70,6 +75,7 @@ class BaiduFanyi {
     zh: 'zh-CN',
     cht: 'zh-TW',
     yue: 'zh-TW',
+    wyw: 'zh-CN',
   };
 
   static MICROSOFT_TRANSLATOR_MAPPING = {
@@ -78,6 +84,7 @@ class BaiduFanyi {
     vie: 'vi',
     zh: 'zh-Hans',
     cht: 'zh-Hant',
+    wyw: 'lzh',
   };
 
   static getFromName(languageCode) {
@@ -800,6 +807,7 @@ class MicrosoftTranslator {
   static BAIDU_FANYI_MAPPING = {
     '': 'auto',
     ja: 'jp',
+    lzh: 'wyw',
     vi: 'vie',
     'zh-Hans': 'zh',
     'zh-Hant': 'cht',
@@ -809,14 +817,16 @@ class MicrosoftTranslator {
     SOURCE_LANGUAGES: {
       en: 'EN',
       ja: 'JA',
-      'yue': 'ZH',
+      lzh: 'ZH',
+      yue: 'ZH',
       'zh-Hans': 'ZH',
       'zh-Hant': 'ZH',
     },
     TARGET_LANGUAGES: {
       en: 'EN-US',
       ja: 'JA',
-      'yue': 'ZH',
+      lzh: 'ZH',
+      yue: 'ZH',
       'zh-Hans': 'ZH',
       'zh-Hant': 'ZH',
     },
@@ -824,14 +834,16 @@ class MicrosoftTranslator {
 
   static GOOGLE_TRANSLATE_MAPPING = {
     '': 'auto',
-    'yue': 'zh-TW',
+    lzh: 'zh-CN',
+    yue: 'zh-TW',
     'zh-Hans': 'zh-CN',
     'zh-Hant': 'zh-TW',
   };
 
   static PAPAGO_MAPPING = {
     '': 'auto',
-    'yue': 'zh-TW',
+    lzh: 'zh-CN',
+    yue: 'zh-TW',
     'zh-Hans': 'zh-CN',
     'zh-Hant': 'zh-TW',
   };
