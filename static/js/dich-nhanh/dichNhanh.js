@@ -1153,12 +1153,12 @@ $(document).ready(async () => {
     method: 'GET',
     url: '/static/datasource/Unihan_Variants.txt',
   }).done((data) => {
-    const array = data.split('\n').filter((element) => element.length !== 0 && !element.startsWith('#')).map((element) => element.split('\t'));
+    const array = data.split('\n').filter((element) => element.length > 0 && !element.startsWith('#')).map((element) => element.split('\t'));
 
-    glossary.traditional = array.filter((element) => element.length === 3 && element[1] === 'kTraditionalVariant').map(([first, __, third]) => [String.fromCodePoint(parseInt(first.substring(2), 16)), third.split(' ').filter((element) => third.split(' '). length === 1 || element !== first).map((element) => String.fromCodePoint(parseInt(element.substring(2), 16)))[0]]);
+    glossary.traditional = array.filter((element) => element.length === 3 && element[1] === 'kTraditionalVariant').map(([first, __, third]) => [String.fromCodePoint(parseInt(first.substring(2), 16)), third.split(' ').filter((element) => third.split(' ').length === 1 || element !== first).map((element) => String.fromCodePoint(parseInt(element.substring(2), 16)))[0]]);
     console.info(`Đã tải xong bộ dữ liệu phổn thể (${glossary.traditional.length})!`);
 
-    glossary.simplified = array.filter((element) => element.length === 3 && element[1] === 'kSimplifiedVariant').map(([first, __, third]) => [String.fromCodePoint(parseInt(first.substring(2), 16)), third.split(' ').filter((element) => third.split(' '). length === 1 || element !== first).map((element) => String.fromCodePoint(parseInt(element.substring(2), 16)))[0]]);
+    glossary.simplified = array.filter((element) => element.length === 3 && element[1] === 'kSimplifiedVariant').map(([first, __, third]) => [String.fromCodePoint(parseInt(first.substring(2), 16)), third.split(' ').filter((element) => third.split(' ').length === 1 || element !== first).map((element) => String.fromCodePoint(parseInt(element.substring(2), 16)))[0]]);
     console.info(`Đã tải xong bộ dữ liệu giản thể (${glossary.simplified.length})!`);
     lastSession = {};
   }).fail((__, ___, errorThrown) => {
@@ -1185,10 +1185,10 @@ $(document).ready(async () => {
     method: 'GET',
     url: '/static/datasource/Unihan_Readings.txt',
   }).done((data) => {
-    glossary.pinyins = data.split('\n').filter((element) => element.length !== 0 && !element.startsWith('#') && element.split('\t')[1] === 'kMandarin').map((element) => element.split('\t')).map(([first, __, third]) => [String.fromCodePoint(parseInt(first.substring(2), 16)), third.split(' ')[0]]);
+    glossary.pinyins = data.split('\n').filter((element) => element.length > 0 && !element.startsWith('#') && element.split('\t')[1] === 'kMandarin').map((element) => element.split('\t')).map(([first, __, third]) => [String.fromCodePoint(parseInt(first.substring(2), 16)), third.split(' ')[0]]);
     console.info(`Đã tải xong bộ dữ liệu bính âm (${glossary.pinyins.size})!`);
 
-    const array = data.split('\n').filter((element) => element.length !== 0 && !element.startsWith('#')).map((element) => element.split('\t'));
+    const array = data.split('\n').filter((element) => element.length > 0 && !element.startsWith('#')).map((element) => element.split('\t'));
 
     glossary.KunYomis = array.filter((element) => element.length === 3 && element[1] === 'kJapaneseKun').map(([first, __, third]) => [String.fromCodePoint(parseInt(first.substring(2), 16)), third.split(' ')[0].toLowerCase()]);
     console.info(`Đã tải xong bộ dữ liệu Kun'yomi (${glossary.KunYomis.length})!`);
@@ -1205,8 +1205,8 @@ $(document).ready(async () => {
   $defaultVietPhraseFileSelect.change();
   $glossaryListSelect.val('namePhu').change();
   isLoaded = true;
-  $inputTextarea.trigger('input');
   lastSession = {};
+  $inputTextarea.trigger('input');
   console.log('Đã tải xong!');
 });
 
