@@ -1164,6 +1164,7 @@ class Vietphrase {
     ['兖', 'DUYỄN'],
     ['台', 'ĐÀI'/* Họ */],
     ['抬', 'ĐÀI'],
+    ['哒', 'ĐÁT'],
     ['娣', 'ĐỆ'],
     ['侄', 'ĐIỆT'],
     ['顶', 'ĐỈNH'],
@@ -1215,6 +1216,7 @@ class Vietphrase {
     ['曼', 'MAN'],
     ['牦', 'MAO'],
     ['咩', 'MIẾT'],
+    ['喵', 'MIÊU'],
     ['茗', 'MINH'],
     ['闹', 'NÁO'],
     ['嚣', 'NGAO'],
@@ -1576,8 +1578,10 @@ class Vietphrase {
     this.nameObject = Object.fromEntries((this.nameEnabled ? this.data.name.concat(glossary.length > 0 ? glossary : this.data.namePhu) : []).map(([first, second]) => [this.prioritizeNameOverVietPhrase ? second : first, second]).filter(([first]) => first != null && first.length > 0 && inputText.toLowerCase().includes(first.toLowerCase())));
     delete this.data.namePhu;
     this.data.name = Object.entries(this.nameObject).map(([first, second]) => [!this.prioritizeNameOverVietPhrase ? first.toUpperCase() : first, second]);
-    this.data.hanViet = this.data.SinoVietnameses.map(([first, second]) => [first, second.toLowerCase()]).concat(this.SpecialSinoVietnameses.filter(([___, second]) => !/^\p{Script=Hani}+$/u.test(second)).map(([a, b, c]) => [a, (c ?? b).split(/, | \| /)[0].toLowerCase()]), this.data.hanViet).filter(([first], ___, array) => !array[first] && (array[first] = 1), {});
-    this.data.hanViet = this.SpecialSinoVietnameses.filter(([___, second]) => /^\p{Script=Hani}+$/u.test(second)).map(([a, b]) => [a, Object.fromEntries(this.data.hanViet.filter(([___, d]) => !/^\p{Script=Hani}+$/u.test(d)).map(([c, d]) => [c, d]))[b]]).concat(this.data.hanViet).filter(([first], ___, array) => !array[first] && (array[first] = 1), {});
+    this.data.hanViet = this.data.SinoVietnameses.filter(([___, second]) => !/^\p{Script=Hani}+$/u.test(second)).map(([first, second]) => [first, second.toLowerCase()]).concat(this.SpecialSinoVietnameses.filter(([___, second]) => !/^\p{Script=Hani}+$/u.test(second)).map(([a, b, c]) => [a, (c ?? b).split(/, | \| /)[0].toLowerCase()]), this.data.hanViet).filter(([first], ___, array) => !array[first] && (array[first] = 1), {});
+    this.data.hanViet = this.SpecialSinoVietnameses.filter(([___, second]) => /^\p{Script=Hani}+$/u.test(second)).map(([a, b]) => [a, Object.fromEntries(this.data.hanViet.filter(([___, d]) => !/^\p{Script=Hani}+$/u.test(d)))[b]]).concat(this.data.hanViet).filter(([first], ___, array) => !array[first] && (array[first] = 1), {});
+    this.data.hanViet = this.data.SinoVietnameses.filter(([___, second]) => /^\p{Script=Hani}+$/u.test(second)).map(([a, b]) => [a, Object.fromEntries(this.data.hanViet.filter(([___, d]) => !/^\p{Script=Hani}+$/u.test(d)))[b]]).concat(this.data.hanViet).filter(([first], ___, array) => !array[first] && (array[first] = 1), {});
+    this.data.hanViet = new Map(this.data.hanViet);
 
     try {
       let dataArray = [];
