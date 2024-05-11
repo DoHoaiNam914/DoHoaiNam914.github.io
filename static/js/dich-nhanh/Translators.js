@@ -147,20 +147,20 @@ class BaiduFanyi {
 
     if (query.replaceAll(/\n/g, '').length > 0) {
       try {
-        if (from === 'auto' && this.from == null) {
-          this.from = (await $.ajax({
+        let detectFrom = from;
+
+        if (from === 'auto') {
+          detectFrom = (await $.ajax({
             data: `query=${encodeURIComponent(query)}`,
             method: 'POST',
             url: `${Utils.CORS_PROXY}https://fanyi.baidu.com/langdetect`,
           })).lan;
-        } else {
-          this.from = from;
         }
 
         let response = (await $.ajax({
           data: JSON.stringify({
             query,
-            from: this.from,
+            from: detectFrom,
             to,
             reference: '',
             corpusIds: [],
@@ -295,8 +295,8 @@ class DeeplTranslate {
     ZH: 'zh-Hans',
   };
 
-  constructor() {
-    this.authKey = 'a4b25ba2-b628-fa56-916e-b323b16502de:fx';
+  constructor(authKey) {
+    this.authKey = authKey;
   }
 
   async init() {
