@@ -1023,7 +1023,7 @@ async function translateText(inputText, translatorOption, targetLanguage, glossa
       }
       case Translators.DEEPL_TRANSLATE: {
         while (true) {
-          currentTranslator = await new DeeplTranslate(deeplAuthKeys[0][0]).init();
+          translator = await new DeeplTranslate(deeplAuthKeys[0][0]).init();
           if ((currentTranslator.usage.character_limit - currentTranslator.usage.character_count) >= 100000) break;
           deeplAuthKeys = deeplAuthKeys.map(([first, second]) => [first, second > 400000 ? $.ajax({ async: false, method: 'GET', url: `https://api-free.deepl.com/v2/usage?auth_key=${element}` }).responseJSON.character_count : second]).toSorted((a, b) => a[1] - b[1]);
         }
