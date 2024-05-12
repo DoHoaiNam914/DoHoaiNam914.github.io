@@ -57,7 +57,7 @@ let isLoaded = false;
 let quickTranslateStorage = JSON.parse(localStorage.getItem('dich_nhanh')) ?? {};
 const glossaryStorage = JSON.parse(localStorage.getItem('glossary')) ?? {};
 
-let deeplAuthKeys = [
+const deeplAuthKeys = [
   ['0c9649a5-e8f6-632a-9c42-a9eee160c330:fx', 500000],
   ['4670812e-ea92-88b1-8b82-0812f3f4009b:fx', 500000],
   ['47c6c989-9eaa-5b30-4ee6-b2e4f1ebd530:fx', 500000],
@@ -1022,10 +1022,12 @@ async function translateText(inputText, translatorOption, targetLanguage, glossa
         break;
       }
       case Translators.DEEPL_TRANSLATE: {
+        const authKeys = [...deeplAuthKeys];
+
         while (true) {
-          translator = await new DeeplTranslate(deeplAuthKeys[0][0]).init();
+          translator = await new DeeplTranslate(authKeys[0][0]).init();
           if ((currentTranslator.usage.character_limit - currentTranslator.usage.character_count) >= 100000) break;
-          deeplAuthKeys = deeplAuthKeys.map(([first, second]) => [first, second > 400000 ? $.ajax({ async: false, method: 'GET', url: `https://api-free.deepl.com/v2/usage?auth_key=${element}` }).responseJSON.character_count : second]).toSorted((a, b) => a[1] - b[1]);
+          authKeys.shift();
         }
 
         sourceLanguage = DeeplTranslate.DETECT_LANGUAGE;
@@ -1250,8 +1252,6 @@ $(window).on('keypress', (event) => {
 });
 
 $translateButton.on('click', function onClick() {
-  if (!isLoaded) return;
-
   if (translateAbortController != null) {
     translateAbortController.abort();
     translateAbortController = null;
@@ -1500,10 +1500,12 @@ $translatorOptions.click(async function onClick() {
       break;
     }
     case Translators.DEEPL_TRANSLATE: {
+      const authKeys = [...deeplAuthKeys];
+
       while (true) {
-        currentTranslator = await new DeeplTranslate(deeplAuthKeys[0][0]).init();
+        currentTranslator = await new DeeplTranslate(authKeys[0][0]).init();
         if ((currentTranslator.usage.character_limit - currentTranslator.usage.character_count) >= 100000) break;
-        deeplAuthKeys = deeplAuthKeys.map(([first, second]) => [first, second > 400000 ? $.ajax({ async: false, method: 'GET', url: `https://api-free.deepl.com/v2/usage?auth_key=${element}` }).responseJSON.character_count : second]).toSorted((a, b) => a[1] - b[1]);
+        authKeys.shift();
       }
 
       break;
