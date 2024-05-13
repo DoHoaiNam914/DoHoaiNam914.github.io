@@ -2033,4 +2033,16 @@ $resultTextarea.on('paste', (event) => {
   event.preventDefault();
 });
 
-$resultTextarea.on('keypress', (event) => (event.key !== 'Enter' || ((event.ctrlKey && $glossaryManagerButton.trigger('mousedown') && $glossaryManagerButton.click()) || ($translateButton.click() && $inputTextarea.focus()))) && event.preventDefault());
+$resultTextarea.on('keypress', (event) => {
+  if (event.key === 'Enter') {
+    $translateButton.click();
+    $inputTextarea.focus();
+    event.preventDefault();
+  }
+
+  if ((event.ctrlKey && event.key === 'Enter') || event.key === '\n') {
+    $glossaryManagerButton.trigger('mousedown');
+    $glossaryManagerButton.click();
+    event.preventDefault();
+  }
+});
