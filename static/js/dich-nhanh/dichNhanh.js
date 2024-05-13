@@ -1026,7 +1026,7 @@ async function translateText(inputText, translatorOption, targetLanguage, glossa
 
         while (true) {
           translator = await new DeeplTranslate(authKeys[0][0]).init();
-          if ((currentTranslator.usage.character_limit - currentTranslator.usage.character_count) >= 100000) break;
+          if ((translator.usage.character_limit - translator.usage.character_count) >= 100000) break;
           authKeys.shift();
         }
 

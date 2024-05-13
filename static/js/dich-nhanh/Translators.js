@@ -1225,6 +1225,7 @@ class Vietphrase {
     ['垠', 'NGẦN'],
     ['荛', 'NGHIÊU'],
     ['鼋', 'NGUYÊN'],
+    ['玥', 'NGUYỆT'],
     ['伢', 'NHA'],
     ['刃', 'NHẪN'],
     ['儿', 'NHI'],
