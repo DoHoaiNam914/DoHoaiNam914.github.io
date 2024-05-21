@@ -1848,6 +1848,7 @@ $translateEntryButtons.click(async function onClick() {
 
 $addButton.click(() => {
   if ($sourceEntryInput.val().length === 0) return;
+  delete glossaryObject[(new Map(glossary[$glossaryListSelect.val()].map(([first]) => [first.toUpperCase(), first]))).get($sourceEntryInput.val().toUpperCase()) ?? $sourceEntryInput.val()];
   glossaryObject[$sourceEntryInput.val().trim()] = $targetEntryTextarea.val().trim();
   glossary[$glossaryListSelect.val()] = Object.entries(glossaryObject);
   reloadGlossaryEntries();
@@ -1858,9 +1859,11 @@ $addButton.click(() => {
 });
 
 $removeButton.on('click', () => {
-  if (Object.hasOwn(glossaryObject, $sourceEntryInput.val())) {
+  const inputText = (new Map(glossary[$glossaryListSelect.val()].map(([first]) => [first.toUpperCase(), first]))).get($sourceEntryInput.val().toUpperCase()) ?? $sourceEntryInput.val();
+
+  if (Object.hasOwn(glossaryObject, inputText)) {
     if (!window.confirm('Bạn có muốn xoá cụm từ này chứ?')) return;
-    delete glossaryObject[$sourceEntryInput.val()];
+    delete glossaryObject[inputText];
     glossary[$glossaryListSelect.val()] = Object.entries(glossaryObject);
     reloadGlossaryEntries();
     if ($translatorOptions.filter($('.active')).data('id') === Translators.VIETPHRASE && !$glossaryListSelect.val().startsWith('name')) lastSession = {};
