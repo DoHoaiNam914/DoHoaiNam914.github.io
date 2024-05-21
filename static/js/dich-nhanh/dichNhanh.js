@@ -1859,11 +1859,9 @@ $addButton.click(() => {
 });
 
 $removeButton.on('click', () => {
-  const inputText = (new Map(glossary[$glossaryListSelect.val()].map(([first]) => [first.toUpperCase(), first]))).get($sourceEntryInput.val().toUpperCase()) ?? $sourceEntryInput.val();
-
-  if (Object.hasOwn(glossaryObject, inputText)) {
+  if (Object.hasOwn(glossaryObject, $sourceEntryInput.val())) {
     if (!window.confirm('Bạn có muốn xoá cụm từ này chứ?')) return;
-    delete glossaryObject[inputText];
+    delete glossaryObject[$sourceEntryInput.val()];
     glossary[$glossaryListSelect.val()] = Object.entries(glossaryObject);
     reloadGlossaryEntries();
     if ($translatorOptions.filter($('.active')).data('id') === Translators.VIETPHRASE && !$glossaryListSelect.val().startsWith('name')) lastSession = {};
