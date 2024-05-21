@@ -1004,6 +1004,7 @@ class Vietphrase {
     ['本体', 'bản thể'],
     ['秘传', 'bí truyền'],
     ['表姐', 'biểu tỷ'],
+    ['部长', 'bộ trưởng'],
     ['格斗', 'cách đấu'],
     ['乾坤', 'càn khôn'],
     ['高岭', 'CAO LĨNH'],
