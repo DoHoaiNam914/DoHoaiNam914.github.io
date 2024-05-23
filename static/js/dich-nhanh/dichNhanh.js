@@ -486,7 +486,6 @@ function loadAllQuickTranslatorOptions() {
     const option = $options.eq(index);
     const optionId = getOptionId(option.attr('name') ?? option.attr('id'));
     const optionType = getOptionType(option.attr('name') ?? option.attr('id'));
-    if (optionId === 'font-stack') console.log(quickTranslateStorage[optionId]);
 
     switch (optionType) {
       case OptionTypes.CHECK:
@@ -1411,7 +1410,7 @@ $themeOptions.click(function onClick() {
 });
 
 $fontStackText.change(function onChange() {
-  const values = $(this).val().split(/, */);
+  const values = $(this).val().split(/, */).filter((element) => element.length > 0).map((element) => element.trim());
   $(this).val(values.join(', '));
 
   $(document.documentElement).css('--opt-font-family', values.map((element) => {
