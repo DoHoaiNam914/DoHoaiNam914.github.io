@@ -1400,7 +1400,7 @@ $themeOptions.click(function onClick() {
   });
 
   if (isLoaded) {
-    if (!$fontStackText.val().includes($(this).data('font-family').split(', ')[0])) $fontStackText.val($(this).data('font-family') ?? '').change();
+    if (!$fontStackText.val().startsWith($(this).data('font-family').split(', ')[0])) $fontStackText.val($(this).data('font-family') ?? '').change();
     if ($(this).data('font-size') != null) $fontSizeRange.val($(this).data('font-size')).change();
     if ($(this).data('line-height') != null) $lineSpacingRange.val($(this).data('line-height')).change();
     if ($(this).data('text-align') != null) $alignmentSettingsSwitch.prop('checked', $(this).data('text-align') === 'justify').change();
