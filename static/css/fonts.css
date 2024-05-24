@@ -276,6 +276,7 @@
   font-display: swap;
   font-family: 'Publico Text Web';
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Publico%20Text%20Web/Publico%20Text%20Web%20Regular.ttf) format('truetype');
+}
 
 @font-face {
   font-display: swap;
