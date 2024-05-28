@@ -1251,6 +1251,7 @@ class Vietphrase {
     ['鼋', 'NGUYÊN'],
     ['玥', 'NGUYỆT'],
     ['伢', 'NHA'],
+    [/* Kanji */'楽', '乐'/* CEDICT */],
     ['刃', 'NHẪN'],
     ['任', 'NHẬM, NHIỆM'/* Họ Nhậm */],
     ['儿', 'NHI'],
