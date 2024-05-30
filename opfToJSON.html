@@ -1,6 +1,23 @@
 <textarea class="input" id="manifest"></textarea>
 <textarea class="input" id="spine"></textarea>
 <textarea id="result" readonly onclick="this.select()"></textarea>
+<script src="/static/lib/LAB.js"></script>
+<!-- <script src="/static/lib/jquery-3.7.1.min.js"></script>
+<script>
+  let chinesePhienAmWord = '';
+  $('#spine').on('change', function () {
+    chinesePhienAmWord = $('#manifest').val().split('\n').filter((element) => element.length > 0 && element.split('=').length === 2).map((element) => element.split('='));
+
+    const vietPhrase = Object.fromEntries($.ajax({
+      async: false,
+      method: 'GET',
+      url: '/static/datasource/Data của thtgiang/VietPhrase.txt',
+    }).responseText.split('\r\n').filter((element) => element.length > 0 && element.split('=').length === 2).map((element) => element.split('=')).filter(([first], __, array) => !array[first] && (array[first] = 1), {}));
+
+    console.log(chinesePhienAmWord.filter(([first]) => !Object.hasOwn(vietPhrase, first)).length, chinesePhienAmWord.length)
+    $('#result').val(chinesePhienAmWord.filter(([first]) => !Object.hasOwn(vietPhrase, first)).map((element) => element.join('=')).join('\r\n'));
+  });
+</script> -->
 <script>
   var manifest;
   var spine;

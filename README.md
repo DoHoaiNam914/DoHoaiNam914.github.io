@@ -10,11 +10,11 @@ This site was built using [GitHub Pages](https://pages.github.com/).
 
 - [Chúa tể bóng tối](https://dohoainam914.github.io/light-novel/?thu-vien=chua-te-bong-toi)
 
-- [Clear the world like a game with The Zero Believer Goddess](https://dohoainam914.github.io/light-novel/?thu-vien=shinjyazero)
-
 - [Demon's Sword Master of Excalibur School](https://dohoainam914.github.io/light-novel/?thu-vien=seikengakuin)
 
 - [King Propose](https://dohoainam914.github.io/light-novel/?thu-vien=propose)
+
+- [Phá Đảo Dị Giới Cùng Nữ Thần Không Tín Đồ](https://dohoainam914.github.io/light-novel/?thu-vien=shinjyazero)
 
 - [SHINWA DENSETSU NO EIYUU NO ISEKAITAN](https://dohoainam914.github.io/light-novel/?thu-vien=shinwadensetu)
 
@@ -22,4 +22,4 @@ This site was built using [GitHub Pages](https://pages.github.com/).
 
 - [Về chuyện tôi chuyển sinh thành Slime](https://dohoainam914.github.io/light-novel/?thu-vien=tenseislime)
 
-- [Wild Final Boss Appeared!](https://dohoainam914.github.io/light-novel/?thu-vien=yaseilastboss)
+- [wild final boss appeared!](https://dohoainam914.github.io/light-novel/?thu-vien=yaseilastboss)
