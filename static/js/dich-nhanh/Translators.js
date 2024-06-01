@@ -1309,6 +1309,7 @@ class Vietphrase {
     ['啸', 'TIẾU'],
     ['静', 'TỊNH, TĨNH', 'TĨNH'/* Họ Tịnh */],
     ['璇', 'TOÀN'],
+    ['诅', 'TỔ'],
     ['橙', 'TRÀNH, TRANH, ĐẮNG', 'TRANH'],
     ['沼', 'TRẢO'],
     ['镯', 'TRỌC'],
