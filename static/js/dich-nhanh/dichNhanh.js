@@ -1388,6 +1388,7 @@ $options.change(function onChange() {
 });
 
 $themeOptions.click(function onClick() {
+  const prevThemeFontFamily = $themeOptions.filter('.active').data('font-family')
   $themeOptions.removeClass('active');
   $(this).addClass('active');
   const isDarkMode = $('#bd-theme').next().find('.active').data('bs-theme-value') === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : $('#bd-theme').next().find('.active').data('bs-theme-value') === 'dark';
@@ -1399,7 +1400,7 @@ $themeOptions.click(function onClick() {
   });
 
   if (isLoaded) {
-    if ($fontStackText.val().length === 0 || $fontStackText.val() === $(this).data('font-family')) $fontStackText.val($(this).data('font-family') ?? '').change();
+    if ($fontStackText.val().length === 0 || prevThemeFontFamily.startsWith($fontStackText.val())) $fontStackText.val($(this).data('font-family') ?? '').change();
     if ($(this).data('font-size') != null) $fontSizeRange.val($(this).data('font-size')).change();
     if ($(this).data('line-height') != null) $lineSpacingRange.val($(this).data('line-height')).change();
     if ($(this).data('text-align') != null) $alignmentSettingsSwitch.prop('checked', $(this).data('text-align') === 'justify').change();
