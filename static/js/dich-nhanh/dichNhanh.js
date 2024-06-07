@@ -1489,7 +1489,7 @@ $formatSettingsSwitch.change(function onChange() {
   localStorage.setItem('dich_nhanh', JSON.stringify(quickTranslateStorage));
 });
 
-$translatorOptions.click(async function onClick() {
+$translatorOptions.on('click', async function onClick() {
   $translatorOptions.removeClass('active');
   $(this).addClass('active');
   updateLanguageSelect($(this).data('id'), quickTranslateStorage.translator);
