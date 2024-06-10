@@ -37,7 +37,6 @@ const $nameSwitch = $('#name-switch');
 const $glossaryInput = $('#glossary-input');
 const $glossaryTypeSelect = $('#glossary-type-select');
 const $vietPhraseType = $('#viet-phrase-type-select');
-const $languagePairsSelect = $('#language-pairs-select');
 const $glossaryListSelect = $('#glossary-list-select');
 const $sourceEntryInput = $('#source-entry-input');
 const $dropdownHasCollapse = $('.dropdown-has-collapse');
@@ -628,35 +627,6 @@ async function translateTextarea() {
 
   const sourceLanguage = $sourceLanguageSelect.val();
   const targetLanguage = $targetLanguageSelect.val();
-  const languagePairs = $languagePairsSelect.val().split('-');
-  let isPairing = false;
-
-  switch (translatorOption) {
-    case Translators.BAIDU_FANYI: {
-      isPairing = BaiduFanyi.getMappedSourceLanguageCode(Translators.GOOGLE_TRANSLATE, sourceLanguage).split('-')[0].toLowerCase() === languagePairs[0] && BaiduFanyi.getMappedTargetLanguageCode(Translators.GOOGLE_TRANSLATE, targetLanguage).split('-')[0].toLowerCase() === languagePairs[1];
-      break;
-    }
-    case Translators.DEEPL_TRANSLATE: {
-      isPairing = DeeplTranslate.getMappedSourceLanguageCode(Translators.GOOGLE_TRANSLATE, sourceLanguage).split('-')[0].toLowerCase() === languagePairs[0] && DeeplTranslate.getMappedTargetLanguageCode(Translators.GOOGLE_TRANSLATE, targetLanguage).split('-')[0].toLowerCase() === languagePairs[1];
-      break;
-    }
-    case Translators.PAPAGO: {
-      isPairing = Papago.getMappedSourceLanguageCode(Translators.GOOGLE_TRANSLATE, sourceLanguage).split('-')[0].toLowerCase() === languagePairs[0] && Papago.getMappedTargetLanguageCode(Translators.GOOGLE_TRANSLATE, targetLanguage).split('-')[0].toLowerCase() === languagePairs[1];
-      break;
-    }
-    case Translators.MICROSOFT_TRANSLATOR: {
-      isPairing = MicrosoftTranslator.getMappedSourceLanguageCode(Translators.GOOGLE_TRANSLATE, sourceLanguage).split('-')[0].toLowerCase() === languagePairs[0] && MicrosoftTranslator.getMappedTargetLanguageCode(Translators.GOOGLE_TRANSLATE, targetLanguage).split('-')[0].toLowerCase() === languagePairs[1];
-      break;
-    }
-    case Translators.VIETPHRASE: {
-      isPairing = Vietphrase.getMappedSourceLanguageCode(Translators.GOOGLE_TRANSLATE, sourceLanguage).split('-')[0].toLowerCase() === languagePairs[0] && Vietphrase.getMappedTargetLanguageCode(Translators.GOOGLE_TRANSLATE, targetLanguage).split('-')[0].toLowerCase() === languagePairs[1];
-      break;
-    }
-    default: {
-      isPairing = sourceLanguage.split('-')[0].toLowerCase() === languagePairs[0] && targetLanguage.split('-')[0].toLowerCase() === languagePairs[1];
-      break;
-    }
-  }
 
   const nameEnabled = $nameSwitch.prop('checked');
 
@@ -665,7 +635,7 @@ async function translateTextarea() {
   if (translatorOption !== Translators.DEEPL_TRANSLATE && inputText.split('\n').toSorted((a, b) => b.length - a.length)[0].length > MAX_LENGTH) throw console.error(`Số lượng từ trong một dòng quá dài (Số lượng từ hợp lệ nhỏ hơn hoặc bằng ${MAX_LENGTH}).`);
 
   try {
-    const inputTextForCheck = nameEnabled && translatorOption === Translators.VIETPHRASE && targetLanguage === 'vi' ? Vietphrase.translateFromLeftToRight(inputText, glossary.name.concat(glossary.namePhu)) : inputText;
+    const inputTextForCheck = nameEnabled && translatorOption === Translators.VIETPHRASE && targetLanguage === 'vi' ? Vietphrase.quickTranslate(inputText, glossary.namePhu) : inputText;
     let result = '';
 
     if (Object.keys(lastSession).length > 0 && lastSession.inputText === inputTextForCheck && lastSession.translatorOption === translatorOption && lastSession.sourceLanguage === sourceLanguage && lastSession.targetLanguage === targetLanguage) {
@@ -717,6 +687,7 @@ async function translateTextarea() {
                 queryLines = [];
               }
             }
+
             break;
           }
         }
@@ -1026,24 +997,22 @@ function reloadGlossaryEntries() {
   glossaryObject = Object.fromEntries(glossary[glossaryList]);
 
   if (glossary[glossaryList].length > 0) {
-    if (glossary[glossaryList].length < 5000) {
-      glossary[glossaryList].forEach(([first, second]) => {
-        const option = document.createElement('option');
-        option.innerText = `${first} → ${second}`;
-        option.value = first;
-        entrySelect.appendChild(option.cloneNode(true));
+    glossary[glossaryList].forEach(([first, second]) => {
+      const option = document.createElement('option');
+      option.innerText = `${first} → ${second}`;
+      option.value = first;
+      entrySelect.appendChild(option.cloneNode(true));
 
-        if (Utils.isOnMobile()) {
-          const optionOnMobile = document.createElement('option');
-          optionOnMobile.innerText = `${first} → ${second}`;
-          optionOnMobile.setAttribute('data-value', first);
-          entriesList.appendChild(optionOnMobile);
-        } else {
-          option.innerText = `${first} → ${second}`;
-          entriesList.appendChild(option.cloneNode(true));
-        }
-      });
-    }
+      if (Utils.isOnMobile()) {
+        const optionOnMobile = document.createElement('option');
+        optionOnMobile.innerText = `${first} → ${second}`;
+        optionOnMobile.setAttribute('data-value', first);
+        entriesList.appendChild(optionOnMobile);
+      } else {
+        option.innerText = `${first} → ${second}`;
+        entriesList.appendChild(option.cloneNode(true));
+      }
+    });
 
     switch ($glossaryTypeSelect.val()) {
       case GlossaryType.CSV: {
@@ -1698,8 +1667,8 @@ $sourceEntryInput.on('input', async function onInput() {
     }
 
     if (Object.hasOwn(glossaryObject, inputText)) {
-      $targetEntryTextarea.val(Vietphrase.translateFromLeftToRight(inputText, glossary[$glossaryListSelect.val()])).trigger('input');
-      if (glossary[$glossaryListSelect.val()].length < 5000) $glossaryEntrySelect.val(inputText);
+      $targetEntryTextarea.val(Vietphrase.quickTranslate(inputText, glossary[$glossaryListSelect.val()])).trigger('input');
+      $glossaryEntrySelect.val(inputText);
 
       if (!Utils.isOnMobile()) {
         const modalBody = $('#glossary-modal .modal-body');
@@ -1708,7 +1677,7 @@ $sourceEntryInput.on('input', async function onInput() {
         modalBody.prop('scrollTop', prevModalBodyScrollTop);
       }
     } else {
-      $translateEntryButtons.filter(`[data-translator="vietphrase"][data-lang="${$glossaryListSelect.val() === 'vietPhrasePhu' ? 'vi' : 'SinoVietnamese'}"][data-glossary="true"]`).click();
+      $translateEntryButtons.filter(`[data-translator="vietphrase"][data-lang="${$glossaryListSelect.val() === 'vietPhrasePhu' ? 'vi' : 'SinoVietnamese'}"]`).click();
       $targetEntryTextarea.prop('scrollTop', 0);
       $glossaryEntrySelect.val('');
     }
@@ -1894,44 +1863,36 @@ $inputTextarea.on('input', function onInput() {
 
   const translator = $translatorOptions.filter($('.active')).data('id');
 
-  let sourceLanguage = $sourceLanguageSelect.val();
   let targetLanguage = $targetLanguageSelect.val();
-  const languagePairs = $languagePairsSelect.val().split('-');
 
   switch (translator) {
     case Translators.BAIDU_FANYI: {
-      sourceLanguage = BaiduFanyi.getMappedSourceLanguageCode(Translators.GOOGLE_TRANSLATE, sourceLanguage).split('-')[0].toLowerCase();
       targetLanguage = BaiduFanyi.getMappedTargetLanguageCode(Translators.GOOGLE_TRANSLATE, targetLanguage).split('-')[0].toLowerCase();
       break;
     }
     case Translators.DEEPL_TRANSLATE: {
-      sourceLanguage = DeeplTranslate.getMappedSourceLanguageCode(Translators.GOOGLE_TRANSLATE, sourceLanguage).split('-')[0].toLowerCase();
       targetLanguage = DeeplTranslate.getMappedTargetLanguageCode(Translators.GOOGLE_TRANSLATE, targetLanguage).split('-')[0].toLowerCase();
       break;
     }
     case Translators.PAPAGO: {
-      sourceLanguage = Papago.getMappedSourceLanguageCode(Translators.GOOGLE_TRANSLATE, sourceLanguage).split('-')[0].toLowerCase();
       targetLanguage = Papago.getMappedTargetLanguageCode(Translators.GOOGLE_TRANSLATE, targetLanguage).split('-')[0].toLowerCase();
       break;
     }
     case Translators.MICROSOFT_TRANSLATOR: {
-      sourceLanguage = MicrosoftTranslator.getMappedSourceLanguageCode(Translators.GOOGLE_TRANSLATE, sourceLanguage).split('-')[0].toLowerCase();
       targetLanguage = MicrosoftTranslator.getMappedTargetLanguageCode(Translators.GOOGLE_TRANSLATE, targetLanguage).split('-')[0].toLowerCase();
       break;
     }
     case Translators.VIETPHRASE: {
-      sourceLanguage = Vietphrase.getMappedSourceLanguageCode(Translators.GOOGLE_TRANSLATE).split('-')[0].toLowerCase();
       targetLanguage = Vietphrase.getMappedTargetLanguageCode(Translators.GOOGLE_TRANSLATE).split('-')[0].toLowerCase();
       break;
     }
     default: {
-      sourceLanguage = sourceLanguage.split('-')[0].toLowerCase();
       targetLanguage = targetLanguage.split('-')[0].toLowerCase();
       break;
     }
   }
 
-  const gapLength = (translatorOption === Translators.VIETPHRASE && targetLanguage === 'vi' ? Vietphrase.translateFromLeftToRight(inputText, glossary.name.concat(glossary.namePhu)) : inputText).length - value.length;
+  const gapLength = (translator === Translators.VIETPHRASE && targetLanguage === 'vi' ? Vietphrase.quickTranslate(value, glossary.namePhu) : value).length - value.length;
   $inputTextareaCounter.text(`${value.length}${value.length > 0 && gapLength > 0 ? ` (+${gapLength})` : ''}`);
 });
 
@@ -1968,7 +1929,8 @@ $resultTextarea.on('drop', (event) => {
   event.preventDefault();
 });
 
-$resultTextarea.on('cut', (event) => {
+$resultTextarea.on('cut', function onCut(event) {
+  navigator.clipboard.writeText($(this).val());
   event.preventDefault();
 });
 
@@ -1977,15 +1939,16 @@ $resultTextarea.on('paste', (event) => {
 });
 
 $resultTextarea.on('keypress', (event) => {
+  if (event.ctrlKey && event.key === 'Enter') {
+    $glossaryManagerButton.trigger('mousedown');
+    $glossaryManagerButton.click();
+    event.preventDefault();
+    return;
+  }
+
   if (event.key === 'Enter') {
     $translateButton.click();
     $inputTextarea.focus();
-    event.preventDefault();
-  }
-
-  if ((event.ctrlKey && event.key === 'Enter') || event.key === '\n') {
-    $glossaryManagerButton.trigger('mousedown');
-    $glossaryManagerButton.click();
     event.preventDefault();
   }
 });
