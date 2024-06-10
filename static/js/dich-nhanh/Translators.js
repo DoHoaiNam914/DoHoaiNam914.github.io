@@ -1315,6 +1315,7 @@ class Vietphrase {
     ['羡', 'TIỄN'/* Họ */],
     ['筱', 'TIÊU'],
     ['啸', 'TIẾU'],
+    ['箐', 'TINH'],
     ['静', 'TỊNH, TĨNH', 'TĨNH'/* Họ Tịnh */],
     ['璇', 'TOÀN'],
     ['诅', 'TỔ'],

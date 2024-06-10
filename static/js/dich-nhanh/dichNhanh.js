@@ -665,9 +665,10 @@ async function translateTextarea() {
   if (translatorOption !== Translators.DEEPL_TRANSLATE && inputText.split('\n').toSorted((a, b) => b.length - a.length)[0].length > MAX_LENGTH) throw console.error(`Số lượng từ trong một dòng quá dài (Số lượng từ hợp lệ nhỏ hơn hoặc bằng ${MAX_LENGTH}).`);
 
   try {
+    const inputTextForCheck = nameEnabled && translatorOption === Translators.VIETPHRASE && targetLanguage === 'vi' ? Vietphrase.translateFromLeftToRight(inputText, glossary.name.concat(glossary.namePhu)) : inputText;
     let result = '';
 
-    if (Object.keys(lastSession).length > 0 && lastSession.inputText === inputText && lastSession.translatorOption === translatorOption && lastSession.sourceLanguage === sourceLanguage && lastSession.targetLanguage === targetLanguage) {
+    if (Object.keys(lastSession).length > 0 && lastSession.inputText === inputTextForCheck && lastSession.translatorOption === translatorOption && lastSession.sourceLanguage === sourceLanguage && lastSession.targetLanguage === targetLanguage) {
       result = lastSession.result;
     } else {
       if (translatorOption === Translators.DEEPL_TRANSLATE && currentTranslator.usage.character_count + inputText.length > currentTranslator.usage.character_limit) throw console.error(`Lỗi DeepL Translator: Đã đạt đến giới hạn dịch của tài khoản. (${currentTranslator.usage.character_count}/${currentTranslator.usage.character_limit} ký tự).`);
@@ -725,7 +726,7 @@ async function translateTextarea() {
 
       if (translateAbortController.signal.aborted) return;
       $('#translate-timer').text(Date.now() - startTime);
-      lastSession.inputText = inputText;
+      lastSession.inputText = inputTextForCheck;
       lastSession.translatorOption = translatorOption;
       lastSession.sourceLanguage = sourceLanguage;
       lastSession.targetLanguage = targetLanguage;
@@ -1930,8 +1931,8 @@ $inputTextarea.on('input', function onInput() {
     }
   }
 
-  const gapLength = Vietphrase.translateFromLeftToRight(value, glossary.namePhu).length - value.length;
-  $inputTextareaCounter.text(`${value.length}${value.length > 0 && ($nameSwitch.prop('checked') && (translator === Translators.VIETPHRASE ? targetLanguage === 'vi' : sourceLanguage === languagePairs[0] && targetLanguage === languagePairs[1])) && gapLength > 0 ? ` (+${gapLength})` : ''}`);
+  const gapLength = (translatorOption === Translators.VIETPHRASE && targetLanguage === 'vi' ? Vietphrase.translateFromLeftToRight(inputText, glossary.name.concat(glossary.namePhu)) : inputText).length - value.length;
+  $inputTextareaCounter.text(`${value.length}${value.length > 0 && gapLength > 0 ? ` (+${gapLength})` : ''}`);
 });
 
 $inputTextarea.on('change', function onChange() {
