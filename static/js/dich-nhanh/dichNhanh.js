@@ -1506,7 +1506,7 @@ $defaultVietPhraseFileSelect.change(async function onChange() {
   if (intValue > 0) {
     switch (intValue) {
       case 1: {
-        $.ajax({
+        await $.ajax({
           method: 'GET',
           url: '/static/datasource/Data của thtgiang/Names.txt',
         }).done((data) => {
@@ -1537,7 +1537,7 @@ $defaultVietPhraseFileSelect.change(async function onChange() {
         break;
       }
       case 2: {
-        $.ajax({
+        await $.ajax({
           method: 'GET',
           url: '/static/datasource/Data của thtgiang/Names.txt',
         }).done((data) => {
@@ -1548,7 +1548,7 @@ $defaultVietPhraseFileSelect.change(async function onChange() {
         }).fail((__, ___, errorThrown) => {
           console.error('Không tải được tệp Names:', errorThrown);
         });
-        $.ajax({
+        await $.ajax({
           method: 'GET',
           url: '/static/datasource/Data của thtgiang/VietPhrase.txt',
         }).done((data) => {
@@ -1562,7 +1562,7 @@ $defaultVietPhraseFileSelect.change(async function onChange() {
         break;
       }
       case 3: {
-        $.ajax({
+        await $.ajax({
           method: 'GET',
           url: '/static/datasource/ttvtranslate/Names.txt',
         }).done((data) => {
@@ -1587,7 +1587,7 @@ $defaultVietPhraseFileSelect.change(async function onChange() {
         break;
       }
       case 4: {
-        $.ajax({
+        await $.ajax({
           method: 'GET',
           url: '/static/datasource/Translate/Names.txt',
         }).done((data) => {
@@ -1598,7 +1598,7 @@ $defaultVietPhraseFileSelect.change(async function onChange() {
         }).fail((__, ___, errorThrown) => {
           console.error('Không tải được tệp Names:', errorThrown);
         });
-        $.ajax({
+        await $.ajax({
           method: 'GET',
           url: '/static/datasource/Translate/VietPhrase.txt',
         }).done((data) => {
