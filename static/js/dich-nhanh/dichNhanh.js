@@ -922,12 +922,10 @@ async function translateText(inputText, translatorOption, targetLanguage, glossa
         break;
       }
       case Translators.DEEPL_TRANSLATE: {
-        const authKeys = [...deeplAuthKeys];
-
         while (true) {
-          translator = await new DeeplTranslate(authKeys[0][0]).init();
-          if (translator.usage.character_count + inputText.length > translator.usage.character_limit) break;
-          authKeys.shift();
+          translator = await new DeeplTranslate(deeplAuthKeys[0][0]).init();
+          if (translator.usage.character_count + inputText.length <= translator.usage.character_limit) break;
+          deeplAuthKeys.shift();
         }
 
         sourceLanguage = DeeplTranslate.DETECT_LANGUAGE;
@@ -1404,12 +1402,10 @@ $translatorOptions.on('click', async function onClick() {
       break;
     }
     case Translators.DEEPL_TRANSLATE: {
-      const authKeys = [...deeplAuthKeys];
-
       while (true) {
-        currentTranslator = await new DeeplTranslate(authKeys[0][0]).init();
+        currentTranslator = await new DeeplTranslate(deeplAuthKeys[0][0]).init();
         if ((currentTranslator.usage.character_limit - currentTranslator.usage.character_count) >= 100000) break;
-        authKeys.shift();
+        deeplAuthKeys.shift();
       }
 
       break;
