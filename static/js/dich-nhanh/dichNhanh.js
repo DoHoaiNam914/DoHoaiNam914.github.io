@@ -47,7 +47,7 @@ const $removeButton = $('#remove-button');
 const $glossaryEntrySelect = $('#glossary-entry-select');
 const $glossaryName = $('#glossary-name');
 
-const defaultOptions = JSON.parse('{"source_language":"","target_language":"vi","translator":"microsoftTranslator","font_stack":"","font_size":100,"line_spacing":40,"alignment_settings":true,"format_settings":true,"show_original_text":false,"default_viet_phrase_file":"4","add_de_le_zhao":false,"translation_algorithm":"0","prioritize_name_over_viet_phrase":false,"multiplication_algorithm":"2","name":true,"glossary_type":"text/plain","language_pairs":"zh-vi"}');
+const defaultOptions = JSON.parse('{"source_language":"","target_language":"vi","translator":"microsoftTranslator","font_stack":"","font_size":100,"line_spacing":40,"alignment_settings":true,"format_settings":true,"show_original_text":false,"default_viet_phrase_file":"4","add_de_le_zhao":false,"multiplication_algorithm":"0","name":true,"glossary_type":"text/plain"}');
 
 const SUPPORTED_LANGUAGES = ['', 'EN', 'JA', 'ZH', 'EN-US', 'auto', 'en', 'ja', 'zh-CN', 'zh-TW', 'vi', 'lzh', 'yue', 'zh-Hans', 'zh-Hant'];
 

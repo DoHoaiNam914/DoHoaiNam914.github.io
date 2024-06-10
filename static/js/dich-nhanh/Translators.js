@@ -1558,13 +1558,13 @@ class Vietphrase {
         if (Object.hasOwn(nameMap, substring.toUpperCase())) {
           const name = nameMap[substring.toUpperCase()];
           translatedText += (translatedChars.length > 0 && (/[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(translatedChars[translatedChars.length - 1]) || previousPhrase.length === 0) ? ' ' : '') + name.split(/[/|]/)[0];
+          if (name !== '') previousPhrase = name;
           textMapping.push({
             indexChina: startIndex,
             lenChina: currentEndIndex,
             contentViet: name,
             contentChina: substring,
           });
-          previousPhrase = name;
           startIndex += currentEndIndex;
           hasPhrase = true;
           break;
@@ -1600,19 +1600,20 @@ class Vietphrase {
           if (!hasHanViet) {
             const vietPhrase = vietPhraseMap[substring.toUpperCase()];
             translatedText += (translatedChars.length > 0 && vietPhrase !== '' && (/[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(translatedChars[translatedChars.length - 1]) || previousPhrase.length === 0) ? ' ' : '') + vietPhrase;
+            if (vietPhrase !== '') previousPhrase = vietPhrase;
             textMapping.push({
               indexChina: startIndex,
               lenChina: currentEndIndex,
               contentViet: vietPhrase,
               contentChina: substring,
             });
-            previousPhrase = vietPhrase;
             startIndex += currentEndIndex;
             hasPhrase = true;
             break;
           } else if (Object.hasOwn(hanVietMap, substring)) {
             const hanViet = hanVietMap[substring];
             translatedText += (translatedChars.length > 0 && hanViet !== '' && (/[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(translatedChars[translatedChars.length - 1]) || previousPhrase.length === 0) ? ' ' : '') + hanViet;
+            if (hanViet !== '') previousPhrase = hanViet;
             textMapping.push({
               indexChina: startIndex,
               lenChina: currentEndIndex,
@@ -1629,6 +1630,7 @@ class Vietphrase {
         } else if (Object.hasOwn(hanVietMap, substring)) {
           const hanViet = hanVietMap[substring];
           translatedText += (translatedChars.length > 0 && hanViet !== '' && (/[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(translatedChars[translatedChars.length - 1]) || previousPhrase.length === 0) ? ' ' : '') + hanViet;
+          if (hanViet !== '') previousPhrase = hanViet;
           textMapping.push({
             indexChina: startIndex,
             lenChina: currentEndIndex,
@@ -1685,7 +1687,9 @@ class Vietphrase {
       if (startIndex + endIndex > charactersLength) endIndex = charactersLength - startIndex;
 
       if (Object.hasOwn(hanVietMap, characters.at(startIndex)) == null) {
-        translatedText += characters.at(startIndex);
+        const char = characters.at(startIndex);
+        translatedText += char;
+        previousPhrase = /[^\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(char) ? char : '';
         startIndex += 1;
       } else {
         const tempChars = [];
@@ -1711,7 +1715,7 @@ class Vietphrase {
           if (Object.hasOwn(nameMap, substring.toUpperCase())) {
             const name = nameMap[substring.toUpperCase()];
             translatedText += (translatedChars.length > 0 && (/[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”\p{sc=Hani}\p{sc=Hira}\p{sc=Kana}]$/u.test(translatedChars[translatedChars.length - 1]) || previousPhrase.length === 0) ? ' ' : '') + name.split(/[/|]/)[0];
-            previousPhrase = name;
+            if (name !== '') previousPhrase = name;
             testTextMapping.push({
               indexChina: startIndex,
               lenChina: currentEndIndex,
