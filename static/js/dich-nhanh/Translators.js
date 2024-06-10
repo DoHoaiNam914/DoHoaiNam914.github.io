@@ -965,7 +965,7 @@ class MicrosoftTranslator {
 }
 
 class Vietphrase {
-  static SOURCE_LANGUAGES = { zh: 'Chinese' };
+  static SOURCE_LANGUAGES = { cj: 'Chinese-Japanese' };
 
   static TARGET_LANGUAGES = {
     simplified: 'Giản thể',
@@ -978,19 +978,8 @@ class Vietphrase {
   };
 
   static DefaultLanguage = {
-    SOURCE_LANGUAGE: 'zh',
+    SOURCE_LANGUAGE: 'cj',
     TARGET_LANGUAGE: 'vi',
-  };
-
-  TranslationAlgorithms = {
-    PRIORITIZE_LONG_VIET_PHRASE_CLUSTERS: '0',
-    TRANSLATE_FROM_LEFT_TO_RIGHT: '1',
-  };
-
-  MultiplicationAlgorithm = {
-    NOT_APPLICABLE: '0',
-    MULTIPLICATION_BY_PRONOUNS: '1',
-    MULTIPLICATION_BY_PRONOUNS_AND_NAMES: '2',
   };
 
   SpecialSinoVietnameses = [
@@ -1393,203 +1382,6 @@ class Vietphrase {
     }
   }
 
-  loadLuatNhanData(targetLanguage, nameArray, inputText) {
-    let nhanByName = [];
-    let nhanByPronoun = [];
-
-    if (this.multiplicationAlgorithm > this.MultiplicationAlgorithm.NOT_APPLICABLE && targetLanguage === 'vi') {
-      this.data.luatNhan.filter(([first]) => inputText.match(new RegExp(Utils.escapeRegExp(first).replace('\\{0\\}', '.+')))).forEach(([a, b]) => {
-        if (this.nameEnabled && this.multiplicationAlgorithm === this.MultiplicationAlgorithm.MULTIPLICATION_BY_PRONOUNS_AND_NAMES && nameArray.length > 0) {
-          nhanByName = [...nhanByName, ...nameArray.map(([c, d]) => [a.replace('{0}', c), b.replace('{0}', d)])];
-        }
-
-        nhanByPronoun = [...nhanByPronoun, ...this.data.pronoun.map(([c, d]) => [a.replace('{0}', c), b.replace('{0}', d.split(/[/|]/)[0])])];
-      });
-    }
-
-    delete this.data.luatNhan;
-    return [nhanByName.toSorted((a, b) => b[0].length - a[0].length), nhanByPronoun.toSorted((a, b) => b[0].length - a[0].length)];
-  }
-
-  static getCapitalizeText(text) {
-    return text.split('\n').map((element) => element.replaceAll(/(^[\p{P}\p{Z}]*|[!.?] )(\p{Ll})/gu, (__, p1, p2) => p1 + p2.toUpperCase())).join('\n');
-  }
-
-  static getFormattedText(inputText) {
-    const PUNCTUATIONS = {
-      '、': ',',
-      '。': '.',
-      '【': '[',
-      '】': ']',
-      '！': '!',
-      '（': '(',
-      '）': ')',
-      '，': ',',
-      '：': ':',
-      '；': ';',
-      '？': '?',
-    };
-
-    return inputText.replaceAll(/(?:[…、。】！），：；？]|\.\.\.)(?![\p{Pc}\p{Pd}\p{Pe}\p{Pf}\p{Po}\s]|$)/gu, (match) => `${PUNCTUATIONS[match] ?? match} `)
-      .replaceAll(/([^\s\p{Ps}\p{Pi}])([【（])/gu, (__, p1, p2) => `${p1} ${PUNCTUATIONS[p2] ?? p2}`)
-      .replaceAll(/[、。【】！（），：；？]/g, (match) => PUNCTUATIONS[match] ?? match)
-      .replaceAll(/ ?· ?/g, ' ');
-  }
-
-  translatePrioritizeLongVietPhraseClusters(targetLanguage, data, inputText) {
-    const text = inputText.split('\n').map((element) => element.trim()).join('\n');
-
-    let result = text;
-
-    try {
-      let nameArray = this.data.name;
-
-      const [nhanByName, nhanByPronoun] = this.loadLuatNhanData(targetLanguage, nameArray, text);
-
-      nameArray = nameArray.concat(nhanByPronoun, !this.prioritizeNameOverVietPhrase ? nhanByName : []).toSorted((a, b) => b[0].length - a[0].length);
-      let dataArray = data.toSorted((a, b) => b[0].length - a[0].length);
-
-      if (nameArray.concat(dataArray).length > 0) {
-        let nameMap = new Map(nameArray);
-
-        let combineDatas = nameArray.concat(dataArray).filter(([first], __, array) => !array[first] && (array[first] = 1), {});
-
-        result = result.split('\n').map((a) => {
-          const chars = a.split(/(?:)/u);
-          let returnText = a;
-
-          if (chars.length > 0 && chars.some((b) => Object.hasOwn(this.essences, b))) {
-            let prefilterElement = a;
-            let couldUpperCaseKey = (b) => !this.prioritizeNameOverVietPhrase || (nameMap.has(b.toUpperCase()) && !Object.hasOwn(this.nameObject, b));
-
-            combineDatas.filter(([first]) => first !== '·' && first.split(/(?:)/u).some((b) => Object.hasOwn(this.essences, b)) && (!couldUpperCaseKey(first) ? prefilterElement.includes(first) : prefilterElement.toLowerCase().includes(first.toLowerCase())) && (prefilterElement = !couldUpperCaseKey(first) ? prefilterElement.replaceAll(first, '\n') : prefilterElement.toLowerCase().replaceAll(first.toLowerCase(), '\n'))).some(([c, d]) => {
-              if (!couldUpperCaseKey(c) ? returnText.includes(c) : returnText.toLowerCase().includes(c.toLowerCase())) {
-                const phraseResult = d.split(/[/|]/)[0].trim();
-                returnText = returnText.replaceAll(new RegExp(`${Utils.escapeRegExp(c)}${Utils.escapeRegExp(c)}${this.nameEnabled && nameArray.length > 0 ? `(?=${nameArray.map(([___, second]) => second).join('|')})` : '(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])'}`, 'giu'), `${Utils.escapeRegExpReplacement(phraseResult)} ${Utils.escapeRegExpReplacement(phraseResult)}${phraseResult.length > 0 ? ' ' : ''}`)
-                  .replaceAll(new RegExp(`([\\p{Lu}\\p{Ll}\\p{M}\\p{Nd})\\]}’”])${Utils.escapeRegExp(c)}${this.nameEnabled && nameArray.length > 0 ? `(?=${nameArray.map(([___, second]) => second).join('|')})` : '(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])'}`, 'giu'), `$1 ${Utils.escapeRegExpReplacement(phraseResult)}${phraseResult.length > 0 ? ' ' : ''}`)
-                  .replaceAll(new RegExp(`${Utils.escapeRegExp(c)}${Utils.escapeRegExp(c)}(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])`, !couldUpperCaseKey(c) ? 'gu' : 'giu'), `${Utils.escapeRegExpReplacement(phraseResult)} ${Utils.escapeRegExpReplacement(phraseResult)}${phraseResult.length > 0 ? ' ' : ''}`)
-                  .replaceAll(new RegExp(`([\\p{Lu}\\p{Ll}\\p{M}\\p{Nd})\\]}’”])${Utils.escapeRegExp(c)}(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])`, !couldUpperCaseKey(c) ? 'gu' : 'giu'), `$1 ${Utils.escapeRegExpReplacement(phraseResult)}${phraseResult.length > 0 ? ' ' : ''}`)
-                  .replaceAll(new RegExp(`${Utils.escapeRegExp(c)}${Utils.escapeRegExp(c)}`, !couldUpperCaseKey(c) ? 'g' : 'gi'), `${Utils.escapeRegExpReplacement(phraseResult)} ${Utils.escapeRegExpReplacement(phraseResult)}`)
-                  .replaceAll(new RegExp(`([\\p{Lu}\\p{Ll}\\p{M}\\p{Nd})\\]}’”])${Utils.escapeRegExp(c)}`, !couldUpperCaseKey(c) ? 'gu' : 'giu'), `$1${phraseResult.length > 0 ? ` ${Utils.escapeRegExpReplacement(phraseResult)}` : ''}`)
-                  .replaceAll(new RegExp(`${Utils.escapeRegExp(c)}${this.nameEnabled && nameArray.length > 0 ? `(?=${nameArray.map(([___, e]) => e).join('|')})` : '(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])'}`, 'giu'), `${Utils.escapeRegExpReplacement(phraseResult)}${phraseResult.length > 0 ? ' ' : ''}`)
-                  .replaceAll(new RegExp(`${Utils.escapeRegExp(c)}(?=[\\p{Lu}\\p{Ll}\\p{Nd}(([{‘“])`, !couldUpperCaseKey(c) ? 'gu' : 'giu'), `${Utils.escapeRegExpReplacement(phraseResult)}${phraseResult.length > 0 ? ' ' : ''}`)
-                  .replaceAll(new RegExp(Utils.escapeRegExp(c), !couldUpperCaseKey(c) ? 'g' : 'gi'), Utils.escapeRegExpReplacement(phraseResult));
-              }
-
-              return false;
-            });
-          }
-
-          return returnText;
-        }).join('\n');
-
-        nameMap = null;
-        combineDatas = null;
-
-        if (['simplified', 'traditional'].every((element) => targetLanguage !== element)) {
-          result = Vietphrase.getFormattedText(result);
-          if (this.autocapitalize) result = Vietphrase.getCapitalizeText(result);
-        }
-      }
-
-      nameArray = null;
-      dataArray = null;
-      return result;
-    } catch (error) {
-      console.error(error);
-      throw error;
-    }
-  }
-
-  translateFromLeftToRight(targetLanguage, data, inputText) {
-    const text = inputText.split('\n').map((element) => element.trim()).join('\n');
-
-    const lines = text.split('\n');
-    const results = [];
-
-    let result = text;
-
-    try {
-      let dataArray = data;
-      let nameArray = this.data.name;
-
-      const [nhanByName, nhanByPronoun] = this.loadLuatNhanData(targetLanguage, nameArray, text);
-
-      nameArray = nameArray.concat(nhanByPronoun, nhanByName);
-
-      if (nameArray.concat(dataArray).length > 0) {
-        let dataMap = new Map(dataArray);
-        let nameMap = new Map(nameArray);
-
-        const dataLengths = nameArray.concat(dataArray).reduce((accumulator, [first]) => (!accumulator.includes(first.length) ? accumulator.concat(first.length) : accumulator), [1]).sort((a, b) => b - a);
-
-        lines.forEach((a) => {
-          const chars = a.split(/(?:)/u);
-
-          if (chars.length === 0 || !chars.some((b) => Object.hasOwn(this.essences, b))) {
-            results.push(a);
-          } else {
-            const nameKeys = nameArray.map(([first]) => first.toLowerCase()).filter((b) => a.includes(b));
-            let tempLine = '';
-            let prevPhrase = '';
-
-            for (let i = 0; i < chars.length; i += 1) {
-              for (let j = 0; j < dataLengths.length; j += 1) {
-                const length = Math.min(chars.length, dataLengths[j]);
-                let phrase = chars.slice(i, i + length).join('');
-
-                const charsInTempLine = tempLine.split(/(?:)/u);
-                const couldUpperCaseKey = !this.prioritizeNameOverVietPhrase || (nameMap.has(phrase.toUpperCase()) && !Object.hasOwn(this.nameObject, phrase));
-
-                if (phrase.length > 0 && (nameMap.has(!couldUpperCaseKey ? phrase : phrase.toUpperCase()) || (phrase.split(/(?:)/u).some((b) => Object.hasOwn(this.essences, b)) && dataMap.has(phrase) && nameKeys.every((b) => !phrase.toLowerCase().startsWith(b.toLowerCase())))) && phrase !== '·') {
-                  phrase = !couldUpperCaseKey ? phrase : phrase.toUpperCase();
-                  const phraseResult = (nameMap.get(phrase) ?? dataMap.get(phrase)).split(/[/|]/)[0].trim();
-
-                  if (this.prioritizeNameOverVietPhrase && Object.hasOwn(this.nameObject, phrase)) {
-                    tempLine += (charsInTempLine.length > 0 && /^[\p{Lu}\p{Ll}\p{Nd}(([{‘“]/u.test(phrase) && (/[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(charsInTempLine[charsInTempLine.length - 1]) || prevPhrase.length === 0) ? ' ' : '') + phrase;
-                    prevPhrase = phrase;
-                  } else if (phraseResult !== '') {
-                    tempLine += (charsInTempLine.length > 0 && (/[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(charsInTempLine[charsInTempLine.length - 1]) || prevPhrase.length === 0) ? ' ' : '') + phraseResult;
-                    prevPhrase = phraseResult;
-                  }
-
-                  i += length - 1;
-                  break;
-                }
-
-                if (length === 1) {
-                  tempLine += (charsInTempLine.length > 0 && /^[\p{Lu}\p{Ll}\p{Nd}(([{‘“]/u.test(phrase) && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(prevPhrase) ? ' ' : '') + phrase;
-                  prevPhrase = /[^\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(phrase) ? phrase : '';
-                  i += length - 1;
-                  break;
-                }
-              }
-            }
-
-            results.push(tempLine);
-          }
-        });
-
-        dataMap = null;
-        nameMap = null;
-
-        if (['simplified', 'traditional'].every((element) => targetLanguage !== element)) {
-          result = Vietphrase.getFormattedText(results.join('\n'));
-          if (this.autocapitalize) result = Vietphrase.getCapitalizeText(result);
-        } else {
-          result = results.join('\n');
-        }
-      }
-
-      dataArray = null;
-      nameArray = null;
-      return result;
-    } catch (error) {
-      console.error(error);
-      throw error;
-    }
-  }
-
   static removeAccents(pinyin) {
     const accentsMap = {
       ā: 'a',
@@ -1622,88 +1414,388 @@ class Vietphrase {
     return pinyin.replaceAll(/[āáǎàōóǒòēéěèīíǐìūúǔùǖǘǚǜü]/g, (match) => accentsMap[match]);
   }
 
-  async translateText(__, targetLanguage, inputText, translationAlgorithm, multiplicationAlgorithm, prioritizeNameOverVietPhrase, addDeLeZhao, autocapitalize, data, nameEnabled, glossary = []) {
-    this.multiplicationAlgorithm = multiplicationAlgorithm;
-    this.prioritizeNameOverVietPhrase = prioritizeNameOverVietPhrase;
-    this.autocapitalize = autocapitalize;
-    this.data = { ...data };
-    this.nameEnabled = nameEnabled;
-    this.nameObject = Object.fromEntries((this.nameEnabled ? this.data.name.concat(glossary.length > 0 ? glossary : this.data.namePhu) : []).map(([first, second]) => [this.prioritizeNameOverVietPhrase ? second : first, second]).filter(([first]) => first != null && first.length > 0 && inputText.toLowerCase().includes(first.toLowerCase())));
-    delete this.data.namePhu;
-    this.data.name = Object.entries(this.nameObject).map(([first, second]) => [!this.prioritizeNameOverVietPhrase ? first.toUpperCase() : first, second]);
-    this.data.hanViet = this.data.SinoVietnameses.filter(([___, second]) => !/^\p{Script=Hani}+$/u.test(second)).map(([first, second]) => [first, second.toLowerCase()]).concat(this.SpecialSinoVietnameses.filter(([___, second]) => !/^\p{Script=Hani}+$/u.test(second)).map(([a, b, c]) => [a, (c ?? b).split(/, | \| /)[0].toLowerCase()]), this.data.hanViet).filter(([first], ___, array) => !array[first] && (array[first] = 1), {});
-    this.data.hanViet = this.SpecialSinoVietnameses.filter(([___, second]) => /^\p{Script=Hani}+$/u.test(second)).map(([a, b]) => [a, Object.fromEntries(this.data.hanViet.filter(([___, d]) => !/^\p{Script=Hani}+$/u.test(d)))[b]]).concat(this.data.hanViet).filter(([first], ___, array) => !array[first] && (array[first] = 1), {});
-    this.data.hanViet = this.data.SinoVietnameses.filter(([___, second]) => /^\p{Script=Hani}+$/u.test(second)).map(([a, b]) => [a, Object.fromEntries(this.data.hanViet.filter(([___, d]) => !/^\p{Script=Hani}+$/u.test(d)))[b]]).concat(this.data.hanViet).filter(([first], ___, array) => !array[first] && (array[first] = 1), {});
-    this.data.hanViet = new Map(this.data.hanViet);
+  static getFormattedText(inputText) {
+    const PUNCTUATIONS = {
+      '、': ',',
+      '。': '.',
+      '【': '[',
+      '】': ']',
+      '！': '!',
+      '（': '(',
+      '）': ')',
+      '，': ',',
+      '：': ':',
+      '；': ';',
+      '？': '?',
+    };
 
-    try {
-      let dataArray = [];
+    return inputText.replaceAll(/(?:[…、。】！），：；？]|\.\.\.)(?![\p{Pc}\p{Pd}\p{Pe}\p{Pf}\p{Po}\s]|$)/gu, (match) => `${PUNCTUATIONS[match] ?? match} `).replaceAll(/([^\s\p{Ps}\p{Pi}])([【（])/gu, (__, p1, p2) => `${p1} ${PUNCTUATIONS[p2] ?? p2}`).replaceAll(/[、。【】！（），：；？]/g, (match) => PUNCTUATIONS[match] ?? match).replaceAll(/ ?· ?/g, ' ');
+  }
 
-      switch (targetLanguage) {
-        case 'simplified': {
-          dataArray = this.data.simplified;
-          break;
+  static translateFromLeftToRight(inputText, translations) {
+    if (translations == null || translations.length === 0) return inputText;
+    let minLength = 0;
+    let maxLength = 131072;
+
+    translations.forEach(([first]) => {
+      const { length } = first.split(/(?:)/u);
+
+      if (length > 0) {
+        if (length > minLength) minLength = length;
+        if (length < maxLength) maxLength = length;
+      }
+    });
+
+    const translationsMap = Object.fromEntries(translations.map(([first, second]) => [first.toUpperCase(), second]));
+
+    return inputText.split(/\n/).map((element) => {
+      let startIndex = 0;
+      const characters = element.split(/(?:)/u);
+      const charactersLength = characters.length;
+      let endIndex = minLength;
+
+      let translatedText = '';
+
+      let lastEndIndex = 0;
+      let hasTranslation = false;
+
+      let previousPhrase = '';
+
+      while (startIndex < charactersLength) {
+        if (startIndex + endIndex > charactersLength) endIndex = charactersLength - startIndex;
+        const tempChars = [];
+
+        for (let i = 0; i < endIndex; i += 1) {
+          tempChars.push(...characters.at(startIndex + i).split(/(?:)/u));
         }
-        case 'traditional': {
-          dataArray = this.data.traditional;
-          break;
+
+        let currentEndIndex = endIndex;
+
+        const translatedChars = translatedText.split(/(?:)/u);
+
+        while (true) {
+          if (currentEndIndex < maxLength) {
+            lastEndIndex = startIndex;
+            hasTranslation = false;
+            break;
+          }
+
+          const substring = tempChars.slice(0, currentEndIndex).join('');
+
+          if (Object.hasOwn(translationsMap, substring.toUpperCase())) {
+            const phrase = translationsMap[substring.toUpperCase()];
+            translatedText += (translatedChars.length > 0 && phrase !== '' && (/[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(translatedChars[translatedChars.length - 1]) || previousPhrase.length === 0) ? ' ' : '') + phrase;
+            previousPhrase = phrase;
+            lastEndIndex = startIndex + currentEndIndex;
+            hasTranslation = true;
+            break;
+          }
+
+          currentEndIndex -= 1;
         }
-        case 'pinyin': {
-          dataArray = this.data.romajis.concat(this.data.pinyins.map(([first, second]) => [first, Vietphrase.removeAccents(second)]));
-          break;
+
+        if (hasTranslation) {
+          startIndex = lastEndIndex;
+        } else {
+          const char = characters.at(lastEndIndex);
+          translatedText += (translatedChars.length > 0 && /^[\p{Lu}\p{Ll}\p{Nd}([{‘“]/u.test(char) && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(previousPhrase) ? ' ' : '') + char;
+          previousPhrase = /[^\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(char) ? char : '';
+          startIndex = lastEndIndex + 1;
         }
-        case 'KunYomi': {
-          dataArray = this.data.KunYomis.concat(this.data.OnYomis, this.data.romajis).filter(([first], ___, array) => !array[first] && (array[first] = 1), {});
-          break;
-        }
-        case 'OnYomi': {
-          dataArray = this.data.OnYomis.concat(this.data.KunYomis, this.data.romajis).filter(([first], ___, array) => !array[first] && (array[first] = 1), {});
-          break;
-        }
-        case 'SinoVietnamese': {
-          dataArray = this.data.romajis.concat([...this.data.hanViet]);
-          break;
-        }
-        case 'vi': {
-          this.essences = Object.fromEntries(this.data.romajis.concat(this.data.KunYomis, this.data.OnYomis, [...this.data.hanViet]));
-          dataArray = Object.entries(Object.fromEntries(this.data.romajis.concat(this.data.KunYomis, this.data.OnYomis, [...this.data.hanViet], this.data.vietPhrase.length > 0 ? this.data.vietPhrase : [], this.data.vietPhrase.concat(this.data.vietPhrasePhu).length > 0 ? [['的', addDeLeZhao ? this.data.hanViet.get('的') : ''], ['了', addDeLeZhao ? this.data.hanViet.get('了') : ''], ['着', addDeLeZhao ? this.data.hanViet.get('着') : '']] : [], this.data.vietPhrasePhu).map(([first, second]) => [first.toUpperCase(), second])));
-          break;
-        }
-        // no default
       }
 
-      delete this.data.namePhu;
-      delete this.data.hanViet;
-      delete this.data.romajis;
-      delete this.data.KunYomis;
-      delete this.data.OnYomis;
+      return translatedText;
+    }).join('\n');
+  }
 
-      let result = inputText;
-      if (targetLanguage !== 'vi') this.essences = Object.fromEntries(dataArray);
+  static translateFromLeftToRightSecondary(inputText, names, vietPhrases, hanVietDict, primaryTextMapping) {
+    const secondaryTextMapping = [];
+    if (names == null || vietPhrases == null || hanVietDict == null || hanVietDict.length === 0) return inputText;
+    const nameMap = Object.fromEntries(names);
+    const vietPhraseMap = Object.fromEntries(vietPhrases);
+    const hanVietMap = Object.fromEntries(hanVietDict);
+    return inputText.split(/\n/).map((element) => {
+      let startIndex = 0;
+      const characters = element.split(/(?:)/u);
+      const charactersLength = characters.length;
+      let endIndex = 10;
+      let primaryIndex = 0;
 
-      switch (translationAlgorithm) {
-        case this.TranslationAlgorithms.TRANSLATE_FROM_LEFT_TO_RIGHT: {
-          result = this.translateFromLeftToRight(targetLanguage, inputText.split('\n').length === 1 ? dataArray.filter(([first]) => first.length > 0 && inputText.includes(first.toLowerCase())) : dataArray, inputText);
-          break;
+      let translatedText = '';
+
+      let hasPhrase = false;
+      let hasHanViet = false;
+
+      let previousPhrase = '';
+
+      let currentIndex = 0;
+
+      while (startIndex < charactersLength) {
+        if (startIndex + endIndex > charactersLength) endIndex = charactersLength - startIndex;
+        const tempChars = [];
+
+        for (let i = 0; i < endIndex; i += 1) {
+          tempChars.push(...characters.at(startIndex + i).split(/(?:)/u));
         }
-        default: {
-          let prefilterElement = inputText;
-          const nameMap = new Map(this.data.name);
-          const couldUpperCaseKey = (element) => !this.prioritizeNameOverVietPhrase || (nameMap.has(element.toUpperCase()) && !Object.hasOwn(this.essences, element));
-          result = this.translatePrioritizeLongVietPhraseClusters(targetLanguage, dataArray.toSorted((a, b) => b[0].length - a[0].length).filter(([first]) => first.length > 0 && (!couldUpperCaseKey(first) ? prefilterElement.includes(first) : prefilterElement.toLowerCase().includes(first.toLowerCase())) && (prefilterElement = !couldUpperCaseKey ? prefilterElement.replaceAll(first, '\n') : prefilterElement.toLowerCase().replaceAll(first.toLowerCase(), '\n'))), inputText);
-          break;
+
+        let currentEndIndex = endIndex;
+
+        const translatedChars = translatedText.split(/(?:)/u);
+
+        let currentStartIndex = primaryIndex;
+
+        while (true) {
+          if (currentEndIndex < 1) {
+            hasPhrase = false;
+            break;
+          }
+
+          const substring = tempChars.slice(currentIndex, currentEndIndex).join('');
+
+          if (Object.hasOwn(nameMap, substring.toUpperCase())) {
+            const name = nameMap[substring.toUpperCase()];
+            translatedText += (translatedChars.length > 0 && (/[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(translatedChars[translatedChars.length - 1]) || previousPhrase.length === 0) ? ' ' : '') + name;
+            secondaryTextMapping.push({
+              indexChina: startIndex,
+              lenChina: currentEndIndex,
+              contentViet: name,
+              contentChina: substring,
+            });
+            previousPhrase = name;
+            startIndex += currentEndIndex;
+            hasPhrase = true;
+            break;
+          } else if (Object.hasOwn(vietPhraseMap, substring.toUpperCase())) {
+            if (currentStartIndex >= primaryTextMapping.length) currentStartIndex = 0;
+            let tempStartIndex = currentStartIndex;
+
+            while (true) {
+              if (currentStartIndex >= primaryTextMapping.length) {
+                currentStartIndex = tempStartIndex;
+                hasHanViet = false;
+                break;
+              }
+
+              const textMapping = primaryTextMapping[currentStartIndex];
+              if (startIndex >= textMapping.indexChina) tempStartIndex = currentStartIndex;
+
+              if (textMapping.indexChina > startIndex + (endIndex * 2)) {
+                currentStartIndex = tempStartIndex;
+                hasHanViet = false;
+                break;
+              }
+
+              if (textMapping.indexChina >= startIndex && textMapping.indexChina < startIndex + currentEndIndex) {
+                currentStartIndex = tempStartIndex;
+                hasHanViet = true;
+                break;
+              }
+
+              currentStartIndex += 1;
+            }
+
+            if (!hasHanViet) {
+              const vietPhrase = vietPhraseMap[substring.toUpperCase()];
+              translatedText += (translatedChars.length > 0 && vietPhrase !== '' && (/[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(translatedChars[translatedChars.length - 1]) || previousPhrase.length === 0) ? ' ' : '') + vietPhrase;
+              secondaryTextMapping.push({
+                indexChina: startIndex,
+                lenChina: currentEndIndex,
+                contentViet: vietPhrase,
+                contentChina: substring,
+              });
+              previousPhrase = vietPhrase;
+              startIndex += currentEndIndex;
+              hasPhrase = true;
+              break;
+            } else if (Object.hasOwn(hanVietMap, substring)) {
+              const hanViet = hanVietMap[substring];
+              translatedText += (translatedChars.length > 0 && hanViet !== '' && (/[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(translatedChars[translatedChars.length - 1]) || previousPhrase.length === 0) ? ' ' : '') + hanViet;
+              secondaryTextMapping.push({
+                indexChina: startIndex,
+                lenChina: currentEndIndex,
+                contentViet: hanViet,
+                contentChina: substring,
+              });
+              startIndex += currentEndIndex;
+              hasPhrase = true;
+              break;
+            } else {
+              currentEndIndex -= 1;
+              currentIndex = 0;
+            }
+          } else if (Object.hasOwn(hanVietMap, substring)) {
+            const hanViet = hanVietMap[substring];
+            translatedText += (translatedChars.length > 0 && hanViet !== '' && (/[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(translatedChars[translatedChars.length - 1]) || previousPhrase.length === 0) ? ' ' : '') + hanViet;
+            secondaryTextMapping.push({
+              indexChina: startIndex,
+              lenChina: currentEndIndex,
+              contentViet: hanViet,
+              contentChina: substring,
+            });
+            startIndex += currentEndIndex;
+            hasPhrase = true;
+            break;
+          } else {
+            currentEndIndex -= 1;
+            currentIndex = 0;
+          }
+        }
+
+        if (hasPhrase) {
+          primaryIndex = currentStartIndex;
+        } else {
+          primaryIndex = currentStartIndex;
+          const char = Vietphrase.getFormattedText(characters.at(startIndex));
+          translatedText += (translatedChars.length > 0 && /^[\p{Lu}\p{Ll}\p{Nd}([{‘“]/u.test(char) && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(previousPhrase) ? ' ' : '') + char;
+          previousPhrase = /[^\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(char) ? char : '';
+          startIndex += 1;
         }
       }
 
-      dataArray = null;
-      this.data = null;
-      this.nameObject = null;
-      return result;
-    } catch (error) {
-      this.data = null;
-      this.nameObject = null;
-      console.error('Bản dịch lỗi:', error);
-      throw error;
+      currentIndex = 0;
+
+      translatedText = Vietphrase.getFormattedText(translatedText.replaceAll(/\n{3,}/g, ' ').replaceAll(/\n/g, '<br>').replaceAll(/\s{2,}/g, ' ').trim().replaceAll(/> /g, '>')).replace(' .', '.').replace(' ,', ',');
+      if (secondaryTextMapping.length > 0) secondaryTextMapping.sort((a, b) => a.indexChina - b.indexChina);
+      return translatedText;
+    }).join('\n');
+  }
+
+  translateFromLeftToRightPrimary(inputText, names, hanVietDict) {
+    const primaryTextMapping = [];
+    if (names == null || hanVietDict.length === 0) return inputText;
+    const hanVietMap = Object.fromEntries(hanVietDict);
+    const nameMap = Object.fromEntries(names);
+    return Vietphrase.translateFromLeftToRightSecondary(inputText.split(/\n/).map((element) => {
+      let startIndex = 0;
+      const characters = element.split(/(?:)/u);
+      const charactersLength = characters.length;
+      let endIndex = 10;
+
+      let translatedText = '';
+
+      let hasPhrase = false;
+
+      let previousPhrase = '';
+
+      while (startIndex < charactersLength) {
+        if (startIndex + endIndex > charactersLength) endIndex = charactersLength - startIndex;
+
+        if (Object.hasOwn(hanVietMap, characters.at(startIndex)) == null) {
+          translatedText += characters.at(startIndex);
+          startIndex += 1;
+        } else {
+          const tempChars = [];
+
+          for (let i = 0; i < endIndex; i += 1) {
+            tempChars.push(...characters.at(startIndex + i).split(/(?:)/u));
+          }
+
+          let currentEndIndex = endIndex;
+
+          const translatedChars = translatedText.split(/(?:)/u);
+
+          while (true) {
+            hasPhrase = true;
+
+            if (currentEndIndex < 1) {
+              hasPhrase = false;
+              break;
+            }
+
+            const substring = tempChars.slice(0, currentEndIndex).join('');
+
+            if (Object.hasOwn(nameMap, substring.toUpperCase())) {
+              const name = nameMap[substring.toUpperCase()];
+              translatedText += (translatedChars.length > 0 && (/[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(translatedChars[translatedChars.length - 1]) || previousPhrase.length === 0) ? ' ' : '') + name;
+              previousPhrase = name;
+              primaryTextMapping.push({
+                indexChina: startIndex,
+                lenChina: currentEndIndex,
+                contentViet: name,
+                contentChina: substring,
+              });
+              startIndex += currentEndIndex;
+              break;
+            }
+
+            currentEndIndex -= 1;
+          }
+
+          if (!hasPhrase) {
+            const char = characters.at(startIndex);
+            translatedText += (translatedChars.length > 0 && /^[\p{Lu}\p{Ll}\p{Nd}([{‘“]/u.test(char) && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(previousPhrase) ? ' ' : '') + char;
+            previousPhrase = /[^\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(char) ? char : '';
+            startIndex += 1;
+          }
+        }
+      }
+
+      if (primaryTextMapping.length > 0) primaryTextMapping.sort((a, b) => a.indexChina - b.indexChina);
+      return translatedText;
+    }).join('\n'), names, this.vietPhrase, hanVietDict, primaryTextMapping);
+  }
+
+  static getCapitalizeText(text) {
+    return text.split('\n').map((element) => element.replaceAll(/(^[\p{P}\p{Z}]*|[!.?] )(\p{Ll})/gu, (__, p1, p2) => p1 + p2.toUpperCase())).join('\n');
+  }
+
+  translateText(__, targetLanguage, inputText, options, glossary) {
+    this.prioritizeNameOverVietPhrase = options.prioritizeNameOverVietPhrase;
+    this.autocapitalize = options.autocapitalize;
+
+    let hanViet = (glossary.SinoVietnameses.length > 0 ? glossary.SinoVietnameses.filter(([___, second]) => !/^\p{Script=Hani}+$/u.test(second)).map(([first, second]) => [first, second.toLowerCase()]) : []).concat(this.SpecialSinoVietnameses.filter(([___, second]) => !/^\p{Script=Hani}+$/u.test(second)).map(([a, b, c]) => [a, (c ?? b).split(/, | \| /)[0].toLowerCase()]), glossary.hanViet).filter(([first], ___, array) => !array[first] && (array[first] = 1), {});
+    hanViet = this.SpecialSinoVietnameses.filter(([___, second]) => /^\p{Script=Hani}+$/u.test(second)).map(([a, b]) => [a, Object.fromEntries(glossary.hanViet.filter(([___, d]) => !/^\p{Script=Hani}+$/u.test(d)))[b]]).concat(hanViet).filter(([first], ___, array) => !array[first] && (array[first] = 1), {});
+    if (glossary.SinoVietnameses.length > 0) hanViet = glossary.SinoVietnameses.filter(([___, second]) => /^\p{Script=Hani}+$/u.test(second)).map(([a, b]) => [a, Object.fromEntries(glossary.hanViet.filter(([___, d]) => !/^\p{Script=Hani}+$/u.test(d)))[b]]).concat(hanViet).filter(([first], ___, array) => !array[first] && (array[first] = 1), {});
+    hanViet = new Map(hanViet);
+
+    let resultText = inputText;
+
+    switch (targetLanguage) {
+      case 'simplified': {
+        resultText = Vietphrase.translateFromLeftToRight(inputText, glossary.simplified);
+        break;
+      }
+      case 'traditional': {
+        resultText = Vietphrase.translateFromLeftToRight(inputText, glossary.traditional);
+        break;
+      }
+      case 'pinyin': {
+        resultText = Vietphrase.translateFromLeftToRight(inputText, glossary.romajis.concat(glossary.pinyins.map(([first, second]) => [first, Vietphrase.removeAccents(second)])));
+        break;
+      }
+      case 'KunYomi': {
+        resultText = Vietphrase.translateFromLeftToRight(inputText, glossary.KunYomis.concat(glossary.OnYomis, glossary.romajis).filter(([first], ___, array) => !array[first] && (array[first] = 1), {}));
+        break;
+      }
+      case 'OnYomi': {
+        resultText = Vietphrase.translateFromLeftToRight(inputText, glossary.OnYomis.concat(glossary.KunYomis, glossary.romajis).filter(([first], ___, array) => !array[first] && (array[first] = 1), {}));
+        break;
+      }
+      case 'vi': {
+        const name = options.nameEnabled ? Object.entries(Object.fromEntries(glossary.name.concat(glossary.namePhu).map(([first, second]) => [first, second]).filter(([first]) => first != null && first.length > 0 && inputText.toLowerCase().includes(first.toLowerCase())))).map(([first, second]) => [first.toUpperCase(), second]) : [];
+        let luatNhan = [];
+
+        if (options.multiplicationAlgorithm > 0) {
+          glossary.luatNhan.filter(([first]) => inputText.match(new RegExp(Utils.escapeRegExp(first).replace('\\{0\\}', '.+')))).forEach(([a, b]) => {
+            if (options.nameEnabled && options.multiplicationAlgorithm === 2 && glossary.name.length > 0) {
+              luatNhan = [...luatNhan, ...glossary.name.map(([c, d]) => [a.replace('{0}', c), b.replace('{0}', d)])];
+            }
+
+            luatNhan = [...luatNhan, ...glossary.name.pronoun.map(([c, d]) => [a.replace('{0}', c), b.replace('{0}', d.split(/[/|]/)[0])])];
+          });
+        }
+
+        this.vietPhrase = Object.entries(Object.fromEntries((glossary.vietPhrase.length > 0 ? glossary.vietPhrase : []).concat(glossary.vietPhrase.concat(glossary.vietPhrasePhu).length > 0 ? [['的', options.addDeLeZhao ? hanViet.get('的') : ''], ['了', options.addDeLeZhao ? hanViet.get('了') : ''], ['着', options.addDeLeZhao ? hanViet.get('着') : '']] : [], glossary.vietPhrasePhu, luatNhan).map(([first, second]) => [first, second.split(/[/|]/)[0]]))).map(([first, second]) => [first.toUpperCase(), second]);
+        resultText = this.translateFromLeftToRightPrimary(inputText, name, Object.entries(Object.fromEntries(glossary.romajis.concat(glossary.KunYomis, glossary.OnYomis, [...hanViet]))));
+        resultText = options.autocapitalize ? Vietphrase.getCapitalizeText(resultText) : resultText;
+        break;
+      }
+      default: {
+        resultText = Vietphrase.translateFromLeftToRight(inputText, [...hanViet]);
+        break;
+      }
     }
+
+    return resultText;
   }
 }

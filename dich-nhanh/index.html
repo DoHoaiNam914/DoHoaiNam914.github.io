@@ -634,24 +634,13 @@
                 <label for="viet-phrase-input" class="form-label">Nhập tệp VietPhrase: <span id="viet-phrase-entry-counter">0</span> mục</label>
                 <input type="file" class="form-control form-control-sm" id="viet-phrase-input" accept="text/plain">
               </div>
+              <div class="mb-3">
+                <label for="name-input" class="form-label">Nhập tệp Names: <span id="name-entry-counter">0</span> mục</label>
+                <input type="file" class="form-control form-control-sm" id="name-entry-counter" accept="text/plain">
+              </div>
               <div class="form-check form-switch mb-3">
                 <input type="checkbox" class="form-check-input option quick-translate-option" id="add-de-le-zhao-switch">
                 <label class="form-check-label" for="add-de-le-zhao-switch">Thêm đích, liễu, trứ</label>
-              </div>
-              <h2 class="fs-6">Thuật toán dịch</h2>
-              <div class="mb-3">
-                <div class="form-check">
-                  <input type="radio" class="form-check-input option quick-translate-option" id="prioritize-long-viet-phrase-clusters-radio" name="translation-algorithm-radio" value="0" checked>
-                  <label class="form-check-label" for="prioritize-long-viet-phrase-clusters-radio">Ưu tiên cụm VietPhrase dài</label>
-                </div>
-                <div class="form-check">
-                  <input type="radio" class="form-check-input option quick-translate-option" id="translate-from-left-to-right-radio" name="translation-algorithm-radio" value="1">
-                  <label class="form-check-label" for="translate-from-left-to-right-radio">Dịch từ trái sang phải</label>
-                </div>
-                <div class="form-check">
-                  <input type="checkbox" class="form-check-input option quick-translate-option" id="prioritize-name-over-viet-phrase-check">
-                  <label class="form-check-label" for="prioritize-name-over-viet-phrase-check">Ưu tiên Name hơn VietPhrase</label>
-                </div>
               </div>
               <h2 class="fs-6">Thuật toán nhân</h2>
               <div class="form-check">
@@ -718,7 +707,6 @@
               <select class="form-select form-select-sm mb-3" id="glossary-list-select">
                 <option value="SinoVietnameses">Hán-Việt</option>
                 <option value="vietPhrasePhu">VietPhrase2</option>
-                <option value="name">Names</option>
                 <option value="namePhu" selected>Names2</option>
                 <option value="luatNhan">LuatNhan</option>
                 <option value="pronoun">Pronouns</option>
