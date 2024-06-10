@@ -1645,7 +1645,7 @@ class Vietphrase {
           primaryIndex = currentStartIndex;
         } else {
           primaryIndex = currentStartIndex;
-          const char = Vietphrase.getFormattedText(characters.at(startIndex));
+          const char = characters.at(startIndex);
           translatedText += (translatedChars.length > 0 && /^[\p{Lu}\p{Ll}\p{Nd}([{‘“]/u.test(char) && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(previousPhrase) ? ' ' : '') + char;
           previousPhrase = /[^\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(char) ? char : '';
           startIndex += 1;
