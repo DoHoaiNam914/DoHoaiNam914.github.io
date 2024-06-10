@@ -1290,7 +1290,7 @@ $options.change(function onChange() {
 });
 
 $themeOptions.click(function onClick() {
-  const prevThemeFontFamily = $themeOptions.filter('.active').data('font-family') ?? '';
+  const prevThemeFontFamily = $themeOptions.filter('.active').data('font-family').replace(/^, /, '') ?? '';
   $themeOptions.removeClass('active');
   $(this).addClass('active');
   const isDarkMode = $('#bd-theme').next().find('.active').data('bs-theme-value') === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : $('#bd-theme').next().find('.active').data('bs-theme-value') === 'dark';
@@ -1302,7 +1302,7 @@ $themeOptions.click(function onClick() {
   });
 
   if (isLoaded) {
-    if ($fontStackText.val().length === 0 || prevThemeFontFamily.startsWith($fontStackText.val().replace(/^, /, ''))) $fontStackText.val($(this).data('font-family') ?? '').change();
+    if ($fontStackText.val().length === 0 || prevThemeFontFamily.startsWith($fontStackText.val())) $fontStackText.val($(this).data('font-family') ?? '').change();
     if ($(this).data('font-size') != null) $fontSizeRange.val($(this).data('font-size')).change();
     if ($(this).data('line-height') != null) $lineSpacingRange.val($(this).data('line-height')).change();
     if ($(this).data('text-align') != null) $alignmentSettingsSwitch.prop('checked', $(this).data('text-align') === 'justify').change();
@@ -1322,7 +1322,7 @@ $fontStackText.change(function onChange() {
   }).join(', '));
 
   const $currentTheme = $themeOptions.filter('.active');
-  $('.textarea').css('font-weight', ['Apple Sách - Nguyên bản', 'Google Play Sách'].some((element) => $currentTheme.text().startsWith(element)) && values.some((element) => element.toLowerCase().startsWith('pingfang')) ? 500 : ($currentTheme.data('font-weight') ?? ''));
+  $('.textarea').css('font-weight', $currentTheme.data('font-weight') ?? '');
   quickTranslateStorage[getOptionId($(this).attr('id'))] = values.join(', ');
   localStorage.setItem('dich_nhanh', JSON.stringify(quickTranslateStorage));
 });
