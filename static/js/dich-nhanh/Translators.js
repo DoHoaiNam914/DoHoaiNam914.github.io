@@ -1667,7 +1667,7 @@ class Vietphrase {
     if (names == null || hanVietDict.length === 0) return inputText;
     const hanVietMap = Object.fromEntries(hanVietDict);
     const nameMap = Object.fromEntries(names);
-    return Vietphrase.translateFromLeftToRightSecondary(inputText.split(/\n/).map((element) => {
+    inputText.split(/\n/).forEach((element) => {
       let startIndex = 0;
       const characters = element.split(/(?:)/u);
       const charactersLength = characters.length;
@@ -1734,7 +1734,9 @@ class Vietphrase {
 
       if (primaryTextMapping.length > 0) primaryTextMapping.sort((a, b) => a.indexChina - b.indexChina);
       return translatedText;
-    }).join('\n'), names, this.vietPhrase, hanVietDict, primaryTextMapping);
+    });
+
+    return Vietphrase.translateFromLeftToRightSecondary(inputText, names, this.vietPhrase, hanVietDict, primaryTextMapping);
   }
 
   static getCapitalizeText(text) {
@@ -1780,10 +1782,10 @@ class Vietphrase {
         if (options.multiplicationAlgorithm > 0) {
           glossary.luatNhan.filter(([first]) => inputText.match(new RegExp(Utils.escapeRegExp(first).replace('\\{0\\}', '.+')))).forEach(([a, b]) => {
             if (options.nameEnabled && options.multiplicationAlgorithm === 2 && glossary.name.length > 0) {
-              luatNhanName = [...luatNhan, ...glossary.name.map(([c, d]) => [a.replace('{0}', c), b.replace('{0}', d)])];
+              luatNhanName = [...luatNhanName, ...glossary.name.map(([c, d]) => [a.replace('{0}', c), b.replace('{0}', d)])];
             }
 
-            luatNhanPronoun = [...luatNhan, ...glossary.name.pronoun.map(([c, d]) => [a.replace('{0}', c), b.replace('{0}', d.split(/[/|]/)[0])])];
+            luatNhanPronoun = [...luatNhanPronoun, ...glossary.name.pronoun.map(([c, d]) => [a.replace('{0}', c), b.replace('{0}', d.split(/[/|]/)[0])])];
           });
         }
 
