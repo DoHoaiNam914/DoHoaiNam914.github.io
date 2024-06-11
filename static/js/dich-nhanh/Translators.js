@@ -1788,7 +1788,7 @@ class Vietphrase {
               luatNhanName = [...luatNhanName, ...glossary.name.map(([c, d]) => [a.replace('{0}', c), b.replace('{0}', d)])];
             }
 
-            luatNhanPronoun = [...luatNhanPronoun, ...glossary.name.pronoun.map(([c, d]) => [a.replace('{0}', c), b.replace('{0}', d.split(/[/|]/)[0])])];
+            luatNhanPronoun = [...luatNhanPronoun, ...glossary.pronoun.map(([c, d]) => [a.replace('{0}', c), b.replace('{0}', d.split(/[/|]/)[0])])];
           });
         }
 
