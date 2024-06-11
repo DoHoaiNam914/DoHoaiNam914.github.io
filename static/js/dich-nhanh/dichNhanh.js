@@ -1290,7 +1290,7 @@ $options.change(function onChange() {
 });
 
 $themeOptions.click(function onClick() {
-  const prevThemeFontFamily = $themeOptions.filter('.active').data('font-family').replace(/^, /, '') ?? '';
+  const prevThemeFontFamily = ($themeOptions.filter('.active').data('font-family') ?? '').replace(/^, /, '');
   $themeOptions.removeClass('active');
   $(this).addClass('active');
   const isDarkMode = $('#bd-theme').next().find('.active').data('bs-theme-value') === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : $('#bd-theme').next().find('.active').data('bs-theme-value') === 'dark';
