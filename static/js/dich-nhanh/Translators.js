@@ -1438,7 +1438,7 @@ class Vietphrase {
 
   static quickTranslate(inputText, translations) {
     if (translations == null || translations.length === 0) return inputText;
-    const translationsMap = Object.fromEntries(translations.map(([first, second]) => [first.toUpperCase(), second]));
+    const translationsMap = Object.fromEntries(translations.map(([first, second]) => [first, second]));
 
     let startIndex = 0;
     const characters = inputText.split(/(?:)/u);
@@ -1485,8 +1485,8 @@ class Vietphrase {
 
         const substring = tempChars.slice(0, currentEndIndex).join('');
 
-        if (Object.hasOwn(translationsMap, substring.toUpperCase())) {
-          const phrase = translationsMap[substring.toUpperCase()];
+        if (Object.hasOwn(translationsMap, substring)) {
+          const phrase = translationsMap[substring];
           translatedText += (translatedChars.length > 0 && phrase !== '' && (/[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(translatedChars[translatedChars.length - 1]) || previousPhrase.length === 0) ? ' ' : '') + phrase;
           previousPhrase = phrase;
           lastEndIndex = startIndex + currentEndIndex;
@@ -1557,8 +1557,8 @@ class Vietphrase {
 
         const substring = tempChars.slice(currentIndex, currentEndIndex).join('');
 
-        if (Object.hasOwn(nameMap, substring.toUpperCase())) {
-          const name = nameMap[substring.toUpperCase()];
+        if (Object.hasOwn(nameMap, substring)) {
+          const name = nameMap[substring];
           translatedText += (translatedChars.length > 0 && (/[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(translatedChars[translatedChars.length - 1]) || previousPhrase.length === 0) ? ' ' : '') + name.split(/[/|]/)[0];
           if (name !== '') previousPhrase = name;
           textMapping.push({
@@ -1570,7 +1570,7 @@ class Vietphrase {
           startIndex += currentEndIndex;
           hasPhrase = true;
           break;
-        } else if (Object.hasOwn(vietPhraseMap, substring.toUpperCase())) {
+        } else if (Object.hasOwn(vietPhraseMap, substring)) {
           if (currentStartIndex >= testTextMapping.length) currentStartIndex = 0;
           let tempStartIndex = currentStartIndex;
 
@@ -1600,7 +1600,7 @@ class Vietphrase {
           }
 
           if (!hasHanViet) {
-            const vietPhrase = vietPhraseMap[substring.toUpperCase()];
+            const vietPhrase = vietPhraseMap[substring];
             translatedText += (translatedChars.length > 0 && vietPhrase !== '' && (/[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(translatedChars[translatedChars.length - 1]) || previousPhrase.length === 0) ? ' ' : '') + vietPhrase;
             if (vietPhrase !== '') previousPhrase = vietPhrase;
             textMapping.push({
@@ -1714,8 +1714,8 @@ class Vietphrase {
 
           const substring = tempChars.slice(0, currentEndIndex).join('');
 
-          if (Object.hasOwn(nameMap, substring.toUpperCase())) {
-            const name = nameMap[substring.toUpperCase()];
+          if (Object.hasOwn(nameMap, substring)) {
+            const name = nameMap[substring];
             translatedText += (translatedChars.length > 0 && (/[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”\p{sc=Hani}\p{sc=Hira}\p{sc=Kana}]$/u.test(translatedChars[translatedChars.length - 1]) || previousPhrase.length === 0) ? ' ' : '') + name.split(/[/|]/)[0];
             if (name !== '') previousPhrase = name;
             testTextMapping.push({
@@ -1794,8 +1794,8 @@ class Vietphrase {
           });
         }
 
-        const name = options.nameEnabled ? Object.entries(Object.fromEntries(glossary.name.concat(glossary.namePhu, luatNhanName).filter(([first]) => first != null && first.length > 0 && inputText.toLowerCase().includes(first.toLowerCase())))).map(([first, second]) => [first.toUpperCase(), second]) : [];
-        this.vietPhrase = Object.entries(Object.fromEntries((glossary.vietPhrase.length > 0 ? glossary.vietPhrase : []).concat(glossary.vietPhrase.concat(glossary.vietPhrasePhu).length > 0 ? [['的', options.addDeLeZhao ? hanViet.get('的') : ''], ['了', options.addDeLeZhao ? hanViet.get('了') : ''], ['着', options.addDeLeZhao ? hanViet.get('着') : '']] : [], glossary.vietPhrasePhu, luatNhanPronoun))).map(([first, second]) => [first.toUpperCase(), second.split(/[/|]/)[0]]);
+        const name = options.nameEnabled ? Object.entries(Object.fromEntries(glossary.name.concat(glossary.namePhu, luatNhanName).filter(([first]) => first != null && first.length > 0 && inputText.toLowerCase().includes(first.toLowerCase())))).map(([first, second]) => [first, second]) : [];
+        this.vietPhrase = Object.entries(Object.fromEntries((glossary.vietPhrase.length > 0 ? glossary.vietPhrase : []).concat(glossary.vietPhrase.concat(glossary.vietPhrasePhu).length > 0 ? [['的', options.addDeLeZhao ? hanViet.get('的') : ''], ['了', options.addDeLeZhao ? hanViet.get('了') : ''], ['着', options.addDeLeZhao ? hanViet.get('着') : '']] : [], glossary.vietPhrasePhu, luatNhanPronoun))).map(([first, second]) => [first, second.split(/[/|]/)[0]]);
         resultText = this.translateWithTextMapping(inputText, name, Object.entries(Object.fromEntries(glossary.romajis.concat(glossary.KunYomis, glossary.OnYomis, [...hanViet]))));
         resultText = options.autocapitalize ? Vietphrase.getCapitalizeText(resultText) : resultText;
         break;
