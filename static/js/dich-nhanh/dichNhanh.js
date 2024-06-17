@@ -1651,7 +1651,7 @@ $glossaryListSelect.change(() => {
 });
 
 $sourceEntryInput.on('input', async function onInput() {
-  const inputText = (new Map(glossary[$glossaryListSelect.val()].map(([first]) => [first.toUpperCase(), first]))).get($(this).val().toUpperCase()) ?? $(this).val();
+  const inputText = $(this).val();
   $targetEntryTextarea.prop('scrollTop', 0);
 
   if (inputText.length > 0) {
@@ -1802,7 +1802,7 @@ $translateEntryButtons.click(async function onClick() {
 
 $addButton.click(() => {
   if ($sourceEntryInput.val().length === 0) return;
-  delete glossaryObject[(new Map(glossary[$glossaryListSelect.val()].map(([first]) => [first.toUpperCase(), first]))).get($sourceEntryInput.val().toUpperCase()) ?? $sourceEntryInput.val()];
+  delete glossaryObject[$sourceEntryInput.val()];
   glossaryObject[$sourceEntryInput.val().trim()] = $targetEntryTextarea.val().trim();
   glossary[$glossaryListSelect.val()] = Object.entries(glossaryObject);
   reloadGlossaryEntries();
