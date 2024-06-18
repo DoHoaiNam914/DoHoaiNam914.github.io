@@ -991,7 +991,7 @@ function reloadGlossaryEntries() {
   const $glossaryExtension = $('#glossary-extension');
   const glossaryList = $glossaryListSelect.val();
 
-  glossary[glossaryList] = glossary[glossaryList].filter(([first], __, array) => !array[first] && (array[first] = 1), {}).toSorted((a, b) => a[1].localeCompare(b[1], 'vi', { ignorePunctuation: true }) || a[0].localeCompare(b[0], 'vi', { sensitivity: 'accent', ignorePunctuation: true }) || b.join('\t').length - a.join('\t').length).map(([first, second]) => [first.trim(), second]);
+  glossary[glossaryList] = glossary[glossaryList].filter(([first], __, array) => !array[first] && (array[first] = 1), {}).toSorted((a, b) => a[1].localeCompare(b[1], 'vi', { ignorePunctuation: true }) || a[0].localeCompare(b[0], 'vi', { sensitivity: 'accent', ignorePunctuation: true }) || b.join('\t').split(/(?:)/u).length - a.join('\t').split(/(?:)/u).length).map(([first, second]) => [first.trim(), second]);
   glossaryObject = Object.fromEntries(glossary[glossaryList]);
 
   if (glossary[glossaryList].length > 0) {
@@ -1014,7 +1014,7 @@ function reloadGlossaryEntries() {
 
     switch ($glossaryTypeSelect.val()) {
       case GlossaryType.CSV: {
-        glossaryData = $.csv.fromArrays(glossary[glossaryList].toSorted((a, b) => b[0].concat(`\t${b[1]}`).length - a[0].concat(`\t${a[1]}`).length || a[1].localeCompare(b[1], 'vi', { ignorePunctuation: true }) || a[0].localeCompare(b[0], 'vi', { ignorePunctuation: true })));
+        glossaryData = $.csv.fromArrays(glossary[glossaryList].toSorted((a, b) => b.join('\t').split(/(?:)/u).length - a.join('\t').split(/(?:)/u).length || a[1].localeCompare(b[1], 'vi', { ignorePunctuation: true }) || a[0].localeCompare(b[0], 'vi', { ignorePunctuation: true })));
         $glossaryExtension.text('csv');
         break;
       }
@@ -1042,7 +1042,7 @@ function reloadGlossaryEntries() {
         break;
       }
       default: {
-        glossaryData = glossary[glossaryList].toSorted((a, b) => b[0].concat(`\t${b[1]}`).length - a[0].concat(`\t${a[1]}`).length || a[1].localeCompare(b[1], 'vi', { ignorePunctuation: true }) || a[0].localeCompare(b[0], 'vi', { ignorePunctuation: true })).map((element) => element.join('\t')).join('\n');
+        glossaryData = glossary[glossaryList].toSorted((a, b) => b.join('\t').split(/(?:)/u).length - a.join('\t').split(/(?:)/u).length || a[1].localeCompare(b[1], 'vi', { ignorePunctuation: true }) || a[0].localeCompare(b[0], 'vi', { ignorePunctuation: true })).map((element) => element.join('\t')).join('\n');
         $glossaryExtension.text('tsv');
         break;
       }
