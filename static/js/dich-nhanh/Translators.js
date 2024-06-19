@@ -1520,6 +1520,8 @@ class Vietphrase {
 
     let translatedText = '';
 
+    const hanVietMap = Object.fromEntries(hanVietDict);
+
     let hasPhrase = false;
 
     let currentIndex = 0;
@@ -1533,13 +1535,12 @@ class Vietphrase {
     const textMapping = [];
 
     const vietPhraseMap = Object.fromEntries(vietPhrases);
-    const hanVietMap = Object.fromEntries(hanVietDict);
 
     while (startIndex < charactersLength) {
       if (startIndex + endIndex > charactersLength) endIndex = charactersLength - startIndex;
       const translatedChars = translatedText.split(/(?:)/u);
 
-      if (hanVietDict[characters.at(startIndex)] == null) {
+      if (!Object.hasOwn(hanVietMap, characters.at(startIndex))) {
         const char = characters.at(startIndex);
         translatedText += (translatedChars.length > 0 && /^[\p{Lu}\p{Ll}\p{Nd}([{‘“]/u.test(char) && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(previousPhrase) ? ' ' : '') + char;
         previousPhrase = /[^\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(char) ? char : '';
@@ -1682,6 +1683,8 @@ class Vietphrase {
 
     let translatedText = '';
 
+    const hanVietMap = Object.fromEntries(hanVietDict);
+
     let hasPhrase = false;
 
     const nameMap = Object.fromEntries(names);
@@ -1694,7 +1697,7 @@ class Vietphrase {
       if (startIndex + endIndex > charactersLength) endIndex = charactersLength - startIndex;
       const translatedChars = translatedText.split(/(?:)/u);
 
-      if (hanVietDict[characters.at(startIndex)] == null) {
+      if (!Object.hasOwn(hanVietMap, characters.at(startIndex))) {
         const char = characters.at(startIndex);
         translatedText += (translatedChars.length > 0 && /^[\p{Lu}\p{Ll}\p{Nd}([{‘“]/u.test(char) && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(previousPhrase) ? ' ' : '') + char;
         previousPhrase = /[^\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(char) ? char : '';
