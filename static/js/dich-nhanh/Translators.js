@@ -1537,81 +1537,104 @@ class Vietphrase {
 
     while (startIndex < charactersLength) {
       if (startIndex + endIndex > charactersLength) endIndex = charactersLength - startIndex;
-      const tempChars = [];
-
-      for (let i = 0; i < endIndex; i += 1) {
-        tempChars.push(...characters.at(startIndex + i).split(/(?:)/u));
-      }
-
-      let currentEndIndex = endIndex;
-
       const translatedChars = translatedText.split(/(?:)/u);
 
-      let currentStartIndex = primaryIndex;
+      if (hanVietDict[characters.at(startIndex)] == null) {
+        const char = characters.at(startIndex);
+        translatedText += (translatedChars.length > 0 && /^[\p{Lu}\p{Ll}\p{Nd}([{‘“]/u.test(char) && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(previousPhrase) ? ' ' : '') + char;
+        previousPhrase = /[^\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(char) ? char : '';
+        startIndex += 1;
+      } else {
+        const tempChars = [];
 
-      while (true) {
-        if (currentEndIndex < 1) {
-          hasPhrase = false;
-          break;
+        for (let i = 0; i < endIndex; i += 1) {
+          tempChars.push(...characters.at(startIndex + i).split(/(?:)/u));
         }
 
-        const substring = tempChars.slice(currentIndex, currentEndIndex).join('');
+        let currentEndIndex = endIndex;
 
-        if (Object.hasOwn(nameMap, substring)) {
-          const name = nameMap[substring];
-          translatedText += (translatedChars.length > 0 && (/[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(translatedChars[translatedChars.length - 1]) || previousPhrase.length === 0) ? ' ' : '') + name.split(/[/|]/)[0];
-          if (name !== '') previousPhrase = name;
-          textMapping.push({
-            indexChina: startIndex,
-            lenChina: currentEndIndex,
-            contentViet: name,
-            contentChina: substring,
-          });
-          startIndex += currentEndIndex;
-          hasPhrase = true;
-          break;
-        } else if (Object.hasOwn(vietPhraseMap, substring)) {
-          if (currentStartIndex >= testTextMapping.length) currentStartIndex = 0;
-          let tempStartIndex = currentStartIndex;
+        let currentStartIndex = primaryIndex;
 
-          while (true) {
-            if (currentStartIndex >= testTextMapping.length) {
-              currentStartIndex = tempStartIndex;
-              hasHanViet = false;
-              break;
-            }
-
-            const text = testTextMapping[currentStartIndex];
-            if (startIndex >= text.indexChina) tempStartIndex = currentStartIndex;
-
-            if (text.indexChina > startIndex + (endIndex * 2)) {
-              currentStartIndex = tempStartIndex;
-              hasHanViet = false;
-              break;
-            }
-
-            if (text.indexChina >= startIndex && text.indexChina < startIndex + currentEndIndex) {
-              currentStartIndex = tempStartIndex;
-              hasHanViet = true;
-              break;
-            }
-
-            currentStartIndex += 1;
+        while (true) {
+          if (currentEndIndex < 1) {
+            hasPhrase = false;
+            break;
           }
 
-          if (!hasHanViet) {
-            const vietPhrase = vietPhraseMap[substring];
-            translatedText += (translatedChars.length > 0 && vietPhrase !== '' && (/[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(translatedChars[translatedChars.length - 1]) || previousPhrase.length === 0) ? ' ' : '') + vietPhrase;
-            if (vietPhrase !== '') previousPhrase = vietPhrase;
+          const substring = tempChars.slice(currentIndex, currentEndIndex).join('');
+
+          if (Object.hasOwn(nameMap, substring)) {
+            const name = nameMap[substring];
+            translatedText += (translatedChars.length > 0 && (/[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(translatedChars[translatedChars.length - 1]) || previousPhrase.length === 0) ? ' ' : '') + name.split(/[/|]/)[0];
+            if (name !== '') previousPhrase = name;
             textMapping.push({
               indexChina: startIndex,
               lenChina: currentEndIndex,
-              contentViet: vietPhrase,
+              contentViet: name,
               contentChina: substring,
             });
             startIndex += currentEndIndex;
             hasPhrase = true;
             break;
+          } else if (Object.hasOwn(vietPhraseMap, substring)) {
+            if (currentStartIndex >= testTextMapping.length) currentStartIndex = 0;
+            let tempStartIndex = currentStartIndex;
+
+            while (true) {
+              if (currentStartIndex >= testTextMapping.length) {
+                currentStartIndex = tempStartIndex;
+                hasHanViet = false;
+                break;
+              }
+
+              const text = testTextMapping[currentStartIndex];
+              if (startIndex >= text.indexChina) tempStartIndex = currentStartIndex;
+
+              if (text.indexChina > startIndex + (endIndex * 2)) {
+                currentStartIndex = tempStartIndex;
+                hasHanViet = false;
+                break;
+              }
+
+              if (text.indexChina >= startIndex && text.indexChina < startIndex + currentEndIndex) {
+                currentStartIndex = tempStartIndex;
+                hasHanViet = true;
+                break;
+              }
+
+              currentStartIndex += 1;
+            }
+
+            if (!hasHanViet) {
+              const vietPhrase = vietPhraseMap[substring];
+              translatedText += (translatedChars.length > 0 && vietPhrase !== '' && (/[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(translatedChars[translatedChars.length - 1]) || previousPhrase.length === 0) ? ' ' : '') + vietPhrase;
+              if (vietPhrase !== '') previousPhrase = vietPhrase;
+              textMapping.push({
+                indexChina: startIndex,
+                lenChina: currentEndIndex,
+                contentViet: vietPhrase,
+                contentChina: substring,
+              });
+              startIndex += currentEndIndex;
+              hasPhrase = true;
+              break;
+            } else if (Object.hasOwn(hanVietMap, substring)) {
+              const hanViet = hanVietMap[substring];
+              translatedText += (translatedChars.length > 0 && hanViet !== '' && (/[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(translatedChars[translatedChars.length - 1]) || previousPhrase.length === 0) ? ' ' : '') + hanViet;
+              if (hanViet !== '') previousPhrase = hanViet;
+              textMapping.push({
+                indexChina: startIndex,
+                lenChina: currentEndIndex,
+                contentViet: hanViet,
+                contentChina: substring,
+              });
+              startIndex += currentEndIndex;
+              hasPhrase = true;
+              break;
+            } else {
+              currentEndIndex -= 1;
+              currentIndex = 0;
+            }
           } else if (Object.hasOwn(hanVietMap, substring)) {
             const hanViet = hanVietMap[substring];
             translatedText += (translatedChars.length > 0 && hanViet !== '' && (/[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(translatedChars[translatedChars.length - 1]) || previousPhrase.length === 0) ? ' ' : '') + hanViet;
@@ -1629,37 +1652,21 @@ class Vietphrase {
             currentEndIndex -= 1;
             currentIndex = 0;
           }
-        } else if (Object.hasOwn(hanVietMap, substring)) {
-          const hanViet = hanVietMap[substring];
-          translatedText += (translatedChars.length > 0 && hanViet !== '' && (/[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(translatedChars[translatedChars.length - 1]) || previousPhrase.length === 0) ? ' ' : '') + hanViet;
-          if (hanViet !== '') previousPhrase = hanViet;
-          textMapping.push({
-            indexChina: startIndex,
-            lenChina: currentEndIndex,
-            contentViet: hanViet,
-            contentChina: substring,
-          });
-          startIndex += currentEndIndex;
-          hasPhrase = true;
-          break;
+        }
+
+        if (hasPhrase) {
+          primaryIndex = currentStartIndex;
         } else {
-          currentEndIndex -= 1;
-          currentIndex = 0;
+          primaryIndex = currentStartIndex;
+          const char = characters.at(startIndex);
+          translatedText += (translatedChars.length > 0 && /^[\p{Lu}\p{Ll}\p{Nd}([{‘“]/u.test(char) && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(previousPhrase) ? ' ' : '') + char;
+          previousPhrase = /[^\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(char) ? char : '';
+          startIndex += 1;
         }
       }
 
-      if (hasPhrase) {
-        primaryIndex = currentStartIndex;
-      } else {
-        primaryIndex = currentStartIndex;
-        const char = characters.at(startIndex);
-        translatedText += (translatedChars.length > 0 && /^[\p{Lu}\p{Ll}\p{Nd}([{‘“]/u.test(char) && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(previousPhrase) ? ' ' : '') + char;
-        previousPhrase = /[^\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(char) ? char : '';
-        startIndex += 1;
-      }
+      currentIndex = 0;
     }
-
-    currentIndex = 0;
 
     translatedText = Vietphrase.getFormattedText(translatedText.replaceAll(/> /g, '>')).replace(' .', '.').replace(' ,', ',');
     if (textMapping.length > 0) textMapping.sort((a, b) => a.indexChina - b.indexChina);
@@ -1673,8 +1680,6 @@ class Vietphrase {
     const charactersLength = characters.length;
     let endIndex = 10;
 
-    const hanVietMap = Object.fromEntries(hanVietDict);
-
     let translatedText = '';
 
     let hasPhrase = false;
@@ -1687,10 +1692,11 @@ class Vietphrase {
 
     while (startIndex < charactersLength) {
       if (startIndex + endIndex > charactersLength) endIndex = charactersLength - startIndex;
+      const translatedChars = translatedText.split(/(?:)/u);
 
-      if (Object.hasOwn(hanVietMap, characters.at(startIndex)) == null) {
+      if (hanVietDict[characters.at(startIndex)] == null) {
         const char = characters.at(startIndex);
-        translatedText += char;
+        translatedText += (translatedChars.length > 0 && /^[\p{Lu}\p{Ll}\p{Nd}([{‘“]/u.test(char) && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(previousPhrase) ? ' ' : '') + char;
         previousPhrase = /[^\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(char) ? char : '';
         startIndex += 1;
       } else {
@@ -1701,8 +1707,6 @@ class Vietphrase {
         }
 
         let currentEndIndex = endIndex;
-
-        const translatedChars = translatedText.split(/(?:)/u);
 
         while (true) {
           hasPhrase = true;
