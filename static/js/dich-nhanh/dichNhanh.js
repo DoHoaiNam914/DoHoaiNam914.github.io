@@ -1472,108 +1472,155 @@ $defaultVietPhraseFileSelect.change(async function onChange() {
     switch (intValue) {
       case 1:
       case 2: {
-        await $.ajax({
-          method: 'GET',
-          url: '/static/datasource/Quick Translator/Names.txt',
-        }).done((data) => {
-          glossary.name = data.split('\r\n').filter((element) => element.length > 0 && element.split('=').length === 2).map((element) => element.split('=')).map(([first, second]) => [first, second.split(/[/|]/)[0]]);
-          $nameEntryCounter.text(glossary.name.length);
-          console.info(`Đã tải xong tệp Names (${$nameEntryCounter.text()})!`);
-        }).fail((__, ___, errorThrown) => {
-          glossary.name = [];
-          console.error('Không tải được tệp Names:', errorThrown);
-        });
+        if (glossary.quickTranslatorName == null || glossary.quickTranslatorName.length === 0) {
+          await $.ajax({
+            method: 'GET',
+            url: '/static/datasource/Quick Translator/Names.txt',
+          }).done((data) => {
+            glossary.quickTranslatorName = data.split('\r\n').filter((element) => element.length > 0 && element.split('=').length === 2).map((element) => element.split('='));
+          }).fail((__, ___, errorThrown) => {
+            glossary.quickTranslatorName = null;
+            console.error('Không tải được tệp Quick Translator\'s Names:', errorThrown);
+          });
+        }
 
-        try {
-          glossary.vietPhraseForCombineFile = intValue === 2 ? (await $.ajax({
+        glossary.name = glossary.quickTranslatorName ?? [];
+        $nameEntryCounter.text(glossary.name.length);
+        console.info(`Đã tải xong tệp Names (${$nameEntryCounter.text()})!`);
+
+        if (glossary.quickTranslatorVietphraseForMergeFiles == null || glossary.quickTranslatorVietphraseForMergeFiles.length === 0) {
+          await $.ajax({
             method: 'GET',
             url: '/static/datasource/Quick Translator/Vietphrase cho file gộp.txt',
-          })).split('\r\n').slice(1).filter((element) => element.length > 0 && element.split('=').length === 2).map((element) => element.split('=')) : [];
-          glossary.vietPhrase = glossary.vietPhraseForCombineFile.concat((await $.ajax({
+          }).done((data) => {
+            glossary.quickTranslatorVietphraseForMergeFiles = data.split('\r\n').filter((element) => element.length > 0 && element.split('=').length === 2).map((element) => element.split('='));
+          }).fail(() => {
+            glossary.quickTranslatorVietphraseForMergeFiles = null;
+          });
+        }
+
+        if (glossary.quickTranslatorVietPhrase == null || glossary.quickTranslatorVietPhrase.length === 0) {
+          await $.ajax({
             method: 'GET',
             url: '/static/datasource/Quick Translator/Vietphrase.txt',
-          })).split('\r\n').filter((element) => element.length > 0 && element.split('=').length === 2).map((element) => element.split('=')));
-          $vietPhraseEntryCounter.text(glossary.vietPhrase.length);
-          console.info(`Đã tải xong tệp VietPhrase (${$vietPhraseEntryCounter.text()})!`);
-        } catch (error) {
-          glossary.vietPhrase = [];
-          console.error('Không tải được tệp VietPhrase:', error);
+          }).done((data) => {
+            glossary.quickTranslatorVietPhrase = data.split('\r\n').filter((element) => element.length > 0 && element.split('=').length === 2).map((element) => element.split('='));
+          }).fail((__, ___, errorThrown) => {
+            glossary.quickTranslatorVietPhrase = null;
+            console.error('Không tải được tệp Quick Translator\'s VietPhrase:', errorThrown);
+          });
         }
+
+        if (intValue === 2) {
+          glossary.vietPhrase = glossary.quickTranslatorVietphraseForMergeFiles == null || glossary.quickTranslatorVietPhrase == null ? glossary.quickTranslatorVietphraseForMergeFiles.concat(glossary.quickTranslatorVietPhrase) : [];
+        } else {
+          glossary.vietPhrase = glossary.quickTranslatorVietPhrase ?? [];
+        }
+
+        $vietPhraseEntryCounter.text(glossary.vietPhrase.length);
+        console.info(`Đã tải xong tệp VietPhrase (${$vietPhraseEntryCounter.text()})!`);
         break;
       }
       case 3: {
-        await $.ajax({
-          method: 'GET',
-          url: '/static/datasource/Data của thtgiang/Names.txt',
-        }).done((data) => {
-          glossary.name = data.split('\r\n').filter((element) => element.length > 0 && element.split('=').length === 2).map((element) => element.split('=')).map(([first, second]) => [first, second.split(/[/|]/)[0]]);
-          $nameEntryCounter.text(glossary.name.length);
-          console.info(`Đã tải xong tệp Names (${$nameEntryCounter.text()})!`);
-        }).fail((__, ___, errorThrown) => {
-          glossary.name = [];
-          console.error('Không tải được tệp Names:', errorThrown);
-        });
-        await $.ajax({
-          method: 'GET',
-          url: '/static/datasource/Data của thtgiang/VietPhrase.txt',
-        }).done((data) => {
-          glossary.vietPhrase = data.split('\r\n').filter((element) => element.length > 0 && element.split('=').length === 2).map((element) => element.split('='));
-          $vietPhraseEntryCounter.text(glossary.vietPhrase.length);
-          console.info(`Đã tải xong tệp VietPhrase (${$vietPhraseEntryCounter.text()})!`);
-        }).fail((__, ___, errorThrown) => {
-          glossary.vietPhrase = [];
-          console.error('Không tải được tệp VietPhrase:', errorThrown);
-        });
+        if (glossary.DataByThtgiangName == null || glossary.DataByThtgiangName.length === 0) {
+          await $.ajax({
+            method: 'GET',
+            url: '/static/datasource/Data của thtgiang/Names.txt',
+          }).done((data) => {
+            glossary.DataByThtgiangName = data.split('\r\n').filter((element) => element.length > 0 && element.split('=').length === 2).map((element) => element.split('='));
+          }).fail((__, ___, errorThrown) => {
+            glossary.DataByThtgiangName = null;
+            console.error('Không tải được tệp Data của thtgiang\'s Names:', errorThrown);
+          });
+        }
+
+        glossary.name = glossary.DataByThtgiangName ?? [];
+        $nameEntryCounter.text(glossary.name.length);
+        console.info(`Đã tải xong tệp Names (${$nameEntryCounter.text()})!`);
+
+        if (glossary.DataByThtgiangVietPhrase == null || glossary.DataByThtgiangVietPhrase.length === 0) {
+          await $.ajax({
+            method: 'GET',
+            url: '/static/datasource/Data của thtgiang/VietPhrase.txt',
+          }).done((data) => {
+            glossary.DataByThtgiangVietPhrase = data.split('\r\n').filter((element) => element.length > 0 && element.split('=').length === 2).map((element) => element.split('='));
+          }).fail((__, ___, errorThrown) => {
+            glossary.DataByThtgiangVietPhrase = null;
+            console.error('Không tải được tệp Data của thtgiang\'s VietPhrase:', errorThrown);
+          });
+        }
+
+        glossary.vietPhrase = glossary.DataByThtgiangVietPhrase ?? [];
+        $vietPhraseEntryCounter.text(glossary.vietPhrase.length);
+        console.info(`Đã tải xong tệp VietPhrase (${$vietPhraseEntryCounter.text()})!`);
         break;
       }
       case 4: {
-        await $.ajax({
-          method: 'GET',
-          url: '/static/datasource/ttvtranslate/Names.txt',
-        }).done((data) => {
-          glossary.name = data.split('\n').filter((element) => element.length > 0 && element.split('=').length === 2).map((element) => element.split('=')).map(([first, second]) => [first, second.split(/[/|]/)[0]]);
-          $nameEntryCounter.text(glossary.name.length);
-          console.info(`Đã tải xong tệp Names (${$nameEntryCounter.text()})!`);
-        }).fail((__, ___, errorThrown) => {
-          glossary.name = [];
-          console.error('Không tải được tệp Names:', errorThrown);
-        });
-        $.ajax({
-          method: 'GET',
-          url: '/static/datasource/ttvtranslate/VietPhrase.txt',
-        }).done((data) => {
-          glossary.vietPhrase = data.split('\n').filter((element) => element.length > 0 && element.split('=').length === 2).map((element) => element.split('='));
-          $vietPhraseEntryCounter.text(glossary.vietPhrase.length);
-          console.info(`Đã tải xong tệp VietPhrase (${$vietPhraseEntryCounter.text()})!`);
-        }).fail((__, ___, errorThrown) => {
-          glossary.vietPhrase = [];
-          console.error('Không tải được tệp VietPhrase:', errorThrown);
-        });
+        if (glossary.ttvtranslateName == null || glossary.ttvtranslateName.length === 0) {
+          await $.ajax({
+            method: 'GET',
+            url: '/static/datasource/ttvtranslate/Names.txt',
+          }).done((data) => {
+            glossary.ttvtranslateName = data.split('\n').filter((element) => element.length > 0 && element.split('=').length === 2).map((element) => element.split('='));
+          }).fail((__, ___, errorThrown) => {
+            glossary.ttvtranslateName = null;
+            console.error('Không tải được tệp ttvtranslate\'s Names:', errorThrown);
+          });
+        }
+
+        glossary.name = glossary.ttvtranslateName ?? [];
+        $nameEntryCounter.text(glossary.name.length);
+        console.info(`Đã tải xong tệp Names (${$nameEntryCounter.text()})!`);
+
+        if (glossary.ttvtranslateVietPhrase == null || glossary.ttvtranslateVietPhrase.length === 0) {
+          await $.ajax({
+            method: 'GET',
+            url: '/static/datasource/ttvtranslate/VietPhrase.txt',
+          }).done((data) => {
+            glossary.ttvtranslateVietPhrase = data.split('\n').filter((element) => element.length > 0 && element.split('=').length === 2).map((element) => element.split('='));
+          }).fail((__, ___, errorThrown) => {
+            glossary.ttvtranslateVietPhrase = null;
+            console.error('Không tải được tệp ttvtranslate\'s VietPhrase:', errorThrown);
+          });
+        }
+
+        glossary.vietPhrase = glossary.ttvtranslateVietPhrase ?? [];
+        $vietPhraseEntryCounter.text(glossary.vietPhrase.length);
+        console.info(`Đã tải xong tệp VietPhrase (${$vietPhraseEntryCounter.text()})!`);
         break;
       }
       case 5: {
-        await $.ajax({
-          method: 'GET',
-          url: '/static/datasource/Translate/Names.txt',
-        }).done((data) => {
-          glossary.name = data.split('\n').filter((element) => element.length > 0 && element.split('=').length === 2).map((element) => element.split('=')).map(([first, second]) => [first, second.split(/[/|]/)[0]]);
-          $nameEntryCounter.text(glossary.name.length);
-          console.info(`Đã tải xong tệp Names (${$nameEntryCounter.text()})!`);
-        }).fail((__, ___, errorThrown) => {
-          glossary.name = [];
-          console.error('Không tải được tệp Names:', errorThrown);
-        });
-        await $.ajax({
-          method: 'GET',
-          url: '/static/datasource/Translate/VietPhrase.txt',
-        }).done((data) => {
-          glossary.vietPhrase = data.split('\n').filter((element) => element.length > 0 && element.split('=').length === 2).map((element) => element.split('='));
-          $vietPhraseEntryCounter.text(glossary.vietPhrase.length);
-          console.info(`Đã tải xong tệp VietPhrase (${$vietPhraseEntryCounter.text()})!`);
-        }).fail((__, ___, errorThrown) => {
-          glossary.vietPhrase = [];
-          console.error('Không tải được tệp VietPhrase:', errorThrown);
-        });
+        if (glossary.translateName == null || glossary.translateName.length === 0) {
+          await $.ajax({
+            method: 'GET',
+            url: '/static/datasource/Translate/Names.txt',
+          }).done((data) => {
+            glossary.translateName = data.split('\n').filter((element) => element.length > 0 && element.split('=').length === 2).map((element) => element.split('='));
+          }).fail((__, ___, errorThrown) => {
+            glossary.translateName = null;
+            console.error('Không tải được tệp Translate\'s Names:', errorThrown);
+          });
+        }
+
+        glossary.name = glossary.translateName ?? [];
+        $nameEntryCounter.text(glossary.name.length);
+        console.info(`Đã tải xong tệp Names (${$nameEntryCounter.text()})!`);
+
+        if (glossary.translateVietPhrase == null || glossary.translateVietPhrase.length === 0) {
+          await $.ajax({
+            method: 'GET',
+            url: '/static/datasource/Translate/VietPhrase.txt',
+          }).done((data) => {
+            glossary.translateVietPhrase = data.split('\n').filter((element) => element.length > 0 && element.split('=').length === 2).map((element) => element.split('='));
+          }).fail((__, ___, errorThrown) => {
+            glossary.translateVietPhrase = null;
+            console.error('Không tải được tệp Translate\'s VietPhrase:', errorThrown);
+          });
+        }
+
+        glossary.vietPhrase = glossary.translateVietPhrase ?? [];
+        $vietPhraseEntryCounter.text(glossary.vietPhrase.length);
+        console.info(`Đã tải xong tệp VietPhrase (${$vietPhraseEntryCounter.text()})!`);
         break;
       }
       // no default
