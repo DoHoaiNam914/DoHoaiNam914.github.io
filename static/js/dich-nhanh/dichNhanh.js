@@ -1974,8 +1974,8 @@ $resultTextarea.on('drop', (event) => {
   event.preventDefault();
 });
 
-$resultTextarea.on('cut', function onCut(event) {
-  navigator.clipboard.writeText($(this).val());
+$resultTextarea.on('cut', (event) => {
+  document.execCommand('copy');
   event.preventDefault();
 });
 
