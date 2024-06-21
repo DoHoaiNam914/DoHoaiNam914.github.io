@@ -1841,8 +1841,8 @@ $translateEntryButtons.click(async function onClick() {
 
 $addButton.click(() => {
   if ($sourceEntryInput.val().length === 0) return;
-  if (glossaryKeys.includes($sourceEntryInput.val())) glossary[$glossaryListSelect.val()].splice(glossaryKeys.indexOf($sourceEntryInput.val()), 1);
-  glossary.push([$sourceEntryInput.val().trim(), $targetEntryTextarea.val().trim()]);
+  while (glossaryKeys.includes($sourceEntryInput.val().trim())) glossary[$glossaryListSelect.val()].splice(glossaryKeys.indexOf($sourceEntryInput.val().trim()), 1);
+  glossary[$glossaryListSelect.val()].push([$sourceEntryInput.val().trim(), $targetEntryTextarea.val().trim()]);
   reloadGlossaryEntries();
   if ($translatorOptions.filter($('.active')).data('id') === Translators.VIETPHRASE && !$glossaryListSelect.val().startsWith('name')) lastSession = {};
   $glossaryEntrySelect.change();
