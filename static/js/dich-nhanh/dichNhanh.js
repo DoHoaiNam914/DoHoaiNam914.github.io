@@ -24,9 +24,7 @@ const $formatSettingsSwitch = $('#format-settings-switch');
 const $translatorOptions = $('.translator-option');
 const $showOriginalTextSwitch = $('#show-original-text-switch');
 const $defaultVietPhraseFileSelect = $('#default-viet-phrase-file-select');
-const $nameEntryCounter = $('#name-entry-counter');
 const $nameInput = $('#name-input');
-const $vietPhraseEntryCounter = $('#viet-phrase-entry-counter');
 const $vietPhraseInput = $('#viet-phrase-input');
 const $addDeLeZhaoSwitch = $('#add-de-le-zhao-switch');
 const $multiplicationAlgorithmRadio = $('.option[name="multiplication-algorithm-radio"]');
@@ -1058,14 +1056,14 @@ function reloadGlossaryEntries() {
     $downloadButton.addClass('disabled');
   }
 
-  $glossaryEntrySelect.html(entrySelect.innerHTML);
+  if (['vietPhrase', 'name'].every((element) => glossaryList !== element)) $glossaryEntrySelect.html(entrySelect.innerHTML);
   entrySelect = null;
   $('#glossary-entries-list').html(entriesList.innerHTML);
   entriesList = null;
   $glossaryEntrySelect.val(defaultOption.value);
   $('#glossary-entry-counter').text(glossary[glossaryList].length);
   if (isLoaded) $inputTextarea.trigger('input');
-  glossaryStorage[glossaryList] = glossary[glossaryList].length < 5000 ? glossary[glossaryList] : [];
+  if (['vietPhrase', 'name'].every((element) => glossaryList !== element)) glossaryStorage[glossaryList] = glossary[glossaryList].length < 5000 ? glossary[glossaryList] : [];
   localStorage.setItem('glossary', JSON.stringify(glossaryStorage));
   $glossaryInput.val(null);
 }
@@ -1444,8 +1442,7 @@ $nameInput.on('change', function onChange() {
 
   reader.onload = function onLoad() {
     glossary.name = this.result.split(/\r?\n|\r/).filter((element) => element.length > 0 && element.split('=').length === 2).map((element) => element.split('=')).filter(([first], __, array) => !array[first] && (array[first] = 1), {}).map(([first, second]) => [first, second.split(/[/|]/)[0]]);
-    $nameEntryCounter.text(glossary.name.length);
-    console.info(`Đã tải xong tệp ${$nameInput.prop('files')[0].name} (${$nameEntryCounter.text()})!`);
+    console.info(`Đã tải xong tệp ${$nameInput.prop('files')[0].name} (${glossary.name.length})!`);
     lastSession = {};
   };
 
@@ -1457,8 +1454,7 @@ $vietPhraseInput.on('change', function onChange() {
 
   reader.onload = function onLoad() {
     glossary.vietPhrase = this.result.split(/\r?\n|\r/).filter((element) => element.length > 0 && element.split('=').length === 2).map((element) => element.split('=')).filter(([first], __, array) => !array[first] && (array[first] = 1), {});
-    $vietPhraseEntryCounter.text(glossary.vietPhrase.length);
-    console.info(`Đã tải xong tệp ${$vietPhraseInput.prop('files')[0].name} (${$vietPhraseEntryCounter.text()})!`);
+    console.info(`Đã tải xong tệp ${$vietPhraseInput.prop('files')[0].name} (${glossary.vietPhrase.length})!`);
     lastSession = {};
   };
 
@@ -1485,8 +1481,7 @@ $defaultVietPhraseFileSelect.change(async function onChange() {
         }
 
         glossary.name = glossary.quickTranslatorName ?? [];
-        $nameEntryCounter.text(glossary.name.length);
-        console.info(`Đã tải xong tệp Names (${$nameEntryCounter.text()})!`);
+        console.info(`Đã tải xong tệp Names (${glossary.name.length})!`);
 
         if (glossary.quickTranslatorVietphraseForMergeFiles == null || glossary.quickTranslatorVietphraseForMergeFiles.length === 0) {
           await $.ajax({
@@ -1517,8 +1512,7 @@ $defaultVietPhraseFileSelect.change(async function onChange() {
           glossary.vietPhrase = glossary.quickTranslatorVietPhrase ?? [];
         }
 
-        $vietPhraseEntryCounter.text(glossary.vietPhrase.length);
-        console.info(`Đã tải xong tệp VietPhrase (${$vietPhraseEntryCounter.text()})!`);
+        console.info(`Đã tải xong tệp VietPhrase (${glossary.vietPhrase.length})!`);
         break;
       }
       case 3: {
@@ -1535,8 +1529,7 @@ $defaultVietPhraseFileSelect.change(async function onChange() {
         }
 
         glossary.name = glossary.DataByThtgiangName ?? [];
-        $nameEntryCounter.text(glossary.name.length);
-        console.info(`Đã tải xong tệp Names (${$nameEntryCounter.text()})!`);
+        console.info(`Đã tải xong tệp Names (${glossary.name.length})!`);
 
         if (glossary.DataByThtgiangVietPhrase == null || glossary.DataByThtgiangVietPhrase.length === 0) {
           await $.ajax({
@@ -1551,8 +1544,7 @@ $defaultVietPhraseFileSelect.change(async function onChange() {
         }
 
         glossary.vietPhrase = glossary.DataByThtgiangVietPhrase ?? [];
-        $vietPhraseEntryCounter.text(glossary.vietPhrase.length);
-        console.info(`Đã tải xong tệp VietPhrase (${$vietPhraseEntryCounter.text()})!`);
+        console.info(`Đã tải xong tệp VietPhrase (${glossary.vietPhrase.length})!`);
         break;
       }
       case 4: {
@@ -1569,8 +1561,7 @@ $defaultVietPhraseFileSelect.change(async function onChange() {
         }
 
         glossary.name = glossary.ttvtranslateName ?? [];
-        $nameEntryCounter.text(glossary.name.length);
-        console.info(`Đã tải xong tệp Names (${$nameEntryCounter.text()})!`);
+        console.info(`Đã tải xong tệp Names (${glossary.name.length})!`);
 
         if (glossary.ttvtranslateVietPhrase == null || glossary.ttvtranslateVietPhrase.length === 0) {
           await $.ajax({
@@ -1585,8 +1576,7 @@ $defaultVietPhraseFileSelect.change(async function onChange() {
         }
 
         glossary.vietPhrase = glossary.ttvtranslateVietPhrase ?? [];
-        $vietPhraseEntryCounter.text(glossary.vietPhrase.length);
-        console.info(`Đã tải xong tệp VietPhrase (${$vietPhraseEntryCounter.text()})!`);
+        console.info(`Đã tải xong tệp VietPhrase (${glossary.vietPhrase.length})!`);
         break;
       }
       case 5: {
@@ -1603,8 +1593,7 @@ $defaultVietPhraseFileSelect.change(async function onChange() {
         }
 
         glossary.name = glossary.translateName ?? [];
-        $nameEntryCounter.text(glossary.name.length);
-        console.info(`Đã tải xong tệp Names (${$nameEntryCounter.text()})!`);
+        console.info(`Đã tải xong tệp Names (${glossary.name.length})!`);
 
         if (glossary.translateVietPhrase == null || glossary.translateVietPhrase.length === 0) {
           await $.ajax({
@@ -1619,8 +1608,7 @@ $defaultVietPhraseFileSelect.change(async function onChange() {
         }
 
         glossary.vietPhrase = glossary.translateVietPhrase ?? [];
-        $vietPhraseEntryCounter.text(glossary.vietPhrase.length);
-        console.info(`Đã tải xong tệp VietPhrase (${$vietPhraseEntryCounter.text()})!`);
+        console.info(`Đã tải xong tệp VietPhrase (${glossary.vietPhrase.length})!`);
         break;
       }
       // no default
@@ -1713,7 +1701,7 @@ $sourceEntryInput.on('input', async function onInput() {
 
     if (Object.hasOwn(glossaryObject, inputText)) {
       $targetEntryTextarea.val(Vietphrase.quickTranslate(inputText, glossary[$glossaryListSelect.val()])).trigger('input');
-      $glossaryEntrySelect.val(inputText);
+      if (['vietPhrase', 'name'].every((element) => glossaryList !== element)) $glossaryEntrySelect.val(inputText);
 
       if (!Utils.isOnMobile()) {
         const modalBody = $('#glossary-modal .modal-body');
