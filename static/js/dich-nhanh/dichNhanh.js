@@ -389,7 +389,7 @@ let glossary = {
   pronoun: [],
 };
 
-let glossaryObject = {};
+let glossaryKeys = [];
 
 let glossaryData = '';
 
@@ -990,10 +990,7 @@ function reloadGlossaryEntries() {
   const glossaryList = $glossaryListSelect.val();
 
   glossary[glossaryList] = glossary[glossaryList].filter(([first], __, array) => !array[first] && (array[first] = 1), {});
-  glossaryObject = {};
-  (async () => {
-    glossaryObject = Object.fromEntries(glossary[glossaryList]);
-  });
+  glossaryKeys = glossary[glossaryList].map(([first]) => first);
 
   if (glossary[glossaryList].length > 0) {
     if (['vietPhrase', 'name'].every((element) => glossaryList !== element)) {
@@ -1689,7 +1686,7 @@ $vietPhraseType.on('change', () => {
 
 $glossaryListSelect.change(() => {
   reloadGlossaryEntries();
-  if (isLoaded && $sourceEntryInput.val().length > 0 && (Object.hasOwn(glossaryObject, $sourceEntryInput.val()) || window.confirm('Bạn có muốn chuyển đổi lại chứ?'))) $sourceEntryInput.trigger('input');
+  if (isLoaded && $sourceEntryInput.val().length > 0 && (glossaryKeys.includes($sourceEntryInput.val()) || window.confirm('Bạn có muốn chuyển đổi lại chứ?'))) $sourceEntryInput.trigger('input');
 });
 
 $sourceEntryInput.on('input', async function onInput() {
@@ -1704,7 +1701,7 @@ $sourceEntryInput.on('input', async function onInput() {
       return;
     }
 
-    if (Object.hasOwn(glossaryObject, inputText)) {
+    if (glossaryKeys.includes(inputText)) {
       $targetEntryTextarea.val(Vietphrase.quickTranslate(inputText, glossary[$glossaryListSelect.val()])).trigger('input');
       if (['vietPhrase', 'name'].every((element) => $glossaryListSelect.val() !== element)) $glossaryEntrySelect.val(inputText);
 
@@ -1844,9 +1841,8 @@ $translateEntryButtons.click(async function onClick() {
 
 $addButton.click(() => {
   if ($sourceEntryInput.val().length === 0) return;
-  delete glossaryObject[$sourceEntryInput.val()];
-  glossaryObject[$sourceEntryInput.val().trim()] = $targetEntryTextarea.val().trim();
-  glossary[$glossaryListSelect.val()] = Object.entries(glossaryObject);
+  glossary[$glossaryListSelect.val()].splice(glossaryKeys.indexOf($sourceEntryInput.val()), 1);
+  glossary.push($sourceEntryInput.val().trim(), $targetEntryTextarea.val().trim());
   reloadGlossaryEntries();
   if ($translatorOptions.filter($('.active')).data('id') === Translators.VIETPHRASE && !$glossaryListSelect.val().startsWith('name')) lastSession = {};
   $glossaryEntrySelect.change();
@@ -1855,10 +1851,9 @@ $addButton.click(() => {
 });
 
 $removeButton.on('click', () => {
-  if (Object.hasOwn(glossaryObject, $sourceEntryInput.val())) {
+  if (glossaryKeys.includes($sourceEntryInput.val())) {
     if (!window.confirm('Bạn có muốn xoá cụm từ này chứ?')) return;
-    delete glossaryObject[$sourceEntryInput.val()];
-    glossary[$glossaryListSelect.val()] = Object.entries(glossaryObject);
+    glossary[$glossaryListSelect.val()].splice(glossaryKeys.indexOf($sourceEntryInput.val()), 1);
     reloadGlossaryEntries();
     if ($translatorOptions.filter($('.active')).data('id') === Translators.VIETPHRASE && !$glossaryListSelect.val().startsWith('name')) lastSession = {};
     $sourceEntryInput.trigger('input');
@@ -1868,7 +1863,7 @@ $removeButton.on('click', () => {
 });
 
 $glossaryEntrySelect.change(function onChange() {
-  if ($(this).val().length > 0 && Object.hasOwn(glossaryObject, $(this).val())) {
+  if ($(this).val().length > 0 && glossaryKeys.includes($(this).val())) {
     $sourceEntryInput.val($(this).val()).trigger('input');
     $removeButton.removeClass('disabled');
   } else {
