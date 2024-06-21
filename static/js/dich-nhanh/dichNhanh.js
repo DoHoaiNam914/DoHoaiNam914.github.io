@@ -55,16 +55,16 @@ let quickTranslateStorage = JSON.parse(localStorage.getItem('dich_nhanh')) ?? {}
 const glossaryStorage = JSON.parse(localStorage.getItem('glossary')) ?? {};
 
 const deeplAuthKeys = [
-  ['0c9649a5-e8f6-632a-9c42-a9eee160c330:fx', 40289],
-  ['4670812e-ea92-88b1-8b82-0812f3f4009b:fx', 59372],
+  ['0c9649a5-e8f6-632a-9c42-a9eee160c330:fx', 181],
+  ['4670812e-ea92-88b1-8b82-0812f3f4009b:fx', 220980],
   ['47c6c989-9eaa-5b30-4ee6-b2e4f1ebd530:fx', 500000],
-  ['9e00d743-da37-8466-8e8d-18940eeeaf88:fx', 180787],
-  ['a4b25ba2-b628-fa56-916e-b323b16502de:fx', 500000],
+  ['9e00d743-da37-8466-8e8d-18940eeeaf88:fx', 370570],
+  ['a4b25ba2-b628-fa56-916e-b323b16502de:fx', 14527],
   ['aa09f88d-ab75-3488-b8a3-18ad27a35870:fx', 500000],
-  ['e5a36703-2001-1b8b-968c-a981fdca7036:fx', 500000],
+  ['e5a36703-2001-1b8b-968c-a981fdca7036:fx', 19],
   ['f114d13f-f882-aebe-2dee-0ef57f830218:fx', 500000],
-  ['f1414922-db81-5454-67bd-9608cdca44b3:fx', 123190],
-  ['f8ff5708-f449-7a57-65b0-6ac4524cf64c:fx', 327839],
+  ['f1414922-db81-5454-67bd-9608cdca44b3:fx', 500000],
+  ['f8ff5708-f449-7a57-65b0-6ac4524cf64c:fx', 500000],
 ].toSorted((a, b) => a[1] - b[1]);
 
 const uuid = crypto.randomUUID();
