@@ -997,7 +997,7 @@ function reloadGlossaryEntries() {
       const option = document.createElement('option');
       option.innerText = `${first} → ${second}`;
       option.value = first;
-      entrySelect.appendChild(option.cloneNode(true));
+      if (['vietPhrase', 'name'].every((element) => glossaryList !== element)) entrySelect.appendChild(option.cloneNode(true));
 
       if (Utils.isOnMobile()) {
         const optionOnMobile = document.createElement('option');
@@ -1056,7 +1056,7 @@ function reloadGlossaryEntries() {
     $downloadButton.addClass('disabled');
   }
 
-  if (['vietPhrase', 'name'].every((element) => glossaryList !== element)) $glossaryEntrySelect.html(entrySelect.innerHTML);
+  $glossaryEntrySelect.html(entrySelect.innerHTML);
   entrySelect = null;
   $('#glossary-entries-list').html(entriesList.innerHTML);
   entriesList = null;
@@ -1701,7 +1701,7 @@ $sourceEntryInput.on('input', async function onInput() {
 
     if (Object.hasOwn(glossaryObject, inputText)) {
       $targetEntryTextarea.val(Vietphrase.quickTranslate(inputText, glossary[$glossaryListSelect.val()])).trigger('input');
-      if (['vietPhrase', 'name'].every((element) => glossaryList !== element)) $glossaryEntrySelect.val(inputText);
+      if (['vietPhrase', 'name'].every((element) => $glossaryListSelect.val() !== element)) $glossaryEntrySelect.val(inputText);
 
       if (!Utils.isOnMobile()) {
         const modalBody = $('#glossary-modal .modal-body');
@@ -1710,7 +1710,7 @@ $sourceEntryInput.on('input', async function onInput() {
         modalBody.prop('scrollTop', prevModalBodyScrollTop);
       }
     } else {
-      $translateEntryButtons.filter(`[data-translator="vietphrase"][data-lang="${$glossaryListSelect.val() === 'vietPhrasePhu' ? 'vi' : 'SinoVietnamese'}"]`).click();
+      $translateEntryButtons.filter(`[data-translator="vietphrase"][data-lang="${$glossaryListSelect.val().startsWith('vietPhrase') ? 'vi' : 'SinoVietnamese'}"]`).click();
       $targetEntryTextarea.prop('scrollTop', 0);
       $glossaryEntrySelect.val('');
     }
