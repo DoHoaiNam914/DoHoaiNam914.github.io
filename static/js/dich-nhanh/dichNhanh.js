@@ -993,22 +993,24 @@ function reloadGlossaryEntries() {
   glossaryObject = Object.fromEntries(glossary[glossaryList]);
 
   if (glossary[glossaryList].length > 0) {
-    glossary[glossaryList].forEach(([first, second]) => {
-      const option = document.createElement('option');
-      option.innerText = `${first} → ${second}`;
-      option.value = first;
-      if (['vietPhrase', 'name'].every((element) => glossaryList !== element)) entrySelect.appendChild(option.cloneNode(true));
-
-      if (Utils.isOnMobile()) {
-        const optionOnMobile = document.createElement('option');
-        optionOnMobile.innerText = `${first} → ${second}`;
-        optionOnMobile.setAttribute('data-value', first);
-        entriesList.appendChild(optionOnMobile);
-      } else {
+    if (['vietPhrase', 'name'].every((element) => glossaryList !== element)) {
+      glossary[glossaryList].forEach(([first, second]) => {
+        const option = document.createElement('option');
         option.innerText = `${first} → ${second}`;
-        entriesList.appendChild(option.cloneNode(true));
-      }
+        option.value = first;
+        entrySelect.appendChild(option.cloneNode(true));
+
+        if (Utils.isOnMobile()) {
+          const optionOnMobile = document.createElement('option');
+          optionOnMobile.innerText = `${first} → ${second}`;
+          optionOnMobile.setAttribute('data-value', first);
+          entriesList.appendChild(optionOnMobile);
+        } else {
+          option.innerText = `${first} → ${second}`;
+          entriesList.appendChild(option.cloneNode(true));
+        }
     });
+    }
 
     switch ($glossaryTypeSelect.val()) {
       case GlossaryType.CSV: {
