@@ -990,7 +990,10 @@ function reloadGlossaryEntries() {
   const glossaryList = $glossaryListSelect.val();
 
   glossary[glossaryList] = glossary[glossaryList].filter(([first], __, array) => !array[first] && (array[first] = 1), {});
-  glossaryObject = Object.fromEntries(glossary[glossaryList]);
+  glossaryObject = {};
+  (async () => {
+    glossaryObject = Object.fromEntries(glossary[glossaryList]);
+  });
 
   if (glossary[glossaryList].length > 0) {
     if (['vietPhrase', 'name'].every((element) => glossaryList !== element)) {
