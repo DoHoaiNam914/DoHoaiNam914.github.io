@@ -989,7 +989,7 @@ function reloadGlossaryEntries() {
   const $glossaryExtension = $('#glossary-extension');
   const glossaryList = $glossaryListSelect.val();
 
-  glossary[glossaryList] = glossary[glossaryList].filter(([first], __, array) => !array[first] && (array[first] = 1), {}).toSorted((a, b) => a[1].localeCompare(b[1], 'vi', { ignorePunctuation: true }) || a[0].localeCompare(b[0], 'vi', { sensitivity: 'accent', ignorePunctuation: true }) || b.join('\t').split(/(?:)/u).length - a.join('\t').split(/(?:)/u).length).map(([first, second]) => [first.trim(), second]);
+  glossary[glossaryList] = glossary[glossaryList].filter(([first], __, array) => !array[first] && (array[first] = 1), {}).toSorted((a, b) => a[1].localeCompare(b[1], 'vi', { ignorePunctuation: true }) || a[0].localeCompare(b[0], 'vi', { sensitivity: 'accent', ignorePunctuation: true }) || b.join('\t').split(/(?:)/u).length - a.join('\t').split(/(?:)/u).length);
   glossaryObject = Object.fromEntries(glossary[glossaryList]);
 
   if (glossary[glossaryList].length > 0) {
@@ -1009,7 +1009,7 @@ function reloadGlossaryEntries() {
           option.innerText = `${first} → ${second}`;
           entriesList.appendChild(option.cloneNode(true));
         }
-    });
+      });
     }
 
     switch ($glossaryTypeSelect.val()) {
