@@ -24,10 +24,10 @@ const $formatSettingsSwitch = $('#format-settings-switch');
 const $translatorOptions = $('.translator-option');
 const $showOriginalTextSwitch = $('#show-original-text-switch');
 const $defaultVietPhraseFileSelect = $('#default-viet-phrase-file-select');
-const $vietPhraseEntryCounter = $('#viet-phrase-entry-counter');
-const $vietPhraseInput = $('#viet-phrase-input');
 const $nameEntryCounter = $('#name-entry-counter');
 const $nameInput = $('#name-input');
+const $vietPhraseEntryCounter = $('#viet-phrase-entry-counter');
+const $vietPhraseInput = $('#viet-phrase-input');
 const $addDeLeZhaoSwitch = $('#add-de-le-zhao-switch');
 const $multiplicationAlgorithmRadio = $('.option[name="multiplication-algorithm-radio"]');
 
@@ -1439,19 +1439,6 @@ $showOriginalTextSwitch.change(function onChange() {
   $retranslateButton.click();
 });
 
-$vietPhraseInput.on('change', function onChange() {
-  const reader = new FileReader();
-
-  reader.onload = function onLoad() {
-    glossary.vietPhrase = this.result.split(/\r?\n|\r/).filter((element) => element.length > 0 && element.split('=').length === 2).map((element) => element.split('=')).filter(([first], __, array) => !array[first] && (array[first] = 1), {});
-    $vietPhraseEntryCounter.text(glossary.vietPhrase.length);
-    console.info(`Đã tải xong tệp ${$vietPhraseInput.prop('files')[0].name} (${$vietPhraseEntryCounter.text()})!`);
-    lastSession = {};
-  };
-
-  reader.readAsText($(this).prop('files')[0]);
-});
-
 $nameInput.on('change', function onChange() {
   const reader = new FileReader();
 
@@ -1459,6 +1446,19 @@ $nameInput.on('change', function onChange() {
     glossary.name = this.result.split(/\r?\n|\r/).filter((element) => element.length > 0 && element.split('=').length === 2).map((element) => element.split('=')).filter(([first], __, array) => !array[first] && (array[first] = 1), {}).map(([first, second]) => [first, second.split(/[/|]/)[0]]);
     $nameEntryCounter.text(glossary.name.length);
     console.info(`Đã tải xong tệp ${$nameInput.prop('files')[0].name} (${$nameEntryCounter.text()})!`);
+    lastSession = {};
+  };
+
+  reader.readAsText($(this).prop('files')[0]);
+});
+
+$vietPhraseInput.on('change', function onChange() {
+  const reader = new FileReader();
+
+  reader.onload = function onLoad() {
+    glossary.vietPhrase = this.result.split(/\r?\n|\r/).filter((element) => element.length > 0 && element.split('=').length === 2).map((element) => element.split('=')).filter(([first], __, array) => !array[first] && (array[first] = 1), {});
+    $vietPhraseEntryCounter.text(glossary.vietPhrase.length);
+    console.info(`Đã tải xong tệp ${$vietPhraseInput.prop('files')[0].name} (${$vietPhraseEntryCounter.text()})!`);
     lastSession = {};
   };
 
@@ -1512,7 +1512,7 @@ $defaultVietPhraseFileSelect.change(async function onChange() {
         }
 
         if (intValue === 2) {
-          glossary.vietPhrase = glossary.quickTranslatorVietphraseForMergeFiles == null || glossary.quickTranslatorVietPhrase == null ? glossary.quickTranslatorVietphraseForMergeFiles.concat(glossary.quickTranslatorVietPhrase) : [];
+          glossary.vietPhrase = glossary.quickTranslatorVietphraseForMergeFiles != null && glossary.quickTranslatorVietPhrase != null ? glossary.quickTranslatorVietphraseForMergeFiles.concat(glossary.quickTranslatorVietPhrase) : [];
         } else {
           glossary.vietPhrase = glossary.quickTranslatorVietPhrase ?? [];
         }
