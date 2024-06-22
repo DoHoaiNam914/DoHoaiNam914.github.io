@@ -977,18 +977,28 @@ function reloadGlossaryEntries() {
   const $downloadButton = $('#download-button');
   const $glossaryExtension = $('#glossary-extension');
   const glossaryList = $glossaryListSelect.val();
+  let debounceTimeout = null;
+  const DEBOUNCE_DELAY = 300;
+  const MAX_SUGGESTIONS = 20;
+  
+  const glossaryListForAutocomplete = Object.entries(glossary[glossaryList]).map((element) => ({ label: element.join('='), value: element[0] }))
 
   $sourceEntryInput.autocomplete({
     appendTo: '#glossary-modal .modal-body',
     source: (request, response) => {
-      const matcher = new RegExp($.ui.autocomplete.escapeRegex(request.term), 'i');
-      response($.grep(Object.keys(glossary[glossaryList]), (elementOfArray) => {
-        const string = elementOfArray.label || elementOfArray.value || elementOfArray;
-        return matcher.test(string) || matcher.test(string.normalize('NFKD').replaceAll(/\p{Mn}/gu, '').replaceAll('đ', 'd').replaceAll('Đ', 'D'));
-      }));
+      clearTimeout(debounceTimeout);
+      debounceTimeout = setTimeout(() => {
+        const matcher = new RegExp($.ui.autocomplete.escapeRegex(request.term), 'i');
+        response($.grep(glossaryListForAutocomplete, (elementOfArray) => {
+          return elementOfArray.label.split('=').some((element, index) => (index === 0 || !/\p{sc=Latn}/u.test(element) || element.length >= 2) && (matcher.test(element) || matcher.test(element.normalize('NFKD').replaceAll(/\p{Mn}/gu, '').replaceAll('đ', 'd').replaceAll('Đ', 'D'))));
+        }).slice(0, MAX_SUGGESTIONS));
+      }, DEBOUNCE_DELAY);
     },
     response: () => {
       $sourceEntryInput.trigger('input');
+    },
+    select: (__, ui) => {
+      $sourceEntryInput.val(ui.item.value).trigger('input');
     },
   });
 
@@ -1470,7 +1480,7 @@ $defaultVietPhraseFileSelect.change(async function onChange() {
         }
 
         if (intValue === 2) {
-          glossary.vietPhrase = Object.fromEntries(glossary.quickTranslatorVietphraseForMergeFiles != null && glossary.quickTranslatorVietPhrase != null ? glossary.quickTranslatorVietphraseForMergeFiles.concat(glossary.quickTranslatorVietPhrase)) : {};
+          glossary.vietPhrase = glossary.quickTranslatorVietphraseForMergeFiles != null && glossary.quickTranslatorVietPhrase != null ? Object.fromEntries(glossary.quickTranslatorVietphraseForMergeFiles.concat(glossary.quickTranslatorVietPhrase)) : {};
         } else {
           glossary.vietPhrase = Object.fromEntries(glossary.quickTranslatorVietPhrase) ?? {};
         }
@@ -1570,7 +1580,7 @@ $defaultVietPhraseFileSelect.change(async function onChange() {
           });
         }
 
-        glossary.vietPhrase = Object.fromEntries(glossary.translateVietPhrase ?? {};
+        glossary.vietPhrase = Object.fromEntries(glossary.translateVietPhrase) ?? {};
         console.info(`Đã tải xong tệp VietPhrase (${Object.keys(glossary.vietPhrase).length})!`);
         break;
       }
@@ -1616,7 +1626,7 @@ $glossaryInput.on('change', function onChange() {
         break;
       }
       default: {
-        glossary[$glossaryListSelect.val()] = Object.fromEntries(this.split(/\r?\n|\r/).map((element) => element.split(/\t/)).map((element) => element.slice(0, 2)));
+        glossary[$glossaryListSelect.val()] = Object.fromEntries(this.result.split(/\r?\n|\r/).map((element) => element.split(/\t/)).map((element) => element.slice(0, 2)));
         $glossaryTypeSelect.val(GlossaryType.TSV);
         break;
       }
