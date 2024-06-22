@@ -1579,6 +1579,7 @@ $defaultVietPhraseFileSelect.change(async function onChange() {
       // no default
     }
 
+    if (['vietPhrase', 'name'].some((element) => $glossaryListSelect.val() === element)) reloadGlossaryEntries();
     lastSession = {};
   }
 });
