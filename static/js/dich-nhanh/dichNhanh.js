@@ -1850,13 +1850,8 @@ $addButton.click(() => {
   if (Object.hasOwn(glossaryObject, $sourceEntryInput.val().trim())) delete glossaryObject[$sourceEntryInput.val().trim()];
   glossaryObject[$sourceEntryInput.val().trim()] = $targetEntryTextarea.val().trim();
   glossary[$glossaryListSelect.val()] = [];
-
   const glossaryKeys = Object.keys(glossaryObject);
-  
-  for (let i = 0; i < glossaryKeys.length; i++) {
-    glossary[$glossaryListSelect.val()].push([glossaryKeys[i], glossaryObject[glossaryKeys[i]]]);
-  }
-
+  for (let i = 0; i < glossaryKeys.length; i++) glossary[$glossaryListSelect.val()].push([glossaryKeys[i], glossaryObject[glossaryKeys[i]]]);
   reloadGlossaryEntries();
   if ($translatorOptions.filter($('.active')).data('id') === Translators.VIETPHRASE && !$glossaryListSelect.val().startsWith('name')) lastSession = {};
   $glossaryEntrySelect.change();
@@ -1869,13 +1864,8 @@ $removeButton.on('click', () => {
     if (!window.confirm('Bạn có muốn xoá cụm từ này chứ?')) return;
     delete glossaryObject[$sourceEntryInput.val()];
     glossary[$glossaryListSelect.val()] = [];
-
     const glossaryKeys = Object.keys(glossaryObject);
-  
-    for (let i = 0; i < glossaryKeys.length; i++) {
-      glossary[$glossaryListSelect.val()].push([glossaryKeys[i], glossaryObject[glossaryKeys[i]]]);
-    }
-
+    for (let i = 0; i < glossaryKeys.length; i++) glossary[$glossaryListSelect.val()].push([glossaryKeys[i], glossaryObject[glossaryKeys[i]]]);
     reloadGlossaryEntries();
     if ($translatorOptions.filter($('.active')).data('id') === Translators.VIETPHRASE && !$glossaryListSelect.val().startsWith('name')) lastSession = {};
     $sourceEntryInput.trigger('input');
