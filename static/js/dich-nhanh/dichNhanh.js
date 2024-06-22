@@ -981,7 +981,7 @@ function reloadGlossaryEntries() {
   const DEBOUNCE_DELAY = 300;
   const MAX_SUGGESTIONS = 20;
   
-  const glossaryListForAutocomplete = Object.keys(glossary[glossaryList]).map((element) => ({ label: `${element}=${glossary[glossaryList][element]`, value: element }))
+  const glossaryListForAutocomplete = Object.keys(glossary[glossaryList]).map((element) => ({ label: `${element}=${glossary[glossaryList][element]}`, value: element }))
 
   $sourceEntryInput.autocomplete({
     appendTo: '#glossary-modal .modal-body',
@@ -1065,13 +1065,6 @@ $(document).ready(async () => {
   loadAllQuickTranslatorOptions();
 
   glossary = { ...glossary, ...glossaryStorage };
-  if (typeof glossary.SinoVietnameses !== 'object' || typeof glossary.vietPhrasePhu !== 'object' || typeof glossary.name !== 'object' || typeof glossary.namePhu !== 'object' || typeof glossary.luatNhan !== 'object' || typeof glossary.pronoun !== 'object') {
-    glossary.SinoVietnameses = Object.fromEntries(glossary.SinoVietnameses);
-    glossary.vietPhrasePhu = Object.fromEntries(glossary.vietPhrasePhu);
-    glossary.namePhu = Object.fromEntries(glossary.namePhu);
-    glossary.luatNhan = Object.fromEntries(glossary.luatNhan);
-    glossary.pronoun = Object.fromEntries(glossary.pronoun);
-  }
 
   await $.ajax({
     method: 'GET',
