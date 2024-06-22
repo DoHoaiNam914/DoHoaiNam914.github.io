@@ -1804,7 +1804,8 @@ $removeButton.on('click', () => {
     for (let i = 0; i < glossaryKeys.length; i += 1) glossary[$glossaryListSelect.val()].push([glossaryKeys[i], glossaryObject[glossaryKeys[i]]]);
     reloadGlossaryEntries();
     if ($translatorOptions.filter($('.active')).data('id') === Translators.VIETPHRASE && !$glossaryListSelect.val().startsWith('name')) lastSession = {};
-    $sourceEntryInput.trigger('input');
+    $translateEntryButtons.filter(`[data-translator="vietphrase"][data-lang="${$glossaryListSelect.val().startsWith('vietPhrase') ? 'vi' : 'SinoVietnamese'}"]`).click();
+    $targetEntryTextarea.prop('scrollTop', 0);
   }
 });
 
