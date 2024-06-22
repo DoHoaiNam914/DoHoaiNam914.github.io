@@ -1131,7 +1131,6 @@ $(document).ready(async () => {
   lastSession = {};
   $inputTextarea.trigger('input');
   isLoaded = true;
-  $glossaryManagerButton.removeClass('disabled');
   console.log('Đã tải xong!');
 });
 
