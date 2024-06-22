@@ -992,7 +992,13 @@ function reloadGlossaryEntries() {
 
   $sourceEntryInput.autocomplete({
     appendTo: '#glossary-modal .modal-body',
-    source: glossaryForAutocomplete,
+    source: (request, response) => {
+      const matcher = new RegExp($.ui.autocomplete.escapeRegex(request.term), 'i');
+      response($.grep(glossaryForAutocomplete, (elementOfArray) => {
+        const string = elementOfArray.label || elementOfArray.value || elementOfArray;
+        return matcher.test(string) || matcher.test(string.normalize('NFKD').replaceAll(/\p{Mn}/gu, '').replaceAll('đ', 'd').replaceAll('Đ', 'D'));
+      }));
+    },
     response: () => {
       $sourceEntryInput.trigger('input');
     },
