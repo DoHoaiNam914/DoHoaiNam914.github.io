@@ -1594,6 +1594,7 @@ $resetButton.on('click', () => {
 
 $('#glossary-modal').on('shown.bs.modal', () => {
   $sourceEntryInput.trigger('input');
+  if ($sourceEntryInput.length > 0) $sourceEntryInput.focus();
 });
 
 $('#glossary-modal').on('hide.bs.modal', () => {
