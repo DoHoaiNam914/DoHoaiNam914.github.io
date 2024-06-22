@@ -1065,7 +1065,7 @@ $(document).ready(async () => {
   loadAllQuickTranslatorOptions();
 
   glossary = { ...glossary, ...glossaryStorage };
-  if (typeof glossary.namePhu !== 'object') {
+  if (typeof glossary.SinoVietnameses !== 'object' || typeof glossary.vietPhrasePhu !== 'object' || typeof glossary.name !== 'object' || typeof glossary.namePhu !== 'object' || typeof glossary.luatNhan !== 'object' || typeof glossary.pronoun !== 'object') {
     glossary.SinoVietnameses = Object.fromEntries(glossary.SinoVietnameses);
     glossary.vietPhrasePhu = Object.fromEntries(glossary.vietPhrasePhu);
     glossary.namePhu = Object.fromEntries(glossary.namePhu);
