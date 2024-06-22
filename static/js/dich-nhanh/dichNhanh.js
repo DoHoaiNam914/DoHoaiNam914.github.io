@@ -1593,8 +1593,9 @@ $resetButton.on('click', () => {
 });
 
 $('#glossary-modal').on('shown.bs.modal', () => {
+  if ($sourceEntryInput.length === 0) return
   $sourceEntryInput.trigger('input');
-  if ($sourceEntryInput.length > 0) $sourceEntryInput.focus();
+  $sourceEntryInput.focus();
 });
 
 $('#glossary-modal').on('hide.bs.modal', () => {
@@ -1652,7 +1653,12 @@ $vietPhraseType.on('change', () => {
 
 $glossaryListSelect.change(() => {
   reloadGlossaryEntries();
-  if (isLoaded && $sourceEntryInput.val().length > 0 && (Object.hasOwn(glossaryObject, $sourceEntryInput.val()) || window.confirm('Bạn có muốn chuyển đổi lại chứ?'))) $sourceEntryInput.trigger('input');
+  if (isLoaded && $sourceEntryInput.val().length > 0 && (Object.hasOwn(glossaryObject, $sourceEntryInput.val()) || window.confirm('Bạn có muốn chuyển đổi lại chứ?'))) {
+    $translateEntryButtons.filter(`[data-translator="vietphrase"][data-lang="${$glossaryListSelect.val().startsWith('vietPhrase') ? 'vi' : 'SinoVietnamese'}"]`).click();
+    $targetEntryTextarea.prop('scrollTop', 0);
+    $addButton.removeClass('disabled');
+    $removeButton.removeClass('disabled');
+  }
 });
 
 $sourceEntryInput.on('input', async function onInput() {
@@ -1664,7 +1670,6 @@ $sourceEntryInput.on('input', async function onInput() {
     if (Object.hasOwn(glossaryObject, inputText)) {
       $targetEntryTextarea.val(glossaryObject[inputText]).trigger('input');
     } else {
-      clearTimeout(vietPhraseTimeout);
       vietPhraseTimeout = setTimeout(() => {
         $translateEntryButtons.filter(`[data-translator="vietphrase"][data-lang="${$glossaryListSelect.val().startsWith('vietPhrase') ? 'vi' : 'SinoVietnamese'}"]`).click();
         $targetEntryTextarea.prop('scrollTop', 0);
