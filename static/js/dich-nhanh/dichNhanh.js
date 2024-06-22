@@ -981,7 +981,7 @@ function reloadGlossaryEntries() {
   const DEBOUNCE_DELAY = 300;
   const MAX_SUGGESTIONS = 20;
   
-  const glossaryListForAutocomplete = Object.entries(glossary[glossaryList]).map((element) => ({ label: element.join('='), value: element[0] }))
+  const glossaryListForAutocomplete = Object.keys(glossary[glossaryList]).map((element) => ({ label: `${element}=${glossary[glossaryList][element]`, value: element }))
 
   $sourceEntryInput.autocomplete({
     appendTo: '#glossary-modal .modal-body',
