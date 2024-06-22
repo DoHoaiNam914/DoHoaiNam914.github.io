@@ -1759,9 +1759,10 @@ class Vietphrase {
     this.prioritizeNameOverVietPhrase = options.prioritizeNameOverVietPhrase;
     this.autocapitalize = options.autocapitalize;
 
-    let hanViet = (glossary.SinoVietnameses.length > 0 ? glossary.SinoVietnameses.filter(([___, second]) => !/^\p{Script=Hani}+$/u.test(second)).map(([first, second]) => [first, second.toLowerCase()]) : []).concat(this.SpecialSinoVietnameses.filter(([___, second]) => !/^\p{Script=Hani}+$/u.test(second)).map(([a, b, c]) => [a, (c ?? b).split(/, | \| /)[0].toLowerCase()]), glossary.hanViet).filter(([first], ___, array) => !array[first] && (array[first] = 1), {});
+    const SinoVietnamesesList = Object.entries(glossary.SinoVietnameses);
+    let hanViet = (SinoVietnamesesList.length > 0 ? SinoVietnamesesList.filter(([___, second]) => !/^\p{Script=Hani}+$/u.test(second)).map(([first, second]) => [first, second.toLowerCase()]) : []).concat(this.SpecialSinoVietnameses.filter(([___, second]) => !/^\p{Script=Hani}+$/u.test(second)).map(([a, b, c]) => [a, (c ?? b).split(/, | \| /)[0].toLowerCase()]), glossary.hanViet).filter(([first], ___, array) => !array[first] && (array[first] = 1), {});
     hanViet = this.SpecialSinoVietnameses.filter(([___, second]) => /^\p{Script=Hani}+$/u.test(second)).map(([a, b]) => [a, Object.fromEntries(glossary.hanViet.filter(([___, d]) => !/^\p{Script=Hani}+$/u.test(d)))[b]]).concat(hanViet).filter(([first], ___, array) => !array[first] && (array[first] = 1), {});
-    if (glossary.SinoVietnameses.length > 0) hanViet = glossary.SinoVietnameses.filter(([___, second]) => /^\p{Script=Hani}+$/u.test(second)).map(([a, b]) => [a, Object.fromEntries(glossary.hanViet.filter(([___, d]) => !/^\p{Script=Hani}+$/u.test(d)))[b]]).concat(hanViet).filter(([first], ___, array) => !array[first] && (array[first] = 1), {});
+    if (SinoVietnamesesList.length > 0) hanViet = SinoVietnamesesList.filter(([___, second]) => /^\p{Script=Hani}+$/u.test(second)).map(([a, b]) => [a, Object.fromEntries(glossary.hanViet.filter(([___, d]) => !/^\p{Script=Hani}+$/u.test(d)))[b]]).concat(hanViet).filter(([first], ___, array) => !array[first] && (array[first] = 1), {});
     hanViet = new Map(hanViet);
 
     let resultText = inputText;
@@ -1789,20 +1790,23 @@ class Vietphrase {
       }
       case 'vi': {
         let luatNhanName = [];
+        let name = options.nameEnabled ? Object.entries({ ...glossary.name, ...glossary.namePhu }).filter(([first]) => first != null && first.length > 0 && inputText.toLowerCase().includes(first.toLowerCase())) : [];
         let luatNhanPronoun = [];
+        const pronounList = Object.entries(glossary.pronoun);
 
         if (options.multiplicationAlgorithm > 0) {
-          glossary.luatNhan.filter(([first]) => inputText.match(new RegExp(Utils.escapeRegExp(first).replace('\\{0\\}', '.+')))).forEach(([a, b]) => {
-            if (options.nameEnabled && options.multiplicationAlgorithm === 2 && glossary.name.length > 0) {
-              luatNhanName = [...luatNhanName, ...glossary.name.map(([c, d]) => [a.replace('{0}', c), b.replace('{0}', d)])];
+          Object.entries(glossary.luatNhan).filter(([first]) => inputText.match(new RegExp(Utils.escapeRegExp(first).replace('\\{0\\}', '.+')))).forEach(([a, b]) => {
+            if (options.nameEnabled && options.multiplicationAlgorithm === 2 && name.length > 0) {
+              luatNhanName = [...luatNhanName, ...name.map(([c, d]) => [a.replace('{0}', c), b.replace('{0}', d.split(/[/|]/)[0])])];
             }
 
-            luatNhanPronoun = [...luatNhanPronoun, ...glossary.pronoun.map(([c, d]) => [a.replace('{0}', c), b.replace('{0}', d.split(/[/|]/)[0])])];
+            luatNhanPronoun = [...luatNhanPronoun, ...pronounList.map(([c, d]) => [a.replace('{0}', c), b.replace('{0}', d.split(/[/|]/)[0])])];
           });
         }
 
-        const name = options.nameEnabled ? Object.entries(Object.fromEntries(glossary.name.concat(glossary.namePhu, luatNhanName).filter(([first]) => first != null && first.length > 0 && inputText.toLowerCase().includes(first.toLowerCase())))).map(([first, second]) => [first, second]) : [];
-        this.vietPhrase = Object.entries(Object.fromEntries((glossary.vietPhrase.length > 0 ? glossary.vietPhrase : []).concat(glossary.vietPhrase.concat(glossary.vietPhrasePhu).length > 0 ? [['的', options.addDeLeZhao ? hanViet.get('的') : ''], ['了', options.addDeLeZhao ? hanViet.get('了') : ''], ['着', options.addDeLeZhao ? hanViet.get('着') : '']] : [], glossary.vietPhrasePhu, luatNhanPronoun))).map(([first, second]) => [first, second.split(/[/|]/)[0]]);
+        name = [...new Map(name.concat(luatNhanName))]
+        const vietPhraseLength = Object.keys(glossary.vietPhrase).length;
+        this.vietPhrase = Object.entries({ ...(vietPhraseLength > 0 ? glossary.vietPhrase : []), ...vietPhraseLength > 0 ? { '的': options.addDeLeZhao ? hanViet.get('的') : '', '了': options.addDeLeZhao ? hanViet.get('了') : '', '着': options.addDeLeZhao ? hanViet.get('着') : '' } : {}, ...glossary.vietPhrasePhu, ...Object.fromEntries(luatNhanPronoun) }).map(([first, second]) => [first, second.split(/[/|]/)[0]]);
         resultText = this.translateWithTextMapping(inputText, name, Object.entries(Object.fromEntries(glossary.romajis.concat(glossary.KunYomis, glossary.OnYomis, [...hanViet]))));
         resultText = options.autocapitalize ? Vietphrase.getCapitalizeText(resultText) : resultText;
         break;
