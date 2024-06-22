@@ -382,7 +382,7 @@ let glossary = {
   vietPhrasePhu: {},
   name: {},
   namePhu: {},
-  luatNhan: {}
+  luatNhan: {},
   pronoun: {},
 };
 

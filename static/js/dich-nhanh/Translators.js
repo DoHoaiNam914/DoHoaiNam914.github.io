@@ -1806,7 +1806,7 @@ class Vietphrase {
 
         name = [...new Map(name.concat(luatNhanName))]
         const vietPhraseLength = Object.keys(glossary.vietPhrase).length;
-        this.vietPhrase = Object.entries({ ...(vietPhraseLength > 0 ? glossary.vietPhrase : []), ...vietPhraseLength > 0 ? { '的': options.addDeLeZhao ? hanViet.get('的') : '', '了': options.addDeLeZhao ? hanViet.get('了') : '', '着': options.addDeLeZhao ? hanViet.get('着') : '' } : {}, ...glossary.vietPhrasePhu, ...Object.fromEntries(luatNhanPronoun) }).map(([first, second]) => [first, second.split(/[/|]/)[0]]);
+        this.vietPhrase = Object.entries({ ...vietPhraseLength > 0 ? glossary.vietPhrase : [], ...vietPhraseLength > 0 ? { '的': options.addDeLeZhao ? hanViet.get('的') : '', '了': options.addDeLeZhao ? hanViet.get('了') : '', '着': options.addDeLeZhao ? hanViet.get('着') : '' } : {}, ...glossary.vietPhrasePhu, ...Object.fromEntries(luatNhanPronoun) }).map(([first, second]) => [first, second.split(/[/|]/)[0]]);
         resultText = this.translateWithTextMapping(inputText, name, Object.entries(Object.fromEntries(glossary.romajis.concat(glossary.KunYomis, glossary.OnYomis, [...hanViet]))));
         resultText = options.autocapitalize ? Vietphrase.getCapitalizeText(resultText) : resultText;
         break;
