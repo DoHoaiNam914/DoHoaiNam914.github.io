@@ -987,24 +987,14 @@ function reloadGlossaryEntries() {
   for (let i = 0; i < glossary[glossaryList].length; i += 1) {
     const [first, second] = glossary[glossaryList][i];
     glossaryObject[first] = second;
-    glossaryForAutocomplete.push({ label: `${first}=${second}`, value: first });
+    glossaryForAutocomplete.push(first);
   }
 
   $sourceEntryInput.autocomplete({
     appendTo: '#glossary-modal .modal-body',
-    source: (request, response) => {
-      const keyMatcher = new RegExp($.ui.autocomplete.escapeRegex(request.term), 'i');
-      const valueMatcher = new RegExp(`(?:^|[^\\p{L}])${$.ui.autocomplete.escapeRegex(request.term)}`, 'u');
-      response($.grep(glossaryForAutocomplete, (elementOfArray) => {
-        const string = elementOfArray.label || elementOfArray.value || elementOfArray;
-        return string.split('=').some((element, index) => (index === 0 || request.term.length >= 2) && ((index === 1 ? keyMatcher : valueMatcher).test(element) || (index === 1 ? keyMatcher : valueMatcher).test(element.normalize('NFKD').replaceAll(/\p{Mn}/gu, '').replaceAll('đ', 'd'))));
-      }));
-    },
+    source: glossaryForAutocomplete,
     response: () => {
       $sourceEntryInput.trigger('input');
-    },
-    select: (__, ui) => {
-      $sourceEntryInput.val(ui.item.value).trigger('input');
     },
   });
 
