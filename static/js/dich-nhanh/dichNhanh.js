@@ -976,14 +976,22 @@ async function translateText(inputText, translatorOption, targetLanguage, glossa
 function reloadGlossaryEntries() {
   const $downloadButton = $('#download-button');
   const $glossaryExtension = $('#glossary-extension');
-  const glossaryList = $glossaryListSelect.val();
+  const glossaryList = glossary[$glossaryListSelect.val()];
+
+  const glossaryKeys = Object.keys(glossary[glossaryList]);
+
+  const glossaryListForAutocomplete = [];
+  const glossaryEntryList = [];
+
+  for (let i = 0; i < glossaryKeys.length; i += 1) {
+    const first = glossaryKeys[i];
+    glossaryListForAutocomplete.push({ label: `${first}=${glossaryList[first]}`, value: first });
+    glossaryEntryList.push([first, glossaryList[first]]);
+  }
+
   let debounceTimeout = null;
   const DEBOUNCE_DELAY = 300;
   const MAX_SUGGESTIONS = 20;
-  
-  const glossaryListForAutocomplete = [];
-  const glossaryKeys = Object.keys(glossary[glossaryList]);
-  for (let i = 0; i < glossaryKeys.length; i += 1) glossaryListForAutocomplete.push({ label: `${glossaryKeys[i]}=${glossary[glossaryList][glossaryKeys[i]]}`, value: glossaryKeys[i] });
 
   $sourceEntryInput.autocomplete({
     appendTo: '#glossary-modal .modal-body',
@@ -1004,11 +1012,9 @@ function reloadGlossaryEntries() {
     },
   });
 
-  let glossaryLength = Object.keys(glossary[glossaryList]).length
+  let glossaryLength = Object.keys(glossaryList).length
 
   if (glossaryLength > 0) {
-    const glossaryEntryList = Object.entries(glossary[glossaryList]);
-
     switch ($glossaryTypeSelect.val()) {
       case GlossaryType.CSV: {
         glossaryData = $.csv.fromArrays(glossaryEntryList.toSorted((a, b) => b.join('\t').split(/(?:)/u).length - a.join('\t').split(/(?:)/u).length || a[1].localeCompare(b[1], 'vi', { ignorePunctuation: true }) || a[0].localeCompare(b[0], 'vi', { ignorePunctuation: true })));
@@ -1057,7 +1063,7 @@ function reloadGlossaryEntries() {
 
   $('#glossary-entry-counter').text(glossaryLength);
   if (isLoaded) $inputTextarea.trigger('input');
-  if (['vietPhrase', 'name'].every((element) => glossaryList !== element)) glossaryStorage[glossaryList] = glossaryLength < 5000 ? glossary[glossaryList] : {};
+  if (['vietPhrase', 'name'].every((element) => glossaryList !== element)) glossaryStorage[glossaryList] = glossaryLength < 5000 ? glossaryList : {};
   localStorage.setItem('glossary', JSON.stringify(glossaryStorage));
   $glossaryInput.val(null);
 }
