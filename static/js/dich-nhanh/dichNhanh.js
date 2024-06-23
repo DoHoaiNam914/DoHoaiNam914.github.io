@@ -1804,7 +1804,7 @@ $addButton.click(() => {
   if (Object.hasOwn(glossary[$glossaryListSelect.val()], $sourceEntryInput.val().trim())) delete glossary[$glossaryListSelect.val()][$sourceEntryInput.val().trim()];
   glossary[$glossaryListSelect.val()][$sourceEntryInput.val().trim()] = $targetEntryTextarea.val().trim();
   reloadGlossaryEntries();
-  if ($translatorOptions.filter($('.active')).data('id') === Translators.VIETPHRASE && !$glossaryListSelect.val().startsWith('name')) lastSession = {};
+  if ($translatorOptions.filter($('.active')).data('id') === Translators.VIETPHRASE && !$glossaryListSelect.val() !== 'namePhu') lastSession = {};
   $addButton.addClass('disabled');
   $removeButton.addClass('disabled');
   $sourceEntryInput.val(null).trigger('input');
@@ -1815,7 +1815,7 @@ $removeButton.on('click', () => {
     if (!window.confirm('Bạn có muốn xoá cụm từ này chứ?')) return;
     delete glossary[$glossaryListSelect.val()][$sourceEntryInput.val().trim()];
     reloadGlossaryEntries();
-    if ($translatorOptions.filter($('.active')).data('id') === Translators.VIETPHRASE && $glossaryListSelect.val() !== 'name') lastSession = {};
+    if ($translatorOptions.filter($('.active')).data('id') === Translators.VIETPHRASE && $glossaryListSelect.val() !== 'namePhu') lastSession = {};
     $translateEntryButtons.filter(`[data-translator="vietphrase"][data-lang="${$glossaryListSelect.val().startsWith('vietPhrase') ? 'vi' : 'SinoVietnamese'}"]`).click();
     $targetEntryTextarea.prop('scrollTop', 0);
   }
