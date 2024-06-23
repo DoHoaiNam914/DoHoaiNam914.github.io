@@ -392,6 +392,7 @@ var glossaryData = '';
 let currentTranslator = null;
 let translateAbortController = null;
 let prevScrollTop = 0;
+let reloadGlossaryDataTimeout = null;
 let vietPhraseTimeout = null;
 
 let lastSession = {};
@@ -974,6 +975,7 @@ async function translateText(inputText, translatorOption, targetLanguage, glossa
 }
 
 function reloadGlossaryEntries() {
+  clearTimeout(reloadGlossaryDataTimeout);
   const $downloadButton = $('#download-button');
   const $glossaryExtension = $('#glossary-extension');
   const glossaryList = glossary[$glossaryListSelect.val()];
@@ -1015,45 +1017,53 @@ function reloadGlossaryEntries() {
   let glossaryLength = glossaryKeys.length
 
   if (glossaryLength > 0) {
-    switch ($glossaryTypeSelect.val()) {
-      case GlossaryType.CSV: {
-        glossaryData = $.csv.fromArrays(glossaryEntryList.toSorted((a, b) => b[3] - a[3] || a[1].localeCompare(b[1], 'vi', { ignorePunctuation: true }) || a[0].localeCompare(b[0], 'vi', { ignorePunctuation: true })));
-        $glossaryExtension.text('csv');
-        break;
-      }
-      case GlossaryType.VIETPHRASE: {
-        switch ($vietPhraseType.val()) {
-          case 'QuickTranslate Without Sorting': {
-            glossaryData = `\ufeff${glossaryEntryList.map((element) => element.join('=')).join('\r\n')}`;
-            break;
-          }
-          case 'QuickTranslate': {
-            glossaryData = `\ufeff${glossaryEntryList.toSorted((a, b) => b[2] - a[2] || a[0].localeCompare(b[0])).map((element) => element.join('=')).join('\r\n')}`;
-            break;
-          }
-          case 'Sáng Tác Việt': {
-            glossaryData = glossaryEntryList.toSorted().toSorted((a, b) => a[2] - b[2]).map((element) => element.join('=')).join('\n');
-            break;
-          }
-          default: {
-            glossaryData = glossaryEntryList.map((element) => element.join('=')).join('\n');
-            break;
-          }
+    reloadGlossaryDataTimeout = setTimeout(() => {
+      const glossaryDataCopyButton = $copyButtons.filter('[data-target="glossaryData"]');
+      glossaryDataCopyButton.addClass('disabled');
+      $downloadButton.addClass('disabled');
+
+      switch ($glossaryTypeSelect.val()) {
+        case GlossaryType.CSV: {
+          glossaryData = $.csv.fromArrays(glossaryEntryList.toSorted((a, b) => b[3] - a[3] || a[1].localeCompare(b[1], 'vi', { ignorePunctuation: true }) || a[0].localeCompare(b[0], 'vi', { ignorePunctuation: true })));
+          $glossaryExtension.text('csv');
+          break;
         }
-
-        $glossaryExtension.text('txt');
-        break;
+        case GlossaryType.VIETPHRASE: {
+          switch ($vietPhraseType.val()) {
+            case 'QuickTranslate Without Sorting': {
+              glossaryData = `\ufeff${glossaryEntryList.map((element) => element.join('=')).join('\r\n')}`;
+              break;
+            }
+            case 'QuickTranslate': {
+              glossaryData = `\ufeff${glossaryEntryList.toSorted((a, b) => b[2] - a[2] || a[0].localeCompare(b[0])).map((element) => element.join('=')).join('\r\n')}`;
+              break;
+            }
+            case 'Sáng Tác Việt': {
+              glossaryData = glossaryEntryList.toSorted().toSorted((a, b) => a[2] - b[2]).map((element) => element.join('=')).join('\n');
+              break;
+            }
+            default: {
+              glossaryData = glossaryEntryList.map((element) => element.join('=')).join('\n');
+              break;
+            }
+          }
+  
+          $glossaryExtension.text('txt');
+          break;
+        }
+        default: {
+          glossaryData = glossaryEntryList.toSorted((a, b) => b[3] - a[3] || a[1].localeCompare(b[1], 'vi', { ignorePunctuation: true }) || a[0].localeCompare(b[0], 'vi', { ignorePunctuation: true })).map((element) => element.join('\t')).join('\n');
+          $glossaryExtension.text('tsv');
+          break;
+        }
       }
-      default: {
-        glossaryData = glossaryEntryList.toSorted((a, b) => b[3] - a[3] || a[1].localeCompare(b[1], 'vi', { ignorePunctuation: true }) || a[0].localeCompare(b[0], 'vi', { ignorePunctuation: true })).map((element) => element.join('\t')).join('\n');
-        $glossaryExtension.text('tsv');
-        break;
-      }
-    }
 
-    $downloadButton.attr('href', URL.createObjectURL(new Blob([glossaryData], { type: `${$glossaryTypeSelect.val()}; charset=UTF-8` })));
-    $downloadButton.attr('download', `${$glossaryName.val().length > 0 ? $glossaryName.val() : $glossaryName.attr('placeholder')}.${$glossaryExtension.text()}`);
-    $downloadButton.removeClass('disabled');
+      glossaryEntryList = null;
+      glossaryDataCopyButton.removeClass('disabled');
+      $downloadButton.attr('href', URL.createObjectURL(new Blob([glossaryData], { type: `${$glossaryTypeSelect.val()}; charset=UTF-8` })));
+      $downloadButton.attr('download', `${$glossaryName.val().length > 0 ? $glossaryName.val() : $glossaryName.attr('placeholder')}.${$glossaryExtension.text()}`);
+      $downloadButton.removeClass('disabled');
+    });
   } else {
     glossaryData = '';
     $downloadButton.removeAttr('href');
