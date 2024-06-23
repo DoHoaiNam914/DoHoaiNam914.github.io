@@ -974,14 +974,15 @@ async function translateText(inputText, translatorOption, targetLanguage, glossa
 }
 
 function reloadGlossaryEntries() {
+  const START_TIME = DATE.now();
   const $downloadButton = $('#download-button');
   const $glossaryExtension = $('#glossary-extension');
-  const glossaryList = glossary[$glossaryListSelect.val()];
+  const glossaryList = glossary[$glossaryListSelect.val()];console.log(Date.now() - START_TIME, String.raw`const glossaryKeys = Object.keys(glossaryList);`);
 
   const glossaryKeys = Object.keys(glossaryList);
 
   const glossaryListForAutocomplete = [];
-  const glossaryEntryList = [];
+  const glossaryEntryList = [];console.log(Date.now() - START_TIME, String.raw`for (let i = 0; i < glossaryKeys.length; i += 1) {`);
 
   for (let i = 0; i < glossaryKeys.length; i += 1) {
     const first = glossaryKeys[i];
@@ -991,7 +992,7 @@ function reloadGlossaryEntries() {
 
   let debounceTimeout = null;
   const DEBOUNCE_DELAY = 300;
-  const MAX_SUGGESTIONS = 20;
+  const MAX_SUGGESTIONS = 20;console.log(Date.now() - START_TIME, String.raw`$sourceEntryInput.autocomplete({`);
 
   $sourceEntryInput.autocomplete({
     appendTo: '#glossary-modal .modal-body',
@@ -1012,9 +1013,9 @@ function reloadGlossaryEntries() {
     },
   });
 
-  let glossaryLength = Object.keys(glossaryList).length
+  let glossaryLength = glossaryKeys.length
 
-  if (glossaryLength > 0) {
+  if (glossaryLength > 0) {console.log(Date.now() - START_TIME, String.raw`switch ($glossaryTypeSelect.val()) {`);
     switch ($glossaryTypeSelect.val()) {
       case GlossaryType.CSV: {
         glossaryData = $.csv.fromArrays(glossaryEntryList.toSorted((a, b) => b.join('\t').split(/(?:)/u).length - a.join('\t').split(/(?:)/u).length || a[1].localeCompare(b[1], 'vi', { ignorePunctuation: true }) || a[0].localeCompare(b[0], 'vi', { ignorePunctuation: true })));
@@ -1049,7 +1050,7 @@ function reloadGlossaryEntries() {
         $glossaryExtension.text('tsv');
         break;
       }
-    }
+    }console.log(Date.now() - START_TIME, 'END!');
 
     $downloadButton.attr('href', URL.createObjectURL(new Blob([glossaryData], { type: `${$glossaryTypeSelect.val()}; charset=UTF-8` })));
     $downloadButton.attr('download', `${$glossaryName.val().length > 0 ? $glossaryName.val() : $glossaryName.attr('placeholder')}.${$glossaryExtension.text()}`);
