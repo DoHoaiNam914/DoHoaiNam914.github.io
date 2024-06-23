@@ -978,7 +978,7 @@ function reloadGlossaryEntries() {
   const $glossaryExtension = $('#glossary-extension');
   const glossaryList = glossary[$glossaryListSelect.val()];
 
-  const glossaryKeys = Object.keys(glossary[glossaryList]);
+  const glossaryKeys = Object.keys(glossaryList);
 
   const glossaryListForAutocomplete = [];
   const glossaryEntryList = [];
