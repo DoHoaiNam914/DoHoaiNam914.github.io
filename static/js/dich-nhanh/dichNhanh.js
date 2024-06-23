@@ -974,7 +974,7 @@ async function translateText(inputText, translatorOption, targetLanguage, glossa
 }
 
 function reloadGlossaryEntries() {
-  const START_TIME = DATE.now();
+  const START_TIME = Date.now();
   const $downloadButton = $('#download-button');
   const $glossaryExtension = $('#glossary-extension');
   const glossaryList = glossary[$glossaryListSelect.val()];console.log(Date.now() - START_TIME, String.raw`const glossaryKeys = Object.keys(glossaryList);`);
