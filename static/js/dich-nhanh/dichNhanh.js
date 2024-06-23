@@ -974,25 +974,24 @@ async function translateText(inputText, translatorOption, targetLanguage, glossa
 }
 
 function reloadGlossaryEntries() {
-  const START_TIME = Date.now();
   const $downloadButton = $('#download-button');
   const $glossaryExtension = $('#glossary-extension');
-  const glossaryList = glossary[$glossaryListSelect.val()];console.log(Date.now() - START_TIME, String.raw`const glossaryKeys = Object.keys(glossaryList);`);
+  const glossaryList = glossary[$glossaryListSelect.val()];
 
   const glossaryKeys = Object.keys(glossaryList);
 
   const glossaryListForAutocomplete = [];
-  const glossaryEntryList = [];console.log(Date.now() - START_TIME, String.raw`for (let i = 0; i < glossaryKeys.length; i += 1) {`);
+  const glossaryEntryList = [];
 
   for (let i = 0; i < glossaryKeys.length; i += 1) {
     const first = glossaryKeys[i];
     glossaryListForAutocomplete.push({ label: `${first}=${glossaryList[first]}`, value: first });
-    glossaryEntryList.push([first, glossaryList[first]]);
+    glossaryEntryList.push([first, glossaryList[first], first.length, first.split(/(?:)/u).length]);
   }
 
   let debounceTimeout = null;
   const DEBOUNCE_DELAY = 300;
-  const MAX_SUGGESTIONS = 20;console.log(Date.now() - START_TIME, String.raw`$sourceEntryInput.autocomplete({`);
+  const MAX_SUGGESTIONS = 20;
 
   $sourceEntryInput.autocomplete({
     appendTo: '#glossary-modal .modal-body',
@@ -1015,10 +1014,10 @@ function reloadGlossaryEntries() {
 
   let glossaryLength = glossaryKeys.length
 
-  if (glossaryLength > 0) {console.log(Date.now() - START_TIME, String.raw`switch ($glossaryTypeSelect.val()) {`);
+  if (glossaryLength > 0) {
     switch ($glossaryTypeSelect.val()) {
       case GlossaryType.CSV: {
-        glossaryData = $.csv.fromArrays(glossaryEntryList.toSorted((a, b) => b.join('\t').split(/(?:)/u).length - a.join('\t').split(/(?:)/u).length || a[1].localeCompare(b[1], 'vi', { ignorePunctuation: true }) || a[0].localeCompare(b[0], 'vi', { ignorePunctuation: true })));
+        glossaryData = $.csv.fromArrays(glossaryEntryList.toSorted((a, b) => b[3] - a[3] || a[1].localeCompare(b[1], 'vi', { ignorePunctuation: true }) || a[0].localeCompare(b[0], 'vi', { ignorePunctuation: true })));
         $glossaryExtension.text('csv');
         break;
       }
@@ -1029,11 +1028,11 @@ function reloadGlossaryEntries() {
             break;
           }
           case 'QuickTranslate': {
-            glossaryData = `\ufeff${glossaryEntryList.toSorted((a, b) => b[0].length - a[0].length || a[0].localeCompare(b[0])).map((element) => element.join('=')).join('\r\n')}`;
+            glossaryData = `\ufeff${glossaryEntryList.toSorted((a, b) => b[2] - a[2] || a[0].localeCompare(b[0])).map((element) => element.join('=')).join('\r\n')}`;
             break;
           }
           case 'Sáng Tác Việt': {
-            glossaryData = glossaryEntryList.toSorted().toSorted((a, b) => a[0].length - b[0].length).map((element) => element.join('=')).join('\n');
+            glossaryData = glossaryEntryList.toSorted().toSorted((a, b) => a[2] - b[2]).map((element) => element.join('=')).join('\n');
             break;
           }
           default: {
@@ -1046,11 +1045,11 @@ function reloadGlossaryEntries() {
         break;
       }
       default: {
-        glossaryData = glossaryEntryList.toSorted((a, b) => b.join('\t').split(/(?:)/u).length - a.join('\t').split(/(?:)/u).length || a[1].localeCompare(b[1], 'vi', { ignorePunctuation: true }) || a[0].localeCompare(b[0], 'vi', { ignorePunctuation: true })).map((element) => element.join('\t')).join('\n');
+        glossaryData = glossaryEntryList.toSorted((a, b) => b[3] - a[3] || a[1].localeCompare(b[1], 'vi', { ignorePunctuation: true }) || a[0].localeCompare(b[0], 'vi', { ignorePunctuation: true })).map((element) => element.join('\t')).join('\n');
         $glossaryExtension.text('tsv');
         break;
       }
-    }console.log(Date.now() - START_TIME, 'END!');
+    }
 
     $downloadButton.attr('href', URL.createObjectURL(new Blob([glossaryData], { type: `${$glossaryTypeSelect.val()}; charset=UTF-8` })));
     $downloadButton.attr('download', `${$glossaryName.val().length > 0 ? $glossaryName.val() : $glossaryName.attr('placeholder')}.${$glossaryExtension.text()}`);
