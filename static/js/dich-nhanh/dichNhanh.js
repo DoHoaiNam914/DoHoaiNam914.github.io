@@ -982,7 +982,7 @@ function reloadGlossaryEntries() {
   const glossaryKeys = Object.keys(glossaryList);
 
   const glossaryListForAutocomplete = [];
-  const glossaryEntryList = [];
+  let glossaryEntryList = [];
 
   for (let i = 0; i < glossaryKeys.length; i += 1) {
     const first = glossaryKeys[i];
