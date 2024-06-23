@@ -1668,8 +1668,8 @@ $glossaryListSelect.change(function onChange() {
   reloadGlossaryEntries();
 
   if (isLoaded && $sourceEntryInput.val().length > 0 && (Object.hasOwn(glossary[$(this).val()], $sourceEntryInput.val()) || window.confirm('Bạn có muốn chuyển đổi lại chứ?'))) {
-    if (Object.hasOwn(glossary[$glossaryListSelect.val()], inputText)) {
-      $targetEntryTextarea.val(glossary[$glossaryListSelect.val()][inputText]).trigger('input');
+    if (Object.hasOwn(glossary[$(this).val()], inputText)) {
+      $targetEntryTextarea.val(glossary[$(this).val()][inputText]).trigger('input');
     } else {
       $translateEntryButtons.filter(`[data-translator="vietphrase"][data-lang="${$glossaryListSelect.val().startsWith('vietPhrase') ? 'vi' : 'SinoVietnamese'}"]`).click();
       $targetEntryTextarea.prop('scrollTop', 0);
