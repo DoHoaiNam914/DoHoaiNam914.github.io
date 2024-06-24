@@ -1002,6 +1002,10 @@ function reloadGlossaryEntries() {
         response($.grep(glossaryListForAutocomplete, (elementOfArray) => elementOfArray.label.split('=').some((element, index) => (index === 0 || !/\p{sc=Latn}/u.test(element) || element.length >= 2) && (matcher.test(element) || matcher.test(element.normalize('NFKD').replaceAll(/\p{Mn}/gu, '').replaceAll('đ', 'd').replaceAll('Đ', 'D'))))).slice(0, 20));
       }, 300);
     },
+    position: {
+      my: 'left bottom',
+      at: 'left top',
+    },
     focus: () => {
       $sourceEntryInput.trigger('input');
     },
