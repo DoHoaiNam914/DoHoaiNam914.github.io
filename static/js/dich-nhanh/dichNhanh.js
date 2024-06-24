@@ -1004,7 +1004,7 @@ function reloadGlossaryEntries() {
         response($.grep(glossaryListForAutocomplete, (elementOfArray) => elementOfArray.label.split('=').some((element, index) => (index === 0 || !/\p{sc=Latn}/u.test(element) || element.length >= 2) && (matcher.test(element) || matcher.test(element.normalize('NFKD').replaceAll(/\p{Mn}/gu, '').replaceAll('đ', 'd').replaceAll('Đ', 'D'))))).slice(0, MAX_SUGGESTIONS));
       }, DEBOUNCE_DELAY);
     },
-    response: () => {
+    focus: () => {
       $sourceEntryInput.trigger('input');
     },
     select: (__, ui) => {
@@ -1727,7 +1727,6 @@ $resetButton.on('click', () => {
 $('#glossary-modal').on('shown.bs.modal', () => {
   if ($sourceEntryInput.val().length === 0) return;
   $sourceEntryInput.trigger('input');
-  $sourceEntryInput.autocomplete('close');
 });
 
 $('#glossary-modal').on('hide.bs.modal', () => {
@@ -1829,10 +1828,6 @@ $sourceEntryInput.on('keypress', (event) => {
     $targetEntryTextarea.focus();
     event.preventDefault();
   }
-});
-
-$sourceEntryInput.on('blur', () => {
-  $sourceEntryInput.autocomplete('close');
 });
 
 $targetEntryTextarea.on('input', function onInput() {
