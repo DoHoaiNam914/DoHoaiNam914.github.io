@@ -1729,7 +1729,6 @@ $resetButton.on('click', () => {
 $('#glossary-modal').on('shown.bs.modal', () => {
   if ($sourceEntryInput.val().length === 0) return;
   $sourceEntryInput.trigger('input');
-  $sourceEntryInput.autocomplete('close');
 });
 
 $('#glossary-modal').on('hide.bs.modal', () => {
