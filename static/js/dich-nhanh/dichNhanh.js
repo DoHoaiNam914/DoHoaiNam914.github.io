@@ -992,8 +992,6 @@ function reloadGlossaryEntries() {
   }
 
   let debounceTimeout = null;
-  const DEBOUNCE_DELAY = 300;
-  const MAX_SUGGESTIONS = 20;
 
   $sourceEntryInput.autocomplete({
     appendTo: '#glossary-modal .modal-body',
@@ -1001,8 +999,8 @@ function reloadGlossaryEntries() {
       clearTimeout(debounceTimeout);
       debounceTimeout = setTimeout(() => {
         const matcher = new RegExp($.ui.autocomplete.escapeRegex(request.term), 'i');
-        response($.grep(glossaryListForAutocomplete, (elementOfArray) => elementOfArray.label.split('=').some((element, index) => (index === 0 || !/\p{sc=Latn}/u.test(element) || element.length >= 2) && (matcher.test(element) || matcher.test(element.normalize('NFKD').replaceAll(/\p{Mn}/gu, '').replaceAll('đ', 'd').replaceAll('Đ', 'D'))))).slice(0, MAX_SUGGESTIONS));
-      }, DEBOUNCE_DELAY);
+        response($.grep(glossaryListForAutocomplete, (elementOfArray) => elementOfArray.label.split('=').some((element, index) => (index === 0 || !/\p{sc=Latn}/u.test(element) || element.length >= 2) && (matcher.test(element) || matcher.test(element.normalize('NFKD').replaceAll(/\p{Mn}/gu, '').replaceAll('đ', 'd').replaceAll('Đ', 'D'))))).slice(0, 20));
+      }, 300);
     },
     focus: () => {
       $sourceEntryInput.trigger('input');
@@ -1811,7 +1809,7 @@ $sourceEntryInput.on('input', async function onInput() {
       vietPhraseTimeout = setTimeout(() => {
         $translateEntryButtons.filter(`[data-translator="vietphrase"][data-lang="${$glossaryListSelect.val().startsWith('vietPhrase') ? 'vi' : 'SinoVietnamese'}"]`).click();
         $targetEntryTextarea.prop('scrollTop', 0);
-      }, $glossaryListSelect.val().startsWith('vietPhrase') ? 500 : 0);
+      }, $glossaryListSelect.val().startsWith('vietPhrase') ? 300 : 0);
     }
 
     $addButton.removeClass('disabled');
