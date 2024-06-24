@@ -1831,6 +1831,10 @@ $sourceEntryInput.on('keypress', (event) => {
   }
 });
 
+$sourceEntryInput.on('blur', () => {
+  $sourceEntryInput.autocomplete('close');
+});
+
 $targetEntryTextarea.on('input', function onInput() {
   $(this).val($(this).val().replaceAll(/\n/g, ' '));
 });
