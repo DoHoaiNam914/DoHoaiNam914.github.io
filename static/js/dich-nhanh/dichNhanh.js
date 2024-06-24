@@ -995,7 +995,7 @@ function reloadGlossaryEntries() {
 
   $sourceEntryInput.autocomplete({
     appendTo: '#glossary-modal .modal-body',
-    disabled: true
+    disabled: true,
     minLength: 1,
     position: {
       my: 'left bottom',
