@@ -995,16 +995,18 @@ function reloadGlossaryEntries() {
 
   $sourceEntryInput.autocomplete({
     appendTo: '#glossary-modal .modal-body',
+    disabled: true
+    minLength: 1,
+    position: {
+      my: 'left bottom',
+      at: 'left top',
+    },
     source: (request, response) => {
       clearTimeout(debounceTimeout);
       debounceTimeout = setTimeout(() => {
         const matcher = new RegExp($.ui.autocomplete.escapeRegex(request.term), 'i');
         response($.grep(glossaryListForAutocomplete, (elementOfArray) => elementOfArray.label.split('=').some((element, index) => (index === 0 || !/\p{sc=Latn}/u.test(element) || element.length >= 2) && (matcher.test(element) || matcher.test(element.normalize('NFKD').replaceAll(/\p{Mn}/gu, '').replaceAll('đ', 'd').replaceAll('Đ', 'D'))))).slice(0, 20));
       }, 300);
-    },
-    position: {
-      my: 'left bottom',
-      at: 'left top',
     },
     focus: () => {
       $sourceEntryInput.trigger('input');
@@ -1727,12 +1729,13 @@ $resetButton.on('click', () => {
 });
 
 $('#glossary-modal').on('shown.bs.modal', () => {
-  if ($sourceEntryInput.val().length === 0) return;
-  $sourceEntryInput.trigger('input');
+  if ($sourceEntryInput.val().length > 0) $sourceEntryInput.trigger('input');
+  $sourceEntryInput.autocomplete('option', 'disabled', false);
 });
 
 $('#glossary-modal').on('hide.bs.modal', () => {
-  $sourceEntryInput.autocomplete('close');
+  $sourceEntryInput.autocomplete('option', 'close');
+  $sourceEntryInput.autocomplete('option', 'disabled', true);
   $sourceEntryInput.prop('scrollLeft', 0);
   $targetEntryTextarea.prop('scrollTop', 0);
   $addButton.addClass('disabled');
