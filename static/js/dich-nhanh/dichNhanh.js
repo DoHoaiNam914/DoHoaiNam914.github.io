@@ -393,6 +393,7 @@ let currentTranslator = null;
 let translateAbortController = null;
 let prevScrollTop = 0;
 let vietPhraseTimeout = null;
+let isOnGlossaryListChange = false
 
 let lastSession = {};
 
@@ -1791,15 +1792,8 @@ $glossaryListSelect.change(function onChange() {
   reloadGlossaryEntries();
 
   if (isLoaded && $sourceEntryInput.val().length > 0 && (Object.hasOwn(glossary[$(this).val()], $sourceEntryInput.val()) || window.confirm('Bạn có muốn chuyển đổi lại chứ?'))) {
-    if (Object.hasOwn(glossary[$(this).val()], $sourceEntryInput.val())) {
-      $targetEntryTextarea.val(glossary[$(this).val()][$sourceEntryInput.val()]).trigger('input');
-    } else {
-      $translateEntryButtons.filter(`[data-translator="vietphrase"][data-lang="${$glossaryListSelect.val().startsWith('vietPhrase') ? 'vi' : 'SinoVietnamese'}"]`).click();
-      $targetEntryTextarea.prop('scrollTop', 0);
-    }
-
-    $addButton.removeClass('disabled');
-    $removeButton.removeClass('disabled');
+    isOnGlossaryListChange = true;
+    $sourceEntryInput.trigger('input');
   }
 });
 
@@ -1816,7 +1810,7 @@ $sourceEntryInput.on('input', async function onInput() {
       vietPhraseTimeout = setTimeout(() => {
         $translateEntryButtons.filter(`[data-translator="vietphrase"][data-lang="${$glossaryListSelect.val().startsWith('vietPhrase') ? 'vi' : 'SinoVietnamese'}"]`).click();
         $targetEntryTextarea.prop('scrollTop', 0);
-      }, $glossaryListSelect.val().startsWith('vietPhrase') ? 300 : 0);
+      }, !isOnGlossaryListChange && $glossaryListSelect.val().startsWith('vietPhrase') ? 300 : 0);
       $removeButton.addClass('disabled');
     }
 
