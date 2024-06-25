@@ -1299,6 +1299,7 @@ class Vietphrase {
     ['采', 'THÁI'],
     ['彩', 'THÁI, THỂ'],
     ['呔', 'THÁI, THẢI'],
+    ['蹚', 'THANG'],
     ['遢', 'THẠP'],
     ['沈', 'THẨM'/* Họ */],
     ['瘆', 'THẨM'],
