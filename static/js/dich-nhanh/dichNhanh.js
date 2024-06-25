@@ -1738,6 +1738,7 @@ $('#glossary-modal').on('hide.bs.modal', () => {
   $sourceEntryInput.autocomplete('option', 'disabled', true);
   $sourceEntryInput.prop('scrollLeft', 0);
   $targetEntryTextarea.prop('scrollTop', 0);
+  $sourceEntryInput.val(null).trigger('input');
   $addButton.addClass('disabled');
   $removeButton.addClass('disabled');
 });
