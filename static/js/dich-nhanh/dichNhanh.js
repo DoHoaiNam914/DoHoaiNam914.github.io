@@ -1789,12 +1789,10 @@ $vietPhraseType.on('change', () => {
 });
 
 $glossaryListSelect.change(function onChange() {
+  isOnGlossaryListChange = true;
   reloadGlossaryEntries();
-
-  if (isLoaded && $sourceEntryInput.val().length > 0 && (Object.hasOwn(glossary[$(this).val()], $sourceEntryInput.val()) || window.confirm('Bạn có muốn chuyển đổi lại chứ?'))) {
-    isOnGlossaryListChange = true;
-    $sourceEntryInput.trigger('input');
-  }
+  if (isLoaded && $sourceEntryInput.val().length > 0 && (Object.hasOwn(glossary[$(this).val()], $sourceEntryInput.val()) || window.confirm('Bạn có muốn chuyển đổi lại chứ?'))) $sourceEntryInput.trigger('input');
+  isOnGlossaryListChange = false;
 });
 
 $sourceEntryInput.on('input', async function onInput() {
