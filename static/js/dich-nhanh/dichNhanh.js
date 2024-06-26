@@ -1730,11 +1730,12 @@ $resetButton.on('click', () => {
 
 $('#glossary-modal').on('shown.bs.modal', () => {
   if ($sourceEntryInput.val().length > 0) $sourceEntryInput.trigger('input');
-  $sourceEntryInput.autocomplete('enable');
+  $sourceEntryInput.autocomplete('close');
 });
 
 $('#glossary-modal').on('hide.bs.modal', () => {
-  $sourceEntryInput.autocomplete('disable');
+  clearTimeout(vietPhraseTimeout);
+  $sourceEntryInput.autocomplete('close');
   $sourceEntryInput.prop('scrollLeft', 0);
   $targetEntryTextarea.prop('scrollTop', 0);
   $sourceEntryInput.val(null).trigger('input');
