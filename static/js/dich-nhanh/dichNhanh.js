@@ -1827,8 +1827,8 @@ $sourceEntryInput.on('keypress', (event) => {
   }
 });
 
-$sourceEntryInput.on('blur', function onBlur() {
-  $(this).autocomplete('close');
+$sourceEntryInput.on('focus', function onBlur() {
+  $(this).autocomplete('search', $(this).val());
 });
 
 $targetEntryTextarea.on('input', function onInput() {
