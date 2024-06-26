@@ -298,26 +298,28 @@
 @font-face {
   font-family: 'SF Pro Text';
   font-style: normal;
+  font-weight: 400;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/SF-Pro/SF-Pro-Text-Regular.otf) format('opentype');
 }
 
 @font-face {
   font-family: 'SF Pro Text';
   font-style: italic;
+  font-weight: 400;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/SF-Pro/SF-Pro-Text-RegularItalic.otf) format('opentype');
 }
 
 @font-face {
   font-family: 'SF Pro Text';
   font-style: normal;
-  font-weight: bold;
+  font-weight: 700;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/SF-Pro/SF-Pro-Text-Bold.otf) format('opentype');
 }
 
 @font-face {
   font-family: 'SF Pro Text';
   font-style: italic;
-  font-weight: bold;
+  font-weight: 700;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/SF-Pro/SF-Pro-Text-BoldItalic.otf) format('opentype');
 }
 
@@ -326,12 +328,13 @@
 @font-face {
   font-family: 'Thonburi';
   font-style: normal;
-  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/thonburi/thonburi-2.ttf) format('truetype');
+  font-weight: 400;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Thonburi/Thonburi-01.ttf) format('truetype');
 }
 
 @font-face {
   font-family: 'Thonburi';
   font-style: normal;
-  font-weight: bold;
-  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/thonburi/thonburi-bold.ttf) format('truetype');
+  font-weight: 700;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Thonburi/Thonburi-Bold-02.ttf) format('truetype');
 }
