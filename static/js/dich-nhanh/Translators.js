@@ -1103,6 +1103,7 @@ class Vietphrase {
     ['重重', 'trùng trùng'],
     ['传道', 'truyền đạo'],
     ['传唤', 'truyền hoán'],
+    ['传经', 'truyền kinh'],
     ['传奇', 'truyền kỳ'],
     ['传人', 'truyền nhân'],
     ['传讯', 'truyền tấn'],
