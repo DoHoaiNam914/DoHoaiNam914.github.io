@@ -1310,7 +1310,7 @@ $themeOptions.click(function onClick() {
     if ($fontStackText.val().length === 0 || prevThemeFontFamily.startsWith($fontStackText.val())) $fontStackText.val($(this).data('font-family') ?? '').change();
     if ($(this).data('font-size') != null) $fontSizeRange.val($(this).data('font-size')).change();
     if ($(this).data('line-height') != null) $lineSpacingRange.val($(this).data('line-height')).change();
-    if ($(this).data('bold-text') != null) $boldTextSwitch.prop('checked', Boolean($(this).data('bold-text'))).change();
+    $boldTextSwitch.prop('checked', $(this).data('bold-text') != null && Boolean($(this).data('bold-text'))).change();
     if ($(this).data('text-align') != null) $alignmentSettingsSwitch.prop('checked', $(this).data('text-align') === 'justify').change();
   }
 
