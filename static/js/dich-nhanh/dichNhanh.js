@@ -1837,7 +1837,6 @@ $sourceEntryInput.on('focus', function onBlur() {
 });
 
 $targetEntryTextarea.on('input', function onInput() {
-  clearTimeout(vietPhraseTimeout);
   $(this).val($(this).val().replaceAll(/\n/g, ' '));
 });
 
