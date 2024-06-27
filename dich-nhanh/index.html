@@ -34,6 +34,7 @@
         --opt-font-family: unset;
         --opt-font-size: 1em;
         --opt-line-height: 1.2em;
+        --opt-font-weight: normal;
         --opt-text-align: unset;
       }
 
@@ -96,7 +97,7 @@
         font-family: var(--opt-font-family);
         font-size: var(--opt-font-size);
         font-variant: normal;
-        font-weight: normal;
+        font-weight: var(--opt-font-weight);
         height: 69vh;
         hyphens: none;
         max-height: 69vh;
@@ -169,6 +170,7 @@
 
       .text-font {
         font-family: var(--opt-font-family);
+        font-weight: var(--opt-font-weight);
       }
 
       .ui-autocomplete {
@@ -444,7 +446,7 @@
                     <button type="button" class="dropdown-item theme-option" data-background-color="#eeeded" data-dark-background-color="#1c1c1e" data-foreground-color="#1e1a1a" data-dark-foreground-color="#f2f2f0" data-hyperlink-color="#0071ed" data-dark-hyperlink-color="#009ddc" data-font-family="Charter, New York, Hiragino Sans, PingFang SC, Apple SD Gothic Neo, Thonburi" data-font-size="125" data-line-height="90" data-text-align="start">Apple Sách - Giấy</button>
                   </li>
                   <li>
-                    <button type="button" class="dropdown-item theme-option" data-background-color="#fff" data-dark-background-color="#000" data-foreground-color="#1c1c1e" data-dark-foreground-color="#efeff1" data-hyperlink-color="#007aff" data-dark-hyperlink-color="#009cdb" data-font-family="SF Pro Text, New York, Hiragino Sans, PingFang SC, Apple SD Gothic Neo, Thonburi" data-font-weight="bold" data-font-size="128.125" data-line-height="100" data-text-align="start">Apple Sách - Đậm</button>
+                    <button type="button" class="dropdown-item theme-option" data-background-color="#fff" data-dark-background-color="#000" data-foreground-color="#1c1c1e" data-dark-foreground-color="#efeff1" data-hyperlink-color="#007aff" data-dark-hyperlink-color="#009cdb" data-font-family="SF Pro Text, New York, Hiragino Sans, PingFang SC, Apple SD Gothic Neo, Thonburi" data-bold-text="true" data-font-size="128.125" data-line-height="100" data-text-align="start">Apple Sách - Đậm</button>
                   </li>
                   <li>
                     <button type="button" class="dropdown-item theme-option" data-background-color="#f1e2c9" data-dark-background-color="#423b30" data-foreground-color="#34281c" data-dark-foreground-color="#f9ecdb" data-hyperlink-color="#b48128" data-dark-hyperlink-color="#009ddc" data-font-family="Canela Text, New York, Hiragino Sans, PingFang SC, Apple SD Gothic Neo, Thonburi" data-font-size="125" data-line-height="90" data-text-align="start">Apple Sách - Êm dịu</button>
@@ -590,6 +592,10 @@
                 <label for="line-spacing-range" class="form-label">Khoảng cách dòng:
                   <input type="number" class="form-control form-control-sm d-inline number-option-display" id="line-spacing-display" value="40" max="300" min="0"/></label>
                 <input type="range" class="form-range option" id="line-spacing-range" value="40" min="0" max="300" step="any">
+              </div>
+              <div class="form-check form-switch mb-3">
+                <input type="checkbox" class="form-check-input option" id="bold-text-switch" role="switch">
+                <label class="form-check-label" for="bold-text-switch">Chữ đậm</label>
               </div>
               <div class="form-check form-switch mb-3">
                 <input type="checkbox" class="form-check-input option" id="alignment-settings-switch" role="switch" checked>

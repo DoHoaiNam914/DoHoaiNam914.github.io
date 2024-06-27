@@ -19,6 +19,7 @@ const $themeOptions = $('.theme-option');
 const $fontStackText = $('#font-stack-text');
 const $fontSizeRange = $('#font-size-range');
 const $lineSpacingRange = $('#line-spacing-range');
+const $boldTextSwitch = $('#bold-text-switch');
 const $alignmentSettingsSwitch = $('#alignment-settings-switch');
 const $formatSettingsSwitch = $('#format-settings-switch');
 const $translatorOptions = $('.translator-option');
@@ -42,7 +43,7 @@ const $addButton = $('#add-button');
 const $removeButton = $('#remove-button');
 const $glossaryName = $('#glossary-name');
 
-const defaultOptions = JSON.parse('{"source_language":"","target_language":"vi","translator":"microsoftTranslator","font_stack":"","font_size":100,"line_spacing":40,"alignment_settings":true,"format_settings":true,"show_original_text":false,"default_viet_phrase_file":"4","add_de_le_zhao":false,"multiplication_algorithm":"0","name":true,"glossary_type":"text/plain"}');
+const defaultOptions = JSON.parse('{"source_language":"","target_language":"vi","translator":"microsoftTranslator","font_stack":"","font_size":100,"line_spacing":40,"bold-text":true,"alignment_settings":true,"format_settings":true,"show_original_text":false,"default_viet_phrase_file":"4","add_de_le_zhao":false,"multiplication_algorithm":"0","name":true,"glossary_type":"text/plain"}');
 
 const SUPPORTED_LANGUAGES = ['', 'EN', 'JA', 'ZH', 'EN-US', 'auto', 'en', 'ja', 'zh-CN', 'zh-TW', 'vi', 'lzh', 'yue', 'zh-Hans', 'zh-Hant'];
 
@@ -1303,13 +1304,13 @@ $themeOptions.click(function onClick() {
   $('.textarea').css({
     'background-color': $(this).data('dark-background-color') != null && isDarkMode ? $(this).data('dark-background-color') : ($(this).data('background-color') ?? ''),
     color: $(this).data('dark-foreground-color') != null && isDarkMode ? $(this).data('dark-foreground-color') : ($(this).data('foreground-color') ?? ''),
-    'font-weight': $(this).data('font-weight') ?? '',
   });
 
   if (isLoaded) {
     if ($fontStackText.val().length === 0 || prevThemeFontFamily.startsWith($fontStackText.val())) $fontStackText.val($(this).data('font-family') ?? '').change();
     if ($(this).data('font-size') != null) $fontSizeRange.val($(this).data('font-size')).change();
     if ($(this).data('line-height') != null) $lineSpacingRange.val($(this).data('line-height')).change();
+    if ($(this).data('bold-text') != null) $boldTextSwitch.prop('checked', Boolean($(this).data('bold-text'))).change();
     if ($(this).data('text-align') != null) $alignmentSettingsSwitch.prop('checked', $(this).data('text-align') === 'justify').change();
   }
 
@@ -1369,6 +1370,14 @@ $lineSpacingRange.off('change');
 
 $lineSpacingRange.change(function onChange() {
   $(this).trigger('input');
+  localStorage.setItem('dich_nhanh', JSON.stringify(quickTranslateStorage));
+});
+
+$boldTextSwitch.off('change');
+
+$boldTextSwitch.change(function onChange() {
+  $(document.documentElement).css('--opt-font-weight', $(this).prop('checked') ? 'bold' : 'normal');
+  quickTranslateStorage[getOptionId($(this).attr('id'))] = $(this).prop('checked');
   localStorage.setItem('dich_nhanh', JSON.stringify(quickTranslateStorage));
 });
 
