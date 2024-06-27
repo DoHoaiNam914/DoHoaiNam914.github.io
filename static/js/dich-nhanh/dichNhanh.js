@@ -1729,13 +1729,17 @@ $resetButton.on('click', () => {
 });
 
 $('#glossary-modal').on('shown.bs.modal', () => {
-  if ($sourceEntryInput.val().length > 0) $sourceEntryInput.trigger('input');
-  $sourceEntryInput.autocomplete('close');
+  if ($sourceEntryInput.val().length > 0) {
+    if (!$sourceEntryInput.autocomplete('option', 'disabled')) $sourceEntryInput.autocomplete('disable');
+    $sourceEntryInput.trigger('input');
+  }
+
+  $sourceEntryInput.autocomplete('enable');
 });
 
 $('#glossary-modal').on('hide.bs.modal', () => {
   clearTimeout(vietPhraseTimeout);
-  $sourceEntryInput.autocomplete('close');
+  $sourceEntryInput.autocomplete('disable');
   $sourceEntryInput.prop('scrollLeft', 0);
   $targetEntryTextarea.prop('scrollTop', 0);
   $sourceEntryInput.val(null).trigger('input');
@@ -1809,7 +1813,7 @@ $sourceEntryInput.on('input', async function onInput() {
       vietPhraseTimeout = setTimeout(() => {
         $translateEntryButtons.filter(`[data-translator="vietphrase"][data-lang="${$glossaryListSelect.val().startsWith('vietPhrase') ? 'vi' : 'SinoVietnamese'}"]`).click();
         $targetEntryTextarea.prop('scrollTop', 0);
-      }, !isOnGlossaryListChange && $glossaryListSelect.val().startsWith('vietPhrase') ? 300 : 0);
+      }, !isOnGlossaryListChange && $glossaryListSelect.val().startsWith('vietPhrase') ? 500 : 0);
       $removeButton.addClass('disabled');
     }
 
@@ -1833,6 +1837,7 @@ $sourceEntryInput.on('focus', function onBlur() {
 });
 
 $targetEntryTextarea.on('input', function onInput() {
+  clearTimeout(vietPhraseTimeout);
   $(this).val($(this).val().replaceAll(/\n/g, ' '));
 });
 
