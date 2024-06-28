@@ -1893,7 +1893,7 @@ $('.define-button').on('click', function onClick() {
 
     switch ($(this).data('type')) {
       case 'char': {
-        defineContent = encodeURIComponent(defineContent.split(/(?:)/u)[0]);
+        defineContent = defineContent.split(/(?:)/u)[0];
         break;
       }
       case 'codePoint': {
