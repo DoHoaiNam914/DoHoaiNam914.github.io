@@ -1336,7 +1336,7 @@ $fontStackText.change(function onChange() {
 $fontSizeRange.on('input', function onInput() {
   const $fontSizeDisplay = $('#font-size-display');
   $fontSizeDisplay.val(parseFloat($(this).val()));
-  $(this).val(parseFloat($(this).val()).toFixed($fontSizeDisplay.val().includes('.') ? $fontSizeDisplay.val().split('.')[1].length : 0));
+  $(this).val(parseFloat($(this).val()).toFixed($fontSizeDisplay.val().includes('.') || $fontSizeDisplay.val().includes('.') ? $fontSizeDisplay.val().split(/[.,]/)[1].length : 0));
   $(document.documentElement).css('--opt-font-size', `${parseFloat($(this).val()) / 100}em`);
   quickTranslateStorage[getOptionId($(this).attr('id'))] = parseFloat($(this).val());
 });
