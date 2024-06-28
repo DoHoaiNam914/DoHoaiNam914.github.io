@@ -1891,20 +1891,22 @@ $('.define-button').on('click', function onClick() {
   if ($sourceEntryInput.val().length > 0) {
     let defineContent = ($sourceEntryInput.val().substring($sourceEntryInput.prop('selectionStart'), $sourceEntryInput.prop('selectionEnd')) || $sourceEntryInput.val()).trim(); // .substring(0, 30)
 
-    switch ($(this).data('type')) {
-      case 'char': {
-        defineContent = defineContent.split(/(?:)/u)[0];
-        break;
+    if ($(this).data('type') != null || $(this).data('type') !== 'encodeURIText') {
+      switch ($(this).data('type')) {
+        case 'char': {
+          defineContent = defineContent.split(/(?:)/u)[0];
+          break;
+        }
+        case 'codePoint': {
+          defineContent = defineContent.codePointAt();
+          break;
+        }
+        // no default
       }
-      case 'codePoint': {
-        defineContent = defineContent.codePointAt();
-        break;
-      }
-      default: {
-        defineContent = encodeURIComponent(defineContent);
-        break;
-      }
+    } else {
+      defineContent = encodeURIComponent(defineContent);
     }
+
     window.open($(this).data('href').replace('{0}', $(this).data('type') != null && encodeURIComponent(defineContent)), '_blank', 'width=1000,height=577');
   }
 
