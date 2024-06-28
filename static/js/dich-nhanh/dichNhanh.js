@@ -1013,7 +1013,7 @@ function reloadGlossaryEntries() {
       $sourceEntryInput.trigger('input');
     },
     select: (__, ui) => {
-      $sourceEntryInput.val(ui.item.value).trigger('input');
+      if ($sourceEntryInput.val() !== ui.item.value) $sourceEntryInput.val(ui.item.value).trigger('input');
     },
   });
 
