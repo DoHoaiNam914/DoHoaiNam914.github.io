@@ -1889,8 +1889,22 @@ $dropdownHasCollapse.on('show.bs.dropdown', function onHideBsDropdown() {
 
 $('.define-button').on('click', function onClick() {
   if ($sourceEntryInput.val().length > 0) {
-    const defineContent = ($sourceEntryInput.val().substring($sourceEntryInput.prop('selectionStart'), $sourceEntryInput.prop('selectionEnd')) || $sourceEntryInput.val()).trim(); // .substring(0, 30)
-    window.open($(this).data('href').replace('{0}', $(this).data('type') != null && $(this).data('type') === 'codePoint' ? defineContent.codePointAt() : encodeURIComponent(defineContent)), '_blank', 'width=1000,height=577');
+    let defineContent = ($sourceEntryInput.val().substring($sourceEntryInput.prop('selectionStart'), $sourceEntryInput.prop('selectionEnd')) || $sourceEntryInput.val()).trim(); // .substring(0, 30)
+    switch ($(this).data('type')) {
+      case 'char': {
+        defineContent = encodeURIComponent(defineContent.split(/(?:)/u)[0]);
+        break;
+      }
+      case 'codePoint': {
+        defineContent = defineContent.codePointAt();
+        break;
+      }
+      default: {
+        defineContent = encodeURIComponent(defineContent);
+        break;
+      }
+    }
+    window.open($(this).data('href').replace('{0}', $(this).data('type') != null && encodeURIComponent(defineContent)), '_blank', 'width=1000,height=577');
   }
 
   if (window.getSelection) window.getSelection().removeAllRanges();
