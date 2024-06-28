@@ -1890,6 +1890,7 @@ $dropdownHasCollapse.on('show.bs.dropdown', function onHideBsDropdown() {
 $('.define-button').on('click', function onClick() {
   if ($sourceEntryInput.val().length > 0) {
     let defineContent = ($sourceEntryInput.val().substring($sourceEntryInput.prop('selectionStart'), $sourceEntryInput.prop('selectionEnd')) || $sourceEntryInput.val()).trim(); // .substring(0, 30)
+
     switch ($(this).data('type')) {
       case 'char': {
         defineContent = encodeURIComponent(defineContent.split(/(?:)/u)[0]);
