@@ -1046,6 +1046,7 @@ class Vietphrase {
     ['命数', 'mệnh số'],
     ['美丽', 'mĩ lệ'],
     ['银行', 'ngân hàng'],
+    ['议长', 'nghị trưởng'],
     ['外号', 'ngoại hiệu'],
     ['二重', 'nhị trùng'],
     ['任务', 'nhiệm vụ'],

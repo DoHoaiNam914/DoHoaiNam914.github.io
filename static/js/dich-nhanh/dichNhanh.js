@@ -1335,8 +1335,8 @@ $fontStackText.change(function onChange() {
 
 $fontSizeRange.on('input', function onInput() {
   const $fontSizeDisplay = $('#font-size-display');
+  $(this).val(parseFloat($(this).val()).toFixed(/[.,]/.test($fontSizeDisplay.val()) ? $fontSizeDisplay.val().split(/[.,]/)[1].length : 0));
   $fontSizeDisplay.val(parseFloat($(this).val()));
-  $(this).val(parseFloat($(this).val()).toFixed($fontSizeDisplay.val().includes('.') || $fontSizeDisplay.val().includes('.') ? $fontSizeDisplay.val().split(/[.,]/)[1].length : 0));
   $(document.documentElement).css('--opt-font-size', `${parseFloat($(this).val()) / 100}em`);
   quickTranslateStorage[getOptionId($(this).attr('id'))] = parseFloat($(this).val());
 });
@@ -1355,8 +1355,8 @@ $fontSizeRange.change(function onChange() {
 
 $lineSpacingRange.on('input', function onInput() {
   const $lineSpacingDisplay = $('#line-spacing-display');
+  $(this).val(parseFloat($(this).val()).toFixed(/[.,]/.test($lineSpacingDisplay.val()) ? $lineSpacingDisplay.val().split(/[.,]/)[1].length : 0));
   $lineSpacingDisplay.val(parseInt($(this).val(), 10));
-  $(this).val(parseFloat($(this).val()).toFixed($lineSpacingDisplay.val().includes('.') ? $lineSpacingDisplay.val().split('.')[1].length : 0));
   $(document.documentElement).css('--opt-line-height', `${1 + ((0.5 * parseInt($(this).val(), 10)) / 100)}em`);
   quickTranslateStorage[getOptionId($(this).attr('id'))] = parseInt($(this).val(), 10);
 });
