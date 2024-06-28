@@ -1907,7 +1907,7 @@ $('.define-button').on('click', function onClick() {
       defineContent = encodeURIComponent(defineContent);
     }
 
-    window.open($(this).data('href').replace('{0}', $(this).data('type') != null && encodeURIComponent(defineContent)), '_blank', 'width=1000,height=577');
+    window.open($(this).data('href').replace('{0}', defineContent), '_blank', 'width=1000,height=577');
   }
 
   if (window.getSelection) window.getSelection().removeAllRanges();
