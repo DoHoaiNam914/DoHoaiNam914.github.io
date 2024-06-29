@@ -96,4 +96,64 @@ class Utils {
   static escapeRegExpReplacement(replacement) {
     return replacement.replace(/\$[&`'\d]/g, '$$$&');
   }
+
+  static hexToRgb(hexColor) {
+    let hex = hexColor.replace(/^#/, '');
+
+    if (hex.length === 3) {
+      hex = hex.split('').map((char) => char + char).join('');
+    }
+
+    const bigint = parseInt(hex, 16);
+    const red = (bigint >> 16) & 255;
+    const green = (bigint >> 8) & 255;
+    const blue = bigint & 255;
+
+    return { red, green, blue };
+  }
+
+  static rgbToHsb(red, green, blue) {
+    const redNormalized = red / 255;
+    const greenNormalized = green / 255;
+    const blueNormalized = blue / 255;
+
+    const max = Math.max(redNormalized, greenNormalized, blueNormalized);
+    const min = Math.min(redNormalized, greenNormalized, blueNormalized);
+    const delta = max - min;
+
+    let hue = 0;
+    let saturation = 0;
+    const brightness = max;
+
+    if (max !== 0) {
+      saturation = delta / max;
+    }
+
+    if (delta !== 0) {
+      switch (max) {
+        case redNormalized: {
+          hue = (greenNormalized - blueNormalized) / delta + (greenNormalized < blueNormalized ? 6 : 0);
+          break;
+        }
+        case greenNormalized: {
+          hue = (blueNormalized - redNormalized) / delta + 2;
+          break;
+        }
+        case blueNormalized: {
+          hue = (redNormalized - greenNormalized) / delta + 4;
+          break;
+        }
+        // no default
+      }
+
+      hue /= 6;
+    }
+
+    return { hue: hue * 360, saturation: saturation * 100, brightness: brightness * 100 };
+  }
+
+  static hexToHsb(hexColor) {
+    const { red, green, blue } = hexToRgb(hexColor);
+    return Utils.rgbToHsb(red, green, blue);
+  }
 }
