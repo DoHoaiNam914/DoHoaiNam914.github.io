@@ -1305,7 +1305,8 @@ $themeOptions.click(function onClick() {
     '--opt-background-color': $(this).data('dark-background-color') != null && isDarkMode ? $(this).data('dark-background-color') : ($(this).data('background-color') ?? ''),
     '--opt-color': $(this).data('dark-foreground-color') != null && isDarkMode ? $(this).data('dark-foreground-color') : ($(this).data('foreground-color') ?? ''),
   });
-  $(document.body).css('mix-blend-mode', $(this).text() !== 'Giao diện Bootstrap' ? 'multiply' : '');
+  if ($(this).text() !== 'Giao diện Bootstrap') $(document.body).css('mix-blend-mode', Utils.hexToHsb($(document.documentElement).css('--opt-background-color')).brightness > 65 ? 'multiply' : 'screen');
+  else $(document.body).css('mix-blend-mode', '');
 
   if (isLoaded) {
     if ($fontStackText.val().length === 0 || prevThemeFontFamily.startsWith($fontStackText.val())) $fontStackText.val($(this).data('font-family') ?? '').change();
