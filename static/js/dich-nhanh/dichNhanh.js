@@ -1393,7 +1393,7 @@ $lineSpacingRange.off('change');
 
 $lineSpacingRange.change(function onChange() {
   $lineSpacingDisplay.val(parseInt($(this).val(), 10));
-  $(document.documentElement).css('--opt-line-height', `${1 + ((0.5 * parseInt($(this).val(), 10)) / 100)}
+  $(document.documentElement).css('--opt-line-height', `${1 + ((0.5 * parseInt($(this).val(), 10)) / 100)}em`);
   quickTranslateStorage[getOptionId($(this).attr('id'))] = parseInt($(this).val(), 10);
   localStorage.setItem('dich_nhanh', JSON.stringify(quickTranslateStorage));
 });

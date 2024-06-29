@@ -1027,6 +1027,7 @@ class Vietphrase {
     ['降世', 'giáng thế'],
     ['降生', 'giáng sinh'],
     ['希望', 'hi vọng'],
+    ['现任', 'hiện nhiệm'],
     ['校长', 'hiệu trưởng'],
     ['欢乐', 'hoan lạc'],
     ['皇朝', 'hoàng triều'],
