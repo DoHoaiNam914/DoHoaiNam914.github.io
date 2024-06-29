@@ -1267,7 +1267,11 @@ $glossaryManagerButton.on('mousedown', () => {
   $('.textarea').blur();
 });
 
-$('[data-bs-theme-value]').on('click', () => $themeOptions.filter('.active').click());
+$('[data-bs-theme-value]').on('click', () => {
+  isOnBsThemeChange = true;
+  $themeOptions.filter('.active').click();
+  isOnBsThemeChange = false;
+});
 
 $options.change(function onChange() {
   const optionId = getOptionId($(this).attr('name') != null ? $(this).attr('name') : $(this).attr('id'));
@@ -1305,15 +1309,15 @@ $themeOptions.click(function onClick() {
     '--opt-background-color': $(this).data('dark-background-color') != null && isDarkMode ? $(this).data('dark-background-color') : ($(this).data('background-color') ?? ''),
     '--opt-color': $(this).data('dark-foreground-color') != null && isDarkMode ? $(this).data('dark-foreground-color') : ($(this).data('foreground-color') ?? ''),
   });
-  if ($(this).text() !== 'Giao diện Bootstrap') $(document.body).css('mix-blend-mode', Utils.hexToHsb($(document.documentElement).css('--opt-background-color')).brightness > 65 ? 'multiply' : 'screen');
+  if ($(this).text() !== 'Giao diện Bootstrap' && (!$(this).text().startsWith('Apple Sách') || !isDarkMode)) $(document.body).css('mix-blend-mode', Utils.hexToHsb($(document.documentElement).css('--opt-background-color')).brightness > 65 ? 'multiply' : 'screen');
   else $(document.body).css('mix-blend-mode', '');
 
-  if (isLoaded) {
+  if (isLoaded && !isOnBsThemeChange) {
     if ($fontStackText.val().length === 0 || prevThemeFontFamily.startsWith($fontStackText.val())) $fontStackText.val($(this).data('font-family') ?? '').change();
-    if ($(this).data('font-size') != null) $fontSizeRange.val($(this).data('font-size')).change();
-    if ($(this).data('line-height') != null) $lineSpacingRange.val($(this).data('line-height')).change();
+    $fontSizeRange.val($(this).data('font-size') != null ? $(this).data('font-size') : 100).change();
+    $lineSpacingRange.val($(this).data('line-height') != null ? $(this).data('line-height') : 40).change();
     $boldTextSwitch.prop('checked', $(this).data('bold-text') != null && Boolean($(this).data('bold-text'))).change();
-    if ($(this).data('text-align') != null) $alignmentSettingsSwitch.prop('checked', $(this).data('text-align') === 'justify').change();
+    $alignmentSettingsSwitch.prop('checked', $(this).data('text-align') != null && $(this).data('text-align') === 'justify').change();
   }
 
   quickTranslateStorage[getOptionId($(this).parent().parent().parent().attr('id'))] = $(this).text();
