@@ -1333,8 +1333,8 @@ $themeOptions.click(function onClick() {
 
   if (isLoaded && !isOnBsThemeChange) {
     if ($fontStackText.val().length === 0 || prevThemeFontFamily.startsWith($fontStackText.val())) $fontStackText.val($(this).data('font-family') ?? '').change();
-    $fontSizeRange.val($(this).data('font-size') != null ? $(this).data('font-size') : 100).change();
-    $lineSpacingRange.val($(this).data('line-height') != null ? $(this).data('line-height') : 40).change();
+    $fontSizeRange.val($(this).data('font-size') != null ? $(this).data('font-size') : 100).trigger('input').change();
+    $lineSpacingRange.val($(this).data('line-height') != null ? $(this).data('line-height') : 40).trigger('input').change();
     $boldTextSwitch.prop('checked', $(this).data('bold-text') != null && Boolean($(this).data('bold-text'))).change();
     $alignmentSettingsSwitch.prop('checked', $(this).data('text-align') != null && $(this).data('text-align') === 'justify').change();
   }
@@ -1372,6 +1372,8 @@ $fontSizeDisplay.on('change', function onChange() {
 $fontSizeRange.off('change');
 
 $fontSizeRange.change(function onChange() {
+  $fontSizeDisplay.val(parseFloat($(this).val()));
+  $(document.documentElement).css('--opt-font-size', `${parseFloat($(this).val()) / 100}em`);
   quickTranslateStorage[getOptionId($(this).attr('id'))] = parseFloat($(this).val());
   localStorage.setItem('dich_nhanh', JSON.stringify(quickTranslateStorage));
 });
@@ -1390,6 +1392,8 @@ $lineSpacingDisplay.on('change', function onChange() {
 $lineSpacingRange.off('change');
 
 $lineSpacingRange.change(function onChange() {
+  $lineSpacingDisplay.val(parseInt($(this).val(), 10));
+  $(document.documentElement).css('--opt-line-height', `${1 + ((0.5 * parseInt($(this).val(), 10)) / 100)}
   quickTranslateStorage[getOptionId($(this).attr('id'))] = parseInt($(this).val(), 10);
   localStorage.setItem('dich_nhanh', JSON.stringify(quickTranslateStorage));
 });
