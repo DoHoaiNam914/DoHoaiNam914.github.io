@@ -1310,21 +1310,23 @@ $themeOptions.click(function onClick() {
     '--opt-background-color': $(this).data('dark-background-color') != null && isDarkMode ? $(this).data('dark-background-color') : ($(this).data('background-color') ?? ''),
     '--opt-color': $(this).data('dark-foreground-color') != null && isDarkMode ? $(this).data('dark-foreground-color') : ($(this).data('foreground-color') ?? ''),
   });
+
   const [bodyRed, bodyGreen, bodyBlue] = $(document.body).css('background-color').replace(/rgb\(([^)]+)\)/, '$1').split(', ');
+
   if ($(this).text() !== 'Giao diện Bootstrap' && Math.abs(Utils.hexToHsb($(document.documentElement).css('--opt-background-color')).brightness - Utils.rgbToHsb(bodyRed, bodyGreen, bodyBlue).brightness) < 25) {
-    $(document.body).css('filter', '');
     $('.textarea').css('filter', '');
+    $(document.body).css('filter', '');
     $(document.body).css('mix-blend-mode', 'luminosity');
   } else {
-    if ($(this).text() !== 'Giao diện Bootstrap') {
-      $(document.body).css('mix-blend-mode', '');
-      $(document.body).css('filter', 'invert(
-    } else {
-      $(document.body).css('filter', '');
-      $('.textarea').css('filter', '');
-    }
+    $(document.body).css('mix-blend-mode', '');
 
-    $('.textarea').css('filter', 'invert(100%)');
+    if ($(this).text() !== 'Giao diện Bootstrap') {
+      $('.textarea').css('filter', 'invert(100%)');
+      $(document.body).css('filter', 'invert(100%)');
+    } else {
+      $('.textarea').css('filter', '');
+      $(document.body).css('filter', '');
+    }
   }
 
   if (isLoaded && !isOnBsThemeChange) {
