@@ -391,6 +391,7 @@ let glossary = {
 var glossaryData = '';
 
 let currentTranslator = null;
+let isOnBsThemeChange = false;
 let translateAbortController = null;
 let prevScrollTop = 0;
 let vietPhraseTimeout = null;
@@ -1309,7 +1310,8 @@ $themeOptions.click(function onClick() {
     '--opt-background-color': $(this).data('dark-background-color') != null && isDarkMode ? $(this).data('dark-background-color') : ($(this).data('background-color') ?? ''),
     '--opt-color': $(this).data('dark-foreground-color') != null && isDarkMode ? $(this).data('dark-foreground-color') : ($(this).data('foreground-color') ?? ''),
   });
-  if ($(this).text() !== 'Giao diện Bootstrap' && (!$(this).text().startsWith('Apple Sách') || !isDarkMode)) $(document.body).css('mix-blend-mode', Utils.hexToHsb($(document.documentElement).css('--opt-background-color')).brightness > 65 ? 'multiply' : 'screen');
+  const { brightness } = Utils.hexToHsb($(document.documentElement).css('--opt-background-color'));
+  if ($(this).text() !== 'Giao diện Bootstrap' && (!isDarkMode || brightness >= 25)) $(document.body).css('mix-blend-mode', brightness > 65 ? 'multiply' : 'screen');
   else $(document.body).css('mix-blend-mode', '');
 
   if (isLoaded && !isOnBsThemeChange) {
