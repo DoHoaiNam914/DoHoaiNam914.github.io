@@ -1216,23 +1216,13 @@ $translateButton.on('click', function onClick() {
 $copyButtons.on('click', async function onClick() {
   const target = $($(this).data('target'));
 
-  if (target.length > 0 && target.val().length > 0) {
-    if (target.attr('id') === 'result-textarea') {
-      if (Object.keys(lastSession).length > 0) {
-        await navigator.clipboard.writeText(lastSession.result);
-      }
-    } else {
-      await navigator.clipboard.writeText(target.val());
-    }
-
+  if (target.length > 0) {
+    if (target.attr('id') === 'result-textarea' && Object.keys(lastSession).length > 0) await navigator.clipboard.writeText(lastSession.result);
+    else if (target.val().length > 0) await navigator.clipboard.writeText(target.val());
     return;
   }
 
-  if (Object.hasOwn(window, $(this).data('target'))) {
-    if (window[$(this).data('target')].length > 0) {
-      await navigator.clipboard.writeText(window[$(this).data('target')]);
-    }
-  }
+  if (Object.hasOwn(window, $(this).data('target')) && window[$(this).data('target')].length > 0) await navigator.clipboard.writeText(window[$(this).data('target')]);
 });
 
 $pasteButtons.on('click', async function onClick() {
