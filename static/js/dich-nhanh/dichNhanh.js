@@ -1316,8 +1316,14 @@ $themeOptions.click(function onClick() {
     $('.textarea').css('filter', '');
     $(document.body).css('mix-blend-mode', 'luminosity');
   } else {
-    $(document.body).css('mix-blend-mode', '');
-    $(document.body).css('filter', 'invert(100%)');
+    if ($(this).text() !== 'Giao diện Bootstrap') {
+      $(document.body).css('mix-blend-mode', '');
+      $(document.body).css('filter', 'invert(
+    } else {
+      $(document.body).css('filter', '');
+      $('.textarea').css('filter', '');
+    }
+
     $('.textarea').css('filter', 'invert(100%)');
   }
 
