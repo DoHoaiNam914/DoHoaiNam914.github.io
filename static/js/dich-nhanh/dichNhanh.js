@@ -1310,9 +1310,16 @@ $themeOptions.click(function onClick() {
     '--opt-background-color': $(this).data('dark-background-color') != null && isDarkMode ? $(this).data('dark-background-color') : ($(this).data('background-color') ?? ''),
     '--opt-color': $(this).data('dark-foreground-color') != null && isDarkMode ? $(this).data('dark-foreground-color') : ($(this).data('foreground-color') ?? ''),
   });
-  const { brightness } = Utils.hexToHsb($(document.documentElement).css('--opt-background-color'));
-  if ($(this).text() !== 'Giao diện Bootstrap' && (!isDarkMode || brightness >= 25)) $(document.body).css('mix-blend-mode', brightness > 65 ? 'multiply' : 'screen');
-  else $(document.body).css('mix-blend-mode', '');
+  const [bodyRed, bodyGreen, bodyBlue] = $(document.body).css('background-color').replace(/rgb\(([^)]+)\)/, '$1').split(', ');
+  if ($(this).text() !== 'Giao diện Bootstrap' && Math.abs(Utils.hexToHsb($(document.documentElement).css('--opt-background-color')).brightness - Utils.rgbToHsb(bodyRed, bodyGreen, bodyBlue).brightness) < 25) {
+    $(document.body).css('filter', '');
+    $('.textarea').css('filter', '');
+    $(document.body).css('mix-blend-mode', 'luminosity');
+  } else {
+    $(document.body).css('mix-blend-mode', '');
+    $(document.body).css('filter', 'invert(100%)');
+    $('.textarea').css('filter', 'invert(100%)');
+  }
 
   if (isLoaded && !isOnBsThemeChange) {
     if ($fontStackText.val().length === 0 || prevThemeFontFamily.startsWith($fontStackText.val())) $fontStackText.val($(this).data('font-family') ?? '').change();
