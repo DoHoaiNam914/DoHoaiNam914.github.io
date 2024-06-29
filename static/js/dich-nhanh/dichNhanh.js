@@ -1361,10 +1361,9 @@ $fontSizeRange.on('input', function onInput() {
   $(this).val(parseFloat($(this).val()).toFixed(/[.,]/.test($fontSizeDisplay.val()) ? $fontSizeDisplay.val().split(/[.,]/)[1].length : 0));
   $fontSizeDisplay.val(parseFloat($(this).val()));
   $(document.documentElement).css('--opt-font-size', `${parseFloat($(this).val()) / 100}em`);
-  quickTranslateStorage[getOptionId($(this).attr('id'))] = parseFloat($(this).val());
 });
 
-$('#font-size-display').change(function onChange() {
+$('#font-size-display').on('change', function onChange() {
   const maybeValueIsBiggerThanMaxValue = $(this).val() > parseInt($fontSizeRange.attr('max'), 10) ? $fontSizeRange.attr('max') : $(this).val();
   $fontSizeRange.val($(this).val() < parseInt($fontSizeRange.attr('min'), 10) ? $fontSizeRange.attr('min') : maybeValueIsBiggerThanMaxValue).change();
 });
@@ -1372,7 +1371,7 @@ $('#font-size-display').change(function onChange() {
 $fontSizeRange.off('change');
 
 $fontSizeRange.change(function onChange() {
-  $('#font-size-display').val($(this).val()).change();
+  quickTranslateStorage[getOptionId($(this).attr('id'))] = parseFloat($(this).val());
   localStorage.setItem('dich_nhanh', JSON.stringify(quickTranslateStorage));
 });
 
@@ -1381,10 +1380,9 @@ $lineSpacingRange.on('input', function onInput() {
   $(this).val(parseFloat($(this).val()).toFixed(/[.,]/.test($lineSpacingDisplay.val()) ? $lineSpacingDisplay.val().split(/[.,]/)[1].length : 0));
   $lineSpacingDisplay.val(parseInt($(this).val(), 10));
   $(document.documentElement).css('--opt-line-height', `${1 + ((0.5 * parseInt($(this).val(), 10)) / 100)}em`);
-  quickTranslateStorage[getOptionId($(this).attr('id'))] = parseInt($(this).val(), 10);
 });
 
-$('#line-spacing-display').change(function onChange() {
+$('#line-spacing-display').on('change', (function onChange() {
   const maybeValueIsBiggerThanMaxValue = $(this).val() > parseInt($lineSpacingRange.attr('max'), 10) ? $lineSpacingRange.attr('max') : $(this).val();
   $lineSpacingRange.val($(this).val() < parseInt($lineSpacingRange.attr('min'), 10) ? $lineSpacingRange.attr('min') : maybeValueIsBiggerThanMaxValue).change();
 });
@@ -1392,7 +1390,7 @@ $('#line-spacing-display').change(function onChange() {
 $lineSpacingRange.off('change');
 
 $lineSpacingRange.change(function onChange() {
-  $('#line-spacing-display').val($(this).val()).change();
+  quickTranslateStorage[getOptionId($(this).attr('id'))] = parseInt($(this).val(), 10);
   localStorage.setItem('dich_nhanh', JSON.stringify(quickTranslateStorage));
 });
 
