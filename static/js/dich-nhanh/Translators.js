@@ -1263,6 +1263,7 @@ class Vietphrase {
     ['刃', 'NHẪN'],
     ['任', 'NHẬM, NHIỆM'/* Họ Nhậm */],
     ['儿', 'NHI'],
+    [/* Biến thể cũ */'伱', '你'/* CEDICT */],
     ['聂', 'NHIẾP'/* Họ */],
     ['蕊', 'NHUỴ'],
     [/* Biến thể cũ */'叒', '若'/* CEDICT */],
