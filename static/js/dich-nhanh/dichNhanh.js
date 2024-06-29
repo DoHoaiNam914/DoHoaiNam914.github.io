@@ -1313,20 +1313,20 @@ $themeOptions.click(function onClick() {
 
   const [bodyRed, bodyGreen, bodyBlue] = $(document.body).css('background-color').replace(/rgb\(([^)]+)\)/, '$1').split(', ');
 
-  if ($(this).text() !== 'Giao diện Bootstrap' && Math.abs(Utils.hexToHsb($(document.documentElement).css('--opt-background-color')).brightness - Utils.rgbToHsb(bodyRed, bodyGreen, bodyBlue).brightness) < 25) {
-    $('.textarea').css('filter', '');
-    $(document.body).css('filter', '');
-    $(document.body).css('mix-blend-mode', 'luminosity');
-  } else {
-    $(document.body).css('mix-blend-mode', '');
-
-    if ($(this).text() !== 'Giao diện Bootstrap') {
+  if ($(this).text() !== 'Giao diện Bootstrap') {
+    if (Math.abs(Utils.hexToHsb($(document.documentElement).css('--opt-background-color')).brightness - Utils.rgbToHsb(bodyRed, bodyGreen, bodyBlue).brightness) >= 25) {
       $('.textarea').css('filter', 'invert(100%)');
       $(document.body).css('filter', 'invert(100%)');
     } else {
       $('.textarea').css('filter', '');
       $(document.body).css('filter', '');
     }
+
+    $(document.body).css('mix-blend-mode', 'luminosity');
+  } else {
+    $('.textarea').css('filter', '');
+    $(document.body).css('filter', '');
+    $(document.body).css('mix-blend-mode', '');
   }
 
   if (isLoaded && !isOnBsThemeChange) {
