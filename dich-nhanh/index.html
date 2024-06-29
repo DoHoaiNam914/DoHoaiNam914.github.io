@@ -31,11 +31,11 @@
         --taiwanFontFamily: "方體", "PingFang TC", "黑體", "Heiti TC", "Microsoft JhengHei UI", "Microsoft JhengHei", Roboto, Noto, "Noto Sans CJK TC", sans-serif;
         --hongKongFontFamily: "方體", "PingFang HK", "方體", "PingFang TC", "黑體", "Heiti TC", "Microsoft JhengHei UI", "Microsoft JhengHei", Roboto, Noto, "Noto Sans CJK TC", sans-serif;
 
-        --opt-font-family: unset;
         --opt-font-size: 1em;
         --opt-line-height: 1.2em;
         --opt-font-weight: normal;
-        --opt-text-align: unset;
+
+        background-color: var(--opt-background-color);
       }
 
       body,
@@ -94,6 +94,8 @@
       }
 
       .textarea {
+        background-color: var(--opt-background-color);
+        color: var(--opt-color);
         font-family: var(--opt-font-family);
         font-size: var(--opt-font-size);
         font-variant: normal;
@@ -449,7 +451,7 @@
                     <button type="button" class="dropdown-item theme-option" data-background-color="#fff" data-dark-background-color="#000" data-foreground-color="#1c1c1e" data-dark-foreground-color="#efeff1" data-hyperlink-color="#007aff" data-dark-hyperlink-color="#009cdb" data-font-family="SF Pro Text, New York, Hiragino Sans, PingFang SC, Apple SD Gothic Neo, Thonburi" data-bold-text="true" data-font-size="128.125" data-line-height="100" data-text-align="start">Apple Sách - Đậm</button>
                   </li>
                   <li>
-                    <button type="button" class="dropdown-item theme-option" data-background-color="#f1e2c9" data-dark-background-color="#423b30" data-foreground-color="#34281c" data-dark-foreground-color="#f9ecdb" data-hyperlink-color="#b48128" data-dark-hyperlink-color="#009ddc" data-font-family="Canela Text, New York, Hiragino Sans, PingFang SC, Apple SD Gothic Neo, Thonburi" data-font-size="125" data-line-height="90" data-text-align="start">Apple Sách - Êm dịu</button>
+                    <button type="button" class="dropdown-item theme-option" data-background-color="#f1e2c9" data-dark-background-color="#423b30" data-mix-blend-background="true" data-foreground-color="#34281c" data-dark-foreground-color="#f9ecdb" data-hyperlink-color="#b48128" data-dark-hyperlink-color="#009ddc" data-font-family="Canela Text, New York, Hiragino Sans, PingFang SC, Apple SD Gothic Neo, Thonburi" data-font-size="125" data-line-height="90" data-text-align="start">Apple Sách - Êm dịu</button>
                   </li>
                   <li>
                     <button type="button" class="dropdown-item theme-option" data-background-color="#fefcf3" data-dark-background-color="#18160c" data-foreground-color="#141200" data-dark-foreground-color="#fff9eb" data-hyperlink-color="#bf902e" data-dark-hyperlink-color="#009ddc" data-font-family="Proxima Nova, New York, Hiragino Sans, PingFang SC, Apple SD Gothic Neo, Thonburi" data-font-size="112.5" data-line-height="80" data-text-align="justify">Apple Sách - Tập trung</button>

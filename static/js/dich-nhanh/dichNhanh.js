@@ -1301,10 +1301,11 @@ $themeOptions.click(function onClick() {
   $(this).addClass('active');
   const isDarkMode = $('#bd-theme').next().find('.active').data('bs-theme-value') === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : $('#bd-theme').next().find('.active').data('bs-theme-value') === 'dark';
 
-  $('.textarea').css({
-    'background-color': $(this).data('dark-background-color') != null && isDarkMode ? $(this).data('dark-background-color') : ($(this).data('background-color') ?? ''),
-    color: $(this).data('dark-foreground-color') != null && isDarkMode ? $(this).data('dark-foreground-color') : ($(this).data('foreground-color') ?? ''),
+  $(document.documentElement).css({
+    '--opt-background-color': $(this).data('dark-background-color') != null && isDarkMode ? $(this).data('dark-background-color') : ($(this).data('background-color') ?? ''),
+    '--opt-color': $(this).data('dark-foreground-color') != null && isDarkMode ? $(this).data('dark-foreground-color') : ($(this).data('foreground-color') ?? ''),
   });
+  $(document.body).css('mix-blend-mode', !isDarkMode && $(this).data('mix-blend-background') != null && Boolean($(this).data('mix-blend-background')) ? 'multiply' : '');
 
   if (isLoaded) {
     if ($fontStackText.val().length === 0 || prevThemeFontFamily.startsWith($fontStackText.val())) $fontStackText.val($(this).data('font-family') ?? '').change();
@@ -1349,7 +1350,7 @@ $('#font-size-display').on('change', function onChange() {
 $fontSizeRange.off('change');
 
 $fontSizeRange.change(function onChange() {
-  $(this).trigger('input');
+  $('#font-size-display').val($(this).val()).trigger('input');
   localStorage.setItem('dich_nhanh', JSON.stringify(quickTranslateStorage));
 });
 
@@ -1369,7 +1370,7 @@ $('#line-spacing-display').on('change', function onChange() {
 $lineSpacingRange.off('change');
 
 $lineSpacingRange.change(function onChange() {
-  $(this).trigger('input');
+  $('#line-spacing-display').val($(this).val()).trigger('input');
   localStorage.setItem('dich_nhanh', JSON.stringify(quickTranslateStorage));
 });
 
