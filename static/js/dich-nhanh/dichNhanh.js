@@ -1333,8 +1333,8 @@ $themeOptions.click(function onClick() {
 
   if (isLoaded && !isOnBsThemeChange) {
     if ($fontStackText.val().length === 0 || prevThemeFontFamily.startsWith($fontStackText.val())) $fontStackText.val($(this).data('font-family') ?? '').change();
-    $fontSizeRange.val($(this).data('font-size') != null ? $(this).data('font-size') : 100).trigger('input').change();
-    $lineSpacingRange.val($(this).data('line-height') != null ? $(this).data('line-height') : 40).trigger('input').change();
+    $fontSizeRange.val($(this).data('font-size') != null ? $(this).data('font-size') : 100).change();
+    $lineSpacingRange.val($(this).data('line-height') != null ? $(this).data('line-height') : 40).change();
     $boldTextSwitch.prop('checked', $(this).data('bold-text') != null && Boolean($(this).data('bold-text'))).change();
     $alignmentSettingsSwitch.prop('checked', $(this).data('text-align') != null && $(this).data('text-align') === 'justify').change();
   }
