@@ -17,7 +17,9 @@ const $glossaryManagerButton = $('#glossary-manager-button');
 
 const $themeOptions = $('.theme-option');
 const $fontStackText = $('#font-stack-text');
+const $fontSizeDisplay = $('#font-size-display');
 const $fontSizeRange = $('#font-size-range');
+const $lineSpacingDisplay = $('#line-spacing-display');
 const $lineSpacingRange = $('#line-spacing-range');
 const $boldTextSwitch = $('#bold-text-switch');
 const $alignmentSettingsSwitch = $('#alignment-settings-switch');
@@ -1357,13 +1359,12 @@ $fontStackText.change(function onChange() {
 });
 
 $fontSizeRange.on('input', function onInput() {
-  const $fontSizeDisplay = $('#font-size-display');
   $(this).val(parseFloat($(this).val()).toFixed(/[.,]/.test($fontSizeDisplay.val()) ? $fontSizeDisplay.val().split(/[.,]/)[1].length : 0));
   $fontSizeDisplay.val(parseFloat($(this).val()));
   $(document.documentElement).css('--opt-font-size', `${parseFloat($(this).val()) / 100}em`);
 });
 
-$('#font-size-display').on('change', function onChange() {
+$fontSizeDisplay.on('change', function onChange() {
   const maybeValueIsBiggerThanMaxValue = $(this).val() > parseInt($fontSizeRange.attr('max'), 10) ? $fontSizeRange.attr('max') : $(this).val();
   $fontSizeRange.val($(this).val() < parseInt($fontSizeRange.attr('min'), 10) ? $fontSizeRange.attr('min') : maybeValueIsBiggerThanMaxValue).change();
 });
@@ -1376,13 +1377,12 @@ $fontSizeRange.change(function onChange() {
 });
 
 $lineSpacingRange.on('input', function onInput() {
-  const $lineSpacingDisplay = $('#line-spacing-display');
   $(this).val(parseFloat($(this).val()).toFixed(/[.,]/.test($lineSpacingDisplay.val()) ? $lineSpacingDisplay.val().split(/[.,]/)[1].length : 0));
   $lineSpacingDisplay.val(parseInt($(this).val(), 10));
   $(document.documentElement).css('--opt-line-height', `${1 + ((0.5 * parseInt($(this).val(), 10)) / 100)}em`);
 });
 
-$('#line-spacing-display').on('change', (function onChange() {
+$lineSpacingDisplay.on('change', function onChange() {
   const maybeValueIsBiggerThanMaxValue = $(this).val() > parseInt($lineSpacingRange.attr('max'), 10) ? $lineSpacingRange.attr('max') : $(this).val();
   $lineSpacingRange.val($(this).val() < parseInt($lineSpacingRange.attr('min'), 10) ? $lineSpacingRange.attr('min') : maybeValueIsBiggerThanMaxValue).change();
 });
