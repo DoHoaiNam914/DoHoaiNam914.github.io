@@ -153,7 +153,7 @@ class Utils {
   }
 
   static hexToHsb(hexColor) {
-    const { red, green, blue } = hexToRgb(hexColor);
+    const { red, green, blue } = Utils.hexToRgb(hexColor);
     return Utils.rgbToHsb(red, green, blue);
   }
 }
