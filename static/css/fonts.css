@@ -234,6 +234,38 @@
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/PingFang/PingFangSC-Semibold.ttf) format('truetype');
 }
 
+/* PingFang TC */
+
+@font-face {
+  font-family: 'PingFang TC';
+  font-style: normal;
+  font-weight: 400;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/PingFang/PingFangTC-Regular.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: 'PingFang TC';
+  font-style: normal;
+  font-weight: 600;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/PingFang/PingFangTC-Semibold.ttf) format('truetype');
+}
+
+/* PingFang HK */
+
+@font-face {
+  font-family: 'PingFang HK';
+  font-style: normal;
+  font-weight: 400;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/PingFang/PingFangHK-Regular.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: 'PingFang HK';
+  font-style: normal;
+  font-weight: 600;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/PingFang/PingFangHK-Semibold.ttf) format('truetype');
+}
+
 /* Proxima Nova */
 
 @font-face {
@@ -324,6 +356,40 @@
   font-style: italic;
   font-weight: 700;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/SF-Pro/SF-Pro-Text-BoldItalic.otf) format('opentype');
+}
+
+/* STSong SC */
+
+@font-face {
+  font-family: 'STSong SC';
+  font-style: normal;
+  font-weight: 400;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/STSong/STSongSC.ttf) format('truetype');
+}
+
+/* STSong TC */
+
+@font-face {
+  font-family: 'STSong TC';
+  font-style: normal;
+  font-weight: 400;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/STSong/STSongTC.ttf) format('truetype');
+}
+
+/* TBMincho */
+
+@font-face {
+  font-family: 'TBMincho';
+  font-style: normal;
+  font-weight: 300;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/TBMincho/TBMinchoMedium_213.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: 'TBMincho';
+  font-style: normal;
+  font-weight: 700;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/TBMincho/TBMinchoBold_213.ttf) format('truetype');
 }
 
 /* Thonburi */
