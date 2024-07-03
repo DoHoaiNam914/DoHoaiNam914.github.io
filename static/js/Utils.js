@@ -105,9 +105,9 @@ class Utils {
     }
 
     const bigint = parseInt(hex, 16);
-    const red = (bigint >> 16) & 255;
-    const green = (bigint >> 8) & 255;
-    const blue = bigint & 255;
+    const red = (bigint / (256 * 256)) % 256;
+    const green = (bigint / 256) % 256;
+    const blue = bigint % 256;
 
     return { red, green, blue };
   }
