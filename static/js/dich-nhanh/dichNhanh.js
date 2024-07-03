@@ -579,25 +579,24 @@ function buildResult(inputText, result) {
                 idiomaticText.innerText = originalLines[i + lostLineFixedNumber];
                 paragraph.appendChild(idiomaticText);
                 if (i > 0 && resultLines[i - 1].length > 0) paragraph.classList.add('line-spacing');
-                resultDiv.appendChild(paragraph.cloneNode(true));
+                resultDiv.appendChild(paragraph);
                 paragraph = document.createElement('p');
               }
 
               paragraph.innerText = resultLines[i];
-              resultDiv.appendChild(paragraph.cloneNode(true));
             } else if (originalLines[i + lostLineFixedNumber].length > 0) {
               const idiomaticText = document.createElement('i');
               idiomaticText.innerText = originalLines[i + lostLineFixedNumber];
               paragraph.appendChild(idiomaticText);
-              paragraph.innerText += resultLines[i].trim().length > 0 ? ' ' : '';
+              paragraph.innerHTML += resultLines[i].trim().length > 0 ? ' ' : '';
               const attentionText = document.createElement('b');
               attentionText.innerText = resultLines[i];
               paragraph.appendChild(attentionText);
-              resultDiv.appendChild(paragraph.cloneNode(true));
             } else {
               paragraph.innerText = resultLines[i];
-              resultDiv.appendChild(paragraph);
             }
+
+            resultDiv.appendChild(paragraph);
           }
         } else if (i + lostLineFixedNumber < originalLines.length) {
           const paragraph = document.createElement('p');
