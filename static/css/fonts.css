@@ -1,23 +1,23 @@
 /* Apple SD Gothic Neo */
 
 @font-face {
-  font-family: appleSdGothicNeo;
+  font-family: appleSDGothicNeo;
   font-style: normal;
   font-weight: 400;
-  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/AppleSDGothicNeo/500_AppleSDGothicNeo-Regular.otf) format('opentype');
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/appleSDGothicNeo/500_appleSDGothicNeo-Regular.otf) format('opentype');
 }
 
 @font-face {
-  font-family: appleSdGothicNeo;
+  font-family: appleSDGothicNeo;
   font-style: normal;
   font-weight: 700;
-  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/AppleSDGothicNeo/700_AppleSDGothicNeo-Bold.otf) format('opentype');
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/appleSDGothicNeo/700_appleSDGothicNeo-Bold.otf) format('opentype');
 }
 
 /* A-OTF Ryumin Pr5 */
 
 @font-face {
-  font-family: aOtfRyuminPr5;
+  font-family: aOTFRyuminPr5;
   font-style: normal;
   font-weight: 400;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/A-OTF%20Ryumin%20Pr5%20R-KL.otf) format('opentype');
@@ -178,14 +178,14 @@
 /* Hiragino Mincho ProN */
 
 @font-face {
-  font-family: hiraginoMinchoPron;
+  font-family: hiraginoMinchoProN;
   font-style: normal;
   font-weight: 300;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/HiraMinProN/HiraMinProN-W3-AlphaNum-01.otf) format('opentype');
 }
 
 @font-face {
-  font-family: hiraginoMinchoPron;
+  font-family: hiraginoMinchoProN;
   font-style: normal;
   font-weight: 600;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/HiraMinProN/HiraMinProN-W6-AlphaNum-03.otf) format('opentype');
