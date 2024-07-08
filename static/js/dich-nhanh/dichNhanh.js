@@ -1757,7 +1757,13 @@ $resetButton.on('click', () => {
 });
 
 $('#glossary-modal').on('shown.bs.modal', () => {
-  if ($sourceEntryInput.val().length > 0) {
+  const inputText = $sourceEntryInput.val();
+  const selectGlossaryList = $glossaryListSelect.val();
+
+  if (inputText.length > 0) {
+    if (selectGlossaryList !== 'namePhu' && Object.hasOwn(glossary.namePhu, inputText)) $glossaryListSelect.val('namePhu').change();
+    else if (selectGlossaryList !== 'name' && Object.hasOwn(glossary.name, inputText)) $glossaryListSelect.val('name').change();
+    else if (selectGlossaryList !== 'vietPhrase' && Object.hasOwn(glossary.vietPhrase, inputText)) $glossaryListSelect.val('vietPhrase').change();
     if (!$sourceEntryInput.autocomplete('option', 'disabled')) $sourceEntryInput.autocomplete('disable');
     $sourceEntryInput.trigger('input');
   }
