@@ -1465,7 +1465,7 @@ class Vietphrase {
 
   static quickTranslate(inputText, translations) {
     if (translations == null || translations.length === 0) return inputText;
-    const translationsMap = Object.fromEntries(translations.map(([first, second]) => [first, second]));
+    const translationsMap = Object.fromEntries(translations.filter((element, __, array) => !array[element[0]] && (array[element[0]] = 1), {}));
 
     let startIndex = 0;
     const characters = inputText.split(/(?:)/u);
@@ -1834,8 +1834,8 @@ class Vietphrase {
         name = [...new Map(name.concat(luatNhanName))];
         const vietPhraseLength = Object.keys(glossary.vietPhrase).length;
         this.vietPhrase = Object.entries({
-          ...vietPhraseLength > 0 ? glossary.vietPhrasePhu : [], ...vietPhraseLength > 0 ? glossary.vietPhrase : [], ...vietPhraseLength > 0 ? { 的: options.addDeLeZhao ? hanViet.get('的') : '', 了: options.addDeLeZhao ? hanViet.get('了') : '', 着: options.addDeLeZhao ? hanViet.get('着') : '' } : {}, ...Object.fromEntries(luatNhanPronoun),
-        }).map(([first, second]) => [first, second.split(/[/|]/)[0]]);
+          ...vietPhraseLength > 0 ? glossary.chinesePhienAmWord : [], ...vietPhraseLength > 0 ? glossary.vietPhrase : [], ...vietPhraseLength > 0 ? { 的: options.addDeLeZhao ? hanViet.get('的') : '', 了: options.addDeLeZhao ? hanViet.get('了') : '', 着: options.addDeLeZhao ? hanViet.get('着') : '' } : {}, ...Object.fromEntries(luatNhanPronoun),
+        }).map(([first, second]) => [first, second.split(/[/|]/)[0]]).filter((element, ___, array) => !array[element[0]] && (array[element[0]] = 1), {});
         resultText = this.translateWithTextMapping(inputText, name, [...new Map(glossary.romajis.concat(glossary.KunYomis, glossary.OnYomis, [...hanViet]))]);
         resultText = options.autocapitalize ? Vietphrase.getCapitalizeText(resultText) : resultText;
         break;
