@@ -1993,6 +1993,7 @@ $removeButton.on('click', () => {
   reloadGlossaryEntries();
   if ($translatorOptions.filter($('.active')).data('id') === Translators.VIETPHRASE && $glossaryListSelect.val() !== 'namePhu') lastSession = {};
   $translateEntryButtons.filter(`[data-translator="vietphrase"][data-lang="${$glossaryListSelect.val().startsWith('vietPhrase') ? 'vi' : 'SinoVietnamese'}"]`).click();
+  $removeButton.addClass('disabled');
 });
 
 $glossaryName.on('change', () => {
