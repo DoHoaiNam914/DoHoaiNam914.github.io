@@ -1761,9 +1761,17 @@ $('#glossary-modal').on('shown.bs.modal', () => {
   const selectGlossaryList = $glossaryListSelect.val();
 
   if (inputText.length > 0) {
-    if (selectGlossaryList !== 'namePhu' && Object.hasOwn(glossary.namePhu, inputText)) $glossaryListSelect.val('namePhu').change();
-    else if (selectGlossaryList !== 'name' && Object.hasOwn(glossary.name, inputText)) $glossaryListSelect.val('name').change();
-    else if (selectGlossaryList !== 'vietPhrase' && Object.hasOwn(glossary.vietPhrase, inputText)) $glossaryListSelect.val('vietPhrase').change();
+    ['namePhu', 'name', 'vietPhrase'].some((element) => {
+      if (selectGlossaryList === element) return true;
+
+      if (Object.hasOwn(glossary[element], inputText)) {
+        $glossaryListSelect.val(element).change();
+        return true;
+      }
+
+      return false;
+    });
+
     if (!$sourceEntryInput.autocomplete('option', 'disabled')) $sourceEntryInput.autocomplete('disable');
     $sourceEntryInput.trigger('input');
   }
