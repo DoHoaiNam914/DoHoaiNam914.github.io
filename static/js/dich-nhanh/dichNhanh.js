@@ -1758,13 +1758,11 @@ $resetButton.on('click', () => {
 
 $('#glossary-modal').on('shown.bs.modal', () => {
   const inputText = $sourceEntryInput.val();
-  const selectGlossaryList = $glossaryListSelect.val();
 
   if (inputText.length > 0) {
     ['namePhu', 'name', 'vietPhrase'].some((element) => {
-      if (selectGlossaryList === element) return true;
-
       if (Object.hasOwn(glossary[element], inputText)) {
+        if ($glossaryListSelect.val() === element) return true;
         $glossaryListSelect.val(element).change();
         return true;
       }
