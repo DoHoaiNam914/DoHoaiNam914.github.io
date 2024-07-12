@@ -235,6 +235,7 @@ $(document).ready(() => {
   $inputTextarea.trigger('input');
 
   $.ajax({
+    cache: false,
     method: 'GET',
     url: '/static/datasource/Unihan_Variants.txt',
   }).done((data) => {
@@ -266,6 +267,7 @@ $(document).ready(() => {
   }
 
   $.ajax({
+    cache: false,
     method: 'GET',
     url: '/static/datasource/Unihan_Readings.txt',
   }).done((data) => {

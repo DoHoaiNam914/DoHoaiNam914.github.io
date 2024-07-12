@@ -23,6 +23,7 @@ class MicrosoftTranslator extends Translator {
     try {
       const bingTranslatorHtml = $.ajax({
         async: false,
+        cache: false,
         method: 'GET',
         url: `${Utils.CORS_PROXY}https://www.bing.com/translator`,
       }).responseText;
@@ -66,6 +67,7 @@ class MicrosoftTranslator extends Translator {
         if (lines.length === 0 || [...queryLines, lines[0]].join('\n').length > this.maxContentLengthPerRequest) {
           const queryText = queryLines.join('\n');
           responses.push($.ajax({
+            cache: false,
             data: `&fromLang=${sourceLanguage ?? MicrosoftTranslator.AUTODETECT}&to=${targetLanguage}&token=${this.token}&key=${this.key}${this.tone === 'Standard' ? `&text=${queryText}&tryFetchingGenderDebiasedTranslations=true` : `&tone=${this.tone}&text=${queryText}`}`,
             headers: { 'Content-type': 'application/x-www-form-urlencoded' },
             method: 'POST',

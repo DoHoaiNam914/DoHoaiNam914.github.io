@@ -16,7 +16,7 @@ $(document).ready(async () => {
     switch (dictionary) {
       case 'thieuchuu': {
         $.ajax({
-          async: false,
+          cache: false,
           method: 'GET',
           url: '/static/datasource/cjkvmap.txt',
         }).done((data) => {
@@ -75,7 +75,7 @@ $(document).ready(async () => {
         define = define.replaceAll(new RegExp(`${Utils.getTrieRegexPatternFromWords(Object.keys(oldAccentObject)).source}(?= |$)`, 'g'), (match) => oldAccentObject[match] ?? match);
 
         $.ajax({
-          async: false,
+          cache: false,
           method: 'GET',
           url: `${Utils.CORS_PROXY}http://nguyendu.com.free.fr/hanviet/ajax.php?query=${encodeURIComponent(define)}&methode=normal`,
         }).done((a) => {
@@ -128,11 +128,15 @@ function loadAd()
             dictionaryUrl = '/static/datasource/lacviet/lv-[vi-zh].tsv';
             break;
           }
+          case 'V-V': {
+            dictionaryUrl = '/static/datasource/lacviet/lv-[vi-vi].tsv';
+            break;
+          }
           // no default
         }
 
         $.ajax({
-          async: false,
+          cache: false,
           method: 'GET',
           url: dictionaryUrl,
         }).done((data) => {
@@ -160,12 +164,15 @@ function loadAd()
             sectionHeading.innerText = first;
             $(document.body).append(sectionHeading.cloneNode(true));
 
-            second.split('\\n').forEach((element) => {
-              paragraph.innerText = element;
+            second.split(/><(?!\/)/).forEach((element) => {
+              paragraph.innerHTML = `${!element.startsWith('<') ? '<' : ''}${element}${!element.endsWith('>') ? '>' : ''}`;
               $(document.body).append(paragraph.cloneNode(true));
             });
 
             $(document.body).append(document.createElement('hr'));
+          });
+          $(document.body).find('a[href]').each((__, element) => {
+            $(element).attr('href', `/dich-nhanh/tra-tu-dien.html?dictionary=lac-viet&dict=V-V&define=${$(element).attr('href')}`);
           });
         });
 

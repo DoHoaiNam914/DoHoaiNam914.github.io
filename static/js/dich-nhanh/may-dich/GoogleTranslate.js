@@ -150,6 +150,7 @@ class GoogleTranslate extends Translator {
 
         if (lines.length === 0 || [...queryLines, lines[0]].join('\n').length > this.maxContentLengthPerRequest) {
           responses.push($.ajax({
+            cache: false,
             data: `q=${queryLines.map((element) => encodeURIComponent(element)).join('&q=')}`,
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             method: 'POST',
