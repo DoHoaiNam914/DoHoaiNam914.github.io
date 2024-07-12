@@ -1054,6 +1054,7 @@ class Vietphrase {
     ['银行', 'ngân hàng'],
     ['议长', 'nghị trưởng'],
     ['外号', 'ngoại hiệu'],
+    ['娱乐', 'ngu lạc'],
     ['二重', 'nhị trùng'],
     ['任务', 'nhiệm vụ'],
     ['奴仆', 'nô bộc'],
