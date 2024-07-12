@@ -1060,7 +1060,7 @@ class Vietphrase {
     ['女仆', 'nữ bộc'],
     ['玻璃', 'pha lê'],
     ['坂本', 'Phản Bản'/* Họ */],
-    ['缥缈', 'phiêu miểu'],
+    ['缥缈', 'phiêu miễu'],
     ['副本', 'phó bản'],
     ['封号', 'phong hiệu'],
     ['府邸', 'phủ để'],
