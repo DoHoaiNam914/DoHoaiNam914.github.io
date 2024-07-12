@@ -1,7 +1,7 @@
 'use strict';
 
-class Papago {
-  static SOURCE_LANGUAGES = {
+class Papago extends Translator {
+  static SOURCE_LANGUAGE_LIST = {
     auto: 'Phát hiện ngôn ngữ',
     ko: 'Hàn',
     en: 'Anh',
@@ -20,7 +20,7 @@ class Papago {
     hi: 'Hindi',
   };
 
-  static TARGET_LANGUAGES = {
+  static TARGET_LANGUAGE_LIST = {
     ko: 'Hàn',
     en: 'Anh',
     ja: 'Nhật',
@@ -38,45 +38,16 @@ class Papago {
     hi: 'Hindi',
   };
 
-  static DETECT_LANGUAGE = 'auto';
-
-  static DefaultLanguage = {
-    SOURCE: Papago.DETECT_LANGUAGE,
-    TARGET: 'vi',
-  };
-
-  static BAIDU_FANYI_MAPPING = {
-    ja: 'jp',
-    vi: 'vie',
-    'zh-CN': 'zh',
-    'zh-TW': 'cht',
-  };
-
-  static DEEPL_TRANSLATOR_MAPPING = {
-    SOURCE_LANGUAGES: {
-      '': 'auto',
-      en: 'EN',
-      ja: 'JA',
-      'zh-CN': 'ZH',
-      'zh-TW': 'ZH',
-    },
-    TARGET_LANGUAGES: {
-      en: 'EN-US',
-      ja: 'JA',
-      'zh-CN': 'ZH',
-      'zh-TW': 'ZH',
-    },
-  };
-
-  static MICROSOFT_TRANSLATOR_MAPPING = {
-    auto: '',
-    'zh-CN': 'zh-Hans',
-    'zh-TW': 'zh-Hant',
+  DefaultLanguage = {
+    SOURCE_lANGUAGE: 'auto',
+    TARGET_lANGUAGE: 'vi',
   };
 
   constructor(uuid) {
-    this.uuid = uuid;
+    super();
     this.fetchVersion();
+    this.uuid = uuid;
+    this.maxContentLengthPerRequest = 3000;
   }
 
   fetchVersion() {
@@ -98,24 +69,38 @@ class Papago {
     }
   }
 
-  translateText(source, target, text) {
+  async translateText(text, targetLanguage, sourceLanguage = this.DefaultLanguage.SOURCE_lANGUAGE) {
     try {
-      const timeStamp = (new Date()).getTime();
+      const lines = text.split(/\n/);
+      let queryLines = [];
+      const responses = [];
 
-      return $.ajax({
-        async: false,
-        data: `deviceId=${this.uuid}&locale=vi&dict=true&dictDisplay=30&honorific=true&instant=false&paging=false&source=${source}&target=${target}&text=${encodeURIComponent(text)}`,
-        headers: {
-          Accept: 'application/json',
-          'Accept-Language': 'vi',
-          'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-          'x-apigw-partnerid': 'papago',
-          Authorization: `PPG ${this.uuid}:${CryptoJS.HmacMD5(`${this.uuid}\nhttps://papago.naver.com/apis/n2mt/translate\n${timeStamp}`, this.version).toString(CryptoJS.enc.Base64)}`,
-          Timestamp: timeStamp,
-        },
-        method: 'POST',
-        url: `${Utils.CORS_PROXY}https://papago.naver.com/apis/n2mt/translate`,
-      }).responseJSON.translatedText;
+      while (lines.length > 0 && [...queryLines, lines[0]].join('\n').length <= this.maxContentLengthPerRequest) {
+        queryLines.push(lines.shift());
+
+        if (lines.length === 0 || [...queryLines, lines[0]].join('\n').length > this.maxContentLengthPerRequest) {
+          const timeStamp = (new Date()).getTime();
+          responses.push($.ajax({
+            data: `deviceId=${this.uuid}&locale=vi&dict=true&dictDisplay=30&honorific=true&instant=false&paging=false&source=${sourceLanguage}&target=${targetLanguage}&text=${encodeURIComponent(queryLines.join('\n'))}`,
+            headers: {
+              Accept: 'application/json',
+              'Accept-Language': 'vi',
+              'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+              'x-apigw-partnerid': 'papago',
+              Authorization: `PPG ${this.uuid}:${CryptoJS.HmacMD5(`${this.uuid}\nhttps://papago.naver.com/apis/n2mt/translate\n${timeStamp}`, this.version).toString(CryptoJS.enc.Base64)}`,
+              Timestamp: timeStamp,
+            },
+            method: 'POST',
+            url: `${Utils.CORS_PROXY}https://papago.naver.com/apis/n2mt/translate`,
+          }));
+          queryLines = [];
+        }
+      }
+
+      await Promise.all(responses);
+      this.result = responses.map((element) => element.responseJSON.translatedText).join('\n');
+      super.translateText(text, targetLanguage, sourceLanguage);
+      return this.result;
     } catch (error) {
       console.error('Bản dịch lỗi:', error);
       throw error;
