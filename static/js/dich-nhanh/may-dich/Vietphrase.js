@@ -797,15 +797,15 @@ class Vietphrase {
         break;
       }
       case 'pinyin': {
-        resultText = Vietphrase.getFormattedText(Vietphrase.quickTranslate(inputText, glossary.romajis.concat(glossary.pinyins.map(([first, second]) => [first, Vietphrase.removeAccents(second)]))));
+        resultText = Vietphrase.getFormattedText(Vietphrase.quickTranslate(inputText, [...new Map(glossary.romajis.concat(glossary.pinyins.map(([first, second]) => [first, Vietphrase.removeAccents(second)])))]));
         break;
       }
       case 'KunYomi': {
-        resultText = Vietphrase.getFormattedText(Vietphrase.quickTranslate(inputText, glossary.KunYomis.concat(glossary.OnYomis, glossary.romajis).filter(([first], ___, array) => !array[first] && (array[first] = 1), {})));
+        resultText = Vietphrase.getFormattedText(Vietphrase.quickTranslate(inputText, glossary.KunYomis.concat(glossary.romajis).filter(([first], ___, array) => !array[first] && (array[first] = 1), {})));
         break;
       }
       case 'OnYomi': {
-        resultText = Vietphrase.getFormattedText(Vietphrase.quickTranslate(inputText, glossary.OnYomis.concat(glossary.KunYomis, glossary.romajis).filter(([first], ___, array) => !array[first] && (array[first] = 1), {})));
+        resultText = Vietphrase.getFormattedText(Vietphrase.quickTranslate(inputText, glossary.OnYomis.concat(glossary.romajis).filter(([first], ___, array) => !array[first] && (array[first] = 1), {})));
         break;
       }
       case 'vi': {
@@ -829,12 +829,12 @@ class Vietphrase {
         this.vietPhrase = Object.entries({
           ...vietPhraseLength > 0 ? glossary.chinesePhienAmWord : [], ...vietPhraseLength > 0 ? glossary.vietPhrase : [], ...vietPhraseLength > 0 ? { 的: options.addDeLeZhao ? hanViet.get('的') : '', 了: options.addDeLeZhao ? hanViet.get('了') : '', 着: options.addDeLeZhao ? hanViet.get('着') : '' } : {}, ...Object.fromEntries(luatNhanPronoun),
         }).map(([first, second]) => [first, second.split(/[/|]/)[0]]).filter((element, ___, array) => !array[element[0]] && (array[element[0]] = 1), {});
-        resultText = this.translateWithTextMapping(inputText, name, [...new Map(glossary.romajis.concat(glossary.KunYomis, glossary.OnYomis, [...hanViet]))]);
+        resultText = this.translateWithTextMapping(inputText, name, [...new Map(glossary.romajis.concat([...hanViet]))]);
         resultText = options.autocapitalize ? Vietphrase.getCapitalizeText(resultText) : resultText;
         break;
       }
       default: {
-        resultText = Vietphrase.getFormattedText(Vietphrase.quickTranslate(inputText, [...hanViet]));
+        resultText = Vietphrase.getFormattedText(Vietphrase.quickTranslate(inputText, [...new Map(glossary.romajis.concat([...hanViet]))]));
         break;
       }
     }
