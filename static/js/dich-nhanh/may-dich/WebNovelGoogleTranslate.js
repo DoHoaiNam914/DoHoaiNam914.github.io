@@ -14,7 +14,7 @@ class WebNovelGoogleTranslate extends Translator {
   constructor() {
     super();
     this.clientName = 'gtx';
-    this.maxContentLengthPerRequest = 5000;
+    this.maxContentLengthPerRequest = 1000;
   }
 
   async translateText(text, targetLanguage, sourceLanguage = this.DefaultLanguage.SOURCE_lANGUAGE) {
