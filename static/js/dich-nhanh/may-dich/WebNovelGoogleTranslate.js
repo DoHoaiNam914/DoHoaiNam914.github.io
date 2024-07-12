@@ -37,7 +37,7 @@ class WebNovelGoogleTranslate extends Translator {
       }
 
       await Promise.all(responses);
-      this.result = responses.map((element) => element.responseJSON[0].map(([first]) => first).join('').replace(/ ?(?:\|{4}|\|[| ]{3,})(?!\|) ?/g, '\n')).join('\n');
+      this.result = responses.map((element) => element.responseJSON[0].map(([first]) => first).join('').replace(/ ?(?:\|{4}|\|[| ]{3,})(?!\|) ?/g, '\n')).join('\n').split('\n').map((element, index) => (index > 0 ? element.charAt(0) + element.substring(1) : element)).join('\n');
       super.translateText(text, targetLanguage, sourceLanguage);
       return this.result;
     } catch (error) {
