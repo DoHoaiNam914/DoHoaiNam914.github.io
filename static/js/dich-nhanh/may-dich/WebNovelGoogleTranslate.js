@@ -31,14 +31,14 @@ class WebNovelGoogleTranslate extends Translator {
           responses.push($.ajax({
             cache: false,
             method: 'GET',
-            url: `${Utils.CORS_PROXY}http://translate.google.com/translate_a/single?client=${this.clientName}&ie=UTF-8&oe=UTF-8&dt=bd&dt=ex&dt=ld&dt=md&dt=rw&dt=rm&dt=ss&dt=t&dt=at&dt=gt&dt=qc&sl=${sourceLanguage}&tl=${targetLanguage}&hl=${targetLanguage}&q=${encodeURIComponent(queryLines.join('||||'))}`,
+            url: `${Utils.CORS_PROXY}http://translate.google.com/translate_a/single?client=${this.clientName}&ie=UTF-8&oe=UTF-8&dt=bd&dt=ex&dt=ld&dt=md&dt=rw&dt=rm&dt=ss&dt=t&dt=at&dt=gt&dt=qc&sl=${sourceLanguage}&tl=${targetLanguage}&hl=${targetLanguage}&q=${encodeURIComponent(queryLines.join(['ja', 'zh-CN', 'zh-TW'].some((element) => sourceLanguage === element) ? '||||' : '\\n'))}`,
           }));
           queryLines = [];
         }
       }
 
       await Promise.all(responses);
-      this.result = responses.map((element) => element.responseJSON[0].map(([first]) => first).join('').replace(/ ?(?:\|{4}|\|[| ]{3,})(?!\|) ?/g, '\n')).join('\n');
+      this.result = responses.map((element) => element.responseJSON[0].map(([first]) => first).join('').replaceAll(['ja', 'zh-CN', 'zh-TW'].some((b) => sourceLanguage === b) ? / ?(?:\|{4}|\|[| ]{3,})(?!\|)/g : / ?\\n/g, '\n')).join('\n');
       super.translateText(text, targetLanguage, sourceLanguage);
       return this.result;
     } catch (error) {
