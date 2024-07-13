@@ -143,10 +143,6 @@
 
       .textarea > p {
         -webkit-user-select: auto;
-        display: block;
-        margin: 0 0 4px;
-        page-break-after: auto;
-        page-break-before: auto;
         user-select: auto;
       }
 
@@ -183,16 +179,6 @@
         font-family: var(--opt-font-family);
         font-weight: var(--opt-font-weight);
       }
-
-      .ui-autocomplete {
-        max-height: 100px;
-        overflow-y: auto;
-        overflow-x: hidden;
-      }
-
-      * html .ui-autocomplete {
-        height: 100px;
-      }
     </style>
     <script>
       'use strict';
@@ -221,9 +207,16 @@
           '/static/js/Utils.js',
           '/static/lib/hanviet.js',
           '/static/lib/handict.js',
-          '/static/js/dich-nhanhOLD/Translators.js',
           '/static/js/newAccentMap.js',
-          '/static/js/dich-nhanhOLD/dichNhanh.js',
+          '/static/js/dich-nhanh/Translator.js',
+          '/static/js/dich-nhanh/may-dich/Vietphrase.js',
+          '/static/js/dich-nhanh/may-dich/MicrosoftTranslator.js',
+          '/static/js/dich-nhanh/may-dich/GoogleTranslate.js',
+          '/static/js/dich-nhanh/may-dich/BaiduTranslate.js',
+          '/static/js/dich-nhanh/may-dich/DeepLTranslate.js',
+          '/static/js/dich-nhanh/may-dich/Papago.js',
+          '/static/js/dich-nhanh/may-dich/WebNovelGoogleTranslate.js',
+          '/static/js/dich-nhanh/dichNhanh.js',
         ],
       ];
 
@@ -322,12 +315,12 @@
             <div class="col-10 pe-0">
               <div class="row m-0 w-100">
                 <div class="col ps-0">
-                  <select class="form-select option quick-translate-option" id="source-language-select">
-                    <option value="" selected>Tự phát hiện</option>
+                  <select class="form-select language-select option quick-translate-option" id="source-language-select">
+                    <option value="auto-detect" selected>Tự phát hiện</option>
                   </select>
                 </div>
                 <div class="col">
-                  <select class="form-select option quick-translate-option" id="target-language-select">
+                  <select class="form-select language-select option quick-translate-option" id="target-language-select">
                     <option value="vi" selected>Tiếng Việt</option>
                   </select>
                 </div>
@@ -376,6 +369,51 @@
               <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
+              <h2 class="fs-5">Thiết lập trình dịch</h2>
+              <div class="dropdown mb-3 option quick-translate-option" id="translator-dropdown">
+                <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
+                  <svg class="bi" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor">
+                    <use xlink:href="#translate"></use>
+                  </svg>
+                  Trình dịch
+                </button>
+                <ul class="dropdown-menu">
+                  <li>
+                    <button type="button" class="dropdown-item" value="baiduTranslate">Baidu Translate</button>
+                  </li>
+                  <li>
+                    <button type="button" class="dropdown-item" value="deeplTranslate">DeepL Translate</button>
+                  </li>
+                  <li>
+                    <button type="button" class="dropdown-item" value="googleTranslate">Google Dịch</button>
+                  </li>
+                  <li>
+                    <button type="button" class="dropdown-item" value="papago">Papago</button>
+                  </li>
+                  <li>
+                    <button type="button" class="dropdown-item active" value="microsoftTranslator">Trình dịch Microsoft</button>
+                  </li>
+                  <li>
+                    <button type="button" class="dropdown-item" value="vietphrase">Vietphrase</button>
+                  </li>
+                  <li>
+                    <button type="button" class="dropdown-item" value="webnovelGoogleTranslate">WebNovel Google Translate</button>
+                  </li>
+                </ul>
+              </div>
+              <div class="mb-3">
+                <label class="form-label" for="tone-select">Giọng điệu của Trình dịch Microsoft:</label>
+                <select class="form-select form-select-sm option" id="tone-select">
+                  <option value="Standard">Tiêu chuẩn</option>
+                  <option value="Casual">Thông thường</option>
+                  <option value="Formal">Trang trọng</option>
+                </select>
+              </div>
+              <div class="form-check form-switch mb-3">
+                <input type="checkbox" class="form-check-input option" id="show-original-text-switch" role="switch">
+                <label class="form-check-label" for="show-original-text-switch">Hiển thị văn bản gốc</label>
+              </div>
+              <hr>
               <h2 class="fs-5">Thiết lập giao diện</h2>
               <div class="dropdown mb-3">
                 <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" id="bd-theme" data-bs-toggle="dropdown">
@@ -411,305 +449,6 @@
                   </li>
                 </ul>
               </div>
-              <div class="dropdown dropdown-scrollable mb-3 option" id="theme-dropdown">
-                <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown">Thay đổi chủ đề</button>
-                <ul class="dropdown-menu">
-                  <li>
-                    <button type="button" class="dropdown-item theme-option active">Giao diện Bootstrap</button>
-                  </li>
-                  <li>
-                    <hr class="dropdown-divider">
-                  </li>
-                  <li>
-                    <button type="button" class="dropdown-item theme-option" data-background-color="#fff" data-foreground-color="#000" data-hyperlink-color="#00f" data-font-family="bookerly, Georgia, Times New Roman, Times, serif" data-font-size="109.37498807907104" data-line-height="110" data-text-align="justify">Amazon Kindle - White</button>
-                  </li>
-                  <li>
-                    <button type="button" class="dropdown-item theme-option" data-background-color="#fff" data-foreground-color="#000" data-hyperlink-color="#00f" data-font-family="hiraginoMinchoPron, pingfangSC, pingfangTC, Georgia, Times New Roman, Times, serif" data-font-size="109.37498807907104" data-line-height="110" data-text-align="unset">Amazon Kindle (CJK) - White</button>
-                  </li>
-                  <li>
-                    <button type="button" class="dropdown-item theme-option" data-background-color="#fbf0d9" data-foreground-color="#5f4b32" data-hyperlink-color="#05a" data-font-family="bookerly, Georgia, Times New Roman, Times, serif" data-font-size="109.37498807907104" data-line-height="110" data-text-align="justify">Amazon Kindle - Sepia</button>
-                  </li>
-                  <li>
-                    <button type="button" class="dropdown-item theme-option" data-background-color="#fbf0d9" data-foreground-color="#5f4b32" data-hyperlink-color="#00f" data-font-family="hiraginoMinchoPron, pingfangSC, pingfangTC, Georgia, Times New Roman, Times, serif" data-font-size="109.37498807907104" data-line-height="110" data-text-align="unset">Amazon Kindle (CJK) - Sepia</button>
-                  </li>
-                  <li>
-                    <button type="button" class="dropdown-item theme-option" data-background-color="#c5e7ce" data-foreground-color="#3a4b4e" data-hyperlink-color="#05a" data-font-family="bookerly, Georgia, Times New Roman, Times, serif" data-font-size="109.37498807907104" data-line-height="110" data-text-align="justify">Amazon Kindle - Green</button>
-                  </li>
-                  <li>
-                    <button type="button" class="dropdown-item theme-option" data-background-color="#c5e7ce" data-foreground-color="#3a4b4e" data-hyperlink-color="#00f" data-font-family="hiraginoMinchoPron, pingfangSC, pingfangTC, Georgia, Times New Roman, Times, serif" data-font-size="109.37498807907104" data-line-height="110" data-text-align="unset">Amazon Kindle (CJK) - Green</button>
-                  </li>
-                  <li>
-                    <button type="button" class="dropdown-item theme-option" data-background-color="#000" data-foreground-color="#acacac" data-hyperlink-color="#8fc0e9" data-font-family="bookerly, Georgia, Times New Roman, Times, serif" data-font-size="109.37498807907104" data-line-height="110" data-text-align="justify">Amazon Kindle - Black</button>
-                  </li>
-                  <li>
-                    <button type="button" class="dropdown-item theme-option" data-background-color="#000" data-foreground-color="#acacac" data-hyperlink-color="#8787ff" data-font-family="hiraginoMinchoPron, pingfangSC, pingfangTC, Georgia, Times New Roman, Times, serif" data-font-size="109.37498807907104" data-line-height="110" data-text-align="unset">Amazon Kindle (CJK) - Black</button>
-                  </li>
-                  <li>
-                    <hr class="dropdown-divider">
-                  </li>
-                  <li>
-                    <button type="button" class="dropdown-item theme-option" data-background-color="#fff" data-dark-background-color="#000" data-foreground-color="#000" data-dark-foreground-color="#fff" data-hyperlink-color="#007aff" data-dark-hyperlink-color="#009cdb" data-font-family=", newYork, hiraginoSans, pingfangSC, pingfangTC, pingfangHK, appleSDGothicNeo, thonburi" data-bold-text="false" data-font-size="100" data-line-height="40" data-text-align="unset">Apple Sách - Nguyên bản</button>
-                  </li>
-                  <li>
-                    <button type="button" class="dropdown-item theme-option" data-background-color="#4a4a4d" data-dark-background-color="#000" data-foreground-color="#ebebf5" data-dark-foreground-color="#8d8d92" data-hyperlink-color="#009ddc" data-dark-hyperlink-color="#009cdb" data-font-family="publicoText, newYork, hiraginoSans, pingfangSC, pingfangTC, pingfangHK, appleSDGothicNeo, thonburi" data-bold-text="false" data-font-size="112.5" data-line-height="80" data-text-align="justify">Apple Sách - Yên tĩnh</button>
-                  </li>
-                  <li>
-                    <button type="button" class="dropdown-item theme-option" data-background-color="#eeeded" data-dark-background-color="#1c1c1e" data-foreground-color="#1e1a1a" data-dark-foreground-color="#f2f2f0" data-hyperlink-color="#0071ed" data-dark-hyperlink-color="#009ddc" data-font-family="charter, newYork, hiraginoSans, pingfangSC, pingfangTC, pingfangHK, appleSDGothicNeo, thonburi" data-bold-text="false" data-font-size="125" data-line-height="90" data-text-align="start">Apple Sách - Giấy</button>
-                  </li>
-                  <li>
-                    <button type="button" class="dropdown-item theme-option" data-background-color="#fff" data-dark-background-color="#000" data-foreground-color="#1c1c1e" data-dark-foreground-color="#efeff1" data-hyperlink-color="#007aff" data-dark-hyperlink-color="#009cdb" data-font-family="sfProText, newYork, hiraginoSans, pingfangSC, pingfangTC, pingfangHK, appleSDGothicNeo, thonburi" data-bold-text="true" data-font-size="128.125" data-line-height="100" data-text-align="start">Apple Sách - Đậm</button>
-                  </li>
-                  <li>
-                    <button type="button" class="dropdown-item theme-option" data-background-color="#f1e2c9" data-dark-background-color="#423b30" data-foreground-color="#34281c" data-dark-foreground-color="#f9ecdb" data-hyperlink-color="#b48128" data-dark-hyperlink-color="#009ddc" data-font-family="canelaText, newYork, hiraginoSans, pingfangSC, pingfangTC, pingfangHK, appleSDGothicNeo, thonburi" data-bold-text="false" data-font-size="125" data-line-height="90" data-text-align="start">Apple Sách - Êm dịu</button>
-                  </li>
-                  <li>
-                    <button type="button" class="dropdown-item theme-option" data-background-color="#fefcf3" data-dark-background-color="#18160c" data-foreground-color="#141200" data-dark-foreground-color="#fff9eb" data-hyperlink-color="#bf902e" data-dark-hyperlink-color="#009ddc" data-font-family="proximaNova, newYork, hiraginoSans, pingfangSC, pingfangTC, pingfangHK, appleSDGothicNeo, thonburi" data-bold-text="false" data-font-size="112.5" data-line-height="80" data-text-align="justify">Apple Sách - Tập trung</button>
-                  </li>
-                  <li>
-                    <hr class="dropdown-divider">
-                  </li>
-                  <li>
-                    <button type="button" class="dropdown-item theme-option" data-background-color="#fff" data-foreground-color="#000" data-hyperlink-color="#00f" data-font-family=", hiraginoMinchoPron" data-font-size="100" data-line-height="40" data-text-align="justify">BOOK☆WALKER - White</button>
-                  </li>
-                  <li>
-                    <button type="button" class="dropdown-item theme-option" data-background-color="#000" data-foreground-color="#d2d2d2" data-hyperlink-color="#ebebeb" data-font-family=", hiraginoMinchoPron" data-font-size="100" data-line-height="40" data-text-align="justify">BOOK☆WALKER - Black</button>
-                  </li>
-                  <li>
-                    <button type="button" class="dropdown-item theme-option" data-background-color="#ebd2a5" data-foreground-color="#5a4114" data-hyperlink-color="#50320c" data-font-family=", hiraginoMinchoPron" data-font-size="100" data-line-height="40" data-text-align="justify">BOOK☆WALKER - Sepia</button>
-                  </li>
-                  <li>
-                    <button type="button" class="dropdown-item theme-option" data-background-color="#ffffe0" data-foreground-color="#000" data-hyperlink-color="#32327d" data-font-family=", hiraginoMinchoPron" data-font-size="100" data-line-height="40" data-text-align="justify">BOOK☆WALKER - Cream</button>
-                  </li>
-                  <li>
-                    <hr class="dropdown-divider">
-                  </li>
-                  <li>
-                    <button type="button" class="dropdown-item theme-option" data-background-color="#000000" data-foreground-color="#ffffff" data-hyperlink-color="#4f81bd" data-font-family=", serif" data-font-size="100" data-text-align="unset">Calibre - Black</button>
-                  </li>
-                  <li>
-                    <button type="button" class="dropdown-item theme-option" data-background-color="#39322B" data-foreground-color="#F6F3E9" data-hyperlink-color="#4f81bd" data-font-family=", serif" data-font-size="100" data-text-align="unset">Calibre - Sepia dark</button>
-                  </li>
-                  <li>
-                    <button type="button" class="dropdown-item theme-option" data-background-color="#F6F3E9" data-foreground-color="#39322B" data-font-family=", serif" data-font-size="100" data-text-align="unset">Calibre - Sepia light</button>
-                  </li>
-                  <li>
-                    <!-- src-dark-background-color="#111" -->
-                    <button type="button" class="dropdown-item theme-option" data-background-color="#ffffff" data-dark-background-color="#121212" data-foreground-color="#000000" data-dark-foreground-color="#ddd" data-dark-hyperlink-color="#6cb4ee" data-font-family=", serif" data-font-size="100" data-text-align="unset">Calibre - System</button>
-                  </li>
-                  <li>
-                    <button type="button" class="dropdown-item theme-option" data-background-color="#ffffff" data-foreground-color="#000000" data-font-family=", serif" data-font-size="100" data-text-align="unset">Calibre - White</button>
-                  </li>
-                  <li>
-                    <hr class="dropdown-divider">
-                  </li>
-                  <li>
-                    <button type="button" class="dropdown-item theme-option" data-background-color="#fff" data-foreground-color="#000" data-hyperlink-color="#00f" data-font-family=", literata, hiraginoMinchoPron" data-font-size="112.5" data-line-height="50" data-text-align="unset">Google Play Sách - Sáng</button>
-                  </li>
-                  <li>
-                    <button type="button" class="dropdown-item theme-option" data-background-color="#000" data-foreground-color="#ccc" data-hyperlink-color="#4747b2" data-font-family=", literata, hiraginoMinchoPron" data-font-size="112.5" data-line-height="50" data-text-align="unset">Google Play Sách - Tối</button>
-                  </li>
-                  <li>
-                    <button type="button" class="dropdown-item theme-option" data-background-color="#fffced" data-foreground-color="#2b0d00" data-hyperlink-color="#09c" data-font-family=", literata, hiraginoMinchoPron" data-font-size="112.5" data-line-height="50" data-text-align="unset">Google Play Sách - Nâu đỏ</button>
-                  </li>
-                  <li>
-                    <hr class="dropdown-divider">
-                  </li>
-                  <li>
-                    <button type="button" class="dropdown-item theme-option" data-background-color="#fff" data-foreground-color="#000" data-hyperlink-color="#00f" data-font-family="literata" data-font-size="87.4" data-line-height="60" data-text-align="start">J-Novel Club - White</button>
-                  </li>
-                  <li>
-                    <button type="button" class="dropdown-item theme-option" data-background-color="#faf4e8" data-foreground-color="#121212" data-hyperlink-color="#00f" data-font-family="literata" data-font-size="87.4" data-line-height="60" data-text-align="start">J-Novel Club - Sepia</button>
-                  </li>
-                  <li>
-                    <button type="button" class="dropdown-item theme-option" data-background-color="#303030" data-foreground-color="#c1c1c1" data-hyperlink-color="#00f" data-font-family="literata" data-font-size="87.4" data-line-height="60" data-text-align="start">J-Novel Club - Gray</button>
-                  </li>
-                  <li>
-                    <button type="button" class="dropdown-item theme-option" data-background-color="#000" data-foreground-color="#fff" data-hyperlink-color="#00f" data-font-family="literata" data-font-size="87.4" data-line-height="60" data-text-align="start">J-Novel Club - Black</button>
-                  </li>
-                  <li>
-                    <hr class="dropdown-divider">
-                  </li>
-                  <li>
-                    <button type="button" class="dropdown-item theme-option" data-background-color="#fff" data-foreground-color="#000" data-font-family="Georgia, hiraginoMincho" data-font-size="125" data-line-height="100" data-text-align="unset">Rakuten Kobo - Light</button>
-                  </li>
-                  <li>
-                    <button type="button" class="dropdown-item theme-option" data-background-color="#eaddc7" data-foreground-color="#000" data-hyperlink-color="#000" data-font-family="Georgia, hiraginoMincho" data-font-size="125" data-line-height="100" data-text-align="unset">Rakuten Kobo - Sepia</button>
-                  </li>
-                  <li>
-                    <button type="button" class="dropdown-item theme-option" data-background-color="#000" data-foreground-color="#7a7a7a" data-hyperlink-color="#7a7a7a" data-font-family="Georgia, hiraginoMincho" data-font-size="125" data-line-height="100" data-text-align="unset">Rakuten Kobo - Dark</button>
-                  </li>
-                  <li>
-                    <button type="button" class="dropdown-item theme-option" data-background-color="#9d9d9d" data-foreground-color="#333" data-hyperlink-color="#9d9d9d" data-font-family="Georgia, hiraginoMincho" data-font-size="125" data-line-height="100" data-text-align="unset">Rakuten Kobo - Charcoal</button>
-                  </li>
-                  <li>
-                    <hr class="dropdown-divider">
-                  </li>
-                  <li>
-                    <button type="button" class="dropdown-item theme-option" data-background-color="#fff" data-foreground-color="#231f20" data-hyperlink-color="#231f20" data-font-family="notoSerif" data-font-size="112.5" data-line-height="40" data-text-align="unset">Waka - Trắng</button>
-                  </li>
-                  <li>
-                    <button type="button" class="dropdown-item theme-option" data-background-color="#525355" data-foreground-color="#d2d3d5" data-hyperlink-color="#d2d3d5" data-font-family="notoSerif" data-font-size="112.5" data-line-height="40" data-text-align="unset">Waka - Xám</button>
-                  </li>
-                  <li>
-                    <button type="button" class="dropdown-item theme-option" data-background-color="#f4ebd8" data-foreground-color="#5b4635" data-hyperlink-color="#5b4635" data-font-family="notoSerif" data-font-size="112.5" data-line-height="40" data-text-align="unset">Waka - Nâu đỏ</button>
-                  </li>
-                  <li>
-                    <button type="button" class="dropdown-item theme-option" data-background-color="#231f20" data-foreground-color="#f9f9f9" data-hyperlink-color="#f9f9f9" data-font-family="notoSerif" data-font-size="112.5" data-line-height="40" data-text-align="unset">Waka - Đen</button>
-                  </li>
-                  <li>
-                    <hr class="dropdown-divider">
-                  </li>
-                  <li>
-                    <button type="button" class="dropdown-item theme-option" data-background-color="#fff" data-foreground-color="#000" data-font-family="crimsonText, serif, roboto, sans-serif" data-font-size="110" data-line-height="60" data-text-align="start">xbreader - White</button>
-                  </li>
-                  <li>
-                    <button type="button" class="dropdown-item theme-option" data-background-color="#faf4e8" data-foreground-color="#000" data-font-family="crimsonText, serif, roboto, sans-serif" data-font-size="110" data-line-height="60" data-text-align="start">xbreader - Sepia</button>
-                  </li>
-                  <li>
-                    <button type="button" class="dropdown-item theme-option" data-background-color="#303030" data-foreground-color="#fff" data-font-family="crimsonText, serif, roboto, sans-serif" data-font-size="110" data-line-height="60" data-text-align="start">xbreader - Gray</button>
-                  </li>
-                  <li>
-                    <button type="button" class="dropdown-item theme-option" data-background-color="#000" data-foreground-color="#fff" data-font-family="crimsonText, serif, roboto, sans-serif" data-font-size="110" data-line-height="60" data-text-align="start">xbreader - Black</button>
-                  </li>
-                </ul>
-              </div>
-              <div class="mb-3">
-                <input type="text" class="form-control option text-font" id="font-stack-text" list="font-list" placeholder="Phông chữ">
-                <datalist id="font-list">
-                  <option value="--system-font-family"></option>
-                  <option value="serif"></option>
-                  <option value="sans-serif"></option>
-                  <option value="--oldStyleTf"></option>
-                  <option value="--modernTf"></option>
-                  <option value="--sansTf"></option>
-                  <option value="--humanistTf"></option>
-                  <option value="--monospaceTf"></option>
-                  <option value="--japaneseFontFamily"></option>
-                  <option value="--serif-ja"></option>
-                  <option value="--sans-serif-ja"></option>
-                  <option value="--serif-ja-v"></option>
-                  <option value="--sans-serif-ja-v"></option>
-                  <option value="--chineseFontFamily"></option>
-                  <option value="--hongKongFontFamily"></option>
-                  <option value="appleSDGothicNeo"></option>
-                  <option value="aOTFRyuminPr5"></option>
-                  <option value="bookerly"></option>
-                  <option value="canelaText"></option>
-                  <option value="charter"></option>
-                  <option value="crimsonText"></option>
-                  <option value="hiraginoMincho"></option>
-                  <option value="hiraginoMinchoPro"></option>
-                  <option value="hiraginoMinchoPron"></option>
-                  <option value="hiraginoSans"></option>
-                  <option value="literata"></option>
-                  <option value="newYork"></option>
-                  <option value="notoSerif"></option>
-                  <option value="pingfangSC"></option>
-                  <option value="pingfangTC"></option>
-                  <option value="pingfangHK"></option>
-                  <option value="proximaNova"></option>
-                  <option value="publicoText"></option>
-                  <option value="roboto"></option>
-                  <option value="sfProText"></option>
-                  <option value="stsongSC"></option>
-                  <option value="stsongTC"></option>
-                  <option value="tbmincho"></option>
-                  <option value="thonubri"></option>
-                </datalist>
-              </div>
-              <div class="mb-3">
-                <label for="font-size-range" class="form-label">Kích cỡ phông chữ:
-                  <input type="number" class="form-control form-control-sm d-inline number-option-display" id="font-size-display" value="100" max="350" min="60"/></label>
-                <input type="range" class="form-range option" id="font-size-range" value="100" min="60" max="350" step="any">
-              </div>
-              <div class="mb-3">
-                <label for="line-spacing-range" class="form-label">Khoảng cách dòng:
-                  <input type="number" class="form-control form-control-sm d-inline number-option-display" id="line-spacing-display" value="40" max="300" min="0"/></label>
-                <input type="range" class="form-range option" id="line-spacing-range" value="40" min="0" max="300" step="any">
-              </div>
-              <div class="form-check form-switch mb-3">
-                <input type="checkbox" class="form-check-input option" id="bold-text-switch" role="switch">
-                <label class="form-check-label" for="bold-text-switch">Chữ đậm</label>
-              </div>
-              <div class="form-check form-switch mb-3">
-                <input type="checkbox" class="form-check-input option" id="alignment-settings-switch" role="switch" checked>
-                <label class="form-check-label" for="alignment-settings-switch">Thiết lập căn lề</label>
-              </div>
-              <div class="form-check form-switch mb-3">
-                <input type="checkbox" class="form-check-input option" id="format-settings-switch" role="switch" checked>
-                <label class="form-check-label" for="format-settings-switch">Thiết lập định dạng</label>
-              </div>
-              <hr>
-              <div class="dropdown mb-3 option quick-translate-option" id="translator-dropdown">
-                <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
-                  <svg class="bi" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor">
-                    <use xlink:href="#translate"></use>
-                  </svg>
-                  Trình dịch
-                </button>
-                <ul class="dropdown-menu">
-                  <li>
-                    <button type="button" class="dropdown-item translator-option" data-id="baiduFanyi">Baidu Fanyi</button>
-                  </li>
-                  <li>
-                    <button type="button" class="dropdown-item translator-option" data-id="deeplTranslate">DeepL Translate</button>
-                  </li>
-                  <li>
-                    <button type="button" class="dropdown-item translator-option" data-id="googleTranslate">Google Dịch</button>
-                  </li>
-                  <li>
-                    <button type="button" class="dropdown-item translator-option" data-id="papago">Papago</button>
-                  </li>
-                  <li>
-                    <button type="button" class="dropdown-item translator-option active" data-id="microsoftTranslator">Trình dịch Microsoft</button>
-                  </li>
-                  <li>
-                    <button type="button" class="dropdown-item translator-option" data-id="vietphrase">Vietphrase</button>
-                  </li>
-                </ul>
-              </div>
-              <div class="form-check form-switch mb-3">
-                <input type="checkbox" class="form-check-input option" id="show-original-text-switch" role="switch">
-                <label class="form-check-label" for="show-original-text-switch">Hiển thị văn bản gốc</label>
-              </div>
-              <hr>
-              <h2 class="fs-5">Vietphrase</h2>
-              <div class="mb-3">
-                <label class="form-label" for="default-viet-phrase-file-select">Tệp VietPhrase mặc định:</label>
-                <select class="form-select form-select-sm option" id="default-viet-phrase-file-select">
-                  <option value="0">Không</option>
-                  <option value="1">Quick Translator</option>
-                  <option value="2">Quick Translator (Gộp)</option>
-                  <option value="3">Data của thtgiang</option>
-                  <option value="4" selected>TTV Translate (Android)</option>
-                  <option value="5" selected>TTV Translate (iOS)</option>
-                </select>
-              </div>
-              <div class="form-check form-switch mb-3">
-                <input type="checkbox" class="form-check-input option quick-translate-option" id="add-de-le-zhao-switch">
-                <label class="form-check-label" for="add-de-le-zhao-switch">Thêm đích, liễu, trứ</label>
-              </div>
-              <h2 class="fs-6">Thuật toán nhân</h2>
-              <div class="form-check">
-                <input type="radio" class="form-check-input option quick-translate-option" id="no-apply-radio" name="multiplication-algorithm-radio" value="0" checked>
-                <label class="form-check-label" for="no-apply-radio">Không áp dụng</label>
-              </div>
-              <div class="form-check">
-                <input type="radio" class="form-check-input option quick-translate-option" id="multiplication-by-pronouns-radio" name="multiplication-algorithm-radio" value="1">
-                <label class="form-check-label" for="multiplication-by-pronouns-radio">Nhân theo Pronouns</label>
-              </div>
-              <div class="form-check">
-                <input type="radio" class="form-check-input option quick-translate-option" id="multiplication-by-pronouns-and-names-radio" name="multiplication-algorithm-radio" value="2">
-                <label class="form-check-label" for="multiplication-by-pronouns-and-names-radio">Nhân theo Pronouns + Names</label>
-              </div>
-            </div>
-            <div class="modal-footer">
-              <button type="reset" class="btn btn-secondary btn-sm" id="reset-button">
-                <svg class="bi" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor">
-                  <use xlink:href="#arrow-counterclockwise"></use>
-                </svg>
-                Thiết lập lại
-              </button>
             </div>
           </div>
         </div>
@@ -722,37 +461,6 @@
               <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-              <div class="form-check form-switch mb-3">
-                <input type="checkbox" class="form-check-input option quick-translate-option" id="name-switch" role="switch" checked>
-                <label class="form-check-label" for="name-switch">Bật Names</label>
-              </div>
-              <div class="input-group input-group-sm my-3">
-                <input type="file" class="form-control" id="glossary-input" accept=".tsv,.tab,text/csv,text/plain">
-                <button type="submit" class="btn btn-outline-danger position-relative" id="clear-glossary-button">
-                  <svg class="bi" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor">
-                    <use xlink:href="#x-lg"></use>
-                  </svg>
-                </button>
-              </div>
-              <select class="form-select form-select-sm mb-3 option" id="glossary-type-select">
-                <option value="text/tab-separated-values">TSV</option>
-                <option value="text/csv">CSV</option>
-                <option value="text/plain" selected>Vietphrase</option>
-              </select>
-              <select class="form-select form-select-sm mb-3" id="viet-phrase-type-select">
-                <option>QuickTranslate Without Sorting</option>
-                <option>QuickTranslate</option>
-                <option selected>TTV Translate</option>
-                <option>Sáng Tác Việt</option>
-              </select>
-              <select class="form-select form-select-sm mb-3" id="glossary-list-select">
-                <option value="SinoVietnameses">Hán-Việt</option>
-                <option value="vietPhrase">VietPhrase</option>
-                <option value="name">Names</option>
-                <option value="namePhu" selected>Names2</option>
-                <option value="luatNhan">LuatNhan</option>
-                <option value="pronoun">Pronouns</option>
-              </select>
               <div class="input-group mb-2 dropstart dropdown-scrollable dropdown-has-collapse">
                 <input type="text" class="form-control text-font" id="source-entry-input" placeholder="Mục nguồn">
                 <button type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" id="source-entry-dropdown-toggle" data-bs-toggle="dropdown" data-bs-auto-close="outside"></button>
@@ -807,7 +515,7 @@
                     <hr class="dropdown-divider">
                   </li>
                   <li>
-                    <button type="button" class="dropdown-item translate-webpage-button" data-href="https://fanyi.baidu.com/#auto/vie/{0}">Baidu Fanyi</button>
+                    <button type="button" class="dropdown-item translate-webpage-button" data-href="https://fanyi.baidu.com/#auto/vie/{0}">Baidu Translate</button>
                   </li>
                   <li>
                     <button type="button" class="dropdown-item translate-webpage-button" data-href="https://www.deepl.com/translator#auto/en/{0}">DeepL Translate</button>
@@ -854,7 +562,7 @@
                   <li>
                     <button type="button" class="dropdown-item" data-bs-toggle="collapse" data-bs-target="#convert-collapse">Convert</button>
                     <div class="collapse show-by-default" id="convert-collapse">
-                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="vietphrase" data-lang="vi">Vietphrase</button>
+                      <!-- <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="vietphrase" data-lang="vi">Vietphrase</button> -->
                       <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="vietphrase" data-lang="SinoVietnamese">Hán-Việt</button>
                       <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="vietphrase" data-lang="OnYomi">On'yomi</button>
                       <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="vietphrase" data-lang="KunYomi">Kun'yomi</button>
@@ -864,13 +572,13 @@
                     </div>
                   </li>
                   <li>
-                    <button type="button" class="dropdown-item" data-bs-toggle="collapse" data-bs-target="#baidu-fanyi-collapse">Baidu Fanyi</button>
+                    <button type="button" class="dropdown-item" data-bs-toggle="collapse" data-bs-target="#baidu-fanyi-collapse">Baidu Translate</button>
                     <div class="collapse" id="baidu-fanyi-collapse">
-                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="baiduFanyi" data-lang="jp">Japanese</button>
-                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="baiduFanyi" data-lang="en">English</button>
-                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="baiduFanyi" data-lang="vie">Vietnamese</button>
-                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="baiduFanyi" data-lang="zh">Chinese</button>
-                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="baiduFanyi" data-lang="cht">Traditional Chinese</button>
+                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="baiduTranslate" data-lang="jp">Japanese</button>
+                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="baiduTranslate" data-lang="en">English</button>
+                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="baiduTranslate" data-lang="vie">Vietnamese</button>
+                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="baiduTranslate" data-lang="zh">Chinese</button>
+                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="baiduTranslate" data-lang="cht">Traditional Chinese</button>
                     </div>
                   </li>
                   <li>
@@ -925,18 +633,7 @@
                 </svg>
                 Xoá
               </button>
-              <button type="button" class="btn btn-sm btn-secondary mb-3 copy-button" data-target="glossaryData">Sao chép</button>
-            </div>
-            <div class="modal-footer">
-              <div class="input-group input-group-sm">
-                <input type="text" placeholder="Bảng thuật ngữ" class="form-control" id="glossary-name">
-                <span class="input-group-text">.<span id="glossary-extension">tsv</span></span>
-                <a class="btn btn-primary btn-sm" id="download-button" role="button">
-                  <svg class="bi" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor">
-                    <use xlink:href="#download"></use>
-                  </svg>
-                  Tải xuống</a>
-              </div>
+              <!-- <button type="button" class="btn btn-sm btn-secondary mb-3 copy-button" data-target="glossaryData">Sao chép</button> -->
             </div>
           </div>
         </div>

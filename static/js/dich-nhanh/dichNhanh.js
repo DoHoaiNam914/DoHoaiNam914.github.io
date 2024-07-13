@@ -1,16 +1,25 @@
 'use strict';
 
-/* global BaiduTranslate, cjkv, DeepLTranslate, GoogleTranslate, hanData, Papago, MicrosoftTranslator, newAccentObject, Utils, WebNovelGoogleTranslate */
+/* global bootstrap, BaiduTranslate, cjkv, DeepLTranslate, GoogleTranslate, hanData, Papago, MicrosoftTranslator, newAccentObject, Utils, Vietphrase, WebNovelGoogleTranslate */
 
+const $addButton = $('#add-button');
 const $copyButtons = $('.copy-button');
+const $dropdownHasCollapse = $('.dropdown-has-collapse');
+const $glossaryManagerButton = $('#glossary-manager-button');
+const $glossaryModal = $('#glossary-modal');
 const $inputTextarea = $('#input-textarea');
 const $pasteButtons = $('.paste-button');
+const $removeButton = $('#remove-button');
 const $resultTextarea = $('#result-textarea');
 const $retranslateButton = $('#retranslate-button');
+const $showOriginalTextSwitch = $('#show-original-text-switch');
+const $sourceEntryInput = $('#source-entry-input');
 const $sourceLanguageSelect = $('#source-language-select');
+const $targetEntryTextarea = $('#target-entry-textarea');
 const $targetLanguageSelect = $('#target-language-select');
 const $toneSelect = $('#tone-select');
 const $translateButton = $('#translate-button');
+const $translateEntryButtons = $('.translate-entry-button');
 const $translateTimer = $('#translate-timer');
 const $translatorDropdown = $('#translator-dropdown');
 
@@ -41,7 +50,318 @@ const DEEPL_AUTH_KEY_LIST = [
 
 const UUID = crypto.randomUUID();
 
-const glossary = {};
+const glossary = {
+  simplified: [],
+  traditional: [],
+  pinyins: [],
+  romajis: [
+    ['ぁ', '~a'],
+    ['あ', 'a'],
+    ['ぃ', '~i'],
+    ['い', 'i'],
+    ['ぅ', '~u'],
+    ['う', 'u'],
+    ['ぇ', '~e'],
+    ['え', 'e'],
+    ['ぉ', '~o'],
+    ['お', 'o'],
+    ['か', 'ka'],
+    ['か', 'ga'],
+    ['きゃ', 'kya'],
+    ['きゅ', 'kyu'],
+    ['きょ', 'kyo'],
+    ['き', 'ki'],
+    ['ぎゃ', 'gya'],
+    ['ぎゅ', 'gyu'],
+    ['ぎょ', 'gyo'],
+    ['ぎ', 'gi'],
+    ['く', 'ku'],
+    ['ぐ', 'gu'],
+    ['け', 'ke'],
+    ['げ', 'ge'],
+    ['こ', 'ko'],
+    ['ご', 'go'],
+    ['さ', 'sa'],
+    ['ざ', 'za'],
+    ['しゃ', 'sha'],
+    ['しゅ', 'shu'],
+    ['しょ', 'sho'],
+    ['し', 'shi'],
+    ['じゃ', 'ja'],
+    ['じゅ', 'ju'],
+    ['じょ', 'jo'],
+    ['じ', 'ji'],
+    ['す', 'su'],
+    ['ず', 'zu'],
+    ['せ', 'se'],
+    ['ぜ', 'ze'],
+    ['そ', 'so'],
+    ['ぞ', 'zo'],
+    ['た', 'ta'],
+    ['だ', 'da'],
+    ['ちゃ', 'cha'],
+    ['ちゅ', 'chu'],
+    ['ちょ', 'cho'],
+    ['ち', 'chi'],
+    ['ぢゃ', 'dja'],
+    ['ぢゅ', 'dju'],
+    ['ぢょ', 'djo'],
+    ['ぢ', 'dji'],
+    ['っ', '~tsu'],
+    ['つ', 'tsu'],
+    ['づ', 'dzu'],
+    ['て', 'te'],
+    ['で', 'de'],
+    ['と', 'to'],
+    ['ど', 'do'],
+    ['な', 'na'],
+    ['にゃ', 'nya'],
+    ['にゅ', 'nyu'],
+    ['にょ', 'nyo'],
+    ['に', 'ni'],
+    ['ぬ', 'nu'],
+    ['ね', 'ne'],
+    ['の', 'no'],
+    ['は', 'ha', 'wa'],
+    ['ば', 'ba'],
+    ['ぱ', 'pa'],
+    ['ひゃ', 'hya'],
+    ['ひゅ', 'hyu'],
+    ['ひょ', 'hyo'],
+    ['ひ', 'hi'],
+    ['びゃ', 'bya'],
+    ['びゅ', 'byu'],
+    ['びょ', 'byo'],
+    ['び', 'bi'],
+    ['ぴゃ', 'pya'],
+    ['ぴゅ', 'pyu'],
+    ['ぴょ', 'pyo'],
+    ['ぴ', 'pi'],
+    ['ふ', 'fu'],
+    ['ぶ', 'bu'],
+    ['ぷ', 'pu'],
+    ['へ', 'he', 'e'],
+    ['べ', 'be'],
+    ['ぺ', 'pe'],
+    ['ほ', 'ho'],
+    ['ぼ', 'bo'],
+    ['ぽ', 'po'],
+    ['ま', 'ma'],
+    ['みゃ', 'mya'],
+    ['みゅ', 'myu'],
+    ['みょ', 'myo'],
+    ['み', 'mi'],
+    ['む', 'mu'],
+    ['め', 'me'],
+    ['も', 'mo'],
+    ['ゃ', '~ya'],
+    ['や', 'ya'],
+    ['ゅ', '~yu'],
+    ['ゆ', 'yu'],
+    ['ょ', '~yo'],
+    ['よ', 'yo'],
+    ['ら', 'ra'],
+    ['りゃ', 'rya'],
+    ['りゅ', 'ryu'],
+    ['りょ', 'ryo'],
+    ['り', 'ri'],
+    ['る', 'ru'],
+    ['れ', 're'],
+    ['ろ', 'ro'],
+    ['ゎ', '~wa'],
+    ['わ', 'wa'],
+    ['ゐ', 'wi'],
+    ['ゑ', 'we'],
+    ['を', 'wo', 'o'],
+    ['ん', 'n'],
+    ['ゔ', 'vu'],
+    ['ゕ', '~ka'],
+    ['ゖ', '~ke'],
+
+    ['ァ', '~a'],
+    ['ア', 'a'],
+    ['ィ', '~i'],
+    ['イェ', 'ye'],
+    ['イ', 'i'],
+    ['ゥ', '~u'],
+    ['ウ', 'u'],
+    ['ェ', '~e'],
+    ['エ', 'e'],
+    ['ォ', '~o'],
+    ['オ', 'o'],
+    ['カ', 'ka'],
+    ['ガ', 'ga'],
+    ['キャ', 'kya'],
+    ['キュ', 'kyu'],
+    ['キョ', 'kyo'],
+    ['キ', 'ki'],
+    ['ギャ', 'gya'],
+    ['ギュ', 'gyu'],
+    ['ギョ', 'gyo'],
+    ['ギ', 'gi'],
+    ['ク', 'ku'],
+    ['グ', 'gu'],
+    ['ケァ', 'kwa'],
+    ['ケィ', 'kwi'],
+    ['ケェ', 'kwe'],
+    ['ケォ', 'kwo'],
+    ['ケ', 'ke'],
+    ['ケァ', 'gwa'],
+    ['ケィ', 'gwi'],
+    ['ケェ', 'gwe'],
+    ['ケォ', 'gwo'],
+    ['ゲ', 'ge'],
+    ['コ', 'ko'],
+    ['ゴ', 'go'],
+    ['サ', 'sa'],
+    ['ザ', 'za'],
+    ['シェ', 'she'],
+    ['シャ', 'sha'],
+    ['シュ', 'shu'],
+    ['ショ', 'sho'],
+    ['シ', 'shi'],
+    ['ジェ', 'je'],
+    ['ジャ', 'ja'],
+    ['ジュ', 'ju'],
+    ['ジョ', 'jo'],
+    ['ジ', 'ji'],
+    ['スィ', 'swi'],
+    ['ス', 'su'],
+    ['ズィ', 'zwi'],
+    ['ズ', 'zu'],
+    ['セ', 'se'],
+    ['ゼ', 'ze'],
+    ['ソ', 'so'],
+    ['ゾ', 'zo'],
+    ['タ', 'ta'],
+    ['ダ', 'da'],
+    ['チェ', 'che'],
+    ['チャ', 'cha'],
+    ['チュ', 'chu'],
+    ['チョ', 'cho'],
+    ['チ', 'chi'],
+    ['ヂャ', 'dja'],
+    ['ヂュ', 'dju'],
+    ['ヂョ', 'djo'],
+    ['ヂ', 'dji'],
+    ['ッ', '~tsu'],
+    ['ツァ', 'tsa'],
+    ['ツィ', 'tsi'],
+    ['ツェ', 'tse'],
+    ['ツォ', 'tso'],
+    ['ツ', 'tsu'],
+    ['ヅ', 'dzu'],
+    ['ティ', 'ti'],
+    ['テゥ', 'tu'],
+    ['テュ', 'tyu'],
+    ['テ', 'te'],
+    ['ティ', 'di'],
+    ['テゥ', 'du'],
+    ['テュ', 'dyu'],
+    ['デ', 'de'],
+    ['ト', 'to'],
+    ['ド', 'do'],
+    ['ナ', 'na'],
+    ['ニャ', 'nya'],
+    ['ニュ', 'nyu'],
+    ['ニョ', 'nyo'],
+    ['ニ', 'ni'],
+    ['ヌ', 'nu'],
+    ['ネ', 'ne'],
+    ['ノ', 'no'],
+    ['ハ', 'ha'],
+    ['バ', 'ba'],
+    ['パ', 'pa'],
+    ['ヒャ', 'hya'],
+    ['ヒュ', 'hyu'],
+    ['ヒョ', 'hyo'],
+    ['ヒ', 'hi'],
+    ['ビャ', 'bya'],
+    ['ビュ', 'byu'],
+    ['ビョ', 'byo'],
+    ['ビ', 'bi'],
+    ['ピャ', 'pya'],
+    ['ピュ', 'pyu'],
+    ['ピョ', 'pyo'],
+    ['ピ', 'pi'],
+    ['ファ', 'fa'],
+    ['フィ', 'fi'],
+    ['フェ', 'fe'],
+    ['フォ', 'fo'],
+    ['フュ', 'fyu'],
+    ['フ', 'fu'],
+    ['ブ', 'bu'],
+    ['プ', 'pu'],
+    ['ヘ', 'he', 'e'],
+    ['ベ', 'be'],
+    ['ペ', 'pe'],
+    ['ホ', 'ho'],
+    ['ボ', 'bo'],
+    ['ポ', 'po'],
+    ['マ', 'ma'],
+    ['ミャ', 'mya'],
+    ['ミュ', 'myu'],
+    ['ミョ', 'myo'],
+    ['ミ', 'mi'],
+    ['ム', 'mu'],
+    ['メ', 'me'],
+    ['モ', 'mo'],
+    ['ャ', '~ya'],
+    ['ヤ', 'ya'],
+    ['ュ', '~yu'],
+    ['ユ', 'yu'],
+    ['ョ', '~yo'],
+    ['ヨ', 'yo'],
+    ['ラ', 'ra'],
+    ['リャ', 'rya'],
+    ['リュ', 'ryu'],
+    ['リョ', 'ryo'],
+    ['リ', 'ri'],
+    ['ル', 'ru'],
+    ['レ', 're'],
+    ['ロ', 'ro'],
+    ['ヮ', '~wa'],
+    ['ワ', 'wa'],
+    ['ヰ', 'wi'],
+    ['ヱ', 'we'],
+    ['ヲ', 'wo', 'o'],
+    ['ン', 'n'],
+    ['ヴァ', 'va'],
+    ['ヴィ', 'vi'],
+    ['ヴェ', 've'],
+    ['ヴォ', 'vo'],
+    ['ヴャ', 'vya'],
+    ['ヴュ', 'vyu'],
+    ['ヴョ', 'vyo'],
+    ['ヴ', 'vu'],
+    ['ヵ', '~ka'],
+    ['ヶ', '~ke'],
+    ['ヷ', 'va'],
+    ['ヸ', 'vi'],
+    ['ヹ', 've'],
+    ['ヺ', 'vo'],
+
+    ['ㇰ', '~ku'],
+    ['ㇱ', '~shi'],
+    ['ㇲ', '~su'],
+    ['ㇳ', '~to'],
+    ['ㇴ', '~ne'],
+    ['ㇵ', '~ha'],
+    ['ㇶ', '~hi'],
+    ['ㇷ', '~fu'],
+    ['ㇸ', '~he'],
+    ['ㇹ', '~ho'],
+    ['ㇺ', '~mu'],
+    ['ㇻ', '~ra'],
+    ['ㇼ', '~ri'],
+    ['ㇽ', '~ru'],
+    ['ㇾ', '~re'],
+    ['ㇿ', '~ro'],
+  ],
+  KunYomis: [],
+  OnYomis: [],
+  hanViet: [],
+};
 
 let currentTranslator = null;
 let translationController = null;
@@ -85,6 +405,16 @@ const getSourceLangOptionList = function getSourceLanguageOptionListHtmlFromTran
     case Translators.PAPAGO: {
       Object.entries(Papago.SOURCE_LANGUAGE_LIST).forEach(([languageCode, name]) => {
         if (!SUPPORTED_LANGUAGES_CODE_LIST.includes(languageCode)) return;
+        const option = document.createElement('option');
+        option.innerText = name;
+        option.value = languageCode;
+        sourceLanguageSelect.appendChild(option);
+      });
+
+      break;
+    }
+    case Translators.VIETPHRASE: {
+      Object.entries(Vietphrase.SOURCE_LANGUAGE_LIST).forEach(([languageCode, name]) => {
         const option = document.createElement('option');
         option.innerText = name;
         option.value = languageCode;
@@ -167,6 +497,16 @@ const getTargetLangOptionList = function getTargetLanguageOptionListHtmlFromTran
 
       break;
     }
+    case Translators.VIETPHRASE: {
+      Object.entries(Vietphrase.TARGET_LANGUAGE_LIST).forEach(([languageCode, name]) => {
+        const option = document.createElement('option');
+        option.innerText = name;
+        option.value = languageCode;
+        targetLanguageSelect.appendChild(option);
+      });
+
+      break;
+    }
     case Translators.WEBNOVEL_GOOGLE_TRANSLATE: {
       Object.entries(WebNovelGoogleTranslate.TARGET_LANGUAGE_LIST).forEach(([languageCode, name]) => {
         if (!SUPPORTED_LANGUAGES_CODE_LIST.includes(languageCode)) return;
@@ -195,20 +535,61 @@ const getTargetLangOptionList = function getTargetLanguageOptionListHtmlFromTran
 };
 
 const loadLangSelectOptions = function loadLanguageListByTranslatorToHtmlOptions(translator) {
-  const sourceLanguage = currentTranslator.DefaultLanguage.SOURCE_lANGUAGE;
-  const targetLanguage = currentTranslator.DefaultLanguage.TARGET_lANGUAGE;
+  const sourceLanguage = currentTranslator.DefaultLanguage.SOURCE_LANGUAGE;
+  const targetLanguage = currentTranslator.DefaultLanguage.TARGET_LANGUAGE;
   $sourceLanguageSelect.html(getSourceLangOptionList(translator));
   $sourceLanguageSelect.val(sourceLanguage).change();
   $targetLanguageSelect.html(getTargetLangOptionList(translator));
   $targetLanguageSelect.val(targetLanguage).change();
 };
 
-const buildResult = function buildResultContentForTextarea(inputText, result) {
+const buildResult = function buildResultContentForTextarea(text, result) {
   try {
     const resultDiv = document.createElement('div');
+
+    const originalLines = text.split('\n').map((element) => element.trimStart());
     const resultLines = result.split('\n').map((element) => element.trimStart());
-    resultDiv.innerHTML = `<p>${resultLines.map(Utils.convertTextToHtml).join('</p><p>')}</p>`;
-    return resultDiv.innerHTML.replaceAll(/(<p>)(<\/p>)/g, '$1<br>$2');
+
+    if ($showOriginalTextSwitch.prop('checked')) {
+      let lostLineFixedNumber = 0;
+
+      for (let i = 0; i < originalLines.length; i += 1) {
+        if (i + lostLineFixedNumber < resultLines.length) {
+          if (originalLines[i + lostLineFixedNumber].trim().replace(/^\s+/, '').length === 0 && resultLines[i].trim().replace(/^\s+/, '').length > 0) {
+            lostLineFixedNumber += 1;
+            i -= 1;
+          } else if ($translatorDropdown.find('.active').val() === Translators.PAPAGO && resultLines[i].trim().replace(/^\s+/, '').length === 0 && originalLines[i + lostLineFixedNumber].trim().replace(/^\s+/, '').length > 0) {
+            lostLineFixedNumber -= 1;
+          } else {
+            const paragraph = document.createElement('p');
+
+            if (originalLines[i + lostLineFixedNumber].length > 0) {
+              const idiomaticText = document.createElement('i');
+              idiomaticText.innerText = originalLines[i + lostLineFixedNumber];
+              paragraph.appendChild(idiomaticText);
+              paragraph.innerHTML += resultLines[i].trim().length > 0 ? ' ' : '';
+              const attentionText = document.createElement('b');
+              attentionText.innerText = resultLines[i];
+              paragraph.appendChild(attentionText);
+            } else {
+              paragraph.innerText = resultLines[i];
+            }
+
+            resultDiv.appendChild(paragraph);
+          }
+        } else if (i + lostLineFixedNumber < originalLines.length) {
+          const paragraph = document.createElement('p');
+          const idiomaticText = document.createElement('i');
+          idiomaticText.innerText = originalLines[i + lostLineFixedNumber];
+          paragraph.appendChild(idiomaticText);
+          resultDiv.appendChild(paragraph);
+        }
+      }
+    } else {
+      resultDiv.innerHTML = `<p>${resultLines.map(Utils.convertTextToHtml).join('</p><p>')}</p>`;
+    }
+
+    return resultDiv.innerHTML;
   } catch (error) {
     console.error('Lỗi hiển thị bản dịch:', error);
     throw error.toString();
@@ -218,10 +599,25 @@ const buildResult = function buildResultContentForTextarea(inputText, result) {
 const translate = async function translateContentInTextarea(controller = new AbortController()) {
   try {
     const startTime = Date.now();
-    const inputText = $inputTextarea.val();
-    await currentTranslator.translateText(inputText, $targetLanguageSelect.val(), $sourceLanguageSelect.val());
+    const text = $inputTextarea.val();
+
+    switch ($translatorDropdown.find('.active').val()) {
+      case Translators.VIETPHRASE: {
+        await currentTranslator.translateText(text, $targetLanguageSelect.val(), {
+          // nameEnabled: true,
+          // multiplicationAlgorithm: $multiplicationAlgorithmRadio.filter('[checked]').val(),
+          // addDeLeZhao: $addDeLeZhaoSwitch.prop('checked'),
+          // autocapitalize: true,
+        }, glossary);
+        break;
+      }
+      default: {
+        await currentTranslator.translateText(text, $targetLanguageSelect.val(), $sourceLanguageSelect.val());
+      }
+    }
+
     if (controller.signal.aborted) return;
-    $resultTextarea.html(buildResult(inputText, currentTranslator.result));
+    $resultTextarea.html(buildResult(text, currentTranslator.result));
     $translateTimer.text(Date.now() - startTime);
   } catch (error) {
     console.error(error);
@@ -379,6 +775,18 @@ $retranslateButton.on('click', () => {
   if ($translateButton.text() === 'Sửa') $translateButton.text('Dịch').click();
 });
 
+$glossaryManagerButton.on('mousedown', () => {
+  $sourceEntryInput.val((window.getSelection().toString() || ((document.activeElement.tagName === 'TEXTAREA' || (document.activeElement.tagName === 'INPUT' && /^(?:email|month|number|search|tel|text|url|week)$/i.test(document.activeElement.type))) && typeof document.activeElement.selectionStart === 'number' && document.activeElement.value.slice(document.activeElement.selectionStart, document.activeElement.selectionEnd)) || '').replaceAll(/\n/g, ' ').trim());
+
+  if (window.getSelection) {
+    window.getSelection().removeAllRanges();
+  } else if (document.selection) {
+    document.selection.empty();
+  }
+
+  $('.textarea').blur();
+});
+
 $inputTextarea.on('input', function onInput() {
   $('#input-textarea-counter').text($(this).val().length);
 });
@@ -427,8 +835,8 @@ $resultTextarea.on('paste', (event) => {
 
 $resultTextarea.on('keypress', (event) => {
   if (event.ctrlKey && event.key === 'Enter') {
-    // $glossaryManagerButton.trigger('mousedown');
-    // $glossaryManagerButton.click();
+    $glossaryManagerButton.trigger('mousedown');
+    $glossaryManagerButton.click();
     event.preventDefault();
     return;
   }
@@ -438,6 +846,42 @@ $resultTextarea.on('keypress', (event) => {
     $inputTextarea.focus();
     event.preventDefault();
   }
+});
+
+$('.modal textarea, .modal input[type="text"]').on('blur', function onBlur() {
+  $(this).prop('scrollLeft', 0);
+  $(this).prop('scrollTop', 0);
+});
+
+$('#source-entry-dropdown-toggle').on('mousedown', (event) => {
+  event.preventDefault();
+});
+
+$('.dropdown-scrollable').on('hide.bs.dropdown', function onHideBsDropdown() {
+  $(this).find('.dropdown-menu').prop('scrollTop', 0);
+});
+
+$dropdownHasCollapse.find('.dropdown-menu button.dropdown-item').on('click', function onClick() {
+  if ($(this).data('bs-toggle') === 'collapse') {
+    $(this).parent().parent().find('.collapse').each((__, value) => {
+      if (!$(value).hasClass('show')) return;
+      const bootstrapDropdownHasCollapse = new bootstrap.Collapse(value);
+      bootstrapDropdownHasCollapse.hide();
+    });
+  } else {
+    $dropdownHasCollapse.find('.dropdown-menu').each((__, value) => {
+      if (!$(value).hasClass('show')) return;
+      const bootstrapDropdownHasCollapse = new bootstrap.Dropdown(value);
+      bootstrapDropdownHasCollapse.hide();
+    });
+  }
+});
+
+$dropdownHasCollapse.on('show.bs.dropdown', function onHideBsDropdown() {
+  if ($(this).find('.dropdown-menu').find('.collapse').toArray().some((element) => $(element).hasClass('show'))) return;
+  if ($(this).find('.dropdown-menu').find('.collapse.show-by-default').length === 0) return;
+  const bootstrapCollapseInDropdown = new bootstrap.Collapse($(this).find('.dropdown-menu').find('.collapse.show-by-default')[0]);
+  bootstrapCollapseInDropdown.show();
 });
 
 $translatorDropdown.find('.dropdown-item').click(function onClick() {
@@ -466,6 +910,10 @@ $translatorDropdown.find('.dropdown-item').click(function onClick() {
       currentTranslator = new Papago(UUID);
       break;
     }
+    case Translators.VIETPHRASE: {
+      currentTranslator = new Vietphrase();
+      break;
+    }
     case Translators.WEBNOVEL_GOOGLE_TRANSLATE: {
       currentTranslator = new WebNovelGoogleTranslate();
       break;
@@ -482,4 +930,177 @@ $translatorDropdown.find('.dropdown-item').click(function onClick() {
 $toneSelect.on('change', () => {
   const $activeTranslator = $translatorDropdown.find('.active');
   if ($activeTranslator.val() === Translators.MICROSOFT_TRANSLATOR) $activeTranslator.click();
+});
+
+$showOriginalTextSwitch.change(() => {
+  $retranslateButton.click();
+});
+
+$glossaryModal.on('shown.bs.modal', () => {
+  const text = $sourceEntryInput.val();
+
+  if (text.length > 0) {
+    // ['namePhu', 'name', 'vietPhrase'].some((element) => {
+    //   if (Object.hasOwn(glossary[element], text)) {
+    //     if ($glossaryListSelect.val() === element) return true;
+    //     $glossaryListSelect.val(element).change();
+    //     return true;
+    //   }
+
+    //   return false;
+    // });
+
+    // if (!$sourceEntryInput.autocomplete('option', 'disabled')) $sourceEntryInput.autocomplete('disable');
+    $sourceEntryInput.trigger('input');
+  }
+
+  // $sourceEntryInput.autocomplete('enable');
+});
+
+$glossaryModal.on('hide.bs.modal', () => {
+  // $sourceEntryInput.autocomplete('disable');
+  $sourceEntryInput.val(null).trigger('input');
+  $addButton.addClass('disabled');
+  $removeButton.addClass('disabled');
+});
+
+$sourceEntryInput.on('input', async function onInput() {
+  const text = $(this).val();
+
+  if (text.length > 0) {
+    $translateEntryButtons.filter(`[data-translator="vietphrase"][data-lang="${/* $glossaryListSelect.val().startsWith('vietPhrase') ? 'vi' :  */'SinoVietnamese'}"]`).click();
+    $removeButton.addClass('disabled');
+    $addButton.removeClass('disabled');
+  } else {
+    $targetEntryTextarea.val(null);
+    $addButton.addClass('disabled');
+    $removeButton.addClass('disabled');
+  }
+});
+
+$sourceEntryInput.on('keypress', (event) => {
+  if (event.key === 'Enter') {
+    $targetEntryTextarea.focus();
+    event.preventDefault();
+  }
+});
+
+$targetEntryTextarea.on('input', function onInput() {
+  $(this).val($(this).val().replaceAll(/\n/g, ' '));
+});
+
+$targetEntryTextarea.on('keypress', (event) => {
+  if (event.key === 'Enter') {
+    $addButton.click();
+    event.preventDefault();
+  }
+});
+
+$('.define-button').on('click', function onClick() {
+  if ($sourceEntryInput.val().length > 0) {
+    let defineContent = ($sourceEntryInput.val().substring($sourceEntryInput.prop('selectionStart'), $sourceEntryInput.prop('selectionEnd')) || $sourceEntryInput.val()).trim(); // .substring(0, 30)
+
+    if ($(this).data('type') != null || $(this).data('type') !== 'encodeURIText') {
+      switch ($(this).data('type')) {
+        case 'char': {
+          [defineContent] = defineContent.split(/(?:)/u);
+          break;
+        }
+        case 'codePoint': {
+          defineContent = defineContent.codePointAt();
+          break;
+        }
+        // no default
+      }
+    } else {
+      defineContent = encodeURIComponent(defineContent);
+    }
+
+    window.open($(this).data('href').replace('{0}', defineContent), '_blank', 'width=1000,height=577');
+  }
+
+  if (window.getSelection) window.getSelection().removeAllRanges();
+  else if (document.selection) document.selection.empty();
+  $sourceEntryInput.blur();
+});
+
+$('.translate-webpage-button').on('click', function onClick() {
+  if ($sourceEntryInput.val().length > 0) window.open($(this).data('href').replace('{0}', encodeURIComponent($sourceEntryInput.val().trimEnd())), '_blank', 'width=1000,height=577');
+  if (window.getSelection) window.getSelection().removeAllRanges();
+  else if (document.selection) document.selection.empty();
+  $sourceEntryInput.blur();
+});
+
+$('.upper-case-button').on('click', function onClick() {
+  if ($targetEntryTextarea.val().length > 0) {
+    let text = $targetEntryTextarea.val().toLowerCase();
+
+    if ($(this).data('amount') !== '#') {
+      for (let i = 0; i < $(this).data('amount'); i += 1) {
+        text = text.replace(/(^|\s|\p{P})(\p{Ll})/u, (__, p1, p2) => p1 + p2.toUpperCase());
+      }
+    } else {
+      text = text.replaceAll(/(^|\s|\p{P})(\p{Ll})/gu, (__, p1, p2) => p1 + p2.toUpperCase());
+    }
+
+    $targetEntryTextarea.val(text).trigger('input');
+  }
+});
+
+$translateEntryButtons.click(async function onClick() {
+  const text = $sourceEntryInput.val();
+
+  if (text.length > 0) {
+    $translateEntryButtons.addClass('disabled');
+    $sourceEntryInput.attr('readonly', true);
+    let translator = null;
+    const targetLanguage = $(this).data('lang');
+
+    switch ($(this).data('translator')) {
+      case Translators.BAIDU_TRANSLATE: {
+        translator = new BaiduTranslate();
+        await translator.translateText(text, targetLanguage);
+        break;
+      }
+      case Translators.DEEPL_TRANSLATE: {
+        while (true) {
+          translator = new DeepLTranslate(DEEPL_AUTH_KEY_LIST[0][0]).init();
+          if ((currentTranslator.usage.character_limit - currentTranslator.usage.character_count) >= 100000) break;
+          DEEPL_AUTH_KEY_LIST.shift();
+        }
+
+        await translator.translateText(text, targetLanguage);
+        break;
+      }
+      case Translators.GOOGLE_TRANSLATE: {
+        translator = new GoogleTranslate();
+        await translator.translateText(text, targetLanguage);
+        break;
+      }
+      case Translators.PAPAGO: {
+        translator = new Papago(UUID);
+        await translator.translateText(text, targetLanguage);
+        break;
+      }
+      case Translators.VIETPHRASE: {
+        translator = new Vietphrase();
+        await translator.translateText(text, targetLanguage, {}, glossary);
+        break;
+      }
+      case Translators.WEBNOVEL_GOOGLE_TRANSLATE: {
+        translator = new WebNovelGoogleTranslate();
+        await translator.translateText(text, targetLanguage);
+        break;
+      }
+      default: {
+        translator = new MicrosoftTranslator($toneSelect.val());
+        await translator.translateText(text, targetLanguage);
+        break;
+      }
+    }
+
+    $targetEntryTextarea.val(translator.result).trigger('input');
+    $sourceEntryInput.removeAttr('readonly');
+    $translateEntryButtons.removeClass('disabled');
+  }
 });

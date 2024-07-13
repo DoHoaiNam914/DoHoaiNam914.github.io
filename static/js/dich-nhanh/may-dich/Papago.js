@@ -41,8 +41,8 @@ class Papago extends Translator {
   };
 
   DefaultLanguage = {
-    SOURCE_lANGUAGE: 'auto',
-    TARGET_lANGUAGE: 'vi',
+    SOURCE_LANGUAGE: 'auto',
+    TARGET_LANGUAGE: 'vi',
   };
 
   constructor(uuid) {
@@ -105,6 +105,7 @@ class Papago extends Translator {
       return this.result;
     } catch (error) {
       console.error('Bản dịch lỗi:', error);
+      this.result = error;
       throw error;
     }
   }

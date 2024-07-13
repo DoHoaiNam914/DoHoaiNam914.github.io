@@ -1,21 +1,23 @@
 'use strict';
 
-class Vietphrase {
-  static SOURCE_LANGUAGES = { cj: 'Chinese-Japanese' };
+/* global Translator, Utils */
 
-  static TARGET_LANGUAGES = {
-    simplified: 'Giản thể',
-    traditional: 'Phổn thể',
-    pinyin: 'Bính âm',
-    KunYomi: 'Kun\'yomi',
-    OnYomi: 'On\'yomi',
+class Vietphrase extends Translator {
+  static SOURCE_LANGUAGE_LIST = { cj: 'Chinese-Japanese' };
+
+  static TARGET_LANGUAGE_LIST = {
+    // vi: 'Vietphrase',
     SinoVietnamese: 'Hán Việt',
-    vi: 'Vietphrase',
+    OnYomi: 'On\'yomi',
+    KunYomi: 'Kun\'yomi',
+    pinyin: 'Bính âm',
+    traditional: 'Phổn thể',
+    simplified: 'Giản thể',
   };
 
-  static DefaultLanguage = {
+  DefaultLanguage = {
     SOURCE_LANGUAGE: 'cj',
-    TARGET_LANGUAGE: 'vi',
+    TARGET_LANGUAGE: 'SinoVietnamese',
   };
 
   SpecialSinoVietnameses = [
@@ -180,230 +182,6 @@ class Vietphrase {
     ['无数', 'vô số'],
     ['王朝', 'vương triều'],
     ['称号', 'xưng hiệu'],
-    ['吖', 'A'],
-    ['摁', 'ÂN'],
-    ['怄', 'ÂU'],
-    ['啵', 'BA'],
-    ['爸', 'BÁ'],
-    ['霸', 'BÁ'],
-    ['沛', 'BÁI'],
-    ['掰', 'BÃI'],
-    ['孢', 'BÀO'],
-    ['泡', 'BÀO'],
-    ['镚', 'BẢNG'],
-    ['嘭', 'BÀNH'],
-    ['嘣', 'BĂNG'],
-    ['赑', 'BỊ'],
-    ['捕', 'BỔ'],
-    ['怖', 'BỐ'],
-    ['旮', 'CA'],
-    ['咖', 'CA'],
-    ['干', 'CAN'],
-    ['赣', 'CÁN'],
-    ['薅', 'CAO'],
-    ['裘', 'CẦU'],
-    ['正', 'CHÍNH'/* Họ */],
-    ['政', 'CHÍNH'],
-    ['锤', 'CHUỲ'],
-    ['杵', 'CHỬ'],
-    ['褚', 'CHỬ'/* Họ */],
-    ['骷', 'CÔ'],
-    ['机', 'CƠ'],
-    ['玑', 'CƠ'],
-    [/* Kanji */'姫', '姬'/* CEDICT */],
-    ['畸', 'CƠ'],
-    ['奇', 'CƠ, KI, KỲ', 'KỲ'/* Họ Kỳ */],
-    ['焗', 'CỤC'],
-    ['蒟', 'CƯ'],
-    ['犟', 'CƯỜNG'],
-    ['柜', 'CỰ, QUỸ'],
-    ['摇', 'DAO'],
-    ['遥', 'DAO'],
-    ['焰', 'DIỆM'],
-    ['焱', 'DIỆM'],
-    ['延', 'DIÊN'/* Họ */],
-    ['淼', 'DIỂU'],
-    ['杳', 'DIỂU'],
-    ['尹', 'DOÃN'/* Họ */],
-    ['允', 'DOÃN'],
-    ['蓉', 'DUNG'],
-    ['熔', 'DUNG'],
-    ['庸', 'DUNG'],
-    ['缘', 'DUYÊN'],
-    ['兖', 'DUYỄN'],
-    ['嗲', 'ĐÀ'],
-    ['台', 'ĐÀI'/* Họ */],
-    ['抬', 'ĐÀI'],
-    ['哒', 'ĐÁT'],
-    ['娣', 'ĐỆ'],
-    ['侄', 'ĐIỆT'],
-    ['顶', 'ĐỈNH'],
-    ['锻', 'ĐOÀN'],
-    ['洞', 'ĐỘNG'],
-    ['郝', 'HÁCH'/* Họ */],
-    ['唏', 'HI'],
-    ['屃', 'HÍ'],
-    ['峡', 'HIỆP'],
-    ['叶', 'HIỆP, DIỆP', 'DIỆP'/* Họ Nghiệp */],
-    ['校', 'HIỆU'],
-    ['嗬', 'HƠ'],
-    ['靴', 'HOA'],
-    [/* Giản thể */'坏', 'HOẠI'],
-    [/* Kanji */'壊', '坏'/* CEDICT */],
-    ['嚯', 'HOẮC'],
-    ['槐', 'HÒE'/* Họ Hoè *//* Fix New Accent */],
-    ['宏', 'HỒNG, HOẰNG', 'HOẰNG'/* Họ Hồng */],
-    ['县', 'HUYỆN'],
-    ['佧', 'KHA'],
-    ['铐', 'KHẢO'],
-    ['啃', 'KHẲNG'],
-    ['氪', 'KHẮC'],
-    ['蹊', 'KHÊ'],
-    ['挑', 'KHIÊU'],
-    ['跨', 'KHOA'],
-    ['矿', 'KHOÁNG'],
-    ['灰', 'KHÔI'],
-    ['绮', 'KHỞI'],
-    ['蝰', 'KHUÊ'],
-    ['哐', 'KHUÔNG'],
-    ['其', 'KI, KỲ', 'KỲ'],
-    ['劲', 'KÌNH'],
-    ['期', 'KỲ'],
-    ['祁', 'KỲ'],
-    ['岐', 'KỲ'],
-    ['祈', 'KỲ'],
-    ['崎', 'KỲ'],
-    ['淇', 'KỲ'],
-    ['棋', 'KỲ'],
-    ['琪', 'KỲ'],
-    ['旗', 'KỲ'],
-    ['麒', 'KỲ'],
-    ['纪', 'KỶ'],
-    ['技', 'KỸ'],
-    ['记', 'KÝ'],
-    ['骑', 'KỴ'],
-    ['铝', 'LÃ'],
-    ['脸', 'LIỂM, LIỄM'],
-    ['辇', 'LIÊN'],
-    ['摞', 'LOA'],
-    ['涮', 'LOÁT'],
-    ['撸', 'LỖ'],
-    ['仑', 'LUÂN'],
-    ['胧', 'LUNG'],
-    ['拢', 'LŨNG'],
-    ['累', 'LUỸ, LUỴ'],
-    ['鎏', 'LƯU'],
-    ['妈', 'MA'],
-    ['犸', 'MÃ'],
-    ['玫', 'MAI'],
-    ['曼', 'MAN'],
-    ['牦', 'MAO'],
-    ['铆', 'MÃO'],
-    ['咩', 'MIẾT'],
-    ['喵', 'MIÊU'],
-    ['茗', 'MINH'],
-    ['馍', 'MÔ'],
-    ['哞', 'MU'],
-    ['闹', 'NÁO'],
-    ['孬', 'NẠO'],
-    ['嚣', 'NGAO'],
-    ['垠', 'NGẦN'],
-    ['荛', 'NGHIÊU'],
-    ['鼋', 'NGUYÊN'],
-    ['玥', 'NGUYỆT'],
-    ['伢', 'NHA'],
-    [/* Kanji */'楽', '乐'/* CEDICT */],
-    ['刃', 'NHẪN'],
-    ['任', 'NHẬM, NHIỆM'/* Họ Nhậm */],
-    ['儿', 'NHI'],
-    [/* Biến thể cũ */'伱', '你'/* CEDICT */],
-    ['聂', 'NHIẾP'/* Họ */],
-    ['蕊', 'NHUỴ'],
-    [/* Biến thể cũ */'叒', '若'/* CEDICT */],
-    ['袅', 'NIỄU'],
-    ['宁', 'NINH'/* Họ Ninh */],
-    ['苧', 'NINH'],
-    ['柠', 'NINH'],
-    [/* Giản thể */'钕', 'NỮ'],
-    [/* Phổn thể */'釹', '钕'],
-    ['邬', 'Ô'/* Họ */],
-    ['樊', 'PHÀN'/* Họ */],
-    ['粪', 'PHẪN, PHẤN'],
-    ['帔', 'PHÍ'],
-    ['缚', 'PHỌC'],
-    ['浦', 'PHỐ'/* Họ */],
-    ['仆', 'PHỐC, BỘC'],
-    ['绾', 'QUÁN'],
-    ['广', 'QUẢNG'],
-    ['瑰', 'QUẾ, KHÔI', 'KHÔI'],
-    ['差', 'SAI'],
-    [/* Giản thể */'创', 'SANG, SÁNG', 'SÁNG'],
-    [/* Phổn thể */'創', '创'],
-    ['厅', 'SẢNH'],
-    ['笙', 'SÊNH'],
-    ['生', 'SINH'],
-    ['傻', 'SOẢ'],
-    ['帅', 'SOÁI'/* Họ */],
-    ['山', 'SƠN'/* Họ */],
-    ['爹', 'TA'],
-    ['噻', 'TẮC'],
-    ['噌', 'TĂNG'],
-    ['沁', 'TẨM'],
-    ['烬', 'TẦN'],
-    ['剂', 'TỄ'],
-    ['济', 'TẾ'],
-    ['采', 'THÁI'],
-    ['彩', 'THÁI, THỂ'],
-    ['呔', 'THÁI, THẢI'],
-    ['蹚', 'THANG'],
-    ['遢', 'THẠP'],
-    ['沈', 'THẨM'/* Họ */],
-    ['瘆', 'THẨM'],
-    ['单', 'THIỀN, ĐƠN', 'ĐƠN'],
-    ['蹿', 'THOÃN'],
-    ['兔', 'THỐ'],
-    ['姝', 'THÙ'],
-    ['驯', 'THUẦN'],
-    ['属', 'THUỘC'],
-    ['姐', 'THƯ'],
-    ['实', 'THỰC'],
-    ['熵', 'THƯƠNG'],
-    ['撕', 'TI, TƯ'],
-    ['比', 'TỈ'],
-    ['噼', 'TÍCH'],
-    ['霹', 'TỊCH'],
-    ['婧', 'TỊNH'],
-    ['钱', 'TIỀN'],
-    ['箭', 'TIỄN'],
-    ['羡', 'TIỄN'/* Họ */],
-    ['筱', 'TIÊU'],
-    ['啸', 'TIẾU'],
-    ['箐', 'TINH'],
-    ['静', 'TỊNH, TĨNH', 'TĨNH'/* Họ Tịnh */],
-    ['璇', 'TOÀN'],
-    ['诅', 'TỔ'],
-    ['猹', 'TRA'],
-    ['锃', 'TRÁNH'],
-    ['橙', 'TRÀNH, TRANH, ĐẮNG', 'TRANH'],
-    ['沼', 'TRẢO'],
-    ['镯', 'TRỌC'],
-    ['住', 'TRÚ'],
-    ['着', 'TRƯỚC, CHIÊU'],
-    ['场', 'TRƯỜNG'],
-    ['洵', 'TUẦN'],
-    ['纵', 'TUNG'],
-    ['祟', 'TUỴ'],
-    ['司', 'TƯ, TI'],
-    ['蔷', 'TƯỜNG'],
-    ['蒋', 'TƯỞNG'/* Họ */],
-    ['碗', 'UYỂN'],
-    ['哟', 'ƯỚC'],
-    ['援', 'VIỆN'],
-    ['眦', 'XẾ'],
-    ['掣', 'XIẾT'],
-    ['冲', 'XUNG'],
-    ['胭', 'YẾT'],
-    ['夭', 'YỂU'],
   ];
 
   static removeAccents(pinyin) {
@@ -438,7 +216,7 @@ class Vietphrase {
     return pinyin.replaceAll(/[āáǎàōóǒòēéěèīíǐìūúǔùǖǘǚǜü]/g, (match) => accentsMap[match]);
   }
 
-  static getFormattedText(inputText) {
+  static getFormattedText(text) {
     const PUNCTUATIONS = {
       '、': ',',
       '。': '.',
@@ -454,15 +232,15 @@ class Vietphrase {
       '～': '~',
     };
 
-    return inputText.replaceAll(/(?:[…、。】！），：；？]|\.\.\.)(?![\p{Pc}\p{Pd}\p{Pe}\p{Pf}\p{Po}\s]|$)/gu, (match) => `${PUNCTUATIONS[match] ?? match} `).replaceAll(/([^\s\p{Ps}\p{Pi}])([【（])/gu, (__, p1, p2) => `${p1} ${PUNCTUATIONS[p2] ?? p2}`).replaceAll(/[、。【】！（），：；？]/g, (match) => PUNCTUATIONS[match] ?? match).replaceAll(/ ?· ?/g, ' ');
+    return text.replaceAll(/(?:[…、。】！），：；？]|\.\.\.)(?![\p{Pc}\p{Pd}\p{Pe}\p{Pf}\p{Po}\s]|$)/gu, (match) => `${PUNCTUATIONS[match] ?? match} `).replaceAll(/([^\s\p{Ps}\p{Pi}])([【（])/gu, (__, p1, p2) => `${p1} ${PUNCTUATIONS[p2] ?? p2}`).replaceAll(/[、。【】！（），：；？]/g, (match) => PUNCTUATIONS[match] ?? match).replaceAll(/ ?· ?/g, ' ');
   }
 
-  static quickTranslate(inputText, translations) {
-    if (translations == null || translations.length === 0) return inputText;
+  static quickTranslate(text, translations) {
+    if (translations == null || translations.length === 0) return text;
     const translationsMap = Object.fromEntries(translations.filter((element, __, array) => !array[element[0]] && (array[element[0]] = 1), {}));
 
     let startIndex = 0;
-    const characters = inputText.split(/(?:)/u);
+    const characters = text.split(/(?:)/u);
     const charactersLength = characters.length;
     let minLength = 0;
     let maxLength = 131072;
@@ -531,10 +309,10 @@ class Vietphrase {
     return translatedText;
   }
 
-  static translateAfterTest(inputText, names, vietPhrases, hanVietDict, testTextMapping) {
-    if (names == null || vietPhrases == null || hanVietDict == null || hanVietDict.length === 0) return inputText;
+  static translateAfterTest(text, names, vietPhrases, hanVietDict, testTextMapping) {
+    if (names == null || vietPhrases == null || hanVietDict == null || hanVietDict.length === 0) return text;
     let startIndex = 0;
-    const characters = inputText.split(/(?:)/u);
+    const characters = text.split(/(?:)/u);
     const charactersLength = characters.length;
     let endIndex = 10;
     let primaryIndex = 0;
@@ -609,16 +387,16 @@ class Vietphrase {
                 break;
               }
 
-              const text = testTextMapping[currentStartIndex];
-              if (startIndex >= text.indexChina) tempStartIndex = currentStartIndex;
+              const testText = testTextMapping[currentStartIndex];
+              if (startIndex >= testText.indexChina) tempStartIndex = currentStartIndex;
 
-              if (text.indexChina > startIndex + (endIndex * 2)) {
+              if (testText.indexChina > startIndex + (endIndex * 2)) {
                 currentStartIndex = tempStartIndex;
                 hasHanViet = false;
                 break;
               }
 
-              if (text.indexChina >= startIndex && text.indexChina < startIndex + currentEndIndex) {
+              if (testText.indexChina >= startIndex && testText.indexChina < startIndex + currentEndIndex) {
                 currentStartIndex = tempStartIndex;
                 hasHanViet = true;
                 break;
@@ -695,10 +473,10 @@ class Vietphrase {
     return translatedText;
   }
 
-  translateWithTextMapping(inputText, names, hanVietDict) {
-    if (names == null || hanVietDict.length === 0) return inputText;
+  translateWithTextMapping(text, names, hanVietDict) {
+    if (names == null || hanVietDict.length === 0) return text;
     let startIndex = 0;
-    const characters = inputText.split(/(?:)/u);
+    const characters = text.split(/(?:)/u);
     const charactersLength = characters.length;
     let endIndex = 10;
 
@@ -769,54 +547,51 @@ class Vietphrase {
     }
 
     if (testTextMapping.length > 0) testTextMapping.sort((a, b) => a.indexChina - b.indexChina);
-    return Vietphrase.translateAfterTest(inputText, names, this.vietPhrase, hanVietDict, testTextMapping);
+    return Vietphrase.translateAfterTest(text, names, this.vietPhrase, hanVietDict, testTextMapping);
   }
 
   static getCapitalizeText(text) {
     return text.split('\n').map((element) => element.replaceAll(/(^[\p{P}\p{Z}]*|[!.?] )(\p{Ll})/gu, (__, p1, p2) => p1 + p2.toUpperCase())).join('\n');
   }
 
-  translateText(__, targetLanguage, inputText, options, glossary) {
-    this.prioritizeNameOverVietPhrase = options.prioritizeNameOverVietPhrase;
-    this.autocapitalize = options.autocapitalize;
+  async translateText(text, targetLanguage, options, glossary) {
+    // const SinoVietnamesesList = Object.entries(glossary.SinoVietnameses);
+    // let hanViet = (SinoVietnamesesList.length > 0 ? SinoVietnamesesList.filter(([___, second]) => !/^\p{Script=Hani}+$/u.test(second)).map(([first, second]) => [first, second.toLowerCase()]) : []).concat(this.SpecialSinoVietnameses.filter(([___, second]) => !/^\p{Script=Hani}+$/u.test(second)).map(([a, b, c]) => [a, (c ?? b).split(/, | \| /)[0].toLowerCase()]), glossary.hanViet).filter(([first], ___, array) => !array[first] && (array[first] = 1), {});
+    // hanViet = this.SpecialSinoVietnameses.filter(([___, second]) => /^\p{Script=Hani}+$/u.test(second)).map(([a, b]) => [a, Object.fromEntries(glossary.hanViet.filter(([___, d]) => !/^\p{Script=Hani}+$/u.test(d)))[b]]).concat(hanViet).filter(([first], ___, array) => !array[first] && (array[first] = 1), {});
+    // if (SinoVietnamesesList.length > 0) hanViet = SinoVietnamesesList.filter(([___, second]) => /^\p{Script=Hani}+$/u.test(second)).map(([a, b]) => [a, Object.fromEntries(glossary.hanViet.filter(([___, d]) => !/^\p{Script=Hani}+$/u.test(d)))[b]]).concat(hanViet).filter(([first], ___, array) => !array[first] && (array[first] = 1), {});
+    const hanViet = new Map(glossary.hanViet);
 
-    const SinoVietnamesesList = Object.entries(glossary.SinoVietnameses);
-    let hanViet = (SinoVietnamesesList.length > 0 ? SinoVietnamesesList.filter(([___, second]) => !/^\p{Script=Hani}+$/u.test(second)).map(([first, second]) => [first, second.toLowerCase()]) : []).concat(this.SpecialSinoVietnameses.filter(([___, second]) => !/^\p{Script=Hani}+$/u.test(second)).map(([a, b, c]) => [a, (c ?? b).split(/, | \| /)[0].toLowerCase()]), glossary.hanViet).filter(([first], ___, array) => !array[first] && (array[first] = 1), {});
-    hanViet = this.SpecialSinoVietnameses.filter(([___, second]) => /^\p{Script=Hani}+$/u.test(second)).map(([a, b]) => [a, Object.fromEntries(glossary.hanViet.filter(([___, d]) => !/^\p{Script=Hani}+$/u.test(d)))[b]]).concat(hanViet).filter(([first], ___, array) => !array[first] && (array[first] = 1), {});
-    if (SinoVietnamesesList.length > 0) hanViet = SinoVietnamesesList.filter(([___, second]) => /^\p{Script=Hani}+$/u.test(second)).map(([a, b]) => [a, Object.fromEntries(glossary.hanViet.filter(([___, d]) => !/^\p{Script=Hani}+$/u.test(d)))[b]]).concat(hanViet).filter(([first], ___, array) => !array[first] && (array[first] = 1), {});
-    hanViet = new Map(hanViet);
-
-    let resultText = inputText;
+    this.result = text;
 
     switch (targetLanguage) {
       case 'simplified': {
-        resultText = Vietphrase.quickTranslate(inputText, glossary.simplified);
+        this.result = Vietphrase.quickTranslate(text, glossary.simplified);
         break;
       }
       case 'traditional': {
-        resultText = Vietphrase.quickTranslate(inputText, glossary.traditional);
+        this.result = Vietphrase.quickTranslate(text, glossary.traditional);
         break;
       }
       case 'pinyin': {
-        resultText = Vietphrase.getFormattedText(Vietphrase.quickTranslate(inputText, [...new Map(glossary.romajis.concat(glossary.pinyins.map(([first, second]) => [first, Vietphrase.removeAccents(second)])))]));
+        this.result = Vietphrase.getFormattedText(Vietphrase.quickTranslate(text, [...new Map(glossary.romajis.concat(glossary.pinyins.map(([first, second]) => [first, Vietphrase.removeAccents(second)])))]));
         break;
       }
       case 'KunYomi': {
-        resultText = Vietphrase.getFormattedText(Vietphrase.quickTranslate(inputText, glossary.KunYomis.concat(glossary.romajis).filter(([first], ___, array) => !array[first] && (array[first] = 1), {})));
+        this.result = Vietphrase.getFormattedText(Vietphrase.quickTranslate(text, glossary.KunYomis.concat(glossary.romajis).filter(([first], ___, array) => !array[first] && (array[first] = 1), {})));
         break;
       }
       case 'OnYomi': {
-        resultText = Vietphrase.getFormattedText(Vietphrase.quickTranslate(inputText, glossary.OnYomis.concat(glossary.romajis).filter(([first], ___, array) => !array[first] && (array[first] = 1), {})));
+        this.result = Vietphrase.getFormattedText(Vietphrase.quickTranslate(text, glossary.OnYomis.concat(glossary.romajis).filter(([first], ___, array) => !array[first] && (array[first] = 1), {})));
         break;
       }
       case 'vi': {
         let luatNhanName = [];
-        let name = options.nameEnabled ? Object.entries({ ...glossary.name, ...glossary.namePhu }).filter(([first]) => first != null && first.length > 0 && inputText.toLowerCase().includes(first.toLowerCase())) : [];
+        let name = options.nameEnabled ? Object.entries({ ...glossary.name, ...glossary.namePhu }).filter(([first]) => first != null && first.length > 0 && text.toLowerCase().includes(first.toLowerCase())) : [];
         let luatNhanPronoun = [];
         const pronounList = Object.entries(glossary.pronoun);
 
         if (options.multiplicationAlgorithm > 0) {
-          Object.entries(glossary.luatNhan).filter(([first]) => inputText.match(new RegExp(Utils.escapeRegExp(first).replace('\\{0\\}', '.+')))).forEach(([a, b]) => {
+          Object.entries(glossary.luatNhan).filter(([first]) => text.match(new RegExp(Utils.escapeRegExp(first).replace('\\{0\\}', '.+')))).forEach(([a, b]) => {
             if (options.nameEnabled && options.multiplicationAlgorithm === 2 && name.length > 0) {
               luatNhanName = [...luatNhanName, ...name.map(([c, d]) => [a.replace('{0}', c), b.replace('{0}', d.split(/[/|]/)[0])])];
             }
@@ -830,16 +605,17 @@ class Vietphrase {
         this.vietPhrase = Object.entries({
           ...vietPhraseLength > 0 ? glossary.chinesePhienAmWord : [], ...vietPhraseLength > 0 ? glossary.vietPhrase : [], ...vietPhraseLength > 0 ? { 的: options.addDeLeZhao ? hanViet.get('的') : '', 了: options.addDeLeZhao ? hanViet.get('了') : '', 着: options.addDeLeZhao ? hanViet.get('着') : '' } : {}, ...Object.fromEntries(luatNhanPronoun),
         }).map(([first, second]) => [first, second.split(/[/|]/)[0]]).filter((element, ___, array) => !array[element[0]] && (array[element[0]] = 1), {});
-        resultText = this.translateWithTextMapping(inputText, name, [...new Map(glossary.romajis.concat([...hanViet]))]);
-        resultText = options.autocapitalize ? Vietphrase.getCapitalizeText(resultText) : resultText;
+        this.result = this.translateWithTextMapping(text, name, [...new Map(glossary.romajis.concat([...hanViet]))]);
+        this.result = options.autocapitalize ? Vietphrase.getCapitalizeText(this.result) : this.result;
         break;
       }
       default: {
-        resultText = Vietphrase.getFormattedText(Vietphrase.quickTranslate(inputText, [...new Map(glossary.romajis.concat([...hanViet]))]));
+        this.result = Vietphrase.getFormattedText(Vietphrase.quickTranslate(text, [...new Map(glossary.romajis.concat([...hanViet]))]));
         break;
       }
     }
 
-    return resultText;
+    super.translateText(text, this.DefaultLanguage.SOURCE_LANGUAGE, targetLanguage);
+    return this.result;
   }
 }

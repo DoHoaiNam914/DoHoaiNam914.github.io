@@ -221,16 +221,9 @@
           '/static/js/Utils.js',
           '/static/lib/hanviet.js',
           '/static/lib/handict.js',
+          '/static/js/dich-nhanhOLD/Translators.js',
           '/static/js/newAccentMap.js',
-          '/static/js/dich-nhanh/Translator.js',
-          // '/static/js/dich-nhanh/may-dich/Vietphrase.js',
-          '/static/js/dich-nhanh/may-dich/MicrosoftTranslator.js',
-          '/static/js/dich-nhanh/may-dich/GoogleTranslate.js',
-          '/static/js/dich-nhanh/may-dich/BaiduTranslate.js',
-          '/static/js/dich-nhanh/may-dich/DeepLTranslate.js',
-          '/static/js/dich-nhanh/may-dich/Papago.js',
-          '/static/js/dich-nhanh/may-dich/WebNovelGoogleTranslate.js',
-          '/static/js/dich-nhanh/dichNhanh.js',
+          '/static/js/dich-nhanhOLD/dichNhanh.js',
         ],
       ];
 
@@ -329,12 +322,12 @@
             <div class="col-10 pe-0">
               <div class="row m-0 w-100">
                 <div class="col ps-0">
-                  <select class="form-select language-select option quick-translate-option" id="source-language-select">
-                    <option value="auto-detect" selected>Tự phát hiện</option>
+                  <select class="form-select option quick-translate-option" id="source-language-select">
+                    <option value="" selected>Tự phát hiện</option>
                   </select>
                 </div>
                 <div class="col">
-                  <select class="form-select language-select option quick-translate-option" id="target-language-select">
+                  <select class="form-select option quick-translate-option" id="target-language-select">
                     <option value="vi" selected>Tiếng Việt</option>
                   </select>
                 </div>
@@ -383,47 +376,6 @@
               <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-              <h2 class="fs-5">Thiết lập trình dịch</h2>
-              <div class="dropdown mb-3 option quick-translate-option" id="translator-dropdown">
-                <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
-                  <svg class="bi" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor">
-                    <use xlink:href="#translate"></use>
-                  </svg>
-                  Trình dịch
-                </button>
-                <ul class="dropdown-menu">
-                  <li>
-                    <button type="button" class="dropdown-item" value="baiduTranslate">Baidu Translate</button>
-                  </li>
-                  <li>
-                    <button type="button" class="dropdown-item" value="deeplTranslate">DeepL Translate</button>
-                  </li>
-                  <li>
-                    <button type="button" class="dropdown-item" value="googleTranslate">Google Dịch</button>
-                  </li>
-                  <li>
-                    <button type="button" class="dropdown-item" value="papago">Papago</button>
-                  </li>
-                  <li>
-                    <button type="button" class="dropdown-item active" value="microsoftTranslator">Trình dịch Microsoft</button>
-                  </li>
-                  <li>
-                    <button type="button" class="dropdown-item" value="vietphrase">Vietphrase</button>
-                  </li>
-                  <li>
-                    <button type="button" class="dropdown-item" value="webnovelGoogleTranslate">WebNovel Google Translate</button>
-                  </li>
-                </ul>
-              </div>
-              <div class="mb-3">
-                <label class="form-label" for="tone-select">Giọng điệu của Trình dịch Microsoft:</label>
-                <select class="form-select form-select-sm option" id="tone-select">
-                  <option value="Standard">Tiêu chuẩn</option>
-                  <option value="Casual">Thông thường</option>
-                  <option value="Formal">Trang trọng</option>
-                </select>
-              </div>
-              <hr>
               <h2 class="fs-5">Thiết lập giao diện</h2>
               <div class="dropdown mb-3">
                 <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" id="bd-theme" data-bs-toggle="dropdown">
@@ -688,6 +640,34 @@
                 <label class="form-check-label" for="format-settings-switch">Thiết lập định dạng</label>
               </div>
               <hr>
+              <div class="dropdown mb-3 option quick-translate-option" id="translator-dropdown">
+                <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
+                  <svg class="bi" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor">
+                    <use xlink:href="#translate"></use>
+                  </svg>
+                  Trình dịch
+                </button>
+                <ul class="dropdown-menu">
+                  <li>
+                    <button type="button" class="dropdown-item translator-option" data-id="baiduFanyi">Baidu Fanyi</button>
+                  </li>
+                  <li>
+                    <button type="button" class="dropdown-item translator-option" data-id="deeplTranslate">DeepL Translate</button>
+                  </li>
+                  <li>
+                    <button type="button" class="dropdown-item translator-option" data-id="googleTranslate">Google Dịch</button>
+                  </li>
+                  <li>
+                    <button type="button" class="dropdown-item translator-option" data-id="papago">Papago</button>
+                  </li>
+                  <li>
+                    <button type="button" class="dropdown-item translator-option active" data-id="microsoftTranslator">Trình dịch Microsoft</button>
+                  </li>
+                  <li>
+                    <button type="button" class="dropdown-item translator-option" data-id="vietphrase">Vietphrase</button>
+                  </li>
+                </ul>
+              </div>
               <div class="form-check form-switch mb-3">
                 <input type="checkbox" class="form-check-input option" id="show-original-text-switch" role="switch">
                 <label class="form-check-label" for="show-original-text-switch">Hiển thị văn bản gốc</label>
@@ -827,7 +807,7 @@
                     <hr class="dropdown-divider">
                   </li>
                   <li>
-                    <button type="button" class="dropdown-item translate-webpage-button" data-href="https://fanyi.baidu.com/#auto/vie/{0}">Baidu Translate</button>
+                    <button type="button" class="dropdown-item translate-webpage-button" data-href="https://fanyi.baidu.com/#auto/vie/{0}">Baidu Fanyi</button>
                   </li>
                   <li>
                     <button type="button" class="dropdown-item translate-webpage-button" data-href="https://www.deepl.com/translator#auto/en/{0}">DeepL Translate</button>
@@ -874,23 +854,23 @@
                   <li>
                     <button type="button" class="dropdown-item" data-bs-toggle="collapse" data-bs-target="#convert-collapse">Convert</button>
                     <div class="collapse show-by-default" id="convert-collapse">
-                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="vietphrase" data-lang="simplified">Giản thể</button>
-                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="vietphrase" data-lang="traditional">Phổn thể</button>
-                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="vietphrase" data-lang="pinyin">Bính âm</button>
-                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="vietphrase" data-lang="KunYomi">Kun'yomi</button>
-                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="vietphrase" data-lang="OnYomi">On'yomi</button>
-                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="vietphrase" data-lang="SinoVietnamese">Hán-Việt</button>
                       <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="vietphrase" data-lang="vi">Vietphrase</button>
+                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="vietphrase" data-lang="SinoVietnamese">Hán-Việt</button>
+                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="vietphrase" data-lang="OnYomi">On'yomi</button>
+                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="vietphrase" data-lang="KunYomi">Kun'yomi</button>
+                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="vietphrase" data-lang="pinyin">Bính âm</button>
+                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="vietphrase" data-lang="traditional">Phổn thể</button>
+                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="vietphrase" data-lang="simplified">Giản thể</button>
                     </div>
                   </li>
                   <li>
-                    <button type="button" class="dropdown-item" data-bs-toggle="collapse" data-bs-target="#baidu-fanyi-collapse">Baidu Translate</button>
+                    <button type="button" class="dropdown-item" data-bs-toggle="collapse" data-bs-target="#baidu-fanyi-collapse">Baidu Fanyi</button>
                     <div class="collapse" id="baidu-fanyi-collapse">
-                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="baiduTranslate" data-lang="jp">Japanese</button>
-                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="baiduTranslate" data-lang="en">English</button>
-                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="baiduTranslate" data-lang="vie">Vietnamese</button>
-                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="baiduTranslate" data-lang="zh">Chinese</button>
-                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="baiduTranslate" data-lang="cht">Traditional Chinese</button>
+                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="baiduFanyi" data-lang="jp">Japanese</button>
+                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="baiduFanyi" data-lang="en">English</button>
+                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="baiduFanyi" data-lang="vie">Vietnamese</button>
+                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="baiduFanyi" data-lang="zh">Chinese</button>
+                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="baiduFanyi" data-lang="cht">Traditional Chinese</button>
                     </div>
                   </li>
                   <li>

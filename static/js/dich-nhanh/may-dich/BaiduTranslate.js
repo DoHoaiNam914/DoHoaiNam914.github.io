@@ -21,8 +21,8 @@ class BaiduTranslate extends Translator {
   };
 
   DefaultLanguage = {
-    SOURCE_lANGUAGE: 'auto',
-    TARGET_lANGUAGE: 'vie',
+    SOURCE_LANGUAGE: 'auto',
+    TARGET_LANGUAGE: 'vie',
   };
 
   constructor() {
@@ -70,6 +70,7 @@ class BaiduTranslate extends Translator {
       return this.result;
     } catch (error) {
       console.error('Bản dịch lỗi:', error);
+      this.result = error;
       throw error;
     }
   }
