@@ -893,7 +893,7 @@ $translatorDropdown.find('.dropdown-item').click(function onClick() {
 
   switch (activeTranslator) {
     case Translators.BAIDU_TRANSLATE: {
-      if (translator == null) currentTranslator = new BaiduTranslate();
+      if (currentTranslator == null) currentTranslator = new BaiduTranslate();
       break;
     }
     case Translators.DEEPL_TRANSLATE: {
@@ -928,7 +928,7 @@ $translatorDropdown.find('.dropdown-item').click(function onClick() {
   }
 
   translators[activeTranslator] = translator;
-  loadLangSelectOptions($(this).val());
+  loadLangSelectOptions(activeTranslator);
 });
 
 $toneSelect.on('change', () => {
