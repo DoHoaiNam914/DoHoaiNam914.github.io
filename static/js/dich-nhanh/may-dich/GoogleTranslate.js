@@ -141,7 +141,7 @@ class GoogleTranslate extends Translator {
     return GoogleTranslate.getSecurityToken(query, this.getSecurityKey());
   }
 
-  async translateText(text, targetLanguage, sourceLanguage = this.DefaultLanguage.SOURCE_lANGUAGE) {
+  async translateText(text, targetLanguage, sourceLanguage = this.DefaultLanguage.SOURCE_LANGUAGE) {
     try {
       const lines = text.split(/\n/);
       let queryLines = [];

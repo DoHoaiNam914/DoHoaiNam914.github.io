@@ -16,12 +16,12 @@ class WebNovelGoogleTranslate extends Translator {
   constructor() {
     super();
     this.clientName = 'gtx';
-    this.maxContentLinePerRequest = 25;
+    this.maxContentLinePerRequest = 22;
     this.maxDataPerRequest = 900;
     this.maxContentLengthPerRequest = 850;
   }
 
-  async translateText(text, targetLanguage, sourceLanguage = this.DefaultLanguage.SOURCE_lANGUAGE) {
+  async translateText(text, targetLanguage, sourceLanguage = this.DefaultLanguage.SOURCE_LANGUAGE) {
     try {
       const lines = text.split(/\n/);
       let queryLines = [];

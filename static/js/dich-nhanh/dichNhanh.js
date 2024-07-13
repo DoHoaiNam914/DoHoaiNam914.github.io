@@ -959,6 +959,7 @@ $glossaryModal.on('shown.bs.modal', () => {
 
 $glossaryModal.on('hide.bs.modal', () => {
   // $sourceEntryInput.autocomplete('disable');
+  translationController.abort();
   $sourceEntryInput.val(null).trigger('input');
   $addButton.addClass('disabled');
   $removeButton.addClass('disabled');
@@ -1050,7 +1051,8 @@ $('.upper-case-button').on('click', function onClick() {
 $translateEntryButtons.click(async function onClick() {
   const text = $sourceEntryInput.val();
 
-  if (text.length > 0) {
+  if ($translateButton.text() !== 'Huỷ' && text.length > 0) {
+    translationController = new AbortController();
     $translateEntryButtons.addClass('disabled');
     $sourceEntryInput.attr('readonly', true);
     let translator = null;
@@ -1099,8 +1101,9 @@ $translateEntryButtons.click(async function onClick() {
       }
     }
 
-    $targetEntryTextarea.val(translator.result).trigger('input');
+    if (!translationController.signal.aborted) $targetEntryTextarea.val(translator.result).trigger('input');
     $sourceEntryInput.removeAttr('readonly');
     $translateEntryButtons.removeClass('disabled');
+    translationController = null
   }
 });

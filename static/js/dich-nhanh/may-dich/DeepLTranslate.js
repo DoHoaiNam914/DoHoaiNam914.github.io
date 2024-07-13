@@ -37,7 +37,7 @@ class DeepLTranslate extends Translator {
     }
   }
 
-  async translateText(text, targetLanguage, sourceLanguage = this.DefaultLanguage.SOURCE_lANGUAGE) {
+  async translateText(text, targetLanguage, sourceLanguage = this.DefaultLanguage.SOURCE_LANGUAGE) {
     try {
       const lines = text.split(/\n/);
       const textEncoder = new TextEncoder();
