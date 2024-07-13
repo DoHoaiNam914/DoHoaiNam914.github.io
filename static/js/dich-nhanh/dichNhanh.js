@@ -927,7 +927,7 @@ $translatorDropdown.find('.dropdown-item').click(function onClick() {
     }
   }
 
-  translators[activeTranslator] = translator;
+  translators[activeTranslator] = currentTranslator;
   loadLangSelectOptions(activeTranslator);
 });
 
