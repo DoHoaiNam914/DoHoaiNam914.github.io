@@ -21,7 +21,8 @@ class DeepLTranslate extends Translator {
     super();
     this.authKey = authKey;
     this.fetchUsage();
-    this.maxRequestBodySize = 131072;
+    this.maxRequestBodySizePerRequest = 131072;
+    this.maxContentLinePerRequest = 50;
   }
 
   fetchUsage() {
@@ -45,10 +46,10 @@ class DeepLTranslate extends Translator {
       let queryLines = [];
       const responses = [];
 
-      while (lines.length > 0 && textEncoder.encode(requestBody([...queryLines, lines[0]])).length <= this.maxRequestBodySize) {
+      while (lines.length > 0 && textEncoder.encode(requestBody([...queryLines, lines[0]])).length <= this.maxRequestBodySizePerRequest && (queryLines.length + 1) <= this.maxContentLinePerRequest) {
         queryLines.push(lines.shift());
 
-        if (lines.length === 0 || textEncoder.encode(requestBody([...queryLines, lines[0]])).length > this.maxRequestBodySize) {
+        if (lines.length === 0 || textEncoder.encode(requestBody([...queryLines, lines[0]])).length > this.maxRequestBodySizePerRequest || (queryLines.length + 1) > this.maxContentLinePerRequest) {
           responses.push($.ajax({
             data: requestBody(queryLines),
             method: 'POST',

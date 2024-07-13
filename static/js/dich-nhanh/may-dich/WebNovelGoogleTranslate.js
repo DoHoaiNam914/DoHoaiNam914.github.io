@@ -28,10 +28,10 @@ class WebNovelGoogleTranslate extends Translator {
       const CJ_LANGUAGE_CODE_LIST = ['ja', 'zh-CN', 'zh-TW'];
       const responses = [];
 
-      while (lines.length > 0 && [...queryLines, lines[0]].join(CJ_LANGUAGE_CODE_LIST.some((element) => sourceLanguage === element) ? '||||' : '\\\\n').length <= this.maxDataPerRequest && [...queryLines, lines[0]].join('\n').length <= this.maxContentLengthPerRequest && queryLines.length + 1 <= this.maxContentLinePerRequest) {
+      while (lines.length > 0 && [...queryLines, lines[0]].join(CJ_LANGUAGE_CODE_LIST.some((element) => sourceLanguage === element) ? '||||' : '\\\\n').length <= this.maxDataPerRequest && [...queryLines, lines[0]].join('\n').length <= this.maxContentLengthPerRequest && (queryLines.length + 1) <= this.maxContentLinePerRequest) {
         queryLines.push(lines.shift());
 
-        if (lines.length === 0 || [...queryLines, lines[0]].join(CJ_LANGUAGE_CODE_LIST.some((element) => sourceLanguage === element) ? '||||' : '\\\\n').length > this.maxDataPerRequest || [...queryLines, lines[0]].join('\n').length > this.maxContentLengthPerRequest || queryLines.length + 1 > this.maxContentLinePerRequest) {
+        if (lines.length === 0 || [...queryLines, lines[0]].join(CJ_LANGUAGE_CODE_LIST.some((element) => sourceLanguage === element) ? '||||' : '\\\\n').length > this.maxDataPerRequest || [...queryLines, lines[0]].join('\n').length > this.maxContentLengthPerRequest || (queryLines.length + 1) > this.maxContentLinePerRequest) {
           responses.push($.ajax({
             method: 'GET',
             url: `${Utils.CORS_PROXY}http://translate.google.com/translate_a/single?client=${this.clientName}&ie=UTF-8&oe=UTF-8&dt=bd&dt=ex&dt=ld&dt=md&dt=rw&dt=rm&dt=ss&dt=t&dt=at&dt=gt&dt=qc&sl=${sourceLanguage}&tl=${targetLanguage}&hl=${targetLanguage}&q=${encodeURIComponent(queryLines.join(CJ_LANGUAGE_CODE_LIST.some((element) => sourceLanguage === element) ? '||||' : '\\\\n'))}`,
