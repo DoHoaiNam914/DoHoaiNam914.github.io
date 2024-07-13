@@ -1788,8 +1788,7 @@ class Vietphrase {
     this.autocapitalize = options.autocapitalize;
 
     const SinoVietnamesesList = Object.entries(glossary.SinoVietnameses);
-    let hanViet = (SinoVietnamesesList.length > 0 ? SinoVietnamesesList.filter(([___, second]) => !/^\p{Script=Hani}+$/u.test(second)).map(([first, second]) => [first, second.toLowerCase()]) : []).concat(this.SpecialSinoVietnameses.filter(([___, second]) => !/^\p{Script=Hani}+$/u.test(second)).map(([a, b, c]) => [a, (c ?? b).split(/, | \| /)[0].toLowerCase()]), glossary.hanViet).filter(([first], ___, array) => !array[first] && (array[first] = 1), {});
-    hanViet = this.SpecialSinoVietnameses.filter(([___, second]) => /^\p{Script=Hani}+$/u.test(second)).map(([a, b]) => [a, Object.fromEntries(glossary.hanViet.filter(([___, d]) => !/^\p{Script=Hani}+$/u.test(d)))[b]]).concat(hanViet).filter(([first], ___, array) => !array[first] && (array[first] = 1), {});
+    let hanViet = (SinoVietnamesesList.length > 0 ? SinoVietnamesesList.filter(([___, second]) => !/^\p{Script=Hani}+$/u.test(second)).map(([first, second]) => [first, second.toLowerCase()]) : []).concat(glossary.hanViet).filter(([first], ___, array) => !array[first] && (array[first] = 1), {});
     if (SinoVietnamesesList.length > 0) hanViet = SinoVietnamesesList.filter(([___, second]) => /^\p{Script=Hani}+$/u.test(second)).map(([a, b]) => [a, Object.fromEntries(glossary.hanViet.filter(([___, d]) => !/^\p{Script=Hani}+$/u.test(d)))[b]]).concat(hanViet).filter(([first], ___, array) => !array[first] && (array[first] = 1), {});
     hanViet = new Map(hanViet);
 

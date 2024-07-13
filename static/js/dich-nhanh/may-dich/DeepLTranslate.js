@@ -1,5 +1,7 @@
 'use strict';
 
+/* global Translator */
+
 class DeepLTranslate extends Translator {
   /** https://api-free.deepl.com/v2/languages?type=source */
   static SOURCE_LANGUAGE_LIST = [{
@@ -26,7 +28,6 @@ class DeepLTranslate extends Translator {
     try {
       this.usage = $.ajax({
         async: false,
-        cache: false,
         method: 'GET',
         url: `https://api-free.deepl.com/v2/usage?auth_key=${this.authKey}`,
       });
@@ -49,7 +50,6 @@ class DeepLTranslate extends Translator {
 
         if (lines.length === 0 || textEncoder.encode(requestBody([...queryLines, lines[0]])).length > this.maxRequestBodySize) {
           responses.push($.ajax({
-            cache: false,
             data: requestBody(queryLines),
             method: 'POST',
             url: `https://api-free.deepl.com/v2/translate?auth_key=${this.authKey}`,

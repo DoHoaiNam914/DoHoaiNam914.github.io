@@ -1,5 +1,7 @@
 'use strict';
 
+/* global CryptoJS, Translator, Utils */
+
 class Papago extends Translator {
   static SOURCE_LANGUAGE_LIST = {
     auto: 'Phát hiện ngôn ngữ',
@@ -54,13 +56,11 @@ class Papago extends Translator {
     try {
       const mainJs = $.ajax({
         async: false,
-        cache: false,
         method: 'GET',
         url: `${Utils.CORS_PROXY}https://papago.naver.com`,
       }).responseText.match(/\/(main.*\.js)/)[1];
       const [__, version] = $.ajax({
         async: false,
-        cache: false,
         method: 'GET',
         url: `${Utils.CORS_PROXY}https://papago.naver.com/${mainJs}`,
       }).responseText.match(/"PPG .*,"(v[^"]*)/);
@@ -83,7 +83,6 @@ class Papago extends Translator {
         if (lines.length === 0 || [...queryLines, lines[0]].join('\n').length > this.maxContentLengthPerRequest) {
           const timeStamp = (new Date()).getTime();
           responses.push($.ajax({
-            cache: false,
             data: `deviceId=${this.uuid}&locale=vi&dict=true&dictDisplay=30&honorific=true&instant=false&paging=false&source=${sourceLanguage}&target=${targetLanguage}&text=${encodeURIComponent(queryLines.join('\n'))}`,
             headers: {
               Accept: 'application/json',

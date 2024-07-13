@@ -1,5 +1,7 @@
 'use strict';
 
+/* global Translator, Utils */
+
 class BaiduTranslate extends Translator {
   static SOURCE_LANGUAGE_LIST = {
     auto: 'Automatic detection',
@@ -35,7 +37,6 @@ class BaiduTranslate extends Translator {
       const responses = [];
       const lan = sourceLanguage === 'auto' ? $.ajax({
         async: false,
-        cache: false,
         data: `query=${encodeURIComponent(text)}`,
         method: 'POST',
         url: `${Utils.CORS_PROXY}https://fanyi.baidu.com/langdetect`,
@@ -46,7 +47,6 @@ class BaiduTranslate extends Translator {
 
         if (lines.length === 0 || [...queryLines, lines[0]].join('\n').length > this.maxContentLengthPerRequest) {
           responses.push($.ajax({
-            cache: false,
             data: JSON.stringify({
               query: queryLines.join('\n'),
               from: sourceLanguage === 'auto' ? lan : sourceLanguage,

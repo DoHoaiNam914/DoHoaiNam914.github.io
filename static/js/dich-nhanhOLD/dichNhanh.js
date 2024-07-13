@@ -1107,29 +1107,32 @@ $(document).ready(async () => {
     }, 5000);
   });
 
-  try {
-    let hanvietList = cjkv.nam.map(([first, second]) => [first, second.split(',').filter((element) => element.length > 0)[0].trimStart().replaceAll(Utils.getTrieRegexPatternFromWords(Object.keys(newAccentObject)), (match) => newAccentObject[match] ?? match)]);
+  $.ajax({
+    cache: false,
+    method: 'GET',
+    url: '/static/datasource/lacviet/lv-[zh-vi].tsv',
+  }).done((data) => {
+    let hanvietList = data.split('\n').filter((element) => element.includes('Hán Việt:') && /^\p{Script=Hani}+$/u.test(element.split('\t')[0])).map((element) => element.split('\t')).map(([first, second]) => [first, second.replaceAll('<span class="east"> </span>', ' ').match(/Hán Việt:(?: |)[^<]*/g)[0].replace(/Hán Việt: ?/, '').split(/[,;] ?/)[0].toLowerCase()]);
+    hanvietList = hanvietList.concat(cjkv.nam.map(([first, second]) => [first, second.split(',').filter((element) => element.length > 0)[0].trimStart().replaceAll(Utils.getTrieRegexPatternFromWords(Object.keys(newAccentObject)), (match) => newAccentObject[match] ?? match)]));
     hanvietList = hanvietList.concat(hanData.names.map(([first, second]) => [first, second.split(',').filter((element) => element.length > 0)[0].replaceAll(Utils.getTrieRegexPatternFromWords(Object.keys(newAccentObject)), (match) => newAccentObject[match] ?? match)]));
     hanvietList = hanvietList.filter((element, __, array) => element.join('=').length > 0 && element.length === 2 && !array[element[0]] && (array[element[0]] = 1), {});
     glossary.hanViet = hanvietList;
     console.info(`Đã tải xong bộ dữ liệu hán việt (${hanvietList.length})!`);
-  } catch (error) {
-    console.error('Không thể tải bộ dữ liệu hán việt:', error);
+  }).fail((__, ___, errorThrown) => {
+    console.error('Không thể tải bộ dữ liệu hán việt:', errorThrown);
     setTimeout(() => {
       window.location.reload();
     }, 5000);
-  }
+  });
 
   await $.ajax({
     cache: false,
     method: 'GET',
     url: '/static/datasource/Unihan_Readings.txt',
   }).done((data) => {
-    glossary.pinyins = data.split('\n').filter((element) => element.length > 0 && !element.startsWith('#') && element.split('\t')[1] === 'kMandarin').map((element) => element.split('\t')).map(([first, __, third]) => [String.fromCodePoint(parseInt(first.substring(2), 16)), third.split(' ')[0]]);
-    console.info(`Đã tải xong bộ dữ liệu bính âm (${glossary.pinyins.length})!`);
-
     const array = data.split('\n').filter((element) => element.length > 0 && !element.startsWith('#')).map((element) => element.split('\t'));
-
+    glossary.pinyins = array.filter((element) => element.length === 3 && element[1] === 'kMandarin').map(([first, __, third]) => [String.fromCodePoint(parseInt(first.substring(2), 16)), third.split(' ')[0]]);
+    console.info(`Đã tải xong bộ dữ liệu bính âm (${glossary.pinyins.length})!`);
     glossary.KunYomis = array.filter((element) => element.length === 3 && element[1] === 'kJapaneseKun').map(([first, __, third]) => [String.fromCodePoint(parseInt(first.substring(2), 16)), third.split(' ')[0].toLowerCase()]);
     console.info(`Đã tải xong bộ dữ liệu Kun'yomi (${glossary.KunYomis.length})!`);
     glossary.OnYomis = array.filter((element) => element.length === 3 && element[1] === 'kJapaneseOn').map(([first, __, third]) => [String.fromCodePoint(parseInt(first.substring(2), 16)), third.split(' ')[0].toLowerCase()]);

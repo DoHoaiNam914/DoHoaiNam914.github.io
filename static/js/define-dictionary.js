@@ -1,5 +1,7 @@
 'use strict';
 
+/* global oldAccentObject, Utils */
+
 $(document).ready(async () => {
   const searchParams = new URLSearchParams(window.location.search);
   let paragraph = document.createElement('p');
@@ -12,6 +14,7 @@ $(document).ready(async () => {
     sectionHeading.innerText = `Từ khoá: ${define}`;
     $(document.body).append(sectionHeading.cloneNode(true));
     $(document.body).append(document.createElement('hr'));
+    const pm = new window.DTM_ExactMatcher();
 
     switch (dictionary) {
       case 'thieuchuu': {
@@ -21,27 +24,9 @@ $(document).ready(async () => {
           url: '/static/datasource/cjkvmap.txt',
         }).done((data) => {
           const dataList = data.split(/\r?\n|\r/).map((element) => element.split('|')).filter((element) => element.length === 3);
-          define = define.replaceAll(new RegExp(`${Utils.getTrieRegexPatternFromWords(Object.keys(oldAccentObject)).source}(?= |$)`, 'g'), (match) => oldAccentObject[match] ?? match);
-          const charsAndPhrases = define.split(' ').flatMap((element) => (/[\p{sc=Hani}\p{sc=Hira}\p{sc=Kana}]+/u.test(element) ? element.split(/(?:)/u) : element));
-          let separator = '';
-          const containsPhrase = [];
+          const searchResults = dataList.map(([first]) => first).filter((element) => pm.search(element, define).length > 0 || pm.search(element, define.replaceAll(new RegExp(`${Utils.getTrieRegexPatternFromWords(Object.keys(oldAccentObject)).source}(?= |$)`, 'g'), (match) => oldAccentObject[match] ?? match)).length > 0);
 
-          for (let i = 0; i < charsAndPhrases.length; i += 1) {
-            const charOrPhrase = charsAndPhrases.slice(i).join(separator);
-            const foundPhrase = dataList.toSorted((a, b) => b[0].length - a[0].length).reduce((accumulator, [first, second, third]) => {
-              if (!containsPhrase.includes(first) && (second.split('/')[0].split(', ').some((a) => charsAndPhrases.filter((b) => /^\p{Ll}+$/u.test(b)).some((b) => b === a.toLowerCase())) || first.toLowerCase() === charOrPhrase || (charsAndPhrases.slice(i).length >= 2 && (charOrPhrase.startsWith(first.toLowerCase()) || charOrPhrase.endsWith(first.toLowerCase()) || third.toLowerCase().includes(charOrPhrase))))) accumulator.push(first);
-              return accumulator;
-            }, []);
-
-            if (foundPhrase.length > 0) containsPhrase.push(...foundPhrase);
-
-            if (separator === '') {
-              separator = ' ';
-              i = -1;
-            }
-          }
-
-          dataList.filter(([first]) => containsPhrase.includes(first.toLowerCase())).toSorted((a, b) => b[1].split('/')[0].split(', ').some((element) => define === element.toLowerCase() || (define.split(' ').length >= 2 && (define.startsWith(element.toLowerCase())))) - a[1].split('/')[0].split(', ').some((element) => define === element.toLowerCase() || (define.split(' ').length >= 2 && (define.startsWith(element.toLowerCase())))) || (b[0].toLowerCase() === define) - (a[0].toLowerCase() === define) || define.startsWith(b[0].toLowerCase()) - define.startsWith(a[0].toLowerCase()) || define.endsWith(b[0].toLowerCase()) - define.endsWith(a[0].toLowerCase())).forEach(([first, second, third]) => {
+          dataList.filter(([first]) => searchResults.includes(first.toLowerCase())).forEach(([first, second, third]) => {
             sectionHeading.innerText = first;
             $(document.body).append(sectionHeading.cloneNode(true));
 
@@ -140,31 +125,15 @@ function loadAd()
           method: 'GET',
           url: dictionaryUrl,
         }).done((data) => {
+          navigator.clipboard.writeText(data.split('\n').filter((element) => element.includes('Hán Việt:')).map((element) => element.split('\t')).map(([first, second]) => `${first}\t${second.replaceAll('<span class="east"> </span>', ' ').match(/(Hán Việt:)(| )[^<]*/).join('||||')}`).join('\n'));
           const dataList = data.split('\n').filter((element) => !element.startsWith('##')).map((element) => element.split('\t')).filter((element) => element.length === 2);
-          const charsAndPhrases = define.split(' ').flatMap((element) => (/[\p{sc=Hani}\p{sc=Hira}\p{sc=Kana}]/u.test(element) ? element.split(/(?:)/u) : element));
-          let separator = '';
-          const containsPhrase = [];
+          const searchResults = dataList.map(([first]) => first).filter((element) => pm.search(element, define).length > 0);
 
-          for (let i = 0; i < charsAndPhrases.length; i += 1) {
-            const charOrPhrase = charsAndPhrases.slice(i).join(separator);
-            const foundPhrase = dataList.toSorted((a, b) => b[0].length - a[0].length).reduce((accumulator, [first, second]) => {
-              if (!containsPhrase.includes(first) && (first.toLowerCase() === charOrPhrase || (charsAndPhrases.slice(i).length >= 2 && (charOrPhrase.startsWith(first.toLowerCase()) || charOrPhrase.endsWith(first.toLowerCase()) || second.toLowerCase().includes(charOrPhrase))))) accumulator.push(first);
-              return accumulator;
-            }, []);
-
-            if (foundPhrase.length > 0) containsPhrase.push(...foundPhrase);
-
-            if (separator === '') {
-              separator = ' ';
-              i = -1;
-            }
-          }
-
-          dataList.filter(([first]) => containsPhrase.includes(first.toLowerCase())).toSorted((a, b) => (b[0].toLowerCase() === define) - (a[0].toLowerCase() === define) || define.startsWith(b[0].toLowerCase()) - define.startsWith(a[0].toLowerCase()) || define.endsWith(b[0].toLowerCase()) - define.endsWith(a[0].toLowerCase())).forEach(([first, second]) => {
+          dataList.filter(([first]) => searchResults.includes(first)).forEach(([first, second]) => {
             sectionHeading.innerText = first;
             $(document.body).append(sectionHeading.cloneNode(true));
 
-            second.split(/><(?!\/)/).forEach((element) => {
+            second.replaceAll(/(<\/d-[^>]+>)(<d-[^>]+>)/g, '$1\n$2').split('\n').forEach((element) => {
               paragraph.innerHTML = `${!element.startsWith('<') ? '<' : ''}${element}${!element.endsWith('>') ? '>' : ''}`;
               $(document.body).append(paragraph.cloneNode(true));
             });
