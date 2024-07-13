@@ -777,7 +777,7 @@ $retranslateButton.on('click', () => {
 });
 
 $glossaryManagerButton.on('mousedown', () => {
-  $sourceEntryInput.val((window.getSelection().toString() || ((document.activeElement.tagName === 'TEXTAREA' || (document.activeElement.tagName === 'INPUT' && /^(?:email|month|number|search|tel|text|url|week)$/i.test(document.activeElement.type))) && typeof document.activeElement.selectionStart === 'number' && document.activeElement.value.slice(document.activeElement.selectionStart, document.activeElement.selectionEnd)) || '').replaceAll(/\n/g, ' ').trim());
+  if ($resultTextarea.is(':visible')) $sourceEntryInput.val((window.getSelection().toString() || ((document.activeElement.tagName === 'TEXTAREA' || (document.activeElement.tagName === 'INPUT' && /^(?:email|month|number|search|tel|text|url|week)$/i.test(document.activeElement.type))) && typeof document.activeElement.selectionStart === 'number' && document.activeElement.value.slice(document.activeElement.selectionStart, document.activeElement.selectionEnd)) || '').replaceAll(/\n/g, ' ').trim());
 
   if (window.getSelection) {
     window.getSelection().removeAllRanges();
@@ -963,7 +963,7 @@ $glossaryModal.on('shown.bs.modal', () => {
 
 $glossaryModal.on('hide.bs.modal', () => {
   // $sourceEntryInput.autocomplete('disable');
-  translationController.abort();
+  if (translationController != null) translationController.abort();
   $sourceEntryInput.val(null).trigger('input');
   $addButton.addClass('disabled');
   $removeButton.addClass('disabled');
