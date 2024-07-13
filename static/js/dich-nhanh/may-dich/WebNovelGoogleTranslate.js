@@ -14,7 +14,8 @@ class WebNovelGoogleTranslate extends Translator {
   constructor() {
     super();
     this.clientName = 'gtx';
-    this.maxContentLengthPerRequest = 1000;
+    this.maxContentLinePerRequest = 25;
+    this.maxContentLengthPerRequest = 850;
   }
 
   async translateText(text, targetLanguage, sourceLanguage = this.DefaultLanguage.SOURCE_lANGUAGE) {
@@ -23,10 +24,10 @@ class WebNovelGoogleTranslate extends Translator {
       let queryLines = [];
       const responses = [];
 
-      while (lines.length > 0 && [...queryLines, lines[0]].join('\n').length <= this.maxContentLengthPerRequest) {
+      while (lines.length > 0 && queryLines.length <= this.maxContentLinePerRequest && [...queryLines, lines[0]].join('\n').length <= this.maxContentLengthPerRequest) {
         queryLines.push(lines.shift());
 
-        if (lines.length === 0 || [...queryLines, lines[0]].join('\n').length > this.maxContentLengthPerRequest) {
+        if (lines.length === 0 || queryLines.length > this.maxContentLinePerRequest || [...queryLines, lines[0]].join('\n').length > this.maxContentLengthPerRequest) {
           responses.push($.ajax({
             cache: false,
             method: 'GET',
