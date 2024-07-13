@@ -25,13 +25,13 @@ class WebNovelGoogleTranslate extends Translator {
     try {
       const lines = text.split(/\n/);
       let queryLines = [];
-      const CJK_LANGUAGE_CODE_LIST = ['ja', 'zh-CN', 'zh-TW'];
+      const CJ_LANGUAGE_CODE_LIST = ['ja', 'zh-CN', 'zh-TW'];
       const responses = [];
 
-      while (lines.length > 0 && [...queryLines, lines[0]].join(CJK_LANGUAGE_CODE_LIST.some((element) => sourceLanguage === element) ? '||||' : '\\\\n').length <= this.maxDataPerRequest && queryLines.length + 1 <= this.maxContentLinePerRequest && [...queryLines, lines[0]].join('\n').length <= this.maxDataPerRequest) {
+      while (lines.length > 0 && [...queryLines, lines[0]].join(CJ_LANGUAGE_CODE_LIST.some((element) => sourceLanguage === element) ? '||||' : '\\\\n').length <= this.maxDataPerRequest && queryLines.length + 1 <= this.maxContentLinePerRequest && [...queryLines, lines[0]].join('\n').length <= this.maxDataPerRequest) {
         queryLines.push(lines.shift());
 
-        if (lines.length === 0 || [...queryLines, lines[0]].join(CJK_LANGUAGE_CODE_LIST.some((element) => sourceLanguage === element) ? '||||' : '\\\\n').length > this.maxDataPerRequest || queryLines.length > this.maxContentLinePerRequest || [...queryLines, lines[0]].join('\n').length > this.maxDataPerRequest) {
+        if (lines.length === 0 || [...queryLines, lines[0]].join(CJ_LANGUAGE_CODE_LIST.some((element) => sourceLanguage === element) ? '||||' : '\\\\n').length > this.maxDataPerRequest || queryLines.length > this.maxContentLinePerRequest || [...queryLines, lines[0]].join('\n').length > this.maxDataPerRequest) {
           responses.push($.ajax({
             method: 'GET',
             url: `${Utils.CORS_PROXY}http://translate.google.com/translate_a/single?client=${this.clientName}&ie=UTF-8&oe=UTF-8&dt=bd&dt=ex&dt=ld&dt=md&dt=rw&dt=rm&dt=ss&dt=t&dt=at&dt=gt&dt=qc&sl=${sourceLanguage}&tl=${targetLanguage}&hl=${targetLanguage}&q=${encodeURIComponent(queryLines.join(CJK_LANGUAGE_CODE_LIST.some((element) => sourceLanguage === element) ? '||||' : '\\\\n'))}`,
@@ -41,7 +41,7 @@ class WebNovelGoogleTranslate extends Translator {
       }
 
       await Promise.all(responses);
-      this.result = responses.map((element) => element.responseJSON[0].map(([first]) => first).join('').replaceAll(['ja', 'zh-CN', 'zh-TW'].some((b) => sourceLanguage === b) ? / ?(?:\|{4}|\|[| ]{3,}|\|+)(?!\|)/g : / ?\\+n/g, '\n')).join('\n');
+      this.result = responses.map((element) => element.responseJSON[0].map(([first]) => first).join('').replaceAll(CJ_LANGUAGE_CODE_LIST.some((b) => sourceLanguage === b) ? / ?(?:\|{4}|\|[| ]{3,}|\|+)(?!\|)/g : / ?\\+n/g, '\n')).join('\n');
       super.translateText(text, targetLanguage, sourceLanguage);
       return this.result;
     } catch (error) {
