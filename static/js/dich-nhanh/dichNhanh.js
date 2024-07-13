@@ -363,6 +363,7 @@ const glossary = {
   hanViet: [],
 };
 
+let translators = {};
 let currentTranslator = null;
 let translationController = null;
 
@@ -887,14 +888,16 @@ $dropdownHasCollapse.on('show.bs.dropdown', function onHideBsDropdown() {
 $translatorDropdown.find('.dropdown-item').click(function onClick() {
   $translatorDropdown.find('.dropdown-item').removeClass('active');
   $(this).addClass('active');
+  const activeTranslator = $(this).val();
+  currentTranslator = translators[activeTranslator];
 
-  switch ($(this).val()) {
+  switch (activeTranslator) {
     case Translators.BAIDU_TRANSLATE: {
-      currentTranslator = new BaiduTranslate();
+      if (translator == null) currentTranslator = new BaiduTranslate();
       break;
     }
     case Translators.DEEPL_TRANSLATE: {
-      while (true) {
+      while (currentTranslator == null || (currentTranslator.usage.character_limit - currentTranslator.usage.character_count) < 100000) {
         currentTranslator = new DeepLTranslate(DEEPL_AUTH_KEY_LIST[0][0]).init();
         if ((currentTranslator.usage.character_limit - currentTranslator.usage.character_count) >= 100000) break;
         DEEPL_AUTH_KEY_LIST.shift();
@@ -903,27 +906,28 @@ $translatorDropdown.find('.dropdown-item').click(function onClick() {
       break;
     }
     case Translators.GOOGLE_TRANSLATE: {
-      currentTranslator = new GoogleTranslate();
+      if (currentTranslator == null) currentTranslator = new GoogleTranslate();
       break;
     }
     case Translators.PAPAGO: {
-      currentTranslator = new Papago(UUID);
+      if (currentTranslator == null) currentTranslator = new Papago(UUID);
       break;
     }
     case Translators.VIETPHRASE: {
-      currentTranslator = new Vietphrase();
+      if (currentTranslator == null) currentTranslator = new Vietphrase();
       break;
     }
     case Translators.WEBNOVEL_GOOGLE_TRANSLATE: {
-      currentTranslator = new WebNovelGoogleTranslate();
+      if (currentTranslator == null) currentTranslator = new WebNovelGoogleTranslate();
       break;
     }
     default: {
-      currentTranslator = new MicrosoftTranslator($toneSelect.val());
+      if (currentTranslator == null) currentTranslator = new MicrosoftTranslator($toneSelect.val());
       break;
     }
   }
 
+  translators[activeTranslator] = translator;
   loadLangSelectOptions($(this).val());
 });
 
@@ -1055,53 +1059,50 @@ $translateEntryButtons.click(async function onClick() {
     translationController = new AbortController();
     $translateEntryButtons.addClass('disabled');
     $sourceEntryInput.attr('readonly', true);
-    let translator = null;
+    const activeTranslator = $(this).data('translator');
+    let translator = translators[activeTranslator];
     const targetLanguage = $(this).data('lang');
 
-    switch ($(this).data('translator')) {
+    switch (activeTranslator) {
       case Translators.BAIDU_TRANSLATE: {
-        translator = new BaiduTranslate();
-        await translator.translateText(text, targetLanguage);
+        if (translator == null) translator = new BaiduTranslate();
         break;
       }
       case Translators.DEEPL_TRANSLATE: {
-        while (true) {
+        while (translator == null || (translator.usage.character_limit - translator.usage.character_count) < 100000) {
           translator = new DeepLTranslate(DEEPL_AUTH_KEY_LIST[0][0]).init();
-          if ((currentTranslator.usage.character_limit - currentTranslator.usage.character_count) >= 100000) break;
+          if ((translator.usage.character_limit - translator.usage.character_count) >= 100000) break;
           DEEPL_AUTH_KEY_LIST.shift();
         }
 
-        await translator.translateText(text, targetLanguage);
         break;
       }
       case Translators.GOOGLE_TRANSLATE: {
-        translator = new GoogleTranslate();
-        await translator.translateText(text, targetLanguage);
+        if (translator == null) translator = new GoogleTranslate();
+        break;
+      }
+      case Translators.MICROSOFT_TRANSLATOR: {
+        if (translator == null) translator = new MicrosoftTranslator($toneSelect.val());
         break;
       }
       case Translators.PAPAGO: {
-        translator = new Papago(UUID);
-        await translator.translateText(text, targetLanguage);
-        break;
-      }
-      case Translators.VIETPHRASE: {
-        translator = new Vietphrase();
-        await translator.translateText(text, targetLanguage, {}, glossary);
+        if (translator == null) translator = new Papago(UUID);
         break;
       }
       case Translators.WEBNOVEL_GOOGLE_TRANSLATE: {
-        translator = new WebNovelGoogleTranslate();
-        await translator.translateText(text, targetLanguage);
+        if (translator == null) translator = new WebNovelGoogleTranslate();
         break;
       }
       default: {
-        translator = new MicrosoftTranslator($toneSelect.val());
-        await translator.translateText(text, targetLanguage);
+        if (translator == null) translator = new Vietphrase();
+        await translator.translateText(text, targetLanguage, {}, glossary);
         break;
       }
     }
 
-    if (!translationController.signal.aborted) $targetEntryTextarea.val(translator.result).trigger('input');
+    translators[activeTranslator] = translator;
+
+    if (!translationController.signal.aborted) $targetEntryTextarea.val(activeTranslator === Translators.VIETPHRASE ? translator.result : await translator.translateText(text, targetLanguage)).trigger('input');
     $sourceEntryInput.removeAttr('readonly');
     $translateEntryButtons.removeClass('disabled');
     translationController = null
