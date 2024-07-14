@@ -2,29 +2,33 @@
 
 /* global oldAccentObject, Utils */
 
-$(document).ready(async () => {
+$(document).ready(() => {
   const searchParams = new URLSearchParams(window.location.search);
   let paragraph = document.createElement('p');
 
   const dictionary = searchParams.get('dictionary') ?? 'lac-viet';
-  let define = (searchParams.get('define') ?? '').trim().replaceAll(/^\s+|\s+$/g, '').toLowerCase();
+  const define = (searchParams.get('define') ?? '').trim().replaceAll(/^\s+|\s+$/g, '').toLowerCase();
   const sectionHeading = document.createElement('h1');
 
   if (define.length > 0) {
     sectionHeading.innerText = `Từ khoá: ${define}`;
     $(document.body).append(sectionHeading.cloneNode(true));
     $(document.body).append(document.createElement('hr'));
+    const statusParagraph = document.createElement('p');
+    statusParagraph.innerText = 'Đang tải...';
+    $(document.body).append(statusParagraph);
+    const oldAccentDefine = define.replaceAll(new RegExp(`${Utils.getTrieRegexPatternFromWords(Object.keys(oldAccentObject)).source}(?= |$)`, 'g'), (match) => oldAccentObject[match] ?? match);
     const pm = new window.DTM_ExactMatcher();
 
     switch (dictionary) {
       case 'thieuchuu': {
-        await $.ajax({
+        $.ajax({
           cache: false,
           method: 'GET',
           url: '/static/datasource/cjkvmap.txt',
         }).done((data) => {
           const dataList = data.split(/\r?\n|\r/).map((element) => element.split('|')).filter((element) => element.length === 3);
-          const searchResults = dataList.map(([first]) => first).filter((element) => pm.search(element, define).length > 0 || pm.search(element, define.replaceAll(new RegExp(`${Utils.getTrieRegexPatternFromWords(Object.keys(oldAccentObject)).source}(?= |$)`, 'g'), (match) => oldAccentObject[match] ?? match)).length > 0);
+          const searchResults = dataList.filter(([first, second]) => [define, oldAccentDefine].some((b) => second.split('/')[0].split(',').filter((element) => element.length > 0).some((element) => pm.search(element.trimStart(), b).length > 0) || pm.search(b, first).length > 0 || first.startsWith(b)));
 
           dataList.filter(([first]) => searchResults.includes(first.toLowerCase())).forEach(([first, second, third]) => {
             sectionHeading.innerText = first;
@@ -57,35 +61,34 @@ $(document).ready(async () => {
         break;
       }
       case 'td': {
-        define = define.replaceAll(new RegExp(`${Utils.getTrieRegexPatternFromWords(Object.keys(oldAccentObject)).source}(?= |$)`, 'g'), (match) => oldAccentObject[match] ?? match);
-
-        await $.ajax({
-          cache: false,
-          method: 'GET',
-          url: `${Utils.CORS_PROXY}http://nguyendu.com.free.fr/hanviet/ajax.php?query=${encodeURIComponent(define)}&methode=normal`,
-        }).done((a) => {
-          a.split('|').map((element) => element.split(':')).filter((element) => element.length === 3).forEach(async ([first, second]) => {
-            await $.ajax({
-              method: 'GET',
-              url: `${Utils.CORS_PROXY}http://nguyendu.com.free.fr/hanviet/hv_tim${first === 'Word' ? 'tukep_ndv.php?wordid' : 'chu_ndv.php?unichar'}=${second}`,
-            }).done((b) => {
-              $(document.body).append($(b)[first === 'Word' ? 19 : 31].innerHTML.replaceAll(/(href|src)="/g, '$&http://nguyendu.com.free.fr/hanviet/').replaceAll(`
-function init()
-{
-  loadAd();
-}
-function loadAd()
-{
-        if (AdURL && top.pubside1)
-        {
-                top.pubside1.location.href=AdURL;
-        }
-}
-`, ''));
+        [define, oldAccentDefine].forEach((a) => {
+          $.ajax({
+            cache: false,
+            method: 'GET',
+            url: `${Utils.CORS_PROXY}http://nguyendu.com.free.fr/hanviet/ajax.php?query=${encodeURIComponent(a)}&methode=normal`,
+          }).done((b) => {
+            b.split('|').map((c) => c.split(':')).filter((c) => c.length === 3).forEach(async ([first, second]) => {
+              await $.ajax({
+                method: 'GET',
+                url: `${Utils.CORS_PROXY}http://nguyendu.com.free.fr/hanviet/hv_tim${first === 'Word' ? 'tukep_ndv.php?wordid' : 'chu_ndv.php?unichar'}=${second}`,
+              }).done((d) => {
+                $(document.body).append($(d)[first === 'Word' ? 19 : 31].innerHTML.replaceAll(/(href|src)="/g, '$&http://nguyendu.com.free.fr/hanviet/').replaceAll(`
+  function init()
+  {
+    loadAd();
+  }
+  function loadAd()
+  {
+          if (AdURL && top.pubside1)
+          {
+                  top.pubside1.location.href=AdURL;
+          }
+  }
+  `, ''));
+              });
             });
           });
         });
-
         break;
       }
       default: {
@@ -98,7 +101,7 @@ function loadAd()
             break;
           }
           case 'N-V': {
-            dictionaryUrl = '/static/datasource/lacviet/lv-[ja-vi].tsv';
+            dictionaryUrl = 'https://media.githubusercontent.com/media/DoHoaiNam914/DoHoaiNam914.github.io/main/static/datasource/lacviet/lv-%5Bja-vi%5D.tsv';
             break;
           }
           case 'V-N': {
@@ -120,13 +123,13 @@ function loadAd()
           // no default
         }
 
-        await $.ajax({
+        $.ajax({
           cache: false,
           method: 'GET',
           url: dictionaryUrl,
         }).done((data) => {
           const dataList = data.split('\n').filter((element) => !element.startsWith('##')).map((element) => element.split('\t')).filter((element) => element.length === 2);
-          const searchResults = dataList.map(([first]) => first).filter((element) => pm.search(element, define).length > 0);
+          const searchResults = dataList.map(([first]) => first).filter((a) => [define, oldAccentDefine].some((b) => pm.search(b, a).length > 0 || a.startsWith(b)));
 
           dataList.filter(([first]) => searchResults.includes(first)).forEach(([first, second]) => {
             sectionHeading.innerText = first;
@@ -147,6 +150,9 @@ function loadAd()
         break;
       }
     }
+
+    statusParagraph.remove();
+    [define, oldAccentDefine].some((element) => $(`h1:contains('${element}')`)[0].scrollIntoView());
   } else {
     paragraph.innerText = 'Cách dùng: ?dictionary=lac-viet&dict=T-V&define=hello';
     $(document.body).append(paragraph.cloneNode(true));
