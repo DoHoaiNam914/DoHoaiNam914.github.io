@@ -28,7 +28,7 @@ $(document).ready(() => {
           url: '/static/datasource/cjkvmap.txt',
         }).done((data) => {
           const dataList = data.split(/\r?\n|\r/).map((element) => element.split('|')).filter((element) => element.length === 3);
-          const searchResults = dataList.filter(([first, second]) => [define, oldAccentDefine].some((b) => second.split('/')[0].split(',').filter((element) => element.length > 0).some((element) => pm.search(element.trimStart(), b).length > 0) || pm.search(b, first).length > 0 || first.startsWith(b)));
+          const searchResults = dataList.filter(([first, second]) => [define, oldAccentDefine].some((element) => pm.search(second.split('/')[0], element).length > 0 || pm.search(element, first).length > 0 || first.startsWith(element)));
 
           dataList.filter(([first]) => searchResults.includes(first.toLowerCase())).forEach(([first, second, third]) => {
             sectionHeading.innerText = first;
