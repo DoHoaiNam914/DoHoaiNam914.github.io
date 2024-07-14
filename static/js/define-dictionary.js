@@ -23,6 +23,7 @@ $(document).ready(() => {
     switch (dictionary) {
       case 'thieuchuu': {
         $.ajax({
+          async: false,
           cache: false,
           method: 'GET',
           url: '/static/datasource/cjkvmap.txt',
@@ -63,12 +64,15 @@ $(document).ready(() => {
       case 'td': {
         [define, oldAccentDefine].forEach((a) => {
           $.ajax({
+            async: false,
             cache: false,
             method: 'GET',
             url: `${Utils.CORS_PROXY}http://nguyendu.com.free.fr/hanviet/ajax.php?query=${encodeURIComponent(a)}&methode=normal`,
           }).done((b) => {
             b.split('|').map((c) => c.split(':')).filter((c) => c.length === 3).forEach(async ([first, second]) => {
-              await $.ajax({
+              $.ajax({
+                async: false,
+                cache: false,
                 method: 'GET',
                 url: `${Utils.CORS_PROXY}http://nguyendu.com.free.fr/hanviet/hv_tim${first === 'Word' ? 'tukep_ndv.php?wordid' : 'chu_ndv.php?unichar'}=${second}`,
               }).done((d) => {
@@ -124,6 +128,7 @@ $(document).ready(() => {
         }
 
         $.ajax({
+          async: false,
           cache: false,
           method: 'GET',
           url: dictionaryUrl,
@@ -146,7 +151,6 @@ $(document).ready(() => {
             $(element).attr('href', `/dich-nhanh/tra-tu-dien.html?dictionary=lac-viet&dict=V-V&define=${$(element).attr('href')}`);
           });
         });
-
         break;
       }
     }
