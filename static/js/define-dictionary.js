@@ -125,7 +125,6 @@ function loadAd()
           method: 'GET',
           url: dictionaryUrl,
         }).done((data) => {
-          navigator.clipboard.writeText(data.split('\n').filter((element) => element.includes('Hán Việt:')).map((element) => element.split('\t')).map(([first, second]) => `${first}\t${second.replaceAll('<span class="east"> </span>', ' ').match(/(Hán Việt:)(| )[^<]*/).join('||||')}`).join('\n'));
           const dataList = data.split('\n').filter((element) => !element.startsWith('##')).map((element) => element.split('\t')).filter((element) => element.length === 2);
           const searchResults = dataList.map(([first]) => first).filter((element) => pm.search(element, define).length > 0);
 
