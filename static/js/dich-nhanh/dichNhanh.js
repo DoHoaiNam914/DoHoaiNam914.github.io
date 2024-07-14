@@ -561,6 +561,7 @@ const buildResult = function buildResultContentForTextarea(text, result) {
             i -= 1;
           } else if ([Translators.PAPAGO, Translators.WEBNOVEL_GOOGLE_TRANSLATE].some((element) => $translatorDropdown.find('.active').val() === element) && resultLines[i].trim().replace(/^\s+/, '').length === 0 && originalLines[i + lostLineFixedNumber].trim().replace(/^\s+/, '').length > 0) {
             lostLineFixedNumber -= 1;
+            i -= 1;
           } else {
             const paragraph = document.createElement('p');
 
