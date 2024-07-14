@@ -559,9 +559,8 @@ const buildResult = function buildResultContentForTextarea(text, result) {
           if (originalLines[i + lostLineFixedNumber].trim().replace(/^\s+/, '').length === 0 && resultLines[i].trim().replace(/^\s+/, '').length > 0) {
             lostLineFixedNumber += 1;
             i -= 1;
-          } else if ([Translators.PAPAGO, Translators.WEBNOVEL_GOOGLE_TRANSLATE].some((element) => $translatorDropdown.find('.active').val() === element) && resultLines[i].trim().replace(/^\s+/, '').length === 0 && originalLines[i + lostLineFixedNumber].trim().replace(/^\s+/, '').length > 0) {
+          } else if ($translatorDropdown.find('.active').val() === Translators.PAPAGO && resultLines[i].trim().replace(/^\s+/, '').length === 0 && originalLines[i + lostLineFixedNumber].trim().replace(/^\s+/, '').length > 0) {
             lostLineFixedNumber -= 1;
-            i -= 1;
           } else {
             const paragraph = document.createElement('p');
 
@@ -594,7 +593,7 @@ const buildResult = function buildResultContentForTextarea(text, result) {
     return resultDiv.innerHTML;
   } catch (error) {
     console.error('Lỗi hiển thị bản dịch:', error);
-    throw error.toString();
+    return error;
   }
 };
 
