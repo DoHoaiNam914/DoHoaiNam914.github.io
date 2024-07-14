@@ -18,7 +18,7 @@ $(document).ready(async () => {
 
     switch (dictionary) {
       case 'thieuchuu': {
-        $.ajax({
+        await $.ajax({
           cache: false,
           method: 'GET',
           url: '/static/datasource/cjkvmap.txt',
@@ -59,7 +59,7 @@ $(document).ready(async () => {
       case 'td': {
         define = define.replaceAll(new RegExp(`${Utils.getTrieRegexPatternFromWords(Object.keys(oldAccentObject)).source}(?= |$)`, 'g'), (match) => oldAccentObject[match] ?? match);
 
-        $.ajax({
+        await $.ajax({
           cache: false,
           method: 'GET',
           url: `${Utils.CORS_PROXY}http://nguyendu.com.free.fr/hanviet/ajax.php?query=${encodeURIComponent(define)}&methode=normal`,
@@ -120,7 +120,7 @@ function loadAd()
           // no default
         }
 
-        $.ajax({
+        await $.ajax({
           cache: false,
           method: 'GET',
           url: dictionaryUrl,
