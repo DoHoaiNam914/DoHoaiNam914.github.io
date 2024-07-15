@@ -2,7 +2,7 @@
 
 /* global oldAccentObject, Utils */
 
-$(document).ready(() => {
+$(document).ready(async () => {
   const searchParams = new URLSearchParams(window.location.search);
   let paragraph = document.createElement('p');
 
@@ -22,8 +22,7 @@ $(document).ready(() => {
 
     switch (dictionary) {
       case 'thieuchuu': {
-        $.ajax({
-          async: false,
+        await $.ajax({
           cache: false,
           method: 'GET',
           url: '/static/datasource/cjkvmap.txt',
@@ -63,7 +62,7 @@ $(document).ready(() => {
       }
       case 'td': {
         [define, oldAccentDefine].forEach((a) => {
-          $.ajax({
+          await $.ajax({
             async: false,
             cache: false,
             method: 'GET',
@@ -127,14 +126,13 @@ $(document).ready(() => {
           // no default
         }
 
-        $.ajax({
-          async: false,
+        await $.ajax({
           cache: false,
           method: 'GET',
           url: dictionaryUrl,
         }).done((data) => {
           const dataList = data.split('\n').filter((element) => !element.startsWith('##')).map((element) => element.split('\t')).filter((element) => element.length === 2);
-          const searchResults = dataList.map(([first]) => first).filter((a) => [define, oldAccentDefine].some((b) => pm.search(b, a).length > 0 || a.startsWith(b)));
+          const searchResults = dataList.map(([first]) => first).filter((a) => [define, oldAccentDefine].some((b) => (['N-V', 'T-V'].some((c) => dict === c) ? pm.search(b, a).length > 0 : pm.search(a, b).length > 0) || a.startsWith(b)));
 
           dataList.filter(([first]) => searchResults.includes(first)).forEach(([first, second]) => {
             sectionHeading.innerText = first;
