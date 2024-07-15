@@ -898,7 +898,7 @@ $translatorDropdown.find('.dropdown-item').click(function onClick() {
     }
     case Translators.DEEPL_TRANSLATE: {
       while (currentTranslator == null || (currentTranslator.usage.character_limit - currentTranslator.usage.character_count) < 100000) {
-        currentTranslator = new DeepLTranslate(DEEPL_AUTH_KEY_LIST[0][0]).init();
+        currentTranslator = new DeepLTranslate(DEEPL_AUTH_KEY_LIST[0][0]);
         if ((currentTranslator.usage.character_limit - currentTranslator.usage.character_count) >= 100000) break;
         DEEPL_AUTH_KEY_LIST.shift();
       }
@@ -1070,7 +1070,7 @@ $translateEntryButtons.click(async function onClick() {
       }
       case Translators.DEEPL_TRANSLATE: {
         while (translator == null || (translator.usage.character_limit - translator.usage.character_count) < 100000) {
-          translator = new DeepLTranslate(DEEPL_AUTH_KEY_LIST[0][0]).init();
+          translator = new DeepLTranslate(DEEPL_AUTH_KEY_LIST[0][0]);
           if ((translator.usage.character_limit - translator.usage.character_count) >= 100000) break;
           DEEPL_AUTH_KEY_LIST.shift();
         }
