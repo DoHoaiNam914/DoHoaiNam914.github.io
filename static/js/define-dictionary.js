@@ -62,7 +62,7 @@ $(document).ready(async () => {
       }
       case 'td': {
         [define, oldAccentDefine].forEach((a) => {
-          await $.ajax({
+          $.ajax({
             async: false,
             cache: false,
             method: 'GET',
