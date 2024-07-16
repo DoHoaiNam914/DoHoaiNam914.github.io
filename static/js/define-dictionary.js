@@ -27,7 +27,7 @@ $(document).ready(async () => {
           url: '/static/datasource/cjkvmap.txt',
         }).done((data) => {
           const dataList = data.split(/\r?\n|\r/).map((element) => element.split('|')).filter((element) => element.length === 3);
-          const searchResults = dataList.filter(([first, second]) => [define, oldAccentDefine].some((element) => pm.search(second.split('/')[0], element).length > 0 || pm.search(element, first).length > 0 || first.startsWith(element)));
+          const searchResults = dataList.filter(([first, second]) => [define, oldAccentDefine].some((element) => pm.search(second.split('/')[0], element).length > 0 || pm.search(element, first).length > 0 || first.startsWith(element))).map(([first]) => first);
 
           dataList.filter(([first]) => searchResults.includes(first.toLowerCase())).forEach(([first, second, third]) => {
             sectionHeading.innerText = first;
@@ -130,7 +130,7 @@ $(document).ready(async () => {
           url: dictionaryUrl,
         }).done((data) => {
           const dataList = data.split('\n').filter((element) => !element.startsWith('##')).map((element) => element.split('\t')).filter((element) => element.length === 2);
-          const searchResults = dataList.map(([first]) => first).filter((a) => [define, oldAccentDefine].some((b) => (['N-V', 'T-V'].some((c) => dict === c) ? pm.search(b, a).length > 0 || a.startsWith(b) : a.startsWith(b) || pm.search(a, `${b} `).length > 0 || pm.search(a, ` ${b}`).length > 0)));
+          const searchResults = dataList.filter(([first, second]) => [define, oldAccentDefine].some((a) => (['N-V', 'T-V'].some((b) => dict === b) ? (pm.search(a, first).length > 0 || dict !== 'N-V' || second.replaceAll('<span class="east">', '').replaceAll('</span>', '').replaceAll('<b>', '').replaceAll('</b>', '').match(/【([^】]+)】/).some((c) => pm.search(a, c))) || (first.startsWith(a) || dict !== 'N-V' || second.replaceAll('<span class="east">', '').replaceAll('</span>', '').replaceAll('<b>', '').replaceAll('</b>', '').match(/【([^】]+)】/).some((c) => c.startsWith(a))) : first.startsWith(a) || pm.search(first, `${a} `).length > 0 || pm.search(first, ` ${a}`).length > 0))).map(([first]) => first);
 
           dataList.filter(([first]) => searchResults.includes(first)).forEach(([first, second]) => {
             sectionHeading.innerText = first;
