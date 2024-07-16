@@ -598,11 +598,12 @@ const buildResult = function buildResultContentForTextarea(text, result) {
 };
 
 const translate = async function translateContentInTextarea(controller = new AbortController()) {
+  const activeTranslator = $translatorDropdown.find('.active').val();
   try {
     const startTime = Date.now();
     const text = $inputTextarea.val();
 
-    switch ($translatorDropdown.find('.active').val()) {
+    switch (activeTranslator) {
       case Translators.VIETPHRASE: {
         await currentTranslator.translateText(text, $targetLanguageSelect.val(), {
           // nameEnabled: true,
@@ -622,10 +623,15 @@ const translate = async function translateContentInTextarea(controller = new Abo
     $translateTimer.text(Date.now() - startTime);
   } catch (error) {
     console.error(error);
-    if (controller.signal.aborted) return;
-    const paragraph = document.createElement('p');
-    paragraph.innerText = `Bản dịch thất bại: ${error}`;
-    $resultTextarea.appendChild(paragraph);
+
+    if (!controller.signal.aborted) {
+      const paragraph = document.createElement('p');
+      paragraph.innerText = `Bản dịch thất bại: ${error}`;
+      $resultTextarea.appendChild(paragraph);
+    }
+
+    translators[activeTranslator] = null;
+    $translatorDropdown.find('.active').click();
   }
 };
 
@@ -634,7 +640,6 @@ $(document).ready(() => {
   $inputTextarea.trigger('input');
 
   $.ajax({
-    cache: false,
     method: 'GET',
     url: '/static/datasource/Unihan_Variants.txt',
   }).done((data) => {
@@ -653,7 +658,6 @@ $(document).ready(() => {
   });
 
   $.ajax({
-    cache: false,
     method: 'GET',
     url: '/static/datasource/lacviet/lv-[zh-vi].tsv',
   }).done((data) => {
@@ -671,7 +675,6 @@ $(document).ready(() => {
   });
 
   $.ajax({
-    cache: false,
     method: 'GET',
     url: '/static/datasource/Unihan_Readings.txt',
   }).done((data) => {
@@ -1063,48 +1066,53 @@ $translateEntryButtons.click(async function onClick() {
     let translator = translators[activeTranslator];
     const targetLanguage = $(this).data('lang');
 
-    switch (activeTranslator) {
-      case Translators.BAIDU_TRANSLATE: {
-        if (translator == null) translator = new BaiduTranslate();
-        break;
-      }
-      case Translators.DEEPL_TRANSLATE: {
-        while (translator == null || (translator.usage.character_limit - translator.usage.character_count) < 100000) {
-          translator = new DeepLTranslate(DEEPL_AUTH_KEY_LIST[0][0]);
-          if ((translator.usage.character_limit - translator.usage.character_count) >= 100000) break;
-          DEEPL_AUTH_KEY_LIST.shift();
+    try {
+      switch (activeTranslator) {
+        case Translators.BAIDU_TRANSLATE: {
+          if (translator == null) translator = new BaiduTranslate();
+          break;
         }
+        case Translators.DEEPL_TRANSLATE: {
+          while (translator == null || (translator.usage.character_limit - translator.usage.character_count) < 100000) {
+            translator = new DeepLTranslate(DEEPL_AUTH_KEY_LIST[0][0]);
+            if ((translator.usage.character_limit - translator.usage.character_count) >= 100000) break;
+            DEEPL_AUTH_KEY_LIST.shift();
+          }
 
-        break;
+          break;
+        }
+        case Translators.GOOGLE_TRANSLATE: {
+          if (translator == null) translator = new GoogleTranslate();
+          break;
+        }
+        case Translators.MICROSOFT_TRANSLATOR: {
+          if (translator == null) translator = new MicrosoftTranslator($toneSelect.val());
+          break;
+        }
+        case Translators.PAPAGO: {
+          if (translator == null) translator = new Papago(UUID);
+          break;
+        }
+        case Translators.WEBNOVEL_GOOGLE_TRANSLATE: {
+          if (translator == null) translator = new WebNovelGoogleTranslate();
+          break;
+        }
+        default: {
+          if (translator == null) translator = new Vietphrase();
+          await translator.translateText(text, targetLanguage, {}, glossary);
+          break;
+        }
       }
-      case Translators.GOOGLE_TRANSLATE: {
-        if (translator == null) translator = new GoogleTranslate();
-        break;
-      }
-      case Translators.MICROSOFT_TRANSLATOR: {
-        if (translator == null) translator = new MicrosoftTranslator($toneSelect.val());
-        break;
-      }
-      case Translators.PAPAGO: {
-        if (translator == null) translator = new Papago(UUID);
-        break;
-      }
-      case Translators.WEBNOVEL_GOOGLE_TRANSLATE: {
-        if (translator == null) translator = new WebNovelGoogleTranslate();
-        break;
-      }
-      default: {
-        if (translator == null) translator = new Vietphrase();
-        await translator.translateText(text, targetLanguage, {}, glossary);
-        break;
-      }
+
+      translators[activeTranslator] = translator;
+
+      if (!translationController.signal.aborted) $targetEntryTextarea.val(activeTranslator === Translators.VIETPHRASE ? translator.result : await translator.translateText(text, targetLanguage)).trigger('input');
+      $sourceEntryInput.removeAttr('readonly');
+      $translateEntryButtons.removeClass('disabled');
+      translationController = null;
+    } catch (error) {
+      console.error(error);
+      translators[activeTranslator] = null;
     }
-
-    translators[activeTranslator] = translator;
-
-    if (!translationController.signal.aborted) $targetEntryTextarea.val(activeTranslator === Translators.VIETPHRASE ? translator.result : await translator.translateText(text, targetLanguage)).trigger('input');
-    $sourceEntryInput.removeAttr('readonly');
-    $translateEntryButtons.removeClass('disabled');
-    translationController = null;
   }
 });

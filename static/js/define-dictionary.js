@@ -23,7 +23,6 @@ $(document).ready(async () => {
     switch (dictionary) {
       case 'thieuchuu': {
         await $.ajax({
-          cache: false,
           method: 'GET',
           url: '/static/datasource/cjkvmap.txt',
         }).done((data) => {
@@ -127,7 +126,6 @@ $(document).ready(async () => {
         }
 
         await $.ajax({
-          cache: false,
           method: 'GET',
           url: dictionaryUrl,
         }).done((data) => {

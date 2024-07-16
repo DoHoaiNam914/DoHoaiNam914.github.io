@@ -15,16 +15,17 @@ class MicrosoftTranslator extends Translator {
 
   constructor(tone) {
     super();
-    this.fetchData(this.tone);
-    this.maxContentLengthPerRequest = 1000;
     this.tone = tone;
+    this.fetchData();
+    this.maxContentLengthPerRequest = 1000;
     this.requestIndex = 1;
   }
 
-  fetchData(tone) {
+  fetchData() {
     try {
       const bingTranslatorHtml = $.ajax({
         async: false,
+        cache: false,
         method: 'GET',
         url: `${Utils.CORS_PROXY}https://www.bing.com/translator`,
       }).responseText;
@@ -36,7 +37,7 @@ class MicrosoftTranslator extends Translator {
 
       this.IG = IG;
 
-      switch (tone) {
+      switch (this.tone) {
         case 'Casual':
         case 'Formal': {
           this.IID = casualAndFormalIid;
