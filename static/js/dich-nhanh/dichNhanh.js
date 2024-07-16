@@ -363,7 +363,7 @@ const glossary = {
   hanViet: [],
 };
 
-let translators = {};
+const translators = {};
 let currentTranslator = null;
 let translationController = null;
 
@@ -657,7 +657,7 @@ $(document).ready(() => {
     method: 'GET',
     url: '/static/datasource/lacviet/lv-[zh-vi].tsv',
   }).done((data) => {
-    let hanvietList = data.split('\n').map((element) => (!element.startsWith('#') ? element.split('\t') : element)).filter((element) => typeof element !== 'string' && /^\p{Script=Hani}+$/u.test(element[0]) && element[1].includes('Hán Việt:')).map(([first, second]) => [first, second.replaceAll('<span class="east"> </span>', ' ').match(/Hán Việt:(?: |)[^<]*/g).filter((element) => element.replace(/Hán Việt: ?/, '').length > 0)[0].replace(/Hán Việt: ?/, '').split(/[,;] ?/)[0].toLowerCase()]);
+    let hanvietList = data.split('\n').map((element) => (!element.startsWith('#') ? element.split('\t') : element)).filter((element) => typeof element !== 'string' && /^\p{Script=Hani}+$/u.test(element[0]) && element[1].includes('Hán Việt:') && element[1].replaceAll('<span class="east"> </span>', ' ').match(/Hán Việt:(?: |)[^<]*/g).length === 1).map(([first, second]) => [first, second.replaceAll('<span class="east"> </span>', ' ').match(/Hán Việt:(?: |)[^<]*/g).filter((element) => element.replace(/Hán Việt: ?/, '').length > 0)[0].replace(/Hán Việt: ?/, '').split(/[,;] ?/)[0].toLowerCase()]);
     hanvietList = hanvietList.concat(cjkv.nam.map(([first, second]) => [first, second.split(',').filter((element) => element.length > 0)[0].trimStart().replaceAll(Utils.getTrieRegexPatternFromWords(Object.keys(newAccentObject)), (match) => newAccentObject[match] ?? match)]));
     hanvietList = hanvietList.concat(hanData.names.map(([first, second]) => [first, second.split(',').filter((element) => element.length > 0)[0].replaceAll(Utils.getTrieRegexPatternFromWords(Object.keys(newAccentObject)), (match) => newAccentObject[match] ?? match)]));
     hanvietList = hanvietList.filter((element, __, array) => element.join('=').length > 0 && element.length === 2 && !array[element[0]] && (array[element[0]] = 1), {});
@@ -1105,6 +1105,6 @@ $translateEntryButtons.click(async function onClick() {
     if (!translationController.signal.aborted) $targetEntryTextarea.val(activeTranslator === Translators.VIETPHRASE ? translator.result : await translator.translateText(text, targetLanguage)).trigger('input');
     $sourceEntryInput.removeAttr('readonly');
     $translateEntryButtons.removeClass('disabled');
-    translationController = null
+    translationController = null;
   }
 });

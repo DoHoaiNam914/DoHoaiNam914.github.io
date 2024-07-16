@@ -132,7 +132,7 @@ $(document).ready(async () => {
           url: dictionaryUrl,
         }).done((data) => {
           const dataList = data.split('\n').filter((element) => !element.startsWith('##')).map((element) => element.split('\t')).filter((element) => element.length === 2);
-          const searchResults = dataList.map(([first]) => first).filter((a) => [define, oldAccentDefine].some((b) => (['N-V', 'T-V'].some((c) => dict === c) ? pm.search(b, a).length > 0 : pm.search(a, b).length > 0) || a.startsWith(b)));
+          const searchResults = dataList.map(([first]) => first).filter((a) => [define, oldAccentDefine].some((b) => (['N-V', 'T-V'].some((c) => dict === c) ? pm.search(b, a).length > 0 || a.startsWith(b) : a.startsWith(b) || pm.search(a, `${b} `).length > 0 || pm.search(a, ` ${b}`).length > 0)));
 
           dataList.filter(([first]) => searchResults.includes(first)).forEach(([first, second]) => {
             sectionHeading.innerText = first;
