@@ -1,6 +1,6 @@
 'use strict';
 
-/* global bootstrap, BaiduTranslate, cjkv, DeepLTranslate, GoogleTranslate, hanData, Papago, MicrosoftTranslator, newAccentObject, Utils, Vietphrase, WebNovelGoogleTranslate */
+/* global bootstrap, BaiduTranslate, cjkv, DeepLTranslate, GoogleTranslate, hanData, Papago, MicrosoftTranslator, newAccentObject, Utils, Vietphrase */
 
 const $addButton = $('#add-button');
 const $copyButtons = $('.copy-button');
@@ -30,7 +30,6 @@ const Translators = {
   PAPAGO: 'papago',
   MICROSOFT_TRANSLATOR: 'microsoftTranslator',
   VIETPHRASE: 'vietphrase',
-  WEBNOVEL_GOOGLE_TRANSLATE: 'webnovelGoogleTranslate',
 };
 
 const SUPPORTED_LANGUAGES_CODE_LIST = ['', 'auto', 'auto-detect', 'en', 'EN', 'EN-US', 'ja', 'JA', 'ZH', 'zh-CN', 'zh-Hans', 'zh-TW', 'zh-Hant', 'vi'];
@@ -424,17 +423,6 @@ const getSourceLangOptionList = function getSourceLanguageOptionListHtmlFromTran
 
       break;
     }
-    case Translators.WEBNOVEL_GOOGLE_TRANSLATE: {
-      Object.entries(WebNovelGoogleTranslate.SOURCE_LANGUAGE_LIST).forEach(([languageCode, name]) => {
-        if (!SUPPORTED_LANGUAGES_CODE_LIST.includes(languageCode)) return;
-        const option = document.createElement('option');
-        option.innerText = name;
-        option.value = languageCode;
-        sourceLanguageSelect.appendChild(option);
-      });
-
-      break;
-    }
     default: {
       Object.entries(MicrosoftTranslator.SOURCE_LANGUAGE_LIST).forEach(([languageCode, { name }]) => {
         if (!SUPPORTED_LANGUAGES_CODE_LIST.includes(languageCode)) return;
@@ -500,17 +488,6 @@ const getTargetLangOptionList = function getTargetLanguageOptionListHtmlFromTran
     }
     case Translators.VIETPHRASE: {
       Object.entries(Vietphrase.TARGET_LANGUAGE_LIST).forEach(([languageCode, name]) => {
-        const option = document.createElement('option');
-        option.innerText = name;
-        option.value = languageCode;
-        targetLanguageSelect.appendChild(option);
-      });
-
-      break;
-    }
-    case Translators.WEBNOVEL_GOOGLE_TRANSLATE: {
-      Object.entries(WebNovelGoogleTranslate.TARGET_LANGUAGE_LIST).forEach(([languageCode, name]) => {
-        if (!SUPPORTED_LANGUAGES_CODE_LIST.includes(languageCode)) return;
         const option = document.createElement('option');
         option.innerText = name;
         option.value = languageCode;
@@ -878,10 +855,6 @@ $translatorDropdown.find('.dropdown-item').click(function onClick() {
       if (currentTranslator == null) currentTranslator = new Vietphrase();
       break;
     }
-    case Translators.WEBNOVEL_GOOGLE_TRANSLATE: {
-      if (currentTranslator == null) currentTranslator = new WebNovelGoogleTranslate();
-      break;
-    }
     default: {
       if (currentTranslator == null) currentTranslator = new MicrosoftTranslator($toneSelect.val());
       break;
@@ -1054,10 +1027,6 @@ $translateEntryButtons.click(async function onClick() {
         }
         case Translators.PAPAGO: {
           if (translator == null) translator = new Papago(UUID);
-          break;
-        }
-        case Translators.WEBNOVEL_GOOGLE_TRANSLATE: {
-          if (translator == null) translator = new WebNovelGoogleTranslate();
           break;
         }
         default: {
