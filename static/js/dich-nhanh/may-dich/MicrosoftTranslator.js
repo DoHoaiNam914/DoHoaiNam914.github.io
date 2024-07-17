@@ -30,9 +30,8 @@ class MicrosoftTranslator extends Translator {
       }).responseText;
 
       const [__, IG] = bingTranslatorHtml.match(/IG:"([A-Z0-9]+)"/);
-      const [___, standardIid] = bingTranslatorHtml.match(/id="tta_outGDCont" data-iid="(translator\.\d+)"/);
-      const [____, casualAndFormalIid] = bingTranslatorHtml.match(/id="rich_tta" data-iid="(translator\.\d+)"/);
-      const [_____, key, token] = bingTranslatorHtml.match(/var params_AbusePreventionHelper = \[([0-9]+),"([^"]+)",[^\]]+\];/);
+      const [___, [____, casualAndFormalIid], [_____, standardIid]] = [...bingTranslatorHtml.matchAll(/data-iid="(translator\.\d+)"/g)];
+      const [______, key, token] = bingTranslatorHtml.match(/var params_AbusePreventionHelper = \[([0-9]+),"([^"]+)",[^\]]+\];/);
 
       this.IG = IG;
 
