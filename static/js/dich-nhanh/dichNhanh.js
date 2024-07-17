@@ -567,6 +567,13 @@ const buildResult = function buildResultContentForTextarea(text, result) {
             if (originalLines[i + lostLineFixedNumber].length > 0) {
               const idiomaticText = document.createElement('i');
               idiomaticText.innerText = originalLines[i + lostLineFixedNumber];
+              idiomaticText.addEventListener('click', function onClick() {
+                const range = document.createRange();
+                const selection = window.getSelection();
+                range.selectNodeContents(this);
+                selection.removeAllRanges();
+                selection.addRange(range);
+              }); 
               paragraph.appendChild(idiomaticText);
               paragraph.innerHTML += resultLines[i].trim().length > 0 ? ' ' : '';
               const attentionText = document.createElement('b');
@@ -780,7 +787,7 @@ $retranslateButton.on('click', () => {
 });
 
 $glossaryManagerButton.on('mousedown', () => {
-  if ($resultTextarea.is(':visible')) $sourceEntryInput.val((window.getSelection().toString() || ((document.activeElement.tagName === 'TEXTAREA' || (document.activeElement.tagName === 'INPUT' && /^(?:email|month|number|search|tel|text|url|week)$/i.test(document.activeElement.type))) && typeof document.activeElement.selectionStart === 'number' && document.activeElement.value.slice(document.activeElement.selectionStart, document.activeElement.selectionEnd)) || '').replaceAll(/\n/g, ' ').trim());
+  if ($resultTextarea.is(':visible')) $sourceEntryInput.val(window.getSelection().toString() || '').replaceAll(/\n/g, ' ').trim());
 
   if (window.getSelection) {
     window.getSelection().removeAllRanges();
