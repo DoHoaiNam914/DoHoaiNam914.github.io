@@ -365,6 +365,7 @@ const glossary = {
 const translators = {};
 let currentTranslator = null;
 let translationController = null;
+let lastTranslateEntryButton = null
 
 const getSourceLangOptionList = function getSourceLanguageOptionListHtmlFromTranslator(translator) {
   const sourceLanguageSelect = document.createElement('select');
@@ -767,7 +768,6 @@ $retranslateButton.on('click', () => {
 
 $glossaryManagerButton.on('mousedown', () => {
   if ($resultTextarea.is(':visible')) $sourceEntryInput.val((window.getSelection().toString() || '').replaceAll(/\n/g, ' ').trim());
-
   if (window.getSelection) window.getSelection().removeAllRanges();
 });
 
@@ -894,7 +894,8 @@ $glossaryModal.on('shown.bs.modal', () => {
     // });
 
     // if (!$sourceEntryInput.autocomplete('option', 'disabled')) $sourceEntryInput.autocomplete('disable');
-    $sourceEntryInput.trigger('input');
+    if (lastTranslateEntryButton != null) lastTranslateEntryButton.click();
+    else $sourceEntryInput.trigger('input');
   }
 
   // $sourceEntryInput.autocomplete('enable');
@@ -1038,13 +1039,18 @@ $translateEntryButtons.click(async function onClick() {
 
       translators[activeTranslator] = translator;
 
-      if (!translationController.signal.aborted) $targetEntryTextarea.val(activeTranslator === Translators.VIETPHRASE ? translator.result : await translator.translateText(text, targetLanguage)).trigger('input');
+      if (!translationController.signal.aborted) {
+        $targetEntryTextarea.val(activeTranslator === Translators.VIETPHRASE ? translator.result : await translator.translateText(text, targetLanguage)).trigger('input');
+        lastTranslateEntryButton = $(this);
+      }
+
       $sourceEntryInput.removeAttr('readonly');
       $translateEntryButtons.removeClass('disabled');
       translationController = null;
     } catch (error) {
       console.error(error);
       translators[activeTranslator] = null;
+      lastTranslateEntryButton = null;
     }
   }
 });

@@ -212,6 +212,7 @@
           '/static/js/dich-nhanh/may-dich/BaiduTranslate.js',
           '/static/js/dich-nhanh/may-dich/DeepLTranslate.js',
           '/static/js/dich-nhanh/may-dich/Papago.js',
+          '/static/js/dich-nhanh/may-dich/WebNovelGoogleTranslate.js',
           '/static/js/dich-nhanh/dichNhanh.js',
         ],
       ];
@@ -538,21 +539,6 @@
                     <hr class="dropdown-divider">
                   </li>
                   <li>
-                    <button type="button" class="dropdown-item upper-case-button" data-amount="1">Viết hoa 1 từ đơn đầu</button>
-                  </li>
-                  <li>
-                    <button type="button" class="dropdown-item upper-case-button" data-amount="2">Viết hoa 2 từ đơn đầu</button>
-                  </li>
-                  <li>
-                    <button type="button" class="dropdown-item upper-case-button" data-amount="3">Viết hoa 3 từ đơn đầu</button>
-                  </li>
-                  <li>
-                    <button type="button" class="dropdown-item upper-case-button" data-amount="#">Viết hoa tất cả</button>
-                  </li>
-                  <li>
-                    <hr class="dropdown-divider">
-                  </li>
-                  <li>
                     <button type="button" class="dropdown-item" data-bs-toggle="collapse" data-bs-target="#convert-collapse">Convert</button>
                     <div class="collapse show-by-default" id="convert-collapse">
                       <!-- <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="vietphrase" data-lang="vi">Vietphrase</button> -->
@@ -567,11 +553,11 @@
                   <li>
                     <button type="button" class="dropdown-item" data-bs-toggle="collapse" data-bs-target="#baidu-fanyi-collapse">Baidu Translate</button>
                     <div class="collapse" id="baidu-fanyi-collapse">
-                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="baiduTranslate" data-lang="jp">Japanese</button>
-                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="baiduTranslate" data-lang="en">English</button>
                       <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="baiduTranslate" data-lang="vie">Vietnamese</button>
+                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="baiduTranslate" data-lang="en">English</button>
                       <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="baiduTranslate" data-lang="zh">Chinese</button>
                       <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="baiduTranslate" data-lang="cht">Traditional Chinese</button>
+                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="baiduTranslate" data-lang="jp">Japanese</button>
                     </div>
                   </li>
                   <li>
@@ -584,33 +570,48 @@
                   </li>
                   <li>
                     <button type="button" class="dropdown-item" data-bs-toggle="collapse" data-bs-target="#google-translate-collapse">Google Dịch</button>
+                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="googleTranslate" data-lang="vi">Việt</button>
                     <div class="collapse" id="google-translate-collapse">
                       <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="googleTranslate" data-lang="en">Anh</button>
-                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="googleTranslate" data-lang="ja">Nhật</button>
                       <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="googleTranslate" data-lang="zh-CN">Trung (Giản thể)</button>
                       <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="googleTranslate" data-lang="zh-TW">Trung (Phồn thể)</button>
-                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="googleTranslate" data-lang="vi">Việt</button>
+                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="googleTranslate" data-lang="ja">Nhật</button>
                     </div>
                   </li>
                   <li>
                     <button type="button" class="dropdown-item" data-bs-toggle="collapse" data-bs-target="#papago-collapse">Papago</button>
                     <div class="collapse" id="papago-collapse">
+                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="papago" data-lang="vi">Việt</button>
                       <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="papago" data-lang="en">Anh</button>
                       <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="papago" data-lang="ja">Nhật</button>
                       <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="papago" data-lang="zh-CN">Trung (Giản thể)</button>
                       <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="papago" data-lang="zh-TW">Trung (Phồn thể)</button>
-                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="papago" data-lang="vi">Việt</button>
                     </div>
                   </li>
                   <li>
                     <button type="button" class="dropdown-item" data-bs-toggle="collapse" data-bs-target="#microsoft-translator-collapse">Trình dịch Microsoft</button>
                     <div class="collapse" id="microsoft-translator-collapse">
+                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="microsoftTranslator" data-lang="vi">Tiếng Việt</button>
                       <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="microsoftTranslator" data-lang="en">Tiếng Anh</button>
                       <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="microsoftTranslator" data-lang="ja">Tiếng Nhật</button>
-                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="microsoftTranslator" data-lang="vi">Tiếng Việt</button>
                       <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="microsoftTranslator" data-lang="zh-Hans">Tiếng Trung (Giản Thể)</button>
                       <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="microsoftTranslator" data-lang="zh-Hant">Tiếng Trung (Phồn Thể)</button>
                     </div>
+                  </li>
+                  <li>
+                    <hr class="dropdown-divider">
+                  </li>
+                  <li>
+                    <button type="button" class="dropdown-item upper-case-button" data-amount="1">Viết hoa 1 từ đơn đầu</button>
+                  </li>
+                  <li>
+                    <button type="button" class="dropdown-item upper-case-button" data-amount="2">Viết hoa 2 từ đơn đầu</button>
+                  </li>
+                  <li>
+                    <button type="button" class="dropdown-item upper-case-button" data-amount="3">Viết hoa 3 từ đơn đầu</button>
+                  </li>
+                  <li>
+                    <button type="button" class="dropdown-item upper-case-button" data-amount="#">Viết hoa tất cả</button>
                   </li>
                 </ul>
               </div>
