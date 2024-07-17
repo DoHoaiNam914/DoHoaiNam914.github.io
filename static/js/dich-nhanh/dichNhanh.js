@@ -668,23 +668,6 @@ $(document).ready(() => {
 
   $.ajax({
     method: 'GET',
-    url: '/static/datasource/lacviet/lv-[zh-vi].tsv',
-  }).done((data) => {
-    let hanvietList = data.split('\n').map((element) => (!element.startsWith('#') ? element.split('\t') : element)).filter((a) => typeof a !== 'string' && /^\p{Script=Hani}+$/u.test(a[0]) && a[1].includes('Hán Việt:') && a[1].replaceAll('<span class="east"> </span>', ' ').match(/Hán Việt:(?: |)[^<]*/g).filter((b) => b.replace(/Hán Việt: ?/, '').length > 0).length > 0).map(([first, second]) => [first, second.replaceAll('<span class="east"> </span>', ' ').match(/Hán Việt:(?: |)[^<]*/g).filter((element) => element.replace(/Hán Việt: ?/, '').length > 0)[0].replace(/Hán Việt: ?/, '').split(/[,;] ?/)[0].toLowerCase()]);
-    hanvietList = hanvietList.concat(cjkv.nam.map(([first, second]) => [first, second.split(',').filter((element) => element.length > 0)[0].trimStart().replaceAll(Utils.getTrieRegexPatternFromWords(Object.keys(newAccentObject)), (match) => newAccentObject[match] ?? match)]));
-    hanvietList = hanvietList.concat(hanData.names.map(([first, second]) => [first, second.split(',').filter((element) => element.length > 0)[0].replaceAll(Utils.getTrieRegexPatternFromWords(Object.keys(newAccentObject)), (match) => newAccentObject[match] ?? match)]));
-    hanvietList = hanvietList.filter((element, __, array) => element.join('=').length > 0 && element.length === 2 && !array[element[0]] && (array[element[0]] = 1), {});
-    glossary.hanViet = hanvietList;
-    console.info(`Đã tải xong bộ dữ liệu Hán-Việt (${hanvietList.length})!`);
-  }).fail((__, ___, errorThrown) => {
-    console.error('Không thể tải bộ dữ liệu Hán-Việt:', errorThrown);
-    setTimeout(() => {
-      window.location.reload();
-    }, 5000);
-  });
-
-  $.ajax({
-    method: 'GET',
     url: '/static/datasource/Unihan_Readings.txt',
   }).done((data) => {
     const array = data.split('\n').filter((element) => element.length > 0 && !element.startsWith('#')).map((element) => element.split('\t'));
@@ -696,6 +679,23 @@ $(document).ready(() => {
     console.info(`Đã tải xong bộ dữ liệu On'yomi (${glossary.OnYomis.length})!`);
   }).fail((__, ___, errorThrown) => {
     console.error('Không thể tải bộ dữ liệu bính âm, Kun\'yomi và On\'yomi:', errorThrown);
+    setTimeout(() => {
+      window.location.reload();
+    }, 5000);
+  });
+
+  $.ajax({
+    method: 'GET',
+    url: '/static/datasource/lacviet/lv-[zh-vi].tsv',
+  }).done((data) => {
+    let hanvietList = data.split('\n').map((element) => (!element.startsWith('#') ? element.split('\t') : element)).filter((a) => typeof a !== 'string' && /^\p{Script=Hani}+$/u.test(a[0]) && a[1].includes('Hán Việt:') && a[1].replaceAll('<span class="east"> </span>', ' ').match(/Hán Việt: *[^<]*/g).filter((b) => b.replace(/Hán Việt: */, '').length > 0).length > 0).map(([first, second]) => [first, second.replaceAll('<span class="east"> </span>', ' ').match(/Hán Việt: *[^<]*/g).filter((element) => element.replace(/Hán Việt: */, '').length > 0)[0].replace(/Hán Việt: */, '').split(/[,;] */)[0].trim().toLowerCase()]);
+    hanvietList = hanvietList.concat(cjkv.nam.map(([first, second]) => [first, second.split(',').filter((element) => element.length > 0)[0].trimStart().replaceAll(Utils.getTrieRegexPatternFromWords(Object.keys(newAccentObject)), (match) => newAccentObject[match] ?? match)]));
+    hanvietList = hanvietList.concat(hanData.names.map(([first, second]) => [first, second.split(',').filter((element) => element.length > 0)[0].replaceAll(Utils.getTrieRegexPatternFromWords(Object.keys(newAccentObject)), (match) => newAccentObject[match] ?? match)]));
+    hanvietList = hanvietList.filter((element, __, array) => element.join('=').length > 0 && element.length === 2 && !array[element[0]] && (array[element[0]] = 1), {});
+    glossary.hanViet = hanvietList;
+    console.info(`Đã tải xong bộ dữ liệu Hán-Việt (${hanvietList.length})!`);
+  }).fail((__, ___, errorThrown) => {
+    console.error('Không thể tải bộ dữ liệu Hán-Việt:', errorThrown);
     setTimeout(() => {
       window.location.reload();
     }, 5000);
