@@ -23,7 +23,7 @@ class WebNovelGoogleTranslate extends Translator {
 
   async translateText(text, targetLanguage, sourceLanguage = this.DefaultLanguage.SOURCE_LANGUAGE) {
     try {
-      const lines = text.split(/\n/).map((element) => element.replace(/^\s+/, '').trim());
+      const lines = text.split(/\n/);
       let queryLines = [];
       const CJ_LANGUAGE_CODE_LIST = ['ja', 'zh-CN', 'zh-TW'];
       const responses = [];
