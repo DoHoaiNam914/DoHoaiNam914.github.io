@@ -43,7 +43,7 @@ class WebNovelGoogleTranslate extends Translator {
 
       await Promise.all(responses);
       console.log('DEBUG', responses.map((element) => element.responseJSON[0].map(([first, second]) => [first, second])));
-      this.result = responses.map((element) => element.responseJSON[0].filter(([__, second]) => second != null).map(([first]) => (CJ_LANGUAGE_CODE_LIST.some((b) => sourceLanguage === b) ? first.trim().replaceAll('||||', '\n').replaceAll('|', '\n\n') : first.replaceAll(/\\n/gi, '\n'))).join('')).join('\n');
+      this.result = responses.map((element) => element.responseJSON[0].filter(([__, second]) => second != null).map(([first]) => (CJ_LANGUAGE_CODE_LIST.some((b) => sourceLanguage === b) ? first.replaceAll('||||', '\n').replaceAll('|', '\n\n') : first.replaceAll(/\\n/gi, '\n'))).join('').split('\n').map((element) => element.trim()).join('\n')).join('\n');
       super.translateText(text, targetLanguage, sourceLanguage);
       return this.result;
     } catch (error) {
