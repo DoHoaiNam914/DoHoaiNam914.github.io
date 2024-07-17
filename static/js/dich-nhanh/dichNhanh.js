@@ -787,7 +787,7 @@ $retranslateButton.on('click', () => {
 });
 
 $glossaryManagerButton.on('mousedown', () => {
-  if ($resultTextarea.is(':visible')) $sourceEntryInput.val(window.getSelection().toString() || '').replaceAll(/\n/g, ' ').trim());
+  if ($resultTextarea.is(':visible')) $sourceEntryInput.val((window.getSelection().toString() || '').replaceAll(/\n/g, ' ').trim());
 
   if (window.getSelection) {
     window.getSelection().removeAllRanges();
