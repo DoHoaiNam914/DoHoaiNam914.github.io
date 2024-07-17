@@ -567,10 +567,10 @@ const buildResult = function buildResultContentForTextarea(text, result) {
             if (originalLines[i + lostLineFixedNumber].length > 0) {
               const idiomaticText = document.createElement('i');
               idiomaticText.innerText = originalLines[i + lostLineFixedNumber];
-              idiomaticText.addEventListener('click', function onClick() {
+              idiomaticText.addEventListener('click', () => {
                 const range = document.createRange();
                 const selection = window.getSelection();
-                range.selectNodeContents(this);
+                range.selectNodeContents(idiomaticText);
                 selection.removeAllRanges();
                 selection.addRange(range);
               }); 
