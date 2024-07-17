@@ -936,7 +936,11 @@ $translatorDropdown.find('.dropdown-item').click(function onClick() {
 
 $toneSelect.on('change', () => {
   const $activeTranslator = $translatorDropdown.find('.active');
-  if ($activeTranslator.val() === Translators.MICROSOFT_TRANSLATOR) $activeTranslator.click();
+
+  if ($activeTranslator.val() === Translators.MICROSOFT_TRANSLATOR) {
+    translators[activeTranslator] = null;
+    $activeTranslator.click();
+  }
 });
 
 $showOriginalTextSwitch.change(() => {

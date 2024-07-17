@@ -25,7 +25,6 @@ class MicrosoftTranslator extends Translator {
     try {
       const bingTranslatorHtml = $.ajax({
         async: false,
-        cache: false,
         method: 'GET',
         url: `${Utils.CORS_PROXY}https://www.bing.com/translator`,
       }).responseText;

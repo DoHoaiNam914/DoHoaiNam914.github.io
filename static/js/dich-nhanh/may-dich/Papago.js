@@ -56,13 +56,11 @@ class Papago extends Translator {
     try {
       const mainJs = $.ajax({
         async: false,
-        cache: false,
         method: 'GET',
         url: `${Utils.CORS_PROXY}https://papago.naver.com`,
       }).responseText.match(/\/(main.*\.js)/)[1];
       const [__, version] = $.ajax({
         async: false,
-        cache: false,
         method: 'GET',
         url: `${Utils.CORS_PROXY}https://papago.naver.com/${mainJs}`,
       }).responseText.match(/"PPG .*,"(v[^"]*)/);
