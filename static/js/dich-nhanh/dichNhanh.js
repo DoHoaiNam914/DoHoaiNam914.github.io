@@ -539,27 +539,27 @@ const loadLangSelectOptions = function loadLanguageListByTranslatorToHtmlOptions
   const sourceLanguage = currentTranslator.DefaultLanguage.SOURCE_LANGUAGE;
   const targetLanguage = currentTranslator.DefaultLanguage.TARGET_LANGUAGE;
   $sourceLanguageSelect.html(getSourceLangOptionList(translator));
-  $sourceLanguageSelect.val(sourceLanguage).change();
+  $sourceLanguageSelect.val(sourceLanguage);
   $targetLanguageSelect.html(getTargetLangOptionList(translator));
-  $targetLanguageSelect.val(targetLanguage).change();
+  $targetLanguageSelect.val(targetLanguage);
 };
 
 const buildResult = function buildResultContentForTextarea(text, result) {
   try {
     const resultDiv = document.createElement('div');
 
-    const originalLines = text.split('\n').map((element) => element.trimStart());
-    const resultLines = result.split('\n').map((element) => element.trimStart());
+    const originalLines = text.split('\n').map((element) => element.replace(/^\s+/, '').trim());
+    const resultLines = result.split('\n').map((element) => element.replace(/^\s+/, '').trim());
 
     if ($showOriginalTextSwitch.prop('checked')) {
       let lostLineFixedNumber = 0;
 
       for (let i = 0; i < originalLines.length; i += 1) {
         if (i + lostLineFixedNumber < resultLines.length) {
-          if (originalLines[i + lostLineFixedNumber].trim().replace(/^\s+/, '').length === 0 && resultLines[i].trim().replace(/^\s+/, '').length > 0) {
+          if (originalLines[i + lostLineFixedNumber].length === 0 && resultLines[i].length > 0) {
             lostLineFixedNumber += 1;
             i -= 1;
-          } else if ($translatorDropdown.find('.active').val() === Translators.PAPAGO && resultLines[i].trim().replace(/^\s+/, '').length === 0 && originalLines[i + lostLineFixedNumber].trim().replace(/^\s+/, '').length > 0) {
+          } else if ($translatorDropdown.find('.active').val() === Translators.PAPAGO && resultLines[i].length === 0 && originalLines[i + lostLineFixedNumber].length > 0) {
             lostLineFixedNumber -= 1;
           } else {
             const paragraph = document.createElement('p');
@@ -567,15 +567,8 @@ const buildResult = function buildResultContentForTextarea(text, result) {
             if (originalLines[i + lostLineFixedNumber].length > 0) {
               const idiomaticText = document.createElement('i');
               idiomaticText.innerText = originalLines[i + lostLineFixedNumber];
-              idiomaticText.addEventListener('click', () => {
-                const range = document.createRange();
-                const selection = window.getSelection();
-                range.selectNodeContents(idiomaticText);
-                selection.removeAllRanges();
-                selection.addRange(range);
-              }); 
               paragraph.appendChild(idiomaticText);
-              paragraph.innerHTML += resultLines[i].trim().length > 0 ? ' ' : '';
+              paragraph.innerHTML += resultLines[i].trim().length > 0 ? document.createElement('br').outerHTML : '';
               const attentionText = document.createElement('b');
               attentionText.innerText = resultLines[i];
               paragraph.appendChild(attentionText);
@@ -627,6 +620,15 @@ const translate = async function translateContentInTextarea(controller = new Abo
 
     if (controller.signal.aborted) return;
     $resultTextarea.html(buildResult(text, currentTranslator.result));
+    $resultTextarea.find('p > i').on('dblclick', function onClick() {
+      const range = document.createRange();
+      const selection = window.getSelection();
+      range.selectNodeContents(this);
+      selection.removeAllRanges();
+      selection.addRange(range);
+      $glossaryManagerButton.trigger('mousedown');
+      $glossaryManagerButton.click();
+    });
     $translateTimer.text(Date.now() - startTime);
   } catch (error) {
     console.error(error);
@@ -658,7 +660,7 @@ $(document).ready(() => {
     glossary.simplified = array.filter((element) => element.length === 3 && element[1] === 'kSimplifiedVariant').map(([first, __, third]) => [String.fromCodePoint(parseInt(first.substring(2), 16)), third.split(' ').filter((element) => third.split(' ').length === 1 || element !== first).map((element) => String.fromCodePoint(parseInt(element.substring(2), 16)))[0]]);
     console.info(`Đã tải xong bộ dữ liệu giản thể (${glossary.simplified.length})!`);
   }).fail((__, ___, errorThrown) => {
-    console.error('Không thể tải bộ dữ liệu phổn thể và phổn thể:', errorThrown);
+    console.error('Không thể tải bộ dữ liệu giản thể-phổn thể:', errorThrown);
     setTimeout(() => {
       window.location.reload();
     }, 5000);
@@ -789,13 +791,7 @@ $retranslateButton.on('click', () => {
 $glossaryManagerButton.on('mousedown', () => {
   if ($resultTextarea.is(':visible')) $sourceEntryInput.val((window.getSelection().toString() || '').replaceAll(/\n/g, ' ').trim());
 
-  if (window.getSelection) {
-    window.getSelection().removeAllRanges();
-  } else if (document.selection) {
-    document.selection.empty();
-  }
-
-  $('.textarea').blur();
+  if (window.getSelection) window.getSelection().removeAllRanges();
 });
 
 $inputTextarea.on('input', function onInput() {
@@ -810,51 +806,6 @@ $inputTextarea.on('keypress', (event) => {
   if (event.shiftKey && event.key === 'Enter') {
     $translateButton.click();
     $resultTextarea.focus();
-    event.preventDefault();
-  }
-});
-
-$resultTextarea.on('keydown', (event) => {
-  const allowKey = [
-    'Escape', 'F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10', 'F11', 'F12', 'PrintScreen', 'ScrollLock', 'Pause', 'Cancel',
-    'Insert', 'Home', 'PageUp', 'NumLock',
-    'Tab', 'Enter', 'End', 'PageDown',
-    'CapsLock',
-    'Shift', 'ArrowUp',
-    'Control', 'Meta', 'Alt', 'ContextMenu', 'ArrowLeft', 'ArrowDown', 'ArrowRight',
-  ];
-
-  return event.ctrlKey || (event.key === 'Escape' && document.activeElement.blur()) || allowKey.some((element) => event.key === element) || event.preventDefault();
-});
-
-$resultTextarea.on('drag', (event) => {
-  event.preventDefault();
-});
-
-$resultTextarea.on('drop', (event) => {
-  event.preventDefault();
-});
-
-$resultTextarea.on('cut', (event) => {
-  document.execCommand('copy');
-  event.preventDefault();
-});
-
-$resultTextarea.on('paste', (event) => {
-  event.preventDefault();
-});
-
-$resultTextarea.on('keypress', (event) => {
-  if (event.ctrlKey && event.key === 'Enter') {
-    $glossaryManagerButton.trigger('mousedown');
-    $glossaryManagerButton.click();
-    event.preventDefault();
-    return;
-  }
-
-  if (event.key === 'Enter') {
-    $translateButton.click();
-    $inputTextarea.focus();
     event.preventDefault();
   }
 });
@@ -939,13 +890,14 @@ $translatorDropdown.find('.dropdown-item').click(function onClick() {
 
   translators[activeTranslator] = currentTranslator;
   loadLangSelectOptions(activeTranslator);
+  $retranslateButton.click();
 });
 
 $toneSelect.on('change', () => {
   const $activeTranslator = $translatorDropdown.find('.active');
 
   if ($activeTranslator.val() === Translators.MICROSOFT_TRANSLATOR) {
-    translators[activeTranslator] = null;
+    translators[$activeTranslator.val()] = null;
     $activeTranslator.click();
   }
 });
@@ -1035,7 +987,7 @@ $('.define-button').on('click', function onClick() {
       defineContent = encodeURIComponent(defineContent);
     }
 
-    window.open($(this).data('href').replace('{0}', defineContent), '_blank', 'width=1000,height=577');
+    window.open($(this).data('href').replace('%s', defineContent), '_blank', 'width=1000,height=577');
   }
 
   if (window.getSelection) window.getSelection().removeAllRanges();
@@ -1044,7 +996,7 @@ $('.define-button').on('click', function onClick() {
 });
 
 $('.translate-webpage-button').on('click', function onClick() {
-  if ($sourceEntryInput.val().length > 0) window.open($(this).data('href').replace('{0}', encodeURIComponent($sourceEntryInput.val().trimEnd())), '_blank', 'width=1000,height=577');
+  if ($sourceEntryInput.val().length > 0) window.open($(this).data('href').replace('%s', encodeURIComponent($sourceEntryInput.val().trimEnd())), '_blank', 'width=1000,height=577');
   if (window.getSelection) window.getSelection().removeAllRanges();
   else if (document.selection) document.selection.empty();
   $sourceEntryInput.blur();

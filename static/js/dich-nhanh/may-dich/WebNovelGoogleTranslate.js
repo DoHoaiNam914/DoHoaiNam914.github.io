@@ -23,7 +23,7 @@ class WebNovelGoogleTranslate extends Translator {
 
   async translateText(text, targetLanguage, sourceLanguage = this.DefaultLanguage.SOURCE_LANGUAGE) {
     try {
-      const lines = text.split(/\n/);
+      const lines = text.split(/\n/).map((element) => `\u3000\u3000${element.replace(/^\s+/, '').trim()}`);
       let queryLines = [];
       const CJ_LANGUAGE_CODE_LIST = ['ja', 'zh-CN', 'zh-TW'];
       const responses = [];
@@ -33,15 +33,17 @@ class WebNovelGoogleTranslate extends Translator {
 
         if (lines.length === 0 || [...queryLines, lines[0]].join(CJ_LANGUAGE_CODE_LIST.some((element) => sourceLanguage === element) ? '||||' : '\\\\n').length > this.maxDataPerRequest || [...queryLines, lines[0]].join('\n').length > this.maxContentLengthPerRequest || (queryLines.length + 1) > this.maxContentLinePerRequest) {
           responses.push($.ajax({
+            cache: false,
             method: 'GET',
-            url: `${Utils.CORS_PROXY}http://translate.google.com/translate_a/single?client=${this.clientName}&ie=UTF-8&oe=UTF-8&dt=bd&dt=ex&dt=ld&dt=md&dt=rw&dt=rm&dt=ss&dt=t&dt=at&dt=gt&dt=qc&sl=${sourceLanguage}&tl=${targetLanguage}&hl=${targetLanguage}&q=${encodeURIComponent(queryLines.join(CJ_LANGUAGE_CODE_LIST.some((element) => sourceLanguage === element) ? '||||' : '\\\\n'))}`,
+            url: `${Utils.CORS_PROXY}http://translate.google.com/translate_a/single?client=${this.clientName}&ie=UTF-8&oe=UTF-8&dt=bd&dt=ex&dt=ld&dt=md&dt=rw&dt=rm&dt=ss&dt=t&dt=at&dt=gt&dt=qc&sl=${sourceLanguage}&tl=${targetLanguage}&hl=${targetLanguage}&q=${encodeURIComponent(queryLines.join(CJ_LANGUAGE_CODE_LIST.some((element) => sourceLanguage === element) ? '||||' : '\\n'))}`,
           }));
           queryLines = [];
         }
       }
 
       await Promise.all(responses);
-      this.result = responses.map((element) => element.responseJSON[0].map(([first]) => first).join('').replaceAll(CJ_LANGUAGE_CODE_LIST.some((b) => sourceLanguage === b) ? / ?(?:\|{4}|\|[| ]{3,}|\|+)(?!\|)/g : / ?\\+n/g, '\n')).join('\n');
+      console.log('DEBUG', responses.map((element) => element.responseJSON[0].map(([first, second]) => [first, second])));
+      this.result = responses.map((element) => element.responseJSON[0].filter(([__, second]) => second != null).map(([first]) => (CJ_LANGUAGE_CODE_LIST.some((b) => sourceLanguage === b) ? first.trim().replaceAll('||||', '\n').replaceAll('|', '\n\n') : first.replaceAll(/\\n/gi, '\n'))).join('')).join('\n');
       super.translateText(text, targetLanguage, sourceLanguage);
       return this.result;
     } catch (error) {

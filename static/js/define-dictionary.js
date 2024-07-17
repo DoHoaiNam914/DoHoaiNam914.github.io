@@ -7,7 +7,7 @@ $(document).ready(async () => {
   let paragraph = document.createElement('p');
 
   const dictionary = searchParams.get('dictionary') ?? 'lac-viet';
-  const define = (searchParams.get('define') ?? '').trim().replaceAll(/^\s+|\s+$/g, '').toLowerCase();
+  let define = (searchParams.get('define') ?? '').trim().replaceAll(/^\s+|\s+$/g, '');
   const sectionHeading = document.createElement('h1');
 
   if (define.length > 0) {
@@ -19,6 +19,7 @@ $(document).ready(async () => {
     $(document.body).append(statusParagraph);
     const oldAccentDefine = define.replaceAll(new RegExp(`${Utils.getTrieRegexPatternFromWords(Object.keys(oldAccentObject)).source}(?= |$)`, 'g'), (match) => oldAccentObject[match] ?? match);
     const pm = new window.DTM_ExactMatcher();
+    define = define.toLowerCase();
 
     switch (dictionary) {
       case 'thieuchuu': {
@@ -27,7 +28,7 @@ $(document).ready(async () => {
           url: '/static/datasource/cjkvmap.txt',
         }).done((data) => {
           const dataList = data.split(/\r?\n|\r/).map((element) => element.split('|')).filter((element) => element.length === 3);
-          const searchResults = dataList.filter(([first, second]) => [define, oldAccentDefine].some((element) => pm.search(second.split('/')[0], element).length > 0 || pm.search(element, first).length > 0 || first.startsWith(element))).map(([first]) => first);
+          const searchResults = dataList.filter(([first, second]) => [define, oldAccentDefine].some((element) => pm.search(second.split('/')[0].toLowerCase(), element).length > 0 || first.startsWith(element))).map(([first]) => first);
 
           dataList.filter(([first]) => searchResults.includes(first.toLowerCase())).forEach(([first, second, third]) => {
             sectionHeading.innerText = first;
@@ -128,7 +129,7 @@ $(document).ready(async () => {
           url: dictionaryUrl,
         }).done((data) => {
           const dataList = data.split('\n').filter((element) => !element.startsWith('##')).map((element) => element.split('\t')).filter((element) => element.length === 2);
-          const searchResults = dataList.filter(([first, second]) => [define, oldAccentDefine].some((a) => (['N-V', 'T-V'].some((b) => dict === b) ? (pm.search(a, first).length > 0 || dict !== 'N-V' || second.replaceAll('<span class="east">', '').replaceAll('</span>', '').replaceAll('<b>', '').replaceAll('</b>', '').match(/【([^】]+)】/).some((c) => pm.search(a, c))) || (first.startsWith(a) || dict !== 'N-V' || second.replaceAll('<span class="east">', '').replaceAll('</span>', '').replaceAll('<b>', '').replaceAll('</b>', '').match(/【([^】]+)】/).some((c) => c.startsWith(a))) : first.startsWith(a) || pm.search(first, `${a} `).length > 0 || pm.search(first, ` ${a}`).length > 0))).map(([first]) => first);
+          const searchResults = dataList.filter(([first, second]) => [define, oldAccentDefine].some((a) => (['N-V', 'T-V'].some((b) => dict === b) ? first.startsWith(a) || (dict === 'N-V' && (second.replaceAll('<span class="east">', '').replaceAll('</span>', '').replaceAll('<b>', '').replaceAll('</b>', '').match(/【[^】]+】/g) ?? []).some((c) => c.replaceAll(/[【】]/g, '').startsWith(a))) : first.toLowerCase().startsWith(a)))).map(([first]) => first);
 
           dataList.filter(([first]) => searchResults.includes(first)).forEach(([first, second]) => {
             sectionHeading.innerText = first;
@@ -142,7 +143,7 @@ $(document).ready(async () => {
             $(document.body).append(document.createElement('hr'));
           });
           $(document.body).find('a[href]').each((__, element) => {
-            $(element).attr('href', `/dich-nhanh/tra-tu-dien.html?dictionary=lac-viet&dict=V-V&define=${$(element).attr('href')}`);
+            $(element).attr('href', `/dich-nhanh/tra-tu-dien.html?dictionary=lac-viet&dict=${dict}&define=${$(element).attr('href')}`);
           });
         });
         break;
@@ -150,7 +151,6 @@ $(document).ready(async () => {
     }
 
     statusParagraph.remove();
-    [define, oldAccentDefine].some((element) => $(`h1:contains('${element}')`)[0].scrollIntoView());
   } else {
     paragraph.innerText = 'Cách dùng: ?dictionary=lac-viet&dict=T-V&define=hello';
     $(document.body).append(paragraph.cloneNode(true));

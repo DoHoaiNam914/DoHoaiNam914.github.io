@@ -29,6 +29,7 @@ class DeepLTranslate extends Translator {
     try {
       this.usage = $.ajax({
         async: false,
+        cache: false,
         method: 'GET',
         url: `https://api-free.deepl.com/v2/usage?auth_key=${this.authKey}`,
       });
