@@ -591,7 +591,7 @@ class Vietphrase extends Translator {
         const pronounList = Object.entries(glossary.pronoun);
 
         if (options.multiplicationAlgorithm > 0) {
-          Object.entries(glossary.luatNhan).filter(([first]) => text.match(new RegExp(Utils.escapeRegExp(first).replace('\\{0\\}', '.+')))).forEach(([a, b]) => {
+          Object.entries(glossary.luatNhan).filter(([first]) => text.matchAll(new RegExp(Utils.escapeRegExp(first).replace('\\{0\\}', '.+')))).forEach(([a, b]) => {
             if (options.nameEnabled && options.multiplicationAlgorithm === 2 && name.length > 0) {
               luatNhanName = [...luatNhanName, ...name.map(([c, d]) => [a.replace('{0}', c), b.replace('{0}', d.split(/[/|]/)[0])])];
             }
