@@ -365,7 +365,7 @@ class Vietphrase extends Translator {
   }
 
   async translateText(text, targetLanguage, options, glossary) {
-    const hanViet = glossary.SinoVietnamese.concat(glossary.hanViet).filter(([first], ___, array) => !array[first] && (array[first] = 1), {});
+    const hanViet = Object.entries(glossary.SinoVietnameses).concat(glossary.hanViet).filter(([first], ___, array) => !array[first] && (array[first] = 1), {});
 
     this.result = text;
 
