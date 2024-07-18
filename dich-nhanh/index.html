@@ -148,12 +148,7 @@
       }
 
       .modal-body {
-        min-height: 500px;
         scrollbar-width: none;
-      }
-
-      .number-option-display {
-        width: 5em;
       }
 
       .dropdown-scrollable > .dropdown-menu {
@@ -170,11 +165,6 @@
 
       .collapse-item::before {
         content: '> ';
-      }
-
-      .text-font {
-        font-family: var(--opt-font-family);
-        font-weight: var(--opt-font-weight);
       }
     </style>
     <script>
@@ -394,17 +384,49 @@
                   </li>
                 </ul>
               </div>
+              <div class="form-check form-switch mb-3">
+                <input type="checkbox" class="form-check-input" id="show-original-text-switch" role="switch">
+                <label class="form-check-label" for="show-original-text-switch">Hiển thị văn bản gốc</label>
+              </div>
+              <hr>
+              <h2 class="fs-5">Trình dịch Microsoft</h2>
               <div class="mb-3">
-                <label class="form-label" for="tone-select">Giọng điệu của Trình dịch Microsoft:</label>
+                <label class="form-label" for="tone-select">Giọng điệu:</label>
                 <select class="form-select form-select-sm" id="tone-select">
                   <option value="Standard">Tiêu chuẩn</option>
                   <option value="Casual">Thông thường</option>
                   <option value="Formal">Trang trọng</option>
                 </select>
               </div>
+              <hr>
+              <h2 class="fs-5">Vietphrase</h2>
+              <div class="mb-3">
+                <label class="form-label" for="default-viet-phrase-file-select">Tệp VietPhrase mặc định:</label>
+                <select class="form-select form-select-sm" id="default-viet-phrase-file-select">
+                  <option value="0" selected>Không</option>
+                  <option value="1">Quick Translator</option>
+                  <option value="2">Quick Translator (Gộp)</option>
+                  <option value="3">Data của thtgiang</option>
+                  <option value="4">TTV Translate (Android)</option>
+                  <option value="5">TTV Translate (iOS)</option>
+                </select>
+              </div>
               <div class="form-check form-switch mb-3">
-                <input type="checkbox" class="form-check-input" id="show-original-text-switch" role="switch">
-                <label class="form-check-label" for="show-original-text-switch">Hiển thị văn bản gốc</label>
+                <input type="checkbox" class="form-check-input" id="add-de-le-zhao-switch">
+                <label class="form-check-label" for="add-de-le-zhao-switch">Thêm đích, liễu, trứ</label>
+              </div>
+              <h2 class="fs-6">Thuật toán nhân</h2>
+              <div class="form-check">
+                <input type="radio" class="form-check-input" id="no-apply-radio" name="multiplication-algorithm-radio" value="0" checked>
+                <label class="form-check-label" for="no-apply-radio">Không áp dụng</label>
+              </div>
+              <div class="form-check">
+                <input type="radio" class="form-check-input" id="multiplication-by-pronouns-radio" name="multiplication-algorithm-radio" value="1">
+                <label class="form-check-label" for="multiplication-by-pronouns-radio">Nhân theo Pronouns</label>
+              </div>
+              <div class="form-check">
+                <input type="radio" class="form-check-input" id="multiplication-by-pronouns-and-names-radio" name="multiplication-algorithm-radio" value="2">
+                <label class="form-check-label" for="multiplication-by-pronouns-and-names-radio">Nhân theo Pronouns + Names</label>
               </div>
               <hr>
               <h2 class="fs-5">Thiết lập giao diện</h2>
@@ -450,10 +472,26 @@
         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
           <div class="modal-content">
             <div class="modal-header">
-              <h5 class="modal-title">Bảng thuật ngữ (<span id="glossary-entry-counter">0</span> mục)</h5>
+              <h5 class="modal-title">Bảng thuật ngữ</h5>
               <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
+              <div class="input-group input-group-sm my-3">
+                <input type="file" class="form-control" id="glossary-input" accept=".tsv,.tab,text/csv,text/plain">
+                <button type="submit" class="btn btn-outline-danger position-relative" id="clear-glossary-button">
+                  <svg class="bi" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor">
+                    <use xlink:href="#x-lg"></use>
+                  </svg>
+                </button>
+              </div>
+              <select class="form-select form-select-sm mb-3" id="glossary-list-select">
+                <option value="SinoVietnameses">Hán-Việt</option>
+                <option value="vietPhrase">VietPhrase</option>
+                <option value="name">Names</option>
+                <option value="namePhu" selected>Names2</option>
+                <option value="luatNhan">LuatNhan</option>
+                <option value="pronoun">Pronouns</option>
+              </select>
               <div class="input-group mb-2 dropstart dropdown-scrollable dropdown-has-collapse">
                 <input type="text" class="form-control text-font" id="source-entry-input" placeholder="Mục nguồn">
                 <button type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" id="source-entry-dropdown-toggle" data-bs-toggle="dropdown" data-bs-auto-close="outside"></button>
@@ -540,7 +578,7 @@
                   <li>
                     <button type="button" class="dropdown-item" data-bs-toggle="collapse" data-bs-target="#convert-collapse">Convert</button>
                     <div class="collapse show-by-default" id="convert-collapse">
-                      <!-- <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="vietphrase" data-lang="vi">Vietphrase</button> -->
+                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="vietphrase" data-lang="vi">Vietphrase</button>
                       <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="vietphrase" data-lang="SinoVietnamese">Hán-Việt</button>
                       <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="vietphrase" data-lang="OnYomi">On'yomi</button>
                       <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="vietphrase" data-lang="KunYomi">Kun'yomi</button>
@@ -614,7 +652,7 @@
                   </li>
                 </ul>
               </div>
-              <!-- <button type="submit" class="btn btn-sm btn-success mb-3 disabled" id="add-button">
+              <button type="submit" class="btn btn-sm btn-success mb-3 disabled" id="add-button">
                 <svg class="bi" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor">
                   <use xlink:href="#plus"></use>
                 </svg>
@@ -626,7 +664,7 @@
                 </svg>
                 Xoá
               </button>
-              <button type="button" class="btn btn-sm btn-secondary mb-3 copy-button" data-target="glossaryData">Sao chép</button> -->
+              <button type="button" class="btn btn-sm btn-secondary mb-3 copy-button" data-target="namePhu">Sao chép Names2.txt</button>
             </div>
           </div>
         </div>
