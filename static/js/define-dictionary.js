@@ -24,6 +24,7 @@ $(document).ready(async () => {
     switch (dictionary) {
       case 'thieuchuu': {
         await $.ajax({
+          cache: false,
           method: 'GET',
           url: '/static/datasource/cjkvmap.txt',
         }).done((data) => {
@@ -125,11 +126,12 @@ $(document).ready(async () => {
         }
 
         await $.ajax({
+          cache: false,
           method: 'GET',
           url: dictionaryUrl,
         }).done((data) => {
           const dataList = data.split('\n').filter((element) => !element.startsWith('##')).map((element) => element.split('\t')).filter((element) => element.length === 2);
-          const searchResults = dataList.filter(([a, second]) => [define, oldAccentDefine].some((b) => (['N-V', 'T-V'].some((c) => dict === c) ? a.startsWith(b) || (dict === 'N-V' && [...second.replaceAll('<span class="east">', '').replaceAll('</span>', '').replaceAll('<b>', '').replaceAll('</b>', '').matchAll(/【[^】]+】/g)].some(([c]) => c.replaceAll(/[【】]/g, '').startsWith(b))) : a.toLowerCase().startsWith(b)))).map(([first]) => first);
+          const searchResults = dataList.filter(([a, second]) => [define, oldAccentDefine].some((b) => (['N-V', 'T-V'].some((c) => dict === c) ? a.startsWith(b) || pm.search(b, a) || (dict === 'N-V' && [...second.replaceAll('<span class="east">', '').replaceAll('</span>', '').replaceAll('<b>', '').replaceAll('</b>', '').matchAll(/【[^】]+】/g)].some(([c]) => c.replaceAll(/[【】]/g, '').startsWith(b) || pm.search(b, c))) : a.toLowerCase().startsWith(b) || pm.search(b, `${a} `) || pm.search(b, ` ${a}`)))).map(([first]) => first);
 
           dataList.filter(([first]) => searchResults.includes(first)).forEach(([first, second]) => {
             sectionHeading.innerText = first;
