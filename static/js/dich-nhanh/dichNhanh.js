@@ -1418,6 +1418,7 @@ $translateEntryButtons.click(async function onClick() {
         lastTranslateEntryButton = $(this);
       }
 
+      if (activeTranslator === Translators.VIETPHRASE) lastTranslateEntryButton = null;
       $sourceEntryInput.removeAttr('readonly');
       $translateEntryButtons.removeClass('disabled');
       translationController = null;
