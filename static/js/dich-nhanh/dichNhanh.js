@@ -642,7 +642,6 @@ const saveGlossary = function saveGlossaryToLocalStorage() {
 };
 
 $(document).ready(async () => {
-  $('input, textarea').val(null);
   $resultTextarea.attr('contenteditable', !Utils.isOnMobile());
   $inputTextarea.trigger('input');
 
