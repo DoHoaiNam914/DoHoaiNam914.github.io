@@ -366,10 +366,10 @@ const glossary = {
   KunYomis: [],
   OnYomis: [],
   hanViet: [],
-  SinoVietnameses: { ...JSON.parse(localStorage.getItem('glossary') ?? JSON.stringify({ SinoVietnameses: {} }).SinoVietnameses },
+  SinoVietnameses: { ...JSON.parse(localStorage.getItem('glossary') ?? JSON.stringify({ SinoVietnameses: {} })).SinoVietnameses },
   vietPhrase: {},
   name: {},
-  namePhu: { ...JSON.parse(localStorage.getItem('glossary') ?? JSON.stringify({ namePhu: {} }).namePhu },
+  namePhu: { ...JSON.parse(localStorage.getItem('glossary') ?? JSON.stringify({ namePhu: {} })).namePhu },
   luatNhan: {},
   pronoun: {},
 };
