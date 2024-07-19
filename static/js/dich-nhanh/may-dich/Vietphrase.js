@@ -20,6 +20,12 @@ class Vietphrase extends Translator {
     TARGET_LANGUAGE: 'vi',
   };
 
+  constructor(addDeLeZhaoEnabled, multiplicationAlgorithm) {
+    super();
+    this.addDeLeZhaoEnabled = addDeLeZhaoEnabled;
+    this.multiplicationAlgorithm = multiplicationAlgorithm;
+  }
+
   static removeAccents(pinyin) {
     const accentsMap = {
       ā: 'a',
@@ -364,7 +370,7 @@ class Vietphrase extends Translator {
     return text.split('\n').map((element) => element.replaceAll(/(^[\p{P}\p{Z}]*|[!.?] )(\p{Ll})/gu, (__, p1, p2) => p1 + p2.toUpperCase())).join('\n');
   }
 
-  async translateText(text, targetLanguage, options, glossary) {
+  async translateText(text, targetLanguage, glossary, options) {
     const hanViet = Object.entries(glossary.SinoVietnameses).concat(glossary.hanViet).filter(([first], ___, array) => !array[first] && (array[first] = 1), {});
 
     this.result = text;
@@ -393,19 +399,19 @@ class Vietphrase extends Translator {
       case 'vi': {
         try {
           if (this.name == null || this.vietPhrase === null) {
-            this.vietPhrase = (!options.addDeLeZhao ? [['的', ''], ['了', ''], ['着', '']] : []).concat(Object.entries(glossary.vietPhrase).map(([first, second]) => [first, second.split(/[/|]/)[0]])).filter(([first], ___, array) => !array[first] && (array[first] = 1), {});
-            this.name = Object.entries(glossary.namePhu).concat(Object.entries(glossary.name)).filter(([first], ___, array) => !array[first] && (array[first] = 1), {});
+            this.vietPhrase = (!this.addDeLeZhaoEnabled ? [['的', ''], ['了', ''], ['着', '']] : []).concat(Object.entries(glossary.vietPhrase).map(([first, second]) => [first, second.split(/[/|]/)[0]])).filter(([first], ___, array) => !array[first] && (array[first] = 1), {});
+            this.name = options.nameEnabled ? Object.entries(glossary.namePhu).concat(Object.entries(glossary.name)).filter(([first], ___, array) => !array[first] && (array[first] = 1), {}) : [];
 
             const pronounList = Object.entries(glossary.pronoun);
 
             let luatNhanPronoun = [];
             let luatNhanName = [];
 
-            if (options.multiplicationAlgorithm > 0) {
+            if (this.multiplicationAlgorithm > 0) {
               Object.entries(glossary.luatNhan).forEach(([a, b]) => {
                 luatNhanPronoun = [...luatNhanPronoun, ...pronounList.map(([c, d]) => [a.replace('{0}', c), b.replace('{0}', d.split(/[/|]/)[0])])];
 
-                if (options.multiplicationAlgorithm === 2 && this.name.length > 0) {
+                if (this.multiplicationAlgorithm === 2 && this.name.length > 0) {
                   luatNhanName = [...luatNhanName, ...this.name.map(([c, d]) => [a.replace('{0}', c), b.replace('{0}', d.split(/[/|]/)[0])])];
                 }
               });

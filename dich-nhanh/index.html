@@ -35,17 +35,27 @@
         --opt-line-height: 1.2em;
         --opt-font-weight: normal;
 
-        background-color: var(--opt-background-color);
-      }
+        --viewport-width: 1000px;
 
-      body,
-      .workspace,
-      .modal-body {
-        overflow-x: hidden;
+        -moz-column-fill: auto;
+        column-fill: auto;
+        font-size: 100% !important;
+        min-height: 0;
+        margin: 0 !important;
+        padding: 0 !important;
+        -webkit-perspective: 1;
+        position: relative;
+        -webkit-text-size-adjust: 100%;
+        -webkit-touch-callout: none;
+        min-width: 0;
       }
 
       .viewport {
-        max-width: 1000px;
+        box-sizing: border-box;
+        padding: 0 !important;
+        margin: 0 auto !important;
+        max-width: var(--viewport-width);
+        width: 100%;
       }
 
       .translate-button {
@@ -64,8 +74,8 @@
       }
 
       .slide-navbar > .nav {
-        -webkit-flex-wrap: nowrap;
         display: flex;
+        -webkit-flex-wrap: nowrap;
         flex-wrap: nowrap;
         scrollbar-width: none;
         overflow-y: hidden;
@@ -86,59 +96,62 @@
       }
 
       .workspace {
-        line-height: 1.2em;
-        font-size: 1em;
-        overflow-wrap: break-word;
-        padding: 11.25pt 3.75pt calc(3.25em + 45pt);
-        max-width: 1000px;
+        padding: 3.5vh 10px 31vh !important;
       }
 
       .textarea {
-        background-color: var(--opt-background-color);
-        color: var(--opt-color);
-        font-family: var(--opt-font-family);
-        font-size: var(--opt-font-size);
-        font-variant: normal;
-        font-weight: var(--opt-font-weight);
-        height: 69vh;
+        background: none;
+        border: none;
+        box-sizing: border-box;
+        font: normal var(--opt-font-weight) var(--opt-font-size)/1.6 var(--opt-font-family);
         hyphens: none;
-        max-height: 69vh;
-        line-height:  1.6;
+        height: 65vh;
         line-height: var(--opt-line-height);
         margin: 0;
         orphans: 1;
+        outline: none;
         overflow-x: hidden;
-        padding: 3.75pt;
+        padding: 0;
         text-align: var(--opt-text-align);
         text-align-last: left;
-        text-decoration: none;
-        text-indent: 0;
-        text-transform: none;
         widows: 1;
+        width: 100%;
       }
 
-      @media screen and (min-width: 75rem) {
+      @media screen and (min-width: 35em) {
 
         .workspace {
-          max-height: 577px;
-          padding: 25px 0 calc(3.25em + 70px);
+          padding: 5vh 10px 49vh !important;
         }
 
         .textarea {
-          height: 59.66907962771458vh;
-          max-height: 430px;
-          padding: 20px;
+          height: 45vh;
         }
 
       }
 
-      .textarea::placeholder {
-        color: var(--opt-color) !important;
+      @media screen and (min-width: 45em) {
+
+        .workspace {
+          padding: 1.5vh 10px 13vh !important;
+        }
+
+        .textarea {
+          height: 85vh;
+        }
+
       }
 
-      .textarea:focus {
-        background-color: var(--opt-background-color) !important;
-        color: var(--opt-color) !important;
+      @media screen and (min-width: 75em) {
+
+        .workspace {
+          padding: 2vh 10px 17vh !important;
+        }
+
+        .textarea {
+          height: 80vh;
+        }
+
       }
 
       .textarea > p {
@@ -152,8 +165,8 @@
       }
 
       .dropdown-scrollable > .dropdown-menu {
-        -ms-overflow-style: none;
         height: 16em;
+        -ms-overflow-style: none;
         overflow-x: hidden;
         scrollbar-width: none;
         white-space: nowrap;
@@ -341,8 +354,8 @@
     </div>
     <main class="container-fluid viewport workspace">
       <div class="position-relative">
-        <textarea class="form-control textarea" id="input-textarea" spellcheck="false" placeholder="Viết gì đó tại đây"></textarea>
-        <div class="form-control textarea" id="result-textarea" style="display: none;"></div>
+        <textarea class="textarea" id="input-textarea" spellcheck="false" placeholder="Viết gì đó tại đây"></textarea>
+        <div class="textarea" id="result-textarea" inputmode="none" spellcheck="false" style="display: none;"></div>
         <span class="badge text-bg-secondary position-absolute translate-middle top-0 start-50">Số lượng ký tự: <span id="input-textarea-counter">0</span></span>
       </div>
     </main>
@@ -463,6 +476,50 @@
                     </button>
                   </li>
                 </ul>
+              </div>
+              <div class="mb-3">
+                <input type="text" class="form-control" id="font-stack-text" list="font-list" placeholder="Phông chữ">
+                <datalist id="font-list">
+                  <option value="--system-font-family"></option>
+                  <option value="serif"></option>
+                  <option value="sans-serif"></option>
+                  <option value="--oldStyleTf"></option>
+                  <option value="--modernTf"></option>
+                  <option value="--sansTf"></option>
+                  <option value="--humanistTf"></option>
+                  <option value="--monospaceTf"></option>
+                  <option value="--japaneseFontFamily"></option>
+                  <option value="--serif-ja"></option>
+                  <option value="--sans-serif-ja"></option>
+                  <option value="--serif-ja-v"></option>
+                  <option value="--sans-serif-ja-v"></option>
+                  <option value="--chineseFontFamily"></option>
+                  <option value="--hongKongFontFamily"></option>
+                  <option value="appleSDGothicNeo"></option>
+                  <option value="aOTFRyuminPr5"></option>
+                  <option value="bookerly"></option>
+                  <option value="canelaText"></option>
+                  <option value="charter"></option>
+                  <option value="crimsonText"></option>
+                  <option value="hiraginoMincho"></option>
+                  <option value="hiraginoMinchoPro"></option>
+                  <option value="hiraginoMinchoPron"></option>
+                  <option value="hiraginoSans"></option>
+                  <option value="literata"></option>
+                  <option value="newYork"></option>
+                  <option value="notoSerif"></option>
+                  <option value="pingfangSC"></option>
+                  <option value="pingfangTC"></option>
+                  <option value="pingfangHK"></option>
+                  <option value="proximaNova"></option>
+                  <option value="publicoText"></option>
+                  <option value="roboto"></option>
+                  <option value="sfProText"></option>
+                  <option value="stsongSC"></option>
+                  <option value="stsongTC"></option>
+                  <option value="tbmincho"></option>
+                  <option value="thonubri"></option>
+                </datalist>
               </div>
             </div>
           </div>

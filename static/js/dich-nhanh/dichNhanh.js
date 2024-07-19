@@ -7,6 +7,7 @@ const $addDeLeZhaoSwitch = $('#add-de-le-zhao-switch');
 const $copyButtons = $('.copy-button');
 const $defaultVietPhraseFileSelect = $('#default-viet-phrase-file-select');
 const $dropdownHasCollapse = $('.dropdown-has-collapse');
+const $fontStackText = $('#font-stack-text');
 const $glossaryInput = $('#glossary-input');
 const $glossaryListSelect = $('#glossary-list-select');
 const $glossaryManagerButton = $('#glossary-manager-button');
@@ -592,18 +593,18 @@ const translate = async function translateContentInTextarea(controller = new Abo
   try {
     const startTime = Date.now();
     const text = $inputTextarea.val();
+    const targetLanguage = $targetLanguageSelect.val();
 
     switch (activeTranslator) {
       case Translators.VIETPHRASE: {
-        await currentTranslator.translateText(text, $targetLanguageSelect.val(), {
-          addDeLeZhao: $addDeLeZhaoSwitch.prop('checked'),
+        await currentTranslator.translateText(text, targetLanguage, glossary, {
           autocapitalize: true,
-          multiplicationAlgorithm: $multiplicationAlgorithmRadio.filter('[checked]').val(),
-        }, glossary);
+          nameEnabled: true,
+        });
         break;
       }
       default: {
-        await currentTranslator.translateText(text, $targetLanguageSelect.val(), $sourceLanguageSelect.val());
+        await currentTranslator.translateText(text, targetLanguage, $sourceLanguageSelect.val());
       }
     }
 
@@ -634,13 +635,14 @@ const translate = async function translateContentInTextarea(controller = new Abo
 };
 
 const saveGlossary = function saveGlossaryToLocalStorage() {
+  if ($translatorDropdown.find('.active').val() === Translators.VIETPHRASE && ['vietPhrase', 'name', 'luatNhan', 'pronoun'].some((element) => $glossaryListSelect.val() === element)) currentTranslator = new Vietphrase($addDeLeZhaoSwitch.prop('checked'), $multiplicationAlgorithmRadio.filter('[checked]').val());
   const { SinoVietnameses, namePhu } = glossary;
   sessionStorage.setItem('namePhu', Object.entries(namePhu).map((element) => element.join('=')).join('\n'));
   localStorage.setItem('glossary', JSON.stringify({ SinoVietnameses, namePhu }));
 };
 
 $(document).ready(() => {
-  $('input[type="file"]').val(null);
+  $resultTextarea.attr('contenteditable', !Utils.isOnMobile());
   $inputTextarea.trigger('input');
 
   $.ajax({
@@ -816,6 +818,50 @@ $inputTextarea.on('keypress', (event) => {
   }
 });
 
+$resultTextarea.on('keydown', (event) => {
+  const allowKey = [
+    'Escape', 'F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10', 'F11', 'F12', 'PrintScreen', 'ScrollLock', 'Pause', 'Cancel',
+    'Insert', 'Home', 'PageUp', 'NumLock',
+    'Tab', 'Enter', 'End', 'PageDown',
+    'CapsLock',
+    'Shift', 'ArrowUp',
+    'Control', 'Meta', 'Alt', 'ContextMenu', 'ArrowLeft', 'ArrowDown', 'ArrowRight',
+  ];
+
+  return event.ctrlKey || (event.key === 'Escape' && document.activeElement.blur()) || allowKey.some((element) => event.key === element) || event.preventDefault();
+});
+
+$resultTextarea.on('drag', (event) => {
+  event.preventDefault();
+});
+
+$resultTextarea.on('drop', (event) => {
+  event.preventDefault();
+});
+
+$resultTextarea.on('cut', (event) => {
+  document.execCommand('copy');
+  event.preventDefault();
+});
+
+$resultTextarea.on('paste', (event) => {
+  event.preventDefault();
+});
+
+$resultTextarea.on('keypress', (event) => {
+  if (event.key === 'Enter') {
+    if (event.ctrlKey) {
+      $glossaryManagerButton.trigger('mousedown');
+      $glossaryManagerButton.click();
+    } else if (event.key === 'Enter') {
+      $translateButton.click();
+      $inputTextarea.focus();
+    }
+
+    event.preventDefault();
+  }
+});
+
 $('.modal textarea, .modal input[type="text"]').on('blur', function onBlur() {
   $(this).prop('scrollLeft', 0);
   $(this).prop('scrollTop', 0);
@@ -881,7 +927,7 @@ $translatorDropdown.find('.dropdown-item').click(function onClick() {
       break;
     }
     case Translators.VIETPHRASE: {
-      if (currentTranslator == null) currentTranslator = new Vietphrase();
+      if (currentTranslator == null) currentTranslator = new Vietphrase($addDeLeZhaoSwitch.prop('checked'), $multiplicationAlgorithmRadio.filter('[checked]').val());
       break;
     }
     default: {
@@ -1222,6 +1268,16 @@ $multiplicationAlgorithmRadio.on('change', () => {
   }
 });
 
+$fontStackText.change(function onChange() {
+  const values = $(this).val().split(/, */).filter((element) => element.length > 0).map((element) => element.trim());
+  $(this).val(values.join(', '));
+
+  $(document.documentElement).css('--opt-font-family', values.map((element) => {
+    const maybeFontStacks = element.startsWith('--') ? `var(${element})` : element;
+    return element.includes(' ') ? `'${element}'` : maybeFontStacks;
+  }).join(', '));
+});
+
 $glossaryModal.on('shown.bs.modal', () => {
   const text = $sourceEntryInput.val();
 
@@ -1422,12 +1478,11 @@ $translateEntryButtons.click(async function onClick() {
           break;
         }
         default: {
-          if (translator == null) translator = new Vietphrase();
-          await translator.translateText(text, targetLanguage, {
-            addDeLeZhao: $addDeLeZhaoSwitch.prop('checked'),
+          if (translator == null) translator = new Vietphrase($addDeLeZhaoSwitch.prop('checked'), $multiplicationAlgorithmRadio.filter('[checked]').val());
+          await translator.translateText(text, targetLanguage, glossary, {
             autocapitalize: false,
-            multiplicationAlgorithm: $multiplicationAlgorithmRadio.filter('[checked]').val(),
-          }, glossary);
+            nameEnabled: false,
+          });
           break;
         }
       }
@@ -1457,28 +1512,6 @@ $addButton.click(() => {
   if (Object.hasOwn(glossary[$glossaryListSelect.val()], $sourceEntryInput.val())) delete glossary[$glossaryListSelect.val()][$sourceEntryInput.val()];
   glossary[$glossaryListSelect.val()][$sourceEntryInput.val()] = $targetEntryTextarea.val();
   saveGlossary();
-
-  if ($translatorDropdown.find('.active').val() === Translators.VIETPHRASE) {
-    switch ($glossaryListSelect.val()) {
-      case 'vietPhrase': {
-        currentTranslator.vietPhrase = null;
-        break;
-      }
-      case 'name':
-      case 'namePhu': {
-        currentTranslator.name = null;
-        break;
-      }
-      case 'luatNhan':
-      case 'pronoun': {
-        currentTranslator.vietPhrase = null;
-        currentTranslator.name = null;
-        break;
-      }
-      // no default
-    }
-  }
-
   $addButton.addClass('disabled');
   $removeButton.addClass('disabled');
   $sourceEntryInput.val(null).trigger('input');
@@ -1488,28 +1521,6 @@ $removeButton.on('click', () => {
   if (!Object.hasOwn(glossary[$glossaryListSelect.val()], $sourceEntryInput.val()) || !window.confirm('Bạn có muốn xoá cụm từ này chứ?')) return;
   delete glossary[$glossaryListSelect.val()][$sourceEntryInput.val()];
   saveGlossary();
-
-  if ($translatorDropdown.find('.active').val() === Translators.VIETPHRASE) {
-    switch ($glossaryListSelect.val()) {
-      case 'vietPhrase': {
-        currentTranslator.vietPhrase = null;
-        break;
-      }
-      case 'name':
-      case 'namePhu': {
-        currentTranslator.name = null;
-        break;
-      }
-      case 'luatNhan':
-      case 'pronoun': {
-        currentTranslator.vietPhrase = null;
-        currentTranslator.name = null;
-        break;
-      }
-      // no default
-    }
-  }
-
   $translateEntryButtons.filter(`[data-translator="vietphrase"][data-lang="${$glossaryListSelect.val() === 'vietPhrase' ? 'vi' : 'SinoVietnamese'}"]`).click();
   $removeButton.addClass('disabled');
 });
