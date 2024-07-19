@@ -44,12 +44,11 @@
         margin: 0 !important;
         padding: 0 !important;
         -webkit-perspective: 1;
-        position: relative;
         -webkit-text-size-adjust: 100%;
         -webkit-touch-callout: none;
         min-width: 0;
       }
-
+      
       .viewport {
         box-sizing: border-box;
         padding: 0 !important;
@@ -103,15 +102,14 @@
         background: none;
         border: none;
         box-sizing: border-box;
-        font: normal var(--opt-font-weight) var(--opt-font-size)/1.6 var(--opt-font-family);
         hyphens: none;
         height: 65vh;
-        line-height: var(--opt-line-height);
         margin: 0;
         orphans: 1;
         outline: none;
         overflow-x: hidden;
         padding: 0;
+        position: relative;
         text-align: var(--opt-text-align);
         text-align-last: left;
         widows: 1;
@@ -158,6 +156,11 @@
         -webkit-user-select: auto;
         margin: 0;
         user-select: auto;
+      }
+
+      .font-options {
+        font: normal var(--opt-font-weight) var(--opt-font-size)/1.6 var(--opt-font-family);
+        line-height: var(--opt-line-height);
       }
 
       .modal-body {
@@ -352,12 +355,10 @@
         </ul>
       </div>
     </div>
-    <main class="container-fluid viewport workspace">
-      <div class="position-relative">
-        <textarea class="textarea" id="input-textarea" spellcheck="false" placeholder="Viết gì đó tại đây"></textarea>
-        <div class="textarea" id="result-textarea" inputmode="none" spellcheck="false" style="display: none;"></div>
-        <span class="badge text-bg-secondary position-absolute translate-middle top-0 start-50">Số lượng ký tự: <span id="input-textarea-counter">0</span></span>
-      </div>
+    <main class="container-fluid position-relative viewport workspace">
+      <textarea class="textarea font-options" id="input-textarea" spellcheck="false" placeholder="Viết gì đó tại đây"></textarea>
+      <div class="textarea font-options" id="result-textarea" inputmode="none" spellcheck="false" style="display: none;"></div>
+      <span class="badge text-bg-secondary position-absolute translate-middle top-0 start-50">Số lượng ký tự: <span id="input-textarea-counter">0</span></span>
     </main>
     <div class="modals viewport">
       <div class="modal fade" id="settings-modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
@@ -478,7 +479,7 @@
                 </ul>
               </div>
               <div class="mb-3">
-                <input type="text" class="form-control" id="font-stack-text" list="font-list" placeholder="Phông chữ">
+                <input type="text" class="form-control font-options" id="font-stack-text" list="font-list" placeholder="Phông chữ">
                 <datalist id="font-list">
                   <option value="--system-font-family"></option>
                   <option value="serif"></option>
@@ -550,7 +551,7 @@
                 <option value="pronoun">Pronouns</option>
               </select>
               <div class="input-group mb-2 dropstart dropdown-scrollable dropdown-has-collapse">
-                <input type="text" class="form-control text-font" id="source-entry-input" placeholder="Mục nguồn">
+                <input type="text" class="form-control font-options" id="source-entry-input" placeholder="Mục nguồn">
                 <button type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" id="source-entry-dropdown-toggle" data-bs-toggle="dropdown" data-bs-auto-close="outside"></button>
                 <ul class="dropdown-menu">
                   <li>
@@ -620,7 +621,7 @@
                 </ul>
               </div>
               <div class="input-group mb-3 dropstart dropdown-scrollable dropdown-has-collapse">
-                <textarea class="form-control text-font" id="target-entry-textarea" placeholder="Mục đích" spellcheck="false"></textarea>
+                <textarea class="form-control font-options" id="target-entry-textarea" placeholder="Mục đích" spellcheck="false"></textarea>
                 <button type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" data-bs-auto-close="outside"></button>
                 <ul class="dropdown-menu">
                   <li>
