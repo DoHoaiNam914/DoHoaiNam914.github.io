@@ -898,6 +898,16 @@ $dropdownHasCollapse.on('show.bs.dropdown', function onHideBsDropdown() {
   bootstrapCollapseInDropdown.show();
 });
 
+$fontStackText.change(function onChange() {
+  const values = $(this).val().split(/, */).filter((element) => element.length > 0).map((element) => element.trim());
+  $(this).val(values.join(', '));
+
+  $(document.documentElement).css('--opt-font-family', values.map((element) => {
+    const maybeFontStacks = element.startsWith('--') ? `var(${element})` : element;
+    return element.includes(' ') ? `'${element}'` : maybeFontStacks;
+  }).join(', '));
+});
+
 $translatorDropdown.find('.dropdown-item').click(function onClick() {
   $translatorDropdown.find('.dropdown-item').removeClass('active');
   $(this).addClass('active');
@@ -1266,16 +1276,6 @@ $multiplicationAlgorithmRadio.on('change', () => {
     currentTranslator.vietPhrase = null;
     $retranslateButton.click();
   }
-});
-
-$fontStackText.change(function onChange() {
-  const values = $(this).val().split(/, */).filter((element) => element.length > 0).map((element) => element.trim());
-  $(this).val(values.join(', '));
-
-  $(document.documentElement).css('--opt-font-family', values.map((element) => {
-    const maybeFontStacks = element.startsWith('--') ? `var(${element})` : element;
-    return element.includes(' ') ? `'${element}'` : maybeFontStacks;
-  }).join(', '));
 });
 
 $glossaryModal.on('shown.bs.modal', () => {

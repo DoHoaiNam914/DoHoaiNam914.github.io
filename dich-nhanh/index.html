@@ -369,80 +369,6 @@
               <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-              <h2 class="fs-5">Thiết lập trình dịch</h2>
-              <div class="dropdown mb-3" id="translator-dropdown">
-                <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
-                  <svg class="bi" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor">
-                    <use xlink:href="#translate"></use>
-                  </svg>
-                  Trình dịch
-                </button>
-                <ul class="dropdown-menu">
-                  <li>
-                    <button type="button" class="dropdown-item" value="baiduTranslate">Baidu Translate</button>
-                  </li>
-                  <li>
-                    <button type="button" class="dropdown-item" value="deeplTranslate">DeepL Translate</button>
-                  </li>
-                  <li>
-                    <button type="button" class="dropdown-item" value="googleTranslate">Google Dịch</button>
-                  </li>
-                  <li>
-                    <button type="button" class="dropdown-item" value="papago">Papago</button>
-                  </li>
-                  <li>
-                    <button type="button" class="dropdown-item active" value="microsoftTranslator">Trình dịch Microsoft</button>
-                  </li>
-                  <li>
-                    <button type="button" class="dropdown-item" value="vietphrase">Vietphrase</button>
-                  </li>
-                </ul>
-              </div>
-              <div class="form-check form-switch mb-3">
-                <input type="checkbox" class="form-check-input" id="show-original-text-switch" role="switch">
-                <label class="form-check-label" for="show-original-text-switch">Hiển thị văn bản gốc</label>
-              </div>
-              <hr>
-              <h2 class="fs-5">Trình dịch Microsoft</h2>
-              <div class="mb-3">
-                <label class="form-label" for="tone-select">Giọng điệu:</label>
-                <select class="form-select form-select-sm" id="tone-select">
-                  <option value="Standard">Tiêu chuẩn</option>
-                  <option value="Casual">Thông thường</option>
-                  <option value="Formal">Trang trọng</option>
-                </select>
-              </div>
-              <hr>
-              <h2 class="fs-5">Vietphrase</h2>
-              <div class="mb-3">
-                <label class="form-label" for="default-viet-phrase-file-select">Tệp VietPhrase mặc định:</label>
-                <select class="form-select form-select-sm" id="default-viet-phrase-file-select">
-                  <option value="0" selected>Không</option>
-                  <option value="1">Quick Translator</option>
-                  <option value="2">Quick Translator (Gộp)</option>
-                  <option value="3">Data của thtgiang</option>
-                  <option value="4">TTV Translate (Android)</option>
-                  <option value="5">TTV Translate (iOS)</option>
-                </select>
-              </div>
-              <div class="form-check form-switch mb-3">
-                <input type="checkbox" class="form-check-input" id="add-de-le-zhao-switch">
-                <label class="form-check-label" for="add-de-le-zhao-switch">Thêm đích, liễu, trứ</label>
-              </div>
-              <h2 class="fs-6">Thuật toán nhân</h2>
-              <div class="form-check">
-                <input type="radio" class="form-check-input" id="no-apply-radio" name="multiplication-algorithm-radio" value="0" checked>
-                <label class="form-check-label" for="no-apply-radio">Không áp dụng</label>
-              </div>
-              <div class="form-check">
-                <input type="radio" class="form-check-input" id="multiplication-by-pronouns-radio" name="multiplication-algorithm-radio" value="1">
-                <label class="form-check-label" for="multiplication-by-pronouns-radio">Nhân theo Pronouns</label>
-              </div>
-              <div class="form-check">
-                <input type="radio" class="form-check-input" id="multiplication-by-pronouns-and-names-radio" name="multiplication-algorithm-radio" value="2">
-                <label class="form-check-label" for="multiplication-by-pronouns-and-names-radio">Nhân theo Pronouns + Names</label>
-              </div>
-              <hr>
               <h2 class="fs-5">Thiết lập giao diện</h2>
               <div class="dropdown mb-3">
                 <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" id="bd-theme" data-bs-toggle="dropdown">
@@ -521,6 +447,80 @@
                   <option value="tbmincho"></option>
                   <option value="thonubri"></option>
                 </datalist>
+              </div>
+              <hr>
+              <h2 class="fs-5">Thiết lập trình dịch</h2>
+              <div class="dropdown mb-3" id="translator-dropdown">
+                <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
+                  <svg class="bi" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor">
+                    <use xlink:href="#translate"></use>
+                  </svg>
+                  Trình dịch
+                </button>
+                <ul class="dropdown-menu">
+                  <li>
+                    <button type="button" class="dropdown-item" value="baiduTranslate">Baidu Translate</button>
+                  </li>
+                  <li>
+                    <button type="button" class="dropdown-item" value="deeplTranslate">DeepL Translate</button>
+                  </li>
+                  <li>
+                    <button type="button" class="dropdown-item" value="googleTranslate">Google Dịch</button>
+                  </li>
+                  <li>
+                    <button type="button" class="dropdown-item" value="papago">Papago</button>
+                  </li>
+                  <li>
+                    <button type="button" class="dropdown-item active" value="microsoftTranslator">Trình dịch Microsoft</button>
+                  </li>
+                  <li>
+                    <button type="button" class="dropdown-item" value="vietphrase">Vietphrase</button>
+                  </li>
+                </ul>
+              </div>
+              <div class="form-check form-switch mb-3">
+                <input type="checkbox" class="form-check-input" id="show-original-text-switch" role="switch">
+                <label class="form-check-label" for="show-original-text-switch">Hiển thị văn bản gốc</label>
+              </div>
+              <hr>
+              <h2 class="fs-5">Trình dịch Microsoft</h2>
+              <div class="mb-3">
+                <label class="form-label" for="tone-select">Giọng điệu:</label>
+                <select class="form-select form-select-sm" id="tone-select">
+                  <option value="Standard">Tiêu chuẩn</option>
+                  <option value="Casual">Thông thường</option>
+                  <option value="Formal">Trang trọng</option>
+                </select>
+              </div>
+              <hr>
+              <h2 class="fs-5">Vietphrase</h2>
+              <div class="mb-3">
+                <label class="form-label" for="default-viet-phrase-file-select">Tệp VietPhrase mặc định:</label>
+                <select class="form-select form-select-sm" id="default-viet-phrase-file-select">
+                  <option value="0" selected>Không</option>
+                  <option value="1">Quick Translator</option>
+                  <option value="2">Quick Translator (Gộp)</option>
+                  <option value="3">Data của thtgiang</option>
+                  <option value="4">TTV Translate (Android)</option>
+                  <option value="5">TTV Translate (iOS)</option>
+                </select>
+              </div>
+              <div class="form-check form-switch mb-3">
+                <input type="checkbox" class="form-check-input" id="add-de-le-zhao-switch">
+                <label class="form-check-label" for="add-de-le-zhao-switch">Thêm đích, liễu, trứ</label>
+              </div>
+              <h2 class="fs-6">Thuật toán nhân</h2>
+              <div class="form-check">
+                <input type="radio" class="form-check-input" id="no-apply-radio" name="multiplication-algorithm-radio" value="0" checked>
+                <label class="form-check-label" for="no-apply-radio">Không áp dụng</label>
+              </div>
+              <div class="form-check">
+                <input type="radio" class="form-check-input" id="multiplication-by-pronouns-radio" name="multiplication-algorithm-radio" value="1">
+                <label class="form-check-label" for="multiplication-by-pronouns-radio">Nhân theo Pronouns</label>
+              </div>
+              <div class="form-check">
+                <input type="radio" class="form-check-input" id="multiplication-by-pronouns-and-names-radio" name="multiplication-algorithm-radio" value="2">
+                <label class="form-check-label" for="multiplication-by-pronouns-and-names-radio">Nhân theo Pronouns + Names</label>
               </div>
             </div>
           </div>
