@@ -641,7 +641,7 @@ const saveGlossary = function saveGlossaryToLocalStorage() {
   localStorage.setItem('glossary', JSON.stringify({ SinoVietnameses, namePhu }));
 };
 
-$(document).ready(() => {
+$(document).ready(async () => {
   $resultTextarea.attr('contenteditable', !Utils.isOnMobile());
   $inputTextarea.trigger('input');
 
@@ -684,18 +684,16 @@ $(document).ready(() => {
   });
 
   try {
-    let hanvietList = $.ajax({
-      async: false,
+    let hanvietList = (await $.ajax({
       cache: false,
       method: 'GET',
       url: '/static/datasource/HanVietGhep.tsv',
-    }).responseText.split('\n').map((element) => element.split('\t'));
-    hanvietList = hanvietList.concat($.ajax({
-      async: false,
+    })).split('\n').map((element) => element.split('\t'));
+    hanvietList = hanvietList.concat((await $.ajax({
       cache: false,
       method: 'GET',
       url: '/static/datasource/lacviet/lv-[zh-vi].tsv',
-    }).responseText.split('\n').map((element) => (!element.startsWith('#') ? element.split('\t') : element)).filter((a) => typeof a !== 'string' && /^\p{Script=Hani}+$/u.test(a[0]) && [...a[1].replaceAll('<span class="east"> </span>', ' ').matchAll(/Hán Việt: *[^<]*/g)].filter(([first]) => first.replace(/Hán Việt: */, '').length > 0).length > 0).map(([a, second]) => [a, [...second.replaceAll('<span class="east"> </span>', ' ').matchAll(/Hán Việt: *[^<]*/g)].filter(([b]) => b.replace(/Hán Việt: */, '').length > 0)[0][0].replace(/Hán Việt: */, '').split(/[,;] */)[0].trim().toLowerCase()]));
+    })).split('\n').map((element) => (!element.startsWith('#') ? element.split('\t') : element)).filter((a) => typeof a !== 'string' && /^\p{Script=Hani}+$/u.test(a[0]) && [...a[1].replaceAll('<span class="east"> </span>', ' ').matchAll(/Hán Việt: *[^<]*/g)].filter(([first]) => first.replace(/Hán Việt: */, '').length > 0).length > 0).map(([a, second]) => [a, [...second.replaceAll('<span class="east"> </span>', ' ').matchAll(/Hán Việt: *[^<]*/g)].filter(([b]) => b.replace(/Hán Việt: */, '').length > 0)[0][0].replace(/Hán Việt: */, '').split(/[,;] */)[0].trim().toLowerCase()]));
     hanvietList = hanvietList.concat(cjkv.nam.map(([first, second]) => [first, second.split(',').filter((element) => element.length > 0)[0].trimStart().replaceAll(Utils.getTrieRegexPatternFromWords(Object.keys(newAccentObject)), (match) => newAccentObject[match] ?? match)]));
     hanvietList = hanvietList.concat(hanData.names.map(([first, second]) => [first, second.split(',').filter((element) => element.length > 0)[0].replaceAll(Utils.getTrieRegexPatternFromWords(Object.keys(newAccentObject)), (match) => newAccentObject[match] ?? match)]));
     hanvietList = hanvietList.filter((element, __, array) => element.join('=').length > 0 && element.length === 2 && !array[element[0]] && (array[element[0]] = 1), {});
@@ -964,7 +962,7 @@ $toneSelect.on('change', () => {
   }
 });
 
-$defaultVietPhraseFileSelect.change(function onChange() {
+$defaultVietPhraseFileSelect.change(async function onChange() {
   const intValue = parseInt($(this).val(), 10);
 
   if (intValue > 0) {
@@ -974,8 +972,7 @@ $defaultVietPhraseFileSelect.change(function onChange() {
       case 1:
       case 2: {
         if (glossary.dataByThtgiangPronoun == null || glossary.dataByThtgiangPronoun.length === 0) {
-          $.ajax({
-            async: false,
+          await $.ajax({
             cache: false,
             method: 'GET',
             url: '/static/datasource/Quick Translator/Pronouns.txt',
@@ -991,8 +988,7 @@ $defaultVietPhraseFileSelect.change(function onChange() {
         console.log(`Đã tải xong tệp Pronouns (${Object.keys(glossary.pronoun).length})!`);
 
         if (glossary.dataByThtgiangLuatNhan == null || glossary.dataByThtgiangLuatNhan.length === 0) {
-          $.ajax({
-            async: false,
+          await $.ajax({
             cache: false,
             method: 'GET',
             url: '/static/datasource/Quick Translator/LuatNhan.txt',
@@ -1008,8 +1004,7 @@ $defaultVietPhraseFileSelect.change(function onChange() {
         console.log(`Đã tải xong tệp LuatNhan (${Object.keys(glossary.luatNhan).length})!`);
 
         if (glossary.quickTranslatorHanViet == null || glossary.quickTranslatorHanViet.length === 0) {
-          $.ajax({
-            async: false,
+          await $.ajax({
             cache: false,
             method: 'GET',
             url: '/static/datasource/Quick Translator/ChinesePhienAmWords.txt',
@@ -1022,8 +1017,7 @@ $defaultVietPhraseFileSelect.change(function onChange() {
         }
 
         if (glossary.quickTranslatorName == null || glossary.quickTranslatorName.length === 0) {
-          $.ajax({
-            async: false,
+          await $.ajax({
             cache: false,
             method: 'GET',
             url: '/static/datasource/Quick Translator/Names.txt',
@@ -1039,8 +1033,7 @@ $defaultVietPhraseFileSelect.change(function onChange() {
         console.log(`Đã tải xong tệp Names (${Object.keys(glossary.name).length})!`);
 
         if (glossary.quickTranslatorVietphraseForMergeFiles == null || glossary.quickTranslatorVietphraseForMergeFiles.length === 0) {
-          $.ajax({
-            async: false,
+          await $.ajax({
             cache: false,
             method: 'GET',
             url: '/static/datasource/Quick Translator/Vietphrase cho file gộp.txt',
@@ -1052,8 +1045,7 @@ $defaultVietPhraseFileSelect.change(function onChange() {
         }
 
         if (glossary.quickTranslatorVietPhrase == null || glossary.quickTranslatorVietPhrase.length === 0) {
-          $.ajax({
-            async: false,
+          await $.ajax({
             cache: false,
             method: 'GET',
             url: '/static/datasource/Quick Translator/Vietphrase.txt',
@@ -1076,8 +1068,7 @@ $defaultVietPhraseFileSelect.change(function onChange() {
       }
       case 3: {
         if (glossary.dataByThtgiangPronoun == null || glossary.dataByThtgiangPronoun.length === 0) {
-          $.ajax({
-            async: false,
+          await $.ajax({
             cache: false,
             method: 'GET',
             url: '/static/datasource/Data của thtgiang/Pronouns.txt',
@@ -1093,8 +1084,7 @@ $defaultVietPhraseFileSelect.change(function onChange() {
         console.log(`Đã tải xong tệp Pronouns (${Object.keys(glossary.pronoun).length})!`);
 
         if (glossary.dataByThtgiangLuatNhan == null || glossary.dataByThtgiangLuatNhan.length === 0) {
-          $.ajax({
-            async: false,
+          await $.ajax({
             cache: false,
             method: 'GET',
             url: '/static/datasource/Data của thtgiang/LuatNhan.txt',
@@ -1110,8 +1100,7 @@ $defaultVietPhraseFileSelect.change(function onChange() {
         console.log(`Đã tải xong tệp LuatNhan (${Object.keys(glossary.luatNhan).length})!`);
 
         if (glossary.dataByThtgiangHanViet == null || glossary.dataByThtgiangHanViet.length === 0) {
-          $.ajax({
-            async: false,
+          await $.ajax({
             cache: false,
             method: 'GET',
             url: '/static/datasource/Data của thtgiang/ChinesePhienAmWords.txt',
@@ -1124,8 +1113,7 @@ $defaultVietPhraseFileSelect.change(function onChange() {
         }
 
         if (glossary.dataByThtgiangName == null || glossary.dataByThtgiangName.length === 0) {
-          $.ajax({
-            async: false,
+          await $.ajax({
             cache: false,
             method: 'GET',
             url: '/static/datasource/Data của thtgiang/Names.txt',
@@ -1141,8 +1129,7 @@ $defaultVietPhraseFileSelect.change(function onChange() {
         console.log(`Đã tải xong tệp Names (${Object.keys(glossary.name).length})!`);
 
         if (glossary.dataByThtgiangVietPhrase == null || glossary.dataByThtgiangVietPhrase.length === 0) {
-          $.ajax({
-            async: false,
+          await $.ajax({
             cache: false,
             method: 'GET',
             url: '/static/datasource/Data của thtgiang/VietPhrase.txt',
@@ -1160,8 +1147,7 @@ $defaultVietPhraseFileSelect.change(function onChange() {
       }
       case 4: {
         if (glossary.ttvtranslateHanViet == null || glossary.ttvtranslateHanViet.length === 0) {
-          $.ajax({
-            async: false,
+          await $.ajax({
             cache: false,
             method: 'GET',
             url: '/static/datasource/ttvtranslate/ChinesePhienAmWords.txt',
@@ -1174,8 +1160,7 @@ $defaultVietPhraseFileSelect.change(function onChange() {
         }
 
         if (glossary.ttvtranslateName == null || glossary.ttvtranslateName.length === 0) {
-          $.ajax({
-            async: false,
+          await $.ajax({
             cache: false,
             method: 'GET',
             url: '/static/datasource/ttvtranslate/Names.txt',
@@ -1191,8 +1176,7 @@ $defaultVietPhraseFileSelect.change(function onChange() {
         console.log(`Đã tải xong tệp Names (${Object.keys(glossary.name).length})!`);
 
         if (glossary.ttvtranslateVietPhrase == null || glossary.ttvtranslateVietPhrase.length === 0) {
-          $.ajax({
-            async: false,
+          await $.ajax({
             cache: false,
             method: 'GET',
             url: '/static/datasource/ttvtranslate/VietPhrase.txt',
@@ -1210,8 +1194,7 @@ $defaultVietPhraseFileSelect.change(function onChange() {
       }
       case 5: {
         if (glossary.translateHanViet == null || glossary.translateHanViet.length === 0) {
-          $.ajax({
-            async: false,
+          await $.ajax({
             cache: false,
             method: 'GET',
             url: '/static/datasource/Translate/ChinesePhienAmWords.txt',
@@ -1224,8 +1207,7 @@ $defaultVietPhraseFileSelect.change(function onChange() {
         }
 
         if (glossary.translateName == null || glossary.translateName.length === 0) {
-          $.ajax({
-            async: false,
+          await $.ajax({
             cache: false,
             method: 'GET',
             url: '/static/datasource/Translate/Names.txt',
@@ -1241,8 +1223,7 @@ $defaultVietPhraseFileSelect.change(function onChange() {
         console.log(`Đã tải xong tệp Names (${Object.keys(glossary.name).length})!`);
 
         if (glossary.translateVietPhrase == null || glossary.translateVietPhrase.length === 0) {
-          $.ajax({
-            async: false,
+          await $.ajax({
             cache: false,
             method: 'GET',
             url: '/static/datasource/Translate/VietPhrase.txt',

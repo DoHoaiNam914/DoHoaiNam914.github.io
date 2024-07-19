@@ -63,14 +63,12 @@ $(document).ready(async () => {
       }
       case 'td': {
         [define, oldAccentDefine].forEach((a) => {
-          $.ajax({
-            async: false,
+          await $.ajax({
             method: 'GET',
             url: `${Utils.CORS_PROXY}http://nguyendu.com.free.fr/hanviet/ajax.php?query=${encodeURIComponent(a)}&methode=normal`,
-          }).done((b) => {
+          }).done(async (b) => {
             b.split('|').map((c) => c.split(':')).filter((c) => c.length === 3).forEach(async ([first, second]) => {
-              $.ajax({
-                async: false,
+              await $.ajax({
                 method: 'GET',
                 url: `${Utils.CORS_PROXY}http://nguyendu.com.free.fr/hanviet/hv_tim${first === 'Word' ? 'tukep_ndv.php?wordid' : 'chu_ndv.php?unichar'}=${second}`,
               }).done((d) => {
