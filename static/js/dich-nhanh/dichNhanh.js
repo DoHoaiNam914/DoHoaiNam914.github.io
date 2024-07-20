@@ -648,7 +648,8 @@ const saveGlossary = function saveGlossaryToLocalStorage() {
           currentTranslator.vietPhrase = null;
           break;
         }
-        case 'name': {
+        case 'name':
+        case 'namePhu': {
           currentTranslator.name = null;
           break;
         }
@@ -665,7 +666,8 @@ const saveGlossary = function saveGlossaryToLocalStorage() {
           translators[Translators.VIETPHRASE].vietPhrase = null;
           break;
         }
-        case 'name': {
+        case 'name':
+        case 'namePhu': {
           translators[Translators.VIETPHRASE].name = null;
           break;
         }
