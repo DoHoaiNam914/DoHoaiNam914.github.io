@@ -1404,10 +1404,10 @@ $('#clear-glossary-button').on('click', () => {
 });
 
 $glossaryListSelect.change(function onChange() {
-  const glossaryList = glossary[$(this).val()];
-  $glossaryEntryCounter.text(Object.keys(glossaryList).length);
+  const glossaryList = $(this).val();
+  $glossaryEntryCounter.text(Object.keys(glossary[glossaryList]).length);
   sessionStorage.setItem('glossary', ['SinoVietnameses', 'namePhu'].includes(glossaryList) ? Object.entries(glossary[glossaryList]).map((element) => element.join('=')).join('\n') : '');
-  if ($sourceEntryInput.val().length > 0 && (Object.hasOwn(glossaryList, $sourceEntryInput.val()) || window.confirm('Bạn có muốn chuyển đổi lại chứ?'))) $sourceEntryInput.trigger('input');
+  if ($sourceEntryInput.val().length > 0 && (Object.hasOwn(glossary[glossaryList], $sourceEntryInput.val()) || window.confirm('Bạn có muốn chuyển đổi lại chứ?'))) $sourceEntryInput.trigger('input');
 });
 
 $sourceEntryInput.on('input', async function onInput() {
