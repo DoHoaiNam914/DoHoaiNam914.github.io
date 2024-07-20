@@ -62,7 +62,7 @@ $(document).ready(async () => {
         break;
       }
       case 'td': {
-        [define, oldAccentDefine].forEach((a) => {
+        [define, oldAccentDefine].forEach(async (a) => {
           await $.ajax({
             method: 'GET',
             url: `${Utils.CORS_PROXY}http://nguyendu.com.free.fr/hanviet/ajax.php?query=${encodeURIComponent(a)}&methode=normal`,
