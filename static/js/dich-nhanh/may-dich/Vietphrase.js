@@ -398,10 +398,20 @@ class Vietphrase extends Translator {
       }
       case 'vi': {
         try {
-          if (this.name == null || this.vietPhrase === null) {
-            this.vietPhrase = (!this.addDeLeZhaoEnabled ? [['的', ''], ['了', ''], ['着', '']] : []).concat(Object.entries(glossary.vietPhrase).map(([first, second]) => [first, second.split(/[/|]/)[0]])).filter(([first], ___, array) => !array[first] && (array[first] = 1), {});
-            this.name = options.nameEnabled ? Object.entries(glossary.namePhu).concat(Object.entries(glossary.name)).filter(([first], ___, array) => !array[first] && (array[first] = 1), {}) : [];
+          let isOnloadNewVietPhrase = false;
+          let isOnloadNewName = false;
 
+          if (this.vietPhrase == null) {
+            this.vietPhrase = (!this.addDeLeZhaoEnabled ? [['的', ''], ['了', ''], ['着', '']] : []).concat(Object.entries(glossary.vietPhrase).map(([first, second]) => [first, second.split(/[/|]/)[0]])).filter(([first], ___, array) => !array[first] && (array[first] = 1), {});
+            isOnloadNewVietPhrase = true;
+          }
+
+          if (this.name == null) {
+            this.name = options.nameEnabled ? Object.entries(glossary.namePhu).concat(Object.entries(glossary.name)).filter(([first], ___, array) => !array[first] && (array[first] = 1), {}) : [];
+            isOnloadNewName = true;
+          }
+
+          if (isOnloadNewVietPhrase || isOnloadNewName) {
             const pronounList = Object.entries(glossary.pronoun);
 
             let luatNhanPronoun = [];
@@ -417,8 +427,8 @@ class Vietphrase extends Translator {
               });
             }
 
-            this.vietPhrase = luatNhanPronoun.concat(this.vietPhrase).filter(([first], ___, array) => !array[first] && (array[first] = 1), {});
-            this.name = luatNhanName.concat(this.name).filter(([first], ___, array) => !array[first] && (array[first] = 1) && text.toLowerCase().includes(first.toLowerCase()), {});
+            if (isOnloadNewVietPhrase && luatNhanPronoun.length > 0) this.vietPhrase = luatNhanPronoun.concat(this.vietPhrase).filter(([first], ___, array) => !array[first] && (array[first] = 1), {});
+            if (isOnloadNewName && luatNhanName.length > 0) this.name = luatNhanName.concat(this.name).filter(([first], ___, array) => !array[first] && (array[first] = 1) && text.toLowerCase().includes(first.toLowerCase()), {});
           }
 
           this.result = this.translateWithTest(text, this.name, hanViet.concat(glossary.romajis).filter(([first], ___, array) => !array[first] && (array[first] = 1), {}));

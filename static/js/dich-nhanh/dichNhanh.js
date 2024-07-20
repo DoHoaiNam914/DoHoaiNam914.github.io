@@ -635,7 +635,48 @@ const translate = async function translateContentInTextarea(controller = new Abo
 };
 
 const saveGlossary = function saveGlossaryToLocalStorage() {
-  if ($translatorDropdown.find('.active').val() === Translators.VIETPHRASE && ['vietPhrase', 'name', 'luatNhan', 'pronoun'].some((element) => $glossaryListSelect.val() === element)) currentTranslator = new Vietphrase($addDeLeZhaoSwitch.prop('checked'), $multiplicationAlgorithmRadio.filter('[checked]').val());
+  const glossaryList = $glossaryListSelect.val();
+
+  if (['vietPhrase', 'name', 'luatNhan', 'pronoun'].some((element) => glossaryList === element)) {
+    const activeTranslator = $translatorDropdown.find('.active').val();
+    const addDeLeZhaoEnabled = $addDeLeZhaoSwitch.prop('checked');
+    const multiplicationAlgorithm = $multiplicationAlgorithmRadio.filter('[checked]').val()
+
+    if (activeTranslator === Translators.VIETPHRASE) {
+      switch (glossaryList) {
+        case 'vietPhrase': {
+          currentTranslator.vietPhrase = null;
+          break;
+        }
+        case 'name': {
+          currentTranslator.name = null;
+          break;
+        }
+        default: {
+          currentTranslator = new Vietphrase(addDeLeZhaoEnabled, multiplicationAlgorithm);
+          break;
+        }
+      }
+
+      translators[Translators.VIETPHRASE] = activeTranslator;
+    } else if (translators[Translators.VIETPHRASE] != null) {
+      switch (glossaryList) {
+        case 'vietPhrase': {
+          translators[Translators.VIETPHRASE].vietPhrase = null;
+          break;
+        }
+        case 'name': {
+          translators[Translators.VIETPHRASE].name = null;
+          break;
+        }
+        default: {
+          translators[Translators.VIETPHRASE] = null;
+          break;
+        }
+      }
+    }
+  }
+
   const { SinoVietnameses, namePhu } = glossary;
   sessionStorage.setItem('namePhu', Object.entries(namePhu).map((element) => element.join('=')).join('\n'));
   localStorage.setItem('glossary', JSON.stringify({ SinoVietnameses, namePhu }));
