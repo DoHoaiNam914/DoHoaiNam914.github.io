@@ -637,7 +637,7 @@ const translate = async function translateContentInTextarea(controller = new Abo
 const saveGlossary = function saveGlossaryToLocalStorage() {
   const glossaryList = $glossaryListSelect.val();
 
-  if (['vietPhrase', 'name', 'luatNhan', 'pronoun'].some((element) => glossaryList === element)) {
+  if (['vietPhrase', 'name', 'namePhu', 'luatNhan', 'pronoun'].some((element) => glossaryList === element)) {
     const activeTranslator = $translatorDropdown.find('.active').val();
     const addDeLeZhaoEnabled = $addDeLeZhaoSwitch.prop('checked');
     const multiplicationAlgorithm = $multiplicationAlgorithmRadio.filter('[checked]').val()
