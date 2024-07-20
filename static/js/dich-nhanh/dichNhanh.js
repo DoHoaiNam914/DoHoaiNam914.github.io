@@ -1338,18 +1338,19 @@ $glossaryModal.on('shown.bs.modal', () => {
   const text = $sourceEntryInput.val();
 
   if (text.length > 0) {
+    const isGlossaryExist = false;
     ['namePhu', 'name', 'vietPhrase'].some((element) => {
       if (Object.hasOwn(glossary[element], text)) {
         if ($glossaryListSelect.val() === element) return true;
         $glossaryListSelect.val(element).change();
+        isGlossaryExist = true;
         return true;
       }
 
       return false;
     });
-
     if (lastTranslateEntryButton != null) lastTranslateEntryButton.click();
-    else $sourceEntryInput.trigger('input');
+    else if (!isGlossaryExist) $sourceEntryInput.trigger('input');
   }
 });
 
