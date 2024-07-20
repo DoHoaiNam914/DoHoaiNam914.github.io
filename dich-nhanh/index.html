@@ -96,7 +96,6 @@
 
       .workspace {
         padding: 3.5vh 10px 31vh !important;
-        position: relative;
       }
 
       .textarea {
@@ -356,10 +355,12 @@
         </ul>
       </div>
     </div>
-    <main class="container-fluid position-relative viewport workspace">
-      <textarea class="textarea font-options" id="input-textarea" spellcheck="false" placeholder="Viết gì đó tại đây"></textarea>
-      <div class="textarea font-options" id="result-textarea" inputmode="none" spellcheck="false" style="display: none;"></div>
-      <span class="badge text-bg-secondary position-absolute translate-middle top-0 start-50">Số lượng ký tự: <span id="input-textarea-counter">0</span></span>
+    <main class="container-fluid viewport workspace">
+      <div class="position-relative">
+        <textarea class="textarea font-options" id="input-textarea" spellcheck="false" placeholder="Viết gì đó tại đây"></textarea>
+        <div class="textarea font-options" id="result-textarea" inputmode="none" spellcheck="false" style="display: none;"></div>
+        <span class="badge text-bg-secondary position-absolute translate-middle top-0 start-50">Số lượng ký tự: <span id="input-textarea-counter">0</span></span>
+      </div>
     </main>
     <div class="modals viewport">
       <div class="modal fade" id="settings-modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
