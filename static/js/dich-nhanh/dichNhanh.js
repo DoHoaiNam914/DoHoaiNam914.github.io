@@ -638,6 +638,9 @@ const translate = async function translateContentInTextarea(controller = new Abo
 const saveGlossary = function saveGlossaryToLocalStorage() {
   const glossaryList = $glossaryListSelect.val();
   $glossaryEntryCounter.text(Object.keys(glossary[glossaryList]).length);
+  const storageGlossary = ['SinoVietnameses', 'namePhu'].forEach((element) => glossaryList === element);
+  if (storageGlossary.length === 1) glossary[storageGlossary[0]] = glossary[storageGlossary[0]].map(([first, second]) => [first, second, y.split(/(?:)/u).length]).toSorted((a, b) => b[3] - a[3] || a[1].localeCompare(b[1], 'vi', { ignorePunctuation: true }) || a[0].localeCompare(b[0], 'vi', { ignorePunctuation: true })).map(([first, second]) => [first, second]);
+  const glossaryStorage = { glossary.SinoVietnameses, glossary.namePhu };
 
   if (['vietPhrase', 'name', 'namePhu', 'luatNhan', 'pronoun'].some((element) => glossaryList === element)) {
     const activeTranslator = $translatorDropdown.find('.active').val();
@@ -681,9 +684,8 @@ const saveGlossary = function saveGlossaryToLocalStorage() {
     }
   }
 
-  const { SinoVietnameses, namePhu } = glossary;
-  localStorage.setItem('glossary', JSON.stringify({ SinoVietnameses, namePhu }));
-  if (Object.hasOwn(JSON.parse(localStorage.getItem('glossary')), glossaryList)) sessionStorage.setItem('glossary', Object.entries(glossary[glossaryList]).map((element) => element.join('=')).join('\n'));
+  sessionStorage.setItem('glossary', Object.hasOwn(glossaryStorage, glossaryList) ? Object.entries(glossary[glossaryList]).map((element) => element.join('=')).join('\n') : '');
+  localStorage.setItem('glossary', JSON.stringify(glossaryStorage));
 };
 
 $(document).ready(async () => {
