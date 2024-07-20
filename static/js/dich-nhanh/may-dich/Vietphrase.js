@@ -373,7 +373,7 @@ class Vietphrase extends Translator {
   }
 
   async translateText(text, targetLanguage, glossary, options) {
-    const hanViet = Object.entries(glossary.SinoVietnameses).concat(glossary.hanViet).filter(function filter([first]) {
+    const hanViet = Object.entries(glossary.SinoVietnameses).map(([first, second]) => [first, second.toLowerCase()]).concat(glossary.hanViet).filter(function filter([first]) {
       return !this[first] && (this[first] = 1);
     }, {});
 
