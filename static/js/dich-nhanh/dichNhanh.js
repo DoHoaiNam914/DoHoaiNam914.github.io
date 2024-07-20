@@ -8,6 +8,7 @@ const $copyButtons = $('.copy-button');
 const $defaultVietPhraseFileSelect = $('#default-viet-phrase-file-select');
 const $dropdownHasCollapse = $('.dropdown-has-collapse');
 const $fontStackText = $('#font-stack-text');
+const $glossaryEntryCounter = $('#glossary-entry-counter');
 const $glossaryInput = $('#glossary-input');
 const $glossaryListSelect = $('#glossary-list-select');
 const $glossaryManagerButton = $('#glossary-manager-button');
@@ -636,6 +637,7 @@ const translate = async function translateContentInTextarea(controller = new Abo
 
 const saveGlossary = function saveGlossaryToLocalStorage() {
   const glossaryList = $glossaryListSelect.val();
+  $glossaryEntryCounter.text(Object.keys(glossary[glossaryList]).length);
 
   if (['vietPhrase', 'name', 'namePhu', 'luatNhan', 'pronoun'].some((element) => glossaryList === element)) {
     const activeTranslator = $translatorDropdown.find('.active').val();
@@ -1399,9 +1401,10 @@ $('#clear-glossary-button').on('click', () => {
 });
 
 $glossaryListSelect.change(function onChange() {
-  const glossaryList = $(this).val();
-  if (Object.hasOwn(JSON.parse(localStorage.setItem('glossary')), glossaryList)) sessionStorage.setItem('glossary', Object.entries(glossary[glossaryList]).map((element) => element.join('=')).join('\n'));
-  if ($sourceEntryInput.val().length > 0 && (Object.hasOwn(glossary[glossaryList], $sourceEntryInput.val()) || window.confirm('Bạn có muốn chuyển đổi lại chứ?'))) $sourceEntryInput.trigger('input');
+  const glossaryList = glossary[$(this).val()];
+  $glossaryEntryCounter.text(Object.keys(glossaryList).length);
+  if (Object.hasOwn(JSON.parse(localStorage.setItem('glossary')), glossaryList)) sessionStorage.setItem('glossary', Object.entries(glossaryList).map((element) => element.join('=')).join('\n'));
+  if ($sourceEntryInput.val().length > 0 && (Object.hasOwn(glossaryList, $sourceEntryInput.val()) || window.confirm('Bạn có muốn chuyển đổi lại chứ?'))) $sourceEntryInput.trigger('input');
 });
 
 $sourceEntryInput.on('input', async function onInput() {
