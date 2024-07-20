@@ -683,7 +683,7 @@ const saveGlossary = function saveGlossaryToLocalStorage() {
 
   const { SinoVietnameses, namePhu } = glossary;
   localStorage.setItem('glossary', JSON.stringify({ SinoVietnameses, namePhu }));
-  if (Object.hasOwn(JSON.parse(localStorage.setItem('glossary')), glossaryList)) sessionStorage.setItem('glossary', Object.entries(glossary[glossaryList]).map((element) => element.join('=')).join('\n'));
+  if (Object.hasOwn(JSON.parse(localStorage.getItem('glossary')), glossaryList)) sessionStorage.setItem('glossary', Object.entries(glossary[glossaryList]).map((element) => element.join('=')).join('\n'));
 };
 
 $(document).ready(async () => {
