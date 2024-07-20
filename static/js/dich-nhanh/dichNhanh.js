@@ -659,7 +659,7 @@ const saveGlossary = function saveGlossaryToLocalStorage() {
         }
       }
 
-      translators[Translators.VIETPHRASE] = activeTranslator;
+      translators[activeTranslator] = currentTranslator;
     } else if (translators[Translators.VIETPHRASE] != null) {
       switch (glossaryList) {
         case 'vietPhrase': {
