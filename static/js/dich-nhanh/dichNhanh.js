@@ -1405,7 +1405,7 @@ $('#clear-glossary-button').on('click', () => {
 $glossaryListSelect.change(function onChange() {
   const glossaryList = glossary[$(this).val()];
   $glossaryEntryCounter.text(Object.keys(glossaryList).length);
-  if (Object.hasOwn(JSON.parse(localStorage.setItem('glossary')), glossaryList)) sessionStorage.setItem('glossary', Object.entries(glossaryList).map((element) => element.join('=')).join('\n'));
+  if (Object.hasOwn(JSON.parse(localStorage.getItem('glossary')), glossaryList)) sessionStorage.setItem('glossary', Object.entries(glossaryList).map((element) => element.join('=')).join('\n'));
   if ($sourceEntryInput.val().length > 0 && (Object.hasOwn(glossaryList, $sourceEntryInput.val()) || window.confirm('Bạn có muốn chuyển đổi lại chứ?'))) $sourceEntryInput.trigger('input');
 });
 
