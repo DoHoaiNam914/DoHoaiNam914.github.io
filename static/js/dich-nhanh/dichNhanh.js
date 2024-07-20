@@ -1349,8 +1349,9 @@ $glossaryModal.on('shown.bs.modal', () => {
 
       return false;
     });
+    if (isGlossaryExist) return;
     if (lastTranslateEntryButton != null) lastTranslateEntryButton.click();
-    else if (!isGlossaryExist) $sourceEntryInput.trigger('input');
+    else $sourceEntryInput.trigger('input');
   }
 });
 
