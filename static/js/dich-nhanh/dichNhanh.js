@@ -688,6 +688,7 @@ const saveGlossary = function saveGlossaryToLocalStorage() {
 
 $(document).ready(async () => {
   $resultTextarea.attr('contenteditable', !Utils.isOnMobile());
+  sessionStorage.removeItem('glossary');
   $inputTextarea.trigger('input');
 
   $.ajax({
