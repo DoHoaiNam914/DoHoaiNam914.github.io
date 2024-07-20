@@ -1283,6 +1283,8 @@ $defaultVietPhraseFileSelect.change(async function onChange() {
       // no default
     }
   }
+
+  saveGlossary();
 });
 
 $addDeLeZhaoSwitch.on('change', () => {
