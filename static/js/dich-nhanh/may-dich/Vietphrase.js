@@ -79,7 +79,9 @@ class Vietphrase extends Translator {
 
   static quickTranslate(text, translations) {
     if (translations == null || translations.length === 0) return text;
-    const translationsMap = Object.fromEntries(translations.filter((element, __, array) => !array[element[0]] && (array[element[0]] = 1), {}));
+    const translationsMap = Object.fromEntries(translations.filter(function filter([first]) {
+      return !this[first] && (this[first] = 1);
+    }, {}));
 
     let startIndex = 0;
     const characters = text.split(/(?:)/u);
@@ -371,7 +373,9 @@ class Vietphrase extends Translator {
   }
 
   async translateText(text, targetLanguage, glossary, options) {
-    const hanViet = Object.entries(glossary.SinoVietnameses).concat(glossary.hanViet).filter(([first], ___, array) => !array[first] && (array[first] = 1), {});
+    const hanViet = Object.entries(glossary.SinoVietnameses).concat(glossary.hanViet).filter(function filter([first]) {
+      return !this[first] && (this[first] = 1);
+    }, {});
 
     this.result = text;
 
@@ -385,15 +389,21 @@ class Vietphrase extends Translator {
         break;
       }
       case 'pinyin': {
-        this.result = Vietphrase.getFormattedText(Vietphrase.quickTranslate(text, glossary.pinyins.map(([first, second]) => [first, Vietphrase.removeAccents(second)]).concat(glossary.romajis).filter(([first], ___, array) => !array[first] && (array[first] = 1), {})));
+        this.result = Vietphrase.getFormattedText(Vietphrase.quickTranslate(text, glossary.pinyins.map(([first, second]) => [first, Vietphrase.removeAccents(second)]).concat(glossary.romajis).filter(function filter([first]) {
+          return !this[first] && (this[first] = 1);
+        }, {})));
         break;
       }
       case 'KunYomi': {
-        this.result = Vietphrase.getFormattedText(Vietphrase.quickTranslate(text, glossary.KunYomis.concat(glossary.romajis).filter(([first], ___, array) => !array[first] && (array[first] = 1), {})));
+        this.result = Vietphrase.getFormattedText(Vietphrase.quickTranslate(text, glossary.KunYomis.concat(glossary.romajis).filter(function filter([first]) {
+          return !this[first] && (this[first] = 1);
+        }, {})));
         break;
       }
       case 'OnYomi': {
-        this.result = Vietphrase.getFormattedText(Vietphrase.quickTranslate(text, glossary.OnYomis.concat(glossary.romajis).filter(([first], ___, array) => !array[first] && (array[first] = 1), {})));
+        this.result = Vietphrase.getFormattedText(Vietphrase.quickTranslate(text, glossary.OnYomis.concat(glossary.romajis).filter(function filter([first]) {
+          return !this[first] && (this[first] = 1);
+        }, {})));
         break;
       }
       case 'vi': {
@@ -402,12 +412,16 @@ class Vietphrase extends Translator {
           let isOnloadNewName = false;
 
           if (this.vietPhrase == null) {
-            this.vietPhrase = (!this.addDeLeZhaoEnabled ? [['的', ''], ['了', ''], ['着', '']] : []).concat(Object.entries(glossary.vietPhrase).map(([first, second]) => [first, second.split(/[/|]/)[0]])).filter(([first], ___, array) => !array[first] && (array[first] = 1), {});
+            this.vietPhrase = (!this.addDeLeZhaoEnabled ? [['的', ''], ['了', ''], ['着', '']] : []).concat(Object.entries(glossary.vietPhrase).map(([first, second]) => [first, second.split(/[/|]/)[0]])).filter(function filter([first]) {
+              return !this[first] && (this[first] = 1);
+            }, {});
             isOnloadNewVietPhrase = true;
           }
 
           if (this.name == null) {
-            this.name = options.nameEnabled ? Object.entries(glossary.namePhu).concat(Object.entries(glossary.name)).filter(([first], ___, array) => !array[first] && (array[first] = 1), {}) : [];
+            this.name = options.nameEnabled ? Object.entries(glossary.namePhu).concat(Object.entries(glossary.name)).filter(function filter([first]) {
+              return !this[first] && (this[first] = 1);
+            }, {}) : [];
             isOnloadNewName = true;
           }
 
@@ -427,8 +441,12 @@ class Vietphrase extends Translator {
               });
             }
 
-            if (isOnloadNewVietPhrase && luatNhanPronoun.length > 0) this.vietPhrase = luatNhanPronoun.concat(this.vietPhrase).filter(([first], ___, array) => !array[first] && (array[first] = 1), {});
-            if (isOnloadNewName && luatNhanName.length > 0) this.name = luatNhanName.concat(this.name).filter(([first], ___, array) => !array[first] && (array[first] = 1) && text.toLowerCase().includes(first.toLowerCase()), {});
+            if (isOnloadNewVietPhrase && luatNhanPronoun.length > 0) this.vietPhrase = luatNhanPronoun.concat(this.vietPhrase).filter(function filter([first]) {
+              return !this[first] && (this[first] = 1);
+            }, {});
+            if (isOnloadNewName && luatNhanName.length > 0) this.name = luatNhanName.concat(this.name).filter(function filter([first]) {
+              return !this[first] && (this[first] = 1);
+            }, {});
           }
 
           this.result = this.translateWithTest(text, this.name, hanViet.concat(glossary.romajis).filter(([first], ___, array) => !array[first] && (array[first] = 1), {}));
