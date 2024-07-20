@@ -739,8 +739,8 @@ $(document).ready(async () => {
     })).split('\n').map((element) => (!element.startsWith('#') ? element.split('\t') : element)).filter((a) => typeof a !== 'string' && /^\p{Script=Hani}+$/u.test(a[0]) && [...a[1].replaceAll('<span class="east"> </span>', ' ').matchAll(/Hán Việt: *[^<]*/g)].filter(([first]) => first.replace(/Hán Việt: */, '').length > 0).length > 0).map(([a, second]) => [a, [...second.replaceAll('<span class="east"> </span>', ' ').matchAll(/Hán Việt: *[^<]*/g)].filter(([b]) => b.replace(/Hán Việt: */, '').length > 0)[0][0].replace(/Hán Việt: */, '').split(/[,;] */)[0].trim().toLowerCase()]));
     hanvietList = hanvietList.concat(cjkv.nam.map(([first, second]) => [first, second.split(',').filter((element) => element.length > 0)[0].trimStart().replaceAll(Utils.getTrieRegexPatternFromWords(Object.keys(newAccentObject)), (match) => newAccentObject[match] ?? match)]));
     hanvietList = hanvietList.concat(hanData.names.map(([first, second]) => [first, second.split(',').filter((element) => element.length > 0)[0].replaceAll(Utils.getTrieRegexPatternFromWords(Object.keys(newAccentObject)), (match) => newAccentObject[match] ?? match)]));
-    hanvietList = hanvietList.filter(function filter([first]) {
-      return element.join('=').length > 0 && element.length === 2 && !this[first] && (this[first] = 1);
+    hanvietList = hanvietList.filter(function filter(element) {
+      return element.join('=').length > 0 && element.length === 2 && !this[element[0]] && (this[element[0]] = 1);
     }, {});
     glossary.hanViet = hanvietList;
     console.log(`Đã tải xong bộ dữ liệu Hán-Việt (${hanvietList.length})!`);
