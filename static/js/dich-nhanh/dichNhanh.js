@@ -680,8 +680,8 @@ const saveGlossary = function saveGlossaryToLocalStorage() {
   }
 
   const { SinoVietnameses, namePhu } = glossary;
-  sessionStorage.setItem('namePhu', Object.entries(namePhu).map((element) => element.join('=')).join('\n'));
   localStorage.setItem('glossary', JSON.stringify({ SinoVietnameses, namePhu }));
+  if (Object.hasOwn(JSON.parse(localStorage.setItem('glossary')), glossaryList)) sessionStorage.setItem('glossary', Object.entries(glossary[glossaryList]).map((element) => element.join('=')).join('\n'));
 };
 
 $(document).ready(async () => {
@@ -841,7 +841,7 @@ $retranslateButton.on('click', () => {
 });
 
 $glossaryManagerButton.on('mousedown', () => {
-  if ($resultTextarea.is(':visible')) $sourceEntryInput.val((window.getSelection().toString() || '').replaceAll(/\n/g, ' ').trim());
+  if ($resultTextarea.is(':visible')) $sourceEntryInput.val((window.getSelection().toString() || '').replaceAll(/\n/g, ' '));
   if (window.getSelection) window.getSelection().removeAllRanges();
 });
 
@@ -1399,7 +1399,9 @@ $('#clear-glossary-button').on('click', () => {
 });
 
 $glossaryListSelect.change(function onChange() {
-  if ($sourceEntryInput.val().length > 0 && (Object.hasOwn(glossary[$(this).val()], $sourceEntryInput.val()) || window.confirm('Bạn có muốn chuyển đổi lại chứ?'))) $sourceEntryInput.trigger('input');
+  const glossaryList = $(this).val();
+  if (Object.hasOwn(JSON.parse(localStorage.setItem('glossary')), glossaryList)) sessionStorage.setItem('glossary', Object.entries(glossary[glossaryList]).map((element) => element.join('=')).join('\n'));
+  if ($sourceEntryInput.val().length > 0 && (Object.hasOwn(glossary[glossaryList], $sourceEntryInput.val()) || window.confirm('Bạn có muốn chuyển đổi lại chứ?'))) $sourceEntryInput.trigger('input');
 });
 
 $sourceEntryInput.on('input', async function onInput() {
