@@ -433,20 +433,25 @@ class Vietphrase extends Translator {
 
             if (this.multiplicationAlgorithm > 0) {
               Object.entries(glossary.luatNhan).forEach(([a, b]) => {
-                luatNhanPronoun = [...luatNhanPronoun, ...pronounList.map(([c, d]) => [a.replace('{0}', c), b.replace('{0}', d.split(/[/|]/)[0])])];
+                if (isOnloadNewVietPhrase) luatNhanPronoun = [...luatNhanPronoun, ...pronounList.map(([c, d]) => [a.replace('{0}', c), b.replace('{0}', d.split(/[/|]/)[0])])];
 
-                if (this.multiplicationAlgorithm === 2 && this.name.length > 0) {
+                if (this.multiplicationAlgorithm === 2 && isOnloadNewName && this.name.length > 0) {
                   luatNhanName = [...luatNhanName, ...this.name.map(([c, d]) => [a.replace('{0}', c), b.replace('{0}', d.split(/[/|]/)[0])])];
                 }
               });
             }
 
-            if (isOnloadNewVietPhrase && luatNhanPronoun.length > 0) this.vietPhrase = luatNhanPronoun.concat(this.vietPhrase).filter(function filter([first]) {
-              return !this[first] && (this[first] = 1);
-            }, {});
-            if (isOnloadNewName && luatNhanName.length > 0) this.name = luatNhanName.concat(this.name).filter(function filter([first]) {
-              return !this[first] && (this[first] = 1);
-            }, {});
+            if (isOnloadNewVietPhrase && luatNhanPronoun.length > 0) {
+              this.vietPhrase = luatNhanPronoun.concat(this.vietPhrase).filter(function filter([first]) {
+                return !this[first] && (this[first] = 1);
+              }, {});
+            }
+
+            if (isOnloadNewName && luatNhanName.length > 0) {
+              this.name = luatNhanName.concat(this.name).filter(function filter([first]) {
+                return !this[first] && (this[first] = 1);
+              }, {});
+            }
           }
 
           this.result = this.translateWithTest(text, this.name, hanViet.concat(glossary.romajis).filter(([first], ___, array) => !array[first] && (array[first] = 1), {}));

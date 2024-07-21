@@ -129,7 +129,7 @@ $(document).ready(async () => {
           url: dictionaryUrl,
         }).done((data) => {
           const dataList = data.split('\n').filter((element) => !element.startsWith('##')).map((element) => element.split('\t')).filter((element) => element.length === 2);
-          const searchResults = dataList.filter(([a, second]) => [define, oldAccentDefine].some((b) => (['N-V', 'T-V'].some((c) => dict === c) ? a.startsWith(b) || pm.search(b, a) || (dict === 'N-V' && [...second.replaceAll('<span class="east">', '').replaceAll('</span>', '').replaceAll('<b>', '').replaceAll('</b>', '').matchAll(/【[^】]+】/g)].some(([c]) => c.replaceAll(/[【】]/g, '').startsWith(b) || pm.search(b, c))) : a.toLowerCase().startsWith(b) || pm.search(b, `${a} `) || pm.search(b, ` ${a}`)))).map(([first]) => first);
+          const searchResults = dataList.filter(([a, second]) => [define, oldAccentDefine].some((b) => (['N-V', 'T-V'].some((c) => dict === c) ? a.startsWith(b) || pm.search(b, a).length > 0 || (dict === 'N-V' && [...second.replaceAll('<span class="east">', '').replaceAll('</span>', '').replaceAll('<b>', '').replaceAll('</b>', '').matchAll(/【[^】]+】/g)].some(([c]) => c.replaceAll(/[【】]/g, '').startsWith(b) || pm.search(b, c.replaceAll(/[【】]/g, '')).length > 0)) : a.toLowerCase().startsWith(b) || pm.search(b, `${a} `).length > 0 || pm.search(b, ` ${a}`).length > 0))).map(([first]) => first);
 
           dataList.filter(([first]) => searchResults.includes(first)).forEach(([first, second]) => {
             sectionHeading.innerText = first;

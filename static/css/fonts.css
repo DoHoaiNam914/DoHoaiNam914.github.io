@@ -143,17 +143,17 @@
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Crimson_Text/CrimsonText-BoldItalic.ttf) format('truetype');
 }
 
-/* Hiragino Mincho */
+/* HiraginoMin */
 
 @font-face {
-  font-family: hiraginoMincho;
+  font-family: hiraginomin;
   font-style: normal;
   font-weight: 300;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/HiraginoMin-W3-90msp-RKSJ-H-01.ttf) format('truetype');
 }
 
 @font-face {
-  font-family: hiraginoMincho;
+  font-family: hiraginomin;
   font-style: normal;
   font-weight: 600;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/HiraginoMin-W6-90msp-RKSJ-H-01.ttf) format('truetype');
@@ -297,6 +297,22 @@
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Noto_Serif/NotoSerif-Italic-VariableFont_wdth,wght.ttf) format('truetype');
 }
 
+/* PingFang HK */
+
+@font-face {
+  font-family: pingfangHK;
+  font-style: normal;
+  font-weight: 400;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/PingFang/PingFangHK-Regular.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: pingfangHK;
+  font-style: normal;
+  font-weight: 600;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/PingFang/PingFangHK-Semibold.ttf) format('truetype');
+}
+
 /* PingFang SC */
 
 @font-face {
@@ -327,22 +343,6 @@
   font-style: normal;
   font-weight: 600;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/PingFang/PingFangTC-Semibold.ttf) format('truetype');
-}
-
-/* PingFang HK */
-
-@font-face {
-  font-family: pingfangHK;
-  font-style: normal;
-  font-weight: 400;
-  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/PingFang/PingFangHK-Regular.ttf) format('truetype');
-}
-
-@font-face {
-  font-family: pingfangHK;
-  font-style: normal;
-  font-weight: 600;
-  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/PingFang/PingFangHK-Semibold.ttf) format('truetype');
 }
 
 /* Proxima Nova */
@@ -465,10 +465,10 @@
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/SF%20Pro%20Fonts/SF-Pro-Text-BoldItalic.otf) format('opentype');
 }
 
-/* STSong SC */
+/* STBShusong */
 
 @font-face {
-  font-family: stsongSC;
+  font-family: stbShusong;
   font-style: normal;
   font-weight: 400;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/STSong/STSongSC.ttf) format('truetype');

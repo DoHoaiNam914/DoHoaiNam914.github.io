@@ -182,6 +182,16 @@
       .collapse-item::before {
         content: '> ';
       }
+
+      .ui-autocomplete {
+        max-height: 100px;
+        overflow-x: hidden;
+        overflow-y: auto;
+      }
+
+      * html .ui-autocomplete {
+        height: 100px;
+      }
     </style>
     <script>
       'use strict';
@@ -406,50 +416,7 @@
                   </li>
                 </ul>
               </div>
-              <div class="mb-3">
-                <input type="text" class="form-control font-options" id="font-stack-text" list="font-list" placeholder="Phông chữ">
-                <datalist id="font-list">
-                  <option value="--system-font-family"></option>
-                  <option value="serif"></option>
-                  <option value="sans-serif"></option>
-                  <option value="--oldStyleTf"></option>
-                  <option value="--modernTf"></option>
-                  <option value="--sansTf"></option>
-                  <option value="--humanistTf"></option>
-                  <option value="--monospaceTf"></option>
-                  <option value="--japaneseFontFamily"></option>
-                  <option value="--serif-ja"></option>
-                  <option value="--sans-serif-ja"></option>
-                  <option value="--serif-ja-v"></option>
-                  <option value="--sans-serif-ja-v"></option>
-                  <option value="--chineseFontFamily"></option>
-                  <option value="--hongKongFontFamily"></option>
-                  <option value="appleSDGothicNeo"></option>
-                  <option value="aOTFRyuminPr5"></option>
-                  <option value="bookerly"></option>
-                  <option value="canelaText"></option>
-                  <option value="charter"></option>
-                  <option value="crimsonText"></option>
-                  <option value="hiraginoMincho"></option>
-                  <option value="hiraginoMinchoPro"></option>
-                  <option value="hiraginoMinchoPron"></option>
-                  <option value="hiraginoSans"></option>
-                  <option value="literata"></option>
-                  <option value="newYork"></option>
-                  <option value="notoSerif"></option>
-                  <option value="pingfangSC"></option>
-                  <option value="pingfangTC"></option>
-                  <option value="pingfangHK"></option>
-                  <option value="proximaNova"></option>
-                  <option value="publicoText"></option>
-                  <option value="roboto"></option>
-                  <option value="sfProText"></option>
-                  <option value="stsongSC"></option>
-                  <option value="stsongTC"></option>
-                  <option value="tbmincho"></option>
-                  <option value="thonburi"></option>
-                </datalist>
-              </div>
+              <input type="text" class="form-control font-options mb-3" id="font-stack-text" placeholder="Phông chữ">
               <hr>
               <h2 class="fs-5">Thiết lập trình dịch</h2>
               <div class="dropdown mb-3" id="translator-dropdown">
