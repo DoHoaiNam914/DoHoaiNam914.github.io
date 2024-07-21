@@ -661,6 +661,15 @@ const reloadGlossary = function reloadActiveGlossary(glossaryList) {
 
   const glossaryStorage = { SinoVietnameses: glossary.SinoVietnameses, namePhu: glossary.namePhu };
   sessionStorage.setItem('glossary', Object.hasOwn(glossaryStorage, glossaryList) ? Object.entries(glossary[glossaryList]).map((element) => element.join('=')).join('\n') : '');
+};
+
+const saveGlossary = function saveGlossaryToLocalStorage() {
+  const glossaryList = $glossaryListSelect.val();
+  reloadGlossary(glossaryList);
+
+  const glossaryStorage = { SinoVietnameses: glossary.SinoVietnameses, namePhu: glossary.namePhu };
+  if (Object.keys(glossaryStorage).includes(glossaryList)) glossary[glossaryList] = Object.fromEntries(Object.entries(glossary[glossaryList]).sort((a, b) => a[1].localeCompare(b[1], 'vi', { ignorePunctuation: true }) || a[0].localeCompare(b[0], 'vi', { ignorePunctuation: true })));
+  localStorage.setItem('glossary', JSON.stringify(glossaryStorage));
 
   if (['vietPhrase', 'name', 'namePhu', 'luatNhan', 'pronoun'].some((element) => glossaryList === element)) {
     const activeTranslator = $translatorDropdown.find('.active').val();
@@ -703,15 +712,6 @@ const reloadGlossary = function reloadActiveGlossary(glossaryList) {
       }
     }
   }
-};
-
-const saveGlossary = function saveGlossaryToLocalStorage() {
-  const glossaryList = $glossaryListSelect.val();
-  reloadGlossary(glossaryList);
-
-  const glossaryStorage = { SinoVietnameses: glossary.SinoVietnameses, namePhu: glossary.namePhu };
-  if (Object.keys(glossaryStorage).includes(glossaryList)) glossary[glossaryList] = Object.fromEntries(Object.entries(glossary[glossaryList]).sort((a, b) => a[1].localeCompare(b[1], 'vi', { ignorePunctuation: true }) || a[0].localeCompare(b[0], 'vi', { ignorePunctuation: true })));
-  localStorage.setItem('glossary', JSON.stringify(glossaryStorage));
 };
 
 $(document).ready(async () => {
@@ -1556,7 +1556,7 @@ $defaultVietPhraseFileSelect.change(async function onChange() {
     }
   }
 
-  reloadGlossary($glossaryListSelect.val());
+  saveGlossary();
 });
 
 $addDeLeZhaoSwitch.on('change', () => {
