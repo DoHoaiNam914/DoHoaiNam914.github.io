@@ -419,9 +419,9 @@ class Vietphrase extends Translator {
           }
 
           if (this.name == null) {
-            this.name = options.nameEnabled ? Object.entries(glossary.namePhu).concat(Object.entries(glossary.name)).filter(function filter([first]) {
+            this.name = Object.entries(glossary.namePhu).concat(Object.entries(glossary.name)).filter(function filter([first]) {
               return !this[first] && (this[first] = 1);
-            }, {}) : [];
+            }, {});
             isOnloadNewName = true;
           }
 
@@ -454,7 +454,7 @@ class Vietphrase extends Translator {
             }
           }
 
-          this.result = this.translateWithTest(text, this.name, hanViet.concat(glossary.romajis).filter(([first], ___, array) => !array[first] && (array[first] = 1), {}));
+          this.result = this.translateWithTest(text, options.nameEnabled ? this.name : [], hanViet.concat(glossary.romajis).filter(([first], ___, array) => !array[first] && (array[first] = 1), {}));
           this.result = options.autocapitalize ? Vietphrase.getCapitalizeText(this.result) : this.result;
         } catch (error) {
           this.vietPhrase = null;
