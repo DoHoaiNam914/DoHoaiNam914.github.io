@@ -30,6 +30,49 @@ const $translateEntryButtons = $('.translate-entry-button');
 const $translateTimer = $('#translate-timer');
 const $translatorDropdown = $('#translator-dropdown');
 
+const fontMap = {
+  'Họ phông chữ hệ thống': '--system-font-family',
+  Serif: 'serif',
+  'Chữ không có chân': 'sans-serif',
+  'Kiểu chữ kiểu cũ': '--oldStyleTf',
+  'Kiểu chữ hiện đại': '--modernTf',
+  'Kiểu chữ sans': '--sansTf',
+  'Kiểu chữ nhân văn': '--humanistTf',
+  'Kiểu chữ monospace': '--monospaceTf',
+  'Họ phông chữ Nhật Bản': '--japaneseFontFamily',
+  'Serif Nhật Bản': '--serif-ja',
+  'Sans serif Nhật Bản': '--sans-serif-ja',
+  'Serif dọc Nhật Bản': '--serif-ja-v',
+  'Sans serif dọc Nhật Bản': '--sans-serif-ja-v',
+  'Họ phông chữ Trung Quốc': '--chineseFontFamily',
+  'Họ phông chữ Hồng Kông': '--hongKongFontFamily',
+  'Họ phông chữ Đài Loan': '--taiwanFontFamily',
+  'Apple SD Gothic Neo': 'appleSDGothicNeo',
+  'A-OTF Ryumin Pr5': 'aOTFRyuminPr5',
+  Bookerly: 'bookerly',
+  'Canela Text': 'canelaText',
+  Charter: 'charter',
+  'Crimson Text': 'crimsonText',
+  HiraginoMin: 'hiraginomin',
+  'Hiragino Mincho Pro': 'hiraginoMinchoPro',
+  'Hiragino Mincho ProN': 'hiraginoMinchoPron',
+  'Hiragino Sans': 'hiraginoSans',
+  Literata: 'literata',
+  'New York': 'newYork',
+  'Noto Serif': 'notoSerif',
+  'PingFang HK': 'pingfangHK',
+  'PingFang SC': 'pingfangSC',
+  'PingFang TC': 'pingfangTC',
+  'Proxima Nova': 'proximaNova',
+  'Publico Text': 'publicoText',
+  Roboto: 'roboto',
+  'SF Pro Text': 'sfProText',
+  STBShusong: 'stbShusong',
+  STSongTC: 'stsongTC',
+  TBMincho: 'tbmincho',
+  Thonburi: 'thonburi',
+};
+
 const Translators = {
   BAIDU_TRANSLATE: 'baiduTranslate',
   DEEPL_TRANSLATE: 'deeplTranslate',
@@ -640,7 +683,7 @@ const reloadGlossary = function reloadActiveGlossary(glossaryList) {
   const glossaryKeys = Object.keys(glossary[glossaryList]);
   $glossaryEntryCounter.text(glossaryKeys.length);
 
-  const autocompleteSource = glossaryKeys.map((element) => ({ value: element, label: `${element}=${glossary[glossaryList][element]}` }));
+  const autocompleteGlossarySource = glossaryKeys.map((element) => ({ value: element, label: `${element}=${glossary[glossaryList][element]}` }));
   $sourceEntryInput.autocomplete({
     appendTo: '#glossary-modal .modal-body',
     disabled: true,
@@ -648,7 +691,7 @@ const reloadGlossary = function reloadActiveGlossary(glossaryList) {
       if (autocompleteTimeout != null) clearTimeout(autocompleteTimeout);
       autocompleteTimeout = setTimeout(() => {
         const matcher = new RegExp(`(^|\\s${/[\p{Script=Hani}\p{Script=Hira}\p{Script=Kana}]/u.test(request.term) ? '|[\\p{Script=Hani}\\p{Script=Hira}\\p{Script=Kana}]' : ''})${$.ui.autocomplete.escapeRegex(request.term)}`, 'iu');
-        response($.grep(/[\p{Script=Hani}\p{Script=Hira}\p{Script=Kana}]/u.test(request.term) || request.term.length >= 2 ? autocompleteSource : [], (elementOfArray) => elementOfArray.label.split('=').some((element, index) => (index === 0 || /[\p{Script=Hani}\p{Script=Hira}\p{Script=Kana}]/u.test(element) || element.length >= 2) && (matcher.test(element) || matcher.test(element.normalize('NFKD').replaceAll(/\p{Mn}/gu, '').replaceAll('đ', 'd').replaceAll('Đ', 'D'))))).slice(0, 50));
+        response($.grep(/[\p{Script=Hani}\p{Script=Hira}\p{Script=Kana}]/u.test(request.term) || request.term.length >= 2 ? autocompleteGlossarySource : [], (elementOfArray) => elementOfArray.label.split('=').some((element, index) => (index === 0 || /[\p{Script=Hani}\p{Script=Hira}\p{Script=Kana}]/u.test(element) || element.length >= 2) && (matcher.test(element) || matcher.test(element.normalize('NFKD').replaceAll(/\p{Mn}/gu, '').replaceAll('đ', 'd').replaceAll('Đ', 'D'))))).slice(0, 50));
       }, 300);
     },
     focus: (__, ui) => {
@@ -717,171 +760,11 @@ const saveGlossary = function saveGlossaryToLocalStorage() {
 $(document).ready(async () => {
   $resultTextarea.attr('contenteditable', !Utils.isOnMobile());
   sessionStorage.removeItem('glossary');
+  const autocompleteFontStackTextSource = Object.entries(fontMap).map(([first, second]) => ({ value: second, label: first }));
   $fontStackText.autocomplete({
     appendTo: '#settings-modal .modal-body',
     source: (request, response) => {
-      response($.ui.autocomplete.filter([
-        {
-          value: '--system-font-family',
-          label: 'Họ phông chữ hệ thống',
-        },
-        {
-          value: 'serif',
-          label: 'Serif',
-        },
-        {
-          value: 'sans-serif',
-          label: 'Chữ không có chân',
-        },
-        {
-          value: '--oldStyleTf',
-          label: 'Kiểu chữ kiểu cũ',
-        },
-        {
-          value: '--modernTf',
-          label: 'Kiểu chữ hiện đại',
-        },
-        {
-          value: '--sansTf',
-          label: 'Kiểu chữ sans',
-        },
-        {
-          value: '--humanistTf',
-          label: 'Kiểu chữ nhân văn',
-        },
-        {
-          value: '--monospaceTf',
-          label: 'Kiểu chữ monospace',
-        },
-        {
-          value: '--japaneseFontFamily',
-          label: 'Họ phông chữ Nhật Bản',
-        },
-        {
-          value: '--serif-ja',
-          label: 'Serif Nhật Bản',
-        },
-        {
-          value: '--sans-serif-ja',
-          label: 'Sans serif Nhật Bản',
-        },
-        {
-          value: '--serif-ja-v',
-          label: 'Serif dọc Nhật Bản',
-        },
-        {
-          value: '--sans-serif-ja-v',
-          label: 'Sans serif dọc Nhật Bản',
-        },
-        {
-          value: '--chineseFontFamily',
-          label: 'Họ phông chữ Trung Quốc',
-        },
-        {
-          value: '--hongKongFontFamily',
-          label: 'Họ phông chữ Hồng Kông',
-        },
-        {
-          value: '--taiwanFontFamily',
-          label: 'Họ phông chữ Đài Loan',
-        },
-        {
-          value: 'appleSDGothicNeo',
-          label: 'Apple SD Gothic Neo',
-        },
-        {
-          value: 'aOTFRyuminPr5',
-          label: 'A-OTF Ryumin Pr5',
-        },
-        {
-          value: 'bookerly',
-          label: 'Bookerly',
-        },
-        {
-          value: 'canelaText',
-          label: 'Canela Text',
-        },
-        {
-          value: 'charter',
-          label: 'Charter',
-        },
-        {
-          value: 'crimsonText',
-          label: 'Crimson Text',
-        },
-        {
-          value: 'hiraginomin',
-          label: 'HiraginoMin',
-        },
-        {
-          value: 'hiraginoMinchoPro',
-          label: 'Hiragino Mincho Pro',
-        },
-        {
-          value: 'hiraginoMinchoPron',
-          label: 'Hiragino Mincho ProN',
-        },
-        {
-          value: 'hiraginoSans',
-          label: 'Hiragino Sans',
-        },
-        {
-          value: 'literata',
-          label: 'Literata',
-        },
-        {
-          value: 'newYork',
-          label: 'New York',
-        },
-        {
-          value: 'notoSerif',
-          label: 'Noto Serif',
-        },
-        {
-          value: 'pingfangHK',
-          label: 'PingFang HK',
-        },
-        {
-          value: 'pingfangSC',
-          label: 'PingFang SC',
-        },
-        {
-          value: 'pingfangTC',
-          label: 'PingFang TC',
-        },
-        {
-          value: 'proximaNova',
-          label: 'Proxima Nova',
-        },
-        {
-          value: 'publicoText',
-          label: 'Publico Text',
-        },
-        {
-          value: 'roboto',
-          label: 'Roboto',
-        },
-        {
-          value: 'sfProText',
-          label: 'SF Pro Text',
-        },
-        {
-          value: 'stbShusong',
-          label: 'STBShusong',
-        },
-        {
-          value: 'stsongTC',
-          label: 'STSongTC',
-        },
-        {
-          value: 'tbmincho',
-          label: 'TBMincho',
-        },
-        {
-          value: 'thonburi',
-          label: 'Thonburi',
-        },
-      ], request.term.split(/, */).pop()));
+      response($.ui.autocomplete.filter(autocompleteFontStackTextSource, request.term.split(/, */).pop()));
     },
     focus: () => false,
     select: function onSelect(__, ui) {
@@ -1149,7 +1032,7 @@ $dropdownHasCollapse.on('show.bs.dropdown', function onHideBsDropdown() {
 });
 
 $fontStackText.change(function onChange() {
-  const values = $(this).val().split(/, */).filter((element) => element.length > 0).map((element) => element.trim());
+  const values = $(this).val().split(/, */).filter((element) => element.length > 0).map((element) => fontMap[element.trim()] ?? element.trim());
   $(this).val(values.join(', '));
 
   $(document.documentElement).css('--opt-font-family', values.map((element) => {
