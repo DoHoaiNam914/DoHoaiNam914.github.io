@@ -770,6 +770,7 @@ $(document).ready(async () => {
     focus: () => false,
     select: function onSelect(__, ui) {
       const terms = $(this).val().split(/, */);
+      terms.pop();
       terms.push(ui.item.value);
       $(this).val(terms.join(', ')).change();
       return false;
