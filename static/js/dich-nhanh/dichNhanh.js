@@ -4,6 +4,7 @@
 
 const $addButton = $('#add-button');
 const $addDeLeZhaoSwitch = $('#add-de-le-zhao-switch');
+const $alignmentRadio = $('input[type="radio"][name="alignment-radio"]');
 const $copyButtons = $('.copy-button');
 const $defaultVietPhraseFileSelect = $('#default-viet-phrase-file-select');
 const $dropdownHasCollapse = $('.dropdown-has-collapse');
@@ -1037,6 +1038,10 @@ $fontStackText.change(function onChange() {
     const maybeFontStacks = element.startsWith('--') ? `var(${element})` : element;
     return element.includes(' ') ? `'${element}'` : maybeFontStacks;
   }).join(', '));
+});
+
+$alignmentRadio.change(function onChange() {
+  $(document.documentElement).css('--opt-text-align', $(this).val());
 });
 
 $translatorDropdown.find('.dropdown-item').click(function onClick() {

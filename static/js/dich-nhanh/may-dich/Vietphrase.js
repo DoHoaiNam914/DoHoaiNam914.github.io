@@ -454,7 +454,7 @@ class Vietphrase extends Translator {
             }
           }
 
-          this.result = this.translateWithTest(text, options.nameEnabled ? this.name : [], hanViet.concat(glossary.romajis).filter(([first], ___, array) => !array[first] && (array[first] = 1), {}));
+          this.result = this.translateWithTest(text, options.nameEnabled ? this.name : [], hanViet.concat(glossary.romajis).filter(([first], ___, array) => !array[first] && (array[first] = 1), {})).normalize();
           this.result = options.autocapitalize ? Vietphrase.getCapitalizeText(this.result) : this.result;
         } catch (error) {
           this.vietPhrase = null;
