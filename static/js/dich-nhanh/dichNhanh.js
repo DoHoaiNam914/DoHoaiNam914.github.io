@@ -694,11 +694,11 @@ const reloadGlossary = function reloadActiveGlossary(glossaryList) {
         response($.grep(/[\p{Script=Hani}\p{Script=Hira}\p{Script=Kana}]/u.test(request.term) || request.term.length >= 2 ? autocompleteGlossarySource : [], (elementOfArray) => elementOfArray.label.split('=').some((element, index) => (index === 0 || /[\p{Script=Hani}\p{Script=Hira}\p{Script=Kana}]/u.test(element) || element.length >= 2) && (matcher.test(element) || matcher.test(element.normalize('NFKD').replaceAll(/\p{Mn}/gu, '').replaceAll('đ', 'd').replaceAll('Đ', 'D'))))).slice(0, 50));
       }, 300);
     },
-    focus: (__, ui) => {
-      if ($sourceEntryInput.val() !== ui.item.value) $sourceEntryInput.trigger('input');
+    focus: function onFocus(__, ui) {
+      if ($(this).val() !== ui.item.value) $(this).trigger('input');
     },
-    select: (__, ui) => {
-      if ($sourceEntryInput.val() !== ui.item.value) $sourceEntryInput.val(ui.item.value).trigger('input');
+    select: function onSelect(__, ui) => {
+      if ($(this).val() !== ui.item.value) $(this).val(ui.item.value).trigger('input');
     },
   });
 
@@ -768,11 +768,9 @@ $(document).ready(async () => {
     },
     focus: () => false,
     select: function onSelect(__, ui) {
-      const terms = this.value.split(/, */);
-      terms.pop();
+      const terms = $(this).val().split(/, */);
       terms.push(ui.item.value);
-      terms.push('');
-      this.value = terms.join(', ');
+      $(this).val(terms.join(', ')).change();
       return false;
     },
   });
