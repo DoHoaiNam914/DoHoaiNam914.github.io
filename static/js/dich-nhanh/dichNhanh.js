@@ -697,7 +697,7 @@ const reloadGlossary = function reloadActiveGlossary(glossaryList) {
     focus: function onFocus(__, ui) {
       if ($(this).val() !== ui.item.value) $(this).trigger('input');
     },
-    select: function onSelect(__, ui) => {
+    select: function onSelect(__, ui) {
       if ($(this).val() !== ui.item.value) $(this).val(ui.item.value).trigger('input');
     },
   });
@@ -1494,6 +1494,7 @@ $glossaryInput.on('change', function onChange() {
     glossary[$glossaryListSelect.val()] = Object.fromEntries(this.result.split(/\r?\n|\r/).filter((element) => element.length > 0 && ($glossaryListSelect.val() !== 'luatNhan' || !element.startsWith('#')) && element.split('=').length === 2).map((element) => element.split('=')));
     saveGlossary();
     if ($sourceEntryInput.val().length > 0) $sourceEntryInput.trigger('input');
+    $glossaryInput.val(null);
   };
 
   reader.readAsText($(this).prop('files')[0]);
