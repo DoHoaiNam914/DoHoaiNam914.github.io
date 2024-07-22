@@ -1472,7 +1472,7 @@ $glossaryModal.on('shown.bs.modal', () => {
         isGlossaryExist = true;
 
         if ($glossaryListSelect.val() === element) {
-    $sourceEntryInput.trigger('input');
+          $sourceEntryInput.trigger('input');
           return true;
         }
 
