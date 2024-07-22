@@ -1467,9 +1467,15 @@ $glossaryModal.on('shown.bs.modal', () => {
   if (text.length > 0) {
     if (!$sourceEntryInput.autocomplete('option', 'disabled')) $sourceEntryInput.autocomplete('disable');
     let isGlossaryExist = false;
+    let isCorrectGlossarySelected = false;
     ['namePhu', 'name', 'vietPhrase'].some((element) => {
       if (Object.hasOwn(glossary[element], text)) {
-        if ($glossaryListSelect.val() === element) return true;
+        if ($glossaryListSelect.val() === element) {
+          b = true;
+          isGlossaryExist = true;
+          return true;
+        }
+
         $glossaryListSelect.val(element).change();
         isGlossaryExist = true;
         return true;
@@ -1479,7 +1485,7 @@ $glossaryModal.on('shown.bs.modal', () => {
     });
     if (isGlossaryExist) return;
     $sourceEntryInput.trigger('input');
-    if (lastTranslateEntryButton != null) lastTranslateEntryButton.click();
+    if (!isCorrectGlossarySelected && lastTranslateEntryButton != null) lastTranslateEntryButton.click();
   }
 
   $sourceEntryInput.autocomplete('enable');
