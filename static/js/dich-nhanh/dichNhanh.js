@@ -1470,7 +1470,12 @@ $glossaryModal.on('shown.bs.modal', () => {
     ['namePhu', 'name', 'vietPhrase'].some((element) => {
       if (Object.hasOwn(glossary[element], text)) {
         isGlossaryExist = true;
-        if ($glossaryListSelect.val() === element) return true;
+
+        if ($glossaryListSelect.val() === element) {
+    $sourceEntryInput.trigger('input');
+          return true;
+        }
+
         $glossaryListSelect.val(element).change();
         return true;
       }
