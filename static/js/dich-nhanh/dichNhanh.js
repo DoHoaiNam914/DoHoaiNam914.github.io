@@ -761,6 +761,11 @@ const saveGlossary = function saveGlossaryToLocalStorage() {
 };
 
 $(document).ready(async () => {
+  if (Utils.isOnMobile()) {
+    const $textareas = $('.textarea');
+    $textareas.css('max-height', `${$textareas.prop('offsetHeight') - (5.6875 * 16)}px`);
+  }
+
   $resultTextarea.attr('contenteditable', !Utils.isOnMobile());
   sessionStorage.removeItem('glossary');
   const autocompleteFontStackTextSource = Object.entries(fontMap).map(([first, second]) => ({ value: second, label: first }));
