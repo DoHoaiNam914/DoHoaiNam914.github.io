@@ -1490,25 +1490,8 @@ $glossaryModal.on('shown.bs.modal', () => {
 
   if (text.length > 0) {
     $sourceEntryInput.autocomplete('disable');
-    let isGlossaryExist = false;
-    ['namePhu', 'name', 'vietPhrase'].some((element) => {
-      if (Object.hasOwn(glossary[element], text)) {
-        isGlossaryExist = true;
-
-        if ($glossaryListSelect.val() === element) {
-          $sourceEntryInput.trigger('input');
-          return true;
-        }
-
-        $glossaryListSelect.val(element).change();
-        return true;
-      }
-
-      return false;
-    });
-    if (isGlossaryExist) return;
-    $sourceEntryInput.trigger('input');
     if (lastTranslateEntryButton != null) lastTranslateEntryButton.click();
+    else $sourceEntryInput.trigger('input');
   }
 
   $sourceEntryInput.autocomplete('enable');
@@ -1715,7 +1698,6 @@ $translateEntryButtons.click(async function onClick() {
         lastTranslateEntryButton = $(this);
       }
 
-      if (activeTranslator === Translators.VIETPHRASE) lastTranslateEntryButton = null;
       $sourceEntryInput.removeAttr('readonly');
       $translateEntryButtons.removeClass('disabled');
       translationController = null;
