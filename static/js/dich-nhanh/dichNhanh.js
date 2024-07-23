@@ -9,6 +9,7 @@ const $copyButtons = $('.copy-button');
 const $defaultVietPhraseFileSelect = $('#default-viet-phrase-file-select');
 const $dropdownHasCollapse = $('.dropdown-has-collapse');
 const $fontStackText = $('#font-stack-text');
+const $fontSizeText = $('#font-size-text');
 const $glossaryEntryCounter = $('#glossary-entry-counter');
 const $glossaryInput = $('#glossary-input');
 const $glossaryListSelect = $('#glossary-list-select');
@@ -23,8 +24,10 @@ const $retranslateButton = $('#retranslate-button');
 const $showOriginalTextSwitch = $('#show-original-text-switch');
 const $sourceEntryInput = $('#source-entry-input');
 const $sourceLanguageSelect = $('#source-language-select');
+const $spacingText = $('#spacing-text');
 const $targetEntryTextarea = $('#target-entry-textarea');
 const $targetLanguageSelect = $('#target-language-select');
+const $themeDropdown = $('#theme-dropdown');
 const $toneSelect = $('#tone-select');
 const $translateButton = $('#translate-button');
 const $translateEntryButtons = $('.translate-entry-button');
@@ -687,7 +690,6 @@ const reloadGlossary = function reloadActiveGlossary(glossaryList) {
   const autocompleteGlossarySource = glossaryKeys.map((element) => ({ value: element, label: `${element}=${glossary[glossaryList][element]}` }));
   $sourceEntryInput.autocomplete({
     appendTo: '#glossary-modal .modal-body',
-    disabled: true,
     source: (request, response) => {
       if (autocompleteTimeout != null) clearTimeout(autocompleteTimeout);
       autocompleteTimeout = setTimeout(() => {
@@ -1031,7 +1033,7 @@ $dropdownHasCollapse.on('show.bs.dropdown', function onHideBsDropdown() {
   bootstrapCollapseInDropdown.show();
 });
 
-$fontStackText.change(function onChange() {
+$fontStackText.on('change', function onChange() {
   const values = $(this).val().split(/, */).filter((element) => element.length > 0).map((element) => fontMap[element.trim()] ?? element.trim());
   $(this).val(values.join(', '));
 
@@ -1039,6 +1041,23 @@ $fontStackText.change(function onChange() {
     const maybeFontStacks = element.startsWith('--') ? `var(${element})` : element;
     return element.includes(' ') ? `'${element}'` : maybeFontStacks;
   }).join(', '));
+});
+
+$fontSizeText.on('change', function onChange() {
+  $(this).val(Math.min(parseFloat($(this).attr('max')), Math.max(parseFloat($(this).attr('min')), parseFloat($(this).val()))));
+  $(document.documentElement).css('--opt-font-size', `${$(this).val()}em`);
+});
+
+$themeDropdown.find('.dropdown-item').on('click', function onClick() {
+  $(document.body).removeClass($themeDropdown.find('.active').val());
+  $themeDropdown.find('.dropdown-item').removeClass('active');
+  $(this).addClass('active');
+  $(document.body).addClass($(this).val());
+});
+
+$spacingText.on('change', function onChange() {
+  $(this).val(Math.min(parseFloat($(this).attr('max')), Math.max(parseFloat($(this).attr('min')), parseFloat($(this).val()))));
+  $(document.documentElement).css('--opt-line-height', `${$(this).val()}em`);
 });
 
 $alignmentRadio.change(function onChange() {
@@ -1465,7 +1484,7 @@ $glossaryModal.on('shown.bs.modal', () => {
   const text = $sourceEntryInput.val();
 
   if (text.length > 0) {
-    if (!$sourceEntryInput.autocomplete('option', 'disabled')) $sourceEntryInput.autocomplete('disable');
+    $sourceEntryInput.autocomplete('disable');
     let isGlossaryExist = false;
     ['namePhu', 'name', 'vietPhrase'].some((element) => {
       if (Object.hasOwn(glossary[element], text)) {

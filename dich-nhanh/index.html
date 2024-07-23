@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="/static/css/bootstrap.min.css">
     <link rel="stylesheet" href="/static/css/general_style.css">
     <link rel="stylesheet" href="/static/css/fonts.css">
+    <link rel="stylesheet" href="/static/css/themes.css">
     <style>
       :root {
         --system-font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantrell, "Helvetica Neue", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
@@ -44,6 +45,7 @@
         margin: 0 !important;
         padding: 0 !important;
         -webkit-perspective: 1;
+        position: static;
         -webkit-text-size-adjust: 100%;
         -webkit-touch-callout: none;
         min-width: 0;
@@ -53,293 +55,9 @@
         background-color: var(--opt-background-color) !important;
       }
 
-      .amazon-kindle-white {
-        --opt-color: #000;
-        --opt-background-color: #fff;
-        --opt-hyperlink-color: #00f;
-      }
-
-      .com-amazon-kindle-sepia {
-        --opt-color: #5f4b32;
-        --opt-background-color: #fbf0d9;
-        --opt-hyperlink-color: #05a;
-      }
-
-      .jp-co-amazon-kindle-sepia {
-        --opt-color: #5f4b32;
-        --opt-background-color: #fbf0d9;
-        --opt-hyperlink-color: #00f;
-      }
-
-      .com-amazon-kindle-green {
-        --opt-color: #3a4b4e;
-        --opt-background-color: #c5e7ce;
-        --opt-hyperlink-color: #05a;
-      }
-
-      .jp-co-amazon-kindle-green {
-        --opt-color: #3a4b4e;
-        --opt-background-color: #c5e7ce;
-        --opt-hyperlink-color: #00f;
-      }
-
-      .com-amazon-kindle-black {
-        --opt-color: #acacac;
-        --opt-background-color: #000;
-        --opt-hyperlink-color: #8fc0e9;
-      }
-
-      .jp-co-amazon-kindle-black {
-        --opt-color: #acacac;
-        --opt-background-color: #000;
-        --opt-hyperlink-color: #8787ff;
-      }
-
-      .apple-books-original-light {
-        --opt-color: #000;
-        --opt-background-color: #fff;
-        --opt-hyperlink-color: #007aff;
-      }
-
-      .apple-books-original-dark {
-        --opt-color: #fff;
-        --opt-background-color: #000;
-        --opt-hyperlink-color: #009cdb;
-      }
-
-      .apple-books-quiet-light {
-        --opt-color: #ebebf5;
-        --opt-background-color: #4a4a4d;
-        --opt-hyperlink-color: #009ddc;
-      }
-
-      .apple-books-quiet-dark {
-        --opt-color: #8d8d92;
-        --opt-background-color: #000;
-        --opt-hyperlink-color: #009cdb;
-      }
-
-      .apple-books-paper-light {
-        --opt-color: #1e1a1a;
-        --opt-background-color: #eeeded;
-        --opt-hyperlink-color: #0071ed;
-      }
-
-      .apple-books-paper-dark {
-        --opt-color: #f2f2f0;
-        --opt-background-color: #1c1c1e;
-        --opt-hyperlink-color: #009ddc;
-      }
-
-      .apple-books-bold-light {
-        --opt-color: #1c1c1e;
-        --opt-background-color: #fff;
-        --opt-hyperlink-color: #007aff;
-      }
-
-      .apple-books-bold-dark {
-        --opt-color: #efeff1;
-        --opt-background-color: #000;
-        --opt-hyperlink-color: #009cdb;
-      }
-
-      .apple-books-calm-light {
-        --opt-color: #34281c;
-        --opt-background-color: #f1e2c9;
-        --opt-hyperlink-color: #b48128;
-      }
-
-      .apple-books-calm-dark {
-        --opt-color: #f9ecdb;
-        --opt-background-color: #423b30;
-        --opt-hyperlink-color: #009ddc;
-      }
-
-      .apple-books-focus-light {
-        --opt-color: #141200;
-        --opt-background-color: #fefcf3;
-        --opt-hyperlink-color: #bf902e;
-      }
-
-      .apple-books-focus-dark {
-        --opt-color: #fff9eb;
-        --opt-background-color: #18160c;
-        --opt-hyperlink-color: #009ddc;
-      }
-
-      .bookwalker-white {
-        --opt-color: #000;
-        --opt-background-color: #fff;
-        --opt-hyperlink-color: #00f;
-      }
-
-      .bookwalker-black {
-        --opt-color: #d2d2d2;
-        --opt-background-color: #000;
-        --opt-hyperlink-color: #ebebeb;
-      }
-
-      .bookwalker-sepia {
-        --opt-color: #5a4114;
-        --opt-background-color: #ebd2a5;
-        --opt-hyperlink-color: #50320c;
-      }
-
-      .bookwalker-cream {
-        --opt-color: #000;
-        --opt-background-color: #ffffe0;
-        --opt-hyperlink-color: #32327d;
-      }
-
-      .calibre-black {
-        --opt-color: #ffffff;
-        --opt-background-color: #000000;
-        --opt-hyperlink-color: #4f81bd;
-      }
-
-      .calibre-sepia-dark {
-        --opt-color: #F6F3E9;
-        --opt-background-color: #39322B;
-        --opt-hyperlink-color: #4f81bd;
-      }
-
-      .calibre-sepia-light {
-        --opt-color: #39322B;
-        --opt-background-color: #F6F3E9;
-      }
-
-      .calibre-system-light {
-        --opt-color: #000000;
-        --opt-background-color: #ffffff;
-      }
-
-      .calibre-system-dark {
-        --opt-color: #ddd;
-        --opt-background-color: #111;
-        --opt-background-color: #121212;
-        --opt-hyperlink-color: #6cb4ee;
-      }
-
-      .calibre-system-white {
-        --opt-color: #000000;
-        --opt-background-color: #ffffff;
-      }
-
-      .google-play-books-light {
-        --opt-color: #000;
-        --opt-background-color: #fff;
-        --opt-hyperlink-color: #00f;
-      }
-
-      .google-play-books-dark {
-        --opt-color: #ccc;
-        --opt-background-color: #000;
-        --opt-hyperlink-color: #4747b2;
-      }
-
-      .google-play-books-sepia {
-        --opt-color: #2b0d00;
-        --opt-background-color: #fffced;
-        --opt-hyperlink-color: #09c;
-      }
-
-      .j_novel-white {
-        --opt-color: #000;
-        --opt-background-color: #fff;
-        --opt-hyperlink-color: #00f;
-      }
-
-      .j_novel-sepia {
-        --opt-color: #121212;
-        --opt-background-color: #faf4e8;
-        --opt-hyperlink-color: #00f;
-      }
-
-      .j_novel-gray {
-        --opt-color: #c1c1c1;
-        --opt-background-color: #303030;
-        --opt-hyperlink-color: #00f;
-      }
-
-      .j_novel-black {
-        --opt-color: #fff;
-        --opt-background-color: #000;
-        --opt-hyperlink-color: #00f;
-      }
-
-      .rakuten-kobo-light {
-        --opt-color: #000;
-        --opt-background-color: #fff;
-      }
-
-      .rakuten-kobo-sepia {
-        --opt-color: #000;
-        --opt-background-color: #eaddc7;
-        --opt-hyperlink-color: #000;
-      }
-
-      .rakuten-kobo-dark {
-        --opt-color: #7a7a7a;
-        --opt-background-color: #000;
-        --opt-hyperlink-color: #7a7a7a;
-      }
-
-      .rakuten-kobo-charcoal {
-        --opt-color: #9d9d9d;
-        --opt-background-color: #333;
-        --opt-hyperlink-color: #9d9d9d;
-      }
-
-      .waka-white {
-        --opt-color: #231f20;
-        --opt-background-color: #fff;
-        --opt-hyperlink-color: #231f20;
-      }
-
-      .waka-gray {
-        --opt-color: #d2d3d5;
-        --opt-background-color: #525355;
-        --opt-hyperlink-color: #d2d3d5;
-      }
-
-      .waka-sepia {
-        --opt-color: #5b4635;
-        --opt-background-color: #f4ebd8;
-        --opt-hyperlink-color: #5b4635;
-      }
-
-      .waka-black {
-        --opt-color: #f9f9f9;
-        --opt-background-color: #231f20;
-        --opt-hyperlink-color: #f9f9f9;
-      }
-
-      .xbreader-white {
-        --opt-color: #000;
-        --opt-background-color: #fff;
-      }
-
-      .xbreader-sepia {
-        --opt-color: #000;
-        --opt-background-color: #faf4e8;
-      }
-
-      .xbreader-gray {
-        --opt-color: #fff;
-        --opt-background-color: #303030;
-      }
-
-      .xbreader-black {
-        --opt-color: #fff;
-        --opt-background-color: #000;
-      }
-
       .viewport {
-        box-sizing: border-box;
         padding: 0 !important;
-        margin: 0 auto !important;
         max-width: var(--viewport-width);
-        width: 100%;
       }
 
       .translate-button {
@@ -354,7 +72,7 @@
 
       .slide-navbar {
         height: 2.5em;
-        margin-bottom: calc(3.25em - 1px);
+        margin-bottom: 3.1875em;
       }
 
       .slide-navbar > .nav {
@@ -380,7 +98,7 @@
       }
 
       .workspace {
-        padding: 3.5vh 10px 0 !important;
+        padding: 10px 10px 0 !important;
       }
 
       .textarea {
@@ -389,7 +107,9 @@
         box-sizing: border-box;
         color: var(--opt-color) !important;
         hyphens: none;
-        height: 65vh;
+        height: calc(100vh - 12px - 5.6875rem);
+        max-height: calc(100vh - 12px - 5.6875rem);
+        min-height: 0 !important;
         margin: 0;
         orphans: 1;
         outline: none;
@@ -400,42 +120,8 @@
         text-align-last: left;
         widows: 1;
         width: 100%;
-      }
-
-      @media screen and (min-width: 35em) {
-
-        .workspace {
-          padding: 5vh 10px 49vh !important;
-        }
-
-        .textarea {
-          height: 45vh;
-        }
-
-      }
-
-      @media screen and (min-width: 45em) {
-
-        .workspace {
-          padding: 1.5vh 10px 13vh !important;
-        }
-
-        .textarea {
-          height: 85vh;
-        }
-
-      }
-
-      @media screen and (min-width: 75em) {
-
-        .workspace {
-          padding: 2vh 10px 17vh !important;
-        }
-
-        .textarea {
-          height: 80vh;
-        }
-
+        max-width: 100%;
+        min-width: 0 !important;
       }
 
       .textarea > p {
@@ -446,6 +132,7 @@
 
       .font-options {
         font: normal var(--opt-font-weight) var(--opt-font-size)/1.6 var(--opt-font-family) !important;
+        font-size: var(--opt-font-size) !important;
         line-height: var(--opt-line-height) !important;
       }
 
@@ -605,7 +292,7 @@
       })();
     </script>
   </head>
-  <body class="h-100 m-0 p-0 position-relative w-100 /*bg-body-tertiary*/ apple-books-calm-dark">
+  <body class="h-100 m-0 p-0 w-100 bg-body-tertiary">
     <div class="container-fluid fixed-bottom p-0 navigator">
       <nav class="navbar bg-body fixed-bottom shadow-sm">
         <div class="container-fluid p-0 text-center viewport">
@@ -703,6 +390,192 @@
                 </ul>
               </div>
               <input type="text" class="form-control font-options mb-3" id="font-stack-text" placeholder="Phông chữ">
+              <input type="number" class="form-control mb-3" id="font-size-text" placeholder="Kích thước phông chữ" value="1" max="3.5" min="0.6" step="0.1">
+              <div class="dropdown dropdown-scrollable mb-3" id="theme-dropdown">
+                <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
+                  <svg class="bi" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor">
+                    <use xlink:href="#translate"></use>
+                  </svg>
+                  Thay đổi chủ đề
+                </button>
+                <ul class="dropdown-menu">
+                  <li>
+                    <button type="button" class="dropdown-item active" value="bg-body-tertiary">Giao diện Bootstrap</button>
+                  </li>
+                  <li>
+                    <h6 class="dropdown-header">Amazon Kindle</h6>
+                  </li>
+                  <li>
+                    <button type="button" class="dropdown-item" value="amazon-kindle-white">White</button>
+                  </li>
+                  <li>
+                    <button type="button" class="dropdown-item" value="com-amazon-kindle-sepia">Sepia</button>
+                  </li>
+                  <li>
+                    <button type="button" class="dropdown-item" value="jp-co-amazon-kindle-sepia">Sepia - Japanese</button>
+                  </li>
+                  <li>
+                    <button type="button" class="dropdown-item" value="com-amazon-kindle-green">Green </button>
+                  </li>
+                  <li>
+                    <button type="button" class="dropdown-item" value="jp-co-amazon-kindle-green">Green - Japanese</button>
+                  </li>
+                  <li>
+                    <button type="button" class="dropdown-item" value="com-amazon-kindle-black">Black</button>
+                  </li>
+                  <li>
+                    <button type="button" class="dropdown-item" value="jp-co-amazon-kindle-black">Black - Japanese</button>
+                  </li>
+                  <li>
+                    <h6 class="dropdown-header">Apple Sách</h6>
+                  </li>
+                  <li>
+                    <button type="button" class="dropdown-item" value="apple-books-original-light">Nguyên bản - Sáng</button>
+                  </li>
+                  <li>
+                    <button type="button" class="dropdown-item" value="apple-books-original-dark">Nguyên bản - Tối</button>
+                  </li>
+                  <li>
+                    <button type="button" class="dropdown-item" value="apple-books-quiet-light">Yên tĩnh - Sáng</button>
+                  </li>
+                  <li>
+                    <button type="button" class="dropdown-item" value="apple-books-quiet-dark">Yên tĩnh - Tối</button>
+                  </li>
+                  <li>
+                    <button type="button" class="dropdown-item" value="apple-books-paper-light">Giấy - Sáng</button>
+                  </li>
+                  <li>
+                    <button type="button" class="dropdown-item" value="apple-books-paper-dark">Giấy - Tối</button>
+                  </li>
+                  <li>
+                    <button type="button" class="dropdown-item" value="apple-books-bold-light">Đậm - Sáng</button>
+                  </li>
+                  <li>
+                    <button type="button" class="dropdown-item" value="apple-books-bold-dark">Đậm - Tối</button>
+                  </li>
+                  <li>
+                    <button type="button" class="dropdown-item" value="apple-books-calm-light">Êm dịu - Sáng</button>
+                  </li>
+                  <li>
+                    <button type="button" class="dropdown-item" value="apple-books-calm-dark">Êm dịu - Tối</button>
+                  </li>
+                  <li>
+                    <button type="button" class="dropdown-item" value="apple-books-focus-light">Tập trung - Sáng</button>
+                  </li>
+                  <li>
+                    <button type="button" class="dropdown-item" value="apple-books-focus-dark">Tập trung - Tối</button>
+                  </li>
+                  <li>
+                    <h6 class="dropdown-header">BOOK☆WALKER</h6>
+                  </li>
+                  <li>
+                    <button type="button" class="dropdown-item" value="bookwalker-white">White</button>
+                  </li>
+                  <li>
+                    <button type="button" class="dropdown-item" value="bookwalker-black">Black</button>
+                  </li>
+                  <li>
+                    <button type="button" class="dropdown-item" value="bookwalker-sepia">Sepia</button>
+                  </li>
+                  <li>
+                    <button type="button" class="dropdown-item" value="bookwalker-cream">Cream</button>
+                  </li>
+                  <li>
+                    <h6 class="dropdown-header">Calibre</h6>
+                  </li>
+                  <li>
+                    <button type="button" class="dropdown-item" value="calibre-black">Black</button>
+                  </li>
+                  <li>
+                    <button type="button" class="dropdown-item" value="calibre-sepia-dark">Sepia dark</button>
+                  </li>
+                  <li>
+                    <button type="button" class="dropdown-item" value="calibre-sepia-light">Sepia light</button>
+                  </li>
+                  <li>
+                    <button type="button" class="dropdown-item" value="calibre-system-light">System - Light</button>
+                  </li>
+                  <li>
+                    <button type="button" class="dropdown-item" value="calibre-system-dark">System - Dark</button>
+                  </li>
+                  <li>
+                    <button type="button" class="dropdown-item" value="calibre-white">White</button>
+                  </li>
+                  <li>
+                    <h6 class="dropdown-header">Google Play Sách</h6>
+                  </li>
+                  <li>
+                    <button type="button" class="dropdown-item" value="google-play-books-light">Sáng</button>
+                  </li>
+                  <li>
+                    <button type="button" class="dropdown-item" value="google-play-books-dark">Tối</button>
+                  </li>
+                  <li>
+                    <button type="button" class="dropdown-item" value="google-play-books-sepia">Nâu đỏ</button>
+                  </li>
+                  <li>
+                    <h6 class="dropdown-header">J-Novel Club</h6>
+                  </li>
+                  <li>
+                    <button type="button" class="dropdown-item" value="j_novel-white">White</button>
+                  </li>
+                  <li>
+                    <button type="button" class="dropdown-item" value="j_novel-sepia">Sepia</button>
+                  </li>
+                  <li>
+                    <button type="button" class="dropdown-item" value="j_novel-gray">Gray</button>
+                  </li>
+                  <li>
+                    <button type="button" class="dropdown-item" value="j_novel-black">Black</button>
+                  </li>
+                  <li>
+                    <h6 class="dropdown-header">Rakuten Kobo</h6>
+                  </li>
+                  <li>
+                    <button type="button" class="dropdown-item" value="rakuten-kobo-light">Light</button>
+                  </li>
+                  <li>
+                    <button type="button" class="dropdown-item" value="rakuten-kobo-sepia">Sepia</button>
+                  </li>
+                  <li>
+                    <button type="button" class="dropdown-item" value="rakuten-kobo-dark">Dark</button>
+                  </li>
+                  <li>
+                    <button type="button" class="dropdown-item" value="rakuten-kobo-charcoal">Charcoal</button>
+                  </li>
+                  <li>
+                    <h6 class="dropdown-header">Waka</h6>
+                  </li>
+                  <li>
+                    <button type="button" class="dropdown-item" value="waka-white">Trắng</button>
+                  </li>
+                  <li>
+                    <button type="button" class="dropdown-item" value="waka-gray">Xám</button>
+                  </li>
+                  <li>
+                    <button type="button" class="dropdown-item" value="waka-sepia">Nâu đổ</button>
+                  </li>
+                  <li>
+                    <button type="button" class="dropdown-item" value="waka-black">Đen</button>
+                  </li>
+                  <li>
+                    <h6 class="dropdown-header">xbreader</h6>
+                  </li>
+                  <li>
+                    <button type="button" class="dropdown-item" value="xbreader-white">White</button>
+                  </li>
+                  <li>
+                    <button type="button" class="dropdown-item" value="xbreader-sepia">Sepia</button>
+                  </li>
+                  <li>
+                    <button type="button" class="dropdown-item" value="xbreader-gray">Gray</button>
+                  </li>
+                  <li>
+                    <button type="button" class="dropdown-item" value="xbreader-black">Black</button>
+                  </li>
+                </ul>
+              </div>
+              <input type="number" class="form-control mb-3" id="spacing-text" placeholder="Khoảng cách" value="1.2" max="2.5" min="0.8" step="0.05">
               <div class="mb-3">
                 <h2 class="fs-6">Sắp hàng</h2>
                 <div class="form-check form-check-inline">
@@ -721,7 +594,7 @@
                   <svg class="bi" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor">
                     <use xlink:href="#translate"></use>
                   </svg>
-                  Trình dịch
+                  Thay đổi trình dịch
                 </button>
                 <ul class="dropdown-menu">
                   <li>
