@@ -28,7 +28,7 @@ $(document).ready(async () => {
           method: 'GET',
           url: '/static/datasource/cjkvmap.txt',
         }).done((data) => {
-          const dataList = data.split(/\r?\n|\r/).map((element) => element.split('|')).filter((element) => element.length === 3);
+          const dataList = data.split('\r').map((element) => element.split('|')).filter((element) => element.length === 3);
           const searchResults = dataList.filter(([first, second]) => [define, oldAccentDefine].some((element) => pm.search(second.split('/')[0].toLowerCase(), element).length > 0 || first.startsWith(element))).map(([first]) => first);
 
           dataList.filter(([first]) => searchResults.includes(first.toLowerCase())).forEach(([first, second, third]) => {
@@ -50,8 +50,8 @@ $(document).ready(async () => {
             paragraph.innerText += ` ${pinyin}`;
             $(document.body).append(paragraph.cloneNode(true));
 
-            third.split(/\*?\/ /).forEach((element) => {
-              paragraph.innerHTML = Utils.convertTextToHtml(element).replaceAll(/{([^}]+)}/g, '<b>$1</b>').replaceAll(/\[(\p{sc=Hani})\]/gu, '<a href="/dich-nhanh/tra-tu-dien.html?dictionary=thieuchuu&define=$1">$1</a>');
+            third.split(/\*?\//).forEach((element) => {
+              paragraph.innerHTML = Utils.convertTextToHtml(element).replaceAll(/{([^}]+)}/g, '<b>$1</b>').replaceAll(/\[(\p{sc=Hani}+)\]/gu, '<a href="/dich-nhanh/tra-tu-dien.html?dictionary=thieuchuu&define=$1">$1</a>');
               $(document.body).append(paragraph.cloneNode(true));
             });
 
