@@ -850,7 +850,7 @@ $(document).ready(async () => {
 
   $translatorDropdown.find('.active').click();
   $inputTextarea.trigger('input');
-  $defaultVietPhraseFileSelect.change();
+  reloadGlossary($glossaryListSelect.val());
 });
 
 $('.language-select').on('change', () => {
@@ -1489,7 +1489,7 @@ $glossaryModal.on('shown.bs.modal', () => {
   const text = $sourceEntryInput.val();
 
   if (text.length > 0) {
-    $sourceEntryInput.autocomplete('disable');
+    if ($sourceEntryInput.autocomplete('option', 'disabled')) $sourceEntryInput.autocomplete('disable');
     if (lastTranslateEntryButton != null) lastTranslateEntryButton.click();
     else $sourceEntryInput.trigger('input');
   }
