@@ -61,7 +61,6 @@ class DeepLTranslate extends Translator {
       }
 
       await Promise.all(responses);
-      console.log(responses);
       this.result = responses.map((a) => a.responseJSON.translations.map((b) => b.text).join('\n')).join('\n');
       super.translateText(text, targetLanguage, sourceLanguage);
       return this.result;
