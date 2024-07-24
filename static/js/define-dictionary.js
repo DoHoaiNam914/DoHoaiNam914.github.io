@@ -124,7 +124,6 @@ $(document).ready(async () => {
         }
 
         await $.ajax({
-          cache: false,
           method: 'GET',
           url: dictionaryUrl,
         }).done((data) => {
