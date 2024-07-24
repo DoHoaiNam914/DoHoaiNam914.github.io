@@ -710,21 +710,22 @@ const reloadGlossary = function reloadActiveGlossary(glossaryList) {
 };
 
 const saveGlossary = function saveGlossaryToLocalStorage() {
-  const glossaryList = $glossaryListSelect.val();
-  reloadGlossary(glossaryList);
+  const activeGlossaryList = $glossaryListSelect.val();
+  reloadGlossary(activeGlossaryList);
 
   const glossaryStorage = { SinoVietnameses: glossary.SinoVietnameses, namePhu: glossary.namePhu };
-  if (Object.keys(glossaryStorage).includes(glossaryList)) glossary[glossaryList] = Object.fromEntries(Object.entries(glossary[glossaryList]).sort((a, b) => a[1].localeCompare(b[1], 'vi', { ignorePunctuation: true }) || a[0].localeCompare(b[0], 'vi', { ignorePunctuation: true })));
+  if (Object.keys(glossaryStorage).includes(activeGlossaryList)) glossary[activeGlossaryList] = Object.fromEntries(Object.entries(glossary[activeGlossaryList]).sort((a, b) => a[1].localeCompare(b[1], 'vi', { ignorePunctuation: true }) || a[0].localeCompare(b[0], 'vi', { ignorePunctuation: true })));
   localStorage.setItem('glossary', JSON.stringify(glossaryStorage));
 
-  if (['vietPhrase', 'name', 'namePhu', 'luatNhan', 'pronoun'].some((element) => glossaryList === element)) {
+  if (['vietPhrase', 'name', 'namePhu', 'luatNhan', 'pronoun'].some((element) => activeGlossaryList === element)) {
     const activeTranslator = $translatorDropdown.find('.active').val();
     const addDeLeZhaoEnabled = $addDeLeZhaoSwitch.prop('checked');
     const multiplicationAlgorithm = $multiplicationAlgorithmRadio.filter('[checked]').val();
 
     if (activeTranslator === Translators.VIETPHRASE) {
-      switch (glossaryList) {
-        case 'vietPhrase': {
+      switch (activeGlossaryList) {
+        case 'vietPhrase':
+        case 'pronoun': {
           currentTranslator.vietPhrase = null;
           break;
         }
@@ -741,8 +742,9 @@ const saveGlossary = function saveGlossaryToLocalStorage() {
 
       translators[activeTranslator] = currentTranslator;
     } else if (translators[Translators.VIETPHRASE] != null) {
-      switch (glossaryList) {
-        case 'vietPhrase': {
+      switch (activeGlossaryList) {
+        case 'vietPhrase':
+        case 'pronoun': {
           translators[Translators.VIETPHRASE].vietPhrase = null;
           break;
         }
@@ -1455,7 +1457,11 @@ $defaultVietPhraseFileSelect.change(async function onChange() {
     }
   }
 
-  saveGlossary();
+  const activeGlossaryList = $glossaryListSelect.val();
+  if (['vietPhrase', 'name', 'luatNhan', 'pronoun'].some((element) => activeGlossaryList === element)) reloadGlossary(activeGlossaryList);
+  if (translators[Translators.VIETPHRASE] != null) translators[Translators.VIETPHRASE] = null;
+  const $activeTranslator = $translatorDropdown.find('.active');
+  if ($activeTranslator.val() === Translators.VIETPHRASE) $activeTranslator.click();
 });
 
 $addDeLeZhaoSwitch.on('change', () => {
@@ -1507,36 +1513,15 @@ $glossaryInput.on('change', function onChange() {
 
 $('#clear-glossary-button').on('click', () => {
   if (!window.confirm('Bạn có muốn xoá sạch bảng thuật ngữ chứ?')) return;
-  const glossaryList = $glossaryListSelect.val();
-  glossary[glossaryList] = {};
+  const activeGlossaryList = $glossaryListSelect.val();
+  glossary[activeGlossaryList] = {};
   saveGlossary();
-
-  if ($translatorDropdown.find('.active').val() === Translators.VIETPHRASE) {
-    switch (glossaryList) {
-      case 'vietPhrase': {
-        currentTranslator.vietPhrase = null;
-        break;
-      }
-      case 'name':
-      case 'namePhu': {
-        currentTranslator.name = null;
-        break;
-      }
-      case 'luatNhan':
-      case 'pronoun': {
-        currentTranslator.vietPhrase = null;
-        currentTranslator.name = null;
-        break;
-      }
-      // no default
-    }
-  }
 });
 
 $glossaryListSelect.change(function onChange() {
-  const glossaryList = $(this).val();
-  reloadGlossary(glossaryList);
-  if ($sourceEntryInput.val().length > 0 && (Object.hasOwn(glossary[glossaryList], $sourceEntryInput.val()) || window.confirm('Bạn có muốn chuyển đổi lại chứ?'))) $sourceEntryInput.trigger('input');
+  const activeGlossaryList = $(this).val();
+  reloadGlossary(activeGlossaryList);
+  if ($sourceEntryInput.val().length > 0 && (Object.hasOwn(glossary[activeGlossaryList], $sourceEntryInput.val()) || window.confirm('Bạn có muốn chuyển đổi lại chứ?'))) $sourceEntryInput.trigger('input');
 });
 
 $sourceEntryInput.on('input', async function onInput() {
