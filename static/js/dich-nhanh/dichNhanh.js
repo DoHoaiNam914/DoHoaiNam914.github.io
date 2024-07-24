@@ -1490,8 +1490,7 @@ $glossaryModal.on('shown.bs.modal', () => {
 
   if (text.length > 0) {
     if ($sourceEntryInput.autocomplete('option', 'disabled')) $sourceEntryInput.autocomplete('disable');
-    if (lastTranslateEntryButton != null) lastTranslateEntryButton.click();
-    else $sourceEntryInput.trigger('input');
+    $sourceEntryInput.trigger('input');
   }
 
   $sourceEntryInput.autocomplete('enable');
@@ -1561,8 +1560,10 @@ $sourceEntryInput.on('input', async function onInput() {
     if (Object.hasOwn(currentGlossary, text)) {
       $targetEntryTextarea.val(currentGlossary[text]);
       $removeButton.removeClass('disabled');
+      lastTranslateEntryButton = null;
     } else {
-      $translateEntryButtons.filter(`[data-translator="vietphrase"][data-lang="${$glossaryListSelect.val() === 'vietPhrase' ? 'vi' : 'SinoVietnamese'}"]`).click();
+      if (lastTranslateEntryButton != null) lastTranslateEntryButton.click();
+      else $translateEntryButtons.filter(`[data-translator="vietphrase"][data-lang="${$glossaryListSelect.val() === 'vietPhrase' ? 'vi' : 'SinoVietnamese'}"]`).click();
       $removeButton.addClass('disabled');
     }
 
@@ -1647,6 +1648,7 @@ $translateEntryButtons.click(async function onClick() {
   const text = $sourceEntryInput.val();
 
   if ($translateButton.text() !== 'Huỷ' && text.length > 0) {
+    lastTranslateEntryButton = null;
     translationController = new AbortController();
     $translateEntryButtons.addClass('disabled');
     $sourceEntryInput.attr('readonly', true);
