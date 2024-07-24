@@ -693,7 +693,7 @@ const reloadGlossary = function reloadActiveGlossary(glossaryList) {
     source: (request, response) => {
       if (autocompleteTimeout != null) clearTimeout(autocompleteTimeout);
       autocompleteTimeout = setTimeout(() => {
-        const matcher = new RegExp(`(^|\\s${/[\p{Script=Hani}\p{Script=Hira}\p{Script=Kana}]/u.test(request.term) ? '|[\\p{Script=Hani}\\p{Script=Hira}\\p{Script=Kana}]' : ''})${$.ui.autocomplete.escapeRegex(request.term)}`, 'iu');
+        const matcher = new RegExp($.ui.autocomplete.escapeRegex(request.term), 'i');
         response($.grep(/[\p{Script=Hani}\p{Script=Hira}\p{Script=Kana}]/u.test(request.term) || request.term.length >= 2 ? autocompleteGlossarySource : [], (elementOfArray) => elementOfArray.label.split('=').some((element, index) => (index === 0 || /[\p{Script=Hani}\p{Script=Hira}\p{Script=Kana}]/u.test(element) || element.length >= 2) && (matcher.test(element) || matcher.test(element.normalize('NFKD').replaceAll(/\p{Mn}/gu, '').replaceAll('đ', 'd').replaceAll('Đ', 'D'))))).slice(0, 50));
       }, 300);
     },
@@ -1553,6 +1553,10 @@ $sourceEntryInput.on('keypress', (event) => {
     $targetEntryTextarea.focus();
     event.preventDefault();
   }
+});
+
+$sourceEntryInput.on('blur', () => {
+  if (autocompleteTimeout != null) clearTimeout(autocompleteTimeout);
 });
 
 $targetEntryTextarea.on('input', function onInput() {
