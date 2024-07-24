@@ -1685,29 +1685,39 @@ $translateEntryButtons.click(async function onClick() {
         }
         default: {
           if (translator == null) translator = new Vietphrase($addDeLeZhaoSwitch.prop('checked'), $multiplicationAlgorithmRadio.filter('[checked]').val());
-          await translator.translateText(text, targetLanguage, glossary, {
-            autocapitalize: false,
-            nameEnabled: false,
-          });
           break;
         }
       }
 
       translators[activeTranslator] = translator;
 
-      if (!translationController.signal.aborted) {
-        $targetEntryTextarea.val(activeTranslator === Translators.VIETPHRASE ? translator.result : await translator.translateText(text, targetLanguage)).trigger('input');
-        lastTranslateEntryButton = $(this);
+      switch (activeTranslator) {
+        case Translators.VIETPHRASE: {
+          await translator.translateText(text, targetLanguage, glossary, {
+            autocapitalize: false,
+            nameEnabled: false,
+          });
+          break;
+        }
+        default: {
+          await translator.translateText(text, targetLanguage);
+          break;
+        }
       }
 
-      $sourceEntryInput.removeAttr('readonly');
-      $translateEntryButtons.removeClass('disabled');
-      translationController = null;
+      if (!translationController.signal.aborted) {
+        $targetEntryTextarea.val(translator.result).trigger('input');
+        lastTranslateEntryButton = $(this);
+      }
     } catch (error) {
       console.error(error);
       translators[activeTranslator] = null;
       lastTranslateEntryButton = null;
     }
+
+    $sourceEntryInput.removeAttr('readonly');
+    $translateEntryButtons.removeClass('disabled');
+    translationController = null;
   }
 });
 
