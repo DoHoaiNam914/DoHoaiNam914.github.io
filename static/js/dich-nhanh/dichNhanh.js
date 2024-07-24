@@ -786,7 +786,6 @@ $(document).ready(async () => {
   $inputTextarea.trigger('input');
 
   $.ajax({
-    cache: false,
     method: 'GET',
     url: '/static/datasource/Unihan_Variants.txt',
   }).done((data) => {
@@ -805,7 +804,6 @@ $(document).ready(async () => {
   });
 
   $.ajax({
-    cache: false,
     method: 'GET',
     url: '/static/datasource/Unihan_Readings.txt',
   }).done((data) => {
@@ -830,7 +828,6 @@ $(document).ready(async () => {
       url: '/static/datasource/HanVietGhep.tsv',
     })).split('\n').map((element) => element.split('\t'));
     hanvietList = hanvietList.concat((await $.ajax({
-      cache: false,
       method: 'GET',
       url: '/static/datasource/lacviet/lv-[zh-vi].tsv',
     })).split('\n').map((element) => (!element.startsWith('#') ? element.split('\t') : element)).filter((a) => typeof a !== 'string' && /^\p{Script=Hani}+$/u.test(a[0]) && [...a[1].replaceAll('<span class="east"> </span>', ' ').matchAll(/Hán Việt: *[^<]*/g)].filter(([first]) => first.replace(/Hán Việt: */, '').length > 0).length > 0).map(([a, second]) => [a, [...second.replaceAll('<span class="east"> </span>', ' ').matchAll(/Hán Việt: *[^<]*/g)].filter(([b]) => b.replace(/Hán Việt: */, '').length > 0)[0][0].replace(/Hán Việt: */, '').normalize().split(/[,;] */)[0].trim().toLowerCase()]));
@@ -1191,7 +1188,6 @@ $defaultVietPhraseFileSelect.change(async function onChange() {
 
         if (glossary.quickTranslatorName == null || glossary.quickTranslatorName.length === 0) {
           await $.ajax({
-            cache: false,
             method: 'GET',
             url: '/static/datasource/Quick Translator/Names.txt',
           }).done((data) => {
@@ -1212,7 +1208,6 @@ $defaultVietPhraseFileSelect.change(async function onChange() {
 
         if (glossary.quickTranslatorVietphraseForMergeFiles == null || glossary.quickTranslatorVietphraseForMergeFiles.length === 0) {
           await $.ajax({
-            cache: false,
             method: 'GET',
             url: '/static/datasource/Quick Translator/Vietphrase cho file gộp.txt',
           }).done((data) => {
@@ -1224,7 +1219,6 @@ $defaultVietPhraseFileSelect.change(async function onChange() {
 
         if (glossary.quickTranslatorVietPhrase == null || glossary.quickTranslatorVietPhrase.length === 0) {
           await $.ajax({
-            cache: false,
             method: 'GET',
             url: '/static/datasource/Quick Translator/Vietphrase.txt',
           }).done((data) => {
@@ -1308,7 +1302,6 @@ $defaultVietPhraseFileSelect.change(async function onChange() {
 
         if (glossary.dataByThtgiangName == null || glossary.dataByThtgiangName.length === 0) {
           await $.ajax({
-            cache: false,
             method: 'GET',
             url: '/static/datasource/Data của thtgiang/Names.txt',
           }).done((data) => {
@@ -1329,7 +1322,6 @@ $defaultVietPhraseFileSelect.change(async function onChange() {
 
         if (glossary.dataByThtgiangVietPhrase == null || glossary.dataByThtgiangVietPhrase.length === 0) {
           await $.ajax({
-            cache: false,
             method: 'GET',
             url: '/static/datasource/Data của thtgiang/VietPhrase.txt',
           }).done((data) => {
@@ -1365,7 +1357,6 @@ $defaultVietPhraseFileSelect.change(async function onChange() {
 
         if (glossary.ttvtranslateName == null || glossary.ttvtranslateName.length === 0) {
           await $.ajax({
-            cache: false,
             method: 'GET',
             url: '/static/datasource/ttvtranslate/Names.txt',
           }).done((data) => {
@@ -1386,7 +1377,6 @@ $defaultVietPhraseFileSelect.change(async function onChange() {
 
         if (glossary.ttvtranslateVietPhrase == null || glossary.ttvtranslateVietPhrase.length === 0) {
           await $.ajax({
-            cache: false,
             method: 'GET',
             url: '/static/datasource/ttvtranslate/VietPhrase.txt',
           }).done((data) => {
@@ -1422,7 +1412,6 @@ $defaultVietPhraseFileSelect.change(async function onChange() {
 
         if (glossary.translateName == null || glossary.translateName.length === 0) {
           await $.ajax({
-            cache: false,
             method: 'GET',
             url: '/static/datasource/Translate/Names.txt',
           }).done((data) => {
@@ -1443,7 +1432,6 @@ $defaultVietPhraseFileSelect.change(async function onChange() {
 
         if (glossary.translateVietPhrase == null || glossary.translateVietPhrase.length === 0) {
           await $.ajax({
-            cache: false,
             method: 'GET',
             url: '/static/datasource/Translate/VietPhrase.txt',
           }).done((data) => {
