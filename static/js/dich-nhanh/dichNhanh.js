@@ -1699,7 +1699,7 @@ $translateEntryButtons.click(async function onClick() {
 
       if (!translationController.signal.aborted) {
         $targetEntryTextarea.val(translator.result).trigger('input');
-        lastTranslateEntryButton = $(this);
+        if (activeTranslator !== Translators.VIETPHRASE) lastTranslateEntryButton = $(this);
       }
     } catch (error) {
       console.error(error);
