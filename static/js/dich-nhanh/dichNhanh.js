@@ -1701,8 +1701,7 @@ $translateEntryButtons.click(async function onClick() {
 $addButton.click(() => {
   if ($sourceEntryInput.val().length === 0) return;
   if ($glossaryListSelect.val() === 'namePhu' && Object.hasOwn(glossary.name, $sourceEntryInput.val())) delete glossary.name[$sourceEntryInput.val()];
-  if (Object.hasOwn(glossary[$glossaryListSelect.val()], $sourceEntryInput.val())) delete glossary[$glossaryListSelect.val()][$sourceEntryInput.val()];
-  glossary[$glossaryListSelect.val()][$sourceEntryInput.val()] = $targetEntryTextarea.val();
+  glossary[$glossaryListSelect.val()][$sourceEntryInput.val()] = $targetEntryTextarea.val().trimStart();
   saveGlossary();
   $addButton.addClass('disabled');
   $removeButton.addClass('disabled');
