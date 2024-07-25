@@ -1549,13 +1549,11 @@ $sourceEntryInput.on('input', async function onInput() {
       $targetEntryTextarea.val(currentGlossary[text]);
       $removeButton.removeClass('disabled');
     } else {
-      if (lastTranslateEntryButton != null) lastTranslateEntryButton.click();
-      else $translateEntryButtons.filter(`[data-translator="vietphrase"][data-lang="${$glossaryListSelect.val() === 'vietPhrase' ? 'vi' : 'SinoVietnamese'}"]`).click();
+      $translateEntryButtons.filter(`[data-translator="vietphrase"][data-lang="${$glossaryListSelect.val() === 'vietPhrase' ? 'vi' : 'SinoVietnamese'}"]`).click();
       $removeButton.addClass('disabled');
     }
 
     $addButton.removeClass('disabled');
-    lastTranslateEntryButton = null;
   } else {
     $targetEntryTextarea.val(null);
     $addButton.addClass('disabled');
@@ -1699,7 +1697,7 @@ $translateEntryButtons.click(async function onClick() {
 
       if (!translationController.signal.aborted) {
         $targetEntryTextarea.val(translator.result).trigger('input');
-        if (activeTranslator !== Translators.VIETPHRASE) lastTranslateEntryButton = $(this);
+        lastTranslateEntryButton = activeTranslator !== Translators.VIETPHRASE ? $(this) : null;
       }
     } catch (error) {
       console.error(error);
