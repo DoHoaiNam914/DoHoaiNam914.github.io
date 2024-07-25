@@ -1123,7 +1123,7 @@ $translatorDropdown.find('.dropdown-item').click(function onClick() {
       if (currentTranslator == null) currentTranslator = new Vietphrase($addDeLeZhaoSwitch.prop('checked'), $multiplicationAlgorithmRadio.filter('[checked]').val());
       break;
     }
-    case WEBNOVEL_TRANSLATE: {
+    case Translators.WEBNOVEL_TRANSLATE: {
       if (currentTranslator == null) currentTranslator = new WebnovelTranslate();
       break;
     }
@@ -1700,7 +1700,7 @@ $translateEntryButtons.click(async function onClick() {
           if (translator == null) translator = new Papago(UUID);
           break;
         }
-        case WEBNOVEL_TRANSLATE: {
+        case Translators.WEBNOVEL_TRANSLATE: {
           if (currentTranslator == null) currentTranslator = new WebnovelTranslate();
           break;
         }
