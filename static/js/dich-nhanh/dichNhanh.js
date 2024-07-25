@@ -1521,7 +1521,19 @@ $('#clear-glossary-button').on('click', () => {
 $glossaryListSelect.change(function onChange() {
   const activeGlossaryList = $(this).val();
   reloadGlossary(activeGlossaryList);
-  if ($sourceEntryInput.val().length > 0 && (Object.hasOwn(glossary[activeGlossaryList], $sourceEntryInput.val()) || window.confirm('Bạn có muốn chuyển đổi lại chứ?'))) $sourceEntryInput.trigger('input');
+  if ($sourceEntryInput.val().length > 0) {
+    if (Object.hasOwn(glossary[activeGlossaryList], $sourceEntryInput.val())) {
+      $targetEntryTextarea.val(currentGlossary[text]);
+      $removeButton.removeClass('disabled');
+      lastTranslateEntryButton = null;
+    } else if (window.confirm('Bạn có muốn chuyển đổi lại chứ?')) {
+      if (lastTranslateEntryButton != null) lastTranslateEntryButton.click();
+      else $translateEntryButtons.filter(`[data-translator="vietphrase"][data-lang="${$glossaryListSelect.val() === 'vietPhrase' ? 'vi' : 'SinoVietnamese'}"]`).click();
+      $removeButton.addClass('disabled');
+    }
+
+    $addButton.removeClass('disabled');
+  }
 });
 
 $sourceEntryInput.on('input', async function onInput() {
@@ -1533,7 +1545,6 @@ $sourceEntryInput.on('input', async function onInput() {
     if (Object.hasOwn(currentGlossary, text)) {
       $targetEntryTextarea.val(currentGlossary[text]);
       $removeButton.removeClass('disabled');
-      lastTranslateEntryButton = null;
     } else {
       if (lastTranslateEntryButton != null) lastTranslateEntryButton.click();
       else $translateEntryButtons.filter(`[data-translator="vietphrase"][data-lang="${$glossaryListSelect.val() === 'vietPhrase' ? 'vi' : 'SinoVietnamese'}"]`).click();
@@ -1541,6 +1552,7 @@ $sourceEntryInput.on('input', async function onInput() {
     }
 
     $addButton.removeClass('disabled');
+    lastTranslateEntryButton = null;
   } else {
     $targetEntryTextarea.val(null);
     $addButton.addClass('disabled');
