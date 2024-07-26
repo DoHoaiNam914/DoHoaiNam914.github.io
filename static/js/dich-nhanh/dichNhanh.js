@@ -1734,7 +1734,7 @@ $translateEntryButtons.click(async function onClick() {
           break;
         }
         default: {
-          await translator.translateText(text, targetLanguage);
+          await translator.translateText(activeTranslator === Translators.WEBNOVEL_TRANSLATE ? `　　${text.trimStart().replaceAll(/^\s+/g, '')}` : text, targetLanguage);
           break;
         }
       }
