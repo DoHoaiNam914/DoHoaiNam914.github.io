@@ -28,22 +28,22 @@ class WebnovelTranslate extends Translator {
       const CJ_LANGUAGE_CODE_LIST = ['ja', 'zh-CN', 'zh-TW'];
       const responses = [];
 
-      while (lines.length > 0 && [...queryLines, lines[0]].join(CJ_LANGUAGE_CODE_LIST.some((element) => sourceLanguage === element) ? '||||' : '\\n').length <= this.maxDataPerRequest && [...queryLines, lines[0]].join('\n').length <= this.maxContentLengthPerRequest && (queryLines.length + 1) <= this.maxContentLinePerRequest) {
+      while (lines.length > 0 && [...queryLines, lines[0]].join((sourceLanguage === 'auto' && /[\p{Script=Hani}\p{Script=Hira}\p{Script=Kana}]{10,}/u.test(text)) || CJ_LANGUAGE_CODE_LIST.some((element) => sourceLanguage === element) ? '||||' : '\\n').length <= this.maxDataPerRequest && [...queryLines, lines[0]].join('\n').length <= this.maxContentLengthPerRequest && (queryLines.length + 1) <= this.maxContentLinePerRequest) {
         queryLines.push(lines.shift());
 
-        if (lines.length === 0 || [...queryLines, lines[0]].join(CJ_LANGUAGE_CODE_LIST.some((element) => sourceLanguage === element) ? '||||' : '\\n').length > this.maxDataPerRequest || [...queryLines, lines[0]].join('\n').length > this.maxContentLengthPerRequest || (queryLines.length + 1) > this.maxContentLinePerRequest) {
+        if (lines.length === 0 || [...queryLines, lines[0]].join((sourceLanguage === 'auto' && /[\p{Script=Hani}\p{Script=Hira}\p{Script=Kana}]{10,}/u.test(text)) || CJ_LANGUAGE_CODE_LIST.some((element) => sourceLanguage === element) ? '||||' : '\\n').length > this.maxDataPerRequest || [...queryLines, lines[0]].join('\n').length > this.maxContentLengthPerRequest || (queryLines.length + 1) > this.maxContentLinePerRequest) {
           responses.push($.ajax({
             cache: false,
             method: 'GET',
-            url: `${Utils.CORS_PROXY}http://translate.google.com/translate_a/single?client=${this.clientName}&ie=UTF-8&oe=UTF-8&dt=bd&dt=ex&dt=ld&dt=md&dt=rw&dt=rm&dt=ss&dt=t&dt=at&dt=gt&dt=qc&sl=${sourceLanguage}&tl=${targetLanguage}&hl=${targetLanguage}&q=${encodeURIComponent(queryLines.join(CJ_LANGUAGE_CODE_LIST.some((element) => sourceLanguage === element) ? '||||' : '\\n'))}`,
+            url: `${Utils.CORS_PROXY}http://translate.google.com/translate_a/single?client=${this.clientName}&ie=UTF-8&oe=UTF-8&dt=bd&dt=ex&dt=ld&dt=md&dt=rw&dt=rm&dt=ss&dt=t&dt=at&dt=gt&dt=qc&sl=${sourceLanguage}&tl=${targetLanguage}&hl=${targetLanguage}&q=${encodeURIComponent(queryLines.join((sourceLanguage === 'auto' && /[\p{Script=Hani}\p{Script=Hira}\p{Script=Kana}]{10,}/u.test(text)) || CJ_LANGUAGE_CODE_LIST.some((element) => sourceLanguage === element) ? '||||' : '\\n'))}`,
           }));
           queryLines = [];
         }
       }
 
       await Promise.all(responses);
-      console.log('DEBUG:', responses.map((element) => element.responseJSON[0].filter(([__, second]) => second != null).map(([first, second]) => [second, first, CJ_LANGUAGE_CODE_LIST.some((b) => sourceLanguage === b) ? first.replaceAll('||||', '\n') : first.replaceAll(/\\n/gi, '\n')])));
-      this.result = responses.map((a) => a.responseJSON[0].filter(([__, second]) => second != null).map(([first, second]) => (CJ_LANGUAGE_CODE_LIST.some((b) => sourceLanguage === b) ? first.replaceAll(/\|{4}\s*/g, '\n') : first.replaceAll(/\\n\s*/gi, '\n'))).join('').split('\n').map((b) => b.trimEnd()).join('\n')).join('\n');
+      console.log('DEBUG:', responses.map((element) => element.responseJSON[0].filter(([__, second]) => second != null).map(([first, second]) => [second, first, (sourceLanguage === 'auto' && /[\p{Script=Hani}\p{Script=Hira}\p{Script=Kana}]{10,}/u.test(text)) || CJ_LANGUAGE_CODE_LIST.some((b) => sourceLanguage === b) ? first.replaceAll('||||', '\n') : first.replaceAll(/\\n/gi, '\n')])));
+      this.result = responses.map((a) => a.responseJSON[0].filter(([__, second]) => second != null).map(([first, second]) => ((sourceLanguage === 'auto' && /[\p{Script=Hani}\p{Script=Hira}\p{Script=Kana}]{10,}/u.test(text)) || CJ_LANGUAGE_CODE_LIST.some((b) => sourceLanguage === b) ? first.replaceAll(/\|{4}\s*/g, '\n') : first.replaceAll(/\\n\s*/gi, '\n'))).join('').split('\n').map((b) => b.replace(/^\s+/g, '').trimEnd()).join('\n')).join('\n');
       super.translateText(text, targetLanguage, sourceLanguage);
       return this.result;
     } catch (error) {
