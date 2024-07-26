@@ -1511,7 +1511,19 @@ $glossaryModal.on('shown.bs.modal', () => {
 
   if (text.length > 0) {
     if ($sourceEntryInput.autocomplete('option', 'disabled')) $sourceEntryInput.autocomplete('disable');
-    $sourceEntryInput.trigger('input');
+    const activeGlossaryList = $glossaryListSelect.val();
+    const currentGlossary = glossary[activeGlossaryList];
+
+    if (Object.hasOwn(currentGlossary, text)) {
+      $targetEntryTextarea.val(currentGlossary[text]);
+      $removeButton.removeClass('disabled');
+    } else {
+      if (lastTranslateEntryButton != null) lastTranslateEntryButton.click();
+      else $translateEntryButtons.filter(`[data-translator="vietphrase"][data-lang="${activeGlossaryList === 'vietPhrase' ? 'vi' : 'SinoVietnamese'}"]`).click();
+      $removeButton.addClass('disabled');
+    }
+
+    $addButton.removeClass('disabled');
   }
 
   $sourceEntryInput.autocomplete('enable');
@@ -1555,12 +1567,9 @@ $glossaryListSelect.change(function onChange() {
     if (Object.hasOwn(currentGlossary, $sourceEntryInput.val())) {
       $targetEntryTextarea.val(currentGlossary[$sourceEntryInput.val()]);
       $removeButton.removeClass('disabled');
+      lastTranslateEntryButton = null;
     } else {
-      if (window.confirm('Bạn có muốn chuyển đổi lại chứ?')) {
-        if (lastTranslateEntryButton != null) lastTranslateEntryButton.click();
-        else $translateEntryButtons.filter(`[data-translator="vietphrase"][data-lang="${$glossaryListSelect.val() === 'vietPhrase' ? 'vi' : 'SinoVietnamese'}"]`).click();
-      }
-
+      if (window.confirm('Bạn có muốn chuyển đổi lại chứ?')) $translateEntryButtons.filter(`[data-translator="vietphrase"][data-lang="${activeGlossaryList === 'vietPhrase' ? 'vi' : 'SinoVietnamese'}"]`).click();
       $removeButton.addClass('disabled');
     }
 
@@ -1572,13 +1581,15 @@ $sourceEntryInput.on('input', async function onInput() {
   const text = $(this).val();
 
   if (text.length > 0) {
-    const currentGlossary = glossary[$glossaryListSelect.val()];
+    const activeGlossaryList = $glossaryListSelect.val();
+    const currentGlossary = glossary[activeGlossaryList];
 
     if (Object.hasOwn(currentGlossary, text)) {
       $targetEntryTextarea.val(currentGlossary[text]);
       $removeButton.removeClass('disabled');
+      lastTranslateEntryButton = null;
     } else {
-      $translateEntryButtons.filter(`[data-translator="vietphrase"][data-lang="${$glossaryListSelect.val() === 'vietPhrase' ? 'vi' : 'SinoVietnamese'}"]`).click();
+      $translateEntryButtons.filter(`[data-translator="vietphrase"][data-lang="${activeGlossaryList === 'vietPhrase' ? 'vi' : 'SinoVietnamese'}"]`).click();
       $removeButton.addClass('disabled');
     }
 
