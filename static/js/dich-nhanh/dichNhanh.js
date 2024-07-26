@@ -1550,7 +1550,9 @@ $glossaryListSelect.change(function onChange() {
   reloadGlossary(activeGlossaryList);
 
   if ($sourceEntryInput.val().length > 0) {
-    if (Object.hasOwn(glossary[activeGlossaryList], $sourceEntryInput.val())) {
+    const currentGlossary = glossary[activeGlossaryList];
+
+    if (Object.hasOwn(currentGlossary, $sourceEntryInput.val())) {
       $targetEntryTextarea.val(currentGlossary[$sourceEntryInput.val()]);
       $removeButton.removeClass('disabled');
     } else {
