@@ -23,7 +23,7 @@ class WebnovelTranslate extends Translator {
 
   async translateText(text, targetLanguage, sourceLanguage = this.DefaultLanguage.SOURCE_LANGUAGE) {
     try {
-      const lines = text.split(/\n/);
+      const lines = text.split('\n');
       let queryLines = [];
       const CJ_LANGUAGE_CODE_LIST = ['ja', 'zh-CN', 'zh-TW'];
       const responses = [];
@@ -43,7 +43,7 @@ class WebnovelTranslate extends Translator {
 
       await Promise.all(responses);
       console.log('DEBUG:', responses.map((element) => element.responseJSON[0].filter(([__, second]) => second != null).map(([first, second]) => [second, first, CJ_LANGUAGE_CODE_LIST.some((b) => sourceLanguage === b) ? first.replaceAll('||||', '\n') : first.replaceAll(/\\n/gi, '\n')])));
-      this.result = responses.map((a) => a.responseJSON[0].filter(([__, second]) => second != null).map(([first, second]) => (CJ_LANGUAGE_CODE_LIST.some((b) => sourceLanguage === b) ? first.replaceAll('||||', '\n') : first.replaceAll(/\\n/gi, '\n'))).join('').split('\n').map((b) => b.trim()).join('\n')).join('\n');
+      this.result = responses.map((a) => a.responseJSON[0].filter(([__, second]) => second != null).map(([first, second]) => (CJ_LANGUAGE_CODE_LIST.some((b) => sourceLanguage === b) ? first.replaceAll(/\|{4}\s*/g, '\n') : first.replaceAll(/\\n\s*/gi, '\n'))).join('').split('\n').map((b) => b.trimEnd()).join('\n')).join('\n');
       super.translateText(text, targetLanguage, sourceLanguage);
       return this.result;
     } catch (error) {
