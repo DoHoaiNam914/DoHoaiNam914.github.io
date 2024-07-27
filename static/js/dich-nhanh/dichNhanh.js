@@ -664,7 +664,7 @@ const translate = async function translateContentInTextarea(controller = new Abo
 
   try {
     const startTime = Date.now();
-    const text = $inputTextarea.val().split('\n').filter((element) => activeTranslator !== Translators.WEBNOVEL_TRANSLATE || element.replace(/^\s+/g, '').trim().length > 0).map((element) => (activeTranslator === Translators.WEBNOVEL_TRANSLATE ? `　　${element.replace(/^\s+/g, '').trimStart()}` : element)).join('\n');
+    const text = $inputTextarea.val().split('\n').filter((element) => $activeTranslator.val() !== Translators.WEBNOVEL_TRANSLATE || element.replace(/^\s+/, '').trim().length > 0).map((element) => ($activeTranslator.val() === Translators.WEBNOVEL_TRANSLATE ? `　　${element.replace(/^\s+/, '').trimStart()}` : element)).join('\n');
     const targetLanguage = $targetLanguageSelect.val();
 
     switch ($activeTranslator.val()) {
@@ -1735,7 +1735,7 @@ $translateEntryButtons.click(async function onClick() {
           break;
         }
         default: {
-          await translator.translateText(activeTranslator === Translators.WEBNOVEL_TRANSLATE ? `　　${text.replace(/^\s+/g, '').trimStart()}` : text, targetLanguage);
+          await translator.translateText(activeTranslator === Translators.WEBNOVEL_TRANSLATE ? `　　${text.replace(/^\s+/, '').trimStart()}` : text, targetLanguage);
           break;
         }
       }
