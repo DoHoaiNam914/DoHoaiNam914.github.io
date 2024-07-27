@@ -698,7 +698,8 @@ const translate = async function translateContentInTextarea(controller = new Abo
     if (!controller.signal.aborted) {
       const paragraph = document.createElement('p');
       paragraph.innerText = `Bản dịch thất bại: ${error}`;
-      $resultTextarea.appendChild(paragraph);
+      $resultTextarea.html(null);
+      $resultTextarea.append(paragraph);
     }
 
     translators[$activeTranslator.val()] = null;
