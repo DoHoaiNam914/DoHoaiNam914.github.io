@@ -660,14 +660,14 @@ const buildResult = function buildResultContentForTextarea(text, result) {
 };
 
 const translate = async function translateContentInTextarea(controller = new AbortController()) {
-  const activeTranslator = $translatorDropdown.find('.active').val();
+  const $activeTranslator = $translatorDropdown.find('.active');
 
   try {
     const startTime = Date.now();
     const text = $inputTextarea.val().split('\n').filter((element) => activeTranslator !== Translators.WEBNOVEL_TRANSLATE || element.replace(/^\s+/g, '').trim().length > 0).map((element) => (activeTranslator === Translators.WEBNOVEL_TRANSLATE ? `　　${element.replace(/^\s+/g, '').trimStart()}` : element)).join('\n');
     const targetLanguage = $targetLanguageSelect.val();
 
-    switch (activeTranslator) {
+    switch ($activeTranslator.val()) {
       case Translators.VIETPHRASE: {
         await currentTranslator.translateText(text, targetLanguage, glossary, {
           autocapitalize: true,
@@ -701,8 +701,8 @@ const translate = async function translateContentInTextarea(controller = new Abo
       $resultTextarea.appendChild(paragraph);
     }
 
-    translators[activeTranslator] = null;
-    $translatorDropdown.find('.active').click();
+    translators[$activeTranslator.val()] = null;
+    $activeTranslator.click();
   }
 };
 
