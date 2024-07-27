@@ -42,8 +42,8 @@ class WebnovelTranslate extends Translator {
       }
 
       await Promise.all(responses);
-      console.log('DEBUG:', responses.map((element) => element.responseJSON[0].filter(([__, second]) => second != null).map(([first, second]) => [second, first, CJ_LANGUAGE_CODE_LIST.some((b) => sourceLanguage === b) ? first.replaceAll(/(?:[ |]{2,4}|\|{1,4})\s*/g, '\n') : first.replaceAll(/\\n\s*/gi, '\n')])));
-      this.result = responses.map((a) => a.responseJSON[0].filter(([__, second]) => second != null).map(([first, second]) => (CJ_LANGUAGE_CODE_LIST.some((b) => sourceLanguage === b) ? first.replaceAll(/(?:[ |]{2,4}|\|{1,4})\s*/g, '\n') : first.replaceAll(/\\n\s*/gi, '\n'))).join('').split('\n').map((b) => b.replace(/^\s+/g, '').trimEnd()).join('\n')).join('\n');
+      console.log('DEBUG:', responses.map((element) => element.responseJSON[0].filter(([__, second]) => second != null).map(([first, second]) => [second, first, CJ_LANGUAGE_CODE_LIST.some((b) => sourceLanguage === b) ? first.replaceAll(/\s*(?:[ |]{2,4}|\|{1,4})\s*/g, '\n') : first.replaceAll(/\s*\\ ?n\s*/gi, '\n')])));
+      this.result = responses.map((a) => a.responseJSON[0].filter(([__, second]) => second != null).map(([first, second]) => (CJ_LANGUAGE_CODE_LIST.some((b) => sourceLanguage === b) ? first.replaceAll(/\s*(?:[ |]{2,4}|\|{1,4})\s*/g, '\n') : first.replaceAll(/\s*\\ ?n\s*/gi, '\n'))).join('')).join('\n');
       super.translateText(text, targetLanguage, sourceLanguage);
       return this.result;
     } catch (error) {
