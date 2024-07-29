@@ -876,6 +876,10 @@ $(document).ready(async () => {
   reloadGlossary($glossaryListSelect.val());
 });
 
+$(window).on('keydown', (event) => {
+  if (event.ctrlKey && event.key === 'r') event.preventDefault();
+});
+
 $('.language-select').on('change', () => {
   $retranslateButton.click();
 });
@@ -981,17 +985,35 @@ $inputTextarea.on('keypress', (event) => {
   }
 });
 
-$resultTextarea.on('keydown', (event) => {
+$resultTextarea.on('keydown', function onKeydown(event) {
   const allowKey = [
-    'Escape', 'F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10', 'F11', 'F12', 'PrintScreen', 'ScrollLock', 'Pause', 'Cancel',
+    'F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10', 'F11', 'F12', 'PrintScreen', 'ScrollLock', 'Pause', 'Cancel',
     'Insert', 'Home', 'PageUp', 'NumLock',
     'Tab', 'Enter', 'End', 'PageDown',
     'CapsLock',
-    'Shift', 'ArrowUp',
-    'Control', 'Meta', 'Alt', 'ContextMenu', 'ArrowLeft', 'ArrowDown', 'ArrowRight',
+    'Shift',
+    'Control', 'Meta', 'Alt', 'ContextMenu', 'ArrowLeft', 'ArrowRight',
   ];
 
-  return event.ctrlKey || (event.key === 'Escape' && document.activeElement.blur()) || allowKey.some((element) => event.key === element) || event.preventDefault();
+  if (event.ctrlKey || allowKey.some((element) => event.key === element)) {
+    if (event.ctrlKey && event.key === 'r') $retranslateButton.click();
+    return;
+  }
+
+  event.preventDefault();
+
+  const scrollAmount = 63;
+  const scrollSpeed = 150;
+
+  if (event.key === 'ArrowDown') {
+    $(this).stop(false, true).animate({
+      scrollTop: `+=${scrollAmount}`,
+    }, scrollSpeed);
+  } else if (event.key === 'ArrowUp') {
+    $(this).stop(false, true).animate({
+      scrollTop: `-=${scrollAmount}`,
+    }, scrollSpeed);
+  }
 });
 
 $resultTextarea.on('drag', (event) => {
