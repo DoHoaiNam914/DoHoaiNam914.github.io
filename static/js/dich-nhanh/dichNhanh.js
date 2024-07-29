@@ -1086,7 +1086,7 @@ $dropdownHasCollapse.on('show.bs.dropdown', function onHideBsDropdown() {
 });
 
 $fontStackText.change(function onChange() {
-  const values = $(this).val().split(/, */).filter((element) => element.length > 0).map((element) => fontMap[element.replaceAll(/['"]/g, '').trim()] ?? element.replaceAll(/['"]/g, '').trim());
+  const values = $(this).val().replaceAll(/['"]/g, '').split(/, */).filter((element) => element.length > 0).map((element) => fontMap[element.trim()] ?? element.trim());
   $(this).val(values.join(', '));
 
   $(document.documentElement).css('--opt-font-family', values.map((element) => {
