@@ -789,7 +789,7 @@ const saveGlossary = function saveGlossaryToLocalStorage() {
 $(document).ready(async () => {
   if (Utils.isOnMobile()) {
     const $textareas = $('.textarea');
-    $textareas.css('max-height', `${$textareas.prop('offsetHeight') - (5.6875 * 16)}px`);
+    $textareas.css('max-height', `${$textareas.prop('offsetHeight') - (5.6875 * 16) - 10}px`);
   }
 
   $resultTextarea.attr('contenteditable', !Utils.isOnMobile());
