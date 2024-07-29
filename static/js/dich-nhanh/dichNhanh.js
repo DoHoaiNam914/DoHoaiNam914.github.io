@@ -5,6 +5,7 @@
 const $addButton = $('#add-button');
 const $addDeLeZhaoSwitch = $('#add-de-le-zhao-switch');
 const $alignmentRadio = $('input[type="radio"][name="alignment-radio"]');
+const $boldTextSwitch = $('.bold-text-switch');
 const $copyButtons = $('.copy-button');
 const $defaultVietPhraseFileSelect = $('#default-viet-phrase-file-select');
 const $dropdownHasCollapse = $('.dropdown-has-collapse');
@@ -625,17 +626,18 @@ const buildResult = function buildResultContentForTextarea(text, result) {
             lostLineFixedNumber -= 1;
           } else {
             const paragraph = document.createElement('p');
+            const contentSpan = document.createElement('span');
+            contentSpan.className = 'paragraph';
+            contentSpan.innerText = resultLines[i];
 
             if (originalLines[i + lostLineFixedNumber].length > 0) {
               const idiomaticText = document.createElement('i');
               idiomaticText.innerText = originalLines[i + lostLineFixedNumber];
               paragraph.appendChild(idiomaticText);
               paragraph.innerHTML += resultLines[i].trim().length > 0 ? document.createElement('br').outerHTML : '';
-              const attentionText = document.createElement('b');
-              attentionText.innerText = resultLines[i];
-              paragraph.appendChild(attentionText);
+              paragraph.appendChild(contentSpan);
             } else {
-              paragraph.innerText = resultLines[i];
+              paragraph.appendChild(contentSpan);
             }
 
             resultDiv.appendChild(paragraph);
@@ -1083,8 +1085,8 @@ $dropdownHasCollapse.on('show.bs.dropdown', function onHideBsDropdown() {
   bootstrapCollapseInDropdown.show();
 });
 
-$fontStackText.on('change', function onChange() {
-  const values = $(this).val().split(/, */).filter((element) => element.length > 0).map((element) => fontMap[element.trim()] ?? element.trim());
+$fontStackText.change(function onChange() {
+  const values = $(this).val().split(/, */).filter((element) => element.length > 0).map((element) => fontMap[element.replaceAll(/['"]/g, '').trim()] ?? element.replaceAll(/['"]/g, '').trim());
   $(this).val(values.join(', '));
 
   $(document.documentElement).css('--opt-font-family', values.map((element) => {
@@ -1093,7 +1095,7 @@ $fontStackText.on('change', function onChange() {
   }).join(', '));
 });
 
-$fontSizeText.on('change', function onChange() {
+$fontSizeText.change(function onChange() {
   $(this).val(Math.min(parseFloat($(this).attr('max')), Math.max(parseFloat($(this).attr('min')), parseFloat($(this).val()))));
   $(document.documentElement).css('--opt-font-size', `${$(this).val()}em`);
 });
@@ -1102,16 +1104,30 @@ $themeDropdown.find('.dropdown-item').on('click', function onClick() {
   $(document.body).removeClass($themeDropdown.find('.active').val());
   $themeDropdown.find('.dropdown-item').removeClass('active');
   $(this).addClass('active');
+  const fontStack = $(this).data('font-family');
+  const fontSize = $(this).data('font-size');
+  const spacing = $(this).data('line-height');
+  const alignment = $(this).data('text-align');
+  const boldText = $(this).data('font-weight');
+  if (fontStack != null) $fontStackText.val(fontStack).change();
+  if (fontSize != null) $fontSizeText.val(fontSize).change();
   $(document.body).addClass($(this).val());
+  if (alignment != null && alignment.length > 0) $alignmentRadio.prop('checked', false).filter(`#${['com-amazon-kindle-', 'apple-books-quiet-', 'apple-books-focus-', 'bookwalker-'].some((element) => $(this).val().includes(element)) ? 'justify' : 'start'}-alignment-radio`).prop('checked', true).change();
+  if (spacing != null) $spacingText.val(spacing).change();
+  if (boldText != null) $boldTextSwitch.prop('checked', boldText === 'bold').change();
 });
 
-$spacingText.on('change', function onChange() {
+$spacingText.change(function onChange() {
   $(this).val(Math.min(parseFloat($(this).attr('max')), Math.max(parseFloat($(this).attr('min')), parseFloat($(this).val()))));
   $(document.documentElement).css('--opt-line-height', `${$(this).val()}em`);
 });
 
 $alignmentRadio.change(function onChange() {
   $(document.documentElement).css('--opt-text-align', $(this).val());
+});
+
+$boldTextSwitch.change(function onChange() {
+  $(document.documentElement).css('--opt-font-weight', $(this).prop('checked') ? 'bold' : 'normal');
 });
 
 $translatorDropdown.find('.dropdown-item').click(function onClick() {
