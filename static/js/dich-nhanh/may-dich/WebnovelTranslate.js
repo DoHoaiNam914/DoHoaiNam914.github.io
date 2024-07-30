@@ -43,7 +43,7 @@ class WebnovelTranslate extends Translator {
 
       await Promise.all(responses);
       if (text.split('\n').length > 1) console.log('DEBUG:', responses.map((element) => element.responseJSON[0].filter(([__, second]) => second != null).map(([first, second]) => [second, first])));
-      this.result = responses.map((a) => a.responseJSON[0].filter(([__, second]) => second != null).map(([first, second]) => [second, (CJ_LANGUAGE_CODE_LIST.some((b) => sourceLanguage === b) ? first.replace(/^\s+/, '').replaceAll(/\s*(?:[ |]{2,4}|\|{1,4})\s*/g, '\n') : first.replace(/^\s+/, '').replaceAll(/\s*\\ ?n\s*/gi, '\n'))]).map(([first, second]) => '\n'.repeat([...first.matchAll(CJ_LANGUAGE_CODE_LIST.some((b) => sourceLanguage === b) ? /\|{4}/g : /\\n/g)].length - [...first.matchAll(/\n/g)].length).concat(second)).join('')).join('\n');
+      this.result = responses.map((a) => a.responseJSON[0].filter(([__, second]) => second != null).map(([first, second]) => [second, CJ_LANGUAGE_CODE_LIST.some((b) => sourceLanguage === b) ? first.replace(/^\s+/, '').replaceAll(/\s*(?:[ |]{2,4}|\|{1,4})\s*/g, '\n') : first.replace(/^\s+/, '').replaceAll(/\s*\\ ?n\s*/gi, '\n')]).map(([first, second]) => '\n'.repeat([...first.matchAll(CJ_LANGUAGE_CODE_LIST.some((b) => sourceLanguage === b) ? /\|{4}/g : /\\n/g)].length - [...second.matchAll(/\n/g)].length).concat(second)).join('')).join('\n');
       super.translateText(text, targetLanguage, sourceLanguage);
       return this.result;
     } catch (error) {
