@@ -143,34 +143,13 @@
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Crimson_Text/CrimsonText-BoldItalic.ttf) format('truetype');
 }
 
-/* Domaine Display */
+/* iCiel Domaine Text */
 
 @font-face {
-  font-family: domaineDisp;
+  font-family: icielDomaineText;
   font-style: normal;
   font-weight: 400;
-  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Domaine%20Display/DomaineDisp-Regular.otf) format('opentype');
-}
-
-@font-face {
-  font-family: domaineDisp;
-  font-style: italic;
-  font-weight: 400;
-  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Domaine%20Display/DomaineDisp-RegularItalic.otf) format('opentype');
-}
-
-@font-face {
-  font-family: domaineDisp;
-  font-style: normal;
-  font-weight: 700;
-  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Domaine%20Display/DomaineDisp-Bold.otf) format('opentype');
-}
-
-@font-face {
-  font-family: domaineDisp;
-  font-style: italic;
-  font-weight: 700;
-  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Domaine%20Display/DomaineDisp-BoldItalic.otf) format('opentype');
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/iCielDomaineText-Regular.ttf) format('truetype');
 }
 
 /* HiraginoMin */
@@ -267,34 +246,34 @@
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Literata/Literata-Italic-VariableFont_opsz,wght.ttf) format('truetype');
 }
 
-/* Minion */
+/* Minion Pro */
 
 @font-face {
   font-family: minionPro;
   font-style: normal;
   font-weight: 400;
-  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Minion/MinionPro-Regular.otf) format('opentype');
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Minion%20Pro/MinionPro-Regular.otf) format('opentype');
 }
 
 @font-face {
   font-family: minionPro;
   font-style: italic;
   font-weight: 400;
-  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Minion/MinionPro-It.otf) format('opentype');
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Minion%20Pro/MinionPro-It.otf) format('opentype');
 }
 
 @font-face {
   font-family: minionPro;
   font-style: normal;
   font-weight: 700;
-  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Minion/MinionPro-Bold.otf) format('opentype');
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Minion%20Pro/MinionPro-Bold.otf) format('opentype');
 }
 
 @font-face {
   font-family: minionPro;
   font-style: italic;
   font-weight: 700;
-  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Minion/MinionPro-BoldIt.otf) format('opentype');
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Minion%20Pro/MinionPro-BoldIt.otf) format('opentype');
 }
 
 /* New York */
@@ -609,34 +588,34 @@
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Trixi%20Pro%20Regular.ttf) format('truetype');
 }
 
-/* SVN-Neue Helvetica */
+/* SVN-Helvetica Neue */
 
 @font-face {
   font-family: svnHelveticaNeue;
   font-style: normal;
   font-weight: 400;
-  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/SVN-Neue%20Helvetica/SVN-Helvetica%20Neue.ttf) format('truetype');
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/SVN-Helvetica%20Neue/SVN-Helvetica%20Neue.ttf) format('truetype');
 }
 
 @font-face {
   font-family: svnHelveticaNeue;
   font-style: italic;
   font-weight: 400;
-  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/SVN-Neue%20Helvetica/SVN-Helvetica%20Neue%20Italic.ttf) format('truetype');
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/SVN-Helvetica%20Neue/SVN-Helvetica%20Neue%20Italic.ttf) format('truetype');
 }
 
 @font-face {
   font-family: svnHelveticaNeue;
   font-style: normal;
   font-weight: 700;
-  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/SVN-Neue%20Helvetica/SVN-Helvetica%20Neue%20Bold.ttf) format('truetype');
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/SVN-Helvetica%20Neue/SVN-Helvetica%20Neue%20Bold.ttf) format('truetype');
 }
 
 @font-face {
   font-family: svnHelveticaNeue;
   font-style: italic;
   font-weight: 700;
-  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/SVN-Neue%20Helvetica/SVN-Helvetica%20Neue%20Bold%20Italic.ttf) format('truetype');
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/SVN-Helvetica%20Neue/SVN-Helvetica%20Neue%20Bold%20Italic.ttf) format('truetype');
 }
 
 /* SVN-Times New Roman */

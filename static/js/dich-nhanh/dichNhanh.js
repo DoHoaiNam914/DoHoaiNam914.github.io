@@ -76,10 +76,11 @@ const fontMap = {
   STSongTC: 'stsongTC',
   TBMincho: 'tbmincho',
   Thonburi: 'thonburi',
-  Minion: 'minionPro',
+  /* Các phông chữ của Waka */
+  'Minion Pro': 'minionPro',
   'SVN-Times New Roman': 'svnTimesNewRoman',
   Quicksand: 'quicksand',
-  'Domaine Display': 'domaineDisp',
+  'iCiel Domaine Text': 'icielDomaineText',
   'P22 Typewriter': 'p22Typewriter',
   'SVN-Helvetica Neue': 'svnHelveticaNeue',
   'Trixi Pro': 'trixiPro',
