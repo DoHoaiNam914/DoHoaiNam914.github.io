@@ -76,6 +76,13 @@ const fontMap = {
   STSongTC: 'stsongTC',
   TBMincho: 'tbmincho',
   Thonburi: 'thonburi',
+  Minion: 'minionPro',
+  'SVN-Times New Roman': 'svnTimesNewRoman',
+  Quicksand: 'quicksand',
+  'Domaine Display': 'domaineDisp',
+  'P22 Typewriter': 'p22Typewriter',
+  'SVN-Helvetica Neue': 'svnHelveticaNeue',
+  'Trixi Pro': 'trixiPro',
 };
 
 const Translators = {
