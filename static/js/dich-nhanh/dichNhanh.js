@@ -84,6 +84,18 @@ const fontMap = {
   'P22 Typewriter': 'p22Typewriter',
   'SVN-Helvetica Neue': 'svnHelveticaNeue',
   'Trixi Pro': 'trixiPro',
+  /* Các phông chữ của Google Play Sách */
+  Helvetica: 'helvetica',
+  Verdana: 'Verdana',
+  Baskerville: 'baskerville',
+  Cochin: 'cochin',
+  Palatino: 'palatino',
+  Times: 'times',
+  /* Các phông chữ của Rakuten Kobo */
+  Avenir: 'avenir',
+  OpenDyslexic: 'opendyslexic',
+  Optima: 'optima',
+  'Trebuchet MS': 'trebuchetMS',
 };
 
 const Translators = {
@@ -808,7 +820,7 @@ $(document).ready(async () => {
   $fontStackText.autocomplete({
     appendTo: '#settings-modal .modal-body',
     source: (request, response) => {
-      response($.ui.autocomplete.filter(autocompleteFontStackTextSource, request.term.split(/, */).pop()));
+      response($.grep(autocompleteFontStackTextSource, (elementOfArray) => new RegExp($.ui.autocomplete.escapeRegex(request.term.split(/, */).pop()), 'i').test(elementOfArray.label || elementOfArray.value || elementOfArray)));
     },
     focus: () => false,
     select: function onSelect(__, ui) {

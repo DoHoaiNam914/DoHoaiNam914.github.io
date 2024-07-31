@@ -14,6 +14,15 @@
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/AppleSDGothicNeo/AppleSDGothicNeoB00-07.otf) format('opentype');
 }
 
+/* Avenir */
+
+@font-face {
+  font-family: avenir;
+  font-style: normal;
+  font-weight: 400;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Avenir-Roman.ttf) format('truetype');
+}
+
 /* A-OTF Ryumin Pr5 */
 
 @font-face {
@@ -21,6 +30,36 @@
   font-style: normal;
   font-weight: 400;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/A-OTF%20Ryumin%20Pr5%20R-KL.otf) format('opentype');
+}
+
+/* Baskerville */
+
+@font-face {
+  font-family: baskerville;
+  font-style: normal;
+  font-weight: 400;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Baskerville/Baskerville.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: baskerville;
+  font-style: italic;
+  font-weight: 400;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Baskerville/Baskerville%20Italic.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: baskerville;
+  font-style: normal;
+  font-weight: 700;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Baskerville/Baskerville%20Bold.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: baskerville;
+  font-style: italic;
+  font-weight: 700;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Baskerville/Baskerville%20Bold%20Italic.ttf) format('truetype');
 }
 
 /* Bookerly */
@@ -113,6 +152,36 @@
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Charter%20210112/Charter%20Bold%20Italic.ttf) format('truetype');
 }
 
+/* Cochin */
+
+@font-face {
+  font-family: cochin;
+  font-style: normal;
+  font-weight: 400;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Cochin/Cochin.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: cochin;
+  font-style: italic;
+  font-weight: 400;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Cochin/Cochin-Italic.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: cochin;
+  font-style: normal;
+  font-weight: 700;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Cochin/Cochin-Bold.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: cochin;
+  font-style: italic;
+  font-weight: 700;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Cochin/Cochin-BoldItalic.ttf) format('truetype');
+}
+
 /* Crimson Text */
 
 @font-face {
@@ -143,13 +212,20 @@
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Crimson_Text/CrimsonText-BoldItalic.ttf) format('truetype');
 }
 
-/* iCiel Domaine Text */
+/* Helvetica */
 
 @font-face {
-  font-family: icielDomaineText;
+  font-family: helvetica;
   font-style: normal;
   font-weight: 400;
-  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/iCielDomaineText-Regular.ttf) format('truetype');
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Helvetica/Helvetica.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: helvetica;
+  font-style: normal;
+  font-weight: 700;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Helvetica/Helvetica%20Bold.ttf) format('truetype');
 }
 
 /* HiraginoMin */
@@ -214,6 +290,15 @@
   font-style: normal;
   font-weight: 600;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/HiraKakuProN-W6-AlphaNum-01.otf) format('opentype');
+}
+
+/* iCiel Domaine Text */
+
+@font-face {
+  font-family: icielDomaineText;
+  font-style: normal;
+  font-weight: 400;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/iCielDomaineText-Regular.ttf) format('truetype');
 }
 
 /* Literata */
@@ -336,6 +421,66 @@
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Noto_Serif/NotoSerif-Italic-VariableFont_wdth,wght.ttf) format('truetype');
 }
 
+/* OpenDyslexic */
+
+@font-face {
+  font-family: opendyslexic;
+  font-style: normal;
+  font-weight: 400;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/opendyslexic-0.91.12/OpenDyslexic-Regular.woff2) format('woff2');
+}
+
+@font-face {
+  font-family: opendyslexic;
+  font-style: italic;
+  font-weight: 400;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/opendyslexic-0.91.12/OpenDyslexic-Italic.woff2) format('woff2');
+}
+
+@font-face {
+  font-family: opendyslexic;
+  font-style: normal;
+  font-weight: 700;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/opendyslexic-0.91.12/OpenDyslexic-Bold.woff2) format('woff2');
+}
+
+@font-face {
+  font-family: opendyslexic;
+  font-style: italic;
+  font-weight: 700;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/opendyslexic-0.91.12/OpenDyslexic-Bold-Italic.woff2) format('woff2');
+}
+
+/* Optima */
+
+@font-face {
+  font-family: optima;
+  font-style: normal;
+  font-weight: 400;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Optima/Optima-Regular.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: optima;
+  font-style: italic;
+  font-weight: 400;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Optima/Optima-Italic.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: optima;
+  font-style: normal;
+  font-weight: 700;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Optima/Optima-Bold.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: optima;
+  font-style: italic;
+  font-weight: 700;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Optima/Optima-BoldItalic.ttf) format('truetype');
+}
+
 /* P22 Typewriter */
 
 @font-face {
@@ -343,6 +488,36 @@
   font-style: normal;
   font-weight: 400;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/P22-Typewriter-Regular.ttf) format('truetype');
+}
+
+/* Palatino */
+
+@font-face {
+  font-family: palatino;
+  font-style: normal;
+  font-weight: 400;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Palatino/Palatino-Roman.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: palatino;
+  font-style: italic;
+  font-weight: 400;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Palatino/Palatino-Italic.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: palatino;
+  font-style: normal;
+  font-weight: 700;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Palatino/Palatino-Bold.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: palatino;
+  font-style: italic;
+  font-weight: 700;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Palatino/Palatino-BoldItalic.ttf) format('truetype');
 }
 
 /* PingFang HK */
@@ -577,6 +752,66 @@
   font-style: normal;
   font-weight: 700;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Thonburi/Thonburi-Bold-02.ttf) format('truetype');
+}
+
+/* Times */
+
+@font-face {
+  font-family: times;
+  font-style: normal;
+  font-weight: 400;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Times/Times-Roman.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: times;
+  font-style: italic;
+  font-weight: 400;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Times/Times-Italic.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: times;
+  font-style: normal;
+  font-weight: 700;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Times/Times-Bold.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: times;
+  font-style: italic;
+  font-weight: 700;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Times/Times-BoldItalic.ttf) format('truetype');
+}
+
+/* Trebuchet MS */
+
+@font-face {
+  font-family: trebuchetMS;
+  font-style: normal;
+  font-weight: 400;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Trebuchet%20MS/trebuc.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: trebuchetMS;
+  font-style: italic;
+  font-weight: 400;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Trebuchet%20MS/trebucit.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: trebuchetMS;
+  font-style: normal;
+  font-weight: 700;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Trebuchet%20MS/trebucbd.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: trebuchetMS;
+  font-style: italic;
+  font-weight: 700;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Trebuchet%20MS/trebucbi.ttf) format('truetype');
 }
 
 /* Trixi Pro */
