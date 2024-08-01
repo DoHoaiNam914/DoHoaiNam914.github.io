@@ -525,6 +525,13 @@
 @font-face {
   font-family: pingfangHK;
   font-style: normal;
+  font-weight: 300;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/PingFang/PingFangHK-Light.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: pingfangHK;
+  font-style: normal;
   font-weight: 400;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/PingFang/PingFangHK-Regular.ttf) format('truetype');
 }
@@ -541,6 +548,13 @@
 @font-face {
   font-family: pingfangSC;
   font-style: normal;
+  font-weight: 300;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/PingFang/PingFangSC-Light.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: pingfangSC;
+  font-style: normal;
   font-weight: 400;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/PingFang/PingFangSC-Regular.ttf) format('truetype');
 }
@@ -553,6 +567,13 @@
 }
 
 /* PingFang TC */
+
+@font-face {
+  font-family: pingfangTC;
+  font-style: normal;
+  font-weight: 300;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/PingFang/PingFangTC-Light.ttf) format('truetype');
+}
 
 @font-face {
   font-family: pingfangTC;
