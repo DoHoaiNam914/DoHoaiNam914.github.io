@@ -31,19 +31,19 @@ class WebnovelTranslate extends Translator {
       while (lines.length > 0 && [...queryLines, lines[0]].join(CJ_LANGUAGE_CODE_LIST.some((element) => sourceLanguage === element) ? '||||' : '\\n').length <= this.maxDataPerRequest && [...queryLines, lines[0]].join('\n').length <= this.maxContentLengthPerRequest && (queryLines.length + 1) <= this.maxContentLinePerRequest) {
         queryLines.push(lines.shift());
 
-        if (lines.length === 0 || [...queryLines, lines[0]].join(CJ_LANGUAGE_CODE_LIST.some((element) => sourceLanguage === element) ? '||||' : '\\n').length > this.maxDataPerRequest || [...queryLines, lines[0]].join('\n').length > this.maxContentLengthPerRequest || (queryLines.length + 1) > this.maxContentLinePerRequest) {
+        if (lines.length === 0 || [...queryLines, lines[0]].join('\\n').length > this.maxDataPerRequest || [...queryLines, lines[0]].join('\n').length > this.maxContentLengthPerRequest || (queryLines.length + 1) > this.maxContentLinePerRequest) {
           responses.push($.ajax({
             cache: false,
             method: 'GET',
-            url: `${Utils.CORS_PROXY}http://translate.google.com/translate_a/single?client=${this.clientName}&ie=UTF-8&oe=UTF-8&dt=bd&dt=ex&dt=ld&dt=md&dt=rw&dt=rm&dt=ss&dt=t&dt=at&dt=gt&dt=qc&sl=${sourceLanguage}&tl=${targetLanguage}&hl=${targetLanguage}&q=${encodeURIComponent(queryLines.join(CJ_LANGUAGE_CODE_LIST.some((element) => sourceLanguage === element) ? '||||' : '\\n'))}`,
+            url: `${Utils.CORS_PROXY}http://translate.google.com/translate_a/single?client=${this.clientName}&ie=UTF-8&oe=UTF-8&dt=bd&dt=ex&dt=ld&dt=md&dt=rw&dt=rm&dt=ss&dt=t&dt=at&dt=gt&dt=qc&sl=${sourceLanguage}&tl=${targetLanguage}&hl=${targetLanguage}&q=${encodeURIComponent(queryLines.join('\\n'))}`,
           }));
           queryLines = [];
         }
       }
 
       await Promise.all(responses);
-      if (text.split('\n').length > 1) console.log('DEBUG:', responses.map((element) => element.responseJSON[0].filter(([__, second]) => second != null).map(([first, second]) => [second, first, CJ_LANGUAGE_CODE_LIST.some((b) => sourceLanguage === b) ? first.replace(/^\s+/, '').replaceAll(/\s*(?:\| \|{2,3}|\|{2} \|{2}|\|{3} \||\|(?:(?: \|){1,3}| )|\|{1,4})\s*/g, '\n') : first.replace(/^\s+/, '').replaceAll(/\s*\\ ?n\s*/gi, '\n')]).map(([first, second, third]) => [first, second, [...first.matchAll(CJ_LANGUAGE_CODE_LIST.some((b) => sourceLanguage === b) ? /\|{4}/g : /\\n/g)].length, [...third.matchAll(/\n/g)].length]).map(([first, second, third, fourth]) => (third >= fourth ? [first, second] : [first, second, third, fourth]))));
-      this.result = responses.map((a) => a.responseJSON[0].filter(([__, second]) => second != null).map(([first, second]) => [second, CJ_LANGUAGE_CODE_LIST.some((b) => sourceLanguage === b) ? first.replace(/^\s+/, '').replaceAll(/\s*(?:\| \|{2,3}|\|{2} \|{2}|\|{3} \||\|(?:(?: \|){1,3}| )|\|{1,4})\s*/g, '\n') : first.replace(/^\s+/, '').replaceAll(/\s*\\ ?n\s*/gi, '\n')]).map(([first, second]) => second.concat('\n'.repeat([...first.matchAll(CJ_LANGUAGE_CODE_LIST.some((b) => sourceLanguage === b) ? /\|{4}/g : /\\n/g)].length - [...second.matchAll(/\n/g)].length))).join('')).join('\n');
+      if (text.split('\n').length > 1) console.log('DEBUG:', responses.map((element) => element.responseJSON[0].filter(([__, second]) => second != null).map(([first, second]) => [second, first, first.replace(/^\s+/, '').replaceAll(new RegExp(Utils.getTrieRegexPatternFromWords(['\\n', '\\ n']).source, 'gi'), '\n')]).map(([first, second, third]) => [first, second, [...first.matchAll(/\\n/g)].length, [...third.matchAll(/\n/g)].length]).map(([first, second, third, fourth]) => (third >= fourth ? [first, second] : [first, second, third, fourth])).filter((element) => element.length === 4)));
+      this.result = responses.map((a) => a.responseJSON[0].filter(([__, second]) => second != null).map(([first, second]) => [second, first.replace(/^\s+/, '').replaceAll(new RegExp(Utils.getTrieRegexPatternFromWords(['\\n', '\\ n']).source, 'gi'), '\n')]).map(([first, second]) => second.concat('\n'.repeat([...first.matchAll(/\\n/g)].length - [...second.matchAll(/\n/g)].length))).join('')).join('\n');
       super.translateText(text, targetLanguage, sourceLanguage);
       return this.result;
     } catch (error) {

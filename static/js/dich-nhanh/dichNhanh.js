@@ -1128,17 +1128,13 @@ $themeDropdown.find('.dropdown-item').on('click', function onClick() {
   const fontSize = $(this).data('font-size');
   const spacing = $(this).data('line-height');
   const alignment = $(this).data('text-align');
-  const textWeight = $(this).data('font-weight');
+  const fontWeight = $(this).data('font-weight');
   if (fontStack != null) $fontStackText.val(fontStack).change();
   if (fontSize != null) $fontSizeText.val(fontSize).change();
   $(document.body).addClass($(this).val());
   if (alignment != null && alignment.length > 0) $alignmentRadio.prop('checked', false).filter(`#${['com-amazon-kindle-', 'apple-books-quiet-', 'apple-books-focus-', 'bookwalker-'].some((element) => $(this).val().includes(element)) ? 'justify' : 'start'}-alignment-radio`).prop('checked', true).change();
   if (spacing != null) $spacingText.val(spacing).change();
-
-  if (textWeight != null) {
-    $boldTextSwitch.prop('checked', textWeight === 'bold').change();
-    if (textWeight !== 'bold') $(document.documentElement).css('--opt-font-weight', parseInt(textWeight, 10));
-  }
+  if (fontWeight != null) $boldTextSwitch.prop('checked', fontWeight === 'bold').change();
 });
 
 $spacingText.change(function onChange() {
@@ -1151,7 +1147,7 @@ $alignmentRadio.change(function onChange() {
 });
 
 $boldTextSwitch.change(function onChange() {
-  $(document.documentElement).css('--opt-font-weight', $(this).prop('checked') ? 'bold' : 'normal');
+  $(document.documentElement).css('--opt-font-weight', $(this).prop('checked') ? 'bold' : ($themeDropdown.find('.active').data('font-weight') ?? 'normal'));
 });
 
 $translatorDropdown.find('.dropdown-item').click(function onClick() {
