@@ -1692,8 +1692,8 @@ $('.define-button').on('click', function onClick() {
           [defineContent] = defineContent.split(/(?:)/u);
           break;
         }
-        case 'codePoint': {
-          defineContent = defineContent.codePointAt();
+        case 'vdict': {
+          defineContent = encodeURIComponent(defineContent).replaceAll('%20', '+');
           break;
         }
         // no default
