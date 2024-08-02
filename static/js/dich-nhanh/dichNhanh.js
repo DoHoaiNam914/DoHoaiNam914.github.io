@@ -698,7 +698,7 @@ const translate = async function translateContentInTextarea(controller = new Abo
 
   try {
     const startTime = Date.now();
-    const text = $inputTextarea.val().split('\n').filter((element) => $activeTranslator.val() !== Translators.WEBNOVEL_TRANSLATE || element.replace(/^\s+/, '').trim().length > 0).map((element) => ($activeTranslator.val() === Translators.WEBNOVEL_TRANSLATE ? `　　${element.replace(/^\s+/, '').trimStart()}` : element)).join('\n');
+    const text = $inputTextarea.val().split('\n').filter((element) => $activeTranslator.val() !== Translators.WEBNOVEL_TRANSLATE || element.replace(/^\s+/, '').trim().length > 0).map((element) => ($activeTranslator.val() === Translators.WEBNOVEL_TRANSLATE ? `\u3000\u3000${element.replace(/^\s+/, '').trimStart()}` : element)).join('\n');
     const targetLanguage = $targetLanguageSelect.val();
 
     switch ($activeTranslator.val()) {
