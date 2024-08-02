@@ -373,7 +373,12 @@ class Vietphrase extends Translator {
   }
 
   async translateText(text, targetLanguage, glossary, options) {
-    const hanViet = Object.entries(glossary.SinoVietnameses).map(([first, second]) => [first, second.toLowerCase()]).concat(glossary.hanViet).filter(function filter([first]) {
+    const SinoVietnameses = Object.entries(glossary.SinoVietnameses);
+    let hanViet = Object.entries(glossary.SinoVietnameses).map(([first, second]) => [first, second.toLowerCase()]).concat(glossary.hanViet).filter(function filter([first]) {
+      return !this[first] && (this[first] = 1);
+    }, {});
+    const hanVietMap = Object.fromEntries(hanViet);
+    hanViet = SinoVietnameses.filter(([__, second]) => !/\p{Script_Extensions=Hani}/u.test(second)).map(([first, second]) => [first, second.toLowerCase()]).concat(SinoVietnameses.filter(([__, second]) => /\p{Script_Extensions=Hani}/u.test(second)).map(([first, second]) => [first, hanVietMap[second]]), glossary.hanViet).filter(function filter([first]) {
       return !this[first] && (this[first] = 1);
     }, {});
 
