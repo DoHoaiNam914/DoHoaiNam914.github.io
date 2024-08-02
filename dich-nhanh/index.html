@@ -32,6 +32,23 @@
         --taiwanFontFamily: "方體", "PingFang TC", "黑體", "Heiti TC", "Microsoft JhengHei UI", "Microsoft JhengHei", Roboto, Noto, "Noto Sans CJK TC", sans-serif;
         --hongKongFontFamily: "方體", "PingFang HK", "方體", "PingFang TC", "黑體", "Heiti TC", "Microsoft JhengHei UI", "Microsoft JhengHei", Roboto, Noto, "Noto Sans CJK TC", sans-serif;
 
+        --amazon-kindle-fallback-font-family: Georgia, 'Times New Roman', Times, serif;
+
+        --apple-books-fallback-font-family: 'Times New Roman', '.PingFang SC', hiraginoSans, appleSDGothicNeo, thonburi;
+        --zh_CN-apple-books-fallback-font-family: '.PingFang SC', hiraginoSans, appleSDGothicNeo, thonburi;
+        --zh_TW-apple-books-fallback-font-family: '.PingFang TC', hiraginoSans, appleSDGothicNeo, thonburi;
+        --zh_HK-apple-books-fallback-font-family: '.PingFang HK', hiraginoSans, appleSDGothicNeo, thonburi;
+        --ja_JP-apple-books-fallback-font-family: hiraginoMinchoPro, '.PingFang SC', appleSDGothicNeo, thonburi;
+
+        --bookwalker-fallback-font-family: hiraginoMinchoPron;
+        --calibre-fallback-font-family: serif;
+
+        --google-play-books-fallback-font-family: literata;
+        --ja_JP-google-play-books-fallback-font-family: hiraginoMinchoPron;
+
+        --rakuten-kobo-fallback-font-family: Georgia;
+        --ja_JP-rakuten-kobo-fallback-font-family: hiraginomin;
+        
         --opt-font-size: 1em;
         --opt-line-height: 1.2em;
         --opt-font-weight: normal;
@@ -412,115 +429,115 @@
                     <h6 class="dropdown-header">Amazon Kindle</h6>
                   </li>
                   <li>
-                    <button type="button" class="dropdown-item" data-font-family="Bookerly, Georgia, &quot;Times New Roman&quot;, Times, serif" data-font-size="1.09375" value="com-amazon-kindle-white" data-line-height="1.55" data-text-align="justify">White</button>
+                    <button type="button" class="dropdown-item" data-font-family="Bookerly, --amazon-kindle-fallback-font-fam" data-font-size="1.09375" value="com-amazon-kindle-white" data-line-height="1.55" data-text-align="justify">White</button>
                   </li>
                   <li>
-                    <button type="button" class="dropdown-item" data-font-family="Hiragino Mincho ProN, Georgia, &quot;Times New Roman&quot;, Times, serif" data-font-size="1.09375" value="com-amazon-kindle-white" data-line-height="1.55">White - Japanese</button>
+                    <button type="button" class="dropdown-item" data-font-family="Hiragino Mincho ProN, --amazon-kindle-fallback-font-fam" data-font-size="1.09375" value="com-amazon-kindle-white" data-line-height="1.55">White - Japanese</button>
                   </li>
                   <li>
-                    <button type="button" class="dropdown-item" data-font-family="Bookerly, Georgia, &quot;Times New Roman&quot;, Times, serif" data-font-size="1.09375" value="jp-co-amazon-kindle-sepia" data-line-height="1.55" data-text-align="justify">Sepia</button>
+                    <button type="button" class="dropdown-item" data-font-family="Bookerly, --amazon-kindle-fallback-font-fam" data-font-size="1.09375" value="jp-co-amazon-kindle-sepia" data-line-height="1.55" data-text-align="justify">Sepia</button>
                   </li>
                   <li>
-                    <button type="button" class="dropdown-item" data-font-family="Hiragino Mincho ProN, Georgia, &quot;Times New Roman&quot;, Times, serif" data-font-size="1.09375" value="jp-co-amazon-kindle-sepia" data-line-height="1.55">Sepia - Japanese</button>
+                    <button type="button" class="dropdown-item" data-font-family="Hiragino Mincho ProN, --amazon-kindle-fallback-font-fam" data-font-size="1.09375" value="jp-co-amazon-kindle-sepia" data-line-height="1.55">Sepia - Japanese</button>
                   </li>
                   <li>
-                    <button type="button" class="dropdown-item" data-font-family="Bookerly, Georgia, &quot;Times New Roman&quot;, Times, serif" data-font-size="1.09375" value="com-amazon-kindle-green" data-line-height="1.55" data-text-align="justify">Green</button>
+                    <button type="button" class="dropdown-item" data-font-family="Bookerly, --amazon-kindle-fallback-font-fam" data-font-size="1.09375" value="com-amazon-kindle-green" data-line-height="1.55" data-text-align="justify">Green</button>
                   </li>
                   <li>
-                    <button type="button" class="dropdown-item" data-font-family="Hiragino Mincho ProN, Georgia, &quot;Times New Roman&quot;, Times, serif" data-font-size="1.09375" value="jp-co-amazon-kindle-green" data-line-height="1.55">Green - Japanese</button>
+                    <button type="button" class="dropdown-item" data-font-family="Hiragino Mincho ProN, --amazon-kindle-fallback-font-fam" data-font-size="1.09375" value="jp-co-amazon-kindle-green" data-line-height="1.55">Green - Japanese</button>
                   </li>
                   <li>
-                    <button type="button" class="dropdown-item" data-font-family="Bookerly, Georgia, &quot;Times New Roman&quot;, Times, serif" data-font-size="1.09375" value="com-amazon-kindle-black" data-line-height="1.55" data-text-align="justify">Black</button>
+                    <button type="button" class="dropdown-item" data-font-family="Bookerly, --amazon-kindle-fallback-font-fam" data-font-size="1.09375" value="com-amazon-kindle-black" data-line-height="1.55" data-text-align="justify">Black</button>
                   </li>
                   <li>
-                    <button type="button" class="dropdown-item" data-font-family="Hiragino Mincho ProN, Georgia, &quot;Times New Roman&quot;, Times, serif" data-font-size="1.09375" value="jp-co-amazon-kindle-black" data-line-height="1.55">Black - Japanese</button>
+                    <button type="button" class="dropdown-item" data-font-family="Hiragino Mincho ProN, --amazon-kindle-fallback-font-fam" data-font-size="1.09375" value="jp-co-amazon-kindle-black" data-line-height="1.55">Black - Japanese</button>
                   </li>
                   <li>
                     <h6 class="dropdown-header">Apple Sách</h6>
                   </li>
                   <li>
-                    <button type="button" class="dropdown-item" data-font-size="1" value="apple-books-original-light" data-font-family=", Times New Roman, PingFang SC, Hiragino Sans, Apple SD Gothic Neo, Thonburi" data-font-weight="400">Nguyên bản - Sáng</button>
+                    <button type="button" class="dropdown-item" data-font-size="1" value="apple-books-original-light" data-font-family="--apple-books-fallback-font-family" data-font-weight="400">Nguyên bản - Sáng</button>
                   </li>
                   <li>
-                    <button type="button" class="dropdown-item" data-font-size="1" value="apple-books-original-dark" data-font-family=", Times New Roman, PingFang SC, Hiragino Sans, Apple SD Gothic Neo, Thonburi" data-font-weight="400">Nguyên bản - Tối</button>
+                    <button type="button" class="dropdown-item" data-font-size="1" value="apple-books-original-dark" data-font-family="--apple-books-fallback-font-family" data-font-weight="400">Nguyên bản - Tối</button>
                   </li>
                   <li>
-                    <button type="button" class="dropdown-item" data-font-size="1.125" value="apple-books-quiet-light" data-font-family="Publico Text, Times New Roman, PingFang SC, Hiragino Sans, Apple SD Gothic Neo, Thonburi" data-font-weight="300" data-line-height="1.40" data-text-align="justify">Yên tĩnh - Sáng</button>
+                    <button type="button" class="dropdown-item" data-font-size="1.125" value="apple-books-quiet-light" data-font-family="Publico Text, --apple-books-fallback-font-family" data-font-weight="300" data-line-height="1.40" data-text-align="justify">Yên tĩnh - Sáng</button>
                   </li>
                   <li>
-                    <button type="button" class="dropdown-item" data-font-size="1.125" value="apple-books-quiet-dark" data-font-family="Publico Text, Times New Roman, PingFang SC, Hiragino Sans, Apple SD Gothic Neo, Thonburi" data-font-weight="300" data-line-height="1.40" data-text-align="justify">Yên tĩnh - Tối</button>
+                    <button type="button" class="dropdown-item" data-font-size="1.125" value="apple-books-quiet-dark" data-font-family="Publico Text, --apple-books-fallback-font-family" data-font-weight="300" data-line-height="1.40" data-text-align="justify">Yên tĩnh - Tối</button>
                   </li>
                   <li>
-                    <button type="button" class="dropdown-item" data-font-size="1.25" value="apple-books-paper-light" data-font-family="Charter, Times New Roman, PingFang SC, Hiragino Sans, Apple SD Gothic Neo, Thonburi" data-font-weight="300" data-line-height="1.55" data-text-align="start">Giấy - Sáng</button>
+                    <button type="button" class="dropdown-item" data-font-size="1.25" value="apple-books-paper-light" data-font-family="Charter, --apple-books-fallback-font-family" data-font-weight="300" data-line-height="1.55" data-text-align="start">Giấy - Sáng</button>
                   </li>
                   <li>
-                    <button type="button" class="dropdown-item" data-font-size="1.25" value="apple-books-paper-dark" data-font-family="Charter, Times New Roman, PingFang SC, Hiragino Sans, Apple SD Gothic Neo, Thonburi" data-font-weight="300" data-line-height="1.55" data-text-align="start">Giấy - Tối</button>
+                    <button type="button" class="dropdown-item" data-font-size="1.25" value="apple-books-paper-dark" data-font-family="Charter, --apple-books-fallback-font-family" data-font-weight="300" data-line-height="1.55" data-text-align="start">Giấy - Tối</button>
                   </li>
                   <li>
-                    <button type="button" class="dropdown-item" data-font-size="1.28125" value="apple-books-bold-light" data-font-family="SF Pro Text, Times New Roman, PingFang SC, Hiragino Sans, Apple SD Gothic Neo, Thonburi" data-font-weight="bold" data-line-height="1.50" data-text-align="start">Đậm - Sáng</button>
+                    <button type="button" class="dropdown-item" data-font-size="1.28125" value="apple-books-bold-light" data-font-family="SF Pro Text, --apple-books-fallback-font-family" data-font-weight="bold" data-line-height="1.50" data-text-align="start">Đậm - Sáng</button>
                   </li>
                   <li>
-                    <button type="button" class="dropdown-item" data-font-size="1.28125" value="apple-books-bold-dark" data-font-family="SF Pro Text, Times New Roman, PingFang SC, Hiragino Sans, Apple SD Gothic Neo, Thonburi" data-font-weight="bold" data-line-height="1.50" data-text-align="start">Đậm - Tối</button>
+                    <button type="button" class="dropdown-item" data-font-size="1.28125" value="apple-books-bold-dark" data-font-family="SF Pro Text, --apple-books-fallback-font-family" data-font-weight="bold" data-line-height="1.50" data-text-align="start">Đậm - Tối</button>
                   </li>
                   <li>
-                    <button type="button" class="dropdown-item" data-font-size="1.25" value="apple-books-calm-light" data-font-family="Canela Text, Times New Roman, PingFang SC, Hiragino Sans, Apple SD Gothic Neo, Thonburi" data-font-weight="300" data-line-height="1.55" data-text-align="start">Êm dịu - Sáng</button>
+                    <button type="button" class="dropdown-item" data-font-size="1.25" value="apple-books-calm-light" data-font-family="Canela Text, --apple-books-fallback-font-family" data-font-weight="300" data-line-height="1.55" data-text-align="start">Êm dịu - Sáng</button>
                   </li>
                   <li>
-                    <button type="button" class="dropdown-item" data-font-size="1.25" value="apple-books-calm-dark" data-font-family="Canela Text, Times New Roman, PingFang SC, Hiragino Sans, Apple SD Gothic Neo, Thonburi" data-font-weight="300" data-line-height="1.55" data-text-align="start">Êm dịu - Tối</button>
+                    <button type="button" class="dropdown-item" data-font-size="1.25" value="apple-books-calm-dark" data-font-family="Canela Text, --apple-books-fallback-font-family" data-font-weight="300" data-line-height="1.55" data-text-align="start">Êm dịu - Tối</button>
                   </li>
                   <li>
-                    <button type="button" class="dropdown-item" data-font-size="1.125" value="apple-books-focus-light" data-font-family="Proxima Nova, Times New Roman, PingFang SC, Hiragino Sans, Apple SD Gothic Neo, Thonburi" data-font-weight="300" data-line-height="1.40" data-text-align="justify">Tập trung - Sáng</button>
+                    <button type="button" class="dropdown-item" data-font-size="1.125" value="apple-books-focus-light" data-font-family="Proxima Nova, --apple-books-fallback-font-family" data-font-weight="300" data-line-height="1.40" data-text-align="justify">Tập trung - Sáng</button>
                   </li>
                   <li>
-                    <button type="button" class="dropdown-item" data-font-size="1.125" value="apple-books-focus-dark" data-font-family="Proxima Nova, Times New Roman, PingFang SC, Hiragino Sans, Apple SD Gothic Neo, Thonburi" data-font-weight="300" data-line-height="1.40" data-text-align="justify">Tập trung - Tối</button>
+                    <button type="button" class="dropdown-item" data-font-size="1.125" value="apple-books-focus-dark" data-font-family="Proxima Nova, --apple-books-fallback-font-family" data-font-weight="300" data-line-height="1.40" data-text-align="justify">Tập trung - Tối</button>
                   </li>
                   <li>
                     <h6 class="dropdown-header">BOOK☆WALKER</h6>
                   </li>
                   <li>
-                    <button type="button" class="dropdown-item" data-font-size="1" data-font-family=", Hiragino Mincho ProN" value="bookwalker-white" data-line-height="1.2" data-text-align="justify">White</button>
+                    <button type="button" class="dropdown-item" data-font-size="1" data-font-family="--bookwalker-fallback-font-family" value="bookwalker-white" data-line-height="1.2" data-text-align="justify">White</button>
                   </li>
                   <li>
-                    <button type="button" class="dropdown-item" data-font-size="1" data-font-family=", Hiragino Mincho ProN" value="bookwalker-black" data-line-height="1.2" data-text-align="justify">Black</button>
+                    <button type="button" class="dropdown-item" data-font-size="1" data-font-family="--bookwalker-fallback-font-family" value="bookwalker-black" data-line-height="1.2" data-text-align="justify">Black</button>
                   </li>
                   <li>
-                    <button type="button" class="dropdown-item" data-font-size="1" data-font-family=", Hiragino Mincho ProN" value="bookwalker-sepia" data-line-height="1.2" data-text-align="justify">Sepia</button>
+                    <button type="button" class="dropdown-item" data-font-size="1" data-font-family="--bookwalker-fallback-font-family" value="bookwalker-sepia" data-line-height="1.2" data-text-align="justify">Sepia</button>
                   </li>
                   <li>
-                    <button type="button" class="dropdown-item" data-font-size="1" data-font-family=", Hiragino Mincho ProN" value="bookwalker-cream" data-line-height="1.2" data-text-align="justify">Cream</button>
+                    <button type="button" class="dropdown-item" data-font-size="1" data-font-family="--bookwalker-fallback-font-family" value="bookwalker-cream" data-line-height="1.2" data-text-align="justify">Cream</button>
                   </li>
                   <li>
                     <h6 class="dropdown-header">Calibre</h6>
                   </li>
                   <li>
-                    <button type="button" class="dropdown-item" data-font-size="1" value="calibre-black" data-font-family=", serif">Black</button>
+                    <button type="button" class="dropdown-item" data-font-size="1" value="calibre-black" data-font-family="--calibre-fallback-font-family">Black</button>
                   </li>
                   <li>
-                    <button type="button" class="dropdown-item" data-font-size="1" value="calibre-sepia-dark" data-font-family=", serif">Sepia dark</button>
+                    <button type="button" class="dropdown-item" data-font-size="1" value="calibre-sepia-dark" data-font-family="--calibre-fallback-font-family">Sepia dark</button>
                   </li>
                   <li>
-                    <button type="button" class="dropdown-item" data-font-size="1" value="calibre-sepia-light" data-font-family=", serif">Sepia light</button>
+                    <button type="button" class="dropdown-item" data-font-size="1" value="calibre-sepia-light" data-font-family="--calibre-fallback-font-family">Sepia light</button>
                   </li>
                   <li>
-                    <button type="button" class="dropdown-item" data-font-size="1" value="calibre-system-light" data-font-family=", serif">System - Light</button>
+                    <button type="button" class="dropdown-item" data-font-size="1" value="calibre-system-light" data-font-family="--calibre-fallback-font-family">System - Light</button>
                   </li>
                   <li>
-                    <button type="button" class="dropdown-item" data-font-size="1" value="calibre-system-dark" data-font-family=", serif">System - Dark</button>
+                    <button type="button" class="dropdown-item" data-font-size="1" value="calibre-system-dark" data-font-family="--calibre-fallback-font-family">System - Dark</button>
                   </li>
                   <li>
-                    <button type="button" class="dropdown-item" data-font-size="1" value="calibre-white" data-font-family=", serif">White</button>
+                    <button type="button" class="dropdown-item" data-font-size="1" value="calibre-white" data-font-family="--calibre-fallback-font-family">White</button>
                   </li>
                   <li>
                     <h6 class="dropdown-header">Google Play Sách</h6>
                   </li>
                   <li>
-                    <button type="button" class="dropdown-item" data-font-family=", Literata" data-font-size="1.125" data-line-height="1.25" data-text-align="" value="google-play-books-light">Sáng</button>
+                    <button type="button" class="dropdown-item" data-font-family="--google-play-books-fallback-font-family" data-font-size="1.125" data-line-height="1.25" data-text-align="" value="google-play-books-light">Sáng</button>
                   </li>
                   <li>
-                    <button type="button" class="dropdown-item" data-font-family=", Literata" data-font-size="1.125" data-line-height="1.25" data-text-align="" value="google-play-books-dark">Tối</button>
+                    <button type="button" class="dropdown-item" data-font-family="--google-play-books-fallback-font-family" data-font-size="1.125" data-line-height="1.25" data-text-align="" value="google-play-books-dark">Tối</button>
                   </li>
                   <li>
-                    <button type="button" class="dropdown-item" data-font-family=", Literata" data-font-size="1.125" data-line-height="1.25" data-text-align="" value="google-play-books-sepia">Nâu đỏ</button>
+                    <button type="button" class="dropdown-item" data-font-family="--google-play-books-fallback-font-family" data-font-size="1.125" data-line-height="1.25" data-text-align="" value="google-play-books-sepia">Nâu đỏ</button>
                   </li>
                   <li>
                     <h6 class="dropdown-header">J-Novel Club</h6>
@@ -541,31 +558,31 @@
                     <h6 class="dropdown-header">Rakuten Kobo</h6>
                   </li>
                   <li>
-                    <button type="button" class="dropdown-item" value="rakuten-kobo-light" data-font-size="1.25" data-font-family="Georgia" data-line-height="1.5" data-text-align="">Light</button>
+                    <button type="button" class="dropdown-item" value="rakuten-kobo-light" data-font-size="1.25" data-font-family="--rakuten-kobo-fallback-font-family" data-line-height="1.5" data-text-align="">Light</button>
                   </li>
                   <li>
-                    <button type="button" class="dropdown-item" value="rakuten-kobo-sepia" data-font-size="1.25" data-font-family="Georgia" data-line-height="1.5" data-text-align="">Sepia</button>
+                    <button type="button" class="dropdown-item" value="rakuten-kobo-sepia" data-font-size="1.25" data-font-family="--rakuten-kobo-fallback-font-family" data-line-height="1.5" data-text-align="">Sepia</button>
                   </li>
                   <li>
-                    <button type="button" class="dropdown-item" value="rakuten-kobo-dark" data-font-size="1.25" data-font-family="Georgia" data-line-height="1.5" data-text-align="">Dark</button>
+                    <button type="button" class="dropdown-item" value="rakuten-kobo-dark" data-font-size="1.25" data-font-family="--rakuten-kobo-fallback-font-family" data-line-height="1.5" data-text-align="">Dark</button>
                   </li>
                   <li>
-                    <button type="button" class="dropdown-item" value="rakuten-kobo-charcoal" data-font-size="1.25" data-font-family="Georgia" data-line-height="1.5" data-text-align="">Charcoal</button>
+                    <button type="button" class="dropdown-item" value="rakuten-kobo-charcoal" data-font-size="1.25" data-font-family="--rakuten-kobo-fallback-font-family" data-line-height="1.5" data-text-align="">Charcoal</button>
                   </li>
                   <li>
                     <h6 class="dropdown-header">Waka</h6>
                   </li>
                   <li>
-                    <button type="button" class="dropdown-item" data-font-size="1.125" data-line-height="1.2" data-font-family="Noto Serif, " value="waka-white">Trắng</button>
+                    <button type="button" class="dropdown-item" data-font-size="1.125" data-line-height="1.2" data-font-family="Noto Serif" value="waka-white">Trắng</button>
                   </li>
                   <li>
-                    <button type="button" class="dropdown-item" data-font-size="1.125" data-line-height="1.2" data-font-family="Noto Serif, " value="waka-gray">Xám</button>
+                    <button type="button" class="dropdown-item" data-font-size="1.125" data-line-height="1.2" data-font-family="Noto Serif" value="waka-gray">Xám</button>
                   </li>
                   <li>
-                    <button type="button" class="dropdown-item" data-font-size="1.125" data-line-height="1.2" data-font-family="Noto Serif, " value="waka-sepia">Nâu đỏ</button>
+                    <button type="button" class="dropdown-item" data-font-size="1.125" data-line-height="1.2" data-font-family="Noto Serif" value="waka-sepia">Nâu đỏ</button>
                   </li>
                   <li>
-                    <button type="button" class="dropdown-item" data-font-size="1.125" data-line-height="1.2" data-font-family="Noto Serif, " value="waka-black">Đen</button>
+                    <button type="button" class="dropdown-item" data-font-size="1.125" data-line-height="1.2" data-font-family="Noto Serif" value="waka-black">Đen</button>
                   </li>
                   <li>
                     <h6 class="dropdown-header">xbreader</h6>

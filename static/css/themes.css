@@ -112,6 +112,14 @@
   --opt-hyperlink-color: #009ddc;
 }
 
+.apple-books-quiet-light .textarea > p > i, .apple-books-quiet-dark .textarea > p > i,
+.apple-books-paper-light .textarea > p > i, .apple-books-paper-dark .textarea > p > i,
+.apple-books-bold-light .textarea > p > i, .apple-books-bold-dark .textarea > p > i,
+.apple-books-calm-light .textarea > p > i, .apple-books-calm-dark .textarea > p > i,
+.apple-books-focus-light .textarea > p > i, .apple-books-focus-dark .textarea > p > i {
+  font-weight: 300 !important;
+}
+
 .bookwalker-white {
   --opt-color: #000;
   --opt-background-color: #fff;
