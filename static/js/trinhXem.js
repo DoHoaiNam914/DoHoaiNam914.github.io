@@ -100,7 +100,7 @@ function j_novelLoader(book, volume, spine) {
       const copyButton = document.createElement('button');
       copyButton.className = 'copy-button';
       copyButton.innerText = 'Sao chép';
-      copyButton.onclick = () => navigator.clipboard.writeText(document.querySelector(`#${spineId}`).innerText);
+      copyButton.onclick = () => navigator.clipboard.writeText(document.querySelector(`#${spineId}`).innerText.replaceAll(/\n{2,}/g, ''));
       $(document.body).append('\n', !data.toString().includes('<img') ? copyButton : '', `<div class="body${(data.toString().includes('<img') ? ' nomargin center"' : '"') + (!data.toString().includes('id="' + spineId + '"') ? ` id="${spineId}"` : '')}>${$(data).find('body').html()}</div>\n\n`);
       $('div.body').last().addClass($(data).find('body').attr('class'));
     });
@@ -166,7 +166,7 @@ function yenpressLoader(book, volume, spine) {
       const copyButton = document.createElement('button');
       copyButton.className = 'copy-button';
       copyButton.innerText = 'Sao chép';
-      copyButton.onclick = () => navigator.clipboard.writeText(document.querySelector(`#${spineId}`).innerText);
+      copyButton.onclick = () => navigator.clipboard.writeText(document.querySelector(`#${spineId}`).innerText.replaceAll(/\n{2,}/g, ''));
       $(document.body).append('\n', !data.toString().includes('<img') ? copyButton : '', `<div class="body"${!data.toString().includes('id="' + spineId + '"') ? ` id="${spineId}"` : ''}>${$(data).find('body').html()}</div>\n\n`);
       $('div.body').last().addClass($(data).find('body').attr('class'));
     });
@@ -220,7 +220,7 @@ function customLoader(book, volume, spine) {
       copyButton.className = 'copy-button';
       copyButton.innerText = 'Sao chép';
       copyButton.onclick = function () {
-        navigator.clipboard.writeText(this.nextSibling.innerText);
+        navigator.clipboard.writeText(this.nextSibling.innerText.replaceAll(/\n{2,}/g, ''));
       };
 
       $(document.body).append('\n', copyButton, `<div class="body"${!data.toString().includes('id="' + spineId + '"') ? ` id="${spineId}"` : ''}>${$(data).find('body').html().replace(/<rt>\p{scx=Hira}+<\/rt>/gu, '').replace(/<rt>(\p{scx=Kana}+)<\/rt>/gu, '（$1）')}</div>\n\n`);
