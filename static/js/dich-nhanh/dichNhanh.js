@@ -642,43 +642,35 @@ const loadLangSelectOptions = function loadLanguageListByTranslatorToHtmlOptions
 const buildResult = function buildResultContentForTextarea(text, result) {
   try {
     const resultDiv = document.createElement('div');
-
-    const originalLines = text.split('\n').map((element) => element.replace(/^\s+/, '').trim());
-    const resultLines = result.split('\n').map((element) => element.replace(/^\s+/, '').trim());
+    const resultLines = result.split('\n');
 
     if ($showOriginalTextSwitch.prop('checked')) {
+      const originalLines = text.split('\n');
       let lostLineFixedNumber = 0;
 
       for (let i = 0; i < originalLines.length; i += 1) {
-        if (i + lostLineFixedNumber < resultLines.length) {
-          if (originalLines[i + lostLineFixedNumber].length === 0 && resultLines[i].length > 0) {
-            lostLineFixedNumber += 1;
-            i -= 1;
-          } else if ($translatorDropdown.find('.active').val() === Translators.PAPAGO && resultLines[i].length === 0 && originalLines[i + lostLineFixedNumber].length > 0) {
-            lostLineFixedNumber -= 1;
-          } else {
-            const paragraph = document.createElement('p');
-            const contentSpan = document.createElement('span');
-            contentSpan.className = 'paragraph';
-            contentSpan.innerText = resultLines[i];
+        if (i + lostLineFixedNumber >= originalLines.length) break;
 
-            if (originalLines[i + lostLineFixedNumber].length > 0) {
-              const idiomaticText = document.createElement('i');
-              idiomaticText.innerText = originalLines[i + lostLineFixedNumber];
-              paragraph.appendChild(idiomaticText);
-              paragraph.innerHTML += resultLines[i].trim().length > 0 ? document.createElement('br').outerHTML : '';
-              paragraph.appendChild(contentSpan);
-            } else {
-              paragraph.appendChild(contentSpan);
-            }
-
-            resultDiv.appendChild(paragraph);
-          }
-        } else if (i + lostLineFixedNumber < originalLines.length) {
+        if (originalLines[i + lostLineFixedNumber].replace(/^\s+/, '').trim().length === 0 && resultLines[i].replace(/^\s+/, '').trim().length > 0) {
+          lostLineFixedNumber += 1;
+          i -= 1;
+        } else if ($translatorDropdown.find('.active').val() === Translators.PAPAGO && resultLines[i].replace(/^\s+/, '').trim().length === 0 && originalLines[i + lostLineFixedNumber].replace(/^\s+/, '').trim().length > 0) {
+          lostLineFixedNumber -= 1;
+        } else {
           const paragraph = document.createElement('p');
-          const idiomaticText = document.createElement('i');
-          idiomaticText.innerText = originalLines[i + lostLineFixedNumber];
-          paragraph.appendChild(idiomaticText);
+          const translation = document.createTextNode(resultLines[i]);
+          const lineBreak = document.createElement('br');
+
+          if (originalLines[i + lostLineFixedNumber].replace(/^\s+/, '').trim().length > 0) {
+            const idiomaticText = document.createElement('i');
+            idiomaticText.innerText = originalLines[i + lostLineFixedNumber];
+            paragraph.appendChild(idiomaticText);
+            paragraph.innerHTML += resultLines[i].replace(/^\s+/, '').trim().length > 0 ? lineBreak.cloneNode(true).outerHTML : '';
+            paragraph.appendChild(translation);
+          } else {
+            paragraph.appendChild(lineBreak.cloneNode(true));
+          }
+
           resultDiv.appendChild(paragraph);
         }
       }
