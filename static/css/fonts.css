@@ -231,14 +231,14 @@
 /* HiraginoMin */
 
 @font-face {
-  font-family: hiraginomin;
+  font-family: hiraginoMin;
   font-style: normal;
   font-weight: 300;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/HiraginoMin-W3-90msp-RKSJ-H-01.ttf) format('truetype');
 }
 
 @font-face {
-  font-family: hiraginomin;
+  font-family: hiraginoMin;
   font-style: normal;
   font-weight: 600;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/HiraginoMin-W6-90msp-RKSJ-H-01.ttf) format('truetype');
@@ -263,14 +263,14 @@
 /* Hiragino Mincho ProN */
 
 @font-face {
-  font-family: hiraginoMinchoPron;
+  font-family: hiraginoMinchoProN;
   font-style: normal;
   font-weight: 300;
   src: local('Hiragino Mincho ProN W3'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/HiraMinProN/HiraMinProN-W3-AlphaNum-01.otf) format('opentype');
 }
 
 @font-face {
-  font-family: hiraginoMinchoPron;
+  font-family: hiraginoMinchoProN;
   font-style: normal;
   font-weight: 600;
   src: local('Hiragino Mincho ProN W6'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/HiraMinProN/HiraMinProN-W6-AlphaNum-03.otf) format('opentype');
@@ -295,7 +295,7 @@
 /* iCiel Domaine Text */
 
 @font-face {
-  font-family: icielDomaineText;
+  font-family: iCielDomaineText;
   font-style: normal;
   font-weight: 400;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/iCielDomaineText-Regular.ttf) format('truetype');
@@ -424,28 +424,28 @@
 /* OpenDyslexic */
 
 @font-face {
-  font-family: opendyslexic;
+  font-family: openDyslexic;
   font-style: normal;
   font-weight: 400;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/opendyslexic-0.91.12/OpenDyslexic-Regular.woff2) format('woff2');
 }
 
 @font-face {
-  font-family: opendyslexic;
+  font-family: openDyslexic;
   font-style: italic;
   font-weight: 400;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/opendyslexic-0.91.12/OpenDyslexic-Italic.woff2) format('woff2');
 }
 
 @font-face {
-  font-family: opendyslexic;
+  font-family: openDyslexic;
   font-style: normal;
   font-weight: 700;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/opendyslexic-0.91.12/OpenDyslexic-Bold.woff2) format('woff2');
 }
 
 @font-face {
-  font-family: opendyslexic;
+  font-family: openDyslexic;
   font-style: italic;
   font-weight: 700;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/opendyslexic-0.91.12/OpenDyslexic-Bold-Italic.woff2) format('woff2');
@@ -523,7 +523,7 @@
 /* PingFang HK */
 
 @font-face {
-  font-family: pingfangHK;
+  font-family: pingFangHK;
   font-style: normal;
   font-weight: 300;
   src: local('PingFang HK Light'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/PingFang/PingFangHK-Light.ttf) format('truetype');
@@ -537,7 +537,7 @@
 }
 
 @font-face {
-  font-family: pingfangHK;
+  font-family: pingFangHK;
   font-style: normal;
   font-weight: 400;
   src: local('PingFang HK Regular'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/PingFang/PingFangHK-Regular.ttf) format('truetype');
@@ -551,7 +551,7 @@
 }
 
 @font-face {
-  font-family: pingfangHK;
+  font-family: pingFangHK;
   font-style: normal;
   font-weight: 600;
   src: local('PingFang HK Semibold'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/PingFang/PingFangHK-Semibold.ttf) format('truetype');
@@ -560,7 +560,7 @@
 /* PingFang SC */
 
 @font-face {
-  font-family: pingfangSC;
+  font-family: pingFangSC;
   font-style: normal;
   font-weight: 300;
   src: local('PingFang SC Light'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/PingFang/PingFangSC-Light.ttf) format('truetype');
@@ -574,7 +574,7 @@
 }
 
 @font-face {
-  font-family: pingfangSC;
+  font-family: pingFangSC;
   font-style: normal;
   font-weight: 400;
   src: local('PingFang SC Regular'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/PingFang/PingFangSC-Regular.ttf) format('truetype');
@@ -588,7 +588,7 @@
 }
 
 @font-face {
-  font-family: pingfangSC;
+  font-family: pingFangSC;
   font-style: normal;
   font-weight: 600;
   src: local('PingFang SC Semibold'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/PingFang/PingFangSC-Semibold.ttf) format('truetype');
@@ -597,7 +597,7 @@
 /* PingFang TC */
 
 @font-face {
-  font-family: pingfangTC;
+  font-family: pingFangTC;
   font-style: normal;
   font-weight: 300;
   src: local('PingFang TC Light'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/PingFang/PingFangTC-Light.ttf) format('truetype');
@@ -611,7 +611,7 @@
 }
 
 @font-face {
-  font-family: pingfangTC;
+  font-family: pingFangTC;
   font-style: normal;
   font-weight: 400;
   src: local('PingFang TC Regular'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/PingFang/PingFangTC-Regular.ttf) format('truetype');
@@ -625,7 +625,7 @@
 }
 
 @font-face {
-  font-family: pingfangTC;
+  font-family: pingFangTC;
   font-style: normal;
   font-weight: 600;
   src: local('PingFang TC Semibold'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/PingFang/PingFangTC-Semibold.ttf) format('truetype');
@@ -779,7 +779,7 @@
 /* STSong TC */
 
 @font-face {
-  font-family: stsongTC;
+  font-family: stSongTC;
   font-style: normal;
   font-weight: 400;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/STSong/STSongTC.ttf) format('truetype');
@@ -848,14 +848,14 @@
 /* TBMincho */
 
 @font-face {
-  font-family: tbmincho;
+  font-family: tbMincho;
   font-style: normal;
   font-weight: 300;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/TBMincho/TBMinchoMedium_213.ttf) format('truetype');
 }
 
 @font-face {
-  font-family: tbmincho;
+  font-family: tbMincho;
   font-style: normal;
   font-weight: 700;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/TBMincho/TBMinchoBold_213.ttf) format('truetype');

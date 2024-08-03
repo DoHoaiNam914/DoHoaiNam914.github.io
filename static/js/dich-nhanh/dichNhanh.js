@@ -35,7 +35,7 @@ const $translateEntryButtons = $('.translate-entry-button');
 const $translateTimer = $('#translate-timer');
 const $translatorDropdown = $('#translator-dropdown');
 
-const fontMap = {
+const FONT_MAPPING = {
   'Họ phông chữ hệ thống': '--system-font-family',
   Serif: 'serif',
   'Sans serif': 'sans-serif',
@@ -54,45 +54,45 @@ const fontMap = {
   'Họ phông chữ Đài Loan': '--taiwanFontFamily',
   'Họ phông chữ dự phòng của Amazon Kindle': '--amazon-kindle-fallback-font-family',
   'Họ phông chữ dự phòng của Apple Sách': '--apple-books-fallback-font-family',
-  'Họ phông chữ dự phòng của Apple Sách tiếng Trung giản thể': '--zh_CN-apple-books-fallback-font-family',
-  'Họ phông chữ dự phòng của Apple Sách tiếng Trung phồn thể cho Đài Loan': '--zh_TW-apple-books-fallback-font-family',
-  'Họ phông chữ dự phòng của Apple Sách tiếng Trung phồn thể cho Hồng Kông và Macao': '--zh_HK-apple-books-fallback-font-family',
-  'Họ phông chữ dự phòng của Apple Sách tiếng Nhật': '--ja_JP-apple-books-fallback-font-family',
+  'Họ phông chữ dự phòng của Apple Sách tiếng Trung giản thể': '--apple-books-fallback-font-family-zh_CN',
+  'Họ phông chữ dự phòng của Apple Sách tiếng Trung phồn thể cho Đài Loan': '---apple-books-fallback-font-family-zh_TW',
+  'Họ phông chữ dự phòng của Apple Sách tiếng Trung phồn thể cho Hồng Kông và Macao': '--apple-books-fallback-font-family-zh_HK',
+  'Họ phông chữ dự phòng của Apple Sách tiếng Nhật': '--apple-books-fallback-font-family-ja_JP',
   'Họ phông chữ dự phòng của BOOK☆WALKER': '--bookwalker-fallback-font-family',
   'Họ phông chữ dự phòng của Calibre': '--calibre-fallback-font-family',
   'Họ phông chữ dự phòng của Google Play Sách': '--google-play-books-fallback-font-family',
-  'Họ phông chữ dự phòng của Google Play Sách tiếng Nhật': '--ja_JP-google-play-books-fallback-font-family',
+  'Họ phông chữ dự phòng của Google Play Sách tiếng Nhật': '--google-play-books-fallback-font-family_ja_JP',
   'Họ phông chữ dự phòng của Rakuten Kobo': '--rakuten-kobo-fallback-font-family',
-  'Họ phông chữ dự phòng của Rakuten Kobo tiếng Nhật': '--ja_JP-rakuten-kobo-fallback-font-family',
+  'Họ phông chữ dự phòng của Rakuten Kobo tiếng Nhật': '--rakuten-kobo-fallback-font-family-ja_JP',
   'Apple SD Gothic Neo': 'appleSDGothicNeo',
   'A-OTF Ryumin Pr5': 'aOTFRyuminPr5',
   Bookerly: 'bookerly',
   'Canela Text': 'canelaText',
   Charter: 'charter',
   'Crimson Text': 'crimsonText',
-  HiraginoMin: 'hiraginomin',
+  HiraginoMin: 'hiraginoMin',
   'Hiragino Mincho Pro': 'hiraginoMinchoPro',
-  'Hiragino Mincho ProN': 'hiraginoMinchoPron',
+  'Hiragino Mincho ProN': 'hiraginoMinchoProN',
   'Hiragino Sans': 'hiraginoSans',
   Literata: 'literata',
   'New York': 'newYork',
   'Noto Serif': 'notoSerif',
-  'PingFang HK': 'pingfangHK',
-  'PingFang SC': 'pingfangSC',
-  'PingFang TC': 'pingfangTC',
+  'PingFang HK': 'pingFangHK',
+  'PingFang SC': 'pingFangSC',
+  'PingFang TC': 'pingFangTC',
   'Proxima Nova': 'proximaNova',
   'Publico Text': 'publicoText',
   Roboto: 'roboto',
   'SF Pro Text': 'sfProText',
   STBShusong: 'stbShusong',
-  STSongTC: 'stsongTC',
-  TBMincho: 'tbmincho',
+  STSongTC: 'stSongTC',
+  TBMincho: 'tbMincho',
   Thonburi: 'thonburi',
   /* Các phông chữ của Waka */
   'Minion Pro': 'minionPro',
   'SVN-Times New Roman': 'svnTimesNewRoman',
   Quicksand: 'quicksand',
-  'iCiel Domaine Text': 'icielDomaineText',
+  'iCiel Domaine Text': 'iCielDomaineText',
   'P22 Typewriter': 'p22Typewriter',
   'SVN-Helvetica Neue': 'svnHelveticaNeue',
   'Trixi Pro': 'trixiPro',
@@ -105,7 +105,7 @@ const fontMap = {
   Times: 'times',
   /* Các phông chữ của Rakuten Kobo */
   Avenir: 'avenir',
-  OpenDyslexic: 'opendyslexic',
+  OpenDyslexic: 'openDyslexic',
   Optima: 'optima',
   'Trebuchet MS': 'Trebuchet MS',
 };
@@ -828,7 +828,7 @@ $(document).ready(async () => {
 
   $resultTextarea.attr('contenteditable', !Utils.isOnMobile());
   sessionStorage.removeItem('glossary');
-  const autocompleteFontStackTextSource = Object.entries(fontMap).map(([first, second]) => ({ value: second, label: first }));
+  const autocompleteFontStackTextSource = Object.entries(FONT_MAPPING).map(([first, second]) => ({ value: second, label: first }));
   $fontStackText.autocomplete({
     appendTo: '#settings-modal .modal-body',
     source: (request, response) => {
@@ -1118,7 +1118,7 @@ $dropdownHasCollapse.on('show.bs.dropdown', function onHideBsDropdown() {
 });
 
 $fontStackText.change(function onChange() {
-  const values = $(this).val().replaceAll(/['"]/g, '').split(/, */).filter((element) => element.length > 0).map((element) => fontMap[element.trim()] ?? element.trim());
+  const values = $(this).val().replaceAll(/['"]/g, '').split(/, */).filter((element) => element.length > 0).map((element) => FONT_MAPPING[element.trim()] ?? element.trim());
   $(this).val(values.join(', '));
 
   $(document.documentElement).css('--opt-font-family', values.map((element) => {
