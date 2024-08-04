@@ -41,7 +41,7 @@ class WebnovelTranslate extends Translator {
       }
 
       await Promise.all(responses);
-      if (text.split('\n').length > 1) console.log('DEBUG:', responses.map((element) => element.responseJSON[0].filter(([__, second]) => second != null).map(([first, second]) => [second, first, first.replace(/^\s+/, '').replaceAll(new RegExp(Utils.getTrieRegexPatternFromWords(['\\n', '\\ n']).source, 'gi'), '\n')]).map(([first, second, third]) => [first, second, [...first.matchAll(/\\n/g)].length, [...third.matchAll(/\n/g)].length]).map(([first, second, third, fourth]) => (third >= fourth ? [first, second] : [first, second, third, fourth])).filter((element) => element.length === 4)));
+      if (text.split('\n').length > 1) console.log('DEBUG:', responses.map((element) => element.responseJSON[0].filter(([__, second]) => second != null).map(([first, second]) => [second, first, first.replace(/^\s+/, '').replaceAll(new RegExp(Utils.getTrieRegexPatternFromWords(['\\n', '\\ n']).source, 'gi'), '\n')]).map(([first, second, third]) => [first, second, [...first.matchAll(/\\n/g)].length, [...third.matchAll(/\n/g)].length]).map(([first, second, third, fourth]) => (third >= fourth ? [first, second] : [first, second, third, fourth]))));
       this.result = responses.map((a) => a.responseJSON[0].filter(([__, second]) => second != null).map(([first, second]) => [second, first.replace(/^\s+/, '').replaceAll(new RegExp(Utils.getTrieRegexPatternFromWords(['\\n', '\\ n']).source, 'gi'), '\n')]).map(([first, second]) => second.concat('\n'.repeat([...first.matchAll(/\\n/g)].length - [...second.matchAll(/\n/g)].length))).join('')).join('\n');
       super.translateText(text, targetLanguage, sourceLanguage);
       return this.result;
