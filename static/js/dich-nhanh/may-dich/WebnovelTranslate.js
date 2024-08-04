@@ -24,13 +24,14 @@ class WebnovelTranslate extends Translator {
   async translateText(text, targetLanguage, sourceLanguage = this.DefaultLanguage.SOURCE_LANGUAGE) {
     try {
       const lines = text.split('\n');
+      const preparedLines = lines.map((element) => `\u3000\u3000${element.replace(/^\s+/, '')}`);
       let queryLines = [];
       const responses = [];
 
-      while (lines.length > 0 && [...queryLines, lines[0]].join('\\n').length <= this.maxDataPerRequest && [...queryLines, lines[0]].join('\n').length <= this.maxContentLengthPerRequest && (queryLines.length + 1) <= this.maxContentLinePerRequest) {
-        queryLines.push(lines.shift());
+      while (preparedLines.length > 0 && [...queryLines, preparedLines[0]].join('\\n').length <= this.maxDataPerRequest && [...queryLines, preparedLines[0]].join('\n').length <= this.maxContentLengthPerRequest && (queryLines.length + 1) <= this.maxContentLinePerRequest) {
+        queryLines.push(preparedLines.shift());
 
-        if (lines.length === 0 || [...queryLines, lines[0]].join('\\n').length > this.maxDataPerRequest || [...queryLines, lines[0]].join('\n').length > this.maxContentLengthPerRequest || (queryLines.length + 1) > this.maxContentLinePerRequest) {
+        if (preparedLines.length === 0 || [...queryLines, preparedLines[0]].join('\\n').length > this.maxDataPerRequest || [...queryLines, preparedLines[0]].join('\n').length > this.maxContentLengthPerRequest || (queryLines.length + 1) > this.maxContentLinePerRequest) {
           responses.push($.ajax({
             cache: false,
             method: 'GET',

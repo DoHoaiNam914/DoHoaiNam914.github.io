@@ -639,44 +639,44 @@ const loadLangSelectOptions = function loadLanguageListByTranslatorToHtmlOptions
   $targetLanguageSelect.val(targetLanguage);
 };
 
-const buildResult = function buildResultContentForTextarea(text, result) {
+const buildResult = function buildResultContentForTextarea(text, result, activeTranslator) {
   try {
     const resultDiv = document.createElement('div');
     const resultLines = result.split('\n');
 
-    if ($showOriginalTextSwitch.prop('checked')) {
-      const originalLines = text.split('\n');
-      let lostLineFixedNumber = 0;
+    const originalLines = text.split('\n');
+    let lostLineFixedNumber = 0;
 
-      for (let i = 0; i < originalLines.length; i += 1) {
-        if (i + lostLineFixedNumber >= originalLines.length) break;
+    for (let i = 0; i < originalLines.length; i += 1) {
+      if (i + lostLineFixedNumber >= originalLines.length) break;
 
-        if (originalLines[i + lostLineFixedNumber].replace(/^\s+/, '').trim().length === 0 && resultLines[i].replace(/^\s+/, '').trim().length > 0) {
-          lostLineFixedNumber += 1;
-          i -= 1;
-        } else if ($translatorDropdown.find('.active').val() === Translators.PAPAGO && resultLines[i].replace(/^\s+/, '').trim().length === 0 && originalLines[i + lostLineFixedNumber].replace(/^\s+/, '').trim().length > 0) {
-          lostLineFixedNumber -= 1;
-        } else {
-          const paragraph = document.createElement('p');
-          const translation = document.createTextNode(resultLines[i]);
-          const lineBreak = document.createElement('br');
+      if (originalLines[i + lostLineFixedNumber].replace(/^\s+/, '').trimEnd().length === 0 && resultLines[i].replace(/^\s+/, '').trimEnd().length > 0) {
+        lostLineFixedNumber += 1;
+        i -= 1;
+      } else if (activeTranslator === Translators.PAPAGO && resultLines[i].replace(/^\s+/, '').trimEnd().length === 0 && originalLines[i + lostLineFixedNumber].replace(/^\s+/, '').trimEnd().length > 0) {
+        lostLineFixedNumber -= 1;
+      } else {
+        const paragraph = document.createElement('p');
+        const translation = document.createTextNode(activeTranslator === Translators.WEBNOVEL_TRANSLATE ? `${/^\s+/.test(originalLines[i + lostLineFixedNumber]) ? originalLines[i + lostLineFixedNumber].match(/^\s+/)[0] : ''}${resultLines[i].replace(/^\s+/, '').trimEnd()}` : resultLines[i]);
+        const lineBreak = document.createElement('br');
 
-          if (originalLines[i + lostLineFixedNumber].replace(/^\s+/, '').trim().length > 0) {
+        if (originalLines[i + lostLineFixedNumber].replace(/^\s+/, '').trimEnd().length > 0) {
+          if ($showOriginalTextSwitch.prop('checked')) {
             const idiomaticText = document.createElement('i');
             idiomaticText.innerText = originalLines[i + lostLineFixedNumber];
             paragraph.appendChild(idiomaticText);
-            paragraph.innerHTML += resultLines[i].replace(/^\s+/, '').trim().length > 0 ? lineBreak.cloneNode(true).outerHTML : '';
-            paragraph.appendChild(translation);
-          } else {
-            paragraph.appendChild(lineBreak.cloneNode(true));
+            paragraph.innerHTML += resultLines[i].replace(/^\s+/, '').trimEnd().length > 0 ? lineBreak.cloneNode(true).outerHTML : '';
           }
 
-          resultDiv.appendChild(paragraph);
+          paragraph.appendChild(translation);
+        } else {
+          paragraph.appendChild(lineBreak.cloneNode(true));
         }
+
+        resultDiv.appendChild(paragraph);
       }
-    } else {
-      resultDiv.innerHTML = `<p>${resultLines.map(Utils.convertTextToHtml).join('</p><p>')}</p>`;
     }
+
 
     return resultDiv.innerHTML;
   } catch (error) {
@@ -690,7 +690,7 @@ const translate = async function translateContentInTextarea(controller = new Abo
 
   try {
     const startTime = Date.now();
-    const text = $inputTextarea.val().split('\n').filter((element) => $activeTranslator.val() !== Translators.WEBNOVEL_TRANSLATE || element.replace(/^\s+/, '').trim().length > 0).map((element) => ($activeTranslator.val() === Translators.WEBNOVEL_TRANSLATE ? `\u3000\u3000${element.replace(/^\s+/, '').trimStart()}` : element)).join('\n');
+    const text = $inputTextarea.val().split('\n').filter((element) => $activeTranslator.val() !== Translators.WEBNOVEL_TRANSLATE || element.replace(/^\s+/, '').trimEnd().length > 0).join('\n');
     const targetLanguage = $targetLanguageSelect.val();
 
     switch ($activeTranslator.val()) {
@@ -707,7 +707,7 @@ const translate = async function translateContentInTextarea(controller = new Abo
     }
 
     if (controller.signal.aborted) return;
-    $resultTextarea.html(buildResult(text, currentTranslator.result));
+    $resultTextarea.html(buildResult(text, currentTranslator.result, $activeTranslator.val()));
     $resultTextarea.find('p > i').on('dblclick', function onClick() {
       const range = document.createRange();
       const selection = window.getSelection();
