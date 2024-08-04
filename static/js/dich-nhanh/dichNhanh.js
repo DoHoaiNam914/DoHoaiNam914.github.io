@@ -657,7 +657,7 @@ const buildResult = function buildResultContentForTextarea(text, result, activeT
         lostLineFixedNumber -= 1;
       } else {
         const paragraph = document.createElement('p');
-        const translation = document.createTextNode(activeTranslator === Translators.WEBNOVEL_TRANSLATE ? `${/^\s+/.test(originalLines[i + lostLineFixedNumber]) ? originalLines[i + lostLineFixedNumber].match(/^\s+/)[0] : ''}${resultLines[i].replace(/^\s+/, '').trimEnd()}` : resultLines[i]);
+        const translation = document.createTextNode(resultLines[i]);
         const lineBreak = document.createElement('br');
 
         if (originalLines[i + lostLineFixedNumber].replace(/^\s+/, '').trimEnd().length > 0) {
@@ -676,7 +676,6 @@ const buildResult = function buildResultContentForTextarea(text, result, activeT
         resultDiv.appendChild(paragraph);
       }
     }
-
 
     return resultDiv.innerHTML;
   } catch (error) {
