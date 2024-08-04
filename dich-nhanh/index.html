@@ -7,7 +7,7 @@
     <title>Dịch nhanh - DoHoaiNam Pages</title>
     <link rel="icon" href="/static/favicon.ico" />
     <link rel="stylesheet" href="/static/css/jquery-ui.min.css">
-    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="/static/css/general_style.css">
     <link rel="stylesheet" href="/static/css/fonts.css">
     <link rel="stylesheet" href="/static/css/themes.css">
@@ -203,18 +203,18 @@
       'use strict';
 
       const librariesToLoad = [
-        '/static/lib/jquery-3.7.1.min.js',
+        'https://code.jquery.com/jquery-3.7.1.min.js',
         '/static/lib/jquery-ui.min.js',
-        '/static/lib/jquery.csv.min.js',
-        '/static/lib/bootstrap.bundle.min.js',
+        'https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js',
+        'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js',
         '/static/lib/CryptoJS v3.1.2/rollups/hmac-md5.js',
         '/static/lib/CryptoJS v3.1.2/components/enc-base64.js',
       ];
 
       const scriptsToLoad = [...librariesToLoad, ...[
           '/static/js/Utils.js',
-          '/static/lib/hanviet.js',
-          '/static/lib/handict.js',
+          '/static/datasource/hanviet.js',
+          '/static/datasource/handict.js',
           '/static/js/newAccentMap.js',
           '/static/js/dich-nhanh/Translator.js',
           '/static/js/dich-nhanh/may-dich/BaiduTranslate.js',

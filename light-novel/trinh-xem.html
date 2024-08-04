@@ -8,11 +8,17 @@
   <link rel="icon" href="/static/favicon.ico" />
   <script src="/static/lib/LAB.js"></script>
   <script>
-    $LAB
-    .script("/static/lib/jquery-3.7.1.min.js")
-    .script("/static/lib/bootstrap.bundle.min.js")
-    .script("/static/lib/underscore-umd-min.js").wait()
-    .script("/static/js/trinhXem.js");
+    'use strict';
+
+    const librariesToLoad = [
+      'https://code.jquery.com/jquery-3.7.1.min.js',
+      'https://cdn.jsdelivr.net/npm/underscore@latest/underscore-umd-min.js',
+    ];
+
+    const scriptsToLoad = [...librariesToLoad, '/static/js/trinhXem.js'];
+    let i = 0;
+    const labJs = () => i < scriptsToLoad.length && $LAB.script(scriptsToLoad[i]).wait(() => i++).wait(labJs);
+    labJs();
   </script>
 </head>
 <body style="box-sizing: border-box; height: 100%; margin: 0; padding: 0; width: 100%;">
