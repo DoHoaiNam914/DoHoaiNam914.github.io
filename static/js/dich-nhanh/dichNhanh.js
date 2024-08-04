@@ -875,14 +875,9 @@ $(document).ready(async () => {
 
   try {
     let hanvietList = (await $.ajax({
-      cache: false,
-      method: 'GET',
-      url: '/static/datasource/HanVietGhep.tsv',
-    })).split('\n').map((element) => element.split('\t'));
-    hanvietList = hanvietList.concat((await $.ajax({
       method: 'GET',
       url: '/static/datasource/lacviet/lv-[zh-vi].tsv',
-    })).split('\n').map((element) => (!element.startsWith('#') ? element.split('\t') : element)).filter((a) => typeof a !== 'string' && /^\p{Script=Hani}+$/u.test(a[0]) && [...a[1].replaceAll('<span class="east"> </span>', ' ').matchAll(/Hán Việt: *[^<]*/g)].filter(([first]) => first.replace(/Hán Việt: */, '').length > 0).length > 0).map(([a, second]) => [a, [...second.replaceAll('<span class="east"> </span>', ' ').matchAll(/Hán Việt: *[^<]*/g)].filter(([b]) => b.replace(/Hán Việt: */, '').length > 0)[0][0].replace(/Hán Việt: */, '').normalize().split(/[,;] */)[0].trim().toLowerCase()]));
+    })).split('\n').map((element) => (!element.startsWith('#') ? element.split('\t') : element)).filter((a) => typeof a !== 'string' && /^\p{Script=Hani}+$/u.test(a[0]) && [...a[1].replaceAll('<span class="east"> </span>', ' ').matchAll(/Hán Việt: *[^<]*/g)].filter(([first]) => first.replace(/Hán Việt: */, '').length > 0).length > 0).map(([a, second]) => [a, [...second.replaceAll('<span class="east"> </span>', ' ').matchAll(/Hán Việt: *[^<]*/g)].filter(([b]) => b.replace(/Hán Việt: */, '').length > 0)[0][0].replace(/Hán Việt: */, '').normalize().split(/[,;] */)[0].trim().toLowerCase()]);
     hanvietList = hanvietList.concat(cjkv.nam.map(([first, second]) => [first, second.normalize().split(',').filter((element) => element.length > 0)[0].trimStart().replaceAll(Utils.getTrieRegexPatternFromWords(Object.keys(newAccentObject)), (match) => newAccentObject[match] ?? match)]));
     hanvietList = hanvietList.concat(hanData.names.map(([first, second]) => [first, second.normalize().split(',').filter((element) => element.length > 0)[0].replaceAll(Utils.getTrieRegexPatternFromWords(Object.keys(newAccentObject)), (match) => newAccentObject[match] ?? match)]));
     hanvietList = hanvietList.filter(function filter(element) {
