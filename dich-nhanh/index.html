@@ -214,7 +214,6 @@
       const scriptsToLoad = [...librariesToLoad, ...[
           '/static/js/Utils.js',
           '/static/datasource/hanviet.js',
-          '/static/datasource/handict.js',
           '/static/js/newAccentMap.js',
           '/static/js/dich-nhanh/Translator.js',
           '/static/js/dich-nhanh/may-dich/BaiduTranslate.js',
@@ -809,12 +808,13 @@
                     <button type="button" class="dropdown-item" data-bs-toggle="collapse" data-bs-target="#convert-collapse">Convert</button>
                     <div class="collapse show-by-default" id="convert-collapse">
                       <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="vietphrase" data-lang="vi">Vietphrase</button>
-                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="vietphrase" data-lang="SinoVietnamese">Hán-Việt</button>
+                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="vietphrase" data-lang="SinoVietnamese">Hán Việt</button>
                       <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="vietphrase" data-lang="OnYomi">On'yomi</button>
                       <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="vietphrase" data-lang="KunYomi">Kun'yomi</button>
-                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="vietphrase" data-lang="pinyin">Bính âm</button>
-                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="vietphrase" data-lang="traditional">Phổn thể</button>
-                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="vietphrase" data-lang="simplified">Giản thể</button>
+                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="vietphrase" data-lang="pinyin">Pinyin</button>
+                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="vietphrase" data-lang="pīnyīn">Pīnyīn</button>
+                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="vietphrase" data-lang="traditional">Traditional</button>
+                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="vietphrase" data-lang="simplified">Simplified</button>
                     </div>
                   </li>
                   <li>

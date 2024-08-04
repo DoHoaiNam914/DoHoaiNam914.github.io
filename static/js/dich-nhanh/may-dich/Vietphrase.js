@@ -10,9 +10,10 @@ class Vietphrase extends Translator {
     SinoVietnamese: 'Hán Việt',
     OnYomi: 'On\'yomi',
     KunYomi: 'Kun\'yomi',
-    pinyin: 'Bính âm',
-    traditional: 'Phổn thể',
-    simplified: 'Giản thể',
+    pinyin: 'Pinyin',
+    pīnyīn: 'Pīnyīn',
+    traditional: 'Traditional',
+    simplified: 'Simplified',
   };
 
   DefaultLanguage = {
@@ -374,13 +375,14 @@ class Vietphrase extends Translator {
 
   async translateText(text, targetLanguage, glossary, options) {
     const SinoVietnameses = Object.entries(glossary.SinoVietnameses);
-    let hanViet = Object.entries(glossary.SinoVietnameses).map(([first, second]) => [first, second.toLowerCase()]).concat(glossary.hanViet).filter(function filter([first]) {
+    let hanViet = SinoVietnameses.concat(glossary.hanViet).filter(function filter([first]) {
       return !this[first] && (this[first] = 1);
     }, {});
     const hanVietMap = Object.fromEntries(hanViet);
     hanViet = SinoVietnameses.filter(([__, second]) => !/\p{Script_Extensions=Hani}/u.test(second)).map(([first, second]) => [first, second.toLowerCase()]).concat(SinoVietnameses.filter(([__, second]) => /\p{Script_Extensions=Hani}/u.test(second)).map(([first, second]) => [first, hanVietMap[second]]), glossary.hanViet).filter(function filter([first]) {
       return !this[first] && (this[first] = 1);
     }, {});
+    hanViet = hanViet.map(([first, second]) => [first, second.toLowerCase()]);
 
     this.result = text;
 
@@ -393,8 +395,9 @@ class Vietphrase extends Translator {
         this.result = Vietphrase.quickTranslate(text, glossary.traditional);
         break;
       }
+      case 'pīnyīn':
       case 'pinyin': {
-        this.result = Vietphrase.getFormattedText(Vietphrase.quickTranslate(text, glossary.pinyins.map(([first, second]) => [first, Vietphrase.removeAccents(second)]).concat(glossary.romajis).filter(function filter([first]) {
+        this.result = Vietphrase.getFormattedText(Vietphrase.quickTranslate(text, glossary.pinyins.map(([first, second]) => [first, targetLanguage === 'pinyin' ? Vietphrase.removeAccents(second) : second]).concat(glossary.romajis).filter(function filter([first]) {
           return !this[first] && (this[first] = 1);
         }, {})));
         break;
