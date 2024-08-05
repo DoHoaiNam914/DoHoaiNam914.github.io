@@ -3,10 +3,1994 @@
 /* global Translator */
 
 class GoogleTranslate extends Translator {
-  /** https://translate.googleapis.com/translate_a/l?client=chrome */
-  static SOURCE_LANGUAGE_LIST = JSON.parse('{"auto":"Phát hiện ngôn ngữ","ar":"Ả Rập","sq":"Albania","am":"Amharic","en":"Anh","hy":"Armenia","as":"Assam","ay":"Aymara","az":"Azerbaijan","pl":"Ba Lan","fa":"Ba Tư","bm":"Bambara","xh":"Bantu","eu":"Basque","be":"Belarus","bn":"Bengal","bho":"Bhojpuri","bs":"Bosnia","pt":"Bồ Đào Nha","bg":"Bulgaria","ca":"Catalan","ceb":"Cebuano","ny":"Chichewa","co":"Corsi","ht":"Creole (Haiti)","hr":"Croatia","dv":"Dhivehi","iw":"Do Thái","doi":"Dogri","da":"Đan Mạch","de":"Đức","et":"Estonia","ee":"Ewe","tl":"Filipino","fy":"Frisia","gd":"Gael Scotland","gl":"Galicia","ka":"George","gn":"Guarani","gu":"Gujarat","nl":"Hà Lan","af":"Hà Lan (Nam Phi)","ko":"Hàn","ha":"Hausa","haw":"Hawaii","hi":"Hindi","hmn":"Hmong","hu":"Hungary","el":"Hy Lạp","is":"Iceland","ig":"Igbo","ilo":"Ilocano","id":"Indonesia","ga":"Ireland","jw":"Java","kn":"Kannada","kk":"Kazakh","km":"Khmer","rw":"Kinyarwanda","gom":"Konkani","kri":"Krio","ku":"Kurd (Kurmanji)","ckb":"Kurd (Sorani)","ky":"Kyrgyz","lo":"Lào","la":"Latinh","lv":"Latvia","ln":"Lingala","lt":"Litva","lg":"Luganda","lb":"Luxembourg","ms":"Mã Lai","mk":"Macedonia","mai":"Maithili","mg":"Malagasy","ml":"Malayalam","mt":"Malta","mi":"Maori","mr":"Marathi","mni-Mtei":"Meiteilon (Manipuri)","lus":"Mizo","mn":"Mông Cổ","my":"Myanmar","no":"Na Uy","ne":"Nepal","ru":"Nga","ja":"Nhật","or":"Odia (Oriya)","om":"Oromo","ps":"Pashto","sa":"Phạn","fr":"Pháp","fi":"Phần Lan","pa":"Punjab","qu":"Quechua","eo":"Quốc tế ngữ","ro":"Rumani","sm":"Samoa","cs":"Séc","nso":"Sepedi","sr":"Serbia","st":"Sesotho","sn":"Shona","sd":"Sindhi","si":"Sinhala","sk":"Slovak","sl":"Slovenia","so":"Somali","su":"Sunda","sw":"Swahili","tg":"Tajik","ta":"Tamil","tt":"Tatar","es":"Tây Ban Nha","te":"Telugu","th":"Thái","tr":"Thổ Nhĩ Kỳ","sv":"Thụy Điển","ti":"Tigrinya","zh-CN":"Trung'.concat(' (Giản thể)","zh-TW":"Trung (Phồn thể)').concat('","ts":"Tsonga","tk":"Turkmen","ak":"Twi","uk":"Ukraina","ur":"Urdu","ug":"Uyghur","uz":"Uzbek","vi":"Việt","cy":"Xứ Wales","it":"Ý","yi":"Yiddish","yo":"Yoruba","zu":"Zulu"}'));
+  /** https://translation.googleapis.com/language/translate/v2/languages?key=AIzaSyBcsB9k1Db4FXrf0Y7vXK0aIS2bQA38Gms&target=vi */
+  static SOURCE_LANGUAGE_LIST = JSON.parse(`{
+  "data": {
+    "languages": [
+      ${`{
+        "language": "auto",
+        "name": "Phát hiện ngôn ngữ"
+      },`}
+      {
+        "language": "ar",
+        "name": "Ả Rập"
+      },
+      {
+        "language": "ab",
+        "name": "Abkhaz"
+      },
+      {
+        "language": "ace",
+        "name": "Aceh"
+      },
+      {
+        "language": "ach",
+        "name": "Acholi"
+      },
+      {
+        "language": "aa",
+        "name": "Afar"
+      },
+      {
+        "language": "sq",
+        "name": "Albania"
+      },
+      {
+        "language": "alz",
+        "name": "Alur"
+      },
+      {
+        "language": "am",
+        "name": "Amharic"
+      },
+      {
+        "language": "en",
+        "name": "Anh"
+      },
+      {
+        "language": "hy",
+        "name": "Armenia"
+      },
+      {
+        "language": "as",
+        "name": "Assam"
+      },
+      {
+        "language": "av",
+        "name": "Avar"
+      },
+      {
+        "language": "awa",
+        "name": "Awadhi"
+      },
+      {
+        "language": "ay",
+        "name": "Aymara"
+      },
+      {
+        "language": "az",
+        "name": "Azerbaijan"
+      },
+      {
+        "language": "pl",
+        "name": "Ba Lan"
+      },
+      {
+        "language": "fa",
+        "name": "Ba Tư"
+      },
+      {
+        "language": "ban",
+        "name": "Bali"
+      },
+      {
+        "language": "bal",
+        "name": "Baluchi"
+      },
+      {
+        "language": "bm",
+        "name": "Bambara"
+      },
+      {
+        "language": "xh",
+        "name": "Bantu"
+      },
+      {
+        "language": "bci",
+        "name": "Baoulé"
+      },
+      {
+        "language": "ba",
+        "name": "Bashkir"
+      },
+      {
+        "language": "eu",
+        "name": "Basque"
+      },
+      {
+        "language": "btx",
+        "name": "Batak Karo"
+      },
+      {
+        "language": "bts",
+        "name": "Batak Simalungun"
+      },
+      {
+        "language": "bbc",
+        "name": "Batak Toba"
+      },
+      {
+        "language": "se",
+        "name": "Bắc Sami"
+      },
+      {
+        "language": "nso",
+        "name": "Bắc Sotho"
+      },
+      {
+        "language": "be",
+        "name": "Belarus"
+      },
+      {
+        "language": "bem",
+        "name": "Bemba"
+      },
+      {
+        "language": "bn",
+        "name": "Bengal"
+      },
+      {
+        "language": "bew",
+        "name": "Betawi"
+      },
+      {
+        "language": "bho",
+        "name": "Bhojpuri"
+      },
+      {
+        "language": "bik",
+        "name": "Bikol"
+      },
+      {
+        "language": "bs",
+        "name": "Bosnia"
+      },
+      {
+        "language": "pt",
+        "name": "Bồ Đào Nha"
+      },
+      {
+        "language": "pt-PT",
+        "name": "Bồ Đào Nha (Bồ Đào Nha)"
+      },
+      {
+        "language": "br",
+        "name": "Breton"
+      },
+      {
+        "language": "bg",
+        "name": "Bulgaria"
+      },
+      {
+        "language": "bua",
+        "name": "Buryat"
+      },
+      {
+        "language": "ca",
+        "name": "Catalan"
+      },
+      {
+        "language": "ceb",
+        "name": "Cebuano"
+      },
+      {
+        "language": "ch",
+        "name": "Chamorro"
+      },
+      {
+        "language": "ce",
+        "name": "Chechnya"
+      },
+      {
+        "language": "ny",
+        "name": "Chichewa"
+      },
+      {
+        "language": "chk",
+        "name": "Chuuk"
+      },
+      {
+        "language": "cv",
+        "name": "Chuvash"
+      },
+      {
+        "language": "co",
+        "name": "Corsi"
+      },
+      {
+        "language": "ht",
+        "name": "Creole (Haiti)"
+      },
+      {
+        "language": "crs",
+        "name": "Creole Seychelles"
+      },
+      {
+        "language": "hr",
+        "name": "Croatia"
+      },
+      {
+        "language": "fa-AF",
+        "name": "Dari"
+      },
+      {
+        "language": "din",
+        "name": "Dinka"
+      },
+      {
+        "language": "dv",
+        "name": "Divehi"
+      },
+      {
+        "language": "iw",
+        "name": "Do Thái"
+      },
+      {
+        "language": "doi",
+        "name": "Dogri"
+      },
+      {
+        "language": "dov",
+        "name": "Dombe"
+      },
+      {
+        "language": "dyu",
+        "name": "Dyula"
+      },
+      {
+        "language": "dz",
+        "name": "Dzongkha"
+      },
+      {
+        "language": "da",
+        "name": "Đan Mạch"
+      },
+      {
+        "language": "de",
+        "name": "Đức"
+      },
+      {
+        "language": "et",
+        "name": "Estonia"
+      },
+      {
+        "language": "ee",
+        "name": "Ewe"
+      },
+      {
+        "language": "fo",
+        "name": "Faroese"
+      },
+      {
+        "language": "fj",
+        "name": "Fiji"
+      },
+      {
+        "language": "tl",
+        "name": "Filipino"
+      },
+      {
+        "language": "fon",
+        "name": "Fon"
+      },
+      {
+        "language": "fy",
+        "name": "Frisia"
+      },
+      {
+        "language": "fur",
+        "name": "Friuli"
+      },
+      {
+        "language": "ff",
+        "name": "Fulfulde"
+      },
+      {
+        "language": "gaa",
+        "name": "Gaa"
+      },
+      {
+        "language": "gd",
+        "name": "Gael Scotland"
+      },
+      {
+        "language": "gl",
+        "name": "Galicia"
+      },
+      {
+        "language": "ka",
+        "name": "George"
+      },
+      {
+        "language": "gn",
+        "name": "Guarani"
+      },
+      {
+        "language": "gu",
+        "name": "Gujarat"
+      },
+      {
+        "language": "nl",
+        "name": "Hà Lan"
+      },
+      {
+        "language": "af",
+        "name": "Hà Lan (Nam Phi)"
+      },
+      {
+        "language": "cnh",
+        "name": "Hakha Chin"
+      },
+      {
+        "language": "ko",
+        "name": "Hàn"
+      },
+      {
+        "language": "ha",
+        "name": "Hausa"
+      },
+      {
+        "language": "haw",
+        "name": "Hawaii"
+      },
+      {
+        "language": "hil",
+        "name": "Hiligaynon"
+      },
+      {
+        "language": "hi",
+        "name": "Hindi"
+      },
+      {
+        "language": "hmn",
+        "name": "Hmong"
+      },
+      {
+        "language": "hu",
+        "name": "Hungary"
+      },
+      {
+        "language": "hrx",
+        "name": "Hunsrik"
+      },
+      {
+        "language": "el",
+        "name": "Hy Lạp"
+      },
+      {
+        "language": "iba",
+        "name": "Iban"
+      },
+      {
+        "language": "is",
+        "name": "Iceland"
+      },
+      {
+        "language": "ig",
+        "name": "Igbo"
+      },
+      {
+        "language": "ilo",
+        "name": "Iloko"
+      },
+      {
+        "language": "id",
+        "name": "Indonesia"
+      },
+      {
+        "language": "ga",
+        "name": "Ireland"
+      },
+      {
+        "language": "jw",
+        "name": "Java"
+      },
+      {
+        "language": "kac",
+        "name": "Jingpo"
+      },
+      {
+        "language": "kl",
+        "name": "Kalaallisut"
+      },
+      {
+        "language": "kn",
+        "name": "Kannada"
+      },
+      {
+        "language": "kr",
+        "name": "Kanuri"
+      },
+      {
+        "language": "pam",
+        "name": "Kapampangan"
+      },
+      {
+        "language": "kk",
+        "name": "Kazakh"
+      },
+      {
+        "language": "kha",
+        "name": "Khasi"
+      },
+      {
+        "language": "km",
+        "name": "Khmer"
+      },
+      {
+        "language": "cgg",
+        "name": "Kiga"
+      },
+      {
+        "language": "kg",
+        "name": "Kikongo"
+      },
+      {
+        "language": "rw",
+        "name": "Kinyarwanda"
+      },
+      {
+        "language": "ktu",
+        "name": "Kituba"
+      },
+      {
+        "language": "trp",
+        "name": "Kokborok"
+      },
+      {
+        "language": "kv",
+        "name": "Komi"
+      },
+      {
+        "language": "gom",
+        "name": "Konkani"
+      },
+      {
+        "language": "kri",
+        "name": "Krio"
+      },
+      {
+        "language": "ku",
+        "name": "Kurd (Kurmanji)"
+      },
+      {
+        "language": "ckb",
+        "name": "Kurd (Sorani)"
+      },
+      {
+        "language": "ky",
+        "name": "Kyrgyz"
+      },
+      {
+        "language": "lo",
+        "name": "Lào"
+      },
+      {
+        "language": "ltg",
+        "name": "Latgale"
+      },
+      {
+        "language": "la",
+        "name": "Latinh"
+      },
+      {
+        "language": "lv",
+        "name": "Latvia"
+      },
+      {
+        "language": "lij",
+        "name": "Liguria"
+      },
+      {
+        "language": "li",
+        "name": "Limburg"
+      },
+      {
+        "language": "ln",
+        "name": "Lingala"
+      },
+      {
+        "language": "lt",
+        "name": "Litva"
+      },
+      {
+        "language": "lmo",
+        "name": "Lombard"
+      },
+      {
+        "language": "lg",
+        "name": "Luganda"
+      },
+      {
+        "language": "luo",
+        "name": "Luo"
+      },
+      {
+        "language": "lb",
+        "name": "Luxembourg"
+      },
+      {
+        "language": "ms",
+        "name": "Mã Lai"
+      },
+      {
+        "language": "mk",
+        "name": "Macedonia"
+      },
+      {
+        "language": "mad",
+        "name": "Madura"
+      },
+      {
+        "language": "mai",
+        "name": "Maithili"
+      },
+      {
+        "language": "mak",
+        "name": "Makassar"
+      },
+      {
+        "language": "mg",
+        "name": "Malagasy"
+      },
+      {
+        "language": "ms-Arab",
+        "name": "Malay (Jawi)"
+      },
+      {
+        "language": "ml",
+        "name": "Malayalam"
+      },
+      {
+        "language": "mt",
+        "name": "Malta"
+      },
+      {
+        "language": "mam",
+        "name": "Mam"
+      },
+      {
+        "language": "gv",
+        "name": "Manx"
+      },
+      {
+        "language": "mi",
+        "name": "Maori"
+      },
+      {
+        "language": "mr",
+        "name": "Marathi"
+      },
+      {
+        "language": "mh",
+        "name": "Marshall"
+      },
+      {
+        "language": "mwr",
+        "name": "Marwadi"
+      },
+      {
+        "language": "mfe",
+        "name": "Mauritian Creole"
+      },
+      {
+        "language": "yua",
+        "name": "Maya Yucatec"
+      },
+      {
+        "language": "chm",
+        "name": "Meadow Mari"
+      },
+      {
+        "language": "mni-Mtei",
+        "name": "Meiteilon (Manipuri)"
+      },
+      {
+        "language": "min",
+        "name": "Minang"
+      },
+      {
+        "language": "lus",
+        "name": "Mizo"
+      },
+      {
+        "language": "mn",
+        "name": "Mông Cổ"
+      },
+      {
+        "language": "my",
+        "name": "Myanmar"
+      },
+      {
+        "language": "bm-Nkoo",
+        "name": "N'Ko"
+      },
+      {
+        "language": "no",
+        "name": "Na Uy"
+      },
+      {
+        "language": "nhe",
+        "name": "Nahuatl (Đông Huasteca)"
+      },
+      {
+        "language": "nr",
+        "name": "Nam Ndebele"
+      },
+      {
+        "language": "ndc-ZW",
+        "name": "Ndau"
+      },
+      {
+        "language": "ne",
+        "name": "Nepal"
+      },
+      {
+        "language": "new",
+        "name": "Newari"
+      },
+      {
+        "language": "ru",
+        "name": "Nga"
+      },
+      {
+        "language": "ja",
+        "name": "Nhật"
+      },
+      {
+        "language": "nus",
+        "name": "Nuer"
+      },
+      {
+        "language": "oc",
+        "name": "Occitan"
+      },
+      {
+        "language": "or",
+        "name": "Odia (Oriya)"
+      },
+      {
+        "language": "om",
+        "name": "Oromo"
+      },
+      {
+        "language": "os",
+        "name": "Ossetia"
+      },
+      {
+        "language": "pag",
+        "name": "Pangasinan"
+      },
+      {
+        "language": "pap",
+        "name": "Papiamento"
+      },
+      {
+        "language": "ps",
+        "name": "Pashto"
+      },
+      {
+        "language": "jam",
+        "name": "Patois Jamaica"
+      },
+      {
+        "language": "sa",
+        "name": "Phạn"
+      },
+      {
+        "language": "fr",
+        "name": "Pháp"
+      },
+      {
+        "language": "fi",
+        "name": "Phần Lan"
+      },
+      {
+        "language": "pa",
+        "name": "Punjab"
+      },
+      {
+        "language": "pa-Arab",
+        "name": "Punjab (Shahmukhi)"
+      },
+      {
+        "language": "yue",
+        "name": "Quảng Đông"
+      },
+      {
+        "language": "qu",
+        "name": "Quechua"
+      },
+      {
+        "language": "eo",
+        "name": "Quốc tế ngữ"
+      },
+      {
+        "language": "rom",
+        "name": "Romani"
+      },
+      {
+        "language": "ro",
+        "name": "Rumani"
+      },
+      {
+        "language": "rn",
+        "name": "Rundi"
+      },
+      {
+        "language": "sm",
+        "name": "Samoa"
+      },
+      {
+        "language": "sg",
+        "name": "Sango"
+      },
+      {
+        "language": "sat-Latn",
+        "name": "Santali"
+      },
+      {
+        "language": "cs",
+        "name": "Séc"
+      },
+      {
+        "language": "sr",
+        "name": "Serbia"
+      },
+      {
+        "language": "st",
+        "name": "Sesotho"
+      },
+      {
+        "language": "shn",
+        "name": "Shan"
+      },
+      {
+        "language": "sn",
+        "name": "Shona"
+      },
+      {
+        "language": "scn",
+        "name": "Sicily"
+      },
+      {
+        "language": "szl",
+        "name": "Silesia"
+      },
+      {
+        "language": "sd",
+        "name": "Sindhi"
+      },
+      {
+        "language": "si",
+        "name": "Sinhala"
+      },
+      {
+        "language": "sk",
+        "name": "Slovak"
+      },
+      {
+        "language": "sl",
+        "name": "Slovenia"
+      },
+      {
+        "language": "so",
+        "name": "Somali"
+      },
+      {
+        "language": "su",
+        "name": "Sunda"
+      },
+      {
+        "language": "sus",
+        "name": "Susu"
+      },
+      {
+        "language": "sw",
+        "name": "Swahili"
+      },
+      {
+        "language": "ss",
+        "name": "Swati"
+      },
+      {
+        "language": "ty",
+        "name": "Tahiti"
+      },
+      {
+        "language": "tg",
+        "name": "Tajik"
+      },
+      {
+        "language": "ber-Latn",
+        "name": "Tamazight"
+      },
+      {
+        "language": "ber",
+        "name": "Tamazight (Tifinagh)"
+      },
+      {
+        "language": "ta",
+        "name": "Tamil"
+      },
+      {
+        "language": "tt",
+        "name": "Tatar"
+      },
+      {
+        "language": "crh",
+        "name": "Tatar Krym"
+      },
+      {
+        "language": "es",
+        "name": "Tây Ban Nha"
+      },
+      {
+        "language": "bo",
+        "name": "Tây Tạng"
+      },
+      {
+        "language": "te",
+        "name": "Telugu"
+      },
+      {
+        "language": "tet",
+        "name": "Tetum"
+      },
+      {
+        "language": "th",
+        "name": "Thái"
+      },
+      {
+        "language": "tr",
+        "name": "Thổ Nhĩ Kỳ"
+      },
+      {
+        "language": "sv",
+        "name": "Thụy Điển"
+      },
+      {
+        "language": "kek",
+        "name": "Tiếng Q'eqchi'"
+      },
+      {
+        "language": "ti",
+        "name": "Tigrinya"
+      },
+      {
+        "language": "tiv",
+        "name": "Tiv"
+      },
+      {
+        "language": "tpi",
+        "name": "Tok Pisin"
+      },
+      {
+        "language": "to",
+        "name": "Tonga"
+      },
+      {
+        "language": "zh",
+        "name": "Trung (Giản thể)"
+      },
+      {
+        "language": "zh-TW",
+        "name": "Trung (Phồn thể)"
+      },
+      {
+        "language": "ts",
+        "name": "Tsonga"
+      },
+      {
+        "language": "tn",
+        "name": "Tswana"
+      },
+      {
+        "language": "tcy",
+        "name": "Tulu"
+      },
+      {
+        "language": "tum",
+        "name": "Tumbuka"
+      },
+      {
+        "language": "tk",
+        "name": "Turkmen"
+      },
+      {
+        "language": "tyv",
+        "name": "Tuva"
+      },
+      {
+        "language": "ak",
+        "name": "Twi"
+      },
+      {
+        "language": "udm",
+        "name": "Udmurt"
+      },
+      {
+        "language": "uk",
+        "name": "Ukraina"
+      },
+      {
+        "language": "ur",
+        "name": "Urdu"
+      },
+      {
+        "language": "ug",
+        "name": "Uyghur"
+      },
+      {
+        "language": "uz",
+        "name": "Uzbek"
+      },
+      {
+        "language": "ve",
+        "name": "Venda"
+      },
+      {
+        "language": "vec",
+        "name": "Venice"
+      },
+      {
+        "language": "vi",
+        "name": "Việt"
+      },
+      {
+        "language": "war",
+        "name": "Waray"
+      },
+      {
+        "language": "wo",
+        "name": "Wolof"
+      },
+      {
+        "language": "cy",
+        "name": "Xứ Wales"
+      },
+      {
+        "language": "it",
+        "name": "Ý"
+      },
+      {
+        "language": "sah",
+        "name": "Yakut"
+      },
+      {
+        "language": "yi",
+        "name": "Yiddish"
+      },
+      {
+        "language": "yo",
+        "name": "Yoruba"
+      },
+      {
+        "language": "zap",
+        "name": "Zapotec"
+      },
+      {
+        "language": "zu",
+        "name": "Zulu"
+      },
+      {
+        "language": "he",
+        "name": "Do Thái"
+      },
+      {
+        "language": "jv",
+        "name": "Java"
+      },
+      {
+        "language": "zh-CN",
+        "name": "Trung (Giản thể)"
+      }
+    ]
+  }
+}
+`);
 
-  static TARGET_LANGUAGE_LIST = JSON.parse('{"ar":"Ả Rập","sq":"Albania","am":"Amharic","en":"Anh","hy":"Armenia","as":"Assam","ay":"Aymara","az":"Azerbaijan","pl":"Ba Lan","fa":"Ba Tư","bm":"Bambara","xh":"Bantu","eu":"Basque","be":"Belarus","bn":"Bengal","bho":"Bhojpuri","bs":"Bosnia","pt":"Bồ Đào Nha","bg":"Bulgaria","ca":"Catalan","ceb":"Cebuano","ny":"Chichewa","co":"Corsi","ht":"Creole (Haiti)","hr":"Croatia","dv":"Dhivehi","iw":"Do Thái","doi":"Dogri","da":"Đan Mạch","de":"Đức","et":"Estonia","ee":"Ewe","tl":"Filipino","fy":"Frisia","gd":"Gael Scotland","gl":"Galicia","ka":"George","gn":"Guarani","gu":"Gujarat","nl":"Hà Lan","af":"Hà Lan (Nam Phi)","ko":"Hàn","ha":"Hausa","haw":"Hawaii","hi":"Hindi","hmn":"Hmong","hu":"Hungary","el":"Hy Lạp","is":"Iceland","ig":"Igbo","ilo":"Ilocano","id":"Indonesia","ga":"Ireland","jw":"Java","kn":"Kannada","kk":"Kazakh","km":"Khmer","rw":"Kinyarwanda","gom":"Konkani","kri":"Krio","ku":"Kurd (Kurmanji)","ckb":"Kurd (Sorani)","ky":"Kyrgyz","lo":"Lào","la":"Latinh","lv":"Latvia","ln":"Lingala","lt":"Litva","lg":"Luganda","lb":"Luxembourg","ms":"Mã Lai","mk":"Macedonia","mai":"Maithili","mg":"Malagasy","ml":"Malayalam","mt":"Malta","mi":"Maori","mr":"Marathi","mni-Mtei":"Meiteilon (Manipuri)","lus":"Mizo","mn":"Mông Cổ","my":"Myanmar","no":"Na Uy","ne":"Nepal","ru":"Nga","ja":"Nhật","or":"Odia (Oriya)","om":"Oromo","ps":"Pashto","sa":"Phạn","fr":"Pháp","fi":"Phần Lan","pa":"Punjab","qu":"Quechua","eo":"Quốc tế ngữ","ro":"Rumani","sm":"Samoa","cs":"Séc","nso":"Sepedi","sr":"Serbia","st":"Sesotho","sn":"Shona","sd":"Sindhi","si":"Sinhala","sk":"Slovak","sl":"Slovenia","so":"Somali","su":"Sunda","sw":"Swahili","tg":"Tajik","ta":"Tamil","tt":"Tatar","es":"Tây Ban Nha","te":"Telugu","th":"Thái","tr":"Thổ Nhĩ Kỳ","sv":"Thụy Điển","ti":"Tigrinya","zh-CN":"Trung (Giản thể)","zh-TW":"Trung (Phồn thể)","ts":"Tsonga","tk":"Turkmen","ak":"Twi","uk":"Ukraina","ur":"Urdu","ug":"Uyghur","uz":"Uzbek","vi":"Việt","cy":"Xứ Wales","it":"Ý","yi":"Yiddish","yo":"Yoruba","zu":"Zulu"}');
+  static TARGET_LANGUAGE_LIST = JSON.parse(`{
+  "data": {
+    "languages": [
+      {
+        "language": "ar",
+        "name": "Ả Rập"
+      },
+      {
+        "language": "ab",
+        "name": "Abkhaz"
+      },
+      {
+        "language": "ace",
+        "name": "Aceh"
+      },
+      {
+        "language": "ach",
+        "name": "Acholi"
+      },
+      {
+        "language": "aa",
+        "name": "Afar"
+      },
+      {
+        "language": "sq",
+        "name": "Albania"
+      },
+      {
+        "language": "alz",
+        "name": "Alur"
+      },
+      {
+        "language": "am",
+        "name": "Amharic"
+      },
+      {
+        "language": "en",
+        "name": "Anh"
+      },
+      {
+        "language": "hy",
+        "name": "Armenia"
+      },
+      {
+        "language": "as",
+        "name": "Assam"
+      },
+      {
+        "language": "av",
+        "name": "Avar"
+      },
+      {
+        "language": "awa",
+        "name": "Awadhi"
+      },
+      {
+        "language": "ay",
+        "name": "Aymara"
+      },
+      {
+        "language": "az",
+        "name": "Azerbaijan"
+      },
+      {
+        "language": "pl",
+        "name": "Ba Lan"
+      },
+      {
+        "language": "fa",
+        "name": "Ba Tư"
+      },
+      {
+        "language": "ban",
+        "name": "Bali"
+      },
+      {
+        "language": "bal",
+        "name": "Baluchi"
+      },
+      {
+        "language": "bm",
+        "name": "Bambara"
+      },
+      {
+        "language": "xh",
+        "name": "Bantu"
+      },
+      {
+        "language": "bci",
+        "name": "Baoulé"
+      },
+      {
+        "language": "ba",
+        "name": "Bashkir"
+      },
+      {
+        "language": "eu",
+        "name": "Basque"
+      },
+      {
+        "language": "btx",
+        "name": "Batak Karo"
+      },
+      {
+        "language": "bts",
+        "name": "Batak Simalungun"
+      },
+      {
+        "language": "bbc",
+        "name": "Batak Toba"
+      },
+      {
+        "language": "se",
+        "name": "Bắc Sami"
+      },
+      {
+        "language": "nso",
+        "name": "Bắc Sotho"
+      },
+      {
+        "language": "be",
+        "name": "Belarus"
+      },
+      {
+        "language": "bem",
+        "name": "Bemba"
+      },
+      {
+        "language": "bn",
+        "name": "Bengal"
+      },
+      {
+        "language": "bew",
+        "name": "Betawi"
+      },
+      {
+        "language": "bho",
+        "name": "Bhojpuri"
+      },
+      {
+        "language": "bik",
+        "name": "Bikol"
+      },
+      {
+        "language": "bs",
+        "name": "Bosnia"
+      },
+      {
+        "language": "pt",
+        "name": "Bồ Đào Nha"
+      },
+      {
+        "language": "pt-PT",
+        "name": "Bồ Đào Nha (Bồ Đào Nha)"
+      },
+      {
+        "language": "br",
+        "name": "Breton"
+      },
+      {
+        "language": "bg",
+        "name": "Bulgaria"
+      },
+      {
+        "language": "bua",
+        "name": "Buryat"
+      },
+      {
+        "language": "ca",
+        "name": "Catalan"
+      },
+      {
+        "language": "ceb",
+        "name": "Cebuano"
+      },
+      {
+        "language": "ch",
+        "name": "Chamorro"
+      },
+      {
+        "language": "ce",
+        "name": "Chechnya"
+      },
+      {
+        "language": "ny",
+        "name": "Chichewa"
+      },
+      {
+        "language": "chk",
+        "name": "Chuuk"
+      },
+      {
+        "language": "cv",
+        "name": "Chuvash"
+      },
+      {
+        "language": "co",
+        "name": "Corsi"
+      },
+      {
+        "language": "ht",
+        "name": "Creole (Haiti)"
+      },
+      {
+        "language": "crs",
+        "name": "Creole Seychelles"
+      },
+      {
+        "language": "hr",
+        "name": "Croatia"
+      },
+      {
+        "language": "fa-AF",
+        "name": "Dari"
+      },
+      {
+        "language": "din",
+        "name": "Dinka"
+      },
+      {
+        "language": "dv",
+        "name": "Divehi"
+      },
+      {
+        "language": "iw",
+        "name": "Do Thái"
+      },
+      {
+        "language": "doi",
+        "name": "Dogri"
+      },
+      {
+        "language": "dov",
+        "name": "Dombe"
+      },
+      {
+        "language": "dyu",
+        "name": "Dyula"
+      },
+      {
+        "language": "dz",
+        "name": "Dzongkha"
+      },
+      {
+        "language": "da",
+        "name": "Đan Mạch"
+      },
+      {
+        "language": "de",
+        "name": "Đức"
+      },
+      {
+        "language": "et",
+        "name": "Estonia"
+      },
+      {
+        "language": "ee",
+        "name": "Ewe"
+      },
+      {
+        "language": "fo",
+        "name": "Faroese"
+      },
+      {
+        "language": "fj",
+        "name": "Fiji"
+      },
+      {
+        "language": "tl",
+        "name": "Filipino"
+      },
+      {
+        "language": "fon",
+        "name": "Fon"
+      },
+      {
+        "language": "fy",
+        "name": "Frisia"
+      },
+      {
+        "language": "fur",
+        "name": "Friuli"
+      },
+      {
+        "language": "ff",
+        "name": "Fulfulde"
+      },
+      {
+        "language": "gaa",
+        "name": "Gaa"
+      },
+      {
+        "language": "gd",
+        "name": "Gael Scotland"
+      },
+      {
+        "language": "gl",
+        "name": "Galicia"
+      },
+      {
+        "language": "ka",
+        "name": "George"
+      },
+      {
+        "language": "gn",
+        "name": "Guarani"
+      },
+      {
+        "language": "gu",
+        "name": "Gujarat"
+      },
+      {
+        "language": "nl",
+        "name": "Hà Lan"
+      },
+      {
+        "language": "af",
+        "name": "Hà Lan (Nam Phi)"
+      },
+      {
+        "language": "cnh",
+        "name": "Hakha Chin"
+      },
+      {
+        "language": "ko",
+        "name": "Hàn"
+      },
+      {
+        "language": "ha",
+        "name": "Hausa"
+      },
+      {
+        "language": "haw",
+        "name": "Hawaii"
+      },
+      {
+        "language": "hil",
+        "name": "Hiligaynon"
+      },
+      {
+        "language": "hi",
+        "name": "Hindi"
+      },
+      {
+        "language": "hmn",
+        "name": "Hmong"
+      },
+      {
+        "language": "hu",
+        "name": "Hungary"
+      },
+      {
+        "language": "hrx",
+        "name": "Hunsrik"
+      },
+      {
+        "language": "el",
+        "name": "Hy Lạp"
+      },
+      {
+        "language": "iba",
+        "name": "Iban"
+      },
+      {
+        "language": "is",
+        "name": "Iceland"
+      },
+      {
+        "language": "ig",
+        "name": "Igbo"
+      },
+      {
+        "language": "ilo",
+        "name": "Iloko"
+      },
+      {
+        "language": "id",
+        "name": "Indonesia"
+      },
+      {
+        "language": "ga",
+        "name": "Ireland"
+      },
+      {
+        "language": "jw",
+        "name": "Java"
+      },
+      {
+        "language": "kac",
+        "name": "Jingpo"
+      },
+      {
+        "language": "kl",
+        "name": "Kalaallisut"
+      },
+      {
+        "language": "kn",
+        "name": "Kannada"
+      },
+      {
+        "language": "kr",
+        "name": "Kanuri"
+      },
+      {
+        "language": "pam",
+        "name": "Kapampangan"
+      },
+      {
+        "language": "kk",
+        "name": "Kazakh"
+      },
+      {
+        "language": "kha",
+        "name": "Khasi"
+      },
+      {
+        "language": "km",
+        "name": "Khmer"
+      },
+      {
+        "language": "cgg",
+        "name": "Kiga"
+      },
+      {
+        "language": "kg",
+        "name": "Kikongo"
+      },
+      {
+        "language": "rw",
+        "name": "Kinyarwanda"
+      },
+      {
+        "language": "ktu",
+        "name": "Kituba"
+      },
+      {
+        "language": "trp",
+        "name": "Kokborok"
+      },
+      {
+        "language": "kv",
+        "name": "Komi"
+      },
+      {
+        "language": "gom",
+        "name": "Konkani"
+      },
+      {
+        "language": "kri",
+        "name": "Krio"
+      },
+      {
+        "language": "ku",
+        "name": "Kurd (Kurmanji)"
+      },
+      {
+        "language": "ckb",
+        "name": "Kurd (Sorani)"
+      },
+      {
+        "language": "ky",
+        "name": "Kyrgyz"
+      },
+      {
+        "language": "lo",
+        "name": "Lào"
+      },
+      {
+        "language": "ltg",
+        "name": "Latgale"
+      },
+      {
+        "language": "la",
+        "name": "Latinh"
+      },
+      {
+        "language": "lv",
+        "name": "Latvia"
+      },
+      {
+        "language": "lij",
+        "name": "Liguria"
+      },
+      {
+        "language": "li",
+        "name": "Limburg"
+      },
+      {
+        "language": "ln",
+        "name": "Lingala"
+      },
+      {
+        "language": "lt",
+        "name": "Litva"
+      },
+      {
+        "language": "lmo",
+        "name": "Lombard"
+      },
+      {
+        "language": "lg",
+        "name": "Luganda"
+      },
+      {
+        "language": "luo",
+        "name": "Luo"
+      },
+      {
+        "language": "lb",
+        "name": "Luxembourg"
+      },
+      {
+        "language": "ms",
+        "name": "Mã Lai"
+      },
+      {
+        "language": "mk",
+        "name": "Macedonia"
+      },
+      {
+        "language": "mad",
+        "name": "Madura"
+      },
+      {
+        "language": "mai",
+        "name": "Maithili"
+      },
+      {
+        "language": "mak",
+        "name": "Makassar"
+      },
+      {
+        "language": "mg",
+        "name": "Malagasy"
+      },
+      {
+        "language": "ms-Arab",
+        "name": "Malay (Jawi)"
+      },
+      {
+        "language": "ml",
+        "name": "Malayalam"
+      },
+      {
+        "language": "mt",
+        "name": "Malta"
+      },
+      {
+        "language": "mam",
+        "name": "Mam"
+      },
+      {
+        "language": "gv",
+        "name": "Manx"
+      },
+      {
+        "language": "mi",
+        "name": "Maori"
+      },
+      {
+        "language": "mr",
+        "name": "Marathi"
+      },
+      {
+        "language": "mh",
+        "name": "Marshall"
+      },
+      {
+        "language": "mwr",
+        "name": "Marwadi"
+      },
+      {
+        "language": "mfe",
+        "name": "Mauritian Creole"
+      },
+      {
+        "language": "yua",
+        "name": "Maya Yucatec"
+      },
+      {
+        "language": "chm",
+        "name": "Meadow Mari"
+      },
+      {
+        "language": "mni-Mtei",
+        "name": "Meiteilon (Manipuri)"
+      },
+      {
+        "language": "min",
+        "name": "Minang"
+      },
+      {
+        "language": "lus",
+        "name": "Mizo"
+      },
+      {
+        "language": "mn",
+        "name": "Mông Cổ"
+      },
+      {
+        "language": "my",
+        "name": "Myanmar"
+      },
+      {
+        "language": "bm-Nkoo",
+        "name": "N'Ko"
+      },
+      {
+        "language": "no",
+        "name": "Na Uy"
+      },
+      {
+        "language": "nhe",
+        "name": "Nahuatl (Đông Huasteca)"
+      },
+      {
+        "language": "nr",
+        "name": "Nam Ndebele"
+      },
+      {
+        "language": "ndc-ZW",
+        "name": "Ndau"
+      },
+      {
+        "language": "ne",
+        "name": "Nepal"
+      },
+      {
+        "language": "new",
+        "name": "Newari"
+      },
+      {
+        "language": "ru",
+        "name": "Nga"
+      },
+      {
+        "language": "ja",
+        "name": "Nhật"
+      },
+      {
+        "language": "nus",
+        "name": "Nuer"
+      },
+      {
+        "language": "oc",
+        "name": "Occitan"
+      },
+      {
+        "language": "or",
+        "name": "Odia (Oriya)"
+      },
+      {
+        "language": "om",
+        "name": "Oromo"
+      },
+      {
+        "language": "os",
+        "name": "Ossetia"
+      },
+      {
+        "language": "pag",
+        "name": "Pangasinan"
+      },
+      {
+        "language": "pap",
+        "name": "Papiamento"
+      },
+      {
+        "language": "ps",
+        "name": "Pashto"
+      },
+      {
+        "language": "jam",
+        "name": "Patois Jamaica"
+      },
+      {
+        "language": "sa",
+        "name": "Phạn"
+      },
+      {
+        "language": "fr",
+        "name": "Pháp"
+      },
+      {
+        "language": "fi",
+        "name": "Phần Lan"
+      },
+      {
+        "language": "pa",
+        "name": "Punjab"
+      },
+      {
+        "language": "pa-Arab",
+        "name": "Punjab (Shahmukhi)"
+      },
+      {
+        "language": "yue",
+        "name": "Quảng Đông"
+      },
+      {
+        "language": "qu",
+        "name": "Quechua"
+      },
+      {
+        "language": "eo",
+        "name": "Quốc tế ngữ"
+      },
+      {
+        "language": "rom",
+        "name": "Romani"
+      },
+      {
+        "language": "ro",
+        "name": "Rumani"
+      },
+      {
+        "language": "rn",
+        "name": "Rundi"
+      },
+      {
+        "language": "sm",
+        "name": "Samoa"
+      },
+      {
+        "language": "sg",
+        "name": "Sango"
+      },
+      {
+        "language": "sat-Latn",
+        "name": "Santali"
+      },
+      {
+        "language": "cs",
+        "name": "Séc"
+      },
+      {
+        "language": "sr",
+        "name": "Serbia"
+      },
+      {
+        "language": "st",
+        "name": "Sesotho"
+      },
+      {
+        "language": "shn",
+        "name": "Shan"
+      },
+      {
+        "language": "sn",
+        "name": "Shona"
+      },
+      {
+        "language": "scn",
+        "name": "Sicily"
+      },
+      {
+        "language": "szl",
+        "name": "Silesia"
+      },
+      {
+        "language": "sd",
+        "name": "Sindhi"
+      },
+      {
+        "language": "si",
+        "name": "Sinhala"
+      },
+      {
+        "language": "sk",
+        "name": "Slovak"
+      },
+      {
+        "language": "sl",
+        "name": "Slovenia"
+      },
+      {
+        "language": "so",
+        "name": "Somali"
+      },
+      {
+        "language": "su",
+        "name": "Sunda"
+      },
+      {
+        "language": "sus",
+        "name": "Susu"
+      },
+      {
+        "language": "sw",
+        "name": "Swahili"
+      },
+      {
+        "language": "ss",
+        "name": "Swati"
+      },
+      {
+        "language": "ty",
+        "name": "Tahiti"
+      },
+      {
+        "language": "tg",
+        "name": "Tajik"
+      },
+      {
+        "language": "ber-Latn",
+        "name": "Tamazight"
+      },
+      {
+        "language": "ber",
+        "name": "Tamazight (Tifinagh)"
+      },
+      {
+        "language": "ta",
+        "name": "Tamil"
+      },
+      {
+        "language": "tt",
+        "name": "Tatar"
+      },
+      {
+        "language": "crh",
+        "name": "Tatar Krym"
+      },
+      {
+        "language": "es",
+        "name": "Tây Ban Nha"
+      },
+      {
+        "language": "bo",
+        "name": "Tây Tạng"
+      },
+      {
+        "language": "te",
+        "name": "Telugu"
+      },
+      {
+        "language": "tet",
+        "name": "Tetum"
+      },
+      {
+        "language": "th",
+        "name": "Thái"
+      },
+      {
+        "language": "tr",
+        "name": "Thổ Nhĩ Kỳ"
+      },
+      {
+        "language": "sv",
+        "name": "Thụy Điển"
+      },
+      {
+        "language": "kek",
+        "name": "Tiếng Q'eqchi'"
+      },
+      {
+        "language": "ti",
+        "name": "Tigrinya"
+      },
+      {
+        "language": "tiv",
+        "name": "Tiv"
+      },
+      {
+        "language": "tpi",
+        "name": "Tok Pisin"
+      },
+      {
+        "language": "to",
+        "name": "Tonga"
+      },
+      {
+        "language": "zh",
+        "name": "Trung (Giản thể)"
+      },
+      {
+        "language": "zh-TW",
+        "name": "Trung (Phồn thể)"
+      },
+      {
+        "language": "ts",
+        "name": "Tsonga"
+      },
+      {
+        "language": "tn",
+        "name": "Tswana"
+      },
+      {
+        "language": "tcy",
+        "name": "Tulu"
+      },
+      {
+        "language": "tum",
+        "name": "Tumbuka"
+      },
+      {
+        "language": "tk",
+        "name": "Turkmen"
+      },
+      {
+        "language": "tyv",
+        "name": "Tuva"
+      },
+      {
+        "language": "ak",
+        "name": "Twi"
+      },
+      {
+        "language": "udm",
+        "name": "Udmurt"
+      },
+      {
+        "language": "uk",
+        "name": "Ukraina"
+      },
+      {
+        "language": "ur",
+        "name": "Urdu"
+      },
+      {
+        "language": "ug",
+        "name": "Uyghur"
+      },
+      {
+        "language": "uz",
+        "name": "Uzbek"
+      },
+      {
+        "language": "ve",
+        "name": "Venda"
+      },
+      {
+        "language": "vec",
+        "name": "Venice"
+      },
+      {
+        "language": "vi",
+        "name": "Việt"
+      },
+      {
+        "language": "war",
+        "name": "Waray"
+      },
+      {
+        "language": "wo",
+        "name": "Wolof"
+      },
+      {
+        "language": "cy",
+        "name": "Xứ Wales"
+      },
+      {
+        "language": "it",
+        "name": "Ý"
+      },
+      {
+        "language": "sah",
+        "name": "Yakut"
+      },
+      {
+        "language": "yi",
+        "name": "Yiddish"
+      },
+      {
+        "language": "yo",
+        "name": "Yoruba"
+      },
+      {
+        "language": "zap",
+        "name": "Zapotec"
+      },
+      {
+        "language": "zu",
+        "name": "Zulu"
+      },
+      {
+        "language": "he",
+        "name": "Do Thái"
+      },
+      {
+        "language": "jv",
+        "name": "Java"
+      },
+      {
+        "language": "zh-CN",
+        "name": "Trung (Giản thể)"
+      }
+    ]
+  }
+}
+`);
 
   DefaultLanguage = {
     SOURCE_LANGUAGE: 'auto',
@@ -15,130 +1999,7 @@ class GoogleTranslate extends Translator {
 
   constructor() {
     super();
-    this.clientName = 'gtx';
     this.maxContentLengthPerRequest = 5000;
-  }
-
-  // fetchData() {
-  //   try {
-  //     const bingTranslatorHtml = $.ajax({
-  //       async: false,
-  //       method: 'GET',
-  //       url: `${Utils.CORS_PROXY}https://translate.google.com/?sl=auto&tl=vi&op=translate`,
-  //     }).responseText;
-
-  //     const [__, fSid] = bingTranslatorHtml.match(/"FdrFJe":"(\d+)"/);
-  //     const [___, bl] = bingTranslatorHtml.match(/"cfb2h":"([^"]+)"/);
-
-  //     this.fSid = fSid;
-  //     this.bl = bl;
-  //   } catch (error) {
-  //     console.error('Không thể lấy được Data:', error);
-  //     throw console.error('Không thể lấy được Data!');
-  //   }
-  // }
-
-  // translateText(sourceLang, targetLang, text) {
-  //   try {
-  //     return $.ajax({
-  //       async: false,
-  //       data: `f.req=${encodeURIComponent(JSON.stringify([[['MkEWBc', JSON.stringify([[text, sourceLang, targetLang, 1], []]), null, 'generic']]]))}&`,
-  //       headers: {
-  //         'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
-  //       },
-  //       method: 'POST',
-  //       url: `${Utils.CORS_PROXY}https://translate.google.com/_/TranslateWebserverUi/data/batchexecute?rpcids=MkEWBc&source-path=%2F&f.sid=${this.fSid}&bl=${this.bl}&hl=vi&soc-app=1&soc-platform=1&soc-device=1&_reqid=${Utils.getRandomInt(10000, 9999999)}&rt=c`,
-  //     }).responseText;
-  //   } catch (error) {
-  //     console.error('Bản dịch lỗi:', error);
-  //     throw error;
-  //   }
-  // }
-
-  static stringToUtf8ByteArray(string) {
-    const utf8Bytes = [];
-
-    for (let i = 0; i < string.length; i += 1) {
-      let charCode = string.charCodeAt(i);
-
-      if (charCode < 128) {
-        utf8Bytes.push(charCode);
-      } else {
-        if (charCode < 2048) {
-          utf8Bytes.push(Math.floor(charCode / 64) + 192);
-        } else {
-          if (charCode >= 55296 && charCode <= 57343 && i + 1 < string.length && string.charCodeAt(i + 1) >= 56320 && string.charCodeAt(i + 1) <= 57343) {
-            charCode = 65536 + ((charCode - 55296) * 1024) + (string.charCodeAt(i += 1) - 56320);
-            utf8Bytes.push(Math.floor(charCode / 262144) + 240);
-            utf8Bytes.push(Math.floor((charCode % 262144) / 4096) + 128);
-          } else {
-            utf8Bytes.push(Math.floor(charCode / 4096) + 224);
-          }
-
-          utf8Bytes.push(Math.floor((charCode % 4096) / 64) + 128);
-        }
-
-        utf8Bytes.push((charCode % 64) + 128);
-      }
-    }
-
-    return utf8Bytes;
-  }
-
-  /* eslint-disable no-bitwise */
-
-  static applyTokenGenerator(securityKey, operationsString) {
-    let result = securityKey;
-
-    for (let c = 0; c < operationsString.length - 2; c += 3) {
-      let shifted = operationsString.charAt(c + 2);
-      shifted = shifted >= 'a' ? shifted.charCodeAt(0) - 87 : Number(shifted);
-      shifted = operationsString.charAt(c + 1) === '+' ? result >>> shifted : result << shifted;
-      result = operationsString.charAt(c) === '+' ? (result + shifted) % 4294967295 : result ^ shifted;
-    }
-
-    return result;
-  }
-
-  static getSecurityHash(query, securityKey, tokenGeneratorKey) {
-    const utf8Bytes = GoogleTranslate.stringToUtf8ByteArray(query);
-    let accumulator = Number(securityKey) || 0;
-
-    for (let i = 0; i < utf8Bytes.length; i += 1) {
-      accumulator += utf8Bytes[i];
-      accumulator = GoogleTranslate.applyTokenGenerator(accumulator, '+-a^+6');
-    }
-
-    accumulator = GoogleTranslate.applyTokenGenerator(accumulator, '+-3^+b+-f');
-    accumulator ^= Number(tokenGeneratorKey) || 0;
-    if (accumulator < 0) accumulator = (accumulator & 2147483647) + 2147483648;
-    return accumulator % 1E6;
-  }
-
-  static getSecurityToken(query, securityKey) {
-    const parts = securityKey.split('.');
-    const keyPart1 = Number(parts[0]) || 0;
-    const securityHash = GoogleTranslate.getSecurityHash(query, keyPart1, Number(parts[1]) || 0);
-    return `${securityHash.toString()}.${securityHash ^ keyPart1}`;
-  }
-
-  /* eslint-enable no-bitwise */
-
-  getSecurityKey() {
-    if (this.securityKeyTokenGenerator != null) return this.securityKeyTokenGenerator;
-    let charT = String.fromCharCode(84);
-    const charK = String.fromCharCode(75);
-
-    charT = [charT, charT];
-    charT[1] = charK;
-
-    this.securityKeyTokenGenerator = window[charT.join(charK)] || '';
-    return this.securityKeyTokenGenerator || '';
-  }
-
-  getSecurityParam(querys) {
-    const query = querys.join('');
-    return GoogleTranslate.getSecurityToken(query, this.getSecurityKey());
   }
 
   async translateText(text, targetLanguage, sourceLanguage = this.DefaultLanguage.SOURCE_LANGUAGE) {
@@ -152,17 +2013,15 @@ class GoogleTranslate extends Translator {
 
         if (lines.length === 0 || [...queryLines, lines[0]].join('\n').length > this.maxContentLengthPerRequest) {
           responses.push($.ajax({
-            data: `q=${queryLines.map((element) => encodeURIComponent(element)).join('&q=')}`,
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            method: 'POST',
-            url: `https://translate.googleapis.com/translate_a/t?client=${this.clientName}&sl=${sourceLanguage}&tl=${targetLanguage}&hl=vi&v=1.0&ie=UTF-8&oe=UTF-8&source=text&tk=${this.getSecurityParam(queryLines)}`,
+            method: 'GET',
+            url: `https://www.googleapis.com/language/translate/v2?key=AIzaSyBcsB9k1Db4FXrf0Y7vXK0aIS2bQA38Gms&target=${targetLanguage}&q=${queryLines.map((element) => encodeURIComponent(element)).join('&q=')}${sourceLanguage !== this.DefaultLanguage.SOURCE_LANGUAGE ? `&source=${sourceLanguage}` : ''}`,
           }));
           queryLines = [];
         }
       }
 
       await Promise.all(responses);
-      this.result = responses.map((a) => a.responseJSON.map((b) => (sourceLanguage === 'auto' ? b[0] : b)).join('\n')).join('\n');
+      this.result = responses.map((a) => a.responseJSON.data.translations.map((b) => b.translatedText).join('\n')).join('\n');
       super.translateText(text, targetLanguage, sourceLanguage);
       return this.result;
     } catch (error) {

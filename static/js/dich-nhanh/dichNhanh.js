@@ -57,13 +57,13 @@ const FONT_MAPPING = {
   'Họ phông chữ dự phòng của Apple Sách tiếng Trung giản thể': '--apple-books-fallback-font-family-zh_CN',
   'Họ phông chữ dự phòng của Apple Sách tiếng Trung phồn thể cho Đài Loan': '---apple-books-fallback-font-family-zh_TW',
   'Họ phông chữ dự phòng của Apple Sách tiếng Trung phồn thể cho Hồng Kông và Macao': '--apple-books-fallback-font-family-zh_HK',
-  'Họ phông chữ dự phòng của Apple Sách tiếng Nhật': '--apple-books-fallback-font-family-ja_JP',
+  'Họ phông chữ dự phòng của Apple Sách tiếng Nhật': '--apple-books-fallback-font-family-ja',
   'Họ phông chữ dự phòng của BOOK☆WALKER': '--bookwalker-fallback-font-family',
   'Họ phông chữ dự phòng của Calibre': '--calibre-fallback-font-family',
   'Họ phông chữ dự phòng của Google Play Sách': '--google-play-books-fallback-font-family',
-  'Họ phông chữ dự phòng của Google Play Sách tiếng Nhật': '--google-play-books-fallback-font-family_ja_JP',
+  'Họ phông chữ dự phòng của Google Play Sách tiếng Nhật': '--google-play-books-fallback-font-family_ja',
   'Họ phông chữ dự phòng của Rakuten Kobo': '--rakuten-kobo-fallback-font-family',
-  'Họ phông chữ dự phòng của Rakuten Kobo tiếng Nhật': '--rakuten-kobo-fallback-font-family-ja_JP',
+  'Họ phông chữ dự phòng của Rakuten Kobo tiếng Nhật': '--rakuten-kobo-fallback-font-family-ja',
   'Apple SD Gothic Neo': 'appleSDGothicNeo',
   'A-OTF Ryumin Pr5': 'aOTFRyuminPr5',
   Bookerly: 'bookerly',
@@ -119,8 +119,6 @@ const Translators = {
   VIETPHRASE: 'vietphrase',
   WEBNOVEL_TRANSLATE: 'webnovelTranslate',
 };
-
-const SUPPORTED_LANGUAGES_CODE_LIST = ['', 'auto', 'auto-detect', 'en', 'EN', 'EN-US', 'ja', 'JA', 'ZH', 'zh-CN', 'zh-Hans', 'zh-TW', 'zh-Hant', 'vi'];
 
 const DEEPL_AUTH_KEY_LIST = [
   ['0c9649a5-e8f6-632a-9c42-a9eee160c330:fx', 308163],
@@ -478,7 +476,7 @@ const getSourceLangOptionList = function getSourceLanguageOptionListHtmlFromTran
     }
     case Translators.DEEPL_TRANSLATE: {
       DeepLTranslate.SOURCE_LANGUAGE_LIST.forEach(({ language, name }) => {
-        if (!SUPPORTED_LANGUAGES_CODE_LIST.includes(language)) return;
+        if (!['', 'EN-US', 'JA', 'ZH'].includes(language)) return;
         const option = document.createElement('option');
         option.innerText = name;
         option.value = language;
@@ -488,11 +486,11 @@ const getSourceLangOptionList = function getSourceLanguageOptionListHtmlFromTran
       break;
     }
     case Translators.GOOGLE_TRANSLATE: {
-      Object.entries(GoogleTranslate.SOURCE_LANGUAGE_LIST).forEach(([languageCode, name]) => {
-        if (!SUPPORTED_LANGUAGES_CODE_LIST.includes(languageCode)) return;
+      GoogleTranslate.SOURCE_LANGUAGE_LIST.data.languages.forEach(({ language, name }) => {
+        if (!['auto', 'en', 'ja', 'zh', 'zh-TW', 'vi'].includes(language)) return;
         const option = document.createElement('option');
         option.innerText = name;
-        option.value = languageCode;
+        option.value = language;
         sourceLanguageSelect.appendChild(option);
       });
 
@@ -500,7 +498,7 @@ const getSourceLangOptionList = function getSourceLanguageOptionListHtmlFromTran
     }
     case Translators.PAPAGO: {
       Object.entries(Papago.SOURCE_LANGUAGE_LIST).forEach(([languageCode, name]) => {
-        if (!SUPPORTED_LANGUAGES_CODE_LIST.includes(languageCode)) return;
+        if (!['auto', 'en', 'ja', 'zh-CN', 'zh-TW', 'vi'].includes(languageCode)) return;
         const option = document.createElement('option');
         option.innerText = name;
         option.value = languageCode;
@@ -520,11 +518,11 @@ const getSourceLangOptionList = function getSourceLanguageOptionListHtmlFromTran
       break;
     }
     case Translators.WEBNOVEL_TRANSLATE: {
-      Object.entries(WebnovelTranslate.SOURCE_LANGUAGE_LIST).forEach(([languageCode, name]) => {
-        if (!SUPPORTED_LANGUAGES_CODE_LIST.includes(languageCode)) return;
+      WebnovelTranslate.SOURCE_LANGUAGE_LIST.forEach(({ language, name }) => {
+        if (!['auto', 'en', 'ja', 'zh-CN', 'zh-TW', 'vi'].includes(language)) return;
         const option = document.createElement('option');
         option.innerText = name;
-        option.value = languageCode;
+        option.value = language;
         sourceLanguageSelect.appendChild(option);
       });
 
@@ -532,7 +530,7 @@ const getSourceLangOptionList = function getSourceLanguageOptionListHtmlFromTran
     }
     default: {
       Object.entries(MicrosoftTranslator.SOURCE_LANGUAGE_LIST).forEach(([languageCode, { name }]) => {
-        if (!SUPPORTED_LANGUAGES_CODE_LIST.includes(languageCode)) return;
+        if (!['auto-detect', 'en', 'ja', 'zh-Hans', 'zh-Hant', 'vi'].includes(languageCode)) return;
         const option = document.createElement('option');
         option.innerText = name;
         option.value = languageCode;
@@ -562,7 +560,7 @@ const getTargetLangOptionList = function getTargetLanguageOptionListHtmlFromTran
     }
     case Translators.DEEPL_TRANSLATE: {
       DeepLTranslate.TARGET_LANGUAGE_LIST.forEach(({ language, name }) => {
-        if (!SUPPORTED_LANGUAGES_CODE_LIST.includes(language)) return;
+        if (!['', 'EN', 'JA', 'ZH'].includes(language)) return;
         const option = document.createElement('option');
         option.innerText = name;
         option.value = language;
@@ -572,11 +570,11 @@ const getTargetLangOptionList = function getTargetLanguageOptionListHtmlFromTran
       break;
     }
     case Translators.GOOGLE_TRANSLATE: {
-      Object.entries(GoogleTranslate.TARGET_LANGUAGE_LIST).forEach(([languageCode, name]) => {
-        if (!SUPPORTED_LANGUAGES_CODE_LIST.includes(languageCode)) return;
+      GoogleTranslate.TARGET_LANGUAGE_LIST.data.languages.forEach(({ language, name }) => {
+        if (!['auto', 'en', 'ja', 'zh', 'zh-TW', 'vi'].includes(language)) return;
         const option = document.createElement('option');
         option.innerText = name;
-        option.value = languageCode;
+        option.value = language;
         targetLanguageSelect.appendChild(option);
       });
 
@@ -584,7 +582,7 @@ const getTargetLangOptionList = function getTargetLanguageOptionListHtmlFromTran
     }
     case Translators.PAPAGO: {
       Object.entries(Papago.TARGET_LANGUAGE_LIST).forEach(([languageCode, name]) => {
-        if (!SUPPORTED_LANGUAGES_CODE_LIST.includes(languageCode)) return;
+        if (!['auto', 'en', 'ja', 'zh-CN', 'zh-TW', 'vi'].includes(languageCode)) return;
         const option = document.createElement('option');
         option.innerText = name;
         option.value = languageCode;
@@ -604,11 +602,11 @@ const getTargetLangOptionList = function getTargetLanguageOptionListHtmlFromTran
       break;
     }
     case Translators.WEBNOVEL_TRANSLATE: {
-      Object.entries(WebnovelTranslate.TARGET_LANGUAGE_LIST).forEach(([languageCode, name]) => {
-        if (!SUPPORTED_LANGUAGES_CODE_LIST.includes(languageCode)) return;
+      WebnovelTranslate.TARGET_LANGUAGE_LIST.forEach(({ language, name }) => {
+        if (!['auto', 'en', 'ja', 'zh-CN', 'zh-TW', 'vi'].includes(language)) return;
         const option = document.createElement('option');
         option.innerText = name;
-        option.value = languageCode;
+        option.value = language;
         targetLanguageSelect.appendChild(option);
       });
 
@@ -616,7 +614,7 @@ const getTargetLangOptionList = function getTargetLanguageOptionListHtmlFromTran
     }
     default: {
       Object.entries(MicrosoftTranslator.TARGET_LANGUAGE_LIST).forEach(([languageCode, { name }]) => {
-        if (!SUPPORTED_LANGUAGES_CODE_LIST.includes(languageCode)) return;
+        if (!['auto-detect', 'en', 'ja', 'zh-Hans', 'zh-Hant', 'vi'].includes(languageCode)) return;
         const option = document.createElement('option');
         option.innerText = name;
         option.value = languageCode;
@@ -1126,7 +1124,7 @@ $fontSizeText.change(function onChange() {
 
 $themeDropdown.find('.dropdown-item').on('click', function onClick() {
   const $prevTheme = $themeDropdown.find('.active');
-  const prevFontStack = $prevThemedata('font-family');
+  const prevFontStack = $prevTheme.data('font-family');
 
   $(document.body).removeClass($prevTheme.val());
   $themeDropdown.find('.dropdown-item').removeClass('active');
