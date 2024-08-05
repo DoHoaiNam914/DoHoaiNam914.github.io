@@ -825,13 +825,14 @@ $(document).ready(async () => {
   $fontStackText.autocomplete({
     appendTo: '#settings-modal .modal-body',
     source: (request, response) => {
-      response($.grep(autocompleteFontStackTextSource, (elementOfArray) => new RegExp($.ui.autocomplete.escapeRegex(request.term.split(/, */).pop()), 'i').test(elementOfArray.label || elementOfArray.value || elementOfArray)));
+      response($.grep(autocompleteFontStackTextSource, (elementOfArray) => (new RegExp($.ui.autocomplete.escapeRegex(request.term.split(/, */).pop()), 'i')).test(elementOfArray.label || elementOfArray.value || elementOfArray)));
     },
     focus: () => false,
     select: function onSelect(__, ui) {
       const terms = $(this).val().split(/, */);
       terms.pop();
       terms.push(ui.item.value);
+      terms.push('');
       $(this).val(terms.join(', ')).change();
       return false;
     },
@@ -1114,21 +1115,30 @@ $fontStackText.change(function onChange() {
   }).join(', '));
 });
 
+$fontStackText.on('blur', function onBlur() {
+  $(this).change();
+});
+
 $fontSizeText.change(function onChange() {
   $(this).val(Math.min(parseFloat($(this).attr('max')), Math.max(parseFloat($(this).attr('min')), parseFloat($(this).val()))));
   $(document.documentElement).css('--opt-font-size', `${$(this).val()}em`);
 });
 
 $themeDropdown.find('.dropdown-item').on('click', function onClick() {
-  $(document.body).removeClass($themeDropdown.find('.active').val());
+  const $prevTheme = $themeDropdown.find('.active');
+  const prevFontStack = $prevThemedata('font-family');
+
+  $(document.body).removeClass($prevTheme.val());
   $themeDropdown.find('.dropdown-item').removeClass('active');
   $(this).addClass('active');
+
   const fontStack = $(this).data('font-family');
   const fontSize = $(this).data('font-size');
   const spacing = $(this).data('line-height');
   const alignment = $(this).data('text-align');
   const fontWeight = $(this).data('font-weight');
-  if (fontStack != null) $fontStackText.val(fontStack).change();
+
+  if ($fontStackText.val().length === 0 || prevFontStack.startsWith($fontStackText.val())) $fontStackText.val(fontStack ?? '').change();
   if (fontSize != null) $fontSizeText.val(fontSize).change();
   $(document.body).addClass($(this).val());
   if (alignment != null && alignment.length > 0) $alignmentRadio.prop('checked', false).filter(`#${['com-amazon-kindle-', 'apple-books-quiet-', 'apple-books-focus-', 'bookwalker-'].some((element) => $(this).val().includes(element)) ? 'justify' : 'start'}-alignment-radio`).prop('checked', true).change();
