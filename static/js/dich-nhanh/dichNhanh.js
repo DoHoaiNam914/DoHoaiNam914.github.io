@@ -1821,13 +1821,13 @@ $translateEntryButtons.click(async function onClick() {
           break;
         }
         default: {
-          await translator.translateText(activeTranslator === Translators.WEBNOVEL_TRANSLATE ? `　　${text.replace(/^\s+/, '').trimStart()}` : text, targetLanguage);
+          await translator.translateText(text, targetLanguage);
           break;
         }
       }
 
       if (!translationController.signal.aborted) {
-        $targetEntryTextarea.val(translator.result).trigger('input');
+        $targetEntryTextarea.val(translator.result.replace(/^\s+/, '')).trigger('input');
         lastTranslateEntryButton = activeTranslator !== Translators.VIETPHRASE ? $(this) : null;
       }
     } catch (error) {
