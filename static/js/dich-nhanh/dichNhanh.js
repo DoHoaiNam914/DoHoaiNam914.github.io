@@ -34,6 +34,7 @@ const $translateButton = $('#translate-button');
 const $translateEntryButtons = $('.translate-entry-button');
 const $translateTimer = $('#translate-timer');
 const $translatorDropdown = $('#translator-dropdown');
+const $upperCaseButtons = $('.upper-case-button');
 
 const FONT_MAPPING = {
   'Họ phông chữ hệ thống': '--system-font-family',
@@ -1655,7 +1656,12 @@ $sourceEntryInput.on('input', async function onInput() {
       $removeButton.removeClass('disabled');
       lastTranslateEntryButton = null;
     } else {
-      $translateEntryButtons.filter(`[data-translator="vietphrase"][data-lang="${activeGlossaryList === 'vietPhrase' ? 'vi' : 'SinoVietnamese'}"]`).click();
+      (new Promise((resolve) => {
+        $translateEntryButtons.filter(`[data-translator="vietphrase"][data-lang="${activeGlossaryList === 'vietPhrase' ? 'vi' : 'SinoVietnamese'}"]`).click();
+        resolve();
+      })).then(() => {
+        if (['name', 'namePhu'].some((element) => activeGlossaryList === element)) $upperCaseButtons.filter('[data-amount="#"]').click();
+      });
       $removeButton.addClass('disabled');
     }
 
@@ -1668,10 +1674,9 @@ $sourceEntryInput.on('input', async function onInput() {
 });
 
 $sourceEntryInput.on('keypress', (event) => {
-  if (event.key === 'Enter') {
-    $targetEntryTextarea.focus();
-    event.preventDefault();
-  }
+  if (event.key !== 'Enter') return;
+  $targetEntryTextarea.focus();
+  event.preventDefault();
 });
 
 $sourceEntryInput.on('blur', () => {
@@ -1724,20 +1729,19 @@ $('.translate-webpage-button').on('click', function onClick() {
   $sourceEntryInput.blur();
 });
 
-$('.upper-case-button').on('click', function onClick() {
-  if ($targetEntryTextarea.val().length > 0) {
-    let text = $targetEntryTextarea.val().toLowerCase();
+$upperCaseButtons.click(function onClick() {
+  if ($targetEntryTextarea.val().length === 0) return;
+  let text = $targetEntryTextarea.val().toLowerCase();
 
-    if ($(this).data('amount') !== '#') {
-      for (let i = 0; i < $(this).data('amount'); i += 1) {
-        text = text.replace(/(^|\s|\p{P})(\p{Ll})/u, (__, p1, p2) => p1 + p2.toUpperCase());
-      }
-    } else {
-      text = text.replaceAll(/(^|\s|\p{P})(\p{Ll})/gu, (__, p1, p2) => p1 + p2.toUpperCase());
+  if ($(this).data('amount') !== '#') {
+    for (let i = 0; i < $(this).data('amount'); i += 1) {
+      text = text.replace(/(^|\s|\p{P})(\p{Ll})/u, (__, p1, p2) => p1 + p2.toUpperCase());
     }
-
-    $targetEntryTextarea.val(text).trigger('input');
+  } else {
+    text = text.replaceAll(/(^|\s|\p{P})(\p{Ll})/gu, (__, p1, p2) => p1 + p2.toUpperCase());
   }
+
+  $targetEntryTextarea.val(text);
 });
 
 $translateEntryButtons.click(async function onClick() {
