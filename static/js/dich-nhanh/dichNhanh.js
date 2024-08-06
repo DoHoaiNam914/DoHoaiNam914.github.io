@@ -1585,8 +1585,17 @@ $glossaryModal.on('shown.bs.modal', () => {
       $targetEntryTextarea.val(currentGlossary[text]);
       $removeButton.removeClass('disabled');
     } else {
-      if (lastTranslateEntryButton != null) lastTranslateEntryButton.click();
-      else $translateEntryButtons.filter(`[data-translator="vietphrase"][data-lang="${activeGlossaryList === 'vietPhrase' ? 'vi' : 'SinoVietnamese'}"]`).click();
+      if (lastTranslateEntryButton != null) {
+        lastTranslateEntryButton.click();
+      } else {
+        (new Promise((resolve) => {
+          $translateEntryButtons.filter(`[data-translator="vietphrase"][data-lang="${activeGlossaryList === 'vietPhrase' ? 'vi' : 'SinoVietnamese'}"]`).click();
+          resolve();
+        })).then(() => {
+          if (['name', 'namePhu'].some((element) => activeGlossaryList === element)) $upperCaseButtons.filter('[data-amount="#"]').click();
+        });
+      }
+
       $removeButton.addClass('disabled');
     }
 
@@ -1636,7 +1645,15 @@ $glossaryListSelect.change(function onChange() {
       $removeButton.removeClass('disabled');
       lastTranslateEntryButton = null;
     } else {
-      if (window.confirm('Bạn có muốn chuyển đổi lại chứ?')) $translateEntryButtons.filter(`[data-translator="vietphrase"][data-lang="${activeGlossaryList === 'vietPhrase' ? 'vi' : 'SinoVietnamese'}"]`).click();
+      if (window.confirm('Bạn có muốn chuyển đổi lại chứ?')) {
+        (new Promise((resolve) => {
+          $translateEntryButtons.filter(`[data-translator="vietphrase"][data-lang="${activeGlossaryList === 'vietPhrase' ? 'vi' : 'SinoVietnamese'}"]`).click();
+          resolve();
+        })).then(() => {
+          if (['name', 'namePhu'].some((element) => activeGlossaryList === element)) $upperCaseButtons.filter('[data-amount="#"]').click();
+        });
+      }
+
       $removeButton.addClass('disabled');
     }
 
