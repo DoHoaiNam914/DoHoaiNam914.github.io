@@ -1999,8 +1999,8 @@ class GoogleTranslate extends Translator {
 
   constructor() {
     super();
-    this.maxContentLengthPerRequest = 8103;
-    this.maxContentLinePerRequest = 128;
+    this.maxContentLengthPerRequest = 4869;
+    this.maxContentLinePerRequest = 17;
   }
 
   async translateText(text, targetLanguage, sourceLanguage = this.DefaultLanguage.SOURCE_LANGUAGE) {
@@ -2022,7 +2022,7 @@ class GoogleTranslate extends Translator {
       }
 
       await Promise.all(responses);
-      this.result = responses.map((a) => a.responseJSON.data.translations.map((b) => b.translatedText).join('\n')).join('\n');
+      this.result = Utils.convertHtmlToText(responses.map((a) => a.responseJSON.data.translations.map((b) => b.translatedText).join('\n')).join('\n'));
       super.translateText(text, targetLanguage, sourceLanguage);
       return this.result;
     } catch (error) {
