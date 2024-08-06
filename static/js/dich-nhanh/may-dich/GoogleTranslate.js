@@ -2000,6 +2000,7 @@ class GoogleTranslate extends Translator {
   constructor() {
     super();
     this.maxContentLengthPerRequest = 5000;
+    this.maxContentLinePerRequest = 10;
   }
 
   async translateText(text, targetLanguage, sourceLanguage = this.DefaultLanguage.SOURCE_LANGUAGE) {
@@ -2008,10 +2009,10 @@ class GoogleTranslate extends Translator {
       let queryLines = [];
       const responses = [];
 
-      while (lines.length > 0 && [...queryLines, lines[0]].join('\n').length <= this.maxContentLengthPerRequest) {
+      while (lines.length > 0 && [...queryLines, lines[0]].join('\n').length <= this.maxContentLengthPerRequest && (queryLines.length + 1) <= this.maxContentLinePerRequest) {
         queryLines.push(lines.shift());
 
-        if (lines.length === 0 || [...queryLines, lines[0]].join('\n').length > this.maxContentLengthPerRequest) {
+        if (lines.length === 0 || [...queryLines, lines[0]].join('\n').length > this.maxContentLengthPerRequest && (queryLines.length + 1) > this.maxContentLinePerRequest) {
           responses.push($.ajax({
             method: 'GET',
             url: `https://www.googleapis.com/language/translate/v2?key=AIzaSyBcsB9k1Db4FXrf0Y7vXK0aIS2bQA38Gms&target=${targetLanguage}&q=${queryLines.map((element) => encodeURIComponent(element)).join('&q=')}${sourceLanguage !== this.DefaultLanguage.SOURCE_LANGUAGE ? `&source=${sourceLanguage}` : ''}`,
