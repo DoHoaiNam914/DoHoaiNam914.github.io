@@ -824,7 +824,8 @@ $(document).ready(async () => {
   $fontStackText.autocomplete({
     appendTo: '#settings-modal .modal-body',
     source: (request, response) => {
-      response($.grep(autocompleteFontStackTextSource, (elementOfArray) => (new RegExp($.ui.autocomplete.escapeRegex(request.term.split(/, */).pop()), 'i')).test(elementOfArray.label || elementOfArray.value || elementOfArray)));
+      const matcher = new RegExp($.ui.autocomplete.escapeRegex(request.term.split(/, */).pop()), 'i');
+      response($.grep(autocompleteFontStackTextSource, (elementOfArray) => matcher.test(elementOfArray.label) || matcher.test(elementOfArray.value)));
     },
     focus: () => false,
     select: function onSelect(__, ui) {
@@ -832,7 +833,7 @@ $(document).ready(async () => {
       terms.pop();
       terms.push(ui.item.value);
       terms.push('');
-      $(this).val(terms.join(', ')).change();
+      $(this).val(terms.join(', '));
       return false;
     },
   });
@@ -1066,6 +1067,10 @@ $resultTextarea.on('keypress', (event) => {
 
     event.preventDefault();
   }
+});
+
+$('.modal').on('blur', () => {
+  $(document.body).focus();
 });
 
 $('.modal textarea, .modal input[type="text"]').on('blur', function onBlur() {
