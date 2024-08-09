@@ -561,7 +561,7 @@ const getTargetLangOptionList = function getTargetLanguageOptionListHtmlFromTran
       });
       break;
     }
-    case Translators.GOOGLE_TRANSLATE: {
+    case Translators.MICROSOFT_TRANSLATOR: {
       Object.entries(MicrosoftTranslator.TARGET_LANGUAGE_LIST).forEach(([languageCode, { name }]) => {
         if (!['auto-detect', 'en', 'ja', 'zh-Hans', 'zh-Hant', 'vi'].includes(languageCode)) return;
         const option = document.createElement('option');
