@@ -633,13 +633,13 @@
                     <button type="button" class="dropdown-item" value="deeplTranslate">DeepL Translate</button>
                   </li>
                   <li>
-                    <button type="button" class="dropdown-item" value="googleTranslate">Google Dịch</button>
+                    <button type="button" class="dropdown-item active" value="googleTranslate">Google Dịch</button>
                   </li>
                   <li>
                     <button type="button" class="dropdown-item" value="papago">Papago</button>
                   </li>
                   <li>
-                    <button type="button" class="dropdown-item active" value="microsoftTranslator">Trình dịch Microsoft</button>
+                    <button type="button" class="dropdown-item" value="microsoftTranslator">Trình dịch Microsoft</button>
                   </li>
                   <li>
                     <button type="button" class="dropdown-item" value="vietphrase">Vietphrase</button>
@@ -820,24 +820,6 @@
                     </div>
                   </li>
                   <li>
-                    <button type="button" class="dropdown-item" data-bs-toggle="collapse" data-bs-target="#baidu-fanyi-collapse">Baidu Translate</button>
-                    <div class="collapse" id="baidu-fanyi-collapse">
-                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="baiduTranslate" data-lang="vie">Vietnamese</button>
-                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="baiduTranslate" data-lang="en">English</button>
-                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="baiduTranslate" data-lang="zh">Chinese</button>
-                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="baiduTranslate" data-lang="cht">Traditional Chinese</button>
-                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="baiduTranslate" data-lang="jp">Japanese</button>
-                    </div>
-                  </li>
-                  <li>
-                    <button type="button" class="dropdown-item" data-bs-toggle="collapse" data-bs-target="#deepl-translate-collapse">DeepL Translate</button>
-                    <div class="collapse" id="deepl-translate-collapse">
-                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="deeplTranslate" data-lang="EN-US">English</button>
-                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="deeplTranslate" data-lang="JA">Japanese</button>
-                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="deeplTranslate" data-lang="ZH">Chinese</button>
-                    </div>
-                  </li>
-                  <li>
                     <button type="button" class="dropdown-item" data-bs-toggle="collapse" data-bs-target="#google-translate-collapse">Google Dịch</button>
                     <div class="collapse" id="google-translate-collapse">
                       <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="googleTranslate" data-lang="vi">Việt</button>
@@ -845,16 +827,6 @@
                       <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="googleTranslate" data-lang="zh-CN">Trung (Giản thể)</button>
                       <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="googleTranslate" data-lang="zh-TW">Trung (Phồn thể)</button>
                       <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="googleTranslate" data-lang="ja">Nhật</button>
-                    </div>
-                  </li>
-                  <li>
-                    <button type="button" class="dropdown-item" data-bs-toggle="collapse" data-bs-target="#papago-collapse">Papago</button>
-                    <div class="collapse" id="papago-collapse">
-                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="papago" data-lang="vi">Việt</button>
-                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="papago" data-lang="en">Anh</button>
-                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="papago" data-lang="ja">Nhật</button>
-                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="papago" data-lang="zh-CN">Trung (Giản thể)</button>
-                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="papago" data-lang="zh-TW">Trung (Phồn thể)</button>
                     </div>
                   </li>
                   <li>
@@ -875,6 +847,34 @@
                       <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="webnovelTranslate" data-lang="zh-CN">Trung (Giản thể)</button>
                       <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="webnovelTranslate" data-lang="zh-TW">Trung (Phồn thể)</button>
                       <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="webnovelTranslate" data-lang="ja">Nhật</button>
+                    </div>
+                  </li>
+                  <li>
+                    <button type="button" class="dropdown-item" data-bs-toggle="collapse" data-bs-target="#baidu-fanyi-collapse">Baidu Translate</button>
+                    <div class="collapse" id="baidu-fanyi-collapse">
+                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="baiduTranslate" data-lang="vie">Vietnamese</button>
+                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="baiduTranslate" data-lang="en">English</button>
+                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="baiduTranslate" data-lang="zh">Chinese</button>
+                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="baiduTranslate" data-lang="cht">Traditional Chinese</button>
+                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="baiduTranslate" data-lang="jp">Japanese</button>
+                    </div>
+                  </li>
+                  <li>
+                    <button type="button" class="dropdown-item" data-bs-toggle="collapse" data-bs-target="#papago-collapse">Papago</button>
+                    <div class="collapse" id="papago-collapse">
+                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="papago" data-lang="vi">Việt</button>
+                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="papago" data-lang="en">Anh</button>
+                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="papago" data-lang="ja">Nhật</button>
+                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="papago" data-lang="zh-CN">Trung (Giản thể)</button>
+                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="papago" data-lang="zh-TW">Trung (Phồn thể)</button>
+                    </div>
+                  </li>
+                  <li>
+                    <button type="button" class="dropdown-item" data-bs-toggle="collapse" data-bs-target="#deepl-translate-collapse">DeepL Translate</button>
+                    <div class="collapse" id="deepl-translate-collapse">
+                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="deeplTranslate" data-lang="EN-US">English</button>
+                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="deeplTranslate" data-lang="JA">Japanese</button>
+                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="deeplTranslate" data-lang="ZH">Chinese</button>
                     </div>
                   </li>
                   <li>

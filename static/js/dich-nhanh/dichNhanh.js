@@ -472,7 +472,6 @@ const getSourceLangOptionList = function getSourceLanguageOptionListHtmlFromTran
         option.value = languageCode;
         sourceLanguageSelect.appendChild(option);
       });
-
       break;
     }
     case Translators.DEEPL_TRANSLATE: {
@@ -483,18 +482,16 @@ const getSourceLangOptionList = function getSourceLanguageOptionListHtmlFromTran
         option.value = language;
         sourceLanguageSelect.appendChild(option);
       });
-
       break;
     }
-    case Translators.GOOGLE_TRANSLATE: {
-      GoogleTranslate.SOURCE_LANGUAGE_LIST.data.languages.forEach(({ language, name }) => {
-        if (!['auto', 'en', 'ja', 'zh', 'zh-TW', 'vi'].includes(language)) return;
+    case Translators.MICROSOFT_TRANSLATOR: {
+      Object.entries(MicrosoftTranslator.SOURCE_LANGUAGE_LIST).forEach(([languageCode, { name }]) => {
+        if (!['auto-detect', 'en', 'ja', 'zh-Hans', 'zh-Hant', 'vi'].includes(languageCode)) return;
         const option = document.createElement('option');
         option.innerText = name;
-        option.value = language;
+        option.value = languageCode;
         sourceLanguageSelect.appendChild(option);
       });
-
       break;
     }
     case Translators.PAPAGO: {
@@ -505,7 +502,6 @@ const getSourceLangOptionList = function getSourceLanguageOptionListHtmlFromTran
         option.value = languageCode;
         sourceLanguageSelect.appendChild(option);
       });
-
       break;
     }
     case Translators.VIETPHRASE: {
@@ -515,7 +511,6 @@ const getSourceLangOptionList = function getSourceLanguageOptionListHtmlFromTran
         option.value = languageCode;
         sourceLanguageSelect.appendChild(option);
       });
-
       break;
     }
     case Translators.WEBNOVEL_TRANSLATE: {
@@ -526,18 +521,16 @@ const getSourceLangOptionList = function getSourceLanguageOptionListHtmlFromTran
         option.value = language;
         sourceLanguageSelect.appendChild(option);
       });
-
       break;
     }
     default: {
-      Object.entries(MicrosoftTranslator.SOURCE_LANGUAGE_LIST).forEach(([languageCode, { name }]) => {
-        if (!['auto-detect', 'en', 'ja', 'zh-Hans', 'zh-Hant', 'vi'].includes(languageCode)) return;
+      GoogleTranslate.SOURCE_LANGUAGE_LIST.data.languages.forEach(({ language, name }) => {
+        if (!['auto', 'en', 'ja', 'zh', 'zh-TW', 'vi'].includes(language)) return;
         const option = document.createElement('option');
         option.innerText = name;
-        option.value = languageCode;
+        option.value = language;
         sourceLanguageSelect.appendChild(option);
       });
-
       break;
     }
   }
@@ -556,7 +549,6 @@ const getTargetLangOptionList = function getTargetLanguageOptionListHtmlFromTran
         option.value = languageCode;
         targetLanguageSelect.appendChild(option);
       });
-
       break;
     }
     case Translators.DEEPL_TRANSLATE: {
@@ -567,18 +559,16 @@ const getTargetLangOptionList = function getTargetLanguageOptionListHtmlFromTran
         option.value = language;
         targetLanguageSelect.appendChild(option);
       });
-
       break;
     }
     case Translators.GOOGLE_TRANSLATE: {
-      GoogleTranslate.TARGET_LANGUAGE_LIST.data.languages.forEach(({ language, name }) => {
-        if (!['auto', 'en', 'ja', 'zh', 'zh-TW', 'vi'].includes(language)) return;
+      Object.entries(MicrosoftTranslator.TARGET_LANGUAGE_LIST).forEach(([languageCode, { name }]) => {
+        if (!['auto-detect', 'en', 'ja', 'zh-Hans', 'zh-Hant', 'vi'].includes(languageCode)) return;
         const option = document.createElement('option');
         option.innerText = name;
-        option.value = language;
+        option.value = languageCode;
         targetLanguageSelect.appendChild(option);
       });
-
       break;
     }
     case Translators.PAPAGO: {
@@ -589,7 +579,6 @@ const getTargetLangOptionList = function getTargetLanguageOptionListHtmlFromTran
         option.value = languageCode;
         targetLanguageSelect.appendChild(option);
       });
-
       break;
     }
     case Translators.VIETPHRASE: {
@@ -599,7 +588,6 @@ const getTargetLangOptionList = function getTargetLanguageOptionListHtmlFromTran
         option.value = languageCode;
         targetLanguageSelect.appendChild(option);
       });
-
       break;
     }
     case Translators.WEBNOVEL_TRANSLATE: {
@@ -610,18 +598,16 @@ const getTargetLangOptionList = function getTargetLanguageOptionListHtmlFromTran
         option.value = language;
         targetLanguageSelect.appendChild(option);
       });
-
       break;
     }
     default: {
-      Object.entries(MicrosoftTranslator.TARGET_LANGUAGE_LIST).forEach(([languageCode, { name }]) => {
-        if (!['auto-detect', 'en', 'ja', 'zh-Hans', 'zh-Hant', 'vi'].includes(languageCode)) return;
+      GoogleTranslate.TARGET_LANGUAGE_LIST.data.languages.forEach(({ language, name }) => {
+        if (!['auto', 'en', 'ja', 'zh', 'zh-TW', 'vi'].includes(language)) return;
         const option = document.createElement('option');
         option.innerText = name;
-        option.value = languageCode;
+        option.value = language;
         targetLanguageSelect.appendChild(option);
       });
-
       break;
     }
   }
