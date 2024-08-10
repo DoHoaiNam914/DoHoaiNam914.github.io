@@ -1086,7 +1086,7 @@ $dropdownHasCollapse.find('.dropdown-menu button.dropdown-item').on('click', fun
   }
 });
 
-$dropdownHasCollapse.on('hide.bs.dropdown' function onHideBsDropdown() {
+$dropdownHasCollapse.on('hide.bs.dropdown', function onHideBsDropdown() {
   $(this).find('.dropdown-menu').find('.collapse.show').each((__, value) => {
     (new bootstrap.Collapse(value)).hide();
   });
