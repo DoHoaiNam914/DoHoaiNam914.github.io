@@ -1074,10 +1074,8 @@ $('.dropdown-scrollable').on('hide.bs.dropdown', function onHideBsDropdown() {
 
 $dropdownHasCollapse.find('.dropdown-menu button.dropdown-item').on('click', function onClick() {
   if ($(this).data('bs-toggle') === 'collapse') {
-    $(this).parent().parent().find('.collapse').each((__, value) => {
-      if (!$(value).hasClass('show')) return;
-      const bootstrapDropdownHasCollapse = new bootstrap.Collapse(value);
-      bootstrapDropdownHasCollapse.hide();
+    $(this).parent().parent().find('.collapse.show').each((__, value) => {
+      (new bootstrap.Collapse(value)).hide();
     });
   } else {
     $dropdownHasCollapse.find('.dropdown-menu').each((__, value) => {
@@ -1088,11 +1086,10 @@ $dropdownHasCollapse.find('.dropdown-menu button.dropdown-item').on('click', fun
   }
 });
 
-$dropdownHasCollapse.on('show.bs.dropdown', function onHideBsDropdown() {
-  if ($(this).find('.dropdown-menu').find('.collapse').toArray().some((element) => $(element).hasClass('show'))) return;
-  if ($(this).find('.dropdown-menu').find('.collapse.show-by-default').length === 0) return;
-  const bootstrapCollapseInDropdown = new bootstrap.Collapse($(this).find('.dropdown-menu').find('.collapse.show-by-default')[0]);
-  bootstrapCollapseInDropdown.show();
+$dropdownHasCollapse.on('hide.bs.dropdown' function onHideBsDropdown() {
+  $(this).find('.dropdown-menu').find('.collapse.show').each((__, value) => {
+    (new bootstrap.Collapse(value)).hide();
+  });
 });
 
 $fontStackText.change(function onChange() {
