@@ -1113,7 +1113,7 @@ $fontSizeText.change(function onChange() {
 
 $themeDropdown.find('.dropdown-item').on('click', function onClick() {
   const $prevTheme = $themeDropdown.find('.active');
-  const prevFontStack = $prevTheme.data('font-family');
+  const prevFontStack = $prevTheme.data('font-family').replaceAll(/['"]/g, '').split(/, */).filter((element) => element.length > 0).map((element) => FONT_MAPPING[element.trim()] ?? element.trim()).join(', ');
 
   $(document.body).removeClass($prevTheme.val());
   $themeDropdown.find('.dropdown-item').removeClass('active');
@@ -1125,7 +1125,7 @@ $themeDropdown.find('.dropdown-item').on('click', function onClick() {
   const alignment = $(this).data('text-align');
   const fontWeight = $(this).data('font-weight');
 
-  if ($fontStackText.val().length === 0 || prevFontStack.replaceAll(/['"]/g, '').split(/, */).filter((element) => element.length > 0).map((element) => FONT_MAPPING[element.trim()] ?? element.trim()).join(', ').startsWith($fontStackText.val())) $fontStackText.val(fontStack ?? '').change();
+  if ($fontStackText.val().length === 0 || prevFontStack.startsWith($fontStackText.val())) $fontStackText.val(fontStack ?? '').change();
   if (fontSize != null) $fontSizeText.val(fontSize).change();
   $(document.body).addClass($(this).val());
   if (alignment != null && alignment.length > 0) $alignmentRadio.prop('checked', false).filter(`#${['com-amazon-kindle-', 'apple-books-quiet-', 'apple-books-focus-', 'bookwalker-'].some((element) => $(this).val().includes(element)) ? 'justify' : 'start'}-alignment-radio`).prop('checked', true).change();
