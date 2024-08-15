@@ -30,14 +30,12 @@
 
         --chineseFontFamily: "方体", "PingFang SC", "黑体", "Heiti SC", "Microsoft JhengHei UI", "Microsoft JhengHei", Roboto, Noto, "Noto Sans CJK SC", sans-serif;
         --taiwanFontFamily: "方體", "PingFang TC", "黑體", "Heiti TC", "Microsoft JhengHei UI", "Microsoft JhengHei", Roboto, Noto, "Noto Sans CJK TC", sans-serif;
-        --hongKongFontFamily: "方體", "PingFang HK", "方體", "PingFang TC", "黑體", "Heiti TC", "Microsoft JhengHei UI", "Microsoft JhengHei", Roboto, Noto, "Noto Sans CJK TC", sans-serif;
 
         --amazon-kindle-fallback-font-family: Georgia, 'Times New Roman', Times, serif;
 
         --apple-books-fallback-font-family: 'Times New Roman', '.PingFang SC', hiraginoSans, appleSDGothicNeo, thonburi;
         --apple-books-fallback-font-family-zh_CN: '.PingFang SC', hiraginoSans, appleSDGothicNeo, thonburi;
         --apple-books-fallback-font-family-zh_TW: '.PingFang TC', hiraginoSans, appleSDGothicNeo, thonburi;
-        --apple-books-fallback-font-family-zh_HK: '.PingFang HK', hiraginoSans, appleSDGothicNeo, thonburi;
         --apple-books-fallback-font-family-ja: hiraginoMinchoPro, '.PingFang SC', appleSDGothicNeo, thonburi;
 
         --bookwalker-fallback-font-family: hiraginoMinchoPron;
@@ -45,10 +43,12 @@
         --calibre-fallback-font-family: serif;
 
         --google-play-books-fallback-font-family: literata;
-        --google-play-books-fallback-font-family_ja: hiraginoMinchoPron;
+        --google-play-books-fallback-font-family-zh_CN: pingFangSC;
+        --google-play-books-fallback-font-family-zh_TW: pingFangTC;
+        --google-play-books-fallback-font-family-ja: hiraginoMinchoPron;
 
         --rakuten-kobo-fallback-font-family: Georgia;
-        --rakuten-kobo-fallback-font-family_ja: hiraginomin;
+        --rakuten-kobo-fallback-font-family-ja: hiraginomin;
         
         --opt-font-size: 1em;
         --opt-line-height: 1.2em;
@@ -329,7 +329,7 @@
                 </div>
                 <div class="col">
                   <select class="form-select language-select" id="target-language-select">
-                    <option value="vi" selected>Tiếng Việt</option>
+                    <option value="vi" selected>Việt</option>
                   </select>
                 </div>
               </div>

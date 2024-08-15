@@ -520,43 +520,6 @@
   src: local('Palatino Bold Italic'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Palatino/Palatino-BoldItalic.ttf) format('truetype');
 }
 
-/* PingFang HK */
-
-@font-face {
-  font-family: pingFangHK;
-  font-style: normal;
-  font-weight: 300;
-  src: local('PingFang HK Light'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/PingFang/PingFangHK-Light.ttf) format('truetype');
-}
-
-@font-face {
-  font-family: '.PingFang HK';
-  font-style: normal;
-  font-weight: 400;
-  src: local('PingFang HK Regular'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/PingFang/PingFangHK-Regular.ttf) format('truetype');
-}
-
-@font-face {
-  font-family: pingFangHK;
-  font-style: normal;
-  font-weight: 400;
-  src: local('PingFang HK Regular'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/PingFang/PingFangHK-Regular.ttf) format('truetype');
-}
-
-@font-face {
-  font-family: '.PingFang HK';
-  font-style: normal;
-  font-weight: 600;
-  src: local('PingFang HK Semibold'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/PingFang/PingFangHK-Semibold.ttf) format('truetype');
-}
-
-@font-face {
-  font-family: pingFangHK;
-  font-style: normal;
-  font-weight: 600;
-  src: local('PingFang HK Semibold'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/PingFang/PingFangHK-Semibold.ttf) format('truetype');
-}
-
 /* PingFang SC */
 
 @font-face {
