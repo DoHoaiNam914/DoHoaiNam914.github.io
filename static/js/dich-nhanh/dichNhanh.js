@@ -1086,11 +1086,11 @@ $dropdownHasCollapse.find('.dropdown-menu button.dropdown-item').on('click', fun
   }
 });
 
-$dropdownHasCollapse.on('hide.bs.dropdown', function onHideBsDropdown() {
-  $(this).find('.dropdown-menu').find('.collapse.show').each((__, value) => {
-    (new bootstrap.Collapse(value)).hide();
-  });
-});
+// $dropdownHasCollapse.on('hide.bs.dropdown', function onHideBsDropdown() {
+//   $(this).find('.dropdown-menu').find('.collapse.show').each((__, value) => {
+//     (new bootstrap.Collapse(value)).hide();
+//   });
+// });
 
 $fontStackText.change(function onChange() {
   const values = $(this).val().replaceAll(/['"]/g, '').split(/, */).filter((element) => element.length > 0).map((element) => FONT_MAPPING[element.trim()] ?? element.trim());
