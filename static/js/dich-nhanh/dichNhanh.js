@@ -667,7 +667,7 @@ const buildResult = function buildResultContentForTextarea(text, result, activeT
         const lineBreak = document.createElement('br');
 
         if (originalLines[i + lostLineFixedNumber].replace(/^\s+/, '').trimEnd().length > 0) {
-          if ($showOriginalTextSwitch.prop('checked') && activeTranslator !== Translators.COCCOC_EDU_TRANSLATE) {
+          if ($showOriginalTextSwitch.prop('checked')) {
             const idiomaticText = document.createElement('i');
             idiomaticText.innerText = originalLines[i + lostLineFixedNumber];
             paragraph.appendChild(idiomaticText);
