@@ -645,9 +645,10 @@ const loadLangSelectOptions = function loadLanguageListByTranslatorToHtmlOptions
   $targetLanguageSelect.val(targetLanguage);
 };
 
-const buildResult = function buildResultContentForTextarea(text, result, activeTranslator) {
-  try {
-    const resultDiv = document.createElement('div');
+const buildResult = function buildResultContentForTextarea(text, result, activeTranslator) {{
+  const resultDiv = document.createElement('div');
+
+  try 
     const resultLines = result.split('\n');
 
     const originalLines = text.split('\n');
@@ -686,7 +687,10 @@ const buildResult = function buildResultContentForTextarea(text, result, activeT
     return resultDiv.innerHTML;
   } catch (error) {
     console.error('Lỗi hiển thị bản dịch:', error);
-    return error;
+    const paragraph = document.createElement('p');
+    paragraph.appendChild(document.createTextNode(activeTranslator !== Translators.COCCOC_EDU_TRANSLATE ? 'Vui lòng dịch lại...' : error));
+    resultDiv.prependChild(paragraph);
+    return resultDiv.innerHTML;
   }
 };
 
