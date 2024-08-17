@@ -688,7 +688,7 @@ const buildResult = function buildResultContentForTextarea(text, result, activeT
   } catch (error) {
     console.error('Lỗi hiển thị bản dịch:', error);
     const paragraph = document.createElement('p');
-    paragraph.appendChild(document.createTextNode(activeTranslator !== Translators.COCCOC_EDU_TRANSLATE ? 'Vui lòng dịch lại...' : error));
+    paragraph.appendChild(document.createTextNode(activeTranslator === Translators.COCCOC_EDU_TRANSLATE ? 'Vui lòng dịch lại...' : error));
     resultDiv.prependChild(paragraph);
     return resultDiv.innerHTML;
   }
