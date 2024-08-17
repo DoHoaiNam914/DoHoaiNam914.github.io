@@ -41,7 +41,7 @@ class DeepLTranslate extends Translator {
 
   async translateText(text, targetLanguage, sourceLanguage = this.DefaultLanguage.SOURCE_LANGUAGE) {
     try {
-      const lines = text.split(/\n/);
+      const lines = text.split('\n');
       const textEncoder = new TextEncoder();
       const requestBody = (queryLines) => `text=${queryLines.map((element) => encodeURIComponent(element)).join('&text=')}&source_lang=${sourceLanguage}&target_lang=${targetLanguage}`;
       let queryLines = [];
