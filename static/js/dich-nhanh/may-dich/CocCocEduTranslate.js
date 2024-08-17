@@ -1,6 +1,6 @@
 'use strict';
 
-/* global Translator */
+/* global Translator, Utils */
 
 class CocCocEduTranslate extends Translator {
   /** https://hoctap.coccoc.com/composer/edu?cat=dich&m=1&reqid=undefined&tbm=edu */
@@ -19,6 +19,7 @@ class CocCocEduTranslate extends Translator {
 
   async translateText(text, targetLanguage, sourceLanguage = this.DefaultLanguage.SOURCE_LANGUAGE) {
     try {
+      while (
       const lines = text.split(/\n/);
       let queryLines = [];
       const responses = [];
@@ -41,7 +42,6 @@ class CocCocEduTranslate extends Translator {
 
       await Promise.all(responses);
       this.result = responses.map((element) => element.responseJSON.proxyapi[0].translations[0].text).join('\n');
-      this.requestIndex += 1;
       super.translateText(text, targetLanguage, sourceLanguage);
       return this.result;
     } catch (error) {
