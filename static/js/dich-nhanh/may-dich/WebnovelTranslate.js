@@ -1994,25 +1994,28 @@ class WebnovelTranslate extends Translator {
       }
 
       await Promise.all(responses);
+
       try {
-        this.result = responses.map((a) => a.responseJSON[0].filter(([__, second]) => second != null).map(([first, second]) => [second, first.replace(/^\s+/, '').replaceAll(Utils.getTrieRegexPatternFromWords(TRANSLATED_EOL), '\n')]).map(([first, second]) => second.concat('\n'.repeat([...first.matchAll(/\\n/g)].length - [...second.matchAll(/\n/g)].length))).join('').split('\n')).flat().map((element) => element.trimEnd());
-      } catch (error) {
-        console.log(responses.map((a) => a.responseJSON[0].filter(([__, second]) => second != null).map((second) => second).join('')).flat().join('\n'));
-      }
-      let lostLineFixedNumber = 0;
-
-      for (let i = 0; i < lines.length; i += 1) {
-        if (i + lostLineFixedNumber >= lines.length) break;
-
-        if (lines[i + lostLineFixedNumber].replace(/^\s+/, '').trimEnd().length === 0 && this.result[i].replace(/^\s+/, '').trimEnd().length > 0) {
-          lostLineFixedNumber += 1;
-          i -= 1;
-        } else {
-          this.result[i] = `${/^\s+/.test(lines[i + lostLineFixedNumber]) ? lines[i + lostLineFixedNumber].match(/^\s+/)[0] : ''}${this.result[i].replace(/^\s+/, '').trimEnd()}`;
+        this.result = responses.map((a) => a.responseJSON[0].filter(([__, second]) => second != null).map(([first, second]) => [second, first.replace(/^\s+/, '').replaceAll(Utils.getTrieRegexPatternFromWords(TRANSLATED_EOL), '\n')]).map(([first, second]) => second.concat('\n'.repeat([...first.matchAll(new RegExp(Utils.escapeRegExp(EOL), 'g'))].length - [...second.matchAll(/\n/g)].length))).join('').split('\n')).flat().map((element) => element.trimEnd());
+        let lostLineFixedNumber = 0;
+  
+        for (let i = 0; i < lines.length; i += 1) {
+          if (i + lostLineFixedNumber >= lines.length) break;
+  
+          if (lines[i + lostLineFixedNumber].replace(/^\s+/, '').trimEnd().length === 0 && this.result[i].replace(/^\s+/, '').trimEnd().length > 0) {
+            lostLineFixedNumber += 1;
+            i -= 1;
+          } else {
+            this.result[i] = `${/^\s+/.test(lines[i + lostLineFixedNumber]) ? lines[i + lostLineFixedNumber].match(/^\s+/)[0] : ''}${this.result[i].replace(/^\s+/, '').trimEnd()}`;
+          }
         }
+
+        this.result = this.result.join('\n');
+      } catch (error) {
+        this.result = text;
+        console.log(responses.map((a) => a.responseJSON[0].filter(([__, second]) => second != null).map(([first]) => first).join('')).flat().join('\n'));
       }
 
-      this.result = this.result.join('\n');
       super.translateText(text, targetLanguage, sourceLanguage);
       return this.result;
     } catch (error) {
