@@ -1,6 +1,6 @@
 'use strict';
 
-/* global bootstrap, BaiduTranslate, cjkv, DeepLTranslate, GoogleTranslate, hanData, Papago, MicrosoftTranslator, newAccentObject, Utils, Vietphrase, WebnovelTranslate */
+/* global bootstrap, BaiduTranslate, cjkv, CocCocEduTranslate, DeepLTranslate, GoogleTranslate, hanData, Papago, MicrosoftTranslator, newAccentObject, Utils, Vietphrase, WebnovelTranslate */
 
 const $addButton = $('#add-button');
 const $addDeLeZhaoSwitch = $('#add-de-le-zhao-switch');
@@ -113,6 +113,7 @@ const FONT_MAPPING = {
 
 const Translators = {
   BAIDU_TRANSLATE: 'baiduTranslate',
+  COCCOC_EDU_TRANSLATE: 'coccocEduTranslate',
   DEEPL_TRANSLATE: 'deeplTranslate',
   GOOGLE_TRANSLATE: 'googleTranslate',
   PAPAGO: 'papago',
@@ -1765,6 +1766,10 @@ $translateEntryButtons.click(async function onClick() {
       switch (activeTranslator) {
         case Translators.BAIDU_TRANSLATE: {
           if (translator == null) translator = new BaiduTranslate();
+          break;
+        }
+        case Translators.COCCOC_EDU_TRANSLATE: {
+          if (translator == null) translator = new CocCocEduTranslate($toneSelect.val());
           break;
         }
         case Translators.DEEPL_TRANSLATE: {
