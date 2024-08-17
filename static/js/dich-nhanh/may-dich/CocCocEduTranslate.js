@@ -19,7 +19,6 @@ class CocCocEduTranslate extends Translator {
 
   async translateText(text, targetLanguage, sourceLanguage = this.DefaultLanguage.SOURCE_LANGUAGE) {
     try {
-      while (
       const lines = text.split(/\n/);
       let queryLines = [];
       const responses = [];
