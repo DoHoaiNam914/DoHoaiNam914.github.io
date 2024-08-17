@@ -999,7 +999,7 @@ $glossaryManagerButton.on('mousedown', () => {
 });
 
 $inputTextarea.on('input', function onInput() {
-  $('#input-textarea-counter').text($(this).val().length);
+  $('#input-textarea-counter').text($(this).val().replaceAll('\n', $translatorDropdown.find('.active').val() === Translators.GOOGLE_TRANSLATE ? '\r\n' : '\n').length);
 });
 
 $inputTextarea.on('change', function onChange() {
