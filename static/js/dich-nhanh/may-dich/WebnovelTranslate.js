@@ -1975,25 +1975,30 @@ class WebnovelTranslate extends Translator {
     try {
       const lines = text.split('\n');
       const preparedLines = lines.map((element) => `\u3000\u3000${element.replace(/^\s+/, '')}`);
+      const EOL = ['ja', 'zh-CN', 'zh-TW'].some((element) => sourceLanguage === element) ? '||||' : '\\n';
+      const TRANSLATED_EOL = ['ja', 'zh-CN', 'zh-TW'].some((element) => sourceLanguage === element) ? ['||||'] : ['\\n', '\\ n', '\\', '\\n n'];
       let queryLines = [];
       const responses = [];
 
-      while (preparedLines.length > 0 && [...queryLines, preparedLines[0]].join('\\n').length <= this.maxDataPerRequest && [...queryLines, preparedLines[0]].join('\n').length <= this.maxContentLengthPerRequest && (queryLines.length + 1) <= this.maxContentLinePerRequest) {
+      while (preparedLines.length > 0 && [...queryLines, preparedLines[0]].join(EOL).length <= this.maxDataPerRequest && [...queryLines, preparedLines[0]].join('\n').length <= this.maxContentLengthPerRequest && (queryLines.length + 1) <= this.maxContentLinePerRequest) {
         queryLines.push(preparedLines.shift());
 
-        if (preparedLines.length === 0 || [...queryLines, preparedLines[0]].join('\\n').length > this.maxDataPerRequest || [...queryLines, preparedLines[0]].join('\n').length > this.maxContentLengthPerRequest || (queryLines.length + 1) > this.maxContentLinePerRequest) {
+        if (preparedLines.length === 0 || [...queryLines, preparedLines[0]].join(EOL).length > this.maxDataPerRequest || [...queryLines, preparedLines[0]].join('\n').length > this.maxContentLengthPerRequest || (queryLines.length + 1) > this.maxContentLinePerRequest) {
           responses.push($.ajax({
             cache: false,
             method: 'GET',
-            url: `${Utils.CORS_PROXY}http://translate.google.com/translate_a/single?client=${this.clientName}&ie=UTF-8&oe=UTF-8&dt=bd&dt=ex&dt=ld&dt=md&dt=rw&dt=rm&dt=ss&dt=t&dt=at&dt=gt&dt=qc&sl=${sourceLanguage}&tl=${targetLanguage}&hl=${targetLanguage}&q=${encodeURIComponent(queryLines.join('\\n'))}`,
+            url: `${Utils.CORS_PROXY}http://translate.google.com/translate_a/single?client=${this.clientName}&ie=UTF-8&oe=UTF-8&dt=bd&dt=ex&dt=ld&dt=md&dt=rw&dt=rm&dt=ss&dt=t&dt=at&dt=gt&dt=qc&sl=${sourceLanguage}&tl=${targetLanguage}&hl=${targetLanguage}&q=${encodeURIComponent(queryLines.join(EOL))}`,
           }));
           queryLines = [];
         }
       }
 
       await Promise.all(responses);
-      // if (text.split('\n').length > 1) console.log('DEBUG:', responses.map((element) => element.responseJSON[0].filter(([__, second]) => second != null).map(([first, second]) => [second, first, first.replace(/^\s+/, '').replaceAll(Utils.getTrieRegexPatternFromWords(['\\n', '\\ n', '\\', '\\n n']), '\n')]).map(([first, second, third]) => [first, second, [...first.matchAll(/\\n/g)].length, [...third.matchAll(/\n/g)].length]).map(([first, second, third, fourth]) => (third >= fourth ? [first, second] : [first, second, third, fourth]))));
-      this.result = responses.map((a) => a.responseJSON[0].filter(([__, second]) => second != null).map(([first, second]) => [second, first.replace(/^\s+/, '').replaceAll(Utils.getTrieRegexPatternFromWords(['\\n', '\\ n', '\\', '\\n n']), '\n')]).map(([first, second]) => second.concat('\n'.repeat([...first.matchAll(/\\n/g)].length - [...second.matchAll(/\n/g)].length))).join('').split('\n')).flat().map((element) => element.trimEnd());
+      try {
+        this.result = responses.map((a) => a.responseJSON[0].filter(([__, second]) => second != null).map(([first, second]) => [second, first.replace(/^\s+/, '').replaceAll(Utils.getTrieRegexPatternFromWords(TRANSLATED_EOL), '\n')]).map(([first, second]) => second.concat('\n'.repeat([...first.matchAll(/\\n/g)].length - [...second.matchAll(/\n/g)].length))).join('').split('\n')).flat().map((element) => element.trimEnd());
+      } catch (error) {
+        console.log(responses.map((a) => a.responseJSON[0].filter(([__, second]) => second != null).map((second) => second).join('')).flat().join('\n'));
+      }
       let lostLineFixedNumber = 0;
 
       for (let i = 0; i < lines.length; i += 1) {

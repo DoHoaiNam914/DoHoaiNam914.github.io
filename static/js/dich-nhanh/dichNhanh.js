@@ -667,7 +667,7 @@ const buildResult = function buildResultContentForTextarea(text, result, activeT
         const lineBreak = document.createElement('br');
 
         if (originalLines[i + lostLineFixedNumber].replace(/^\s+/, '').trimEnd().length > 0) {
-          if ($showOriginalTextSwitch.prop('checked')) {
+          if ($showOriginalTextSwitch.prop('checked') && activeTranslator !== Translators.COCCOC_EDU_TRANSLATE) {
             const idiomaticText = document.createElement('i');
             idiomaticText.innerText = originalLines[i + lostLineFixedNumber];
             paragraph.appendChild(idiomaticText);
@@ -1176,6 +1176,10 @@ $translatorDropdown.find('.dropdown-item').click(function onClick() {
   switch (activeTranslator) {
     case Translators.BAIDU_TRANSLATE: {
       if (currentTranslator == null) currentTranslator = new BaiduTranslate();
+      break;
+    }
+    case Translators.COCCOC_EDU_TRANSLATE: {
+      if (currentTranslator == null) currentTranslator = new CocCocEduTranslate();
       break;
     }
     case Translators.DEEPL_TRANSLATE: {
@@ -1789,7 +1793,7 @@ $translateEntryButtons.click(async function onClick() {
           break;
         }
         case Translators.COCCOC_EDU_TRANSLATE: {
-          if (translator == null) translator = new CocCocEduTranslate($toneSelect.val());
+          if (translator == null) translator = new CocCocEduTranslate();
           break;
         }
         case Translators.DEEPL_TRANSLATE: {
