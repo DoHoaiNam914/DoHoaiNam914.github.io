@@ -737,8 +737,10 @@ const translate = async function translateContentInTextarea(controller = new Abo
       $resultTextarea.append(paragraph);
     }
 
-    translators[$activeTranslator.val()] = null;
-    $activeTranslator.click();
+    if ($activeTranslator.val() === Translators.MICROSOFT_TRANSLATOR) {
+      translators[$activeTranslator.val()].fetchUsage();
+      $activeTranslator.click();
+    }
   }
 };
 
@@ -1853,7 +1855,7 @@ $translateEntryButtons.click(async function onClick() {
       }
     } catch (error) {
       console.error(error);
-      translators[activeTranslator] = null;
+      if ($activeTranslator.val() === Translators.MICROSOFT_TRANSLATOR) translators[$activeTranslator.val()].fetchUsage();
       lastTranslateEntryButton = null;
     }
 
