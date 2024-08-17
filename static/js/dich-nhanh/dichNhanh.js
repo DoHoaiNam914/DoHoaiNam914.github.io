@@ -475,6 +475,16 @@ const getSourceLangOptionList = function getSourceLanguageOptionListHtmlFromTran
       });
       break;
     }
+    case Translators.COCCOC_EDU_TRANSLATE: {
+      CocCocEduTranslate.LANGUAGE_LIST.forEach(({ label, value }) => {
+        if (!['auto', 'en', 'vi', 'ja', 'zh-Hans', 'zh-Hant'].includes(value)) return;
+        const option = document.createElement('option');
+        option.innerText = label;
+        option.value = value;
+        sourceLanguageSelect.appendChild(option);
+      });
+      break;
+    }
     case Translators.DEEPL_TRANSLATE: {
       DeepLTranslate.SOURCE_LANGUAGE_LIST.forEach(({ language, name }) => {
         if (!['', 'EN-US', 'JA', 'ZH'].includes(language)) return;
@@ -548,6 +558,16 @@ const getTargetLangOptionList = function getTargetLanguageOptionListHtmlFromTran
         const option = document.createElement('option');
         option.innerText = name;
         option.value = languageCode;
+        targetLanguageSelect.appendChild(option);
+      });
+      break;
+    }
+    case Translators.COCCOC_EDU_TRANSLATE: {
+      CocCocEduTranslate.LANGUAGE_LIST.forEach(({ label, value }) => {
+        if (!['en', 'vi', 'ja', 'zh-Hans', 'zh-Hant'].includes(value)) return;
+        const option = document.createElement('option');
+        option.innerText = label;
+        option.value = value;
         targetLanguageSelect.appendChild(option);
       });
       break;
