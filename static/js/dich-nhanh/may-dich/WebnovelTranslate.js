@@ -1993,7 +1993,7 @@ class WebnovelTranslate extends Translator {
       }
 
       await Promise.all(responses);
-      console.log('DEBUG:', responses.map((a) => a.responseJSON[0].filter(([__, second]) => second != null).map(([first, second]) => [second, first, [...first.matchAll(new RegExp(Utils.escapeRegExp(EOL), 'g'))].length - [...second.matchAll(/\n/g)].length])).flat());
+      console.log('DEBUG:', responses.map((a) => a.responseJSON[0].filter(([__, second]) => second != null).map(([first, second]) => [second, first, [...first.matchAll(new RegExp(Utils.escapeRegExp(EOL), 'g'))].length - [...second.matchAll(/\n/g)].length])).flat().map((elment) => (element[2] < 0 ? element.slice(0, -1) : element)));
       this.result = responses.map((a) => a.responseJSON[0].filter(([__, second]) => second != null).map(([first, second]) => [second, first.replace(/^\s+/, '').replaceAll(EOL, '\n')]).map(([first, second]) => second.concat('\n'.repeat([...first.matchAll(new RegExp(Utils.escapeRegExp(EOL), 'g'))].length - [...second.matchAll(/\n/g)].length))).join('').split('\n')).flat().map((element) => element.trimEnd());
       let lostLineFixedNumber = 0;
   
