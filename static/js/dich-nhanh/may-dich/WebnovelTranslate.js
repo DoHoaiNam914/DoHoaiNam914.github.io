@@ -1976,7 +1976,6 @@ class WebnovelTranslate extends Translator {
       const lines = text.split('\n');
       const preparedLines = lines.map((element) => `\u3000\u3000${element.replace(/^\s+/, '')}`);
       const EOL = ['ja', 'zh-CN', 'zh-TW'].some((element) => sourceLanguage === element) ? '||||' : '\\n';
-      const TRANSLATED_EOL = ['ja', 'zh-CN', 'zh-TW'].some((element) => sourceLanguage === element) ? ['||||', '|| ||'] : ['\\n', '\\ n', '\\', '\\n n'];
       let queryLines = [];
       const responses = [];
 
@@ -1995,7 +1994,7 @@ class WebnovelTranslate extends Translator {
 
       await Promise.all(responses);
       console.log('DEBUG:', responses.map((a) => a.responseJSON[0].filter(([__, second]) => second != null).map(([first]) => first).join('')).flat().join('\n'));
-      this.result = responses.map((a) => a.responseJSON[0].filter(([__, second]) => second != null).map(([first, second]) => [second, first.replace(/^\s+/, '').replaceAll(Utils.getTrieRegexPatternFromWords(TRANSLATED_EOL), '\n')]).map(([first, second]) => second.concat('\n'.repeat([...first.matchAll(new RegExp(Utils.escapeRegExp(EOL), 'g'))].length - [...second.matchAll(/\n/g)].length))).join('').split('\n')).flat().map((element) => element.trimEnd());
+      this.result = responses.map((a) => a.responseJSON[0].filter(([__, second]) => second != null).map(([first, second]) => [second, first.replace(/^\s+/, '').replaceAll(EOL, '\n')]).map(([first, second]) => second.concat('\n'.repeat([...first.matchAll(new RegExp(Utils.escapeRegExp(EOL), 'g'))].length - [...second.matchAll(/\n/g)].length))).join('').split('\n')).flat().map((element) => element.trimEnd());
       let lostLineFixedNumber = 0;
   
       for (let i = 0; i < lines.length; i += 1) {
