@@ -1976,7 +1976,7 @@ class WebnovelTranslate extends Translator {
       const lines = text.split('\n');
       const preparedLines = lines.map((element) => `\u3000\u3000${element.replace(/^\s+/, '')}`);
       const EOL = ['ja', 'zh-CN', 'zh-TW'].some((element) => sourceLanguage === element) ? '||||' : '\\n';
-      const TRANSLATED_EOL = ['ja', 'zh-CN', 'zh-TW'].some((element) => sourceLanguage === element) ? ['||||'] : ['\\n', '\\ n', '\\', '\\n n'];
+      const TRANSLATED_EOL = ['ja', 'zh-CN', 'zh-TW'].some((element) => sourceLanguage === element) ? ['||||', '|| ||'] : ['\\n', '\\ n', '\\', '\\n n'];
       let queryLines = [];
       const responses = [];
 
