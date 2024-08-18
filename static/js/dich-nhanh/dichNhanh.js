@@ -526,7 +526,7 @@ const getSourceLangOptionList = function getSourceLanguageOptionListHtmlFromTran
     }
     case Translators.WEBNOVEL_TRANSLATE: {
       WebnovelTranslate.SOURCE_LANGUAGE_LIST.forEach(({ language, name }) => {
-        if (!['auto', 'en', 'ja', 'zh-CN', 'zh-TW', 'vi'].includes(language)) return;
+        if (!['auto', 'en', 'ja', 'zh-CN', 'vi'].includes(language)) return;
         const option = document.createElement('option');
         option.innerText = name;
         option.value = language;
@@ -613,7 +613,7 @@ const getTargetLangOptionList = function getTargetLanguageOptionListHtmlFromTran
     }
     case Translators.WEBNOVEL_TRANSLATE: {
       WebnovelTranslate.TARGET_LANGUAGE_LIST.forEach(({ language, name }) => {
-        if (!['auto', 'en', 'ja', 'zh-CN', 'zh-TW', 'vi'].includes(language)) return;
+        if (!['auto', 'en', 'ja', 'zh-CN', 'vi'].includes(language)) return;
         const option = document.createElement('option');
         option.innerText = name;
         option.value = language;
@@ -1820,10 +1820,6 @@ $translateEntryButtons.click(async function onClick() {
         }
         case Translators.PAPAGO: {
           if (translator == null) translator = new Papago(UUID);
-          break;
-        }
-        case Translators.WEBNOVEL_TRANSLATE: {
-          if (translator == null) translator = new WebnovelTranslate();
           break;
         }
         default: {

@@ -879,11 +879,7 @@ class WebnovelTranslate extends Translator {
     },
     {
       "language": "zh-CN",
-      "name": "Trung${` (Giản thể)"
-    },
-    {
-      "language": "zh-TW",
-      "name": "Trung (Phồn thể)`}"
+      "name": "Trung"
     },
     {
       "language": "ts",
