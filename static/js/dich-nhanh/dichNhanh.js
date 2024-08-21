@@ -78,7 +78,6 @@ const FONT_MAPPING = {
   Literata: 'literata',
   'New York': 'newYork',
   'Noto Serif': 'notoSerif',
-  'PingFang HK': 'pingFangHK',
   'PingFang SC': 'pingFangSC',
   'PingFang TC': 'pingFangTC',
   'Proxima Nova': 'proximaNova',
