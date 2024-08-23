@@ -486,7 +486,7 @@ const getSourceLangOptionList = function getSourceLanguageOptionListHtmlFromTran
     }
     case Translators.DEEPL_TRANSLATE: {
       DeepLTranslate.SOURCE_LANGUAGE_LIST.forEach(({ language, name }) => {
-        if (!['', 'EN-US', 'JA', 'ZH'].includes(language)) return;
+        if (!['', 'EN', 'JA', 'ZH'].includes(language)) return;
         const option = document.createElement('option');
         option.innerText = name;
         option.value = language;
@@ -573,7 +573,7 @@ const getTargetLangOptionList = function getTargetLanguageOptionListHtmlFromTran
     }
     case Translators.DEEPL_TRANSLATE: {
       DeepLTranslate.TARGET_LANGUAGE_LIST.forEach(({ language, name }) => {
-        if (!['', 'EN', 'JA', 'ZH'].includes(language)) return;
+        if (!['', 'EN-US', 'JA', 'ZH'].includes(language)) return;
         const option = document.createElement('option');
         option.innerText = name;
         option.value = language;
@@ -1187,7 +1187,7 @@ $translatorDropdown.find('.dropdown-item').click(function onClick() {
       break;
     }
     case Translators.DEEPL_TRANSLATE: {
-      while (currentTranslator == null || (currentTranslator.usage.character_limit - currentTranslator.usage.character_count) < 100000) {
+      while (currentTranslator == null || (translator instanceof DeepLTranslate && (currentTranslator.usage.character_limit - currentTranslator.usage.character_count) < 100000)) {
         currentTranslator = new DeepLTranslate(DEEPL_AUTH_KEY_LIST[0][0]);
         if ((currentTranslator.usage.character_limit - currentTranslator.usage.character_count) >= 100000) break;
         DEEPL_AUTH_KEY_LIST.shift();
@@ -1801,7 +1801,7 @@ $translateEntryButtons.click(async function onClick() {
           break;
         }
         case Translators.DEEPL_TRANSLATE: {
-          while (translator == null || (translator.usage.character_limit - translator.usage.character_count) < 1000) {
+          while (translator == null || (translator instanceof DeepLTranslate && (translator.usage.character_limit - translator.usage.character_count) < 1000)) {
             translator = new DeepLTranslate(DEEPL_AUTH_KEY_LIST[0][0]);
             if ((translator.usage.character_limit - translator.usage.character_count) >= 1000) break;
             DEEPL_AUTH_KEY_LIST.shift();
