@@ -1801,9 +1801,9 @@ $translateEntryButtons.click(async function onClick() {
           break;
         }
         case Translators.DEEPL_TRANSLATE: {
-          while (translator == null || (translator.usage.character_limit - translator.usage.character_count) < 100000) {
+          while (translator == null || (translator.usage.character_limit - translator.usage.character_count) < 1000) {
             translator = new DeepLTranslate(DEEPL_AUTH_KEY_LIST[0][0]);
-            if ((translator.usage.character_limit - translator.usage.character_count) >= 100000) break;
+            if ((translator.usage.character_limit - translator.usage.character_count) >= 1000) break;
             DEEPL_AUTH_KEY_LIST.shift();
           }
 
@@ -1849,7 +1849,7 @@ $translateEntryButtons.click(async function onClick() {
       }
     } catch (error) {
       console.error(error);
-      if ($activeTranslator.val() === Translators.MICROSOFT_TRANSLATOR) translators[$activeTranslator.val()].fetchUsage();
+      if (activeTranslator === Translators.MICROSOFT_TRANSLATOR) translators[activeTranslator].fetchUsage();
       lastTranslateEntryButton = null;
     }
 
