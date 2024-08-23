@@ -1970,15 +1970,14 @@ class WebnovelTranslate extends Translator {
   async translateText(text, targetLanguage, sourceLanguage = this.DefaultLanguage.SOURCE_LANGUAGE) {
     try {
       const lines = text.split('\n');
-      const preparedLines = lines.map((element) => `\u3000\u3000${element.replace(/^\s+/, '')}`);
       const EOL = ['ja', 'zh-CN', 'zh-TW'].some((element) => sourceLanguage === element) ? '||||' : '\\n';
       let queryLines = [];
       const responses = [];
 
-      while (preparedLines.length > 0 && [...queryLines, preparedLines[0]].join(EOL).length <= this.maxDataPerRequest && [...queryLines, preparedLines[0]].join('\n').length <= this.maxContentLengthPerRequest && (queryLines.length + 1) <= this.maxContentLinePerRequest) {
-        queryLines.push(preparedLines.shift());
+      while (lines.length > 0 && [...queryLines, lines[0]].join(EOL).length <= this.maxDataPerRequest && [...queryLines, lines[0]].join('\n').length <= this.maxContentLengthPerRequest && (queryLines.length + 1) <= this.maxContentLinePerRequest) {
+        queryLines.push(lines.shift());
 
-        if (preparedLines.length === 0 || [...queryLines, preparedLines[0]].join(EOL).length > this.maxDataPerRequest || [...queryLines, preparedLines[0]].join('\n').length > this.maxContentLengthPerRequest || (queryLines.length + 1) > this.maxContentLinePerRequest) {
+        if (lines.length === 0 || [...queryLines, lines[0]].join(EOL).length > this.maxDataPerRequest || [...queryLines, lines[0]].join('\n').length > this.maxContentLengthPerRequest || (queryLines.length + 1) > this.maxContentLinePerRequest) {
           responses.push($.ajax({
             cache: false,
             method: 'GET',
@@ -1989,22 +1988,10 @@ class WebnovelTranslate extends Translator {
       }
 
       await Promise.all(responses);
-      console.log('DEBUG:', responses.map((a) => a.responseJSON[0].filter(([__, second]) => second != null).map(([first, second]) => [second, first, [...second.matchAll(new RegExp(Utils.escapeRegExp(EOL), 'g'))].length - [...first.matchAll(new RegExp(Utils.escapeRegExp(EOL), 'g'))].length])).flat().map((element) => (element[2] >= 0 ? element.slice(0, -1) : element)));
-      this.result = responses.map((a) => a.responseJSON[0].filter(([__, second]) => second != null).map(([first, second]) => [second, first.replace(/^\s+/, '').replaceAll(EOL, '\n')]).map(([first, second]) => second.concat('\n'.repeat([...first.matchAll(new RegExp(Utils.escapeRegExp(EOL), 'g'))].length - [...second.matchAll(/\n/g)].length))).join('').split('\n')).flat().map((element) => element.trimEnd());
-      let lostLineFixedNumber = 0;
-  
-      for (let i = 0; i < lines.length; i += 1) {
-        if (i + lostLineFixedNumber >= lines.length) break;
-  
-        if (lines[i + lostLineFixedNumber].replace(/^\s+/, '').trimEnd().length === 0 && this.result[i].replace(/^\s+/, '').trimEnd().length > 0) {
-          lostLineFixedNumber += 1;
-          i -= 1;
-        } else {
-          this.result[i] = `${/^\s+/.test(lines[i + lostLineFixedNumber]) ? lines[i + lostLineFixedNumber].match(/^\s+/)[0] : ''}${this.result[i].replace(/^\s+/, '').trimEnd()}`;
-        }
-      }
-
-      this.result = this.result.join('\n');
+      const TRANSLATED_EOL = Utils.getTrieRegexPatternFromWords(['ja', 'zh-CN', 'zh-TW'].some((element) => sourceLanguage === element) ? ['||||', '|||'] : ['\\n']);
+      const EOL_REG_EXP = new RegExp(Utils.escapeRegExp(EOL), 'g');
+      console.log('DEBUG:', responses.map((a) => a.responseJSON[0].filter(([__, second]) => second != null).map(([first, second]) => [second, first, [...second.matchAll(EOL_REG_EXP)].length - [...first.matchAll(TRANSLATED_EOL)].length])).flat().map((element) => (element[2] >= 0 ? element.slice(0, -1) : element)));
+      this.result = responses.map((a) => a.responseJSON[0].filter(([__, second]) => second != null).map(([first, second]) => [second, first.replace(/^\s+/, '').replaceAll(TRANSLATED_EOL, '\n')]).map(([first, second]) => second.concat('\n'.repeat([...first.matchAll(EOL_REG_EXP)].length - [...second.matchAll(/\n/g)].length))).join('').split('\n')).flat().map((element) => element.trimEnd()).join('\n');
       super.translateText(text, targetLanguage, sourceLanguage);
       return this.result;
     } catch (error) {
