@@ -23,24 +23,24 @@ class CocCocEduTranslate extends Translator {
       let queryLines = [];
       const responses = [];
 
-      while (lines.length > 0 && [...queryLines, lines[0]].join('\\\\n').length <= this.maxContentLengthPerRequest && (queryLines.length + 1) <= this.maxContentLinePerRequest) {
+      while (lines.length > 0 && [...queryLines, lines[0]].join('\n').length <= this.maxContentLengthPerRequest && (queryLines.length + 1) <= this.maxContentLinePerRequest) {
         queryLines.push(lines.shift());
 
-        if (lines.length === 0 || [...queryLines, lines[0]].join('\\\\n').length > this.maxContentLengthPerRequest || (queryLines.length + 1) > this.maxContentLinePerRequest) {
+        if (lines.length === 0 || [...queryLines, lines[0]].join('\n').length > this.maxContentLengthPerRequest || (queryLines.length + 1) > this.maxContentLinePerRequest) {
           responses.push($.ajax({
             data: JSON.stringify({
-              Text: queryLines.join('\\\\n'),
+              Text: queryLines.join('\n'),
             }),
             headers: { 'Content-Type': 'application/json' },
             method: 'POST',
-            url: `${Utils.CORS_PROXY}https://hoctap.coccoc.com/composer/proxyapi/translate?from=${sourceLanguage ?? CocCocEduTranslate.AUTODETECT}&to=${targetLanguage}&reqid=undefined`,
+            url: `${Utils.CORS_PROXY}https://hoctap.coccoc.com/composer/proxyapi/translate?from=${sourceLanguage}&to=${targetLanguage}&reqid=undefined`,
           }));
           queryLines = [];
         }
       }
 
       await Promise.all(responses);
-      this.result = responses.map((element) => element.responseJSON.proxyapi[0].translations[0].text.split(/ ?\\\\n ?/)).flat().join('\n');
+      this.result = responses.map((element) => element.responseJSON.proxyapi[0].translations[0].text.split(/ ?\n ?/)).flat().join('\n');
       super.translateText(text, targetLanguage, sourceLanguage);
       return this.result;
     } catch (error) {
