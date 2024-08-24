@@ -40,7 +40,7 @@ class CocCocEduTranslate extends Translator {
       }
 
       await Promise.all(responses);
-      this.result = responses.map((element) => element.responseJSON.proxyapi[0].translations[0].text.split(/ ?\\\\n ?/).flat().join('\n');
+      this.result = responses.map((element) => element.responseJSON.proxyapi[0].translations[0].text.split(/ ?\\\\n ?/)).flat().join('\n');
       super.translateText(text, targetLanguage, sourceLanguage);
       return this.result;
     } catch (error) {
