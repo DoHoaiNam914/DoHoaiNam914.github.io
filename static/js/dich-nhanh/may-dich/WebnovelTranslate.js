@@ -1979,7 +1979,6 @@ class WebnovelTranslate extends Translator {
 
         if (lines.length === 0 || [...queryLines, lines[0]].join(EOL).length > this.maxDataPerRequest || [...queryLines, lines[0]].join('\n').length > this.maxContentLengthPerRequest || (queryLines.length + 1) > this.maxContentLinePerRequest) {
           responses.push($.ajax({
-            cache: false,
             method: 'GET',
             url: `${Utils.CORS_PROXY}http://translate.google.com/translate_a/single?client=${this.clientName}&ie=UTF-8&oe=UTF-8&dt=bd&dt=ex&dt=ld&dt=md&dt=rw&dt=rm&dt=ss&dt=t&dt=at&dt=gt&dt=qc&sl=${sourceLanguage}&tl=${targetLanguage}&hl=${targetLanguage}&q=${encodeURIComponent(queryLines.join(EOL))}`,
           }));
@@ -1988,10 +1987,9 @@ class WebnovelTranslate extends Translator {
       }
 
       await Promise.all(responses);
-      const TRANSLATED_EOL = Utils.getTrieRegexPatternFromWords(['ja', 'zh-CN', 'zh-TW'].some((element) => sourceLanguage === element) ? ['||||', '|||'] : ['\\n']);
       const EOL_REG_EXP = new RegExp(Utils.escapeRegExp(EOL), 'g');
-      console.log('DEBUG:', responses.map((a) => a.responseJSON[0].filter(([__, second]) => second != null).map(([first, second]) => [second, first, [...second.matchAll(EOL_REG_EXP)].length - [...first.matchAll(TRANSLATED_EOL)].length])).flat().map((element) => (element[2] >= 0 ? element.slice(0, -1) : element)));
-      this.result = responses.map((a) => a.responseJSON[0].filter(([__, second]) => second != null).map(([first, second]) => [second, first.replace(/^\s+/, '').replaceAll(TRANSLATED_EOL, '\n')]).map(([first, second]) => second.concat('\n'.repeat([...first.matchAll(EOL_REG_EXP)].length - [...second.matchAll(/\n/g)].length))).join('').split('\n')).flat().map((element) => element.trimEnd()).join('\n');
+      console.log('DEBUG:', responses.map((a) => a.responseJSON[0].filter(([__, second]) => second != null).map(([first, second]) => [second, first, [...second.matchAll(EOL_REG_EXP)].length - [...first.matchAll(EOL_REG_EXP)].length])).flat().map((element) => (element[2] >= 0 ? element.slice(0, -1) : element)));
+      this.result = responses.map((a) => a.responseJSON[0].filter(([__, second]) => second != null).map(([first, second]) => [second, first.replace(/^\s+/, '').replaceAll(EOL_REG_EXP, '\n')]).map(([first, second]) => second.concat('\n'.repeat([...first.matchAll(EOL_REG_EXP)].length - [...second.matchAll(/\n/g)].length))).join('').split('\n')).flat().map((element) => element.trimEnd()).join('\n');
       super.translateText(text, targetLanguage, sourceLanguage);
       return this.result;
     } catch (error) {
