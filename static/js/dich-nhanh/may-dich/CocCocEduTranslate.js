@@ -13,7 +13,7 @@ class CocCocEduTranslate extends Translator {
 
   constructor(tone) {
     super();
-    this.maxContentLengthPerRequest = 1000;
+    this.maxContentLengthPerRequest = 1000 - 282;
     this.maxContentLinePerRequest = 25;
   }
 
@@ -23,13 +23,13 @@ class CocCocEduTranslate extends Translator {
       let queryLines = [];
       const responses = [];
 
-      while (lines.length > 0 && [...queryLines, lines[0]].join('\n').length <= this.maxContentLengthPerRequest && (queryLines.length + 1) <= this.maxContentLinePerRequest) {
+      while (lines.length > 0 && [...queryLines, lines[0]].join('\\\\n').length <= this.maxContentLengthPerRequest && (queryLines.length + 1) <= this.maxContentLinePerRequest) {
         queryLines.push(lines.shift());
 
-        if (lines.length === 0 || [...queryLines, lines[0]].join('\n').length > this.maxContentLengthPerRequest || (queryLines.length + 1) > this.maxContentLinePerRequest) {
+        if (lines.length === 0 || [...queryLines, lines[0]].join('\\\\n').length > this.maxContentLengthPerRequest || (queryLines.length + 1) > this.maxContentLinePerRequest) {
           responses.push($.ajax({
             data: JSON.stringify({
-              Text: queryLines.join('\n'),
+              Text: queryLines.join('\\\\n'),
             }),
             headers: { 'Content-Type': 'application/json' },
             method: 'POST',
@@ -40,8 +40,7 @@ class CocCocEduTranslate extends Translator {
       }
 
       await Promise.all(responses);
-      this.result = responses.map((element) => element.responseJSON.proxyapi[0].translations[0].text).join('\n');
-      if (this.result.split('\n').length !== text.split('\n').length) this.result = text;
+      this.result = responses.map((element) => element.responseJSON.proxyapi[0].translations[0].text.split(/ ?\\\\n ?/).flat().join('\n');
       super.translateText(text, targetLanguage, sourceLanguage);
       return this.result;
     } catch (error) {
