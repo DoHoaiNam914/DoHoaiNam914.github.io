@@ -11,7 +11,7 @@ class CocCocEduTranslate extends Translator {
     TARGET_LANGUAGE: 'vi',
   };
 
-  constructor(tone) {
+  constructor() {
     super();
     this.maxContentLengthPerRequest = 1000 - 282;
     this.maxContentLinePerRequest = 25;
