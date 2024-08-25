@@ -1794,8 +1794,6 @@ $translateEntryButtons.click(async function onClick() {
 
   if ($translateButton.text() !== 'Huỷ' && text.length > 0) {
     translationController = new AbortController();
-    $translateEntryButton.data('translator', null);
-    $translateEntryButton.data('lang', null);
     $translateEntryButtons.addClass('disabled');
     $sourceEntryInput.attr('readonly', true);
     const activeTranslator = $(this).data('translator');
@@ -1857,8 +1855,11 @@ $translateEntryButtons.click(async function onClick() {
 
       if (!translationController.signal.aborted) {
         $targetEntryTextarea.val(translator.result.replace(/^\s+/, '')).trigger('input');
-        $translateEntryButton.data('translator', activeTranslator !== Translators.VIETPHRASE ? activeTranslator : null);
-        if ($translateEntryButton.data('translator') != null) $translateEntryButton.data('lang', targetLanguage);
+
+        if (activeTranslator !== Translators.VIETPHRASE) {
+          $translateEntryButton.data('translator', activeTranslator);
+          $translateEntryButton.data('lang', targetLanguage);
+        }
       }
     } catch (error) {
       console.error(error);
