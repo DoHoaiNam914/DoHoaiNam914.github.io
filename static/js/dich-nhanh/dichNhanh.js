@@ -32,6 +32,7 @@ const $themeDropdown = $('#theme-dropdown');
 const $toneSelect = $('#tone-select');
 const $translateButton = $('#translate-button');
 const $translateEntryButtons = $('.translate-entry-button');
+const $translateEntryButton = $('#translate-entry-button');
 const $translateTimer = $('#translate-timer');
 const $translatorDropdown = $('#translator-dropdown');
 const $upperCaseButtons = $('.upper-case-button');
@@ -459,7 +460,6 @@ const translators = {};
 let currentTranslator = null;
 let translationController = null;
 let autocompleteTimeout = null;
-let lastTranslateEntryButton = null;
 
 const getSourceLangOptionList = function getSourceLanguageOptionListHtmlFromTranslator(translator) {
   const sourceLanguageSelect = document.createElement('select');
@@ -1602,17 +1602,12 @@ $glossaryModal.on('shown.bs.modal', () => {
       $targetEntryTextarea.val(currentGlossary[text]);
       $removeButton.removeClass('disabled');
     } else {
-      if (lastTranslateEntryButton != null) {
-        lastTranslateEntryButton.click();
-      } else {
-        (new Promise((resolve) => {
-          $translateEntryButtons.filter(`[data-translator="vietphrase"][data-lang="${activeGlossaryList === 'vietPhrase' ? 'vi' : 'SinoVietnamese'}"]`).click();
-          resolve();
-        })).then(() => {
-          if (['name', 'namePhu'].some((element) => activeGlossaryList === element)) $upperCaseButtons.filter('[data-amount="#"]').click();
-        });
-      }
-
+      (new Promise((resolve) => {
+        $translateEntryButtons.filter(`[data-translator="vietphrase"][data-lang="${activeGlossaryList === 'vietPhrase' ? 'vi' : 'SinoVietnamese'}"]`).click();
+        resolve();
+      })).then(() => {
+        if (['name', 'namePhu'].some((element) => activeGlossaryList === element)) $upperCaseButtons.filter('[data-amount="#"]').click();
+      });
       $removeButton.addClass('disabled');
     }
 
@@ -1660,7 +1655,6 @@ $glossaryListSelect.change(function onChange() {
     if (Object.hasOwn(currentGlossary, $sourceEntryInput.val())) {
       $targetEntryTextarea.val(currentGlossary[$sourceEntryInput.val()]);
       $removeButton.removeClass('disabled');
-      lastTranslateEntryButton = null;
     } else {
       if (window.confirm('Bạn có muốn chuyển đổi lại chứ?')) {
         (new Promise((resolve) => {
@@ -1688,7 +1682,6 @@ $sourceEntryInput.on('input', async function onInput() {
     if (Object.hasOwn(currentGlossary, text)) {
       $targetEntryTextarea.val(currentGlossary[text]);
       $removeButton.removeClass('disabled');
-      lastTranslateEntryButton = null;
     } else {
       (new Promise((resolve) => {
         $translateEntryButtons.filter(`[data-translator="vietphrase"][data-lang="${activeGlossaryList === 'vietPhrase' ? 'vi' : 'SinoVietnamese'}"]`).click();
@@ -1717,15 +1710,12 @@ $sourceEntryInput.on('blur', () => {
   if (autocompleteTimeout != null) clearTimeout(autocompleteTimeout);
 });
 
-$targetEntryTextarea.on('input', function onInput() {
-  $(this).val($(this).val().replaceAll(/\n/g, ' '));
-});
-
-$targetEntryTextarea.on('keypress', (event) => {
-  if (event.key === 'Enter') {
-    $addButton.click();
-    event.preventDefault();
-  }
+$removeButton.on('click', () => {
+  if (!Object.hasOwn(glossary[$glossaryListSelect.val()], $sourceEntryInput.val()) || !window.confirm('Bạn có muốn xoá cụm từ này chứ?')) return;
+  delete glossary[$glossaryListSelect.val()][$sourceEntryInput.val()];
+  saveGlossary();
+  $translateEntryButtons.filter(`[data-translator="vietphrase"][data-lang="${$glossaryListSelect.val() === 'vietPhrase' ? 'vi' : 'SinoVietnamese'}"]`).click();
+  $removeButton.addClass('disabled');
 });
 
 $('.define-button').on('click', function onClick() {
@@ -1761,6 +1751,27 @@ $('.translate-webpage-button').on('click', function onClick() {
   if (window.getSelection) window.getSelection().removeAllRanges();
   else if (document.selection) document.selection.empty();
   $sourceEntryInput.blur();
+});
+
+$targetEntryTextarea.on('input', function onInput() {
+  $(this).val($(this).val().replaceAll(/\n/g, ' '));
+});
+
+$targetEntryTextarea.on('keypress', (event) => {
+  if (event.key === 'Enter') {
+    $addButton.click();
+    event.preventDefault();
+  }
+});
+
+$addButton.click(() => {
+  if ($sourceEntryInput.val().length === 0) return;
+  if ($glossaryListSelect.val() === 'namePhu' && Object.hasOwn(glossary.name, $sourceEntryInput.val())) delete glossary.name[$sourceEntryInput.val()];
+  glossary[$glossaryListSelect.val()][$sourceEntryInput.val()] = $targetEntryTextarea.val().trimStart();
+  saveGlossary();
+  $addButton.addClass('disabled');
+  $removeButton.addClass('disabled');
+  $sourceEntryInput.val(null).trigger('input');
 });
 
 $upperCaseButtons.click(function onClick() {
@@ -1846,11 +1857,14 @@ $translateEntryButtons.click(async function onClick() {
       if (!translationController.signal.aborted) {
         $targetEntryTextarea.val(translator.result.replace(/^\s+/, '')).trigger('input');
         lastTranslateEntryButton = activeTranslator !== Translators.VIETPHRASE ? $(this) : null;
+        $translateEntryButton.data('translator', activeTranslator !== Translators.VIETPHRASE ? activeTranslator : null);
+        $translateEntryButton.data('lang', $translateEntryButton.data('translator') != null ? targetLanguage : null);
       }
     } catch (error) {
       console.error(error);
       if (activeTranslator === Translators.MICROSOFT_TRANSLATOR) translators[activeTranslator].fetchUsage();
-      lastTranslateEntryButton = null;
+      $translateEntryButton.data('translator', null);
+      $translateEntryButton.data('lang', null);
     }
 
     $sourceEntryInput.removeAttr('readonly');
@@ -1859,20 +1873,6 @@ $translateEntryButtons.click(async function onClick() {
   }
 });
 
-$addButton.click(() => {
-  if ($sourceEntryInput.val().length === 0) return;
-  if ($glossaryListSelect.val() === 'namePhu' && Object.hasOwn(glossary.name, $sourceEntryInput.val())) delete glossary.name[$sourceEntryInput.val()];
-  glossary[$glossaryListSelect.val()][$sourceEntryInput.val()] = $targetEntryTextarea.val().trimStart();
-  saveGlossary();
-  $addButton.addClass('disabled');
-  $removeButton.addClass('disabled');
-  $sourceEntryInput.val(null).trigger('input');
-});
-
-$removeButton.on('click', () => {
-  if (!Object.hasOwn(glossary[$glossaryListSelect.val()], $sourceEntryInput.val()) || !window.confirm('Bạn có muốn xoá cụm từ này chứ?')) return;
-  delete glossary[$glossaryListSelect.val()][$sourceEntryInput.val()];
-  saveGlossary();
-  $translateEntryButtons.filter(`[data-translator="vietphrase"][data-lang="${$glossaryListSelect.val() === 'vietPhrase' ? 'vi' : 'SinoVietnamese'}"]`).click();
-  $removeButton.addClass('disabled');
+$translateEntryButton.on('click', function onClick() {
+  if ($(this).data('translator') != null) $translateEntryButtons.filter(`[data-translator="${$(this).data('translator')}"][data-lang="${$(this).data('lang')}"]`).click();
 });
