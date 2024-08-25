@@ -1862,10 +1862,9 @@ $translateEntryButtons.click(async function onClick() {
         }
       }
     } catch (error) {
+      $targetEntryTextarea.val(error);
       console.error(error);
       if (activeTranslator === Translators.MICROSOFT_TRANSLATOR) translators[activeTranslator].fetchUsage();
-      $translateEntryButton.data('translator', null);
-      $translateEntryButton.data('lang', null);
     }
 
     $sourceEntryInput.removeAttr('readonly');
