@@ -1821,6 +1821,7 @@ $translateEntryButtons.click(async function onClick() {
       }
 
       translators[activeTranslator] = translator;
+      translator.controller = translationController;
 
       switch (activeTranslator) {
         case Translators.VIETPHRASE: {
@@ -1835,8 +1836,6 @@ $translateEntryButtons.click(async function onClick() {
           break;
         }
       }
-
-      translator.controller = translationController;
 
       if (!translator.controller.signal.aborted) {
         $targetEntryTextarea.val(translator.result.replace(/^\s+/, '')).trigger('input');
