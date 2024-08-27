@@ -699,7 +699,6 @@ const translate = async function translateContentInTextarea(controller = new Abo
     const startTime = Date.now();
     const text = $inputTextarea.val().split('\n').filter((element) => $activeTranslator.val() !== Translators.WEBNOVEL_TRANSLATE || element.replace(/^\s+/, '').trimEnd().length > 0).join('\n');
     const targetLanguage = $targetLanguageSelect.val();
-    currentTranslator.controller = controller;
 
     switch ($activeTranslator.val()) {
       case Translators.VIETPHRASE: {
@@ -710,6 +709,7 @@ const translate = async function translateContentInTextarea(controller = new Abo
         break;
       }
       default: {
+        currentTranslator.controller = controller;
         await currentTranslator.translateText(text, targetLanguage, $sourceLanguageSelect.val());
       }
     }
@@ -1782,6 +1782,8 @@ $translateEntryButtons.click(async function onClick() {
     const activeTranslator = $(this).data('translator');
     let translator = translators[activeTranslator];
     const targetLanguage = $(this).data('lang');
+    const nameEnabled = $(this).data('name-enabled');
+    const nameEnabledBoolean = nameEnabled != null && Boolean(nameEnabled) !== false;
 
     try {
       switch (activeTranslator) {
@@ -1821,11 +1823,9 @@ $translateEntryButtons.click(async function onClick() {
       }
 
       translators[activeTranslator] = translator;
-      translator.controller = translationController;
 
       switch (activeTranslator) {
         case Translators.VIETPHRASE: {
-          const nameEnabled = $(this).data('name-enabled');
           await translator.translateText(text, targetLanguage, glossary, {
             autocapitalize: false,
             nameEnabled: nameEnabled != null && Boolean(nameEnabled) !== false,
@@ -1833,6 +1833,7 @@ $translateEntryButtons.click(async function onClick() {
           break;
         }
         default: {
+          translator.controller = translationController;
           await translator.translateText(text, targetLanguage);
           break;
         }
@@ -1841,9 +1842,10 @@ $translateEntryButtons.click(async function onClick() {
       if (!translator.controller.signal.aborted) {
         $targetEntryTextarea.val(translator.result.replace(/^\s+/, '')).trigger('input');
 
-        if (activeTranslator !== Translators.VIETPHRASE) {
+        if (activeTranslator !== Translators.VIETPHRASE || nameEnabledBoolean) {
           $translateEntryButton.data('translator', activeTranslator);
           $translateEntryButton.data('lang', targetLanguage);
+          $translateEntryButton.data('name-enabled', nameEnabled != null ? Boolean(nameEnabled) !== false : null);
         }
       }
     } catch (error) {
@@ -1877,5 +1879,5 @@ $removeButton.on('click', () => {
 });
 
 $translateEntryButton.on('click', function onClick() {
-  if ($(this).data('translator') != null) $translateEntryButtons.filter(`[data-translator="${$(this).data('translator')}"][data-lang="${$(this).data('lang')}"]`).click();
+  if ($(this).data('translator') != null) $translateEntryButtons.filter(`[data-translator="${$(this).data('translator')}"][data-lang="${$(this).data('lang')}"]${$(this).data('name-enabled') != null ? `[data-lang="${$(this).data('name-enabled')}"]` : ''}`).click();
 });
