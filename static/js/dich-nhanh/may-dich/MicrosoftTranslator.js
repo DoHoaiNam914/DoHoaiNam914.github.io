@@ -77,14 +77,15 @@ class MicrosoftTranslator extends Translator {
       }
 
       await Promise.all(responses);
+      if (controller.signal.aborted) return text;
       this.result = responses.map((element) => element.responseJSON[0].translations[0].text).join('\n');
       this.requestIndex += 1;
       super.translateText(text, targetLanguage, sourceLanguage);
-      return this.result;
     } catch (error) {
       console.error('Bản dịch lỗi:', error);
       this.result = error;
-      throw error;
     }
+
+    return this.result;
   }
 }

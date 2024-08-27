@@ -2,6 +2,7 @@
 
 class Translator {
   constructor() {
+    this.controller = new AbortController();
     this.lastRequestData = null;
     this.result = '';
   }

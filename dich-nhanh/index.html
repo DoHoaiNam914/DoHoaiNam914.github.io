@@ -730,11 +730,6 @@
               </select>
               <div class="input-group mb-2 dropstart dropdown-scrollable dropdown-has-collapse">
                 <input type="text" class="form-control font-options" id="source-entry-input" placeholder="Mục nguồn">
-                <button type="submit" class="btn btn-danger disabled" id="remove-button">
-                  <svg class="bi" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor">
-                    <use xlink:href="#dash"></use>
-                  </svg>
-                </button>
                 <button type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" id="source-entry-dropdown-toggle" data-bs-toggle="dropdown" data-bs-auto-close="outside"></button>
                 <ul class="dropdown-menu">
                   <li>
@@ -804,12 +799,7 @@
                 </ul>
               </div>
               <div class="input-group mb-3 dropstart dropdown-scrollable dropdown-has-collapse">
-                <textarea class="form-control font-options" id="target-entry-textarea" placeholder="Mục đích" spellcheck="false" rows="6"></textarea>
-                <button type="submit" class="btn btn-success disabled" id="add-button">
-                  <svg class="bi" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor">
-                    <use xlink:href="#plus"></use>
-                  </svg>
-                </button>
+                <textarea class="form-control font-options" id="target-entry-textarea" placeholder="Mục đích" spellcheck="false" rows="8"></textarea>
                 <button type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" data-bs-auto-close="outside"></button>
                 <ul class="dropdown-menu">
                   <li>
@@ -909,6 +899,18 @@
                   </li>
                 </ul>
               </div>
+              <button type="submit" class="btn btn-success mb-3 disabled" id="add-button">
+                <svg class="bi" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor">
+                  <use xlink:href="#plus"></use>
+                </svg>
+                Thêm
+              </button>
+              <button type="submit" class="btn btn-danger mb-3 disabled" id="remove-button">
+                <svg class="bi" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor">
+                  <use xlink:href="#dash"></use>
+                </svg>
+                Xoá
+              </button>
               <button type="button" class="btn btn-sm btn-primary mb-3" id="translate-entry-button">Dịch</button>
               <button type="button" class="btn btn-sm btn-secondary mb-3 copy-button" data-target="glossary">Sao chép dữ liệu</button>
             </div>

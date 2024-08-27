@@ -699,6 +699,7 @@ const translate = async function translateContentInTextarea(controller = new Abo
     const startTime = Date.now();
     const text = $inputTextarea.val().split('\n').filter((element) => $activeTranslator.val() !== Translators.WEBNOVEL_TRANSLATE || element.replace(/^\s+/, '').trimEnd().length > 0).join('\n');
     const targetLanguage = $targetLanguageSelect.val();
+    currentTranslator.controller = controller;
 
     switch ($activeTranslator.val()) {
       case Translators.VIETPHRASE: {
@@ -1195,8 +1196,8 @@ $translatorDropdown.find('.dropdown-item').click(function onClick() {
 
       break;
     }
-    case Translators.GOOGLE_TRANSLATE: {
-      if (currentTranslator == null) currentTranslator = new GoogleTranslate();
+    case Translators.MICROSOFT_TRANSLATOR: {
+      if (currentTranslator == null) currentTranslator = new MicrosoftTranslator($toneSelect.val());
       break;
     }
     case Translators.PAPAGO: {
@@ -1212,7 +1213,7 @@ $translatorDropdown.find('.dropdown-item').click(function onClick() {
       break;
     }
     default: {
-      if (currentTranslator == null) currentTranslator = new MicrosoftTranslator($toneSelect.val());
+      if (currentTranslator == null) currentTranslator = new GoogleTranslate();
       break;
     }
   }
@@ -1710,14 +1711,6 @@ $sourceEntryInput.on('blur', () => {
   if (autocompleteTimeout != null) clearTimeout(autocompleteTimeout);
 });
 
-$removeButton.on('click', () => {
-  if (!Object.hasOwn(glossary[$glossaryListSelect.val()], $sourceEntryInput.val()) || !window.confirm('Bạn có muốn xoá cụm từ này chứ?')) return;
-  delete glossary[$glossaryListSelect.val()][$sourceEntryInput.val()];
-  saveGlossary();
-  $translateEntryButtons.filter(`[data-translator="vietphrase"][data-lang="${$glossaryListSelect.val() === 'vietPhrase' ? 'vi' : 'SinoVietnamese'}"]`).click();
-  $removeButton.addClass('disabled');
-});
-
 $('.define-button').on('click', function onClick() {
   if ($sourceEntryInput.val().length > 0) {
     let defineContent = ($sourceEntryInput.val().substring($sourceEntryInput.prop('selectionStart'), $sourceEntryInput.prop('selectionEnd')) || $sourceEntryInput.val()).trim(); // .substring(0, 30)
@@ -1762,16 +1755,6 @@ $targetEntryTextarea.on('keypress', (event) => {
     $addButton.click();
     event.preventDefault();
   }
-});
-
-$addButton.click(() => {
-  if ($sourceEntryInput.val().length === 0) return;
-  if ($glossaryListSelect.val() === 'namePhu' && Object.hasOwn(glossary.name, $sourceEntryInput.val())) delete glossary.name[$sourceEntryInput.val()];
-  glossary[$glossaryListSelect.val()][$sourceEntryInput.val()] = $targetEntryTextarea.val().trimStart();
-  saveGlossary();
-  $addButton.addClass('disabled');
-  $removeButton.addClass('disabled');
-  $sourceEntryInput.val(null).trigger('input');
 });
 
 $upperCaseButtons.click(function onClick() {
@@ -1853,7 +1836,9 @@ $translateEntryButtons.click(async function onClick() {
         }
       }
 
-      if (!translationController.signal.aborted) {
+      translator.controller = translationController;
+
+      if (!translator.controller.signal.aborted) {
         $targetEntryTextarea.val(translator.result.replace(/^\s+/, '')).trigger('input');
 
         if (activeTranslator !== Translators.VIETPHRASE) {
@@ -1870,7 +1855,26 @@ $translateEntryButtons.click(async function onClick() {
     $sourceEntryInput.removeAttr('readonly');
     $translateEntryButtons.removeClass('disabled');
     translationController = null;
+    translator.controller = translationController;
   }
+});
+
+$addButton.click(() => {
+  if ($sourceEntryInput.val().length === 0) return;
+  if ($glossaryListSelect.val() === 'namePhu' && Object.hasOwn(glossary.name, $sourceEntryInput.val())) delete glossary.name[$sourceEntryInput.val()];
+  glossary[$glossaryListSelect.val()][$sourceEntryInput.val()] = $targetEntryTextarea.val().trimStart();
+  saveGlossary();
+  $addButton.addClass('disabled');
+  $removeButton.addClass('disabled');
+  $sourceEntryInput.val(null).trigger('input');
+});
+
+$removeButton.on('click', () => {
+  if (!Object.hasOwn(glossary[$glossaryListSelect.val()], $sourceEntryInput.val()) || !window.confirm('Bạn có muốn xoá cụm từ này chứ?')) return;
+  delete glossary[$glossaryListSelect.val()][$sourceEntryInput.val()];
+  saveGlossary();
+  $translateEntryButtons.filter(`[data-translator="vietphrase"][data-lang="${$glossaryListSelect.val() === 'vietPhrase' ? 'vi' : 'SinoVietnamese'}"]`).click();
+  $removeButton.addClass('disabled');
 });
 
 $translateEntryButton.on('click', function onClick() {
