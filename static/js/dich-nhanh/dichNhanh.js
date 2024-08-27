@@ -1825,9 +1825,10 @@ $translateEntryButtons.click(async function onClick() {
 
       switch (activeTranslator) {
         case Translators.VIETPHRASE: {
+          const nameEnabled = $(this).data('name-enabled');
           await translator.translateText(text, targetLanguage, glossary, {
             autocapitalize: false,
-            nameEnabled: false,
+            nameEnabled: nameEnabled != null && Boolean(nameEnabled) !== false,
           });
           break;
         }
