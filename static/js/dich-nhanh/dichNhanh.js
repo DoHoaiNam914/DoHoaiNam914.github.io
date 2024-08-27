@@ -1855,7 +1855,6 @@ $translateEntryButtons.click(async function onClick() {
     $sourceEntryInput.removeAttr('readonly');
     $translateEntryButtons.removeClass('disabled');
     translationController = null;
-    translator.controller = translationController;
   }
 });
 
