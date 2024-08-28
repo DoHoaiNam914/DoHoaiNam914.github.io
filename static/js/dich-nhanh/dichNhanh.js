@@ -1593,10 +1593,6 @@ $multiplicationAlgorithmRadio.on('change', () => {
   }
 });
 
-$artificialIntelligenceSelect.on('change', () => {
-  $retranslateButton.click();
-});
-
 $glossaryModal.on('shown.bs.modal', () => {
   const text = $sourceEntryInput.val();
 
