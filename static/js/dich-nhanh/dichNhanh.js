@@ -659,7 +659,7 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
     queryRawTranslationLines.push(rawTranslationLines.shift());
 
     if (textLines.length === 0 || [...queryRawTranslationLines, rawTranslationLines[0]].join('\n').length > MAX_CONTENT_LENGTH_PER_REQUEST) {
-      responses.push($.ajax({
+      responses.push([queryTextLines.join('\n'), $.ajax({
         data: JSON.stringify({
           contents: [
             {
@@ -703,14 +703,14 @@ ${translator === Translators.VIETPHRASE && nameEnabled && name.length > 0 ? `<NA
         headers: { 'Content-Type': 'application/json' },
         method: 'POST',
         url: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=AIzaSyD5e2NPw_Vmgr_eUXtNX4tGMYl0lmsQQW4',
-      }));
+      })]);
       queryTextLines = [];
       queryRawTranslationLines = [];
     }
   }
 
-  await Promise.all(responses);
-  return responses.map((element) => element.responseJSON.candidates[0].content.parts[0].text).join('\n');
+  await Promise.all(responses.map(([__, second]) => second));
+  return responses.map(([first, second]) => second.responseJSON.candidates[0].content.parts[0].text.replace(/\n+$/, '').concat(first.match(/\n*$/)[0])).join('\n');
 };
 
 const buildResult = function buildResultContentForTextarea(text, result, activeTranslator) {
