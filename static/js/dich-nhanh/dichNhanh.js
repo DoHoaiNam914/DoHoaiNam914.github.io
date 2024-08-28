@@ -1833,7 +1833,7 @@ $translateEntryButtons.click(async function onClick() {
       switch (activeTranslator) {
         case Translators.VIETPHRASE: {
           await translator.translateText(text, targetLanguage, glossary, {
-            artificialIntelligence: $artificialIntelligenceSelect.val(),
+            artificialIntelligence: 'none',
             autocapitalize: false,
             nameEnabled: nameEnabled != null && Boolean(nameEnabled) !== false,
           });
