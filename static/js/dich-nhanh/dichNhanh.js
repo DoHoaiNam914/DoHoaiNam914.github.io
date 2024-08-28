@@ -1846,7 +1846,7 @@ $translateEntryButtons.click(async function onClick() {
       if (!translator.controller.signal.aborted) {
         $targetEntryTextarea.val(translator.result.replace(/^\s+/, '')).trigger('input');
 
-        if (activeTranslator !== Translators.VIETPHRASE || nameEnabledBoolean) {
+        if (activeTranslator !== Translators.VIETPHRASE || (nameEnabled != null && Boolean(nameEnabled) !== false)) {
           $translateEntryButton.data('translator', activeTranslator);
           $translateEntryButton.data('lang', targetLanguage);
           $translateEntryButton.data('name-enabled', nameEnabled != null ? Boolean(nameEnabled) !== false : null);
