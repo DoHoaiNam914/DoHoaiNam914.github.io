@@ -517,7 +517,7 @@ ${this.result}
               headers: { 'Content-Type': 'application/json' },
               method: 'POST',
               url: `https://generativelanguage.googleapis.com/v1beta/models/${options.artificialIntelligence}:generateContent?key=AIzaSyD5e2NPw_Vmgr_eUXtNX4tGMYl0lmsQQW4`,
-            })).candidates[0].content.parts[0].text.replace('<TL>\n', '').replace('\n</TL>', '');
+            })).candidates[0].content.parts[0].text.replace(/<TL>\n?/, '').replace(/\n?<\/TL>/, '');
           }
         } catch (error) {
           this.vietPhrase = null;
