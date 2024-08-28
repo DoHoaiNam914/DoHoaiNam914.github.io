@@ -472,7 +472,7 @@ class Vietphrase extends Translator {
                     role: 'model',
                     parts: [
                       {
-                        text: 'Dịch văn bản trong cặp thẻ <TEXT></TEXT> sang tiếng Việt. Tham khảo tên riêng trong cặp thẻ <NAMES></NAMES>. Tham khảo ngữ nghĩa theo bản dịch thô trong cặp thẻ <RAW></RAW>. Đảm bảo số dòng được giữ nguyên như trong văn bản gốc. Bản dịch của bạn phải truyền đạt đầy đủ nội dung của văn bản gốc và không được bao gồm giải thích hoặc thông tin không cần thiết khác. Đảm bảo rằng văn bản dịch tự nhiên cho người bản địa, ngữ pháp chính xác và lựa chọn từ ngữ đúng đắn. Bản dịch của bạn chỉ chứa văn bản đã dịch và không thể chứa bất kỳ giải thích hoặc thông tin khác.',
+                        text: 'Dịch văn bản trong cặp thẻ <TEXT></TEXT> sang tiếng Việt. Tham khảo tên riêng trong cặp thẻ <NAMES></NAMES>. Tham khảo ngữ nghĩa theo bản dịch thô trong cặp thẻ <RAW></RAW>. Đảm bảo số dòng được giữ nguyên như trong văn bản gốc. Bản dịch của bạn phải truyền đạt đầy đủ nội dung của văn bản gốc và không được bao gồm giải thích hoặc thông tin không cần thiết khác. Đảm bảo rằng văn bản dịch tự nhiên cho người bản địa, ngữ pháp chính xác và lựa chọn từ ngữ đúng đắn. Bản dịch của bạn chỉ chứa văn bản đã dịch và không thể chứa bất kỳ giải thích hoặcthẻ hay thông tin khác.',
                       },
                     ],
                   },
