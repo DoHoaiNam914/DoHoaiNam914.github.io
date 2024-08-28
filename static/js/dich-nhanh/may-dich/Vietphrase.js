@@ -472,7 +472,7 @@ class Vietphrase extends Translator {
                     role: 'model',
                     parts: [
                       {
-                        text: 'Bạn là một dịch giả chuyên nghiệp. Hãy dịch văn bản trong cặp thẻ <ZH></ZH> từ Tiếng Trung sang Tiếng Việt. Tham khảo tên riêng trong cặp thẻ <NA></NA>.Tham khảo tên riêng và ngữ nghĩa theo bản dịch thô tiếng Việt trong cặp thẻ <VI></VI>. Đảm bảo bản dịch chính xác và trôi chảy, đồng thời giữ nguyên số dòng như bản gốc. Đặt kết quả dịch trong cặp thẻ <TL></TL>.',
+                        text: 'Dịch văn bản trong cặp thẻ <TEXT></TEXT> sang tiếng Việt. Tham khảo tên riêng trong cặp thẻ <NAMES></NAMES>. Tham khảo ngữ nghĩa theo bản dịch thô trong cặp thẻ <RAW></RAW>. Các bản dịch của bạn phải truyền đạt đầy đủ nội dung của văn bản gốc và không được bao gồm giải thích hoặc thông tin không cần thiết khác. Đảm bảo rằng văn bản dịch tự nhiên cho người bản địa, ngữ pháp chính xác và lựa chọn từ ngữ đúng đắn. Bản dịch của bạn chỉ chứa văn bản đã dịch và không thể chứa bất kỳ giải thích hoặc thông tin khác. Đảm bảo số dòng được giữ nguyên như văn bản gốc.',
                       },
                     ],
                   },
@@ -480,17 +480,17 @@ class Vietphrase extends Translator {
                     role: 'user',
                     parts: [
                       {
-                        text: `<ZH>
+                        text: `<TEXT>
 ${text}
-</ZH>
+</TEXT>
 ${options.nameEnabled ? `
-<NA>
+<NAMES>
 ${Object.entries(glossary.namePhu).map((element) => element.join('=')).join('\n')}
-</NA>
+</NAMES>
 ` : ''}
-<VI>
+<RAW>
 ${this.result}
-</VI>`,
+</RAW>`,
                       },
                     ],
                   },
@@ -517,7 +517,7 @@ ${this.result}
               headers: { 'Content-Type': 'application/json' },
               method: 'POST',
               url: `https://generativelanguage.googleapis.com/v1beta/models/${options.artificialIntelligence}:generateContent?key=AIzaSyD5e2NPw_Vmgr_eUXtNX4tGMYl0lmsQQW4`,
-            })).candidates[0].content.parts[0].text.replace(/<TL>\n?/, '').replace(/\n?<\/TL>/, '');
+            })).candidates[0].content.parts[0].text;
           }
         } catch (error) {
           this.vietPhrase = null;
