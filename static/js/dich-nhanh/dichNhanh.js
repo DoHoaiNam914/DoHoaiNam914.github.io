@@ -5,6 +5,7 @@
 const $addButton = $('#add-button');
 const $addDeLeZhaoSwitch = $('#add-de-le-zhao-switch');
 const $alignmentRadio = $('input[type="radio"][name="alignment-radio"]');
+const $artificialIntelligenceSelect = $('#artificial-intelligence-select');
 const $boldTextSwitch = $('#bold-text-switch');
 const $copyButtons = $('.copy-button');
 const $defaultVietPhraseFileSelect = $('#default-viet-phrase-file-select');
@@ -703,6 +704,7 @@ const translate = async function translateContentInTextarea(controller = new Abo
     switch ($activeTranslator.val()) {
       case Translators.VIETPHRASE: {
         await currentTranslator.translateText(text, targetLanguage, glossary, {
+          artificialIntelligence: $artificialIntelligenceSelect.val(),
           autocapitalize: true,
           nameEnabled: true,
         });
@@ -1591,6 +1593,10 @@ $multiplicationAlgorithmRadio.on('change', () => {
   }
 });
 
+$artificialIntelligenceSelect.on('change', () => {
+  $retranslateButton.click();
+});
+
 $glossaryModal.on('shown.bs.modal', () => {
   const text = $sourceEntryInput.val();
 
@@ -1827,6 +1833,7 @@ $translateEntryButtons.click(async function onClick() {
       switch (activeTranslator) {
         case Translators.VIETPHRASE: {
           await translator.translateText(text, targetLanguage, glossary, {
+            artificialIntelligence: $artificialIntelligenceSelect.val(),
             autocapitalize: false,
             nameEnabled: nameEnabled != null && Boolean(nameEnabled) !== false,
           });

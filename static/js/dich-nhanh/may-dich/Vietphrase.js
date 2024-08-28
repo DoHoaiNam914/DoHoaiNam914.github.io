@@ -464,6 +464,61 @@ class Vietphrase extends Translator {
 
           this.result = this.translateWithTest(text, options.nameEnabled ? this.name : [], hanViet.concat(glossary.romajis).filter(([first], ___, array) => !array[first] && (array[first] = 1), {})).normalize();
           this.result = options.autocapitalize ? Vietphrase.getCapitalizeText(this.result) : this.result;
+          if (option.artificialIntelligence !== 'none') {
+            this.result = (await $.ajax({
+              data: JSON.stringify({
+                contents: [
+                  {
+                    role: 'model',
+                    parts: [
+                      {
+                        text: 'Bạn là một dịch giả chuyên nghiệp. Hãy dịch văn bản trong cặp thẻ <ZH></ZH> từ Tiếng Trung sang Tiếng Việt. Tham khảo tên riêng trong cặp thẻ <NA></NA>.Tham khảo tên riêng và ngữ nghĩa theo bản dịch thô tiếng Việt trong cặp thẻ <VI></VI>. Đảm bảo bản dịch chính xác và trôi chảy, đồng thời giữ nguyên số dòng như bản gốc. Đặt kết quả dịch trong cặp thẻ <TL></TL>.',
+                      },
+                    ],
+                  },
+                  {
+                    role: 'user',
+                    parts: [
+                      {
+                        text: `<ZH>
+${text}
+</ZH>
+${options.nameEnabled ? `
+<NA>
+${Object.entries(glossary.namePhu).map((element) => element.join('=')).join('\n')}
+</NA>
+` : ''}
+<VI>
+${this.result}
+</VI>`,
+                      },
+                    ],
+                  },
+                ],
+                safetySettings: [
+                  {
+                    category: 'HARM_CATEGORY_HARASSMENT',
+                    threshold: 'BLOCK_NONE',
+                  },
+                  {
+                    category: 'HARM_CATEGORY_HATE_SPEECH',
+                    threshold: 'BLOCK_NONE',
+                  },
+                  {
+                    category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT',
+                    threshold: 'BLOCK_NONE',
+                  },
+                  {
+                    category: 'HARM_CATEGORY_DANGEROUS_CONTENT',
+                    threshold: 'BLOCK_NONE',
+                  },
+                ],
+              }),
+              headers: { 'Content-Type': 'application/json' },
+              method: 'POST',
+              url: `https://generativelanguage.googleapis.com/v1beta/models/${option.artificialIntelligence}-latest:generateContent?key=AIzaSyD5e2NPw_Vmgr_eUXtNX4tGMYl0lmsQQW4`,
+            })).candidates[0].content.parts.text.replace('<TL>\n', '').replace('\n</TL>', '');
+          }
         } catch (error) {
           this.vietPhrase = null;
           this.name = null;
