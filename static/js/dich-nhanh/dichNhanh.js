@@ -645,6 +645,74 @@ const loadLangSelectOptions = function loadLanguageListByTranslatorToHtmlOptions
   $targetLanguageSelect.val(targetLanguage);
 };
 
+const polishTranslation = async function polishTranslationWithArtificialIntelligence(translator, text, rawTranslation, nameEnabled) {
+  const MAX_CONTENT_LENGTH_PER_REQUEST = 8192 - 3584;
+  const name = Object.entries(glossary.namePhu);
+  const textLines = text.split('\n');
+  const rawTranslationLines = rawTranslation.split('\n');
+  let queryTextLines = [];
+  let queryRawTranslationLines = [];
+  const responses = [];
+
+  while (textLines.length > 0 && [...queryRawTranslationLines, rawTranslationLines[0]].join('\n').length <= MAX_CONTENT_LENGTH_PER_REQUEST) {
+    queryTextLines.push(textLines.shift());
+    queryRawTranslationLines.push(rawTranslationLines.shift());
+
+    if (textLines.length === 0 || [...queryRawTranslationLines, rawTranslationLines[0]].join('\n').length > MAX_CONTENT_LENGTH_PER_REQUEST) {
+      responses.push($.ajax({
+        data: JSON.stringify({
+          contents: [
+            {
+              role: 'model',
+              parts: [
+                {
+                  text: `Dịch văn bản trong nhãn <TEXT></TEXT> sang tiếng Việt. Tham khảo tên riêng trong nhãn <NAMES></NAMES> nếu có nhãn này. Tham khảo ngữ nghĩa theo bản dịch thô trong nhãn <RAW></RAW>. Bản dịch của bạn phải truyền đạt đầy đủ nội dung đồng thời giữ nguyên cấu trúc ${queryTextLines.length} dòng của văn bản gốc và không được bao gồm giải thích hoặc thông tin không cần thiết khác. Đảm bảo rằng văn bản dịch tự nhiên cho người bản địa, ngữ pháp chính xác và lựa chọn từ ngữ đúng đắn. Bản dịch của bạn chỉ chứa văn bản đã dịch và không thể chứa bất kỳ giải thích hoặc thông tin khác. Trả về bản dịch cuối cùng của bạn mà không cần nhãn.`,
+                },
+              ],
+            },
+            {
+              role: 'user',
+              parts: [
+                {
+                  text: `<TEXT>${queryTextLines.join('\n')}</TEXT>
+${translator === Translators.VIETPHRASE && nameEnabled && name.length > 0 ? `<NAMES>${name.map((element) => element.join('=')).join('\n')}</NAMES>` : ''}
+<RAW>${queryRawTranslationLines.join('\n')}</RAW>`,
+                },
+              ],
+            },
+          ],
+          safetySettings: [
+            {
+              category: 'HARM_CATEGORY_HARASSMENT',
+              threshold: 'BLOCK_NONE',
+            },
+            {
+              category: 'HARM_CATEGORY_HATE_SPEECH',
+              threshold: 'BLOCK_NONE',
+            },
+            {
+              category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT',
+              threshold: 'BLOCK_NONE',
+            },
+            {
+              category: 'HARM_CATEGORY_DANGEROUS_CONTENT',
+              threshold: 'BLOCK_NONE',
+            },
+          ],
+        }),
+        headers: { 'Content-Type': 'application/json' },
+        method: 'POST',
+        url: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=AIzaSyD5e2NPw_Vmgr_eUXtNX4tGMYl0lmsQQW4',
+      }));
+      queryTextLines = [];
+      queryRawTranslationLines = [];
+    }
+  }
+
+  await Promise.all(responses);
+  return responses.map((element) => element.responseJSON.candidates[0].content.parts[0].text).map((element) => text.includes('\n\n') ? element.replaceAll('\n\n', '\n') : element).join('\n');
+};
+
 const buildResult = function buildResultContentForTextarea(text, result, activeTranslator) {
   const resultDiv = document.createElement('div');
 
@@ -704,7 +772,6 @@ const translate = async function translateContentInTextarea(controller = new Abo
     switch ($activeTranslator.val()) {
       case Translators.VIETPHRASE: {
         await currentTranslator.translateText(text, targetLanguage, glossary, {
-          artificialIntelligence: $artificialIntelligenceSelect.val(),
           autocapitalize: true,
           nameEnabled: true,
         });
@@ -717,6 +784,7 @@ const translate = async function translateContentInTextarea(controller = new Abo
     }
 
     if (controller.signal.aborted) return;
+    if ($activeTranslator.val() === Translators.VIETPHRASE && targetLanguage === 'vi' && $artificialIntelligenceSelect.val() !== 'none') currentTranslator.result = await polishTranslation($activeTranslator.val(), text, currentTranslator.result, true);
     $resultTextarea.html(buildResult(text, currentTranslator.result, $activeTranslator.val()));
     $resultTextarea.find('p > i').on('dblclick', function onClick() {
       const range = document.createRange();
@@ -1828,12 +1896,11 @@ $translateEntryButtons.click(async function onClick() {
 
       switch (activeTranslator) {
         case Translators.VIETPHRASE: {
-          const artificialIntelligence = $artificialIntelligenceSelect.val() === 'none' ? 'gemini-1.5-flash' : $artificialIntelligenceSelect.val();
           await translator.translateText(text, targetLanguage, glossary, {
-            artificialIntelligence: artificialIntelligenceEnabled != null && Boolean(artificialIntelligenceEnabled) !== false ? artificialIntelligence : 'none',
             autocapitalize: false,
             nameEnabled: nameEnabled != null && Boolean(nameEnabled) !== false,
           });
+          if (artificialIntelligenceEnabled != null && Boolean(artificialIntelligenceEnabled) !== false && targetLanguage === 'vi') translator.result = await polishTranslation(activeTranslator, text, translator.result, nameEnabled != null && Boolean(nameEnabled) !== false);
           break;
         }
         default: {

@@ -464,53 +464,6 @@ class Vietphrase extends Translator {
 
           this.result = this.translateWithTest(text, options.nameEnabled ? this.name : [], hanViet.concat(glossary.romajis).filter(([first], ___, array) => !array[first] && (array[first] = 1), {})).normalize();
           this.result = options.autocapitalize ? Vietphrase.getCapitalizeText(this.result) : this.result;
-          if (options.artificialIntelligence !== 'none') {
-            this.result = (await $.ajax({
-              data: JSON.stringify({
-                contents: [
-                  {
-                    role: 'model',
-                    parts: [
-                      {
-                        text: 'Dịch văn bản trong cặp thẻ <TEXT></TEXT> sang tiếng Việt. Tham khảo tên riêng trong cặp thẻ <NAMES></NAMES>. Tham khảo ngữ nghĩa theo bản dịch thô trong cặp thẻ <RAW></RAW>. Đảm bảo số dòng được giữ nguyên như trong văn bản gốc. Bản dịch của bạn phải truyền đạt đầy đủ nội dung của văn bản gốc và không được bao gồm giải thích hoặc thông tin không cần thiết khác. Đảm bảo rằng văn bản dịch tự nhiên cho người bản địa, ngữ pháp chính xác và lựa chọn từ ngữ đúng đắn. Bản dịch của bạn chỉ chứa văn bản đã dịch và không thể chứa bất kỳ giải thích hoặcthẻ hay thông tin khác.',
-                      },
-                    ],
-                  },
-                  {
-                    role: 'user',
-                    parts: [
-                      {
-                        text: `<TEXT>${text}</TEXT>
-${options.nameEnabled ? `<NAMES>${Object.entries(glossary.namePhu).map((element) => element.join('=')).join('\n')}</NAMES>` : ''}
-<RAW>${this.result}</RAW>`,
-                      },
-                    ],
-                  },
-                ],
-                safetySettings: [
-                  {
-                    category: 'HARM_CATEGORY_HARASSMENT',
-                    threshold: 'BLOCK_NONE',
-                  },
-                  {
-                    category: 'HARM_CATEGORY_HATE_SPEECH',
-                    threshold: 'BLOCK_NONE',
-                  },
-                  {
-                    category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT',
-                    threshold: 'BLOCK_NONE',
-                  },
-                  {
-                    category: 'HARM_CATEGORY_DANGEROUS_CONTENT',
-                    threshold: 'BLOCK_NONE',
-                  },
-                ],
-              }),
-              headers: { 'Content-Type': 'application/json' },
-              method: 'POST',
-              url: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=AIzaSyD5e2NPw_Vmgr_eUXtNX4tGMYl0lmsQQW4',
-            })).candidates[0].content.parts[0].text;
-          }
         } catch (error) {
           this.vietPhrase = null;
           this.name = null;
