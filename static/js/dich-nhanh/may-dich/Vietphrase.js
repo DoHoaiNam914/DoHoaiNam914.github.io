@@ -464,7 +464,7 @@ class Vietphrase extends Translator {
 
           this.result = this.translateWithTest(text, options.nameEnabled ? this.name : [], hanViet.concat(glossary.romajis).filter(([first], ___, array) => !array[first] && (array[first] = 1), {})).normalize();
           this.result = options.autocapitalize ? Vietphrase.getCapitalizeText(this.result) : this.result;
-          if (option.artificialIntelligence !== 'none') {
+          if (options.artificialIntelligence !== 'none') {
             this.result = (await $.ajax({
               data: JSON.stringify({
                 contents: [
@@ -516,7 +516,7 @@ ${this.result}
               }),
               headers: { 'Content-Type': 'application/json' },
               method: 'POST',
-              url: `https://generativelanguage.googleapis.com/v1beta/models/${option.artificialIntelligence}-latest:generateContent?key=AIzaSyD5e2NPw_Vmgr_eUXtNX4tGMYl0lmsQQW4`,
+              url: `https://generativelanguage.googleapis.com/v1beta/models/${options.artificialIntelligence}-latest:generateContent?key=AIzaSyD5e2NPw_Vmgr_eUXtNX4tGMYl0lmsQQW4`,
             })).candidates[0].content.parts.text.replace('<TL>\n', '').replace('\n</TL>', '');
           }
         } catch (error) {
