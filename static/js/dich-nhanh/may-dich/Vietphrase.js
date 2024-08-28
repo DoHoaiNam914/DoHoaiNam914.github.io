@@ -472,7 +472,7 @@ class Vietphrase extends Translator {
                     role: 'model',
                     parts: [
                       {
-                        text: 'Dịch văn bản trong cặp thẻ <TEXT></TEXT> sang tiếng Việt. Tham khảo tên riêng trong cặp thẻ <NAMES></NAMES>. Tham khảo ngữ nghĩa theo bản dịch thô trong cặp thẻ <RAW></RAW>. Các bản dịch của bạn phải truyền đạt đầy đủ nội dung của văn bản gốc và không được bao gồm giải thích hoặc thông tin không cần thiết khác. Đảm bảo rằng văn bản dịch tự nhiên cho người bản địa, ngữ pháp chính xác và lựa chọn từ ngữ đúng đắn. Bản dịch của bạn chỉ chứa văn bản đã dịch và không thể chứa bất kỳ giải thích hoặc thông tin khác. Đảm bảo số dòng được giữ nguyên như văn bản gốc.',
+                        text: 'Dịch văn bản trong cặp thẻ <TEXT></TEXT> sang tiếng Việt. Tham khảo tên riêng trong cặp thẻ <NAMES></NAMES>. Tham khảo ngữ nghĩa theo bản dịch thô trong cặp thẻ <RAW></RAW>. Đảm bảo số dòng được giữ nguyên như trong văn bản gốc. Bản dịch của bạn phải truyền đạt đầy đủ nội dung của văn bản gốc và không được bao gồm giải thích hoặc thông tin không cần thiết khác. Đảm bảo rằng văn bản dịch tự nhiên cho người bản địa, ngữ pháp chính xác và lựa chọn từ ngữ đúng đắn. Bản dịch của bạn chỉ chứa văn bản đã dịch và không thể chứa bất kỳ giải thích hoặc thông tin khác.',
                       },
                     ],
                   },
@@ -480,17 +480,9 @@ class Vietphrase extends Translator {
                     role: 'user',
                     parts: [
                       {
-                        text: `<TEXT>
-${text}
-</TEXT>
-${options.nameEnabled ? `
-<NAMES>
-${Object.entries(glossary.namePhu).map((element) => element.join('=')).join('\n')}
-</NAMES>
-` : ''}
-<RAW>
-${this.result}
-</RAW>`,
+                        text: `<TEXT>${text}</TEXT>
+${options.nameEnabled ? `<NAMES>${Object.entries(glossary.namePhu).map((element) => element.join('=')).join('\n')}</NAMES>` : ''}
+<RAW>${this.result}</RAW>`,
                       },
                     ],
                   },
@@ -516,7 +508,7 @@ ${this.result}
               }),
               headers: { 'Content-Type': 'application/json' },
               method: 'POST',
-              url: `https://generativelanguage.googleapis.com/v1beta/models/${options.artificialIntelligence}:generateContent?key=AIzaSyD5e2NPw_Vmgr_eUXtNX4tGMYl0lmsQQW4`,
+              url: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=AIzaSyD5e2NPw_Vmgr_eUXtNX4tGMYl0lmsQQW4',
             })).candidates[0].content.parts[0].text;
           }
         } catch (error) {
