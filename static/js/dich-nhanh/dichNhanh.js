@@ -1298,10 +1298,6 @@ $translatorDropdown.find('.dropdown-item').click(function onClick() {
   $retranslateButton.click();
 });
 
-$showOriginalTextSwitch.on('change', () => {
-  $retranslateButton.click();
-});
-
 $toneSelect.on('change', () => {
   const $activeTranslator = $translatorDropdown.find('.active');
 
@@ -1646,23 +1642,16 @@ $defaultVietPhraseFileSelect.change(async function onChange() {
 
   const activeGlossaryList = $glossaryListSelect.val();
   if (['vietPhrase', 'name', 'luatNhan', 'pronoun'].some((element) => activeGlossaryList === element)) reloadGlossary(activeGlossaryList);
-  if (translators[Translators.VIETPHRASE] != null) translators[Translators.VIETPHRASE] = null;
-  const $activeTranslator = $translatorDropdown.find('.active');
-  if ($activeTranslator.val() === Translators.VIETPHRASE) $activeTranslator.click();
 });
 
 $addDeLeZhaoSwitch.on('change', () => {
-  if ($translatorDropdown.find('.active').val() === Translators.VIETPHRASE) {
-    currentTranslator.vietPhrase = null;
-    $retranslateButton.click();
-  }
+  if ($translatorDropdown.find('.active').val() === Translators.VIETPHRASE) currentTranslator.vietPhrase = null;
 });
 
 $multiplicationAlgorithmRadio.on('change', () => {
   if ($translatorDropdown.find('.active').val() === Translators.VIETPHRASE) {
     currentTranslator.name = null;
     currentTranslator.vietPhrase = null;
-    $retranslateButton.click();
   }
 });
 
