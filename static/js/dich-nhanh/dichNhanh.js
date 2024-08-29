@@ -792,9 +792,9 @@ const translate = async function translateContentInTextarea(controller = new Abo
     if (controller.signal.aborted) return;
 
     if ($activeTranslator.val() === Translators.VIETPHRASE && targetLanguage === 'vi' && $artificialIntelligenceSelect.val() !== 'none') {
-      const polishTranslation = await polishTranslation($activeTranslator.val(), text, currentTranslator.result, true);
+      const polishResult = (await polishTranslation($activeTranslator.val(), text, currentTranslator.result, true)) ?? currentTranslator.result;
       if (controller.signal.aborted) return;
-      currentTranslator.result = polishTranslation;
+      currentTranslator.result = polishResult;
     }
 
     if (controller.signal.aborted) return;
