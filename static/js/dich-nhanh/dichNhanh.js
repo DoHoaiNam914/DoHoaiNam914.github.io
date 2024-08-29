@@ -652,6 +652,7 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
   const rawTranslationLines = rawTranslation.split('\n');
   let queryTextLines = [];
   let queryRawTranslationLines = [];
+  const contents = [];
   const responses = [];
 
   while (textLines.length > 0 && [...queryRawTranslationLines, rawTranslationLines[0]].join('\n').length <= MAX_CONTENT_LENGTH_PER_REQUEST) {
@@ -659,7 +660,20 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
     queryRawTranslationLines.push(rawTranslationLines.shift());
 
     if (textLines.length === 0 || [...queryRawTranslationLines, rawTranslationLines[0]].join('\n').length > MAX_CONTENT_LENGTH_PER_REQUEST) {
+      contents.push({
+        role: 'user',
+        parts: [
+          {
+            text: `<TEXT>${queryTextLines.join('\n')}</TEXT>
+${translator === Translators.VIETPHRASE && nameEnabled && name.length > 0 ? `
+<NAMES>${name.map((element) => element.join('=')).join('\n')}</NAMES>
+` : '\n'}<RAW>${queryRawTranslationLines.join('\n')}</RAW>`,
+          },
+        ],
+      });
+
       responses.push([queryTextLines.join('\n'), $.ajax({
+        async: false,
         data: JSON.stringify({
           contents: [
             {
@@ -670,16 +684,7 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
                 },
               ],
             },
-            {
-              role: 'user',
-              parts: [
-                {
-                  text: `<TEXT>${queryTextLines.join('\n')}</TEXT>
-${translator === Translators.VIETPHRASE && nameEnabled && name.length > 0 ? `<NAMES>${name.map((element) => element.join('=')).join('\n')}</NAMES>` : ''}
-<RAW>${queryRawTranslationLines.join('\n')}</RAW>`,
-                },
-              ],
-            },
+            ...contents,
           ],
           safetySettings: [
             {
@@ -709,7 +714,6 @@ ${translator === Translators.VIETPHRASE && nameEnabled && name.length > 0 ? `<NA
     }
   }
 
-  await Promise.all(responses.map(([__, second]) => second));
   return responses.map(([first, second]) => [first, second.responseJSON.candidates[0].content.parts[0].text]).map(([first, second]) => first.match(/^(?:\p{Zs}*\n)*/u)[0].concat(([...second.replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').matchAll(/\n\n/g)].length > [...first.replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').matchAll(/\n\n/g)].length ? second.replaceAll('\n\n', '\n') : second).replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').concat(first.match(/\s*$/)[0]))).join('\n');
 };
 
