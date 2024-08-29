@@ -709,7 +709,7 @@ ${translator === Translators.VIETPHRASE && nameEnabled && name.length > 0 ? `<NA
       })]);
       queryTextLines = [];
       queryRawTranslationLines = [];
-      if (contents.length === 2) contents.shift();
+      if (contents.length === 5) contents.shift();
     }
   }
 
