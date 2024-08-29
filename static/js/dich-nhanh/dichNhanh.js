@@ -710,6 +710,7 @@ ${translator === Translators.VIETPHRASE && nameEnabled && name.length > 0 ? `
       })]);
       queryTextLines = [];
       queryRawTranslationLines = [];
+      if (contents.length === 2) contents.shift();
     }
   }
 
@@ -789,7 +790,14 @@ const translate = async function translateContentInTextarea(controller = new Abo
     }
 
     if (controller.signal.aborted) return;
-    if ($activeTranslator.val() === Translators.VIETPHRASE && targetLanguage === 'vi' && $artificialIntelligenceSelect.val() !== 'none') currentTranslator.result = await polishTranslation($activeTranslator.val(), text, currentTranslator.result, true);
+
+    if ($activeTranslator.val() === Translators.VIETPHRASE && targetLanguage === 'vi' && $artificialIntelligenceSelect.val() !== 'none') {
+      const polishTranslation = await polishTranslation($activeTranslator.val(), text, currentTranslator.result, true);
+      if (controller.signal.aborted) return;
+      currentTranslator.result = polishTranslation;
+    }
+
+    if (controller.signal.aborted) return;
     $resultTextarea.html(buildResult(text, currentTranslator.result, $activeTranslator.val()));
     $resultTextarea.find('p > i').on('dblclick', function onClick() {
       const range = document.createRange();
