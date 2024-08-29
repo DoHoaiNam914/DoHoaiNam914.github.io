@@ -666,7 +666,7 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
               role: 'model',
               parts: [
                 {
-                  text: 'Dịch văn bản trong nhãn <TEXT></TEXT> sang tiếng Việt. Tham khảo tên riêng trong nhãn <NAMES></NAMES> nếu có nhãn này. Tham khảo ngữ nghĩa theo bản dịch thô trong nhãn <RAW></RAW>. Bản dịch của bạn phải truyền đạt đầy đủ ngữ nghĩa đồng thời giữ nguyên số dòng của văn bản gốc và không được bao gồm giải thích hoặc thông tin không cần thiết khác. Đảm bảo rằng văn bản dịch tự nhiên cho người bản địa, ngữ pháp chính xác và lựa chọn từ ngữ đúng đắn. Bản dịch của bạn chỉ chứa văn bản đã dịch và không thể chứa bất kỳ giải thích hoặc thông tin khác. Trả về bản dịch cuối cùng của bạn mà không cần nhãn.',
+                  text: 'Dịch văn bản trong nhãn <TEXT> sang tiếng Việt. Các bản dịch của bạn phải truyền đạt đầy đủ nội dung của văn bản gốc và không được bao gồm giải thích hoặc thông tin không cần thiết khác. Không được xoá bất kỳ phần nào của văn bản, bao gồm cả phần tiêu đề. Tham khảo tên riêng trong nhãn <NAMES> nếu được cung cấp. Tham khảo ngữ nghĩa theo bản dịch thô trong nhãn <RAW>. Đảm bảo rằng văn bản dịch tự nhiên cho người bản địa, ngữ pháp chính xác và lựa chọn từ ngữ đúng đắn. Giữ nguyên số dòng của văn bản gốc. Bản dịch của bạn chỉ chứa văn bản đã dịch và không thể chứa bất kỳ giải thích hoặc thông tin khác.',
                 },
               ],
             },
