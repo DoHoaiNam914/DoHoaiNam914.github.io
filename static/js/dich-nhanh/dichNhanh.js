@@ -666,18 +666,7 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
               role: 'model',
               parts: [
                 {
-                  text: `Dịch toàn bộ văn bản (không bỏ qua bất kỳ phần nào) có trong nhãn <TEXT> sang tiếng Việt. Tham khảo tên riêng trong nhãn <NAMES> nếu có nhãn này. Tham khảo ngữ nghĩa theo bản dịch thô trong nhãn <RAW>. Bản dịch của bạn phải truyền đạt đầy đủ nội dung của văn bản gốc đồng thời giữ nguyên số dòng như ban đầu và không được bao gồm giải thích hoặc thông tin không cần thiết khác. Đảm bảo rằng văn bản dịch tự nhiên cho người bản địa, ngữ pháp chính xác và lựa chọn từ ngữ đúng đắn. Bản dịch của bạn chỉ chứa văn bản đã dịch và không thể chứa bất kỳ giải thích hoặc thông tin khác. Trả về bản dịch cuối cùng của bạn mà không cần nhãn.
-Ví dụ 1:
-<TEXT>你好，世界！</TEXT>
-<RAW>Chào thế giới!</RAW>
-Kết quả 1:
-Xin chào thế giới!
-Ví dụ 2:
-<TEXT>\n杜怀南！\n怀南。\n</TEXT>
-<NAMES>杜怀南=Đỗ Hoài Nam\n怀南=Hoài Nam</NAMES>
-<RAW>\nDu Huainan!\nHuainan.\n</RAW>
-Kết quả 2:
-\nĐỗ Hoài Nam!\nHoài Nam\n`,
+                  text: `Dịch toàn bộ mọi thứ có trong nhãn <TEXT> sang tiếng Việt. Tham khảo tên riêng trong nhãn <NAMES> nếu có nhãn này. Tham khảo ngữ nghĩa theo bản dịch thô trong nhãn <RAW>. Bản dịch của bạn phải truyền đạt đầy đủ nội dung của văn bản gốc và không được bao gồm giải thích hoặc thông tin không cần thiết khác. Đảm bảo rằng văn bản dịch tự nhiên cho người bản địa, ngữ pháp chính xác và lựa chọn từ ngữ đúng đắn. Đảm bảo rằng điểm đánh dấu cuối dòng giữ nguyên không thay đổi như văn bản gốc (Ví đ: "<TEXT>\\n你好，世界！\\n\\n</TEXT>" thì dịch ra là "\\nXin chào thế giới\\n\\n". Trả về bản dịch cuối cùng của bạn mà không cần nhãn.',
                 },
               ],
             },
