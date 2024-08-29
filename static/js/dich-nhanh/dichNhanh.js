@@ -710,7 +710,7 @@ ${translator === Translators.VIETPHRASE && nameEnabled && name.length > 0 ? `<NA
   }
 
   await Promise.all(responses.map(([__, second]) => second));
-  return responses.map(([first, second]) => second.responseJSON.candidates[0].content.parts[0].text.replace(/\n+$/, '').concat(first.match(/\n*$/)[0])).join('\n');
+  return responses.map(([first, second]) => [first, second.responseJSON.candidates[0].content.parts[0].text]).map(([first, second]) => ([...second.replace(/\s+$/, '').matchAll(/\n\n/g)].length > [...first.replace(/\s+$/, '').matchAll(/\n\n/g)].length ? second.replaceAll('\n\n', '\n') : second).replace(/\s+$/, '').concat(first.match(/\s*$/)[0])).join('\n');
 };
 
 const buildResult = function buildResultContentForTextarea(text, result, activeTranslator) {
