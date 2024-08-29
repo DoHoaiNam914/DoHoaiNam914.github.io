@@ -646,7 +646,7 @@ const loadLangSelectOptions = function loadLanguageListByTranslatorToHtmlOptions
 };
 
 const polishTranslation = async function polishTranslationWithArtificialIntelligence(translator, text, rawTranslation, nameEnabled) {
-  const MAX_CONTENT_LENGTH_PER_REQUEST = 8192 - 4096;
+  const MAX_CONTENT_LENGTH_PER_REQUEST = 390;
   const name = Object.entries(glossary.namePhu);
   const textLines = text.split('\n');
   const rawTranslationLines = rawTranslation.split('\n');
@@ -655,11 +655,11 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
   const contents = [];
   const responses = [];
 
-  while (textLines.length > 0 && [...queryRawTranslationLines, rawTranslationLines[0]].join('\n').length <= MAX_CONTENT_LENGTH_PER_REQUEST) {
+  while (textLines.length > 0 && [...queryTextLines, textLines[0]].join('\n').length <= MAX_CONTENT_LENGTH_PER_REQUEST) {
     queryTextLines.push(textLines.shift());
     queryRawTranslationLines.push(rawTranslationLines.shift());
 
-    if (textLines.length === 0 || [...queryRawTranslationLines, rawTranslationLines[0]].join('\n').length > MAX_CONTENT_LENGTH_PER_REQUEST) {
+    if (textLines.length === 0 || [...queryTextLines, textLines[0]].join('\n').length > MAX_CONTENT_LENGTH_PER_REQUEST) {
       contents.push({
         role: 'user',
         parts: [
