@@ -666,7 +666,7 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
               role: 'model',
               parts: [
                 {
-                  text: `Dịch văn bản trong nhãn <TEXT></TEXT> sang tiếng Việt. Tham khảo tên riêng trong nhãn <NAMES></NAMES> nếu có nhãn này. Tham khảo ngữ nghĩa theo bản dịch thô trong nhãn <RAW></RAW>. Bản dịch của bạn phải truyền đạt đầy đủ nội dung đồng thời giữ nguyên cấu trúc ${queryTextLines.length} dòng của văn bản gốc và không được bao gồm giải thích hoặc thông tin không cần thiết khác. Đảm bảo rằng văn bản dịch tự nhiên cho người bản địa, ngữ pháp chính xác và lựa chọn từ ngữ đúng đắn. Bản dịch của bạn chỉ chứa văn bản đã dịch và không thể chứa bất kỳ giải thích hoặc thông tin khác. Trả về bản dịch cuối cùng của bạn mà không cần nhãn.`,
+                  text: `Dịch văn bản trong nhãn <TEXT></TEXT> sang tiếng Việt. Tham khảo tên riêng trong nhãn <NAMES></NAMES> nếu có nhãn này. Tham khảo ngữ nghĩa theo bản dịch thô trong nhãn <RAW></RAW>. Bản dịch của bạn phải truyền đạt đầy đủ đầu đề và nội dung đồng thời giữ nguyên cấu trúc ${queryTextLines.length} dòng của văn bản gốc và không được bao gồm giải thích hoặc thông tin không cần thiết khác. Đảm bảo rằng văn bản dịch tự nhiên cho người bản địa, ngữ pháp chính xác và lựa chọn từ ngữ đúng đắn. Bản dịch của bạn chỉ chứa văn bản đã dịch và không thể chứa bất kỳ giải thích hoặc thông tin khác. Trả về bản dịch cuối cùng của bạn mà không cần nhãn.`,
                 },
               ],
             },
@@ -710,7 +710,7 @@ ${translator === Translators.VIETPHRASE && nameEnabled && name.length > 0 ? `<NA
   }
 
   await Promise.all(responses.map(([__, second]) => second));
-  return responses.map(([first, second]) => [first, second.responseJSON.candidates[0].content.parts[0].text]).map(([first, second]) => ([...second.replace(/\s+$/, '').matchAll(/\n\n/g)].length > [...first.replace(/\s+$/, '').matchAll(/\n\n/g)].length ? second.replaceAll('\n\n', '\n') : second).replace(/\s+$/, '').concat(first.match(/\s*$/)[0])).join('\n');
+  return responses.map(([first, second]) => [first, second.responseJSON.candidates[0].content.parts[0].text]).map(([first, second]) => first.match(/^(?:\p{Zs}*\n)*/u)[0].concat(([...second.replace(/^\s+/, '').replace(/\s+$/, '').matchAll(/\n\n/g)].length > [...first.replace(/^\s+/, '').replace(/\s+$/, '').matchAll(/\n\n/g)].length ? second.replaceAll('\n\n', '\n') : second).replace(/^(?:\p{Zs}*\n)*/, '').replace(/\s+$/, '').concat(first.match(/\s*$/)[0]))).join('\n');
 };
 
 const buildResult = function buildResultContentForTextarea(text, result, activeTranslator) {
@@ -1009,7 +1009,7 @@ $translateButton.on('click', function onClick() {
     }
     default: {
       if ($inputTextarea.val().length === 0) break;
-      $resultTextarea.html($resultTextarea.html().split(/<br>|<\/p><p>/).map((element, index) => (index === 0 ? `Đang dịch...${element.slice(12).replaceAll(/./g, ' ')}` : element.replaceAll(/./g, ' '))).join('<br>'));
+      if ($resultTextarea.text().length === 0) $resultTextarea.text('Đang dịch...');
       $inputTextarea.hide();
       $resultTextarea.show();
       $copyButton.addClass('disabled');
