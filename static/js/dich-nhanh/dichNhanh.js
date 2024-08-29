@@ -664,7 +664,7 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
         role: 'user',
         parts: [
           {
-            text: `<TEXT>${queryTextLines.join('\n')}</TEXT>
+            text: `<TEXT>${queryTextLines.map((element) => element.replace(/^\s+/, '')).join('\n')}</TEXT>
 ${translator === Translators.VIETPHRASE && nameEnabled && name.length > 0 ? `
 <NAMES>${name.map((element) => element.join('=')).join('\n')}</NAMES>
 ` : '\n'}<RAW>${queryRawTranslationLines.join('\n')}</RAW>`,
@@ -715,7 +715,7 @@ ${translator === Translators.VIETPHRASE && nameEnabled && name.length > 0 ? `
   }
 
   await Promise.all(responses.map(([__, second]) => second));
-  return responses.map(([first, second]) => [first, second.responseJSON.candidates[0].content.parts[0].text.replaceAll(/<\/?TEXT>/g, '')]).map(([first, second]) => first.match(/^(?:\p{Zs}*\n)*/u)[0].concat(([...second.replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').matchAll(/\n\n/g)].length > [...first.replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').matchAll(/\n\n/g)].length ? second.replaceAll('\n\n', '\n') : second).replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').concat(first.match(/\s*$/)[0]))).join('\n');
+  return responses.map(([first, second]) => [first, second.responseJSON.candidates[0].content.parts[0].text.replaceAll(/<\/?TEXT>/g, '')]).map(([first, second]) => [first.split('\n'), first.match(/^(?:\p{Zs}*\n)*/u)[0].concat(([...second.replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').matchAll(/\n\n/g)].length > [...first.replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').matchAll(/\n\n/g)].length ? second.replaceAll('\n\n', '\n') : second).replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').concat(first.match(/\s*$/)[0])).split('\n')]).map(([first, second]) => first.some((element) => /^\s+/.test(element)) ? second.map((element, index) => first[index].match(/^\s*/)[0].concat(element)) : second).flat().join('\n');
 };
 
 const buildResult = function buildResultContentForTextarea(text, result, activeTranslator) {
