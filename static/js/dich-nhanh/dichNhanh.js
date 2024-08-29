@@ -673,7 +673,6 @@ ${translator === Translators.VIETPHRASE && nameEnabled && name.length > 0 ? `
       });
 
       responses.push([queryTextLines.join('\n'), $.ajax({
-        async: false,
         data: JSON.stringify({
           contents: [
             {
@@ -714,6 +713,7 @@ ${translator === Translators.VIETPHRASE && nameEnabled && name.length > 0 ? `
     }
   }
 
+  await Promise.all(responses.map(([__, second]) => second));
   return responses.map(([first, second]) => [first, second.responseJSON.candidates[0].content.parts[0].text]).map(([first, second]) => first.match(/^(?:\p{Zs}*\n)*/u)[0].concat(([...second.replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').matchAll(/\n\n/g)].length > [...first.replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').matchAll(/\n\n/g)].length ? second.replaceAll('\n\n', '\n') : second).replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').concat(first.match(/\s*$/)[0]))).join('\n');
 };
 
