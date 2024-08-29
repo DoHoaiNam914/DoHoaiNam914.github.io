@@ -731,6 +731,7 @@ const buildResult = function buildResultContentForTextarea(text, result, activeT
       } else if (activeTranslator === Translators.PAPAGO && resultLines[i].replace(/^\s+/, '').trimEnd().length === 0 && originalLines[i + lostLineFixedNumber].replace(/^\s+/, '').trimEnd().length > 0) {
         lostLineFixedNumber -= 1;
       } else {
+        if (resultLines[i] == null) resultLines[i] = '';
         const paragraph = document.createElement('p');
         const translation = document.createTextNode(resultLines[i]);
         const lineBreak = document.createElement('br');
