@@ -665,9 +665,8 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
         parts: [
           {
             text: `<TEXT>${queryTextLines.map((element) => element.replace(/^\s+/, '')).join('\n')}</TEXT>
-${translator === Translators.VIETPHRASE && nameEnabled && name.length > 0 ? `
-<NAMES>${name.map((element) => element.join('=')).join('\n')}</NAMES>
-` : '\n'}<RAW>${queryRawTranslationLines.join('\n')}</RAW>`,
+${translator === Translators.VIETPHRASE && nameEnabled && name.length > 0 ? `<NAMES>${name.map((element) => element.join('=')).join('\n')}</NAMES>
+` : '\n'}<RAW>${queryRawTranslationLines.map((element) => element.replace(/^\s+/, '')).join('\n')}</RAW>`,
           },
         ],
       });
@@ -1016,6 +1015,7 @@ $translateButton.on('click', function onClick() {
       $copyButton.data('target', `#${$inputTextarea.attr('id')}`);
       $copyButton.removeClass('disabled');
       $pasteButton.removeClass('disabled');
+      $glossaryManagerButton.removeClass('disabled');
       $(this).text('Dịch');
       $retranslateButton.addClass('disabled');
       break;
@@ -1026,8 +1026,9 @@ $translateButton.on('click', function onClick() {
       $inputTextarea.hide();
       $resultTextarea.show();
       $copyButton.addClass('disabled');
-      $pasteButton.addClass('disabled');
       $copyButton.data('target', `#${$resultTextarea.attr('id')}`);
+      $pasteButton.addClass('disabled');
+      $glossaryManagerButton.addClass('disabled');
       translationController = new AbortController();
       $(this).text('Huỷ');
       translate(translationController).finally(() => {
@@ -1041,6 +1042,7 @@ $translateButton.on('click', function onClick() {
         $copyButton.removeClass('disabled');
         $pasteButton.removeClass('disabled');
         $retranslateButton.removeClass('disabled');
+        $glossaryManagerButton.removeClass('disabled');
       });
       break;
     }
