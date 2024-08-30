@@ -1869,7 +1869,7 @@ $translateEntryButtons.click(async function onClick() {
     let translator = translators[activeTranslator];
     const targetLanguage = $(this).data('lang');
     const nameEnabled = $(this).data('name-enabled');
-    const artificialIntelligenceEnabled = $(this).data('artificial-intelligence-enabled');
+    const artificialIntelligence = $(this).data('artificial-intelligence');
 
     try {
       switch (activeTranslator) {
@@ -1916,7 +1916,6 @@ $translateEntryButtons.click(async function onClick() {
             autocapitalize: false,
             nameEnabled: nameEnabled != null && Boolean(nameEnabled) !== false,
           });
-          if (artificialIntelligenceEnabled != null && Boolean(artificialIntelligenceEnabled) !== false && targetLanguage === 'vi') translator.result = await polishTranslation(activeTranslator, text, translator.result, nameEnabled != null && Boolean(nameEnabled) !== false);
           break;
         }
         default: {
@@ -1926,6 +1925,8 @@ $translateEntryButtons.click(async function onClick() {
         }
       }
 
+      if (targetLanguage === 'vi') translator.result = await polishTranslation(artificialIntelligence ?? 'none', activeTranslator, text, translator.result, nameEnabled != null && Boolean(nameEnabled) !== false);
+
       if (!translator.controller.signal.aborted) {
         $targetEntryTextarea.val(translator.result.replace(/^\s+/, '')).trigger('input');
 
@@ -1933,7 +1934,7 @@ $translateEntryButtons.click(async function onClick() {
           $translateEntryButton.data('translator', activeTranslator);
           $translateEntryButton.data('lang', targetLanguage);
           $translateEntryButton.data('name-enabled', nameEnabled != null ? Boolean(nameEnabled) !== false : null);
-          $translateEntryButton.data('artificial-intelligence-enabled', artificialIntelligenceEnabled != null ? Boolean(artificialIntelligenceEnabled) !== false : null);
+          $translateEntryButton.data('artificial-intelligence-enabled', artificialIntelligence ?? null);
         }
       }
     } catch (error) {
@@ -1967,5 +1968,5 @@ $removeButton.on('click', () => {
 });
 
 $translateEntryButton.on('click', function onClick() {
-  if ($(this).data('translator') != null) $translateEntryButtons.filter(`[data-translator="${$(this).data('translator')}"][data-lang="${$(this).data('lang')}"]${$(this).data('name-enabled') != null ? `[data-name-enabled="${$(this).data('name-enabled')}"]` : ''}${$(this).data('artificial-intelligence-enabled') != null ? `[data-artificial-intelligence-enabled="${$(this).data('artificial-intelligence-enabled')}"]` : ''}`).click();
+  if ($(this).data('translator') != null) $translateEntryButtons.filter(`[data-translator="${$(this).data('translator')}"][data-lang="${$(this).data('lang')}"]${$(this).data('name-enabled') != null ? `[data-name-enabled="${$(this).data('name-enabled')}"]` : ''}${$(this).data('artificial-intelligence') != null ? `[data-artificial-intelligence="${$(this).data('artificial-intelligence')}"]` : ''}`).click();
 });
