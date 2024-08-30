@@ -646,7 +646,7 @@ const loadLangSelectOptions = function loadLanguageListByTranslatorToHtmlOptions
 };
 
 const polishTranslation = async function polishTranslationWithArtificialIntelligence(artificialIntelligence, translator, text, rawTranslation, nameEnabled) {
-  const MAX_CONTENT_LENGTH_PER_RESPONSE = 1844;
+  const MAX_CONTENT_LENGTH_PER_RESPONSE = 2048 - 1265;
   const name = Object.entries(glossary.namePhu);
   const textLines = text.split('\n');
   const rawTranslationLines = rawTranslation.split('\n');
@@ -657,11 +657,11 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
   let result = rawTranslation;
 
   if (artificialIntelligence !== 'none') {
-    while (textLines.length > 0 && [...queryRawTranslationLines, rawTranslationLines[0]].join('\n').length <= MAX_CONTENT_LENGTH_PER_RESPONSE) {
+    while (textLines.length > 0 && [...queryRawTranslationLines, rawTranslationLines[0]].join('').trim().replaceAll(/\s+/g, '').length <= MAX_CONTENT_LENGTH_PER_RESPONSE) {
       queryTextLines.push(textLines.shift());
       queryRawTranslationLines.push(rawTranslationLines.shift());
 
-      if (textLines.length === 0 || [...queryRawTranslationLines, rawTranslationLines[0]].join('\n').length > MAX_CONTENT_LENGTH_PER_RESPONSE) {
+      if (textLines.length === 0 || [...queryRawTranslationLines, rawTranslationLines[0]].join('').trim().replaceAll(/\s+/g, '').length > MAX_CONTENT_LENGTH_PER_RESPONSE) {
         switch (artificialIntelligence) {
           case 'gemini-1.5-flash': {
             messages.push({
@@ -670,7 +670,7 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
                 {
                   text: `<TEXT>${queryTextLines.map((element) => element.replace(/^\s+/, '')).join('\n')}</TEXT>
 ${translator === Translators.VIETPHRASE && nameEnabled && name.length > 0 ? `<NAMES>${name.map((element) => element.join('=')).join('\n')}</NAMES>
-` : '\n'}<RAW>${queryRawTranslationLines.map((element) => element.replace(/^\s+/, '')).join('\n')}</RAW>`,
+` : ''}<RAW>${queryRawTranslationLines.map((element) => element.replace(/^\s+/, '')).join('\n')}</RAW>`,
                 },
               ],
             });
@@ -718,7 +718,7 @@ ${translator === Translators.VIETPHRASE && nameEnabled && name.length > 0 ? `<NA
 
         queryTextLines = [];
         queryRawTranslationLines = [];
-        if (messages.length === 2) messages.shift();
+        if (messages.length === 6) messages.shift();
       }
     }
 
