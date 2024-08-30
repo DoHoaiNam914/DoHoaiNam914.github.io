@@ -1,6 +1,6 @@
 'use strict';
 
-/* global bootstrap, BaiduTranslate, cjkv, CocCocEduTranslate, DeepLTranslate, GoogleTranslate, hanData, Papago, MicrosoftTranslator, newAccentObject, Utils, Vietphrase, WebnovelTranslate */
+/* global bootstrap, BaiduTranslate, cjkv, CocCocEduTranslate, DeepLTranslate, encode, GoogleTranslate, hanData, Papago, MicrosoftTranslator, newAccentObject, Utils, Vietphrase, WebnovelTranslate */
 
 const $addButton = $('#add-button');
 const $addDeLeZhaoSwitch = $('#add-de-le-zhao-switch');
@@ -646,7 +646,7 @@ const loadLangSelectOptions = function loadLanguageListByTranslatorToHtmlOptions
 };
 
 const polishTranslation = async function polishTranslationWithArtificialIntelligence(artificialIntelligence, translator, text, rawTranslation, nameEnabled) {
-  const MAX_CONTENT_LENGTH_PER_RESPONSE = 2048 - 1265;
+  const MAX_TOKENS_PER_RESPONSE = 8192;
   const name = Object.entries(glossary.namePhu);
   const textLines = text.split('\n');
   const rawTranslationLines = rawTranslation.split('\n');
@@ -657,11 +657,11 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
   let result = rawTranslation;
 
   if (artificialIntelligence !== 'none') {
-    while (textLines.length > 0 && [...queryRawTranslationLines, rawTranslationLines[0]].join('').trim().replaceAll(/\s+/g, '').length <= MAX_CONTENT_LENGTH_PER_RESPONSE) {
+    while (textLines.length > 0 && encode([...queryRawTranslationLines, rawTranslationLines[0]].join('\n')).length <= MAX_CONTENT_LENGTH_PER_RESPONSE) {
       queryTextLines.push(textLines.shift());
       queryRawTranslationLines.push(rawTranslationLines.shift());
 
-      if (textLines.length === 0 || [...queryRawTranslationLines, rawTranslationLines[0]].join('').trim().replaceAll(/\s+/g, '').length > MAX_CONTENT_LENGTH_PER_RESPONSE) {
+      if (textLines.length === 0 || encode([...queryRawTranslationLines, rawTranslationLines[0]].join('\n')).length > MAX_CONTENT_LENGTH_PER_RESPONSE) {
         switch (artificialIntelligence) {
           case 'gemini-1.5-flash': {
             messages.push({
@@ -1925,7 +1925,7 @@ $translateEntryButtons.click(async function onClick() {
         }
       }
 
-      if (targetLanguage === 'vi') translator.result = await polishTranslation(artificialIntelligence ?? 'none', activeTranslator, text, translator.result, nameEnabled != null && Boolean(nameEnabled) !== false);
+      if (targetLanguage.startsWith('vi')) translator.result = await polishTranslation(artificialIntelligence ?? 'none', activeTranslator, text, translator.result, nameEnabled != null && Boolean(nameEnabled) !== false);
 
       if (!translator.controller.signal.aborted) {
         $targetEntryTextarea.val(translator.result.replace(/^\s+/, '')).trigger('input');
