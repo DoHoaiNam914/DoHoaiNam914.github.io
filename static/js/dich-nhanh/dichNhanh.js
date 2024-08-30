@@ -646,7 +646,7 @@ const loadLangSelectOptions = function loadLanguageListByTranslatorToHtmlOptions
 };
 
 const polishTranslation = async function polishTranslationWithArtificialIntelligence(artificialIntelligence, translator, text, rawTranslation, nameEnabled) {
-  const MAX_TOKENS_PER_RESPONSE = 8192;
+  const MAX_TOKENS_PER_RESPONSE = (8192 / 4) / 2;
   const name = Object.entries(glossary.namePhu);
   const textLines = text.split('\n');
   const rawTranslationLines = rawTranslation.split('\n');
@@ -657,11 +657,11 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
   let result = rawTranslation;
 
   if (artificialIntelligence !== 'none') {
-    while (textLines.length > 0 && encode([...queryRawTranslationLines, rawTranslationLines[0]].join('\n')).length <= MAX_CONTENT_LENGTH_PER_RESPONSE) {
+    while (textLines.length > 0 && ([...queryRawTranslationLines, rawTranslationLines[0]].join('')).trim().replaceAll(/\s+/g, '').length <= MAX_CONTENT_LENGTH_PER_RESPONSE) {
       queryTextLines.push(textLines.shift());
       queryRawTranslationLines.push(rawTranslationLines.shift());
 
-      if (textLines.length === 0 || encode([...queryRawTranslationLines, rawTranslationLines[0]].join('\n')).length > MAX_CONTENT_LENGTH_PER_RESPONSE) {
+      if (textLines.length === 0 || ([...queryRawTranslationLines, rawTranslationLines[0]].join('')).trim().replaceAll(/\s+/g, '').length > MAX_CONTENT_LENGTH_PER_RESPONSE) {
         switch (artificialIntelligence) {
           case 'gemini-1.5-flash': {
             messages.push({
