@@ -646,7 +646,7 @@ const loadLangSelectOptions = function loadLanguageListByTranslatorToHtmlOptions
 };
 
 const polishTranslation = async function polishTranslationWithArtificialIntelligence(artificialIntelligence, translator, text, rawTranslation, nameEnabled) {
-  const MAX_CONTENT_LENGTH_PER_REQUEST = 3072;
+  const MAX_CONTENT_LENGTH_PER_REQUEST = 1844;
   const name = Object.entries(glossary.namePhu);
   const textLines = text.split('\n');
   const rawTranslationLines = rawTranslation.split('\n');
