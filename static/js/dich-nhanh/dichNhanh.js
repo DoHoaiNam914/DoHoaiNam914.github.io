@@ -654,7 +654,7 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
   let queryRawTranslationLines = [];
   const messages = [];
   const responses = [];
-  result = rawTranslation;
+  let result = rawTranslation;
 
   if (artificialIntelligence !== 'none') {
     while (textLines.length > 0 && [...queryRawTranslationLines, rawTranslationLines[0]].join('\n').length <= MAX_CONTENT_LENGTH_PER_REQUEST) {
@@ -802,7 +802,7 @@ const translate = async function translateContentInTextarea(controller = new Abo
 
     if (controller.signal.aborted) return;
 
-    if ([Translators.COCCOC_EDU_TRANSLATE, Translators.WEBNOVEL_TRANSLATE].every((element) => $activeTranslator.val() !== element) && targetLanguage === 'vi') {
+    if ([Translators.COCCOC_EDU_TRANSLATE, Translators.DEEPL_TRANSLATE].every((element) => $activeTranslator.val() !== element) && targetLanguage.startsWith('vi')) {
       const polishResult = (await polishTranslation($artificialIntelligenceSelect.val(), $activeTranslator.val(), text, currentTranslator.result, true)) ?? currentTranslator.result;
       if (controller.signal.aborted) return;
       currentTranslator.result = polishResult;
