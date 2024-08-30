@@ -645,76 +645,88 @@ const loadLangSelectOptions = function loadLanguageListByTranslatorToHtmlOptions
   $targetLanguageSelect.val(targetLanguage);
 };
 
-const polishTranslation = async function polishTranslationWithArtificialIntelligence(translator, text, rawTranslation, nameEnabled) {
+const polishTranslation = async function polishTranslationWithArtificialIntelligence(artificialIntelligence, translator, text, rawTranslation, nameEnabled) {
   const MAX_CONTENT_LENGTH_PER_REQUEST = 3072;
   const name = Object.entries(glossary.namePhu);
   const textLines = text.split('\n');
   const rawTranslationLines = rawTranslation.split('\n');
   let queryTextLines = [];
   let queryRawTranslationLines = [];
-  const contents = [];
+  const messages = [];
   const responses = [];
+  result = rawTranslation;
 
-  while (textLines.length > 0 && [...queryRawTranslationLines, rawTranslationLines[0]].join('\n').length <= MAX_CONTENT_LENGTH_PER_REQUEST) {
-    queryTextLines.push(textLines.shift());
-    queryRawTranslationLines.push(rawTranslationLines.shift());
+  if (artificialIntelligence !== 'none') {
+    while (textLines.length > 0 && [...queryRawTranslationLines, rawTranslationLines[0]].join('\n').length <= MAX_CONTENT_LENGTH_PER_REQUEST) {
+      queryTextLines.push(textLines.shift());
+      queryRawTranslationLines.push(rawTranslationLines.shift());
 
-    if (textLines.length === 0 || [...queryRawTranslationLines, rawTranslationLines[0]].join('\n').length > MAX_CONTENT_LENGTH_PER_REQUEST) {
-      contents.push({
-        role: 'user',
-        parts: [
-          {
-            text: `<TEXT>${queryTextLines.map((element) => element.replace(/^\s+/, '')).join('\n')}</TEXT>
-${translator === Translators.VIETPHRASE && nameEnabled && name.length > 0 ? `<NAMES>${name.map((element) => element.join('=')).join('\n')}</NAMES>
-` : '\n'}<RAW>${queryRawTranslationLines.map((element) => element.replace(/^\s+/, '')).join('\n')}</RAW>`,
-          },
-        ],
-      });
-
-      responses.push([queryTextLines.join('\n'), $.ajax({
-        data: JSON.stringify({
-          contents: [
-            {
-              role: 'model',
+      if (textLines.length === 0 || [...queryRawTranslationLines, rawTranslationLines[0]].join('\n').length > MAX_CONTENT_LENGTH_PER_REQUEST) {
+        switch (artificialIntelligence) {
+          case 'gemini-1.5-flash': {
+            messages.push({
+              role: 'user',
               parts: [
                 {
-                  text: 'Dịch văn bản (bao gồm cả đầu đề) trong nhãn <TEXT> sang tiếng Việt. Tham khảo tên riêng trong nhãn <NAMES> nếu có nhãn này. Tham khảo ngữ nghĩa theo bản dịch thô trong nhãn <RAW>. Các bản dịch của bạn phải truyền đạt đầy đủ nội dung của văn bản gốc. Không được gộp hay cắt dòng mà phải giữ nguyên số dòng như văn bản gốc. Đảm bảo rằng văn bản dịch tự nhiên cho người bản địa, ngữ pháp chính xác và lựa chọn từ ngữ đúng đắn. Bản dịch của bạn chỉ chứa văn bản đã dịch không bao gồm nhãn và không cần định dạng kiểu chữ.',
+                  text: `<TEXT>${queryTextLines.map((element) => element.replace(/^\s+/, '')).join('\n')}</TEXT>
+${translator === Translators.VIETPHRASE && nameEnabled && name.length > 0 ? `<NAMES>${name.map((element) => element.join('=')).join('\n')}</NAMES>
+` : '\n'}<RAW>${queryRawTranslationLines.map((element) => element.replace(/^\s+/, '')).join('\n')}</RAW>`,
                 },
               ],
-            },
-            ...contents,
-          ],
-          safetySettings: [
-            {
-              category: 'HARM_CATEGORY_HARASSMENT',
-              threshold: 'BLOCK_NONE',
-            },
-            {
-              category: 'HARM_CATEGORY_HATE_SPEECH',
-              threshold: 'BLOCK_NONE',
-            },
-            {
-              category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT',
-              threshold: 'BLOCK_NONE',
-            },
-            {
-              category: 'HARM_CATEGORY_DANGEROUS_CONTENT',
-              threshold: 'BLOCK_NONE',
-            },
-          ],
-        }),
-        headers: { 'Content-Type': 'application/json' },
-        method: 'POST',
-        url: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=AIzaSyD5e2NPw_Vmgr_eUXtNX4tGMYl0lmsQQW4',
-      })]);
-      queryTextLines = [];
-      queryRawTranslationLines = [];
-      if (contents.length === 2) contents.shift();
+            });
+
+            responses.push([queryTextLines.join('\n'), $.ajax({
+              data: JSON.stringify({
+                contents: [
+                  {
+                    role: 'model',
+                    parts: [
+                      {
+                        text: 'Dịch văn bản (bao gồm cả đầu đề) trong nhãn <TEXT> sang tiếng Việt. Tham khảo tên riêng trong nhãn <NAMES> nếu có nhãn này. Tham khảo ngữ nghĩa theo bản dịch thô trong nhãn <RAW>. Các bản dịch của bạn phải truyền đạt đầy đủ nội dung của văn bản gốc. Không được gộp hay cắt dòng mà phải giữ nguyên số dòng như văn bản gốc. Đảm bảo rằng văn bản dịch tự nhiên cho người bản địa, ngữ pháp chính xác và lựa chọn từ ngữ đúng đắn. Bản dịch của bạn chỉ chứa văn bản đã dịch không bao gồm nhãn và không cần định dạng kiểu chữ.',
+                      },
+                    ],
+                  },
+                  ...messages,
+                ],
+                safetySettings: [
+                  {
+                    category: 'HARM_CATEGORY_HARASSMENT',
+                    threshold: 'BLOCK_NONE',
+                  },
+                  {
+                    category: 'HARM_CATEGORY_HATE_SPEECH',
+                    threshold: 'BLOCK_NONE',
+                  },
+                  {
+                    category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT',
+                    threshold: 'BLOCK_NONE',
+                  },
+                  {
+                    category: 'HARM_CATEGORY_DANGEROUS_CONTENT',
+                    threshold: 'BLOCK_NONE',
+                  },
+                ],
+              }),
+              headers: { 'Content-Type': 'application/json' },
+              method: 'POST',
+              url: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=AIzaSyD5e2NPw_Vmgr_eUXtNX4tGMYl0lmsQQW4',
+            })]);
+            break;
+          }
+          // no default
+        }
+
+        queryTextLines = [];
+        queryRawTranslationLines = [];
+        if (messages.length === 2) messages.shift();
+      }
     }
+
+    await Promise.all(responses.map(([__, second]) => second));
+    result = responses.map(([first, second]) => [first, second.responseJSON.candidates[0].content.parts[0].text.replaceAll(/<\/?TEXT>/g, '')]).map(([first, second]) => [first.split('\n'), first.match(/^(?:\p{Zs}*\n)*/u)[0].concat(([...second.replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').matchAll(/\n\n/g)].length > [...first.replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').matchAll(/\n\n/g)].length ? second.replaceAll('\n\n', '\n') : second).replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').concat(first.match(/\s*$/)[0])).split('\n')]).map(([first, second]) => first.some((element) => /^\s+/.test(element)) ? second.map((element, index) => first[index].match(/^\s*/)[0].concat(element)) : second).flat().join('\n');
   }
 
-  await Promise.all(responses.map(([__, second]) => second));
-  return responses.map(([first, second]) => [first, second.responseJSON.candidates[0].content.parts[0].text.replaceAll(/<\/?TEXT>/g, '')]).map(([first, second]) => [first.split('\n'), first.match(/^(?:\p{Zs}*\n)*/u)[0].concat(([...second.replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').matchAll(/\n\n/g)].length > [...first.replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').matchAll(/\n\n/g)].length ? second.replaceAll('\n\n', '\n') : second).replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').concat(first.match(/\s*$/)[0])).split('\n')]).map(([first, second]) => first.some((element) => /^\s+/.test(element)) ? second.map((element, index) => first[index].match(/^\s*/)[0].concat(element)) : second).flat().join('\n');
+  return result;
 };
 
 const buildResult = function buildResultContentForTextarea(text, result, activeTranslator) {
@@ -790,8 +802,8 @@ const translate = async function translateContentInTextarea(controller = new Abo
 
     if (controller.signal.aborted) return;
 
-    if ($activeTranslator.val() === Translators.VIETPHRASE && targetLanguage === 'vi' && $artificialIntelligenceSelect.val() !== 'none') {
-      const polishResult = (await polishTranslation($activeTranslator.val(), text, currentTranslator.result, true)) ?? currentTranslator.result;
+    if ([Translators.COCCOC_EDU_TRANSLATE, Translators.WEBNOVEL_TRANSLATE].every((element) => $activeTranslator.val() !== element) && targetLanguage === 'vi') {
+      const polishResult = (await polishTranslation($artificialIntelligenceSelect.val(), $activeTranslator.val(), text, currentTranslator.result, true)) ?? currentTranslator.result;
       if (controller.signal.aborted) return;
       currentTranslator.result = polishResult;
     }
