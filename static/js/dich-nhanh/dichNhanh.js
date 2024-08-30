@@ -657,11 +657,11 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
   let result = rawTranslation;
 
   if (artificialIntelligence !== 'none') {
-    while (textLines.length > 0 && ([...queryRawTranslationLines, rawTranslationLines[0]].join('')).trim().replaceAll(/\s+/g, '').length <= MAX_CONTENT_LENGTH_PER_RESPONSE) {
+    while (textLines.length > 0 && ([...queryRawTranslationLines, rawTranslationLines[0]].join('')).trim().replaceAll(/\s+/g, '').length <= MAX_TOKENS_PER_RESPONSE) {
       queryTextLines.push(textLines.shift());
       queryRawTranslationLines.push(rawTranslationLines.shift());
 
-      if (textLines.length === 0 || ([...queryRawTranslationLines, rawTranslationLines[0]].join('')).trim().replaceAll(/\s+/g, '').length > MAX_CONTENT_LENGTH_PER_RESPONSE) {
+      if (textLines.length === 0 || ([...queryRawTranslationLines, rawTranslationLines[0]].join('')).trim().replaceAll(/\s+/g, '').length > MAX_TOKENS_PER_RESPONSE) {
         switch (artificialIntelligence) {
           case 'gemini-1.5-flash': {
             messages.push({
