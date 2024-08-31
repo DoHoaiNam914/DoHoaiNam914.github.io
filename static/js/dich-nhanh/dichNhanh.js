@@ -675,7 +675,7 @@ ${translator === Translators.VIETPHRASE && nameEnabled && name.length > 0 ? `<NA
               ],
             });
 
-            responses.push([queryTextLines.join('\n'), $.ajax({
+            responses.push([queryRawTranslationLines.join('\n'), $.ajax({
               data: JSON.stringify({
                 contents: [
                   {
