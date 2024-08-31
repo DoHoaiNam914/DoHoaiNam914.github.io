@@ -1963,7 +1963,7 @@ $removeButton.on('click', () => {
   if (!Object.hasOwn(glossary[$glossaryListSelect.val()], $sourceEntryInput.val()) || !window.confirm('Bạn có muốn xoá cụm từ này chứ?')) return;
   delete glossary[$glossaryListSelect.val()][$sourceEntryInput.val()];
   saveGlossary();
-  $translateEntryButtons.filter(`[data-translator="vietphrase"][data-lang="${$glossaryListSelect.val() === 'vietPhrase' ? 'vi' : 'SinoVietnamese'}"]`).click();
+  $sourceEntryInput.trigger('input');
   $removeButton.addClass('disabled');
 });
 
