@@ -646,7 +646,7 @@ const loadLangSelectOptions = function loadLanguageListByTranslatorToHtmlOptions
 };
 
 const polishTranslation = async function polishTranslationWithArtificialIntelligence(artificialIntelligence, translator, text, rawTranslation, nameEnabled) {
-  const MAX_TOKENS_PER_RESPONSE = ((8192 / 4) / 2) * 0.8;
+  const MAX_TOKENS_PER_RESPONSE = 8192 / 9;
   const name = Object.entries(glossary.namePhu);
   const textLines = text.split('\n');
   const rawTranslationLines = rawTranslation.split('\n');
@@ -657,11 +657,11 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
   let result = rawTranslation;
 
   if (artificialIntelligence !== 'none') {
-    while (textLines.length > 0 && ([...queryRawTranslationLines, rawTranslationLines[0]].join('')).trim().replaceAll(/\s+/g, '').length <= MAX_TOKENS_PER_RESPONSE) {
+    while (textLines.length > 0 && encode([...queryRawTranslationLines, rawTranslationLines[0]].join('\n')).length <= MAX_TOKENS_PER_RESPONSE) {
       queryTextLines.push(textLines.shift());
       queryRawTranslationLines.push(rawTranslationLines.shift());
 
-      if (textLines.length === 0 || ([...queryRawTranslationLines, rawTranslationLines[0]].join('')).trim().replaceAll(/\s+/g, '').length > MAX_TOKENS_PER_RESPONSE) {
+      if (textLines.length === 0 || encode([...queryRawTranslationLines, rawTranslationLines[0]].join('\n')).length > MAX_TOKENS_PER_RESPONSE) {
         switch (artificialIntelligence) {
           case 'gemini-1.5-flash': {
             messages.push({
@@ -985,7 +985,7 @@ $(document).ready(async () => {
     let hanvietList = (await $.ajax({
       method: 'GET',
       url: '/static/datasource/lacviet/lv-[zh-vi].tsv',
-    })).split('\n').map((element) => (!element.startsWith('#') ? element.split('\t') : element)).filter((a) => typeof a !== 'string' && /^\p{Script=Hani}+$/u.test(a[0]) && [...a[1].replaceAll('<span class="east"> </span>', ' ').matchAll(/Hán Việt: *[^<]*/g)].filter(([first]) => first.replace(/Hán Việt: */, '').length > 0).length > 0).map(([a, second]) => [a, [...second.replaceAll('<span class="east"> </span>', ' ').matchAll(/Hán Việt: *[^<]*/g)].filter(([b]) => b.replace(/Hán Việt: */, '').length > 0).flat()[0].replace(/Hán Việt: */, '').normalize().split(/[,;] */)[0].trim()]);
+    })).split('\n').map((element) => (!element.startsWith('#') ? element.split('\t') : element)).filter((a) => typeof a !== 'string' && /^\p{Script=Hani}+$/u.test(a[0]) && [...a[1].replaceAll('<span class="east"> </span>', ' ').matchAll(/Hán Việt: *[^<]*/g)].filter(([first]) => first.replace(/Hán Việt: */, '').length > 0).length > 0).map(([a, second]) => [a, [...second.replaceAll('<span class="east"> </span>', ' ').matchAll(/Hán Việt: *[^<]*/g)].filter(([b]) => b.replace(/Hán Việt: */, '').length > 0).flat()[0].replace(/Hán Việt: */, '').normalize().split(/[,;] */).toReversed()[0].trim()]);
     hanvietList = hanvietList.concat(cjkv.nam.map(([first, second]) => [first, second.normalize().split(',').filter((element) => element.length > 0)[0].trimStart().replaceAll(Utils.getTrieRegexPatternFromWords(Object.keys(newAccentObject)), (match) => newAccentObject[match] ?? match)]));
     hanvietList = hanvietList.filter(function filter(element) {
       return element.join('=').length > 0 && element.length === 2 && !this[element[0]] && (this[element[0]] = 1);
