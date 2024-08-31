@@ -718,7 +718,7 @@ ${translator === Translators.VIETPHRASE && nameEnabled && name.length > 0 ? `<NA
 
         queryTextLines = [];
         queryRawTranslationLines = [];
-        if (messages.length === 6) messages.shift();
+        if (messages.length === 2) messages.shift();
       }
     }
 
@@ -1934,7 +1934,7 @@ $translateEntryButtons.click(async function onClick() {
           $translateEntryButton.data('translator', activeTranslator);
           $translateEntryButton.data('lang', targetLanguage);
           $translateEntryButton.data('name-enabled', nameEnabled != null ? Boolean(nameEnabled) !== false : null);
-          $translateEntryButton.data('artificial-intelligence-enabled', artificialIntelligence ?? null);
+          $translateEntryButton.data('artificial-intelligence', artificialIntelligence ?? null);
         }
       }
     } catch (error) {
