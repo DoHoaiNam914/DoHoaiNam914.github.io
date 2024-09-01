@@ -803,7 +803,7 @@ const translate = async function translateContentInTextarea(controller = new Abo
 
     if (controller.signal.aborted) return;
 
-    if ([Translators.COCCOC_EDU_TRANSLATE, Translators.DEEPL_TRANSLATE, TRANSLATORS.WEBNOVEL_TRANSLATE].every((element) => $activeTranslator.val() !== element) && targetLanguage.startsWith('vi')) {
+    if ([Translators.COCCOC_EDU_TRANSLATE, Translators.DEEPL_TRANSLATE, Translators.WEBNOVEL_TRANSLATE].every((element) => $activeTranslator.val() !== element) && targetLanguage.startsWith('vi')) {
       const polishResult = (await polishTranslation($artificialIntelligenceSelect.val(), $activeTranslator.val(), text, currentTranslator.result, true)) ?? currentTranslator.result;
       if (controller.signal.aborted) return;
       currentTranslator.result = polishResult;
@@ -1926,7 +1926,7 @@ $translateEntryButtons.click(async function onClick() {
         }
       }
 
-      if ([Translators.COCCOC_EDU_TRANSLATE, Translators.DEEPL_TRANSLATE, TRANSLATORS.WEBNOVEL_TRANSLATE].every((element) => activeTranslator !== element) && targetLanguage.startsWith('vi')) translator.result = await polishTranslation(artificialIntelligence ?? 'none', activeTranslator, text, translator.result, nameEnabled != null && Boolean(nameEnabled) !== false);
+      if ([Translators.COCCOC_EDU_TRANSLATE, Translators.DEEPL_TRANSLATE, Translators.WEBNOVEL_TRANSLATE].every((element) => activeTranslator !== element) && targetLanguage.startsWith('vi')) translator.result = await polishTranslation(artificialIntelligence ?? 'none', activeTranslator, text, translator.result, nameEnabled != null && Boolean(nameEnabled) !== false);
 
       if (!translator.controller.signal.aborted) {
         $targetEntryTextarea.val(translator.result.replace(/^\s+/, '')).trigger('input');
