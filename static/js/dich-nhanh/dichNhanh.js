@@ -117,8 +117,9 @@ const Translators = {
   COCCOC_EDU_TRANSLATE: 'coccocEduTranslate',
   DEEPL_TRANSLATE: 'deeplTranslate',
   GOOGLE_TRANSLATE: 'googleTranslate',
-  PAPAGO: 'papago',
+  LINGVANEX_TRANSLATOR: 'lingvanexTranslator',
   MICROSOFT_TRANSLATOR: 'microsoftTranslator',
+  PAPAGO: 'papago',
   VIETPHRASE: 'vietphrase',
   WEBNOVEL_TRANSLATE: 'webnovelTranslate',
 };
@@ -646,7 +647,7 @@ const loadLangSelectOptions = function loadLanguageListByTranslatorToHtmlOptions
 };
 
 const polishTranslation = async function polishTranslationWithArtificialIntelligence(artificialIntelligence, translator, text, rawTranslation, nameEnabled) {
-  const MAX_TOKENS_PER_RESPONSE = 8192 / 10;
+  const MAX_TOKENS_PER_RESPONSE = 8192;
   const name = Object.entries(glossary.namePhu);
   const textLines = text.split('\n');
   const rawTranslationLines = rawTranslation.split('\n');
@@ -656,12 +657,12 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
   const responses = [];
   let result = rawTranslation;
 
-  if (artificialIntelligence !== 'none' && text.trim().replaceAll(/\s+/g, '').length <= 3072) {
-    while (textLines.length > 0 && encode([...queryRawTranslationLines, rawTranslationLines[0]].join('\n')).length <= MAX_TOKENS_PER_RESPONSE) {
+  if (artificialIntelligence !== 'none') {
+    while (textLines.length > 0) {
       queryTextLines.push(textLines.shift());
       queryRawTranslationLines.push(rawTranslationLines.shift());
 
-      if (textLines.length === 0 || encode([...queryRawTranslationLines, rawTranslationLines[0]].join('\n')).length > MAX_TOKENS_PER_RESPONSE) {
+      if (textLines.length === 0 || (encode([...queryRawTranslationLines, rawTranslationLines[0]].join('\n')).length / 3) > MAX_TOKENS_PER_RESPONSE) {
         switch (artificialIntelligence) {
           case 'gemini-1.5-flash': {
             messages.push({
@@ -802,7 +803,7 @@ const translate = async function translateContentInTextarea(controller = new Abo
 
     if (controller.signal.aborted) return;
 
-    if ([Translators.COCCOC_EDU_TRANSLATE, Translators.DEEPL_TRANSLATE].every((element) => $activeTranslator.val() !== element) && targetLanguage.startsWith('vi')) {
+    if ([Translators.COCCOC_EDU_TRANSLATE, Translators.DEEPL_TRANSLATE, TRANSLATOR.WEBNOVEL_TRANSLATE].every((element) => $activeTranslator.val() !== element) && targetLanguage.startsWith('vi')) {
       const polishResult = (await polishTranslation($artificialIntelligenceSelect.val(), $activeTranslator.val(), text, currentTranslator.result, true)) ?? currentTranslator.result;
       if (controller.signal.aborted) return;
       currentTranslator.result = polishResult;
@@ -1925,7 +1926,7 @@ $translateEntryButtons.click(async function onClick() {
         }
       }
 
-      if (targetLanguage.startsWith('vi')) translator.result = await polishTranslation(artificialIntelligence ?? 'none', activeTranslator, text, translator.result, nameEnabled != null && Boolean(nameEnabled) !== false);
+      if ([Translators.COCCOC_EDU_TRANSLATE, Translators.DEEPL_TRANSLATE, TRANSLATOR.WEBNOVEL_TRANSLATE].every((element) => activeTranslator !== element) && targetLanguage.startsWith('vi')) translator.result = await polishTranslation(artificialIntelligence ?? 'none', activeTranslator, text, translator.result, nameEnabled != null && Boolean(nameEnabled) !== false);
 
       if (!translator.controller.signal.aborted) {
         $targetEntryTextarea.val(translator.result.replace(/^\s+/, '')).trigger('input');

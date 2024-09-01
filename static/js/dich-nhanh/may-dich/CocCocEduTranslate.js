@@ -23,7 +23,7 @@ class CocCocEduTranslate extends Translator {
       let queryLines = [];
       const responses = [];
 
-      while (lines.length > 0 && [...queryLines, lines[0]].join('\n').length <= this.maxContentLengthPerRequest && (queryLines.length + 1) <= this.maxContentLinePerRequest) {
+      while (lines.length > 0) {
         queryLines.push(lines.shift());
 
         if (lines.length === 0 || [...queryLines, lines[0]].join('\n').length > this.maxContentLengthPerRequest || (queryLines.length + 1) > this.maxContentLinePerRequest) {

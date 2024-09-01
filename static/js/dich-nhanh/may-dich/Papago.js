@@ -79,7 +79,7 @@ class Papago extends Translator {
       let queryLines = [];
       const responses = [];
 
-      while (lines.length > 0 && [...queryLines, lines[0]].join('\n').length <= this.maxContentLengthPerRequest) {
+      while (lines.length > 0) {
         queryLines.push(lines.shift());
 
         if (lines.length === 0 || [...queryLines, lines[0]].join('\n').length > this.maxContentLengthPerRequest) {
