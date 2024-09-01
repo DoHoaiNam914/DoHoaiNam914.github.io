@@ -656,7 +656,7 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
   const responses = [];
   let result = rawTranslation;
 
-  if (artificialIntelligence !== 'none') {
+  if (artificialIntelligence !== 'none' && text.trim().replaceAll(/\s+/g, '').length <= 3072) {
     while (textLines.length > 0 && encode([...queryRawTranslationLines, rawTranslationLines[0]].join('\n')).length <= MAX_TOKENS_PER_RESPONSE) {
       queryTextLines.push(textLines.shift());
       queryRawTranslationLines.push(rawTranslationLines.shift());
