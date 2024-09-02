@@ -851,7 +851,7 @@ const translate = async function translateContentInTextarea(controller = new Abo
       $resultTextarea.append(paragraph);
     }
 
-    if (translators[$activeTranslator.val()] != null {
+    if (translators[$activeTranslator.val()] != null) {
       switch ($activeTranslator.val()) {
         case Translators.LINGVANEX: {
           translators[$activeTranslator.val()].fetchApiKey();
@@ -1984,7 +1984,7 @@ $translateEntryButtons.click(async function onClick() {
       $targetEntryTextarea.val(error);
       console.error(error);
 
-      if (translators[activeTranslator] != null {
+      if (translators[activeTranslator] != null) {
         switch (activeTranslator) {
           case Translators.LINGVANEX: {
             translators[activeTranslator].fetchApiKey();
