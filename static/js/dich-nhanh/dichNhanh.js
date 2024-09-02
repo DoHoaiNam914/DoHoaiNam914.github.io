@@ -643,7 +643,7 @@ const getTargetLangOptionList = function getTargetLanguageOptionListHtmlFromTran
       break;
     }
     default: {
-      GoogleTranslate.LANGUAGE_LIST.data.languages.forEach(({ language, name }) => {
+      GoogleTranslate.LANGUAGE_LIST.forEach(({ language, name }) => {
         if (!['en', 'ja', 'zh', 'zh-TW', 'vi'].includes(language)) return;
         const option = document.createElement('option');
         option.innerText = name;
