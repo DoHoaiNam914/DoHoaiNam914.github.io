@@ -9,7 +9,7 @@ class GoogleTranslate extends Translator {
     "languages": [
       ${`{
         "language": "auto",
-        "name": "Phát hiện ngôn ngữ",
+        "name": "Phát hiện ngôn ngữ"
       },`}
       {
         "language": "ar",

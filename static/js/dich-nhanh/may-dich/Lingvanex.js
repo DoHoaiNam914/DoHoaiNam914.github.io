@@ -6,7 +6,7 @@ class Lingvanex extends Translator {
   "result": [
     ${`{
       "full_code": "",
-      "codeName": "",
+      "codeName": ""
     },`}
     {
       "full_code": "af_ZA",

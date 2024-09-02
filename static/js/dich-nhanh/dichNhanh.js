@@ -1847,7 +1847,7 @@ $('.define-button').on('click', function onClick() {
           break;
         }
         case 'vdict': {
-          defineContent = encodeURIComponent(defineContent).replaceAll('%20', '+');
+          defineContent = encodeURIComponent(defineContent.replaceAll(' ', '+'));
           break;
         }
         // no default

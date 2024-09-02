@@ -755,6 +755,17 @@
                     <hr class="dropdown-divider">
                   </li>
                   <li>
+                    <button type="button" class="dropdown-item" data-bs-toggle="collapse" data-bs-target="#hanzi-define-collapse">Tra cứu chữ Hán</button>
+                    <div class="collapse" id="hanzi-define-collapse">
+                      <button type="button" class="dropdown-item collapse-item define-button" data-href="https://www.unicode.org/cgi-bin/GetUnihanData.pl?codepoint=%s" data-type="char">Unihan Database Lookup</button>
+                      <button type="button" class="dropdown-item collapse-item define-button" data-href="/dich-nhanh/tra-tu-dien.html?dictionary=thieuchuu&define=%s">Hán Việt Tự Điển Thiều Chửu</button>
+                      <button type="button" class="dropdown-item collapse-item define-button" data-href="https://nomfoundation.org/nom-tools/Nom-Lookup-Tool/Nom-Lookup-Tool?uiLang=vn&inputText=%s">Tra cứu chữ Nôm</button>
+                      <button type="button" class="dropdown-item collapse-item define-button" data-href="https://m.vdict.com/?word=%s&dict=8&searchaction=Lookup" data-type="vdict">VDict</button>
+                      <button type="button" class="dropdown-item collapse-item define-button" data-href="/dich-nhanh/tra-tu-dien.html?dictionary=td&define=%s">Từ Điển Hán Việt Trích Dẫn</button>
+                      <button type="button" class="dropdown-item collapse-item define-button" data-href="https://hvdic.thivien.net/whv/%s">Từ điển Hán Nôm</button>
+                    </div>
+                  </li>
+                  <li>
                     <button type="button" class="dropdown-item" data-bs-toggle="collapse" data-bs-target="#english-define-collapse">Tra cứu tiếng Anh</button>
                     <div class="collapse" id="english-define-collapse">
                       <button type="button" class="dropdown-item collapse-item define-button" data-href="/dich-nhanh/tra-tu-dien.html?dictionary=lac-viet&dict=A-V&define=%s">Từ điển Lạc Việt</button>
@@ -769,10 +780,6 @@
                     <div class="collapse" id="chinese-define-collapse">
                       <button type="button" class="dropdown-item collapse-item define-button" data-href="/dich-nhanh/tra-tu-dien.html?dictionary=lac-viet&dict=T-V&define=%s">Từ điển Lạc Việt</button>
                       <button type="button" class="dropdown-item collapse-item define-button" data-href="https://hanzii.net/search/word/%s?hl=vi">Hanzii</button>
-                      <button type="button" class="dropdown-item collapse-item define-button" data-href="https://www.unicode.org/cgi-bin/GetUnihanData.pl?codepoint=%s" data-type="char">Unihan Database Lookup</button>
-                      <button type="button" class="dropdown-item collapse-item define-button" data-href="/dich-nhanh/tra-tu-dien.html?dictionary=thieuchuu&define=%s">Hán Việt Tự Điển Thiều Chửu</button>
-                      <button type="button" class="dropdown-item collapse-item define-button" data-href="/dich-nhanh/tra-tu-dien.html?dictionary=td&define=%s">Từ Điển Hán Việt Trích Dẫn</button>
-                      <button type="button" class="dropdown-item collapse-item define-button" data-href="https://hvdic.thivien.net/whv/%s">Từ điển Hán Nôm</button>
                       <button type="button" class="dropdown-item collapse-item define-button" data-href="https://www.mdbg.net/chinese/dictionary?page=worddict&wdqb=%s">CC-CEDICT</button>
                       <button type="button" class="dropdown-item collapse-item define-button" data-href="https://english.dict.naver.com/english-chinese-dictionary/#/search?query=%s">NAVER Dictionary</button>
                       <button type="button" class="dropdown-item collapse-item define-button" data-href="https://dict.youdao.com/result?word=%s&lang=en">NetEase Youdao</button>
