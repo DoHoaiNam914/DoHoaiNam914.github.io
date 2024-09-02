@@ -117,7 +117,7 @@ const Translators = {
   COCCOC_EDU_TRANSLATE: 'coccocEduTranslate',
   DEEPL_TRANSLATE: 'deeplTranslate',
   GOOGLE_TRANSLATE: 'googleTranslate',
-  LINGVANEX_TRANSLATOR: 'lingvanexTranslator',
+  LINGVANEX: 'lingvanex',
   MICROSOFT_TRANSLATOR: 'microsoftTranslator',
   PAPAGO: 'papago',
   VIETPHRASE: 'vietphrase',
@@ -496,6 +496,16 @@ const getSourceLangOptionList = function getSourceLanguageOptionListHtmlFromTran
       });
       break;
     }
+    case Translators.LINGVANEX: {
+      Lingvanex.LANGUAGE_LIST.forEach(({ full_code, codeName }) => {
+        if (!['', 'zh-Hans_CN', 'zh-Hant_TW', 'en_AU', 'en_GB', 'en_US', 'ja_JP', 'vi_VN'].includes(language)) return;
+        const option = document.createElement('option');
+        option.innerText = codeName;
+        option.value = full_code;
+        sourceLanguageSelect.appendChild(option);
+      });
+      break;
+    }
     case Translators.MICROSOFT_TRANSLATOR: {
       Object.entries(MicrosoftTranslator.SOURCE_LANGUAGE_LIST).forEach(([languageCode, { name }]) => {
         if (!['auto-detect', 'en', 'ja', 'zh-Hans', 'zh-Hant', 'vi'].includes(languageCode)) return;
@@ -526,7 +536,7 @@ const getSourceLangOptionList = function getSourceLanguageOptionListHtmlFromTran
       break;
     }
     case Translators.WEBNOVEL_TRANSLATE: {
-      WebnovelTranslate.SOURCE_LANGUAGE_LIST.forEach(({ language, name }) => {
+      WebnovelTranslate.LANGUAGE_LIST.sourceLanguages.forEach(({ language, name }) => {
         if (!['auto', 'en', 'ja', 'zh-CN', 'vi'].includes(language)) return;
         const option = document.createElement('option');
         option.innerText = name;
@@ -536,7 +546,7 @@ const getSourceLangOptionList = function getSourceLanguageOptionListHtmlFromTran
       break;
     }
     default: {
-      GoogleTranslate.SOURCE_LANGUAGE_LIST.data.languages.forEach(({ language, name }) => {
+      GoogleTranslate.LANGUAGE_LIST.forEach(({ language, name }) => {
         if (!['auto', 'en', 'ja', 'zh', 'zh-TW', 'vi'].includes(language)) return;
         const option = document.createElement('option');
         option.innerText = name;
@@ -575,7 +585,7 @@ const getTargetLangOptionList = function getTargetLanguageOptionListHtmlFromTran
     }
     case Translators.DEEPL_TRANSLATE: {
       DeepLTranslate.TARGET_LANGUAGE_LIST.forEach(({ language, name }) => {
-        if (!['', 'EN-US', 'JA', 'ZH'].includes(language)) return;
+        if (!['EN-GB', 'EN-US', 'JA', 'ZH', 'ZH-HANS'].includes(language)) return;
         const option = document.createElement('option');
         option.innerText = name;
         option.value = language;
@@ -583,9 +593,19 @@ const getTargetLangOptionList = function getTargetLanguageOptionListHtmlFromTran
       });
       break;
     }
+    case Translators.LINGVANEX: {
+      Lingvanex.LANGUAGE_LIST.forEach(({ full_code, codeName }) => {
+        if (!['zh-Hans_CN', 'zh-Hant_TW', 'en_AU', 'en_GB', 'en_US', 'ja_JP', 'vi_VN'].includes(language)) return;
+        const option = document.createElement('option');
+        option.innerText = codeName;
+        option.value = full_code;
+        targetLanguageSelect.appendChild(option);
+      });
+      break;
+    }
     case Translators.MICROSOFT_TRANSLATOR: {
       Object.entries(MicrosoftTranslator.TARGET_LANGUAGE_LIST).forEach(([languageCode, { name }]) => {
-        if (!['auto-detect', 'en', 'ja', 'zh-Hans', 'zh-Hant', 'vi'].includes(languageCode)) return;
+        if (!['en', 'ja', 'zh-Hans', 'zh-Hant', 'vi'].includes(languageCode)) return;
         const option = document.createElement('option');
         option.innerText = name;
         option.value = languageCode;
@@ -613,8 +633,8 @@ const getTargetLangOptionList = function getTargetLanguageOptionListHtmlFromTran
       break;
     }
     case Translators.WEBNOVEL_TRANSLATE: {
-      WebnovelTranslate.TARGET_LANGUAGE_LIST.forEach(({ language, name }) => {
-        if (!['auto', 'en', 'ja', 'zh-CN', 'vi'].includes(language)) return;
+      WebnovelTranslate.LANGUAGE_LIST.targetLanguages.forEach(({ language, name }) => {
+        if (!['en', 'ja', 'zh-CN', 'vi'].includes(language)) return;
         const option = document.createElement('option');
         option.innerText = name;
         option.value = language;
@@ -623,8 +643,8 @@ const getTargetLangOptionList = function getTargetLanguageOptionListHtmlFromTran
       break;
     }
     default: {
-      GoogleTranslate.TARGET_LANGUAGE_LIST.data.languages.forEach(({ language, name }) => {
-        if (!['auto', 'en', 'ja', 'zh', 'zh-TW', 'vi'].includes(language)) return;
+      GoogleTranslate.LANGUAGE_LIST.data.languages.forEach(({ language, name }) => {
+        if (!['en', 'ja', 'zh', 'zh-TW', 'vi'].includes(language)) return;
         const option = document.createElement('option');
         option.innerText = name;
         option.value = language;
@@ -683,7 +703,7 @@ ${translator === Translators.VIETPHRASE && nameEnabled && name.length > 0 ? `<NA
                     role: 'model',
                     parts: [
                       {
-                        text: 'Bạn là dịch giả. Bạn sẽ dịch văn bản (không phân biệt là phần đầu đề hay phần thân) trong nhãn <TEXT> sang tiếng Việt. Tham khảo tên riêng trong nhãn <NAMES> nếu có nhãn này. Tham khảo ngữ nghĩa theo bản dịch thô trong nhãn <RAW>. Các bản dịch của bạn phải truyền đạt đầy đủ nội dung của văn bản gốc và không được bao gồm giải thích hoặc thông tin không cần thiết khác. Không được gộp hay cắt dòng mà phải giữ nguyên số dòng như văn bản gốc. Đảm bảo rằng văn bản dịch tự nhiên cho người bản địa, ngữ pháp chính xác và lựa chọn từ ngữ đúng đắn. Bản dịch của bạn chỉ chứa văn bản đã dịch và không thể chứa bất kỳ giải thích hoặc thông tin khác.',
+                        text: 'Bạn là dịch giả. Bạn sẽ dịch văn bản trong nhãn <TEXT> sang tiếng Việt. Tham khảo tên riêng trong nhãn <NAMES> nếu có nhãn này. Tham khảo ngữ nghĩa theo bản dịch thô trong nhãn <RAW>. Các bản dịch của bạn phải truyền đạt đầy đủ đầu đề và nội dung của văn bản gốc và không được bao gồm giải thích hoặc thông tin không cần thiết khác. Không được gộp hay cắt dòng mà phải giữ nguyên số dòng như văn bản gốc. Đảm bảo rằng văn bản dịch tự nhiên cho người bản địa, ngữ pháp chính xác và lựa chọn từ ngữ đúng đắn. Bản dịch của bạn chỉ chứa văn bản đã dịch và không thể chứa bất kỳ giải thích hoặc thông tin khác.',
                       },
                     ],
                   },
@@ -831,9 +851,23 @@ const translate = async function translateContentInTextarea(controller = new Abo
       $resultTextarea.append(paragraph);
     }
 
-    if ($activeTranslator.val() === Translators.MICROSOFT_TRANSLATOR) {
-      translators[$activeTranslator.val()].fetchUsage();
-      $activeTranslator.click();
+    if (translators[$activeTranslator.val()] != null {
+      switch ($activeTranslator.val()) {
+        case Translators.LINGVANEX: {
+          translators[$activeTranslator.val()].fetchApiKey();
+          break;
+        }
+        case Translators.MICROSOFT_TRANSLATOR: {
+          translators[$activeTranslator.val()].fetchData();
+          break;
+        }
+        case Translators.PAPAGO: {
+          translators[$activeTranslator.val()].fetchVersion();
+          break;
+        }
+      }
+      
+      currentTranslator = translators[$activeTranslator.val()];
     }
   }
 };
@@ -1292,6 +1326,10 @@ $translatorDropdown.find('.dropdown-item').click(function onClick() {
         DEEPL_AUTH_KEY_LIST.shift();
       }
 
+      break;
+    }
+    case Translators.LINGVANEX: {
+      if (currentTranslator == null) currentTranslator = new Lingvanex();
       break;
     }
     case Translators.MICROSOFT_TRANSLATOR: {
@@ -1895,6 +1933,10 @@ $translateEntryButtons.click(async function onClick() {
           if (translator == null) translator = new GoogleTranslate();
           break;
         }
+        case Translators.LINGVANEX: {
+          if (translator == null) translator = new Lingvanex();
+          break;
+        }
         case Translators.MICROSOFT_TRANSLATOR: {
           if (translator == null) translator = new MicrosoftTranslator($toneSelect.val());
           break;
@@ -1941,7 +1983,23 @@ $translateEntryButtons.click(async function onClick() {
     } catch (error) {
       $targetEntryTextarea.val(error);
       console.error(error);
-      if (activeTranslator === Translators.MICROSOFT_TRANSLATOR) translators[activeTranslator].fetchUsage();
+
+      if (translators[activeTranslator] != null {
+        switch (activeTranslator) {
+          case Translators.LINGVANEX: {
+            translators[activeTranslator].fetchApiKey();
+            break;
+          }
+          case Translators.MICROSOFT_TRANSLATOR: {
+            translators[activeTranslator].fetchData();
+            break;
+          }
+          case Translators.PAPAGO: {
+            translators[activeTranslator].fetchVersion();
+            break;
+          }
+        }
+      }
     }
 
     $sourceEntryInput.removeAttr('readonly');

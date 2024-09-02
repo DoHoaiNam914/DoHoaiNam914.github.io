@@ -4,7 +4,8 @@
 
 class WebnovelTranslate extends Translator {
   /** https://translate-pa.googleapis.com/v1/supportedLanguages?client=gtx&display_language=vi&key=AIzaSyDLEeFI5OtFBwYBIoK_jj5m32rZK5CkCXA */
-  static SOURCE_LANGUAGE_LIST = JSON.parse(`[
+  static LANGUAGE_LIST = JSON.parse(`{
+  "sourceLanguages": [
     {
       "language": "auto",
       "name": "Phát hiện ngôn ngữ"
@@ -977,9 +978,8 @@ class WebnovelTranslate extends Translator {
       "language": "zu",
       "name": "Zulu"
     }
-  ]`);
-
-  static TARGET_LANGUAGE_LIST = JSON.parse(`[
+  ],
+  "targetLanguages": [
     {
       "language": "ar",
       "name": "Ả Rập"
@@ -1952,7 +1952,8 @@ class WebnovelTranslate extends Translator {
       "language": "zu",
       "name": "Zulu"
     }
-  ]`);
+  ]
+}`);
 
   DefaultLanguage = {
     SOURCE_LANGUAGE: 'auto',
