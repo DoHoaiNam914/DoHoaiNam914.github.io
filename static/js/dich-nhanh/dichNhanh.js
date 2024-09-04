@@ -461,6 +461,7 @@ const glossary = {
 const translators = {};
 let currentTranslator = null;
 let translationController = null;
+let entryTranslationController = null;
 let autocompleteTimeout = null;
 
 const getSourceLangOptionList = function getSourceLanguageOptionListHtmlFromTranslator(translator) {
@@ -666,7 +667,7 @@ const loadLangSelectOptions = function loadLanguageListByTranslatorToHtmlOptions
   $targetLanguageSelect.val(targetLanguage);
 };
 
-const polishTranslation = async function polishTranslationWithArtificialIntelligence(artificialIntelligence, translator, text, rawTranslation, nameEnabled) {
+const polishTranslation = async function polishTranslationWithArtificialIntelligence(artificialIntelligence, text, rawTranslation, nameEnabled) {
   const MAX_TOKENS_PER_RESPONSE = 8192;
   const name = Object.entries(glossary.namePhu);
   const textLines = text.split('\n');
@@ -677,74 +678,79 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
   const responses = [];
   let result = rawTranslation;
 
-  if (artificialIntelligence !== 'none') {
-    while (textLines.length > 0) {
-      queryTextLines.push(textLines.shift());
-      queryRawTranslationLines.push(rawTranslationLines.shift());
+  try {
+    if (artificialIntelligence !== 'none') {
+      while (textLines.length > 0) {
+        queryTextLines.push(textLines.shift());
+        queryRawTranslationLines.push(rawTranslationLines.shift());
 
-      if (textLines.length === 0 || (encode([...queryRawTranslationLines, rawTranslationLines[0]].join('\n')).length / 3) > MAX_TOKENS_PER_RESPONSE) {
-        switch (artificialIntelligence) {
-          case 'gemini-1.5-flash': {
-            messages.push({
-              role: 'user',
-              parts: [
-                {
-                  text: `<TEXT>${queryTextLines.map((element) => element.replace(/^\s+/, '')).join('\n')}</TEXT>
-${translator === Translators.VIETPHRASE && nameEnabled && name.length > 0 ? `<NAMES>${name.map((element) => element.join('=')).join('\n')}</NAMES>
-` : ''}<RAW>${queryRawTranslationLines.map((element) => element.replace(/^\s+/, '')).join('\n')}</RAW>`,
-                },
-              ],
-            });
-
-            responses.push([queryRawTranslationLines.join('\n'), $.ajax({
-              data: JSON.stringify({
-                contents: [
+        if (textLines.length === 0 || (encode([...queryRawTranslationLines, rawTranslationLines[0]].join('\n')).length / 1.5) > MAX_TOKENS_PER_RESPONSE) {
+          switch (artificialIntelligence) {
+            case 'gemini-1.5-flash': {
+              messages.push({
+                role: 'user',
+                parts: [
                   {
-                    role: 'model',
-                    parts: [
-                      {
-                        text: 'Bạn là dịch giả. Bạn sẽ dịch văn bản (bất kể là đầu đề hay nội dung) trong nhãn <TEXT> sang tiếng Việt. Tham khảo tên riêng trong nhãn <NAMES> nếu có nhãn này. Tham khảo ngữ nghĩa theo bản dịch thô trong nhãn <RAW>. Các bản dịch của bạn phải truyền đạt đầy đủ đầu đề và nội dung của văn bản gốc và không được bao gồm giải thích hoặc thông tin không cần thiết khác. Không được gộp hay cắt dòng mà phải giữ nguyên số dòng như văn bản gốc. Đảm bảo rằng văn bản dịch tự nhiên cho người bản địa, ngữ pháp chính xác và lựa chọn từ ngữ đúng đắn. Bản dịch của bạn chỉ chứa văn bản đã dịch và không thể chứa bất kỳ giải thích hoặc thông tin khác.',
-                      },
-                    ],
-                  },
-                  ...messages,
-                ],
-                safetySettings: [
-                  {
-                    category: 'HARM_CATEGORY_HARASSMENT',
-                    threshold: 'BLOCK_NONE',
-                  },
-                  {
-                    category: 'HARM_CATEGORY_HATE_SPEECH',
-                    threshold: 'BLOCK_NONE',
-                  },
-                  {
-                    category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT',
-                    threshold: 'BLOCK_NONE',
-                  },
-                  {
-                    category: 'HARM_CATEGORY_DANGEROUS_CONTENT',
-                    threshold: 'BLOCK_NONE',
+                    text: `<TEXT>${queryTextLines.map((element) => element.replace(/^\s+/, '')).join('\n')}</TEXT>
+  ${nameEnabled && name.length > 0 ? `<NAMES>${name.map((element) => element.join('=')).join('\n')}</NAMES>
+  ` : ''}<RAW>${queryRawTranslationLines.map((element) => element.replace(/^\s+/, '')).join('\n')}</RAW>`,
                   },
                 ],
-              }),
-              headers: { 'Content-Type': 'application/json' },
-              method: 'POST',
-              url: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=AIzaSyD5e2NPw_Vmgr_eUXtNX4tGMYl0lmsQQW4',
-            })]);
-            break;
+              });
+
+              responses.push([queryRawTranslationLines.join('\n'), $.ajax({
+                data: JSON.stringify({
+                  contents: [
+                    {
+                      role: 'model',
+                      parts: [
+                        {
+                          text: 'Bạn là dịch giả. Bạn sẽ dịch văn bản (bất kể là đầu đề hay nội dung) trong nhãn <TEXT> sang tiếng Việt. Tham khảo tên riêng trong nhãn <NAMES> nếu có nhãn này. Tham khảo ngữ nghĩa theo bản dịch thô trong nhãn <RAW>. Các bản dịch của bạn phải truyền đạt đầy đủ đầu đề và nội dung của văn bản gốc và không được bao gồm giải thích hoặc thông tin không cần thiết khác. Không được gộp hay cắt dòng mà phải giữ nguyên số dòng như văn bản gốc. Đảm bảo rằng văn bản dịch tự nhiên cho người bản địa, ngữ pháp chính xác và lựa chọn từ ngữ đúng đắn. Bản dịch của bạn chỉ chứa văn bản đã dịch và không thể chứa bất kỳ giải thích hoặc thông tin khác.',
+                        },
+                      ],
+                    },
+                    ...messages,
+                  ],
+                  safetySettings: [
+                    {
+                      category: 'HARM_CATEGORY_HARASSMENT',
+                      threshold: 'BLOCK_NONE',
+                    },
+                    {
+                      category: 'HARM_CATEGORY_HATE_SPEECH',
+                      threshold: 'BLOCK_NONE',
+                    },
+                    {
+                      category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT',
+                      threshold: 'BLOCK_NONE',
+                    },
+                    {
+                      category: 'HARM_CATEGORY_DANGEROUS_CONTENT',
+                      threshold: 'BLOCK_NONE',
+                    },
+                  ],
+                }),
+                headers: { 'Content-Type': 'application/json' },
+                method: 'POST',
+                url: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=AIzaSyD5e2NPw_Vmgr_eUXtNX4tGMYl0lmsQQW4',
+              })]);
+              break;
+            }
+            // no default
           }
-          // no default
+
+          queryTextLines = [];
+          queryRawTranslationLines = [];
+          if (messages.length === 2) messages.shift();
         }
-
-        queryTextLines = [];
-        queryRawTranslationLines = [];
-        if (messages.length === 2) messages.shift();
       }
-    }
 
-    await Promise.all(responses.map(([__, second]) => second));
-    result = responses.map(([first, second]) => [first, second.responseJSON.candidates[0].content.parts[0].text.replaceAll(/<\/?TEXT>/g, '')]).map(([first, second]) => [first.split('\n'), first.match(/^(?:\p{Zs}*\n)*/u)[0].concat(([...second.replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').matchAll(/\n\n/g)].length > [...first.replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').matchAll(/\n\n/g)].length ? second.replaceAll('\n\n', '\n') : second).replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').concat(first.match(/\s*$/)[0])).split('\n')]).map(([first, second]) => first.some((element) => /^\s+/.test(element)) ? second.map((element, index) => first[index].match(/^\s*/)[0].concat(element)) : second).flat().join('\n');
+      await Promise.all(responses.map(([__, second]) => second));
+      result = responses.map(([first, second]) => [first, second.responseJSON.candidates[0].content.parts[0].text.replaceAll(/<\/?TEXT>/g, '')]).map(([first, second]) => [first.split('\n'), first.match(/^(?:\p{Zs}*\n)*/u)[0].concat(([...second.replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').matchAll(/\n\n/g)].length > [...first.replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').matchAll(/\n\n/g)].length ? second.replaceAll('\n\n', '\n') : second).replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').concat(first.match(/\s*$/)[0])).split('\n')]).map(([first, second]) => first.some((element) => /^\s+/.test(element)) ? second.map((element, index) => first[index].match(/^\s*/)[0].concat(element)) : second).flat().join('\n');
+    }
+  } catch (error) {
+    result = error;
+    throw error;
   }
 
   return result;
@@ -822,15 +828,16 @@ const translate = async function translateContentInTextarea(controller = new Abo
     }
 
     if (controller.signal.aborted) return;
+    $resultTextarea.html(buildResult(text, currentTranslator.result, $activeTranslator.val()));
 
     if ([Translators.COCCOC_EDU_TRANSLATE, Translators.DEEPL_TRANSLATE, Translators.WEBNOVEL_TRANSLATE].every((element) => $activeTranslator.val() !== element) && targetLanguage.startsWith('vi')) {
-      const polishResult = (await polishTranslation($artificialIntelligenceSelect.val(), $activeTranslator.val(), text, currentTranslator.result, true)) ?? currentTranslator.result;
+      const polishResult = (await polishTranslation($artificialIntelligenceSelect.val(), text, currentTranslator.result, true)) ?? currentTranslator.result;
       if (controller.signal.aborted) return;
       currentTranslator.result = polishResult;
+      $resultTextarea.html(buildResult(text, currentTranslator.result, $activeTranslator.val()));
     }
 
     if (controller.signal.aborted) return;
-    $resultTextarea.html(buildResult(text, currentTranslator.result, $activeTranslator.val()));
     $resultTextarea.find('p > i').on('dblclick', function onClick() {
       const range = document.createRange();
       const selection = window.getSelection();
@@ -1745,7 +1752,7 @@ $glossaryModal.on('shown.bs.modal', () => {
 
 $glossaryModal.on('hide.bs.modal', () => {
   $sourceEntryInput.autocomplete('disable');
-  if (translationController != null) translationController.abort();
+  if (entryTranslationController != null) entryTranslationController.abort();
   $sourceEntryInput.val(null).trigger('input');
   $addButton.addClass('disabled');
   $removeButton.addClass('disabled');
@@ -1901,7 +1908,7 @@ $translateEntryButtons.click(async function onClick() {
   const text = $sourceEntryInput.val();
 
   if ($translateButton.text() !== 'Huỷ' && text.length > 0) {
-    translationController = new AbortController();
+    entryTranslationController = new AbortController();
     $translateEntryButtons.addClass('disabled');
     $sourceEntryInput.attr('readonly', true);
     const activeTranslator = $(this).data('translator');
@@ -1962,13 +1969,13 @@ $translateEntryButtons.click(async function onClick() {
           break;
         }
         default: {
-          translator.controller = translationController;
+          translator.controller = entryTranslationController;
           await translator.translateText(text, targetLanguage);
           break;
         }
       }
 
-      if ([Translators.COCCOC_EDU_TRANSLATE, Translators.DEEPL_TRANSLATE, Translators.WEBNOVEL_TRANSLATE].every((element) => activeTranslator !== element) && targetLanguage.startsWith('vi')) translator.result = await polishTranslation(artificialIntelligence ?? 'none', activeTranslator, text, translator.result, nameEnabled != null && Boolean(nameEnabled) !== false);
+      if ([Translators.COCCOC_EDU_TRANSLATE, Translators.DEEPL_TRANSLATE, Translators.WEBNOVEL_TRANSLATE].every((element) => activeTranslator !== element) && targetLanguage.startsWith('vi')) translator.result = await polishTranslation(artificialIntelligence ?? 'none', text, translator.result, nameEnabled != null && Boolean(nameEnabled) !== false);
 
       if (!translator.controller.signal.aborted) {
         $targetEntryTextarea.val(translator.result.replace(/^\s+/, '')).trigger('input');
@@ -2004,7 +2011,7 @@ $translateEntryButtons.click(async function onClick() {
 
     $sourceEntryInput.removeAttr('readonly');
     $translateEntryButtons.removeClass('disabled');
-    translationController = null;
+    entryTranslationController = null;
   }
 });
 
