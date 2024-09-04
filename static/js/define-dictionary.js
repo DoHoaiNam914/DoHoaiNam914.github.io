@@ -66,11 +66,13 @@ $(document).ready(async () => {
           return !this[first] && (this[first] = 1);
         }, {}).forEach(async (a) => {
           await $.ajax({
+            cache: false,
             method: 'GET',
             url: `${Utils.CORS_PROXY}http://nguyendu.com.free.fr/hanviet/ajax.php?query=${encodeURIComponent(a)}&methode=normal`,
           }).done(async (b) => {
             b.split('|').map((c) => c.split(':')).filter((c) => c.length === 3).forEach(async ([first, second]) => {
               await $.ajax({
+                cache: false,
                 method: 'GET',
                 url: `${Utils.CORS_PROXY}http://nguyendu.com.free.fr/hanviet/hv_tim${first === 'Word' ? 'tukep_ndv.php?wordid' : 'chu_ndv.php?unichar'}=${second}`,
               }).done((d) => {

@@ -1069,7 +1069,6 @@ $translateButton.on('click', function onClick() {
       $copyButton.data('target', `#${$inputTextarea.attr('id')}`);
       $copyButton.removeClass('disabled');
       $pasteButton.removeClass('disabled');
-      $glossaryManagerButton.removeClass('disabled');
       $(this).text('Dịch');
       $retranslateButton.addClass('disabled');
       break;
@@ -1082,7 +1081,6 @@ $translateButton.on('click', function onClick() {
       $copyButton.addClass('disabled');
       $copyButton.data('target', `#${$resultTextarea.attr('id')}`);
       $pasteButton.addClass('disabled');
-      $glossaryManagerButton.addClass('disabled');
       translationController = new AbortController();
       $(this).text('Huỷ');
       translate(translationController).finally(() => {
@@ -1096,7 +1094,6 @@ $translateButton.on('click', function onClick() {
         $copyButton.removeClass('disabled');
         $pasteButton.removeClass('disabled');
         $retranslateButton.removeClass('disabled');
-        $glossaryManagerButton.removeClass('disabled');
       });
       break;
     }
