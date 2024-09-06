@@ -693,7 +693,7 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
                   {
                     text: `<TEXT>${queryTextLines.map((element) => element.replace(/^\s+/, '')).join('\n')}</TEXT>
   ${nameEnabled && name.length > 0 ? `<NAMES>${name.map((element) => element.join('=')).join('\n')}</NAMES>
-  ` : ''}<RAW>${queryRawTranslationLines.map((element) => element.replace(/^\s+/, '')).join('\n')}</RAW>`,
+  ` : ''}<RAW>${rawTranslation.split('\n').map((element) => element.replace(/^\s+/, '')).join('\n')}</RAW>`,
                   },
                 ],
               });
@@ -831,7 +831,7 @@ const translate = async function translateContentInTextarea(controller = new Abo
     $resultTextarea.html(buildResult(text, currentTranslator.result, $activeTranslator.val()));
 
     if ([Translators.COCCOC_EDU_TRANSLATE, Translators.DEEPL_TRANSLATE].every((element) => $activeTranslator.val() !== element) && targetLanguage.startsWith('vi')) {
-      const polishResult = (await polishTranslation($artificialIntelligenceSelect.val(), text, currentTranslator.result, true)) ?? currentTranslator.result;
+      const polishResult = (await polishTranslation($artificialIntelligenceSelect.val(), text, $activeTranslator.val() === Translators.WEBNOVEL_TRANSLATE ? currentTranslator.result.replaceAll('\n', '||||') : currentTranslator.result, true)) ?? currentTranslator.result;
       if (controller.signal.aborted) return;
       currentTranslator.result = polishResult;
       $resultTextarea.html(buildResult(text, currentTranslator.result, $activeTranslator.val()));
