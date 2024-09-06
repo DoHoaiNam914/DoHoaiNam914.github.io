@@ -676,7 +676,7 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
   let queryRawTranslationLines = [];
   const messages = [];
   const responses = [];
-  let result = rawTranslation;
+  let result = text
 
   try {
     if (artificialIntelligence !== 'none') {
@@ -934,6 +934,7 @@ const saveGlossary = function saveGlossaryToLocalStorage() {
         }
         default: {
           currentTranslator = new Vietphrase(addDeLeZhaoEnabled, multiplicationAlgorithm);
+          translators[activeTranslator] = currentTranslator;
           break;
         }
       }
@@ -1316,16 +1317,25 @@ $translatorDropdown.find('.dropdown-item').click(function onClick() {
 
   switch (activeTranslator) {
     case Translators.BAIDU_TRANSLATE: {
-      if (currentTranslator == null) currentTranslator = new BaiduTranslate();
+      if (currentTranslator == null) {
+        currentTranslator = new BaiduTranslate();
+        translators[activeTranslator] = currentTranslator;
+      }
+
       break;
     }
     case Translators.COCCOC_EDU_TRANSLATE: {
-      if (currentTranslator == null) currentTranslator = new CocCocEduTranslate();
+      if (currentTranslator == null) {
+        currentTranslator = new CocCocEduTranslate();
+        translators[activeTranslator] = currentTranslator;
+      }
+
       break;
     }
     case Translators.DEEPL_TRANSLATE: {
       while (currentTranslator == null || (currentTranslator instanceof DeepLTranslate && (currentTranslator.usage.character_limit - currentTranslator.usage.character_count) < 100000)) {
         currentTranslator = new DeepLTranslate(DEEPL_AUTH_KEY_LIST[0][0]);
+        translators[activeTranslator] = currentTranslator;
         if ((currentTranslator.usage.character_limit - currentTranslator.usage.character_count) >= 100000) break;
         DEEPL_AUTH_KEY_LIST.shift();
       }
@@ -1333,32 +1343,55 @@ $translatorDropdown.find('.dropdown-item').click(function onClick() {
       break;
     }
     case Translators.LINGVANEX: {
-      if (currentTranslator == null) currentTranslator = new Lingvanex();
+      if (currentTranslator == null) {
+        currentTranslator = new Lingvanex();
+        translators[activeTranslator] = currentTranslator;
+      }
+
       break;
     }
     case Translators.MICROSOFT_TRANSLATOR: {
-      if (currentTranslator == null) currentTranslator = new MicrosoftTranslator($toneSelect.val());
+      if (currentTranslator == null) {
+        currentTranslator = new MicrosoftTranslator($toneSelect.val());
+        translators[activeTranslator] = currentTranslator;
+      }
+
       break;
     }
     case Translators.PAPAGO: {
-      if (currentTranslator == null) currentTranslator = new Papago(UUID);
+      if (currentTranslator == null) {
+        currentTranslator = new Papago(UUID);
+        translators[activeTranslator] = currentTranslator;
+      }
+
       break;
     }
     case Translators.VIETPHRASE: {
-      if (currentTranslator == null) currentTranslator = new Vietphrase($addDeLeZhaoSwitch.prop('checked'), $multiplicationAlgorithmRadio.filter('[checked]').val());
+      if (currentTranslator == null) {
+        currentTranslator = new Vietphrase($addDeLeZhaoSwitch.prop('checked'), $multiplicationAlgorithmRadio.filter('[checked]').val());
+        translators[activeTranslator] = currentTranslator;
+      }
+
       break;
     }
     case Translators.WEBNOVEL_TRANSLATE: {
-      if (currentTranslator == null) currentTranslator = new WebnovelTranslate();
+      if (currentTranslator == null) {
+        currentTranslator = new WebnovelTranslate();
+        translators[activeTranslator] = currentTranslator;
+      }
+  
       break;
     }
     default: {
-      if (currentTranslator == null) currentTranslator = new GoogleTranslate();
+      if (currentTranslator == null) {
+        currentTranslator = new GoogleTranslate();
+        translators[activeTranslator] = currentTranslator;
+      }
+
       break;
     }
   }
 
-  translators[activeTranslator] = currentTranslator;
   loadLangSelectOptions(activeTranslator);
   $retranslateButton.click();
 });
@@ -1917,16 +1950,25 @@ $translateEntryButtons.click(async function onClick() {
     try {
       switch (activeTranslator) {
         case Translators.BAIDU_TRANSLATE: {
-          if (translator == null) translator = new BaiduTranslate();
+          if (translator == null) {
+            translator = new BaiduTranslate();
+            translators[activeTranslator] = translator;
+          }
+
           break;
         }
         case Translators.COCCOC_EDU_TRANSLATE: {
-          if (translator == null) translator = new CocCocEduTranslate();
+          if (translator == null) {
+            translator = new CocCocEduTranslate();
+            translators[activeTranslator] = translator;
+          }
+
           break;
         }
         case Translators.DEEPL_TRANSLATE: {
           while (translator == null || (translator instanceof DeepLTranslate && (translator.usage.character_limit - translator.usage.character_count) < 1000)) {
             translator = new DeepLTranslate(DEEPL_AUTH_KEY_LIST[0][0]);
+            translators[activeTranslator] = translator;
             if ((translator.usage.character_limit - translator.usage.character_count) >= 1000) break;
             DEEPL_AUTH_KEY_LIST.shift();
           }
@@ -1934,28 +1976,46 @@ $translateEntryButtons.click(async function onClick() {
           break;
         }
         case Translators.GOOGLE_TRANSLATE: {
-          if (translator == null) translator = new GoogleTranslate();
+          if (translator == null) {
+            translator = new GoogleTranslate();
+            translators[activeTranslator] = translator;
+          }
+
           break;
         }
         case Translators.LINGVANEX: {
-          if (translator == null) translator = new Lingvanex();
+          if (translator == null) {
+            translator = new Lingvanex();
+            translators[activeTranslator] = translator;
+          }
+
           break;
         }
         case Translators.MICROSOFT_TRANSLATOR: {
-          if (translator == null) translator = new MicrosoftTranslator($toneSelect.val());
+          if (translator == null) {
+            translator = new MicrosoftTranslator($toneSelect.val());
+            translators[activeTranslator] = translator;
+          }
+
           break;
         }
         case Translators.PAPAGO: {
-          if (translator == null) translator = new Papago(UUID);
+          if (translator == null) {
+            translator = new Papago(UUID);
+            translators[activeTranslator] = translator;
+          }
+
           break;
         }
         default: {
-          if (translator == null) translator = new Vietphrase($addDeLeZhaoSwitch.prop('checked'), $multiplicationAlgorithmRadio.filter('[checked]').val());
+          if (translator == null) {
+            translator = new Vietphrase($addDeLeZhaoSwitch.prop('checked'), $multiplicationAlgorithmRadio.filter('[checked]').val());
+            translators[activeTranslator] = translator;
+          }
+
           break;
         }
       }
-
-      translators[activeTranslator] = translator;
 
       switch (activeTranslator) {
         case Translators.VIETPHRASE: {
