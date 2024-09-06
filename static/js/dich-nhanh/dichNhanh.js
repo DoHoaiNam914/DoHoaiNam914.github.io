@@ -1,6 +1,6 @@
 'use strict';
 
-/* global bootstrap, BaiduTranslate, cjkv, CocCocEduTranslate, DeepLTranslate, encode, GoogleTranslate, hanData, Papago, MicrosoftTranslator, newAccentObject, Utils, Vietphrase, WebnovelTranslate */
+/* global bootstrap, BaiduTranslate, cjkv, CocCocEduTranslate, DeepLTranslate, encode, GoogleTranslate, hanData, Lingvanex, MicrosoftTranslator, newAccentObject, Papago, Utils, Vietphrase, WebnovelTranslate */
 
 const $addButton = $('#add-button');
 const $addDeLeZhaoSwitch = $('#add-de-le-zhao-switch');
@@ -498,10 +498,10 @@ const getSourceLangOptionList = function getSourceLanguageOptionListHtmlFromTran
       break;
     }
     case Translators.LINGVANEX: {
-      Lingvanex.LANGUAGE_LIST.forEach(({ full_code, codeName }) => {
+      Lingvanex.LANGUAGE_LIST.forEach(({ full_code, englishName }) => {
         if (!['', 'zh-Hans_CN', 'zh-Hant_TW', 'en_AU', 'en_GB', 'en_US', 'ja_JP', 'vi_VN'].includes(language)) return;
         const option = document.createElement('option');
-        option.innerText = codeName;
+        option.innerText = englishName;
         option.value = full_code;
         sourceLanguageSelect.appendChild(option);
       });
@@ -595,10 +595,10 @@ const getTargetLangOptionList = function getTargetLanguageOptionListHtmlFromTran
       break;
     }
     case Translators.LINGVANEX: {
-      Lingvanex.LANGUAGE_LIST.forEach(({ full_code, codeName }) => {
+      Lingvanex.LANGUAGE_LIST.forEach(({ full_code, englishName }) => {
         if (!['zh-Hans_CN', 'zh-Hant_TW', 'en_AU', 'en_GB', 'en_US', 'ja_JP', 'vi_VN'].includes(language)) return;
         const option = document.createElement('option');
-        option.innerText = codeName;
+        option.innerText = englishName;
         option.value = full_code;
         targetLanguageSelect.appendChild(option);
       });

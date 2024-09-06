@@ -1,11 +1,15 @@
 'use strict';
 
+/* global Translator, Utils */
+
 class Lingvanex extends Translator {
-  const LANGUAGE_LIST = JSON.parse(`{
+  /** https://api-b2b.backenster.com/b1/api/v3/getLanguages?platform=dp&code=vi_VN */
+  static LANGUAGE_LIST = JSON.parse(`{
   "err": null,
   "result": [
     ${`{
       "full_code": "",
+      "englishName": "",
       "codeName": ""
     },`}
     {
@@ -3583,14 +3587,13 @@ class Lingvanex extends Translator {
 
         if (lines.length === 0 || [...queryLines, lines[0]].join('\n').length > this.maxContentLengthPerRequest) {
           responses.push($.ajax({
-            data: `from=${sourceLanguage}&to=${targetLanguage}&text=${encodeURIComponent(queryLines.join('\n').replaceAll(' ', '+'))}&platform=dp`,
+            data: `from=${sourceLanguage}&to=${targetLanguage}&text=${encodeURIComponent(queryLines.join('\n'))}&platform=dp`,
             headers: {
-              'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
               Accept: 'application/json, text/javascript, */*; q=0.01',
               Authorization: this.authToken,
             },
             method: 'POST',
-            url: `${Utils.CORS_PROXY}https://api-b2b.backenster.com/b1/api/v3/translate`,
+            url: `https://api-b2b.backenster.com/b1/api/v3/translate/?client=site&feature=seo_text&lang_pair=en_te`,
           }));
           queryLines = [];
         }
@@ -3598,7 +3601,7 @@ class Lingvanex extends Translator {
 
       await Promise.all(responses);
       if (this.controller.signal.aborted) return text;
-      this.result = responses.map((element) => element.responseJSON.proxyapi[0].translations[0].text.split(/ ?\n ?/)).flat().join('\n');
+      this.result = responses.map((element) => element.responseJSON.result).flat().join('\n');
       super.translateText(text, targetLanguage, sourceLanguage);
     } catch (error) {
       console.error('Bản dịch lỗi:', error);
