@@ -499,7 +499,7 @@ const getSourceLangOptionList = function getSourceLanguageOptionListHtmlFromTran
     }
     case Translators.LINGVANEX: {
       Lingvanex.LANGUAGE_LIST.forEach(({ full_code, englishName }) => {
-        if (!['', 'zh-Hans_CN', 'zh-Hant_TW', 'en_AU', 'en_GB', 'en_US', 'ja_JP', 'vi_VN'].includes(language)) return;
+        if (!['', 'zh-Hans_CN', 'zh-Hant_TW', 'en_AU', 'en_GB', 'en_US', 'ja_JP', 'vi_VN'].includes(full_code)) return;
         const option = document.createElement('option');
         option.innerText = englishName;
         option.value = full_code;
@@ -596,7 +596,7 @@ const getTargetLangOptionList = function getTargetLanguageOptionListHtmlFromTran
     }
     case Translators.LINGVANEX: {
       Lingvanex.LANGUAGE_LIST.forEach(({ full_code, englishName }) => {
-        if (!['zh-Hans_CN', 'zh-Hant_TW', 'en_AU', 'en_GB', 'en_US', 'ja_JP', 'vi_VN'].includes(language)) return;
+        if (!['zh-Hans_CN', 'zh-Hant_TW', 'en_AU', 'en_GB', 'en_US', 'ja_JP', 'vi_VN'].includes(full_code)) return;
         const option = document.createElement('option');
         option.innerText = englishName;
         option.value = full_code;
