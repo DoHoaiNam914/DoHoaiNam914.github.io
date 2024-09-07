@@ -676,7 +676,7 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
   let queryRawTranslationLines = [];
   const messages = [];
   const responses = [];
-  let result = text
+  let result = rawTranslation;
 
   try {
     if (artificialIntelligence !== 'none') {
@@ -830,8 +830,8 @@ const translate = async function translateContentInTextarea(controller = new Abo
     if (controller.signal.aborted) return;
     $resultTextarea.html(buildResult(text, currentTranslator.result, $activeTranslator.val()));
 
-    if ([Translators.COCCOC_EDU_TRANSLATE, Translators.DEEPL_TRANSLATE].every((element) => $activeTranslator.val() !== element) && targetLanguage.startsWith('vi')) {
-      const polishResult = (await polishTranslation($artificialIntelligenceSelect.val(), text, $activeTranslator.val() === Translators.WEBNOVEL_TRANSLATE ? currentTranslator.result.replaceAll('\n', '||||') : currentTranslator.result, true)) ?? currentTranslator.result;
+    if ([Translators.DEEPL_TRANSLATE, Translators.WEBNOVEL_TRANSLATE].every((element) => $activeTranslator.val() !== element) && targetLanguage.startsWith('vi')) {
+      const polishResult = (await polishTranslation($artificialIntelligenceSelect.val(), text, currentTranslator.result, true)) ?? currentTranslator.result;
       if (controller.signal.aborted) return;
       currentTranslator.result = polishResult;
       $resultTextarea.html(buildResult(text, currentTranslator.result, $activeTranslator.val()));
