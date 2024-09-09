@@ -378,10 +378,11 @@ class Vietphrase extends Translator {
     let hanViet = SinoVietnameses.concat(glossary.hanViet).filter(function filter([first]) {
       return !this[first] && (this[first] = 1);
     }, {});
-    hanViet = SinoVietnameses.filter(([__, second]) => !/\p{Script_Extensions=Hani}/u.test(second)).map(([first, second]) => [first, second]).concat(SinoVietnameses.filter(([__, second]) => /\p{Script_Extensions=Hani}/u.test(second)).map(([first, second]) => [first, second.split(/(?:)/u).map((element) => Vietphrase.quickTranslate(element, hanViet)).join(' ')]), glossary.hanViet).filter(function filter([first]) {
+    hanViet = SinoVietnameses.filter(([__, second]) => !/\p{Script_Extensions=Hani}/u.test(second)).concat(glossary.hanViet);
+    hanViet = SinoVietnameses.filter(([__, second]) => /\p{Script_Extensions=Hani}/u.test(second)).map(([first, second]) => [first, second.split(/(?:)/u).map((element) => Vietphrase.quickTranslate(element, hanViet)).join(' ')]).concat(glossary.hanViet);
+    hanViet = hanViet.map(([first, second]) => [first, second.toLowerCase()]).filter(function filter([first]) {
       return !this[first] && (this[first] = 1);
     }, {});
-    hanViet = hanViet.map(([first, second]) => [first, second.toLowerCase()]);
 
     this.result = text;
 
