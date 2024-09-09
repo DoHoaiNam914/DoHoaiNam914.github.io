@@ -378,8 +378,8 @@ class Vietphrase extends Translator {
     let hanViet = SinoVietnameses.concat(glossary.hanViet).filter(function filter([first]) {
       return !this[first] && (this[first] = 1);
     }, {});
-    hanViet = SinoVietnameses.filter(([__, second]) => !/\p{Script_Extensions=Hani}/u.test(second)).concat(glossary.hanViet.map(([first,second]) => [first, second.split(',').map((element) => element.trimStart()).filter((element) => element.length > 0)[0]]);
-    hanViet = SinoVietnameses.filter(([__, second]) => /\p{Script_Extensions=Hani}/u.test(second)).map(([first, second]) => [first, second.split(/(?:)/u).map((element) => Vietphrase.quickTranslate(element, hanViet)).join(' ')]).concat(glossary.hanViet);
+    hanViet = SinoVietnameses.filter(([__, second]) => !/\p{Script_Extensions=Hani}/u.test(second)).concat(glossary.hanViet.map(([first,second]) => [first, second.split(',').map((element) => element.trimStart()).filter((element) => element.length > 0)[0]]));
+    hanViet = SinoVietnameses.filter(([__, second]) => /\p{Script_Extensions=Hani}/u.test(second)).map(([first, second]) => [first, second.split(/(?:)/u).map((element) => Vietphrase.quickTranslate(element, hanViet)).join(' ')]).concat(hanViet);
     hanViet = hanViet.map(([first, second]) => [first, second.toLowerCase()]).filter(function filter([first]) {
       return !this[first] && (this[first] = 1);
     }, {});
