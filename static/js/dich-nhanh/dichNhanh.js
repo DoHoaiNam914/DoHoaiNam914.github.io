@@ -1503,12 +1503,12 @@ $defaultVietPhraseFileSelect.change(async function onChange() {
         }
 
         if (intValue === 2) {
-          glossary.vietPhrase = glossary.quickTranslatorVietphraseForMergeFiles != null && glossary.quickTranslatorVietPhrase != null ? Object.fromEntries(glossary.quickTranslatorVietphraseForMergeFiles.concat(glossary.quickTranslatorVietPhrase, glossary.quickTranslatorHanViet.filter(([first]) => !Object.hasOwn(glossary.SinoVietnameses, first))).filter(function filter([first]) {
+          glossary.vietPhrase = glossary.quickTranslatorVietphraseForMergeFiles != null && glossary.quickTranslatorVietPhrase != null ? Object.fromEntries(glossary.quickTranslatorVietphraseForMergeFiles.concat(glossary.quickTranslatorVietPhrase).filter(function filter([first]) {
             return !this[first] && (this[first] = 1);
           }, {})) : {};
         } else {
           glossary.vietPhrase = {
-            ...Object.fromEntries(glossary.quickTranslatorVietPhrase.concat(glossary.quickTranslatorHanViet.filter(([first]) => !Object.hasOwn(glossary.SinoVietnameses, first))).filter(function filter([first]) {
+            ...Object.fromEntries(glossary.quickTranslatorVietPhrase.filter(function filter([first]) {
               return !this[first] && (this[first] = 1);
             }, {})),
           };
@@ -1606,7 +1606,7 @@ $defaultVietPhraseFileSelect.change(async function onChange() {
         }
 
         glossary.vietPhrase = {
-          ...Object.fromEntries(glossary.dataByThtgiangVietPhrase.concat(glossary.dataByThtgiangHanViet.filter(([first]) => !Object.hasOwn(glossary.SinoVietnameses, first))).filter(function filter([first]) {
+          ...Object.fromEntries(glossary.dataByThtgiangVietPhrase.filter(function filter([first]) {
             return !this[first] && (this[first] = 1);
           }, {})),
         };
@@ -1661,7 +1661,7 @@ $defaultVietPhraseFileSelect.change(async function onChange() {
         }
 
         glossary.vietPhrase = {
-          ...Object.fromEntries(glossary.ttvtranslateVietPhrase.concat(glossary.ttvtranslateHanViet.filter(([first]) => !Object.hasOwn(glossary.SinoVietnameses, first))).filter(function filter([first]) {
+          ...Object.fromEntries(glossary.ttvtranslateVietPhrase.filter(function filter([first]) {
             return !this[first] && (this[first] = 1);
           }, {})),
         };
@@ -1716,7 +1716,7 @@ $defaultVietPhraseFileSelect.change(async function onChange() {
         }
 
         glossary.vietPhrase = {
-          ...Object.fromEntries(glossary.translateVietPhrase.concat(glossary.translateHanViet.filter(([first]) => !Object.hasOwn(glossary.SinoVietnameses, first))).filter(function filter([first]) {
+          ...Object.fromEntries(glossary.translateVietPhrase.filter(function filter([first]) {
             return !this[first] && (this[first] = 1);
           }, {})),
         };
