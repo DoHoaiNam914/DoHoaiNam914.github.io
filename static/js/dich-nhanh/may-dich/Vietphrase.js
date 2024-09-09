@@ -378,7 +378,7 @@ class Vietphrase extends Translator {
     let hanViet = SinoVietnameses.concat(glossary.hanViet).filter(function filter([first]) {
       return !this[first] && (this[first] = 1);
     }, {});
-    hanViet = SinoVietnameses.filter(([__, second]) => !/\p{Script_Extensions=Hani}/u.test(second)).concat(glossary.hanViet);
+    hanViet = SinoVietnameses.filter(([__, second]) => !/\p{Script_Extensions=Hani}/u.test(second)).concat(glossary.hanViet.map(([first,second]) => [first, second.split(',').map((element) => element.trimStart()).filter((element) => element.length > 0)[0]]);
     hanViet = SinoVietnameses.filter(([__, second]) => /\p{Script_Extensions=Hani}/u.test(second)).map(([first, second]) => [first, second.split(/(?:)/u).map((element) => Vietphrase.quickTranslate(element, hanViet)).join(' ')]).concat(glossary.hanViet);
     hanViet = hanViet.map(([first, second]) => [first, second.toLowerCase()]).filter(function filter([first]) {
       return !this[first] && (this[first] = 1);
@@ -388,28 +388,28 @@ class Vietphrase extends Translator {
 
     switch (targetLanguage) {
       case 'simplified': {
-        this.result = Vietphrase.quickTranslate(text, glossary.simplified);
+        this.result = Vietphrase.quickTranslate(text, glossary.simplified.map(([first, second]) => [first, second.split(' ').filter((element) => element !== first)[0] ?? null]).filter(([__, second]) => second != null));
         break;
       }
       case 'traditional': {
-        this.result = Vietphrase.quickTranslate(text, glossary.traditional);
+        this.result = Vietphrase.quickTranslate(text, glossary.traditional.map(([first, second]) => [first, second.split(' ').filter((element) => element !== first)[0] ?? null]).filter(([__, second]) => second != null));
         break;
       }
       case 'pīnyīn':
       case 'pinyin': {
-        this.result = Vietphrase.getFormattedText(Vietphrase.quickTranslate(text, glossary.pinyins.map(([first, second]) => [first, targetLanguage === 'pinyin' ? Vietphrase.removeAccents(second) : second]).concat(glossary.romajis).filter(function filter([first]) {
+        this.result = Vietphrase.getFormattedText(Vietphrase.quickTranslate(text, glossary.pinyins.map(([first, second]) => [first, second.split(' ')[0]]).map(([first, second]) => [first, targetLanguage === 'pinyin' ? Vietphrase.removeAccents(second) : second]).concat(glossary.romajis).filter(function filter([first]) {
           return !this[first] && (this[first] = 1);
         }, {})));
         break;
       }
       case 'KunYomi': {
-        this.result = Vietphrase.getFormattedText(Vietphrase.quickTranslate(text, glossary.KunYomis.concat(glossary.romajis).filter(function filter([first]) {
+        this.result = Vietphrase.getFormattedText(Vietphrase.quickTranslate(text, glossary.KunYomis.map(([first, second]) => [first, second.split(' ')[0].toLowerCase()]).concat(glossary.romajis).filter(function filter([first]) {
           return !this[first] && (this[first] = 1);
         }, {})));
         break;
       }
       case 'OnYomi': {
-        this.result = Vietphrase.getFormattedText(Vietphrase.quickTranslate(text, glossary.OnYomis.concat(glossary.romajis).filter(function filter([first]) {
+        this.result = Vietphrase.getFormattedText(Vietphrase.quickTranslate(text, glossary.OnYomis.map(([first, second]) => [first, second.split(' ')[0].toLowerCase()]).concat(glossary.romajis).filter(function filter([first]) {
           return !this[first] && (this[first] = 1);
         }, {})));
         break;
@@ -462,7 +462,9 @@ class Vietphrase extends Translator {
             }
           }
 
-          this.result = this.translateWithTest(text, options.nameEnabled ? this.name : [], hanViet.concat(glossary.romajis).filter(([first], ___, array) => !array[first] && (array[first] = 1), {})).normalize();
+          this.result = this.translateWithTest(text, options.nameEnabled ? this.name : [], hanViet.concat(glossary.romajis).filter(function filter([first]) {
+            return !this[first] && (this[first] = 1);
+          }, {}));
           this.result = options.autocapitalize ? Vietphrase.getCapitalizeText(this.result) : this.result;
         } catch (error) {
           this.vietPhrase = null;
