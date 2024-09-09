@@ -1026,7 +1026,7 @@ $(document).ready(async () => {
 
   try {
     glossary.hanViet = cjkv.nam.map(([first, second]) => [first, second.normalize().split(',').map((element) => element.replaceAll(Utils.getTrieRegexPatternFromWords(Object.keys(newAccentObject)), (match) => newAccentObject[match] ?? match)).join(',')]);
-    console.log(`Đã tải xong bộ dữ liệu Hán-Việt (${hanvietList.length})!`);
+    console.log(`Đã tải xong bộ dữ liệu Hán-Việt (${glossary.hanViet.length})!`);
   } catch (error) {
     console.error('Không thể tải bộ dữ liệu Hán-Việt:', error);
     setTimeout(() => {
