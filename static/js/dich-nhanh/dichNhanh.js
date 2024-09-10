@@ -450,7 +450,8 @@ const glossary = {
   KunYomis: [],
   OnYomis: [],
   hanViet: [],
-  SinoVietnameses: { ...JSON.parse(localStorage.getItem('glossary') ?? JSON.stringify({ SinoVietnameses: {} })).SinoVietnameses },
+  SinoVietnameses: [],
+  phonetics: { ...JSON.parse(localStorage.getItem('glossary') ?? JSON.stringify({ phonetics: {} })).phonetics },
   vietPhrase: {},
   name: {},
   namePhu: { ...JSON.parse(localStorage.getItem('glossary') ?? JSON.stringify({ namePhu: {} })).namePhu },
@@ -883,7 +884,7 @@ const reloadGlossary = function reloadActiveGlossary(glossaryList) {
   const glossaryKeys = Object.keys(glossary[glossaryList]);
   $glossaryEntryCounter.text(glossaryKeys.length);
 
-  const glossaryStorage = { SinoVietnameses: glossary.SinoVietnameses, namePhu: glossary.namePhu };
+  const glossaryStorage = { phonetics: glossary.phonetics, namePhu: glossary.namePhu };
   if (Object.keys(glossaryStorage).includes(glossaryList)) glossary[glossaryList] = Object.fromEntries(Object.entries(glossary[glossaryList]).sort((a, b) => a[1].localeCompare(b[1], 'vi', { ignorePunctuation: true }) || a[0].localeCompare(b[0], 'vi', { ignorePunctuation: true })));
 
   const autocompleteGlossarySource = glossaryKeys.map((element) => ({ value: element, label: `${element}=${glossary[glossaryList][element]}` }));
@@ -911,7 +912,7 @@ const saveGlossary = function saveGlossaryToLocalStorage() {
   const activeGlossaryList = $glossaryListSelect.val();
   reloadGlossary(activeGlossaryList);
 
-  const glossaryStorage = { SinoVietnameses: glossary.SinoVietnameses, namePhu: glossary.namePhu };
+  const glossaryStorage = { phonetics: glossary.phonetics, namePhu: glossary.namePhu };
   if (Object.keys(glossaryStorage).includes(activeGlossaryList)) glossary[activeGlossaryList] = Object.fromEntries(Object.entries(glossary[activeGlossaryList]).sort((a, b) => a[1].localeCompare(b[1], 'vi', { ignorePunctuation: true }) || a[0].localeCompare(b[0], 'vi', { ignorePunctuation: true })));
   localStorage.setItem('glossary', JSON.stringify(glossaryStorage));
 
@@ -1025,8 +1026,8 @@ $(document).ready(async () => {
   });
 
   try {
-    glossary.hanViet = cjkv.nam.map(([first, second]) => [first, second.normalize().split(',').map((element) => element.replaceAll(Utils.getTrieRegexPatternFromWords(Object.keys(newAccentObject)), (match) => newAccentObject[match] ?? match)).join(',')]);
-    console.log(`Đã tải xong bộ dữ liệu Hán-Việt (${glossary.hanViet.length})!`);
+    glossary.SinoVietnameses = cjkv.nam.map(([first, second]) => [first, second.normalize().split(',').map((element) => element.replaceAll(Utils.getTrieRegexPatternFromWords(Object.keys(newAccentObject)), (match) => newAccentObject[match] ?? match)).join(',')]);
+    console.log(`Đã tải xong bộ dữ liệu Hán-Việt (${glossary.SinoVietnameses.length})!`);
   } catch (error) {
     console.error('Không thể tải bộ dữ liệu Hán-Việt:', error);
     setTimeout(() => {
@@ -1401,6 +1402,8 @@ $defaultVietPhraseFileSelect.change(async function onChange() {
   const intValue = parseInt($(this).val(), 10);
 
   if (intValue > 0) {
+    const SinoVietnamesesFirsts = glossary.SinoVietnameses.map(([first]) => first);
+
     switch (intValue) {
       case 1:
       case 2: {
@@ -1458,6 +1461,11 @@ $defaultVietPhraseFileSelect.change(async function onChange() {
             console.error('Không tải được tệp Quick Translator\'s ChinesePhienAmWords:', errorThrown);
           });
         }
+
+        glossary.hanViet = glossary.quickTranslatorHanViet.filter(function filter([first]) {
+          return SinoVietnamesesFirsts.includes(first) && !this[first] && (this[first] = 1);
+        }, {});
+        console.log(`Đã tải xong tệp ChinesePhienAmWords (${glossary.hanViet.length})!`);
 
         if (glossary.quickTranslatorName == null || glossary.quickTranslatorName.length === 0) {
           await $.ajax({
@@ -1573,6 +1581,11 @@ $defaultVietPhraseFileSelect.change(async function onChange() {
           });
         }
 
+        glossary.hanViet = glossary.dataByThtgiangHanViet.filter(function filter([first]) {
+          return SinoVietnamesesFirsts.includes(first) && !this[first] && (this[first] = 1);
+        }, {});
+        console.log(`Đã tải xong tệp ChinesePhienAmWords (${glossary.hanViet.length})!`);
+
         if (glossary.dataByThtgiangName == null || glossary.dataByThtgiangName.length === 0) {
           await $.ajax({
             method: 'GET',
@@ -1628,6 +1641,11 @@ $defaultVietPhraseFileSelect.change(async function onChange() {
           });
         }
 
+        glossary.hanViet = glossary.ttvtranslateHanViet.filter(function filter([first]) {
+          return SinoVietnamesesFirsts.includes(first) && !this[first] && (this[first] = 1);
+        }, {});
+        console.log(`Đã tải xong tệp ChinesePhienAmWords (${glossary.hanViet.length})!`);
+
         if (glossary.ttvtranslateName == null || glossary.ttvtranslateName.length === 0) {
           await $.ajax({
             method: 'GET',
@@ -1682,6 +1700,11 @@ $defaultVietPhraseFileSelect.change(async function onChange() {
             console.error('Không tải được tệp Translate\'s ChinesePhienAmWords:', errorThrown);
           });
         }
+
+        glossary.hanViet = glossary.translateHanViet.filter(function filter([first]) {
+          return SinoVietnamesesFirsts.includes(first) && !this[first] && (this[first] = 1);
+        }, {});
+        console.log(`Đã tải xong tệp ChinesePhienAmWords (${glossary.hanViet.length})!`);
 
         if (glossary.translateName == null || glossary.translateName.length === 0) {
           await $.ajax({

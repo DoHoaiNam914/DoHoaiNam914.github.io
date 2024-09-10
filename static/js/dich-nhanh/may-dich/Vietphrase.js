@@ -374,13 +374,10 @@ class Vietphrase extends Translator {
   }
 
   async translateText(text, targetLanguage, glossary, options) {
-    const SinoVietnameses = Object.entries(glossary.SinoVietnameses).map(([first, second]) => [first, second.split('/')[0]]).map(([first, second]) => [first, second.split(/; */)[0]]);
-    let hanViet = SinoVietnameses.concat(glossary.hanViet).filter(function filter([first]) {
-      return !this[first] && (this[first] = 1);
-    }, {});
-    hanViet = SinoVietnameses.filter(([__, second]) => !/\p{Script_Extensions=Hani}/u.test(second)).concat(glossary.hanViet.map(([first,second]) => [first, second.split(',').map((element) => element.trimStart()).filter((element) => element.length > 0)[0]]));
-    hanViet = SinoVietnameses.filter(([__, second]) => /\p{Script_Extensions=Hani}/u.test(second)).map(([first, second]) => [first, Vietphrase.quickTranslate(second, hanViet)]).concat(hanViet);
-    hanViet = hanViet.map(([first, second]) => [first, second.toLowerCase()]).filter(function filter([first]) {
+    const phonetics = Object.entries(glossary.phonetics).map(([first, second]) => [first, second.split('/')[0]]).map(([first, second]) => [first, second.split(/; */)[0]]);
+    const SinoVietnameses = glossary.SinoVietnameses.map(([first,second]) => [first, second.split(',').map((element) => element.trimStart()).filter((element) => element.length > 0)[0]]);
+    let hanViet = phonetics.filter(([__, second]) => !/\p{Script_Extensions=Hani}/u.test(second)).concat(targetLanguage === 'vietPhrase' ? glossary.hanViet.filter(([first]) => !Object.hasOwn(glossary.phonetics, first)) : [], SinoVietnameses);
+    hanViet = phonetics.filter(([__, second]) => /\p{Script_Extensions=Hani}/u.test(second)).map(([first, second]) => [first, Vietphrase.quickTranslate(second, hanViet)]).concat(hanViet).map(([first, second]) => [first, second.toLowerCase()]).filter(function filter([first]) {
       return !this[first] && (this[first] = 1);
     }, {});
 
