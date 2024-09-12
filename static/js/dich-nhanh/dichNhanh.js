@@ -1402,8 +1402,6 @@ $defaultVietPhraseFileSelect.change(async function onChange() {
   const intValue = parseInt($(this).val(), 10);
 
   if (intValue > 0) {
-    const SinoVietnamesesFirsts = glossary.SinoVietnameses.map(([first]) => first);
-
     switch (intValue) {
       case 1:
       case 2: {
@@ -1463,7 +1461,7 @@ $defaultVietPhraseFileSelect.change(async function onChange() {
         }
 
         glossary.hanViet = glossary.quickTranslatorHanViet.filter(function filter([first]) {
-          return SinoVietnamesesFirsts.includes(first) && !this[first] && (this[first] = 1);
+          return !this[first] && (this[first] = 1);
         }, {});
         console.log(`Đã tải xong tệp ChinesePhienAmWords (${glossary.hanViet.length})!`);
 
@@ -1582,7 +1580,7 @@ $defaultVietPhraseFileSelect.change(async function onChange() {
         }
 
         glossary.hanViet = glossary.dataByThtgiangHanViet.filter(function filter([first]) {
-          return SinoVietnamesesFirsts.includes(first) && !this[first] && (this[first] = 1);
+          return !this[first] && (this[first] = 1);
         }, {});
         console.log(`Đã tải xong tệp ChinesePhienAmWords (${glossary.hanViet.length})!`);
 
@@ -1642,7 +1640,7 @@ $defaultVietPhraseFileSelect.change(async function onChange() {
         }
 
         glossary.hanViet = glossary.ttvtranslateHanViet.filter(function filter([first]) {
-          return SinoVietnamesesFirsts.includes(first) && !this[first] && (this[first] = 1);
+          return !this[first] && (this[first] = 1);
         }, {});
         console.log(`Đã tải xong tệp ChinesePhienAmWords (${glossary.hanViet.length})!`);
 
@@ -1702,7 +1700,7 @@ $defaultVietPhraseFileSelect.change(async function onChange() {
         }
 
         glossary.hanViet = glossary.translateHanViet.filter(function filter([first]) {
-          return SinoVietnamesesFirsts.includes(first) && !this[first] && (this[first] = 1);
+          return !this[first] && (this[first] = 1);
         }, {});
         console.log(`Đã tải xong tệp ChinesePhienAmWords (${glossary.hanViet.length})!`);
 

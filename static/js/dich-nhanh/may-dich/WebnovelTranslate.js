@@ -1991,7 +1991,10 @@ class WebnovelTranslate extends Translator {
       const EOL_REG_EXP = new RegExp(Utils.escapeRegExp(EOL), 'g');
       if (this.controller.signal.aborted) return text;
       console.log('DEBUG:', responses.map((a) => a.responseJSON[0].filter(([__, second]) => second != null).map(([first, second]) => [second, first, [...second.matchAll(EOL_REG_EXP)].length - [...first.matchAll(EOL_REG_EXP)].length])).flat().map((element) => (element[2] >= 0 ? element.slice(0, -1) : element)));
-      this.result = responses.map((a) => a.responseJSON[0].filter(([__, second]) => second != null).map(([first, second]) => [second, first.replace(/^\s+/, '').replaceAll(EOL_REG_EXP, '\n')]).map(([first, second]) => second.concat('\n'.repeat([...first.matchAll(EOL_REG_EXP)].length - [...second.matchAll(/\n/g)].length))).join('').split('\n')).flat().map((element) => element.trimEnd()).join('\n');
+      this.result = responses.map((a) => a.responseJSON[0].filter(([__, second]) => second != null).map(([first, second]) => [second, first.replace(/^\s+/, '').replaceAll(EOL_REG_EXP, '\n')]).map(([first, second]) => {
+        const count = [...first.matchAll(EOL_REG_EXP)].length - [...second.matchAll(/\n/g)].length;
+        return second.concat('\n'.repeat(count >= 0 ? count : 0));
+      }).join('').split('\n')).flat().map((element) => element.trimEnd()).join('\n');
       super.translateText(text, targetLanguage, sourceLanguage);
     } catch (error) {
       console.error('Bản dịch lỗi:', error);
