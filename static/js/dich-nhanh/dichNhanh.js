@@ -673,81 +673,58 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
   const name = Object.entries(glossary.namePhu);
   const textLines = text.split('\n');
   const rawTranslationLines = rawTranslation.split('\n');
-  let queryTextLines = [];
-  let queryRawTranslationLines = [];
-  const messages = [];
   const responses = [];
   let result = rawTranslation;
 
   try {
     if (artificialIntelligence !== 'none') {
-      while (textLines.length > 0) {
-        queryTextLines.push(textLines.shift());
-        queryRawTranslationLines.push(rawTranslationLines.shift());
-
-        if (textLines.length === 0 || (encode([...queryRawTranslationLines, rawTranslationLines[0]].join('\n')).length / 1.5) > MAX_TOKENS_PER_RESPONSE) {
-          switch (artificialIntelligence) {
-            case 'gemini-1.5-flash': {
-              messages.push({
-                role: 'user',
-                parts: [
-                  {
-                    text: `<TEXT>${queryTextLines.map((element) => element.replace(/^\s+/, '')).join('\n')}</TEXT>
+      result = await $.ajax({
+        data: JSON.stringify({
+          contents: [
+            {
+              role: 'model',
+              parts: [
+                {
+                  text: 'Bạn là dịch giả. Bạn sẽ dịch văn bản trong nhãn <TEXT> sang tiếng Việt. Tham khảo tên riêng trong nhãn <NAMES> nếu có nhãn này. Tham khảo ngữ nghĩa theo bản dịch thô trong nhãn <RAW>. Các bản dịch của bạn phải truyền đạt đầy đủ đầu đề và nội dung của văn bản gốc và không được bao gồm giải thích hoặc thông tin không cần thiết khác hay định dạng kiểu chữ. Không được gộp hay cắt dòng mà phải giữ nguyên số dòng như văn bản gốc. Đảm bảo rằng văn bản dịch tự nhiên cho người bản địa, ngữ pháp chính xác và lựa chọn từ ngữ đúng đắn. Bản dịch của bạn chỉ chứa văn bản đã dịch và không thể chứa bất kỳ giải thích hoặc thông tin khác hay định dạng kiểu chữ.',
+                },
+              ],
+            },
+            {
+              role: 'user',
+              parts: [
+                {
+                  text: `<TEXT>${textLines.map((element) => element.replace(/^\s+/, '')).join('\n')}</TEXT>
 <NAMES>${nameEnabled && name.length > 0 ? name.map((element) => element.join('=')).join('\n') : ''}</NAMES>
-<RAW>${rawTranslation.split('\n').map((element) => element.replace(/^\s+/, '')).join('\n')}</RAW>`,
-                  },
-                ],
-              });
-
-              responses.push([queryRawTranslationLines.join('\n'), $.ajax({
-                data: JSON.stringify({
-                  contents: [
-                    {
-                      role: 'model',
-                      parts: [
-                        {
-                          text: 'Bạn là dịch giả. Bạn sẽ dịch văn bản trong nhãn <TEXT> sang tiếng Việt. Tham khảo tên riêng trong nhãn <NAMES> nếu có nhãn này. Tham khảo ngữ nghĩa theo bản dịch thô trong nhãn <RAW>. Các bản dịch của bạn phải truyền đạt đầy đủ đầu đề và nội dung của văn bản gốc và không được bao gồm giải thích hoặc thông tin không cần thiết khác hay định dạng kiểu chữ. Không được gộp hay cắt dòng mà phải giữ nguyên số dòng như văn bản gốc. Đảm bảo rằng văn bản dịch tự nhiên cho người bản địa, ngữ pháp chính xác và lựa chọn từ ngữ đúng đắn. Bản dịch của bạn chỉ chứa văn bản đã dịch và không thể chứa bất kỳ giải thích hoặc thông tin khác hay định dạng kiểu chữ.',
-                        },
-                      ],
-                    },
-                    ...messages,
-                  ],
-                  safetySettings: [
-                    {
-                      category: 'HARM_CATEGORY_HARASSMENT',
-                      threshold: 'BLOCK_NONE',
-                    },
-                    {
-                      category: 'HARM_CATEGORY_HATE_SPEECH',
-                      threshold: 'BLOCK_NONE',
-                    },
-                    {
-                      category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT',
-                      threshold: 'BLOCK_NONE',
-                    },
-                    {
-                      category: 'HARM_CATEGORY_DANGEROUS_CONTENT',
-                      threshold: 'BLOCK_NONE',
-                    },
-                  ],
-                }),
-                headers: { 'Content-Type': 'application/json' },
-                method: 'POST',
-                url: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=AIzaSyD5e2NPw_Vmgr_eUXtNX4tGMYl0lmsQQW4',
-              })]);
-              break;
-            }
-            // no default
-          }
-
-          queryTextLines = [];
-          queryRawTranslationLines = [];
-          if (messages.length === 2) messages.shift();
-        }
-      }
-
-      await Promise.all(responses.map(([__, second]) => second));
-      result = responses.map(([first, second]) => [first, second.responseJSON.candidates[0].content.parts[0].text.replaceAll(/<\/?TEXT>/g, '')]).map(([first, second]) => [first.split('\n'), first.match(/^(?:\p{Zs}*\n)*/u)[0].concat(([...second.replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').matchAll(/\n\n/g)].length > [...first.replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').matchAll(/\n\n/g)].length ? second.replaceAll('\n\n', '\n') : second).replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').concat(first.match(/\s*$/)[0])).split('\n')]).map(([first, second]) => first.some((element) => /^\s+/.test(element)) ? second.map((element, index) => first[index].match(/^\s*/)[0].concat(element)) : second).flat().join('\n');
+<RAW>${rawTranslationLines.map((element) => element.replace(/^\s+/, '')).join('\n')}</RAW>`,
+                },
+              ],
+            },
+          ],
+          safetySettings: [
+            {
+              category: 'HARM_CATEGORY_HARASSMENT',
+              threshold: 'BLOCK_NONE',
+            },
+            {
+              category: 'HARM_CATEGORY_HATE_SPEECH',
+              threshold: 'BLOCK_NONE',
+            },
+            {
+              category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT',
+              threshold: 'BLOCK_NONE',
+            },
+            {
+              category: 'HARM_CATEGORY_DANGEROUS_CONTENT',
+              threshold: 'BLOCK_NONE',
+            },
+          ],
+        }),
+        headers: { 'Content-Type': 'application/json' },
+        method: 'POST',
+        url: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=AIzaSyD5e2NPw_Vmgr_eUXtNX4tGMYl0lmsQQW4',
+      });
+      if (result.candidates != null) result = result.candidates[0].content.parts[0].text.replaceAll(/<\/?TEXT>/g, '');
+      result = text.match(/^(?:\p{Zs}*\n)*/u)[0].concat(([...result.replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').matchAll(/\n\n/g)].length > [...text.replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').matchAll(/\n\n/g)].length ? result.replaceAll('\n\n', '\n') : second)second).replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').concat(first.match(/\s*$/)[0]));
     }
   } catch (error) {
     result = error;
