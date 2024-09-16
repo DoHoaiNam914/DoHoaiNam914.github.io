@@ -670,14 +670,12 @@ const loadLangSelectOptions = function loadLanguageListByTranslatorToHtmlOptions
 
 const polishTranslation = async function polishTranslationWithArtificialIntelligence(artificialIntelligence, text, rawTranslation, nameEnabled) {
   const MAX_TOKENS_PER_RESPONSE = 8192;
-  const name = Object.entries(glossary.namePhu);
-  const textLines = text.split('\n');
-  const rawTranslationLines = rawTranslation.split('\n');
   const responses = [];
   let result = rawTranslation;
 
   try {
     if (artificialIntelligence !== 'none') {
+      const name = Object.entries(glossary.namePhu);
       result = await $.ajax({
         data: JSON.stringify({
           contents: [
@@ -693,9 +691,9 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
               role: 'user',
               parts: [
                 {
-                  text: `<TEXT>${textLines.map((element) => element.replace(/^\s+/, '')).join('\n')}</TEXT>
+                  text: `<TEXT>${text.split('\n').map((element) => element.replace(/^\s+/, '')).join('\n')}</TEXT>
 <NAMES>${nameEnabled && name.length > 0 ? name.map((element) => element.join('=')).join('\n') : ''}</NAMES>
-<RAW>${rawTranslationLines.map((element) => element.replace(/^\s+/, '')).join('\n')}</RAW>`,
+<RAW>${rawTranslation.split('\n').map((element) => element.replace(/^\s+/, '')).join('\n')}</RAW>`,
                 },
               ],
             },
@@ -724,7 +722,7 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
         url: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=AIzaSyD5e2NPw_Vmgr_eUXtNX4tGMYl0lmsQQW4',
       });
       if (result.candidates != null) result = result.candidates[0].content.parts[0].text.replaceAll(/<\/?TEXT>/g, '');
-      result = text.match(/^(?:\p{Zs}*\n)*/u)[0].concat(([...result.replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').matchAll(/\n\n/g)].length > [...text.replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').matchAll(/\n\n/g)].length ? result.replaceAll('\n\n', '\n') : second)second).replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').concat(first.match(/\s*$/)[0]));
+      result = text.match(/^(?:\p{Zs}*\n)*/u)[0].concat(([...result.replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').matchAll(/\n\n/g)].length > [...text.replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').matchAll(/\n\n/g)].length ? result.replaceAll('\n\n', '\n') : result).replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').concat(first.match(/\s*$/)[0]));
     }
   } catch (error) {
     result = error;
