@@ -1386,7 +1386,6 @@ $translatorDropdown.find('.dropdown-item').click(function onClick() {
   }
 
   loadLangSelectOptions(activeTranslator);
-  $retranslateButton.click();
 });
 
 $toneSelect.on('change', () => {
