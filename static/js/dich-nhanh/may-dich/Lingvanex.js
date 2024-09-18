@@ -3568,7 +3568,7 @@ class Lingvanex extends Translator {
         cache: false,
         method: 'GET',
         url: `${Utils.CORS_PROXY}https://lingvanex.com/lingvanex_demo_page/js/api-base.js`,
-      }).responseText.match(/B2B_AUTH_TOKEN="([^"]+)"/)[1];
+      }).responseText.match(/B2B_AUTH_TOKEN="([^"]+)"/);
       this.authToken = b2bAuthToken;
     } catch (error) {
       console.error('Không thể lấy được B2B_AUTH_TOKEN:', error);
