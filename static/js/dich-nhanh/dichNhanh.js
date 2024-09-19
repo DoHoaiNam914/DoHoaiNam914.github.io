@@ -2052,7 +2052,7 @@ $translateEntryButtons.click(async function onClick() {
 
       switch (activeTranslator) {
         case Translators.GOOGLE_GEMINI: {
-          translator.controller = controller;
+          translator.controller = entryTranslationController;
           await translator.translateText(text, targetLanguage, glossary);
           break;
         }
