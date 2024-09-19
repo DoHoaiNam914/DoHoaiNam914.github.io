@@ -478,7 +478,7 @@ class Vietphrase extends Translator {
       }
     }
 
-    super.translateText(text, this.DefaultLanguage.SOURCE_LANGUAGE, targetLanguage);
+    super.translateText(text, targetLanguage, this.DefaultLanguage.SOURCE_LANGUAGE);
     return this.result;
   }
 }

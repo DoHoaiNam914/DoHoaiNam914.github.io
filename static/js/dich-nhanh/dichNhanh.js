@@ -1,6 +1,6 @@
 'use strict';
 
-/* global bootstrap, BaiduTranslate, cjkv, CocCocEduTranslate, DeepLTranslate, GoogleTranslate, hanData, Lingvanex, MicrosoftTranslator, newAccentObject, Papago, Utils, Vietphrase, WebnovelTranslate */
+/* global bootstrap, BaiduTranslate, cjkv, CocCocEduTranslate, DeepLTranslate, GoogleGemini, GoogleTranslate, Lingvanex, MicrosoftTranslator, newAccentObject, Papago, Utils, Vietphrase, WebnovelTranslate */
 
 const $addButton = $('#add-button');
 const $addDeLeZhaoSwitch = $('#add-de-le-zhao-switch');
@@ -116,6 +116,7 @@ const Translators = {
   BAIDU_TRANSLATE: 'baiduTranslate',
   COCCOC_EDU_TRANSLATE: 'coccocEduTranslate',
   DEEPL_TRANSLATE: 'deeplTranslate',
+  GOOGLE_GEMINI: 'googleGemini',
   GOOGLE_TRANSLATE: 'googleTranslate',
   LINGVANEX: 'lingvanex',
   MICROSOFT_TRANSLATOR: 'microsoftTranslator',
@@ -136,6 +137,8 @@ const DEEPL_AUTH_KEY_LIST = [
   // ['f1414922-db81-5454-67bd-9608cdca44b3:fx', 154587],
   ['f8ff5708-f449-7a57-65b0-6ac4524cf64c:fx', 500000],
 ].toSorted((a, b) => a[1] - b[1]);
+
+const GOOGLE_GENERATIVE_AI_API_KEY = 'AIzaSyD5e2NPw_Vmgr_eUXtNX4tGMYl0lmsQQW4';
 
 const UUID = crypto.randomUUID();
 
@@ -498,6 +501,12 @@ const getSourceLangOptionList = function getSourceLanguageOptionListHtmlFromTran
       });
       break;
     }
+    case Translators.GOOGLE_GEMINI: {
+      const option = document.createElement('option');
+      option.innerText = '';
+      sourceLanguageSelect.appendChild(option);
+      break;
+    }
     case Translators.LINGVANEX: {
       Lingvanex.LANGUAGE_LIST.forEach(({ full_code, englishName }) => {
         if (!['', 'zh-Hans_CN', 'zh-Hant_TW', 'en_AU', 'en_GB', 'en_US', 'ja_JP', 'vi_VN'].includes(full_code)) return;
@@ -595,6 +604,15 @@ const getTargetLangOptionList = function getTargetLanguageOptionListHtmlFromTran
       });
       break;
     }
+    case Translators.GOOGLE_GEMINI: {
+      GoogleGemini.LANGUAGE_LIST.forEach((language) => {
+        if (!['tiếng Anh', 'tiếng Nhật', 'tiếng Trung (Giản thể)', 'tiếng Trung (Phổn thể)', 'tiếng Việt'].includes(language)) return;
+        const option = document.createElement('option');
+        option.innerText = language;
+        targetLanguageSelect.appendChild(option);
+      });
+      break;
+    }
     case Translators.LINGVANEX: {
       Lingvanex.LANGUAGE_LIST.forEach(({ full_code, englishName }) => {
         if (!['zh-Hans_CN', 'zh-Hant_TW', 'en_AU', 'en_GB', 'en_US', 'ja_JP', 'vi_VN'].includes(full_code)) return;
@@ -679,14 +697,6 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
         data: JSON.stringify({
           contents: [
             {
-              role: 'model',
-              parts: [
-                {
-                  text: 'Bạn là dịch giả. Bạn sẽ dịch văn bản trong nhãn <TEXT> sang tiếng Việt. Tham khảo tên riêng trong nhãn <NAMES> nếu có nhãn này. Tham khảo ngữ nghĩa theo bản dịch thô trong nhãn <RAW>. Các bản dịch của bạn phải truyền đạt đầy đủ đầu đề và nội dung của văn bản gốc và không được bao gồm giải thích hoặc thông tin không cần thiết khác hay định dạng kiểu chữ. Không được gộp hay cắt dòng mà phải giữ nguyên số dòng như văn bản gốc. Đảm bảo rằng văn bản dịch tự nhiên cho người bản địa, ngữ pháp chính xác và lựa chọn từ ngữ đúng đắn. Bản dịch của bạn chỉ chứa văn bản đã dịch và không thể chứa bất kỳ giải thích hoặc thông tin khác hay định dạng kiểu chữ.',
-                },
-              ],
-            },
-            {
               role: 'user',
               parts: [
                 {
@@ -697,6 +707,14 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
               ],
             },
           ],
+          systemInstruction: {
+            role: 'model',
+            parts: [
+              {
+                text: 'Bạn là dịch giả. Bạn sẽ dịch văn bản trong nhãn <TEXT> sang tiếng Việt. Tham khảo tên riêng trong nhãn <NAMES> nếu có nhãn này. Tham khảo ngữ nghĩa theo bản dịch thô trong nhãn <RAW>. Các bản dịch của bạn phải truyền đạt đầy đủ đầu đề và nội dung của văn bản gốc và không được bao gồm giải thích hoặc thông tin không cần thiết khác hay định dạng kiểu chữ. Không được gộp hay cắt dòng mà phải giữ nguyên số dòng như văn bản gốc. Đảm bảo rằng văn bản dịch tự nhiên cho người bản địa, ngữ pháp chính xác và lựa chọn từ ngữ đúng đắn. Bản dịch của bạn chỉ chứa văn bản đã dịch và không thể chứa bất kỳ giải thích hoặc thông tin khác hay định dạng kiểu chữ.',
+              },
+            ],
+          },
           safetySettings: [
             {
               category: 'HARM_CATEGORY_HARASSMENT',
@@ -715,10 +733,17 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
               threshold: 'BLOCK_NONE',
             },
           ],
+          generationConfig: {
+            temperature: 1,
+            topK: 64,
+            topP: 0.95,
+            maxOutputTokens: 8192,
+            responseMimeType: 'text/plain',
+          }
         }),
         headers: { 'Content-Type': 'application/json' },
         method: 'POST',
-        url: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=AIzaSyD5e2NPw_Vmgr_eUXtNX4tGMYl0lmsQQW4',
+        url: `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GOOGLE_GENERATIVE_AI_API_KEY}`,
       });
       if (response.candidates != null) result = response.candidates[0].content.parts[0].text.replaceAll(/<\/?TEXT>/g, '');
       result = text.match(/^(?:\p{Zs}*\n)*/u)[0].concat(([...result.replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').matchAll(/\n\n/g)].length > [...text.replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').matchAll(/\n\n/g)].length ? result.replaceAll('\n\n', '\n') : result).replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').concat(text.match(/\s*$/)[0]));
@@ -789,6 +814,11 @@ const translate = async function translateContentInTextarea(controller = new Abo
     const targetLanguage = $targetLanguageSelect.val();
 
     switch ($activeTranslator.val()) {
+      case Translators.GOOGLE_GEMINI: {
+        currentTranslator.controller = controller;
+        await currentTranslator.translateText(text, targetLanguage, glossary);
+        break;
+      }
       case Translators.VIETPHRASE: {
         await currentTranslator.translateText(text, targetLanguage, glossary, {
           autocapitalize: true,
@@ -1037,6 +1067,7 @@ $translateButton.on('click', function onClick() {
       $copyButton.data('target', `#${$inputTextarea.attr('id')}`);
       $copyButton.removeClass('disabled');
       $pasteButton.removeClass('disabled');
+      $translatorDropdown.find('.dropdown-item').removeClass('disabled');
       $(this).text('Dịch');
       $retranslateButton.addClass('disabled');
       break;
@@ -1049,6 +1080,7 @@ $translateButton.on('click', function onClick() {
       $copyButton.addClass('disabled');
       $copyButton.data('target', `#${$resultTextarea.attr('id')}`);
       $pasteButton.addClass('disabled');
+      $translatorDropdown.find('.dropdown-item').addClass('disabled');
       translationController = new AbortController();
       $(this).text('Huỷ');
       translate(translationController).finally(() => {
@@ -1062,6 +1094,7 @@ $translateButton.on('click', function onClick() {
         $copyButton.removeClass('disabled');
         $pasteButton.removeClass('disabled');
         $retranslateButton.removeClass('disabled');
+        $translatorDropdown.find('.dropdown-item').removeClass('disabled');
       });
       break;
     }
@@ -1305,6 +1338,14 @@ $translatorDropdown.find('.dropdown-item').click(function onClick() {
         translators[activeTranslator] = currentTranslator;
         if ((currentTranslator.usage.character_limit - currentTranslator.usage.character_count) >= 100000) break;
         DEEPL_AUTH_KEY_LIST.shift();
+      }
+
+      break;
+    }
+    case Translators.GOOGLE_GEMINI: {
+      if (translator == null) {
+        currentTranslator = new GoogleGemini(GOOGLE_GENERATIVE_AI_API_KEY);
+        translators[activeTranslator] = translator;
       }
 
       break;
@@ -1959,6 +2000,14 @@ $translateEntryButtons.click(async function onClick() {
 
           break;
         }
+        case Translators.GOOGLE_GEMINI: {
+          if (translator == null) {
+            translator = new GoogleGemini(GOOGLE_GENERATIVE_AI_API_KEY);
+            translators[activeTranslator] = translator;
+          }
+
+          break;
+        }
         case Translators.GOOGLE_TRANSLATE: {
           if (translator == null) {
             translator = new GoogleTranslate();
@@ -2002,6 +2051,11 @@ $translateEntryButtons.click(async function onClick() {
       }
 
       switch (activeTranslator) {
+        case Translators.GOOGLE_GEMINI: {
+          currentTranslator.controller = controller;
+          await translator.translateText(text, targetLanguage, glossary);
+          break;
+        }
         case Translators.VIETPHRASE: {
           await translator.translateText(text, targetLanguage, glossary, {
             autocapitalize: false,
