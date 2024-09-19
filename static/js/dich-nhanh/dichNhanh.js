@@ -739,7 +739,7 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
             topP: 0.95,
             maxOutputTokens: 8192,
             responseMimeType: 'text/plain',
-          }
+          },
         }),
         headers: { 'Content-Type': 'application/json' },
         method: 'POST',
@@ -1901,24 +1901,25 @@ $sourceEntryInput.on('blur', () => {
 $('.define-button').on('click', function onClick() {
   if ($sourceEntryInput.val().length > 0) {
     let defineContent = ($sourceEntryInput.val().substring($sourceEntryInput.prop('selectionStart'), $sourceEntryInput.prop('selectionEnd')) || $sourceEntryInput.val()).trim(); // .substring(0, 30)
+    let href = $(this).data('href');
 
-    if ($(this).data('type') != null || $(this).data('type') !== 'encodeURIText') {
-      switch ($(this).data('type')) {
-        case 'char': {
-          [defineContent] = defineContent.split(/(?:)/u);
-          break;
-        }
-        case 'vdict': {
-          defineContent = encodeURIComponent(defineContent.replaceAll(' ', '+'));
-          break;
-        }
-        // no default
+    switch ($(this).data('type') ?? 'encodeURIComponent') {
+      case 'char': {
+        href = href.replace('%s', defineContent.split(/(?:)/u)[0]);
+        break;
       }
-    } else {
-      defineContent = encodeURIComponent(defineContent);
+      case 'congdongviet': {
+        [defineContent] = defineContent.split(/(?:)/u);
+        href = href.replace('%d', defineContent.codePointAt(0)).replace('%s', encodeURIComponent(defineContent));
+        break;
+      }
+      default: {
+        href = href.replace('%s', encodeURIComponent(defineContent));
+        break;
+      }
     }
 
-    window.open($(this).data('href').replace('%s', defineContent), '_blank', 'width=1000,height=577');
+    window.open(href, '_blank', 'width=1000,height=577');
   }
 
   if (window.getSelection) window.getSelection().removeAllRanges();

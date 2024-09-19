@@ -65,7 +65,7 @@ class GoogleGemini extends Translator {
             topP: 0.95,
             maxOutputTokens: 8192,
             responseMimeType: 'text/plain',
-          }
+          },
         }),
         headers: { 'Content-Type': 'application/json' },
         method: 'POST',
