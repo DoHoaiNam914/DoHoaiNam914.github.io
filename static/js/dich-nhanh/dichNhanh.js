@@ -606,7 +606,7 @@ const getTargetLangOptionList = function getTargetLanguageOptionListHtmlFromTran
     }
     case Translators.GOOGLE_GEMINI: {
       GoogleGemini.LANGUAGE_LIST.forEach((language) => {
-        if (!['tiếng Anh', 'tiếng Nhật', 'tiếng Trung (Giản thể)', 'tiếng Trung (Phổn thể)', 'tiếng Việt'].includes(language)) return;
+        if (!['tiếng Anh', 'tiếng Nhật', 'tiếng Trung (Giản thể)', 'tiếng Trung (Phồn thể)', 'tiếng Việt'].includes(language)) return;
         const option = document.createElement('option');
         option.innerText = language;
         targetLanguageSelect.appendChild(option);
@@ -1000,12 +1000,12 @@ $(document).ready(async () => {
     const array = data.split('\n').filter((element) => element.length > 0 && !element.startsWith('#')).map((element) => element.split('\t'));
 
     glossary.traditional = array.filter((element) => element.length === 3 && element[1] === 'kTraditionalVariant').map(([first, __, third]) => [String.fromCodePoint(parseInt(first.substring(2), 16)), third.split(' ').map((element) => element.startsWith('U+') ? String.fromCodePoint(parseInt(element.substring(2), 16)) : element).join(' ')]);
-    console.log(`Đã tải xong bộ dữ liệu phổn thể (${glossary.traditional.length})!`);
+    console.log(`Đã tải xong bộ dữ liệu phồn thể (${glossary.traditional.length})!`);
 
     glossary.simplified = array.filter((element) => element.length === 3 && element[1] === 'kSimplifiedVariant').map(([first, __, third]) => [String.fromCodePoint(parseInt(first.substring(2), 16)), third.split(' ').map((element) => element.startsWith('U+') ? String.fromCodePoint(parseInt(element.substring(2), 16)) : element).join(' ')]);
     console.log(`Đã tải xong bộ dữ liệu giản thể (${glossary.simplified.length})!`);
   }).fail((__, ___, errorThrown) => {
-    console.error('Không thể tải bộ dữ liệu giản thể-phổn thể:', errorThrown);
+    console.error('Không thể tải bộ dữ liệu giản thể-phồn thể:', errorThrown);
     setTimeout(() => {
       window.location.reload();
     }, 5000);

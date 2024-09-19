@@ -1,5 +1,7 @@
 'use strict';
 
+/* global Translator */
+
 class GoogleGemini extends Translator {
   static LANGUAGE_LIST = [
     'tiếng Anh', 'tiếng Nhật', 'tiếng Hàn', 'tiếng Ả Rập', 'tiếng Bahasa Indonesia', 'tiếng Bengal', 'tiếng Bulgaria', 'tiếng Trung (Giản thể)', 'tiếng Trung (Phồn thể)', 'tiếng Croatia', 'tiếng Séc', 'tiếng Đan Mạch', 'tiếng Hà Lan', 'tiếng Estonia', 'tiếng Farsi', 'tiếng Phần Lan', 'tiếng Pháp', 'tiếng Đức', 'tiếng Gujarati', 'tiếng Hy Lạp', 'tiếng Do Thái', 'tiếng Hindi', 'tiếng Hungary', 'tiếng Ý', 'tiếng Kannada', 'tiếng Latvia', 'tiếng Lithuania', 'tiếng Malayalam', 'tiếng Marathi', 'tiếng Na Uy', 'tiếng Ba Lan', 'tiếng Bồ Đào Nha', 'tiếng Romania', 'tiếng Nga', 'tiếng Serbia', 'tiếng Slovakia', 'tiếng Slovenia', 'tiếng Tây Ban Nha', 'tiếng Swahili', 'tiếng Thuỵ Điển', 'tiếng Tamil', 'tiếng Telugu', 'tiếng Thái', 'tiếng Thổ Nhĩ Kỳ', 'tiếng Ukraina', 'tiếng Urdu', 'tiếng Việt',
@@ -26,7 +28,7 @@ class GoogleGemini extends Translator {
               parts: [
                 {
                   text: `<TEXT>${text.split('\n').map((element) => element.replace(/^\s+/, '')).join('\n')}</TEXT>
-<NAMES>${nameEnabled && name.length > 0 ? name.map((element) => element.join('=')).join('\n') : ''}</NAMES>`
+<NAMES>${name.length > 0 ? name.map((element) => element.join('=')).join('\n') : ''}</NAMES>`
                 },
               ],
             },
