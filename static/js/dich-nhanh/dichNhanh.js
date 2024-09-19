@@ -606,7 +606,7 @@ const getTargetLangOptionList = function getTargetLanguageOptionListHtmlFromTran
     }
     case Translators.GOOGLE_GEMINI: {
       GoogleGemini.LANGUAGE_LIST.forEach((language) => {
-        if (!['tiếng Anh', 'tiếng Nhật', 'tiếng Trung (Giản thể)', 'tiếng Trung (Phồn thể)', 'tiếng Việt'].includes(language)) return;
+        if (!['Tiếng Anh', 'Tiếng Nhật', 'Tiếng Trung (Giản thể)', 'Tiếng Trung (Phồn thể)', 'Tiếng Việt'].includes(language)) return;
         const option = document.createElement('option');
         option.innerText = language;
         targetLanguageSelect.appendChild(option);
@@ -692,7 +692,7 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
 
   try {
     if (artificialIntelligence !== 'none') {
-      const name = Object.entries(glossary.namePhu);
+      const name = Object.entries(glossary.namePhu).filter(([first]) => text.includes(first));
       const response = await $.ajax({
         data: JSON.stringify({
           contents: [
@@ -700,18 +700,18 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
               role: 'user',
               parts: [
                 {
-                  text: `<TEXT>${text.split('\n').map((element) => element.replace(/^\s+/, '')).join('\n')}</TEXT>
-<NAMES>${nameEnabled && name.length > 0 ? name.map((element) => element.join('=')).join('\n') : ''}</NAMES>
+                  text: `<TEXT>${text.split('\n').map((element) => element.replace(/^\s+/, '')).join('\n')}</TEXT>${name.length > 0 ? `
+<NAMES>${name.map((element) => element.join('=')).join('\n')}</NAMES>` : ''}
 <RAW>${rawTranslation.split('\n').map((element) => element.replace(/^\s+/, '')).join('\n')}</RAW>`,
                 },
               ],
             },
           ],
           systemInstruction: {
-            role: 'model',
+            role: 'user',
             parts: [
               {
-                text: 'Bạn là dịch giả. Bạn sẽ dịch văn bản trong nhãn <TEXT> sang tiếng Việt. Tham khảo tên riêng trong nhãn <NAMES> nếu có nhãn này. Tham khảo ngữ nghĩa theo bản dịch thô trong nhãn <RAW>. Các bản dịch của bạn phải truyền đạt đầy đủ đầu đề và nội dung của văn bản gốc và không được bao gồm giải thích hoặc thông tin không cần thiết khác hay định dạng kiểu chữ. Không được gộp hay cắt dòng mà phải giữ nguyên số dòng như văn bản gốc. Đảm bảo rằng văn bản dịch tự nhiên cho người bản địa, ngữ pháp chính xác và lựa chọn từ ngữ đúng đắn. Bản dịch của bạn chỉ chứa văn bản đã dịch và không thể chứa bất kỳ giải thích hoặc thông tin khác hay định dạng kiểu chữ.',
+                text: 'Dịch văn bản trong nhãn <TEXT> sau sang tiếng Việt. Tham khảo tên riêng trong nhãn <NAMES> nếu có nhãn này. Tham khảo ngữ nghĩa theo bản dịch thô trong nhãn <RAW>. Các bản dịch của bạn phải truyền đạt đầy đủ nội dung của văn bản gốc và không được bao gồm giải thích hoặc thông tin không cần thiết khác. Không được gộp hay cắt dòng mà phải giữ nguyên số dòng như văn bản gốc. Đảm bảo rằng văn bản dịch tự nhiên cho người bản địa, ngữ pháp chính xác và lựa chọn từ ngữ đúng đắn. Bản dịch của bạn chỉ chứa văn bản đã dịch không bao gồm nhãn hay định dạng kiểu chữ và không thể chứa bất kỳ giải thích hoặc thông tin khác.',
               },
             ],
           },
@@ -836,7 +836,7 @@ const translate = async function translateContentInTextarea(controller = new Abo
     $resultTextarea.html(buildResult(text, currentTranslator.result, $activeTranslator.val()));
 
     if (targetLanguage.startsWith('vi')) {
-      const polishResult = (await polishTranslation($artificialIntelligenceSelect.val(), text, currentTranslator.result, true)) ?? currentTranslator.result;
+      const polishResult = (await polishTranslation($artificialIntelligenceSelect.val(), text, currentTranslator.result)) ?? currentTranslator.result;
       if (controller.signal.aborted) return;
       currentTranslator.result = polishResult;
       $resultTextarea.html(buildResult(text, currentTranslator.result, $activeTranslator.val()));
@@ -2070,7 +2070,7 @@ $translateEntryButtons.click(async function onClick() {
         }
       }
 
-      if (targetLanguage.startsWith('vi')) translator.result = await polishTranslation(artificialIntelligence ?? 'none', text, translator.result, nameEnabled != null && Boolean(nameEnabled) !== false);
+      if (targetLanguage.startsWith('vi')) translator.result = await polishTranslation(artificialIntelligence ?? 'none', text, translator.result);
 
       if (!translator.controller.signal.aborted) {
         $targetEntryTextarea.val(translator.result.replace(/^\s+/, '')).trigger('input');
