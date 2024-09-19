@@ -1343,7 +1343,7 @@ $translatorDropdown.find('.dropdown-item').click(function onClick() {
       break;
     }
     case Translators.GOOGLE_GEMINI: {
-      if (translator == null) {
+      if (currentTranslator == null) {
         currentTranslator = new GoogleGemini(GOOGLE_GENERATIVE_AI_API_KEY);
         translators[activeTranslator] = currentTranslator;
       }
