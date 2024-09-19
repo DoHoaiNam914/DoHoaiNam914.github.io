@@ -11,6 +11,7 @@ class GoogleGemini extends Translator {
   };
 
   constructor(apiKey) {
+    super();
     this.apiKey = apiKey;
   }
 
