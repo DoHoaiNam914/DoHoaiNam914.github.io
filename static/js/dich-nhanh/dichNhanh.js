@@ -1345,7 +1345,7 @@ $translatorDropdown.find('.dropdown-item').click(function onClick() {
     case Translators.GOOGLE_GEMINI: {
       if (translator == null) {
         currentTranslator = new GoogleGemini(GOOGLE_GENERATIVE_AI_API_KEY);
-        translators[activeTranslator] = translator;
+        translators[activeTranslator] = currentTranslator;
       }
 
       break;
@@ -2052,7 +2052,7 @@ $translateEntryButtons.click(async function onClick() {
 
       switch (activeTranslator) {
         case Translators.GOOGLE_GEMINI: {
-          currentTranslator.controller = controller;
+          translator.controller = controller;
           await translator.translateText(text, targetLanguage, glossary);
           break;
         }
