@@ -4,12 +4,12 @@
 
 class GoogleGemini extends Translator {
   static LANGUAGE_LIST = [
-    'tiếng Anh', 'tiếng Nhật', 'tiếng Hàn', 'tiếng Ả Rập', 'tiếng Bahasa Indonesia', 'tiếng Bengal', 'tiếng Bulgaria', 'tiếng Trung (Giản thể)', 'tiếng Trung (Phồn thể)', 'tiếng Croatia', 'tiếng Séc', 'tiếng Đan Mạch', 'tiếng Hà Lan', 'tiếng Estonia', 'tiếng Farsi', 'tiếng Phần Lan', 'tiếng Pháp', 'tiếng Đức', 'tiếng Gujarati', 'tiếng Hy Lạp', 'tiếng Do Thái', 'tiếng Hindi', 'tiếng Hungary', 'tiếng Ý', 'tiếng Kannada', 'tiếng Latvia', 'tiếng Lithuania', 'tiếng Malayalam', 'tiếng Marathi', 'tiếng Na Uy', 'tiếng Ba Lan', 'tiếng Bồ Đào Nha', 'tiếng Romania', 'tiếng Nga', 'tiếng Serbia', 'tiếng Slovakia', 'tiếng Slovenia', 'tiếng Tây Ban Nha', 'tiếng Swahili', 'tiếng Thuỵ Điển', 'tiếng Tamil', 'tiếng Telugu', 'tiếng Thái', 'tiếng Thổ Nhĩ Kỳ', 'tiếng Ukraina', 'tiếng Urdu', 'tiếng Việt',
+    'Tiếng Anh', 'Tiếng Nhật', 'Tiếng Hàn', 'Tiếng Ả Rập', 'Tiếng Bahasa Indonesia', 'Tiếng Bengal', 'Tiếng Bulgaria', 'Tiếng Trung (Giản thể)', 'Tiếng Trung (Phồn thể)', 'Tiếng Croatia', 'Tiếng Séc', 'Tiếng Đan Mạch', 'Tiếng Hà Lan', 'Tiếng Estonia', 'Tiếng Farsi', 'Tiếng Phần Lan', 'Tiếng Pháp', 'Tiếng Đức', 'Tiếng Gujarati', 'Tiếng Hy Lạp', 'Tiếng Do Thái', 'Tiếng Hindi', 'Tiếng Hungary', 'Tiếng Ý', 'Tiếng Kannada', 'Tiếng Latvia', 'Tiếng Lithuania', 'Tiếng Malayalam', 'Tiếng Marathi', 'Tiếng Na Uy', 'Tiếng Ba Lan', 'Tiếng Bồ Đào Nha', 'Tiếng Romania', 'Tiếng Nga', 'Tiếng Serbia', 'Tiếng Slovakia', 'Tiếng Slovenia', 'Tiếng Tây Ban Nha', 'Tiếng Swahili', 'Tiếng Thuỵ Điển', 'Tiếng Tamil', 'Tiếng Telugu', 'Tiếng Thái', 'Tiếng Thổ Nhĩ Kỳ', 'Tiếng Ukraina', 'Tiếng Urdu', 'Tiếng Việt',
   ];
 
   DefaultLanguage = {
     SOURCE_LANGUAGE: '',
-    TARGET_LANGUAGE: 'tiếng Việt',
+    TARGET_LANGUAGE: 'Tiếng Việt',
   };
 
   constructor(apiKey) {
@@ -19,7 +19,7 @@ class GoogleGemini extends Translator {
 
   async translateText(text, targetLanguage, glossary) {
     try {
-      const name = Object.entries(glossary.namePhu);
+      const name = Object.entries(glossary.namePhu).filter(([first]) => text.includes(first));
       const response = await $.ajax({
         data: JSON.stringify({
           contents: [
@@ -27,17 +27,17 @@ class GoogleGemini extends Translator {
               role: 'user',
               parts: [
                 {
-                  text: `<TEXT>${text.split('\n').map((element) => element.replace(/^\s+/, '')).join('\n')}</TEXT>
-<NAMES>${name.length > 0 ? name.map((element) => element.join('=')).join('\n') : ''}</NAMES>`
+                  text: `<TEXT>${text.split('\n').map((element) => element.replace(/^\s+/, '')).join('\n')}</TEXT>${name.length > 0 ? `
+<NAMES>${name.map((element) => element.join('=')).join('\n')}</NAMES>` : ''}`
                 },
               ],
             },
           ],
           systemInstruction: {
-            role: 'model',
+            role: 'user',
             parts: [
               {
-                text: `Bạn là dịch giả. Bạn sẽ dịch văn bản trong nhãn <TEXT> sang ${targetLanguage}. Tham khảo tên riêng trong nhãn <NAMES> nếu có nhãn này. Các bản dịch của bạn phải truyền đạt đầy đủ đầu đề và nội dung của văn bản gốc và không được bao gồm giải thích hoặc thông tin không cần thiết khác hay định dạng kiểu chữ. Không được gộp hay cắt dòng mà phải giữ nguyên số dòng như văn bản gốc. Đảm bảo rằng văn bản dịch tự nhiên cho người bản địa, ngữ pháp chính xác và lựa chọn từ ngữ đúng đắn. Bản dịch của bạn chỉ chứa văn bản đã dịch và không thể chứa bất kỳ giải thích hoặc thông tin khác hay định dạng kiểu chữ.`,
+                text: `Dịch văn bản trong nhãn <TEXT> sau sang ${targetLanguage.replace('Tiếng', 'tiếng')}. Tham khảo tên riêng trong nhãn <NAMES> nếu có nhãn này. Các bản dịch của bạn phải truyền đạt đầy đủ nội dung của văn bản gốc và không được bao gồm giải thích hoặc thông tin không cần thiết khác. Không được gộp hay cắt dòng mà phải giữ nguyên số dòng như văn bản gốc. Đảm bảo rằng văn bản dịch tự nhiên cho người bản địa, ngữ pháp chính xác và lựa chọn từ ngữ đúng đắn. Bản dịch của bạn chỉ chứa văn bản đã dịch không bao gồm nhãn hay định dạng kiểu chữ và không thể chứa bất kỳ giải thích hoặc thông tin khác.`,
               },
             ],
           },
