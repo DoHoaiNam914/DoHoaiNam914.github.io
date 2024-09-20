@@ -4,7 +4,198 @@
 
 class GoogleGemini extends Translator {
   static LANGUAGE_LIST = [
-    'Tiếng Anh', 'Tiếng Nhật', 'Tiếng Hàn', 'Tiếng Ả Rập', 'Tiếng Bahasa Indonesia', 'Tiếng Bengal', 'Tiếng Bulgaria', 'Tiếng Trung (Giản thể)', 'Tiếng Trung (Phồn thể)', 'Tiếng Croatia', 'Tiếng Séc', 'Tiếng Đan Mạch', 'Tiếng Hà Lan', 'Tiếng Estonia', 'Tiếng Farsi', 'Tiếng Phần Lan', 'Tiếng Pháp', 'Tiếng Đức', 'Tiếng Gujarati', 'Tiếng Hy Lạp', 'Tiếng Do Thái', 'Tiếng Hindi', 'Tiếng Hungary', 'Tiếng Ý', 'Tiếng Kannada', 'Tiếng Latvia', 'Tiếng Lithuania', 'Tiếng Malayalam', 'Tiếng Marathi', 'Tiếng Na Uy', 'Tiếng Ba Lan', 'Tiếng Bồ Đào Nha', 'Tiếng Romania', 'Tiếng Nga', 'Tiếng Serbia', 'Tiếng Slovakia', 'Tiếng Slovenia', 'Tiếng Tây Ban Nha', 'Tiếng Swahili', 'Tiếng Thuỵ Điển', 'Tiếng Tamil', 'Tiếng Telugu', 'Tiếng Thái', 'Tiếng Thổ Nhĩ Kỳ', 'Tiếng Ukraina', 'Tiếng Urdu', 'Tiếng Việt',
+    {
+      label: 'Tự động nhận diện',
+      value: '',
+    }
+    {
+      label: 'Tiếng Anh',
+      value: 'English',
+    },
+    {
+      label: 'Tiếng Nhật',
+      value: 'Japanese',
+    },
+    {
+      label: 'Tiếng Hàn',
+      value: 'Korean',
+    },
+    {
+      label: 'Tiếng Ả Rập',
+      value: 'Arabic',
+    },
+    {
+      label: 'Tiếng Bahasa Indonesia',
+      value: 'Bahasa Indonesia',
+    },
+    {
+      label: 'Tiếng Bengal',
+      value: 'Bengali',
+    },
+    {
+      label: 'Tiếng Bulgaria',
+      value: 'Bulgarian',
+    },
+    {
+      label: 'Tiếng Trung (Giản thể)',
+      value: 'Chinese (Simplified)',
+    },
+    {
+      label: 'Tiếng Trung (Phồn thể)',
+      value: 'Chinese (Traditional)',
+    },
+    {
+      label: 'Tiếng Croatia',
+      value: 'Croatian',
+    },
+    {
+      label: 'Tiếng Séc',
+      value: 'Czech',
+    },
+    {
+      label: 'Tiếng Đan Mạch',
+      value: 'Danish',
+    },
+    {
+      label: 'Tiếng Hà Lan',
+      value: 'Dutch',
+    },
+    {
+      label: 'Tiếng Estonia',
+      value: 'Estonian',
+    },
+    {
+      label: 'Tiếng Farsi',
+      value: 'Farsi',
+    },
+    {
+      label: 'Tiếng Phần Lan',
+      value: 'Finnish',
+    },
+    {
+      label: 'Tiếng Pháp',
+      value: 'French',
+    },
+    {
+      label: 'Tiếng Đức',
+      value: 'German',
+    },
+    {
+      label: 'Tiếng Gujarati',
+      value: 'Gujarati',
+    },
+    {
+      label: 'Tiếng Hy Lạp',
+      value: 'Greek',
+    },
+    {
+      label: 'Tiếng Do Thái',
+      value: 'Hebrew',
+    },
+    {
+      label: 'Tiếng Hindi',
+      value: 'Hindi',
+    },
+    {
+      label: 'Tiếng Hungary',
+      value: 'Hungarian',
+    },
+    {
+      label: 'Tiếng Ý',
+      value: 'Italian',
+    },
+    {
+      label: 'Tiếng Kannada',
+      value: 'Kannada',
+    },
+    {
+      label: 'Tiếng Latvia',
+      value: 'Latvian',
+    },
+    {
+      label: 'Tiếng Lithuania',
+      value: 'Lithuanian',
+    },
+    {
+      label: 'Tiếng Malayalam',
+      value: 'Malayalam',
+    },
+    {
+      label: 'Tiếng Marathi',
+      value: 'Marathi',
+    },
+    {
+      label: 'Tiếng Na Uy',
+      value: 'Norwegian',
+    },
+    {
+      label: 'Tiếng Ba Lan',
+      value: 'Polish',
+    },
+    {
+      label: 'Tiếng Bồ Đào Nha',
+      value: 'Portuguese',
+    },
+    {
+      label: 'Tiếng Romania',
+      value: 'Romanian',
+    },
+    {
+      label: 'Tiếng Nga',
+      value: 'Russian',
+    },
+    {
+      label: 'Tiếng Serbia',
+      value: 'Serbian',
+    },
+    {
+      label: 'Tiếng Slovakia',
+      value: 'Slovak',
+    },
+    {
+      label: 'Tiếng Slovenia',
+      value: 'Slovenian',
+    },
+    {
+      label: 'Tiếng Tây Ban Nha',
+      value: 'Spanish',
+    },
+    {
+      label: 'Tiếng Swahili',
+      value: 'Swahili',
+    },
+    {
+      label: 'Tiếng Thuỵ Điển',
+      value: 'Swedish',
+    },
+    {
+      label: 'Tiếng Tamil',
+      value: 'Tamil',
+    },
+    {
+      label: 'Tiếng Telugu',
+      value: 'Telugu',
+    },
+    {
+      label: 'Tiếng Thái',
+      value: 'Thai',
+    },
+    {
+      label: 'Tiếng Thổ Nhĩ Kỳ',
+      value: 'Turkish',
+    },
+    {
+      label: 'Tiếng Ukraina',
+      value: 'Ukrainian',
+    },
+    {
+      label: 'Tiếng Urdu',
+      value: 'Urdu',
+    },
+    {
+      label: 'Tiếng Việt',
+      value: 'Vietnamese',
+    },
   ];
 
   DefaultLanguage = {
@@ -27,20 +218,28 @@ class GoogleGemini extends Translator {
               role: 'user',
               parts: [
                 {
+                  text: `Translate the following text including the title and content in the <TEXT> tag into ${targetLanguage}. Refer to the proper nouns in the <NAMES> tag if this tag exists. Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information. Do not merge or cut lines but keep the same number of lines as the original text. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text without formatting in the tag and cannot include explanations or other information.`,
+                },
+              ],
+            },
+            {
+              role: 'model',
+              parts: [
+                {
+                  text: `Please provide the text you would like to have translated into ${targetLanguage}.`,
+                },
+              ],
+            },
+            {
+              role: 'user',
+              parts: [
+                {
                   text: `<TEXT>${text.split('\n').map((element) => element.replace(/^\s+/, '')).join('\n')}</TEXT>${name.length > 0 ? `
 <NAMES>${name.map((element) => element.join('=')).join('\n')}</NAMES>` : ''}`
                 },
               ],
             },
           ],
-          systemInstruction: {
-            role: 'user',
-            parts: [
-              {
-                text: `Dịch văn bản gồm cả đầu đề và nội dung trong nhãn <TEXT> sau sang ${targetLanguage.replace('Tiếng', 'tiếng')}. Tham khảo tên riêng trong nhãn <NAMES> nếu có nhãn này. Các bản dịch của bạn phải truyền đạt đầy đủ nội dung của văn bản gốc và không được bao gồm giải thích hoặc thông tin không cần thiết khác. Không được gộp hay cắt dòng mà phải giữ nguyên số dòng như văn bản gốc. Đảm bảo rằng văn bản dịch tự nhiên cho người bản địa, ngữ pháp chính xác và lựa chọn từ ngữ đúng đắn. Bản dịch của bạn chỉ chứa văn bản đã dịch không bao gồm nhãn hay định dạng kiểu chữ và không thể chứa bất kỳ giải thích hoặc thông tin khác.`,
-              },
-            ],
-          },
           safetySettings: [
             {
               category: 'HARM_CATEGORY_HARASSMENT',

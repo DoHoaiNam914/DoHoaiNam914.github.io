@@ -138,7 +138,7 @@ const DEEPL_AUTH_KEY_LIST = [
   ['f8ff5708-f449-7a57-65b0-6ac4524cf64c:fx', 500000],
 ].toSorted((a, b) => a[1] - b[1]);
 
-const GOOGLE_GENERATIVE_AI_API_KEY = 'AIzaSyD5e2NPw_Vmgr_eUXtNX4tGMYl0lmsQQW4';
+const GEMINI_API_KEY = 'AIzaSyD5e2NPw_Vmgr_eUXtNX4tGMYl0lmsQQW4';
 
 const UUID = crypto.randomUUID();
 
@@ -502,9 +502,13 @@ const getSourceLangOptionList = function getSourceLanguageOptionListHtmlFromTran
       break;
     }
     case Translators.GOOGLE_GEMINI: {
-      const option = document.createElement('option');
-      option.innerText = '';
-      sourceLanguageSelect.appendChild(option);
+      GoogleGemini.LANGUAGE_LIST.forEach(({ label, value }) => {
+        if (!['', 'English', 'Japanese', 'Chinese (Simplified)', 'Chinese (Traditional)', 'Vietnamese'].includes(value)) return;
+        const option = document.createElement('option');
+        option.innerText = label;
+        option.value = value;
+        targetLanguageSelect.appendChild(option);
+      });
       break;
     }
     case Translators.LINGVANEX: {
@@ -605,10 +609,11 @@ const getTargetLangOptionList = function getTargetLanguageOptionListHtmlFromTran
       break;
     }
     case Translators.GOOGLE_GEMINI: {
-      GoogleGemini.LANGUAGE_LIST.forEach((language) => {
-        if (!['Tiếng Anh', 'Tiếng Nhật', 'Tiếng Trung (Giản thể)', 'Tiếng Trung (Phồn thể)', 'Tiếng Việt'].includes(language)) return;
+      GoogleGemini.LANGUAGE_LIST.forEach(({ label, value }) => {
+        if (!['English', 'Japanese', 'Chinese (Simplified)', 'Chinese (Traditional)', 'Vietnamese'].includes(language)) return;
         const option = document.createElement('option');
-        option.innerText = language;
+        option.innerText = label;
+        option.value = value;
         targetLanguageSelect.appendChild(option);
       });
       break;
@@ -700,6 +705,22 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
               role: 'user',
               parts: [
                 {
+                  text: 'Translate the text including the title and content in the <TEXT> tag into Vietnamese. Refer to the proper nouns in the <NAMES> tag if this tag exists. Refer to the meaning according to the raw translation in the <RAW> tag. Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information. Do not merge or cut lines but keep the same number of lines as the original text. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text without formatting in the tag and cannot include explanations or other information.',
+                },
+              ],
+            },
+            {
+              role: 'model',
+              parts: [
+                {
+                  text: 'Please provide the text you would like to have translated into Vietnamese.',
+                },
+              ],
+            },
+            {
+              role: 'user',
+              parts: [
+                {
                   text: `<TEXT>${text.split('\n').map((element) => element.replace(/^\s+/, '')).join('\n')}</TEXT>${name.length > 0 ? `
 <NAMES>${name.map((element) => element.join('=')).join('\n')}</NAMES>` : ''}
 <RAW>${rawTranslation.split('\n').map((element) => element.replace(/^\s+/, '')).join('\n')}</RAW>`,
@@ -707,14 +728,6 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
               ],
             },
           ],
-          systemInstruction: {
-            role: 'user',
-            parts: [
-              {
-                text: 'Dịch văn bản gồm cả đầu đề và nội dung trong nhãn <TEXT> sau sang tiếng Việt. Tham khảo tên riêng trong nhãn <NAMES> nếu có nhãn này. Tham khảo ngữ nghĩa theo bản dịch thô trong nhãn <RAW>. Các bản dịch của bạn phải truyền đạt đầy đủ nội dung của văn bản gốc và không được bao gồm giải thích hoặc thông tin không cần thiết khác. Không được gộp hay cắt dòng mà phải giữ nguyên số dòng như văn bản gốc. Đảm bảo rằng văn bản dịch tự nhiên cho người bản địa, ngữ pháp chính xác và lựa chọn từ ngữ đúng đắn. Bản dịch của bạn chỉ chứa văn bản đã dịch không bao gồm nhãn hay định dạng kiểu chữ và không thể chứa bất kỳ giải thích hoặc thông tin khác.',
-              },
-            ],
-          },
           safetySettings: [
             {
               category: 'HARM_CATEGORY_HARASSMENT',
@@ -743,7 +756,7 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
         }),
         headers: { 'Content-Type': 'application/json' },
         method: 'POST',
-        url: `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GOOGLE_GENERATIVE_AI_API_KEY}`,
+        url: `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`,
       });
       if (response.candidates != null) result = response.candidates[0].content.parts[0].text.replaceAll(/<\/?TEXT>/g, '');
       result = text.match(/^(?:\p{Zs}*\n)*/u)[0].concat(([...result.replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').matchAll(/\n\n/g)].length > [...text.replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').matchAll(/\n\n/g)].length ? result.replaceAll('\n\n', '\n') : result).replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').concat(text.match(/\s*$/)[0]));
@@ -1344,7 +1357,7 @@ $translatorDropdown.find('.dropdown-item').click(function onClick() {
     }
     case Translators.GOOGLE_GEMINI: {
       if (currentTranslator == null) {
-        currentTranslator = new GoogleGemini(GOOGLE_GENERATIVE_AI_API_KEY);
+        currentTranslator = new GoogleGemini(GEMINI_API_KEY);
         translators[activeTranslator] = currentTranslator;
       }
 
@@ -2003,7 +2016,7 @@ $translateEntryButtons.click(async function onClick() {
         }
         case Translators.GOOGLE_GEMINI: {
           if (translator == null) {
-            translator = new GoogleGemini(GOOGLE_GENERATIVE_AI_API_KEY);
+            translator = new GoogleGemini(GEMINI_API_KEY);
             translators[activeTranslator] = translator;
           }
 
