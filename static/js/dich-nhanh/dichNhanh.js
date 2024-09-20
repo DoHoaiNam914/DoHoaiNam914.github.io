@@ -607,7 +607,7 @@ const getTargetLangOptionList = function getTargetLanguageOptionListHtmlFromTran
     }
     case Translators.GOOGLE_GEMINI: {
       GoogleGemini.LANGUAGE_LIST.forEach(({ label, value }) => {
-        if (!['English', 'Japanese', 'Chinese (Simplified)', 'Chinese (Traditional)', 'Vietnamese'].includes(language)) return;
+        if (!['English', 'Japanese', 'Chinese (Simplified)', 'Chinese (Traditional)', 'Vietnamese'].includes(value)) return;
         const option = document.createElement('option');
         option.innerText = label;
         option.value = value;
