@@ -7,7 +7,7 @@ class GoogleGemini extends Translator {
     {
       label: 'Tự động nhận diện',
       value: '',
-    }
+    },
     {
       label: 'Tiếng Anh',
       value: 'English',
@@ -200,7 +200,7 @@ class GoogleGemini extends Translator {
 
   DefaultLanguage = {
     SOURCE_LANGUAGE: '',
-    TARGET_LANGUAGE: 'Tiếng Việt',
+    TARGET_LANGUAGE: 'Vietnamese',
   };
 
   constructor(apiKey) {

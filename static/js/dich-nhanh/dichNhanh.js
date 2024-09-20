@@ -502,13 +502,10 @@ const getSourceLangOptionList = function getSourceLanguageOptionListHtmlFromTran
       break;
     }
     case Translators.GOOGLE_GEMINI: {
-      GoogleGemini.LANGUAGE_LIST.forEach(({ label, value }) => {
-        if (!['', 'English', 'Japanese', 'Chinese (Simplified)', 'Chinese (Traditional)', 'Vietnamese'].includes(value)) return;
-        const option = document.createElement('option');
-        option.innerText = label;
-        option.value = value;
-        targetLanguageSelect.appendChild(option);
-      });
+      const option = document.createElement('option');
+      option.innerText = GoogleGemini.LANGUAGE_LIST[0].label;
+      option.value = GoogleGemini.LANGUAGE_LIST[0].value;
+      sourceLanguageSelect.appendChild(option);
       break;
     }
     case Translators.LINGVANEX: {
