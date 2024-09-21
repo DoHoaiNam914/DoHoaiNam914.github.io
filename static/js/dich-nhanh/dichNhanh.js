@@ -721,8 +721,8 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
               parts: [
                 {
                   text: `<TEXT>${text.split('\n').map((element) => element.replace(/^\s+/, '')).join('\n')}</TEXT>${terminologies.length > 0 ? `
-<TERMINOLOGIES>${terminologies.map((element) => element.join('\t')).join('\n')}</TERMINOLOGIES>` : ''}${name.length > 0 ? `
-<NAMES>${name.map((element) => element.join('\t')).join('\n')}</NAMES>` : ''}
+<TERMINOLOGIES>${terminologies.map((element) => element.join(' → ')).join('\n')}</TERMINOLOGIES>` : ''}${name.length > 0 ? `
+<NAMES>${name.map((element) => element.join(' → ')).join('\n')}</NAMES>` : ''}
 <RAW>${rawTranslation.split('\n').map((element) => element.replace(/^\s+/, '')).join('\n')}</RAW>`,
                 },
               ],
