@@ -210,7 +210,7 @@ class GoogleGemini extends Translator {
 
   async translateText(text, targetLanguage, glossary) {
     try {
-      const name = Object.entries(glossary.namePhu).filter(([first]) => text.includes(first));
+      const name = Object.entries(glossary).filter(([first]) => text.includes(first));
       const response = await $.ajax({
         data: JSON.stringify({
           contents: [

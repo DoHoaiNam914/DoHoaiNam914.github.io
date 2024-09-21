@@ -826,7 +826,7 @@ const translate = async function translateContentInTextarea(controller = new Abo
     switch ($activeTranslator.val()) {
       case Translators.GOOGLE_GEMINI: {
         currentTranslator.controller = controller;
-        await currentTranslator.translateText(text, targetLanguage, glossary);
+        await currentTranslator.translateText(text, targetLanguage, glossary.namePhu);
         break;
       }
       case Translators.VIETPHRASE: {
@@ -2064,7 +2064,7 @@ $translateEntryButtons.click(async function onClick() {
       switch (activeTranslator) {
         case Translators.GOOGLE_GEMINI: {
           translator.controller = entryTranslationController;
-          await translator.translateText(text, targetLanguage, glossary);
+          await translator.translateText(text, targetLanguage, nameEnabled != null && Boolean(nameEnabled) !== false ? glossary.namePhu : {});
           break;
         }
         case Translators.VIETPHRASE: {
