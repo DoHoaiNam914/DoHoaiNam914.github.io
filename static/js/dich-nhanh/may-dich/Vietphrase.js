@@ -75,7 +75,7 @@ class Vietphrase extends Translator {
       '～': '~',
     };
 
-    return text.replaceAll(/(?:[…、。】！），：；？]|\.\.\.)(?![\p{Pc}\p{Pd}\p{Pe}\p{Pf}\p{Po}\s]|$)/gu, (match) => `${PUNCTUATIONS[match] ?? match} `).replaceAll(/([^\s\p{Ps}\p{Pi}])([【（])/gu, (__, p1, p2) => `${p1} ${PUNCTUATIONS[p2] ?? p2}`).replaceAll(/[、。【】！（），：；？]/g, (match) => PUNCTUATIONS[match] ?? match).replaceAll(/ ?· ?/g, ' ');
+    return text.replaceAll(/(?:[…、。】！），：；？～]|\.\.\.)(?![\p{Pc}\p{Pd}\p{Pe}\p{Pf}\p{Po}\s]|$)/gu, (match) => `${PUNCTUATIONS[match] ?? match} `).replaceAll(/([^\s\p{Ps}\p{Pi}])([【（])/gu, (__, p1, p2) => `${p1} ${PUNCTUATIONS[p2] ?? p2}`).replaceAll(/[、。【】！（），：；？～]/g, (match) => PUNCTUATIONS[match] ?? match).replaceAll(/ ?· ?/g, ' ');
   }
 
   static quickTranslate(text, translations) {
@@ -181,9 +181,8 @@ class Vietphrase extends Translator {
     while (startIndex < charactersLength) {
       if (startIndex + endIndex > charactersLength) endIndex = charactersLength - startIndex;
       const translatedChars = translatedText.split(/(?:)/u);
-      const remainText = characters.slice(startIndex).join('');
 
-      if (!Object.hasOwn(hanVietMap, characters.at(startIndex)) || names.every(([first]) => !remainText.startsWith(first))) {
+      if (!Object.hasOwn(hanVietMap, characters.slice(startIndex).filter((element) => !/^[\p{Ps}\p{Pi}]/u.test(element))[0])) {
         const char = characters.at(startIndex);
         translatedText += (translatedChars.length > 0 && /^[\p{Lu}\p{Ll}\p{Nd}([{‘“]/u.test(char) && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(previousPhrase) ? ' ' : '') + char;
         previousPhrase = /[^\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(char) ? char : '';
@@ -315,9 +314,8 @@ class Vietphrase extends Translator {
     while (startIndex < charactersLength) {
       if (startIndex + endIndex > charactersLength) endIndex = charactersLength - startIndex;
       const translatedChars = translatedText.split(/(?:)/u);
-      const remainText = characters.slice(startIndex).join('');
 
-      if (!Object.hasOwn(hanVietMap, characters.at(startIndex)) || names.every(([first]) => !remainText.startsWith(first))) {
+      if (!Object.hasOwn(hanVietMap, characters.slice(startIndex).filter((element) => !/^[\p{Ps}\p{Pi}]/u.test(element))[0])) {
         const char = characters.at(startIndex);
         translatedText += (translatedChars.length > 0 && /^[\p{Lu}\p{Ll}\p{Nd}([{‘“]/u.test(char) && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(previousPhrase) ? ' ' : '') + char;
         previousPhrase = /[^\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(char) ? char : '';
@@ -419,7 +417,7 @@ class Vietphrase extends Translator {
           let isOnloadNewName = false;
 
           if (this.vietPhrase == null) {
-            this.vietPhrase = (!this.addDeLeZhaoEnabled ? [['的', ''], ['了', ''], ['着', '']] : []).concat(Object.entries(glossary.terminologies), Object.entries(glossary.vietPhrase).map(([first, second]) => [first, second.split(/[/|]/)[0]])).filter(function filter([first]) {
+            this.vietPhrase = (!this.addDeLeZhaoEnabled ? [['的', ''], ['了', ''], ['着', '']] : []).concat(Object.entries(glossary.terminologies).map(([first, second]) => [first, second.split(/[/|]/)[0]]), Object.entries(glossary.vietPhrase).map(([first, second]) => [first, second.split(/[/|]/)[0]])).filter(function filter([first]) {
               return !this[first] && (this[first] = 1);
             }, {});
             isOnloadNewVietPhrase = true;
