@@ -236,8 +236,8 @@ class GoogleGemini extends Translator {
               parts: [
                 {
                   text: `<TEXT>${text.split('\n').map((element) => element.replace(/^\s+/, '')).join('\n')}</TEXT>${terminologyList.length > 0 ? `
-<TERMINOLOGIES>${terminologyList.map((element) => element.join('\t')).join('\n')}</TERMINOLOGIES>` : ''}${nameList.length > 0 ? `
-<NAMES>${nameList.map((element) => element.join('\t')).join('\n')}</NAMES>` : ''}`
+<TERMINOLOGIES>${terminologyList.map((element) => element.join(' → ')).join('\n')}</TERMINOLOGIES>` : ''}${nameList.length > 0 ? `
+<NAMES>${nameList.map((element) => element.join(' → ')).join('\n')}</NAMES>` : ''}`
                 },
               ],
             },
