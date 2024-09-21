@@ -211,7 +211,7 @@ class GoogleGemini extends Translator {
   async translateText(text, targetLanguage terminologies, name) {
     try {
       const terminologyList = Object.entries(terminologies).filter(([first]) => text.includes(first));
-      const name = Object.entries(name).filter(([first]) => text.includes(first));
+      const nameList = Object.entries(name).filter(([first]) => text.includes(first));
       const response = await $.ajax({
         data: JSON.stringify({
           contents: [
@@ -235,9 +235,9 @@ class GoogleGemini extends Translator {
               role: 'user',
               parts: [
                 {
-                  text: `<TEXT>${text.split('\n').map((element) => element.replace(/^\s+/, '')).join('\n')}</TEXT>${terminologies.length > 0 ? `
-<TERMINOLOGIES>${terminologies.map((element) => element.join('\t')).join('\n')}</TERMINOLOGIES>` : ''}${name.length > 0 ? `
-<NAMES>${name.map((element) => element.join('\t')).join('\n')}</NAMES>` : ''}`
+                  text: `<TEXT>${text.split('\n').map((element) => element.replace(/^\s+/, '')).join('\n')}</TEXT>${terminologyList.length > 0 ? `
+<TERMINOLOGIES>${terminologyList.map((element) => element.join('\t')).join('\n')}</TERMINOLOGIES>` : ''}${nameList.length > 0 ? `
+<NAMES>${nameList.map((element) => element.join('\t')).join('\n')}</NAMES>` : ''}`
                 },
               ],
             },
