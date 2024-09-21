@@ -208,7 +208,7 @@ class GoogleGemini extends Translator {
     this.apiKey = apiKey;
   }
 
-  async translateText(text, targetLanguage terminologies, name) {
+  async translateText(text, targetLanguage, terminologies, name) {
     try {
       const terminologyList = Object.entries(terminologies).filter(([first]) => text.includes(first));
       const nameList = Object.entries(name).filter(([first]) => text.includes(first));
