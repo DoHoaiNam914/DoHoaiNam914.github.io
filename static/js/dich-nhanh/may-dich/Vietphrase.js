@@ -181,8 +181,9 @@ class Vietphrase extends Translator {
     while (startIndex < charactersLength) {
       if (startIndex + endIndex > charactersLength) endIndex = charactersLength - startIndex;
       const translatedChars = translatedText.split(/(?:)/u);
+      const remainText = characters.slice(startIndex).join('');
 
-      if (!Object.hasOwn(hanVietMap, characters.at(startIndex))) {
+      if (!Object.hasOwn(hanVietMap, characters.at(startIndex)) || names.every(([first]) => !remainText.startsWith(first))) {
         const char = characters.at(startIndex);
         translatedText += (translatedChars.length > 0 && /^[\p{Lu}\p{Ll}\p{Nd}([{‘“]/u.test(char) && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(previousPhrase) ? ' ' : '') + char;
         previousPhrase = /[^\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(char) ? char : '';
@@ -314,8 +315,9 @@ class Vietphrase extends Translator {
     while (startIndex < charactersLength) {
       if (startIndex + endIndex > charactersLength) endIndex = charactersLength - startIndex;
       const translatedChars = translatedText.split(/(?:)/u);
+      const remainText = characters.slice(startIndex).join('');
 
-      if (!Object.hasOwn(hanVietMap, characters.at(startIndex))) {
+      if (!Object.hasOwn(hanVietMap, characters.at(startIndex)) || names.every(([first]) => !remainText.startsWith(first))) {
         const char = characters.at(startIndex);
         translatedText += (translatedChars.length > 0 && /^[\p{Lu}\p{Ll}\p{Nd}([{‘“]/u.test(char) && /[\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(previousPhrase) ? ' ' : '') + char;
         previousPhrase = /[^\p{Lu}\p{Ll}\p{M}\p{Nd})\]}’”]$/u.test(char) ? char : '';
@@ -417,7 +419,7 @@ class Vietphrase extends Translator {
           let isOnloadNewName = false;
 
           if (this.vietPhrase == null) {
-            this.vietPhrase = (!this.addDeLeZhaoEnabled ? [['的', ''], ['了', ''], ['着', '']] : []).concat(Object.entries(glossary.vietPhrase).map(([first, second]) => [first, second.split(/[/|]/)[0]])).filter(function filter([first]) {
+            this.vietPhrase = (!this.addDeLeZhaoEnabled ? [['的', ''], ['了', ''], ['着', '']] : []).concat(Object.entries(glossary.terminologies), Object.entries(glossary.vietPhrase).map(([first, second]) => [first, second.split(/[/|]/)[0]])).filter(function filter([first]) {
               return !this[first] && (this[first] = 1);
             }, {});
             isOnloadNewVietPhrase = true;
