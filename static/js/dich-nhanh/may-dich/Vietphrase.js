@@ -63,6 +63,8 @@ class Vietphrase extends Translator {
     const PUNCTUATIONS = {
       '、': ',',
       '。': '.',
+      '《': '“',
+      '》': '”',
       '【': '[',
       '】': ']',
       '！': '!',
