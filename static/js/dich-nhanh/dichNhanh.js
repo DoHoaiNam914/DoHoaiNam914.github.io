@@ -454,7 +454,7 @@ const glossary = {
   OnYomis: [],
   SinoVietnameses: [],
   phonetics: { ...JSON.parse(localStorage.getItem('glossary') ?? JSON.stringify({ phonetics: {} })).phonetics },
-  dictionary: { ...JSON.parse(localStorage.getItem('glossary') ?? JSON.stringify({ dictionary: {} })).dictionary },
+  terminologies: { ...JSON.parse(localStorage.getItem('glossary') ?? JSON.stringify({ terminologies: {} })).terminologies },
   hanViet: [],
   vietPhrase: {},
   name: {},
@@ -702,7 +702,7 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
               role: 'user',
               parts: [
                 {
-                  text: 'Translate the text including the title and content in the <TEXT> tag into Vietnamese. Refer to the name in the <NAMES> tag. Refer to the vocabulary in the <DICTIONARY> tag. Refer to the meaning according to the raw translation in the <RAW> tag. Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information. Do not merge or cut lines but keep the same number of lines as the original text. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text without formatting in the tag and cannot include explanations or other information.',
+                  text: 'Translate the text within the <TEXT> tag into Vietnamese. Use the name in the <NAMES> tag and the term in the <GLOSSARY> tag. Consider the meaning according to the literal translation in the <RAW> tag. Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information. Do not merge or cut lines. Keep the same number of lines as the original text. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text without formatting in the tag and cannot include explanations or other information.',
                 },
               ],
             },
@@ -719,11 +719,11 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
               parts: [
                 {
                   text: `<TEXT>${text.split('\n').map((element) => element.replace(/^\s+/, '')).join('\n')}</TEXT>
-<DICTIONARY>
-${Object.entries(glossary.dictionary).filter(([first]) => text.includes(first)).map((element) => element.join(' → ')).join('\n')}
-</DICTIONARY>
+<GLOSSARY>
+${Object.entries(glossary.terminologies).filter(([first]) => text.includes(first)).map((element) => element.join('=')).join('\n')}
+</GLOSSARY>
 <NAMES>
-${Object.entries(glossary.namePhu).filter(([first]) => text.includes(first)).map((element) => element.join(' → ')).join('\n')}
+${Object.entries(glossary.namePhu).filter(([first]) => text.includes(first)).map((element) => element.join('=')).join('\n')}
 </NAMES>
 <RAW>${rawTranslation.split('\n').map((element) => element.replace(/^\s+/, '')).join('\n')}</RAW>`,
                 },
@@ -831,7 +831,7 @@ const translate = async function translateContentInTextarea(controller = new Abo
     switch ($activeTranslator.val()) {
       case Translators.GOOGLE_GEMINI: {
         currentTranslator.controller = controller;
-        await currentTranslator.translateText(text, targetLanguage, glossary.dictionary, glossary.namePhu);
+        await currentTranslator.translateText(text, targetLanguage, glossary);
         break;
       }
       case Translators.VIETPHRASE: {
@@ -903,7 +903,7 @@ const reloadGlossary = function reloadActiveGlossary(glossaryList) {
   const glossaryKeys = Object.keys(glossary[glossaryList]);
   $glossaryEntryCounter.text(glossaryKeys.length);
 
-  const glossaryStorage = { phonetics: glossary.phonetics, dictionary: glossary.dictionary, namePhu: glossary.namePhu };
+  const glossaryStorage = { phonetics: glossary.phonetics, terminologies: glossary.terminologies, namePhu: glossary.namePhu };
   if (Object.keys(glossaryStorage).includes(glossaryList)) glossary[glossaryList] = Object.fromEntries(Object.entries(glossary[glossaryList]).sort((a, b) => a[1].localeCompare(b[1], 'vi', { ignorePunctuation: true }) || a[0].localeCompare(b[0], 'vi', { ignorePunctuation: true })));
 
   const autocompleteGlossarySource = glossaryKeys.map((element) => ({ value: element, label: `${element} → ${glossary[glossaryList][element]}` }));
@@ -931,18 +931,18 @@ const saveGlossary = function saveGlossaryToLocalStorage() {
   const activeGlossaryList = $glossaryListSelect.val();
   reloadGlossary(activeGlossaryList);
 
-  const glossaryStorage = { phonetics: glossary.phonetics, dictionary: glossary.dictionary, namePhu: glossary.namePhu };
+  const glossaryStorage = { phonetics: glossary.phonetics, terminologies: glossary.terminologies, namePhu: glossary.namePhu };
   if (Object.keys(glossaryStorage).includes(activeGlossaryList)) glossary[activeGlossaryList] = Object.fromEntries(Object.entries(glossary[activeGlossaryList]).sort((a, b) => a[1].localeCompare(b[1], 'vi', { ignorePunctuation: true }) || a[0].localeCompare(b[0], 'vi', { ignorePunctuation: true })));
   localStorage.setItem('glossary', JSON.stringify(glossaryStorage));
 
-  if (['dictionary', 'vietPhrase', 'name', 'namePhu', 'luatNhan', 'pronoun'].some((element) => activeGlossaryList === element)) {
+  if (['terminologies', 'vietPhrase', 'name', 'namePhu', 'luatNhan', 'pronoun'].some((element) => activeGlossaryList === element)) {
     const activeTranslator = $translatorDropdown.find('.active').val();
     const addDeLeZhaoEnabled = $addDeLeZhaoSwitch.prop('checked');
     const multiplicationAlgorithm = $multiplicationAlgorithmRadio.filter('[checked]').val();
 
     if (activeTranslator === Translators.VIETPHRASE) {
       switch (activeGlossaryList) {
-        case 'dictionary':
+        case 'terminologies':
         case 'vietPhrase':
         case 'pronoun': {
           currentTranslator.vietPhrase = null;
@@ -1351,8 +1351,12 @@ $translatorDropdown.find('.dropdown-item').click(function onClick() {
     case Translators.DEEPL_TRANSLATE: {
       while (currentTranslator == null || (currentTranslator instanceof DeepLTranslate && (currentTranslator.usage.character_limit - currentTranslator.usage.character_count) < 100000)) {
         currentTranslator = new DeepLTranslate(DEEPL_AUTH_KEY_LIST[0][0]);
-        translators[activeTranslator] = currentTranslator;
-        if ((currentTranslator.usage.character_limit - currentTranslator.usage.character_count) >= 100000) break;
+
+        if ((currentTranslator.usage.character_limit - currentTranslator.usage.character_count) >= 100000) {
+          translators[activeTranslator] = currentTranslator;
+          break;
+        }
+
         DEEPL_AUTH_KEY_LIST.shift();
       }
 
@@ -2010,8 +2014,12 @@ $translateEntryButtons.click(async function onClick() {
         case Translators.DEEPL_TRANSLATE: {
           while (translator == null || (translator instanceof DeepLTranslate && (translator.usage.character_limit - translator.usage.character_count) < 1000)) {
             translator = new DeepLTranslate(DEEPL_AUTH_KEY_LIST[0][0]);
-            translators[activeTranslator] = translator;
-            if ((translator.usage.character_limit - translator.usage.character_count) >= 1000) break;
+
+            if ((translator.usage.character_limit - translator.usage.character_count) >= 1000) {
+              translators[activeTranslator] = translator;
+              break;
+            }
+
             DEEPL_AUTH_KEY_LIST.shift();
           }
 
@@ -2070,7 +2078,7 @@ $translateEntryButtons.click(async function onClick() {
       switch (activeTranslator) {
         case Translators.GOOGLE_GEMINI: {
           translator.controller = entryTranslationController;
-          await translator.translateText(text, targetLanguage, glossary.dictionary, nameEnabled != null && Boolean(nameEnabled) !== false ? glossary.namePhu : {});
+          await translator.translateText(text, targetLanguage, { ...glossary, namePhu: nameEnabled != null && Boolean(nameEnabled) !== false ? glossary.namePhu : {} });
           break;
         }
         case Translators.VIETPHRASE: {

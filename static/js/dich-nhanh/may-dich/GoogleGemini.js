@@ -208,7 +208,7 @@ class GoogleGemini extends Translator {
     this.apiKey = apiKey;
   }
 
-  async translateText(text, targetLanguage, dictionary, name) {
+  async translateText(text, targetLanguage, glossary) {
     try {
       const response = await $.ajax({
         data: JSON.stringify({
@@ -217,7 +217,7 @@ class GoogleGemini extends Translator {
               role: 'user',
               parts: [
                 {
-                  text: `Translate the following text including the title and content in the <TEXT> tag into ${targetLanguage}. Refer to the name in the <NAMES> tag. Refer to the vocabulary in the <DICTIONARY> tag. Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information. Do not merge or cut lines but keep the same number of lines as the original text. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text without formatting in the tag and cannot include explanations or other information.`,
+                  text: `Translate the text within the <TEXT> tag into Vietnamese. Use the name in the <NAMES> tag and the term in the <GLOSSARY> tag. Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information. Do not merge or cut lines. Keep the same number of lines as the original text. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text without formatting in the tag and cannot include explanations or other information.`,
                 },
               ],
             },
@@ -234,11 +234,11 @@ class GoogleGemini extends Translator {
               parts: [
                 {
                   text: `<TEXT>${text.split('\n').map((element) => element.replace(/^\s+/, '')).join('\n')}</TEXT>
-<DICTIONARY>
-${Object.entries(dictionary).filter(([first]) => text.includes(first)).map((element) => element.join(' → ')).join('\n')}
-</DICTIONARY>
+<GLOSSARY>
+${Object.entries(glossary.terminologies).filter(([first]) => text.includes(first)).map((element) => element.join(' → ')).join('\n')}
+</GLOSSARY>
 <NAMES>
-${Object.entries(name).filter(([first]) => text.includes(first)).map((element) => element.join(' → ')).join('\n')}
+${Object.entries(glossary.namePhu).filter(([first]) => text.includes(first)).map((element) => element.join(' → ')).join('\n')}
 </NAMES>`
                 },
               ],
