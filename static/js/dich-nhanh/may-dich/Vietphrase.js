@@ -419,7 +419,7 @@ class Vietphrase extends Translator {
           let isOnloadNewName = false;
 
           if (this.vietPhrase == null) {
-            this.vietPhrase = (!this.addDeLeZhaoEnabled ? [['的', ''], ['了', ''], ['着', '']] : []).concat(Object.entries(glossary.terminologies).map(([first, second]) => [first, second.split(/[/|]/)[0]]), Object.entries(glossary.vietPhrase).map(([first, second]) => [first, second.split(/[/|]/)[0]])).filter(function filter([first]) {
+            this.vietPhrase = (!this.addDeLeZhaoEnabled ? [['的', ''], ['了', ''], ['着', '']] : []).concat(Object.entries(glossary.dictionary).map(([first, second]) => [first, second.split(/[/|]/)[0]]), Object.entries(glossary.vietPhrase).map(([first, second]) => [first, second.split(/[/|]/)[0]])).filter(function filter([first]) {
               return !this[first] && (this[first] = 1);
             }, {});
             isOnloadNewVietPhrase = true;
