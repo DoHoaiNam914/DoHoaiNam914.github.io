@@ -208,10 +208,8 @@ class GoogleGemini extends Translator {
     this.apiKey = apiKey;
   }
 
-  async translateText(text, targetLanguage, terminologies, name) {
+  async translateText(text, targetLanguage, dictionary, name) {
     try {
-      const terminologyList = Object.entries(terminologies).filter(([first]) => text.includes(first));
-      const nameList = Object.entries(name).filter(([first]) => text.includes(first));
       const response = await $.ajax({
         data: JSON.stringify({
           contents: [
@@ -219,7 +217,7 @@ class GoogleGemini extends Translator {
               role: 'user',
               parts: [
                 {
-                  text: `Translate the following text including the title and content in the <TEXT> tag into ${targetLanguage}. Refer to the name in the <NAMES> tag if this tag exists. Refer to the terminology in the <TERMINOLOGIES> tag if this tag exists. Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information. Do not merge or cut lines but keep the same number of lines as the original text. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text without formatting in the tag and cannot include explanations or other information.`,
+                  text: `Translate the following text including the title and content in the <TEXT> tag into ${targetLanguage}. Refer to the name in the <NAMES> tag if this tag exists. Refer to the vocabulary in the <DICTIONARY> tag if this tag exists. Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information. Do not merge or cut lines but keep the same number of lines as the original text. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text without formatting in the tag and cannot include explanations or other information.`,
                 },
               ],
             },
@@ -235,9 +233,13 @@ class GoogleGemini extends Translator {
               role: 'user',
               parts: [
                 {
-                  text: `<TEXT>${text.split('\n').map((element) => element.replace(/^\s+/, '')).join('\n')}</TEXT>${terminologyList.length > 0 ? `
-<TERMINOLOGIES>${terminologyList.map((element) => element.join(' → ')).join('\n')}</TERMINOLOGIES>` : ''}${nameList.length > 0 ? `
-<NAMES>${nameList.map((element) => element.join(' → ')).join('\n')}</NAMES>` : ''}`
+                  text: `<TEXT>${text.split('\n').map((element) => element.replace(/^\s+/, '')).join('\n')}</TEXT>
+<DICTIONARY>
+${Object.entries(dictionary).filter(([first]) => text.includes(first)).map((element) => element.join(' → ')).join('\n')}
+</DICTIONARY>
+<NAMES>
+${Object.entries(name).filter(([first]) => text.includes(first)).map((element) => element.join(' → ')).join('\n')}
+</NAMES>`
                 },
               ],
             },
