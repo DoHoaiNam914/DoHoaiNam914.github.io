@@ -702,7 +702,7 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
               role: 'user',
               parts: [
                 {
-                  text: 'Translate the text including the title and content in the <TEXT> tag into Vietnamese. Refer to the name in the <NAMES> tag if this tag exists. Refer to the vocabulary in the <DICTIONARY> tag if this tag exists. Refer to the meaning according to the raw translation in the <RAW> tag. Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information. Do not merge or cut lines but keep the same number of lines as the original text. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text without formatting in the tag and cannot include explanations or other information.',
+                  text: 'Translate the text including the title and content in the <TEXT> tag into Vietnamese. Refer to the name in the <NAMES> tag. Refer to the vocabulary in the <DICTIONARY> tag. Refer to the meaning according to the raw translation in the <RAW> tag. Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information. Do not merge or cut lines but keep the same number of lines as the original text. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text without formatting in the tag and cannot include explanations or other information.',
                 },
               ],
             },
