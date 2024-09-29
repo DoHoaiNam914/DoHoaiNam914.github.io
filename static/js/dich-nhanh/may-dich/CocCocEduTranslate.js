@@ -14,7 +14,7 @@ class CocCocEduTranslate extends Translator {
   constructor() {
     super();
     this.maxContentLengthPerRequest = 1000 - 282;
-    this.maxContentLinePerRequest = 25;
+    this.maxContentLinePerRequest = 25 - 24;
   }
 
   async translateText(text, targetLanguage, sourceLanguage = this.DefaultLanguage.SOURCE_LANGUAGE) {
