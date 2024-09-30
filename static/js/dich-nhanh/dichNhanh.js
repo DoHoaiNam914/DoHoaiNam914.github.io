@@ -702,7 +702,7 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
               role: 'user',
               parts: [
                 {
-                  text: 'Use the name in the <NAMES></NAMES> tag and the term in the <GLOSSARY></GLOSSARY> tag. Translate the text within the <TEXT></TEXT> tag into Vietnamese. Consider the meaning according to the literal translation in the <RAW></RAW> tag. Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information. Do not cut, merge, add, or delete lines. Make sure to keep the same number of lines as the original text. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text without formatting or the tag and cannot include explanations or other information.',
+                  text: 'Use the name in #names and the term in #glossary. Translate the text within #text into Vietnamese. Consider the meaning according to the literal translation in #raw. Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information. Do not cut, merge, add, or delete lines. Make sure to keep the same number of lines as the original text. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text without formatting or the tag and cannot include explanations or other information.',
                 },
               ],
             },
@@ -718,14 +718,10 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
               role: 'user',
               parts: [
                 {
-                  text: `<NAMES>
-${Object.entries(glossary.namePhu).filter(([first]) => text.includes(first)).map((element) => element.join('=')).join('\n')}
-</NAMES>
-<GLOSSARY>
-${Object.entries(glossary.terminologies).filter(([first]) => text.includes(first)).map((element) => element.join('=')).join('\n')}
-</GLOSSARY>
-<TEXT>${text}</TEXT>
-<RAW>${rawTranslation}</RAW>`,
+                  text: `<pre id="names">${Object.entries(glossary.namePhu).filter(([first]) => text.includes(first)).map((element) => element.join('=')).join('\n')}</pre>
+<pre id="glossary">${Object.entries(glossary.terminologies).filter(([first]) => text.includes(first)).map((element) => element.join('=')).join('\n')}</pre>
+<pre id="text">${text}</pre>
+<pre id="raw">${rawTranslation}</pre>`,
                 },
               ],
             },
