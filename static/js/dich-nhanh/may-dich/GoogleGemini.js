@@ -217,7 +217,7 @@ class GoogleGemini extends Translator {
               role: 'user',
               parts: [
                 {
-                  text: `Use the name in #names and the term in #glossary. Translate the text within #text into ${targetLanguage}. Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information. Do not cut, merge, add, or delete lines. Make sure to keep the same number of lines as the original text. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text without formatting or the tag and cannot include explanations or other information.`,
+                  text: `Use the name in #names and the term in #glossary. Translate the text within #text into ${targetLanguage}. Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information.${targetLanguage === 'Vietnamese' ? ' Standardize the use of I/Y for the main vowel and the placement of tone marks in syllables with -oa/-oe/-uy.' : ''} If it is a Chinese name, translate it into ${targetLanguage === 'Vietnamese' ? 'Sino-Vietnamese' : 'pinyin'}. If it is a Japanese name, translate it into romaji. Do not cut, merge, add, or delete lines. Make sure to keep the same number of lines as the original text. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text without formatting or the tag and cannot include explanations or other information.`,
                 },
               ],
             },
@@ -271,7 +271,7 @@ class GoogleGemini extends Translator {
         url: `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${this.apiKey}`,
       });
       if (this.controller.signal.aborted) return text;
-      if (response.candidates != null) this.result = response.candidates[0].content.parts[0].text.replaceAll(/<\/?TEXT>/g, '');
+      if (response.candidates != null) this.result = response.candidates[0].content.parts[0].text;
       this.result = text.match(/^(?:\p{Zs}*\n)*/u)[0].concat(([...this.result.replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').matchAll(/\n\n/g)].length > [...text.replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').matchAll(/\n\n/g)].length ? this.result.replaceAll('\n\n', '\n') : this.result).replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').concat(text.match(/\s*$/)[0]));
       super.translateText(text, targetLanguage, this.DefaultLanguage.SOURCE_LANGUAGE);
     } catch (error) {

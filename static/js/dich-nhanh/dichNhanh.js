@@ -702,7 +702,7 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
               role: 'user',
               parts: [
                 {
-                  text: 'Use the name in #names and the term in #glossary. Translate the text within #text into Vietnamese. Consider the meaning according to the literal translation in #raw. Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information. Do not cut, merge, add, or delete lines. Make sure to keep the same number of lines as the original text. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text without formatting or the tag and cannot include explanations or other information.',
+                  text: 'Use the name in #names and the term in #glossary. Translate the text within #text into Vietnamese. Consider the meaning according to the literal translation in #raw. Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information. Standardize the use of I/Y for the main vowel and the placement of tone marks in syllables with -oa/-oe/-uy. If it is a Chinese name, translate it into Sino-Vietnamese. If it is a Japanese name, translate it into romaji. Do not cut, merge, add, or delete lines. Make sure to keep the same number of lines as the original text. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text without formatting or the tag and cannot include explanations or other information.',
                 },
               ],
             },
@@ -756,7 +756,7 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
         method: 'POST',
         url: `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`,
       });
-      if (response.candidates != null) result = response.candidates[0].content.parts[0].text.replaceAll(/<\/?TEXT>/g, '');
+      if (response.candidates != null) result = response.candidates[0].content.parts[0].text;
       result = text.match(/^(?:\p{Zs}*\n)*/u)[0].concat(([...result.replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').matchAll(/\n\n/g)].length > [...text.replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').matchAll(/\n\n/g)].length ? result.replaceAll('\n\n', '\n') : result).replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').concat(text.match(/\s*$/)[0]));
     }
   } catch (error) {
