@@ -724,8 +724,8 @@ ${Object.entries(glossary.namePhu).filter(([first]) => text.includes(first)).map
 <GLOSSARY>
 ${Object.entries(glossary.terminologies).filter(([first]) => text.includes(first)).map((element) => element.join('=')).join('\n')}
 </GLOSSARY>
-<TEXT>${text.split('\n').map((element) => element.replace(/^\s+/, '')).join('\n')}</TEXT>
-<RAW>${rawTranslation.split('\n').map((element) => element.replace(/^\s+/, '')).join('\n')}</RAW>`,
+<TEXT>${text}</TEXT>
+<RAW>${rawTranslation}</RAW>`,
                 },
               ],
             },

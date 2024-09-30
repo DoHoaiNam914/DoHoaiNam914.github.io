@@ -234,12 +234,12 @@ class GoogleGemini extends Translator {
               parts: [
                 {
                   text: `<NAMES>
-${Object.entries(glossary.namePhu).filter(([first]) => text.includes(first)).map((element) => element.join(' → ')).join('\n')}
+${Object.entries(glossary.namePhu).filter(([first]) => text.includes(first)).map((element) => element.join('=')).join('\n')}
 </NAMES>
 <GLOSSARY>
-${Object.entries(glossary.terminologies).filter(([first]) => text.includes(first)).map((element) => element.join(' → ')).join('\n')}
+${Object.entries(glossary.terminologies).filter(([first]) => text.includes(first)).map((element) => element.join('=')).join('\n')}
 </GLOSSARY>
-<TEXT>${text.split('\n').map((element) => element.replace(/^\s+/, '')).join('\n')}</TEXT>`,
+<TEXT>${text}</TEXT>`,
                 },
               ],
             },
