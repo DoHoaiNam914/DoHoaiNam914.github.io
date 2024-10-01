@@ -233,8 +233,8 @@ class GoogleGemini extends Translator {
               role: 'user',
               parts: [
                 {
-                  text: `<pre id="names">${Object.entries(glossary.namePhu).filter(([first]) => text.includes(first)).map((element) => element.join('=')).join('\n')}</pre>
-<pre id="glossary">${Object.entries(glossary.terminologies).filter(([first]) => text.includes(first)).map((element) => element.join('=')).join('\n')}</pre>
+                  text: `<pre id="names">${Object.entries(glossary.namePhu).filter(([first]) => text.includes(first)).map((element) => element.join(' → ')).join('\n')}</pre>
+<pre id="glossary">${Object.entries(glossary.terminologies).filter(([first]) => text.includes(first)).map((element) => element.join(' → ')).join('\n')}</pre>
 <pre id="text">${text}</pre>`,
                 },
               ],
