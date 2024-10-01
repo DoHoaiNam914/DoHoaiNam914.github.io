@@ -718,12 +718,8 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
               role: 'user',
               parts: [
                 {
-                  text: `<pre type="text/tab-separated-values" id="names">source\ttarget
-${Object.entries(glossary.namePhu).filter(([first]) => text.includes(first)).map((element) => element.join('\t')).join('\n')}
-</pre>
-<pre type="text/tab-separated-values" id="glossary">source\ttarget
-${Object.entries(glossary.terminologies).filter(([first]) => text.includes(first)).map((element) => element.join('\t')).join('\n')}
-</pre>
+                  text: `<pre type="text/tab-separated-values" id="names">${Object.entries(glossary.namePhu).filter(([first]) => text.includes(first)).map((element) => element.join('\t')).join('\n')}</pre>
+<pre type="text/tab-separated-values" id="glossary">${Object.entries(glossary.terminologies).filter(([first]) => text.includes(first)).map((element) => element.join('\t')).join('\n')}</pre>
 <pre type="text/plain" id="text">${text}</pre>
 <pre type="text/plain" id="raw">${rawTranslation}</pre>`,
                 },
