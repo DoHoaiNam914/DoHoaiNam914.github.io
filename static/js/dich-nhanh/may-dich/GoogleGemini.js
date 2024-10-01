@@ -217,7 +217,7 @@ class GoogleGemini extends Translator {
               role: 'user',
               parts: [
                 {
-                  text: `Use the name in #names and the term in #glossary. Translate the text within #text into ${targetLanguage}. Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information.${targetLanguage === 'Vietnamese' ? ' Standardize the use of I/Y for the main vowel and the placement of tone marks in syllables with -oa/-oe/-uy.' : ''}. Remember to use ${targetLanguage === 'Vietnamese' ? 'Sino-Vietnamese' : 'pinyin'} for Chinese names and Hepburn for Japanese names. Do not cut, merge, add, or delete lines. Make sure to keep the same number of lines as the original text. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text without formatting or the tag and cannot include explanations or other information.`,
+                  text: `Translate the text within #text into ${targetLanguage}. Please make sure to use names in #names and terms in #glossary. Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information.${targetLanguage === 'Vietnamese' ? ' Standardize the use of I/Y for the main vowel and the placement of tone marks in syllables with -oa/-oe/-uy.' : ''}. When writing Chinese names, use ${targetLanguage === 'Vietnamese' ? 'Sino-Vietnamese' : 'pinyin'}. For Japanese names, use Hepburn. Do not cut, merge, add, or delete lines. Make sure to keep the same number of lines as the original text. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text without formatting or the tag and cannot include explanations or other information.`,
                 },
               ],
             },
@@ -233,9 +233,13 @@ class GoogleGemini extends Translator {
               role: 'user',
               parts: [
                 {
-                  text: `<pre id="names">${Object.entries(glossary.namePhu).filter(([first]) => text.includes(first)).map((element) => element.join(' → ')).join('\n')}</pre>
-<pre id="glossary">${Object.entries(glossary.terminologies).filter(([first]) => text.includes(first)).map((element) => element.join(' → ')).join('\n')}</pre>
-<pre id="text">${text}</pre>`,
+                  text: `<pre type="text/tab-separated-values" id="names">source\ttarget
+${Object.entries(glossary.namePhu).filter(([first]) => text.includes(first)).map((element) => element.join('\t')).join('\n')}
+</pre>
+<pre type="text/tab-separated-values" id="glossary">source\ttarget
+${Object.entries(glossary.terminologies).filter(([first]) => text.includes(first)).map((element) => element.join('\t')).join('\n')}
+</pre>
+<pre type="text/plain" id="text">${text}</pre>`,
                 },
               ],
             },

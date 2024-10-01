@@ -702,7 +702,7 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
               role: 'user',
               parts: [
                 {
-                  text: 'Use the name in #names and the term in #glossary. Translate the text within #text into Vietnamese. Consider the meaning according to the literal translation in #raw. Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information. Standardize the use of I/Y for the main vowel and the placement of tone marks in syllables with -oa/-oe/-uy. Remember to use Sino-Vietnamese for Chinese names and Hepburn for Japanese names. Do not cut, merge, add, or delete lines. Make sure to keep the same number of lines as the original text. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text without formatting or the tag and cannot include explanations or other information.',
+                  text: 'Translate the text within #text into Vietnamese. Please make sure to use names in #names and terms in #glossary. Consider the meaning according to the literal translation in #raw. Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information. Standardize the use of I/Y for the main vowel and the placement of tone marks in syllables with -oa/-oe/-uy. When writing Chinese names, use Sino-Vietnamese. For Japanese names, use Hepburn. Do not cut, merge, add, or delete lines. Make sure to keep the same number of lines as the original text. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text without formatting or the tag and cannot include explanations or other information.',
                 },
               ],
             },
@@ -718,10 +718,14 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
               role: 'user',
               parts: [
                 {
-                  text: `<pre id="names">${Object.entries(glossary.namePhu).filter(([first]) => text.includes(first)).map((element) => element.join(' → ')).join('\n')}</pre>
-<pre id="glossary">${Object.entries(glossary.terminologies).filter(([first]) => text.includes(first)).map((element) => element.join(' → ')).join('\n')}</pre>
-<pre id="text">${text}</pre>
-<pre id="raw">${rawTranslation}</pre>`,
+                  text: `<pre type="text/tab-separated-values" id="names">source\ttarget
+${Object.entries(glossary.namePhu).filter(([first]) => text.includes(first)).map((element) => element.join('\t')).join('\n')}
+</pre>
+<pre type="text/tab-separated-values" id="glossary">source\ttarget
+${Object.entries(glossary.terminologies).filter(([first]) => text.includes(first)).map((element) => element.join('\t')).join('\n')}
+</pre>
+<pre type="text/plain" id="text">${text}</pre>
+<pre type="text/plain" id="raw">${rawTranslation}</pre>`,
                 },
               ],
             },
@@ -2132,9 +2136,10 @@ $translateEntryButtons.click(async function onClick() {
 });
 
 $addButton.click(() => {
-  if ($sourceEntryInput.val().length === 0) return;
-  if ($glossaryListSelect.val() === 'namePhu' && Object.hasOwn(glossary.name, $sourceEntryInput.val())) delete glossary.name[$sourceEntryInput.val()];
-  glossary[$glossaryListSelect.val()][$sourceEntryInput.val()] = $targetEntryTextarea.val().trimStart();
+  const key = $sourceEntryInput.val().trim();
+  if (key.length === 0) return;
+  if ($glossaryListSelect.val() === 'namePhu' && Object.hasOwn(glossary.name, key)) delete glossary.name[key];
+  glossary[$glossaryListSelect.val()][key] = $targetEntryTextarea.val().trim();
   saveGlossary();
   $addButton.addClass('disabled');
   $removeButton.addClass('disabled');
