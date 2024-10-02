@@ -702,7 +702,7 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
               role: 'user',
               parts: [
                 {
-                  text: 'Translate the text within #text into Vietnamese. Please make sure to use the name in #names and the term in #glossary. Consider the meaning according to the literal translation in #raw. Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information. Standardize the use of I/Y for the main vowel and the placement of tone marks in syllables with -oa/-oe/-uy. When writing Chinese names, use Sino-Vietnamese. For Japanese names, use Hepburn. Do not cut, merge, add, or delete lines. Make sure to keep the same number of lines as the original text. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text without formatting or the tag and cannot include explanations or other information.',
+                  text: 'Translate the text within #text into Vietnamese. Please make sure to use the name in #names and the term in #glossary. Consider the meaning according to the literal translation in #raw. Your translations must convey all the content in the original text within #text and cannot involve explanations or other unnecessary information. Make sure to keep the same number of lines as the original text within #text. Standardize the use of I/Y for the main vowel and the placement of tone marks in syllables with -oa/-oe/-uy in the translated text. When writing Japanese names, use Hepburn romanization. For Chinese names, use Sino-Vietnamese. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text and cannot include explanations or other information.',
                 },
               ],
             },
@@ -718,10 +718,18 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
               role: 'user',
               parts: [
                 {
-                  text: `<pre type="text/tab-separated-values" id="names">${Object.entries(glossary.namePhu).filter(([first]) => text.includes(first)).map((element) => element.join('\t')).join('\n')}</pre>
-<pre type="text/tab-separated-values" id="glossary">${Object.entries(glossary.terminologies).filter(([first]) => text.includes(first)).map((element) => element.join('\t')).join('\n')}</pre>
-<pre type="text/plain" id="text">${text}</pre>
-<pre type="text/plain" id="raw">${rawTranslation}</pre>`,
+                  text: `<script type="text/tab-separated-values" id="names">
+${['source\ttarget', ...Object.entries(glossary.namePhu).filter(([first]) => text.includes(first)).map((element) => element.join('\t'))].join('\n')}
+</script>
+<script type="text/tab-separated-values" id="glossary">
+${['source\ttarget', ...Object.entries(glossary.terminologies).filter(([first]) => text.includes(first)).map((element) => element.join('\t'))].join('\n')}
+</script>
+<pre type="text/plain" id="text">
+${text}
+</pre>
+<pre type="text/plain" id="raw">
+${rawTranslation}
+</pre>`,
                 },
               ],
             },
@@ -756,7 +764,7 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
         method: 'POST',
         url: `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`,
       });
-      if (response.candidates != null) result = response.candidates[0].content.parts[0].text;
+      if (response.candidates != null) result = response.candidates[0].content.parts[0].text.replaceAll(/<pre type="text\/plain" id="text">\n|\n<\/pre>/g, '');
       result = text.match(/^(?:\p{Zs}*\n)*/u)[0].concat(([...result.replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').matchAll(/\n\n/g)].length > [...text.replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').matchAll(/\n\n/g)].length ? result.replaceAll('\n\n', '\n') : result).replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').concat(text.match(/\s*$/)[0]));
     }
   } catch (error) {
