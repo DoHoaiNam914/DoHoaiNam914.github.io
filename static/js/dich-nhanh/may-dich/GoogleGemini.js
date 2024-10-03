@@ -277,7 +277,7 @@ ${text}
         url: `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${this.apiKey}`,
       });
       if (this.controller.signal.aborted) return text;
-      if (response.candidates != null) this.result = response.candidates[0].content.parts[0].text.replaceAll(/<pre type="text\/plain" id="text">\n|\n<\/pre>/g, '');
+      if (response.candidates != null) this.result = response.candidates[0].content.parts[0].text.replaceAll(/(?:<pre type="text\/plain" id="text">|<pre type="text\/plain">)\n|\n<\/pre>/g, '');
       this.result = text.match(/^(?:\p{Zs}*\n)*/u)[0].concat(([...this.result.replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').matchAll(/\n\n/g)].length > [...text.replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').matchAll(/\n\n/g)].length ? this.result.replaceAll('\n\n', '\n') : this.result).replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').concat(text.match(/\s*$/)[0]));
       super.translateText(text, targetLanguage, this.DefaultLanguage.SOURCE_LANGUAGE);
     } catch (error) {

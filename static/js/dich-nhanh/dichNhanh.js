@@ -764,7 +764,7 @@ ${rawTranslation}
         method: 'POST',
         url: `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`,
       });
-      if (response.candidates != null) result = response.candidates[0].content.parts[0].text.replaceAll(/<pre type="text\/plain" id="text">\n|\n<\/pre>/g, '');
+      if (response.candidates != null) result = response.candidates[0].content.parts[0].text.replaceAll(/(?:<pre type="text\/plain" id="text">|<pre type="text\/plain">)\n|\n<\/pre>/g, '');
       result = text.match(/^(?:\p{Zs}*\n)*/u)[0].concat(([...result.replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').matchAll(/\n\n/g)].length > [...text.replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').matchAll(/\n\n/g)].length ? result.replaceAll('\n\n', '\n') : result).replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').concat(text.match(/\s*$/)[0]));
     }
   } catch (error) {
