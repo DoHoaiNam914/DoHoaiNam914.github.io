@@ -695,6 +695,7 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
 
   try {
     if (artificialIntelligence !== 'none') {
+      const lines = text.split('\n');
       const response = await $.ajax({
         data: JSON.stringify({
           contents: [
@@ -702,7 +703,7 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
               role: 'user',
               parts: [
                 {
-                  text: 'Translate the text within #text into Vietnamese. Please make sure to use the name in #names and the term in #glossary. Consider the meaning according to the literal translation in #raw. Your translations must convey all the content in the original text within #text and cannot involve explanations or other unnecessary information. Make sure to keep the same number of lines as the original text within #text. Standardize the use of I/Y for the main vowel and the placement of tone marks in syllables with -oa/-oe/-uy in the translated text. When writing Japanese names, use Hepburn romanization. For Chinese names, use Sino-Vietnamese. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text and cannot include explanations or other information.',
+                  text: 'Translate the text within #text into Vietnamese. Please make sure to use the name in #names and the term in #glossary. Consider the meaning according to the literal translation in #raw. Your translations must convey all the content in the original text within #text line-by-line and cannot involve explanations or other unnecessary information. Make sure to keep the same number of lines as the original text within #text. Standardize the use of I/Y for the main vowel and the placement of tone marks in syllables with -oa/-oe/-uy. When writing Chinese names, use Sino-Vietnamese. For Japanese names, use Hepburn. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text and cannot include explanations or other information.',
                 },
               ],
             },
@@ -725,10 +726,10 @@ ${['source\ttarget', ...Object.entries(glossary.namePhu).filter(([first]) => tex
 ${['source\ttarget', ...Object.entries(glossary.terminologies).filter(([first]) => text.includes(first)).map((element) => element.join('\t'))].join('\n')}
 </script>
 <pre type="text/plain" id="text">
-${text}
+${lines.map((element) => element.replace(/^\s+/g, '')).join('\n')}
 </pre>
 <pre type="text/plain" id="raw">
-${rawTranslation}
+${rawTranslation.split('\n').map((element) => element.replace(/^\s+/g, '')).join('\n')}
 </pre>`,
                 },
               ],
@@ -764,11 +765,12 @@ ${rawTranslation}
         method: 'POST',
         url: `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`,
       });
-      if (response.candidates != null) result = response.candidates[0].content.parts[0].text.replaceAll(/(?:<pre type="text\/plain"(?: id="text")?>|```(?:text)?)\n|\n<\/pre>/g, '');
-      result = text.match(/^(?:\p{Zs}*\n)*/u)[0].concat(([...result.replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').matchAll(/\n\n/g)].length > [...text.replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').matchAll(/\n\n/g)].length ? result.replaceAll('\n\n', '\n') : result).replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').concat(text.match(/\s*$/)[0]));
+      if (response.candidates != null) result = response.candidates[0].content.parts[0].text.replace(/<script type="text\/tab-separated-values" id="names">\n(?:.+\n)+<\/script>\n/, '').replaceAll(/(?:<pre type="text\/plain"(?: id="text")?>|```(?:text)?)\n|\n<\/pre>/g, '');
+      result = text.match(/^(?:\p{Zs}*\n)*/u)[0].concat(([...result.replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').matchAll(/\n\n/g)].length > [...text.replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').matchAll(/\n\n/g)].length ? result.replaceAll('\n\n', '\n') : result).replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').concat(text.match(/\s*$/)[0])).split('\n');
+      if (result.length === text.split('\n').length) result = result.map((element, index) => lines[index].match(/^\s*/)[0].concat(element));
+      result = result.join('\n');
     }
   } catch (error) {
-    result = error;
     throw error;
   }
 
