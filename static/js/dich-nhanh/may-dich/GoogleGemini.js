@@ -211,6 +211,8 @@ class GoogleGemini extends Translator {
   async translateText(text, targetLanguage, glossary) {
     try {
       const lines = text.split('\n');
+      const terminologies = Object.entries(glossary.terminologies);
+      const names = Object.entries(glossary.namePhu)
       const response = await $.ajax({
         data: JSON.stringify({
           contents: [
@@ -218,7 +220,7 @@ class GoogleGemini extends Translator {
               role: 'user',
               parts: [
                 {
-                  text: `Translate the text within #text into ${targetLanguage}. Please make sure to use the name in #names and the term in #glossary. Your translations must convey all the content in the original text within #text and cannot involve explanations or other unnecessary information. Make sure to keep the same number of lines as the original text within #text.${targetLanguage === 'Vietnamese' ? ' Standardize the use of I/Y for the main vowel and the placement of tone marks in syllables with -oa/-oe/-uy in the translated text.' : ''}. When writing Japanese names, use Hepburn romanization. For Chinese names, use ${targetLanguage === 'Vietnamese' ? 'Sino-Vietnamese' : 'pinyin without tonal marks'}. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text and cannot include explanations or other information.`,
+                  text: `Translate the text within #text into ${targetLanguage}. Please make sure to use the names from #names and terms from #glossary instead of translating them. Your translations must convey all the content in the original text within #text and cannot involve explanations or other unnecessary information. Make sure to keep the same number of lines as the original text within #text.${targetLanguage === 'Vietnamese' ? ' Standardize the use of I/Y for the main vowel and the placement of tone marks in syllables with -oa/-oe/-uy in the translated text.' : ''} When writing Japanese names, use Hepburn romanization. For Chinese names, use ${targetLanguage === 'Vietnamese' ? 'Sino-Vietnamese' : 'pinyin without tonal marks'}. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text and cannot include explanations or other information.`,
                 },
               ],
             },
@@ -235,10 +237,10 @@ class GoogleGemini extends Translator {
               parts: [
                 {
                   text: `<script type="text/tab-separated-values" id="names">
-${['source\ttarget', ...Object.entries(glossary.namePhu).filter(([first]) => text.includes(first)).map((element) => element.join('\t'))].join('\n')}
+${names.length > 0 ? ['source\ttarget', ...Object.entries(glossary.namePhu).filter(([first]) => text.includes(first)).map((element) => element.join('\t'))].join('\n') : ''}
 </script>
 <script type="text/tab-separated-values" id="glossary">
-${['source\ttarget', ...Object.entries(glossary.terminologies).filter(([first]) => text.includes(first)).map((element) => element.join('\t'))].join('\n')}
+${terminologies.length > 0 ? ['source\ttarget', ...Object.entries(glossary.terminologies).filter(([first]) => text.includes(first)).map((element) => element.join('\t'))].join('\n') : ''}
 </script>
 <pre type="text/plain" id="text">
 ${lines.map((element) => element.replace(/^\s+/g, '')).join('\n')}
@@ -280,7 +282,7 @@ ${lines.map((element) => element.replace(/^\s+/g, '')).join('\n')}
       if (this.controller.signal.aborted) return text;
       if (response.candidates != null) this.result = response.candidates[0].content.parts[0].text.replace(/<script type="text\/tab-separated-values" id="names">\n(?:.+\n)+<\/script>\n/, '').replaceAll(/(?:<pre type="text\/plain"(?: id="text")?>|```(?:text)?)\n|\n<\/pre>/g, '');
       this.result = text.match(/^(?:\p{Zs}*\n)*/u)[0].concat(([...this.result.replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').matchAll(/\n\n/g)].length > [...text.replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').matchAll(/\n\n/g)].length ? this.result.replaceAll('\n\n', '\n') : this.result).replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').concat(text.match(/\s*$/)[0])).split('\n');
-      if (this.result.length === text.split('\n').length) this.result = this.result.map((element, index) => lines[index].match(/^\s*/)[0].concat(element));
+      if (this.result.length === text.split('\n').length) this.result = this.result.map((element, index) => lines[index].match(/^\s*/)[0].concat(element.replace(/^\s+/g, '')));
       this.result = this.result.join('\n');
       super.translateText(text, targetLanguage, this.DefaultLanguage.SOURCE_LANGUAGE);
     } catch (error) {

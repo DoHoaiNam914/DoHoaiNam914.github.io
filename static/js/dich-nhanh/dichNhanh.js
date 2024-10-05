@@ -696,6 +696,8 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
   try {
     if (artificialIntelligence !== 'none') {
       const lines = text.split('\n');
+      const terminologies = Object.entries(glossary.terminologies);
+      const names = Object.entries(glossary.namePhu)
       const response = await $.ajax({
         data: JSON.stringify({
           contents: [
@@ -703,7 +705,7 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
               role: 'user',
               parts: [
                 {
-                  text: 'Translate the text within #text into Vietnamese. Please make sure to use the name in #names and the term in #glossary. Consider the meaning according to the literal translation in #raw. Your translations must convey all the content in the original text within #text and cannot involve explanations or other unnecessary information. Make sure to keep the same number of lines as the original text within #text. Standardize the use of I/Y for the main vowel and the placement of tone marks in syllables with -oa/-oe/-uy in the translated text. When writing Japanese names, use Hepburn romanization. For Chinese names, use Sino-Vietnamese. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text and cannot include explanations or other information.',
+                  text: 'Translate the text within #text into Vietnamese. Please make sure to use the names from #names and terms from #glossary instead of translating them. Consider the meaning according to the literal translation in #raw. Your translations must convey all the content in the original text within #text and cannot involve explanations or other unnecessary information. Make sure to keep the same number of lines as the original text within #text. Standardize the use of I/Y for the main vowel and the placement of tone marks in syllables with -oa/-oe/-uy in the translated text. When writing Japanese names, use Hepburn romanization. For Chinese names, use Sino-Vietnamese. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text and cannot include explanations or other information.',
                 },
               ],
             },
@@ -720,10 +722,10 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
               parts: [
                 {
                   text: `<script type="text/tab-separated-values" id="names">
-${['source\ttarget', ...Object.entries(glossary.namePhu).filter(([first]) => text.includes(first)).map((element) => element.join('\t'))].join('\n')}
+${names.length > 0 ? ['source\ttarget', ...Object.entries(glossary.namePhu).filter(([first]) => text.includes(first)).map((element) => element.join('\t'))].join('\n') : ''}
 </script>
 <script type="text/tab-separated-values" id="glossary">
-${['source\ttarget', ...Object.entries(glossary.terminologies).filter(([first]) => text.includes(first)).map((element) => element.join('\t'))].join('\n')}
+${terminologies.length > 0 ? ['source\ttarget', ...Object.entries(glossary.terminologies).filter(([first]) => text.includes(first)).map((element) => element.join('\t'))].join('\n') : ''}
 </script>
 <pre type="text/plain" id="text">
 ${lines.map((element) => element.replace(/^\s+/g, '')).join('\n')}
@@ -767,7 +769,7 @@ ${rawTranslation.split('\n').map((element) => element.replace(/^\s+/g, '')).join
       });
       if (response.candidates != null) result = response.candidates[0].content.parts[0].text.replace(/<script type="text\/tab-separated-values" id="names">\n(?:.+\n)+<\/script>\n/, '').replaceAll(/(?:<pre type="text\/plain"(?: id="text")?>|```(?:text)?)\n|\n<\/pre>/g, '');
       result = text.match(/^(?:\p{Zs}*\n)*/u)[0].concat(([...result.replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').matchAll(/\n\n/g)].length > [...text.replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').matchAll(/\n\n/g)].length ? result.replaceAll('\n\n', '\n') : result).replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').concat(text.match(/\s*$/)[0])).split('\n');
-      if (result.length === text.split('\n').length) result = result.map((element, index) => lines[index].match(/^\s*/)[0].concat(element));
+      if (result.length === text.split('\n').length) result = result.map((element, index) => lines[index].match(/^\s*/)[0].concat(element.replace(/^\s+/g, '')));
       result = result.join('\n');
     }
   } catch (error) {
