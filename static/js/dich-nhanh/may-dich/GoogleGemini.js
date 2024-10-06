@@ -283,7 +283,7 @@ ${lines.map((element) => element.replace(/^\s+/g, '')).join('\n')}
       });
       if (this.controller.signal.aborted || response.candidates == null) this.result = text;
       response = response.candidates[0].content.parts[0].text;
-      response = text.match(/^(?:\p{Zs}*\n)*/u)[0].concat(([...response.replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').matchAll(/\n\n/g)].length > [...text.replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').matchAll(/\n\n/g)].length ? response.replaceAll('\n\n', '\n') : response).replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').concat(text.match(/\s*$/)[0]));
+      response = text.match(/^(?:\p{Zs}*\n)*/u)[0].concat(([...response.replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').matchAll(/\n\n/g)].length > [...text.replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').matchAll(/\n\n/g)].length ? response.replaceAll('\n\n', '\n') : response).replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').concat(text.match(/\s*$/)[0])).split('\n');
       if (response.length === lines.length) this.result = response.map((element, index) => lines[index].match(/^\s*/)[0].concat(element.replace(/^\s+/g, ''))).join('\n');
       super.translateText(text, targetLanguage, this.DefaultLanguage.SOURCE_LANGUAGE);
     } catch (error) {
