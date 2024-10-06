@@ -77,7 +77,7 @@ class MicrosoftTranslator extends Translator {
       }
 
       await Promise.all(responses);
-      if (this.controller.signal.aborted) return text;
+      if (this.controller.signal.aborted) this.result = text;
       this.result = responses.map((element) => element.responseJSON[0].translations[0].text).join('\n');
       this.requestIndex += 1;
       super.translateText(text, targetLanguage, sourceLanguage);

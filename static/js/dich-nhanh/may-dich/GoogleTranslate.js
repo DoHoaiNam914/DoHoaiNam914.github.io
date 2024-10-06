@@ -1029,7 +1029,7 @@ class GoogleTranslate extends Translator {
       }
 
       await Promise.all(responses);
-      if (this.controller.signal.aborted) return text;
+      if (this.controller.signal.aborted) this.result = text;
       this.result = Utils.convertHtmlToText(responses.map((a) => a.responseJSON.data.translations.map((b) => b.translatedText).join('\n')).join('\n'));
       super.translateText(text, targetLanguage, sourceLanguage);
     } catch (error) {

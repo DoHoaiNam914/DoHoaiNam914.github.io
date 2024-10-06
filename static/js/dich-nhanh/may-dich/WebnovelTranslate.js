@@ -1989,8 +1989,8 @@ class WebnovelTranslate extends Translator {
 
       await Promise.all(responses);
       const EOL_REG_EXP = new RegExp(Utils.escapeRegExp(EOL), 'g');
-      if (this.controller.signal.aborted) return text;
-      console.log('DEBUG:', responses.map((a) => a.responseJSON[0].filter(([__, second]) => second != null).map(([first, second]) => [second, first, [...second.matchAll(EOL_REG_EXP)].length - [...first.matchAll(EOL_REG_EXP)].length])).flat().map((element) => (element[2] >= 0 ? element.slice(0, -1) : element)));
+      if (this.controller.signal.aborted) this.result = text;
+      if (!/eruda=true/.test(window.location)) console.log('DEBUG:', responses.map((a) => a.responseJSON[0].filter(([__, second]) => second != null).map(([first, second]) => [second, first, [...second.matchAll(EOL_REG_EXP)].length - [...first.matchAll(EOL_REG_EXP)].length])).flat().map((element) => (element[2] >= 0 ? element.slice(0, -1) : element)));
       this.result = responses.map((a) => a.responseJSON[0].filter(([__, second]) => second != null).map(([first, second]) => [second, first.replace(/^\s+/, '').replaceAll(EOL_REG_EXP, '\n')]).map(([first, second]) => {
         const count = [...first.matchAll(EOL_REG_EXP)].length - [...second.matchAll(/\n/g)].length;
         return second.concat('\n'.repeat(count >= 0 ? count : 0));
