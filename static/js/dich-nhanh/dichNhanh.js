@@ -721,11 +721,11 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
               role: 'user',
               parts: [
                 {
-                  text: `<script type="text/tab-separated-values" id="names">
-${names.length > 0 ? ['source\ttarget', ...Object.entries(glossary.namePhu).filter(([first]) => text.includes(first)).map((element) => element.join('\t'))].join('\n') : ''}
-</script>
-<script type="text/tab-separated-values" id="glossary">
+                  text: `<script type="text/tab-separated-values" id="glossary">
 ${terminologies.length > 0 ? ['source\ttarget', ...Object.entries(glossary.terminologies).filter(([first]) => text.includes(first)).map((element) => element.join('\t'))].join('\n') : ''}
+</script>
+<script type="text/tab-separated-values" id="names">
+${names.length > 0 ? ['source\ttarget', ...Object.entries(glossary.namePhu).filter(([first]) => text.includes(first)).map((element) => element.join('\t'))].join('\n') : ''}
 </script>
 <pre type="text/plain" id="text">
 ${lines.map((element) => element.replace(/^\s+/g, '')).join('\n')}
@@ -767,9 +767,10 @@ ${rawTranslation.split('\n').map((element) => element.replace(/^\s+/g, '')).join
         method: 'POST',
         url: `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`,
       });
-      if (response.candidates != null) response = response.candidates[0].content.parts[0].text.replace(/<script type="text\/tab-separated-values" id="names">\n(?:.+\n)+<\/script>\n/, '').replaceAll(/(?:<pre type="text\/plain"(?: id="text")?>|```(?:text)?)\n|\n<\/pre>/g, '');
-      response = text.match(/^(?:\p{Zs}*\n)*/u)[0].concat(([...response.replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').matchAll(/\n\n/g)].length > [...text.replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').matchAll(/\n\n/g)].length ? response.replaceAll('\n\n', '\n') : response).replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').concat(text.match(/\s*$/)[0])).split('\n');
-      if (response.length === lines.length) result = result.map((element, index) => lines[index].match(/^\s*/)[0].concat(element.replace(/^\s+/g, ''))).join('\n');
+      if (this.controller.signal.aborted || response.candidates == null) return text;
+      response = response.candidates[0].content.parts[0].text;
+      response = text.match(/^(?:\p{Zs}*\n)*/u)[0].concat(([...response.replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').matchAll(/\n\n/g)].length > [...text.replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').matchAll(/\n\n/g)].length ? response.replaceAll('\n\n', '\n') : response).replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').concat(text.match(/\s*$/)[0]));
+      if (response.length === lines.length) result = response.split('\n').map((element, index) => lines[index].match(/^\s*/)[0].concat(element.replace(/^\s+/g, ''))).join('\n');
     }
   } catch (error) {
     throw error;
@@ -796,9 +797,8 @@ const buildResult = function buildResultContentForTextarea(text, result, activeT
       } else if (activeTranslator === Translators.PAPAGO && resultLines[i].replace(/^\s+/, '').trimEnd().length === 0 && originalLines[i + lostLineFixedNumber].replace(/^\s+/, '').trimEnd().length > 0) {
         lostLineFixedNumber -= 1;
       } else {
-        if (resultLines[i] == null) resultLines[i] = '';
         const paragraph = document.createElement('p');
-        const translation = document.createTextNode(resultLines[i]);
+        const translation = document.createTextNode(resultLines[i] ?? '');
         const lineBreak = document.createElement('br');
 
         if (originalLines[i + lostLineFixedNumber].replace(/^\s+/, '').trimEnd().length > 0) {
@@ -806,7 +806,7 @@ const buildResult = function buildResultContentForTextarea(text, result, activeT
             const idiomaticText = document.createElement('i');
             idiomaticText.innerText = originalLines[i + lostLineFixedNumber];
             paragraph.appendChild(idiomaticText);
-            paragraph.innerHTML += resultLines[i].replace(/^\s+/, '').trimEnd().length > 0 ? lineBreak.cloneNode(true).outerHTML : '';
+            paragraph.innerHTML += resultLines[i] != null && resultLines[i].replace(/^\s+/, '').trimEnd().length > 0 ? lineBreak.cloneNode(true).outerHTML : '';
           }
 
           paragraph.appendChild(translation);
