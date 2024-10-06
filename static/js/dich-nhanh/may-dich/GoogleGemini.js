@@ -236,7 +236,9 @@ class GoogleGemini extends Translator {
               role: 'user',
               parts: [
                 {
-                  text: `<script type="text/tab-separated-values" id="glossary">
+                  text: `<!DOCTYPE html>
+<meta charset="utf-8">
+<script type="text/tab-separated-values" id="glossary">
 ${terminologies.length > 0 ? ['source\ttarget', ...Object.entries(glossary.terminologies).filter(([first]) => text.includes(first)).map((element) => element.join('\t'))].join('\n') : ''}
 </script>
 <script type="text/tab-separated-values" id="names">
