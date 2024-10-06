@@ -705,7 +705,7 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
               role: 'user',
               parts: [
                 {
-                  text: 'Translate the text within #text into Vietnamese. Please ensure to use the name from #names and the term from #glossary instead of translating them if they exist. Consider the meaning according to the literal translation in #raw. Your translations must convey all the content in the original text within #text and cannot involve explanations or other unnecessary information. Make sure to keep the same number of lines as the original text within #text. Standardize the use of I/Y for the main vowel and the placement of tone marks in syllables with -oa/-oe/-uy in the translated text. When writing Japanese names, use Hepburn romanization. For Chinese names, use Sino-Vietnamese. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text and cannot include explanations or other information.',
+                  text: 'Translate the text within #original-text into Vietnamese. Please ensure to use the name from #names and the term from #glossary instead of translating them if they match. Consider the meaning according to the literal translation in #raw-translation. Your translations must convey all the content in the original text within #text and cannot involve explanations or other unnecessary information. Make sure to keep the same number of lines as the original text within #text. Standardize the use of I/Y for the main vowel and the placement of tone marks in syllables with -oa/-oe/-uy in the translated text. When writing Japanese names, use Hepburn romanization. For Chinese names, use Sino-Vietnamese. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text and cannot include explanations or other information.',
                 },
               ],
             },
@@ -724,15 +724,15 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
                   text: `<!DOCTYPE html>
 <meta charset="utf-8">
 <script type="text/tab-separated-values" id="glossary">
-${terminologies.length > 0 ? ['source\ttarget', ...Object.entries(glossary.terminologies).filter(([first]) => text.includes(first)).map((element) => element.join('\t'))].join('\n') : ''}
+${terminologies.length > 0 ? ['source\ttarget', ...terminologies.filter(([first]) => text.includes(first)).map((element) => element.join('\t'))].join('\n') : ''}
 </script>
 <script type="text/tab-separated-values" id="names">
-${names.length > 0 ? ['source\ttarget', ...Object.entries(glossary.namePhu).filter(([first]) => text.includes(first)).map((element) => element.join('\t'))].join('\n') : ''}
+${names.length > 0 ? ['source\ttarget', ...names.filter(([first]) => text.includes(first)).map((element) => element.join('\t'))].join('\n') : ''}
 </script>
-<pre type="text/plain" id="text">
+<pre type="text/plain" id="original-text">
 ${lines.map((element) => element.replace(/^\s+/g, '')).join('\n')}
 </pre>
-<pre type="text/plain" id="raw">
+<pre type="text/plain" id="raw-translation">
 ${rawTranslation.split('\n').map((element) => element.replace(/^\s+/g, '')).join('\n')}
 </pre>`,
                 },
