@@ -210,10 +210,10 @@ class GoogleGemini extends Translator {
 
   async translateText(text, targetLanguage, glossary) {
     try {
-      const lines = text.split('\n');
+      const lines = text.split(/\n+/);
       const terminologies = Object.entries(glossary.terminologies);
       const names = Object.entries(glossary.namePhu)
-      const response = await $.ajax({
+      let response = await $.ajax({
         data: JSON.stringify({
           contents: [
             {
@@ -280,10 +280,9 @@ ${lines.map((element) => element.replace(/^\s+/g, '')).join('\n')}
         url: `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${this.apiKey}`,
       });
       if (this.controller.signal.aborted) return text;
-      if (response.candidates != null) this.result = response.candidates[0].content.parts[0].text.replace(/<script type="text\/tab-separated-values" id="names">\n(?:.+\n)+<\/script>\n/, '').replaceAll(/(?:<pre type="text\/plain"(?: id="text")?>|```(?:text)?)\n|\n<\/pre>/g, '');
-      this.result = text.match(/^(?:\p{Zs}*\n)*/u)[0].concat(([...this.result.replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').matchAll(/\n\n/g)].length > [...text.replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').matchAll(/\n\n/g)].length ? this.result.replaceAll('\n\n', '\n') : this.result).replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').concat(text.match(/\s*$/)[0])).split('\n');
-      if (this.result.length === text.split('\n').length) this.result = this.result.map((element, index) => lines[index].match(/^\s*/)[0].concat(element.replace(/^\s+/g, '')));
-      this.result = this.result.join('\n');
+      if (response.candidates != null) response = response.candidates[0].content.parts[0].text.replace(/<script type="text\/tab-separated-values" id="names">\n(?:.+\n)+<\/script>\n/, '').replaceAll(/(?:<pre type="text\/plain"(?: id="text")?>|```(?:text)?)\n|\n<\/pre>/g, '');
+      response = Object.fromEntries(text.match(/^(?:\p{Zs}*\n)*/u)[0].concat(([...response.replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').matchAll(/\n\n/g)].length > [...text.replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').matchAll(/\n\n/g)].length ? response.replaceAll('\n\n', '\n') : response).replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').concat(text.match(/\s*$/)[0])).split('\n').map((element, index) => [lines[index], lines[index].match(/^\s*/)[0].concat(element.replace(/^\s+/g, ''))]));
+      if (response.length === text.split('\n').length) this.result = text.split('\n').map((element) => response[element] ?? element).join('\n');
       super.translateText(text, targetLanguage, this.DefaultLanguage.SOURCE_LANGUAGE);
     } catch (error) {
       console.error('Bản dịch lỗi:', error);

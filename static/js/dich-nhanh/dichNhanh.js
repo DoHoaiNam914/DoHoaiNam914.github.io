@@ -698,7 +698,7 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
       const lines = text.split('\n');
       const terminologies = Object.entries(glossary.terminologies);
       const names = Object.entries(glossary.namePhu)
-      const response = await $.ajax({
+      let response = await $.ajax({
         data: JSON.stringify({
           contents: [
             {
@@ -767,10 +767,9 @@ ${rawTranslation.split('\n').map((element) => element.replace(/^\s+/g, '')).join
         method: 'POST',
         url: `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`,
       });
-      if (response.candidates != null) result = response.candidates[0].content.parts[0].text.replace(/<script type="text\/tab-separated-values" id="names">\n(?:.+\n)+<\/script>\n/, '').replaceAll(/(?:<pre type="text\/plain"(?: id="text")?>|```(?:text)?)\n|\n<\/pre>/g, '');
-      result = text.match(/^(?:\p{Zs}*\n)*/u)[0].concat(([...result.replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').matchAll(/\n\n/g)].length > [...text.replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').matchAll(/\n\n/g)].length ? result.replaceAll('\n\n', '\n') : result).replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').concat(text.match(/\s*$/)[0])).split('\n');
-      if (result.length === text.split('\n').length) result = result.map((element, index) => lines[index].match(/^\s*/)[0].concat(element.replace(/^\s+/g, '')));
-      result = result.join('\n');
+      if (response.candidates != null) response = response.candidates[0].content.parts[0].text.replace(/<script type="text\/tab-separated-values" id="names">\n(?:.+\n)+<\/script>\n/, '').replaceAll(/(?:<pre type="text\/plain"(?: id="text")?>|```(?:text)?)\n|\n<\/pre>/g, '');
+      response = text.match(/^(?:\p{Zs}*\n)*/u)[0].concat(([...response.replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').matchAll(/\n\n/g)].length > [...text.replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').matchAll(/\n\n/g)].length ? response.replaceAll('\n\n', '\n') : response).replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').concat(text.match(/\s*$/)[0])).split('\n');
+      if (response.length === lines.length) result = result.map((element, index) => lines[index].match(/^\s*/)[0].concat(element.replace(/^\s+/g, ''))).join('\n');
     }
   } catch (error) {
     throw error;
