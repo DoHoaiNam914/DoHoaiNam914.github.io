@@ -721,7 +721,9 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
               role: 'user',
               parts: [
                 {
-                  text: `<script type="text/tab-separated-values" id="glossary">
+                  text: `<!DOCTYPE html>
+<meta charset="utf-8">
+<script type="text/tab-separated-values" id="glossary">
 ${terminologies.length > 0 ? ['source\ttarget', ...Object.entries(glossary.terminologies).filter(([first]) => text.includes(first)).map((element) => element.join('\t'))].join('\n') : ''}
 </script>
 <script type="text/tab-separated-values" id="names">
@@ -767,7 +769,7 @@ ${rawTranslation.split('\n').map((element) => element.replace(/^\s+/g, '')).join
         method: 'POST',
         url: `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`,
       });
-      if (this.controller.signal.aborted || response.candidates == null) return text;
+      if (response.candidates == null) return text;
       response = response.candidates[0].content.parts[0].text;
       response = text.match(/^(?:\p{Zs}*\n)*/u)[0].concat(([...response.replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').matchAll(/\n\n/g)].length > [...text.replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').matchAll(/\n\n/g)].length ? response.replaceAll('\n\n', '\n') : response).replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').concat(text.match(/\s*$/)[0]));
       if (response.length === lines.length) result = response.split('\n').map((element, index) => lines[index].match(/^\s*/)[0].concat(element.replace(/^\s+/g, ''))).join('\n');
@@ -790,15 +792,17 @@ const buildResult = function buildResultContentForTextarea(text, result, activeT
 
     for (let i = 0; i < originalLines.length; i += 1) {
       if (i + lostLineFixedNumber >= originalLines.length) break;
+      const originalLine = originalLines[i + lostLineFixedNumber];
+      const resultLine = resultLines[i] ?? '';
 
-      if (originalLines[i + lostLineFixedNumber].replace(/^\s+/, '').trimEnd().length === 0 && resultLines[i].replace(/^\s+/, '').trimEnd().length > 0) {
+      if (originalLine.replace(/^\s+/, '').trimEnd().length === 0 && resultLine.replace(/^\s+/, '').trimEnd().length > 0) {
         lostLineFixedNumber += 1;
         i -= 1;
-      } else if (activeTranslator === Translators.PAPAGO && resultLines[i].replace(/^\s+/, '').trimEnd().length === 0 && originalLines[i + lostLineFixedNumber].replace(/^\s+/, '').trimEnd().length > 0) {
+      } else if (activeTranslator === Translators.PAPAGO && resultLine.replace(/^\s+/, '').trimEnd().length === 0 && originalLine.replace(/^\s+/, '').trimEnd().length > 0) {
         lostLineFixedNumber -= 1;
       } else {
         const paragraph = document.createElement('p');
-        const translation = document.createTextNode(resultLines[i] ?? '');
+        const translation = document.createTextNode(resultLine);
         const lineBreak = document.createElement('br');
 
         if (originalLines[i + lostLineFixedNumber].replace(/^\s+/, '').trimEnd().length > 0) {
@@ -806,7 +810,7 @@ const buildResult = function buildResultContentForTextarea(text, result, activeT
             const idiomaticText = document.createElement('i');
             idiomaticText.innerText = originalLines[i + lostLineFixedNumber];
             paragraph.appendChild(idiomaticText);
-            paragraph.innerHTML += resultLines[i] != null && resultLines[i].replace(/^\s+/, '').trimEnd().length > 0 ? lineBreak.cloneNode(true).outerHTML : '';
+            paragraph.innerHTML += resultLine.replace(/^\s+/, '').trimEnd().length > 0 ? lineBreak.cloneNode(true).outerHTML : '';
           }
 
           paragraph.appendChild(translation);
@@ -2143,8 +2147,8 @@ $translateEntryButtons.click(async function onClick() {
 });
 
 $addButton.click(() => {
-  const key = $sourceEntryInput.val().trim();
-  if (key.length === 0) return;
+  const key = $sourceEntryInput.val();
+  if (key.trim().length === 0) return;
   if ($glossaryListSelect.val() === 'namePhu' && Object.hasOwn(glossary.name, key)) delete glossary.name[key];
   glossary[$glossaryListSelect.val()][key] = $targetEntryTextarea.val().trim();
   saveGlossary();
