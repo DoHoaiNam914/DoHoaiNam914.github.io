@@ -220,7 +220,7 @@ class GoogleGemini extends Translator {
               role: 'user',
               parts: [
                 {
-                  text: `Translate the text within #original-text into ${targetLanguage}. Please ensure to use the name from #names and the term from #glossary instead of translating them when they match. Your translations must convey all the content in the original text within #original-text and cannot involve explanations or other unnecessary information. Make sure to keep the same number of lines as the original text within #original-text.${targetLanguage === 'Vietnamese' ? ' Standardize the use of I/Y for the main vowel and the placement of tone marks in syllables with -oa/-oe/-uy in the translated text.' : ''} When writing Japanese names, use Hepburn romanization. For Chinese names, use ${targetLanguage === 'Vietnamese' ? 'Sino-Vietnamese' : 'pinyin without tonal marks'}. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text and cannot include explanations or other information.`,
+                  text: `Translate the text within #original-text into ${targetLanguage}. Please ensure to use the existing names from #name-dictionary and the existing terms from #glossary instead of translating them. Your translations must convey all the content in the original text within #original-text and cannot involve explanations or other unnecessary information. Make sure to keep the same number of lines as the original text within #original-text.${targetLanguage === 'Vietnamese' ? ' Standardize the use of I/Y for the main vowel and the placement of tone marks in syllables with -oa/-oe/-uy in the translated text.' : ''} When writing Japanese names, use Hepburn Romanization. For Chinese names, use ${targetLanguage === 'Vietnamese' ? 'Sino-Vietnamese' : 'pinyin without tonal marks'}. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text and cannot include explanations or other information.`,
                 },
               ],
             },
@@ -239,7 +239,7 @@ class GoogleGemini extends Translator {
                   text: `<!DOCTYPE html>
 <meta charset="utf-8">
 <script type="text/tab-separated-values" id="glossary">${terminologies.length > 0 ? ['source\ttarget', ...terminologies.map((element) => element.join('\t'))].join('\n') : ''}</script>
-<script type="text/tab-separated-values" id="names">${names.length > 0 ? ['source\ttarget', ...names.map((element) => element.join('\t'))].join('\n') : ''}</script>
+<script type="text/tab-separated-values" id="name-dictionary">${names.length > 0 ? ['source\ttarget', ...names.map((element) => element.join('\t'))].join('\n') : ''}</script>
 <pre type="text/plain" id="original-text">
 ${lines.map((element) => element.replace(/^\s+/g, '')).join('\n')}
 </pre>`,
@@ -283,8 +283,7 @@ ${lines.map((element) => element.replace(/^\s+/g, '')).join('\n')}
         return this.result;
       }
 
-      response = response.candidates[0].content.parts[0].text.replace(/<\/pre>\n?/, '');
-      response = text.match(/^(?:\p{Zs}*\n)*/u)[0].concat(response.replace(/^(?:\p{Zs}*\n)*/u, '').replace(/\s+$/, '').concat(text.match(/\s*$/)[0])).split('\n');
+      response = response.candidates[0].content.parts[0].text.replace(/\n<\/pre>\n?|\n<pre type="text\/plain">/, '').split('\n');
       const contentLine = lines.filter((element) => element.replace(/^\s+/g, '').length > 0);
       response = Object.fromEntries(response.filter((element) => element.replace(/^\s+/g, '').length > 0).map((element, index) => [contentLine[index], element]));
       this.result = lines.map((element) => (response[element] != null ? element.match(/^\s*/)[0].concat(response[element].replace(/^\s+/g, '')) : element)).join('\n');
