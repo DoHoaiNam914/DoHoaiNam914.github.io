@@ -283,7 +283,7 @@ ${lines.map((element) => element.replace(/^\s+/g, '')).join('\n')}
         return this.result;
       }
 
-      response = response.candidates[0].content.parts[0].text.replace(/\n<\/pre>\n?|\n<pre type="text\/plain">/, '').split('\n');
+      response = response.candidates[0].content.parts[0].text.replace(/\n<\/pre>\n?|<pre type="text\/plain">\n/g, '').split('\n');
       const contentLine = lines.filter((element) => element.replace(/^\s+/g, '').length > 0);
       response = Object.fromEntries(response.filter((element) => element.replace(/^\s+/g, '').length > 0).map((element, index) => [contentLine[index], element]));
       this.result = lines.map((element) => (response[element] != null ? element.match(/^\s*/)[0].concat(response[element].replace(/^\s+/g, '')) : element)).join('\n');
