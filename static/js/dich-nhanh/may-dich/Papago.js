@@ -102,7 +102,12 @@ class Papago extends Translator {
       }
 
       await Promise.all(responses);
-      if (this.controller.signal.aborted) this.result = text;
+
+      if (this.controller.signal.aborted) {
+        this.result = text;
+        return this.result;
+      }
+
       this.result = responses.map((element) => element.responseJSON.translatedText).join('\n');
       super.translateText(text, targetLanguage, sourceLanguage);
     } catch (error) {

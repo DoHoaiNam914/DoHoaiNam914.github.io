@@ -65,7 +65,12 @@ class BaiduTranslate extends Translator {
       }
 
       await Promise.all(responses);
-      if (this.controller.signal.aborted) this.result = text;
+
+      if (this.controller.signal.aborted) {
+        this.result = text;
+        return this.result;
+      }
+
       this.result = responses.map((a) => JSON.parse(a.responseText.split('\n').filter((b) => b.includes('"event":"Translating"'))[0].replace(/^data: /, '')).data.list.map((b) => b.dst).join('\n')).join('\n');
       super.translateText(text, targetLanguage, sourceLanguage);
     } catch (error) {
