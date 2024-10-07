@@ -696,8 +696,8 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
   try {
     if (artificialIntelligence !== 'none') {
       const lines = text.split('\n');
-      const terminologies = Object.entries(glossary.terminologies);
-      const names = Object.entries(glossary.namePhu)
+      const terminologies = Object.entries(glossary.terminologies).filter(([first]) => text.includes(first));
+      const names = Object.entries(glossary.namePhu).filter(([first]) => text.includes(first));
       let response = await $.ajax({
         data: JSON.stringify({
           contents: [
@@ -723,12 +723,8 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
                 {
                   text: `<!DOCTYPE html>
 <meta charset="utf-8">
-<script type="text/tab-separated-values" id="glossary">
-${terminologies.length > 0 ? ['source\ttarget', ...terminologies.filter(([first]) => text.includes(first)).map((element) => element.join('\t'))].join('\n') : ''}
-</script>
-<script type="text/tab-separated-values" id="names">
-${names.length > 0 ? ['source\ttarget', ...names.filter(([first]) => text.includes(first)).map((element) => element.join('\t'))].join('\n') : ''}
-</script>
+<script type="text/tab-separated-values" id="glossary">${terminologies.length > 0 ? ['source\ttarget', ...terminologies.map((element) => element.join('\t'))].join('\n') : ''}</script>
+<script type="text/tab-separated-values" id="names">${names.length > 0 ? ['source\ttarget', ...names.map((element) => element.join('\t'))].join('\n') : ''}</script>
 <pre type="text/plain" id="original-text">
 ${lines.map((element) => element.replace(/^\s+/g, '')).join('\n')}
 </pre>
