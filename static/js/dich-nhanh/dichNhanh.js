@@ -1337,7 +1337,7 @@ $translatorDropdown.find('.dropdown-item').click(function onClick() {
   $translatorDropdown.find('.dropdown-item').removeClass('active');
   $(this).addClass('active');
   const activeTranslator = $(this).val();
-  currentTranslator = JSON.parse(JSON.stringify(translators))[activeTranslator];
+  currentTranslator = translators[activeTranslator];
 
   switch (activeTranslator) {
     case Translators.BAIDU_TRANSLATE: {
@@ -1996,7 +1996,7 @@ $translateEntryButtons.click(async function onClick() {
     $translateEntryButtons.addClass('disabled');
     $sourceEntryInput.attr('readonly', true);
     const activeTranslator = $(this).data('translator');
-    let translator = JSON.parse(JSON.stringify(translators))[activeTranslator];
+    let translator = translators[activeTranslator];
     const targetLanguage = $(this).data('lang');
     const nameEnabled = $(this).data('name-enabled');
     const artificialIntelligence = $(this).data('artificial-intelligence');
