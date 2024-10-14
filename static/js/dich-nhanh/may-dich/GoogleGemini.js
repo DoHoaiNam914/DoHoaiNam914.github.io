@@ -220,7 +220,7 @@ class GoogleGemini extends Translator {
               role: 'user',
               parts: [
                 {
-                  text: `Translate the text in #original-text tag into ${targetLanguage}. Do not skip the title. Remember to use the names listed under the #name-dictionary tag and the terms from the #glossary tag if available to enhance the accuracy of translation. When transliterating Japanese names, employ Hepburn Romanization, and for Chinese names, utilize ${targetLanguage === 'Vietnamese' ? 'Sino-Vietnamese' : 'pinyin without tone marks'}. Make sure to reference the raw translation in #raw-translation for accuracy and consistency. Your translations must convey all the content in the original text in #original-text and cannot involve explanations or other unnecessary information. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text and cannot include explanations or other information.`,
+                  text: `Translate the text in #original-text tag into ${targetLanguage}. Do not skip the title. Remember to use the names listed under the #name-dictionary tag and the terms from the #glossary tag to enhance the accuracy of translation. When transliterating Japanese names, employ Hepburn Romanization, and for Chinese names, utilize ${targetLanguage === 'Vietnamese' ? 'Sino-Vietnamese' : 'pinyin without tone marks'} and cannot include explanations or other information. Make sure to reference the raw translation in #raw-translation for accuracy and consistency. Your translations must convey all the content in the original text in #original-text and cannot involve explanations or other unnecessary information. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text and cannot include explanations or other information.`,
                 },
               ],
             },
@@ -236,9 +236,11 @@ class GoogleGemini extends Translator {
               role: 'user',
               parts: [
                 {
-                  text: `<script type="text/tab-separated-values" id="glossary">${terminologies.length > 0 ? ['source\ttarget', ...terminologies.map((element) => element.join('\t'))].join('\n') : ''}</script>
-<script type="text/tab-separated-values" id="name-dictionary">${names.length > 0 ? ['source\ttarget', ...names.map((element) => element.join('\t'))].join('\n') : ''}</script>
-<script type="text/plain" id="original-text">
+                  text: `${terminologies.length > 0 ? `<script type="text/tab-separated-values" id="glossary">
+${['source\ttarget', ...terminologies.map((element) => element.join('\t'))].join('\n')}
+</script>\n` : ''}${names.length > 0 ? `<script type="text/tab-separated-values" id="name-dictionary">
+${['source\ttarget', ...names.map((element) => element.join('\t'))].join('\n')}
+</script>\n` : ''}<script type="text/plain" id="original-text">
 ${lines.map((element) => element.replace(/^\s+/g, '')).join('\n')}
 </script>`,
                 },
