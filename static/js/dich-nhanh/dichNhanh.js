@@ -729,7 +729,7 @@ ${terminologies.length > 0 ? terminologies.map((element) => element.join('\t')).
 RAW TRANSLATION:
 \`\`\`tsv
 source\ttarget
-${terminologies.length > 0 ? terminologies.map((element) => element.join('\t')).join('\n') : '...'}
+${names.length > 0 ? terminologies.map((element) => element.join('\t')).join('\n') : '...'}
 \`\`\`
 ORIGINAL TEXT:
 \`\`\`txt
