@@ -244,7 +244,7 @@ ${terminologies.length > 0 ? terminologies.map((element) => element.join('\t')).
 NAME DICTIONARY:
 \`\`\`tsv
 source\ttarget
-${terminologies.length > 0 ? names.map((element) => element.join('\t')).join('\n') : '...'}
+${names.length > 0 ? names.map((element) => element.join('\t')).join('\n') : '...'}
 \`\`\`
 ORIGINAL TEXT:
 \`\`\`txt
