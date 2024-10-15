@@ -705,7 +705,7 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
               role: 'user',
               parts: [
                 {
-                  text: 'Translate the text in #original-text tag into Vietnamese. Don\'t forget to include the title when translating. Remember to use the names listed under the #name-dictionary tag and the terms from the #glossary tag to enhance the accuracy of translation. When transliterating Japanese names, employ Hepburn Romanization, and for Chinese names, utilize Sino-Vietnamese and cannot include explanations or other information. Make sure to reference the translation in #raw-translation for accuracy and consistency. Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text and cannot include explanations or other information. Please do not format the output.',
+                  text: 'Translate the text in #original-text tag into Vietnamese. Don\'t forget to include the title when translating. Remember to use the names listed under the #name-dictionary tag and the terms from the #glossary tag to enhance the accuracy of translation. Make sure to reference the translation in #raw-translation for accuracy and consistency. Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text and cannot include explanations or other information. Please do not format the output.',
                 },
               ],
             },
@@ -713,7 +713,7 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
               role: 'model',
               parts: [
                 {
-                  text: 'Please provide the text you would like to have translated into Vietnamese.',
+                  text: 'Please provide the text you would like to have translated into Vietnamese in #original-text.',
                 },
               ],
             },
