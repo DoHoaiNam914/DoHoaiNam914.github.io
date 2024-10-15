@@ -705,7 +705,7 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
               role: 'user',
               parts: [
                 {
-                  text: 'Translate the text in #original-text tag into Vietnamese. Don\'t forget to include the title when translating. Remember to use the names listed under the #name-dictionary tag and the terms from the #glossary tag to enhance the accuracy of translation. Make sure to reference the translation in #raw-translation for accuracy and consistency. Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text and cannot include explanations or other information. Please do not format the output.',
+                  text: 'Translate the text in ORIGINAL TEXT into Vietnamese. Use the names listed in NAME DICTIONARY and the terms listed in GLOSSARY to enhance the accuracy of the translation. Make sure to reference the raw in RAW TRANSLATION for accuracy and consistency. Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text and cannot include explanations or other information.',
                 },
               ],
             },
@@ -713,7 +713,7 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
               role: 'model',
               parts: [
                 {
-                  text: 'Please provide the text you would like to have translated into Vietnamese in #original-text.',
+                  text: 'Please provide the text you would like to have translated into Vietnamese within the ORIGINAL TEXT.',
                 },
               ],
             },
@@ -721,14 +721,24 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
               role: 'user',
               parts: [
                 {
-                  text: `<script type="text/tab-separated-values" id="glossary">${terminologies.length > 0 ? ['source\ttarget', ...terminologies.map((element) => element.join('\t'))].join('\n') : ''}</script>
-<script type="text/tab-separated-values" id="name-dictionary">${names.length > 0 ? ['source\ttarget', ...names.map((element) => element.join('\t'))].join('\n') : ''}</script>
-<script type="text/plain" id="original-text">
+                  text: `GLOSSARY:
+\`\`\`tsv
+source\ttarget
+${terminologies.length > 0 ? terminologies.map((element) => element.join('\t')).join('\n') : '...'}
+\`\`\`
+RAW TRANSLATION:
+\`\`\`tsv
+source\ttarget
+${terminologies.length > 0 ? terminologies.map((element) => element.join('\t')).join('\n') : '...'}
+\`\`\`
+ORIGINAL TEXT:
+\`\`\`txt
 ${lines.map((element) => element.replace(/^\s+/g, '')).join('\n')}
-</script>
-<script type="text/plain" id="raw-translation">
+\`\`\`
+RAW TRANSLATION:
+\`\`\`txt
 ${rawTranslation.split('\n').map((element) => element.replace(/^\s+/g, '')).join('\n')}
-</script>`,
+\`\`\``,
                 },
               ],
             },
