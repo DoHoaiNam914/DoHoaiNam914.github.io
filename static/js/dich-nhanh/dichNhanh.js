@@ -773,7 +773,7 @@ ${rawTranslation.split('\n').map((element) => element.replace(/^\s+/g, '')).join
         method: 'POST',
         url: `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`,
       });
-      if (response.candidates == null) return text;
+      if (response.candidates == null) return result;
       response = response.candidates[0].content.parts[0].text.split('\n');
       const contentLine = lines.filter((element) => element.replace(/^\s+/g, '').length > 0);
       response = Object.fromEntries(response.filter((element) => element.replace(/^\s+/g, '').length > 0).map((element, index) => [contentLine[index], element]));
