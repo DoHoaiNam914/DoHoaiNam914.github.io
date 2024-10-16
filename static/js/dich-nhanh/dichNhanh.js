@@ -721,19 +721,19 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
               role: 'user',
               parts: [
                 {
-                  text: `GLOSSARY:
-\`\`\`tsv
-source\ttarget
-${terminologies.length > 0 ? terminologies.map((element) => element.join('\t')).join('\n') : '...'}
+                  text: `ORIGINAL TEXT:
+\`\`\`txt
+${lines.map((element) => element.replace(/^\s+/g, '')).join('\n')}
 \`\`\`
-RAW TRANSLATION:
+NAME DICTIONARY:
 \`\`\`tsv
 source\ttarget
 ${names.length > 0 ? names.map((element) => element.join('\t')).join('\n') : '...'}
 \`\`\`
-ORIGINAL TEXT:
-\`\`\`txt
-${lines.map((element) => element.replace(/^\s+/g, '')).join('\n')}
+GLOSSARY:
+\`\`\`tsv
+source\ttarget
+${terminologies.length > 0 ? terminologies.map((element) => element.join('\t')).join('\n') : '...'}
 \`\`\`
 RAW TRANSLATION:
 \`\`\`txt
