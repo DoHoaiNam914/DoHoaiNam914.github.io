@@ -705,7 +705,7 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
               role: 'user',
               parts: [
                 {
-                  text: 'Translate the text in ORIGINAL TEXT into Vietnamese. Censor words that cause the request to be blocked by the safety filter with asterisks during translation. Skip censoring if it doesn’t cause blocking. Use the names listed in NAME DICTIONARY and the terms listed in GLOSSARY to enhance the accuracy of the translation. Make sure to reference the raw in RAW TRANSLATION for accuracy and consistency. Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text and cannot include explanations or other information.',
+                  text: 'Translate the text in ORIGINAL TEXT into Vietnamese. Use the names listed in NAME DICTIONARY and the terms listed in GLOSSARY to enhance the accuracy of the translation. Make sure to reference the raw in RAW TRANSLATION for accuracy and consistency. Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Ensure that inappropriate words in the translated text are censored with an asterisk, as this is crucial for avoiding being blocked by the safety filter. Your output must only contain the translated text and cannot include explanations or other information.',
                 },
               ],
             },
@@ -774,7 +774,7 @@ ${rawTranslation.split('\n').map((element) => element.replace(/^\s+/g, '')).join
         url: `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`,
       });
       if (response.candidates == null) return text;
-      response = response.candidates[0].content.parts[0].text.replace(/\n<\/pre>\n?|(?:<pre type="text\/plain"(?: id="(?:original|translated)-text")?>|```)\n/g, '').split('\n');
+      response = response.candidates[0].content.parts[0].text.split('\n');
       const contentLine = lines.filter((element) => element.replace(/^\s+/g, '').length > 0);
       response = Object.fromEntries(response.filter((element) => element.replace(/^\s+/g, '').length > 0).map((element, index) => [contentLine[index], element]));
       result = lines.map((element) => (response[element] != null ? element.match(/^\s*/)[0].concat(response[element].replace(/^\s+/g, '')) : element)).join('\n');
