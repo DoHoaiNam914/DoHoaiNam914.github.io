@@ -705,7 +705,7 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
               role: 'user',
               parts: [
                 {
-                  text: 'Translate the text in ORIGINAL TEXT into Vietnamese. Use the names listed in NAME DICTIONARY and the terms listed in GLOSSARY to enhance the accuracy of the translation. Make sure to reference the raw in RAW TRANSLATION for accuracy and consistency. Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text and cannot include explanations or other information.',
+                  text: 'Translate the text in ORIGINAL TEXT into Vietnamese. Censor words that cause the request to be blocked by the safety filter with asterisks during translation. Skip censoring if it doesn’t cause blocking. Use the names listed in NAME DICTIONARY and the terms listed in GLOSSARY to enhance the accuracy of the translation. Make sure to reference the raw in RAW TRANSLATION for accuracy and consistency. Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text and cannot include explanations or other information.',
                 },
               ],
             },
