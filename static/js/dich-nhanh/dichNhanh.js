@@ -705,7 +705,19 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
               role: 'user',
               parts: [
                 {
-                  text: 'Translate the text in ORIGINAL TEXT into Vietnamese. Use the names listed in NAME DICTIONARY and the terms listed in GLOSSARY to enhance the accuracy of the translation. Make sure to reference the raw in RAW TRANSLATION for accuracy and consistency. Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text and cannot include explanations or other information.',
+                  text: `Translate the text in ORIGINAL TRANSLATION into Vietnamese. In that text, regardless of whether it is a title or content, all must be translated. Use the terms listed in BẢNG CHÚ GIẢI THUẬT NGỮ and the names listed in BẢNG CHÚ GIẢI TÊN to enhance the accuracy of the translation. Make sure to reference the raw in BẢN DỊCH THÔ for accuracy and consistency. Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text and cannot include explanations or other information. Absolutely do not format the output text.
+
+## BẢNG CHÚ GIẢI THUẬT NGỮ:
+\`\`\`tsv
+source\ttarget
+${terminologies.length > 0 ? terminologies.map((element) => element.join('\t')).join('\n') : '...'}
+\`\`\`
+
+## BẢNG CHÚ GIẢI TÊN:
+\`\`\`tsv
+source\ttarget
+${names.length > 0 ? names.map((element) => element.join('\t')).join('\n') : '...'}
+\`\`\``,
                 },
               ],
             },
@@ -713,7 +725,7 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
               role: 'model',
               parts: [
                 {
-                  text: 'Please provide the text you would like to have translated into Vietnamese within the ORIGINAL TEXT.',
+                  text: 'Please provide the text you would like to have translated into Vietnamese within the VĂN BẢN GỐC.',
                 },
               ],
             },
@@ -721,21 +733,12 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
               role: 'user',
               parts: [
                 {
-                  text: `ORIGINAL TEXT:
+                  text: `## VĂN BẢN GỐC:
 \`\`\`txt
 ${lines.map((element) => element.replace(/^\s+/g, '')).join('\n')}
 \`\`\`
-NAME DICTIONARY:
-\`\`\`tsv
-source\ttarget
-${names.length > 0 ? names.map((element) => element.join('\t')).join('\n') : '...'}
-\`\`\`
-GLOSSARY:
-\`\`\`tsv
-source\ttarget
-${terminologies.length > 0 ? terminologies.map((element) => element.join('\t')).join('\n') : '...'}
-\`\`\`
-RAW TRANSLATION:
+
+## BẢN DỊCH THÔ:
 \`\`\`txt
 ${rawTranslation.split('\n').map((element) => element.replace(/^\s+/g, '')).join('\n')}
 \`\`\``,
