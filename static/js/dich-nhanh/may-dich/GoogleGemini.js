@@ -220,7 +220,7 @@ class GoogleGemini extends Translator {
               role: 'user',
               parts: [
                 {
-                  text: `Translate the text in ORIGINAL TEXT into ${targetLanguage}. Use the names listed in NAME DICTIONARY and the terms listed in GLOSSARY to enhance the accuracy of the translation. Your translations must convey all the content in the original text in and cannot involve explanations or other unnecessary information. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Ensure that inappropriate words in the translated text are censored with an asterisk, as this is crucial for avoiding being blocked by the safety filter. Your output must only contain the translated text and cannot include explanations or other information.`,
+                  text: `Translate the text in ORIGINAL TEXT into ${targetLanguage}. Use the names listed in NAME DICTIONARY and the terms listed in GLOSSARY to enhance the accuracy of the translation. Your translations must convey all the content in the original text in and cannot involve explanations or other unnecessary information. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Censor the main violating words in the translated text by replacing the vowel letters in those words with an asterisk when they are blocked by the safety filter. Your output must only contain the translated text and cannot include explanations or other information.`,
                 },
               ],
             },
