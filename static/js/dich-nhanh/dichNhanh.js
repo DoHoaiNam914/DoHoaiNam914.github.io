@@ -707,14 +707,14 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
                 {
                   text: `Translate the text in ORIGINAL TRANSLATION into Vietnamese. In that text, regardless of whether it is a title or content, all must be translated. ${terminologies.length > 0 || names.length > 0 ? `Use ${terminologies.length > 0 ? 'the terms listed in BẢNG CHÚ GIẢI THUẬT NGỮ ' : ''}${names.length > 0 ? `${terminologies.length > 0 ? 'and ' : ''}the names listed in BẢNG CHÚ GIẢI TÊN ` : ''}to enhance the accuracy of the translation. ` : ''}Make sure to reference the raw translation in BẢN DỊCH THÔ for accuracy and consistency. Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text and cannot include explanations or other information. Absolutely do not format the output text.${terminologies.length > 0 || names.length > 0 ? `
 
-${terminologies.length > 0 `## BẢNG CHÚ GIẢI THUẬT NGỮ:
+${terminologies.length > 0 ? `## BẢNG CHÚ GIẢI THUẬT NGỮ:
 \`\`\`tsv
 source\ttarget
 ${terminologies.map((element) => element.join('\t')).join('\n')}
-\`\`\`` : ''}${names.length > 0 ? `${terminologies.length > 0 '\n\n' : ''}## BẢNG CHÚ GIẢI TÊN:
+\`\`\`` : ''}${names.length > 0 ? `${terminologies.length > 0 ? '\n\n' : ''}## BẢNG CHÚ GIẢI TÊN:
 \`\`\`tsv
 source\ttarget
-${names.length > 0 ? names.map((element) => element.join('\t')).join('\n') : '...'}
+${names.map((element) => element.join('\t')).join('\n')}
 \`\`\`` : ''}` : ''}`,
                 },
               ],
