@@ -287,9 +287,8 @@ ${names.length > 0 ? names.map((element) => element.join('\t')).join('\n') : '..
         return this.result;
       }
 
-      response = response.candidates[0].content.parts[0].text.split('\n');
-      const contentLine = lines.filter((element) => element.replace(/^\s+/g, '').length > 0);
-      response = Object.fromEntries(response.filter((element) => element.replace(/^\s+/g, '').length > 0).map((element, index) => [contentLine[index], element]));
+      response = response.candidates[0].content.parts[0].text.split('\n').filter((element) => element.replace(/^\s+/, '').length > 0);
+      response = Object.fromEntries(lines.filter((element) => element.replace(/^\s+/, '').length > 0).map((element, index) => [element, response[index]]));
       this.result = lines.map((element) => (response[element] != null ? element.match(/^\s*/)[0].concat(response[element].replace(/^\s+/g, '')) : element)).join('\n');
       super.translateText(text, targetLanguage, this.DefaultLanguage.SOURCE_LANGUAGE);
     } catch (error) {

@@ -696,6 +696,7 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
   try {
     if (artificialIntelligence !== 'none') {
       const lines = text.split('\n');
+      const rawTranslationLines = rawTranslation.split('\n');
       const terminologies = Object.entries(glossary.terminologies).filter(([first]) => text.includes(first));
       const names = Object.entries(glossary.namePhu).filter(([first]) => text.includes(first));
       let response = await $.ajax({
@@ -705,7 +706,7 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
               role: 'user',
               parts: [
                 {
-                  text: `Translate the text in ORIGINAL TRANSLATION into Vietnamese. In that text, regardless of whether it is a title or content, all must be translated. ${terminologies.length > 0 || names.length > 0 ? `Use ${terminologies.length > 0 ? 'the terms listed in BẢNG CHÚ GIẢI THUẬT NGỮ ' : ''}${names.length > 0 ? `${terminologies.length > 0 ? 'and ' : ''}the names listed in BẢNG CHÚ GIẢI TÊN ` : ''}to enhance the accuracy of the translation. ` : ''}Make sure to reference the raw translation in BẢN DỊCH THÔ for accuracy and consistency. Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text and cannot include explanations or other information. Absolutely do not format the output text.${terminologies.length > 0 || names.length > 0 ? `
+                  text: `Translate the text in VĂN BẢN GỐC into Vietnamese. In that text, regardless of whether it is a title or content, all must be translated. ${terminologies.length > 0 || names.length > 0 ? `Use ${terminologies.length > 0 ? 'the terms listed in BẢNG CHÚ GIẢI THUẬT NGỮ ' : ''}${names.length > 0 ? `${terminologies.length > 0 ? 'and ' : ''}the names listed in BẢNG CHÚ GIẢI TÊN ` : ''}to enhance the accuracy of the translation. ` : ''}Make sure to reference the raw translation in BẢN DỊCH THÔ for accuracy and consistency. Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text and cannot include explanations or other information. Absolutely do not format the output text.${terminologies.length > 0 || names.length > 0 ? `
 
 ${terminologies.length > 0 ? `## BẢNG CHÚ GIẢI THUẬT NGỮ:
 \`\`\`tsv
@@ -738,7 +739,7 @@ ${lines.map((element) => element.replace(/^\s+/g, '')).join('\n')}
 
 ## BẢN DỊCH THÔ:
 \`\`\`txt
-${rawTranslation.split('\n').map((element) => element.replace(/^\s+/g, '')).join('\n')}
+${rawTranslationLines.map((element) => element.replace(/^\s+/g, '')).join('\n')}
 \`\`\``,
                 },
               ],
@@ -775,10 +776,9 @@ ${rawTranslation.split('\n').map((element) => element.replace(/^\s+/g, '')).join
         url: `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`,
       });
       if (response.candidates == null) return result;
-      response = response.candidates[0].content.parts[0].text.split('\n');
-      const contentLine = lines.filter((element) => element.replace(/^\s+/g, '').length > 0);
-      response = Object.fromEntries(response.filter((element) => element.replace(/^\s+/g, '').length > 0).map((element, index) => [contentLine[index], element]));
-      result = lines.map((element) => (response[element] != null ? element.match(/^\s*/)[0].concat(response[element].replace(/^\s+/g, '')) : element)).join('\n');
+response = response.candidates[0].content.parts[0].text.split('\n').filter((element) => element.replace(/^\s+/, '').length > 0);
+      response = Object.fromEntries(lines.filter((element) => element.replace(/^\s+/, '').length > 0).map((element, index) => [element, response[index]]));
+      result = lines.map((element, index) => (response[element] != null ? (rawTranslationLines[index] ?? element).match(/^\s*/)[0].concat(response[element].replace(/^\s+/g, '')) : rawTranslationLines[index] ?? element)).join('\n');
     }
   } catch (error) {
     throw error;
