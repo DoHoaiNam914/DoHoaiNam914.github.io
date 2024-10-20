@@ -695,10 +695,10 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
 
   try {
     if (artificialIntelligence !== 'none') {
-      const lines = text.split('\n');
-      const rawTranslationLines = rawTranslation.split('\n');
       const terminologies = Object.entries(glossary.terminologies).filter(([first]) => text.includes(first));
       const names = Object.entries(glossary.namePhu).filter(([first]) => text.includes(first));
+      const lines = text.split('\n');
+      const rawTranslationLines = rawTranslation.split('\n');
       let response = await $.ajax({
         data: JSON.stringify({
           contents: [
@@ -724,7 +724,7 @@ ${names.map((element) => element.join('\t')).join('\n')}
               role: 'model',
               parts: [
                 {
-                  text: 'Please provide the text you would like to have translated into Vietnamese within the VĂN BẢN GỐC.',
+                  text: 'Please provide the text you would like to have translated into Vietnamese within VĂN BẢN GỐC.',
                 },
               ],
             },
