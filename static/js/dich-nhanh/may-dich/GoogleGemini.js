@@ -216,11 +216,30 @@ class GoogleGemini extends Translator {
       let response = await $.ajax({
         data: JSON.stringify({
           contents: [
-            terminologies.length > 0 || names.length > 0 ? {
+            {
               role: 'user',
               parts: [
                 {
-                  text: `
+                  text: `Translate the text ${terminologies.length > 0 || names.length > 0 ? 'in VĂN BẢN GỐC ' : ''}into ${targetLanguage}. In that text, regardless of whether it is a title or content, all must be translated. ${terminologies.length > 0 || names.length > 0 ? `Use ${terminologies.length > 0 ? 'the terms listed in BẢNG TRA CỨU THUẬT NGỮ ' : ''}${names.length > 0 ? `${terminologies.length > 0 ? 'and ' : ''}the proper names listed in BẢNG CHÚ GIẢI TÊN ` : ''}to enhance the accuracy of the translation. ` : ''}Your translations must convey all the content in the original text in and cannot involve explanations or other unnecessary information. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text and cannot include explanations or other information. Absolutely do not format the output text.`,
+                },
+              ],
+            },
+            {
+              role: 'model',
+              parts: [
+                {
+                  text: `Please provide the text you would like to have translated into ${targetLanguage}${terminologies.length > 0 || names.length > 0 ? ' within VĂN BẢN GỐC' : ''}.`,
+                },
+              ],
+            },
+            {
+              role: 'user',
+              parts: [
+                {
+                  text: `${terminologies.length > 0 || names.length > 0 ? `## VĂN BẢN GỐC:
+\`\`\`txt
+${lines.map((element) => element.replace(/^\s+/g, '')).join('\n')}
+\`\`\`
 
 ${terminologies.length > 0 ? `## BẢNG TRA CỨU THUẬT NGỮ:
 \`\`\`tsv
@@ -230,31 +249,7 @@ ${terminologies.map((element) => element.join('\t')).join('\n')}
 \`\`\`tsv
 source\ttarget
 ${names.map((element) => element.join('\t')).join('\n')}
-\`\`\`` : ''}`,
-                },
-              ],
-            } : null,
-            {
-              role: 'user',
-              parts: [
-                {
-                  text: `Translate the text into ${targetLanguage}. In that text, regardless of whether it is a title or content, all must be translated. ${terminologies.length > 0 || names.length > 0 ? `Use ${terminologies.length > 0 ? 'the terms listed in BẢNG TRA CỨU THUẬT NGỮ ' : ''}${names.length > 0 ? `${terminologies.length > 0 ? 'and ' : ''}the proper names listed in BẢNG CHÚ GIẢI TÊN ` : ''}to enhance the accuracy of the translation. ` : ''}Your translations must convey all the content in the original text in and cannot involve explanations or other unnecessary information. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text and cannot include explanations or other information. Absolutely do not format the output text.`,
-                },
-              ],
-            },
-            {
-              role: 'model',
-              parts: [
-                {
-                  text: `Please provide the text you would like to have translated into ${targetLanguage}.`,
-                },
-              ],
-            },
-            {
-              role: 'user',
-              parts: [
-                {
-                  text: lines.map((element) => element.replace(/^\s+/g, '')).join('\n'),
+\`\`\`` : ''}` : lines.map((element) => element.replace(/^\s+/g, '')).join('\n')}`,
                 },
               ],
             },
