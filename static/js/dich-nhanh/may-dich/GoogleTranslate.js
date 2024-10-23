@@ -3,7 +3,7 @@
 /* global Translator, Utils */
 
 class GoogleTranslate extends Translator {
-  /** https://translation.googleapis.com/language/translate/v2/languages?key=AIzaSyBcsB9k1Db4FXrf0Y7vXK0aIS2bQA38Gms&target=vi */
+  /** https://translation.googleapis.com/language/translate/v2/languages?prettyPrint=false&target=vi&key=AIzaSyDj3f1TGsnamhL8U5tpvpWw4J27So0IGp8 */
   static LANGUAGE_LIST = JSON.parse(`{
   "data": {
     "languages": [
@@ -1022,7 +1022,7 @@ class GoogleTranslate extends Translator {
         if (lines.length === 0 || [...queryLines, lines[0]].join('\r\n').length > this.maxContentLengthPerRequest || (queryLines.length + 1) > this.maxContentLinePerRequest) {
           responses.push($.ajax({
             method: 'GET',
-            url: `https://www.googleapis.com/language/translate/v2?key=AIzaSyBcsB9k1Db4FXrf0Y7vXK0aIS2bQA38Gms&target=${targetLanguage}&q=${queryLines.map((element) => encodeURIComponent(element)).join('&q=')}${sourceLanguage !== this.DefaultLanguage.SOURCE_LANGUAGE ? `&source=${sourceLanguage}` : ''}`,
+            url: `https://www.googleapis.com/language/translate/v2?prettyPrint=false${sourceLanguage !== this.DefaultLanguage.SOURCE_LANGUAGE ? `&source=${sourceLanguage}` : ''}&target=${targetLanguage}&q=${queryLines.map((element) => encodeURIComponent(element)).join('&q=')}&key=AIzaSyDj3f1TGsnamhL8U5tpvpWw4J27So0IGp8`,
           }));
           queryLines = [];
         }
