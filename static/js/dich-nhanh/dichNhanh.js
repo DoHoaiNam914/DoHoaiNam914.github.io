@@ -706,7 +706,7 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
               role: 'user',
               parts: [
                 {
-                  text: `Translate the text in VĂN BẢN GỐC into Vietnamese. In that text, regardless of whether it is a title or content, all must be translated. ${terminologies.length > 0 || names.length > 0 ? `Use ${terminologies.length > 0 ? 'the terms listed in BẢNG TRA CỨU THUẬT NGỮ ' : ''}${names.length > 0 ? `${terminologies.length > 0 ? 'and ' : ''}the proper names listed in BẢNG CHÚ GIẢI TÊN ` : ''}to enhance the accuracy of the translation. ` : ''}Reference the raw translation in BẢN DỊCH THÔ for accuracy and consistency. Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text and cannot include explanations or other information. Absolutely do not format the output text.`,
+                  text: `Translate the text in the VĂN BẢN GỐC section into Vietnamese. In that text, regardless of whether it is a title or content, everything must be translated. Refer to the rough translation in the BẢN DỊCH THÔ section to ensure consistency. ${terminologies.length > 0 || names.length > 0 ? `Prioritize applying ${terminologies.length > 0 ? 'the terms listed in the BẢNG TRA CỨU THUẬT NGỮ section ' : ''}${names.length > 0 ? `${terminologies.length > 0 ? 'and ' : ''}the proper names listed in the BẢNG CHÚ GIẢI TÊN section ` : ''}over anything else to enhance the accuracy and consistency of the translation. ` : ''}Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text and cannot include explanations or other information. Your output must be unformatted raw text.`,
                 },
               ],
             },
@@ -714,7 +714,7 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
               role: 'model',
               parts: [
                 {
-                  text: 'Please provide the text you would like to have translated into Vietnamese within VĂN BẢN GỐC.',
+                  text: 'Please provide the text you would like to have translated into Vietnamese in the VĂN BẢN GỐC section.',
                 },
               ],
             },
