@@ -1996,7 +1996,7 @@ class WebnovelTranslate extends Translator {
         return this.result;
       }
 
-      this.result = responses.map((a) => a.responseJSON[0].filter(([__, second]) => second != null).map(([first, second]) => [second, first.replace(/^ +/, '')]).map(([first, second]) => [first, (isCj ? second.replace(/^([^|]+)|{8}/, '\n') : second).replaceAll(EOL_REG_EXP, '\n')]).map(([first, second]) => {
+      this.result = responses.map((a) => a.responseJSON[0].filter(([__, second]) => second != null).map(([first, second]) => [second, first.replace(/^ +/, '')]).map(([first, second]) => [first, (isCj ? second.replace(/^[^|]+\|{8}/, '\n') : second).replaceAll(EOL_REG_EXP, '\n')]).map(([first, second]) => {
         const count = [...first.matchAll(EOL_REG_EXP)].length - [...second.matchAll(/\n/g)].length;
         return second.concat('\n'.repeat(count >= 0 ? count : 0));
       }).join('').split('\n')).flat().join('\n');
