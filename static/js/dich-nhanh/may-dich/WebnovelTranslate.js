@@ -1989,7 +1989,7 @@ class WebnovelTranslate extends Translator {
       }
 
       await Promise.all(responses);
-      const EOL_REG_EXP = new RegExp(EOL, 'g');
+      const EOL_REG_EXP = new RegExp(Utils.escapeRegExp(EOL), 'g');
 
       if (this.controller.signal.aborted) {
         this.result = text;
