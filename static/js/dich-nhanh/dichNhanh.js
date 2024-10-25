@@ -776,7 +776,7 @@ ${names.map((element) => element.join('\t')).join('\n')}
         url: `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`,
       });
       if (response.candidates == null) return result;
-response = response.candidates[0].content.parts[0].text.split('\n').filter((element) => element.replace(/^\s+/, '').length > 0);
+response = response.candidates[0].content.parts[0].text.replace(' \n', '').split('\n').filter((element) => element.replace(/^\s+/, '').length > 0);
       response = Object.fromEntries(lines.filter((element) => element.replace(/^\s+/, '').length > 0).map((element, index) => [element, response[index]]));
       result = lines.map((element, index) => (response[element] != null ? (rawTranslationLines[index] ?? element).match(/^\s*/)[0].concat(response[element].replace(/^\s+/g, '')) : rawTranslationLines[index] ?? element)).join('\n');
     }
