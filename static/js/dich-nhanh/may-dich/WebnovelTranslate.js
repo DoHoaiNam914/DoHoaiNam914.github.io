@@ -1970,8 +1970,9 @@ class WebnovelTranslate extends Translator {
 
   async translateText(text, targetLanguage, sourceLanguage = this.DefaultLanguage.SOURCE_LANGUAGE) {
     try {
-      const lines = text.split('\n');
-      const EOL = ['ja', 'zh-CN', 'zh-TW'].some((element) => sourceLanguage === element) ? '||||' : '\\n';
+      const isCj = ['ja', 'zh-CN', 'zh-TW'].some((element) => sourceLanguage === element);
+      const lines = (isCj ? text.replace(/^([^\n]+)\n/, '$1||||||||\u3000\u3000') : text).split('\n').map((element) => `${isCj ? '\u3000\u3000' : ''}${element}`);
+      const EOL = isCj ? '||||' : '\\n';
       let queryLines = [];
       const responses = [];
 
@@ -1988,18 +1989,17 @@ class WebnovelTranslate extends Translator {
       }
 
       await Promise.all(responses);
-      const EOL_REG_EXP = new RegExp(Utils.escapeRegExp(EOL), 'g');
+      const EOL_REG_EXP = new RegExp(EOL, 'g');
 
       if (this.controller.signal.aborted) {
         this.result = text;
         return this.result;
       }
 
-      if (!/eruda=true/.test(window.location)) console.log('DEBUG:', responses.map((a) => a.responseJSON[0].filter(([__, second]) => second != null).map(([first, second]) => [second, first, [...second.matchAll(EOL_REG_EXP)].length - [...first.matchAll(EOL_REG_EXP)].length])).flat().map((element) => (element[2] >= 0 ? element.slice(0, -1) : element)));
-      this.result = responses.map((a) => a.responseJSON[0].filter(([__, second]) => second != null).map(([first, second]) => [second, first.replace(/^\s+/, '').replaceAll(EOL_REG_EXP, '\n')]).map(([first, second]) => {
+      this.result = responses.map((a) => a.responseJSON[0].filter(([__, second]) => second != null).map(([first, second]) => [second, first.replace(/^ +/, '')]).map(([first, second]) => [first, (isCj ? second.replace(/^([^|]+)|{8}/, '\n') : second).replaceAll(EOL_REG_EXP, '\n')]).map(([first, second]) => {
         const count = [...first.matchAll(EOL_REG_EXP)].length - [...second.matchAll(/\n/g)].length;
         return second.concat('\n'.repeat(count >= 0 ? count : 0));
-      }).join('').split('\n')).flat().map((element) => element.trimEnd()).join('\n');
+      }).join('').split('\n')).flat().join('\n');
       super.translateText(text, targetLanguage, sourceLanguage);
     } catch (error) {
       console.error('Bản dịch lỗi:', error);
