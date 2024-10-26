@@ -1989,14 +1989,14 @@ class WebnovelTranslate extends Translator {
       }
 
       await Promise.all(responses);
-      const EOL_REG_EXP = new RegExp(` ?${Utils.escapeRegExp(EOL)} ?`, 'g');
+      const EOL_REG_EXP = new RegExp(` ?${Utils.getTrieRegexPatternFromWords([EOL, ...isCj ? ['||| |'] : []])} ?`, 'g');
 
       if (this.controller.signal.aborted) {
         this.result = text;
         return this.result;
       }
 
-      this.result = responses.map((element, a) => element.responseJSON[0].filter(([__, second]) => second != null).map(([first, second], b) => [second, (isCj && a === 0 && b === 0 ? first.replace(/^([^|]*)\|{7,8} /, '$1\n') : first).replaceAll(EOL_REG_EXP, '\n')]).map(([first, second]) => {
+      this.result = responses.map((element, a) => element.responseJSON[0].filter(([__, second]) => second != null).map(([first, second], b) => [second, (isCj && a === 0 && b === 0 ? first.replace(/^([^|]*)\|{7,} /, '$1\n') : first).replaceAll(EOL_REG_EXP, '\n')]).map(([first, second]) => {
         const count = [...first.matchAll(EOL_REG_EXP)].length - [...second.matchAll(/\n/g)].length;
         return second.concat('\n'.repeat(count >= 0 ? count : 0));
       }).join('').split('\n')).flat().join('\n');
