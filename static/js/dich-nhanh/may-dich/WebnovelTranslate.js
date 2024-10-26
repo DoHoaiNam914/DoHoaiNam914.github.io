@@ -1995,8 +1995,8 @@ class WebnovelTranslate extends Translator {
         return this.result;
       }
 
-      this.result = responses.map((element, a) => element.responseJSON[0].filter(([__, second]) => second != null).map(([first, second], b) => [second, (isCj && a === 0 && b === 0 ? first.replace(/^([^|]*)\|{7,} /, '$1\n') : first).replaceAll(new RegExp(` ?${Utils.getTrieRegexPatternFromWords([EOL, ...isCj ? ['||| |'] : []]).source} ?`, 'g'), '\n')]).map(([first, second]) => {
-        const count = [...(isCj ? first.replace(/^([^|]*)\|{8}/, '$1||||') : first).matchAll(new RegExp(Utils.escapeRegExp(EOL), 'g'))].length - [...second.matchAll(/\n/g)].length;
+      this.result = responses.map((element, a) => element.responseJSON[0].filter(([__, second]) => second != null).map(([first, second], b) => [second, (isCj && a === 0 && b === 0 ? first.replace(/^([^|]*)\|{7,} /, '$1\n') : first).replaceAll(new RegExp(` ?${Utils.getTrieRegexPatternFromWords([EOL, ...isCj ? ['||| |'] : []]).source} ?`, 'g'), '\n')]).map(([first, second], b) => {
+        const count = [...(isCj && a === 0 && b === 0 ? first.replace(/^([^|]*)\|{8}/, '$1||||') : first).matchAll(new RegExp(Utils.escapeRegExp(EOL), 'g'))].length - [...second.matchAll(/\n/g)].length;
         return second.concat('\n'.repeat(count >= 0 ? count : 0));
       }).join('').split('\n')).flat().join('\n');
       super.translateText(text, targetLanguage, sourceLanguage);
