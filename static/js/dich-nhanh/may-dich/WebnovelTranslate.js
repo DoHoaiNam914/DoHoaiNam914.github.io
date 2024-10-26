@@ -1971,7 +1971,7 @@ class WebnovelTranslate extends Translator {
   async translateText(text, targetLanguage, sourceLanguage = this.DefaultLanguage.SOURCE_LANGUAGE) {
     try {
       const isCj = ['ja', 'zh-CN', 'zh-TW'].some((element) => sourceLanguage === element);
-      const lines = (isCj ? text.replace(/^([^\n]+)\n/, '$1||||||||\u3000\u3000') : text).split('\n').map((element) => `${isCj ? '\u3000\u3000' : ''}${element}`);
+      const lines = (isCj ? text.replace(/^([^\n]*)\n/, '$1||||||||\u3000\u3000') : text).split('\n').map((element) => `${isCj ? '\u3000\u3000' : ''}${element}`);
       const EOL = isCj ? '||||' : '\\n';
       let queryLines = [];
       const responses = [];
@@ -1996,7 +1996,7 @@ class WebnovelTranslate extends Translator {
         return this.result;
       }
 
-      this.result = responses.map((element, index) => element.responseJSON[0].filter(([__, second]) => second != null).map(([first, second]) => [second, first.replace(/^ +/, '')]).map(([first, second]) => [first, (isCj && index === 0 ? second.replace(/^[^|]+\|{7,8} /, '\n') : second).replaceAll(EOL_REG_EXP, '\n')]).map(([first, second]) => {
+      this.result = responses.map((element, a) => element.responseJSON[0].filter(([__, second]) => second != null).map(([first, second], b) => [second, (isCj && a === 0 && b === 0 ? first.replace(/^([^|]*)\|{7,8} /, '$1\n') : first).replaceAll(EOL_REG_EXP, '\n')]).map(([first, second]) => {
         const count = [...first.matchAll(EOL_REG_EXP)].length - [...second.matchAll(/\n/g)].length;
         return second.concat('\n'.repeat(count >= 0 ? count : 0));
       }).join('').split('\n')).flat().join('\n');
