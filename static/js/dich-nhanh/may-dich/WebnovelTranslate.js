@@ -1998,8 +1998,8 @@ class WebnovelTranslate extends Translator {
       const originalPart = [];
       const translationPart = [];
 
-      responses.forEach((element, a) => element.responseJSON[0].filter(([__, second]) => second != null).map(([first, second], b) => [second, (isCj && a === 0 && b === 0 ? first.replace(/ ?\|{7,8} /, '\n') : first).replaceAll(new RegExp(` ?${Utils.getTrieRegexPatternFromWords([EOL, ...isCj ? [] : []].toSorted((a, b) => b.length - a.length)).source}\\s*`, 'g'), '\n')]).forEach(([first, second], b) => {
-        const requestLines = isCj && a === 0 && b === 0 ? first.replace(EOL.repeat(2), EOL) : first;
+      responses.forEach((element) => element.responseJSON[0].filter(([__, second]) => second != null).map(([first, second]) => [second, first.replaceAll(new RegExp(` ?${Utils.getTrieRegexPatternFromWords([EOL, ...isCj ? [EOL.repeat(2), '|||'] : []].toSorted((a, b) => b.length - a.length)).source}\\s*`, 'g'), '\n')]).forEach(([first, second]) => {
+        const requestLines = isCj ? first.replace(EOL.repeat(2), EOL) : first;
         originalPart.push(requestLines);
         const count = [...requestLines.matchAll(new RegExp(Utils.escapeRegExp(EOL), 'g'))].length - [...second.matchAll(/\n/g)].length;
         translationPart.push((count < 0 ? second.replace(new RegExp(`\\n{${Math.abs(count)}}$`), '') : second).concat('\n'.repeat(count >= 0 ? count : 0)));
