@@ -1972,7 +1972,7 @@ class WebnovelTranslate extends Translator {
       const EOL = isCj ? '||||' : '\\n';
       const lines = text.split('\n');
       let query = lines.filter((element) => element.replace(/^\s+/, '').length > 0).map((element) => `${isCj ? '\u3000\u3000' : ''}${element}`).join(EOL);
-      query = (isCj ? query.replace(EOL, EOL.repeat(2)) : query).split(new RegExp(`(?<=\\.{3}|[${!isCj ? '!,.:;?' : ''}…${isCj ? '、。！，：；？' : ''}](?:[^${!isCj ? '!,.:;?' : ''}…${isCj ? '、。！，：；？' : ''}]*$${isCj ? '|\\s*' : ''}|))`));
+      query = (isCj ? query.replace(EOL, EOL.repeat(2)) : query).split(new RegExp(`(?<=\\.{3}|[${!isCj ? '!,.:;?' : ''}…${isCj ? '、。！，：；？' : ''}](?:[^${!isCj ? '!,.:;?' : ''}…${isCj ? '、。！，：；？' : ''}]*$${!isCj ? '|\\s+' : ''}|))`));
       let request = [];
       const responses = [];
 
@@ -1998,11 +1998,11 @@ class WebnovelTranslate extends Translator {
       const originalPart = [];
       const translationPart = [];
 
-      responses.forEach((element) => element.responseJSON[0].filter(([__, second]) => second != null).map(([first, second]) => [second, first.replaceAll(new RegExp(` ?${isCj ? '(?:\\|[ |]*|[ |]*\|)' : Utils.getTrieRegexPatternFromWords([EOL].toSorted((a, b) => b.length - a.length)).source}\\s*`, 'g'), '\n')]).forEach(([first, second]) => {
+      responses.forEach((element) => element.responseJSON[0].filter(([__, second]) => second != null).map(([first, second]) => [second, first.replaceAll(new RegExp(` ?${isCj ? '(?:\\|[ |]*|[ |]*\\|)' : Utils.getTrieRegexPatternFromWords([EOL].toSorted((a, b) => b.length - a.length)).source}\\s*`, 'g'), '\n')]).forEach(([first, second]) => {
         const requestLines = isCj ? first.replace(EOL.repeat(2), EOL) : first;
         originalPart.push(requestLines);
         const count = [...requestLines.matchAll(new RegExp(Utils.escapeRegExp(EOL), 'g'))].length - [...second.matchAll(/\n/g)].length;
-        translationPart.push((count < 0 ? second.replace(new RegExp(`\\n{${Math.abs(count)}}$`), '') : second).concat('\n'.repeat(count >= 0 ? count : 0)));
+        translationPart.push((count < 0 ? second.replace(new RegExp(`\\n{${Math.abs(count)}}$`), '') : second).concat('\n'.repeat(count > 0 ? count : 0)));
       }));
 
       const translationLines = translationPart.join('').split('\n');
