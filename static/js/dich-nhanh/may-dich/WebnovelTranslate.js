@@ -1980,7 +1980,7 @@ class WebnovelTranslate extends Translator {
       while (query.length > 0) {
         requestLines.push(query.shift());
 
-        if (query.length === 0 || [...requestLines, query[0]].join(EOL).length > this.maxDataPerRequest || [...requestLines, query[0]].join('\n').length > this.maxContentLengthPerRequest || (request.length + 1) > this.maxContentLinePerRequest) {
+        if (query.length === 0 || [...requestLines, query[0]].join(EOL).length > this.maxDataPerRequest || [...requestLines, query[0]].join('\n').length > this.maxContentLengthPerRequest || (requestLines.length + 1) > this.maxContentLinePerRequest) {
           requestLines = requestLines.map((element) => `${isCj ? '\u3000\u3000' : ''}${element}`).join(EOL);
           responses.push($.ajax({
             method: 'GET',
