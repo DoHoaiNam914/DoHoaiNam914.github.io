@@ -1971,8 +1971,8 @@ class WebnovelTranslate extends Translator {
       const isCj = ['ja', 'zh-CN', 'zh-TW'].some((element) => sourceLanguage === element);
       const EOL = isCj ? '||||' : '\\n';
       const lines = text.split('\n');
-      let query = lines.filter((element) => element.replace(/^\s+/, '').length > 0).map((element) => `${isCj ? '\u3000\u3000' : ''}${element}`).join(EOL).split(new RegExp(`(?:\\.{3}|[${!isCj ? '!,.:;?' : ''}…${isCj ? '、。！，：；？' : ''}]${isCj ? '\\s*' : ''})()`));
-      query = isCj ? query.replace(EOL, EOL.repeat(2)) : query;
+      let query = lines.filter((element) => element.replace(/^\s+/, '').length > 0).map((element) => `${isCj ? '\u3000\u3000' : ''}${element}`).join(EOL);
+      query = (isCj ? query.replace(EOL, EOL.repeat(2)) : query).split(new RegExp(`(?:\\.{3}|[${!isCj ? '!,.:;?' : ''}…${isCj ? '、。！，：；？' : ''}]${isCj ? '\\s*' : ''})()`));
       let request = [];
       const responses = [];
 
