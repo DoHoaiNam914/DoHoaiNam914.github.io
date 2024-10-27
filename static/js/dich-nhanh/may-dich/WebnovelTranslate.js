@@ -1972,7 +1972,7 @@ class WebnovelTranslate extends Translator {
       const EOL = isCj ? '||||' : '\\n';
       const lines = text.split('\n');
       let query = lines.filter((element) => element.replace(/^\s+/, '').length > 0).map((element) => `${isCj ? '\u3000\u3000' : ''}${element}`).join(EOL).split(new RegExp(`(?:\\.{3}|[${!isCj ? '!,.:;?' : ''}…${isCj ? '、。！，：；？' : ''}]${isCj ? '\\s*' : ''})()`));
-      query = isCj && responses.length === 0 ? request.replace(EOL, EOL.repeat(2)) : request;
+      query = isCj ? request.replace(EOL, EOL.repeat(2)) : request;
       let request = [];
       const responses = [];
 
