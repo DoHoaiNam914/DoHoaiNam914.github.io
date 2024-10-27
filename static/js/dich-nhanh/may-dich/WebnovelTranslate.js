@@ -1980,11 +1980,11 @@ class WebnovelTranslate extends Translator {
       while (query.length > 0) {
         requestLines.push(query.shift());
 
-        if (query.length === 0 || [...request, query[0]].join(EOL).length > this.maxDataPerRequest || [...request, query[0]].join('\n').length > this.maxContentLengthPerRequest || (request.length + 1) > this.maxContentLinePerRequest) {
+        if (query.length === 0 || [...requestLines, query[0]].join(EOL).length > this.maxDataPerRequest || [...requestLines, query[0]].join('\n').length > this.maxContentLengthPerRequest || (request.length + 1) > this.maxContentLinePerRequest) {
           requestLines = requestLines.map((element) => `${isCj ? '\u3000\u3000' : ''}${element}`).join(EOL);
           responses.push($.ajax({
             method: 'GET',
-            url: `${Utils.CORS_PROXY}http://translate.google.com/translate_a/single?client=${this.clientName}&ie=UTF-8&oe=UTF-8&dt=bd&dt=ex&dt=ld&dt=md&dt=rw&dt=rm&dt=ss&dt=t&dt=at&dt=gt&dt=qc&sl=${sourceLanguage}&tl=${targetLanguage}&hl=${targetLanguage}&q=${encodeURIComponent(isCj && responses.length === 0 ? requestLines.replace(EOL, EOL.repeat(2)) : requestLines)}`,
+            url: `http://translate.google.com/translate_a/single?client=${this.clientName}&ie=UTF-8&oe=UTF-8&dt=bd&dt=ex&dt=ld&dt=md&dt=rw&dt=rm&dt=ss&dt=t&dt=at&dt=gt&dt=qc&sl=${sourceLanguage}&tl=${targetLanguage}&hl=${targetLanguage}&q=${encodeURIComponent(isCj && responses.length === 0 ? requestLines.replace(EOL, EOL.repeat(2)) : requestLines)}`,
           }));
           requestLines = [];
         }
