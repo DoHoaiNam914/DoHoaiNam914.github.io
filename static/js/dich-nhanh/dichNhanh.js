@@ -706,7 +706,7 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
               role: 'user',
               parts: [
                 {
-                  text: `Translate the text in the VĂN BẢN GỐC section into Vietnamese. In that text, regardless of whether it is a title or content, all of it must be translated. Refer to the rough translation in the BẢN DỊCH THÔ section to ensure consistency. ${terminologies.length > 0 || names.length > 0 ? `Prioritize applying ${terminologies.length > 0 ? 'the terms listed in the BẢNG TRA CỨU THUẬT NGỮ section ' : ''}${names.length > 0 ? `${terminologies.length > 0 ? 'and ' : ''}the proper names listed in the BẢNG TRA CỨU TÊN RIÊNG section ` : ''}over anything else to enhance the accuracy and consistency of the translation. ` : ''}Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text and cannot include explanations or other information. The output must be unformatted.`,
+                  text: `Translate the text in the VĂN BẢN GỐC section into Vietnamese. In that text, regardless of whether it is a title or content, all must be translated. Refer to the rough translation in the BẢN DỊCH THÔ section line by line to ensure consistency. ${terminologies.length > 0 || names.length > 0 ? `Prioritize applying ${terminologies.length > 0 ? 'the terms listed in the BẢNG TRA CỨU THUẬT NGỮ section ' : ''}${names.length > 0 ? `${terminologies.length > 0 ? 'and ' : ''}the proper names listed in the BẢNG TRA CỨU TÊN RIÊNG section ` : ''}over anything else to enhance the accuracy and consistency of the translation. ` : ''}Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text and cannot include explanations or other information. The output must be unformatted.`,
                 },
               ],
             },
@@ -778,7 +778,7 @@ ${names.map((element) => element.join('\t')).join('\n')}
       if (response.candidates == null) return result;
 response = response.candidates[0].content.parts[0].text.replace(' \n', '').split('\n').filter((element) => element.replace(/^\s+/, '').length > 0);
       response = Object.fromEntries(lines.filter((element) => element.replace(/^\s+/, '').length > 0).map((element, index) => [element, response[index]]));
-      result = lines.map((element, index) => (response[element] != null ? (rawTranslationLines[index] ?? element).match(/^\s*/)[0].concat(response[element].replace(/^\s+/g, '')) : rawTranslationLines[index] ?? element)).join('\n');
+      result = lines.map((element, index) => (response[element] != null ? (rawTranslationLines[index] ?? element).match(/^\s*/)[0].concat(response[element].replace(/^\s+/, '')) : rawTranslationLines[index] ?? element)).join('\n');
     }
   } catch (error) {
     throw error;
