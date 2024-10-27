@@ -1974,19 +1974,19 @@ class WebnovelTranslate extends Translator {
       const lines = text.split('\n');
       const query = lines.filter((element) => element.replace(/^\s+/, '').length > 0);
       const EOL = isCj ? '||||' : '\\n';
-      let request = [];
+      let requestLines = [];
       const responses = [];
 
       while (query.length > 0) {
-        queryLines.push(query.shift());
+        requestLines.push(query.shift());
 
         if (query.length === 0 || [...request, query[0]].join(EOL).length > this.maxDataPerRequest || [...request, query[0]].join('\n').length > this.maxContentLengthPerRequest || (request.length + 1) > this.maxContentLinePerRequest) {
-          request = request.map((element) => `${isCj ? '\u3000\u3000' : ''}${element}`).join(EOL);
+          requestLines = requestLines.map((element) => `${isCj ? '\u3000\u3000' : ''}${element}`).join(EOL);
           responses.push($.ajax({
             method: 'GET',
-            url: `${Utils.CORS_PROXY}http://translate.google.com/translate_a/single?client=${this.clientName}&ie=UTF-8&oe=UTF-8&dt=bd&dt=ex&dt=ld&dt=md&dt=rw&dt=rm&dt=ss&dt=t&dt=at&dt=gt&dt=qc&sl=${sourceLanguage}&tl=${targetLanguage}&hl=${targetLanguage}&q=${encodeURIComponent(isCj && responses.length === 0 ? request.replace(EOL, EOL.repeat(2)) : request)}`,
+            url: `${Utils.CORS_PROXY}http://translate.google.com/translate_a/single?client=${this.clientName}&ie=UTF-8&oe=UTF-8&dt=bd&dt=ex&dt=ld&dt=md&dt=rw&dt=rm&dt=ss&dt=t&dt=at&dt=gt&dt=qc&sl=${sourceLanguage}&tl=${targetLanguage}&hl=${targetLanguage}&q=${encodeURIComponent(isCj && responses.length === 0 ? requestLines.replace(EOL, EOL.repeat(2)) : requestLines)}`,
           }));
-          request = [];
+          requestLines = [];
         }
       }
 

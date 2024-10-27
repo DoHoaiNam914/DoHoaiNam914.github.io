@@ -3579,15 +3579,15 @@ class Lingvanex extends Translator {
   async translateText(text, targetLanguage, sourceLanguage = this.DefaultLanguage.SOURCE_LANGUAGE) {
     try {
       const lines = text.split('\n');
-      let queryLines = [];
+      let requestLines = [];
       const responses = [];
 
       while (lines.length > 0) {
-        queryLines.push(lines.shift());
+        requestLines.push(lines.shift());
 
-        if (lines.length === 0 || [...queryLines, lines[0]].join('\n').length > this.maxContentLengthPerRequest) {
+        if (lines.length === 0 || [...requestLines, lines[0]].join('\n').length > this.maxContentLengthPerRequest) {
           responses.push($.ajax({
-            data: `from=${sourceLanguage}&to=${targetLanguage}&text=${encodeURIComponent(queryLines.join('\n'))}&platform=dp`,
+            data: `from=${sourceLanguage}&to=${targetLanguage}&text=${encodeURIComponent(requestLines.join('\n'))}&platform=dp`,
             headers: {
               Accept: 'application/json, text/javascript, */*; q=0.01',
               Authorization: this.authToken,
@@ -3595,7 +3595,7 @@ class Lingvanex extends Translator {
             method: 'POST',
             url: `https://api-b2b.backenster.com/b1/api/v3/translate/?client=site&feature=seo_text&lang_pair=en_te`,
           }));
-          queryLines = [];
+          requestLines = [];
         }
       }
 

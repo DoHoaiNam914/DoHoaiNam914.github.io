@@ -43,20 +43,20 @@ class DeepLTranslate extends Translator {
     try {
       const lines = text.split('\n');
       const textEncoder = new TextEncoder();
-      const requestBody = (queryLines) => `text=${queryLines.map((element) => encodeURIComponent(element)).join('&text=')}&source_lang=${sourceLanguage}&target_lang=${targetLanguage}`;
-      let queryLines = [];
+      const requestBody = (requestLines) => `text=${requestLines.map((element) => encodeURIComponent(element)).join('&text=')}&source_lang=${sourceLanguage}&target_lang=${targetLanguage}`;
+      let requestLines = [];
       const responses = [];
 
       while (lines.length > 0) {
-        queryLines.push(lines.shift());
+        requestLines.push(lines.shift());
 
-        if (lines.length === 0 || textEncoder.encode(requestBody([...queryLines, lines[0]])).length > this.maxRequestBodySizePerRequest || (queryLines.length + 1) > this.maxContentLinePerRequest) {
+        if (lines.length === 0 || textEncoder.encode(requestBody([...requestLines, lines[0]])).length > this.maxRequestBodySizePerRequest || (requestLines.length + 1) > this.maxContentLinePerRequest) {
           responses.push($.ajax({
-            data: requestBody(queryLines),
+            data: requestBody(requestLines),
             method: 'POST',
             url: `https://api-free.deepl.com/v2/translate?auth_key=${this.authKey}`,
           }));
-          queryLines = [];
+          requestLines = [];
         }
       }
 

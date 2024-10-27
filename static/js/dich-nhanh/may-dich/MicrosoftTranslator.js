@@ -58,21 +58,21 @@ class MicrosoftTranslator extends Translator {
   async translateText(text, targetLanguage, sourceLanguage = this.DefaultLanguage.SOURCE_LANGUAGE) {
     try {
       const lines = text.split('\n');
-      let queryLines = [];
+      let requestLines = [];
       const responses = [];
 
       while (lines.length > 0) {
-        queryLines.push(lines.shift());
+        requestLines.push(lines.shift());
 
-        if (lines.length === 0 || [...queryLines, lines[0]].join('\n').length > this.maxContentLengthPerRequest) {
-          const queryText = queryLines.join('\n');
+        if (lines.length === 0 || [...requestLines, lines[0]].join('\n').length > this.maxContentLengthPerRequest) {
+          const queryText = requestLines.join('\n');
           responses.push($.ajax({
             data: `&fromLang=${sourceLanguage ?? MicrosoftTranslator.AUTODETECT}&to=${targetLanguage}&token=${this.token}&key=${this.key}${this.tone === 'Standard' ? `&text=${queryText}&tryFetchingGenderDebiasedTranslations=true` : `&tone=${this.tone}&text=${queryText}`}`,
             headers: { 'Content-type': 'application/x-www-form-urlencoded' },
             method: 'POST',
             url: `${Utils.CORS_PROXY}https://www.bing.com/ttranslatev3?isVertical=1&&IG=${this.IG}&IID=${this.IID}${this.tone !== 'Standard' ? `.${this.requestIndex}` : ''}`,
           }));
-          queryLines = [];
+          requestLines = [];
         }
       }
 

@@ -20,22 +20,22 @@ class CocCocEduTranslate extends Translator {
   async translateText(text, targetLanguage, sourceLanguage = this.DefaultLanguage.SOURCE_LANGUAGE) {
     try {
       const lines = text.split('\n');
-      let queryLines = [];
+      let requestLines = [];
       const responses = [];
 
       while (lines.length > 0) {
-        queryLines.push(lines.shift());
+        requestLines.push(lines.shift());
 
-        if (lines.length === 0 || [...queryLines, lines[0]].join('\n').length > this.maxContentLengthPerRequest || (queryLines.length + 1) > this.maxContentLinePerRequest) {
+        if (lines.length === 0 || [...requestLines, lines[0]].join('\n').length > this.maxContentLengthPerRequest || (requestLines.length + 1) > this.maxContentLinePerRequest) {
           responses.push($.ajax({
             data: JSON.stringify({
-              Text: queryLines.join('\n'),
+              Text: requestLines.join('\n'),
             }),
             headers: { 'Content-Type': 'application/json' },
             method: 'POST',
             url: `${Utils.CORS_PROXY}https://hoctap.coccoc.com/composer/proxyapi/translate?from=${sourceLanguage}&to=${targetLanguage}&reqid=undefined`,
           }));
-          queryLines = [];
+          requestLines = [];
         }
       }
 

@@ -33,22 +33,23 @@ class BaiduTranslate extends Translator {
   async translateText(text, targetLanguage, sourceLanguage = this.DefaultLanguage.SOURCE_LANGUAGE) {
     try {
       const lines = text.split('\n');
-      let queryLines = [];
+      let requestLines = [];
       const responses = [];
       const lan = sourceLanguage === 'auto' ? $.ajax({
         async: false,
+        cache: false,
         data: `query=${encodeURIComponent(text)}`,
         method: 'POST',
         url: `${Utils.CORS_PROXY}https://fanyi.baidu.com/langdetect`,
       }).responseJSON.lan : sourceLanguage;
 
       while (lines.length > 0) {
-        queryLines.push(lines.shift());
+        requestLines.push(lines.shift());
 
-        if (lines.length === 0 || [...queryLines, lines[0]].join('\n').length > this.maxContentLengthPerRequest) {
+        if (lines.length === 0 || [...requestLines, lines[0]].join('\n').length > this.maxContentLengthPerRequest) {
           responses.push($.ajax({
             data: JSON.stringify({
-              query: queryLines.join('\n'),
+              query: requestLines.join('\n'),
               from: sourceLanguage === 'auto' ? lan : sourceLanguage,
               to: targetLanguage,
               reference: '',
@@ -60,7 +61,7 @@ class BaiduTranslate extends Translator {
             method: 'POST',
             url: `${Utils.CORS_PROXY}https://fanyi.baidu.com/ait/text/translate`,
           }));
-          queryLines = [];
+          requestLines = [];
         }
       }
 

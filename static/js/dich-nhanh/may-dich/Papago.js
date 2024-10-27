@@ -76,16 +76,16 @@ class Papago extends Translator {
   async translateText(text, targetLanguage, sourceLanguage = this.DefaultLanguage.SOURCE_LANGUAGE) {
     try {
       const lines = text.split('\n');
-      let queryLines = [];
+      let requestLines = [];
       const responses = [];
 
       while (lines.length > 0) {
-        queryLines.push(lines.shift());
+        requestLines.push(lines.shift());
 
-        if (lines.length === 0 || [...queryLines, lines[0]].join('\n').length > this.maxContentLengthPerRequest) {
+        if (lines.length === 0 || [...requestLines, lines[0]].join('\n').length > this.maxContentLengthPerRequest) {
           const timeStamp = (new Date()).getTime();
           responses.push($.ajax({
-            data: `deviceId=${this.uuid}&locale=vi&dict=true&dictDisplay=30&honorific=true&instant=false&paging=false&source=${sourceLanguage}&target=${targetLanguage}&text=${encodeURIComponent(queryLines.join('\n'))}`,
+            data: `deviceId=${this.uuid}&locale=vi&dict=true&dictDisplay=30&honorific=true&instant=false&paging=false&source=${sourceLanguage}&target=${targetLanguage}&text=${encodeURIComponent(requestLines.join('\n'))}`,
             headers: {
               Accept: 'application/json',
               'Accept-Language': 'vi',
@@ -97,7 +97,7 @@ class Papago extends Translator {
             method: 'POST',
             url: `${Utils.CORS_PROXY}https://papago.naver.com/apis/n2mt/translate`,
           }));
-          queryLines = [];
+          requestLines = [];
         }
       }
 
