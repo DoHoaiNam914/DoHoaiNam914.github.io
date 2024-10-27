@@ -1970,7 +1970,8 @@ class WebnovelTranslate extends Translator {
     try {
       const isCj = ['ja', 'zh-CN', 'zh-TW'].some((element) => sourceLanguage === element);
       const EOL = isCj ? '||||' : '\\n';
-      const query = text.filter((element) => element.replace(/^\s+/, '').length > 0).map((element) => `${isCj ? '\u3000\u3000' : ''}${element}`).join(EOL).split(new RegExp(`(?:\\.{3}|[${!isCj ? '!,.:;?' : ''}…${isCj ? '、。！，：；？' : ''}])(${isCj ? '\\s*' : ''})`));
+      const lines = text.split('\n');
+      const query = lines.filter((element) => element.replace(/^\s+/, '').length > 0).map((element) => `${isCj ? '\u3000\u3000' : ''}${element}`).join(EOL).split(new RegExp(`(?:\\.{3}|[${!isCj ? '!,.:;?' : ''}…${isCj ? '、。！，：；？' : ''}])(${isCj ? '\\s*' : ''})`));
       query = isCj && responses.length === 0 ? request.replace(EOL, EOL.repeat(2)) : request;
       let request = [];
       const responses = [];
@@ -2006,7 +2007,7 @@ class WebnovelTranslate extends Translator {
 
       const translationLines = translationPart.join('').split('\n');
       const translationMap = Object.fromEntries(originalPart.join('').split(EOL).map((element, index) => [isCj ? element.replace(/^\u3000{2}/, '') : element, translationLines[index]]));
-      this.result = text.split('\n').map((element) => (translationMap[element] != null && translationMap[element].replace(/^\s+/, '').length > 0 ? element.match(/^\s*/)[0].concat(translationMap[element].replace(/^\s+/, '').trimEnd()) : element)).join('\n');
+      this.result = lines.map((element) => (translationMap[element] != null && translationMap[element].replace(/^\s+/, '').length > 0 ? element.match(/^\s*/)[0].concat(translationMap[element].replace(/^\s+/, '').trimEnd()) : element)).join('\n');
       super.translateText(text, targetLanguage, sourceLanguage);
     } catch (error) {
       console.error('Bản dịch lỗi:', error);
