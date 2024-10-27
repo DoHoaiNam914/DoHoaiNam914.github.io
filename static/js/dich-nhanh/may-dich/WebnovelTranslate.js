@@ -1971,7 +1971,7 @@ class WebnovelTranslate extends Translator {
       const isCj = ['ja', 'zh-CN', 'zh-TW'].some((element) => sourceLanguage === element);
       const EOL = isCj ? '||||' : '\\n';
       const lines = text.split('\n');
-      const query = lines.filter((element) => element.replace(/^\s+/, '').length > 0).map((element) => `${isCj ? '\u3000\u3000' : ''}${element}`).join(EOL).split(new RegExp(`(?:\\.{3}|[${!isCj ? '!,.:;?' : ''}…${isCj ? '、。！，：；？' : ''}])(${isCj ? '\\s*' : ''})`));
+      let query = lines.filter((element) => element.replace(/^\s+/, '').length > 0).map((element) => `${isCj ? '\u3000\u3000' : ''}${element}`).join(EOL).split(new RegExp(`(?:\\.{3}|[${!isCj ? '!,.:;?' : ''}…${isCj ? '、。！，：；？' : ''}]${isCj ? '\\s*' : ''})()`));
       query = isCj && responses.length === 0 ? request.replace(EOL, EOL.repeat(2)) : request;
       let request = [];
       const responses = [];
@@ -1979,10 +1979,10 @@ class WebnovelTranslate extends Translator {
       while (query.length > 0) {
         request.push(query.shift());
 
-        if (query.length === 0 || request.join('').concat(query[0]).length > this.maxContentLengthPerRequest) {
+        if (query.length === 0 || request.join('').concat(query[0].trimEnd()).length > this.maxContentLengthPerRequest) {
           responses.push($.ajax({
             method: 'GET',
-            url: `${Utils.CORS_PROXY}http://translate.google.com/translate_a/single?client=${this.clientName}&ie=UTF-8&oe=UTF-8&dt=bd&dt=ex&dt=ld&dt=md&dt=rw&dt=rm&dt=ss&dt=t&dt=at&dt=gt&dt=qc&sl=${sourceLanguage}&tl=${targetLanguage}&hl=${targetLanguage}&q=${encodeURIComponent(request)}`,
+            url: `${Utils.CORS_PROXY}http://translate.google.com/translate_a/single?client=${this.clientName}&ie=UTF-8&oe=UTF-8&dt=bd&dt=ex&dt=ld&dt=md&dt=rw&dt=rm&dt=ss&dt=t&dt=at&dt=gt&dt=qc&sl=${sourceLanguage}&tl=${targetLanguage}&hl=${targetLanguage}&q=${encodeURIComponent(request.join('').trimEnd())}`,
           }));
           request = [];
         }
