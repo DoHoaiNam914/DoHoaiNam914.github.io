@@ -1971,20 +1971,22 @@ class WebnovelTranslate extends Translator {
   async translateText(text, targetLanguage, sourceLanguage = this.DefaultLanguage.SOURCE_LANGUAGE) {
     try {
       const isCj = ['ja', 'zh-CN', 'zh-TW'].some((element) => sourceLanguage === element);
+      const lines = text.split('\n');
+      const query = lines.filter((element) => element.replace(/^\s+/, '').length > 0);
       const EOL = isCj ? '||||' : '\\n';
-      const lines = (isCj ? text.replace(/^([^\n]*)\n/, `$1${EOL.repeat(2)}\u3000\u3000`) : text).split('\n').map((element) => `${isCj ? '\u3000\u3000' : ''}${element}`);
-      let queryLines = [];
+      let request = [];
       const responses = [];
 
-      while (lines.length > 0) {
-        queryLines.push(lines.shift());
+      while (query.length > 0) {
+        queryLines.push(query.shift());
 
-        if (lines.length === 0 || [...queryLines, lines[0]].join(EOL).length > this.maxDataPerRequest || [...queryLines, lines[0]].join('\n').length > this.maxContentLengthPerRequest || (queryLines.length + 1) > this.maxContentLinePerRequest) {
+        if (query.length === 0 || [...request, query[0]].join(EOL).length > this.maxDataPerRequest || [...request, query[0]].join('\n').length > this.maxContentLengthPerRequest || (request.length + 1) > this.maxContentLinePerRequest) {
+          request = request.map((element) => `${isCj ? '\u3000\u3000' : ''}${element}`).join(EOL);
           responses.push($.ajax({
             method: 'GET',
-            url: `${Utils.CORS_PROXY}http://translate.google.com/translate_a/single?client=${this.clientName}&ie=UTF-8&oe=UTF-8&dt=bd&dt=ex&dt=ld&dt=md&dt=rw&dt=rm&dt=ss&dt=t&dt=at&dt=gt&dt=qc&sl=${sourceLanguage}&tl=${targetLanguage}&hl=${targetLanguage}&q=${encodeURIComponent(queryLines.join(EOL))}`,
+            url: `${Utils.CORS_PROXY}http://translate.google.com/translate_a/single?client=${this.clientName}&ie=UTF-8&oe=UTF-8&dt=bd&dt=ex&dt=ld&dt=md&dt=rw&dt=rm&dt=ss&dt=t&dt=at&dt=gt&dt=qc&sl=${sourceLanguage}&tl=${targetLanguage}&hl=${targetLanguage}&q=${encodeURIComponent(isCj && responses.length === 0 ? request.replace(EOL, EOL.repeat(2)) : request)}`,
           }));
-          queryLines = [];
+          request = [];
         }
       }
 
@@ -1995,10 +1997,19 @@ class WebnovelTranslate extends Translator {
         return this.result;
       }
 
-      this.result = responses.map((element, a) => element.responseJSON[0].filter(([__, second]) => second != null).map(([first, second], b) => [second, (isCj && a === 0 && b === 0 ? first.replace(/^([^|]*)\|{7,} /, '$1\n') : first).replaceAll(new RegExp(` ?${Utils.getTrieRegexPatternFromWords([EOL, ...isCj ? ['||| |', '| |||'] : []]).source} ?`, 'g'), '\n')]).map(([first, second], b) => {
-        const count = [...(isCj && a === 0 && b === 0 ? first.replace(/^([^|]*)\|{8}/, '$1||||') : first).matchAll(new RegExp(Utils.escapeRegExp(EOL), 'g'))].length - [...second.matchAll(/\n/g)].length;
-        return second.concat('\n'.repeat(count >= 0 ? count : 0));
-      }).join('').split('\n')).flat().join('\n');
+      const originalPart = [];
+      const translationPart = [];
+
+      responses.forEach((element, a) => element.responseJSON[0].filter(([__, second]) => second != null).map(([first, second], b) => [second, (isCj && a === 0 && b === 0 ? first.replace(/\|{7,8} /, '\n') : first).replaceAll(new RegExp(` ?${Utils.getTrieRegexPatternFromWords([EOL, ...isCj ? ['||| |', '| |||'] : []]).source} ?`, 'g'), '\n')]).forEach(([first, second], b) => {
+        const requestLines = isCj && a === 0 && b === 0 ? first.replace(EOL.repeat(2), EOL) : first;
+        originalPart.push(requestLines);
+        const count = [...requestLines.matchAll(new RegExp(Utils.escapeRegExp(EOL), 'g'))].length - [...second.matchAll(/\n/g)].length;
+        translationPart.push(count < 0 ? second.replace(new RegExp(`\\n{${Math.abs(count)}}$`), '') : second).concat('\n'.repeat(count >= 0 ? count : 0)));
+      }));
+
+      const translationLines = translationPart.join('').split('\n');
+      const translationMap = Object.fromEntries(originalPart.join('').split(EOL).map((element, index) => [element, translationLines[index]]));
+      this.result = lines.map((element) => (translationMap[element] != null ? element.match(/^\s*/)[0].concat(translationMap[element].replace(/^\s+/, '')) : element));
       super.translateText(text, targetLanguage, sourceLanguage);
     } catch (error) {
       console.error('Bản dịch lỗi:', error);
