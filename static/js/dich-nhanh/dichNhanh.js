@@ -657,7 +657,7 @@ const getTargetLangOptionList = function getTargetLanguageOptionListHtmlFromTran
     }
     case Translators.WEBNOVEL_TRANSLATE: {
       WebnovelTranslate.LANGUAGE_LIST.targetLanguages.forEach(({ language, name }) => {
-        if (!['en', 'ja', 'zh-CN', 'vi'].includes(language)) return;
+        if (!['en', 'ja', 'zh-CN', 'zh-TW', 'vi'].includes(language)) return;
         const option = document.createElement('option');
         option.innerText = name;
         option.value = language;
@@ -2095,7 +2095,7 @@ $translateEntryButtons.click(async function onClick() {
       switch (activeTranslator) {
         case Translators.GOOGLE_GEMINI: {
           translator.controller = entryTranslationController;
-          await translator.translateText(text, targetLanguage, { ...glossary, namePhu: nameEnabled != null && Boolean(nameEnabled) !== false ? glossary.namePhu : {} });
+          await translator.translateText(text, targetLanguage, { ...glossary, namePhu: nameEnabled != null && Boolean(nameEnabled) !== false && glossary.namePhu[text] == null ? glossary.namePhu : {} });
           break;
         }
         case Translators.VIETPHRASE: {

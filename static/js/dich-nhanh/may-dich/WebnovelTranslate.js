@@ -1998,7 +1998,7 @@ class WebnovelTranslate extends Translator {
       const originalPart = [];
       const translationPart = [];
 
-      responses.forEach((element) => element.responseJSON[0].filter(([__, second]) => second != null).map(([first, second]) => [second, first.replaceAll(new RegExp(` ?${Utils.getTrieRegexPatternFromWords([EOL, ...isCj ? [EOL.repeat(2), '|||'] : []].toSorted((a, b) => b.length - a.length)).source}\\s*`, 'g'), '\n')]).forEach(([first, second]) => {
+      responses.forEach((element) => element.responseJSON[0].filter(([__, second]) => second != null).map(([first, second]) => [second, first.replaceAll(new RegExp(` ?${isCj ? '(?:\\|[ |]|*[ |]*\|)' : Utils.getTrieRegexPatternFromWords([EOL].toSorted((a, b) => b.length - a.length)).source}\\s*`, 'g'), '\n')]).forEach(([first, second]) => {
         const requestLines = isCj ? first.replace(EOL.repeat(2), EOL) : first;
         originalPart.push(requestLines);
         const count = [...requestLines.matchAll(new RegExp(Utils.escapeRegExp(EOL), 'g'))].length - [...second.matchAll(/\n/g)].length;
