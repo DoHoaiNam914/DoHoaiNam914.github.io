@@ -2009,7 +2009,7 @@ class WebnovelTranslate extends Translator {
 
       const translationLines = translationPart.join('').split('\n');
       const translationMap = Object.fromEntries(originalPart.join('').split(EOL).map((element, index) => [element, translationLines[index]]));
-      this.result = lines.map((element) => (translationMap[element] != null ? element.match(/^\s*/)[0].concat(translationMap[element].replace(/^\s+/, '')) : element));
+      this.result = lines.map((element) => (translationMap[`${isCj ? '\u3000\u3000' : ''}${element}`] != null ? element.match(/^\s*/)[0].concat(translationMap[`${isCj ? '\u3000\u3000' : ''}${element}`].replace(/^\s+/, '')) : element)).join('\n');
       super.translateText(text, targetLanguage, sourceLanguage);
     } catch (error) {
       console.error('Bản dịch lỗi:', error);
