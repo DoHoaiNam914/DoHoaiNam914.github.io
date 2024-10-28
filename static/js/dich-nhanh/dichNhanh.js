@@ -765,8 +765,8 @@ ${names.map((element) => element.join('\t')).join('\n')}
           ],
           generationConfig: {
             temperature: 1,
-            topK: 64,
             topP: 0.95,
+            topK: model.startsWith('gemini-1.5-flash-8b') || /^gemini-1\.5-[^-]+-002$/.test(model) ? 40 : 64,
             maxOutputTokens: 8192,
             responseMimeType: 'text/plain',
           },
@@ -910,7 +910,7 @@ const translate = async function translateContentInTextarea(controller = new Abo
           break;
         }
       }
-      
+
       currentTranslator = translators[$activeTranslator.val()];
     }
   }
@@ -1424,7 +1424,7 @@ $translatorDropdown.find('.dropdown-item').click(function onClick() {
         currentTranslator = new WebnovelTranslate();
         translators[activeTranslator] = currentTranslator;
       }
-  
+
       break;
     }
     default: {
@@ -2076,6 +2076,14 @@ $translateEntryButtons.click(async function onClick() {
         case Translators.PAPAGO: {
           if (translator == null) {
             translator = new Papago(UUID);
+            translators[activeTranslator] = translator;
+          }
+
+          break;
+        }
+        case Translators.WEBNOVEL_TRANSLATE: {
+          if (translator == null) {
+            translator = new WebnovelTranslate();
             translators[activeTranslator] = translator;
           }
 
