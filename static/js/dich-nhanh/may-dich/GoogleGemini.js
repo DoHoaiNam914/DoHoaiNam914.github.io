@@ -208,7 +208,7 @@ class GoogleGemini extends Translator {
     this.apiKey = apiKey;
   }
 
-  async translateText(text, targetLanguage, glossary, model = 'gemini-1.5-flash') {
+  async translateText(text, targetLanguage, glossary = { terminologies: {}, namePhu: {} }, model = 'gemini-1.5-flash') {
     try {
       const terminologies = Object.entries(glossary.terminologies).filter(([first]) => text.includes(first));
       const names = Object.entries(glossary.namePhu).filter(([first]) => text.includes(first));
@@ -220,7 +220,7 @@ class GoogleGemini extends Translator {
               role: 'user',
               parts: [
                 {
-                  text: `Translate the text ${terminologies.length > 0 || names.length > 0 ? 'in the VĂN BẢN GỐC section ' : ''}into ${targetLanguage}. In that text, regardless of whether it is a title or content, all must be translated. ${terminologies.length > 0 || names.length > 0 ? `Prioritize applying ${terminologies.length > 0 ? 'the terms listed in the BẢNG TRA CỨU THUẬT NGỮ section ' : ''}${names.length > 0 ? `${terminologies.length > 0 ? 'and ' : ''}the proper names listed in the BẢNG TRA CỨU TÊN RIÊNG section ` : ''}over anything else to enhance the accuracy and consistency of the translation. ` : ''}Your translations must convey all the content in the original text in and cannot involve explanations or other unnecessary information. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text and cannot include explanations or other information. The output must be unformatted.`,
+                  text: `Translate the text ${terminologies.length > 0 || names.length > 0 ? 'in the VĂN BẢN GỐC section ' : ''}into ${targetLanguage}. ${terminologies.length > 0 || names.length > 0 ? `Prioritize applying ${terminologies.length > 0 ? 'the terms listed in the BẢNG TRA CỨU THUẬT NGỮ section ' : ''}${names.length > 0 ? `${terminologies.length > 0 ? 'and ' : ''}the proper names listed in the BẢNG TRA CỨU TÊN RIÊNG section ` : ''}over anything else to enhance the accuracy and consistency of the translation. ` : ''}Your translations must convey all the content in the original text in and cannot involve explanations or other unnecessary information. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text and cannot include explanations or other information.`,
                 },
               ],
             },
