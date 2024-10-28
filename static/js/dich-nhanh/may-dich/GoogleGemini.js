@@ -208,7 +208,7 @@ class GoogleGemini extends Translator {
     this.apiKey = apiKey;
   }
 
-  async translateText(text, targetLanguage, glossary) {
+  async translateText(text, targetLanguage, glossary, model = 'gemini-1.5-flash') {
     try {
       const terminologies = Object.entries(glossary.terminologies).filter(([first]) => text.includes(first));
       const names = Object.entries(glossary.namePhu).filter(([first]) => text.includes(first));
@@ -282,7 +282,7 @@ ${names.map((element) => element.join('\t')).join('\n')}
         }),
         headers: { 'Content-Type': 'application/json' },
         method: 'POST',
-        url: `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${this.apiKey}`,
+        url: `https://generativelanguage.googleapis.com/v1beta/models/${model !== 'none' ? model : 'gemini-1.5-flash'}:generateContent?key=${this.apiKey}`,
       });
 
       if (this.controller.signal.aborted || response.candidates == null) {

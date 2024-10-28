@@ -5,13 +5,13 @@
 const $addButton = $('#add-button');
 const $addDeLeZhaoSwitch = $('#add-de-le-zhao-switch');
 const $alignmentRadio = $('input[type="radio"][name="alignment-radio"]');
-const $artificialIntelligenceSelect = $('#artificial-intelligence-select');
 const $boldTextSwitch = $('#bold-text-switch');
 const $copyButtons = $('.copy-button');
 const $defaultVietPhraseFileSelect = $('#default-viet-phrase-file-select');
 const $dropdownHasCollapse = $('.dropdown-has-collapse');
 const $fontStackText = $('#font-stack-text');
 const $fontSizeText = $('#font-size-text');
+const $geminiModelSelect = $('#gemini-model-select');
 const $glossaryEntryCounter = $('#glossary-entry-counter');
 const $glossaryInput = $('#glossary-input');
 const $glossaryListSelect = $('#glossary-list-select');
@@ -689,12 +689,12 @@ const loadLangSelectOptions = function loadLanguageListByTranslatorToHtmlOptions
   $targetLanguageSelect.val(targetLanguage);
 };
 
-const polishTranslation = async function polishTranslationWithArtificialIntelligence(artificialIntelligence, text, rawTranslation, nameEnabled) {
+const polishTranslation = async function polishTranslationWithArtificialIntelligence(text, rawTranslation, model) {
   const MAX_TOKENS_PER_RESPONSE = 8192;
   let result = rawTranslation;
 
   try {
-    if (artificialIntelligence !== 'none') {
+    if (model !== 'none') {
       const terminologies = Object.entries(glossary.terminologies).filter(([first]) => text.includes(first));
       const names = Object.entries(glossary.namePhu).filter(([first]) => text.includes(first));
       const lines = text.split('\n');
@@ -773,7 +773,7 @@ ${names.map((element) => element.join('\t')).join('\n')}
         }),
         headers: { 'Content-Type': 'application/json' },
         method: 'POST',
-        url: `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`,
+        url: `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_API_KEY}`,
       });
       if (response.candidates == null) return result;
 response = response.candidates[0].content.parts[0].text.replace(' \n', '').split('\n').filter((element) => element.replace(/^\s+/, '').length > 0);
@@ -848,7 +848,7 @@ const translate = async function translateContentInTextarea(controller = new Abo
     switch ($activeTranslator.val()) {
       case Translators.GOOGLE_GEMINI: {
         currentTranslator.controller = controller;
-        await currentTranslator.translateText(text, targetLanguage, glossary);
+        await currentTranslator.translateText(text, targetLanguage, glossary, $geminiModelSelect.val());
         break;
       }
       case Translators.VIETPHRASE: {
@@ -868,7 +868,7 @@ const translate = async function translateContentInTextarea(controller = new Abo
     $resultTextarea.html(buildResult(text, currentTranslator.result, $activeTranslator.val()));
 
     if (targetLanguage.startsWith('vi')) {
-      const polishResult = (await polishTranslation($artificialIntelligenceSelect.val(), text, currentTranslator.result)) ?? currentTranslator.result;
+      const polishResult = (await polishTranslation(text, currentTranslator.result, $geminiModelSelect.val())) ?? currentTranslator.result;
       if (controller.signal.aborted) return;
       currentTranslator.result = polishResult;
       $resultTextarea.html(buildResult(text, currentTranslator.result, $activeTranslator.val()));
@@ -2008,7 +2008,6 @@ $translateEntryButtons.click(async function onClick() {
     let translator = translators[activeTranslator];
     const targetLanguage = $(this).data('lang');
     const nameEnabled = $(this).data('name-enabled');
-    const artificialIntelligence = $(this).data('artificial-intelligence');
 
     try {
       switch (activeTranslator) {
@@ -2095,7 +2094,7 @@ $translateEntryButtons.click(async function onClick() {
       switch (activeTranslator) {
         case Translators.GOOGLE_GEMINI: {
           translator.controller = entryTranslationController;
-          await translator.translateText(text, targetLanguage, { ...glossary, namePhu: nameEnabled != null && Boolean(nameEnabled) !== false && glossary.namePhu[text] == null ? glossary.namePhu : {} });
+          await translator.translateText(text, targetLanguage, { ...glossary, namePhu: nameEnabled != null && Boolean(nameEnabled) !== false && glossary.namePhu[text] == null ? glossary.namePhu : {} }, $geminiModelSelect.val());
           break;
         }
         case Translators.VIETPHRASE: {
@@ -2112,8 +2111,6 @@ $translateEntryButtons.click(async function onClick() {
         }
       }
 
-      if (targetLanguage.startsWith('vi')) translator.result = await polishTranslation(artificialIntelligence ?? 'none', text, translator.result);
-
       if (!translator.controller.signal.aborted) {
         $targetEntryTextarea.val(translator.result.replace(/^\s+/, '')).trigger('input');
 
@@ -2121,7 +2118,6 @@ $translateEntryButtons.click(async function onClick() {
           $translateEntryButton.data('translator', activeTranslator);
           $translateEntryButton.data('lang', targetLanguage);
           $translateEntryButton.data('name-enabled', nameEnabled != null ? Boolean(nameEnabled) !== false : null);
-          $translateEntryButton.data('artificial-intelligence', artificialIntelligence ?? null);
         }
       }
     } catch (error) {
@@ -2172,5 +2168,5 @@ $removeButton.on('click', () => {
 });
 
 $translateEntryButton.on('click', function onClick() {
-  if ($(this).data('translator') != null) $translateEntryButtons.filter(`[data-translator="${$(this).data('translator')}"][data-lang="${$(this).data('lang')}"]${$(this).data('name-enabled') != null ? `[data-name-enabled="${$(this).data('name-enabled')}"]` : ''}${$(this).data('artificial-intelligence') != null ? `[data-artificial-intelligence="${$(this).data('artificial-intelligence')}"]` : ''}`).click();
+  if ($(this).data('translator') != null) $translateEntryButtons.filter(`[data-translator="${$(this).data('translator')}"][data-lang="${$(this).data('lang')}"]${$(this).data('name-enabled') != null ? `[data-name-enabled="${$(this).data('name-enabled')}"]` : ''}`).click();
 });
