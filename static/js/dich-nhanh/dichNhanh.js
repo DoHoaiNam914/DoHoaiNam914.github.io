@@ -929,7 +929,7 @@ const reloadGlossary = function reloadActiveGlossary(glossaryList) {
     source: (request, response) => {
       if (autocompleteTimeout != null) clearTimeout(autocompleteTimeout);
       autocompleteTimeout = setTimeout(() => {
-        const matcher = new RegExp($.ui.autocomplete.escapeRegex(request.term), 'i');
+        const matcher = new RegExp($.ui.autocomplete.escapeRegex(request.term).replace(/(\s)+$/, '$1?'), 'i');
         response($.grep(autocompleteGlossarySource, (elementOfArray) => elementOfArray.label.split('=').some((element, index) => matcher.test(element) || matcher.test(element.normalize('NFKD').replaceAll(/\p{Mn}/gu, '').replaceAll('đ', 'd').replaceAll('Đ', 'D')))).slice(0, 50));
       }, 300);
     },
@@ -1011,7 +1011,7 @@ $(document).ready(async () => {
   $fontStackText.autocomplete({
     appendTo: '#settings-modal .modal-body',
     source: (request, response) => {
-      const matcher = new RegExp($.ui.autocomplete.escapeRegex(request.term.split(/, */).pop()), 'i');
+      const matcher = new RegExp($.ui.autocomplete.escapeRegex(request.term.split(/, */).pop()).replace(/(\s)+$/, '$1?'), 'i');
       response($.grep(autocompleteFontStackTextSource, (elementOfArray) => matcher.test(elementOfArray.label) || matcher.test(elementOfArray.value)));
     },
     focus: () => false,
@@ -2002,6 +2002,7 @@ $translateEntryButtons.click(async function onClick() {
 
   if ($translateButton.text() !== 'Huỷ' && text.length > 0) {
     entryTranslationController = new AbortController();
+    $translateEntryButton.addClass('disabled');
     $translateEntryButtons.addClass('disabled');
     $sourceEntryInput.attr('readonly', true);
     const activeTranslator = $(this).data('translator');
@@ -2150,9 +2151,10 @@ $translateEntryButtons.click(async function onClick() {
       }
     }
 
+    entryTranslationController = null;
     $sourceEntryInput.removeAttr('readonly');
     $translateEntryButtons.removeClass('disabled');
-    entryTranslationController = null;
+    $translateEntryButton.removeClass('disabled');
   }
 });
 
