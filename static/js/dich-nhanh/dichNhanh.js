@@ -468,6 +468,7 @@ let currentTranslator = null;
 let translationController = null;
 let entryTranslationController = null;
 let autocompleteTimeout = null;
+let isRetranslate;
 
 const getSourceLangOptionList = function getSourceLanguageOptionListHtmlFromTranslator(translator) {
   const sourceLanguageSelect = document.createElement('select');
@@ -694,35 +695,34 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
   let result = rawTranslation;
 
   try {
-    if (model !== 'none') {
-      const terminologies = Object.entries(glossary.terminologies).filter(([first]) => text.includes(first));
-      const names = Object.entries(glossary.namePhu).filter(([first]) => text.includes(first));
-      const lines = text.split('\n');
-      const rawTranslationLines = rawTranslation.split('\n');
-      let response = await $.ajax({
-        data: JSON.stringify({
-          contents: [
-            {
-              role: 'user',
-              parts: [
-                {
-                  text: `Translate the text in the VĂN BẢN GỐC section into Vietnamese. Review, cross-reference, and correct any sentences or lines in the rough translation in the BẢN DỊCH THÔ section that may be misaligned or missing content before proceeding. Refer to each line of the previously corrected rough translation to ensure consistency in your translation. ${terminologies.length > 0 || names.length > 0 ? `Prioritize accurately mapping ${terminologies.length > 0 ? 'the terms listed in the BẢNG TRA CỨU THUẬT NGỮ section ' : ''}${names.length > 0 ? `${terminologies.length > 0 ? 'and ' : ''}the proper names listed in the BẢNG TRA CỨU TÊN RIÊNG section ` : ''}above all else to enhance translation accuracy and consistency. ` : ''}Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text and cannot include explanations or other information.`,
-                },
-              ],
-            },
-            {
-              role: 'model',
-              parts: [
-                {
-                  text: 'Please provide the text you would like to have translated into Vietnamese in the VĂN BẢN GỐC section.',
-                },
-              ],
-            },
-            {
-              role: 'user',
-              parts: [
-                {
-                  text: `## VĂN BẢN GỐC:
+    const terminologies = Object.entries(glossary.terminologies).filter(([first]) => text.includes(first));
+    const names = Object.entries(glossary.namePhu).filter(([first]) => text.includes(first));
+    const lines = text.split('\n');
+    const rawTranslationLines = rawTranslation.split('\n');
+    let response = await $.ajax({
+      data: JSON.stringify({
+        contents: [
+          {
+            role: 'user',
+            parts: [
+              {
+                text: `Translate the text in the VĂN BẢN GỐC section into Vietnamese. Review, cross-reference, and correct any sentences or lines in the rough translation in the BẢN DỊCH THÔ section that may be misaligned or missing content before proceeding. Refer to each line of the previously corrected rough translation to ensure consistency in your translation. ${terminologies.length > 0 || names.length > 0 ? `Prioritize accurately mapping ${terminologies.length > 0 ? 'the terms listed in the BẢNG TRA CỨU THUẬT NGỮ section ' : ''}${names.length > 0 ? `${terminologies.length > 0 ? 'and ' : ''}the proper names listed in the BẢNG TRA CỨU TÊN RIÊNG section ` : ''}above all else to enhance translation accuracy and consistency. ` : ''}Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text and cannot include explanations or other information.`,
+              },
+            ],
+          },
+          {
+            role: 'model',
+            parts: [
+              {
+                text: 'Please provide the text you would like to have translated into Vietnamese in the VĂN BẢN GỐC section.',
+              },
+            ],
+          },
+          {
+            role: 'user',
+            parts: [
+              {
+                text: `## VĂN BẢN GỐC:
 \`\`\`txt
 ${lines.map((element) => element.replace(/^\s+/g, '')).join('\n')}
 \`\`\`
@@ -741,45 +741,44 @@ ${terminologies.map((element) => element.join('\t')).join('\n')}
 source\ttarget
 ${names.map((element) => element.join('\t')).join('\n')}
 \`\`\`` : ''}` : ''}`,
-                },
-              ],
-            },
-          ],
-          safetySettings: [
-            {
-              category: 'HARM_CATEGORY_HARASSMENT',
-              threshold: 'BLOCK_NONE',
-            },
-            {
-              category: 'HARM_CATEGORY_HATE_SPEECH',
-              threshold: 'BLOCK_NONE',
-            },
-            {
-              category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT',
-              threshold: 'BLOCK_NONE',
-            },
-            {
-              category: 'HARM_CATEGORY_DANGEROUS_CONTENT',
-              threshold: 'BLOCK_NONE',
-            },
-          ],
-          generationConfig: {
-            temperature: 1,
-            topP: 0.95,
-            topK: model.startsWith('gemini-1.5-flash-8b') || /^gemini-1\.5-[^-]+-002$/.test(model) ? 40 : 64,
-            maxOutputTokens: 8192,
-            responseMimeType: 'text/plain',
+              },
+            ],
           },
-        }),
-        headers: { 'Content-Type': 'application/json' },
-        method: 'POST',
-        url: `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_API_KEY}`,
-      });
-      if (response.candidates == null) return result;
+        ],
+        safetySettings: [
+          {
+            category: 'HARM_CATEGORY_HARASSMENT',
+            threshold: 'BLOCK_NONE',
+          },
+          {
+            category: 'HARM_CATEGORY_HATE_SPEECH',
+            threshold: 'BLOCK_NONE',
+          },
+          {
+            category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT',
+            threshold: 'BLOCK_NONE',
+          },
+          {
+            category: 'HARM_CATEGORY_DANGEROUS_CONTENT',
+            threshold: 'BLOCK_NONE',
+          },
+        ],
+        generationConfig: {
+          temperature: 1,
+          topP: 0.95,
+          topK: model.startsWith('gemini-1.5-flash-8b') || /^gemini-1\.5-[^-]+-002$/.test(model) ? 40 : 64,
+          maxOutputTokens: 8192,
+          responseMimeType: 'text/plain',
+        },
+      }),
+      headers: { 'Content-Type': 'application/json' },
+      method: 'POST',
+      url: `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_API_KEY}`,
+    });
+    if (response.candidates == null) return result;
 response = response.candidates[0].content.parts[0].text.replace(' \n', '').split('\n').filter((element) => element.replace(/^\s+/, '').length > 0);
-      response = Object.fromEntries(lines.filter((element) => element.replace(/^\s+/, '').length > 0).map((element, index) => [element, response[index]]));
-      result = lines.map((element, index) => (response[element] != null ? (rawTranslationLines[index] ?? element).match(/^\s*/)[0].concat(response[element].replace(/^\s+/, '')) : rawTranslationLines[index] ?? element)).join('\n');
-    }
+    response = Object.fromEntries(lines.filter((element) => element.replace(/^\s+/, '').length > 0).map((element, index) => [element, response[index]]));
+    result = lines.map((element, index) => (response[element] != null ? (rawTranslationLines[index] ?? element).match(/^\s*/)[0].concat(response[element].replace(/^\s+/, '')) : rawTranslationLines[index] ?? element)).join('\n');
   } catch (error) {
     throw error;
   }
@@ -865,14 +864,15 @@ const translate = async function translateContentInTextarea(controller = new Abo
     }
 
     if (controller.signal.aborted) return;
-    $resultTextarea.html(buildResult(text, currentTranslator.result, $activeTranslator.val()));
 
-    if (targetLanguage.startsWith('vi')) {
+    if (targetLanguage.startsWith('vi') && model !== 'none') {
+      if (!isRetranslate) $resultTextarea.html(buildResult(text, currentTranslator.result, $activeTranslator.val()));
       const polishResult = (await polishTranslation(text, currentTranslator.result, $geminiModelSelect.val())) ?? currentTranslator.result;
       if (controller.signal.aborted) return;
       currentTranslator.result = polishResult;
-      $resultTextarea.html(buildResult(text, currentTranslator.result, $activeTranslator.val()));
     }
+
+    $resultTextarea.html(buildResult(text, currentTranslator.result, $activeTranslator.val()));
 
     if (controller.signal.aborted) return;
     $resultTextarea.find('p > i').on('dblclick', function onClick() {
@@ -1092,7 +1092,11 @@ $translateButton.on('click', function onClick() {
   switch ($(this).text()) {
     case 'Huỷ':
     case 'Sửa': {
-      if ($(this).text() === 'Huỷ') translationController.abort();
+      if ($(this).text() === 'Huỷ') {
+        translationController.abort();
+        isRetranslate = false;
+      }
+
       $resultTextarea.html(null);
       $translateTimer.text(0);
       $resultTextarea.hide();
@@ -1123,6 +1127,7 @@ $translateButton.on('click', function onClick() {
         }
 
         translationController = null;
+        isRetranslate = false;
         $(this).text('Sửa');
         $copyButton.removeClass('disabled');
         $pasteButton.removeClass('disabled');
@@ -1157,7 +1162,7 @@ $pasteButtons.on('click', function onClick() {
     if ($targetTextInput.attr('id') === $inputTextarea.attr('id')) {
       $resultTextarea.prop('scrollTop', 0);
       $targetTextInput.val(clipText).trigger('input');
-      $retranslateButton.click();
+      $translateButton.text('Dịch').click();
     } else {
       $targetTextInput.val(clipText).trigger('input');
     }
@@ -1165,7 +1170,9 @@ $pasteButtons.on('click', function onClick() {
 });
 
 $retranslateButton.on('click', () => {
-  if ($translateButton.text() === 'Sửa') $translateButton.text('Dịch').click();
+  if ($translateButton.text() !== 'Sửa') return;
+  isRetranslate = true;
+  $translateButton.text('Dịch').click();
 });
 
 $glossaryManagerButton.on('mousedown', () => {
