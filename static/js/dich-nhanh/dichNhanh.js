@@ -843,6 +843,7 @@ const translate = async function translateContentInTextarea(controller = new Abo
     const startTime = Date.now();
     const text = $inputTextarea.val();
     const targetLanguage = $targetLanguageSelect.val();
+    const model = $geminiModelSelect.val();
 
     switch ($activeTranslator.val()) {
       case Translators.GOOGLE_GEMINI: {
@@ -867,7 +868,7 @@ const translate = async function translateContentInTextarea(controller = new Abo
 
     if (targetLanguage.startsWith('vi') && model !== 'none') {
       if (!isRetranslate) $resultTextarea.html(buildResult(text, currentTranslator.result, $activeTranslator.val()));
-      const polishResult = (await polishTranslation(text, currentTranslator.result, $geminiModelSelect.val())) ?? currentTranslator.result;
+      const polishResult = (await polishTranslation(text, currentTranslator.result, model)) ?? currentTranslator.result;
       if (controller.signal.aborted) return;
       currentTranslator.result = polishResult;
     }
