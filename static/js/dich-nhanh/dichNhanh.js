@@ -90,6 +90,7 @@ const FONT_MAPPING = {
   STSongTC: 'stSongTC',
   TBMincho: 'tbMincho',
   Thonburi: 'thonburi',
+
   /* Các phông chữ của Waka */
   'Minion Pro': 'minionPro',
   'SVN-Times New Roman': 'svnTimesNewRoman',
@@ -98,6 +99,7 @@ const FONT_MAPPING = {
   'P22 Typewriter': 'p22Typewriter',
   'SVN-Helvetica Neue': 'svnHelveticaNeue',
   'Trixi Pro': 'trixiPro',
+
   /* Các phông chữ của Google Play Sách */
   Helvetica: 'helvetica',
   Verdana: 'Verdana',
@@ -105,11 +107,14 @@ const FONT_MAPPING = {
   Cochin: 'cochin',
   Palatino: 'palatino',
   Times: 'times',
+
   /* Các phông chữ của Rakuten Kobo */
   Avenir: 'avenir',
   OpenDyslexic: 'openDyslexic',
   Optima: 'optima',
   'Trebuchet MS': 'Trebuchet MS',
+
+  Lora: 'Lora',
 };
 
 const Translators = {
@@ -956,7 +961,7 @@ const saveGlossary = function saveGlossaryToLocalStorage() {
   reloadGlossary(activeGlossaryList);
 
   const glossaryStorage = { phonetics: glossary.phonetics, terminologies: glossary.terminologies, namePhu: glossary.namePhu };
-  if (Object.keys(glossaryStorage).includes(activeGlossaryList)) glossary[activeGlossaryList] = Object.fromEntries(Object.entries(glossary[activeGlossaryList]).sort((a, b) => a[1].localeCompare(b[1], 'vi', { ignorePunctuation: true }) || a[0].localeCompare(b[0], 'vi', { ignorePunctuation: true })));
+  if (Object.keys(glossaryStorage).includes(activeGlossaryList)) glossary[activeGlossaryList] = Object.fromEntries(Object.entries(glossary[activeGlossaryList]).toSorted((a, b) => a[1].localeCompare(b[1], 'vi', { ignorePunctuation: true }) || a[0].localeCompare(b[0], 'vi', { ignorePunctuation: true })));
   localStorage.setItem('glossary', JSON.stringify(glossaryStorage));
 
   if (['terminologies', 'vietPhrase', 'name', 'namePhu', 'luatNhan', 'pronoun'].some((element) => activeGlossaryList === element)) {
