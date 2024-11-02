@@ -454,6 +454,7 @@ const glossary = {
   OnYomis: [],
   SinoVietnameses: [],
   phonetics: { ...JSON.parse(localStorage.getItem('glossary') ?? JSON.stringify({ phonetics: {} })).phonetics },
+  addresses: [],
   terminologies: { ...JSON.parse(localStorage.getItem('glossary') ?? JSON.stringify({ terminologies: {} })).terminologies },
   hanViet: [],
   vietPhrase: {},
@@ -695,6 +696,7 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
   let result = rawTranslation;
 
   try {
+    const addresses = glossary.addresses.filter(([first]) => text.includes(first));
     const terminologies = Object.entries(glossary.terminologies).filter(([first]) => text.includes(first));
     const names = Object.entries(glossary.namePhu).filter(([first]) => text.includes(first));
     const lines = text.split('\n');
@@ -706,7 +708,7 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
             role: 'user',
             parts: [
               {
-                text: `Translate the text in the VĂN BẢN GỐC section into Vietnamese. Review, cross-reference, and correct any sentences or lines in the rough translation in the BẢN DỊCH THÔ section that may be misaligned or missing content before proceeding. Refer to each line of the previously corrected rough translation to ensure consistency in your translation. ${terminologies.length > 0 || names.length > 0 ? `Prioritize accurately mapping ${terminologies.length > 0 ? 'the terms listed in the BẢNG TRA CỨU THUẬT NGỮ section ' : ''}${names.length > 0 ? `${terminologies.length > 0 ? 'and ' : ''}the proper names listed in the BẢNG TRA CỨU TÊN RIÊNG section ` : ''}above all else to enhance translation accuracy and consistency. ` : ''}Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text and cannot include explanations or other information.`,
+                text: `Translate the text in the VĂN BẢN GỐC section into Vietnamese. Review, cross-reference, and correct any sentences or lines in the rough translation in the BẢN DỊCH THÔ section that may be misaligned or missing content before proceeding. Refer to each line of the previously corrected rough translation to ensure consistency in your translation. ${addresses.length > 0 || terminologies.length > 0 || names.length > 0 ? `Prioritize accurately mapping ${addresses.length > 0 ? 'the addresses listed in the BẢNG TRA CỨU TÔN XƯNG section ' : ''}${terminologies.length > 0 ? `${addresses.length > 0 ? `${names.length === 0 ? 'and' : ','} ` : ''}the terms listed in the BẢNG TRA CỨU THUẬT NGỮ section ' : ''}${names.length > 0 ? `${addresses.length > 0 || terminologies.length > 0 ? `${addresses.length === 0 || terminologies.length === 0 ? 'and' : ','} ` : ''}the proper names listed in the BẢNG TRA CỨU TÊN RIÊNG section ` : ''}above all else to enhance translation accuracy and consistency. ` : ''}Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text and cannot include explanations or other information.`,
               },
             ],
           },
@@ -732,11 +734,15 @@ ${lines.map((element) => element.replace(/^\s+/g, '')).join('\n')}
 ${rawTranslationLines.map((element) => element.replace(/^\s+/g, '')).join('\n')}
 \`\`\`${terminologies.length > 0 || names.length > 0 ? `
 
-${terminologies.length > 0 ? `## BẢNG TRA CỨU THUẬT NGỮ:
+${addresses.length > 0 ? `## BẢNG TRA CỨU TÔN XƯNG:
+\`\`\`tsv
+source\ttarget
+${addresses.map((element) => element.join('\t')).join('\n')}
+\`\`\`` : ''}${terminologies.length > 0 ? `${addresses.length > 0 ? '\n\n' : ''}## BẢNG TRA CỨU THUẬT NGỮ:
 \`\`\`tsv
 source\ttarget
 ${terminologies.map((element) => element.join('\t')).join('\n')}
-\`\`\`` : ''}${names.length > 0 ? `${terminologies.length > 0 ? '\n\n' : ''}## BẢNG TRA CỨU TÊN RIÊNG:
+\`\`\`` : ''}${names.length > 0 ? `${addresses.length > 0 || terminologies.length > 0 ? '\n\n' : ''}## BẢNG TRA CỨU TÊN RIÊNG:
 \`\`\`tsv
 source\ttarget
 ${names.map((element) => element.join('\t')).join('\n')}
@@ -1072,6 +1078,19 @@ $(document).ready(async () => {
       window.location.reload();
     }, 5000);
   }
+
+  $.ajax({
+    method: 'GET',
+    url: 'https://raw.githubusercontent.com/DoHoaiNam914/CDN/refs/heads/main/du-lieu/Ba%CC%89ng%20tra%20cu%CC%9B%CC%81u%20to%CC%82n%20xu%CC%9Bng.tsv',
+  }).done((data) => {
+    glossary.addresses = data.split('\n').map((element) => element.split('\t')).filter((element) => element.length === 2);
+    console.log(`Đã tải xong bộ dữ liệu từ tôn xưng (${glossary.address.length})!`);
+  }).fail((__, ___, errorThrown) => {
+    console.error('Không thể tải bộ dữ liệu từ tôn xưng:', errorThrown);
+    setTimeout(() => {
+      window.location.reload();
+    }, 5000);
+  });
 
   $translatorDropdown.find('.active').click();
   $inputTextarea.trigger('input');
