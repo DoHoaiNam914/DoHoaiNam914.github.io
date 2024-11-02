@@ -1124,6 +1124,7 @@ $translateButton.on('click', function onClick() {
       translate(translationController).finally(() => {
         if (translationController.signal.aborted) {
           translationController = null;
+          isRetranslate = false;
           return;
         }
 
@@ -1163,7 +1164,7 @@ $pasteButtons.on('click', function onClick() {
     if ($targetTextInput.attr('id') === $inputTextarea.attr('id')) {
       $resultTextarea.prop('scrollTop', 0);
       $targetTextInput.val(clipText).trigger('input');
-      $translateButton.text('Dịch').click();
+      if ($translateButton.text() === 'Sửa') $translateButton.text('Dịch').click();
     } else {
       $targetTextInput.val(clipText).trigger('input');
     }
