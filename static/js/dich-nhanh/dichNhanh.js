@@ -1086,7 +1086,7 @@ $(document).ready(async () => {
 
   $.ajax({
     method: 'GET',
-    url: 'https://raw.githubusercontent.com/DoHoaiNam914/CDN/refs/heads/main/du-lieu/Ba%CC%89ng%20tra%20cu%CC%9B%CC%81u%20to%CC%82n%20xu%CC%9Bng.tsv',
+    url: 'https://raw.githubusercontent.com/DoHoaiNam914/CDN/refs/heads/main/du-lieu/Ba%CC%89ng%20Tra%20cu%CC%9B%CC%81u%20To%CC%82n%20xu%CC%9Bng.tsv',
   }).done((data) => {
     glossary.addresses = data.split('\n').map((element) => element.split('\t')).filter((element) => element.length === 2);
     console.log(`Đã tải xong bộ dữ liệu từ tôn xưng (${glossary.address.length})!`);
