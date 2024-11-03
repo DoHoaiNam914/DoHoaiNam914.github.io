@@ -702,10 +702,11 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
 
   try {
     const addresses = glossary.addresses.filter(([first]) => text.includes(first));
-    const terminologies = Object.entries(glossary.terminologies).filter(([first]) => text.includes(first));
+    const terminologies = Object.entries({ ...Object.fromEntries(addresses), ...glossary.terminologies }).filter(([first]) => text.includes(first));
     const names = Object.entries(glossary.namePhu).filter(([first]) => text.includes(first));
     const lines = text.split('\n');
     const rawTranslationLines = rawTranslation.split('\n');
+
     let response = await $.ajax({
       data: JSON.stringify({
         contents: [
@@ -713,7 +714,7 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
             role: 'user',
             parts: [
               {
-                text: `Translate the text in the VĂN BẢN GỐC section into Vietnamese. Review, cross-reference, and correct any sentences or lines in the rough translation in the BẢN DỊCH THÔ section that may be misaligned or missing content before proceeding. Refer to each line of the previously corrected rough translation to ensure consistency in your translation. ${addresses.length > 0 || terminologies.length > 0 || names.length > 0 ? `Accurately mapping ${terminologies.length > 0 ? `the terms ${addresses.length > 0 ? 'or the addresses ' : ''}listed in the BẢNG TRA CỨU THUẬT NGỮ section ` : ''}${names.length > 0 ? `${addresses.length > 0 || terminologies.length > 0 ? 'and ' : ''}the proper names listed in the BẢNG TRA CỨU TÊN RIÊNG section ` : ''}to enhance translation accuracy and consistency. ` : ''}Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text and cannot include explanations or other information.`,
+                text: `Translate the text in the VĂN BẢN GỐC section into Vietnamese. Review, cross-reference, and correct any sentences or lines in the rough translation in the BẢN DỊCH THÔ section that may be misaligned or missing content before proceeding. Refer to each line of the previously corrected rough translation to ensure consistency in your translation. ${terminologies.length > 0 || names.length > 0 ? `Accurately mapping ${terminologies.length > 0 ? `the terms ${addresses.length > 0 ? 'or the addresses ' : ''}listed in the BẢNG TRA CỨU THUẬT NGỮ section ` : ''}${names.length > 0 ? `${terminologies.length > 0 ? 'and ' : ''}the proper names listed in the BẢNG TRA CỨU TÊN RIÊNG section ` : ''}to enhance translation accuracy and consistency. ` : ''}Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text and cannot include explanations or other information.`,
               },
             ],
           },
@@ -742,8 +743,8 @@ ${rawTranslationLines.map((element) => element.replace(/^\s+/g, '')).join('\n')}
 ${terminologies.length > 0 ? `## BẢNG TRA CỨU THUẬT NGỮ:
 \`\`\`tsv
 source\ttarget
-${[...targetLanguage === 'Vietnamese' ? addresses : [], terminologies].map((element) => element.join('\t')).join('\n')}
-\`\`\`` : ''}${names.length > 0 ? `${(targetLanguage === 'Vietnamese' && addresses.length > 0) || terminologies.length > 0 ? '\n\n' : ''}## BẢNG TRA CỨU TÊN RIÊNG:
+${terminologies.map((element) => element.join('\t')).join('\n')}
+\`\`\`` : ''}${names.length > 0 ? `${terminologies.length > 0 ? '\n\n' : ''}## BẢNG TRA CỨU TÊN RIÊNG:
 \`\`\`tsv
 source\ttarget
 ${names.map((element) => element.join('\t')).join('\n')}
@@ -782,6 +783,7 @@ ${names.map((element) => element.join('\t')).join('\n')}
       method: 'POST',
       url: `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_API_KEY}`,
     });
+
     if (response.candidates == null) return result;
 response = response.candidates[0].content.parts[0].text.replace(' \n', '').split('\n').filter((element) => element.replace(/^\s+/, '').length > 0);
     response = Object.fromEntries(lines.filter((element) => element.replace(/^\s+/, '').length > 0).map((element, index) => [element, response[index]]));

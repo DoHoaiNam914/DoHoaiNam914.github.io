@@ -211,9 +211,10 @@ class GoogleGemini extends Translator {
   async translateText(text, targetLanguage, glossary = { terminologies: {}, namePhu: {} }, model = 'gemini-1.5-flash') {
     try {
       const addresses = glossary.addresses.filter(([first]) => text.includes(first));
-      const terminologies = Object.entries(glossary.terminologies).filter(([first]) => text.includes(first));
+      const terminologies = Object.entries({ ...targetLanguage === 'Vietnamese' ? Object.fromEntries(addresses) : {}, ...glossary.terminologies }).filter(([first]) => text.includes(first));
       const names = Object.entries(glossary.namePhu).filter(([first]) => text.includes(first));
       const lines = text.split('\n');
+
       let response = await $.ajax({
         data: JSON.stringify({
           contents: [
@@ -245,8 +246,8 @@ ${lines.map((element) => element.replace(/^\s+/g, '')).join('\n')}
 ${terminologies.length > 0 ? `## BẢNG TRA CỨU THUẬT NGỮ:
 \`\`\`tsv
 source\ttarget
-${[...targetLanguage === 'Vietnamese' ? addresses : [], terminologies].map((element) => element.join('\t')).join('\n')}
-\`\`\`` : ''}${names.length > 0 ? `${(targetLanguage === 'Vietnamese' && addresses.length > 0) || terminologies.length > 0 ? '\n\n' : ''}## BẢNG TRA CỨU TÊN RIÊNG:
+${terminologies.map((element) => element.join('\t')).join('\n')}
+\`\`\`` : ''}${names.length > 0 ? `${terminologies.length > 0 ? '\n\n' : ''}## BẢNG TRA CỨU TÊN RIÊNG:
 \`\`\`tsv
 source\ttarget
 ${names.map((element) => element.join('\t')).join('\n')}
