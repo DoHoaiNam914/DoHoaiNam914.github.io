@@ -35,13 +35,12 @@ class BaiduTranslate extends Translator {
       const lines = text.split('\n');
       let requestLines = [];
       const responses = [];
-      const lan = sourceLanguage === 'auto' ? $.ajax({
-        async: false,
+      const lan = sourceLanguage === 'auto' ? (await $.ajax({
         cache: false,
         data: `query=${encodeURIComponent(text)}`,
         method: 'POST',
         url: `${Utils.CORS_PROXY}https://fanyi.baidu.com/langdetect`,
-      }).responseJSON.lan : sourceLanguage;
+      })).lan : sourceLanguage;
 
       while (lines.length > 0) {
         requestLines.push(lines.shift());

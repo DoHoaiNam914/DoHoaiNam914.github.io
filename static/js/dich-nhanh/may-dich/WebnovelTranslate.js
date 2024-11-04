@@ -2004,7 +2004,7 @@ class WebnovelTranslate extends Translator {
       }));
 
       const translationLines = translationPart.join('').split('\n');
-      const translationMap = Object.fromEntries(lines.map((__, index) => (element.replace(/^\s+/, '').length > 0 ? [index, translationLines[index]] : null)).filter((element) => element != null));
+      const translationMap = Object.fromEntries(lines.map((element, index) => (element.replace(/^\s+/, '').length > 0 ? index : null)).filter((element) => element != null).map((element, index) => [element, translationLines[index]]));
       this.result = lines.map((element, index) => (translationMap[index] != null ? element.match(/^\s*/)[0].concat(translationMap[index].replace(/^\s+/, '')) : element)).join('\n');
       super.translateText(text, targetLanguage, sourceLanguage);
     } catch (error) {
