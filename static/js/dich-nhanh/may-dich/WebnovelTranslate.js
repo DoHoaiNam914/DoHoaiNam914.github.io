@@ -1995,19 +1995,17 @@ class WebnovelTranslate extends Translator {
         return this.result;
       }
 
-      const originalPart = [];
       const translationPart = [];
 
       responses.forEach((element) => element.responseJSON[0].filter(([__, second]) => second != null).map(([first, second]) => [second, first.replaceAll(new RegExp(` ?${isCj ? '(?:\\|[ |]*|[ |]*\\|)' : Utils.getTrieRegexPatternFromWords([EOL].toSorted((a, b) => b.length - a.length)).source}\\s*`, 'g'), '\n')]).forEach(([first, second]) => {
         const requestLines = isCj ? first.replace(EOL.repeat(2), EOL) : first;
-        originalPart.push(requestLines);
         const count = [...requestLines.matchAll(new RegExp(Utils.escapeRegExp(EOL), 'g'))].length - [...second.matchAll(/\n/g)].length;
         translationPart.push((count < 0 ? second.replace(new RegExp(`\\n{${Math.abs(count)}}$`), '') : second).concat('\n'.repeat(count > 0 ? count : 0)));
       }));
 
       const translationLines = translationPart.join('').split('\n');
-      const translationMap = Object.fromEntries(originalPart.join('').split(EOL).map((element, index) => [isCj ? element.replace(/^\u3000{2}/, '') : element, translationLines[index]]));
-      this.result = lines.map((element) => (translationMap[element] != null ? element.match(/^\s*/)[0].concat(translationMap[element].replace(/^\s+/, '').trimEnd()) : element)).join('\n');
+      const translationMap = Object.fromEntries(lines.map((__, index) => (element.replace(/^\s+/, '').length > 0 ? [index, translationLines[index]] : null)).filter((element) => element != null));
+      this.result = lines.map((element, index) => (translationMap[index] != null ? element.match(/^\s*/)[0].concat(translationMap[index].replace(/^\s+/, '')) : element)).join('\n');
       super.translateText(text, targetLanguage, sourceLanguage);
     } catch (error) {
       console.error('Bản dịch lỗi:', error);
