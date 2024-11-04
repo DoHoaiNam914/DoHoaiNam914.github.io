@@ -277,7 +277,7 @@ ${names.map((element) => element.join('\t')).join('\n')}
           generationConfig: {
             temperature: 1,
             topP: 0.95,
-            topK: model.startsWith('gemini-1.5-flash-8b') || /^gemini-1\.5-[^-]+-002$/.test(model) ? 40 : 64,
+            topK: /^gemini-1\.5-[^-]+-001$/.test(model) ? 64 : 40,
             maxOutputTokens: 8192,
             responseMimeType: 'text/plain',
           },
