@@ -774,7 +774,7 @@ ${names.map((element) => element.join('\t')).join('\n')}
         generationConfig: {
           temperature: 1,
           topP: 0.95,
-            topK: /^gemini-1\.5-[^-]+-001$/.test(model) ? 64 : 40,
+          topK: /^gemini-1\.5-[^-]+-001$/.test(model) ? 64 : 40,
           maxOutputTokens: 8192,
           responseMimeType: 'text/plain',
         },
@@ -785,7 +785,7 @@ ${names.map((element) => element.join('\t')).join('\n')}
     });
 
     if (response.candidates == null) return result;
-response = response.candidates[0].content.parts[0].text.replace(' \n', '').split('\n').filter((element) => element.replace(/^\s+/, '').length > 0);
+    response = response.candidates[0].content.parts[0].text.replace(/^# .+\n`{3}txt\n/, '').replace('\n```', '').replace(' \n', '').split('\n').filter((element) => element.replace(/^\s+/, '').length > 0);
     response = Object.fromEntries(lines.map((element, index) => (element.replace(/^\s+/, '').length > 0 ? index : null)).filter((element) => element != null).map((element, index) => [element, response[index]]));
     result = lines.map((element, index) => (response[index] != null ? (rawTranslationLines[index] ?? element).match(/^\s*/)[0].concat(response[index].replace(/^\s+/, '')) : rawTranslationLines[index] ?? element)).join('\n');
   } catch (error) {
