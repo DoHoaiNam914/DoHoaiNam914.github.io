@@ -1352,7 +1352,7 @@ $themeDropdown.find('.dropdown-item').on('click', function onClick() {
   const alignment = $(this).data('text-align');
   const fontWeight = $(this).data('font-weight');
 
-  if ($fontStackText.val().length === 0 || (new RegExp(`^${Utils.escapeRegExp($fontStackText.val())}(?:, *|$)`).test(prevFontStack.startsWith())) $fontStackText.val(fontStack ?? '').change();
+  if ($fontStackText.val().length === 0 || (new RegExp(`^${Utils.escapeRegExp($fontStackText.val())}(?:, *|$)`)).test(prevFontStack.startsWith())) $fontStackText.val(fontStack ?? '').change();
   if (fontSize != null) $fontSizeText.val(fontSize).change();
   $(document.body).addClass($(this).val());
   if (alignment != null && alignment.length > 0) $alignmentRadio.prop('checked', false).filter(`#${['com-amazon-kindle-', 'apple-books-quiet-', 'apple-books-focus-', 'bookwalker-'].some((element) => $(this).val().includes(element)) ? 'justify' : 'start'}-alignment-radio`).prop('checked', true).change();
