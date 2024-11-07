@@ -144,6 +144,7 @@ const DEEPL_AUTH_KEY_LIST = [
 ].toSorted((a, b) => a[1] - b[1]);
 
 const GEMINI_API_KEY = 'AIzaSyD5e2NPw_Vmgr_eUXtNX4tGMYl0lmsQQW4';
+const GOOGLE_TRANSLATE_KEY = 'AIzaSyDj3f1TGsnamhL8U5tpvpWw4J27So0IGp8';
 
 const UUID = crypto.randomUUID();
 
@@ -1460,7 +1461,7 @@ $translatorDropdown.find('.dropdown-item').click(function onClick() {
     }
     default: {
       if (currentTranslator == null) {
-        currentTranslator = new GoogleTranslate();
+        currentTranslator = new GoogleTranslate(GOOGLE_TRANSLATE_KEY);
         translators[activeTranslator] = currentTranslator;
       }
 
@@ -2083,7 +2084,7 @@ $translateEntryButtons.click(async function onClick() {
         }
         case Translators.GOOGLE_TRANSLATE: {
           if (translator == null) {
-            translator = new GoogleTranslate();
+            translator = new GoogleTranslate(GOOGLE_TRANSLATE_KEY);
             translators[activeTranslator] = translator;
           }
 

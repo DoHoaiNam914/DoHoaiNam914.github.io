@@ -3,7 +3,7 @@
 /* global Translator, Utils */
 
 class GoogleTranslate extends Translator {
-  /** https://translation.googleapis.com/language/translate/v2/languages?prettyPrint=false&target=vi&key=AIzaSyDj3f1TGsnamhL8U5tpvpWw4J27So0IGp8 */
+  /** https://translation.googleapis.com/language/translate/v2/languages?prettyPrint=false&target=vi&key=${key} */
   static LANGUAGE_LIST = JSON.parse(`{
   "data": {
     "languages": [
@@ -1004,8 +1004,9 @@ class GoogleTranslate extends Translator {
     TARGET_LANGUAGE: 'vi',
   };
 
-  constructor() {
+  constructor(key) {
     super();
+    this.key = key;
     this.maxContentLengthPerRequest = 4869;
     this.maxContentLinePerRequest = 17;
   }
@@ -1021,7 +1022,7 @@ class GoogleTranslate extends Translator {
 
         if (lines.length === 0 || [...requestLines, lines[0]].join('\r\n').length > this.maxContentLengthPerRequest || (requestLines.length + 1) > this.maxContentLinePerRequest) {
           responses.push($.ajax({
-            data: `prettyPrint=false${sourceLanguage !== this.DefaultLanguage.SOURCE_LANGUAGE ? `&source=${sourceLanguage}` : ''}&target=${targetLanguage}&q=${requestLines.map((element) => encodeURIComponent(element)).join('&q=')}&key=AIzaSyDj3f1TGsnamhL8U5tpvpWw4J27So0IGp8`,
+            data: `prettyPrint=false${sourceLanguage !== this.DefaultLanguage.SOURCE_LANGUAGE ? `&source=${sourceLanguage}` : ''}&target=${targetLanguage}&q=${requestLines.map((element) => encodeURIComponent(element)).join('&q=')}&key=${this.key}`,
             method: 'POST',
             url: 'https://translation.googleapis.com/language/translate/v2'
           }));
