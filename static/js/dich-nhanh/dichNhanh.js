@@ -794,7 +794,7 @@ ${names.map((element) => element.join('\t')).join('\n')}
           temperature: 1,
           topP: 0.95,
           topK: /^gemini-1\.5-[^-]+-001$/.test(model) ? 64 : 40,
-          maxOutputTokens: 8192,
+          // maxOutputTokens: 8192,
           responseMimeType: 'text/plain',
         },
       }),
@@ -1414,7 +1414,7 @@ $translatorDropdown.find('.dropdown-item').click(function onClick() {
     }
     case Translators.CHATGPT: {
       if (currentTranslator == null) {
-        currentTranslator = new Chatgpt();
+        currentTranslator = new Chatgpt(UUID);
         translators[activeTranslator] = currentTranslator;
       }
 
@@ -2085,7 +2085,7 @@ $translateEntryButtons.click(async function onClick() {
         }
         case Translators.CHATGPT: {
           if (translator == null) {
-            translator = new Chatgpt();
+            translator = new Chatgpt(UUID);
             translators[activeTranslator] = translator;
           }
 
