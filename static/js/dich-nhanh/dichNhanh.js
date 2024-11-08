@@ -1,6 +1,6 @@
 'use strict';
 
-/* global bootstrap, BaiduTranslate, cjkv, CocCocEduTranslate, DeepLTranslate, GoogleGemini, GoogleTranslate, Lingvanex, MicrosoftTranslator, newAccentObject, Papago, Utils, Vietphrase, WebnovelTranslate */
+/* global bootstrap, BaiduTranslate, cjkv, Chatgpt, , DeeplTranslate, GoogleGemini, GoogleTranslate, Lingvanex, MicrosoftTranslator, newAccentObject, Papago, Utils, Vietphrase, WebnovelTranslate */
 
 const $addButton = $('#add-button');
 const $addDeLeZhaoSwitch = $('#add-de-le-zhao-switch');
@@ -119,6 +119,7 @@ const FONT_MAPPING = {
 
 const Translators = {
   BAIDU_TRANSLATE: 'baiduTranslate',
+  CHATGPT: 'chatgpt',
   COCCOC_EDU_TRANSLATE: 'coccocEduTranslate',
   DEEPL_TRANSLATE: 'deeplTranslate',
   GOOGLE_GEMINI: 'googleGemini',
@@ -490,8 +491,15 @@ const getSourceLangOptionList = function getSourceLanguageOptionListHtmlFromTran
       });
       break;
     }
+    case Translators.CHATGPT: {
+      const option = document.createElement('option');
+      option.innerText = Chatgpt.LANGUAGE_LIST[0].label;
+      option.value = Chatgpt.LANGUAGE_LIST[0].value;
+      sourceLanguageSelect.appendChild(option);
+      break;
+    }
     case Translators.COCCOC_EDU_TRANSLATE: {
-      CocCocEduTranslate.LANGUAGE_LIST.forEach(({ label, value }) => {
+      .LANGUAGE_LIST.forEach(({ label, value }) => {
         if (!['auto', 'en', 'vi', 'ja', 'zh-Hans', 'zh-Hant'].includes(value)) return;
         const option = document.createElement('option');
         option.innerText = label;
@@ -501,7 +509,7 @@ const getSourceLangOptionList = function getSourceLanguageOptionListHtmlFromTran
       break;
     }
     case Translators.DEEPL_TRANSLATE: {
-      DeepLTranslate.SOURCE_LANGUAGE_LIST.forEach(({ language, name }) => {
+      DeeplTranslate.SOURCE_LANGUAGE_LIST.forEach(({ language, name }) => {
         if (!['', 'EN', 'JA', 'ZH'].includes(language)) return;
         const option = document.createElement('option');
         option.innerText = name;
@@ -594,8 +602,18 @@ const getTargetLangOptionList = function getTargetLanguageOptionListHtmlFromTran
       });
       break;
     }
+    case Translators.CHATGPT: {
+      Chatgpt.LANGUAGE_LIST.forEach(({ label, value }) => {
+        if (!['English', 'Chinese', 'Japanese', 'Vietnamese'].includes(value)) return;
+        const option = document.createElement('option');
+        option.innerText = label;
+        option.value = value;
+        targetLanguageSelect.appendChild(option);
+      });
+      break;
+    }
     case Translators.COCCOC_EDU_TRANSLATE: {
-      CocCocEduTranslate.LANGUAGE_LIST.forEach(({ label, value }) => {
+      .LANGUAGE_LIST.forEach(({ label, value }) => {
         if (!['en', 'vi', 'ja', 'zh-Hans', 'zh-Hant'].includes(value)) return;
         const option = document.createElement('option');
         option.innerText = label;
@@ -605,7 +623,7 @@ const getTargetLangOptionList = function getTargetLanguageOptionListHtmlFromTran
       break;
     }
     case Translators.DEEPL_TRANSLATE: {
-      DeepLTranslate.TARGET_LANGUAGE_LIST.forEach(({ language, name }) => {
+      DeeplTranslate.TARGET_LANGUAGE_LIST.forEach(({ language, name }) => {
         if (!['EN-GB', 'EN-US', 'JA', 'ZH', 'ZH-HANS'].includes(language)) return;
         const option = document.createElement('option');
         option.innerText = name;
@@ -856,6 +874,11 @@ const translate = async function translateContentInTextarea(controller = new Abo
     const model = $geminiModelSelect.val();
 
     switch ($activeTranslator.val()) {
+      case Translators.CHATGPT: {
+        currentTranslator.controller = controller;
+        await currentTranslator.translateText(text, targetLanguage, glossary);
+        break;
+      }
       case Translators.GOOGLE_GEMINI: {
         currentTranslator.controller = controller;
         await currentTranslator.translateText(text, targetLanguage, glossary, $geminiModelSelect.val());
@@ -1389,17 +1412,25 @@ $translatorDropdown.find('.dropdown-item').click(function onClick() {
 
       break;
     }
+    case Translators.CHATGPT: {
+      if (currentTranslator == null) {
+        currentTranslator = new Chatgpt();
+        translators[activeTranslator] = currentTranslator;
+      }
+
+      break;
+    }
     case Translators.COCCOC_EDU_TRANSLATE: {
       if (currentTranslator == null) {
-        currentTranslator = new CocCocEduTranslate();
+        currentTranslator = new ();
         translators[activeTranslator] = currentTranslator;
       }
 
       break;
     }
     case Translators.DEEPL_TRANSLATE: {
-      while (currentTranslator == null || (currentTranslator instanceof DeepLTranslate && (currentTranslator.usage.character_limit - currentTranslator.usage.character_count) < 100000)) {
-        currentTranslator = new DeepLTranslate(DEEPL_AUTH_KEY_LIST[0][0]);
+      while (currentTranslator == null || (currentTranslator instanceof DeeplTranslate && (currentTranslator.usage.character_limit - currentTranslator.usage.character_count) < 100000)) {
+        currentTranslator = new DeeplTranslate(DEEPL_AUTH_KEY_LIST[0][0]);
 
         if ((currentTranslator.usage.character_limit - currentTranslator.usage.character_count) >= 100000) {
           translators[activeTranslator] = currentTranslator;
@@ -2052,17 +2083,25 @@ $translateEntryButtons.click(async function onClick() {
 
           break;
         }
+        case Translators.CHATGPT: {
+          if (translator == null) {
+            translator = new Chatgpt();
+            translators[activeTranslator] = translator;
+          }
+
+          break;
+        }
         case Translators.COCCOC_EDU_TRANSLATE: {
           if (translator == null) {
-            translator = new CocCocEduTranslate();
+            translator = new ();
             translators[activeTranslator] = translator;
           }
 
           break;
         }
         case Translators.DEEPL_TRANSLATE: {
-          while (translator == null || (translator instanceof DeepLTranslate && (translator.usage.character_limit - translator.usage.character_count) < 1000)) {
-            translator = new DeepLTranslate(DEEPL_AUTH_KEY_LIST[0][0]);
+          while (translator == null || (translator instanceof DeeplTranslate && (translator.usage.character_limit - translator.usage.character_count) < 1000)) {
+            translator = new DeeplTranslate(DEEPL_AUTH_KEY_LIST[0][0]);
 
             if ((translator.usage.character_limit - translator.usage.character_count) >= 1000) {
               translators[activeTranslator] = translator;
@@ -2133,6 +2172,11 @@ $translateEntryButtons.click(async function onClick() {
       }
 
       switch (activeTranslator) {
+        case Translators.CHATGPT: {
+          translator.controller = entryTranslationController;
+          await translator.translateText(text, targetLanguage, { ...glossary, namePhu: nameEnabled != null && Boolean(nameEnabled) !== false && glossary.namePhu[text] == null ? glossary.namePhu : {} });
+          break;
+        }
         case Translators.GOOGLE_GEMINI: {
           translator.controller = entryTranslationController;
           await translator.translateText(text, targetLanguage, { ...glossary, namePhu: nameEnabled != null && Boolean(nameEnabled) !== false && glossary.namePhu[text] == null ? glossary.namePhu : {} }, $geminiModelSelect.val());

@@ -2,7 +2,7 @@
 
 /* global Translator */
 
-class DeepLTranslate extends Translator {
+class DeeplTranslate extends Translator {
   /** https://api-free.deepl.com/v2/languages?type=source */
   static SOURCE_LANGUAGE_LIST = [{
     language: '',
