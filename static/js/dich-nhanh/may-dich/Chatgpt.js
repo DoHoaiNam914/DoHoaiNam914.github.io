@@ -263,9 +263,8 @@ class Chatgpt extends Translator {
     TARGET_LANGUAGE: 'Vietnamese',
   };
 
-  constructor(apiKey) {
+  constructor() {
     super();
-    this.apiKey = apiKey;
   }
 
   async translateText(text, targetLanguage, glossary = { terminologies: {}, namePhu: {} }) {

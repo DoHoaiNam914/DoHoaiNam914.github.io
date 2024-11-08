@@ -499,7 +499,7 @@ const getSourceLangOptionList = function getSourceLanguageOptionListHtmlFromTran
       break;
     }
     case Translators.COCCOC_EDU_TRANSLATE: {
-      .LANGUAGE_LIST.forEach(({ label, value }) => {
+      CoccocEduTranslate.LANGUAGE_LIST.forEach(({ label, value }) => {
         if (!['auto', 'en', 'vi', 'ja', 'zh-Hans', 'zh-Hant'].includes(value)) return;
         const option = document.createElement('option');
         option.innerText = label;
@@ -613,7 +613,7 @@ const getTargetLangOptionList = function getTargetLanguageOptionListHtmlFromTran
       break;
     }
     case Translators.COCCOC_EDU_TRANSLATE: {
-      .LANGUAGE_LIST.forEach(({ label, value }) => {
+      CoccocEduTranslate.LANGUAGE_LIST.forEach(({ label, value }) => {
         if (!['en', 'vi', 'ja', 'zh-Hans', 'zh-Hant'].includes(value)) return;
         const option = document.createElement('option');
         option.innerText = label;
@@ -1422,7 +1422,7 @@ $translatorDropdown.find('.dropdown-item').click(function onClick() {
     }
     case Translators.COCCOC_EDU_TRANSLATE: {
       if (currentTranslator == null) {
-        currentTranslator = new ();
+        currentTranslator = new CoccocEduTranslate();
         translators[activeTranslator] = currentTranslator;
       }
 
@@ -2093,7 +2093,7 @@ $translateEntryButtons.click(async function onClick() {
         }
         case Translators.COCCOC_EDU_TRANSLATE: {
           if (translator == null) {
-            translator = new ();
+            translator = new CoccocEduTranslate();
             translators[activeTranslator] = translator;
           }
 
