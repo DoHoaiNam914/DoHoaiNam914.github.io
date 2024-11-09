@@ -125,7 +125,6 @@ const Translators = {
   LINGVANEX: 'lingvanex',
   MICROSOFT_TRANSLATOR: 'microsoftTranslator',
   PAPAGO: 'papago',
-  VIETPHRASE: 'vietphrase',
   WEBNOVEL_TRANSLATE: 'webnovelTranslate',
 };
 
@@ -1473,14 +1472,6 @@ $translatorDropdown.find('.dropdown-item').click(function onClick() {
     case Translators.PAPAGO: {
       if (currentTranslator == null) {
         currentTranslator = new Papago(UUID);
-        translators[activeTranslator] = currentTranslator;
-      }
-
-      break;
-    }
-    case Translators.VIETPHRASE: {
-      if (currentTranslator == null) {
-        currentTranslator = new Vietphrase($addDeLeZhaoSwitch.prop('checked'), $multiplicationAlgorithmRadio.filter('[checked]').val());
         translators[activeTranslator] = currentTranslator;
       }
 
