@@ -1521,7 +1521,7 @@ $glossaryModal.on('shown.bs.modal', () => {
     } else {
       const phonetics = Object.entries(glossary.phonetics).map(([first, second]) => [first, second.split('/')[0]]).map(([first, second]) => [first, second.split('|')[0]]).map(([first, second]) => [first, second.split(/; */)[0]]);
       const sinovietnameses = glossary.sinovietnameses.map(([first,second]) => [first, second.split(',').map((element) => element.trimStart()).filter((element) => element.length > 0)[0]]);
-      const hanViet = phonetics.filter(([__, second]) => /\p{Script_Extensions=Hani}/u.test(second)).map(([first, second]) => [first, quickTranslate(second, hanViet)]).concat(phonetics.filter(([__, second]) => !/\p{Script_Extensions=Hani}/u.test(second)).concat(sinovietnameses).map(([first, second]) => [first, second.toLowerCase()]);
+      const hanViet = phonetics.filter(([__, second]) => /\p{Script_Extensions=Hani}/u.test(second)).map(([first, second]) => [first, quickTranslate(second, hanViet)]).concat(phonetics.filter(([__, second]) => !/\p{Script_Extensions=Hani}/u.test(second)), sinovietnameses).map(([first, second]) => [first, second.toLowerCase()]);
       $targetEntryTextarea.val(quickTranslate(text, Object.entries(currentGlossary).concat(hanViet, glossary.romajis).filter(function filter([first]) {
         return !this[first] && (this[first] = 1);
       }, {})));
@@ -1577,7 +1577,7 @@ $glossaryListSelect.change(function onChange() {
       if (window.confirm('Bạn có muốn chuyển đổi lại chứ?')) {
         const phonetics = Object.entries(glossary.phonetics).map(([first, second]) => [first, second.split('/')[0]]).map(([first, second]) => [first, second.split('|')[0]]).map(([first, second]) => [first, second.split(/; */)[0]]);
         const sinovietnameses = glossary.sinovietnameses.map(([first,second]) => [first, second.split(',').map((element) => element.trimStart()).filter((element) => element.length > 0)[0]]);
-        const hanViet = phonetics.filter(([__, second]) => /\p{Script_Extensions=Hani}/u.test(second)).map(([first, second]) => [first, quickTranslate(second, hanViet)]).concat(phonetics.filter(([__, second]) => !/\p{Script_Extensions=Hani}/u.test(second)).concat(sinovietnameses).map(([first, second]) => [first, second.toLowerCase()]);
+        const hanViet = phonetics.filter(([__, second]) => /\p{Script_Extensions=Hani}/u.test(second)).map(([first, second]) => [first, quickTranslate(second, hanViet)]).concat(phonetics.filter(([__, second]) => !/\p{Script_Extensions=Hani}/u.test(second)), sinovietnameses).map(([first, second]) => [first, second.toLowerCase()]);
         $targetEntryTextarea.val(quickTranslate(text, Object.entries(currentGlossary).concat(hanViet, glossary.romajis).filter(function filter([first]) {
           return !this[first] && (this[first] = 1);
         }, {})));
@@ -1604,7 +1604,7 @@ $sourceEntryInput.on('input', async function onInput() {
     } else {
       const phonetics = Object.entries(glossary.phonetics).map(([first, second]) => [first, second.split('/')[0]]).map(([first, second]) => [first, second.split('|')[0]]).map(([first, second]) => [first, second.split(/; */)[0]]);
       const sinovietnameses = glossary.sinovietnameses.map(([first,second]) => [first, second.split(',').map((element) => element.trimStart()).filter((element) => element.length > 0)[0]]);
-      const hanViet = phonetics.filter(([__, second]) => /\p{Script_Extensions=Hani}/u.test(second)).map(([first, second]) => [first, quickTranslate(second, hanViet)]).concat(phonetics.filter(([__, second]) => !/\p{Script_Extensions=Hani}/u.test(second)).concat(sinovietnameses).map(([first, second]) => [first, second.toLowerCase()]);
+      const hanViet = phonetics.filter(([__, second]) => /\p{Script_Extensions=Hani}/u.test(second)).map(([first, second]) => [first, quickTranslate(second, hanViet)]).concat(phonetics.filter(([__, second]) => !/\p{Script_Extensions=Hani}/u.test(second)), sinovietnameses).map(([first, second]) => [first, second.toLowerCase()]);
       $targetEntryTextarea.val(quickTranslate(text, Object.entries(currentGlossary).concat(hanViet, glossary.romajis).filter(function filter([first]) {
         return !this[first] && (this[first] = 1);
       }, {})));
