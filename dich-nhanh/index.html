@@ -229,7 +229,6 @@
           '/static/js/dich-nhanh/may-dich/Lingvanex.js',
           '/static/js/dich-nhanh/may-dich/MicrosoftTranslator.js',
           '/static/js/dich-nhanh/may-dich/Papago.js',
-          '/static/js/dich-nhanh/may-dich/Vietphrase.js',
           '/static/js/dich-nhanh/may-dich/WebnovelTranslate.js',
           '/static/js/dich-nhanh/dichNhanh.js',
         ],
@@ -253,7 +252,7 @@
         const setStoredTheme = theme => localStorage.setItem('theme', theme);
 
         const getPreferredTheme = () => {
-          const storedTheme = getStoredTheme();
+          const storedTheme = null /* getStoredTheme() */;
           if (storedTheme) {
             return storedTheme;
           }
@@ -313,7 +312,7 @@
           document.querySelectorAll('[data-bs-theme-value]').forEach(toggle => {
             toggle.addEventListener('click', () => {
               const theme = toggle.getAttribute('data-bs-theme-value');
-              setStoredTheme(theme);
+              // setStoredTheme(theme);
               setTheme(theme);
               showActiveTheme(theme, true);
             });
@@ -681,48 +680,22 @@
                 </select>
               </div>
               <hr>
-              <h2 class="fs-5">Vietphrase</h2>
               <div class="mb-3">
-                <label class="form-label" for="default-viet-phrase-file-select">Tệp VietPhrase mặc định:</label>
-                <select class="form-select form-select-sm" id="default-viet-phrase-file-select">
-                  <option value="0" selected>Không</option>
-                  <option value="1">Quick Translator</option>
-                  <option value="2">Quick Translator (Gộp)</option>
-                  <option value="3">Data của thtgiang</option>
-                  <option value="4">TTV Translate (Android)</option>
-                  <option value="5">TTV Translate (iOS)</option>
+                <h2 class="fs-5">Trí tuệ nhân tạo tạo sinh</h2>
+                <label class="form-label" for="gpt-model-select">Mô hình GPT:</label>
+                <select class="form-select form-select-sm" id="gpt-model-select">
+                  <option value="gpt-4o">GPT-4o</option>
+                  <option value="gpt-4o-mini" selected>GPT-4o mini</option>
+                  <option value="gpt-4-turbo">GPT-4 Turbo</option>
+                  <option value="gpt-4">GPT-4</option>
+                  <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
                 </select>
-              </div>
-              <div class="form-check form-switch mb-3">
-                <input type="checkbox" class="form-check-input" id="add-de-le-zhao-switch">
-                <label class="form-check-label" for="add-de-le-zhao-switch">Thêm đích, liễu, trứ</label>
-              </div>
-              <div class="mb-3">
-                <h2 class="fs-6">Thuật toán nhân</h2>
-                <div class="form-check">
-                  <input type="radio" class="form-check-input" id="no-apply-radio" name="multiplication-algorithm-radio" value="0" checked>
-                  <label class="form-check-label" for="no-apply-radio">Không áp dụng</label>
-                </div>
-                <div class="form-check">
-                  <input type="radio" class="form-check-input" id="multiplication-by-pronouns-radio" name="multiplication-algorithm-radio" value="1">
-                  <label class="form-check-label" for="multiplication-by-pronouns-radio">Nhân theo Pronouns</label>
-                </div>
-                <div class="form-check">
-                  <input type="radio" class="form-check-input" id="multiplication-by-pronouns-and-names-radio" name="multiplication-algorithm-radio" value="2">
-                  <label class="form-check-label" for="multiplication-by-pronouns-and-names-radio">Nhân theo Pronouns + Names</label>
-                </div>
-              </div>
-              <div class="mb-3">
                 <label class="form-label" for="gemini-model-select">Mô hình Gemini:</label>
                 <select class="form-select form-select-sm" id="gemini-model-select">
-                  <option value="none" selected>Không sử dụng</option>
                   <option value="gemini-1.5-flash-latest">Gemini 1.5 Flash Lastest</option>
-                  <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
+                  <option value="gemini-1.5-flash" selected>Gemini 1.5 Flash</option>
                   <option value="gemini-1.5-flash-001">Gemini 1.5 Flash 001</option>
                   <option value="gemini-1.5-flash-002">Gemini 1.5 Flash 002</option>
-                  <option value="gemini-1.5-flash-8b-exp-0924">Gemini 1.5 Flash-8B Experimental 0924</option>
-                  <option value="gemini-1.5-flash-8b-exp-0827">Gemini 1.5 Flash-8B Experimental 0827</option>
-                  <option value="gemini-1.5-flash-exp-0827">Gemini 1.5 Flash Experimental 0827</option>
                 </select>
               </div>
             </div>
@@ -748,11 +721,7 @@
               <select class="form-select form-select-sm mb-3" id="glossary-list-select">
                 <option value="phonetics">Phiên âm chữ Hán</option>
                 <option value="terminologies">Thuật ngữ</option>
-                <option value="vietPhrase">VietPhrase</option>
-                <option value="name">Names</option>
-                <option value="namePhu" selected>Names2</option>
-                <option value="luatNhan">LuatNhan</option>
-                <option value="pronoun">Pronouns</option>
+                <option value="names" selected>Tên riêng</option>
               </select>
               <div class="input-group mb-2 dropstart dropdown-scrollable dropdown-has-collapse">
                 <input type="text" class="form-control font-options" id="source-entry-input" placeholder="Mục nguồn">
@@ -857,17 +826,11 @@
                     <hr class="dropdown-divider">
                   </li>
                   <li>
-                    <button type="button" class="dropdown-item" data-bs-toggle="collapse" data-bs-target="#vietphrase-collapse">Vietphrase</button>
-                    <div class="collapse" id="vietphrase-collapse">
-                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="vietphrase" data-lang="vi" data-name-enabled="true">Vietphrase với Names</button>
-                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="vietphrase" data-lang="vi">Vietphrase</button>
-                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="vietphrase" data-lang="SinoVietnamese">Hán Việt</button>
-                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="vietphrase" data-lang="traditional">Traditional</button>
-                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="vietphrase" data-lang="simplified">Simplified</button>
-                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="vietphrase" data-lang="OnYomi">On'yomi</button>
-                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="vietphrase" data-lang="KunYomi">Kun'yomi</button>
-                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="vietphrase" data-lang="pinyin">Pinyin</button>
-                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="vietphrase" data-lang="pīnyīn">Pīnyīn</button>
+                    <button type="button" class="dropdown-item" data-bs-toggle="collapse" data-bs-target="#glossary-collapse">Chuyển đổi sang</button>
+                    <div class="collapse" id="glossary-collapse">
+                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-lang="phonetics">Phiên âm</button>
+                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-lang="traditional">Phồn thể</button>
+                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-lang="simplified">Giản thể</button>
                     </div>
                   </li>
                   <li>

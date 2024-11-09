@@ -210,8 +210,7 @@ class GoogleGemini extends Translator {
 
   async translateText(text, targetLanguage, glossary = { terminologies: {}, namePhu: {} }, model = 'gemini-1.5-flash') {
     try {
-      const addresses = glossary.addresses.filter(([first]) => text.includes(first));
-      const terminologies = Object.entries({ ...targetLanguage === 'Vietnamese' ? Object.fromEntries(addresses) : {}, ...glossary.terminologies }).filter(([first]) => text.includes(first));
+      const terminologies = Object.entries(glossary.terminologies).filter(([first]) => text.includes(first));
       const names = Object.entries(glossary.namePhu).filter(([first]) => text.includes(first));
       const lines = text.split('\n');
 
@@ -222,7 +221,7 @@ class GoogleGemini extends Translator {
               role: 'user',
               parts: [
                 {
-                  text: `Translate the text ${terminologies.length > 0 || names.length > 0 ? 'in the VĂN BẢN GỐC section ' : ''}into ${targetLanguage}. ${(targetLanguage === 'Vietnamese' && addresses.length > 0) || terminologies.length > 0 || names.length > 0 ? `Accurately mapping ${terminologies.length > 0 ? `the terms ${targetLanguage === 'Vietnamese' && addresses.length > 0 ? 'or the addresses ' : ''}listed in the BẢNG TRA CỨU THUẬT NGỮ section ` : ''}${names.length > 0 ? `${(targetLanguage === 'Vietnamese' && addresses.length > 0) || terminologies.length > 0 ? 'and ' : ''}the proper names listed in the BẢNG TRA CỨU TÊN RIÊNG section ` : ''}to enhance translation accuracy and consistency. ` : ''}Your translations must convey all the content in the original text in and cannot involve explanations or other unnecessary information. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text and cannot include explanations or other information.`,
+                  text: `Translate the text ${terminologies.length > 0 || names.length > 0 ? 'in the VĂN BẢN GỐC section ' : ''}into ${targetLanguage}. ${terminologies.length > 0 || names.length > 0 ? `Accurately mapping ${terminologies.length > 0 ? 'the terms listed in the BẢNG TRA CỨU THUẬT NGỮ section ' : ''}${names.length > 0 ? `${terminologies.length > 0 ? 'and ' : ''}the proper names listed in the BẢNG TRA CỨU TÊN RIÊNG section ` : ''}to enhance translation accuracy and consistency. ` : ''}Your translations must convey all the content in the original text in and cannot involve explanations or other unnecessary information. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text and cannot include explanations or other information.`,
                 },
               ],
             },
@@ -238,16 +237,16 @@ class GoogleGemini extends Translator {
               role: 'user',
               parts: [
                 {
-                  text: `${terminologies.length > 0 || names.length > 0 ? `## VĂN BẢN GỐC:
+                  text: `${terminologies.length > 0 || names.length > 0 ? `# VĂN BẢN GỐC:
 \`\`\`txt
 ${lines.map((element) => element.replace(/^\s+/g, '')).join('\n')}
 \`\`\`
 
-${terminologies.length > 0 ? `## BẢNG TRA CỨU THUẬT NGỮ:
+${terminologies.length > 0 ? `# BẢNG TRA CỨU THUẬT NGỮ:
 \`\`\`tsv
 source\ttarget
 ${terminologies.map((element) => element.join('\t')).join('\n')}
-\`\`\`` : ''}${names.length > 0 ? `${terminologies.length > 0 ? '\n\n' : ''}## BẢNG TRA CỨU TÊN RIÊNG:
+\`\`\`` : ''}${names.length > 0 ? `${terminologies.length > 0 ? '\n\n' : ''}# BẢNG TRA CỨU TÊN RIÊNG:
 \`\`\`tsv
 source\ttarget
 ${names.map((element) => element.join('\t')).join('\n')}

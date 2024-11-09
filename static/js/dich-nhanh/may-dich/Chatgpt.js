@@ -268,19 +268,18 @@ class Chatgpt extends Translator {
     this.uuid = uuid.toUpperCase();
   }
 
-  async translateText(text, targetLanguage, glossary = { terminologies: {}, namePhu: {} }) {
+  async translateText(text, targetLanguage, glossary = { terminologies: {}, namePhu: {} }, model = 'gpt-4o-mini') {
     try {
-      const addresses = glossary.addresses.filter(([first]) => text.includes(first));
-      const terminologies = Object.entries({ ...targetLanguage === 'Vietnamese' ? Object.fromEntries(addresses) : {}, ...glossary.terminologies }).filter(([first]) => text.includes(first));
+      const terminologies = Object.entries(glossary.terminologies).filter(([first]) => text.includes(first));
       const names = Object.entries(glossary.namePhu).filter(([first]) => text.includes(first));
       const lines = text.split('\n');
 
       let response = await $.ajax({
         data: JSON.stringify({
-          model: 'gpt-4o-mini',
+          model,
           messages: [
             {
-              content: `Translate the text ${terminologies.length > 0 || names.length > 0 ? 'in the VĂN BẢN GỐC section ' : ''}into ${targetLanguage}. ${(targetLanguage === 'Vietnamese' && addresses.length > 0) || terminologies.length > 0 || names.length > 0 ? `Accurately mapping ${terminologies.length > 0 ? `the terms ${targetLanguage === 'Vietnamese' && addresses.length > 0 ? 'or the addresses ' : ''}listed in the BẢNG TRA CỨU THUẬT NGỮ section ` : ''}${names.length > 0 ? `${(targetLanguage === 'Vietnamese' && addresses.length > 0) || terminologies.length > 0 ? 'and ' : ''}the proper names listed in the BẢNG TRA CỨU TÊN RIÊNG section ` : ''}to enhance translation accuracy and consistency. ` : ''}Your translations must convey all the content in the original text in and cannot involve explanations or other unnecessary information. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text and cannot include explanations or other information.`,
+              content: `Translate the text ${terminologies.length > 0 || names.length > 0 ? 'in the VĂN BẢN GỐC section ' : ''}into ${targetLanguage}. ${terminologies.length > 0 || names.length > 0 ? `Accurately mapping ${terminologies.length > 0 ? 'the terms listed in the BẢNG TRA CỨU THUẬT NGỮ section ' : ''}${names.length > 0 ? `${terminologies.length > 0 ? 'and ' : ''}the proper names listed in the BẢNG TRA CỨU TÊN RIÊNG section ` : ''}to enhance translation accuracy and consistency. ` : ''}Your translations must convey all the content in the original text in and cannot involve explanations or other unnecessary information. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text and cannot include explanations or other information.`,
               role: 'user',
             },
             {
@@ -326,7 +325,7 @@ ${names.map((element) => element.join('\t')).join('\n')}
         return this.result;
       }
 
-      response = response.choices[0].message.content.replace(/^#{2} .+\n`{3}txt\n/, '').replace('\n```', '').split('\n').filter((element) => element.replace(/^\s+/, '').length > 0);
+      response = response.choices[0].message.content.replace(/^#{2} .+\n`{3}txt\n/, '').replace('\n```$', '').split('\n').filter((element) => element.replace(/^\s+/, '').length > 0);
       response = Object.fromEntries(lines.map((element, index) => (element.replace(/^\s+/, '').length > 0 ? index : null)).filter((element) => element != null).map((element, index) => [element, response[index]]));
       this.result = lines.map((element, index) => (response[index] != null ? element.match(/^\s*/)[0].concat(response[index].replace(/^\s+/, '')) : element)).join('\n');
       super.translateText(text, targetLanguage, this.DefaultLanguage.SOURCE_LANGUAGE);
