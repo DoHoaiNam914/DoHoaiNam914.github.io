@@ -1,6 +1,6 @@
 'use strict';
 
-/* global bootstrap, BaiduTranslate, cjkv, Chatgpt, , DeeplTranslate, GoogleGemini, GoogleTranslate, Lingvanex, MicrosoftTranslator, newAccentObject, Papago, Utils, WebnovelTranslate */
+/* global bootstrap, BaiduTranslate, cjkv, Gpt, , DeeplTranslate, Gemini, GoogleTranslate, Lingvanex, MicrosoftTranslator, newAccentObject, Papago, Utils, WebnovelTranslate */
 
 const $addButton = $('#add-button');
 const $alignmentRadio = $('input[type="radio"][name="alignment-radio"]');
@@ -18,6 +18,7 @@ const $glossaryModal = $('#glossary-modal');
 const $gptModelSelect = $('#gpt-model-select');
 const $inputTextarea = $('#input-textarea');
 const $pasteButtons = $('.paste-button');
+const $polishSwitch = $('#polish-switch');
 const $removeButton = $('#remove-button');
 const $resultTextarea = $('#result-textarea');
 const $retranslateButton = $('#retranslate-button');
@@ -117,10 +118,10 @@ const FONT_MAPPING = {
 
 const Translators = {
   BAIDU_TRANSLATE: 'baiduTranslate',
-  CHATGPT: 'chatgpt',
+  GPT: 'gpt',
   COCCOC_EDU_TRANSLATE: 'coccocEduTranslate',
   DEEPL_TRANSLATE: 'deeplTranslate',
-  GOOGLE_GEMINI: 'googleGemini',
+  GEMINI: 'gemini',
   GOOGLE_TRANSLATE: 'googleTranslate',
   LINGVANEX: 'lingvanex',
   MICROSOFT_TRANSLATOR: 'microsoftTranslator',
@@ -479,10 +480,10 @@ const getSourceLangOptionList = function getSourceLanguageOptionListHtmlFromTran
       });
       break;
     }
-    case Translators.CHATGPT: {
+    case Translators.GPT: {
       const option = document.createElement('option');
-      option.innerText = Chatgpt.LANGUAGE_LIST[0].label;
-      option.value = Chatgpt.LANGUAGE_LIST[0].value;
+      option.innerText = Gpt.LANGUAGE_LIST[0].label;
+      option.value = Gpt.LANGUAGE_LIST[0].value;
       sourceLanguageSelect.appendChild(option);
       break;
     }
@@ -506,10 +507,10 @@ const getSourceLangOptionList = function getSourceLanguageOptionListHtmlFromTran
       });
       break;
     }
-    case Translators.GOOGLE_GEMINI: {
+    case Translators.GEMINI: {
       const option = document.createElement('option');
-      option.innerText = GoogleGemini.LANGUAGE_LIST[0].label;
-      option.value = GoogleGemini.LANGUAGE_LIST[0].value;
+      option.innerText = Gemini.LANGUAGE_LIST[0].label;
+      option.value = Gemini.LANGUAGE_LIST[0].value;
       sourceLanguageSelect.appendChild(option);
       break;
     }
@@ -581,8 +582,8 @@ const getTargetLangOptionList = function getTargetLanguageOptionListHtmlFromTran
       });
       break;
     }
-    case Translators.CHATGPT: {
-      Chatgpt.LANGUAGE_LIST.forEach(({ label, value }) => {
+    case Translators.GPT: {
+      Gpt.LANGUAGE_LIST.forEach(({ label, value }) => {
         if (!['English', 'Chinese', 'Japanese', 'Vietnamese'].includes(value)) return;
         const option = document.createElement('option');
         option.innerText = label;
@@ -611,8 +612,8 @@ const getTargetLangOptionList = function getTargetLanguageOptionListHtmlFromTran
       });
       break;
     }
-    case Translators.GOOGLE_GEMINI: {
-      GoogleGemini.LANGUAGE_LIST.forEach(({ label, value }) => {
+    case Translators.GEMINI: {
+      Gemini.LANGUAGE_LIST.forEach(({ label, value }) => {
         if (!['English', 'Japanese', 'Chinese (Simplified)', 'Chinese (Traditional)', 'Vietnamese'].includes(value)) return;
         const option = document.createElement('option');
         option.innerText = label;
@@ -843,10 +844,10 @@ const translate = async function translateContentInTextarea(controller = new Abo
     const model = $geminiModelSelect.val();
 
     switch ($activeTranslator.val()) {
-      case Translators.CHATGPT:
-      case Translators.GOOGLE_GEMINI: {
+      case Translators.GPT:
+      case Translators.GEMINI: {
         currentTranslator.controller = controller;
-        await currentTranslator.translateText(text, targetLanguage, glossary, $activeTranslator.val() === Translators.GOOGLE_GEMINI ? $geminiModelSelect.val() : $gptModelSelect.val());
+        await currentTranslator.translateText(text, targetLanguage, glossary, $activeTranslator.val() === Translators.GEMINI ? $geminiModelSelect.val() : $gptModelSelect.val());
         break;
       }
       default: {
@@ -857,7 +858,7 @@ const translate = async function translateContentInTextarea(controller = new Abo
 
     if (controller.signal.aborted) return;
 
-    if (targetLanguage.startsWith('vi') && model !== 'none') {
+    if (targetLanguage.startsWith('vi') && $polishSwitch.prop('checked')) {
       if (!isRetranslate) $resultTextarea.html(buildResult(text, currentTranslator.result, $activeTranslator.val()));
       const polishResult = (await polishTranslation(text, currentTranslator.result, model)) ?? currentTranslator.result;
       if (controller.signal.aborted) return;
@@ -1415,9 +1416,9 @@ $translatorDropdown.find('.dropdown-item').click(function onClick() {
 
       break;
     }
-    case Translators.CHATGPT: {
+    case Translators.GPT: {
       if (currentTranslator == null) {
-        currentTranslator = new Chatgpt(UUID);
+        currentTranslator = new Gpt(UUID);
         translators[activeTranslator] = currentTranslator;
       }
 
@@ -1445,9 +1446,9 @@ $translatorDropdown.find('.dropdown-item').click(function onClick() {
 
       break;
     }
-    case Translators.GOOGLE_GEMINI: {
+    case Translators.GEMINI: {
       if (currentTranslator == null) {
-        currentTranslator = new GoogleGemini(GEMINI_API_KEY);
+        currentTranslator = new Gemini(GEMINI_API_KEY);
         translators[activeTranslator] = currentTranslator;
       }
 
@@ -1722,9 +1723,9 @@ $translateEntryButtons.click(async function onClick() {
 
           break;
         }
-        case Translators.CHATGPT: {
+        case Translators.GPT: {
           if (translator == null) {
-            translator = new Chatgpt(UUID);
+            translator = new Gpt(UUID);
             translators[activeTranslator] = translator;
           }
 
@@ -1752,9 +1753,9 @@ $translateEntryButtons.click(async function onClick() {
 
           break;
         }
-        case Translators.GOOGLE_GEMINI: {
+        case Translators.GEMINI: {
           if (translator == null) {
-            translator = new GoogleGemini(GEMINI_API_KEY);
+            translator = new Gemini(GEMINI_API_KEY);
             translators[activeTranslator] = translator;
           }
 
@@ -1804,10 +1805,10 @@ $translateEntryButtons.click(async function onClick() {
 
       if (translator != null) {
         switch (activeTranslator) {
-          case Translators.CHATGPT:
-          case Translators.GOOGLE_GEMINI: {
+          case Translators.GPT:
+          case Translators.GEMINI: {
             translator.controller = entryTranslationController;
-            await translator.translateText(text, targetLanguage, { ...glossary, names: glossary.names[text] == null ? glossary.names : {} }, activeTranslator === Translators.GOOGLE_GEMINI ? $geminiModelSelect.val() : $gptModelSelect.val());
+            await translator.translateText(text, targetLanguage, { ...glossary, names: glossary.names[text] == null ? glossary.names : {} }, activeTranslator === Translators.GEMINI ? $geminiModelSelect.val() : $gptModelSelect.val());
             break;
           }
           default: {

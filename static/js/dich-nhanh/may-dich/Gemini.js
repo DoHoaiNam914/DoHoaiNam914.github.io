@@ -2,7 +2,7 @@
 
 /* global Translator */
 
-class GoogleGemini extends Translator {
+class Gemini extends Translator {
   static LANGUAGE_LIST = [
     {
       label: 'Tự động nhận diện',
@@ -208,10 +208,10 @@ class GoogleGemini extends Translator {
     this.apiKey = apiKey;
   }
 
-  async translateText(text, targetLanguage, glossary = { terminologies: {}, namePhu: {} }, model = 'gemini-1.5-flash') {
+  async translateText(text, targetLanguage, glossary = { terminologies: {}, names: {} }, model = 'gemini-1.5-flash') {
     try {
       const terminologies = Object.entries(glossary.terminologies).filter(([first]) => text.includes(first));
-      const names = Object.entries(glossary.namePhu).filter(([first]) => text.includes(first));
+      const names = Object.entries(glossary.names).filter(([first]) => text.includes(first));
       const lines = text.split('\n');
 
       let response = await $.ajax({

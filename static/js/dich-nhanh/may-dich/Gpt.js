@@ -2,7 +2,7 @@
 
 /* global Translator */
 
-class Chatgpt extends Translator {
+class Gpt extends Translator {
   static LANGUAGE_LIST = [
     {
       label: 'Tự động nhận diện',
@@ -268,10 +268,10 @@ class Chatgpt extends Translator {
     this.uuid = uuid.toUpperCase();
   }
 
-  async translateText(text, targetLanguage, glossary = { terminologies: {}, namePhu: {} }, model = 'gpt-4o-mini') {
+  async translateText(text, targetLanguage, glossary = { terminologies: {}, names: {} }, model = 'gpt-4o-mini') {
     try {
       const terminologies = Object.entries(glossary.terminologies).filter(([first]) => text.includes(first));
-      const names = Object.entries(glossary.namePhu).filter(([first]) => text.includes(first));
+      const names = Object.entries(glossary.names).filter(([first]) => text.includes(first));
       const lines = text.split('\n');
 
       let response = await $.ajax({

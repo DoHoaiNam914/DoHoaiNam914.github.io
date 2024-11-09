@@ -221,10 +221,10 @@
           '/static/js/Encoder.js',
           '/static/js/dich-nhanh/Translator.js',
           '/static/js/dich-nhanh/may-dich/BaiduTranslate.js',
-          '/static/js/dich-nhanh/may-dich/Chatgpt.js',
+          '/static/js/dich-nhanh/may-dich/Gpt.js',
           '/static/js/dich-nhanh/may-dich/CoccocEduTranslate.js',
           '/static/js/dich-nhanh/may-dich/DeeplTranslate.js',
-          '/static/js/dich-nhanh/may-dich/GoogleGemini.js',
+          '/static/js/dich-nhanh/may-dich/Gemini.js',
           '/static/js/dich-nhanh/may-dich/GoogleTranslate.js',
           '/static/js/dich-nhanh/may-dich/Lingvanex.js',
           '/static/js/dich-nhanh/may-dich/MicrosoftTranslator.js',
@@ -637,13 +637,13 @@
                     <button type="button" class="dropdown-item" value="baiduTranslate">Baidu Translate</button>
                   </li>
                   <li>
-                    <button type="button" class="dropdown-item" value="chatgpt">ChatGPT</button>
+                    <button type="button" class="dropdown-item" value="gpt">GPT</button>
                   </li>
                   <li>
                     <button type="button" class="dropdown-item" value="deeplTranslate">DeepL Translate</button>
                   </li>
                   <li>
-                    <button type="button" class="dropdown-item" value="googleGemini">Google Gemini</button>
+                    <button type="button" class="dropdown-item" value="gemini">Gemini</button>
                   </li>
                   <li>
                     <button type="button" class="dropdown-item active" value="googleTranslate">Google Dịch</button>
@@ -677,8 +677,12 @@
                 </select>
               </div>
               <hr>
+              <h2 class="fs-5">Trí tuệ nhân tạo tạo sinh</h2>
+              <div class="form-check form-switch mb-3">
+                <input type="checkbox" class="form-check-input" id="polish-switch" role="switch">
+                <label class="form-check-label" for="polish-switch">Làm mượt bản dịch bằng Gemini</label>
+              </div>
               <div class="mb-3">
-                <h2 class="fs-5">Trí tuệ nhân tạo tạo sinh</h2>
                 <label class="form-label" for="gpt-model-select">Mô hình GPT:</label>
                 <select class="form-select form-select-sm" id="gpt-model-select">
                   <option value="gpt-4o">GPT-4o</option>
@@ -687,6 +691,8 @@
                   <option value="gpt-4">GPT-4</option>
                   <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
                 </select>
+              </div>
+              <div class="mb-3">
                 <label class="form-label" for="gemini-model-select">Mô hình Gemini:</label>
                 <select class="form-select form-select-sm" id="gemini-model-select">
                   <option value="gemini-1.5-flash-latest">Gemini 1.5 Flash Lastest</option>
@@ -841,22 +847,22 @@
                     </div>
                   </li>
                   <li>
-                    <button type="button" class="dropdown-item" data-bs-toggle="collapse" data-bs-target="#chatgpt-collapse">ChatGPT</button>
-                    <div class="collapse" id="chatgpt-collapse">
-                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="chatgpt" data-lang="Vietnamese" data-name-enabled="true">Tiếng Việt</button>
-                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="chatgpt" data-lang="English" data-name-enabled="true">Tiếng Anh</button>
-                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="chatgpt" data-lang="Japanese" data-name-enabled="true">Tiếng Nhật</button>
-                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="chatgpt" data-lang="Chinese" data-name-enabled="true">Tiếng Trung</button>
+                    <button type="button" class="dropdown-item" data-bs-toggle="collapse" data-bs-target="#gpt-collapse">GPT</button>
+                    <div class="collapse" id="gpt-collapse">
+                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="gpt" data-lang="Vietnamese" data-name-enabled="true">Tiếng Việt</button>
+                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="gpt" data-lang="English" data-name-enabled="true">Tiếng Anh</button>
+                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="gpt" data-lang="Japanese" data-name-enabled="true">Tiếng Nhật</button>
+                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="gpt" data-lang="Chinese" data-name-enabled="true">Tiếng Trung</button>
                     </div>
                   </li>
                   <li>
-                    <button type="button" class="dropdown-item" data-bs-toggle="collapse" data-bs-target="#google-gemini-collapse">Google Gemini</button>
-                    <div class="collapse" id="google-gemini-collapse">
-                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="googleGemini" data-lang="Vietnamese" data-name-enabled="true">Tiếng Việt</button>
-                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="googleGemini" data-lang="English" data-name-enabled="true">Tiếng Anh</button>
-                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="googleGemini" data-lang="Japanese" data-name-enabled="true">Tiếng Nhật</button>
-                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="googleGemini" data-lang="Chinese (Simplified)" data-name-enabled="true">Tiếng Trung (Giản thể)</button>
-                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="googleGemini" data-lang="Chinese (Traditional)" data-name-enabled="true">Tiếng Trung (Phồn thể)</button>
+                    <button type="button" class="dropdown-item" data-bs-toggle="collapse" data-bs-target="#gemini-collapse">Gemini</button>
+                    <div class="collapse" id="gemini-collapse">
+                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="gemini" data-lang="Vietnamese" data-name-enabled="true">Tiếng Việt</button>
+                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="gemini" data-lang="English" data-name-enabled="true">Tiếng Anh</button>
+                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="gemini" data-lang="Japanese" data-name-enabled="true">Tiếng Nhật</button>
+                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="gemini" data-lang="Chinese (Simplified)" data-name-enabled="true">Tiếng Trung (Giản thể)</button>
+                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="gemini" data-lang="Chinese (Traditional)" data-name-enabled="true">Tiếng Trung (Phồn thể)</button>
                     </div>
                   </li>
                   <li>
