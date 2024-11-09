@@ -841,13 +841,13 @@ const translate = async function translateContentInTextarea(controller = new Abo
     const startTime = Date.now();
     const text = $inputTextarea.val();
     const targetLanguage = $targetLanguageSelect.val();
-    const model = $geminiModelSelect.val();
+    const geminiModel = $geminiModelSelect.val();
 
     switch ($activeTranslator.val()) {
       case Translators.GPT:
       case Translators.GEMINI: {
         currentTranslator.controller = controller;
-        await currentTranslator.translateText(text, targetLanguage, glossary, $activeTranslator.val() === Translators.GEMINI ? $geminiModelSelect.val() : $gptModelSelect.val());
+        await currentTranslator.translateText(text, targetLanguage, glossary, $activeTranslator.val() === Translators.GEMINI ? geminiModel : $gptModelSelect.val());
         break;
       }
       default: {
@@ -860,7 +860,7 @@ const translate = async function translateContentInTextarea(controller = new Abo
 
     if (targetLanguage.startsWith('vi') && $polishSwitch.prop('checked')) {
       if (!isRetranslate) $resultTextarea.html(buildResult(text, currentTranslator.result, $activeTranslator.val()));
-      const polishResult = (await polishTranslation(text, currentTranslator.result, model)) ?? currentTranslator.result;
+      const polishResult = (await polishTranslation(text, currentTranslator.result, geminiModel)) ?? currentTranslator.result;
       if (controller.signal.aborted) return;
       currentTranslator.result = polishResult;
     }
@@ -1521,10 +1521,7 @@ $glossaryModal.on('shown.bs.modal', () => {
     } else {
       const phonetics = Object.entries(glossary.phonetics).map(([first, second]) => [first, second.split('/')[0]]).map(([first, second]) => [first, second.split('|')[0]]).map(([first, second]) => [first, second.split(/; */)[0]]);
       const sinovietnameses = glossary.sinovietnameses.map(([first,second]) => [first, second.split(',').map((element) => element.trimStart()).filter((element) => element.length > 0)[0]]);
-      let hanViet = phonetics.filter(([__, second]) => !/\p{Script_Extensions=Hani}/u.test(second)).concat(targetLanguage === 'vi' ? glossary.hanViet.filter(([first]) => !Object.hasOwn(glossary.phonetics, first)) : [], sinovietnameses);
-      hanViet = phonetics.filter(([__, second]) => /\p{Script_Extensions=Hani}/u.test(second)).map(([first, second]) => [first, quickTranslate(second, hanViet)]).concat(hanViet).map(([first, second]) => [first, second.toLowerCase()]).filter(function filter([first]) {
-        return !this[first] && (this[first] = 1);
-      }, {});
+      const hanViet = phonetics.filter(([__, second]) => /\p{Script_Extensions=Hani}/u.test(second)).map(([first, second]) => [first, quickTranslate(second, hanViet)]).concat(phonetics.filter(([__, second]) => !/\p{Script_Extensions=Hani}/u.test(second)).concat(sinovietnameses).map(([first, second]) => [first, second.toLowerCase()]);
       $targetEntryTextarea.val(quickTranslate(text, Object.entries(currentGlossary).concat(hanViet, glossary.romajis).filter(function filter([first]) {
         return !this[first] && (this[first] = 1);
       }, {})));
@@ -1580,10 +1577,7 @@ $glossaryListSelect.change(function onChange() {
       if (window.confirm('Bạn có muốn chuyển đổi lại chứ?')) {
         const phonetics = Object.entries(glossary.phonetics).map(([first, second]) => [first, second.split('/')[0]]).map(([first, second]) => [first, second.split('|')[0]]).map(([first, second]) => [first, second.split(/; */)[0]]);
         const sinovietnameses = glossary.sinovietnameses.map(([first,second]) => [first, second.split(',').map((element) => element.trimStart()).filter((element) => element.length > 0)[0]]);
-        let hanViet = phonetics.filter(([__, second]) => !/\p{Script_Extensions=Hani}/u.test(second)).concat(targetLanguage === 'vi' ? glossary.hanViet.filter(([first]) => !Object.hasOwn(glossary.phonetics, first)) : [], sinovietnameses);
-        hanViet = phonetics.filter(([__, second]) => /\p{Script_Extensions=Hani}/u.test(second)).map(([first, second]) => [first, quickTranslate(second, hanViet)]).concat(hanViet).map(([first, second]) => [first, second.toLowerCase()]).filter(function filter([first]) {
-          return !this[first] && (this[first] = 1);
-        }, {});
+        const hanViet = phonetics.filter(([__, second]) => /\p{Script_Extensions=Hani}/u.test(second)).map(([first, second]) => [first, quickTranslate(second, hanViet)]).concat(phonetics.filter(([__, second]) => !/\p{Script_Extensions=Hani}/u.test(second)).concat(sinovietnameses).map(([first, second]) => [first, second.toLowerCase()]);
         $targetEntryTextarea.val(quickTranslate(text, Object.entries(currentGlossary).concat(hanViet, glossary.romajis).filter(function filter([first]) {
           return !this[first] && (this[first] = 1);
         }, {})));
@@ -1610,10 +1604,7 @@ $sourceEntryInput.on('input', async function onInput() {
     } else {
       const phonetics = Object.entries(glossary.phonetics).map(([first, second]) => [first, second.split('/')[0]]).map(([first, second]) => [first, second.split('|')[0]]).map(([first, second]) => [first, second.split(/; */)[0]]);
       const sinovietnameses = glossary.sinovietnameses.map(([first,second]) => [first, second.split(',').map((element) => element.trimStart()).filter((element) => element.length > 0)[0]]);
-      let hanViet = phonetics.filter(([__, second]) => !/\p{Script_Extensions=Hani}/u.test(second)).concat(targetLanguage === 'vi' ? glossary.hanViet.filter(([first]) => !Object.hasOwn(glossary.phonetics, first)) : [], sinovietnameses);
-      hanViet = phonetics.filter(([__, second]) => /\p{Script_Extensions=Hani}/u.test(second)).map(([first, second]) => [first, quickTranslate(second, hanViet)]).concat(hanViet).map(([first, second]) => [first, second.toLowerCase()]).filter(function filter([first]) {
-        return !this[first] && (this[first] = 1);
-      }, {});
+      const hanViet = phonetics.filter(([__, second]) => /\p{Script_Extensions=Hani}/u.test(second)).map(([first, second]) => [first, quickTranslate(second, hanViet)]).concat(phonetics.filter(([__, second]) => !/\p{Script_Extensions=Hani}/u.test(second)).concat(sinovietnameses).map(([first, second]) => [first, second.toLowerCase()]);
       $targetEntryTextarea.val(quickTranslate(text, Object.entries(currentGlossary).concat(hanViet, glossary.romajis).filter(function filter([first]) {
         return !this[first] && (this[first] = 1);
       }, {})));
@@ -1826,10 +1817,7 @@ $translateEntryButtons.click(async function onClick() {
           if (targetLanguage === 'phonetics') {
             const phonetics = Object.entries(glossary.phonetics).map(([first, second]) => [first, second.split('/')[0]]).map(([first, second]) => [first, second.split('|')[0]]).map(([first, second]) => [first, second.split(/; */)[0]]);
             const sinovietnameses = glossary.sinovietnameses.map(([first,second]) => [first, second.split(',').map((element) => element.trimStart()).filter((element) => element.length > 0)[0]]);
-            glossaryMap = phonetics.filter(([__, second]) => !/\p{Script_Extensions=Hani}/u.test(second)).concat(targetLanguage === 'vi' ? glossary.hanViet.filter(([first]) => !Object.hasOwn(glossary.phonetics, first)) : [], sinovietnameses);
-            glossaryMap = phonetics.filter(([__, second]) => /\p{Script_Extensions=Hani}/u.test(second)).map(([first, second]) => [first, quickTranslate(second, hanViet)]).concat(glossaryMap).map(([first, second]) => [first, second.toLowerCase()]).filter(function filter([first]) {
-              return !this[first] && (this[first] = 1);
-            }, {});
+            glossaryMap = phonetics.filter(([__, second]) => /\p{Script_Extensions=Hani}/u.test(second)).map(([first, second]) => [first, quickTranslate(second, glossaryMap)]).concat(phonetics.filter(([__, second]) => !/\p{Script_Extensions=Hani}/u.test(second)), sinovietnameses).map(([first, second]) => [first, second.toLowerCase()]);
           } else {
             glossaryMap = glossary[targetLanguage];
           }
