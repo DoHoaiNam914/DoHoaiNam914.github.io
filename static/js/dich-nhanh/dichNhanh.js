@@ -1566,12 +1566,13 @@ $('#clear-glossary-button').on('click', () => {
 $glossaryListSelect.change(function onChange() {
   const activeGlossaryList = $(this).val();
   reloadGlossary(activeGlossaryList);
+  const text = $sourceEntryInput.val();
 
-  if ($sourceEntryInput.val().length > 0) {
+  if (text.length > 0) {
     const currentGlossary = glossary[activeGlossaryList];
 
     if (Object.hasOwn(currentGlossary, $sourceEntryInput.val())) {
-      $targetEntryTextarea.val(currentGlossary[$sourceEntryInput.val()]);
+      $targetEntryTextarea.val(currentGlossary[text]);
       $removeButton.removeClass('disabled');
     } else {
       if (window.confirm('Bạn có muốn chuyển đổi lại chứ?')) {
