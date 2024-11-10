@@ -69,22 +69,13 @@ const FONT_MAPPING = {
   'Apple SD Gothic Neo': 'appleSDGothicNeo',
   'A-OTF Ryumin Pr5': 'aOTFRyuminPr5',
   Bookerly: 'bookerly',
-  'Canela Text': 'canelaText',
-  Charter: 'charter',
   'Crimson Text': 'crimsonText',
   HiraginoMin: 'hiraginoMin',
   'Hiragino Mincho Pro': 'hiraginoMinchoPro',
   'Hiragino Mincho ProN': 'hiraginoMinchoProN',
   'Hiragino Sans': 'hiraginoSans',
-  Literata: 'literata',
-  'New York': 'newYork',
-  'Noto Serif': 'notoSerif',
   'PingFang SC': 'pingFangSC',
   'PingFang TC': 'pingFangTC',
-  'Proxima Nova': 'proximaNova',
-  'Publico Text': 'publicoText',
-  Roboto: 'roboto',
-  'SF Pro Text': 'sfProText',
   STBShusong: 'stbShusong',
   STSongTC: 'stSongTC',
   TBMincho: 'tbMincho',
@@ -92,6 +83,8 @@ const FONT_MAPPING = {
 
   /* Các phông chữ của Waka */
   'Minion Pro': 'minionPro',
+  'Noto Serif': 'notoSerif',
+  Roboto: 'roboto',
   'SVN-Times New Roman': 'svnTimesNewRoman',
   Quicksand: 'quicksand',
   'iCiel Domaine Text': 'iCielDomaineText',
@@ -102,6 +95,7 @@ const FONT_MAPPING = {
   /* Các phông chữ của Google Play Sách */
   Helvetica: 'helvetica',
   Verdana: 'Verdana',
+  Literata: 'literata',
   Baskerville: 'baskerville',
   Cochin: 'cochin',
   Palatino: 'palatino',
@@ -109,9 +103,23 @@ const FONT_MAPPING = {
 
   /* Các phông chữ của Rakuten Kobo */
   Avenir: 'avenir',
+  Georgia: 'Georgia',
   OpenDyslexic: 'openDyslexic',
   Optima: 'optima',
   'Trebuchet MS': 'Trebuchet MS',
+
+  /* Các phông chữ của Apple Sách */
+  // Athelas: 'athelas',
+  'Avenir Next': 'Avenir Next',
+  'Canela Text': 'canelaText',
+  Charter: 'charter',
+  // 'Iowan Old Style': 'iowanOldStyle',
+  'SF Pro Text': 'sfProText',
+  'Proxima Nova': 'proximaNova',
+  'Publico Text': 'publicoText',
+  'New York': 'newYork',
+  // Seravek: 'seravek',
+  'Times New Roman', 'Times New Roman',
 
   Lora: 'Lora',
 };
@@ -773,7 +781,7 @@ ${names.map((element) => element.join('\t')).join('\n')}
     });
 
     if (response.candidates == null) return result;
-    response = response.candidates[0].content.parts[0].text.replace(' \n$', '').replace(/^# .+\n`{3}txt\n/, '').replace('\n```$', '').split('\n').filter((element) => element.replace(/^\s+/, '').length > 0);
+    response = response.candidates[0].content.parts[0].text.replace(/ \n$/, '').replace(/^# .+\n`{3}txt\n/, '').replace('\n```$', '').split('\n').filter((element) => element.replace(/^\s+/, '').length > 0);
     response = Object.fromEntries(lines.map((element, index) => (element.replace(/^\s+/, '').length > 0 ? index : null)).filter((element) => element != null).map((element, index) => [element, response[index]]));
     result = lines.map((element, index) => (response[index] != null ? (rawTranslationLines[index] ?? element).match(/^\s*/)[0].concat(response[index].replace(/^\s+/, '')) : rawTranslationLines[index] ?? element)).join('\n');
   } catch (error) {
