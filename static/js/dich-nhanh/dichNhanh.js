@@ -106,7 +106,7 @@ const FONT_MAPPING = {
   'Publico Text': 'publicoText',
   'New York': 'newYork',
   // Seravek: 'seravek',
-  'Times New Roman', 'Times New Roman',
+  'Times New Roman': 'Times New Roman',
 
   'Apple SD Gothic Neo': 'appleSDGothicNeo',
   'A-OTF Ryumin Pr5': 'aOTFRyuminPr5',
