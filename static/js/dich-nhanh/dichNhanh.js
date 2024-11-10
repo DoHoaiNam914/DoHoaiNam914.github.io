@@ -687,7 +687,6 @@ const loadLangSelectOptions = function loadLanguageListByTranslatorToHtmlOptions
 };
 
 const polishTranslation = async function polishTranslationWithArtificialIntelligence(text, rawTranslation, model) {
-  const MAX_TOKENS_PER_RESPONSE = 8192;
   let result = rawTranslation;
 
   try {
@@ -761,8 +760,8 @@ ${names.map((element) => element.join('\t')).join('\n')}
           },
         ],
         generationConfig: {
-          temperature: 1,
-          topP: 0.95,
+          temperature: 0.3, // Mặc định: 1
+          topP: 0.3,  // Mặc định: 0.95
           topK: /^gemini-1\.5-[^-]+-001$/.test(model) ? 64 : 40,
           // maxOutputTokens: 8192,
           responseMimeType: 'text/plain',
