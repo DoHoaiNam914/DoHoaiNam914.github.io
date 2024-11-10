@@ -274,8 +274,8 @@ ${names.map((element) => element.join('\t')).join('\n')}
             },
           ],
           generationConfig: {
-            temperature: 1,
-            topP: 0.95,
+            temperature: 0.3, // Mặc định: 1
+            topP: 0.3,  // Mặc định: 0.95
             topK: /^gemini-1\.5-[^-]+-001$/.test(model) ? 64 : 40,
             // maxOutputTokens: 8192,
             responseMimeType: 'text/plain',
