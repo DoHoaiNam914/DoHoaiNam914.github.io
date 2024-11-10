@@ -1,6 +1,6 @@
 'use strict';
 
-/* global bootstrap, BaiduTranslate, cjkv, Gpt, , DeeplTranslate, Gemini, GoogleTranslate, Lingvanex, MicrosoftTranslator, newAccentObject, Papago, Utils, WebnovelTranslate */
+/* global bootstrap, BaiduTranslate, cjkv, CoccocEduTranslate, DeeplTranslate, Gemini, GoogleTranslate, Gpt, Lingvanex, MicrosoftTranslator, newAccentObject, Papago, Utils, WebnovelTranslate */
 
 const $addButton = $('#add-button');
 const $alignmentRadio = $('input[type="radio"][name="alignment-radio"]');
@@ -118,11 +118,11 @@ const FONT_MAPPING = {
 
 const Translators = {
   BAIDU_TRANSLATE: 'baiduTranslate',
-  GPT: 'gpt',
   COCCOC_EDU_TRANSLATE: 'coccocEduTranslate',
   DEEPL_TRANSLATE: 'deeplTranslate',
   GEMINI: 'gemini',
   GOOGLE_TRANSLATE: 'googleTranslate',
+  GPT: 'gpt',
   LINGVANEX: 'lingvanex',
   MICROSOFT_TRANSLATOR: 'microsoftTranslator',
   PAPAGO: 'papago',
@@ -480,13 +480,6 @@ const getSourceLangOptionList = function getSourceLanguageOptionListHtmlFromTran
       });
       break;
     }
-    case Translators.GPT: {
-      const option = document.createElement('option');
-      option.innerText = Gpt.LANGUAGE_LIST[0].label;
-      option.value = Gpt.LANGUAGE_LIST[0].value;
-      sourceLanguageSelect.appendChild(option);
-      break;
-    }
     case Translators.COCCOC_EDU_TRANSLATE: {
       CoccocEduTranslate.LANGUAGE_LIST.forEach(({ label, value }) => {
         if (!['auto', 'en', 'vi', 'ja', 'zh-Hans', 'zh-Hant'].includes(value)) return;
@@ -511,6 +504,13 @@ const getSourceLangOptionList = function getSourceLanguageOptionListHtmlFromTran
       const option = document.createElement('option');
       option.innerText = Gemini.LANGUAGE_LIST[0].label;
       option.value = Gemini.LANGUAGE_LIST[0].value;
+      sourceLanguageSelect.appendChild(option);
+      break;
+    }
+    case Translators.GPT: {
+      const option = document.createElement('option');
+      option.innerText = Gpt.LANGUAGE_LIST[0].label;
+      option.value = Gpt.LANGUAGE_LIST[0].value;
       sourceLanguageSelect.appendChild(option);
       break;
     }
@@ -582,16 +582,6 @@ const getTargetLangOptionList = function getTargetLanguageOptionListHtmlFromTran
       });
       break;
     }
-    case Translators.GPT: {
-      Gpt.LANGUAGE_LIST.forEach(({ label, value }) => {
-        if (!['English', 'Chinese', 'Japanese', 'Vietnamese'].includes(value)) return;
-        const option = document.createElement('option');
-        option.innerText = label;
-        option.value = value;
-        targetLanguageSelect.appendChild(option);
-      });
-      break;
-    }
     case Translators.COCCOC_EDU_TRANSLATE: {
       CoccocEduTranslate.LANGUAGE_LIST.forEach(({ label, value }) => {
         if (!['en', 'vi', 'ja', 'zh-Hans', 'zh-Hant'].includes(value)) return;
@@ -615,6 +605,16 @@ const getTargetLangOptionList = function getTargetLanguageOptionListHtmlFromTran
     case Translators.GEMINI: {
       Gemini.LANGUAGE_LIST.forEach(({ label, value }) => {
         if (!['English', 'Japanese', 'Chinese (Simplified)', 'Chinese (Traditional)', 'Vietnamese'].includes(value)) return;
+        const option = document.createElement('option');
+        option.innerText = label;
+        option.value = value;
+        targetLanguageSelect.appendChild(option);
+      });
+      break;
+    }
+    case Translators.GPT: {
+      Gpt.LANGUAGE_LIST.forEach(({ label, value }) => {
+        if (!['English', 'Chinese', 'Japanese', 'Vietnamese'].includes(value)) return;
         const option = document.createElement('option');
         option.innerText = label;
         option.value = value;
@@ -1415,14 +1415,6 @@ $translatorDropdown.find('.dropdown-item').click(function onClick() {
 
       break;
     }
-    case Translators.GPT: {
-      if (currentTranslator == null) {
-        currentTranslator = new Gpt(UUID);
-        translators[activeTranslator] = currentTranslator;
-      }
-
-      break;
-    }
     case Translators.COCCOC_EDU_TRANSLATE: {
       if (currentTranslator == null) {
         currentTranslator = new CoccocEduTranslate();
@@ -1448,6 +1440,14 @@ $translatorDropdown.find('.dropdown-item').click(function onClick() {
     case Translators.GEMINI: {
       if (currentTranslator == null) {
         currentTranslator = new Gemini(GEMINI_API_KEY);
+        translators[activeTranslator] = currentTranslator;
+      }
+
+      break;
+    }
+    case Translators.GPT: {
+      if (currentTranslator == null) {
+        currentTranslator = new Gpt(UUID);
         translators[activeTranslator] = currentTranslator;
       }
 
@@ -1716,14 +1716,6 @@ $translateEntryButtons.click(async function onClick() {
 
           break;
         }
-        case Translators.GPT: {
-          if (translator == null) {
-            translator = new Gpt(UUID);
-            translators[activeTranslator] = translator;
-          }
-
-          break;
-        }
         case Translators.COCCOC_EDU_TRANSLATE: {
           if (translator == null) {
             translator = new CoccocEduTranslate();
@@ -1757,6 +1749,14 @@ $translateEntryButtons.click(async function onClick() {
         case Translators.GOOGLE_TRANSLATE: {
           if (translator == null) {
             translator = new GoogleTranslate(GOOGLE_TRANSLATE_KEY);
+            translators[activeTranslator] = translator;
+          }
+
+          break;
+        }
+        case Translators.GPT: {
+          if (translator == null) {
+            translator = new Gpt(UUID);
             translators[activeTranslator] = translator;
           }
 
