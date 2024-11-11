@@ -208,7 +208,7 @@ class Gemini extends Translator {
     this.apiKey = apiKey;
   }
 
-  async translateText(text, targetLanguage, glossary = { terminologies: {}, names: {} }, model = 'gemini-1.5-flash') {
+  async translateText(text, targetLanguage, model = 'gemini-1.5-flash', glossary = { terminologies: {}, names: {} }) {
     try {
       const terminologies = Object.entries(glossary.terminologies).filter(([first]) => text.includes(first));
       const names = Object.entries(glossary.names).filter(([first]) => text.includes(first));

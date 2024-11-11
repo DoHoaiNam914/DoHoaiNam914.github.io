@@ -854,7 +854,7 @@ const translate = async function translateContentInTextarea(controller = new Abo
       case Translators.GPT:
       case Translators.GEMINI: {
         currentTranslator.controller = controller;
-        await currentTranslator.translateText(text, targetLanguage, glossary, $activeTranslator.val() === Translators.GEMINI ? geminiModel : $gptModelSelect.val());
+        await currentTranslator.translateText(text, targetLanguage, $activeTranslator.val() === Translators.GEMINI ? geminiModel : $gptModelSelect.val(), glossary);
         break;
       }
       default: {
@@ -1810,7 +1810,7 @@ $translateEntryButtons.click(async function onClick() {
           case Translators.GPT:
           case Translators.GEMINI: {
             translator.controller = entryTranslationController;
-            await translator.translateText(text, targetLanguage, null, activeTranslator === Translators.GEMINI ? $geminiModelSelect.val() : $gptModelSelect.val());
+            await translator.translateText(text, targetLanguage, activeTranslator === Translators.GEMINI ? $geminiModelSelect.val() : $gptModelSelect.val());
             break;
           }
           default: {
@@ -1838,7 +1838,7 @@ $translateEntryButtons.click(async function onClick() {
             return !this[first] && (this[first] = 1);
           }, {})));
         } else {
-          $targetEntryTextarea.val(translator.result.replace(/^\s+/, '')).trigger('input');
+          $targetEntryTextarea.val(translator.result).trigger('input');
         }
 
         if (activeTranslator != null) {

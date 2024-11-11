@@ -268,7 +268,7 @@ class Gpt extends Translator {
     this.uuid = uuid.toUpperCase();
   }
 
-  async translateText(text, targetLanguage, glossary = { terminologies: {}, names: {} }, model = 'gpt-4o-mini') {
+  async translateText(text, targetLanguage, model = 'gpt-4o-mini', glossary = { terminologies: {}, names: {} }) {
     try {
       const terminologies = Object.entries(glossary.terminologies).filter(([first]) => text.includes(first));
       const names = Object.entries(glossary.names).filter(([first]) => text.includes(first));
