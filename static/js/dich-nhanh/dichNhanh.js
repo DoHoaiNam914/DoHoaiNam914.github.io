@@ -1810,7 +1810,7 @@ $translateEntryButtons.click(async function onClick() {
           case Translators.GPT:
           case Translators.GEMINI: {
             translator.controller = entryTranslationController;
-            await translator.translateText(text, targetLanguage, { ...glossary, names: glossary.names[text] == null ? glossary.names : {} }, activeTranslator === Translators.GEMINI ? $geminiModelSelect.val() : $gptModelSelect.val());
+            await translator.translateText(text, targetLanguage, null, activeTranslator === Translators.GEMINI ? $geminiModelSelect.val() : $gptModelSelect.val());
             break;
           }
           default: {
