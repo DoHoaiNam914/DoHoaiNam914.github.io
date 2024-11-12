@@ -6,9 +6,11 @@ const $addButton = $('#add-button');
 const $alignmentRadio = $('input[type="radio"][name="alignment-radio"]');
 const $boldTextSwitch = $('#bold-text-switch');
 const $copyButtons = $('.copy-button');
+const $deeplAuthKeyText = $('#deepl-auth-key-text');
 const $dropdownHasCollapse = $('.dropdown-has-collapse');
 const $fontStackText = $('#font-stack-text');
 const $fontSizeText = $('#font-size-text');
+const $geminiApiKeyText = $('#gemini-api-key-text');
 const $geminiModelSelect = $('#gemini-model-select');
 const $glossaryEntryCounter = $('#glossary-entry-counter');
 const $glossaryInput = $('#glossary-input');
@@ -137,20 +139,7 @@ const Translators = {
   WEBNOVEL_TRANSLATE: 'webnovelTranslate',
 };
 
-const DEEPL_AUTH_KEY_LIST = [
-  ['0c9649a5-e8f6-632a-9c42-a9eee160c330:fx', 168314],
-  ['4670812e-ea92-88b1-8b82-0812f3f4009b:fx', 340202],
-  ['47c6c989-9eaa-5b30-4ee6-b2e4f1ebd530:fx', 191240],
-  ['9e00d743-da37-8466-8e8d-18940eeeaf88:fx', 78643],
-  // ['a4b25ba2-b628-fa56-916e-b323b16502de:fx', 238323],
-  // ['aa09f88d-ab75-3488-b8a3-18ad27a35870:fx', 500000],
-  ['e5a36703-2001-1b8b-968c-a981fdca7036:fx', 38919],
-  ['f114d13f-f882-aebe-2dee-0ef57f830218:fx', 499994],
-  // ['f1414922-db81-5454-67bd-9608cdca44b3:fx', 154587],
-  ['f8ff5708-f449-7a57-65b0-6ac4524cf64c:fx', 500000],
-].toSorted((a, b) => a[1] - b[1]);
-
-const GEMINI_API_KEY = 'AIzaSyD5e2NPw_Vmgr_eUXtNX4tGMYl0lmsQQW4';
+const geminiApiKey = '';
 const GOOGLE_TRANSLATE_KEY = 'AIzaSyDj3f1TGsnamhL8U5tpvpWw4J27So0IGp8';
 
 const UUID = crypto.randomUUID();
@@ -710,7 +699,7 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
             role: 'user',
             parts: [
               {
-                text: `Translate the text in the VĂN BẢN GỐC section into Vietnamese. Review, cross-reference, and correct any sentences or lines in the rough translation in the BẢN DỊCH THÔ section that may be misaligned or missing content before proceeding. Refer to each line of the previously corrected rough translation to ensure consistency in your translation. ${terminologies.length > 0 || names.length > 0 ? `Accurately mapping ${terminologies.length > 0 ? `the terms and respectful terms of address listed in the BẢNG TRA CỨU THUẬT NGỮ section ` : ''}${names.length > 0 ? `${terminologies.length > 0 ? 'and ' : ''}the proper names listed in the BẢNG TRA CỨU TÊN RIÊNG section ` : ''}to enhance translation accuracy and consistency. ` : ''}Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text and cannot include explanations or other information.`,
+                text: `Translate the text in the VĂN BẢN GỐC section into Vietnamese. Review, cross-reference, and correct any sentences or lines in the rough translation in the BẢN DỊCH THÔ section that may be misaligned or missing content before proceeding. Refer to each line of the previously corrected rough translation to ensure consistency in your translation. ${terminologies.length > 0 || names.length > 0 ? `Accurately mapping ${names.length > 0 ? 'the proper names listed in the BẢNG TRA CỨU TÊN RIÊNG section ' : ''}${terminologies.length > 0 ? `${names.length > 0 ? 'and ' : ''}the terms and respectful terms of address listed in the BẢNG TRA CỨU THUẬT NGỮ section ` : ''}to enhance translation accuracy and consistency. ` : ''}Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text and cannot include explanations or other information.`,
               },
             ],
           },
@@ -777,7 +766,7 @@ ${names.map((element) => element.join('\t')).join('\n')}
       }),
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
-      url: `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_API_KEY}`,
+      url: `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiApiKey}`,
     });
 
     if (response.candidates == null) return result;
@@ -1432,22 +1421,16 @@ $translatorDropdown.find('.dropdown-item').click(function onClick() {
       break;
     }
     case Translators.DEEPL_TRANSLATE: {
-      while (currentTranslator == null || (currentTranslator instanceof DeeplTranslate && (currentTranslator.usage.character_limit - currentTranslator.usage.character_count) < 100000)) {
-        currentTranslator = new DeeplTranslate(DEEPL_AUTH_KEY_LIST[0][0]);
-
-        if ((currentTranslator.usage.character_limit - currentTranslator.usage.character_count) >= 100000) {
-          translators[activeTranslator] = currentTranslator;
-          break;
-        }
-
-        DEEPL_AUTH_KEY_LIST.shift();
+      if (currentTranslator == null) {
+        currentTranslator = new DeeplTranslate($deeplAuthKeyText.val());
+        translators[activeTranslator] = currentTranslator;
       }
 
       break;
     }
     case Translators.GEMINI: {
       if (currentTranslator == null) {
-        currentTranslator = new Gemini(GEMINI_API_KEY);
+        currentTranslator = new Gemini($geminiApiKeyText.val());
         translators[activeTranslator] = currentTranslator;
       }
 
@@ -1506,12 +1489,22 @@ $translatorDropdown.find('.dropdown-item').click(function onClick() {
   loadLangSelectOptions(activeTranslator);
 });
 
+$deeplAuthKeyText.on('change', function onChange() {
+  const $activeTranslator = $translatorDropdown.find('.active');
+  translators[Translators.DEEPL_TRANSLATE] = null;
+  if ($activeTranslator.val() === Translators.DEEPL_TRANSLATE) $activeTranslator.click();
+});
+
 $toneSelect.on('change', () => {
   const $activeTranslator = $translatorDropdown.find('.active');
-  if ($activeTranslator.val() === Translators.MICROSOFT_TRANSLATOR) {
-    translators[$activeTranslator.val()] = null;
-    $activeTranslator.click();
-  }
+  translators[Translators.MICROSOFT_TRANSLATOR] = null;
+  if ($activeTranslator.val() === Translators.MICROSOFT_TRANSLATOR) $activeTranslator.click();
+});
+
+$geminiApiKeyText.on('change', () => {
+  const $activeTranslator = $translatorDropdown.find('.active');
+  translators[Translators.GEMINI] = null;
+  if ($activeTranslator.val() === Translators.GEMINI) $activeTranslator.click();
 });
 
 $glossaryModal.on('shown.bs.modal', () => {
@@ -1734,22 +1727,16 @@ $translateEntryButtons.click(async function onClick() {
           break;
         }
         case Translators.DEEPL_TRANSLATE: {
-          while (translator == null || (translator instanceof DeeplTranslate && (translator.usage.character_limit - translator.usage.character_count) < 1000)) {
-            translator = new DeeplTranslate(DEEPL_AUTH_KEY_LIST[0][0]);
-
-            if ((translator.usage.character_limit - translator.usage.character_count) >= 1000) {
-              translators[activeTranslator] = translator;
-              break;
-            }
-
-            DEEPL_AUTH_KEY_LIST.shift();
+          if (translator == null) {
+            translator = new DeeplTranslate($deeplAuthKeyText.val());
+            translators[activeTranslator] = translator;
           }
 
           break;
         }
         case Translators.GEMINI: {
           if (translator == null) {
-            translator = new Gemini(GEMINI_API_KEY);
+            translator = new Gemini($geminiApiKeyText.val());
             translators[activeTranslator] = translator;
           }
 

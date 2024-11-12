@@ -664,6 +664,9 @@
                 <label class="form-check-label" for="show-original-text-switch">Hiển thị văn bản gốc</label>
               </div>
               <hr>
+              <h2 class="fs-5">DeepL Translate</h2>
+              <input type="text" class="form-control mb-3" id="deepl-auth-key-text" placeholder="DeepL Auth Key">
+              <hr>
               <h2 class="fs-5">Trình dịch Microsoft</h2>
               <div class="mb-3">
                 <label class="form-label" for="tone-select">Giọng điệu:</label>
@@ -688,11 +691,12 @@
                   <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
                 </select>
               </div>
+              <input type="text" class="form-control mb-3" id="gemini-api-key-text" placeholder="Gemini API Key">
               <div class="mb-3">
                 <label class="form-label" for="gemini-model-select">Mô hình Gemini:</label>
                 <select class="form-select form-select-sm" id="gemini-model-select">
                   <option value="gemini-1.5-flash" selected>Gemini 1.5 Flash</option>
-                  <option value="gemini-1.5-flash-8b">Gemini 1.5 Flash-8B</option>
+                  <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
                   <option value="gemini-1.0-pro">Gemini 1.0 Pro</option>
                 </select>
               </div>
