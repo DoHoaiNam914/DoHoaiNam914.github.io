@@ -700,7 +700,7 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
             role: 'user',
             parts: [
               {
-                text: `Translate the text in the VĂN BẢN GỐC section into Vietnamese. Review, cross-reference, and correct any sentences or lines in the rough translation in the BẢN DỊCH THÔ section that may be misaligned or missing content before proceeding. Refer to each line of the previously corrected rough translation to ensure consistency in your translation. ${terminologies.length > 0 || names.length > 0 ? `Accurately mapping ${names.length > 0 ? 'the proper names listed in the BẢNG TRA CỨU TÊN RIÊNG section ' : ''}${terminologies.length > 0 ? `${names.length > 0 ? 'and ' : ''}the pronouns, respectful terms of address, and terms listed in the BẢNG TRA CỨU THUẬT NGỮ section ` : ''}to enhance translation accuracy and consistency. ` : ''}Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text and cannot include explanations or other information.`,
+                text: `Translate the text in the ORIGINAL TEXT section into Vietnamese. Review, cross-reference, and correct any sentences or lines in the rough translation in the ROUGH TRANSLATION section that may be misaligned or missing content before proceeding. Refer to each line of the previously corrected rough translation to ensure consistency in your translation. ${terminologies.length > 0 || names.length > 0 ? `Accurately map ${names.length > 0 ? 'the proper names listed in the PROPER NAME LOOKUP TABLE ' : ''}${terminologies.length > 0 ? `${names.length > 0 ? 'as well as ' : ''}the pronouns, respectful terms of address, and terms found in the TERM LOOKUP TABLE ` : ''}to enhance translation accuracy and consistency. ` : ''}Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text and cannot include explanations or other information.`,
               },
             ],
           },
@@ -708,7 +708,7 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
             role: 'model',
             parts: [
               {
-                text: 'Please provide the text you would like to have translated into Vietnamese in the VĂN BẢN GỐC section.',
+                text: 'Please provide the text you would like to have translated into Vietnamese in the ORIGINAL TEXT section.',
               },
             ],
           },
@@ -716,21 +716,21 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
             role: 'user',
             parts: [
               {
-                text: `# VĂN BẢN GỐC:
+                text: `# ORIGINAL TEXT:
 \`\`\`txt
 ${lines.map((element) => element.replace(/^\s+/g, '')).join('\n')}
 \`\`\`
 
-# BẢN DỊCH THÔ:
+# ROUGH TRANSLATION:
 \`\`\`txt
 ${rawTranslationLines.map((element) => element.replace(/^\s+/g, '')).join('\n')}
 \`\`\`${terminologies.length > 0 || names.length > 0 ? `
 
-${terminologies.length > 0 ? `# BẢNG TRA CỨU THUẬT NGỮ:
+${terminologies.length > 0 ? `# TERM LOOKUP TABLE:
 \`\`\`tsv
 source\ttarget
 ${terminologies.map((element) => element.join('\t')).join('\n')}
-\`\`\`` : ''}${names.length > 0 ? `${terminologies.length > 0 ? '\n\n' : ''}# BẢNG TRA CỨU TÊN RIÊNG:
+\`\`\`` : ''}${names.length > 0 ? `${terminologies.length > 0 ? '\n\n' : ''}# PROPER NAME LOOKUP TABLE:
 \`\`\`tsv
 source\ttarget
 ${names.map((element) => element.join('\t')).join('\n')}
