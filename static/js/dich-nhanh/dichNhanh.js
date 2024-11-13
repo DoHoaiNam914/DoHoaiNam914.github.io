@@ -139,7 +139,6 @@ const Translators = {
   WEBNOVEL_TRANSLATE: 'webnovelTranslate',
 };
 
-const geminiApiKey = '';
 const GOOGLE_TRANSLATE_KEY = 'AIzaSyDj3f1TGsnamhL8U5tpvpWw4J27So0IGp8';
 
 const UUID = crypto.randomUUID();
@@ -684,6 +683,8 @@ const loadLangSelectOptions = function loadLanguageListByTranslatorToHtmlOptions
 };
 
 const polishTranslation = async function polishTranslationWithArtificialIntelligence(text, rawTranslation, model) {
+  const apiKey = $geminiApiKeyText.val()
+  if (apiKey.length === 0) return 'Vui lòng điền API Key để sử dụng Gemini.';
   let result = rawTranslation;
 
   try {
@@ -766,7 +767,7 @@ ${names.map((element) => element.join('\t')).join('\n')}
       }),
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
-      url: `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiApiKey}`,
+      url: `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
     });
 
     if (response.candidates == null) return result;
