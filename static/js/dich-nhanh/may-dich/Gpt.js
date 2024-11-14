@@ -283,10 +283,6 @@ class Gpt extends Translator {
               role: 'user',
             },
             {
-              content: `Please provide the text you would like to have translated into ${targetLanguage}${terminologies.length > 0 || names.length > 0 ? ' in the ORIGINAL TEXT section' : ''}.`,
-              role: 'assistant',
-            },
-            {
               content: `${terminologies.length > 0 || names.length > 0 ? `## ORIGINAL TEXT:
 \`\`\`txt
 ${lines.map((element) => element.replace(/^\s+/g, '')).join('\n')}
@@ -325,7 +321,7 @@ ${names.map((element) => element.join('\t')).join('\n')}
         return this.result;
       }
 
-      response = response.choices[0].message.content.replace(/^#{2} .+\n`{3}txt\n/, '').replace('\n```$', '').split('\n').filter((element) => element.replace(/^\s+/, '').length > 0);
+      response = response.choices[0].message.content.replace(/^#{2} .+:\n(?:`{3}txt\n)?/, '').replace('\n```$', '').split('\n').filter((element) => element.replace(/^\s+/, '').length > 0);
       response = Object.fromEntries(lines.map((element, index) => (element.replace(/^\s+/, '').length > 0 ? index : null)).filter((element) => element != null).map((element, index) => [element, response[index]]));
       this.result = lines.map((element, index) => (response[index] != null ? element.match(/^\s*/)[0].concat(response[index].replace(/^\s+/, '')) : element)).join('\n');
       super.translateText(text, targetLanguage, this.DefaultLanguage.SOURCE_LANGUAGE);
