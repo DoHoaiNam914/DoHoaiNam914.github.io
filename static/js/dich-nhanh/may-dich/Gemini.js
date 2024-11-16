@@ -288,7 +288,7 @@ ${names.map((element) => element.join('\t')).join('\n')}
         return this.result;
       }
 
-      response = response.candidates[0].content.parts[0].text.replace(/ \n$/, '').replace(/^# .+:\n`{3}txt\n/, '').replace('\n```$', '').split('\n').filter((element) => element.replace(/^\s+/, '').length > 0);
+      response = response.candidates[0].content.parts[0].text.replace(/ \n$/, '').replace(/^# .+:\n`{3}txt\n/, '').replace(/\n`{3}$/, '').split('\n').filter((element) => element.replace(/^\s+/, '').length > 0);
       response = Object.fromEntries(lines.map((element, index) => (element.replace(/^\s+/, '').length > 0 ? index : null)).filter((element) => element != null).map((element, index) => [element, response[index]]));
       this.result = lines.map((element, index) => (response[index] != null ? element.match(/^\s*/)[0].concat(response[index].replace(/^\s+/, '')) : element)).join('\n');
       super.translateText(text, targetLanguage, this.DefaultLanguage.SOURCE_LANGUAGE);
