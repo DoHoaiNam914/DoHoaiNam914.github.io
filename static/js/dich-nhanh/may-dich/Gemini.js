@@ -5,7 +5,7 @@
 class Gemini extends Translator {
   static LANGUAGE_LIST = [
     {
-      label: 'Tự động nhận diện',
+      label: '',
       value: '',
     },
     {
@@ -17,180 +17,12 @@ class Gemini extends Translator {
       value: 'Japanese',
     },
     {
-      label: 'Tiếng Hàn',
-      value: 'Korean',
-    },
-    {
-      label: 'Tiếng Ả Rập',
-      value: 'Arabic',
-    },
-    {
-      label: 'Tiếng Bahasa Indonesia',
-      value: 'Bahasa Indonesia',
-    },
-    {
-      label: 'Tiếng Bengal',
-      value: 'Bengali',
-    },
-    {
-      label: 'Tiếng Bulgaria',
-      value: 'Bulgarian',
-    },
-    {
       label: 'Tiếng Trung (Giản thể)',
       value: 'Chinese (Simplified)',
     },
     {
       label: 'Tiếng Trung (Phồn thể)',
       value: 'Chinese (Traditional)',
-    },
-    {
-      label: 'Tiếng Croatia',
-      value: 'Croatian',
-    },
-    {
-      label: 'Tiếng Séc',
-      value: 'Czech',
-    },
-    {
-      label: 'Tiếng Đan Mạch',
-      value: 'Danish',
-    },
-    {
-      label: 'Tiếng Hà Lan',
-      value: 'Dutch',
-    },
-    {
-      label: 'Tiếng Estonia',
-      value: 'Estonian',
-    },
-    {
-      label: 'Tiếng Farsi',
-      value: 'Farsi',
-    },
-    {
-      label: 'Tiếng Phần Lan',
-      value: 'Finnish',
-    },
-    {
-      label: 'Tiếng Pháp',
-      value: 'French',
-    },
-    {
-      label: 'Tiếng Đức',
-      value: 'German',
-    },
-    {
-      label: 'Tiếng Gujarati',
-      value: 'Gujarati',
-    },
-    {
-      label: 'Tiếng Hy Lạp',
-      value: 'Greek',
-    },
-    {
-      label: 'Tiếng Do Thái',
-      value: 'Hebrew',
-    },
-    {
-      label: 'Tiếng Hindi',
-      value: 'Hindi',
-    },
-    {
-      label: 'Tiếng Hungary',
-      value: 'Hungarian',
-    },
-    {
-      label: 'Tiếng Ý',
-      value: 'Italian',
-    },
-    {
-      label: 'Tiếng Kannada',
-      value: 'Kannada',
-    },
-    {
-      label: 'Tiếng Latvia',
-      value: 'Latvian',
-    },
-    {
-      label: 'Tiếng Lithuania',
-      value: 'Lithuanian',
-    },
-    {
-      label: 'Tiếng Malayalam',
-      value: 'Malayalam',
-    },
-    {
-      label: 'Tiếng Marathi',
-      value: 'Marathi',
-    },
-    {
-      label: 'Tiếng Na Uy',
-      value: 'Norwegian',
-    },
-    {
-      label: 'Tiếng Ba Lan',
-      value: 'Polish',
-    },
-    {
-      label: 'Tiếng Bồ Đào Nha',
-      value: 'Portuguese',
-    },
-    {
-      label: 'Tiếng Romania',
-      value: 'Romanian',
-    },
-    {
-      label: 'Tiếng Nga',
-      value: 'Russian',
-    },
-    {
-      label: 'Tiếng Serbia',
-      value: 'Serbian',
-    },
-    {
-      label: 'Tiếng Slovakia',
-      value: 'Slovak',
-    },
-    {
-      label: 'Tiếng Slovenia',
-      value: 'Slovenian',
-    },
-    {
-      label: 'Tiếng Tây Ban Nha',
-      value: 'Spanish',
-    },
-    {
-      label: 'Tiếng Swahili',
-      value: 'Swahili',
-    },
-    {
-      label: 'Tiếng Thuỵ Điển',
-      value: 'Swedish',
-    },
-    {
-      label: 'Tiếng Tamil',
-      value: 'Tamil',
-    },
-    {
-      label: 'Tiếng Telugu',
-      value: 'Telugu',
-    },
-    {
-      label: 'Tiếng Thái',
-      value: 'Thai',
-    },
-    {
-      label: 'Tiếng Thổ Nhĩ Kỳ',
-      value: 'Turkish',
-    },
-    {
-      label: 'Tiếng Ukraina',
-      value: 'Ukrainian',
-    },
-    {
-      label: 'Tiếng Urdu',
-      value: 'Urdu',
     },
     {
       label: 'Tiếng Việt',

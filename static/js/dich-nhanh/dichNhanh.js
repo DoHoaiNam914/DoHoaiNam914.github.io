@@ -600,7 +600,6 @@ const getTargetLangOptionList = function getTargetLanguageOptionListHtmlFromTran
     }
     case Translators.GEMINI: {
       Gemini.LANGUAGE_LIST.forEach(({ label, value }) => {
-        if (!['English', 'Japanese', 'Chinese (Simplified)', 'Chinese (Traditional)', 'Vietnamese'].includes(value)) return;
         const option = document.createElement('option');
         option.innerText = label;
         option.value = value;
@@ -610,7 +609,6 @@ const getTargetLangOptionList = function getTargetLanguageOptionListHtmlFromTran
     }
     case Translators.GPT: {
       Gpt.LANGUAGE_LIST.forEach(({ label, value }) => {
-        if (!['English', 'Chinese', 'Japanese', 'Vietnamese'].includes(value)) return;
         const option = document.createElement('option');
         option.innerText = label;
         option.value = value;

@@ -5,257 +5,29 @@
 class Gpt extends Translator {
   static LANGUAGE_LIST = [
     {
-      label: 'Tự động nhận diện',
-      value: '',
+      label: 'Dò tìm tự động',
+      value: 'Auto-Detect',
     },
-    {
-      label: 'Albanian',
-      value: 'Albanian',
-    },
-    {
-      label: 'Amharic',
-      value: 'Amharic',
-    },
-    {
-      label: 'Tiếng Ả Rập',
-      value: 'Arabic',
-    },
-    {
-      label: 'Armenian',
-      value: 'Armenian',
-    },
-    {
-      label: 'Bengali',
-      value: 'Bengali',
-    },
-    {
-      label: 'Tiếng Bosnia',
-      value: 'Bosnian',
-    },
-    {
-      label: 'Tiếng Bulgaria',
-      value: 'Bulgarian',
-    },
-    {
-      label: 'Burmese',
-      value: 'Burmese',
-    },
-    {
-      label: 'Tiếng Catalan',
-      value: 'Catalan',
-    },
-    {
-      label: 'Tiếng Trung',
-      value: 'Chinese',
-    },
-    {
-      label: 'Tiếng Croatia',
-      value: 'Croatian',
-    },
-    {
-      label: 'Tiếng Séc',
-      value: 'Czech',
-    },
-    {
-      label: 'Tiếng Đan Mạch',
-      value: 'Danish',
-    },
-    {
-      label: 'Tiếng Hà Lan',
-      value: 'Dutch',
-    },
-
     {
       label: 'Tiếng Anh',
       value: 'English',
-    },
-
-    {
-      label: 'Estonian',
-      value: 'Estonian',
-    },
-    {
-      label: 'Tiếng Phần Lan',
-      value: 'Finnish',
-    },
-    {
-      label: 'Tiếng Pháp',
-      value: 'French',
-    },
-
-    {
-      label: 'Tiếng Galician',
-      value: 'Galician',
-    },
-
-    {
-      label: 'Georgian',
-      value: 'Georgian',
-    },
-    {
-      label: 'Tiếng Đức',
-      value: 'German',
-    },
-    {
-      label: 'Tiếng Hy Lạp',
-      value: 'Greek',
-    },
-    {
-      label: 'Gujarati',
-      value: 'Gujarati',
-    },
-    {
-      label: 'Tiếng Hindi',
-      value: 'Hindi',
-    },
-    {
-      label: 'Tiếng Hungaryc',
-      value: 'Hungarian',
-    },
-    {
-      label: 'Icelandic',
-      value: 'Icelandic',
-    },
-    {
-      label: 'Tiếng Indonesia',
-      value: 'Indonesian',
-    },
-    {
-      label: 'Tiếng Italy',
-      value: 'Italian',
     },
     {
       label: 'Tiếng Nhật',
       value: 'Japanese',
     },
     {
-      label: 'Kannada',
-      value: 'Kannada',
+      label: 'Tiếng Trung giản thể',
+      value: 'Simplified Chinese',
     },
     {
-      label: 'Kazakh',
-      value: 'Kazakh',
-    },
-    {
-      label: 'Tiếng Hàn',
-      value: 'Korean',
-    },
-    {
-      label: 'Latvian',
-      value: 'Latvian',
-    },
-    {
-      label: 'Lithuanian',
-      value: 'Lithuanian',
-    },
-    {
-      label: 'Tiếng Macedonia',
-      value: 'Macedonian',
-    },
-    {
-      label: 'Tiếng Mã Lai',
-      value: 'Malay',
-    },
-    {
-      label: 'Malayalam',
-      value: 'Malayalam',
-    },
-    {
-      label: 'Marathi',
-      value: 'Marathi',
-    },
-    {
-      label: 'Mongolian',
-      value: 'Mongolian',
-    },
-    {
-      label: 'Tiếng Na Uy',
-      value: 'Norwegian',
-    },
-    {
-      label: 'Persian',
-      value: 'Persian',
-    },
-    {
-      label: 'Tiếng Ba Lan',
-      value: 'Polish',
-    },
-    {
-      label: 'Tiếng Bồ Đào Nha',
-      value: 'Portuguese',
-    },
-    {
-      label: 'Punjabi',
-      value: 'Punjabi',
-    },
-    {
-      label: 'Tiếng Romania',
-      value: 'Romanian',
-    },
-    {
-      label: 'Tiếng Nga',
-      value: 'Russian',
-    },
-    {
-      label: 'Serbian',
-      value: 'Serbian',
-    },
-    {
-      label: 'Tiếng Slovak',
-      value: 'Slovak',
-    },
-    {
-      label: 'Slovenian',
-      value: 'Slovenian',
-    },
-    {
-      label: 'Somali',
-      value: 'Somali',
-    },
-    {
-      label: 'Tiếng Tây Ban Nha',
-      value: 'Spanish',
-    },
-    {
-      label: 'Swahili',
-      value: 'Swahili',
-    },
-    {
-      label: 'Tiếng Thụy Điển',
-      value: 'Swedish',
-    },
-    {
-      label: 'Tiếng Tagalog',
-      value: 'Tagalog',
-    },
-    {
-      label: 'Tiếng Tamil',
-      value: 'Tamil',
-    },
-    {
-      label: 'Telugu',
-      value: 'Telugu',
-    },
-    {
-      label: 'Tiếng Thái',
-      value: 'Thai',
-    },
-    {
-      label: 'Tiếng Thổ Nhĩ Kỳ',
-      value: 'Turkish',
-    },
-    {
-      label: 'Tiếng Ukraina',
-      value: 'Ukrainian',
-    },
-    {
-      label: 'Urdu',
-      value: 'Urdu',
+      label: 'Tiếng Trung phồn thể',
+      value: 'Traditional Chinese',
     },
     {
       label: 'Tiếng Việt',
       value: 'Vietnamese',
-    }
+    },
   ];
 
   DefaultLanguage = {
