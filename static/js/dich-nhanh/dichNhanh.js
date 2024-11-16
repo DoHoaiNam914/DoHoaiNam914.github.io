@@ -706,21 +706,21 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
             role: 'user',
             parts: [
               {
-                text: `# ORIGINAL TEXT:
+                text: `ORIGINAL TEXT:
 \`\`\`txt
 ${lines.map((element) => element.replace(/^\s+/g, '')).join('\n')}
 \`\`\`
 
-# ROUGH TRANSLATION:
+ROUGH TRANSLATION:
 \`\`\`txt
 ${rawTranslationLines.map((element) => element.replace(/^\s+/g, '')).join('\n')}
 \`\`\`${terminologies.length > 0 || names.length > 0 ? `
 
-${terminologies.length > 0 ? `# TERM LOOKUP TABLE:
+${terminologies.length > 0 ? `TERM LOOKUP TABLE:
 \`\`\`tsv
 source\ttarget
 ${terminologies.map((element) => element.join('\t')).join('\n')}
-\`\`\`` : ''}${names.length > 0 ? `${terminologies.length > 0 ? '\n\n' : ''}# PROPER NAME LOOKUP TABLE:
+\`\`\`` : ''}${names.length > 0 ? `${terminologies.length > 0 ? '\n\n' : ''}PROPER NAME LOOKUP TABLE:
 \`\`\`tsv
 source\ttarget
 ${names.map((element) => element.join('\t')).join('\n')}
@@ -761,7 +761,7 @@ ${names.map((element) => element.join('\t')).join('\n')}
     });
 
     if (response.candidates == null) return result;
-    response = response.candidates[0].content.parts[0].text.replace(/ \n$/, '').replace(/^# .+:\n`{3}txt\n/, '').replace(/\n`{3}$/, '').split('\n').filter((element) => element.replace(/^\s+/, '').length > 0);
+    response = response.candidates[0].content.parts[0].text.replace(/ \n$/, '').replaceAll(/(?:^`{3}txt\n|\n`{3}$)/g, '').split('\n').filter((element) => element.replace(/^\s+/, '').length > 0);
     response = Object.fromEntries(lines.map((element, index) => (element.replace(/^\s+/, '').length > 0 ? index : null)).filter((element) => element != null).map((element, index) => [element, response[index]]));
     result = lines.map((element, index) => (response[index] != null ? (rawTranslationLines[index] ?? element).match(/^\s*/)[0].concat(response[index].replace(/^\s+/, '')) : rawTranslationLines[index] ?? element)).join('\n');
   } catch (error) {
