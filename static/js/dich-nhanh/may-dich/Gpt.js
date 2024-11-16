@@ -31,7 +31,7 @@ class Gpt extends Translator {
   ];
 
   DefaultLanguage = {
-    SOURCE_LANGUAGE: '',
+    SOURCE_LANGUAGE: 'Auto-Detect',
     TARGET_LANGUAGE: 'Vietnamese',
   };
 
