@@ -226,7 +226,7 @@ class Gemini extends Translator {
               role: 'user',
               parts: [
                 {
-                  text: `Translate the text ${terminologies.length > 0 || names.length > 0 ? 'in the ORIGINAL TEXT section ' : ''}into ${targetLanguage}. ${terminologies.length > 0 || names.length > 0 ? `Accurately map ${names.length > 0 ? 'the proper names listed in the PROPER NAME LOOKUP TABLE ' : ''}${terminologies.length > 0 ? `${names.length > 0 ? 'as well as ' : ''}the pronouns, respectful terms of address, and terms found in the TERM LOOKUP TABLE ` : ''}to enhance translation accuracy and consistency. ` : ''}Your translations must convey all the content in the original text in and cannot involve explanations or other unnecessary information. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text and cannot include explanations or other information.`,
+                  text: `Translate the following text ${terminologies.length > 0 || names.length > 0 ? 'in the ORIGINAL TEXT section ' : ''}into ${targetLanguage}. ${terminologies.length > 0 || names.length > 0 ? `Accurately map ${names.length > 0 ? 'the proper names listed in the PROPER NAME LOOKUP TABLE ' : ''}${terminologies.length > 0 ? `${names.length > 0 ? 'as well as ' : ''}the pronouns, respectful terms of address, and terms found in the TERM LOOKUP TABLE ` : ''}to enhance translation accuracy and consistency. ` : ''}Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text and cannot include explanations or other information.`,
                 },
               ],
             },
@@ -272,7 +272,7 @@ ${names.map((element) => element.join('\t')).join('\n')}
           ],
           generationConfig: {
             temperature: 0.3, // Mặc định: 1
-            topP: 0.3,  // Mặc định: 0.95
+            topP: 0.3,  // Mặc định: model.startsWith('gemini-1.0-pro') ? 0.9 : 0.95
             topK: /^gemini-1\.5-[^-]+-001$/.test(model) ? 64 : 40,
             // maxOutputTokens: 8192,
             responseMimeType: 'text/plain',
