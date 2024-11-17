@@ -450,8 +450,7 @@ const glossary = {
   ],
   sinovietnameses: [],
   phonetics: { ...JSON.parse(localStorage.getItem('glossary') ?? JSON.stringify({ phonetics: {} })).phonetics },
-  terminologies: { ...JSON.parse(localStorage.getItem('glossary') ?? JSON.stringify({ terminologies: {} })).terminologies },
-  names: { ...JSON.parse(localStorage.getItem('glossary') ?? JSON.stringify({ namePhu: {} })).names },
+  nomenclature: { ...JSON.parse(localStorage.getItem('glossary') ?? JSON.stringify({ nomenclature: {} })).nomenclature },
 };
 
 const translators = {};
@@ -683,8 +682,7 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
   let result = rawTranslation;
 
   try {
-    const terminologies = Object.entries(glossary.terminologies).filter(([first]) => text.includes(first));
-    const names = Object.entries(glossary.names).filter(([first]) => text.includes(first));
+    const nomenclature = Object.entries(glossary.nomenclature).filter(([first]) => text.includes(first));
     const lines = text.split('\n');
     const rawTranslationLines = rawTranslation.split('\n');
 
@@ -695,7 +693,7 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
             role: 'user',
             parts: [
               {
-                text: `Translate the following text in the ORIGINAL TEXT section into Vietnamese. Review, cross-reference, and correct any sentences or lines in the rough translation in the ROUGH TRANSLATION section that may be misaligned or missing content before proceeding. Refer to each line of the previously corrected rough translation to ensure consistency in your translation. ${terminologies.length > 0 || names.length > 0 ? `Accurately map ${names.length > 0 ? 'the proper names listed in the PROPER NAME LOOKUP TABLE ' : ''}${terminologies.length > 0 ? `${names.length > 0 ? 'as well as ' : ''}the pronouns, respectful terms of address, and terms found in the TERM LOOKUP TABLE ` : ''}to enhance translation accuracy and consistency. ` : ''}Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text and cannot include explanations or other information.`,
+                text: `Translate the following text in the ORIGINAL TEXT section into Vietnamese. Review, cross-reference, and correct any sentences or lines in the rough translation in the ROUGH TRANSLATION section that may be misaligned or missing content before proceeding. Refer to each line of the previously corrected rough translation to ensure consistency in your translation. ${nomenclature.length > 0 ? `Accurately map proper names, respectful terms of address, pronouns, and concepts listed in the NOMENCLATURE LOOKUP TABLE to enhance translation accuracy and consistency. ` : ''}Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text and cannot include explanations or other information.`,
               },
             ],
           },
@@ -711,17 +709,13 @@ ${lines.map((element) => element.replace(/^\s+/g, '')).join('\n')}
 ROUGH TRANSLATION:
 \`\`\`txt
 ${rawTranslationLines.map((element) => element.replace(/^\s+/g, '')).join('\n')}
-\`\`\`${terminologies.length > 0 || names.length > 0 ? `
+\`\`\`${nomenclature.length > 0 ? `
 
-${terminologies.length > 0 ? `TERM LOOKUP TABLE:
+NOMENCLATURE LOOKUP TABLE:
 \`\`\`tsv
 source\ttarget
-${terminologies.map((element) => element.join('\t')).join('\n')}
-\`\`\`` : ''}${names.length > 0 ? `${terminologies.length > 0 ? '\n\n' : ''}PROPER NAME LOOKUP TABLE:
-\`\`\`tsv
-source\ttarget
-${names.map((element) => element.join('\t')).join('\n')}
-\`\`\`` : ''}` : ''}`,
+${nomenclature.map((element) => element.join('\t')).join('\n')}
+\`\`\`` : ''}`,
               },
             ],
           },
@@ -897,7 +891,7 @@ const reloadGlossary = function reloadActiveGlossary(glossaryList) {
   const glossaryKeys = Object.keys(glossary[glossaryList]);
   $glossaryEntryCounter.text(glossaryKeys.length);
 
-  const glossaryStorage = { phonetics: glossary.phonetics, terminologies: glossary.terminologies, names: glossary.names };
+  const glossaryStorage = { phonetics: glossary.phonetics, nomenclature: glossary.nomenclature };
   if (Object.keys(glossaryStorage).includes(glossaryList)) glossary[glossaryList] = Object.fromEntries(Object.entries(glossary[glossaryList]).sort((a, b) => a[1].localeCompare(b[1], 'vi', { ignorePunctuation: true }) || a[0].localeCompare(b[0], 'vi', { ignorePunctuation: true })));
 
   const autocompleteGlossarySource = glossaryKeys.map((element) => ({ value: element, label: `${element} → ${glossary[glossaryList][element]}` }));
@@ -925,7 +919,7 @@ const saveGlossary = function saveGlossaryToLocalStorage() {
   const activeGlossaryList = $glossaryListSelect.val();
   reloadGlossary(activeGlossaryList);
 
-  const glossaryStorage = { phonetics: glossary.phonetics, terminologies: glossary.terminologies, names: glossary.names };
+  const glossaryStorage = { phonetics: glossary.phonetics, nomenclature: glossary.nomenclature };
   if (Object.keys(glossaryStorage).includes(activeGlossaryList)) glossary[activeGlossaryList] = Object.fromEntries(Object.entries(glossary[activeGlossaryList]).toSorted((a, b) => a[1].localeCompare(b[1], 'vi', { ignorePunctuation: true }) || a[0].localeCompare(b[0], 'vi', { ignorePunctuation: true })));
   localStorage.setItem('glossary', JSON.stringify(glossaryStorage));
 };
