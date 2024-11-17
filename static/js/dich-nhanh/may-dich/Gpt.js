@@ -38,7 +38,7 @@ class Gpt extends Translator {
 
   async translateText(text, targetLanguage, model = 'gpt-4o-mini', nomenclature = []) {
     try {
-      const nomenclature = nomenclature.filter(([first]) => text.includes(first));
+      const filteredNomenclature = nomenclature.filter(([first]) => text.includes(first));
       const lines = text.split('\n');
 
       let response = await $.ajax({
@@ -46,7 +46,7 @@ class Gpt extends Translator {
           model,
           messages: [
             {
-              content: `Translate the following text ${nomenclature.length > 0 ? 'in the ORIGINAL TEXT section ' : ''}into ${targetLanguage}. ${nomenclature.length > 0 ? `Accurately map proper names, respectful terms of address, pronouns, and concepts listed in the NOMENCLATURE LOOKUP TABLE to enhance translation accuracy and consistency. ` : ''}Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text and cannot include explanations or other information.`,
+              content: `Translate the following text ${filteredNomenclature.length > 0 ? 'in the ORIGINAL TEXT section ' : ''}into ${targetLanguage}. ${filteredNomenclature.length > 0 ? `Accurately map proper names, respectful terms of address, pronouns, and concepts listed in the NOMENCLATURE LOOKUP TABLE to enhance translation accuracy and consistency. ` : ''}Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text and cannot include explanations or other information.`,
               role: 'user',
             },
             {
@@ -58,7 +58,7 @@ ${lines.map((element) => element.replace(/^\s+/g, '')).join('\n')}
 NOMENCLATURE LOOKUP TABLE:
 \`\`\`tsv
 source\ttarget
-${nomenclature.map((element) => element.join('\t')).join('\n')}
+${filteredNomenclature.map((element) => element.join('\t')).join('\n')}
 \`\`\`` : lines.map((element) => element.replace(/^\s+/g, '')).join('\n')}`,
               role: 'user',
             },
