@@ -825,7 +825,7 @@ const translate = async function translateContentInTextarea(controller = new Abo
       case Translators.GPT:
       case Translators.GEMINI: {
         currentTranslator.controller = controller;
-        await currentTranslator.translateText(text, targetLanguage, $activeTranslator.val() === Translators.GEMINI ? geminiModel : $('#gpt-model-select').val(), glossary);
+        await currentTranslator.translateText(text, targetLanguage, $activeTranslator.val() === Translators.GEMINI ? geminiModel : $('#gpt-model-select').val(), Object.entries(glossary.nomenclature));
         break;
       }
       default: {
@@ -1512,7 +1512,6 @@ $glossaryModal.on('shown.bs.modal', () => {
       $removeButton.removeClass('disabled');
     } else {
       $targetEntryTextarea.val(quickTranslateEntry(text, activeGlossaryList !== 'phonetics' ? currentGlossary : {}));
-      if (activeGlossaryList === 'names') $upperCaseButtons.filter('[data-amount="#"]').click();
       $removeButton.addClass('disabled');
     }
 
@@ -1564,7 +1563,6 @@ $glossaryListSelect.change(function onChange() {
     } else {
       if (window.confirm('Bạn có muốn chuyển đổi lại chứ?')) {
         $targetEntryTextarea.val(quickTranslateEntry(text, activeGlossaryList !== 'phonetics' ? currentGlossary : {}));
-        if (activeGlossaryList === 'names') $upperCaseButtons.filter('[data-amount="#"]').click();
       }
 
       $removeButton.addClass('disabled');
@@ -1586,7 +1584,6 @@ $sourceEntryInput.on('input', async function onInput() {
       $removeButton.removeClass('disabled');
     } else {
       $targetEntryTextarea.val(quickTranslateEntry(text, activeGlossaryList !== 'phonetics' ? currentGlossary : {}));
-      if (activeGlossaryList === 'names') $upperCaseButtons.filter('[data-amount="#"]').click();
       $removeButton.addClass('disabled');
     }
 
