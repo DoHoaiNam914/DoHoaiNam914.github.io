@@ -36,14 +36,14 @@ class Gemini extends Translator {
     this.apiKey = apiKey;
   }
 
-  async translateText(text, targetLanguage, model = 'gemini-1.5-flash', glossary = { terminologies: {}, names: {} }) {
+  async translateText(text, targetLanguage, model = 'gemini-1.5-flash', nomenclature = []) {
     if (this.apiKey.length === 0) {
       this.result = 'Vui lòng điền API Key để sử dụng Gemini.';
       return this.result;
     }
 
     try {
-      const nomenclature = Object.entries(glossary.nomenclature).filter(([first]) => text.includes(first));
+      const nomenclature = nomenclature.filter(([first]) => text.includes(first));
       const lines = text.split('\n');
 
       let response = await $.ajax({
