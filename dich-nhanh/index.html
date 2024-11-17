@@ -196,7 +196,7 @@
         var src = '//cdn.jsdelivr.net/npm/eruda';
         if (!/eruda=true/.test(window.location) && localStorage.getItem('active-eruda') != 'true') return;
         document.write('<scr' + 'ipt src="' + src + '"></scr' + 'ipt>');
-        document.write('<scr' + 'ipt>eruda.init();</scr' + 'ipt>');
+        document.write('<scr' + 'ipt>eruda.init();Object.keys(localStorage).filter((element) => element.startsWith(\'eruda-\')).forEach((element) => localStorage.removeItem(element));</scr' + 'ipt>');
       })();
     </script>
     <script src="/static/lib/LAB.js"></script>
@@ -723,8 +723,7 @@
               </div>
               <select class="form-select form-select-sm mb-3" id="glossary-list-select">
                 <option value="phonetics">Phiên âm chữ Hán</option>
-                <option value="terminologies">Thuật ngữ</option>
-                <option value="names" selected>Tên riêng</option>
+                <option value="nomenclature" selected>Danh pháp</option>
               </select>
               <div class="input-group mb-2 dropstart dropdown-scrollable dropdown-has-collapse">
                 <input type="text" class="form-control font-options" id="source-entry-input" placeholder="Mục nguồn">
@@ -943,7 +942,7 @@
                 Xoá
               </button>
               <button type="button" class="btn btn-sm btn-primary mb-3" id="translate-entry-button">Dịch</button>
-              <button type="button" class="btn btn-sm btn-secondary mb-3 copy-button" data-target="glossary">Sao chép (<span id="glossary-entry-counter">0</span> mục)</button>
+              <button type="button" class="btn btn-sm btn-secondary mb-3 copy-button" data-target="glossary">Sao chép (<span id="glossary-entry-counter">0</span>)</button>
               <div class="mb-3">
                 <label class="form-label" for="translate-entry-gpt-model-select">Mô hình GPT:</label>
                 <select class="form-select form-select-sm" id="translate-entry-gpt-model-select">
