@@ -46,7 +46,7 @@ class DeeplTranslate extends Translator {
       this.result = 'Auth Key của bạn không hợp lệ!';
       return this.result;
     } else if ((this.usage.character_limit - this.usage.character_count) < text.length) {
-      this.result = `Đã đạt đến giới hạn sử dụng của Auth Key này: ${this.usage.character_count}/${this.usage.character_limit}`);
+      this.result = `Đã đạt đến giới hạn sử dụng của Auth Key này: ${this.usage.character_count}/${this.usage.character_limit}`;
       return this.result;
     }
 
