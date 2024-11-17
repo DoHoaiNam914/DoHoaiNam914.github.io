@@ -194,17 +194,19 @@
 
       ;(function () {
         var src = '//cdn.jsdelivr.net/npm/eruda';
-        if (/vconsole=true/.test(window.location) || (!/eruda=true/.test(window.location) && localStorage.getItem('active-eruda') != 'true')) return;
+        if (!/eruda=true/.test(window.location) && localStorage.getItem('active-eruda') != 'true') return;
         document.write('<scr' + 'ipt src="' + src + '"></scr' + 'ipt>');
-        document.write('<scr' + 'ipt>eruda.init();Object.keys(localStorage).filter((element) => element.includes(\'eruda\')).forEach((element) => localStorage.removeItem(element));</scr' + 'ipt>');
+        document.write('<scr' + 'ipt>eruda.init();</scr' + 'ipt>');
       })();
     </script>
     <script>
       'use strict';
 
-      if ((/eruda=true/.test(window.location) || localStorage.getItem('active-eruda') === 'true') || !/vconsole=true/.test(window.location)) return;
-      document.write('<scr' + 'ipt src="https://unpkg.com/vconsole@latest/dist/vconsole.min.js"></scr' + 'ipt>');
-      document.write('<scr' + 'ipt>window.vConsole = new window.VConsole();</scr' + 'ipt>');
+      (() => {
+        if (!/vconsole=true/.test(window.location)) return;
+        document.write('<scr' + 'ipt src="https://unpkg.com/vconsole@latest/dist/vconsole.min.js"></scr' + 'ipt>');
+        document.write('<scr' + 'ipt>window.vConsole = new window.VConsole();</scr' + 'ipt>');
+      });
     </script>
     <script src="/static/lib/LAB.js"></script>
     <script>
