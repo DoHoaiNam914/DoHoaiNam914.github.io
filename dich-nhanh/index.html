@@ -203,8 +203,8 @@
       'use strict';
 
       if ((/eruda=true/.test(window.location) || localStorage.getItem('active-eruda') === 'true') || !/vconsole=true/.test(window.location)) return;
-      document.write('<script src="https://unpkg.com/vconsole@latest/dist/vconsole.min.js"></script>');
-      document.write('<script>\n  // VConsole will be exported to `window.VConsole` by default.\n  var vConsole = new window.VConsole();\n</script>');
+      document.write('<script src="https://unpkg.com/vconsole@latest/dist/vconsole.min.js"><\/script>');
+      document.write('<script>\n  // VConsole will be exported to `window.VConsole` by default.\n  var vConsole = new window.VConsole();\n<\/script>');
       })();
     </script>
     <script src="/static/lib/LAB.js"></script>
