@@ -37,7 +37,7 @@ const $translateTimer = $('#translate-timer');
 const $translatorDropdown = $('#translator-dropdown');
 const $upperCaseButtons = $('.upper-case-button');
 
-const FONT_MAPPING = {
+const FONT_MAPPING = Object.entries({
   'Họ phông chữ hệ thống': '--system-font-family',
   Serif: 'serif',
   'Sans serif': 'sans-serif',
@@ -97,7 +97,7 @@ const FONT_MAPPING = {
 
   /* Các phông chữ của Apple Sách */
   // Athelas: 'athelas',
-  'Avenir Next': 'Avenir Next',
+  // 'Avenir Next': 'avenirNext',
   'Canela Text': 'canelaText',
   Charter: 'charter',
   // 'Iowan Old Style': 'iowanOldStyle',
@@ -122,7 +122,7 @@ const FONT_MAPPING = {
   'STSong TC': 'stsongTc',
   TBMincho: 'tbmincho',
   Thonburi: 'thonburi',
-};
+});
 
 const Translators = {
   BAIDU_TRANSLATE: 'baiduTranslate',
@@ -1050,7 +1050,7 @@ $(document).ready(async () => {
 
   $resultTextarea.attr('contenteditable', !Utils.isOnMobile());
   sessionStorage.removeItem('glossary');
-  const autocompleteFontStackTextSource = Object.entries(FONT_MAPPING).map(([first, second]) => ({ value: second, label: first }));
+  const autocompleteFontStackTextSource = FONT_MAPPING.map(([first, second]) => ({ value: second, label: first }));
   $fontStackText.autocomplete({
     appendTo: '#settings-modal .modal-body',
     source: (request, response) => {
@@ -1342,7 +1342,7 @@ $dropdownHasCollapse.on('hide.bs.dropdown', function onHideBsDropdown() {
 });
 
 $fontStackText.change(function onChange() {
-  const values = $(this).val().replaceAll(/['"]/g, '').split(/, */).filter((element) => element.length > 0).map((element) => FONT_MAPPING[element.trim()] ?? element.trim());
+  const values = $(this).val().replaceAll(/['"]/g, '').split(/, */).filter((element) => element.length > 0).map((element) => FONT_MAPPING.find(([first, second]) => first.toLowerCase().startsWith(element.toLowerCase().trim()) || second.toLowerCase().startsWith(element.toLowerCase().trim()))[1] ?? element.trim());
   $(this).val(values.join(', '));
 
   $(document.documentElement).css('--opt-font-family', values.map((element) => {
