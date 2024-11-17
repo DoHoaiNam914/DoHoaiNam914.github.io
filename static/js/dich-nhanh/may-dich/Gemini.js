@@ -5,10 +5,6 @@
 class Gemini extends Translator {
   static LANGUAGE_LIST = [
     {
-      label: '',
-      value: '',
-    },
-    {
       label: 'Tiếng Anh',
       value: 'English',
     },

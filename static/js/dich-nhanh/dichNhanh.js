@@ -11,13 +11,11 @@ const $dropdownHasCollapse = $('.dropdown-has-collapse');
 const $fontStackText = $('#font-stack-text');
 const $fontSizeText = $('#font-size-text');
 const $geminiApiKeyText = $('#gemini-api-key-text');
-const $geminiModelSelect = $('#gemini-model-select');
 const $glossaryEntryCounter = $('#glossary-entry-counter');
 const $glossaryInput = $('#glossary-input');
 const $glossaryListSelect = $('#glossary-list-select');
 const $glossaryManagerButton = $('#glossary-manager-button');
 const $glossaryModal = $('#glossary-modal');
-const $gptModelSelect = $('#gpt-model-select');
 const $inputTextarea = $('#input-textarea');
 const $pasteButtons = $('.paste-button');
 const $polishSwitch = $('#polish-switch');
@@ -498,15 +496,14 @@ const getSourceLangOptionList = function getSourceLanguageOptionListHtmlFromTran
     }
     case Translators.GEMINI: {
       const option = document.createElement('option');
-      option.innerText = Gemini.LANGUAGE_LIST[0].label;
-      option.value = Gemini.LANGUAGE_LIST[0].value;
+      option.value = '';
       sourceLanguageSelect.appendChild(option);
       break;
     }
     case Translators.GPT: {
       const option = document.createElement('option');
-      option.innerText = Gpt.LANGUAGE_LIST[0].label;
-      option.value = Gpt.LANGUAGE_LIST[0].value;
+      option.innerText = 'Dò tìm tự động';
+      option.value = 'Auto-Detect';
       sourceLanguageSelect.appendChild(option);
       break;
     }
@@ -828,13 +825,13 @@ const translate = async function translateContentInTextarea(controller = new Abo
     const startTime = Date.now();
     const text = $inputTextarea.val();
     const targetLanguage = $targetLanguageSelect.val();
-    const geminiModel = $geminiModelSelect.val();
+    const geminiModel = $('#gemini-model-select').val();
 
     switch ($activeTranslator.val()) {
       case Translators.GPT:
       case Translators.GEMINI: {
         currentTranslator.controller = controller;
-        await currentTranslator.translateText(text, targetLanguage, $activeTranslator.val() === Translators.GEMINI ? geminiModel : $gptModelSelect.val(), glossary);
+        await currentTranslator.translateText(text, targetLanguage, $activeTranslator.val() === Translators.GEMINI ? geminiModel : $('#gpt-model-select'), glossary);
         break;
       }
       default: {
@@ -1780,7 +1777,7 @@ $translateEntryButtons.click(async function onClick() {
           case Translators.GPT:
           case Translators.GEMINI: {
             translator.controller = entryTranslationController;
-            await translator.translateText(text, targetLanguage, activeTranslator === Translators.GEMINI ? $geminiModelSelect.val() : $gptModelSelect.val());
+            await translator.translateText(text, targetLanguage, activeTranslator === Translators.GEMINI ? $('#translate-entry-gemini-model-select').val() : $('#translate-entry-gpt-model-select').val());
             break;
           }
           default: {

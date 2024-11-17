@@ -944,6 +944,24 @@
               </button>
               <button type="button" class="btn btn-sm btn-primary mb-3" id="translate-entry-button">Dịch</button>
               <button type="button" class="btn btn-sm btn-secondary mb-3 copy-button" data-target="glossary">Sao chép (<span id="glossary-entry-counter">0</span> mục)</button>
+              <div class="mb-3">
+                <label class="form-label" for="translate-entry-gpt-model-select">Mô hình GPT:</label>
+                <select class="form-select form-select-sm" id="translate-entry-gpt-model-select">
+                  <option value="gpt-4o">GPT-4o</option>
+                  <option value="gpt-4o-mini">GPT-4o mini</option>
+                  <option value="gpt-4-turbo" selected>GPT-4 Turbo</option>
+                  <option value="gpt-4">GPT-4</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label class="form-label" for="translate-entry-gemini-model-select">Mô hình Gemini:</label>
+                <select class="form-select form-select-sm" id="translate-entry-gemini-model-select">
+                  <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
+                  <option value="gemini-1.5-flash-001">Gemini 1.5 Flash-001</option>
+                  <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
+                  <option value="gemini-1.0-pro" selected>Gemini 1.0 Pro</option>
+                </select>
+              </div>
             </div>
           </div>
         </div>

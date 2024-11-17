@@ -5,10 +5,6 @@
 class Gpt extends Translator {
   static LANGUAGE_LIST = [
     {
-      label: 'Dò tìm tự động',
-      value: 'Auto-Detect',
-    },
-    {
       label: 'Tiếng Anh',
       value: 'English',
     },
