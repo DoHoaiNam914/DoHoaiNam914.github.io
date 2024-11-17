@@ -831,7 +831,7 @@ const translate = async function translateContentInTextarea(controller = new Abo
       case Translators.GPT:
       case Translators.GEMINI: {
         currentTranslator.controller = controller;
-        await currentTranslator.translateText(text, targetLanguage, $activeTranslator.val() === Translators.GEMINI ? geminiModel : $('#gpt-model-select'), glossary);
+        await currentTranslator.translateText(text, targetLanguage, $activeTranslator.val() === Translators.GEMINI ? geminiModel : $('#gpt-model-select').val(), glossary);
         break;
       }
       default: {
