@@ -1107,6 +1107,7 @@ $(document).ready(async () => {
   $translatorDropdown.find('.active').click();
   $inputTextarea.trigger('input');
   reloadGlossary($glossaryListSelect.val());
+  Object.keys(localStorage).filter((element) => element.includes('eruda') || element.startsWith('vConsole')).forEach((element) => localStorage.removeItem(element));
 });
 
 $(window).on('resize', () => {
