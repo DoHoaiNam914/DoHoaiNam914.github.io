@@ -38,8 +38,7 @@ class Gpt extends Translator {
 
   async translateText(text, targetLanguage, model = 'gpt-4o-mini', glossary = { terminologies: {}, names: {} }) {
     try {
-      const terminologies = Object.entries(glossary.terminologies).filter(([first]) => text.includes(first));
-      const names = Object.entries(glossary.names).filter(([first]) => text.includes(first));
+      const nomenclature = Object.entries(glossary.nomenclature).filter(([first]) => text.includes(first));
       const lines = text.split('\n');
 
       let response = await $.ajax({
@@ -47,24 +46,20 @@ class Gpt extends Translator {
           model,
           messages: [
             {
-              content: `Translate the following text ${terminologies.length > 0 || names.length > 0 ? 'in the ORIGINAL TEXT section ' : ''}into ${targetLanguage}. ${terminologies.length > 0 || names.length > 0 ? `Accurately map ${names.length > 0 ? 'the proper names listed in the PROPER NAME LOOKUP TABLE ' : ''}${terminologies.length > 0 ? `${names.length > 0 ? 'as well as ' : ''}the pronouns, respectful terms of address, and terms found in the TERM LOOKUP TABLE ` : ''}to enhance translation accuracy and consistency. ` : ''}Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text and cannot include explanations or other information.`,
+              content: `Translate the following text ${nomenclature.length > 0 ? 'in the ORIGINAL TEXT section ' : ''}into ${targetLanguage}. ${nomenclature.length > 0 ? `Accurately map proper names, respectful terms of address, pronouns, and concepts listed in the NOMENCLATURE LOOKUP TABLE to enhance translation accuracy and consistency. ` : ''}Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text and cannot include explanations or other information.`,
               role: 'user',
             },
             {
-              content: `${terminologies.length > 0 || names.length > 0 ? `ORIGINAL TEXT:
+              content: `${nomenclature.length > 0 ? `ORIGINAL TEXT:
 \`\`\`txt
 ${lines.map((element) => element.replace(/^\s+/g, '')).join('\n')}
 \`\`\`
 
-${terminologies.length > 0 ? `TERM LOOKUP TABLE:
+NOMENCLATURE LOOKUP TABLE:
 \`\`\`tsv
 source\ttarget
-${terminologies.map((element) => element.join('\t')).join('\n')}
-\`\`\`` : ''}${names.length > 0 ? `${terminologies.length > 0 ? '\n\n' : ''}PROPER NAME LOOKUP TABLE:
-\`\`\`tsv
-source\ttarget
-${names.map((element) => element.join('\t')).join('\n')}
-\`\`\`` : ''}` : lines.map((element) => element.replace(/^\s+/g, '')).join('\n')}`,
+${nomenclature.map((element) => element.join('\t')).join('\n')}
+\`\`\`` : lines.map((element) => element.replace(/^\s+/g, '')).join('\n')}`,
               role: 'user',
             },
           ],
