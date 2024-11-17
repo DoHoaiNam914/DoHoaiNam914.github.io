@@ -36,9 +36,9 @@ class Gpt extends Translator {
     this.uuid = uuid.toUpperCase();
   }
 
-  async translateText(text, targetLanguage, model = 'gpt-4o-mini', glossary = { terminologies: {}, names: {} }) {
+  async translateText(text, targetLanguage, model = 'gpt-4o-mini', nomenclature = []) {
     try {
-      const nomenclature = Object.entries(glossary.nomenclature).filter(([first]) => text.includes(first));
+      const nomenclature = nomenclature.filter(([first]) => text.includes(first));
       const lines = text.split('\n');
 
       let response = await $.ajax({
