@@ -69,7 +69,7 @@ NOMENCLATURE LOOKUP TABLE:
 \`\`\`tsv
 source\ttarget
 ${filteredNomenclature.map((element) => element.join('\t')).join('\n')}
-\`\`\`` : lines.map((element) => element.replace(/^\s+/g, '')).join('\n')}`,
+\`\`\`` : lines.map((element) => element.replace(/^\s+/g, '')).filter((element) => element.length > 0).join('\n')}`,
                 },
               ],
             },
@@ -110,7 +110,7 @@ ${filteredNomenclature.map((element) => element.join('\t')).join('\n')}
         return this.result;
       }
 
-      response = response.candidates[0].content.parts[0].text.replace(/ \n$/, '').replaceAll(/(?:^`{3}txt\n|\n`{3}$)/g, '').split('\n').filter((element) => element.replace(/^\s+/, '').length > 0);
+      response = response.candidates[0].content.parts[0].text.replace(/ \n$/, '').replaceAll(/(?:^`{3}txt\n|\n`{3}$)/g, '').split('\n');
       response = Object.fromEntries(lines.map((element, index) => (element.replace(/^\s+/, '').length > 0 ? index : null)).filter((element) => element != null).map((element, index) => [element, response[index]]));
       this.result = lines.map((element, index) => (response[index] != null ? element.match(/^\s*/)[0].concat(response[index].replace(/^\s+/, '')) : element)).join('\n');
       super.translateText(text, targetLanguage, this.DefaultLanguage.SOURCE_LANGUAGE);
