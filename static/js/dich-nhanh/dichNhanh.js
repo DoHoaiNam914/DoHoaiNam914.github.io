@@ -1104,7 +1104,7 @@ $(window).on('keydown', (event) => {
   if (event.ctrlKey && event.key === 'r') event.preventDefault();
 });
 
-$(window).on('beforeunload' () => {
+$(window).on('beforeunload', () => {
   sessionStorage.removeItem('glossary');
   Object.keys(localStorage).filter((element) => element.includes('eruda') || element.startsWith('vConsole')).forEach((element) => {
     localStorage.removeItem(element);

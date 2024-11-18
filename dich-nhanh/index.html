@@ -198,13 +198,20 @@
           case 'eruda': {
             src = '//cdn.jsdelivr.net/npm/eruda';
             document.write(`<script src="${src}"><\/script>`);
-            document.write('<scr' + 'ipt>eruda.init();<\/script>');
+            document.write(`<script>
+  eruda.init({
+    tool: ['console', 'network', 'resources', 'info', 'settings'],
+    autoScale: false,
+  });
+<\/script>`);
             break;
           }
           case 'VConsole': {
             src = 'https://unpkg.com/vconsole@latest/dist/vconsole.min.js';
             document.write(`<script src="${src}"><\/script>`);
-            document.write('<script>var vConsole = new window.VConsole();<\/script>');
+            document.write(`<script>
+  var vConsole = new window.VConsole();
+<\/script>`);
             break;
           }
           // no default
