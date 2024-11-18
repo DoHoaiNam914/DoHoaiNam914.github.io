@@ -45,7 +45,6 @@ class Gemini extends Translator {
     try {
       const filteredNomenclature = nomenclature.filter(([first]) => text.includes(first));
       const lines = text.split('\n');
-
       let response = await $.ajax({
         data: JSON.stringify({
           contents: [

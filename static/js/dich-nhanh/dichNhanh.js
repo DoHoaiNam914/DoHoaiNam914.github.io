@@ -454,6 +454,7 @@ const glossary = {
 };
 
 const translators = {};
+
 let currentTranslator = null;
 let translationController = null;
 let entryTranslationController = null;
@@ -767,7 +768,6 @@ const buildResult = function buildResultContentForTextarea(text, result, activeT
 
   try {
     const resultLines = result.split('\n');
-
     const originalLines = text.split('\n');
     let lostLineFixedNumber = 0;
 
@@ -889,11 +889,9 @@ const translate = async function translateContentInTextarea(controller = new Abo
 
 const reloadGlossary = function reloadActiveGlossary(glossaryList) {
   const glossaryKeys = Object.keys(glossary[glossaryList]);
-  $glossaryEntryCounter.text(glossaryKeys.length);
-
   const glossaryStorage = { phonetics: glossary.phonetics, nomenclature: glossary.nomenclature };
+  $glossaryEntryCounter.text(glossaryKeys.length);
   if (Object.keys(glossaryStorage).includes(glossaryList)) glossary[glossaryList] = Object.fromEntries(Object.entries(glossary[glossaryList]).sort((a, b) => a[1].localeCompare(b[1], 'vi', { ignorePunctuation: true }) || a[0].localeCompare(b[0], 'vi', { ignorePunctuation: true })));
-
   const autocompleteGlossarySource = glossaryKeys.map((element) => ({ value: element, label: `${element} → ${glossary[glossaryList][element]}` }));
   $sourceEntryInput.autocomplete({
     appendTo: '#glossary-modal .modal-body',
@@ -918,7 +916,6 @@ const reloadGlossary = function reloadActiveGlossary(glossaryList) {
 const saveGlossary = function saveGlossaryToLocalStorage() {
   const activeGlossaryList = $glossaryListSelect.val();
   reloadGlossary(activeGlossaryList);
-
   const glossaryStorage = { phonetics: glossary.phonetics, nomenclature: glossary.nomenclature };
   if (Object.keys(glossaryStorage).includes(activeGlossaryList)) glossary[activeGlossaryList] = Object.fromEntries(Object.entries(glossary[activeGlossaryList]).toSorted((a, b) => a[1].localeCompare(b[1], 'vi', { ignorePunctuation: true }) || a[0].localeCompare(b[0], 'vi', { ignorePunctuation: true })));
   localStorage.setItem('glossary', JSON.stringify(glossaryStorage));
@@ -931,9 +928,9 @@ const quickTranslate = function translateByMappingGlossary(text, translations) {
     return !this[first] && (this[first] = 1);
   }, {}));
 
-  let startIndex = 0;
   const characters = text.split(/(?:)/u);
   const charactersLength = characters.length;
+  let startIndex = 0;
   let minLength = 0;
   let maxLength = 131072;
 
@@ -1486,6 +1483,11 @@ $deeplAuthKeyText.on('change', function onChange() {
   const $activeTranslator = $translatorDropdown.find('.active');
   translators[Translators.DEEPL_TRANSLATE] = null;
   if ($activeTranslator.val() === Translators.DEEPL_TRANSLATE) $activeTranslator.click();
+
+  if (localStorage.getItem('DEEPL_AUTH_KEY') != null) {
+    if (!localStorage.getItem('DEEPL_AUTH_KEY').endsWith(':fx') || localStorage.getItem('DEEPL_AUTH_KEY').length === 0) localStorage.removeItem('DEEPL_AUTH_KEY')
+    else if (localStorage.getItem('DEEPL_AUTH_KEY') !== $(this).val()) localStorage.setItem('DEEPL_AUTH_KEY', $(this).val());
+  }
 });
 
 $toneSelect.on('change', () => {
@@ -1494,10 +1496,15 @@ $toneSelect.on('change', () => {
   if ($activeTranslator.val() === Translators.MICROSOFT_TRANSLATOR) $activeTranslator.click();
 });
 
-$geminiApiKeyText.on('change', () => {
+$geminiApiKeyText.on('change', function onChange() {
   const $activeTranslator = $translatorDropdown.find('.active');
   translators[Translators.GEMINI] = null;
   if ($activeTranslator.val() === Translators.GEMINI) $activeTranslator.click();
+
+  if (localStorage.getItem('GEMINI_API_KEY') != null) {
+    if (!localStorage.getItem('GEMINI_API_KEY').endsWith(':fx') || localStorage.getItem('GEMINI_API_KEY').length === 0) localStorage.removeItem('GEMINI_API_KEY')
+    else if (localStorage.getItem('GEMINI_API_KEY') !== $(this).val()) localStorage.setItem('GEMINI_API_KEY', $(this).val());
+  }
 });
 
 $glossaryModal.on('shown.bs.modal', () => {
@@ -1552,8 +1559,8 @@ $('#clear-glossary-button').on('click', () => {
 
 $glossaryListSelect.change(function onChange() {
   const activeGlossaryList = $(this).val();
-  reloadGlossary(activeGlossaryList);
   const text = $sourceEntryInput.val();
+  reloadGlossary(activeGlossaryList);
 
   if (text.length > 0) {
     const currentGlossary = glossary[activeGlossaryList];
@@ -1677,8 +1684,8 @@ $translateEntryButtons.click(async function onClick() {
     $translateEntryButtons.addClass('disabled');
     $sourceEntryInput.attr('readonly', true);
     const activeTranslator = $(this).data('translator');
-    let translator = translators[activeTranslator];
     const targetLanguage = $(this).data('lang');
+    let translator = translators[activeTranslator];
 
     try {
       switch (activeTranslator) {

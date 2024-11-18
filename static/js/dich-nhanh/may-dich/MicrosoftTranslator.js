@@ -58,8 +58,8 @@ class MicrosoftTranslator extends Translator {
   async translateText(text, targetLanguage, sourceLanguage = this.DefaultLanguage.SOURCE_LANGUAGE) {
     try {
       const lines = text.split('\n');
-      let requestLines = [];
       const responses = [];
+      let requestLines = [];
 
       while (lines.length > 0) {
         requestLines.push(lines.shift());

@@ -54,8 +54,8 @@ class DeeplTranslate extends Translator {
       const lines = text.split('\n');
       const textEncoder = new TextEncoder();
       const requestBody = (requestLines) => `text=${requestLines.map((element) => encodeURIComponent(element)).join('&text=')}&source_lang=${sourceLanguage}&target_lang=${targetLanguage}`;
-      let requestLines = [];
       const responses = [];
+      let requestLines = [];
 
       while (lines.length > 0) {
         requestLines.push(lines.shift());

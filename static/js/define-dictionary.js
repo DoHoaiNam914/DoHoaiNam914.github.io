@@ -4,11 +4,10 @@
 
 $(document).ready(async () => {
   const searchParams = new URLSearchParams(window.location.search);
-  let paragraph = document.createElement('p');
-
   const dictionary = searchParams.get('dictionary') ?? 'lac-viet';
-  let define = (searchParams.get('define') ?? '').trim().replaceAll(/^\s+|\s+$/g, '');
   const sectionHeading = document.createElement('h1');
+  let paragraph = document.createElement('p');
+  let define = (searchParams.get('define') ?? '').trim().replaceAll(/^\s+|\s+$/g, '');
 
   if (define.length > 0) {
     sectionHeading.innerText = `Từ khoá: ${define}`;

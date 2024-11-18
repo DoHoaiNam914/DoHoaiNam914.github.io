@@ -33,14 +33,14 @@ class BaiduTranslate extends Translator {
   async translateText(text, targetLanguage, sourceLanguage = this.DefaultLanguage.SOURCE_LANGUAGE) {
     try {
       const lines = text.split('\n');
-      let requestLines = [];
-      const responses = [];
       const lan = sourceLanguage === 'auto' ? (await $.ajax({
         cache: false,
         data: `query=${encodeURIComponent(text)}`,
         method: 'POST',
         url: `${Utils.CORS_PROXY}https://fanyi.baidu.com/langdetect`,
       })).lan : sourceLanguage;
+      const responses = [];
+      let requestLines = [];
 
       while (lines.length > 0) {
         requestLines.push(lines.shift());
