@@ -1040,7 +1040,6 @@ $(document).ready(async () => {
   }
 
   $resultTextarea.attr('contenteditable', !Utils.isOnMobile());
-  sessionStorage.removeItem('glossary');
   const autocompleteFontStackTextSource = FONT_MAPPING.map(([first, second]) => ({ value: second, label: first }));
   $fontStackText.autocomplete({
     appendTo: '#settings-modal .modal-body',
@@ -1058,7 +1057,6 @@ $(document).ready(async () => {
       return false;
     },
   });
-  $inputTextarea.trigger('input');
 
   $.ajax({
     method: 'GET',
@@ -1088,25 +1086,11 @@ $(document).ready(async () => {
     }, 5000);
   }
 
-  /** $.ajax({
-    method: 'GET',
-    url: 'https://raw.githubusercontent.com/DoHoaiNam914/CDN/refs/heads/main/du-lieu/Ba%CC%89ng%20Tra%20cu%CC%9B%CC%81u%20To%CC%82n%20xu%CC%9Bng.tsv',
-  }).done((data) => {
-    glossary.addresses = data.split('\n').map((element) => element.split('\t')).filter((element) => element.length === 2);
-    console.log(`Đã tải xong bộ dữ liệu từ tôn xưng (${glossary.address.length})!`);
-  }).fail((__, ___, errorThrown) => {
-    console.error('Không thể tải bộ dữ liệu từ tôn xưng:', errorThrown);
-    setTimeout(() => {
-      window.location.reload();
-    }, 5000);
-  }); */
-
   $translatorDropdown.find('.active').click();
-  $inputTextarea.trigger('input');
   if (localStorage.getItem('DEEPL_AUTH_KEY') != null) $deeplAuthKeyText.val(localStorage.getItem('DEEPL_AUTH_KEY')).change();
   if (localStorage.getItem('GEMINI_API_KEY') != null) $geminiApiKeyText.val(localStorage.getItem('GEMINI_API_KEY')).change();
   reloadGlossary($glossaryListSelect.val());
-  Object.keys(localStorage).filter((element) => element.includes('eruda') || element.startsWith('vConsole')).forEach((element) => localStorage.removeItem(element));
+  $inputTextarea.trigger('input');
 });
 
 $(window).on('resize', () => {
@@ -1118,6 +1102,13 @@ $(window).on('resize', () => {
 
 $(window).on('keydown', (event) => {
   if (event.ctrlKey && event.key === 'r') event.preventDefault();
+});
+
+$(window).on('beforeunload' () => {
+  sessionStorage.removeItem('glossary');
+  Object.keys(localStorage).filter((element) => element.includes('eruda') || element.startsWith('vConsole')).forEach((element) => {
+    localStorage.removeItem(element);
+  });
 });
 
 $('.language-select').on('change', () => {
