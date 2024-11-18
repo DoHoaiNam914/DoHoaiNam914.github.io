@@ -1104,7 +1104,7 @@ $(window).on('keydown', (event) => {
   if (event.ctrlKey && event.key === 'r') event.preventDefault();
 });
 
-$(window).on('beforeunload', () => {
+$(window).on('unload', () => {
   sessionStorage.removeItem('glossary');
   Object.keys(localStorage).filter((element) => element.includes('eruda') || element.startsWith('vConsole')).forEach((element) => {
     localStorage.removeItem(element);
@@ -1476,8 +1476,7 @@ $deeplAuthKeyText.change(function onChange() {
   const $activeTranslator = $translatorDropdown.find('.active');
   translators[Translators.DEEPL_TRANSLATE] = null;
   if ($activeTranslator.val() === Translators.DEEPL_TRANSLATE) $activeTranslator.click();
-
-  if (localStorage.getItem('DEEPL_AUTH_KEY') != null && (!localStorage.getItem('DEEPL_AUTH_KEY').endsWith(':fx') || localStorage.getItem('DEEPL_AUTH_KEY').length === 0)) localStorage.removeItem('DEEPL_AUTH_KEY')
+  if (localStorage.getItem('DEEPL_AUTH_KEY') != null && (localStorage.getItem('DEEPL_AUTH_KEY').length === 0 || !localStorage.getItem('DEEPL_AUTH_KEY').endsWith(':fx'))) localStorage.removeItem('DEEPL_AUTH_KEY');
   else if (localStorage.getItem('DEEPL_AUTH_KEY') !== $(this).val()) localStorage.setItem('DEEPL_AUTH_KEY', $(this).val());
 });
 
@@ -1491,8 +1490,7 @@ $geminiApiKeyText.change(function onChange() {
   const $activeTranslator = $translatorDropdown.find('.active');
   translators[Translators.GEMINI] = null;
   if ($activeTranslator.val() === Translators.GEMINI) $activeTranslator.click();
-
-  if (localStorage.getItem('GEMINI_API_KEY') != null && localStorage.getItem('GEMINI_API_KEY').length === 0) localStorage.removeItem('GEMINI_API_KEY')
+  if (localStorage.getItem('GEMINI_API_KEY') != null && localStorage.getItem('GEMINI_API_KEY').length === 0) localStorage.removeItem('GEMINI_API_KEY');
   else if (localStorage.getItem('GEMINI_API_KEY') !== $(this).val()) localStorage.setItem('GEMINI_API_KEY', $(this).val());
 });
 
