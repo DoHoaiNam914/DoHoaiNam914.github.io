@@ -1484,10 +1484,8 @@ $deeplAuthKeyText.on('change', function onChange() {
   translators[Translators.DEEPL_TRANSLATE] = null;
   if ($activeTranslator.val() === Translators.DEEPL_TRANSLATE) $activeTranslator.click();
 
-  if (localStorage.getItem('DEEPL_AUTH_KEY') != null) {
-    if (!localStorage.getItem('DEEPL_AUTH_KEY').endsWith(':fx') || localStorage.getItem('DEEPL_AUTH_KEY').length === 0) localStorage.removeItem('DEEPL_AUTH_KEY')
-    else if (localStorage.getItem('DEEPL_AUTH_KEY') !== $(this).val()) localStorage.setItem('DEEPL_AUTH_KEY', $(this).val());
-  }
+  if (localStorage.getItem('DEEPL_AUTH_KEY') != null && (!localStorage.getItem('DEEPL_AUTH_KEY').endsWith(':fx') || localStorage.getItem('DEEPL_AUTH_KEY').length === 0)) localStorage.removeItem('DEEPL_AUTH_KEY')
+  else if (localStorage.getItem('DEEPL_AUTH_KEY') !== $(this).val()) localStorage.setItem('DEEPL_AUTH_KEY', $(this).val());
 });
 
 $toneSelect.on('change', () => {
@@ -1501,10 +1499,8 @@ $geminiApiKeyText.on('change', function onChange() {
   translators[Translators.GEMINI] = null;
   if ($activeTranslator.val() === Translators.GEMINI) $activeTranslator.click();
 
-  if (localStorage.getItem('GEMINI_API_KEY') != null) {
-    if (!localStorage.getItem('GEMINI_API_KEY').endsWith(':fx') || localStorage.getItem('GEMINI_API_KEY').length === 0) localStorage.removeItem('GEMINI_API_KEY')
-    else if (localStorage.getItem('GEMINI_API_KEY') !== $(this).val()) localStorage.setItem('GEMINI_API_KEY', $(this).val());
-  }
+  if (localStorage.getItem('GEMINI_API_KEY') != null && localStorage.getItem('GEMINI_API_KEY').length === 0) localStorage.removeItem('GEMINI_API_KEY')
+  else if (localStorage.getItem('GEMINI_API_KEY') !== $(this).val()) localStorage.setItem('GEMINI_API_KEY', $(this).val());
 });
 
 $glossaryModal.on('shown.bs.modal', () => {
