@@ -1103,6 +1103,8 @@ $(document).ready(async () => {
 
   $translatorDropdown.find('.active').click();
   $inputTextarea.trigger('input');
+  if (localStorage.getItem('DEEPL_AUTH_KEY') != null) $deeplAuthKeyText.val(localStorage.getItem('DEEPL_AUTH_KEY')).change();
+  if (localStorage.getItem('GEMINI_API_KEY') != null) $geminiApiKeyText.val(localStorage.getItem('GEMINI_API_KEY')).change();
   reloadGlossary($glossaryListSelect.val());
   Object.keys(localStorage).filter((element) => element.includes('eruda') || element.startsWith('vConsole')).forEach((element) => localStorage.removeItem(element));
 });
@@ -1479,7 +1481,7 @@ $translatorDropdown.find('.dropdown-item').click(function onClick() {
   loadLangSelectOptions(activeTranslator);
 });
 
-$deeplAuthKeyText.on('change', function onChange() {
+$deeplAuthKeyText.change(function onChange() {
   const $activeTranslator = $translatorDropdown.find('.active');
   translators[Translators.DEEPL_TRANSLATE] = null;
   if ($activeTranslator.val() === Translators.DEEPL_TRANSLATE) $activeTranslator.click();
@@ -1494,7 +1496,7 @@ $toneSelect.on('change', () => {
   if ($activeTranslator.val() === Translators.MICROSOFT_TRANSLATOR) $activeTranslator.click();
 });
 
-$geminiApiKeyText.on('change', function onChange() {
+$geminiApiKeyText.change(function onChange() {
   const $activeTranslator = $translatorDropdown.find('.active');
   translators[Translators.GEMINI] = null;
   if ($activeTranslator.val() === Translators.GEMINI) $activeTranslator.click();
