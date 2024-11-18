@@ -685,6 +685,7 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
   try {
     const nomenclature = Object.entries(glossary.nomenclature).filter(([first]) => text.includes(first));
     const lines = text.split('\n');
+    const query = lines.map((element) => element.replace(/^\s+/g, '')).filter((element) => element.length > 0).join('\n');
     const rawTranslationLines = rawTranslation.split('\n');
 
     let response = await $.ajax({
@@ -704,7 +705,7 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
               {
                 text: `ORIGINAL TEXT:
 \`\`\`txt
-${lines.map((element) => element.replace(/^\s+/g, '')).filter((element) => element.length > 0).join('\n')}
+${query}
 \`\`\`
 
 ROUGH TRANSLATION:
@@ -753,7 +754,8 @@ ${nomenclature.map((element) => element.join('\t')).join('\n')}
     });
 
     if (response.candidates == null) return result;
-    response = response.candidates[0].content.parts[0].text.replace(/ \n$/, '').replaceAll(/(?:^`{3}txt\n|\n`{3}$)/g, '').split('\n');
+    response = response.candidates[0].content.parts[0].text.replace(/ \n$/, '').replaceAll(/(?:^`{3}txt\n|\n`{3}$)/g, '');
+    response = response.split(response.match(/\n{2}/).length <= query.match(/\n{1}/).length ? '\n\n' : '\n');
     response = Object.fromEntries(lines.map((element, index) => (element.replace(/^\s+/, '').length > 0 ? index : null)).filter((element) => element != null).map((element, index) => [element, response[index]]));
     result = lines.map((element, index) => (response[index] != null ? (rawTranslationLines[index] ?? element).match(/^\s*/)[0].concat(response[index].replace(/^\s+/, '')) : rawTranslationLines[index] ?? element)).join('\n');
   } catch (error) {

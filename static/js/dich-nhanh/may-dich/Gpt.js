@@ -40,6 +40,7 @@ class Gpt extends Translator {
     try {
       const filteredNomenclature = nomenclature.filter(([first]) => text.includes(first));
       const lines = text.split('\n');
+      const query = lines.map((element) => element.replace(/^\s+/g, '')).filter((element) => element.length > 0).join('\n');
       let response = await $.ajax({
         data: JSON.stringify({
           model,
@@ -51,14 +52,14 @@ class Gpt extends Translator {
             {
               content: `${nomenclature.length > 0 ? `ORIGINAL TEXT:
 \`\`\`txt
-${lines.map((element) => element.replace(/^\s+/g, '')).join('\n')}
+${query}
 \`\`\`
 
 NOMENCLATURE LOOKUP TABLE:
 \`\`\`tsv
 source\ttarget
 ${filteredNomenclature.map((element) => element.join('\t')).join('\n')}
-\`\`\`` : lines.map((element) => element.replace(/^\s+/g, '')).filter((element) => element.length > 0).join('\n')}`,
+\`\`\`` : query}`,
               role: 'user',
             },
           ],
@@ -83,7 +84,8 @@ ${filteredNomenclature.map((element) => element.join('\t')).join('\n')}
         return this.result;
       }
 
-      response = response.choices[0].message.content.replaceAll(/(?:^(?:.+:\n)?`{3}txt\n|\n`{3}$)/g, '').split('\n');
+      response = response.choices[0].message.content.replaceAll(/(?:^(?:.+:\n)?`{3}txt\n|\n`{3}$)/g, '');
+      response = response.split(response.match(/\n{2}/).length <= query.match(/\n{1}/).length ? '\n\n' : '\n');
       response = Object.fromEntries(lines.map((element, index) => (element.replace(/^\s+/, '').length > 0 ? index : null)).filter((element) => element != null).map((element, index) => [element, response[index]]));
       this.result = lines.map((element, index) => (response[index] != null ? element.match(/^\s*/)[0].concat(response[index].replace(/^\s+/, '')) : element)).join('\n');
       super.translateText(text, targetLanguage, this.DefaultLanguage.SOURCE_LANGUAGE);
