@@ -46,7 +46,7 @@ class Gpt extends Translator {
           model,
           messages: [
             {
-              content: `Translate the following text ${filteredNomenclature.length > 0 ? 'in the ORIGINAL TEXT section ' : ''}into ${targetLanguage}. ${filteredNomenclature.length > 0 ? `Accurately map proper names, respectful terms of address, pronouns, and concepts listed in the NOMENCLATURE LOOKUP TABLE to enhance translation accuracy and consistency. ` : ''}Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text and cannot include explanations or other information.`,
+              content: `Translate the following text ${filteredNomenclature.length > 0 ? 'in the ORIGINAL TEXT section ' : ''}into ${targetLanguage}. ${filteredNomenclature.length > 0 ? `Accurately map names of people, ethnic groups, species, place-names, and other concepts listed in the NOMENCLATURE LOOKUP TABLE to enhance translation accuracy and consistency. ` : ''}Your translations must convey all the content in the original text ${/\n/.test(query) ? 'line by line ' : ''}and cannot involve explanations or other unnecessary information. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text and cannot include explanations or other information.`,
               role: 'user',
             },
             {
@@ -85,7 +85,7 @@ ${filteredNomenclature.map((element) => element.join('\t')).join('\n')}
       }
 
       response = response.choices[0].message.content.replaceAll(/(?:^(?:.+:\n)?`{3}txt\n|\n`{3}$)/g, '');
-    response = response.split(response.match(/\n{2}/) != null && response.match(/\n{2}/).length <= query.match(/\n/).length ? '\n\n' : '\n');
+      response = response.split(response.match(/\n{2}/) != null && response.match(/\n{2}/).length <= query.match(/\n/).length ? '\n\n' : '\n');
       response = Object.fromEntries(lines.map((element, index) => (element.replace(/^\s+/, '').length > 0 ? index : null)).filter((element) => element != null).map((element, index) => [element, response[index]]));
       this.result = lines.map((element, index) => (response[index] != null ? element.match(/^\s*/)[0].concat(response[index].replace(/^\s+/, '')) : element)).join('\n');
       super.translateText(text, targetLanguage, this.DefaultLanguage.SOURCE_LANGUAGE);
