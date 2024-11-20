@@ -63,9 +63,9 @@ ${filteredNomenclature.map((element) => element.join('\t')).join('\n')}
               role: 'user',
             },
           ],
-          temperature: 0.3, // Mặc định: 1
+          temperature: model.startsWith('o1') ? 1 : 0.3, // Mặc định: 1
           // max_tokens: 2048,
-          top_p: 0.3, // Mặc định: 1
+          top_p: model.startsWith('o1') ? 1 : 0.3, // Mặc định: 1
           frequency_penalty: 0,
           presence_penalty: 0,
           response_format: { type: 'text' },
