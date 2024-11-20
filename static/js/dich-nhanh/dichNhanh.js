@@ -695,7 +695,7 @@ const polishTranslation = async function polishTranslationWithArtificialIntellig
             role: 'user',
             parts: [
               {
-                text: `Translate the following text in the ORIGINAL TEXT section into Vietnamese. Review, cross-reference, and correct any sentences or lines in the rough translation in the ROUGH TRANSLATION section that may be misaligned or missing content before proceeding. Refer to each line of the previously corrected rough translation to ensure consistency in your translation. ${nomenclature.length > 0 ? `Accurately map names of people, ethnic groups, species, place-names, and other concepts listed in the NOMENCLATURE LOOKUP TABLE to enhance translation accuracy and consistency. ` : ''}Your translations must convey all the content in the original text ${/\n/.test(query) ? 'line by line ' : ''}and cannot involve explanations or other unnecessary information. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text and cannot include explanations or other information.`,
+                text: `Translate the following text in the ORIGINAL TEXT section into Vietnamese. Review, cross-reference, and correct any sentences or lines in the rough translation in the ROUGH TRANSLATION section that may be misaligned or missing content before proceeding. Refer to each line of the previously corrected rough translation to ensure consistency in your translation. ${nomenclature.length > 0 ? `Accurately map names of people, ethnic groups, species, or place-names, and other concepts listed in the NOMENCLATURE LOOKUP TABLE to enhance translation accuracy and consistency. ` : ''}Your translations must convey all the content in the original text ${/\n/.test(query) ? 'line by line ' : ''}and cannot involve explanations or other unnecessary information. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text and cannot include explanations or other information.`,
               },
             ],
           },
@@ -846,9 +846,8 @@ const translate = async function translateContentInTextarea(controller = new Abo
     }
 
     $resultTextarea.html(buildResult(text, currentTranslator.result, $activeTranslator.val()));
-
     if (controller.signal.aborted) return;
-    $resultTextarea.find('p > i').on('dblclick', function onClick() {
+    $resultTextarea.find('p > i').on('dblclick', function onDblclick() {
       const range = document.createRange();
       const selection = window.getSelection();
       range.selectNodeContents(this);
@@ -882,6 +881,7 @@ const translate = async function translateContentInTextarea(controller = new Abo
           translators[$activeTranslator.val()].fetchVersion();
           break;
         }
+        // no default
       }
 
       currentTranslator = translators[$activeTranslator.val()];
@@ -1795,11 +1795,6 @@ $translateEntryButtons.click(async function onClick() {
         } else {
           $targetEntryTextarea.val(translator.result).trigger('input');
         }
-
-        if (activeTranslator != null) {
-          $translateEntryButton.data('translator', activeTranslator);
-          $translateEntryButton.data('lang', targetLanguage);
-        }
       }
     } catch (error) {
       $targetEntryTextarea.val(error);
@@ -1819,11 +1814,19 @@ $translateEntryButtons.click(async function onClick() {
             translators[activeTranslator].fetchVersion();
             break;
           }
+          // no default
         }
       }
     }
 
+
     entryTranslationController = null;
+
+    if (activeTranslator != null) {
+      $translateEntryButton.data('translator', activeTranslator);
+      $translateEntryButton.data('lang', targetLanguage);
+    }
+
     $sourceEntryInput.removeAttr('readonly');
     $translateEntryButtons.removeClass('disabled');
     $translateEntryButton.removeClass('disabled');
