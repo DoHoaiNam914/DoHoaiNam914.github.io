@@ -76,7 +76,7 @@ ${filteredNomenclature.map((element) => element.join('\t')).join('\n')}
           'air-user-id': this.uuid,
         },
         method: 'POST',
-        url: `https://gateway.api.airapps.co/aa_service=server5/aa_apikey=5N3NR9SDGLS7VLUWSEN9J30P//v3/proxy/open-ai/v1/chat/completions`,
+        url: 'https://gateway.api.airapps.co/aa_service=server5/aa_apikey=5N3NR9SDGLS7VLUWSEN9J30P//v3/proxy/open-ai/v1/chat/completions',
       });
 
       if (this.controller.signal.aborted || response.choices == null) {
