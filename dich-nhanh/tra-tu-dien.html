@@ -10,12 +10,31 @@
     <script>
       'use strict';
 
-      ;(function () {
-        var src = '//cdn.jsdelivr.net/npm/eruda';
-        if (!/eruda=true/.test(window.location) && localStorage.getItem('active-eruda') != 'true') return;
-        document.write('<scr' + 'ipt src="' + src + '"></scr' + 'ipt>');
-        document.write('<scr' + 'ipt>eruda.init();</scr' + 'ipt>');
-      })();
+      (function () {
+        let src = '';
+        switch (window.location.search.toLowerCase().match(/debug=([^&]+)/)[1]) {
+          case 'eruda': {
+            src = '//cdn.jsdelivr.net/npm/eruda';
+            document.write(`<script src="${src}"><\/script>`);
+            document.write(`<script>
+  eruda.init({
+    tool: ['console', 'network', 'resources', 'info', 'settings'],
+    autoScale: false,
+  });
+<\/script>`);
+            break;
+          }
+          case 'VConsole': {
+            src = 'https://unpkg.com/vconsole@latest/dist/vconsole.min.js';
+            document.write(`<script src="${src}"><\/script>`);
+            document.write(`<script>
+  var vConsole = new window.VConsole();
+<\/script>`);
+            break;
+          }
+          // no default
+        }
+      }());
     </script>
     <script src="/static/lib/LAB.js"></script>
     <script>

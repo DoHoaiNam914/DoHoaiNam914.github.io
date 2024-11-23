@@ -1532,7 +1532,7 @@ $glossaryInput.on('change', function onChange() {
   reader.onload = function onLoad() {
     glossary[$glossaryListSelect.val()] = Object.fromEntries(this.result.split(/\r?\n|\r/).filter((element) => element.length > 0 && ($glossaryListSelect.val() !== 'luatNhan' || !element.startsWith('#')) && element.split('=').length === 2).map((element) => element.split('=')));
     saveGlossary();
-    if ($sourceEntryInput.val().length > 0) $sourceEntryInput.trigger('input');
+    $sourceEntryInput.trigger('input');
     $glossaryInput.val(null);
   };
 
@@ -1544,6 +1544,7 @@ $('#clear-glossary-button').on('click', () => {
   const activeGlossaryList = $glossaryListSelect.val();
   glossary[activeGlossaryList] = {};
   saveGlossary();
+  $sourceEntryInput.trigger('input');
 });
 
 $glossaryListSelect.change(function onChange() {
