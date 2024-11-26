@@ -71,8 +71,8 @@ ${filteredNomenclature.map((element) => element.join('\t')).join('\n')}
           response_format: { type: 'text' },
         }),
         headers: {
-          'Content-Type': 'application/json',
-          'User-Agent': 'iOS-TranslateNow/8.7.0.1001 CFNetwork/1568.200.51 Darwin/24.1.0',
+          Host: 'gateway.api.airapps.co',
+          'User-Agent': 'iOS-TranslateNow/8.7.0.1004 CFNetwork/1568.200.51 Darwin/24.1.0',
           'air-user-id': this.uuid,
         },
         method: 'POST',
