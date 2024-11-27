@@ -1013,6 +1013,7 @@ class GoogleTranslate extends Translator {
   async translateText(text, targetLanguage, sourceLanguage = this.DefaultLanguage.SOURCE_LANGUAGE) {
     try {
       const lines = text.split('\n');
+      const textEncoder = new TextEncoder();
       const responses = [];
       let requestLines = [];
 
@@ -1021,6 +1022,9 @@ class GoogleTranslate extends Translator {
 
         if (lines.length === 0 || `https://translation.googleapis.com/language/translate/v2?prettyPrint=false${sourceLanguage !== this.DefaultLanguage.SOURCE_LANGUAGE ? `&source=${sourceLanguage}` : ''}&target=${targetLanguage}&q=${[...requestLines, lines[0]].join('&q=')}&key=${this.key}`.length > this.maxRequestUrlLength) {
           responses.push($.ajax({
+            headers: {
+              'Content-length': textEncoder.encode(`prettyPrint=false${sourceLanguage !== this.DefaultLanguage.SOURCE_LANGUAGE ? `&source=${sourceLanguage}` : ''}&target=${targetLanguage}&q=${requestLines.map((element) => element).join('&q=')}&key=${this.key}`).length,
+            },
             method: 'POST',
             url: `https://translation.googleapis.com/language/translate/v2?prettyPrint=false${sourceLanguage !== this.DefaultLanguage.SOURCE_LANGUAGE ? `&source=${sourceLanguage}` : ''}&target=${targetLanguage}&q=${requestLines.map((element) => encodeURIComponent(element)).join('&q=')}&key=${this.key}`,
           }));
