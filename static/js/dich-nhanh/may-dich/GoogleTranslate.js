@@ -1024,7 +1024,7 @@ class GoogleTranslate extends Translator {
           responses.push($.ajax({
             headers: {
               'Content-Type': 'application/json; charset=utf-8',
-              'User-Agent': 'com.google.GoogleBooks/6.8.1 google-api-objc-client/3.0 iPhone/18.1.1 hw/iPhone11_2 (gzip)',
+              'User-Agent': 'com.google.GoogleBooks/6.8.1 google-api-objc-client/3.0 iPhone/18.1.1 hw/iPhone17_2 (gzip)',
               'Cache-Control': 'no-cache',
             },
             method: 'POST',
