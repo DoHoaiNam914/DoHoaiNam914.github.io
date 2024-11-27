@@ -87,7 +87,9 @@ ${filteredNomenclature.map((element) => element.join('\t')).join('\n')}
       }
 
       response = response.choices[0].message.content.replaceAll(/(?:^(?:.+:\n)?`{3}txt\n|\n`{3}$)/g, '');
-      response = response.split(response.match(/\n{2}/) != null && response.match(/\n{2}/).length <= query.match(/\n/).length ? '\n\n' : '\n');
+      const queryLineSeperators = query.split(/(\n)/).filter((element) => element.includes('\n'));
+      const lineSeparatorBooleans = response.split(/(\n{2})/).filter((element) => element.includes('\n\n')).map((element, index) => element === queryLineSeperators[index]);
+      response = response.split(lineSeparatorBooleans.reduce((accumulator, currentValue) => accumulator + (currentValue ? 1 : -1), 0) > 0 ? '\n\n' : '\n');
       response = Object.fromEntries(lines.map((element, index) => (element.replace(/^\s+/, '').length > 0 ? index : null)).filter((element) => element != null).map((element, index) => [element, response[index]]));
       this.result = lines.map((element, index) => (response[index] != null ? element.match(/^\s*/)[0].concat(response[index].replace(/^\s+/, '')) : element)).join('\n');
       super.translateText(text, targetLanguage, this.DefaultLanguage.SOURCE_LANGUAGE);
