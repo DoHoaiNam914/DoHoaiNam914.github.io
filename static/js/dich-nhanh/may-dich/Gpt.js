@@ -41,7 +41,7 @@ class Gpt extends Translator {
       const filteredNomenclature = nomenclature.filter(([first]) => text.includes(first));
       const lines = text.split('\n');
       const query = lines.map((element) => element.replace(/^\s+/g, '')).filter((element) => element.length > 0).join('\n');
-      const maybeGpt4 = ['gpt-4', 'gpt-4-0613'].some((element) => model === element) ? 8192 : 16384;
+      const maybeGpt4 = ['gpt-4', 'gpt-4-0613'].some((element) => model === element) ? null/* 8192 */ : 16384;
       let response = await $.ajax({
         data: JSON.stringify({
           model,
