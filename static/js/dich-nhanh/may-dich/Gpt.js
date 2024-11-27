@@ -1,6 +1,6 @@
 'use strict';
 
-/* global Translator */
+/* global Translator, Utils */
 
 class Gpt extends Translator {
   static LANGUAGE_LIST = [
@@ -74,7 +74,7 @@ ${filteredNomenclature.map((element) => element.join('\t')).join('\n')}
         headers: {
           'User-Agent': 'iOS-TranslateNow/8.7.0.1004 CFNetwork/1568.200.51 Darwin/24.1.0',
           'Content-Type': 'application/json',
-          'air-user-id': this.uuid,
+          'Air-User-Id': this.uuid,
         },
         method: 'POST',
         url: '${Utils.CORS_PROXY}https://gateway.api.airapps.co/aa_service=server5/aa_apikey=5N3NR9SDGLS7VLUWSEN9J30P//v3/proxy/open-ai/v1/chat/completions',
