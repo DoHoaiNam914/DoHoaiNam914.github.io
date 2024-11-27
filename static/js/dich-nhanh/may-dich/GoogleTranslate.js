@@ -1,6 +1,6 @@
 'use strict';
 
-/* global Translator, Utils */
+/* global Translator */
 
 class GoogleTranslate extends Translator {
   /** https://translation.googleapis.com/language/translate/v2/languages?prettyPrint=false&target=vi&key=${key} */
@@ -1013,23 +1013,16 @@ class GoogleTranslate extends Translator {
   async translateText(text, targetLanguage, sourceLanguage = this.DefaultLanguage.SOURCE_LANGUAGE) {
     try {
       const lines = text.split('\n');
-      const textEncoder = new TextEncoder();
       const responses = [];
       let requestLines = [];
 
       while (lines.length > 0) {
         requestLines.push(lines.shift());
 
-        if (lines.length === 0 || `${Utils.CORS_PROXY}https://translation.googleapis.com/language/translate/v2?prettyPrint=false${sourceLanguage !== this.DefaultLanguage.SOURCE_LANGUAGE ? `&source=${sourceLanguage}` : ''}&target=${targetLanguage}&q=${[...requestLines, lines[0]].join('&q=')}&key=${this.key}`.length > this.maxRequestUrlLength) {
+        if (lines.length === 0 || `https://translation.googleapis.com/language/translate/v2?prettyPrint=false${sourceLanguage !== this.DefaultLanguage.SOURCE_LANGUAGE ? `&source=${sourceLanguage}` : ''}&target=${targetLanguage}&q=${[...requestLines, lines[0]].join('&q=')}&key=${this.key}`.length > this.maxRequestUrlLength) {
           responses.push($.ajax({
-            headers: {
-              'Content-Type': 'application/json; charset=utf-8',
-              'Content-Length': textEncoder.encode(`prettyPrint=false${sourceLanguage !== this.DefaultLanguage.SOURCE_LANGUAGE ? `&source=${sourceLanguage}` : ''}&target=${targetLanguage}&q=${requestLines.map((element) => element).join('&q=')}&key=${this.key}`).length,
-              'User-Agent': 'com.google.GoogleBooks/6.8.1 google-api-objc-client/3.0 iPhone/18.1.1 hw/iPhone17_2 (gzip)',
-              'Cache-Control': 'no-cache',
-            },
             method: 'POST',
-            url: `${Utils.CORS_PROXY}https://translation.googleapis.com/language/translate/v2?prettyPrint=false${sourceLanguage !== this.DefaultLanguage.SOURCE_LANGUAGE ? `&source=${sourceLanguage}` : ''}&target=${targetLanguage}&q=${requestLines.map((element) => encodeURIComponent(element)).join('&q=')}&key=${this.key}`,
+            url: `https://translation.googleapis.com/language/translate/v2?prettyPrint=false${sourceLanguage !== this.DefaultLanguage.SOURCE_LANGUAGE ? `&source=${sourceLanguage}` : ''}&target=${targetLanguage}&q=${requestLines.map((element) => encodeURIComponent(element)).join('&q=')}&key=${this.key}`,
           }));
           requestLines = [];
         }
