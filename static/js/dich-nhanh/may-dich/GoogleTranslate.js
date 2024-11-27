@@ -1024,10 +1024,10 @@ class GoogleTranslate extends Translator {
             headers: {
               'Content-Type': 'application/json; charset=utf-8',
               'User-Agent': 'com.google.GoogleBooks/6.8.1 google-api-objc-client/3.0 iPhone/18.1.1 hw/iPhone17_2 (gzip)',
-              // 'Cache-Control': 'no-cache',
+              'Cache-Control': 'no-cache',
             },
             method: 'POST',
-            url: `https://translation.googleapis.com/language/translate/v2?prettyPrint=false${sourceLanguage !== this.DefaultLanguage.SOURCE_LANGUAGE ? `&source=${sourceLanguage}` : ''}&target=${targetLanguage}&q=${requestLines.map((element) => encodeURIComponent(element)).join('&q=')}&key=${this.key}`,
+            url: `${Utils.CORS_PROXY}https://translation.googleapis.com/language/translate/v2?prettyPrint=false${sourceLanguage !== this.DefaultLanguage.SOURCE_LANGUAGE ? `&source=${sourceLanguage}` : ''}&target=${targetLanguage}&q=${requestLines.map((element) => encodeURIComponent(element)).join('&q=')}&key=${this.key}`,
           }));
           requestLines = [];
         }
