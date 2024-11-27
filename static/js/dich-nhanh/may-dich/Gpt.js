@@ -41,6 +41,7 @@ class Gpt extends Translator {
       const filteredNomenclature = nomenclature.filter(([first]) => text.includes(first));
       const lines = text.split('\n');
       const query = lines.map((element) => element.replace(/^\s+/g, '')).filter((element) => element.length > 0).join('\n');
+      const maybeGpt4 = ['gpt-4', 'gpt-4-0613'].some((element) => model === element) ? 8192 : 16384;
       let response = await $.ajax({
         data: JSON.stringify({
           model,
@@ -64,7 +65,7 @@ ${filteredNomenclature.map((element) => element.join('\t')).join('\n')}
             },
           ],
           temperature: model.startsWith('o1') ? 1 : 0.3, // Mặc định: 1
-          // max_tokens: 2048,
+          max_tokens: ['gpt-4o-2024-05-13', 'gpt-4-turbo', 'gpt-4-turbo-2024-04-09', 'gpt-3.5-turbo-0125', 'gpt-3.5-turbo', 'gpt-3.5-turbo-1106'].some((element) => model === element) ? 4096 : maybeGpt4, // Mặc định: 2048
           top_p: model.startsWith('o1') ? 1 : 0.3, // Mặc định: 1
           frequency_penalty: 0,
           presence_penalty: 0,

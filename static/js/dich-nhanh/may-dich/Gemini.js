@@ -97,7 +97,7 @@ ${filteredNomenclature.map((element) => element.join('\t')).join('\n')}
             temperature: 0.3, // Mặc định: 1
             topP: 0.3,  // Mặc định: model.startsWith('gemini-1.0-pro') ? 0.9 : 0.95
             topK: /^gemini-1\.5-[^-]+-001$/.test(model) ? 64 : 40,
-            // maxOutputTokens: 8192,
+            maxOutputTokens: 8192,
             responseMimeType: 'text/plain',
           },
         }),
