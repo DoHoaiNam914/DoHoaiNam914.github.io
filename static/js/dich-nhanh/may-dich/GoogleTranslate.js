@@ -1007,8 +1007,7 @@ class GoogleTranslate extends Translator {
   constructor(key) {
     super();
     this.key = key;
-    this.maxContentLengthPerRequest = 4869;
-    this.maxContentLinePerRequest = 17;
+    this.maxRequestUrlLength = 2048;
   }
 
   async translateText(text, targetLanguage, sourceLanguage = this.DefaultLanguage.SOURCE_LANGUAGE) {
@@ -1020,15 +1019,15 @@ class GoogleTranslate extends Translator {
       while (lines.length > 0) {
         requestLines.push(lines.shift());
 
-        if (lines.length === 0 || [...requestLines, lines[0]].join('\r\n').length > this.maxContentLengthPerRequest || (requestLines.length + 1) > this.maxContentLinePerRequest) {
+        if (lines.length === 0 || (`https://translation.googleapis.com/language/translate/v2?prettyPrint=false${sourceLanguage !== this.DefaultLanguage.SOURCE_LANGUAGE ? `&source=${sourceLanguage}` : ''}&target=${targetLanguage}&q=${requestLines.join('&q=')}&key=${this.key}`.length + 1) > this.maxRequestUrlLength) {
           responses.push($.ajax({
             headers: {
               'Content-Type': 'application/json; charset=utf-8',
               'User-Agent': 'com.google.GoogleBooks/6.8.1 google-api-objc-client/3.0 iPhone/18.1.1 hw/iPhone17_2 (gzip)',
-              'Cache-Control': 'no-cache',
+              // 'Cache-Control': 'no-cache',
             },
             method: 'POST',
-            url: `https://translation.googleapis.com/language/translate/v2?prettyPrint=false${sourceLanguage !== this.DefaultLanguage.SOURCE_LANGUAGE ? `&source=${sourceLanguage}` : ''}&target=${targetLanguage}&q=${requestLines.map((element) => encodeURIComponent(element)).join('&q=')}&key=${this.key}`
+            url: `https://translation.googleapis.com/language/translate/v2?prettyPrint=false${sourceLanguage !== this.DefaultLanguage.SOURCE_LANGUAGE ? `&source=${sourceLanguage}` : ''}&target=${targetLanguage}&q=${requestLines.map((element) => encodeURIComponent(element)).join('&q=')}&key=${this.key}`,
           }));
           requestLines = [];
         }
