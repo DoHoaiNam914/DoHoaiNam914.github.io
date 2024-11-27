@@ -1022,14 +1022,13 @@ class GoogleTranslate extends Translator {
 
         if (lines.length === 0 || [...requestLines, lines[0]].join('\r\n').length > this.maxContentLengthPerRequest || (requestLines.length + 1) > this.maxContentLinePerRequest) {
           responses.push($.ajax({
-            data: `prettyPrint=false${sourceLanguage !== this.DefaultLanguage.SOURCE_LANGUAGE ? `&source=${sourceLanguage}` : ''}&target=${targetLanguage}&q=${requestLines.map((element) => encodeURIComponent(element)).join('&q=')}&key=${this.key}`,
             headers: {
               'Content-Type': 'application/json; charset=utf-8',
               'User-Agent': 'com.google.GoogleBooks/6.8.1 google-api-objc-client/3.0 iPhone/18.1.1 hw/iPhone11_2 (gzip)',
               'Cache-Control': 'no-cache',
             },
             method: 'POST',
-            url: 'https://translation.googleapis.com/language/translate/v2'
+            url: `https://translation.googleapis.com/language/translate/v2?prettyPrint=false${sourceLanguage !== this.DefaultLanguage.SOURCE_LANGUAGE ? `&source=${sourceLanguage}` : ''}&target=${targetLanguage}&q=${requestLines.map((element) => encodeURIComponent(element)).join('&q=')}&key=${this.key}`
           }));
           requestLines = [];
         }
