@@ -755,7 +755,9 @@ ${nomenclature.map((element) => element.join('\t')).join('\n')}
 
     if (response.candidates == null) return result;
     response = response.candidates[0].content.parts[0].text.replace(/ \n$/, '').replaceAll(/(?:^`{3}txt\n|\n`{3}$)/g, '');
-    response = response.split(response.match(/\n{2}/) != null && response.match(/\n{2}/).length <= query.match(/\n/).length ? '\n\n' : '\n');
+    const queryLineSeperators = query.split(/(\n)/).filter((element) => element.includes('\n'));
+    const lineSeparatorBooleans = response.split(/(\n{2})/).filter((element) => element.includes('\n\n')).map((element, index) => element === queryLineSeperators[index]);
+    response = response.split(lineSeparatorBooleans.reduce((accumulator, currentValue) => accumulator + (currentValue ? 1 : -1), 0) > 0 ? '\n\n' : '\n');
     response = Object.fromEntries(lines.map((element, index) => (element.replace(/^\s+/, '').length > 0 ? index : null)).filter((element) => element != null).map((element, index) => [element, response[index]]));
     result = lines.map((element, index) => (response[index] != null ? (rawTranslationLines[index] ?? element).match(/^\s*/)[0].concat(response[index].replace(/^\s+/, '')) : rawTranslationLines[index] ?? element)).join('\n');
   } catch (error) {
