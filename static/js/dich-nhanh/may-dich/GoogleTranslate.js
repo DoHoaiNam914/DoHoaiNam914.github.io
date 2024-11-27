@@ -1028,7 +1028,7 @@ class GoogleTranslate extends Translator {
               'Cache-control': 'no-cache',
             },
             method: 'POST',
-            url: `${Utils.CORS_PROXY}https://translation.googleapis.com/language/translate/v2?prettyPrint=false&q=${requestLines.map((element) => encodeURIComponent(element)).join('&q=')}&${sourceLanguage !== this.DefaultLanguage.SOURCE_LANGUAGE ? `source=${sourceLanguage}&` : ''}target=${targetLanguage}key=${this.key}`,
+            url: `${Utils.CORS_PROXY}https://translation.googleapis.com/language/translate/v2?prettyPrint=false&q=${requestLines.map((element) => encodeURIComponent(element)).join('&q=')}&${sourceLanguage == null || sourceLanguage !== this.DefaultLanguage.SOURCE_LANGUAGE ? `source=${sourceLanguage}&` : ''}target=${targetLanguage}&key=${this.key}`,
           }));
           requestLines = [];
         }
