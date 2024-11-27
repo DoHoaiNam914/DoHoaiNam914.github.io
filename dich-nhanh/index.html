@@ -194,7 +194,7 @@
 
       (function () {
         let src = '';
-        switch (window.location.search.toLowerCase().match(/debug=([^&]+)/)[1]) {
+        switch (window.location.search.toLowerCase().match(/debug=([^&]+)|/)[1]) {
           case 'eruda': {
             src = '//cdn.jsdelivr.net/npm/eruda';
             document.write(`<script src="${src}"><\/script>`);
