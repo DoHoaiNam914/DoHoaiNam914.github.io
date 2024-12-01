@@ -1,4 +1,8 @@
+@import url('https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,200..900;1,7..72,200..900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap');
 
 /* Apple SD Gothic Neo */
 
@@ -184,36 +188,6 @@
   src: local('Cochin Bold Italic'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Cochin/Cochin-BoldItalic.ttf) format('truetype');
 }
 
-/* Crimson Text */
-
-@font-face {
-  font-family: crimsonText;
-  font-style: normal;
-  font-weight: 400;
-  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Crimson_Text/CrimsonText-Regular.ttf) format('truetype');
-}
-
-@font-face {
-  font-family: crimsonText;
-  font-style: italic;
-  font-weight: 400;
-  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Crimson_Text/CrimsonText-Italic.ttf) format('truetype');
-}
-
-@font-face {
-  font-family: crimsonText;
-  font-style: normal;
-  font-weight: 700;
-  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Crimson_Text/CrimsonText-Bold.ttf) format('truetype');
-}
-
-@font-face {
-  font-family: crimsonText;
-  font-style: italic;
-  font-weight: 700;
-  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Crimson_Text/CrimsonText-BoldItalic.ttf) format('truetype');
-}
-
 /* Helvetica */
 
 @font-face {
@@ -303,36 +277,6 @@
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/iCielDomaineText-Regular.ttf) format('truetype');
 }
 
-/* Literata */
-
-@font-face {
-  font-family: literata;
-  font-style: normal;
-  font-weight: 400;
-  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Literata/Literata-VariableFont_opsz,wght.ttf) format('truetype');
-}
-
-@font-face {
-  font-family: literata;
-  font-style: italic;
-  font-weight: 400;
-  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Literata/Literata-Italic-VariableFont_opsz,wght.ttf) format('truetype');
-}
-
-@font-face {
-  font-family: literata;
-  font-style: normal;
-  font-weight: 700;
-  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Literata/Literata-VariableFont_opsz,wght.ttf) format('truetype');
-}
-
-@font-face {
-  font-family: literata;
-  font-style: italic;
-  font-weight: 700;
-  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Literata/Literata-Italic-VariableFont_opsz,wght.ttf) format('truetype');
-}
-
 /* Minion Pro */
 
 @font-face {
@@ -391,36 +335,6 @@
   font-style: italic;
   font-weight: 700;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/NY%20Fonts/NewYorkItalic.ttf) format('truetype');
-}
-
-/* Noto Serif */
-
-@font-face {
-  font-family: notoSerif;
-  font-style: normal;
-  font-weight: 400;
-  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Noto_Serif/NotoSerif-VariableFont_wdth,wght.ttf) format('truetype');
-}
-
-@font-face {
-  font-family: notoSerif;
-  font-style: italic;
-  font-weight: 400;
-  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Noto_Serif/NotoSerif-Italic-VariableFont_wdth,wght.ttf) format('truetype');
-}
-
-@font-face {
-  font-family: notoSerif;
-  font-style: normal;
-  font-weight: 700;
-  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Noto_Serif/NotoSerif-VariableFont_wdth,wght.ttf) format('truetype');
-}
-
-@font-face {
-  font-family: notoSerif;
-  font-style: italic;
-  font-weight: 700;
-  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Noto_Serif/NotoSerif-Italic-VariableFont_wdth,wght.ttf) format('truetype');
 }
 
 /* OpenDyslexic */
@@ -654,22 +568,6 @@
   font-style: italic;
   font-weight: 700;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/PublicoText/PublicoText-BoldItalic-Cy-Gr-Web.woff2) format('woff2');
-}
-
-/* Quicksand */
-
-@font-face {
-  font-family: quicksand;
-  font-style: normal;
-  font-weight: 400;
-  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Quicksand-VariableFont_wght.ttf) format('truetype');
-}
-
-@font-face {
-  font-family: quicksand;
-  font-style: normal;
-  font-weight: 700;
-  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Quicksand-VariableFont_wght.ttf) format('truetype');
 }
 
 /* Roboto */
@@ -914,7 +812,7 @@
 }
 
 .crimson-text {
-  font-family: crimsonText;
+  font-family: 'Crimson Text';
 }
 
 .georgia {
@@ -946,7 +844,7 @@
 }
 
 .literata {
-  font-family: literata;
+  font-family: Literata;
 }
 
 .minion-pro {
@@ -958,7 +856,7 @@
 }
 
 .noto-serif {
-  font-family: notoSerif;
+  font-family: 'Noto Serif';
 }
 
 .opendyslexic {
@@ -994,7 +892,7 @@
 }
 
 .quicksand {
-  font-family: quicksand;
+  font-family: Quicksand;
 }
 
 .roboto {

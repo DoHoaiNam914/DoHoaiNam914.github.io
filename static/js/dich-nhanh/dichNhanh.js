@@ -70,10 +70,10 @@ const FONT_MAPPING = Object.entries({
   /* Các phông chữ của Waka */
   Bookerly: 'bookerly',
   'Minion Pro': 'minionPro',
-  'Noto Serif': 'notoSerif',
+  'Noto Serif': 'Noto Serif',
   Roboto: 'roboto',
   'SVN-Times New Roman': 'svnTimesNewRoman',
-  Quicksand: 'quicksand',
+  Quicksand: 'Quicksand',
   'iCiel Domaine Text': 'icielDomaineText',
   'P22 Typewriter': 'p22Typewriter',
   'SVN-Helvetica Neue': 'svnHelveticaNeue',
@@ -82,7 +82,7 @@ const FONT_MAPPING = Object.entries({
   /* Các phông chữ của Google Play Sách */
   Helvetica: 'helvetica',
   Verdana: 'Verdana',
-  Literata: 'literata',
+  Literata: 'Literata',
   Baskerville: 'baskerville',
   Cochin: 'cochin',
   Palatino: 'palatino',
@@ -110,7 +110,7 @@ const FONT_MAPPING = Object.entries({
 
   'Apple SD Gothic Neo': 'appleSdGothicNeo',
   'A-OTF Ryumin Pr5': 'aotfRyuminPr5',
-  'Crimson Text': 'crimsonText',
+  'Crimson Text': 'Crimson Text',
   HiraginoMin: 'hiraginomin',
   'Hiragino Mincho Pro': 'hiraginoMinchoPro',
   'Hiragino Mincho ProN': 'hiraginoMinchoPron',
@@ -1331,7 +1331,7 @@ $dropdownHasCollapse.on('hide.bs.dropdown', function onHideBsDropdown() {
 });
 
 $fontStackText.change(function onChange() {
-  const values = $(this).val().replaceAll(/['"]/g, '').split(/, */).filter((element) => element.length > 0).map((element) => FONT_MAPPING.find(([first, second]) => first.toLowerCase().startsWith(element.toLowerCase().trim()) || second.toLowerCase().startsWith(element.toLowerCase().trim()))[1] ?? element.trim());
+  const values = $(this).val().replaceAll(/['"]/g, '').split(/, */).filter((element) => element.length > 0).map((element) => FONT_MAPPING.some(([first, second]) => first.toLowerCase().startsWith(element.toLowerCase().trim()) || second.toLowerCase().startsWith(element.toLowerCase().trim())) ? FONT_MAPPING.find(([first, second]) => first.toLowerCase().startsWith(element.toLowerCase().trim()) || second.toLowerCase().startsWith(element.toLowerCase().trim()))[1] : element.trim());
   $(this).val(values.join(', '));
 
   $(document.documentElement).css('--opt-font-family', values.map((element) => {
