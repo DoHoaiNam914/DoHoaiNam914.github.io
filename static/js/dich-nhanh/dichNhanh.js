@@ -682,7 +682,7 @@ const loadLangSelectOptions = function loadLanguageListByTranslatorToHtmlOptions
   $targetLanguageSelect.val(targetLanguage);
 };
 
-const polishTranslation = async function polishTranslationWithArtificialIntelligence(text, rawTranslation, model) {
+const polishTranslation = async function polishTranslationWithArtificialIntelligence(text, rawTranslation, model = 'gemini-1.5-flash') {
   const apiKey = $geminiApiKeyText.val()
   if (apiKey.length === 0) return 'Vui lòng điền API Key để sử dụng Gemini.';
   let result = rawTranslation;
@@ -759,7 +759,7 @@ ${nomenclature.map((element) => element.join('\t')).join('\n')}
     });
 
     if (response.candidates == null) return result;
-    response = response.candidates[0].content.parts[0].text.replace(/ \n$/, '').replaceAll(/(?:^`{3}txt\n|\n`{3}$)/g, '');
+    response = response.candidates[0].content.parts[0].text.replace(/ ?\n$/, '').replaceAll(new RegExp(`\`{3}${targetLanguage.toLowerCase()}\n|\n\`{3}`, 'g'), '');
     const queryLineSeperators = query.split(/(\n)/).filter((element) => element.includes('\n'));
     const lineSeparatorBooleans = response.split(/(\n{1,2})/).filter((element) => element.includes('\n\n')).map((element, index) => element !== queryLineSeperators[index]);
     response = response.split(lineSeparatorBooleans.reduce((accumulator, currentValue) => accumulator + (currentValue ? 1 : -1), 0) > 0 ? '\n\n' : '\n');
@@ -1394,6 +1394,7 @@ $translatorDropdown.find('.dropdown-item').click(function onClick() {
   $(this).addClass('active');
   const activeTranslator = $(this).val();
   currentTranslator = translators[activeTranslator];
+  $('#polish-switch').removeClass('disabled');
 
   switch (activeTranslator) {
     case Translators.BAIDU_TRANSLATE: {
@@ -1466,6 +1467,8 @@ $translatorDropdown.find('.dropdown-item').click(function onClick() {
         translators[activeTranslator] = currentTranslator;
       }
 
+      if ($('#polish-switch').prop('checked')) $('#polish-switch').prop('checked', false);
+      $('#polish-switch').addClass('disabled');
       break;
     }
     default: {

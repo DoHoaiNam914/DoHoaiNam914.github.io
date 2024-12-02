@@ -111,7 +111,7 @@ ${filteredNomenclature.map((element) => element.join('\t')).join('\n')}
         return this.result;
       }
 
-      response = response.candidates[0].content.parts[0].text.replace(/ \n$/, '').replaceAll(/(?:^`{3}txt\n|\n`{3}$)/g, '');
+      response = response.candidates[0].content.parts[0].text.replace(/ ?\n$/, '');
       const queryLineSeperators = query.split(/(\n)/).filter((element) => element.includes('\n'));
       const lineSeparatorBooleans = response.split(/(\n{1,2})/).filter((element) => element.includes('\n\n')).map((element, index) => element !== queryLineSeperators[index]);
       response = response.split(lineSeparatorBooleans.reduce((accumulator, currentValue) => accumulator + (currentValue ? 1 : -1), 0) > 0 ? '\n\n' : '\n');
