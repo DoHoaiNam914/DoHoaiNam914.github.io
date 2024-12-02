@@ -1,6 +1,6 @@
 'use strict';
 
-/* global bootstrap, BaiduTranslate, cjkv, CoccocEduTranslate, DeeplTranslate, Gemini, GoogleTranslate, Gpt, Lingvanex, MicrosoftTranslator, newAccentObject, Papago, Utils, WebnovelTranslate */
+/* global bootstrap, BaiduTranslate, cjkv, CoccocEduTranslate, DeeplTranslate, Gemini, GoogleTranslate, Lingvanex, MicrosoftTranslator, Openai, newAccentObject, Papago, Utils, WebnovelTranslate */
 
 const $addButton = $('#add-button');
 const $alignmentRadio = $('input[type="radio"][name="alignment-radio"]');
@@ -130,9 +130,9 @@ const Translators = {
   DEEPL_TRANSLATE: 'deeplTranslate',
   GEMINI: 'gemini',
   GOOGLE_TRANSLATE: 'googleTranslate',
-  GPT: 'gpt',
   LINGVANEX: 'lingvanex',
   MICROSOFT_TRANSLATOR: 'microsoftTranslator',
+  OPENAI: 'openai',
   PAPAGO: 'papago',
   WEBNOVEL_TRANSLATE: 'webnovelTranslate',
 };
@@ -485,7 +485,7 @@ const getSourceLangOptionList = function getSourceLanguageOptionListHtmlFromTran
       break;
     }
     case Translators.DEEPL_TRANSLATE: {
-      DeeplTranslate.SOURCE_LANGUAGE_LIST.forEach(({ language, name }) => {
+      [{ language: '', name: 'Detect language' }, ...DeeplTranslate.SOURCE_LANGUAGE_LIST].forEach(({ language, name }) => {
         if (!['', 'EN', 'JA', 'ZH'].includes(language)) return;
         const option = document.createElement('option');
         option.innerText = name;
@@ -495,20 +495,16 @@ const getSourceLangOptionList = function getSourceLanguageOptionListHtmlFromTran
       break;
     }
     case Translators.GEMINI: {
-      const option = document.createElement('option');
-      option.value = '';
-      sourceLanguageSelect.appendChild(option);
-      break;
-    }
-    case Translators.GPT: {
-      const option = document.createElement('option');
-      option.innerText = 'Dò tìm tự động';
-      option.value = 'Auto-Detect';
-      sourceLanguageSelect.appendChild(option);
+      [{ label: '', value: '' }, ...Gemini.LANGUAGE_LIST].forEach(({ label, value }) => {
+        const option = document.createElement('option');
+        option.innerText = label;
+        option.value = value;
+        sourceLanguageSelect.appendChild(option);
+      });
       break;
     }
     case Translators.LINGVANEX: {
-      Lingvanex.LANGUAGE_LIST.forEach(({ full_code, englishName }) => {
+      [{ full_code: '', englishName: 'Auto-detect language', codeName: 'Ngôn ngữ tự động phát hiện' }, ...Lingvanex.LANGUAGE_LIST].forEach(({ full_code, englishName }) => {
         if (!['', 'zh-Hans_CN', 'zh-Hant_TW', 'en_AU', 'en_GB', 'en_US', 'ja_JP', 'vi_VN'].includes(full_code)) return;
         const option = document.createElement('option');
         option.innerText = englishName;
@@ -518,11 +514,20 @@ const getSourceLangOptionList = function getSourceLanguageOptionListHtmlFromTran
       break;
     }
     case Translators.MICROSOFT_TRANSLATOR: {
-      Object.entries(MicrosoftTranslator.SOURCE_LANGUAGE_LIST).forEach(([languageCode, { name }]) => {
+      Object.entries({ 'auto-detect': { nativeName: 'Auto-detect', name: 'Tự phát hiện' }, ...MicrosoftTranslator.LANGUAGE_LIST }).forEach(([languageCode, { name }]) => {
         if (!['auto-detect', 'en', 'ja', 'zh-Hans', 'zh-Hant', 'vi'].includes(languageCode)) return;
         const option = document.createElement('option');
         option.innerText = name;
         option.value = languageCode;
+        sourceLanguageSelect.appendChild(option);
+      });
+      break;
+    }
+    case Translators.OPENAI: {
+      [{ label: 'Dò tìm tự động', value: 'Auto-Detect' }, ...Openai.LANGUAGE_LIST].forEach(({ label, value }) => {
+        const option = document.createElement('option');
+        option.innerText = label;
+        option.value = value;
         sourceLanguageSelect.appendChild(option);
       });
       break;
@@ -548,7 +553,7 @@ const getSourceLangOptionList = function getSourceLanguageOptionListHtmlFromTran
       break;
     }
     default: {
-      GoogleTranslate.LANGUAGE_LIST.forEach(({ language, name }) => {
+      [{ language: 'auto', name: 'Phát hiện ngôn ngữ' }, ...GoogleTranslate.LANGUAGE_LIST].forEach(({ language, name }) => {
         if (!['auto', 'en', 'ja', 'zh', 'zh-TW', 'vi'].includes(language)) return;
         const option = document.createElement('option');
         option.innerText = name;
@@ -604,15 +609,6 @@ const getTargetLangOptionList = function getTargetLanguageOptionListHtmlFromTran
       });
       break;
     }
-    case Translators.GPT: {
-      Gpt.LANGUAGE_LIST.forEach(({ label, value }) => {
-        const option = document.createElement('option');
-        option.innerText = label;
-        option.value = value;
-        targetLanguageSelect.appendChild(option);
-      });
-      break;
-    }
     case Translators.LINGVANEX: {
       Lingvanex.LANGUAGE_LIST.forEach(({ full_code, englishName }) => {
         if (!['zh-Hans_CN', 'zh-Hant_TW', 'en_AU', 'en_GB', 'en_US', 'ja_JP', 'vi_VN'].includes(full_code)) return;
@@ -624,11 +620,20 @@ const getTargetLangOptionList = function getTargetLanguageOptionListHtmlFromTran
       break;
     }
     case Translators.MICROSOFT_TRANSLATOR: {
-      Object.entries(MicrosoftTranslator.TARGET_LANGUAGE_LIST).forEach(([languageCode, { name }]) => {
+      Object.entries(MicrosoftTranslator.LANGUAGE_LIST).forEach(([languageCode, { name }]) => {
         if (!['en', 'ja', 'zh-Hans', 'zh-Hant', 'vi'].includes(languageCode)) return;
         const option = document.createElement('option');
         option.innerText = name;
         option.value = languageCode;
+        targetLanguageSelect.appendChild(option);
+      });
+      break;
+    }
+    case Translators.OPENAI: {
+      Openai.LANGUAGE_LIST.forEach(({ label, value }) => {
+        const option = document.createElement('option');
+        option.innerText = label;
+        option.value = value;
         targetLanguageSelect.appendChild(option);
       });
       break;
@@ -826,10 +831,10 @@ const translate = async function translateContentInTextarea(controller = new Abo
     const geminiModel = $('#gemini-model-select').val();
 
     switch ($activeTranslator.val()) {
-      case Translators.GPT:
+      case Translators.OPENAI:
       case Translators.GEMINI: {
         currentTranslator.controller = controller;
-        await currentTranslator.translateText(text, targetLanguage, $activeTranslator.val() === Translators.GEMINI ? geminiModel : $('#gpt-model-select').val(), Object.entries(glossary.nomenclature));
+        await currentTranslator.translateText(text, targetLanguage, $activeTranslator.val() === Translators.GEMINI ? geminiModel : $('#openai-model-select').val(), Object.entries(glossary.nomenclature));
         break;
       }
       default: {
@@ -1423,14 +1428,6 @@ $translatorDropdown.find('.dropdown-item').click(function onClick() {
 
       break;
     }
-    case Translators.GPT: {
-      if (currentTranslator == null) {
-        currentTranslator = new Gpt(UUID);
-        translators[activeTranslator] = currentTranslator;
-      }
-
-      break;
-    }
     case Translators.LINGVANEX: {
       if (currentTranslator == null) {
         currentTranslator = new Lingvanex();
@@ -1442,6 +1439,14 @@ $translatorDropdown.find('.dropdown-item').click(function onClick() {
     case Translators.MICROSOFT_TRANSLATOR: {
       if (currentTranslator == null) {
         currentTranslator = new MicrosoftTranslator($toneSelect.val());
+        translators[activeTranslator] = currentTranslator;
+      }
+
+      break;
+    }
+    case Translators.OPENAI: {
+      if (currentTranslator == null) {
+        currentTranslator = new Openai(UUID);
         translators[activeTranslator] = currentTranslator;
       }
 
@@ -1721,14 +1726,6 @@ $translateEntryButtons.click(async function onClick() {
 
           break;
         }
-        case Translators.GPT: {
-          if (translator == null) {
-            translator = new Gpt(UUID);
-            translators[activeTranslator] = translator;
-          }
-
-          break;
-        }
         case Translators.LINGVANEX: {
           if (translator == null) {
             translator = new Lingvanex();
@@ -1740,6 +1737,14 @@ $translateEntryButtons.click(async function onClick() {
         case Translators.MICROSOFT_TRANSLATOR: {
           if (translator == null) {
             translator = new MicrosoftTranslator($toneSelect.val());
+            translators[activeTranslator] = translator;
+          }
+
+          break;
+        }
+        case Translators.OPENAI: {
+          if (translator == null) {
+            translator = new Openai(UUID);
             translators[activeTranslator] = translator;
           }
 
@@ -1765,10 +1770,10 @@ $translateEntryButtons.click(async function onClick() {
 
       if (translator != null) {
         switch (activeTranslator) {
-          case Translators.GPT:
+          case Translators.OPENAI:
           case Translators.GEMINI: {
             translator.controller = entryTranslationController;
-            await translator.translateText(text, targetLanguage, activeTranslator === Translators.GEMINI ? $('#translate-entry-gemini-model-select').val() : $('#translate-entry-gpt-model-select').val());
+            await translator.translateText(text, targetLanguage, activeTranslator === Translators.GEMINI ? $('#translate-entry-gemini-model-select').val() : $('#translate-entry-openai-model-select').val());
             break;
           }
           default: {

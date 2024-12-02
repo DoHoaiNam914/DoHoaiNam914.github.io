@@ -2,7 +2,7 @@
 
 /* global Translator, Utils */
 
-class Gpt extends Translator {
+class Openai extends Translator {
   static LANGUAGE_LIST = [
     {
       label: 'Tiếng Anh',
@@ -73,7 +73,7 @@ ${filteredNomenclature.map((element) => element.join('\t')).join('\n')}
           presence_penalty: 0,
         }),
         headers: {
-          'User-Agent': 'iOS-TranslateNow/8.7.0.1004 CFNetwork/1568.200.51 Darwin/24.1.0',
+          'User-Agent': 'iOS-TranslateNow/8.7.1.1001 CFNetwork/1568.200.51 Darwin/24.1.0',
           'Content-Type': 'application/json',
           'Air-User-Id': this.uuid,
         },

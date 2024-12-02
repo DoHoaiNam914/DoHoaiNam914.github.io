@@ -237,13 +237,13 @@
           '/static/js/newAccentMap.js',
           '/static/js/dich-nhanh/Translator.js',
           '/static/js/dich-nhanh/may-dich/BaiduTranslate.js',
-          '/static/js/dich-nhanh/may-dich/Gpt.js',
           '/static/js/dich-nhanh/may-dich/CoccocEduTranslate.js',
           '/static/js/dich-nhanh/may-dich/DeeplTranslate.js',
           '/static/js/dich-nhanh/may-dich/Gemini.js',
           '/static/js/dich-nhanh/may-dich/GoogleTranslate.js',
           '/static/js/dich-nhanh/may-dich/Lingvanex.js',
           '/static/js/dich-nhanh/may-dich/MicrosoftTranslator.js',
+          '/static/js/dich-nhanh/may-dich/Openai.js',
           '/static/js/dich-nhanh/may-dich/Papago.js',
           '/static/js/dich-nhanh/may-dich/WebnovelTranslate.js',
           '/static/js/dich-nhanh/dichNhanh.js',
@@ -662,16 +662,16 @@
                     <button type="button" class="dropdown-item active" value="googleTranslate">Google Dịch</button>
                   </li>
                   <li>
-                    <button type="button" class="dropdown-item" value="gpt">GPT</button>
-                  </li>
-                  <li>
                     <button type="button" class="dropdown-item" value="lingvanex">Lingvanex</button>
                   </li>
                   <li>
-                    <button type="button" class="dropdown-item" value="microsoftTranslator">Trình dịch Microsoft</button>
+                    <button type="button" class="dropdown-item" value="openai">OpenAI</button>
                   </li>
                   <li>
                     <button type="button" class="dropdown-item" value="papago">Papago</button>
+                  </li>
+                  <li>
+                    <button type="button" class="dropdown-item" value="microsoftTranslator">Trình dịch Microsoft</button>
                   </li>
                   <li>
                     <button type="button" class="dropdown-item" value="webnovelTranslate">WebNovel Dịch</button>
@@ -702,8 +702,8 @@
                 <label class="form-check-label" for="polish-switch">Làm mượt bản dịch bằng Gemini</label>
               </div>
               <div class="mb-3">
-                <label class="form-label" for="gpt-model-select">Mô hình GPT:</label>
-                <select class="form-select form-select-sm" id="gpt-model-select">
+                <label class="form-label" for="openai-model-select">Mô hình OpenAI:</label>
+                <select class="form-select form-select-sm" id="openai-model-select">
                   <option>gpt-4o</option>
                   <option>gpt-4o-2024-08-06</option>
                   <option>gpt-4o-2024-05-13</option>
@@ -885,13 +885,13 @@
                     </div>
                   </li>
                   <li>
-                    <button type="button" class="dropdown-item" data-bs-toggle="collapse" data-bs-target="#gpt-collapse">GPT</button>
-                    <div class="collapse" id="gpt-collapse">
-                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="gpt" data-lang="Vietnamese">Tiếng Việt</button>
-                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="gpt" data-lang="English">Tiếng Anh</button>
-                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="gpt" data-lang="Japanese">Tiếng Nhật</button>
-                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="gpt" data-lang="Traditional Chinese">Tiếng Trung phồn thể</button>
-                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="gpt" data-lang="Simplified Chinese">Tiếng Trung giản thể</button>
+                    <button type="button" class="dropdown-item" data-bs-toggle="collapse" data-bs-target="#openai-collapse">OpenAI</button>
+                    <div class="collapse" id="openai-collapse">
+                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="openai" data-lang="Vietnamese">Tiếng Việt</button>
+                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="openai" data-lang="English">Tiếng Anh</button>
+                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="openai" data-lang="Japanese">Tiếng Nhật</button>
+                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="openai" data-lang="Traditional Chinese">Tiếng Trung phồn thể</button>
+                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="openai" data-lang="Simplified Chinese">Tiếng Trung giản thể</button>
                     </div>
                   </li>
                   <li>
@@ -983,8 +983,8 @@
               <button type="button" class="btn btn-sm btn-primary mb-3" id="translate-entry-button">Dịch</button>
               <button type="button" class="btn btn-sm btn-secondary mb-3 copy-button" data-target="glossary">Sao chép (<span id="glossary-entry-counter">0</span>)</button>
               <div class="mb-3">
-                <label class="form-label" for="translate-entry-gpt-model-select">Mô hình GPT:</label>
-                <select class="form-select form-select-sm" id="translate-entry-gpt-model-select">
+                <label class="form-label" for="translate-entry-openai-model-select">Mô hình OpenAI:</label>
+                <select class="form-select form-select-sm" id="translate-entry-openai-model-select">
                   <option selected>gpt-4o</option>
                   <option>gpt-4o-2024-08-06</option>
                   <option>gpt-4o-2024-05-13</option>

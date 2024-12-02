@@ -303,10 +303,6 @@ class WebnovelTranslate extends Translator {
       "name": "Galicia"
     },
     {
-      "language": "ka",
-      "name": "George"
-    },
-    {
       "language": "gn",
       "name": "Guarani"
     },
@@ -731,10 +727,6 @@ class WebnovelTranslate extends Translator {
       "name": "Sango"
     },
     {
-      "language": "sat-Latn",
-      "name": "Santali"
-    },
-    {
       "language": "cs",
       "name": "Séc"
     },
@@ -827,10 +819,6 @@ class WebnovelTranslate extends Translator {
       "name": "Tatar"
     },
     {
-      "language": "crh",
-      "name": "Tatar Krym"
-    },
-    {
       "language": "es",
       "name": "Tây Ban Nha"
     },
@@ -859,8 +847,40 @@ class WebnovelTranslate extends Translator {
       "name": "Thụy Điển"
     },
     {
+      "language": "ka",
+      "name": "Tiếng Georgia"
+    },
+    {
+      "language": "iu",
+      "name": "Tiếng Inuktut (Âm tiết)"
+    },
+    {
+      "language": "iu-Latn",
+      "name": "Tiếng Inuktut (Latinh)"
+    },
+    {
       "language": "new",
       "name": "Tiếng Nepal Bhasa (tiếng Newar)"
+    },
+    {
+      "language": "fr-CA",
+      "name": "Tiếng Pháp (Canada)"
+    },
+    {
+      "language": "sat-Latn",
+      "name": "Tiếng Santal (Latinh)"
+    },
+    {
+      "language": "sat",
+      "name": "Tiếng Santal (Ol Chiki)"
+    },
+    {
+      "language": "crh",
+      "name": "Tiếng Tatar Krym (Kirin)"
+    },
+    {
+      "language": "crh-Latn",
+      "name": "Tiếng Tatar Krym (Latinh)"
     },
     {
       "language": "ti",
@@ -881,6 +901,10 @@ class WebnovelTranslate extends Translator {
     {
       "language": "zh-CN",
       "name": "Trung"
+    },
+    {
+      "language": "lua",
+      "name": "Tshiluba"
     },
     {
       "language": "ts",
@@ -1273,10 +1297,6 @@ class WebnovelTranslate extends Translator {
       "name": "Galicia"
     },
     {
-      "language": "ka",
-      "name": "George"
-    },
-    {
       "language": "gn",
       "name": "Guarani"
     },
@@ -1701,10 +1721,6 @@ class WebnovelTranslate extends Translator {
       "name": "Sango"
     },
     {
-      "language": "sat-Latn",
-      "name": "Santali"
-    },
-    {
       "language": "cs",
       "name": "Séc"
     },
@@ -1797,10 +1813,6 @@ class WebnovelTranslate extends Translator {
       "name": "Tatar"
     },
     {
-      "language": "crh",
-      "name": "Tatar Krym"
-    },
-    {
       "language": "es",
       "name": "Tây Ban Nha"
     },
@@ -1829,8 +1841,40 @@ class WebnovelTranslate extends Translator {
       "name": "Thụy Điển"
     },
     {
+      "language": "ka",
+      "name": "Tiếng Georgia"
+    },
+    {
+      "language": "iu",
+      "name": "Tiếng Inuktut (Âm tiết)"
+    },
+    {
+      "language": "iu-Latn",
+      "name": "Tiếng Inuktut (Latinh)"
+    },
+    {
       "language": "new",
       "name": "Tiếng Nepal Bhasa (tiếng Newar)"
+    },
+    {
+      "language": "fr-CA",
+      "name": "Tiếng Pháp (Canada)"
+    },
+    {
+      "language": "sat-Latn",
+      "name": "Tiếng Santal (Latinh)"
+    },
+    {
+      "language": "sat",
+      "name": "Tiếng Santal (Ol Chiki)"
+    },
+    {
+      "language": "crh",
+      "name": "Tiếng Tatar Krym (Kirin)"
+    },
+    {
+      "language": "crh-Latn",
+      "name": "Tiếng Tatar Krym (Latinh)"
     },
     {
       "language": "ti",
@@ -1855,6 +1899,10 @@ class WebnovelTranslate extends Translator {
     {
       "language": "zh-TW",
       "name": "Trung (Phồn thể)"
+    },
+    {
+      "language": "lua",
+      "name": "Tshiluba"
     },
     {
       "language": "ts",
@@ -1953,7 +2001,8 @@ class WebnovelTranslate extends Translator {
       "name": "Zulu"
     }
   ]
-}`);
+}
+`);
 
   DefaultLanguage = {
     SOURCE_LANGUAGE: 'auto',
