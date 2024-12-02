@@ -193,8 +193,9 @@
       'use strict';
 
       (function () {
+        if (!/debug=[^&]+/.test(window.location.search)) return;
         let src = '';
-        switch (window.location.search.toLowerCase().match(/debug=([^&]+)|/)[1]) {
+        switch (window.location.search.toLowerCase().match(/debug=([^&]+)/)[1]) {
           case 'eruda': {
             src = '//cdn.jsdelivr.net/npm/eruda';
             document.write(`<script src="${src}"><\/script>`);
@@ -206,7 +207,7 @@
 <\/script>`);
             break;
           }
-          case 'VConsole': {
+          case 'vconsole': {
             src = 'https://unpkg.com/vconsole@latest/dist/vconsole.min.js';
             document.write(`<script src="${src}"><\/script>`);
             document.write(`<script>
