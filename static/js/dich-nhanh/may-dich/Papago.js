@@ -1,8 +1,11 @@
 'use strict';
 
-/* global CryptoJS, Translator, Utils */
+/* global CryptoJS */
 
-class Papago extends Translator {
+import Translator from '/static/js/dich-nhanh/Translator.js';
+import Utils from '/static/js/Utils.js';
+
+export default class Papago extends Translator {
   static SOURCE_LANGUAGE_LIST = {
     auto: 'Phát hiện ngôn ngữ',
     ko: 'Hàn',

@@ -1,6 +1,6 @@
 'use strict';
 
-class Utils {
+export default class Utils {
   static CORS_PROXY = 'https://corsproxy.itsdhnam.workers.dev/';
 
   static getRandomInt(min, max) {

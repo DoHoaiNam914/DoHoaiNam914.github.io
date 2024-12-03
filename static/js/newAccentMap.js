@@ -17,3 +17,5 @@ const newAccentMap = [
 
 const newAccentObject = Object.fromEntries(newAccentMap);
 const oldAccentObject = Object.fromEntries(newAccentMap.map((element) => element.toReversed()));
+
+export { newAccentObject };

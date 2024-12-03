@@ -1,8 +1,9 @@
 'use strict';
 
-/* global Translator, Utils */
+import Translator from '/static/js/dich-nhanh/Translator.js';
+import Utils from '/static/js/Utils.js';
 
-class WebnovelTranslate extends Translator {
+export default class WebnovelTranslate extends Translator {
   /** https://translate-pa.googleapis.com/v1/supportedLanguages?client=gtx&display_language=vi&key=AIzaSyDLEeFI5OtFBwYBIoK_jj5m32rZK5CkCXA */
   static LANGUAGE_LIST = JSON.parse(`{
   "sourceLanguages": [

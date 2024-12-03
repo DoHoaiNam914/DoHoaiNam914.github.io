@@ -1,8 +1,9 @@
 'use strict';
 
-/* global Translator, Utils */
+import Translator from '/static/js/dich-nhanh/Translator.js';
+import Utils from '/static/js/Utils.js';
 
-class BaiduTranslate extends Translator {
+export default class BaiduTranslate extends Translator {
   static SOURCE_LANGUAGE_LIST = {
     auto: 'Automatic detection',
     jp: 'Japanese',

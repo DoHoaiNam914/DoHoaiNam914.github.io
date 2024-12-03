@@ -1,6 +1,6 @@
 'use strict';
 
-class Translator {
+export default class Translator {
   constructor() {
     this.controller = new AbortController();
     this.lastRequestData = null;

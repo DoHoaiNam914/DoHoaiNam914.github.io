@@ -201,7 +201,7 @@
             document.write(`<script src="${src}"><\/script>`);
             document.write(`<script>
   eruda.init({
-    tool: ['console', 'network', 'resources', 'info', 'settings'],
+    tool: ['console', 'elements', 'network', 'resources', 'info', 'settings'],
     autoScale: false,
   });
 <\/script>`);
@@ -224,22 +224,16 @@
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <script src="/static/lib/jquery-ui.min.js"></script>
     <script src="/static/datasource/hanviet.js"></script>
-    <script src="/static/js/newAccentMap.js"></script>
-    <script src="/static/js/dich-nhanh/Translator.js"></script>
-    <script src="/static/js/Utils.js"></script>
+    <script type="importmap">
+      {
+        "imports": {
+          "@google/generative-ai": "https://esm.run/@google/generative-ai"
+        }
+      }
+    </script>
     <script src="/static/lib/CryptoJS v3.1.2/rollups/hmac-md5.js"></script>
     <script src="/static/lib/CryptoJS v3.1.2/components/enc-base64.js"></script>
-    <script src="/static/js/dich-nhanh/may-dich/BaiduTranslate.js"></script>
-    <script src="/static/js/dich-nhanh/may-dich/CoccocEduTranslate.js"></script>
-    <script src="/static/js/dich-nhanh/may-dich/DeeplTranslate.js"></script>
-    <script src="/static/js/dich-nhanh/may-dich/Gemini.js"></script>
-    <script src="/static/js/dich-nhanh/may-dich/GoogleTranslate.js"></script>
-    <script src="/static/js/dich-nhanh/may-dich/Lingvanex.js"></script>
-    <script src="/static/js/dich-nhanh/may-dich/MicrosoftTranslator.js"></script>
-    <script src="/static/js/dich-nhanh/may-dich/Openai.js"></script>
-    <script src="/static/js/dich-nhanh/may-dich/Papago.js"></script>
-    <script src="/static/js/dich-nhanh/may-dich/WebnovelTranslate.js"></script>
-    <script src="/static/js/dich-nhanh/dichNhanh.js"></script>
+    <script src="/static/js/dich-nhanh/dichNhanh.js" type="module"></script>
     <script>
       /*!
       * Color mode toggler for Bootstrap's docs (https://getbootstrap.com/)

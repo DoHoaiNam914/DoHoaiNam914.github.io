@@ -1,8 +1,8 @@
 'use strict';
 
-/* global Translator */
+import Translator from '/static/js/dich-nhanh/Translator.js';
 
-class DeeplTranslate extends Translator {
+export default class DeeplTranslate extends Translator {
   /** https://api-free.deepl.com/v2/languages?type=source */
   static SOURCE_LANGUAGE_LIST = JSON.parse('[{"language":"BG","name":"Bulgarian"},{"language":"CS","name":"Czech"},{"language":"DA","name":"Danish"},{"language":"DE","name":"German"},{"language":"EL","name":"Greek"},{"language":"EN","name":"English"},{"language":"ES","name":"Spanish"},{"language":"ET","name":"Estonian"},{"language":"FI","name":"Finnish"},{"language":"FR","name":"French"},{"language":"HU","name":"Hungarian"},{"language":"ID","name":"Indonesian"},{"language":"IT","name":"Italian"},{"language":"JA","name":"Japanese"},{"language":"KO","name":"Korean"},{"language":"LT","name":"Lithuanian"},{"language":"LV","name":"Latvian"},{"language":"NB","name":"Norwegian"},{"language":"NL","name":"Dutch"},{"language":"PL","name":"Polish"},{"language":"PT","name":"Portuguese"},{"language":"RO","name":"Romanian"},{"language":"RU","name":"Russian"},{"language":"SK","name":"Slovak"},{"language":"SL","name":"Slovenian"},{"language":"SV","name":"Swedish"},{"language":"TR","name":"Turkish"},{"language":"UK","name":"Ukrainian"},{"language":"ZH","name":"Chinese"}]');
 
@@ -18,7 +18,6 @@ class DeeplTranslate extends Translator {
     super();
     this.authKey = authKey;
     this.fetchUsage();
-    this.maxRequestBodySizePerRequest = 131072;
     this.maxContentLinePerRequest = 50;
   }
 
@@ -49,17 +48,15 @@ class DeeplTranslate extends Translator {
 
     try {
       const lines = text.split('\n');
-      const textEncoder = new TextEncoder();
-      const requestBody = (requestLines) => `text=${requestLines.map((element) => encodeURIComponent(element)).join('&text=')}&source_lang=${sourceLanguage}&target_lang=${targetLanguage}`;
       const responses = [];
       let requestLines = [];
 
       while (lines.length > 0) {
         requestLines.push(lines.shift());
 
-        if (lines.length === 0 || textEncoder.encode(requestBody([...requestLines, lines[0]])).length > this.maxRequestBodySizePerRequest || (requestLines.length + 1) > this.maxContentLinePerRequest) {
+        if (lines.length === 0 || (requestLines.length + 1) > this.maxContentLinePerRequest) {
           responses.push($.ajax({
-            data: requestBody(requestLines),
+            data: `text=${requestLines.map((element) => encodeURIComponent(element)).join('&text=')}&${sourceLanguage !== '' ? `source_lang=${sourceLanguage}&` : ''}target_lang=${targetLanguage}`,
             method: 'POST',
             url: `https://api-free.deepl.com/v2/translate?auth_key=${this.authKey}`,
           }));

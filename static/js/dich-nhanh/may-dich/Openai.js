@@ -1,8 +1,9 @@
 'use strict';
 
-/* global Translator, Utils */
+import Translator from '/static/js/dich-nhanh/Translator.js';
+import Utils from '/static/js/Utils.js';
 
-class Openai extends Translator {
+export default class Openai extends Translator {
   static LANGUAGE_LIST = [
     {
       label: 'Tiếng Anh',
