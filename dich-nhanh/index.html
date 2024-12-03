@@ -630,22 +630,19 @@
                 </button>
                 <ul class="dropdown-menu">
                   <li>
+                    <button type="button" class="dropdown-item" value="generativeAi">AI tạo sinh</button>
+                  </li>
+                  <li>
                     <button type="button" class="dropdown-item" value="baiduTranslate">Baidu Translate</button>
                   </li>
                   <li>
                     <button type="button" class="dropdown-item" value="deeplTranslate">DeepL Translate</button>
                   </li>
                   <li>
-                    <button type="button" class="dropdown-item" value="gemini">Gemini</button>
-                  </li>
-                  <li>
                     <button type="button" class="dropdown-item active" value="googleTranslate">Google Dịch</button>
                   </li>
                   <li>
                     <button type="button" class="dropdown-item" value="lingvanex">Lingvanex</button>
-                  </li>
-                  <li>
-                    <button type="button" class="dropdown-item" value="openai">OpenAI</button>
                   </li>
                   <li>
                     <button type="button" class="dropdown-item" value="papago">Papago</button>
@@ -677,25 +674,49 @@
               </div>
               <hr>
               <h2 class="fs-5">Trí tuệ nhân tạo tạo sinh</h2>
-              <div class="form-check form-switch mb-3">
-                <input type="checkbox" class="form-check-input" id="polish-switch" role="switch">
-                <label class="form-check-label" for="polish-switch">Làm mượt bản dịch bằng Gemini</label>
-              </div>
               <div class="mb-3">
-                <label class="form-label" for="openai-model-select">Mô hình OpenAI:</label>
-                <select class="form-select form-select-sm" id="openai-model-select">
+                <label class="form-label" for="model-select">Mô hình AI tạo sinh:</label>
+                <select class="form-select form-select-sm" id="model-select">
+                  <!-- Gemini-->
+                  <option value="gemini-1.5-flash-latest">Gemini 1.5 Flash-latest</option>
+                  <option value="gemini-1.5-flash" selected>Gemini 1.5 Flash</option>
+                  <option value="gemini-1.5-flash-001">Gemini 1.5 Flash-001</option>
+                  <option value="gemini-1.5-flash-002">Gemini 1.5 Flash-002</option>
+                  <option value="gemini-1.5-flash-8b-latest">Gemini 1.5 Flash-8B-latest</option>
+                  <option value="gemini-1.5-flash-8b">Gemini 1.5 Flash-8B</option>
+                  <option value="gemini-1.5-flash-8b-001">Gemini 1.5 Flash-8B-001</option>
+                  <option value="gemini-1.5-pro-latest">Gemini 1.5 Pro-latest</option>
+                  <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
+                  <option value="gemini-1.5-pro-001">Gemini 1.5 Pro-001</option>
+                  <option value="gemini-1.5-pro-002">Gemini 1.5 Pro-002</option>
+                  <!-- Không dùng nữa -->
+                  <option value="gemini-1.0-pro">Gemini 1.0 Pro</option>
+                  <!-- OpenAI-->
                   <option value="gpt-4o">GPT-4o</option>
+                  <option value="gpt-4o-2024-11-20">GPT-4o-2024-11-20</option>
+                  <option value="gpt-4o-2024-08-06">GPT-4o-2024-08-06</option>
                   <option value="gpt-4o-2024-05-13">GPT-4o-2024-05-13</option>
                   <option value="gpt-4o-mini" selected>GPT-4o mini</option>
+                  <option value="gpt-4o-mini-2024-07-18">GPT-4o mini-2024-07-18</option>
                   <option value="o1-preview">o1-preview</option>
+                  <option value="o1-preview-2024-09-12">o1-preview-2024-09-12</option>
                   <option value="o1-mini">o1-mini</option>
+                  <option value="o1-mini-2024-09-12">o1-mini-2024-09-12</option>
                   <option value="gpt-4-turbo">GPT-4 Turbo</option>
+                  <option value="gpt-4-turbo-2024-04-09">GPT-4 Turbo-2024-04-09</option>
+                  <option value="gpt-4-turbo-2024-04-09">GPT-4 Turbo-2024-04-09</option>
                   <option value="gpt-4">GPT-4</option>
+                  <option value="gpt-4-0613">GPT-4-0613</option>
+                  <option value="gpt-3.5-turbo-0125">GPT-3.5 Turbo-0125</option>
                   <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
                   <option value="gpt-3.5-turbo-1106">GPT-3.5 Turbo-1106</option>
                 </select>
               </div>
               <input type="text" class="form-control mb-3" id="gemini-api-key-text" placeholder="Gemini API Key">
+              <div class="form-check form-switch mb-3">
+                <input type="checkbox" class="form-check-input" id="polish-switch" role="switch">
+                <label class="form-check-label" for="polish-switch">Làm mượt bản dịch bằng Gemini</label>
+              </div>
               <div class="mb-3">
                 <label class="form-label" for="gemini-model-select">Mô hình Gemini:</label>
                 <select class="form-select form-select-sm" id="gemini-model-select">
@@ -711,9 +732,7 @@
                   <option value="gemini-1.5-pro-001">Gemini 1.5 Pro-001</option>
                   <option value="gemini-1.5-pro-002">Gemini 1.5 Pro-002</option>
                   <!-- Không dùng nữa -->
-                  <option value="gemini-1.0-pro-latest">Gemini 1.0 Pro-latest</option>
                   <option value="gemini-1.0-pro">Gemini 1.0 Pro</option>
-                  <option value="gemini-1.0-pro-001">Gemini 1.0 Pro-001</option>
                 </select>
               </div>
             </div>
@@ -881,13 +900,13 @@
                     </div>
                   </li>
                   <li>
-                    <button type="button" class="dropdown-item" data-bs-toggle="collapse" data-bs-target="#openai-collapse">OpenAI</button>
-                    <div class="collapse" id="openai-collapse">
-                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="openai" data-lang="Vietnamese">Tiếng Việt</button>
-                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="openai" data-lang="English">Tiếng Anh</button>
-                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="openai" data-lang="Japanese">Tiếng Nhật</button>
-                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="openai" data-lang="Traditional Chinese">Tiếng Trung phồn thể</button>
-                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="openai" data-lang="Simplified Chinese">Tiếng Trung giản thể</button>
+                    <button type="button" class="dropdown-item" data-bs-toggle="collapse" data-bs-target="#generative-ai-collapse">AI tạo sinh</button>
+                    <div class="collapse" id="generative-ai-collapse">
+                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="generativeAi" data-lang="Vietnamese">Tiếng Việt</button>
+                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="generativeAi" data-lang="English">Tiếng Anh</button>
+                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="generativeAi" data-lang="Japanese">Tiếng Nhật</button>
+                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="generativeAi" data-lang="Traditional Chinese">Tiếng Trung phồn thể</button>
+                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="generativeAi" data-lang="Simplified Chinese">Tiếng Trung giản thể</button>
                     </div>
                   </li>
                   <li>
@@ -901,8 +920,8 @@
                     </div>
                   </li>
                   <li>
-                    <button type="button" class="dropdown-item" data-bs-toggle="collapse" data-bs-target="#baidu-fanyi-collapse">Baidu Translate</button>
-                    <div class="collapse" id="baidu-fanyi-collapse">
+                    <button type="button" class="dropdown-item" data-bs-toggle="collapse" data-bs-target="#baidu-translate-collapse">Baidu Translate</button>
+                    <div class="collapse" id="baidu-translate-collapse">
                       <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="baiduTranslate" data-lang="vie">Vietnamese</button>
                       <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="baiduTranslate" data-lang="zh">Chinese</button>
                       <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="baiduTranslate" data-lang="cht">Traditional Chinese</button>
@@ -932,16 +951,6 @@
                       <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="lingvanex" data-lang="zh-Hant_TW">Chinese (traditional)</button>
                     </div>
                   </li>
-                  <li>
-                    <button type="button" class="dropdown-item" data-bs-toggle="collapse" data-bs-target="#gemini-collapse">Gemini</button>
-                    <div class="collapse" id="gemini-collapse">
-                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="gemini" data-lang="Vietnamese">Tiếng Việt</button>
-                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="gemini" data-lang="English">Tiếng Anh</button>
-                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="gemini" data-lang="Japanese">Tiếng Nhật</button>
-                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="gemini" data-lang="Chinese (Simplified)">Tiếng Trung (Giản thể)</button>
-                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="gemini" data-lang="Chinese (Traditional)">Tiếng Trung (Phồn thể)</button>
-                    </div>
-                  </li>
                 </ul>
               </div>
               <button type="submit" class="btn btn-sm btn-success mb-3 disabled" id="add-button">
@@ -959,41 +968,41 @@
               <button type="button" class="btn btn-sm btn-primary mb-3" id="translate-entry-button">Dịch</button>
               <button type="button" class="btn btn-sm btn-secondary mb-3 copy-button" data-target="glossary">Sao chép (<span id="glossary-entry-counter">0</span>)</button>
               <div class="mb-3">
-                <label class="form-label" for="translate-entry-openai-model-select">Mô hình OpenAI:</label>
-                <select class="form-select form-select-sm" id="translate-entry-openai-model-select">
-                  <option selected>gpt-4o</option>
-                  <option>gpt-4o-2024-08-06</option>
-                  <option>gpt-4o-2024-05-13</option>
-                  <option>chatgpt-4o-latest</option>
-                  <option>gpt-4o-mini</option>
-                  <option>gpt-4o-mini-2024-07-18</option>
-                  <option>gpt-4-turbo</option>
-                  <option>gpt-4-turbo-2024-04-09</option>
-                  <option>gpt-4</option>
-                  <option>gpt-4-0613</option>
-                  <option>gpt-3.5-turbo-0125</option>
-                  <option>gpt-3.5-turbo</option>
-                  <option>gpt-3.5-turbo-1106</option>
-                </select>
-              </div>
-              <div class="mb-3">
-                <label class="form-label" for="translate-entry-gemini-model-select">Mô hình Gemini:</label>
-                <select class="form-select form-select-sm" id="translate-entry-gemini-model-select">
-                  <option>gemini-1.5-flash-latest</option>
-                  <option selected>gemini-1.5-flash</option>
-                  <option>gemini-1.5-flash-001</option>
-                  <option>gemini-1.5-flash-002</option>
-                  <option>gemini-1.5-flash-8b-latest</option>
-                  <option>gemini-1.5-flash-8b</option>
-                  <option>gemini-1.5-flash-8b-001</option>
-                  <option>gemini-1.5-pro-latest</option>
-                  <option>gemini-1.5-pro</option>
-                  <option>gemini-1.5-pro-001</option>
-                  <option>gemini-1.5-pro-002</option>
+                <label class="form-label" for="translate-entry-model-select">Mô hình AI tạo sinh:</label>
+                <select class="form-select form-select-sm" id="translate-entry-model-select">
+                  <!-- Gemini-->
+                  <option value="gemini-1.5-flash-latest">Gemini 1.5 Flash-latest</option>
+                  <option value="gemini-1.5-flash" selected>Gemini 1.5 Flash</option>
+                  <option value="gemini-1.5-flash-001">Gemini 1.5 Flash-001</option>
+                  <option value="gemini-1.5-flash-002">Gemini 1.5 Flash-002</option>
+                  <option value="gemini-1.5-flash-8b-latest">Gemini 1.5 Flash-8B-latest</option>
+                  <option value="gemini-1.5-flash-8b">Gemini 1.5 Flash-8B</option>
+                  <option value="gemini-1.5-flash-8b-001">Gemini 1.5 Flash-8B-001</option>
+                  <option value="gemini-1.5-pro-latest">Gemini 1.5 Pro-latest</option>
+                  <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
+                  <option value="gemini-1.5-pro-001">Gemini 1.5 Pro-001</option>
+                  <option value="gemini-1.5-pro-002">Gemini 1.5 Pro-002</option>
                   <!-- Không dùng nữa -->
-                  <option>gemini-1.0-pro-latest</option>
-                  <option>gemini-1.0-pro</option>
-                  <option>gemini-1.0-pro-001</option>
+                  <option value="gemini-1.0-pro">Gemini 1.0 Pro</option>
+                  <!-- OpenAI-->
+                  <option value="gpt-4o" selected>GPT-4o</option>
+                  <option value="gpt-4o-2024-11-20">GPT-4o-2024-11-20</option>
+                  <option value="gpt-4o-2024-08-06">GPT-4o-2024-08-06</option>
+                  <option value="gpt-4o-2024-05-13">GPT-4o-2024-05-13</option>
+                  <option value="gpt-4o-mini">GPT-4o mini</option>
+                  <option value="gpt-4o-mini-2024-07-18">GPT-4o mini-2024-07-18</option>
+                  <option value="o1-preview">o1-preview</option>
+                  <option value="o1-preview-2024-09-12">o1-preview-2024-09-12</option>
+                  <option value="o1-mini">o1-mini</option>
+                  <option value="o1-mini-2024-09-12">o1-mini-2024-09-12</option>
+                  <option value="gpt-4-turbo">GPT-4 Turbo</option>
+                  <option value="gpt-4-turbo-2024-04-09">GPT-4 Turbo-2024-04-09</option>
+                  <option value="gpt-4-turbo-2024-04-09">GPT-4 Turbo-2024-04-09</option>
+                  <option value="gpt-4">GPT-4</option>
+                  <option value="gpt-4-0613">GPT-4-0613</option>
+                  <option value="gpt-3.5-turbo-0125">GPT-3.5 Turbo-0125</option>
+                  <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
+                  <option value="gpt-3.5-turbo-1106">GPT-3.5 Turbo-1106</option>
                 </select>
               </div>
             </div>

@@ -5,11 +5,10 @@
 import BaiduTranslate from '/static/js/dich-nhanh/may-dich/BaiduTranslate.js';
 import CoccocEduTranslate from '/static/js/dich-nhanh/may-dich/CoccocEduTranslate.js';
 import DeeplTranslate from '/static/js/dich-nhanh/may-dich/DeeplTranslate.js';
-import Gemini from '/static/js/dich-nhanh/may-dich/Gemini.js';
+import GenerativeAi from '/static/js/dich-nhanh/may-dich/GenerativeAi.js';
 import GoogleTranslate from '/static/js/dich-nhanh/may-dich/GoogleTranslate.js';
 import Lingvanex from '/static/js/dich-nhanh/may-dich/Lingvanex.js';
 import MicrosoftTranslator from '/static/js/dich-nhanh/may-dich/MicrosoftTranslator.js';
-import Openai from '/static/js/dich-nhanh/may-dich/Openai.js';
 import Papago from '/static/js/dich-nhanh/may-dich/Papago.js';
 import WebnovelTranslate from '/static/js/dich-nhanh/may-dich/WebnovelTranslate.js';
 
@@ -148,11 +147,10 @@ const Translators = {
   BAIDU_TRANSLATE: 'baiduTranslate',
   COCCOC_EDU_TRANSLATE: 'coccocEduTranslate',
   DEEPL_TRANSLATE: 'deeplTranslate',
-  GEMINI: 'gemini',
+  GENERATIVE_AI: 'generativeAi',
   GOOGLE_TRANSLATE: 'googleTranslate',
   LINGVANEX: 'lingvanex',
   MICROSOFT_TRANSLATOR: 'microsoftTranslator',
-  OPENAI: 'openai',
   PAPAGO: 'papago',
   WEBNOVEL_TRANSLATE: 'webnovelTranslate',
 };
@@ -514,8 +512,8 @@ const getSourceLangOptionList = function getSourceLanguageOptionListHtmlFromTran
       });
       break;
     }
-    case Translators.GEMINI: {
-      [{ label: '', value: '' }, ...Gemini.LANGUAGE_LIST].forEach(({ label, value }) => {
+    case Translators.GENERATIVE_AI: {
+      [{ label: 'Tự động nhận diện', value: 'Auto-detect' }, ...GenerativeAi.LANGUAGE_LIST].forEach(({ label, value }) => {
         const option = document.createElement('option');
         option.innerText = label;
         option.value = value;
@@ -539,15 +537,6 @@ const getSourceLangOptionList = function getSourceLanguageOptionListHtmlFromTran
         const option = document.createElement('option');
         option.innerText = name;
         option.value = languageCode;
-        sourceLanguageSelect.appendChild(option);
-      });
-      break;
-    }
-    case Translators.OPENAI: {
-      [{ label: 'Dò tìm tự động', value: 'Auto-Detect' }, ...Openai.LANGUAGE_LIST].forEach(({ label, value }) => {
-        const option = document.createElement('option');
-        option.innerText = label;
-        option.value = value;
         sourceLanguageSelect.appendChild(option);
       });
       break;
@@ -620,8 +609,8 @@ const getTargetLangOptionList = function getTargetLanguageOptionListHtmlFromTran
       });
       break;
     }
-    case Translators.GEMINI: {
-      Gemini.LANGUAGE_LIST.forEach(({ label, value }) => {
+    case Translators.GENERATIVE_AI: {
+      GenerativeAi.LANGUAGE_LIST.forEach(({ label, value }) => {
         const option = document.createElement('option');
         option.innerText = label;
         option.value = value;
@@ -645,15 +634,6 @@ const getTargetLangOptionList = function getTargetLanguageOptionListHtmlFromTran
         const option = document.createElement('option');
         option.innerText = name;
         option.value = languageCode;
-        targetLanguageSelect.appendChild(option);
-      });
-      break;
-    }
-    case Translators.OPENAI: {
-      Openai.LANGUAGE_LIST.forEach(({ label, value }) => {
-        const option = document.createElement('option');
-        option.innerText = label;
-        option.value = value;
         targetLanguageSelect.appendChild(option);
       });
       break;
@@ -847,13 +827,11 @@ const translate = async function translateContentInTextarea(controller = new Abo
     const startTime = Date.now();
     const text = $inputTextarea.val();
     const targetLanguage = $targetLanguageSelect.val();
-    const geminiModel = $('#gemini-model-select').val();
 
     switch ($activeTranslator.val()) {
-      case Translators.OPENAI:
-      case Translators.GEMINI: {
+      case Translators.GENERATIVE_AI: {
         currentTranslator.controller = controller;
-        await currentTranslator.translateText(text, targetLanguage, $activeTranslator.val() === Translators.GEMINI ? geminiModel : $('#openai-model-select').val(), Object.entries(glossary.nomenclature));
+        await currentTranslator.translateText(text, targetLanguage, $('#model-select').val(), Object.entries(glossary.nomenclature));
         break;
       }
       default: {
@@ -866,8 +844,8 @@ const translate = async function translateContentInTextarea(controller = new Abo
 
     if (targetLanguage.startsWith('vi') && $polishSwitch.prop('checked')) {
       if (!isRetranslate) $resultTextarea.html(buildResult(text, currentTranslator.result, $activeTranslator.val()));
-      const polishResult = (await polishTranslation(text, currentTranslator.result, geminiModel)) ?? currentTranslator.result;
-      if (controller.signal.aborted) return;
+      const polishResult = await polishTranslation(text, currentTranslator.result, $('#gemini-model-select').val());
+      if (controller.signal.aborted || !polishResult) return;
       currentTranslator.result = polishResult;
     }
 
@@ -1440,9 +1418,9 @@ $translatorDropdown.find('.dropdown-item').click(function onClick() {
 
       break;
     }
-    case Translators.GEMINI: {
+    case Translators.GENERATIVE_AI: {
       if (currentTranslator == null) {
-        currentTranslator = new Gemini($geminiApiKeyText.val());
+        currentTranslator = new GenerativeAi(UUID.toLowerCase(), $geminiApiKeyText.val());
         translators[activeTranslator] = currentTranslator;
       }
 
@@ -1459,14 +1437,6 @@ $translatorDropdown.find('.dropdown-item').click(function onClick() {
     case Translators.MICROSOFT_TRANSLATOR: {
       if (currentTranslator == null) {
         currentTranslator = new MicrosoftTranslator($toneSelect.val());
-        translators[activeTranslator] = currentTranslator;
-      }
-
-      break;
-    }
-    case Translators.OPENAI: {
-      if (currentTranslator == null) {
-        currentTranslator = new Openai(UUID);
         translators[activeTranslator] = currentTranslator;
       }
 
@@ -1519,8 +1489,8 @@ $toneSelect.on('change', () => {
 
 $geminiApiKeyText.change(function onChange() {
   const $activeTranslator = $translatorDropdown.find('.active');
-  translators[Translators.GEMINI] = null;
-  if ($activeTranslator.val() === Translators.GEMINI) $activeTranslator.click();
+  translators[Translators.GENERATIVE_AI] = null;
+  if ($activeTranslator.val() === Translators.GENERATIVE_AI) $activeTranslator.click();
   if (localStorage.getItem('GEMINI_API_KEY') != null && localStorage.getItem('GEMINI_API_KEY').length === 0) localStorage.removeItem('GEMINI_API_KEY');
   else if (localStorage.getItem('GEMINI_API_KEY') !== $(this).val()) localStorage.setItem('GEMINI_API_KEY', $(this).val());
 });
@@ -1732,9 +1702,9 @@ $translateEntryButtons.click(async function onClick() {
 
           break;
         }
-        case Translators.GEMINI: {
+        case Translators.GENERATIVE_AI: {
           if (translator == null) {
-            translator = new Gemini($geminiApiKeyText.val());
+            translator = new GenerativeAi(UUID.toLowerCase(), $geminiApiKeyText.val());
             translators[activeTranslator] = translator;
           }
 
@@ -1764,14 +1734,6 @@ $translateEntryButtons.click(async function onClick() {
 
           break;
         }
-        case Translators.OPENAI: {
-          if (translator == null) {
-            translator = new Openai(UUID);
-            translators[activeTranslator] = translator;
-          }
-
-          break;
-        }
         case Translators.PAPAGO: {
           if (translator == null) {
             translator = new Papago(UUID);
@@ -1792,10 +1754,9 @@ $translateEntryButtons.click(async function onClick() {
 
       if (translator != null) {
         switch (activeTranslator) {
-          case Translators.OPENAI:
-          case Translators.GEMINI: {
+          case Translators.GENERATIVE_AI: {
             translator.controller = entryTranslationController;
-            await translator.translateText(text, targetLanguage, activeTranslator === Translators.GEMINI ? $('#translate-entry-gemini-model-select').val() : $('#translate-entry-openai-model-select').val());
+            await translator.translateText(text, targetLanguage, $('#translate-entry-model-select').val());
             break;
           }
           default: {
