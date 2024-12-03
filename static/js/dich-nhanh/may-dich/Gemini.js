@@ -13,11 +13,11 @@ class Gemini extends Translator {
       value: 'Japanese',
     },
     {
-      label: 'Tiếng Trung (Giản thể)',
+      label: 'Tiếng Trung giản thể',
       value: 'Chinese simplified',
     },
     {
-      label: 'Tiếng Trung (Phồn thể)',
+      label: 'Tiếng Trung phồn thể',
       value: 'Chinese traditional',
     },
     {
@@ -76,6 +76,10 @@ ${filteredNomenclature.map((element) => element.join('\t')).join('\n')}
             },
           ],
           safetySettings: [
+            {
+              category: 'HARM_CATEGORY_UNSPECIFIED',
+              threshold: 'BLOCK_NONE',
+            },
             {
               category: 'HARM_CATEGORY_HARASSMENT',
               threshold: 'BLOCK_NONE',
