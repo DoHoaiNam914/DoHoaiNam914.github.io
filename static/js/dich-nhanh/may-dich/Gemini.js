@@ -14,11 +14,11 @@ class Gemini extends Translator {
     },
     {
       label: 'Tiếng Trung (Giản thể)',
-      value: 'Chinese (Simplified)',
+      value: 'Chinese simplified',
     },
     {
       label: 'Tiếng Trung (Phồn thể)',
-      value: 'Chinese (Traditional)',
+      value: 'Chinese traditional',
     },
     {
       label: 'Tiếng Việt',

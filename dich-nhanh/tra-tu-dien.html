@@ -37,26 +37,11 @@
         }
       }());
     </script>
-    <script src="/static/lib/LAB.js"></script>
-    <script>
-      'use strict';
-
-      const librariesToLoad = [
-        'https://code.jquery.com/jquery-3.7.1.min.js',
-        '/static/lib/text_match_engines.js',
-      ];
-
-      const scriptsToLoad = [...librariesToLoad, ...[
-          '/static/js/Utils.js',
-          '/static/js/newAccentMap.js',
-          '/static/js/define-dictionary.js',
-        ],
-      ];
-
-      let i = 0;
-      const labJs = () => i < scriptsToLoad.length && $LAB.script(scriptsToLoad[i]).wait(() => i++).wait(labJs);
-      labJs();
-    </script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="/static/js/Utils.js"></script>
+    <script src="/static/js/newAccentMap.js"></script>
+    <script src="/static/lib/text_match_engines.js"></script>
+    <script src="/static/js/define-dictionary.js"></script>
   </head>
   <body class="bg-body-tertiary h-100 m-0 p-0 position-relative w-100">
 </html>
