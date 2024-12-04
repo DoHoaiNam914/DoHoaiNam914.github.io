@@ -155,13 +155,13 @@ ${filteredNomenclature.map((element) => element.join('\t')).join('\n')}
 
       this.result = isGemini ? await this.runGemini(model, INSTRUCTIONS, MESSAGE) : await this.runOpenai(model, INSTRUCTIONS, MESSAGE);
 
-      if (this.controller.signal.aborted || !this.result) {
+      if (this.controller.signal.aborted || this.result == null) {
         this.result = text;
         return this.result;
       }
 
-      if (isGemini) this.result = this.result.replace(/\n$/, '');
-      else this.result = this.result.replaceAll(/(?:^(?:.+:\n)?`{3}txt\n|\n`{3}$)/g, '');
+      if (isGemini) this.result = this.result.replace(/\n$/, '').replaceAll(/`{3}txt\n|\n`{3}/g, '');
+      else this.result = this.result.replaceAll(/^(?:.+:\n)?`{3}txt\n|\n`{3}$/g, '');
       const queryLineSeperators = query.split(/(\n)/).filter((element) => element.includes('\n'));
       const lineSeparatorBooleans = this.result.split(/(\n{1,2})/).filter((element) => element.includes('\n\n')).map((element, index) => element !== queryLineSeperators[index]);
       this.result = this.result.split(lineSeparatorBooleans.reduce((accumulator, currentValue) => accumulator + (currentValue ? 1 : -1), 0) > 0 ? '\n\n' : '\n');
