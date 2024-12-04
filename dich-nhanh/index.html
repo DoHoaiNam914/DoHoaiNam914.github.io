@@ -673,67 +673,51 @@
                 </select>
               </div>
               <hr>
-              <h2 class="fs-5">Trí tuệ nhân tạo tạo sinh</h2>
+              <h2 class="fs-5">Dịch với trí tuệ nhân tạo tạo sinh</h2>
               <div class="mb-3">
                 <label class="form-label" for="model-select">Mô hình AI tạo sinh:</label>
                 <select class="form-select form-select-sm" id="model-select">
-                  <!-- Gemini-->
-                  <option value="gemini-1.5-flash-latest">Gemini 1.5 Flash-latest</option>
-                  <option value="gemini-1.5-flash" selected>Gemini 1.5 Flash</option>
-                  <option value="gemini-1.5-flash-001">Gemini 1.5 Flash-001</option>
-                  <option value="gemini-1.5-flash-002">Gemini 1.5 Flash-002</option>
-                  <option value="gemini-1.5-flash-8b-latest">Gemini 1.5 Flash-8B-latest</option>
-                  <option value="gemini-1.5-flash-8b">Gemini 1.5 Flash-8B</option>
-                  <option value="gemini-1.5-flash-8b-001">Gemini 1.5 Flash-8B-001</option>
-                  <option value="gemini-1.5-pro-latest">Gemini 1.5 Pro-latest</option>
-                  <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
-                  <option value="gemini-1.5-pro-001">Gemini 1.5 Pro-001</option>
-                  <option value="gemini-1.5-pro-002">Gemini 1.5 Pro-002</option>
-                  <!-- Không dùng nữa -->
-                  <option value="gemini-1.0-pro">Gemini 1.0 Pro</option>
-                  <!-- OpenAI-->
-                  <option value="gpt-4o">GPT-4o</option>
-                  <option value="gpt-4o-2024-11-20">GPT-4o-2024-11-20</option>
-                  <option value="gpt-4o-2024-08-06">GPT-4o-2024-08-06</option>
-                  <option value="gpt-4o-2024-05-13">GPT-4o-2024-05-13</option>
-                  <option value="gpt-4o-mini" selected>GPT-4o mini</option>
-                  <option value="gpt-4o-mini-2024-07-18">GPT-4o mini-2024-07-18</option>
-                  <option value="o1-preview">o1-preview</option>
-                  <option value="o1-preview-2024-09-12">o1-preview-2024-09-12</option>
-                  <option value="o1-mini">o1-mini</option>
-                  <option value="o1-mini-2024-09-12">o1-mini-2024-09-12</option>
-                  <option value="gpt-4-turbo">GPT-4 Turbo</option>
-                  <option value="gpt-4-turbo-2024-04-09">GPT-4 Turbo-2024-04-09</option>
-                  <option value="gpt-4-turbo-2024-04-09">GPT-4 Turbo-2024-04-09</option>
-                  <option value="gpt-4">GPT-4</option>
-                  <option value="gpt-4-0613">GPT-4-0613</option>
-                  <option value="gpt-3.5-turbo-0125">GPT-3.5 Turbo-0125</option>
-                  <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
-                  <option value="gpt-3.5-turbo-1106">GPT-3.5 Turbo-1106</option>
+                  <optgroup label="Gemini">
+                    <option value="gemini-1.5-flash-latest">Gemini 1.5 Flash-latest</option>
+                    <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
+                    <option value="gemini-1.5-flash-001">Gemini 1.5 Flash-001</option>
+                    <option value="gemini-1.5-flash-002">Gemini 1.5 Flash-002</option>
+                    <option value="gemini-1.5-flash-8b-latest">Gemini 1.5 Flash-8B-latest</option>
+                    <option value="gemini-1.5-flash-8b">Gemini 1.5 Flash-8B</option>
+                    <option value="gemini-1.5-flash-8b-001">Gemini 1.5 Flash-8B-001</option>
+                    <option value="gemini-1.5-pro-latest">Gemini 1.5 Pro-latest</option>
+                    <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
+                    <option value="gemini-1.5-pro-001">Gemini 1.5 Pro-001</option>
+                    <option value="gemini-1.5-pro-002">Gemini 1.5 Pro-002</option>
+                    <!-- Không dùng nữa -->
+                    <option value="gemini-1.0-pro">Gemini 1.0 Pro</option>
+                  </optgroup>
+                  <optgroup label="OpenAI">
+                    <option value="gpt-4o">GPT-4o</option>
+                    <option value="gpt-4o-2024-11-20">GPT-4o-2024-11-20</option>
+                    <option value="gpt-4o-2024-08-06">GPT-4o-2024-08-06</option>
+                    <option value="gpt-4o-2024-05-13">GPT-4o-2024-05-13</option>
+                    <option value="gpt-4o-mini" selected>GPT-4o mini</option>
+                    <option value="gpt-4o-mini-2024-07-18">GPT-4o mini-2024-07-18</option>
+                    <option value="o1-preview">o1-preview</option>
+                    <option value="o1-preview-2024-09-12">o1-preview-2024-09-12</option>
+                    <option value="o1-mini">o1-mini</option>
+                    <option value="o1-mini-2024-09-12">o1-mini-2024-09-12</option>
+                    <option value="gpt-4-turbo">GPT-4 Turbo</option>
+                    <option value="gpt-4-turbo-2024-04-09">GPT-4 Turbo-2024-04-09</option>
+                    <option value="gpt-4-turbo-2024-04-09">GPT-4 Turbo-2024-04-09</option>
+                    <option value="gpt-4">GPT-4</option>
+                    <option value="gpt-4-0613">GPT-4-0613</option>
+                    <option value="gpt-3.5-turbo-0125">GPT-3.5 Turbo-0125</option>
+                    <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
+                    <option value="gpt-3.5-turbo-1106">GPT-3.5 Turbo-1106</option>
+                  </optgroup>
                 </select>
               </div>
               <input type="text" class="form-control mb-3" id="gemini-api-key-text" placeholder="Gemini API Key">
               <div class="form-check form-switch mb-3">
                 <input type="checkbox" class="form-check-input" id="polish-switch" role="switch">
-                <label class="form-check-label" for="polish-switch">Làm mượt bản dịch bằng Gemini</label>
-              </div>
-              <div class="mb-3">
-                <label class="form-label" for="gemini-model-select">Mô hình Gemini:</label>
-                <select class="form-select form-select-sm" id="gemini-model-select">
-                  <option value="gemini-1.5-flash-latest">Gemini 1.5 Flash-latest</option>
-                  <option value="gemini-1.5-flash" selected>Gemini 1.5 Flash</option>
-                  <option value="gemini-1.5-flash-001">Gemini 1.5 Flash-001</option>
-                  <option value="gemini-1.5-flash-002">Gemini 1.5 Flash-002</option>
-                  <option value="gemini-1.5-flash-8b-latest">Gemini 1.5 Flash-8B-latest</option>
-                  <option value="gemini-1.5-flash-8b">Gemini 1.5 Flash-8B</option>
-                  <option value="gemini-1.5-flash-8b-001">Gemini 1.5 Flash-8B-001</option>
-                  <option value="gemini-1.5-pro-latest">Gemini 1.5 Pro-latest</option>
-                  <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
-                  <option value="gemini-1.5-pro-001">Gemini 1.5 Pro-001</option>
-                  <option value="gemini-1.5-pro-002">Gemini 1.5 Pro-002</option>
-                  <!-- Không dùng nữa -->
-                  <option value="gemini-1.0-pro">Gemini 1.0 Pro</option>
-                </select>
+                <label class="form-check-label" for="polish-switch">Đánh bóng bản dịch bằng AI tạo sinh</label>
               </div>
             </div>
           </div>
@@ -970,39 +954,41 @@
               <div class="mb-3">
                 <label class="form-label" for="translate-entry-model-select">Mô hình AI tạo sinh:</label>
                 <select class="form-select form-select-sm" id="translate-entry-model-select">
-                  <!-- Gemini-->
-                  <option value="gemini-1.5-flash-latest">Gemini 1.5 Flash-latest</option>
-                  <option value="gemini-1.5-flash" selected>Gemini 1.5 Flash</option>
-                  <option value="gemini-1.5-flash-001">Gemini 1.5 Flash-001</option>
-                  <option value="gemini-1.5-flash-002">Gemini 1.5 Flash-002</option>
-                  <option value="gemini-1.5-flash-8b-latest">Gemini 1.5 Flash-8B-latest</option>
-                  <option value="gemini-1.5-flash-8b">Gemini 1.5 Flash-8B</option>
-                  <option value="gemini-1.5-flash-8b-001">Gemini 1.5 Flash-8B-001</option>
-                  <option value="gemini-1.5-pro-latest">Gemini 1.5 Pro-latest</option>
-                  <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
-                  <option value="gemini-1.5-pro-001">Gemini 1.5 Pro-001</option>
-                  <option value="gemini-1.5-pro-002">Gemini 1.5 Pro-002</option>
-                  <!-- Không dùng nữa -->
-                  <option value="gemini-1.0-pro">Gemini 1.0 Pro</option>
-                  <!-- OpenAI-->
-                  <option value="gpt-4o" selected>GPT-4o</option>
-                  <option value="gpt-4o-2024-11-20">GPT-4o-2024-11-20</option>
-                  <option value="gpt-4o-2024-08-06">GPT-4o-2024-08-06</option>
-                  <option value="gpt-4o-2024-05-13">GPT-4o-2024-05-13</option>
-                  <option value="gpt-4o-mini">GPT-4o mini</option>
-                  <option value="gpt-4o-mini-2024-07-18">GPT-4o mini-2024-07-18</option>
-                  <option value="o1-preview">o1-preview</option>
-                  <option value="o1-preview-2024-09-12">o1-preview-2024-09-12</option>
-                  <option value="o1-mini">o1-mini</option>
-                  <option value="o1-mini-2024-09-12">o1-mini-2024-09-12</option>
-                  <option value="gpt-4-turbo">GPT-4 Turbo</option>
-                  <option value="gpt-4-turbo-2024-04-09">GPT-4 Turbo-2024-04-09</option>
-                  <option value="gpt-4-turbo-2024-04-09">GPT-4 Turbo-2024-04-09</option>
-                  <option value="gpt-4">GPT-4</option>
-                  <option value="gpt-4-0613">GPT-4-0613</option>
-                  <option value="gpt-3.5-turbo-0125">GPT-3.5 Turbo-0125</option>
-                  <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
-                  <option value="gpt-3.5-turbo-1106">GPT-3.5 Turbo-1106</option>
+                  <optgroup label="Gemini">
+                    <option value="gemini-1.5-flash-latest">Gemini 1.5 Flash-latest</option>
+                    <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
+                    <option value="gemini-1.5-flash-001">Gemini 1.5 Flash-001</option>
+                    <option value="gemini-1.5-flash-002">Gemini 1.5 Flash-002</option>
+                    <option value="gemini-1.5-flash-8b-latest">Gemini 1.5 Flash-8B-latest</option>
+                    <option value="gemini-1.5-flash-8b">Gemini 1.5 Flash-8B</option>
+                    <option value="gemini-1.5-flash-8b-001">Gemini 1.5 Flash-8B-001</option>
+                    <option value="gemini-1.5-pro-latest">Gemini 1.5 Pro-latest</option>
+                    <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
+                    <option value="gemini-1.5-pro-001">Gemini 1.5 Pro-001</option>
+                    <option value="gemini-1.5-pro-002">Gemini 1.5 Pro-002</option>
+                    <!-- Không dùng nữa -->
+                    <option value="gemini-1.0-pro">Gemini 1.0 Pro</option>
+                  </optgroup>
+                  <optgroup label="OpenAI">
+                    <option value="gpt-4o" selected>GPT-4o</option>
+                    <option value="gpt-4o-2024-11-20">GPT-4o-2024-11-20</option>
+                    <option value="gpt-4o-2024-08-06">GPT-4o-2024-08-06</option>
+                    <option value="gpt-4o-2024-05-13">GPT-4o-2024-05-13</option>
+                    <option value="gpt-4o-mini">GPT-4o mini</option>
+                    <option value="gpt-4o-mini-2024-07-18">GPT-4o mini-2024-07-18</option>
+                    <option value="o1-preview">o1-preview</option>
+                    <option value="o1-preview-2024-09-12">o1-preview-2024-09-12</option>
+                    <option value="o1-mini">o1-mini</option>
+                    <option value="o1-mini-2024-09-12">o1-mini-2024-09-12</option>
+                    <option value="gpt-4-turbo">GPT-4 Turbo</option>
+                    <option value="gpt-4-turbo-2024-04-09">GPT-4 Turbo-2024-04-09</option>
+                    <option value="gpt-4-turbo-2024-04-09">GPT-4 Turbo-2024-04-09</option>
+                    <option value="gpt-4">GPT-4</option>
+                    <option value="gpt-4-0613">GPT-4-0613</option>
+                    <option value="gpt-3.5-turbo-0125">GPT-3.5 Turbo-0125</option>
+                    <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
+                    <option value="gpt-3.5-turbo-1106">GPT-3.5 Turbo-1106</option>
+                  </optgroup>
                 </select>
               </div>
             </div>
