@@ -43,9 +43,11 @@ export default class GenerativeAi extends Translator {
     this.uuid = uuid;
     this.genAI = new GoogleGenerativeAI(geminiApiKey);
   }
-  
+
   async runOpenai(model, instructions, message) {
-    const maybeGpt4 = ['gpt-4', 'gpt-4-0613'].some((element) => model === element) ? null/* 8192 */ : 16384;
+    const maybeGpt4 = model.startsWith('gpt-4') ? null /** 8192 */ : 16384;
+    const maybeO1 = model.startsWith('o1') ? 32768 : maybeGpt4;
+    const maybeO1Mini = model.startsWith('o1-mini') ? 65536 : maybeO1;
     const result = await $.ajax({
       data: JSON.stringify({
         model,
@@ -62,7 +64,7 @@ export default class GenerativeAi extends Translator {
         response_format: { type: 'text' },
         temperature: model.startsWith('o1') ? 1 : 0.3, // Mặc định: 1
         // max_tokens: 2048,
-        max_completion_tokens: ['gpt-4o-2024-05-13', 'gpt-4-turbo', 'gpt-4-turbo-2024-04-09', 'gpt-3.5-turbo-0125', 'gpt-3.5-turbo', 'gpt-3.5-turbo-1106'].some((element) => model === element) ? 4096 : maybeGpt4,
+        max_completion_tokens: ['gpt-4o-2024-05-13', 'gpt-4-turbo', 'gpt-4-turbo-2024-04-09', 'gpt-3.5-turbo-0125', 'gpt-3.5-turbo', 'gpt-3.5-turbo-1106'].some((element) => model === element) ? 4096 : maybeO1Mini,
         top_p: model.startsWith('o1') ? 1 : 0.3, // Mặc định: 1
         frequency_penalty: 0,
         presence_penalty: 0,

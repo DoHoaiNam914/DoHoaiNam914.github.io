@@ -7,31 +7,35 @@
 /* Apple SD Gothic Neo */
 
 @font-face {
+  font-display: swap;
   font-family: appleSdGothicNeo;
   font-style: normal;
   font-weight: 400;
-  src: local('Apple SD Gothic Neo Regular'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/AppleSDGothicNeo/AppleSDGothicNeoR00-01.otf) format('opentype');
+  src: local('Apple SD Gothic Neo'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/AppleSDGothicNeo/AppleSDGothicNeoR00-01.otf) format('opentype');
 }
 
 @font-face {
+  font-display: swap;
   font-family: appleSdGothicNeo;
   font-style: normal;
   font-weight: 700;
-  src: local('Apple SD Gothic Neo Bold'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/AppleSDGothicNeo/AppleSDGothicNeoB00-07.otf) format('opentype');
+  src: local('Apple SD Gothic Neo'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/AppleSDGothicNeo/AppleSDGothicNeoB00-07.otf) format('opentype');
 }
 
 /* Avenir */
 
 @font-face {
+  font-display: swap;
   font-family: avenir;
   font-style: normal;
   font-weight: 400;
-  src: local('Avenir Roman'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Avenir-Roman.ttf) format('truetype');
+  src: local('Avenir'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Avenir-Roman.ttf) format('truetype');
 }
 
 /* A-OTF Ryumin Pr5 */
 
 @font-face {
+  font-display: swap;
   font-family: aotfRyuminPr5;
   font-style: normal;
   font-weight: 400;
@@ -41,6 +45,7 @@
 /* Baskerville */
 
 @font-face {
+  font-display: swap;
   font-family: baskerville;
   font-style: normal;
   font-weight: 400;
@@ -48,29 +53,33 @@
 }
 
 @font-face {
+  font-display: swap;
   font-family: baskerville;
   font-style: italic;
   font-weight: 400;
-  src: local('Baskerville Italic'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Baskerville/Baskerville%20Italic.ttf) format('truetype');
+  src: local('Baskerville'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Baskerville/Baskerville%20Italic.ttf) format('truetype');
 }
 
 @font-face {
+  font-display: swap;
   font-family: baskerville;
   font-style: normal;
   font-weight: 700;
-  src: local('Baskerville Bold'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Baskerville/Baskerville%20Bold.ttf) format('truetype');
+  src: local('Baskerville'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Baskerville/Baskerville%20Bold.ttf) format('truetype');
 }
 
 @font-face {
+  font-display: swap;
   font-family: baskerville;
   font-style: italic;
   font-weight: 700;
-  src: local('Baskerville Bold Italic'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Baskerville/Baskerville%20Bold%20Italic.ttf) format('truetype');
+  src: local('Baskerville'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Baskerville/Baskerville%20Bold%20Italic.ttf) format('truetype');
 }
 
 /* Bookerly */
 
 @font-face {
+  font-display: swap;
   font-family: bookerly;
   font-style: normal;
   font-weight: 400;
@@ -78,6 +87,7 @@
 }
 
 @font-face {
+  font-display: swap;
   font-family: bookerly;
   font-style: italic;
   font-weight: 400;
@@ -85,6 +95,7 @@
 }
 
 @font-face {
+  font-display: swap;
   font-family: bookerly;
   font-style: normal;
   font-weight: 700;
@@ -92,6 +103,7 @@
 }
 
 @font-face {
+  font-display: swap;
   font-family: bookerly;
   font-style: italic;
   font-weight: 700;
@@ -101,6 +113,7 @@
 /* Canela Text */
 
 @font-face {
+  font-display: swap;
   font-family: canelaText;
   font-style: normal;
   font-weight: 400;
@@ -108,6 +121,7 @@
 }
 
 @font-face {
+  font-display: swap;
   font-family: canelaText;
   font-style: italic;
   font-weight: 400;
@@ -115,6 +129,7 @@
 }
 
 @font-face {
+  font-display: swap;
   font-family: canelaText;
   font-style: normal;
   font-weight: 700;
@@ -122,6 +137,7 @@
 }
 
 @font-face {
+  font-display: swap;
   font-family: canelaText;
   font-style: italic;
   font-weight: 700;
@@ -131,36 +147,41 @@
 /* Charter */
 
 @font-face {
+  font-display: swap;
   font-family: charter;
   font-style: normal;
   font-weight: 400;
-  src: local('Charter Roman'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Charter%20210112/Charter%20Regular.ttf) format('truetype');
+  src: local('Charter'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Charter%20210112/Charter%20Regular.ttf) format('truetype');
 }
 
 @font-face {
+  font-display: swap;
   font-family: charter;
   font-style: italic;
   font-weight: 400;
-  src: local('Charter Italic'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Charter%20210112/Charter%20Italic.ttf) format('truetype');
+  src: local('Charter'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Charter%20210112/Charter%20Italic.ttf) format('truetype');
 }
 
 @font-face {
+  font-display: swap;
   font-family: charter;
   font-style: normal;
   font-weight: 700;
-  src: local('Charter Bold'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Charter%20210112/Charter%20Bold.ttf) format('truetype');
+  src: local('Charter'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Charter%20210112/Charter%20Bold.ttf) format('truetype');
 }
 
 @font-face {
+  font-display: swap;
   font-family: charter;
   font-style: italic;
   font-weight: 700;
-  src: local('Charter Bold Italic'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Charter%20210112/Charter%20Bold%20Italic.ttf) format('truetype');
+  src: local('Charter'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Charter%20210112/Charter%20Bold%20Italic.ttf) format('truetype');
 }
 
 /* Cochin */
 
 @font-face {
+  font-display: swap;
   font-family: cochin;
   font-style: normal;
   font-weight: 400;
@@ -168,29 +189,33 @@
 }
 
 @font-face {
+  font-display: swap;
   font-family: cochin;
   font-style: italic;
   font-weight: 400;
-  src: local('Cochin Italic'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Cochin/Cochin-Italic.ttf) format('truetype');
+  src: local('Cochin'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Cochin/Cochin-Italic.ttf) format('truetype');
 }
 
 @font-face {
+  font-display: swap;
   font-family: cochin;
   font-style: normal;
   font-weight: 700;
-  src: local('Cochin Bold'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Cochin/Cochin-Bold.ttf) format('truetype');
+  src: local('Cochin'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Cochin/Cochin-Bold.ttf) format('truetype');
 }
 
 @font-face {
+  font-display: swap;
   font-family: cochin;
   font-style: italic;
   font-weight: 700;
-  src: local('Cochin Bold Italic'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Cochin/Cochin-BoldItalic.ttf) format('truetype');
+  src: local('Cochin'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Cochin/Cochin-BoldItalic.ttf) format('truetype');
 }
 
 /* Helvetica */
 
 @font-face {
+  font-display: swap;
   font-family: helvetica;
   font-style: normal;
   font-weight: 400;
@@ -198,15 +223,17 @@
 }
 
 @font-face {
+  font-display: swap;
   font-family: helvetica;
   font-style: normal;
   font-weight: 700;
-  src: local('Helvetica Bold'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Helvetica/Helvetica%20Bold.ttf) format('truetype');
+  src: local('Helvetica'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Helvetica/Helvetica%20Bold.ttf) format('truetype');
 }
 
 /* HiraginoMin */
 
 @font-face {
+  font-display: swap;
   font-family: hiraginomin;
   font-style: normal;
   font-weight: 300;
@@ -214,6 +241,7 @@
 }
 
 @font-face {
+  font-display: swap;
   font-family: hiraginomin;
   font-style: normal;
   font-weight: 600;
@@ -223,6 +251,7 @@
 /* Hiragino Mincho Pro */
 
 @font-face {
+  font-display: swap;
   font-family: hiraginoMinchoPro;
   font-style: normal;
   font-weight: 300;
@@ -230,6 +259,7 @@
 }
 
 @font-face {
+  font-display: swap;
   font-family: hiraginoMinchoPro;
   font-style: normal;
   font-weight: 600;
@@ -239,6 +269,7 @@
 /* Hiragino Mincho ProN */
 
 @font-face {
+  font-display: swap;
   font-family: hiraginoMinchoPron;
   font-style: normal;
   font-weight: 300;
@@ -246,6 +277,7 @@
 }
 
 @font-face {
+  font-display: swap;
   font-family: hiraginoMinchoPron;
   font-style: normal;
   font-weight: 600;
@@ -255,6 +287,7 @@
 /* Hiragino Sans */
 
 @font-face {
+  font-display: swap;
   font-family: hiraginoSans;
   font-style: normal;
   font-weight: 300;
@@ -262,6 +295,7 @@
 }
 
 @font-face {
+  font-display: swap;
   font-family: hiraginoSans;
   font-style: normal;
   font-weight: 600;
@@ -271,6 +305,7 @@
 /* iCiel Domaine Text */
 
 @font-face {
+  font-display: swap;
   font-family: icielDomaineText;
   font-style: normal;
   font-weight: 400;
@@ -280,6 +315,7 @@
 /* Minion Pro */
 
 @font-face {
+  font-display: swap;
   font-family: minionPro;
   font-style: normal;
   font-weight: 400;
@@ -287,6 +323,7 @@
 }
 
 @font-face {
+  font-display: swap;
   font-family: minionPro;
   font-style: italic;
   font-weight: 400;
@@ -294,6 +331,7 @@
 }
 
 @font-face {
+  font-display: swap;
   font-family: minionPro;
   font-style: normal;
   font-weight: 700;
@@ -301,6 +339,7 @@
 }
 
 @font-face {
+  font-display: swap;
   font-family: minionPro;
   font-style: italic;
   font-weight: 700;
@@ -310,6 +349,7 @@
 /* New York */
 
 @font-face {
+  font-display: swap;
   font-family: newYork;
   font-style: normal;
   font-weight: 400;
@@ -317,6 +357,7 @@
 }
 
 @font-face {
+  font-display: swap;
   font-family: newYork;
   font-style: italic;
   font-weight: 400;
@@ -324,6 +365,7 @@
 }
 
 @font-face {
+  font-display: swap;
   font-family: newYork;
   font-style: normal;
   font-weight: 700;
@@ -331,6 +373,7 @@
 }
 
 @font-face {
+  font-display: swap;
   font-family: newYork;
   font-style: italic;
   font-weight: 700;
@@ -340,6 +383,7 @@
 /* OpenDyslexic */
 
 @font-face {
+  font-display: swap;
   font-family: opendyslexic;
   font-style: normal;
   font-weight: 400;
@@ -347,6 +391,7 @@
 }
 
 @font-face {
+  font-display: swap;
   font-family: opendyslexic;
   font-style: italic;
   font-weight: 400;
@@ -354,6 +399,7 @@
 }
 
 @font-face {
+  font-display: swap;
   font-family: opendyslexic;
   font-style: normal;
   font-weight: 700;
@@ -361,6 +407,7 @@
 }
 
 @font-face {
+  font-display: swap;
   font-family: opendyslexic;
   font-style: italic;
   font-weight: 700;
@@ -370,36 +417,41 @@
 /* Optima */
 
 @font-face {
+  font-display: swap;
   font-family: optima;
   font-style: normal;
   font-weight: 400;
-  src: local('Optima Regular'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Optima/Optima-Regular.ttf) format('truetype');
+  src: local('Optima'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Optima/Optima-Regular.ttf) format('truetype');
 }
 
 @font-face {
+  font-display: swap;
   font-family: optima;
   font-style: italic;
   font-weight: 400;
-  src: local('Optima Italic'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Optima/Optima-Italic.ttf) format('truetype');
+  src: local('Optima'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Optima/Optima-Italic.ttf) format('truetype');
 }
 
 @font-face {
+  font-display: swap;
   font-family: optima;
   font-style: normal;
   font-weight: 700;
-  src: local('Optima Bold'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Optima/Optima-Bold.ttf) format('truetype');
+  src: local('Optima'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Optima/Optima-Bold.ttf) format('truetype');
 }
 
 @font-face {
+  font-display: swap;
   font-family: optima;
   font-style: italic;
   font-weight: 700;
-  src: local('Optima Bold Italic'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Optima/Optima-BoldItalic.ttf) format('truetype');
+  src: local('Optima'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Optima/Optima-BoldItalic.ttf) format('truetype');
 }
 
 /* P22 Typewriter */
 
 @font-face {
+  font-display: swap;
   font-family: p22Typewriter;
   font-style: normal;
   font-weight: 400;
@@ -409,6 +461,7 @@
 /* Palatino */
 
 @font-face {
+  font-display: swap;
   font-family: palatino;
   font-style: normal;
   font-weight: 400;
@@ -416,103 +469,117 @@
 }
 
 @font-face {
+  font-display: swap;
   font-family: palatino;
   font-style: italic;
   font-weight: 400;
-  src: local('Palatino Italic'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Palatino/Palatino-Italic.ttf) format('truetype');
+  src: local('Palatino'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Palatino/Palatino-Italic.ttf) format('truetype');
 }
 
 @font-face {
+  font-display: swap;
   font-family: palatino;
   font-style: normal;
   font-weight: 700;
-  src: local('Palatino Bold'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Palatino/Palatino-Bold.ttf) format('truetype');
+  src: local('Palatino'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Palatino/Palatino-Bold.ttf) format('truetype');
 }
 
 @font-face {
+  font-display: swap;
   font-family: palatino;
   font-style: italic;
   font-weight: 700;
-  src: local('Palatino Bold Italic'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Palatino/Palatino-BoldItalic.ttf) format('truetype');
+  src: local('Palatino'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Palatino/Palatino-BoldItalic.ttf) format('truetype');
 }
 
 /* PingFang SC */
 
 @font-face {
+  font-display: swap;
   font-family: pingfangSc;
   font-style: normal;
   font-weight: 300;
-  src: local('PingFang SC Light'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/PingFang/PingFangSC-Light.ttf) format('truetype');
+  src: local('PingFang SC'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/PingFang/PingFangSC-Light.ttf) format('truetype');
 }
 
 @font-face {
+  font-display: swap;
   font-family: '.PingFang SC';
   font-style: normal;
   font-weight: 400;
-  src: local('PingFang SC Regular'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/PingFang/PingFangSC-Regular.ttf) format('truetype');
+  src: local('PingFang SC'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/PingFang/PingFangSC-Regular.ttf) format('truetype');
 }
 
 @font-face {
+  font-display: swap;
   font-family: pingfangSc;
   font-style: normal;
   font-weight: 400;
-  src: local('PingFang SC Regular'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/PingFang/PingFangSC-Regular.ttf) format('truetype');
+  src: local('PingFang SC'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/PingFang/PingFangSC-Regular.ttf) format('truetype');
 }
 
 @font-face {
+  font-display: swap;
   font-family: '.PingFang SC';
   font-style: normal;
   font-weight: 600;
-  src: local('PingFang SC Semibold'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/PingFang/PingFangSC-Semibold.ttf) format('truetype');
+  src: local('PingFang SC'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/PingFang/PingFangSC-Semibold.ttf) format('truetype');
 }
 
 @font-face {
+  font-display: swap;
   font-family: pingfangSc;
   font-style: normal;
   font-weight: 600;
-  src: local('PingFang SC Semibold'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/PingFang/PingFangSC-Semibold.ttf) format('truetype');
+  src: local('PingFang SC'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/PingFang/PingFangSC-Semibold.ttf) format('truetype');
 }
 
 /* PingFang TC */
 
 @font-face {
+  font-display: swap;
   font-family: pingfangTc;
   font-style: normal;
   font-weight: 300;
-  src: local('PingFang TC Light'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/PingFang/PingFangTC-Light.ttf) format('truetype');
+  src: local('PingFang TC'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/PingFang/PingFangTC-Light.ttf) format('truetype');
 }
 
 @font-face {
+  font-display: swap;
   font-family: '.PingFang TC';
   font-style: normal;
   font-weight: 400;
-  src: local('PingFang TC Regular'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/PingFang/PingFangTC-Regular.ttf) format('truetype');
+  src: local('PingFang TC'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/PingFang/PingFangTC-Regular.ttf) format('truetype');
 }
 
 @font-face {
+  font-display: swap;
   font-family: pingfangTc;
   font-style: normal;
   font-weight: 400;
-  src: local('PingFang TC Regular'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/PingFang/PingFangTC-Regular.ttf) format('truetype');
+  src: local('PingFang TC'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/PingFang/PingFangTC-Regular.ttf) format('truetype');
 }
 
 @font-face {
+  font-display: swap;
   font-family: '.PingFang TC';
   font-style: normal;
   font-weight: 600;
-  src: local('PingFang TC Semibold'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/PingFang/PingFangTC-Semibold.ttf) format('truetype');
+  src: local('PingFang TC'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/PingFang/PingFangTC-Semibold.ttf) format('truetype');
 }
 
 @font-face {
+  font-display: swap;
   font-family: pingfangTc;
   font-style: normal;
   font-weight: 600;
-  src: local('PingFang TC Semibold'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/PingFang/PingFangTC-Semibold.ttf) format('truetype');
+  src: local('PingFang TC'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/PingFang/PingFangTC-Semibold.ttf) format('truetype');
 }
 
 /* Proxima Nova */
 
 @font-face {
+  font-display: swap;
   font-family: proximaNova;
   font-style: normal;
   font-weight: 400;
@@ -520,6 +587,7 @@
 }
 
 @font-face {
+  font-display: swap;
   font-family: proximaNova;
   font-style: italic;
   font-weight: 400;
@@ -527,6 +595,7 @@
 }
 
 @font-face {
+  font-display: swap;
   font-family: proximaNova;
   font-style: normal;
   font-weight: 700;
@@ -534,6 +603,7 @@
 }
 
 @font-face {
+  font-display: swap;
   font-family: proximaNova;
   font-style: italic;
   font-weight: 700;
@@ -543,6 +613,7 @@
 /* Publico Text */
 
 @font-face {
+  font-display: swap;
   font-family: publicoText;
   font-style: normal;
   font-weight: 400;
@@ -550,6 +621,7 @@
 }
 
 @font-face {
+  font-display: swap;
   font-family: publicoText;
   font-style: italic;
   font-weight: 400;
@@ -557,6 +629,7 @@
 }
 
 @font-face {
+  font-display: swap;
   font-family: publicoText;
   font-style: normal;
   font-weight: 700;
@@ -564,6 +637,7 @@
 }
 
 @font-face {
+  font-display: swap;
   font-family: publicoText;
   font-style: italic;
   font-weight: 700;
@@ -573,6 +647,7 @@
 /* Roboto */
 
 @font-face {
+  font-display: swap;
   font-family: roboto;
   font-style: normal;
   font-weight: 400;
@@ -580,6 +655,7 @@
 }
 
 @font-face {
+  font-display: swap;
   font-family: roboto;
   font-style: italic;
   font-weight: 400;
@@ -587,6 +663,7 @@
 }
 
 @font-face {
+  font-display: swap;
   font-family: roboto;
   font-style: normal;
   font-weight: 700;
@@ -594,6 +671,7 @@
 }
 
 @font-face {
+  font-display: swap;
   font-family: roboto;
   font-style: italic;
   font-weight: 700;
@@ -603,6 +681,7 @@
 /* SF Pro Text */
 
 @font-face {
+  font-display: swap;
   font-family: sfProText;
   font-style: normal;
   font-weight: 400;
@@ -610,6 +689,7 @@
 }
 
 @font-face {
+  font-display: swap;
   font-family: sfProText;
   font-style: italic;
   font-weight: 400;
@@ -617,6 +697,7 @@
 }
 
 @font-face {
+  font-display: swap;
   font-family: sfProText;
   font-style: normal;
   font-weight: 700;
@@ -624,6 +705,7 @@
 }
 
 @font-face {
+  font-display: swap;
   font-family: sfProText;
   font-style: italic;
   font-weight: 700;
@@ -633,6 +715,7 @@
 /* STBShusong */
 
 @font-face {
+  font-display: swap;
   font-family: stbshusong;
   font-style: normal;
   font-weight: 400;
@@ -642,6 +725,7 @@
 /* STSong TC */
 
 @font-face {
+  font-display: swap;
   font-family: stsongTc;
   font-style: normal;
   font-weight: 400;
@@ -651,6 +735,7 @@
 /* SVN-Helvetica Neue */
 
 @font-face {
+  font-display: swap;
   font-family: svnHelveticaNeue;
   font-style: normal;
   font-weight: 400;
@@ -658,6 +743,7 @@
 }
 
 @font-face {
+  font-display: swap;
   font-family: svnHelveticaNeue;
   font-style: italic;
   font-weight: 400;
@@ -665,6 +751,7 @@
 }
 
 @font-face {
+  font-display: swap;
   font-family: svnHelveticaNeue;
   font-style: normal;
   font-weight: 700;
@@ -672,6 +759,7 @@
 }
 
 @font-face {
+  font-display: swap;
   font-family: svnHelveticaNeue;
   font-style: italic;
   font-weight: 700;
@@ -681,6 +769,7 @@
 /* SVN-Times New Roman */
 
 @font-face {
+  font-display: swap;
   font-family: svnTimesNewRoman;
   font-style: normal;
   font-weight: 400;
@@ -688,6 +777,7 @@
 }
 
 @font-face {
+  font-display: swap;
   font-family: svnTimesNewRoman;
   font-style: italic;
   font-weight: 400;
@@ -695,6 +785,7 @@
 }
 
 @font-face {
+  font-display: swap;
   font-family: svnTimesNewRoman;
   font-style: normal;
   font-weight: 700;
@@ -702,6 +793,7 @@
 }
 
 @font-face {
+  font-display: swap;
   font-family: svnTimesNewRoman;
   font-style: italic;
   font-weight: 700;
@@ -711,6 +803,7 @@
 /* TBMincho */
 
 @font-face {
+  font-display: swap;
   font-family: tbmincho;
   font-style: normal;
   font-weight: 300;
@@ -718,6 +811,7 @@
 }
 
 @font-face {
+  font-display: swap;
   font-family: tbmincho;
   font-style: normal;
   font-weight: 700;
@@ -727,6 +821,7 @@
 /* Thonburi */
 
 @font-face {
+  font-display: swap;
   font-family: thonburi;
   font-style: normal;
   font-weight: 400;
@@ -734,6 +829,7 @@
 }
 
 @font-face {
+  font-display: swap;
   font-family: thonburi;
   font-style: normal;
   font-weight: 700;
@@ -743,6 +839,7 @@
 /* Times */
 
 @font-face {
+  font-display: swap;
   font-family: times;
   font-style: normal;
   font-weight: 400;
@@ -750,6 +847,7 @@
 }
 
 @font-face {
+  font-display: swap;
   font-family: times;
   font-style: italic;
   font-weight: 400;
@@ -757,6 +855,7 @@
 }
 
 @font-face {
+  font-display: swap;
   font-family: times;
   font-style: normal;
   font-weight: 700;
@@ -764,6 +863,7 @@
 }
 
 @font-face {
+  font-display: swap;
   font-family: times;
   font-style: italic;
   font-weight: 700;
@@ -773,6 +873,7 @@
 /* Trixi Pro */
 
 @font-face {
+  font-display: swap;
   font-family: trixiPro;
   font-style: normal;
   font-weight: 400;

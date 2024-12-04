@@ -1626,15 +1626,15 @@ $('.define-button').on('click', function onClick() {
     window.open(href, '_blank', 'width=1000,height=577');
   }
 
-  if (window.getSelection) window.getSelection().removeAllRanges();
-  else if (document.selection) document.selection.empty();
+  if (window.getSelection != null) window.getSelection().removeAllRanges();
+  else if (document.selection != null) document.selection.empty();
   $sourceEntryInput.blur();
 });
 
 $('.translate-webpage-button').on('click', function onClick() {
   if ($sourceEntryInput.val().length > 0) window.open($(this).data('href').replace('%s', encodeURIComponent($sourceEntryInput.val().trimEnd())), '_blank', 'width=1000,height=577');
-  if (window.getSelection) window.getSelection().removeAllRanges();
-  else if (document.selection) document.selection.empty();
+  if (window.getSelection != null) window.getSelection().removeAllRanges();
+  else if (document.selection != null) document.selection.empty();
   $sourceEntryInput.blur();
 });
 
@@ -1809,7 +1809,6 @@ $translateEntryButtons.click(async function onClick() {
         }
       }
     }
-
 
     entryTranslationController = null;
 
