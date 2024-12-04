@@ -15,12 +15,6 @@ import WebnovelTranslate from '/static/js/dich-nhanh/may-dich/WebnovelTranslate.
 import { newAccentObject } from '/static/js/newAccentMap.js';
 import Utils from '/static/js/Utils.js';
 
-import {
-  GoogleGenerativeAI,
-  HarmCategory,
-  HarmBlockThreshold,
-} from '@google/generative-ai';
-
 const $addButton = $('#add-button');
 const $alignmentRadio = $('input[type="radio"][name="alignment-radio"]');
 const $boldTextSwitch = $('#bold-text-switch');
@@ -683,65 +677,15 @@ const loadLangSelectOptions = function loadLanguageListByTranslatorToHtmlOptions
 };
 
 const polishTranslation = async function polishTranslationWithArtificialIntelligence(text, rawTranslation, model = 'gemini-1.5-flash') {
-  const apiKey = $geminiApiKeyText.val()
-  if (apiKey.length === 0) return 'Vui lòng điền API Key để sử dụng Gemini.';
-  let result = rawTranslation;
+  let result = '';
 
   try {
     const nomenclature = Object.entries(glossary.nomenclature).filter(([first]) => text.includes(first));
     const lines = text.split('\n');
     const query = lines.map((element) => element.replace(/^\s+/g, '')).filter((element) => element.length > 0).join('\n');
     const rawTranslationLines = rawTranslation.split('\n');
-
-    const genAI = new GoogleGenerativeAI(apiKey);
-    const generativeModel = genAI.getGenerativeModel({ model });
-
-    const generationConfig = {
-      temperature: 0.3, // Mặc định: 1
-      topP: 0.3,  // Mặc định: model.startsWith('gemini-1.0-pro') ? 0.9 : 0.95
-      topK: /^gemini-1\.5-[^-]+-001$/.test(model) ? 64 : 40,
-      maxOutputTokens: 8192,
-      responseMimeType: 'text/plain',
-    };
-
-    const chatSession = generativeModel.startChat({
-      generationConfig,
-      history: [
-        {
-          role: 'user',
-          parts: [
-            {
-              text: `Translate the following text in the ORIGINAL TEXT section into Vietnamese. Review, cross-reference, and correct any sentences or lines in the rough translation in the ROUGH TRANSLATION section that may be misaligned or missing content before proceeding. Refer to each line of the previously corrected rough translation to ensure consistency in your translation. ${nomenclature.length > 0 ? `Accurately map names of people, ethnic groups, species, or place-names, and other concepts listed in the NOMENCLATURE LOOKUP TABLE to enhance translation accuracy and consistency. ` : ''}Your translations must convey all the content in the original text ${/\n/.test(query) ? 'line by line ' : ''}and cannot involve explanations or other unnecessary information. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text and cannot include explanations or other information.`,
-            },
-          ],
-        },
-      ],
-      safetySettings: [
-        {
-          category: HarmCategory.HARM_CATEGORY_HARASSMENT,
-          threshold: HarmBlockThreshold.BLOCK_NONE,
-        },
-        {
-          category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
-          threshold: HarmBlockThreshold.BLOCK_NONE,
-        },
-        {
-          category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
-          threshold: HarmBlockThreshold.BLOCK_NONE,
-        },
-        {
-          category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
-          threshold: HarmBlockThreshold.BLOCK_NONE,
-        },
-        {
-          // TODO: Đợi phía API thêm biến `HarmCategory.HARM_CATEGORY_CIVIC_INTEGRITY`
-          category: 'HARM_CATEGORY_CIVIC_INTEGRITY',
-          threshold: HarmBlockThreshold.BLOCK_NONE,
-        },
-      ],
-    });
-
-    let { response } = await chatSession.sendMessage(`ORIGINAL TEXT:
+    const INSTRCTIONS = `Translate the following text in the ORIGINAL TEXT section into Vietnamese. Review, cross-reference, and correct any sentences or lines in the rough translation in the ROUGH TRANSLATION section that may be misaligned or missing content before proceeding. Refer to each line of the previously corrected rough translation to ensure consistency in your translation. ${nomenclature.length > 0 ? `Accurately map names of people, ethnic groups, species, or place-names, and other concepts listed in the NOMENCLATURE LOOKUP TABLE to enhance translation accuracy and consistency. ` : ''}Your translations must convey all the content in the original text ${/\n/.test(query) ? 'line by line ' : ''}and cannot involve explanations or other unnecessary information. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text and cannot include explanations or other information.`;
+    const MESSAGE = `ORIGINAL TEXT:
 \`\`\`txt
 ${query}
 \`\`\`
@@ -755,16 +699,31 @@ NOMENCLATURE LOOKUP TABLE:
 \`\`\`tsv
 source\ttarget
 ${nomenclature.map((element) => element.join('\t')).join('\n')}
-\`\`\`` : ''}`);
+\`\`\`` : ''}`;
 
-    if (!response.text()) return result;
-    response = response.text().replace(/\n$/, '').replaceAll(new RegExp(`\`{3}${targetLanguage.toLowerCase()}\n|\n\`{3}`, 'g'), '');
+    let generativeAi = translators[Translators.GENERATIVE_AI];
+
+    if (generativeAi == null) {
+      generativeAi = new GenerativeAi(UUID.toLowerCase(), $geminiApiKeyText.val());
+      translators[Translators.GENERATIVE_AI] = generativeAi;
+    }
+
+    result = await generativeAi.runGemini(model, INSTRUCTIONS, MESSAGE);
+
+    if (result == null) {
+      result = rawTranslation;
+      return result;
+    }
+
+    result = result.replace(/\n$/, '').replaceAll(new RegExp(`\`{3}${targetLanguage.toLowerCase()}\n|\n\`{3}`, 'g'), '');
     const queryLineSeperators = query.split(/(\n)/).filter((element) => element.includes('\n'));
-    const lineSeparatorBooleans = response.split(/(\n{1,2})/).filter((element) => element.includes('\n\n')).map((element, index) => element !== queryLineSeperators[index]);
-    response = response.split(lineSeparatorBooleans.reduce((accumulator, currentValue) => accumulator + (currentValue ? 1 : -1), 0) > 0 ? '\n\n' : '\n');
-    response = Object.fromEntries(lines.map((element, index) => (element.replace(/^\s+/, '').length > 0 ? index : null)).filter((element) => element != null).map((element, index) => [element, response[index]]));
-    result = lines.map((element, index) => (response[index] != null ? (rawTranslationLines[index] ?? element).match(/^\s*/)[0].concat(response[index].replace(/^\s+/, '')) : rawTranslationLines[index] ?? element)).join('\n');
+    const lineSeparatorBooleans = result.split(/(\n{1,2})/).filter((element) => element.includes('\n\n')).map((element, index) => element !== queryLineSeperators[index]);
+    result = result.split(lineSeparatorBooleans.reduce((accumulator, currentValue) => accumulator + (currentValue ? 1 : -1), 0) > 0 ? '\n\n' : '\n');
+    const resultMap = Object.fromEntries(lines.map((element, index) => (element.replace(/^\s+/, '').length > 0 ? index : null)).filter((element) => element != null).map((element, index) => [element, result[index]]));
+    result = lines.map((element, index) => (resultMap[index] != null ? (rawTranslationLines[index] ?? element).match(/^\s*/)[0].concat(resultMap[index].replace(/^\s+/, '')) : rawTranslationLines[index] ?? element)).join('\n');
+    return result;
   } catch (error) {
+    result = error;
     throw error;
   }
 
@@ -845,7 +804,7 @@ const translate = async function translateContentInTextarea(controller = new Abo
     if (targetLanguage.startsWith('vi') && $polishSwitch.prop('checked')) {
       if (!isRetranslate) $resultTextarea.html(buildResult(text, currentTranslator.result, $activeTranslator.val()));
       const polishResult = await polishTranslation(text, currentTranslator.result, $('#gemini-model-select').val());
-      if (controller.signal.aborted || !polishResult) return;
+      if (controller.signal.aborted || polishResult == null) return;
       currentTranslator.result = polishResult;
     }
 

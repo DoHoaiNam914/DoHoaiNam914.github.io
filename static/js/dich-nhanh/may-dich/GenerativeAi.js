@@ -48,6 +48,7 @@ export default class GenerativeAi extends Translator {
     const maybeGpt4 = model.startsWith('gpt-4') ? null /** 8192 */ : 16384;
     const maybeO1 = model.startsWith('o1') ? 32768 : maybeGpt4;
     const maybeO1Mini = model.startsWith('o1-mini') ? 65536 : maybeO1;
+
     const result = await $.ajax({
       data: JSON.stringify({
         model,
@@ -84,6 +85,30 @@ export default class GenerativeAi extends Translator {
   async runGemini(model, instructions, message) {
     const generativeModel = this.genAI.getGenerativeModel({ model });
 
+    const safetySettings = [
+      {
+        category: HarmCategory.HARM_CATEGORY_HARASSMENT,
+        threshold: HarmBlockThreshold.BLOCK_NONE,
+      },
+      {
+        category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+        threshold: HarmBlockThreshold.BLOCK_NONE,
+      },
+      {
+        category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
+        threshold: HarmBlockThreshold.BLOCK_NONE,
+      },
+      {
+        category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+        threshold: HarmBlockThreshold.BLOCK_NONE,
+      },
+      {
+        // FIXME: Thiếu biến `HarmCategory.HARM_CATEGORY_CIVIC_INTEGRITY`
+        category: 'HARM_CATEGORY_CIVIC_INTEGRITY',
+        threshold: HarmBlockThreshold.BLOCK_NONE,
+      },
+    ];
+
     const generationConfig = {
       temperature: 0.3, // Mặc định: 1
       topP: 0.3,  // Mặc định: model.startsWith('gemini-1.0-pro') ? 0.9 : 0.95
@@ -93,6 +118,7 @@ export default class GenerativeAi extends Translator {
     };
 
     const chatSession = generativeModel.startChat({
+      safetySettings,
       generationConfig,
       history: [
         {
@@ -102,29 +128,6 @@ export default class GenerativeAi extends Translator {
               text: instructions,
             },
           ],
-        },
-      ],
-      safetySettings: [
-        {
-          category: HarmCategory.HARM_CATEGORY_HARASSMENT,
-          threshold: HarmBlockThreshold.BLOCK_NONE,
-        },
-        {
-          category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
-          threshold: HarmBlockThreshold.BLOCK_NONE,
-        },
-        {
-          category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
-          threshold: HarmBlockThreshold.BLOCK_NONE,
-        },
-        {
-          category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
-          threshold: HarmBlockThreshold.BLOCK_NONE,
-        },
-        {
-          // FIXME: Thiếu biến `HarmCategory.HARM_CATEGORY_CIVIC_INTEGRITY`
-          category: 'HARM_CATEGORY_CIVIC_INTEGRITY',
-          threshold: HarmBlockThreshold.BLOCK_NONE,
         },
       ],
     });
