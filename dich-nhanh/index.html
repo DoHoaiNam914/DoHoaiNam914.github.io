@@ -223,11 +223,13 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <script src="/static/lib/jquery-ui.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="/static/datasource/hanviet.js"></script>
     <script type="importmap">
       {
         "imports": {
-          "@google/generative-ai": "https://esm.run/@google/generative-ai"
+          "@google/generative-ai": "https://esm.run/@google/generative-ai",
+          "crypto-js": "https://esm.run/crypto-js"
         }
       }
     </script>
@@ -864,16 +866,6 @@
                     </div>
                   </li>
                   <li>
-                    <button type="button" class="dropdown-item" data-bs-toggle="collapse" data-bs-target="#microsoft-translator-collapse">Trình dịch Microsoft</button>
-                    <div class="collapse" id="microsoft-translator-collapse">
-                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="microsoftTranslator" data-lang="vi">Tiếng Việt</button>
-                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="microsoftTranslator" data-lang="en">Tiếng Anh</button>
-                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="microsoftTranslator" data-lang="ja">Tiếng Nhật</button>
-                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="microsoftTranslator" data-lang="zh-Hans">Tiếng Trung (Giản Thể)</button>
-                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="microsoftTranslator" data-lang="zh-Hant">Tiếng Trung (Phồn Thể)</button>
-                    </div>
-                  </li>
-                  <li>
                     <button type="button" class="dropdown-item" data-bs-toggle="collapse" data-bs-target="#coccoc-edu-translate-collapse">Cốc Cốc Học tập - Dịch</button>
                     <div class="collapse" id="coccoc-edu-translate-collapse">
                       <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="coccocEduTranslate" data-lang="vi">Tiếng Việt</button>
@@ -881,6 +873,16 @@
                       <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="coccocEduTranslate" data-lang="zh-Hans">Tiếng Trung giản thể</button>
                       <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="coccocEduTranslate" data-lang="zh-Hant">Tiếng Trung phồn thể</button>
                       <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="coccocEduTranslate" data-lang="ja">Tiếng Nhật</button>
+                    </div>
+                  </li>
+                  <li>
+                    <button type="button" class="dropdown-item" data-bs-toggle="collapse" data-bs-target="#microsoft-translator-collapse">Trình dịch Microsoft</button>
+                    <div class="collapse" id="microsoft-translator-collapse">
+                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="microsoftTranslator" data-lang="vi">Tiếng Việt</button>
+                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="microsoftTranslator" data-lang="en">Tiếng Anh</button>
+                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="microsoftTranslator" data-lang="ja">Tiếng Nhật</button>
+                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="microsoftTranslator" data-lang="zh-Hans">Tiếng Trung (Giản Thể)</button>
+                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="microsoftTranslator" data-lang="zh-Hant">Tiếng Trung (Phồn Thể)</button>
                     </div>
                   </li>
                   <li>
@@ -928,11 +930,9 @@
                     <div class="collapse" id="lingvanex-collapse">
                       <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="lingvanex" data-lang="vi_VN">Vietnamese</button>
                       <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="lingvanex" data-lang="en_US">English (USA)</button>
-                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="lingvanex" data-lang="en_GB">English (Great Britain)</button>
-                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="lingvanex" data-lang="en_AU">English (Australian)</button>
                       <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="lingvanex" data-lang="ja_JP">Japanese</button>
-                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="lingvanex" data-lang="zh-Hans_CN">Chinese (simplified)</button>
                       <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="lingvanex" data-lang="zh-Hant_TW">Chinese (traditional)</button>
+                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="lingvanex" data-lang="zh-Hans_CN">Chinese (simplified)</button>
                     </div>
                   </li>
                 </ul>

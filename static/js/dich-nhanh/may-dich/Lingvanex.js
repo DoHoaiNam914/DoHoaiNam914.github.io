@@ -14,61 +14,50 @@ export default class Lingvanex extends Translator {
 
   constructor() {
     super();
-    this.fetchApiKey();
     this.maxContentLengthPerRequest = 3000;
   }
 
-  fetchApiKey() {
-    try {
-      const [__, b2bAuthToken] = $.ajax({
-        async: false,
-        cache: false,
-        method: 'GET',
-        url: `${Utils.CORS_PROXY}https://lingvanex.com/lingvanex_demo_page/js/api-base.js`,
-      }).responseText.match(/B2B_AUTH_TOKEN="([^"]+)"/);
-      this.authToken = b2bAuthToken;
-    } catch (error) {
-      console.error('Không thể lấy được B2B_AUTH_TOKEN:', error);
-      throw console.error('Không thể lấy được B2B_AUTH_TOKEN!');
-    }
+  async fetchApiKey() {
+    await axios.get(`${Utils.CORS_PROXY}https://lingvanex.com/lingvanex_demo_page/js/api-base.js`).then(({ data }) => {
+      this.authToken = data.match(/B2B_AUTH_TOKEN="([^"]+)"/)[1];
+    }).catch((error) => {
+      this.controller.abort();
+      console.error('Bản dịch lỗi: Không thể lấy được B2B_AUTH_TOKEN:', error);
+    });
   }
 
   async translateText(text, targetLanguage, sourceLanguage = this.DefaultLanguage.SOURCE_LANGUAGE) {
-    try {
-      const lines = text.split('\n');
-      const responses = [];
-      let requestLines = [];
+    if (this.authToken == null) await this.fetchApiKey();
+    const lines = text.split('\n');
+    const responses = [];
+    let requestLines = [];
 
-      while (lines.length > 0) {
-        requestLines.push(lines.shift());
+    while (lines.length > 0) {
+      requestLines.push(lines.shift());
 
-        if (lines.length === 0 || [...requestLines, lines[0]].join('\n').length > this.maxContentLengthPerRequest) {
-          responses.push($.ajax({
-            data: `from=${sourceLanguage}&to=${targetLanguage}&text=${encodeURIComponent(requestLines.join('\n'))}&platform=dp`,
-            headers: {
-              Accept: 'application/json, text/javascript, */*; q=0.01',
-              Authorization: this.authToken,
-            },
-            method: 'POST',
-            url: `https://api-b2b.backenster.com/b1/api/v3/translate/?client=site&feature=seo_text&lang_pair=en_te`,
-          }));
-          requestLines = [];
-        }
+      if (lines.length === 0 || [...requestLines, lines[0]].join('\n').length > this.maxContentLengthPerRequest) {
+        responses.push(axios.post(`https://api-b2b.backenster.com/b1/api/v3/translate/`, `from=${sourceLanguage}&to=${targetLanguage}&text=${encodeURIComponent(requestLines.join('\n'))}&platform=dp`, {
+          headers: {
+            Accept: 'application/json, text/javascript, */*; q=0.01',
+            Authorization: this.authToken,
+          },
+          params: {
+            client: 'site',
+            feature: 'seo_text',
+            lang_pair: 'en_te',
+          },
+          signal: this.controller.signal,
+        }));
+        requestLines = [];
       }
+    }
 
-      await Promise.all(responses);
-
-      if (this.controller.signal.aborted) {
-        this.result = text;
-        return this.result;
-      }
-
+    await Promise.all(responses).then((responses) => {
       this.result = responses.map((element) => element.responseJSON.result).flat().join('\n');
       super.translateText(text, targetLanguage, sourceLanguage);
-    } catch (error) {
-      console.error('Bản dịch lỗi:', error);
-      this.result = error;
-    }
+    }).catch((error) => {
+      this.result = `Bản dịch lỗi: ${error}`;
+    });
 
     return this.result;
   }

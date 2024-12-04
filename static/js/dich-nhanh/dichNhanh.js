@@ -517,7 +517,7 @@ const getSourceLangOptionList = function getSourceLanguageOptionListHtmlFromTran
     }
     case Translators.LINGVANEX: {
       [{ full_code: '', englishName: 'Auto-detect language', codeName: 'Ngôn ngữ tự động phát hiện' }, ...Lingvanex.LANGUAGE_LIST].forEach(({ full_code, englishName }) => {
-        if (!['', 'zh-Hans_CN', 'zh-Hant_TW', 'en_AU', 'en_GB', 'en_US', 'ja_JP', 'vi_VN'].includes(full_code)) return;
+        if (!['', 'zh-Hans_CN', 'zh-Hant_TW', 'en_US', 'ja_JP', 'vi_VN'].includes(full_code)) return;
         const option = document.createElement('option');
         option.innerText = englishName;
         option.value = full_code;
@@ -614,7 +614,7 @@ const getTargetLangOptionList = function getTargetLanguageOptionListHtmlFromTran
     }
     case Translators.LINGVANEX: {
       Lingvanex.LANGUAGE_LIST.forEach(({ full_code, englishName }) => {
-        if (!['zh-Hans_CN', 'zh-Hant_TW', 'en_AU', 'en_GB', 'en_US', 'ja_JP', 'vi_VN'].includes(full_code)) return;
+        if (!['zh-Hans_CN', 'zh-Hant_TW', 'en_US', 'ja_JP', 'vi_VN'].includes(full_code)) return;
         const option = document.createElement('option');
         option.innerText = englishName;
         option.value = full_code;
@@ -817,15 +817,15 @@ ${nomenclature.map((element) => element.join('\t')).join('\n')}
     if (translators[$activeTranslator.val()] != null) {
       switch ($activeTranslator.val()) {
         case Translators.LINGVANEX: {
-          translators[$activeTranslator.val()].fetchApiKey();
+          await translators[$activeTranslator.val()].fetchApiKey();
           break;
         }
         case Translators.MICROSOFT_TRANSLATOR: {
-          translators[$activeTranslator.val()].fetchData();
+          await translators[activeTranslator].fetchData(translators[activeTranslator].tone);
           break;
         }
         case Translators.PAPAGO: {
-          translators[$activeTranslator.val()].fetchVersion();
+          await translators[$activeTranslator.val()].fetchVersion();
           break;
         }
         // no default
@@ -1007,10 +1007,7 @@ $(document).ready(async () => {
     },
   });
 
-  $.ajax({
-    method: 'GET',
-    url: '/static/datasource/Unihan_Variants.txt',
-  }).done((data) => {
+  axios.get('/static/datasource/Unihan_Variants.txt').then(({ data }) => {
     const array = data.split('\n').filter((element) => element.length > 0 && !element.startsWith('#')).map((element) => element.split('\t'));
 
     glossary.traditional = array.filter((element) => element.length === 3 && element[1] === 'kTraditionalVariant').map(([first, __, third]) => [String.fromCodePoint(parseInt(first.substring(2), 16)), third.split(' ').map((element) => element.startsWith('U+') ? String.fromCodePoint(parseInt(element.substring(2), 16)) : element).join(' ')]);
@@ -1018,22 +1015,15 @@ $(document).ready(async () => {
 
     glossary.simplified = array.filter((element) => element.length === 3 && element[1] === 'kSimplifiedVariant').map(([first, __, third]) => [String.fromCodePoint(parseInt(first.substring(2), 16)), third.split(' ').map((element) => element.startsWith('U+') ? String.fromCodePoint(parseInt(element.substring(2), 16)) : element).join(' ')]);
     console.log(`Đã tải xong bộ dữ liệu giản thể (${glossary.simplified.length})!`);
-  }).fail((__, ___, errorThrown) => {
-    console.error('Không thể tải bộ dữ liệu giản thể-phồn thể:', errorThrown);
+  }).catch((error) => {
+    console.error('Không thể tải bộ dữ liệu giản thể-phồn thể:', error);
     setTimeout(() => {
       window.location.reload();
     }, 5000);
   });
 
-  try {
-    glossary.sinovietnameses = cjkv.nam.map(([first, second]) => [first, second.normalize().split(',').map((element) => element.replaceAll(Utils.getTrieRegexPatternFromWords(Object.keys(newAccentObject)), (match) => newAccentObject[match] ?? match)).join(',')]);
-    console.log(`Đã tải xong bộ dữ liệu Hán-Việt (${glossary.sinovietnameses.length})!`);
-  } catch (error) {
-    console.error('Không thể tải bộ dữ liệu Hán-Việt:', error);
-    setTimeout(() => {
-      window.location.reload();
-    }, 5000);
-  }
+  glossary.sinovietnameses = cjkv.nam.map(([first, second]) => [first, second.normalize().split(',').map((element) => element.replaceAll(Utils.getTrieRegexPatternFromWords(Object.keys(newAccentObject)), (match) => newAccentObject[match] ?? match)).join(',')]);
+  console.log(`Đã tải xong bộ dữ liệu Hán-Việt (${glossary.sinovietnameses.length})!`);
 
   $translatorDropdown.find('.active').click();
   if (localStorage.getItem('DEEPL_AUTH_KEY') != null) $deeplAuthKeyText.val(localStorage.getItem('DEEPL_AUTH_KEY')).change();
@@ -1329,7 +1319,7 @@ $boldTextSwitch.change(function onChange() {
   $(document.documentElement).css('--opt-font-weight', $(this).prop('checked') ? 'bold' : ($themeDropdown.find('.active').data('font-weight') ?? 'normal'));
 });
 
-$translatorDropdown.find('.dropdown-item').click(function onClick() {
+$translatorDropdown.find('.dropdown-item').click(async function onClick() {
   $translatorDropdown.find('.dropdown-item').removeClass('active');
   $(this).addClass('active');
   const activeTranslator = $(this).val();
@@ -1372,6 +1362,7 @@ $translatorDropdown.find('.dropdown-item').click(function onClick() {
     case Translators.LINGVANEX: {
       if (currentTranslator == null) {
         currentTranslator = new Lingvanex();
+        currentTranslator.fetchApiKey();
         translators[activeTranslator] = currentTranslator;
       }
 
@@ -1379,7 +1370,8 @@ $translatorDropdown.find('.dropdown-item').click(function onClick() {
     }
     case Translators.MICROSOFT_TRANSLATOR: {
       if (currentTranslator == null) {
-        currentTranslator = new MicrosoftTranslator($toneSelect.val());
+        currentTranslator = new MicrosoftTranslator();
+        currentTranslator.fetchData($toneSelect.val());
         translators[activeTranslator] = currentTranslator;
       }
 
@@ -1388,6 +1380,7 @@ $translatorDropdown.find('.dropdown-item').click(function onClick() {
     case Translators.PAPAGO: {
       if (currentTranslator == null) {
         currentTranslator = new Papago(UUID);
+        currentTranslator.fetchVersion();
         translators[activeTranslator] = currentTranslator;
       }
 
@@ -1426,7 +1419,8 @@ $deeplAuthKeyText.change(function onChange() {
 
 $toneSelect.on('change', () => {
   const $activeTranslator = $translatorDropdown.find('.active');
-  translators[Translators.MICROSOFT_TRANSLATOR] = null;
+  if (translators[Translators.MICROSOFT_TRANSLATOR] == null) return;
+  translators[Translators.MICROSOFT_TRANSLATOR].fetchData($toneSelect.val());
   if ($activeTranslator.val() === Translators.MICROSOFT_TRANSLATOR) $activeTranslator.click();
 });
 
@@ -1664,6 +1658,7 @@ $translateEntryButtons.click(async function onClick() {
         case Translators.LINGVANEX: {
           if (translator == null) {
             translator = new Lingvanex();
+            translator.fetchApiKey();
             translators[activeTranslator] = translator;
           }
 
@@ -1671,7 +1666,8 @@ $translateEntryButtons.click(async function onClick() {
         }
         case Translators.MICROSOFT_TRANSLATOR: {
           if (translator == null) {
-            translator = new MicrosoftTranslator($toneSelect.val());
+            translator = new MicrosoftTranslator();
+            translator.fetchData($toneSelect.val());
             translators[activeTranslator] = translator;
           }
 
@@ -1680,6 +1676,7 @@ $translateEntryButtons.click(async function onClick() {
         case Translators.PAPAGO: {
           if (translator == null) {
             translator = new Papago(UUID);
+            translator.fetchVersion();
             translators[activeTranslator] = translator;
           }
 
@@ -1737,15 +1734,15 @@ $translateEntryButtons.click(async function onClick() {
       if (translators[activeTranslator] != null) {
         switch (activeTranslator) {
           case Translators.LINGVANEX: {
-            translators[activeTranslator].fetchApiKey();
+            await translators[activeTranslator].fetchApiKey();
             break;
           }
           case Translators.MICROSOFT_TRANSLATOR: {
-            translators[activeTranslator].fetchData();
+            await translators[activeTranslator].fetchData(translators[activeTranslator].tone);
             break;
           }
           case Translators.PAPAGO: {
-            translators[activeTranslator].fetchVersion();
+            await translators[activeTranslator].fetchVersion();
             break;
           }
           // no default

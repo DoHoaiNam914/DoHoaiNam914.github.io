@@ -19,42 +19,41 @@ export default class GoogleTranslate extends Translator {
   }
 
   async translateText(text, targetLanguage, sourceLanguage = this.DefaultLanguage.SOURCE_LANGUAGE) {
-    try {
-      const lines = text.split('\n');
-      const textEncoder = new TextEncoder();
-      const responses = [];
-      let requestLines = [];
+    const lines = text.split('\n');
+    const textEncoder = new TextEncoder();
+    const responses = [];
+    let requestLines = [];
 
-      while (lines.length > 0) {
-        requestLines.push(lines.shift());
+    while (lines.length > 0) {
+      requestLines.push(lines.shift());
 
-        if (lines.length === 0 || `${Utils.CORS_PROXY}https://translation.googleapis.com/language/translate/v2?prettyPrint=false${sourceLanguage !== this.DefaultLanguage.SOURCE_LANGUAGE ? `&source=${sourceLanguage}` : ''}&target=${targetLanguage}&q=${[...requestLines, lines[0]].map((element) => encodeURIComponent(element)).join('&q=')}&key=${this.key}`.length > this.maxRequestUrlLength) {
-          responses.push($.ajax({
-            headers: {
-              'Content-type': 'application/json; charset=utf-8',
-              'User-agent': 'com.google.GoogleBooks/6.8.1 google-api-objc-client/3.0 iPhone/18.1.1 hw/iPhone17_2 (gzip)',
-              'Cache-control': 'no-cache',
-            },
-            method: 'POST',
-            url: `${Utils.CORS_PROXY}https://translation.googleapis.com/language/translate/v2?prettyPrint=false&q=${requestLines.map((element) => encodeURIComponent(element)).join('&q=')}&${sourceLanguage == null || sourceLanguage !== this.DefaultLanguage.SOURCE_LANGUAGE ? `source=${sourceLanguage}&` : ''}target=${targetLanguage}&key=${this.key}`,
-          }));
-          requestLines = [];
-        }
+      if (lines.length === 0 || `${Utils.CORS_PROXY}https://translation.googleapis.com/language/translate/v2?prettyPrint=false${sourceLanguage !== this.DefaultLanguage.SOURCE_LANGUAGE ? `&source=${sourceLanguage}` : ''}&target=${targetLanguage}&q=${[...requestLines, lines[0]].map((element) => encodeURIComponent(element)).join('&q=')}&key=${this.key}`.length > this.maxRequestUrlLength) {
+        responses.push(axios.post(`${Utils.CORS_PROXY}https://translation.googleapis.com/language/translate/v2?${requestLines.length === 1 ? '' : `q=${requestLines.slice(0, -1).map((element) => encodeURIComponent(element)).join('&q=')}`}`, undefined, {
+          headers: {
+            'User-Agent': 'com.google.GoogleBooks/6.8.1 google-api-objc-client/3.0 iPhone/18.1.1 hw/iPhone17_2 (gzip)',
+            'content-type': 'application/json; charset=utf-8',
+            'accept-language': 'vi-VN,vi;q=0.9',
+            'cache-control': 'no-cache',
+          },
+          params: {
+            prettyPrint: false,
+            q: requestLines.pop(),
+            source: sourceLanguage == null || sourceLanguage !== this.DefaultLanguage.SOURCE_LANGUAGE ? sourceLanguage : null,
+            target: targetLanguage,
+            key: this.key,
+          },
+          signal: this.controller.signal,
+        }));
+        requestLines = [];
       }
-
-      await Promise.all(responses);
-
-      if (this.controller.signal.aborted) {
-        this.result = text;
-        return this.result;
-      }
-
-      this.result = Utils.convertHtmlToText(responses.map((a) => a.responseJSON.data.translations.map((b) => b.translatedText).join('\n')).join('\n'));
-      super.translateText(text, targetLanguage, sourceLanguage);
-    } catch (error) {
-      console.error('Bản dịch lỗi:', error);
-      this.result = error;
     }
+
+    await Promise.all(responses).then((responses) => {
+      this.result = Utils.convertHtmlToText(responses.map(({ data: { data: { translations } } }) => translations.map((element) => element.translatedText)).flat().join('\n'));
+      super.translateText(text, targetLanguage, sourceLanguage);
+    }).catch((error) => {
+      this.result = `Bản dịch lỗi: ${error}`;
+    });
 
     return this.result;
   }

@@ -12,27 +12,23 @@ export default class MicrosoftTranslator extends Translator {
     TARGET_LANGUAGE: 'vi',
   };
 
-  constructor(tone) {
+  constructor() {
     super();
-    this.tone = tone;
-    this.fetchData();
     this.maxContentLengthPerRequest = 1000;
     this.requestIndex = 1;
+    this.instance = axios.create({
+      baseURL: `${Utils.CORS_PROXY}https://www.bing.com`,
+      signal: this.controller.signal,
+    });
   }
 
-  fetchData() {
-    try {
-      const bingTranslatorHtml = $.ajax({
-        async: false,
-        method: 'GET',
-        url: `${Utils.CORS_PROXY}https://www.bing.com/translator`,
-      }).responseText;
+  async fetchData(tone) {
+    this.tone = tone;
 
-      const [__, IG] = bingTranslatorHtml.match(/IG:"([A-Z0-9]+)"/);
-      const [___, [____, casualAndFormalIid], [_____, standardIid]] = [...bingTranslatorHtml.matchAll(/data-iid="(translator\.\d+)"/g)];
-      const [______, key, token] = bingTranslatorHtml.match(/var params_AbusePreventionHelper = \[([0-9]+),"([^"]+)",[^\]]+\];/);
+    await this.instance.get(`/translator`).then(({ data }) => {
+      this.IG = data.match(/IG:"([A-Z0-9]+)"/)[1];
 
-      this.IG = IG;
+      const [__, [___, casualAndFormalIid], [____, standardIid]] = [...data.matchAll(/data-iid="(translator\.\d+)"/g)];
 
       switch (this.tone) {
         case 'Casual':
@@ -46,49 +42,46 @@ export default class MicrosoftTranslator extends Translator {
         }
       }
 
+      const [_____, key, token] = data.match(/var params_AbusePreventionHelper = \[([0-9]+),"([^"]+)",[^\]]+\];/);
+
       this.key = key;
       this.token = token;
-    } catch (error) {
-      console.error('Không thể lấy được Data:', error);
-      throw console.error('Không thể lấy được Data!');
-    }
+    }).catch((error) => {
+      this.controller.abort();
+      console.error('Bản dịch lỗi: Không thể lấy được dữ liệu:', error);
+    });
   }
 
   async translateText(text, targetLanguage, sourceLanguage = this.DefaultLanguage.SOURCE_LANGUAGE) {
-    try {
-      const lines = text.split('\n');
-      const responses = [];
-      let requestLines = [];
+    if (this.IG == null || this.IID == null || this.token == null || this.key == null) await this.fetchData(this.tone);
+    const lines = text.split('\n');
+    const responses = [];
+    let requestLines = [];
 
-      while (lines.length > 0) {
-        requestLines.push(lines.shift());
+    while (lines.length > 0) {
+      requestLines.push(lines.shift());
 
-        if (lines.length === 0 || [...requestLines, lines[0]].join('\n').length > this.maxContentLengthPerRequest) {
-          const queryText = requestLines.join('\n');
-          responses.push($.ajax({
-            data: `&fromLang=${sourceLanguage ?? MicrosoftTranslator.AUTODETECT}&to=${targetLanguage}&token=${this.token}&key=${this.key}${this.tone === 'Standard' ? `&text=${queryText}&tryFetchingGenderDebiasedTranslations=true` : `&tone=${this.tone}&text=${queryText}`}`,
-            headers: { 'Content-type': 'application/x-www-form-urlencoded' },
-            method: 'POST',
-            url: `${Utils.CORS_PROXY}https://www.bing.com/ttranslatev3?isVertical=1&&IG=${this.IG}&IID=${this.IID}${this.tone !== 'Standard' ? `.${this.requestIndex}` : ''}`,
-          }));
-          requestLines = [];
-        }
+      if (lines.length === 0 || [...requestLines, lines[0]].join('\n').length > this.maxContentLengthPerRequest) {
+        const queryText = requestLines.join('\n');
+        responses.push(this.instance.post('/ttranslatev3', `&fromLang=${sourceLanguage ?? MicrosoftTranslator.AUTODETECT}&to=${targetLanguage}&token=${this.token}&key=${this.key}${this.tone === 'Standard' ? `&text=${queryText}&tryFetchingGenderDebiasedTranslations=true` : `&tone=${this.tone}&text=${queryText}`}`, {
+          headers: { 'Content-type': 'application/x-www-form-urlencoded' },
+          params: {
+            isVertical: 1,
+            IG: this.IG,
+            IID: `${this.IID}${this.tone !== 'Standard' ? `.${this.requestIndex}` : ''}`,
+          },
+        }));
+        requestLines = [];
       }
+    }
 
-      await Promise.all(responses);
-
-      if (this.controller.signal.aborted) {
-        this.result = text;
-        return this.result;
-      }
-
-      this.result = responses.map((element) => element.responseJSON[0].translations[0].text).join('\n');
+    await Promise.all(responses).then((responses) => {
+      this.result = responses.map(({ data: [{ translations: [{ text }] }] }) => text).join('\n');
       this.requestIndex += 1;
       super.translateText(text, targetLanguage, sourceLanguage);
-    } catch (error) {
-      console.error('Bản dịch lỗi:', error);
-      this.result = error;
-    }
+    }).catch((error) => {
+      this.result = `Bản dịch lỗi: ${error}`;
+    });
 
     return this.result;
   }

@@ -19,40 +19,33 @@ export default class CoccocEduTranslate extends Translator {
   }
 
   async translateText(text, targetLanguage, sourceLanguage = this.DefaultLanguage.SOURCE_LANGUAGE) {
-    try {
-      const lines = text.split('\n');
-      const responses = [];
-      let requestLines = [];
+    const lines = text.split('\n');
+    const responses = [];
+    let requestLines = [];
 
-      while (lines.length > 0) {
-        requestLines.push(lines.shift());
+    while (lines.length > 0) {
+      requestLines.push(lines.shift());
 
-        if (lines.length === 0 || [...requestLines, lines[0]].join('\n').length > this.maxContentLengthPerRequest || (requestLines.length + 1) > this.maxContentLinePerRequest) {
-          responses.push($.ajax({
-            data: JSON.stringify({
-              Text: requestLines.join('\n'),
-            }),
-            headers: { 'Content-Type': 'application/json' },
-            method: 'POST',
-            url: `${Utils.CORS_PROXY}https://hoctap.coccoc.com/composer/proxyapi/translate?from=${sourceLanguage}&to=${targetLanguage}&reqid=undefined`,
-          }));
-          requestLines = [];
-        }
+      if (lines.length === 0 || [...requestLines, lines[0]].join('\n').length > this.maxContentLengthPerRequest || (requestLines.length + 1) > this.maxContentLinePerRequest) {
+        responses.push(axios.post(`${Utils.CORS_PROXY}https://hoctap.coccoc.com/composer/proxyapi/translate`, JSON.stringify({ Text: requestLines.join('\n') }), {
+          headers: { 'Content-Type': 'application/json' },
+          params: {
+            from: sourceLanguage,
+            to: targetLanguage,
+            reqid: 'undefined',
+          },
+          signal: this.controller.signal,
+        }));
+        requestLines = [];
       }
-
-      await Promise.all(responses);
-
-      if (this.controller.signal.aborted) {
-        this.result = text;
-        return this.result;
-      }
-
-      this.result = responses.map((element) => element.responseJSON.proxyapi[0].translations[0].text).join('\n');
-      super.translateText(text, targetLanguage, sourceLanguage);
-    } catch (error) {
-      console.error('Bản dịch lỗi:', error);
-      this.result = error;
     }
+
+    await Promise.all(responses).then((responses) => {
+      this.result = responses.map(({ data: { proxyapi: [{ translations: [{ text }] }] } }) => text).join('\n');
+      super.translateText(text, targetLanguage, sourceLanguage);
+    }).catch((error) => {
+      this.result = `Bản dịch lỗi: ${error}`;
+    });
 
     return this.result;
   }

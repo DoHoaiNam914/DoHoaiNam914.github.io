@@ -16,67 +16,52 @@ export default class DeeplTranslate extends Translator {
 
   constructor(authKey) {
     super();
-    this.authKey = authKey;
-    this.fetchUsage();
     this.maxContentLinePerRequest = 50;
-  }
-
-  fetchUsage() {
-    try {
-      this.usage = $.ajax({
-        async: false,
-        cache: false,
-        method: 'GET',
-        url: `https://api-free.deepl.com/v2/usage?auth_key=${this.authKey}`,
-      });
-    } catch (error) {
-      console.error('Không thể lấy được Mức sử dụng:', error);
-      throw console.error('Không thể lấy được Mức sử dụng!');
-    }
+    this.maxRequestSize = 128 * 1024;
+    this.instance = axios.create({
+      baseURL: 'https://api-free.deepl.com',
+      params: {
+        auth_key: authKey,
+      },
+      signal: this.controller.signal,
+    });
   }
 
   async translateText(text, targetLanguage, sourceLanguage = this.DefaultLanguage.SOURCE_LANGUAGE) {
-    if (this.usage == null) this.fetchUsage();
+    if (this.usage == null) {
+      this.usage = await this.instance.get('/v2/usage').then(({ data }) => data).catch((error) => {
+        this.controller.abort();
+        console.error('Không thể lấy được Mức sử dụng:', error);
+      });
+    }
 
     if (this.usage == null) {
-      this.result = 'Auth Key của bạn không hợp lệ!';
+      this.result = 'Bản dịch lỗi: Auth Key của bạn không hợp lệ!';
       return this.result;
     } else if ((this.usage.character_limit - this.usage.character_count) < text.length) {
-      this.result = `Đã đạt đến giới hạn sử dụng của Auth Key này: ${this.usage.character_count}/${this.usage.character_limit}`;
+      this.result = `Bản dịch lỗi: Đã đạt đến giới hạn sử dụng của Auth Key này: ${this.usage.character_count}/${this.usage.character_limit}`;
       return this.result;
     }
 
-    try {
-      const lines = text.split('\n');
-      const responses = [];
-      let requestLines = [];
+    const lines = text.split('\n');
+    const responses = [];
+    let requestLines = [];
 
-      while (lines.length > 0) {
-        requestLines.push(lines.shift());
+    while (lines.length > 0) {
+      requestLines.push(lines.shift());
 
-        if (lines.length === 0 || (requestLines.length + 1) > this.maxContentLinePerRequest) {
-          responses.push($.ajax({
-            data: `text=${requestLines.map((element) => encodeURIComponent(element)).join('&text=')}&${sourceLanguage !== '' ? `source_lang=${sourceLanguage}&` : ''}target_lang=${targetLanguage}`,
-            method: 'POST',
-            url: `https://api-free.deepl.com/v2/translate?auth_key=${this.authKey}`,
-          }));
-          requestLines = [];
-        }
+      if (lines.length === 0 || (requestLines.length + 1) > this.maxContentLinePerRequest) {
+        responses.push(this.instance.post('/v2/translate', `text=${requestLines.map((element) => encodeURIComponent(element)).join('&text=')}&${sourceLanguage !== '' ? `source_lang=${sourceLanguage}&` : ''}target_lang=${targetLanguage}`));
+        requestLines = [];
       }
-
-      await Promise.all(responses);
-
-      if (this.controller.signal.aborted) {
-        this.result = text;
-        return this.result;
-      }
-
-      this.result = responses.map((a) => a.responseJSON.translations.map((b) => b.text).join('\n')).join('\n');
-      super.translateText(text, targetLanguage, sourceLanguage);
-    } catch (error) {
-      console.error('Bản dịch lỗi:', error);
-      this.result = error;
     }
+
+    await Promise.all(responses).then((responses) => {
+      this.result = responses.map(({ data: { translations } }) => translations.map((element) => element.text).join('\n')).join('\n');
+      super.translateText(text, targetLanguage, sourceLanguage);
+    }).catch((error) => {
+      this.result = `Bản dịch lỗi: ${error}`;
+    });
 
     return this.result;
   }

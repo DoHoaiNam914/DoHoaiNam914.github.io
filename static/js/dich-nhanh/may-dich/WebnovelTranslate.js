@@ -2017,38 +2017,52 @@ export default class WebnovelTranslate extends Translator {
   }
 
   async translateText(text, targetLanguage, sourceLanguage = this.DefaultLanguage.SOURCE_LANGUAGE) {
-    try {
-      const isCj = ['ja', 'zh-CN', 'zh-TW'].some((element) => sourceLanguage === element);
-      const EOL = isCj ? '||||' : '\\n';
-      const lines = text.split('\n');
-      const responses = [];
-      let query = lines.filter((element) => element.replace(/^\s+/, '').length > 0).map((element) => `${isCj ? '\u3000\u3000' : ''}${element}`).join(EOL);
-      let request = [];
-      query = (isCj ? query.replace(EOL, EOL.repeat(2)) : query).split(new RegExp(`(?<=\\.{3}|[${!isCj ? '!,.:;?' : ''}…${isCj ? '、。！，：；？' : ''}](?:[^${!isCj ? '!,.:;?' : ''}…${isCj ? '、。！，：；？' : ''}]*$${!isCj ? '|\\s+' : ''}|))`));
+    const isCj = ['ja', 'zh-CN', 'zh-TW'].some((element) => sourceLanguage === element);
+    const EOL = isCj ? '||||' : '\\n';
+    const lines = text.split('\n');
+    const responses = [];
+    let query = lines.filter((element) => element.replace(/^\s+/, '').length > 0).map((element) => `${isCj ? '\u3000\u3000' : ''}${element}`).join(EOL);
+    let request = [];
+    query = (isCj ? query.replace(EOL, EOL.repeat(2)) : query).split(new RegExp(`(?<=\\.{3}|[${!isCj ? '!,.:;?' : ''}…${isCj ? '、。！，：；？' : ''}](?:[^${!isCj ? '!,.:;?' : ''}…${isCj ? '、。！，：；？' : ''}]*$${!isCj ? '|\\s+' : ''}|))`));
 
-      while (query.length > 0) {
-        request.push(query.shift());
+    while (query.length > 0) {
+      request.push(query.shift());
 
-        if (query.length === 0 || request.join('').concat(query[0].trimEnd()).length > this.maxContentLengthPerRequest) {
-          responses.push($.ajax({
-            method: 'GET',
-            url: `${Utils.CORS_PROXY}http://translate.google.com/translate_a/single?client=${this.clientName}&ie=UTF-8&oe=UTF-8&dt=bd&dt=ex&dt=ld&dt=md&dt=rw&dt=rm&dt=ss&dt=t&dt=at&dt=gt&dt=qc&sl=${sourceLanguage}&tl=${targetLanguage}&hl=${targetLanguage}&q=${encodeURIComponent(request.join('').trimEnd())}`,
-          }));
-          request = [];
-        }
+      if (query.length === 0 || request.join('').concat(query[0].trimEnd()).length > this.maxContentLengthPerRequest) {
+        responses.push(axios.get(a, {
+          params: {
+            client: this.clientName,
+            ie: 'UTF-8',
+            oe: 'UTF-8',
+            dt: [
+              'bd',
+              'ex',
+              'ld',
+              'md',
+              'rw',
+              'rm',
+              'ss',
+              't',
+              'at',
+              'gt',
+              'qc',
+            ],
+            sl: sourceLanguage,
+            tl: targetLanguage,
+            hl: targetLanguage,
+            q: request.join('').trimEnd(),
+          },
+          signal: this.controller.signal,
+        }));
+        request = [];
       }
+    }
 
-      await Promise.all(responses);
-
-      if (this.controller.signal.aborted) {
-        this.result = text;
-        return this.result;
-      }
-
+    await Promise.all(responses).then((responses) => {
       const translationPart = [];
 
-      responses.forEach((element) => element.responseJSON[0].filter(([__, second]) => second != null).map(([first, second]) => [second, first.replaceAll(new RegExp(` ?${isCj ? '(?:\\|[ |]*|[ |]*\\|)' : Utils.getTrieRegexPatternFromWords([EOL].toSorted((a, b) => b.length - a.length)).source}\\s*`, 'g'), '\n')]).forEach(([first, second]) => {
-        const requestLines = isCj ? first.replace(EOL.repeat(2), EOL) : first;
+      responses.forEach(({ data: [a] }) => a.filter(([__, second]) => second != null).map(([b, second]) => [second, b.replaceAll(new RegExp(` ?${isCj ? '(?:\\|[ |]*|[ |]*\\|)' : Utils.getTrieRegexPatternFromWords([EOL].toSorted((a, b) => b.length - a.length)).source}\\s*`, 'g'), '\n')]).forEach(([b, second]) => {
+        const requestLines = isCj ? b.replace(EOL.repeat(2), EOL) : b;
         const count = [...requestLines.matchAll(new RegExp(Utils.escapeRegExp(EOL), 'g'))].length - [...second.matchAll(/\n/g)].length;
         translationPart.push((count < 0 ? second.replace(new RegExp(`\\n{${Math.abs(count)}}$`), '') : second).concat('\n'.repeat(count > 0 ? count : 0)));
       }));
@@ -2057,10 +2071,9 @@ export default class WebnovelTranslate extends Translator {
       const translationMap = Object.fromEntries(lines.map((element, index) => (element.replace(/^\s+/, '').length > 0 ? index : null)).filter((element) => element != null).map((element, index) => [element, translationLines[index]]));
       this.result = lines.map((element, index) => (translationMap[index] != null ? element.match(/^\s*/)[0].concat(translationMap[index].replace(/^\s+/, '')) : element)).join('\n');
       super.translateText(text, targetLanguage, sourceLanguage);
-    } catch (error) {
-      console.error('Bản dịch lỗi:', error);
-      this.result = error;
-    }
+    }).catch((error) => {
+      this.result = `Bản dịch lỗi: ${error}`;
+    });
 
     return this.result;
   }
