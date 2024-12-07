@@ -53,7 +53,7 @@ export default class Lingvanex extends Translator {
     }
 
     await Promise.all(responses).then((responses) => {
-      this.result = responses.map((element) => element.responseJSON.result).flat().join('\n');
+      this.result = responses.map(({ result }) => result).flat().join('\n');
       super.translateText(text, targetLanguage, sourceLanguage);
     }).catch((error) => {
       this.result = `Bản dịch lỗi: ${error}`;
