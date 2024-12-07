@@ -17,6 +17,7 @@ import Utils from '/static/js/Utils.js';
 
 const $addButton = $('#add-button');
 const $alignmentRadio = $('input[type="radio"][name="alignment-radio"]');
+const $anthropicApiKeyText = $('#anthropic-api-key-text');
 const $boldTextSwitch = $('#bold-text-switch');
 const $copyButtons = $('.copy-button');
 const $deeplAuthKeyText = $('#deepl-auth-key-text');
@@ -30,6 +31,7 @@ const $glossaryListSelect = $('#glossary-list-select');
 const $glossaryManagerButton = $('#glossary-manager-button');
 const $glossaryModal = $('#glossary-modal');
 const $inputTextarea = $('#input-textarea');
+const $openaiApiKeyText = $('#openai-api-key-text');
 const $pasteButtons = $('.paste-button');
 const $polishSwitch = $('#polish-switch');
 const $removeButton = $('#remove-button');
@@ -775,13 +777,14 @@ ${nomenclature.map((element) => element.join('\t')).join('\n')}
       let generativeAi = translators[Translators.GENERATIVE_AI];
 
       if (generativeAi == null) {
-        generativeAi = new GenerativeAi(UUID.toLowerCase(), $geminiApiKeyText.val());
+        generativeAi = new GenerativeAi(UUID.toLowerCase(), $openaiApiKeyText.val(), $geminiApiKeyText.val(), $anthropicApiKeyText.val());
         translators[Translators.GENERATIVE_AI] = generativeAi;
       }
 
       const isGemini = model.startsWith('gemini');
+      const maybeIsClaude = model.startsWith('claude') ? await generativeAi.runClaude(model, INSTRUCTIONS, MESSAGE) : await generativeAi.runOpenai(model, INSTRUCTIONS, MESSAGE);
+      let polishResult = isGemini ? await generativeAi.runGemini(model, INSTRUCTIONS, MESSAGE) : maybeIsClaude;
 
-      let polishResult = isGemini ? await generativeAi.runGemini(model, INSTRUCTIONS, MESSAGE) : await generativeAi.runOpenai(model, INSTRUCTIONS, MESSAGE);
       if (controller.signal.aborted || polishResult == null) return;
       if (isGemini) polishResult = polishResult.replace(/\n$/, '').replaceAll(new RegExp(`\`{3}${targetLanguage.toLowerCase()}\n|\n\`{3}`, 'g'), '');
       else polishResult = polishResult.replaceAll(/^`{3}txt\n|\n`{3}$/g, '');
@@ -1027,6 +1030,8 @@ $(document).ready(async () => {
 
   $translatorDropdown.find('.active').click();
   if (localStorage.getItem('DEEPL_AUTH_KEY') != null) $deeplAuthKeyText.val(localStorage.getItem('DEEPL_AUTH_KEY')).change();
+  if (localStorage.getItem('OPENAI_API_KEY') != null) $openaiApiKeyText.val(localStorage.getItem('OPENAI_API_KEY')).change();
+  if (localStorage.getItem('ANTHROPIC_API_KEY') != null) $anthropicApiKeyText.val(localStorage.getItem('ANTHROPIC_API_KEY')).change();
   if (localStorage.getItem('GEMINI_API_KEY') != null) $geminiApiKeyText.val(localStorage.getItem('GEMINI_API_KEY')).change();
   reloadGlossary($glossaryListSelect.val());
   $inputTextarea.trigger('input');
@@ -1353,7 +1358,7 @@ $translatorDropdown.find('.dropdown-item').click(async function onClick() {
     }
     case Translators.GENERATIVE_AI: {
       if (currentTranslator == null) {
-        currentTranslator = new GenerativeAi(UUID.toLowerCase(), $geminiApiKeyText.val());
+        currentTranslator = new GenerativeAi(UUID.toLowerCase(), $openaiApiKeyText.val(), $geminiApiKeyText.val(), $anthropicApiKeyText.val());
         translators[activeTranslator] = currentTranslator;
       }
 
@@ -1413,8 +1418,8 @@ $deeplAuthKeyText.change(function onChange() {
   const $activeTranslator = $translatorDropdown.find('.active');
   translators[Translators.DEEPL_TRANSLATE] = null;
   if ($activeTranslator.val() === Translators.DEEPL_TRANSLATE) $activeTranslator.click();
-  if (localStorage.getItem('DEEPL_AUTH_KEY') != null && (localStorage.getItem('DEEPL_AUTH_KEY').length === 0 || !localStorage.getItem('DEEPL_AUTH_KEY').endsWith(':fx'))) localStorage.removeItem('DEEPL_AUTH_KEY');
-  else if (localStorage.getItem('DEEPL_AUTH_KEY') !== $(this).val()) localStorage.setItem('DEEPL_AUTH_KEY', $(this).val());
+  if (localStorage.getItem('DEEPL_AUTH_KEY') != null && $(this).val().length === 0) localStorage.removeItem('DEEPL_AUTH_KEY');
+  else if ($(this).val().endsWith(':fx') && localStorage.getItem('DEEPL_AUTH_KEY') !== $(this).val()) localStorage.setItem('DEEPL_AUTH_KEY', $(this).val());
 });
 
 $toneSelect.on('change', () => {
@@ -1424,12 +1429,28 @@ $toneSelect.on('change', () => {
   if ($activeTranslator.val() === Translators.MICROSOFT_TRANSLATOR) $activeTranslator.click();
 });
 
+$openaiApiKeyText.change(function onChange() {
+  const $activeTranslator = $translatorDropdown.find('.active');
+  translators[Translators.GENERATIVE_AI] = null;
+  if ($activeTranslator.val() === Translators.GENERATIVE_AI) $activeTranslator.click();
+  if (localStorage.getItem('OPENAI_API_KEY') != null && $(this).val().length === 0) localStorage.removeItem('OPENAI_API_KEY');
+  else if (($(this).val().startsWith('sk-proj-') || $(this).val().startsWith('sk-svcacct-')) && localStorage.getItem('OPENAI_API_KEY') !== $(this).val()) localStorage.setItem('OPENAI_API_KEY', $(this).val());
+});
+
+$anthropicApiKeyText.change(function onChange() {
+  const $activeTranslator = $translatorDropdown.find('.active');
+  translators[Translators.GENERATIVE_AI] = null;
+  if ($activeTranslator.val() === Translators.GENERATIVE_AI) $activeTranslator.click();
+  if (localStorage.getItem('ANTHROPIC_API_KEY') != null && $(this).val().length === 0) localStorage.removeItem('ANTHROPIC_API_KEY');
+  else if ($(this).val().startsWith('sk-ant-api03-') && localStorage.getItem('ANTHROPIC_API_KEY') !== $(this).val()) localStorage.setItem('ANTHROPIC_API_KEY', $(this).val());
+});
+
 $geminiApiKeyText.change(function onChange() {
   const $activeTranslator = $translatorDropdown.find('.active');
   translators[Translators.GENERATIVE_AI] = null;
   if ($activeTranslator.val() === Translators.GENERATIVE_AI) $activeTranslator.click();
-  if (localStorage.getItem('GEMINI_API_KEY') != null && localStorage.getItem('GEMINI_API_KEY').length === 0) localStorage.removeItem('GEMINI_API_KEY');
-  else if (localStorage.getItem('GEMINI_API_KEY') !== $(this).val()) localStorage.setItem('GEMINI_API_KEY', $(this).val());
+  if (localStorage.getItem('GEMINI_API_KEY') != null && $(this).val().length === 0) localStorage.removeItem('GEMINI_API_KEY');
+  else if ($(this).val().startsWith('AIzaSyD') && localStorage.getItem('GEMINI_API_KEY') !== $(this).val()) localStorage.setItem('GEMINI_API_KEY', $(this).val());
 });
 
 $glossaryModal.on('shown.bs.modal', () => {
@@ -1641,7 +1662,7 @@ $translateEntryButtons.click(async function onClick() {
         }
         case Translators.GENERATIVE_AI: {
           if (translator == null) {
-            translator = new GenerativeAi(UUID.toLowerCase(), $geminiApiKeyText.val());
+            translator = new GenerativeAi(UUID.toLowerCase(), $openaiApiKeyText.val(), $geminiApiKeyText.val(), $anthropicApiKeyText.val());
             translators[activeTranslator] = translator;
           }
 

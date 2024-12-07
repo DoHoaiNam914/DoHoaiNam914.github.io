@@ -3,11 +3,15 @@
 import Translator from '/static/js/dich-nhanh/Translator.js';
 import Utils from '/static/js/Utils.js';
 
+import Anthropic from "@anthropic-ai/sdk";
+
 import {
   GoogleGenerativeAI,
   HarmCategory,
   HarmBlockThreshold,
 } from '@google/generative-ai';
+
+import OpenAI from "openai";
 
 export default class GenerativeAi extends Translator {
   static LANGUAGE_LIST = [
@@ -38,9 +42,17 @@ export default class GenerativeAi extends Translator {
     TARGET_LANGUAGE: 'Vietnamese',
   };
 
-  constructor(uuid, geminiApiKey) {
+  constructor(uuid, openaiApiKey, geminiApiKey, anthropicApiKey) {
     super();
     this.uuid = uuid;
+    this.openai = new OpenAI({
+      apiKey: openaiApiKey,
+      dangerouslyAllowBrowser: true,
+    });
+    this.anthropic = new Anthropic({
+      apiKey: anthropicApiKey,
+      dangerouslyAllowBrowser: true,
+    });
     this.genAI = new GoogleGenerativeAI(geminiApiKey);
   }
 
@@ -48,8 +60,7 @@ export default class GenerativeAi extends Translator {
     const maybeGpt4 = model.startsWith('gpt-4') ? null /** 8192 */ : 16384;
     const maybeO1 = model.startsWith('o1') ? 32768 : maybeGpt4;
     const maybeO1Mini = model.startsWith('o1-mini') ? 65536 : maybeO1;
-
-    const result = await axios.post(`${Utils.CORS_PROXY}https://gateway.api.airapps.co/aa_service=server5/aa_apikey=5N3NR9SDGLS7VLUWSEN9J30P//v3/proxy/open-ai/v1/chat/completions`, JSON.stringify({
+    const requestBody = {
       model,
       messages: [
         {
@@ -68,7 +79,9 @@ export default class GenerativeAi extends Translator {
       top_p: model.startsWith('o1') ? 1 : 0.3, // Mặc định: 1
       frequency_penalty: 0,
       presence_penalty: 0,
-    }), {
+    };
+
+    const result = localStorage.getItem('OPENAI_API_KEY') == null ? await axios.post(`${Utils.CORS_PROXY}https://gateway.api.airapps.co/aa_service=server5/aa_apikey=5N3NR9SDGLS7VLUWSEN9J30P//v3/proxy/open-ai/v1/chat/completions`, JSON.stringify(requestBody), {
       headers: {
         'User-Agent': 'iOS-TranslateNow/8.7.1.1001 CFNetwork/1568.200.51 Darwin/24.1.0',
         'Content-Type': 'application/json',
@@ -76,9 +89,30 @@ export default class GenerativeAi extends Translator {
         'air-user-id': this.uuid,
       },
       signal: this.controller.signal,
-    }).then(({ data }) => data);
+    }).then(({ data }) => data) : await this.openai.chat.completions.create(requestBody);
 
-    if (result.choices != null) return result.choices[0].message.content;
+    return result.choices[0].message.content;
+  }
+
+  async runClaude(model, instructions, message) {
+    const msg = await this.anthropic.messages.create({
+      model,
+      max_tokens: !model.startsWith('claude-3-5') ? 4096 : 8192, // Mặc định: 1000
+      temperature: 0.3, // Mặc định: 0
+      messages: [
+        {
+          role: 'user',
+          content: instructions,
+        },
+        {
+          role: 'user',
+          content: message,
+        },
+      ],
+      top_p: 0.3,
+    });
+
+    return msg;
   }
 
   async runGemini(model, instructions, message) {
@@ -155,7 +189,8 @@ ${filteredNomenclature.map((element) => element.join('\t')).join('\n')}
 
       const isGemini = model.startsWith('gemini');
 
-      this.result = isGemini ? await this.runGemini(model, INSTRUCTIONS, MESSAGE) : await this.runOpenai(model, INSTRUCTIONS, MESSAGE);
+      const maybeIsClaude = model.startsWith('claude') ? await this.runClaude(model, INSTRUCTIONS, MESSAGE) : await this.runOpenai(model, INSTRUCTIONS, MESSAGE);
+      this.result = isGemini ? await this.runGemini(model, INSTRUCTIONS, MESSAGE) : maybeIsClaude;
 
       if (this.controller.signal.aborted || this.result == null) {
         this.result = text;

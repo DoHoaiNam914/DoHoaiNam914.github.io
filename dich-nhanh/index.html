@@ -228,8 +228,10 @@
     <script type="importmap">
       {
         "imports": {
+          "@anthropic-ai/sdk": "https://esm.run/@anthropic-ai/sdk",
           "@google/generative-ai": "https://esm.run/@google/generative-ai",
-          "crypto-js": "https://esm.run/crypto-js"
+          "crypto-js": "https://esm.run/crypto-js",
+          "openai": "https://esm.run/openai"
         }
       }
     </script>
@@ -674,10 +676,13 @@
               </div>
               <hr>
               <h2 class="fs-5">Dịch với trí tuệ nhân tạo tạo sinh</h2>
+              <input type="text" class="form-control mb-3" id="openai-api-key-text" placeholder="OpenAI API Key">
+              <input type="text" class="form-control mb-3" id="anthropic-api-key-text" placeholder="Anthropic API Key">
+              <input type="text" class="form-control mb-3" id="gemini-api-key-text" placeholder="Gemini API Key">
               <div class="mb-3">
                 <label class="form-label" for="model-select">Mô hình AI tạo sinh:</label>
                 <select class="form-select form-select-sm" id="model-select">
-                  <optgroup label="Gemini">
+                  <optgroup label="Gemini (Bắt buộc phải có API Key)">
                     <option value="gemini-1.5-flash-latest">Gemini 1.5 Flash-latest</option>
                     <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
                     <option value="gemini-1.5-flash-001">Gemini 1.5 Flash-001</option>
@@ -692,7 +697,7 @@
                     <!-- Không dùng nữa -->
                     <option value="gemini-1.0-pro">Gemini 1.0 Pro</option>
                   </optgroup>
-                  <optgroup label="OpenAI">
+                  <optgroup label="OpenAI (Cần có API Key)">
                     <option value="gpt-4o">GPT-4o</option>
                     <option value="gpt-4o-2024-11-20">GPT-4o-2024-11-20</option>
                     <option value="gpt-4o-2024-08-06">GPT-4o-2024-08-06</option>
@@ -712,9 +717,18 @@
                     <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
                     <option value="gpt-3.5-turbo-1106">GPT-3.5 Turbo-1106</option>
                   </optgroup>
+                  <optgroup label="Claude (Bắt buộc phải có API Key)">
+                    <option value="claude-3-5-sonnet-20241022">Claude 3.5 Sonnet</option>
+                    <option value="claude-3-5-sonnet-latest">Claude 3.5 Sonnet Latest</option>
+                    <option value="claude-3-5-haiku-20241022">Claude 3.5 Haiku</option>
+                    <option value="claude-3-5-haiku-latest">Claude 3.5 Haiku Latest</option>
+                    <option value="claude-3-opus-20240229">Claude 3 Opus</option>
+                    <option value="claude-3-opus-latest">Claude 3 Opus Latest</option>
+                    <option value="claude-3-sonnet-20240229">Claude 3 Sonnet</option>
+                    <option value="claude-3-haiku-20240307">Claude 3 Haiku</option>
+                  </optgroup>
                 </select>
               </div>
-              <input type="text" class="form-control mb-3" id="gemini-api-key-text" placeholder="Gemini API Key">
               <div class="form-check form-switch mb-3">
                 <input type="checkbox" class="form-check-input" id="polish-switch" role="switch">
                 <label class="form-check-label" for="polish-switch">Đánh bóng bản dịch bằng AI tạo sinh</label>
@@ -952,7 +966,7 @@
               <div class="mb-3">
                 <label class="form-label" for="translate-entry-model-select">Mô hình AI tạo sinh:</label>
                 <select class="form-select form-select-sm" id="translate-entry-model-select">
-                  <optgroup label="Gemini">
+                  <optgroup label="Gemini (Bắt buộc phải có API Key)">
                     <option value="gemini-1.5-flash-latest">Gemini 1.5 Flash-latest</option>
                     <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
                     <option value="gemini-1.5-flash-001">Gemini 1.5 Flash-001</option>
@@ -967,7 +981,7 @@
                     <!-- Không dùng nữa -->
                     <option value="gemini-1.0-pro">Gemini 1.0 Pro</option>
                   </optgroup>
-                  <optgroup label="OpenAI">
+                  <optgroup label="OpenAI (Cần có API Key)">
                     <option value="gpt-4o" selected>GPT-4o</option>
                     <option value="gpt-4o-2024-11-20">GPT-4o-2024-11-20</option>
                     <option value="gpt-4o-2024-08-06">GPT-4o-2024-08-06</option>
@@ -986,6 +1000,16 @@
                     <option value="gpt-3.5-turbo-0125">GPT-3.5 Turbo-0125</option>
                     <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
                     <option value="gpt-3.5-turbo-1106">GPT-3.5 Turbo-1106</option>
+                  </optgroup>
+                  <optgroup label="Claude (Bắt buộc phải có API Key)">
+                    <option value="claude-3-5-sonnet-20241022">Claude 3.5 Sonnet</option>
+                    <option value="claude-3-5-sonnet-latest">Claude 3.5 Sonnet Latest</option>
+                    <option value="claude-3-5-haiku-20241022">Claude 3.5 Haiku</option>
+                    <option value="claude-3-5-haiku-latest">Claude 3.5 Haiku Latest</option>
+                    <option value="claude-3-opus-20240229">Claude 3 Opus</option>
+                    <option value="claude-3-opus-latest">Claude 3 Opus Latest</option>
+                    <option value="claude-3-sonnet-20240229">Claude 3 Sonnet</option>
+                    <option value="claude-3-haiku-20240307">Claude 3 Haiku</option>
                   </optgroup>
                 </select>
               </div>
