@@ -2030,28 +2030,7 @@ export default class WebnovelTranslate extends Translator {
 
       if (query.length === 0 || request.join('').concat(query[0].trimEnd()).length > this.maxContentLengthPerRequest) {
         responses.push(axios.get(`${Utils.CORS_PROXY}http://translate.google.com/translate_a/single`, {
-          params: {
-            client: this.clientName,
-            ie: 'UTF-8',
-            oe: 'UTF-8',
-            dt: [
-              'bd',
-              'ex',
-              'ld',
-              'md',
-              'rw',
-              'rm',
-              'ss',
-              't',
-              'at',
-              'gt',
-              'qc',
-            ],
-            sl: sourceLanguage,
-            tl: targetLanguage,
-            hl: targetLanguage,
-            q: request.join('').trimEnd(),
-          },
+          params: new URLSearchParams(`client=${this.clientName}&ie=UTF-8&oe=UTF-8&dt=bd&dt=ex&dt=ld&dt=md&dt=rw&dt=rm&dt=ss&dt=t&dt=at&dt=gt&dt=qc&sl=${sourceLanguage}&tl=${targetLanguage}&hl=${targetLanguage}&q=${encodeURIComponent(request.join('').trimEnd())}`),
           signal: this.controller.signal,
         }));
         request = [];

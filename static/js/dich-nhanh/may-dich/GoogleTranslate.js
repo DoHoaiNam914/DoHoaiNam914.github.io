@@ -28,20 +28,14 @@ export default class GoogleTranslate extends Translator {
       requestLines.push(lines.shift());
 
       if (lines.length === 0 || `${Utils.CORS_PROXY}https://translation.googleapis.com/language/translate/v2?prettyPrint=false${sourceLanguage !== this.DefaultLanguage.SOURCE_LANGUAGE ? `&source=${sourceLanguage}` : ''}&target=${targetLanguage}&q=${[...requestLines, lines[0]].map((element) => encodeURIComponent(element)).join('&q=')}&key=${this.key}`.length > this.maxRequestUrlLength) {
-        responses.push(axios.post(`${Utils.CORS_PROXY}https://translation.googleapis.com/language/translate/v2?${requestLines.length === 1 ? '' : `q=${requestLines.slice(0, -1).map((element) => encodeURIComponent(element)).join('&q=')}`}`, undefined, {
+        responses.push(axios.post(`${Utils.CORS_PROXY}https://translation.googleapis.com/language/translate/v2`, undefined, {
           headers: {
             'User-Agent': 'com.google.GoogleBooks/6.8.1 google-api-objc-client/3.0 iPhone/18.1.1 hw/iPhone17_2 (gzip)',
             'content-type': 'application/json; charset=utf-8',
             'accept-language': 'vi-VN,vi;q=0.9',
             'cache-control': 'no-cache',
           },
-          params: {
-            prettyPrint: false,
-            q: requestLines.pop(),
-            source: sourceLanguage == null || sourceLanguage !== this.DefaultLanguage.SOURCE_LANGUAGE ? sourceLanguage : null,
-            target: targetLanguage,
-            key: this.key,
-          },
+          params: new URLSearchParams(`prettyPrint=false&q=${requestLines.map((element) => encodeURIComponent(element)).join('&q=')}&${sourceLanguage !== this.DefaultLanguage.SOURCE_LANGUAGE ? `source=${sourceLanguage}&` : ''}target=${targetLanguage}&q=${this.key}`),
           signal: this.controller.signal,
         }));
         requestLines = [];
