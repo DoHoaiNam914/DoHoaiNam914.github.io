@@ -189,8 +189,8 @@ ${filteredNomenclature.map((element) => element.join('\t')).join('\n')}
 
       const isGemini = model.startsWith('gemini');
 
-      const maybeIsClaude = model.startsWith('claude') ? await this.runClaude(model, INSTRUCTIONS, MESSAGE) : await this.runOpenai(model, INSTRUCTIONS, MESSAGE);
-      this.result = isGemini ? await this.runGemini(model, INSTRUCTIONS, MESSAGE) : maybeIsClaude;
+      const maybeIsClaude = async () => model.startsWith('claude') ? await this.runClaude(model, INSTRUCTIONS, MESSAGE) : await this.runOpenai(model, INSTRUCTIONS, MESSAGE);
+      this.result = isGemini ? await this.runGemini(model, INSTRUCTIONS, MESSAGE) : await maybeIsClaude();
 
       if (this.controller.signal.aborted || this.result == null) {
         this.result = text;

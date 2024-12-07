@@ -782,8 +782,8 @@ ${nomenclature.map((element) => element.join('\t')).join('\n')}
       }
 
       const isGemini = model.startsWith('gemini');
-      const maybeIsClaude = model.startsWith('claude') ? await generativeAi.runClaude(model, INSTRUCTIONS, MESSAGE) : await generativeAi.runOpenai(model, INSTRUCTIONS, MESSAGE);
-      let polishResult = isGemini ? await generativeAi.runGemini(model, INSTRUCTIONS, MESSAGE) : maybeIsClaude;
+      const maybeIsClaude = async () => model.startsWith('claude') ? await generativeAi.runClaude(model, INSTRUCTIONS, MESSAGE) : await generativeAi.runOpenai(model, INSTRUCTIONS, MESSAGE);
+      let polishResult = isGemini ? await generativeAi.runGemini(model, INSTRUCTIONS, MESSAGE) : await maybeIsClaude();
 
       if (controller.signal.aborted || polishResult == null) return;
       if (isGemini) polishResult = polishResult.replace(/\n$/, '').replaceAll(new RegExp(`\`{3}${targetLanguage.toLowerCase()}\n|\n\`{3}`, 'g'), '');
