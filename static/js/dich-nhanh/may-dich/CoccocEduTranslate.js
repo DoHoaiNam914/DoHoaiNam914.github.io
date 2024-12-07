@@ -27,7 +27,7 @@ export default class CoccocEduTranslate extends Translator {
       requestLines.push(lines.shift());
 
       if (lines.length === 0 || [...requestLines, lines[0]].join('\n').length > this.maxContentLengthPerRequest || (requestLines.length + 1) > this.maxContentLinePerRequest) {
-        responses.push(axios.post(`${Utils.CORS_PROXY}https://hoctap.coccoc.com/composer/proxyapi/translate`, JSON.stringify({ Text: requestLines.join('\n') }), {
+        responses.push(axios.post(`${Utils.CORS_HEADER_PROXY}https://hoctap.coccoc.com/composer/proxyapi/translate`, JSON.stringify({ Text: requestLines.join('\n') }), {
           headers: { 'Content-Type': 'application/json' },
           params: {
             from: sourceLanguage,

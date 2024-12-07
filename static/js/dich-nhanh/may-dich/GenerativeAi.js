@@ -81,7 +81,7 @@ export default class GenerativeAi extends Translator {
       presence_penalty: 0,
     };
 
-    const result = localStorage.getItem('OPENAI_API_KEY') == null ? await axios.post(`${Utils.CORS_PROXY}https://gateway.api.airapps.co/aa_service=server5/aa_apikey=5N3NR9SDGLS7VLUWSEN9J30P//v3/proxy/open-ai/v1/chat/completions`, JSON.stringify(requestBody), {
+    const result = localStorage.getItem('OPENAI_API_KEY') == null ? await axios.post(`${Utils.CORS_HEADER_PROXY}https://gateway.api.airapps.co/aa_service=server5/aa_apikey=5N3NR9SDGLS7VLUWSEN9J30P//v3/proxy/open-ai/v1/chat/completions`, JSON.stringify(requestBody), {
       headers: {
         'User-Agent': 'iOS-TranslateNow/8.7.1.1001 CFNetwork/1568.200.51 Darwin/24.1.0',
         'Content-Type': 'application/json',

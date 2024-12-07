@@ -30,7 +30,7 @@ export default class BaiduTranslate extends Translator {
     super();
     this.maxContentLengthPerRequest = 1000;
     this.instance = axios.create({
-      baseURL: `${Utils.CORS_PROXY}https://fanyi.baidu.com`,
+      baseURL: `${Utils.CORS_HEADER_PROXY}https://fanyi.baidu.com`,
       signal: this.controller.signal,
     });
   }

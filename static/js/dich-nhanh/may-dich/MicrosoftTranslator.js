@@ -12,12 +12,13 @@ export default class MicrosoftTranslator extends Translator {
     TARGET_LANGUAGE: 'vi',
   };
 
-  constructor() {
+  constructor(tone) {
     super();
     this.maxContentLengthPerRequest = 1000;
+    this.tone = tone;
     this.requestIndex = 1;
     this.instance = axios.create({
-      baseURL: `${Utils.CORS_PROXY}https://www.bing.com`,
+      baseURL: `${Utils.CLOUDFLARE_CORS_ANYWHERE}https://www.bing.com`,
       signal: this.controller.signal,
     });
   }

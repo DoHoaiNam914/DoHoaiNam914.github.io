@@ -1,7 +1,8 @@
 'use strict';
 
 export default class Utils {
-  static CORS_PROXY = 'https://corsproxy.itsdhnam.workers.dev/';
+  static CORS_HEADER_PROXY = 'https://cors-header-proxy.itsdhnam.workers.dev/';
+  static CLOUDFLARE_CORS_ANYWHERE = 'https://cloudflare-cors-anywhere.itsdhnam.workers.dev/?';
 
   static getRandomInt(min, max) {
     const minCeiled = Math.ceil(min);

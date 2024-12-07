@@ -3,7 +3,7 @@
 import Translator from '/static/js/dich-nhanh/Translator.js';
 import Utils from '/static/js/Utils.js';
 
-import * as CryptoJS from 'crypto-js';
+import CryptoJS from 'crypto-js';
 
 export default class Papago extends Translator {
   static SOURCE_LANGUAGE_LIST = {
@@ -53,7 +53,7 @@ export default class Papago extends Translator {
     this.uuid = uuid;
     this.maxContentLengthPerRequest = 3000;
     this.instance = axios.create({
-      baseURL: `${Utils.CORS_PROXY}https://papago.naver.com`,
+      baseURL: `${Utils.CLOUDFLARE_CORS_ANYWHERE}https://papago.naver.com`,
       signal: this.controller.signal,
     });
   }
@@ -90,7 +90,7 @@ export default class Papago extends Translator {
             'Accept-Language': 'vi',
             'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
             'x-apigw-partnerid': 'papago',
-            Authorization: `PPG ${this.uuid}:${CryptoJS.HmacMD5(`${this.uuid}\nhttps://papago.naver.com/apis/n2mt/translate\n${timeStamp}`, this.version).toString()}`,
+            Authorization: `PPG ${this.uuid}:${CryptoJS.HmacMD5(`${this.uuid}\nhttps://papago.naver.com/apis/n2mt/translate\n${timeStamp}`, this.version).toString(CryptoJS.enc.Base64)}`,
             Timestamp: timeStamp,
           },
         }));
