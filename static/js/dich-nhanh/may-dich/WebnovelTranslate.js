@@ -4,7 +4,7 @@ import Translator from '/static/js/dich-nhanh/Translator.js';
 import Utils from '/static/js/Utils.js';
 
 export default class WebnovelTranslate extends Translator {
-  /** https://translate-pa.googleapis.com/v1/supportedLanguages?client=gtx&display_language=vi&key=AIzaSyDLEeFI5OtFBwYBIoK_jj5m32rZK5CkCXA */
+  /** https://translate-pa.googleapis.com/v1/supportedLanguages?client=gtx&display_language=vi&key=${key} */
   static LANGUAGE_LIST = JSON.parse(`{
   "sourceLanguages": [
     {
@@ -2042,7 +2042,7 @@ export default class WebnovelTranslate extends Translator {
         const adjustedText = isCj ? b.replace(EOL.repeat(2), EOL) : b;
         const lineCountDifference = [...adjustedText.matchAll(new RegExp(Utils.escapeRegExp(EOL), 'g'))].length - [...second.matchAll(/\n/g)].length;
         return (lineCountDifference < 0 ? second.replace(new RegExp(`\\n{${Math.abs(lineCountDifference)}}$`), '') : second).concat('\n'.repeat(lineCountDifference > 0 ? lineCountDifference : 0));
-      })).join('').split('\n');
+      })).flat().join('').split('\n');
       const translationMap = Object.fromEntries(lines.map((element, index) => (element.replace(/^\s+/, '').length > 0 ? index : null)).filter((element) => element != null).map((element, index) => [element, translationLines[index]]));
       this.result = lines.map((element, index) => (translationMap[index] != null ? element.match(/^\s*/)[0].concat(translationMap[index].replace(/^\s+/, '')) : element)).join('\n');
       super.translateText(text, targetLanguage, sourceLanguage);
