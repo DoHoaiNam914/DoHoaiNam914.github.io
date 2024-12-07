@@ -2041,7 +2041,7 @@ export default class WebnovelTranslate extends Translator {
       const translationLines = responses.map(({ data: [a] }) => a.filter(([__, second]) => second != null).map(([b, second]) => [second, b.replaceAll(new RegExp(` ?${isCj ? '(?:\\|[ |]*|[ |]*\\|)' : Utils.getTrieRegexPatternFromWords([EOL].toSorted((a, b) => b.length - a.length)).source}\\s*`, 'g'), '\n')]).map(([b, second]) => {
         const adjustedText = isCj ? b.replace(EOL.repeat(2), EOL) : b;
         const lineCountDifference = [...adjustedText.matchAll(new RegExp(Utils.escapeRegExp(EOL), 'g'))].length - [...second.matchAll(/\n/g)].length;
-        return (count < 0 ? second.replace(new RegExp(`\\n{${Math.abs(count)}}$`), '') : second).concat('\n'.repeat(lineCountDifference > 0 ? lineCountDifference : 0));
+        return (count < 0 ? second.replace(new RegExp(`\\n{${Math.abs(lineCountDifference)}}$`), '') : second).concat('\n'.repeat(lineCountDifference > 0 ? lineCountDifference : 0));
       })).join('').split('\n');
       const translationMap = Object.fromEntries(lines.map((element, index) => (element.replace(/^\s+/, '').length > 0 ? index : null)).filter((element) => element != null).map((element, index) => [element, translationLines[index]]));
       this.result = lines.map((element, index) => (translationMap[index] != null ? element.match(/^\s*/)[0].concat(translationMap[index].replace(/^\s+/, '')) : element)).join('\n');
