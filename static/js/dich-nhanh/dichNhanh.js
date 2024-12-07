@@ -809,33 +809,11 @@ ${nomenclature.map((element) => element.join('\t')).join('\n')}
     $translateTimer.text(Date.now() - startTime);
   } catch (error) {
     console.error(error);
-
-    if (!controller.signal.aborted) {
-      const paragraph = document.createElement('p');
-      paragraph.innerText = `Bản dịch thất bại: ${error}`;
-      $resultTextarea.html(null);
-      $resultTextarea.append(paragraph);
-    }
-
-    if (translators[$activeTranslator.val()] != null) {
-      switch ($activeTranslator.val()) {
-        case Translators.LINGVANEX: {
-          await translators[$activeTranslator.val()].fetchApiKey();
-          break;
-        }
-        case Translators.MICROSOFT_TRANSLATOR: {
-          await translators[activeTranslator].fetchData(translators[activeTranslator].tone);
-          break;
-        }
-        case Translators.PAPAGO: {
-          await translators[$activeTranslator.val()].fetchVersion();
-          break;
-        }
-        // no default
-      }
-
-      currentTranslator = translators[$activeTranslator.val()];
-    }
+    if (controller.signal.aborted) return;
+    const paragraph = document.createElement('p');
+    paragraph.innerText = `Bản dịch thất bại: ${error}`;
+    $resultTextarea.html(null);
+    $resultTextarea.append(paragraph);
   }
 };
 
@@ -1367,7 +1345,6 @@ $translatorDropdown.find('.dropdown-item').click(async function onClick() {
     case Translators.LINGVANEX: {
       if (currentTranslator == null) {
         currentTranslator = new Lingvanex();
-        currentTranslator.fetchApiKey();
         translators[activeTranslator] = currentTranslator;
       }
 
@@ -1375,8 +1352,7 @@ $translatorDropdown.find('.dropdown-item').click(async function onClick() {
     }
     case Translators.MICROSOFT_TRANSLATOR: {
       if (currentTranslator == null) {
-        currentTranslator = new MicrosoftTranslator();
-        currentTranslator.fetchData($toneSelect.val());
+        currentTranslator = new MicrosoftTranslator($toneSelect.val());
         translators[activeTranslator] = currentTranslator;
       }
 
@@ -1385,7 +1361,6 @@ $translatorDropdown.find('.dropdown-item').click(async function onClick() {
     case Translators.PAPAGO: {
       if (currentTranslator == null) {
         currentTranslator = new Papago(UUID);
-        currentTranslator.fetchVersion();
         translators[activeTranslator] = currentTranslator;
       }
 
@@ -1425,7 +1400,7 @@ $deeplAuthKeyText.change(function onChange() {
 $toneSelect.on('change', () => {
   const $activeTranslator = $translatorDropdown.find('.active');
   if (translators[Translators.MICROSOFT_TRANSLATOR] == null) return;
-  translators[Translators.MICROSOFT_TRANSLATOR].fetchData($toneSelect.val());
+  translators[Translators.MICROSOFT_TRANSLATOR].setToneAndFetchData($toneSelect.val());
   if ($activeTranslator.val() === Translators.MICROSOFT_TRANSLATOR) $activeTranslator.click();
 });
 
@@ -1679,7 +1654,6 @@ $translateEntryButtons.click(async function onClick() {
         case Translators.LINGVANEX: {
           if (translator == null) {
             translator = new Lingvanex();
-            translator.fetchApiKey();
             translators[activeTranslator] = translator;
           }
 
@@ -1687,8 +1661,7 @@ $translateEntryButtons.click(async function onClick() {
         }
         case Translators.MICROSOFT_TRANSLATOR: {
           if (translator == null) {
-            translator = new MicrosoftTranslator();
-            translator.fetchData($toneSelect.val());
+            translator = new MicrosoftTranslator($toneSelect.val());
             translators[activeTranslator] = translator;
           }
 
@@ -1697,7 +1670,6 @@ $translateEntryButtons.click(async function onClick() {
         case Translators.PAPAGO: {
           if (translator == null) {
             translator = new Papago(UUID);
-            translator.fetchVersion();
             translators[activeTranslator] = translator;
           }
 
@@ -1751,24 +1723,6 @@ $translateEntryButtons.click(async function onClick() {
     } catch (error) {
       $targetEntryTextarea.val(error);
       console.error(error);
-
-      if (translators[activeTranslator] != null) {
-        switch (activeTranslator) {
-          case Translators.LINGVANEX: {
-            await translators[activeTranslator].fetchApiKey();
-            break;
-          }
-          case Translators.MICROSOFT_TRANSLATOR: {
-            await translators[activeTranslator].fetchData(translators[activeTranslator].tone);
-            break;
-          }
-          case Translators.PAPAGO: {
-            await translators[activeTranslator].fetchVersion();
-            break;
-          }
-          // no default
-        }
-      }
     }
 
     entryTranslationController = null;

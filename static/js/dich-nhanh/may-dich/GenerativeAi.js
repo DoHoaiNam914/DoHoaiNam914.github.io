@@ -89,7 +89,7 @@ export default class GenerativeAi extends Translator {
         'air-user-id': this.uuid,
       },
       signal: this.controller.signal,
-    }).then(({ data }) => data) : await this.openai.chat.completions.create(requestBody);
+    }).then(({ data }) => data).catch((error) => error.toJSON()) : await this.openai.chat.completions.create(requestBody);
 
     return result.choices[0].message.content;
   }

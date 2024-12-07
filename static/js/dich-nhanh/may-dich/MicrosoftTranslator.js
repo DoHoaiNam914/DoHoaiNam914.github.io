@@ -22,7 +22,7 @@ export default class MicrosoftTranslator extends Translator {
     });
   }
 
-  async fetchData(tone) {
+  async setToneAndFetchData(tone) {
     this.tone = tone;
 
     await this.instance.get(`/translator`).then(({ data }) => {
@@ -53,7 +53,7 @@ export default class MicrosoftTranslator extends Translator {
   }
 
   async translateText(text, targetLanguage, sourceLanguage = this.DefaultLanguage.SOURCE_LANGUAGE) {
-    if (this.IG == null || this.IID == null || this.token == null || this.key == null) await this.fetchData(this.tone);
+    if (this.IG == null || this.IID == null || this.token == null || this.key == null) await this.setToneAndFetchData(this.tone);
     const lines = text.split('\n');
     const responses = [];
     let requestLines = [];
