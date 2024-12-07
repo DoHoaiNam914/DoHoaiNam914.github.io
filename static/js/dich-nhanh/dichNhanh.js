@@ -754,7 +754,7 @@ const translate = async function translateContentInTextarea(controller = new Abo
       if (!isRetranslate) $resultTextarea.html(buildResult(text, currentTranslator.result, $activeTranslator.val()));
       const nomenclature = Object.entries(glossary.nomenclature).filter(([first]) => text.includes(first));
       const lines = text.split('\n');
-      const query = lines.map((element) => element.replace(/^\s+/g, '')).filter((element) => element.length > 0).join('\n');
+      const query = lines.map((element) => element.replace(/^\s+/g, '')).join('\n');
       const rawTranslationLines = currentTranslator.result.split('\n');
 
       const INSTRUCTIONS = `Translate the following text in the ORIGINAL TEXT section into Vietnamese. Refer to the following translation in ROUGH TRANSLATION section to ensure consistency in your translations. ${nomenclature.length > 0 ? `Accurately map names of people, ethnic groups, species, or place-names, and other concepts listed in the NOMENCLATURE LOOKUP TABLE to enhance the accuracy and consistency in your translations. ` : ''}Your translations must convey all the content in the original text ${/\n/.test(query) ? 'line by line ' : ''}and cannot involve explanations or other unnecessary information. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text and cannot include explanations or other information.`;
@@ -765,7 +765,7 @@ ${query}
 
 ROUGH TRANSLATION:
 \`\`\`txt
-${rawTranslationLines.map((element) => element.replace(/^\s+/g, '')).filter((element) => element.length > 0).join('\n')}
+${rawTranslationLines.join('\n')}
 \`\`\`${nomenclature.length > 0 ? `
 
 NOMENCLATURE LOOKUP TABLE:
