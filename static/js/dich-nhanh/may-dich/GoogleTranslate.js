@@ -35,7 +35,7 @@ export default class GoogleTranslate extends Translator {
             'accept-language': 'vi-VN,vi;q=0.9',
             'cache-control': 'no-cache',
           },
-          params: new URLSearchParams(`prettyPrint=false&q=${requestLines.map((element) => encodeURIComponent(element)).join('&q=')}&${sourceLanguage !== this.DefaultLanguage.SOURCE_LANGUAGE ? `source=${sourceLanguage}&` : ''}target=${targetLanguage}&q=${this.key}`),
+          params: new URLSearchParams(`prettyPrint=false&q=${requestLines.map((element) => encodeURIComponent(element)).join('&q=')}&${sourceLanguage !== this.DefaultLanguage.SOURCE_LANGUAGE ? `source=${sourceLanguage}&` : ''}target=${targetLanguage}&key=${this.key}`),
           signal: this.controller.signal,
         }));
         requestLines = [];
