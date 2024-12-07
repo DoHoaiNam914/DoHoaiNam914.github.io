@@ -2029,7 +2029,7 @@ export default class WebnovelTranslate extends Translator {
       request.push(query.shift());
 
       if (query.length === 0 || request.join('').concat(query[0].trimEnd()).length > this.maxContentLengthPerRequest) {
-        responses.push(axios.get(a, {
+        responses.push(axios.get(`${Utils.CORS_PROXY}http://translate.google.com/translate_a/single`, {
           params: {
             client: this.clientName,
             ie: 'UTF-8',
