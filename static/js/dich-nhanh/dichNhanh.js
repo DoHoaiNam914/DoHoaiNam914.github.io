@@ -799,7 +799,7 @@ ${nomenclature.map((element) => element.join('\t')).join('\n')}
     if (controller.signal.aborted) return;
     $resultTextarea.find('p > i').on('dblclick', function onDblclick() {
       const range = document.createRange();
-      const selection = window.getSelection();
+      const selection = getSelection();
       range.selectNodeContents(this);
       selection.removeAllRanges();
       selection.addRange(range);
@@ -999,7 +999,7 @@ $(document).ready(async () => {
   }).catch((error) => {
     console.error('Không thể tải bộ dữ liệu giản thể-phồn thể:', error);
     setTimeout(() => {
-      window.location.reload();
+      location.reload();
     }, 5000);
   });
 
@@ -1129,8 +1129,8 @@ $retranslateButton.on('click', () => {
 });
 
 $glossaryManagerButton.on('mousedown', () => {
-  if ($resultTextarea.is(':visible')) $sourceEntryInput.val((window.getSelection().toString() || '').replaceAll(/\n/g, ' '));
-  if (window.getSelection) window.getSelection().removeAllRanges();
+  if ($resultTextarea.is(':visible')) $sourceEntryInput.val((getSelection().toString() || '').replaceAll(/\n/g, ' '));
+  if (getSelection != null) window.getSelection().removeAllRanges();
 });
 
 $inputTextarea.on('input', function onInput() {
@@ -1394,7 +1394,7 @@ $deeplAuthKeyText.change(function onChange() {
   translators[Translators.DEEPL_TRANSLATE] = null;
   if ($activeTranslator.val() === Translators.DEEPL_TRANSLATE) $activeTranslator.click();
   if (localStorage.getItem('DEEPL_AUTH_KEY') != null && $(this).val().length === 0) localStorage.removeItem('DEEPL_AUTH_KEY');
-  else if ($(this).val().endsWith(':fx') && localStorage.getItem('DEEPL_AUTH_KEY') !== $(this).val()) localStorage.setItem('DEEPL_AUTH_KEY', $(this).val());
+  else if (localStorage.getItem('DEEPL_AUTH_KEY') !== $(this).val()) localStorage.setItem('DEEPL_AUTH_KEY', $(this).val());
 });
 
 $toneSelect.on('change', () => {
@@ -1472,7 +1472,7 @@ $glossaryInput.on('change', function onChange() {
 });
 
 $('#clear-glossary-button').on('click', () => {
-  if (!window.confirm('Bạn có muốn xoá sạch bảng thuật ngữ chứ?')) return;
+  if (!confirm('Bạn có muốn xoá sạch bảng thuật ngữ chứ?')) return;
   const activeGlossaryList = $glossaryListSelect.val();
   glossary[activeGlossaryList] = {};
   saveGlossary();
@@ -1491,7 +1491,7 @@ $glossaryListSelect.change(function onChange() {
       $targetEntryTextarea.val(currentGlossary[text]);
       $removeButton.removeClass('disabled');
     } else {
-      if (window.confirm('Bạn có muốn chuyển đổi lại chứ?')) {
+      if (confirm('Bạn có muốn chuyển đổi lại chứ?')) {
         $targetEntryTextarea.val(quickTranslateEntry(text, activeGlossaryList !== 'phonetics' ? currentGlossary : {}));
       }
 
@@ -1556,17 +1556,17 @@ $('.define-button').on('click', function onClick() {
       }
     }
 
-    window.open(href, '_blank', 'width=1000,height=577');
+    open(href, '_blank', 'width=1000,height=577');
   }
 
-  if (window.getSelection != null) window.getSelection().removeAllRanges();
+  if (getSelection != null) getSelection().removeAllRanges();
   else if (document.selection != null) document.selection.empty();
   $sourceEntryInput.blur();
 });
 
 $('.translate-webpage-button').on('click', function onClick() {
-  if ($sourceEntryInput.val().length > 0) window.open($(this).data('href').replace('%s', encodeURIComponent($sourceEntryInput.val().trimEnd())), '_blank', 'width=1000,height=577');
-  if (window.getSelection != null) window.getSelection().removeAllRanges();
+  if ($sourceEntryInput.val().length > 0) open($(this).data('href').replace('%s', encodeURIComponent($sourceEntryInput.val().trimEnd())), '_blank', 'width=1000,height=577');
+  if (getSelection != null) getSelection().removeAllRanges();
   else if (document.selection != null) document.selection.empty();
   $sourceEntryInput.blur();
 });
@@ -1750,7 +1750,7 @@ $addButton.click(() => {
 });
 
 $removeButton.on('click', () => {
-  if (!Object.hasOwn(glossary[$glossaryListSelect.val()], $sourceEntryInput.val()) || !window.confirm('Bạn có muốn xoá cụm từ này chứ?')) return;
+  if (!Object.hasOwn(glossary[$glossaryListSelect.val()], $sourceEntryInput.val()) || !confirm('Bạn có muốn xoá cụm từ này chứ?')) return;
   delete glossary[$glossaryListSelect.val()][$sourceEntryInput.val()];
   saveGlossary();
   $sourceEntryInput.trigger('input');

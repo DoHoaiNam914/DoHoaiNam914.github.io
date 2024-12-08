@@ -18,7 +18,7 @@ export default class Lingvanex extends Translator {
   }
 
   async fetchApiKey() {
-    await axios.get(`${Utils.CLOUDFLARE_CORS_ANYWHERE}https://lingvanex.com/lingvanex_demo_page/js/api-base.js`).then(({ data }) => {
+    await axios.get(`${Utils.CORS_HEADER_PROXY}https://lingvanex.com/lingvanex_demo_page/js/api-base.js`).then(({ data }) => {
       this.authToken = data.match(/B2B_AUTH_TOKEN="([^"]+)"/)[1];
     }).catch((error) => {
       this.controller.abort();

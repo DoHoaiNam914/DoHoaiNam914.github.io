@@ -19,7 +19,7 @@ export default class DeeplTranslate extends Translator {
     this.maxContentLinePerRequest = 50;
     this.maxRequestSize = 128 * 1024;
     this.instance = axios.create({
-      baseURL: 'https://api-free.deepl.com',
+      baseURL: authKey.endsWith(':fx') ? 'https://api-free.deepl.com' : 'https://api.deepl.com',
       params: {
         auth_key: authKey,
       },
@@ -51,7 +51,11 @@ export default class DeeplTranslate extends Translator {
       requestLines.push(lines.shift());
 
       if (lines.length === 0 || (requestLines.length + 1) > this.maxContentLinePerRequest) {
-        responses.push(this.instance.post('/v2/translate', `text=${requestLines.map((element) => encodeURIComponent(element)).join('&text=')}&${sourceLanguage !== '' ? `source_lang=${sourceLanguage}&` : ''}target_lang=${targetLanguage}`));
+        responses.push(this.instance.post('/v2/translate', new URLSearchParams({
+          text: requestLines,
+          target_lang: targetLanguage,
+          source_lang: sourceLanguage !== '' ? sourceLanguage : null,
+        })));
         requestLines = [];
       }
     }

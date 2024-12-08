@@ -53,7 +53,7 @@ export default class Papago extends Translator {
     this.uuid = uuid;
     this.maxContentLengthPerRequest = 3000;
     this.instance = axios.create({
-      baseURL: `${Utils.CLOUDFLARE_CORS_ANYWHERE}https://papago.naver.com`,
+      baseURL: `${Utils.CORS_HEADER_PROXY}https://papago.naver.com`,
       signal: this.controller.signal,
     });
   }
