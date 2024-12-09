@@ -258,7 +258,7 @@ ${filteredNomenclature.map((element) => element.join('\t')).join('\n')}
       }
 
       if (isGemini) this.result = this.result.replace(/\n$/, '').replaceAll(/`{3}txt\n|\n`{3}/g, '');
-      else if (isClaude) this.result = this.result.replace(new RegExp(`Dưới đây là bản dịch ${GenerativeAi.LANGUAGE_LIST.find(({ value }) => value === element).label.replace('Tiếng', 'tiếng')} của đoạn văn bản:\n{2}`), ''),
+      else if (isClaude) this.result = this.result.replace(new RegExp(`Dưới đây là bản dịch ${GenerativeAi.LANGUAGE_LIST.find(({ value }) => value === targetLanguage).label.replace('Tiếng', 'tiếng')} của đoạn văn bản:\n{2}`), '');
       else if (model.startsWith('gpt') || model.startsWith('o1')) this.result = this.result.replaceAll(/^(?:.+:\n)?`{3}txt\n|\n`{3}$/g, '');
       const queryLineSeperators = query.split(/(\n)/).filter((element) => element.includes('\n'));
       const lineSeparatorBooleans = this.result.split(/(\n{1,2})/).filter((element) => element.includes('\n\n')).map((element, index) => element !== queryLineSeperators[index]);
