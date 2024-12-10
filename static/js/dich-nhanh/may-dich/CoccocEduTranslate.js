@@ -1,7 +1,7 @@
 'use strict';
 
 import Translator from '/static/js/dich-nhanh/Translator.js';
-import Utils from '/static/js/Utils.js';
+import * as Utils from '/static/js/Utils.js';
 
 export default class CoccocEduTranslate extends Translator {
   /** https://hoctap.coccoc.com/composer/edu?cat=dich&m=1&reqid=undefined&tbm=edu */

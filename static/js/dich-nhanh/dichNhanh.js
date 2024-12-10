@@ -12,8 +12,10 @@ import MicrosoftTranslator from '/static/js/dich-nhanh/may-dich/MicrosoftTransla
 import Papago from '/static/js/dich-nhanh/may-dich/Papago.js';
 import WebnovelTranslate from '/static/js/dich-nhanh/may-dich/WebnovelTranslate.js';
 
-import { newAccentObject } from '/static/js/newAccentMap.js';
-import Utils from '/static/js/Utils.js';
+import Translators from '/static/js/dich-nhanh/Translators.js';
+
+import * as Standardize from '/static/js/Standardize.js';
+import * as Utils from '/static/js/Utils.js';
 
 const $addButton = $('#add-button');
 const $alignmentRadio = $('input[type="radio"][name="alignment-radio"]');
@@ -138,18 +140,6 @@ const FONT_MAPPING = Object.entries({
   TBMincho: 'tbmincho',
   Thonburi: 'thonburi',
 });
-
-const Translators = {
-  BAIDU_TRANSLATE: 'baiduTranslate',
-  COCCOC_EDU_TRANSLATE: 'coccocEduTranslate',
-  DEEPL_TRANSLATE: 'deeplTranslate',
-  GENERATIVE_AI: 'generativeAi',
-  GOOGLE_TRANSLATE: 'googleTranslate',
-  LINGVANEX: 'lingvanex',
-  MICROSOFT_TRANSLATOR: 'microsoftTranslator',
-  PAPAGO: 'papago',
-  WEBNOVEL_TRANSLATE: 'webnovelTranslate',
-};
 
 const GOOGLE_TRANSLATE_KEY = 'AIzaSyDj3f1TGsnamhL8U5tpvpWw4J27So0IGp8';
 
@@ -473,7 +463,7 @@ let currentTranslator = null;
 let translationController = null;
 let entryTranslationController = null;
 let autocompleteTimeout = null;
-let isRetranslate;
+let isRetranslate = false;
 
 const getSourceLangOptionList = function getSourceLanguageOptionListHtmlFromTranslator(translator) {
   const sourceLanguageSelect = document.createElement('select');
@@ -1003,7 +993,7 @@ $(document).ready(async () => {
     }, 5000);
   });
 
-  glossary.sinovietnameses = cjkv.nam.map(([first, second]) => [first, second.normalize().split(',').map((element) => element.replaceAll(Utils.getTrieRegexPatternFromWords(Object.keys(newAccentObject)), (match) => newAccentObject[match] ?? match)).join(',')]);
+  glossary.sinovietnameses = cjkv.nam.map(([first, second]) => [first, Standardize.vosOaoeuy(Standardize.vosYToI(second.normalize()))]);
   console.log(`Đã tải xong bộ dữ liệu Hán-Việt (${glossary.sinovietnameses.length})!`);
 
   $translatorDropdown.find('.active').click();

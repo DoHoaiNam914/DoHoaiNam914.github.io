@@ -1,7 +1,7 @@
 'use strict';
 
 import Translator from '/static/js/dich-nhanh/Translator.js';
-import Utils from '/static/js/Utils.js';
+import * as Utils from '/static/js/Utils.js';
 
 export default class BaiduTranslate extends Translator {
   static SOURCE_LANGUAGE_LIST = {

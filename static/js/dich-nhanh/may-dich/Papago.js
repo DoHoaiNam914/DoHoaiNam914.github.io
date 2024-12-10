@@ -1,7 +1,7 @@
 'use strict';
 
 import Translator from '/static/js/dich-nhanh/Translator.js';
-import Utils from '/static/js/Utils.js';
+import * as Utils from '/static/js/Utils.js';
 
 import CryptoJS from 'crypto-js';
 

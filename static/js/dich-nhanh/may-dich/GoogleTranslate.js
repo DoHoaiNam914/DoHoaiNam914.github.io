@@ -1,7 +1,7 @@
 'use strict';
 
 import Translator from '/static/js/dich-nhanh/Translator.js';
-import Utils from '/static/js/Utils.js';
+import * as Utils from '/static/js/Utils.js';
 
 export default class GoogleTranslate extends Translator {
   /** https://translation.googleapis.com/language/translate/v2/languages?prettyPrint=false&target=vi&key=${key} */

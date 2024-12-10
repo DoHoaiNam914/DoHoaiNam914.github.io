@@ -1,7 +1,7 @@
 'use strict';
 
 import Translator from '/static/js/dich-nhanh/Translator.js';
-import Utils from '/static/js/Utils.js';
+import * as Utils from '/static/js/Utils.js';
 
 export default class Lingvanex extends Translator {
   /** https://api-b2b.backenster.com/b1/api/v3/getLanguages?platform=dp&code=vi_VN */
