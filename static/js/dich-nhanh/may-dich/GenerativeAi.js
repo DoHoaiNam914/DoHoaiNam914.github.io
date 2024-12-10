@@ -257,14 +257,13 @@ ${filteredNomenclature.map((element) => element.join('\t')).join('\n')}
         return this.result;
       }
 
-      if (isGemini) this.result = this.result.replace(/\n$/, '').replaceAll(new RegExp(`\`{3}(?:txt|${targetLanguage})\\n|\\n\`{3}`, 'g'), '');
+      if (isGemini) this.result = this.result.replace(/\n$/, '').replaceAll(new RegExp(`\`{3}(?:txt|${targetLanguage}|vn)\\n|\\n\`{3}`, 'g'), '');
       else if (isClaude) this.result = this.result.replace(new RegExp(`Dưới đây là bản dịch ${GenerativeAi.LANGUAGE_LIST.find(({ value }) => value === targetLanguage).label.replace('Tiếng', 'tiếng')} của đoạn văn bản:\n{2}`), '');
       else if (model.startsWith('gpt') || model.startsWith('o1')) this.result = this.result.replaceAll(/^(?:.+:\n)?`{3}txt\n|\n`{3}$/g, '');
       const queryLineSeperators = query.split(/(\n)/).filter((element) => element.includes('\n'));
       const lineSeparatorBooleans = this.result.split(/(\n{1,2})/).filter((element) => element.includes('\n\n')).map((element, index) => element !== queryLineSeperators[index]);
       this.result = this.result.split(lineSeparatorBooleans.reduce((accumulator, currentValue) => accumulator + (currentValue ? 1 : -1), 0) > 0 ? '\n\n' : '\n');
-      const resultMap = Object.fromEntries(lines.map((element, index) => (element.replace(/^\s+/, '').length > 0 ? index : null)).filter((element) => element != null).map((element, index) => [element, this.result[index]]));
-      this.result = lines.map((element, index) => (resultMap[index] != null ? element.match(/^\s*/)[0].concat(resultMap[index].replace(/^\s+/, '')) : element)).join('\n');
+      this.result = lines.map((element, index) => (this.result[index] != null ? element.match(/^\s*/)[0].concat(this.result[index].replace(/^\s+/, '')) : element)).join('\n');
       super.translateText(text, targetLanguage, this.DefaultLanguage.SOURCE_LANGUAGE);
     } catch (error) {
       console.error('Bản dịch lỗi:', error);

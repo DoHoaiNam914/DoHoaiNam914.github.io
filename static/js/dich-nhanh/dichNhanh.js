@@ -781,8 +781,7 @@ ${nomenclature.map((element) => element.join('\t')).join('\n')}
       const queryLineSeperators = query.split(/(\n)/).filter((element) => element.includes('\n'));
       const lineSeparatorBooleans = polishResult.split(/(\n{1,2})/).filter((element) => element.includes('\n\n')).map((element, index) => element !== queryLineSeperators[index]);
       polishResult = polishResult.split(lineSeparatorBooleans.reduce((accumulator, currentValue) => accumulator + (currentValue ? 1 : -1), 0) > 0 ? '\n\n' : '\n');
-      const resultMap = Object.fromEntries(lines.map((element, index) => (element.replace(/^\s+/, '').length > 0 ? index : null)).filter((element) => element != null).map((element, index) => [element, polishResult[index]]));
-      currentTranslator.result = lines.map((element, index) => (resultMap[index] != null ? (rawTranslationLines[index] ?? element).match(/^\s*/)[0].concat(resultMap[index].replace(/^\s+/, '')) : rawTranslationLines[index] ?? element)).join('\n');
+      currentTranslator.result = lines.map((element, index) => (polishResult[index] != null ? (rawTranslationLines[index] ?? element).match(/^\s*/)[0].concat(polishResult[index].replace(/^\s+/, '')) : (rawTranslationLines[index] ?? element))).join('\n');
     }
 
     $resultTextarea.html(buildResult(text, currentTranslator.result, $activeTranslator.val()));
