@@ -1,5 +1,6 @@
-//# sourceUrl=https://s.ngonngu.net/static/common.js?20240113
+// sourceURL=https://s.ngonngu.net/static/common.js?20240113
 'use strict'
+
 const VOS = {
   // Initial characters
   C: '[bdđhklmnrstvxBDĐHKLMNRSTVX]',
