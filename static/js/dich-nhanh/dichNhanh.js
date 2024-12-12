@@ -35,7 +35,6 @@ const $glossaryModal = $('#glossary-modal');
 const $inputTextarea = $('#input-textarea');
 const $openaiApiKeyText = $('#openai-api-key-text');
 const $pasteButtons = $('.paste-button');
-const $polishSwitch = $('#polish-switch');
 const $removeButton = $('#remove-button');
 const $resultTextarea = $('#result-textarea');
 const $retranslateButton = $('#retranslate-button');
@@ -740,7 +739,7 @@ const translate = async function translateContentInTextarea(controller = new Abo
 
     if (controller.signal.aborted) return;
 
-    if (targetLanguage.startsWith('vi') && $polishSwitch.prop('checked')) {
+    if (targetLanguage.startsWith('vi') && $('#polish-switch').prop('checked')) {
       if (!isRetranslate) $resultTextarea.html(buildResult(text, currentTranslator.result, $activeTranslator.val()));
       const nomenclature = Object.entries(glossary.nomenclature).filter(([first]) => text.includes(first));
       const lines = text.split('\n');
@@ -1674,7 +1673,7 @@ $translateEntryButtons.click(async function onClick() {
         switch (activeTranslator) {
           case Translators.GENERATIVE_AI: {
             translator.controller = entryTranslationController;
-            await translator.translateText(text, targetLanguage, $('#translate-entry-model-select').val());
+            await translator.translateText(text, targetLanguage, $('#translate-entry-model-select').val(), $('#apply-nomenclature-switch').prop('checked') ? Object.entries(glossary.nomenclature) : []);
             break;
           }
           default: {
