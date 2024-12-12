@@ -752,7 +752,7 @@ const translate = async function translateContentInTextarea(controller = new Abo
 Nomenclature Lookup Table:
 \`\`\`tsv
 source\ttarget
-${filteredNomenclature.map((element) => element.join('\t')).join('\n')}
+${nomenclature.map((element) => element.join('\t')).join('\n')}
 \`\`\`` : ''}`;
       const MESSAGE = `Rough Translation:
 \`\`\`txt
