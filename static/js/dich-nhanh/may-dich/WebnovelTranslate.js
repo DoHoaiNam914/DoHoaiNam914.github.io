@@ -1,5 +1,7 @@
 'use strict';
 
+/* global axios */
+
 import Translator from '/static/js/dich-nhanh/Translator.js';
 import * as Utils from '/static/js/Utils.js';
 

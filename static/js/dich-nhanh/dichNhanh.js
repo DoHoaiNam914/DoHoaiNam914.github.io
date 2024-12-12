@@ -1,6 +1,6 @@
 'use strict';
 
-/* global axios, bootstrap, cjkv */
+/* global $, axios, bootstrap, cjkv */
 
 import BaiduTranslate from '/static/js/dich-nhanh/may-dich/BaiduTranslate.js';
 import CoccocEduTranslate from '/static/js/dich-nhanh/may-dich/CoccocEduTranslate.js';
@@ -777,7 +777,7 @@ ${query}
 
       if (controller.signal.aborted || polishResult == null) return;
       if (isGemini) polishResult = polishResult.replace(/\n$/, '');
-      const lineSeperators = lines.split(/(\n)/).filter((element) => element.includes('\n'));
+      const lineSeperators = text.split(/(\n)/).filter((element) => element.includes('\n'));
       const lineSeparatorBooleans = polishResult.split(/(\n{1,2})/).filter((element) => element.includes('\n\n')).map((element, index) => element !== lineSeperators[index]);
       polishResult = polishResult.split(lineSeparatorBooleans.reduce((accumulator, currentValue) => accumulator + (currentValue ? 1 : -1), 0) > 0 ? '\n\n' : '\n');
       currentTranslator.result = lines.map((element, index) => (polishResult[index] != null ? (rawTranslationLines[index] ?? element).match(/^\s*/)[0].concat(polishResult[index].replace(/^\s+/, '')) : (rawTranslationLines[index] ?? element))).join('\n');
