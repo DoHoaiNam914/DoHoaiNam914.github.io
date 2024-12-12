@@ -747,21 +747,21 @@ const translate = async function translateContentInTextarea(controller = new Abo
       const query = lines.map((element) => element.replace(/^\s/, '')).join('\n');
       const rawTranslationLines = currentTranslator.result.split('\n');
 
-      const INSTRUCTIONS = `Re-translate the following incorrect or missing lines in Rough Translation codeblock ${nomenclature.length > 0 ? 'and edit that translation with names of people, ethnic groups, species, or place-names, and other concepts listed in the Nomenclature Lookup Table ' : ''}by refer to the content in Original Text codeblock. Your translations must convey all the content in the original text ${/\n/.test(query) ? 'line by line ' : ''}and cannot involve explanations or other unnecessary information. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text without codeblock and cannot include explanations or other information.${nomenclature.length > 0 ? `
+      const INSTRUCTIONS = `Rewrite the rough translation provided, correcting any errors or omissions in the translation by referencing the original text. ${filteredNomenclature.length > 0 ? `Accurately map proper names of people, ethnic groups, species, or place-names, and other concepts listed in the Nomenclature Lookup Table. ` : ''}If a line is missing or has incorrect content due to errors in the previous line, translate it correctly from the original text. Return the entire corrected translation in natural and fluent language, with proper grammar and word choice, without explanations or code blocks.${nomenclature.length > 0 ? `
 
 Nomenclature Lookup Table:
 \`\`\`tsv
 source\ttarget
 ${nomenclature.map((element) => element.join('\t')).join('\n')}
 \`\`\`` : ''}`;
-      const MESSAGE = `Rough Translation:
-\`\`\`txt
-${rawTranslationLines.map((element) => element.replace(/^\s/, '')).join('\n')}
-\`\`\`
-
-Original Text:
+      const MESSAGE = `Original text:
 \`\`\`txt
 ${query}
+\`\`\`
+
+Rough translation:
+\`\`\`txt
+${rawTranslationLines.map((element) => element.replace(/^\s/, '')).join('\n')}
 \`\`\``;
 
       let generativeAi = translators[Translators.GENERATIVE_AI];
