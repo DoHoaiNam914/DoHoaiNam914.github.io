@@ -1,6 +1,6 @@
 'use strict';
 
-/* global bootstrap, cjkv */
+/* global axios, bootstrap, cjkv */
 
 import BaiduTranslate from '/static/js/dich-nhanh/may-dich/BaiduTranslate.js';
 import CoccocEduTranslate from '/static/js/dich-nhanh/may-dich/CoccocEduTranslate.js';
@@ -747,7 +747,7 @@ const translate = async function translateContentInTextarea(controller = new Abo
       const query = lines.map((element) => element.replace(/^\s/, '')).join('\n');
       const rawTranslationLines = currentTranslator.result.split('\n');
 
-      const INSTRUCTIONS = `Edit the following Vietnamese translation in the Rough Translation section. Refer to the following text in the Original Text section. ${nomenclature.length > 0 ? `Accurately map names of people, ethnic groups, species, or place-names, and other concepts listed in the Nomenclature Lookup Table to enhance the accuracy and consistency in your translations. ` : ''}Your translations must convey all the content in the original text ${/\n/.test(query) ? 'line by line ' : ''}and cannot involve explanations or other unnecessary information. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text and cannot include explanations or other information.${filteredNomenclature.length > 0 ? `
+      const INSTRUCTIONS = `Edit the following Vietnamese translation in the Rough Translation section. Refer to the following text in the Original Text section. ${nomenclature.length > 0 ? `Accurately map names of people, ethnic groups, species, or place-names, and other concepts listed in the Nomenclature Lookup Table to enhance the accuracy and consistency in your translations. ` : ''}Your translations must convey all the content in the original text ${/\n/.test(query) ? 'line by line ' : ''}and cannot involve explanations or other unnecessary information. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text and cannot include explanations or other information.${nomenclature.length > 0 ? `
 
 Nomenclature Lookup Table:
 \`\`\`tsv
