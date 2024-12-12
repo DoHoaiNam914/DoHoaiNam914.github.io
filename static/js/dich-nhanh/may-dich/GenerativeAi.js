@@ -105,7 +105,7 @@ export default class GenerativeAi extends Translator {
 
     const maybeIsDebug = async () => isDebug ? await axios.post(`${Utils.CORS_HEADER_PROXY}https://gateway.api.airapps.co/aa_service=server5/aa_apikey=5N3NR9SDGLS7VLUWSEN9J30P//v3/proxy/open-ai/v1/chat/completions`, JSON.stringify(requestBody), {
       headers: {
-        'User-Agent': 'iOS-TranslateNow/8.7.1.1001 CFNetwork/1568.200.51 Darwin/24.1.0',
+        'User-Agent': 'iOS-TranslateNow/8.8.0.1016 CFNetwork/1568.200.51 Darwin/24.1.0',
         'Content-Type': 'application/json',
         'accept-language': 'vi-VN,vi;q=0.9',
         'air-user-id': this.uuid,
@@ -234,32 +234,26 @@ export default class GenerativeAi extends Translator {
       const lines = text.split('\n');
       const query = lines.join('\n');
 
-      const INSTRUCTIONS = `Translate the following text ${filteredNomenclature.length > 0 ? 'in the ORIGINAL TEXT section ' : ''}into ${targetLanguage}. ${filteredNomenclature.length > 0 ? `Accurately map proper names of people, ethnic groups, species, or place-names, and other concepts listed in the NOMENCLATURE LOOKUP TABLE to enhance the accuracy and consistency in your translations. ` : ''}Your translations must convey all the content in the original text ${/\n/.test(query) ? 'line by line ' : ''}and cannot involve explanations or other unnecessary information. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text and cannot include explanations or other information.`;
-      const MESSAGE = `${filteredNomenclature.length > 0 ? `ORIGINAL TEXT:
-\`\`\`txt
-${query}
-\`\`\`
+      const INSTRUCTIONS = `Translate the following text into ${targetLanguage}. ${filteredNomenclature.length > 0 ? `Accurately map proper names of people, ethnic groups, species, or place-names, and other concepts listed in the Nomenclature Lookup Table to enhance the accuracy and consistency in your translations. ` : ''}Your translations must convey all the content in the original text ${/\n/.test(query) ? 'line by line ' : ''}and cannot involve explanations or other unnecessary information. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text and cannot include explanations or other information.${filteredNomenclature.length > 0 ? `
 
-NOMENCLATURE LOOKUP TABLE:
+Nomenclature Lookup Table:
 \`\`\`tsv
 source\ttarget
 ${filteredNomenclature.map((element) => element.join('\t')).join('\n')}
-\`\`\`` : query}`;
+\`\`\`` : ''}`;
 
       const isGemini = model.startsWith('gemini');
       const isClaude = model.startsWith('claude');
 
-      const maybeIsClaude = async () => isClaude ? await this.runClaude(model, INSTRUCTIONS, MESSAGE) : await this.runOpenai(model, INSTRUCTIONS, MESSAGE);
-      this.result = isGemini ? await this.runGemini(model, INSTRUCTIONS, MESSAGE) : await maybeIsClaude();
+      const maybeIsClaude = async () => isClaude ? await this.runClaude(model, INSTRUCTIONS, query) : await this.runOpenai(model, INSTRUCTIONS, query);
+      this.result = isGemini ? await this.runGemini(model, INSTRUCTIONS, query) : await maybeIsClaude();
 
       if (this.controller.signal.aborted || this.result == null) {
         this.result = text;
         return this.result;
       }
 
-      if (isGemini) this.result = this.result.replace(/\n$/, '').replaceAll(new RegExp(`\`{3}(?:txt|${targetLanguage.toLowerCase()}|v(?:n|i))\\n|\\n\`{3}`, 'g'), '');
-      else if (isClaude) this.result = this.result.replace(new RegExp(`Dưới đây là bản dịch ${GenerativeAi.LANGUAGE_LIST.find(({ value }) => value === targetLanguage).label.replace('Tiếng', 'tiếng')} của đoạn văn bản:\n{2}`), '');
-      else if (model.startsWith('gpt') || model.startsWith('o1')) this.result = this.result.replaceAll(/^(?:.+:\n)?`{3}txt\n|\n`{3}$/g, '');
+      if (isGemini) this.result = this.result.replace(/\n$/, '');
       const queryLineSeperators = query.split(/(\n)/).filter((element) => element.includes('\n'));
       const lineSeparatorBooleans = this.result.split(/(\n{1,2})/).filter((element) => element.includes('\n\n')).map((element, index) => element !== queryLineSeperators[index]);
       this.result = this.result.split(lineSeparatorBooleans.reduce((accumulator, currentValue) => accumulator + (currentValue ? 1 : -1), 0) > 0 ? '\n\n' : '\n');

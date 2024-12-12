@@ -744,25 +744,25 @@ const translate = async function translateContentInTextarea(controller = new Abo
       if (!isRetranslate) $resultTextarea.html(buildResult(text, currentTranslator.result, $activeTranslator.val()));
       const nomenclature = Object.entries(glossary.nomenclature).filter(([first]) => text.includes(first));
       const lines = text.split('\n');
-      const query = lines.join('\n');
+      const query = lines.map((element) => element.replace(/^\s/, '')).join('\n');
       const rawTranslationLines = currentTranslator.result.split('\n');
 
-      const INSTRUCTIONS = `Translate the following text in the ORIGINAL TEXT section into Vietnamese. Refer to the following translation in ROUGH TRANSLATION section. ${nomenclature.length > 0 ? `Accurately map names of people, ethnic groups, species, or place-names, and other concepts listed in the NOMENCLATURE LOOKUP TABLE to enhance the accuracy and consistency in your translations. ` : ''}Your translations must convey all the content in the original text ${/\n/.test(query) ? 'line by line ' : ''}and cannot involve explanations or other unnecessary information. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text and cannot include explanations or other information.`;
-      const MESSAGE = `ORIGINAL TEXT:
-\`\`\`txt
-${query}
-\`\`\`
+      const INSTRUCTIONS = `Edit the following Vietnamese translation in the Rough Translation section. Refer to the following text in the Original Text section. ${nomenclature.length > 0 ? `Accurately map names of people, ethnic groups, species, or place-names, and other concepts listed in the NOMENCLATURE LOOKUP TABLE to enhance the accuracy and consistency in your translations. ` : ''}Your translations must convey all the content in the original text ${/\n/.test(query) ? 'line by line ' : ''}and cannot involve explanations or other unnecessary information. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text and cannot include explanations or other information.${filteredNomenclature.length > 0 ? `
 
-ROUGH TRANSLATION:
-\`\`\`txt
-${rawTranslationLines.join('\n')}
-\`\`\`${nomenclature.length > 0 ? `
-
-NOMENCLATURE LOOKUP TABLE:
+Nomenclature Lookup Table:
 \`\`\`tsv
 source\ttarget
-${nomenclature.map((element) => element.join('\t')).join('\n')}
+${filteredNomenclature.map((element) => element.join('\t')).join('\n')}
 \`\`\`` : ''}`;
+      const MESSAGE = `Rough Translation:
+\`\`\`txt
+${rawTranslationLines.map((element) => element.replace(/^\s/, '')).join('\n')}
+\`\`\`
+
+Original Text:
+\`\`\`txt
+${query}
+\`\`\``;
 
       let generativeAi = translators[Translators.GENERATIVE_AI];
 
@@ -776,10 +776,9 @@ ${nomenclature.map((element) => element.join('\t')).join('\n')}
       let polishResult = isGemini ? await generativeAi.runGemini(model, INSTRUCTIONS, MESSAGE) : await maybeIsClaude();
 
       if (controller.signal.aborted || polishResult == null) return;
-      if (isGemini) polishResult = polishResult.replace(/\n$/, '').replaceAll(new RegExp(`\`{3}${targetLanguage.toLowerCase()}\n|\n\`{3}`, 'g'), '');
-      else polishResult = polishResult.replaceAll(/^`{3}txt\n|\n`{3}$/g, '');
-      const queryLineSeperators = query.split(/(\n)/).filter((element) => element.includes('\n'));
-      const lineSeparatorBooleans = polishResult.split(/(\n{1,2})/).filter((element) => element.includes('\n\n')).map((element, index) => element !== queryLineSeperators[index]);
+      if (isGemini) polishResult = polishResult.replace(/\n$/, '');
+      const lineSeperators = lines.split(/(\n)/).filter((element) => element.includes('\n'));
+      const lineSeparatorBooleans = polishResult.split(/(\n{1,2})/).filter((element) => element.includes('\n\n')).map((element, index) => element !== lineSeperators[index]);
       polishResult = polishResult.split(lineSeparatorBooleans.reduce((accumulator, currentValue) => accumulator + (currentValue ? 1 : -1), 0) > 0 ? '\n\n' : '\n');
       currentTranslator.result = lines.map((element, index) => (polishResult[index] != null ? (rawTranslationLines[index] ?? element).match(/^\s*/)[0].concat(polishResult[index].replace(/^\s+/, '')) : (rawTranslationLines[index] ?? element))).join('\n');
     }
