@@ -1295,7 +1295,6 @@ $translatorDropdown.find('.dropdown-item').click(async function onClick() {
   $(this).addClass('active');
   const activeTranslator = $(this).val();
   currentTranslator = translators[activeTranslator];
-  $('#polish-switch').removeClass('disabled');
 
   switch (activeTranslator) {
     case Translators.BAIDU_TRANSLATE: {
@@ -1360,8 +1359,6 @@ $translatorDropdown.find('.dropdown-item').click(async function onClick() {
         translators[activeTranslator] = currentTranslator;
       }
 
-      if ($('#polish-switch').prop('checked')) $('#polish-switch').prop('checked', false);
-      $('#polish-switch').addClass('disabled');
       break;
     }
     default: {
