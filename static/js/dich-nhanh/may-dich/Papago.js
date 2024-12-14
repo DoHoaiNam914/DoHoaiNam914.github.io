@@ -5,7 +5,7 @@
 import Translator from '/static/js/dich-nhanh/Translator.js';
 import * as Utils from '/static/js/Utils.js';
 
-import CryptoJS from 'crypto-js';
+import CryptoJS from 'https://esm.run/crypto-js';
 
 export default class Papago extends Translator {
   static SOURCE_LANGUAGE_LIST = {

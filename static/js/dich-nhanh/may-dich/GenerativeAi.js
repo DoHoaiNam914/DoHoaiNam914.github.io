@@ -5,15 +5,15 @@
 import Translator from '/static/js/dich-nhanh/Translator.js';
 import * as Utils from '/static/js/Utils.js';
 
-import Anthropic from "@anthropic-ai/sdk";
+import Anthropic from "https://esm.run/@anthropic-ai/sdk";
 
 import {
   GoogleGenerativeAI,
   HarmCategory,
   HarmBlockThreshold,
-} from '@google/generative-ai';
+} from 'https://esm.run/@google/generative-ai';
 
-import OpenAI from "openai";
+import OpenAI from "https://esm.run/openai";
 
 export default class GenerativeAi extends Translator {
   static LANGUAGE_LIST = [
