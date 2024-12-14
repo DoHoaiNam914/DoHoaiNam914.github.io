@@ -48,6 +48,19 @@ function vosYToI (text: string): string {
   }
   return result
 }
+function vosIToY (text: string): string {
+  const Cc: string = VOS.Cf
+  const Y: string = VOS.Y.join('')
+  const I: string = VOS.I.join('')
+  let result: string = text
+  for (let i: number = 0; i < Y.length; i++) {
+    // quý- > quí-
+    result = result.replaceAll(new RegExp(`(?<=(?:\\P{L}|^)[Qq][Uu])(?:${Y[i]}([ptuPTU]|nh|NH|ch|CH)?)(?=^|$|\\P{L})`, 'gui'), `${I[i]}$1`)
+    // hi, kì, lí > hy, kỳ, lý
+    result = result.replaceAll(new RegExp(`(?<=(?:\\P{L}|^)${Cc})${I[i]}(?=^|$|\\P{L})`, 'gui'), Y[i])
+  }
+  return result
+}
 function vosOaoeuy (text: string): string {
   const Cf: string = VOS.Cf
   // OA, OE, UY: incorrect tone marks position
@@ -61,4 +74,17 @@ function vosOaoeuy (text: string): string {
   }
   return result
 }
-export { vosOaoeuy, vosYToI }
+function reversedVosOaoeuy (text: string): string {
+  const Cf: string = VOS.Cf
+  // OA, OE, UY: incorrect tone marks position
+  const wrong: string[] = VOS.Tw
+  // OA, OE, UY: corrected tone marks position
+  const right: string[] = VOS.Tr
+  let result: string = text
+  for (let i: number = 0; i < right.length; i++) {
+    // Replace right
+    result = result.replaceAll(new RegExp(`((?:\\P{L}|^)(?:${Cf})?)${right[i]}`, 'gu'), `$1${wrong[i]}`)
+  }
+  return result
+}
+export { reversedVosOaoeuy, vosOaoeuy, vosIToY, vosYToI }

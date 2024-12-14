@@ -1,6 +1,6 @@
 'use strict';
 
-/* global $, axios, bootstrap, cjkv */
+/* global $, axios, bootstrap */
 
 import BaiduTranslate from '/static/js/dich-nhanh/may-dich/BaiduTranslate.js';
 import CoccocEduTranslate from '/static/js/dich-nhanh/may-dich/CoccocEduTranslate.js';
@@ -995,7 +995,7 @@ $(document).ready(async () => {
     }, 5000);
   });
 
-  glossary.sinovietnameses = cjkv.nam.map(([first, second]) => [first, Standardize.vosOaoeuy(Standardize.vosYToI(second.normalize()))]);
+  glossary.sinovietnameses = window.cjkv.nam.map(([first, second]) => [first, Standardize.vosOaoeuy(Standardize.vosYToI(second.normalize()))]);
   console.log(`Đã tải xong bộ dữ liệu Hán-Việt (${glossary.sinovietnameses.length})!`);
 
   $translatorDropdown.find('.active').click();

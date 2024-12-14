@@ -1,6 +1,9 @@
 'use strict';
 
-/* global oldAccentObject, Utils */
+/* global DTM_ExactMatcher */
+
+import * as Standardize from '/static/js/Standardize.js';
+import * as Utils from '/static/js/Utils.js';
 
 $(document).ready(async () => {
   const searchParams = new URLSearchParams(window.location.search);
@@ -16,8 +19,8 @@ $(document).ready(async () => {
     const statusParagraph = document.createElement('p');
     statusParagraph.innerText = 'Đang tải...';
     $(document.body).append(statusParagraph);
-    const oldAccentDefine = define.replaceAll(new RegExp(`${Utils.getTrieRegexPatternFromWords(Object.keys(oldAccentObject)).source}(?= |$)`, 'g'), (match) => oldAccentObject[match] ?? match);
-    const pm = new window.DTM_ExactMatcher();
+    const oldAccentDefine = Standardize.vosIToY(Standardize.reversedVosOaoeuy(define);
+    const pm = new DTM_ExactMatcher();
     define = define.toLowerCase();
 
     switch (dictionary) {
