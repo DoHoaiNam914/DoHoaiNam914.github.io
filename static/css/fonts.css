@@ -18,6 +18,40 @@
   src: local('Apple SD Gothic Neo'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/AppleSDGothicNeo/AppleSDGothicNeoB00-07.otf) format('opentype');
 }
 
+/* Atkinson Hyperlegible */
+
+@font-face {
+  font-display: swap;
+  font-family: 'Atkinson Hyperlegible';
+  font-style: normal;
+  font-weight: 400;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Atkinson-Hyperlegible-Font-Web-2020-0514/Atkinson-Hyperlegible-Regular-102.ttf) format('truetype');
+}
+
+@font-face {
+  font-display: swap;
+  font-family: 'Atkinson Hyperlegible';
+  font-style: italic;
+  font-weight: 400;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Atkinson-Hyperlegible-Font-Web-2020-0514/Atkinson-Hyperlegible-Italic-102.ttf) format('truetype');
+}
+
+@font-face {
+  font-display: swap;
+  font-family: 'Atkinson Hyperlegible';
+  font-style: normal;
+  font-weight: 700;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Atkinson-Hyperlegible-Font-Web-2020-0514/Atkinson-Hyperlegible-Bold-102.ttf) format('truetype');
+}
+
+@font-face {
+  font-display: swap;
+  font-family: 'Atkinson Hyperlegible';
+  font-style: italic;
+  font-weight: 700;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Atkinson-Hyperlegible-Font-Web-2020-0514/Atkinson-Hyperlegible-BoldItalic-102.ttf) format('truetype');
+}
+
 /* Avenir */
 
 @font-face {
@@ -32,7 +66,7 @@
 
 @font-face {
   font-display: swap;
-  font-family: aotfRyuminPr5;
+  font-family: 'A-OTF Ryumin Pr5';
   font-style: normal;
   font-weight: 400;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/A-OTF%20Ryumin%20Pr5%20R-KL.otf) format('opentype');
@@ -208,6 +242,40 @@
   src: local('Cochin'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Cochin/Cochin-BoldItalic.ttf) format('truetype');
 }
 
+/* Fira Sans */
+
+@font-face {
+  font-display: swap;
+  font-family: firaSans;
+  font-style: normal;
+  font-weight: 400;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Fira-4.202/FiraSans-Regular.ttf) format('truetype');
+}
+
+@font-face {
+  font-display: swap;
+  font-family: firaSans;
+  font-style: italic;
+  font-weight: 400;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Fira-4.202/FiraSans-Italic.ttf) format('truetype');
+}
+
+@font-face {
+  font-display: swap;
+  font-family: firaSans;
+  font-style: normal;
+  font-weight: 700;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Fira-4.202/FiraSans-Bold.ttf) format('truetype');
+}
+
+@font-face {
+  font-display: swap;
+  font-family: firaSans;
+  font-style: italic;
+  font-weight: 700;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Fira-4.202/FiraSans-BoldItalic.ttf) format('truetype');
+}
+
 /* Helvetica */
 
 @font-face {
@@ -230,7 +298,7 @@
 
 @font-face {
   font-display: swap;
-  font-family: hiraginomin;
+  font-family: HiraginoMin;
   font-style: normal;
   font-weight: 300;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/HiraginoMin-W3-90msp-RKSJ-H-01.ttf) format('truetype');
@@ -238,7 +306,7 @@
 
 @font-face {
   font-display: swap;
-  font-family: hiraginomin;
+  font-family: HiraginoMin;
   font-style: normal;
   font-weight: 600;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/HiraginoMin-W6-90msp-RKSJ-H-01.ttf) format('truetype');
@@ -302,7 +370,7 @@
 
 @font-face {
   font-display: swap;
-  font-family: icielDomaineText;
+  font-family: 'iCiel Domaine Text';
   font-style: normal;
   font-weight: 400;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/iCielDomaineText-Regular.ttf) format('truetype');
@@ -312,7 +380,7 @@
 
 @font-face {
   font-display: swap;
-  font-family: minionPro;
+  font-family: 'Minion Pro';
   font-style: normal;
   font-weight: 400;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Minion%20Pro/MinionPro-Regular.otf) format('opentype');
@@ -320,7 +388,7 @@
 
 @font-face {
   font-display: swap;
-  font-family: minionPro;
+  font-family: 'Minion Pro';
   font-style: italic;
   font-weight: 400;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Minion%20Pro/MinionPro-It.otf) format('opentype');
@@ -328,7 +396,7 @@
 
 @font-face {
   font-display: swap;
-  font-family: minionPro;
+  font-family: 'Minion Pro';
   font-style: normal;
   font-weight: 700;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Minion%20Pro/MinionPro-Bold.otf) format('opentype');
@@ -336,7 +404,7 @@
 
 @font-face {
   font-display: swap;
-  font-family: minionPro;
+  font-family: 'Minion Pro';
   font-style: italic;
   font-weight: 700;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Minion%20Pro/MinionPro-BoldIt.otf) format('opentype');
@@ -380,7 +448,7 @@
 
 @font-face {
   font-display: swap;
-  font-family: opendyslexic;
+  font-family: OpenDyslexic;
   font-style: normal;
   font-weight: 400;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/opendyslexic-0.91.12/OpenDyslexic-Regular.woff2) format('woff2');
@@ -388,7 +456,7 @@
 
 @font-face {
   font-display: swap;
-  font-family: opendyslexic;
+  font-family: OpenDyslexic;
   font-style: italic;
   font-weight: 400;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/opendyslexic-0.91.12/OpenDyslexic-Italic.woff2) format('woff2');
@@ -396,7 +464,7 @@
 
 @font-face {
   font-display: swap;
-  font-family: opendyslexic;
+  font-family: OpenDyslexic;
   font-style: normal;
   font-weight: 700;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/opendyslexic-0.91.12/OpenDyslexic-Bold.woff2) format('woff2');
@@ -404,7 +472,7 @@
 
 @font-face {
   font-display: swap;
-  font-family: opendyslexic;
+  font-family: OpenDyslexic;
   font-style: italic;
   font-weight: 700;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/opendyslexic-0.91.12/OpenDyslexic-Bold-Italic.woff2) format('woff2');
@@ -448,7 +516,7 @@
 
 @font-face {
   font-display: swap;
-  font-family: p22Typewriter;
+  font-family: 'P22 Typewriter';
   font-style: normal;
   font-weight: 400;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/P22-Typewriter-Regular.ttf) format('truetype');
@@ -712,7 +780,7 @@
 
 @font-face {
   font-display: swap;
-  font-family: stbshusong;
+  font-family: STBShusong;
   font-style: normal;
   font-weight: 400;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/STSong/STSongSC.ttf) format('truetype');
@@ -722,7 +790,7 @@
 
 @font-face {
   font-display: swap;
-  font-family: stsongTc;
+  font-family: 'STSong TC';
   font-style: normal;
   font-weight: 400;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/STSong/STSongTC.ttf) format('truetype');
@@ -732,7 +800,7 @@
 
 @font-face {
   font-display: swap;
-  font-family: svnHelveticaNeue;
+  font-family: 'SVN-Helvetica Neue';
   font-style: normal;
   font-weight: 400;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/SVN-Helvetica%20Neue/SVN-Helvetica%20Neue.ttf) format('truetype');
@@ -740,7 +808,7 @@
 
 @font-face {
   font-display: swap;
-  font-family: svnHelveticaNeue;
+  font-family: 'SVN-Helvetica Neue';
   font-style: italic;
   font-weight: 400;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/SVN-Helvetica%20Neue/SVN-Helvetica%20Neue%20Italic.ttf) format('truetype');
@@ -748,7 +816,7 @@
 
 @font-face {
   font-display: swap;
-  font-family: svnHelveticaNeue;
+  font-family: 'SVN-Helvetica Neue';
   font-style: normal;
   font-weight: 700;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/SVN-Helvetica%20Neue/SVN-Helvetica%20Neue%20Bold.ttf) format('truetype');
@@ -756,7 +824,7 @@
 
 @font-face {
   font-display: swap;
-  font-family: svnHelveticaNeue;
+  font-family: 'SVN-Helvetica Neue';
   font-style: italic;
   font-weight: 700;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/SVN-Helvetica%20Neue/SVN-Helvetica%20Neue%20Bold%20Italic.ttf) format('truetype');
@@ -766,7 +834,7 @@
 
 @font-face {
   font-display: swap;
-  font-family: svnTimesNewRoman;
+  font-family: 'SVN-Times New Roman';
   font-style: normal;
   font-weight: 400;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/SVN-Times%20New%20Roman/SVN-Times%20New%20Roman.ttf) format('truetype');
@@ -774,7 +842,7 @@
 
 @font-face {
   font-display: swap;
-  font-family: svnTimesNewRoman;
+  font-family: 'SVN-Times New Roman';
   font-style: italic;
   font-weight: 400;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/SVN-Times%20New%20Roman/SVN-Times%20New%20Roman%20Italic.ttf) format('truetype');
@@ -782,7 +850,7 @@
 
 @font-face {
   font-display: swap;
-  font-family: svnTimesNewRoman;
+  font-family: 'SVN-Times New Roman';
   font-style: normal;
   font-weight: 700;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/SVN-Times%20New%20Roman/SVN-Times%20New%20Roman%20Bold.ttf) format('truetype');
@@ -790,7 +858,7 @@
 
 @font-face {
   font-display: swap;
-  font-family: svnTimesNewRoman;
+  font-family: 'SVN-Times New Roman';
   font-style: italic;
   font-weight: 700;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/SVN-Times%20New%20Roman/SVN-Times%20New%20Roman%20Bold%20Italic.ttf) format('truetype');
@@ -800,7 +868,7 @@
 
 @font-face {
   font-display: swap;
-  font-family: tbmincho;
+  font-family: TBMincho;
   font-style: normal;
   font-weight: 300;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/TBMincho/TBMinchoMedium_213.ttf) format('truetype');
@@ -808,7 +876,7 @@
 
 @font-face {
   font-display: swap;
-  font-family: tbmincho;
+  font-family: TBMincho;
   font-style: normal;
   font-weight: 700;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/TBMincho/TBMinchoBold_213.ttf) format('truetype');
@@ -870,7 +938,7 @@
 
 @font-face {
   font-display: swap;
-  font-family: trixiPro;
+  font-family: 'Trixi Pro';
   font-style: normal;
   font-weight: 400;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Trixi%20Pro%20Regular.ttf) format('truetype');
@@ -880,12 +948,16 @@
   font-family: appleSdGothicNeo;
 }
 
-.avenir {
-  font-family: avenir;
+.aotf-ryumin-pr5 {
+  font-family: 'A-OTF Ryumin Pr5';
 }
 
-.aotf-ryumin-pr5 {
-  font-family: aotfRyuminPr5;
+.atkinson-hyperlegible {
+  font-family: 'Atkinson Hyperlegible';
+}
+
+.avenir {
+  font-family: avenir;
 }
 
 .baskerville {
@@ -912,6 +984,10 @@
   font-family: 'Crimson Text';
 }
 
+.fira-sans {
+  font-family: firaSans;
+}
+
 .georgia {
   font-family: Georgia;
 }
@@ -921,7 +997,7 @@
 }
 
 .hiraginomin {
-  font-family: hiraginomin;
+  font-family: HiraginoMin;
 }
 
 .hiragino-mincho-pro {
@@ -937,7 +1013,7 @@
 }
 
 .iciel-domaine-text {
-  font-family: icielDomaineText;
+  font-family: 'iCiel Domaine Text';
 }
 
 .literata {
@@ -945,7 +1021,7 @@
 }
 
 .minion-pro {
-  font-family: minionPro;
+  font-family: 'Minion Pro';
 }
 
 .new-york {
@@ -957,7 +1033,7 @@
 }
 
 .opendyslexic {
-  font-family: opendyslexic;
+  font-family: OpenDyslexic;
 }
 
 .optima {
@@ -965,7 +1041,7 @@
 }
 
 .p22-typewriter {
-  font-family: p22Typewriter;
+  font-family: 'P22 Typewriter';
 }
 
 .palatino {
@@ -1001,23 +1077,23 @@
 }
 
 .stbshusong {
-  font-family: stbshusong;
+  font-family: STBShusong;
 }
 
 .stsong-tc {
-  font-family: stsongTc;
+  font-family: 'STSong TC';
 }
 
-.svn-helvetica-neue {
-  font-family: svnHelveticaNeue;
+.svnhelvetica-neue {
+  font-family: 'SVN-Helvetica Neue';
 }
 
-.svn-times-new-roman {
-  font-family: svnTimesNewRoman;
+.svntimes-new-roman {
+  font-family: 'SVN-Times New Roman';
 }
 
 .tbmincho {
-  font-family: tbmincho;
+  font-family: TBMincho;
 }
 
 .thonburi {
@@ -1033,7 +1109,7 @@
 }
 
 .trixi-pro {
-  font-family: trixiPro;
+  font-family: 'Trixi Pro';
 }
 
 .verdana {

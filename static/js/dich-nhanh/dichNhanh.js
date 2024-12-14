@@ -57,6 +57,9 @@ const FONT_MAPPING = Object.entries({
   'Họ phông chữ hệ thống': '--system-font-family',
   Serif: 'serif',
   'Sans serif': 'sans-serif',
+  'Hệ thống Apple': '-apple-system',
+  'UI hệ thống': 'system-ui',
+  'Phông chữ hệ thống Mac Blink': 'BlinkMacSystemFont',
   'Kiểu chữ kiểu cũ': '--oldStyleTf',
   'Kiểu chữ hiện đại': '--modernTf',
   'Kiểu chữ Sans': '--sansTf',
@@ -85,15 +88,15 @@ const FONT_MAPPING = Object.entries({
 
   /* Các phông chữ của Waka */
   Bookerly: 'bookerly',
-  'Minion Pro': 'minionPro',
+  'Minion Pro': 'Minion Pro',
   'Noto Serif': 'Noto Serif',
   Roboto: 'roboto',
-  'SVN-Times New Roman': 'svnTimesNewRoman',
+  'SVN-Times New Roman': 'SVN-Times New Roman',
   Quicksand: 'Quicksand',
-  'iCiel Domaine Text': 'icielDomaineText',
-  'P22 Typewriter': 'p22Typewriter',
-  'SVN-Helvetica Neue': 'svnHelveticaNeue',
-  'Trixi Pro': 'trixiPro',
+  'iCiel Domaine Text': 'iCiel Domaine Text',
+  'P22 Typewriter': 'P22 Typewriter',
+  'SVN-Helvetica Neue': 'SVN-Helvetica Neue',
+  'Trixi Pro': 'Trixi Pro',
 
   /* Các phông chữ của Google Play Sách */
   Helvetica: 'helvetica',
@@ -107,7 +110,7 @@ const FONT_MAPPING = Object.entries({
   /* Các phông chữ của Rakuten Kobo */
   Avenir: 'avenir',
   Georgia: 'Georgia',
-  OpenDyslexic: 'opendyslexic',
+  OpenDyslexic: 'OpenDyslexic',
   Optima: 'optima',
   'Trebuchet MS': 'Trebuchet MS',
 
@@ -125,18 +128,20 @@ const FONT_MAPPING = Object.entries({
   'Times New Roman': 'Times New Roman',
 
   'Apple SD Gothic Neo': 'appleSdGothicNeo',
-  'A-OTF Ryumin Pr5': 'aotfRyuminPr5',
+  'Atkinson Hyperlegible': 'Atkinson Hyperlegible',
+  'A-OTF Ryumin Pr5': 'A-OTF Ryumin Pr5',
   'Crimson Text': 'Crimson Text',
-  HiraginoMin: 'hiraginomin',
+  'Fira Sans': 'firaSans',
+  HiraginoMin: 'HiraginoMin',
   'Hiragino Mincho Pro': 'hiraginoMinchoPro',
   'Hiragino Mincho ProN': 'hiraginoMinchoPron',
   'Hiragino Sans': 'hiraginoSans',
   Lora: 'Lora',
   'PingFang SC': 'pingfangSc',
   'PingFang TC': 'pingfangTc',
-  STBShusong: 'stbshusong',
-  'STSong TC': 'stsongTc',
-  TBMincho: 'tbmincho',
+  STBShusong: 'STBShusong',
+  'STSong TC': 'STSong TC',
+  TBMincho: 'TBMincho',
   Thonburi: 'thonburi',
 });
 
