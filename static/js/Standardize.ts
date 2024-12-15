@@ -1,6 +1,6 @@
 // sourceURL=https://s.ngonngu.net/static/common.js?20240113
 'use strict'
-const VOS: { [key: string]: any } = {
+const VOS: { [key: string]: string | string[] } = {
   // Initial characters
   C: '[bdđhklmnrstvxBDĐHKLMNRSTVX]',
   // i/y non-standard words usually start with these ones
@@ -32,58 +32,58 @@ const VOS: { [key: string]: any } = {
   Tr: ['oà', 'oả', 'oã', 'oá', 'oạ', 'oè', 'oẻ', 'oẽ', 'oé', 'oẹ', 'uỳ', 'uỷ', 'uỹ', 'uý', 'uỵ', 'OÀ', 'OẢ', 'OÃ', 'OÁ', 'OẠ', 'OÈ', 'OẺ', 'OẼ', 'OÉ', 'OẸ', 'UỲ', 'UỶ', 'UỸ', 'UÝ', 'UỴ', 'Oà', 'Oả', 'Oã', 'Oá', 'Oạ', 'Oè', 'Oẻ', 'Oẽ', 'Oé', 'Oẹ', 'Uỳ', 'Uỷ', 'Uỹ', 'Uý', 'Uỵ']
 }
 function vosYToI (text: string): string {
-  const Cc: string = VOS.Cf
-  const Y: string = VOS.Y.join('')
-  const I: string = VOS.I.join('')
-  const Ux: string = VOS.Ux.join('')
-  const U1: string = VOS.U1.join('')
+  const Cc: string = String(VOS.Cf)
+  const Y: string = [...VOS.Y].join('')
+  const I: string = [...VOS.I].join('')
+  const Ux: string = [...VOS.Ux].join('')
+  const U1: string = [...VOS.U1].join('')
   let result: string = text
   for (let i: number = 0; i < Y.length; i++) {
     // quí- > quý-
-    result = result.replaceAll(new RegExp(`(?<=(?:\\P{L}|^)[Qq][Uu])(?:${I[i]}([ptuPTU]|nh|NH|ch|CH)?)(?=^|$|\\P{L})`, 'gui'), `${Y[i]}$1`)
+    result = result.replaceAll(new RegExp(`(?<=(?:\\P{L}|^)[Qq][Uu])${I[i]}([ptuPTU]|nh|NH|ch|CH)?(?=^|$|\\P{L})`, 'gui'), `${Y[i]}$1`)
     // qụi- > quỵ-
-    result = result.replaceAll(new RegExp(`(?<=(?:\\P{L}|^)[Qq])(?:${Ux[i]}i([ptuPTU]|nh|NH|ch|CH)?)(?=^|$|\\P{L})`, 'gui'), `${U1[i]}${Y[i]}$1`)
+    result = result.replaceAll(new RegExp(`(?<=(?:\\P{L}|^)[Qq])${Ux[i]}i([ptuPTU]|nh|NH|ch|CH)?(?=^|$|\\P{L})`, 'gui'), `${U1[i]}${Y[i]}$1`)
     // hy, kỳ, lý > hi, kì, lí
     result = result.replaceAll(new RegExp(`(?<=(?:\\P{L}|^)${Cc})${Y[i]}(?=^|$|\\P{L})`, 'gui'), I[i])
   }
   return result
 }
 function vosIToY (text: string): string {
-  const Cc: string = VOS.Cf
-  const Y: string = VOS.Y.join('')
-  const I: string = VOS.I.join('')
+  const Cc: string = String(VOS.Cf)
+  const I: string = [...VOS.I].join('')
+  const Y: string = [...VOS.Y].join('')
   let result: string = text
-  for (let i: number = 0; i < Y.length; i++) {
+  for (let i: number = 0; i < I.length; i++) {
     // quý- > quí-
-    result = result.replaceAll(new RegExp(`(?<=(?:\\P{L}|^)[Qq][Uu])(?:${Y[i]}([ptuPTU]|nh|NH|ch|CH)?)(?=^|$|\\P{L})`, 'gui'), `${I[i]}$1`)
+    result = result.replaceAll(new RegExp(`(?<=(?:\\P{L}|^)[Qq][Uu])${Y[i]}([ptuPTU]|nh|NH|ch|CH)?(?=^|$|\\P{L})`, 'gui'), `${I[i]}$1`)
     // hi, kì, lí > hy, kỳ, lý
     result = result.replaceAll(new RegExp(`(?<=(?:\\P{L}|^)${Cc})${I[i]}(?=^|$|\\P{L})`, 'gui'), Y[i])
   }
   return result
 }
 function vosOaoeuy (text: string): string {
-  const Cf: string = VOS.Cf
+  const Cf: string = String(VOS.Cf)
   // OA, OE, UY: incorrect tone marks position
-  const wrong: string[] = VOS.Tw
+  const wrong: string[] = [...VOS.Tw]
   // OA, OE, UY: corrected tone marks position
-  const right: string[] = VOS.Tr
+  const right: string[] = [...VOS.Tr]
   let result: string = text
   for (let i: number = 0; i < wrong.length; i++) {
     // Replace wrong
-    result = result.replaceAll(new RegExp(`((?:\\P{L}|^)(?:${Cf})?)${wrong[i]}`, 'gu'), `$1${right[i]}`)
+    result = result.replaceAll(new RegExp(`(?<=(?:\\P{L}|^)${Cf}?)${wrong[i]}`, 'gu'), right[i])
   }
   return result
 }
 function reversedVosOaoeuy (text: string): string {
-  const Cf: string = VOS.Cf
-  // OA, OE, UY: incorrect tone marks position
-  const wrong: string[] = VOS.Tw
+  const Cf: string = String(VOS.Cf)
   // OA, OE, UY: corrected tone marks position
-  const right: string[] = VOS.Tr
+  const right: string[] = [...VOS.Tr]
+  // OA, OE, UY: incorrect tone marks position
+  const wrong: string[] = [...VOS.Tw]
   let result: string = text
   for (let i: number = 0; i < right.length; i++) {
     // Replace right
-    result = result.replaceAll(new RegExp(`((?:\\P{L}|^)(?:${Cf})?)${right[i]}`, 'gu'), `$1${wrong[i]}`)
+    result = result.replaceAll(new RegExp(`(?<=(?:\\P{L}|^)${Cf}?)${right[i]}`, 'gu'), wrong[i])
   }
   return result
 }
