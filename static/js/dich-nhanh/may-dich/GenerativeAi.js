@@ -257,9 +257,10 @@ ${filteredNomenclature.map((element) => element.join('\t')).join('\n')}
 
       if (isGemini) this.result = this.result.replace(/\n$/, '');
       const queryLineSeperators = query.split(/(\n)/).filter((element) => element.includes('\n'));
-      const lineSeparatorBooleans = this.result.split(/(\n{1,2})/).filter((element) => element.includes('\n\n')).map((element, index) => element !== queryLineSeperators[index]);
+      const lineSeparatorBooleans = this.result.split(/(\n{1,2})/).filter((element) => element.includes('\n')).map((element, index) => element !== queryLineSeperators[index]);
       this.result = this.result.split(lineSeparatorBooleans.reduce((accumulator, currentValue) => accumulator + (currentValue ? 1 : -1), 0) > 0 ? '\n\n' : '\n');
-      this.result = lines.map((element, index) => (this.result[index] != null ? element.match(/^\s*/)[0].concat(this.result[index].replace(/^\s+/, '')) : element)).join('\n');
+      const maybeTextLengthBiggerThanZero = (text) => text.replace(/^\s+/, '').length > 0 ? text.match(/^\s*/)[0] : text;
+      this.result = lines.map((element, index) => (this.result[index] != null ? element.match(/^\s*/)[0].concat(this.result[index].replace(/^\s+/, '')) : maybeTextLengthBiggerThanZero(element))).join('\n');
       super.translateText(text, targetLanguage, this.DefaultLanguage.SOURCE_LANGUAGE);
     } catch (error) {
       console.error('Bản dịch lỗi:', error);

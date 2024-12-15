@@ -688,19 +688,19 @@ const buildResult = function buildResultContentForTextarea(text, result, activeT
       if (originalLine.replace(/^\s+/, '').trimEnd().length === 0 && resultLine.replace(/^\s+/, '').trimEnd().length > 0) {
         lostLineFixedNumber += 1;
         i -= 1;
-      } else if (activeTranslator === Translators.PAPAGO && resultLine.replace(/^\s+/, '').trimEnd().length === 0 && originalLine.replace(/^\s+/, '').trimEnd().length > 0) {
+      } else if (activeTranslator === Translators.PAPAGO && resultLine.replace(/^\s+/, '').length === 0 && originalLine.replace(/^\s+/, '').length > 0) {
         lostLineFixedNumber -= 1;
       } else {
         const paragraph = document.createElement('p');
         const translation = document.createTextNode(resultLine);
         const lineBreak = document.createElement('br');
 
-        if (originalLines[i + lostLineFixedNumber].replace(/^\s+/, '').trimEnd().length > 0) {
+        if (originalLines[i + lostLineFixedNumber].replace(/^\s+/, '').length > 0) {
           if ($showOriginalTextSwitch.prop('checked')) {
             const idiomaticText = document.createElement('i');
             idiomaticText.innerText = originalLines[i + lostLineFixedNumber];
             paragraph.appendChild(idiomaticText);
-            paragraph.innerHTML += resultLine.replace(/^\s+/, '').trimEnd().length > 0 ? lineBreak.cloneNode(true).outerHTML : '';
+            paragraph.innerHTML += resultLine.replace(/^\s+/, '').length > 0 ? lineBreak.cloneNode(true).outerHTML : '';
           }
 
           paragraph.appendChild(translation);
@@ -782,9 +782,10 @@ ${rawTranslationLines.map((element) => element.replace(/^\s/, '')).join('\n')}
       if (controller.signal.aborted || polishResult == null) return;
       if (isGemini) polishResult = polishResult.replace(/\n$/, '');
       const lineSeperators = text.split(/(\n)/).filter((element) => element.includes('\n'));
-      const lineSeparatorBooleans = polishResult.split(/(\n{1,2})/).filter((element) => element.includes('\n\n')).map((element, index) => element !== lineSeperators[index]);
+      const lineSeparatorBooleans = polishResult.split(/(\n{1,2})/).filter((element) => element.includes('\n')).map((element, index) => element !== lineSeperators[index]);
       polishResult = polishResult.split(lineSeparatorBooleans.reduce((accumulator, currentValue) => accumulator + (currentValue ? 1 : -1), 0) > 0 ? '\n\n' : '\n');
-      currentTranslator.result = lines.map((element, index) => (polishResult[index] != null ? (rawTranslationLines[index] ?? element).match(/^\s*/)[0].concat(polishResult[index].replace(/^\s+/, '')) : (rawTranslationLines[index] ?? element))).join('\n');
+      const maybeTextLengthBiggerThanZero = (text) => text.replace(/^\s+/, '').length > 0 ? text.match(/^\s*/)[0] : text;
+      currentTranslator.result = lines.map((element, index) => (polishResult[index] != null ? (rawTranslationLines[index] ?? maybeTextLengthBiggerThanZero(element)).match(/^\s*/)[0].concat(polishResult[index].replace(/^\s+/, '')) : (rawTranslationLines[index] ?? element))).join('\n');
     }
 
     $resultTextarea.html(buildResult(text, currentTranslator.result, $activeTranslator.val()));
