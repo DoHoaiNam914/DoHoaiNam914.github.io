@@ -622,7 +622,7 @@
                 </button>
                 <ul class="dropdown-menu">
                   <li>
-                    <button type="button" class="dropdown-item" value="generativeAi">AI tạo sinh</button>
+                    <button type="button" class="dropdown-item" value="generativeAi">AI tạo sinh (Yêu cầu khoá API)</button>
                   </li>
                   <li>
                     <button type="button" class="dropdown-item" value="baiduTranslate">Baidu Translate</button>
@@ -672,50 +672,50 @@
               <div class="mb-3">
                 <label class="form-label" for="model-select">Mô hình AI tạo sinh:</label>
                 <select class="form-select form-select-sm" id="model-select">
-                  <optgroup label="Claude (Yêu cầu khoá API)">
-                    <option value="claude-3-5-sonnet-20241022">Claude 3.5 Sonnet</option>
+                  <optgroup label="Claude">
+                    <option value="claude-3-5-sonnet-20241022">Claude 3.5 Sonnet 20241022</option>
                     <option value="claude-3-5-sonnet-latest">Claude 3.5 Sonnet Latest</option>
-                    <option value="claude-3-5-haiku-20241022">Claude 3.5 Haiku</option>
+                    <option value="claude-3-5-haiku-20241022">Claude 3.5 Haiku 20241022</option>
                     <option value="claude-3-5-haiku-latest">Claude 3.5 Haiku Latest</option>
-                    <option value="claude-3-opus-20240229">Claude 3 Opus</option>
+                    <option value="claude-3-opus-20240229">Claude 3 Opus 20240229</option>
                     <option value="claude-3-opus-latest">Claude 3 Opus Latest</option>
-                    <option value="claude-3-sonnet-20240229">Claude 3 Sonnet</option>
-                    <option value="claude-3-haiku-20240307">Claude 3 Haiku</option>
+                    <option value="claude-3-sonnet-20240229">Claude 3 Sonnet 20240229</option>
+                    <option value="claude-3-haiku-20240307">Claude 3 Haiku 20240307</option>
                   </optgroup>
-                  <optgroup label="Gemini (Yêu cầu khoá API)">
-                    <option value="gemini-2.0-flash-exp">Gemini 2.0 Flash-exp</option>
-                    <option value="gemini-1.5-flash-latest">Gemini 1.5 Flash-latest</option>
-                    <option value="gemini-1.5-flash" selected>Gemini 1.5 Flash</option>
-                    <option value="gemini-1.5-flash-001">Gemini 1.5 Flash-001</option>
-                    <option value="gemini-1.5-flash-002">Gemini 1.5 Flash-002</option>
-                    <option value="gemini-1.5-flash-8b-latest">Gemini 1.5 Flash-8B-latest</option>
+                  <optgroup label="Gemini">
+                    <option value="gemini-2.0-flash-exp" selected>Gemini 2.0 Flash Experimental</option>
+                    <option value="gemini-1.5-flash-latest">Gemini 1.5 Flash Latest</option>
+                    <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
+                    <option value="gemini-1.5-flash-001">Gemini 1.5 Flash 001</option>
+                    <option value="gemini-1.5-flash-002">Gemini 1.5 Flash 002</option>
+                    <option value="gemini-1.5-flash-8b-latest">Gemini 1.5 Flash-8B Latest</option>
                     <option value="gemini-1.5-flash-8b">Gemini 1.5 Flash-8B</option>
-                    <option value="gemini-1.5-flash-8b-001">Gemini 1.5 Flash-8B-001</option>
-                    <option value="gemini-1.5-pro-latest">Gemini 1.5 Pro-latest</option>
+                    <!-- <option value="gemini-1.5-flash-8b-001">Gemini 1.5 Flash-8B 001</option> -->
+                    <option value="gemini-1.5-pro-latest">Gemini 1.5 Pro Latest</option>
                     <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
-                    <option value="gemini-1.5-pro-001">Gemini 1.5 Pro-001</option>
-                    <option value="gemini-1.5-pro-002">Gemini 1.5 Pro-002</option>
+                    <option value="gemini-1.5-pro-001">Gemini 1.5 Pro 001</option>
+                    <!-- <option value="gemini-1.5-pro-002">Gemini 1.5 Pro 002</option> -->
                     <option value="gemini-1.0-pro">Gemini 1.0 Pro (Không dùng nữa)</option>
                   </optgroup>
-                  <optgroup label="OpenAI (Yêu cầu khoá API)">
+                  <optgroup label="OpenAI">
                     <option value="gpt-4o">GPT-4o</option>
-                    <option value="gpt-4o-2024-11-20">GPT-4o-2024-11-20</option>
-                    <option value="gpt-4o-2024-08-06">GPT-4o-2024-08-06</option>
-                    <option value="gpt-4o-2024-05-13">GPT-4o-2024-05-13</option>
+                    <option value="gpt-4o-2024-11-20">GPT-4o 2024-11-20</option>
+                    <!-- <option value="gpt-4o-2024-08-06">GPT-4o 2024-08-06</option> -->
+                    <option value="gpt-4o-2024-05-13">GPT-4o 2024-05-13</option>
                     <option value="gpt-4o-mini">GPT-4o mini</option>
-                    <option value="gpt-4o-mini-2024-07-18">GPT-4o mini-2024-07-18</option>
+                    <!-- <option value="gpt-4o-mini-2024-07-18">GPT-4o mini 2024-07-18</option> -->
                     <option value="o1-preview">o1-preview</option>
-                    <option value="o1-preview-2024-09-12">o1-preview-2024-09-12</option>
+                    <!-- <option value="o1-preview-2024-09-12">o1-preview 2024-09-12</option> -->
                     <option value="o1-mini">o1-mini</option>
-                    <option value="o1-mini-2024-09-12">o1-mini-2024-09-12</option>
+                    <!-- <option value="o1-mini-2024-09-12">o1-mini 2024-09-12</option> -->
                     <option value="gpt-4-turbo">GPT-4 Turbo</option>
-                    <option value="gpt-4-turbo-2024-04-09">GPT-4 Turbo-2024-04-09</option>
+                    <!-- <option value="gpt-4-turbo-2024-04-09">GPT-4 Turbo 2024-04-09</option> -->
                     <option value="gpt-4">GPT-4</option>
-                    <option value="gpt-4-0613">GPT-4-0613</option>
-                    <option value="gpt-3.5-turbo-0125">GPT-3.5 Turbo-0125</option>
+                    <!-- <option value="gpt-4-0613">GPT-4 0613</option> -->
+                    <!-- <option value="gpt-3.5-turbo-0125">GPT-3.5 Turbo 0125</option> -->
                     <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
-                    <option value="gpt-3.5-turbo-1106">GPT-3.5 Turbo-1106</option>
-                    <option value="gpt-3.5-turbo-16k">GPT-3.5 Turbo-16k</option>
+                    <option value="gpt-3.5-turbo-1106">GPT-3.5 Turbo 1106</option>
+                    <option value="gpt-3.5-turbo-16k">GPT-3.5 Turbo 16k</option>
                   </optgroup>
                 </select>
               </div>
@@ -960,51 +960,50 @@
               <div class="mb-3">
                 <label class="form-label" for="translate-entry-model-select">Mô hình AI tạo sinh:</label>
                 <select class="form-select form-select-sm" id="translate-entry-model-select">
-                  <optgroup label="Claude (Yêu cầu khoá API)">
-                    <option value="claude-3-5-sonnet-20241022">Claude 3.5 Sonnet</option>
+                  <optgroup label="Claude">
+                    <option value="claude-3-5-sonnet-20241022">Claude 3.5 Sonnet 20241022</option>
                     <option value="claude-3-5-sonnet-latest">Claude 3.5 Sonnet Latest</option>
-                    <option value="claude-3-5-haiku-20241022">Claude 3.5 Haiku</option>
+                    <option value="claude-3-5-haiku-20241022">Claude 3.5 Haiku 20241022</option>
                     <option value="claude-3-5-haiku-latest">Claude 3.5 Haiku Latest</option>
-                    <option value="claude-3-opus-20240229">Claude 3 Opus</option>
+                    <option value="claude-3-opus-20240229">Claude 3 Opus 20240229</option>
                     <option value="claude-3-opus-latest">Claude 3 Opus Latest</option>
-                    <option value="claude-3-sonnet-20240229">Claude 3 Sonnet</option>
-                    <option value="claude-3-haiku-20240307">Claude 3 Haiku</option>
+                    <option value="claude-3-sonnet-20240229">Claude 3 Sonnet 20240229</option>
+                    <option value="claude-3-haiku-20240307">Claude 3 Haiku 20240307</option>
                   </optgroup>
-                  <optgroup label="Gemini (Yêu cầu khoá API)">
-                    <option value="gemini-2.0-flash-exp">Gemini 2.0 Flash-exp</option>
-                    <option value="gemini-1.5-flash-latest">Gemini 1.5 Flash-latest</option>
-                    <option value="gemini-1.5-flash" selected>Gemini 1.5 Flash</option>
-                    <option value="gemini-1.5-flash-001">Gemini 1.5 Flash-001</option>
-                    <option value="gemini-1.5-flash-002">Gemini 1.5 Flash-002</option>
-                    <option value="gemini-1.5-flash-8b-latest">Gemini 1.5 Flash-8B-latest</option>
+                  <optgroup label="Gemini">
+                    <option value="gemini-2.0-flash-exp" selected>Gemini 2.0 Flash Experimental</option>
+                    <option value="gemini-1.5-flash-latest">Gemini 1.5 Flash Latest</option>
+                    <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
+                    <option value="gemini-1.5-flash-001">Gemini 1.5 Flash 001</option>
+                    <option value="gemini-1.5-flash-002">Gemini 1.5 Flash 002</option>
+                    <option value="gemini-1.5-flash-8b-latest">Gemini 1.5 Flash-8B Latest</option>
                     <option value="gemini-1.5-flash-8b">Gemini 1.5 Flash-8B</option>
-                    <option value="gemini-1.5-flash-8b-001">Gemini 1.5 Flash-8B-001</option>
-                    <option value="gemini-1.5-pro-latest">Gemini 1.5 Pro-latest</option>
+                    <!-- <option value="gemini-1.5-flash-8b-001">Gemini 1.5 Flash-8B 001</option> -->
+                    <option value="gemini-1.5-pro-latest">Gemini 1.5 Pro Latest</option>
                     <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
-                    <option value="gemini-1.5-pro-001">Gemini 1.5 Pro-001</option>
-                    <option value="gemini-1.5-pro-002">Gemini 1.5 Pro-002</option>
-                    <!-- Không dùng nữa -->
-                    <option value="gemini-1.0-pro">Gemini 1.0 Pro</option>
+                    <option value="gemini-1.5-pro-001">Gemini 1.5 Pro 001</option>
+                    <!-- <option value="gemini-1.5-pro-002">Gemini 1.5 Pro 002</option> -->
+                    <option value="gemini-1.0-pro">Gemini 1.0 Pro (Không dùng nữa)</option>
                   </optgroup>
-                  <optgroup label="OpenAI (Yêu cầu khoá API)">
+                  <optgroup label="OpenAI">
                     <option value="gpt-4o">GPT-4o</option>
-                    <option value="gpt-4o-2024-11-20">GPT-4o-2024-11-20</option>
-                    <option value="gpt-4o-2024-08-06">GPT-4o-2024-08-06</option>
-                    <option value="gpt-4o-2024-05-13">GPT-4o-2024-05-13</option>
+                    <option value="gpt-4o-2024-11-20">GPT-4o 2024-11-20</option>
+                    <!-- <option value="gpt-4o-2024-08-06">GPT-4o 2024-08-06</option> -->
+                    <option value="gpt-4o-2024-05-13">GPT-4o 2024-05-13</option>
                     <option value="gpt-4o-mini">GPT-4o mini</option>
-                    <option value="gpt-4o-mini-2024-07-18">GPT-4o mini-2024-07-18</option>
+                    <!-- <option value="gpt-4o-mini-2024-07-18">GPT-4o mini 2024-07-18</option> -->
                     <option value="o1-preview">o1-preview</option>
-                    <option value="o1-preview-2024-09-12">o1-preview-2024-09-12</option>
+                    <!-- <option value="o1-preview-2024-09-12">o1-preview 2024-09-12</option> -->
                     <option value="o1-mini">o1-mini</option>
-                    <option value="o1-mini-2024-09-12">o1-mini-2024-09-12</option>
+                    <!-- <option value="o1-mini-2024-09-12">o1-mini 2024-09-12</option> -->
                     <option value="gpt-4-turbo">GPT-4 Turbo</option>
-                    <option value="gpt-4-turbo-2024-04-09">GPT-4 Turbo-2024-04-09</option>
+                    <!-- <option value="gpt-4-turbo-2024-04-09">GPT-4 Turbo 2024-04-09</option> -->
                     <option value="gpt-4">GPT-4</option>
-                    <option value="gpt-4-0613">GPT-4-0613</option>
-                    <option value="gpt-3.5-turbo-0125">GPT-3.5 Turbo-0125</option>
+                    <!-- <option value="gpt-4-0613">GPT-4 0613</option> -->
+                    <!-- <option value="gpt-3.5-turbo-0125">GPT-3.5 Turbo 0125</option> -->
                     <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
-                    <option value="gpt-3.5-turbo-1106">GPT-3.5 Turbo-1106</option>
-                    <option value="gpt-3.5-turbo-16k">GPT-3.5 Turbo-16k</option>
+                    <option value="gpt-3.5-turbo-1106">GPT-3.5 Turbo 1106</option>
+                    <option value="gpt-3.5-turbo-16k">GPT-3.5 Turbo 16k</option>
                   </optgroup>
                 </select>
               </div>
