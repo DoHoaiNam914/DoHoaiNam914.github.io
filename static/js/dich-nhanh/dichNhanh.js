@@ -1086,34 +1086,37 @@ $translateButton.on('click', function onClick() {
 });
 
 $copyButtons.on('click', async function onClick() {
-  const $target = $(target);
+  try {
+    const target = $(this).data('target');
+    const $target = $(target);
 
-  if ($target.length > 0) {
-    if ($target.attr('id') === $resultTextarea.attr('id') && currentTranslator.result.length > 0) await navigator.clipboard.writeText(currentTranslator.result);
-    else if ($target.val().length > 0) await navigator.clipboard.writeText($target.val());
-    return;
-  }
+    if ($target.length > 0) {
+      if ($target.attr('id') === $resultTextarea.attr('id') && currentTranslator.result.length > 0) await navigator.clipboard.writeText(currentTranslator.result);
+      else if ($target.val().length > 0) await navigator.clipboard.writeText($target.val());
+      return;
+    }
 
-  const target = $(this).data('target');
-
-  if (sessionStorage.getItem(target) != null && sessionStorage.getItem(target).length > 0) await navigator.clipboard.writeText(sessionStorage.getItem(target));
+    if (sessionStorage.getItem(target) != null && sessionStorage.getItem(target).length > 0) await navigator.clipboard.writeText(sessionStorage.getItem(target));
+  } catch (__) {}
 });
 
 $pasteButtons.on('click', async function onClick() {
-  await navigator.clipboard.readText().then((clipText) => {
-    const $targetTextInput = $($(this).data('target'));
-    if (clipText === $targetTextInput.val()) return;
-    $targetTextInput.prop('scrollLeft', 0);
-    $targetTextInput.prop('scrollTop', 0);
-
-    if ($targetTextInput.attr('id') === $inputTextarea.attr('id')) {
-      $resultTextarea.prop('scrollTop', 0);
-      $targetTextInput.val(clipText).trigger('input');
-      if ($translateButton.text() === 'Sửa') $translateButton.text('Dịch').click();
-    } else {
-      $targetTextInput.val(clipText).trigger('input');
-    }
-  });
+  try {
+    await navigator.clipboard.readText().then((clipText) => {
+      const $targetTextInput = $($(this).data('target'));
+      if (clipText === $targetTextInput.val()) return;
+      $targetTextInput.prop('scrollLeft', 0);
+      $targetTextInput.prop('scrollTop', 0);
+  
+      if ($targetTextInput.attr('id') === $inputTextarea.attr('id')) {
+        $resultTextarea.prop('scrollTop', 0);
+        $targetTextInput.val(clipText).trigger('input');
+        if ($translateButton.text() === 'Sửa') $translateButton.text('Dịch').click();
+      } else {
+        $targetTextInput.val(clipText).trigger('input');
+      }
+    });
+  } catch (__) {}
 });
 
 $retranslateButton.on('click', () => {
