@@ -55,8 +55,6 @@ function vosIToY (text) {
   const Y = [...VOS.Y].join('')
   let result = text
   for (let i = 0; i < I.length; i++) {
-    // quý- > quí-
-    result = result.replaceAll(new RegExp(`((?:\\P{L}|^)[Qq][Uu])${Y[i]}([ptuPTU]|nh|NH|ch|CH)?(?=^|$|\\P{L})`, 'gui'), `$1${I[i]}$2`)
     // hi, kì, lí > hy, kỳ, lý
     result = result.replaceAll(new RegExp(`((?:\\P{L}|^)${Cc})${I[i]}(?=^|$|\\P{L})`, 'gui'), `$1${Y[i]}`)
   }
