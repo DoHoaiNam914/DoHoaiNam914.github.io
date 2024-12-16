@@ -744,7 +744,7 @@ const translate = async function translateContentInTextarea(controller = new Abo
 
     if (controller.signal.aborted) return;
 
-    if (targetLanguage.startsWith('vi') && $('#polish-switch').prop('checked')) {
+    if ($activeTranslator.val() !== Translators.GENERATIVE_AI || $('#polish-switch').prop('checked')) {
       if (!isRetranslate) $resultTextarea.html(buildResult(text, currentTranslator.result, $activeTranslator.val()));
       const nomenclature = Object.entries(glossary.nomenclature).filter(([first]) => text.includes(first));
       const lines = text.split('\n');
@@ -1085,21 +1085,22 @@ $translateButton.on('click', function onClick() {
   }
 });
 
-$copyButtons.on('click', function onClick() {
-  const target = $(this).data('target');
+$copyButtons.on('click', async function onClick() {
   const $target = $(target);
 
   if ($target.length > 0) {
-    if ($target.attr('id') === $resultTextarea.attr('id') && currentTranslator.result.length > 0) navigator.clipboard.writeText(currentTranslator.result);
-    else if ($target.val().length > 0) navigator.clipboard.writeText($target.val());
+    if ($target.attr('id') === $resultTextarea.attr('id') && currentTranslator.result.length > 0) await navigator.clipboard.writeText(currentTranslator.result);
+    else if ($target.val().length > 0) await navigator.clipboard.writeText($target.val());
     return;
   }
 
-  if (sessionStorage.getItem(target) != null && sessionStorage.getItem(target).length > 0) navigator.clipboard.writeText(sessionStorage.getItem(target));
+  const target = $(this).data('target');
+
+  if (sessionStorage.getItem(target) != null && sessionStorage.getItem(target).length > 0) await navigator.clipboard.writeText(sessionStorage.getItem(target));
 });
 
-$pasteButtons.on('click', function onClick() {
-  navigator.clipboard.readText().then((clipText) => {
+$pasteButtons.on('click', async function onClick() {
+  await navigator.clipboard.readText().then((clipText) => {
     const $targetTextInput = $($(this).data('target'));
     if (clipText === $targetTextInput.val()) return;
     $targetTextInput.prop('scrollLeft', 0);
