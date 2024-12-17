@@ -76,7 +76,7 @@ const FONT_MAPPING = Object.entries({
   'Họ phông chữ dự phòng của xbreader': '--xbreader-fallback-font-family',
 
   /* Các phông chữ của Waka */
-  Bookerly: 'bookerly',
+  Bookerly: 'Bookerly',
   'Minion Pro': 'Minion Pro',
   'Noto Serif': 'Noto Serif',
   Roboto: 'roboto',
@@ -108,7 +108,7 @@ const FONT_MAPPING = Object.entries({
   // 'Avenir Next': 'avenirNext',
   'Canela Text': 'canelaText',
   Charter: 'charter',
-  // 'Iowan Old Style': 'iowanOldStyle',
+  'Iowan Old Style': 'iowanOldStyle',
   'SF Pro Text': 'sfProText',
   'Proxima Nova': 'proximaNova',
   'Publico Text': 'publicoText',
