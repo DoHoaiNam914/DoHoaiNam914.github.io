@@ -1243,7 +1243,7 @@ $fontStackText.change(function onChange() {
   const values = $(this).val().replaceAll(/['"]/g, '').split(/, */).filter((element) => element.length > 0).map((element) => element.length >= 3 && FONT_MAPPING.some(([first, second]) => first.toLowerCase().startsWith(element.toLowerCase().trim()) || second.toLowerCase().startsWith(element.toLowerCase().trim())) ? FONT_MAPPING.find(([first, second]) => first.toLowerCase().startsWith(element.toLowerCase().trim()) || second.toLowerCase().startsWith(element.toLowerCase().trim()))[1] : element.trim());
   $(this).val(values.join(', '));
 
-  $(document.documentElement).css('--opt-font-family', values.map((element) => {
+  $(document.body).css('--opt-font-family', values.map((element) => {
     const maybeFontStacks = element.startsWith('--') ? `var(${element})` : element;
     return element.includes(' ') ? `'${element}'` : maybeFontStacks;
   }).join(', '));
@@ -1255,7 +1255,7 @@ $fontStackText.on('blur', function onBlur() {
 
 $fontSizeText.change(function onChange() {
   $(this).val(Math.min(parseFloat($(this).attr('max')), Math.max(parseFloat($(this).attr('min')), parseFloat($(this).val()))));
-  $(document.documentElement).css('--opt-font-size', `${$(this).val()}em`);
+  $(document.body).css('--opt-font-size', `${$(this).val()}em`);
 });
 
 $themeDropdown.find('.dropdown-item').on('click', function onClick() {
@@ -1282,15 +1282,15 @@ $themeDropdown.find('.dropdown-item').on('click', function onClick() {
 
 $spacingText.change(function onChange() {
   $(this).val(Math.min(parseFloat($(this).attr('max')), Math.max(parseFloat($(this).attr('min')), parseFloat($(this).val()))));
-  $(document.documentElement).css('--opt-line-height', `${$(this).val()}em`);
+  $(document.body).css('--opt-line-height', `${$(this).val()}em`);
 });
 
 $alignmentRadio.change(function onChange() {
-  $(document.documentElement).css('--opt-text-align', $(this).val());
+  $(document.body).css('--opt-text-align', $(this).val());
 });
 
 $boldTextSwitch.change(function onChange() {
-  $(document.documentElement).css('--opt-font-weight', $(this).prop('checked') ? 'bold' : ($themeDropdown.find('.active').data('font-weight') ?? 'normal'));
+  $(document.body).css('--opt-font-weight', $(this).prop('checked') ? 'bold' : ($themeDropdown.find('.active').data('font-weight') ?? 'normal'));
 });
 
 $translatorDropdown.find('.dropdown-item').click(async function onClick() {

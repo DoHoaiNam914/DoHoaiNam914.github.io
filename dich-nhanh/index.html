@@ -232,7 +232,7 @@
       }
 
       .com-amazon-kindle-white, .jp-co-amazon-kindle-white, .com-amazon-kindle-sepia, .jp-co-amazon-kindle-sepia, .com-amazon-kindle-green, .jp-co-amazon-kindle-green, .com-amazon-kindle-black, .jp-co-amazon-kindle-black {
-        font-family: var(--amazon-kindle-fallback-font-family);
+        --opt-font-family: var(--amazon-kindle-fallback-font-family);
       }
 
       .apple-books-original-light {
@@ -307,8 +307,11 @@
         --opt-hyperlink-color: #009ddc;
       }
 
+      .apple-books-quiet-light, .apple-books-quiet-dark, .apple-books-paper-light, .apple-books-paper-dark, .apple-books-bold-light, .apple-books-bold-dark, .apple-books-calm-light, .apple-books-calm-dark, .apple-books-focus-light, .apple-books-focus-dark {
+        --opt-font-family: var(--apple-books-fallback-font-family);
+      }
+
       .apple-books-quiet-light .textarea > p > i, .apple-books-quiet-dark .textarea > p > i, .apple-books-paper-light .textarea > p > i, .apple-books-paper-dark .textarea > p > i, .apple-books-bold-light .textarea > p > i, .apple-books-bold-dark .textarea > p > i, .apple-books-calm-light .textarea > p > i, .apple-books-calm-dark .textarea > p > i, .apple-books-focus-light .textarea > p > i, .apple-books-focus-dark .textarea > p > i {
-        font-family: var(--apple-books-fallback-font-family);
         font-weight: 300;
       }
 
@@ -337,7 +340,7 @@
       }
 
       .bookwalker-white, .bookwalker-black, .bookwalker-sepia, .bookwalker-cream {
-        font-family: hiraginoMinchoPron;
+        --opt-font-family: hiraginoMinchoPron;
       }
 
       .calibre-black {
@@ -375,7 +378,7 @@
       }
 
       .calibre-black, .calibre-sepia-dark, .calibre-sepia-light, .calibre-system-light, .calibre-system-dark, .calibre-white {
-        font-family: serif;
+        --opt-font-family: serif;
       }
 
       .google-play-books-light {
@@ -397,7 +400,7 @@
       }
 
       .google-play-books-light, .google-play-books-dark, .google-play-books-sepia {
-        font-family: var(--google-play-books-fallback-font-family);
+        --opt-font-family: var(--google-play-books-fallback-font-family);
       }
 
       .j_novel-white {
@@ -425,7 +428,7 @@
       }
 
       .j_novel-white, .j_novel-sepia, .j_novel-gray, .j_novel-black {
-        font-family: var(--xbreader-fallback-font-family);
+        --opt-font-family: var(--xbreader-fallback-font-family);
       }
 
       .rakuten-kobo-light {
@@ -453,7 +456,7 @@
       }
 
       .rakuten-kobo-light, .rakuten-kobo-sepia, .rakuten-kobo-dark, .rakuten-kobo-charcoal {
-        font-family: var(--rakuten-kobo-fallback-font-family);
+        --opt-font-family: var(--rakuten-kobo-fallback-font-family);
       }
 
       .waka-white {
@@ -501,7 +504,7 @@
       }
 
       .xbreader-white, .xbreader-sepia, .xbreader-gray, .xbreader-black {
-        font-family: var(--xbreader-fallback-font-family);
+        --opt-font-family: var(--xbreader-fallback-font-family);
       }
     </style>
     <script>
