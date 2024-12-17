@@ -124,7 +124,7 @@ const FONT_MAPPING = Object.entries({
   // 'Comic Sans MS': 'comicSansMs',
   // Courier: 'courier',
   'Crimson Text': 'Crimson Text',
-  'Fira Sans': 'firaSans',
+  'Fira Sans': 'FiraSans',
   HiraginoMin: 'HiraginoMin',
   'Hiragino Mincho Pro': 'hiraginoMinchoPro',
   'Hiragino Mincho ProN': 'hiraginoMinchoPron',

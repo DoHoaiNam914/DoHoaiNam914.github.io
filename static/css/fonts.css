@@ -64,7 +64,7 @@
   src: local('AppleSDGothicNeo'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/AppleSDGothicNeo/AppleSDGothicNeoB00-07.otf) format('opentype');
 }
 
-@font-face {
+/* @font-face {
   font-display: swap;
   font-family: appleSdGothicNeo;
   font-style: normal;
@@ -86,7 +86,7 @@
   font-style: normal;
   font-weight: 100;
   src: local('AppleSDGothicNeo'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/AppleSDGothicNeo/AppleSDGothicNeoUL00-13.otf) format('opentype');
-}
+} */
 
 @font-face {
   font-display: swap;
@@ -204,7 +204,7 @@
   src: local('Avenir-HeavyOblique'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Avenir.ttc#Avenir-HeavyOblique) format('collection');
 }
 
-@font-face {
+/* @font-face {
   font-display: swap;
   font-family: avenir;
   font-style: normal;
@@ -218,7 +218,7 @@
   font-style: oblique;
   font-weight: 300;
   src: local('Avenir-LightOblique'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Avenir.ttc#Avenir-LightOblique) format('collection');
-}
+} */
 
 @font-face {
   font-display: swap;
@@ -277,7 +277,7 @@
   font-family: baskerville;
   font-style: italic;
   font-weight: 400;
-  src: local('Baskerville'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Baskerville/Baskerville%20Italic.ttf) format('truetype');
+  src: local('Baskerville-Italic'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Baskerville/Baskerville%20Italic.ttf) format('truetype');
 }
 
 @font-face {
@@ -285,7 +285,7 @@
   font-family: baskerville;
   font-style: normal;
   font-weight: 700;
-  src: local('Baskerville'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Baskerville/Baskerville%20Bold.ttf) format('truetype');
+  src: local('Baskerville-Bold'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Baskerville/Baskerville%20Bold.ttf) format('truetype');
 }
 
 @font-face {
@@ -293,7 +293,7 @@
   font-family: baskerville;
   font-style: italic;
   font-weight: 700;
-  src: local('Baskerville'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Baskerville/Baskerville%20Bold%20Italic.ttf) format('truetype');
+  src: local('Baskerville-Bold-Italic'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Baskerville/Baskerville%20Bold%20Italic.ttf) format('truetype');
 }
 
 /* Bookerly */
@@ -500,7 +500,7 @@
   font-family: helvetica;
   font-style: normal;
   font-weight: 700;
-  src: local('Helvetica'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Helvetica/Helvetica%20Bold.ttf) format('truetype');
+  src: local('Helvetica-Bold'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Helvetica/Helvetica%20Bold.ttf) format('truetype');
 }
 
 /* HiraginoMin */
@@ -546,7 +546,7 @@
   font-family: hiraginoMinchoPron;
   font-style: normal;
   font-weight: 300;
-  src: local('Hiragino Mincho ProN W3'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/HiraMinProN/HiraMinProN-W3-AlphaNum-01.otf) format('opentype');
+  src: local('HiraginoMinchoProN-W3'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/HiraMinProN/HiraMinProN-W3-AlphaNum-01.otf) format('opentype');
 }
 
 @font-face {
@@ -554,7 +554,7 @@
   font-family: hiraginoMinchoPron;
   font-style: normal;
   font-weight: 600;
-  src: local('Hiragino Mincho ProN W6'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/HiraMinProN/HiraMinProN-W6-AlphaNum-03.otf) format('opentype');
+  src: local('HiraginoMinchoProN-W6'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/HiraMinProN/HiraMinProN-W6-AlphaNum-03.otf) format('opentype');
 }
 
 /* Hiragino Sans */
@@ -564,7 +564,7 @@
   font-family: hiraginoSans;
   font-style: normal;
   font-weight: 300;
-  src: local('Hiragino Sans W3'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/HiraKakuProN-W3-AlphaNum-01.otf) format('opentype');
+  src: local('HiraginoSans-W3'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/HiraKakuProN-W3-AlphaNum-01.otf) format('opentype');
 }
 
 @font-face {
@@ -572,7 +572,7 @@
   font-family: hiraginoSans;
   font-style: normal;
   font-weight: 600;
-  src: local('Hiragino Sans W6'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/HiraKakuProN-W6-AlphaNum-01.otf) format('opentype');
+  src: local('HiraginoSans-W6'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/HiraKakuProN-W6-AlphaNum-01.otf) format('opentype');
 }
 
 /* iCiel Domaine Text */
@@ -646,7 +646,7 @@
 
 /* Literata */
 
-@font-face {
+/* @font-face {
   font-display: swap;
   font-family: Literata;
   font-style: normal;
@@ -676,7 +676,7 @@
   font-style: italic;
   font-weight: 300;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/3.103/fonts/webfonts/Literata-LightItalic.woff2) format('woff2');
-}
+} */
 
 @font-face {
   font-display: swap;
@@ -1076,11 +1076,11 @@
   src: local('PingFangSC-Semibold'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/PingFang/PingFangSC-Semibold-09.ttf) format('truetype');
 }
 
-@font-face {
+/* @font-face {
   font-display: swap;
   font-family: pingfangSc;
   font-style: normal;
-  font-weight: 600;
+  font-weight: 300;
   src: local('PingFangSC-Light'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/PingFang/PingFangSC-Light-12.ttf) format('truetype');
 }
 
@@ -1088,7 +1088,7 @@
   font-display: swap;
   font-family: pingfangSc;
   font-style: normal;
-  font-weight: 600;
+  font-weight: 200;
   src: local('PingFangSC-Thin'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/PingFang/PingFangSC-Thin-15.ttf) format('truetype');
 }
 
@@ -1096,9 +1096,9 @@
   font-display: swap;
   font-family: pingfangSc;
   font-style: normal;
-  font-weight: 600;
+  font-weight: 100;
   src: local('PingFangSC-Ultralight'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/PingFang/PingFangSC-Ultralight-18.ttf) format('truetype');
-}
+} */
 
 /* PingFang TC */
 
@@ -1150,11 +1150,11 @@
   src: local('PingFangTC-Semibold'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/PingFang/PingFangTC-Semibold-08.ttf) format('truetype');
 }
 
-@font-face {
+/* @font-face {
   font-display: swap;
   font-family: pingfangTc;
   font-style: normal;
-  font-weight: 600;
+  font-weight: 300;
   src: local('PingFangTC-Light'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/PingFang/PingFangTC-Light-11.ttf) format('truetype');
 }
 
@@ -1162,7 +1162,7 @@
   font-display: swap;
   font-family: pingfangTc;
   font-style: normal;
-  font-weight: 600;
+  font-weight: 200;
   src: local('PingFangTC-Thin'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/PingFang/PingFangTC-Thin-14.ttf) format('truetype');
 }
 
@@ -1170,9 +1170,9 @@
   font-display: swap;
   font-family: pingfangTc;
   font-style: normal;
-  font-weight: 600;
+  font-weight: 100;
   src: local('PingFangTC-Ultralight'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/PingFang/PingFangTC-Ultralight-17.ttf) format('truetype');
-}
+} */
 
 /* Proxima Nova */
 
@@ -1244,13 +1244,13 @@
 
 /* Quicksand */
 
-@font-face {
+/* @font-face {
   font-display: swap;
   font-family: Quicksand;
   font-style: normal;
   font-weight: 300;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Waka%20Fonts/QuicksandFamily-master/fonts/statics/Quicksand-Light.ttf) format('truetype');
-}
+} */
 
 @font-face {
   font-display: swap;
@@ -1278,7 +1278,7 @@
 
 /* SF Pro Text */
 
-@font-face {
+/* @font-face {
   font-display: swap;
   font-family: sfProText;
   font-style: normal;
@@ -1324,7 +1324,7 @@
   font-style: italic;
   font-weight: 300;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/SF%20Pro%20Fonts/SF-Pro-Text-LightItalic.otf) format('opentype');
-}
+} */
 
 @font-face {
   font-display: swap;
@@ -1562,13 +1562,13 @@
   src: local('Thonburi-Bold'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Thonburi/Thonburi-Bold-02.ttf) format('truetype');
 }
 
-@font-face {
+/* @font-face {
   font-display: swap;
   font-family: thonburi;
   font-style: normal;
   font-weight: 300;
   src: local('Thonburi-Light'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Thonburi/Thonburi-Light-03.ttf) format('truetype');
-}
+} */
 
 /* Times */
 
