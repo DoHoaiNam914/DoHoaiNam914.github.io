@@ -55,36 +55,25 @@ const $upperCaseButtons = $('.upper-case-button');
 
 const FONT_MAPPING = Object.entries({
   'Họ phông chữ hệ thống': '--system-font-family',
-  Serif: 'serif',
-  'Sans serif': 'sans-serif',
-  'Hệ thống Apple': '-apple-system',
-  'UI hệ thống': 'system-ui',
-  'Phông chữ hệ thống Mac Blink': 'BlinkMacSystemFont',
   'Kiểu chữ kiểu cũ': '--oldStyleTf',
   'Kiểu chữ hiện đại': '--modernTf',
-  'Kiểu chữ Sans': '--sansTf',
+  'Kiểu chữ sans': '--sansTf',
   'Kiểu chữ nhân văn': '--humanistTf',
-  'Kiểu chữ Monospace': '--monospaceTf',
+  'Kiểu chữ monospace': '--monospaceTf',
   'Họ phông chữ Nhật Bản': '--japaneseFontFamily',
-  'Serif Nhật Bản': '--serif-ja',
-  'Sans serif Nhật Bản': '--sans-serif-ja',
-  'Serif dọc Nhật Bản': '--serif-ja-v',
-  'Sans serif dọc Nhật Bản': '--sans-serif-ja-v',
-  'Họ phông chữ Trung Quốc': '--chineseFontFamily',
+  'Serif Nhật': '--serif-ja',
+  'Sans serif Nhật': '--sans-serif-ja',
+  'Serif Nhật dọc': '--serif-ja-v',
+  'Sans serif Nhật dọc': '--sans-serif-ja-v',
+  'Họ phông chữ Trung Hoa': '--chineseFontFamily',
   'Họ phông chữ Đài Loan': '--taiwanFontFamily',
+
   'Họ phông chữ dự phòng của Amazon Kindle': '--amazon-kindle-fallback-font-family',
   'Họ phông chữ dự phòng của Apple Sách': '--apple-books-fallback-font-family',
-  'Họ phông chữ dự phòng của Apple Sách tiếng Trung giản thể': '--apple-books-fallback-font-family-zh_CN',
-  'Họ phông chữ dự phòng của Apple Sách tiếng Trung phồn thể cho Đài Loan': '---apple-books-fallback-font-family-zh_TW',
-  'Họ phông chữ dự phòng của Apple Sách tiếng Nhật': '--apple-books-fallback-font-family-ja',
-  'Họ phông chữ dự phòng của BOOK☆WALKER': '--bookwalker-fallback-font-family',
-  'Họ phông chữ dự phòng của Calibre': '--calibre-fallback-font-family',
-  'Họ phông chữ dự phòng của Google Play Sách': '--google-play-books-fallback-font-family',
-  'Họ phông chữ dự phòng của Google Play Sách tiếng Trung giản thể': '--google-play-books-fallback-font-family-zh_CN',
-  'Họ phông chữ dự phòng của Google Play Sách tiếng Trung phồn thể': '--google-play-books-fallback-font-family-zh_TW',
-  'Họ phông chữ dự phòng của Google Play Sách tiếng Nhật': '--google-play-books-fallback-font-family-ja',
-  'Họ phông chữ dự phòng của Rakuten Kobo': '--rakuten-kobo-fallback-font-family',
-  'Họ phông chữ dự phòng của Rakuten Kobo tiếng Nhật': '--rakuten-kobo-fallback-font-family-ja',
+  'Họ phông chữ dự phòng của Apple Sách tiếng Hoa giản thể': '--apple-books-fallback-font-family-zh_CN',
+  'Họ phông chữ dự phòng của Apple Sách tiếng Hoa phồn thể cho Đài Loan': '---apple-books-fallback-font-family-zh_TW',
+  'Họ phông chữ dự phòng của Apple Sách tiếng Nhật Bản': '--apple-books-fallback-font-family-ja',
+  'Họ phông chữ dự phòng của xbreader': '--xbreader-fallback-font-family',
 
   /* Các phông chữ của Waka */
   Bookerly: 'bookerly',
@@ -130,6 +119,10 @@ const FONT_MAPPING = Object.entries({
   'Apple SD Gothic Neo': 'appleSdGothicNeo',
   'Atkinson Hyperlegible': 'Atkinson Hyperlegible',
   'A-OTF Ryumin Pr5': 'A-OTF Ryumin Pr5',
+  // Calibri: 'calibri',
+  // 'Comic Sans': 'comicSans',
+  // 'Comic Sans MS': 'comicSansMs',
+  // Courier: 'courier',
   'Crimson Text': 'Crimson Text',
   'Fira Sans': 'firaSans',
   HiraginoMin: 'HiraginoMin',
@@ -139,6 +132,7 @@ const FONT_MAPPING = Object.entries({
   Lora: 'Lora',
   'PingFang SC': 'pingfangSc',
   'PingFang TC': 'pingfangTc',
+  // Sitka: 'sitka',
   STBShusong: 'STBShusong',
   'STSong TC': 'STSong TC',
   TBMincho: 'TBMincho',
@@ -1246,7 +1240,7 @@ $dropdownHasCollapse.on('hide.bs.dropdown', function onHideBsDropdown() {
 });
 
 $fontStackText.change(function onChange() {
-  const values = $(this).val().replaceAll(/['"]/g, '').split(/, */).filter((element) => element.length > 0).map((element) => FONT_MAPPING.some(([first, second]) => first.toLowerCase().startsWith(element.toLowerCase().trim()) || second.toLowerCase().startsWith(element.toLowerCase().trim())) ? FONT_MAPPING.find(([first, second]) => first.toLowerCase().startsWith(element.toLowerCase().trim()) || second.toLowerCase().startsWith(element.toLowerCase().trim()))[1] : element.trim());
+  const values = $(this).val().replaceAll(/['"]/g, '').split(/, */).filter((element) => element.length > 0).map((element) => element.length >= 3 && FONT_MAPPING.some(([first, second]) => first.toLowerCase().startsWith(element.toLowerCase().trim()) || second.toLowerCase().startsWith(element.toLowerCase().trim())) ? FONT_MAPPING.find(([first, second]) => first.toLowerCase().startsWith(element.toLowerCase().trim()) || second.toLowerCase().startsWith(element.toLowerCase().trim()))[1] : element.trim());
   $(this).val(values.join(', '));
 
   $(document.documentElement).css('--opt-font-family', values.map((element) => {
