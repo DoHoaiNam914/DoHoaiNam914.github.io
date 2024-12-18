@@ -5,7 +5,7 @@
 import Translator from '/static/js/dich-nhanh/Translator.js';
 import * as Utils from '/static/js/Utils.js';
 
-import Anthropic from "https://esm.run/@anthropic-ai/sdk";
+import Anthropic from 'https://esm.run/@anthropic-ai/sdk';
 
 import {
   GoogleGenerativeAI,
@@ -13,6 +13,7 @@ import {
   HarmBlockThreshold,
 } from 'https://esm.run/@google/generative-ai';
 
+import { Mistral } from 'https://esm.run/@mistralai/mistralai';
 import OpenAI from "https://esm.run/openai";
 
 export default class GenerativeAi extends Translator {
@@ -44,7 +45,7 @@ export default class GenerativeAi extends Translator {
     TARGET_LANGUAGE: 'Vietnamese',
   };
 
-  constructor(uuid, openaiApiKey, geminiApiKey, anthropicApiKey) {
+  constructor(uuid, openaiApiKey, geminiApiKey, anthropicApiKey, mistralApiKey) {
     super();
     this.uuid = uuid;
     this.openai = new OpenAI({
@@ -56,6 +57,7 @@ export default class GenerativeAi extends Translator {
       dangerouslyAllowBrowser: true,
     });
     this.genAI = new GoogleGenerativeAI(geminiApiKey);
+    this.client = new Mistral({ apiKey: mistralApiKey });
     this.duckchat = axios.create({
       baseURL: `${Utils.CORS_HEADER_PROXY}https://duckduckgo.com/duckchat`,
       signal: this.controller.signal,
@@ -230,6 +232,27 @@ export default class GenerativeAi extends Translator {
     return result.response.text();
   }
 
+  async runMistral(model, instructions, message) {
+    const chatResponse = await this.client.chat.complete({
+      model,
+      temperature: 0.3,
+      top_p: 0.3,
+      max_tokens: model === 'mistral-small-latest' ? 32000 : 128000,
+      messages: [
+        {
+          role: 'user',
+          content: instructions,
+        },
+        {
+          role: 'user',
+          content: message,
+        },
+      ],
+    });
+
+    return chatResponse.choices[0].message.content;
+  }
+
   async translateText(text, targetLanguage, model = 'gpt-4o-mini', nomenclature = []) {
     try {
       const filteredNomenclature = nomenclature.filter(([first]) => text.includes(first));
@@ -245,10 +268,10 @@ ${filteredNomenclature.map((element) => element.join('\t')).join('\n')}
 \`\`\`` : ''}`;
 
       const isGemini = model.startsWith('gemini');
-      const isClaude = model.startsWith('claude');
 
-      const maybeIsClaude = async () => isClaude ? await this.runClaude(model, INSTRUCTIONS, query) : await this.runOpenai(model, INSTRUCTIONS, query);
-      this.result = isGemini ? await this.runGemini(model, INSTRUCTIONS, query) : await maybeIsClaude();
+      const maybeIsClaude = async () => model.startsWith('claude') ? await this.runClaude(model, INSTRUCTIONS, query) : await this.runOpenai(model, INSTRUCTIONS, query);
+      const maybeIsGemini = async () => isGemini ? await this.runGemini(model, INSTRUCTIONS, query) : await maybeIsClaude();
+      this.result = /^(?:open-)?[^-]+tral/.test(model) ? await this.runMistral(model, INSTRUCTIONS, query) : await maybeIsGemini();
 
       if (this.controller.signal.aborted || this.result == null) {
         this.result = text;

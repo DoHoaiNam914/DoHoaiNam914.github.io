@@ -330,7 +330,7 @@
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Bookerly/BookerlyLCD_W_BdIt.woff2) format('woff2');
 }
 
-/* Canela Text */
+/* Canela Text (https://commercialtype.com/catalog/canela/canela_text) */
 
 @font-face {
   font-display: swap;
@@ -1288,7 +1288,7 @@
   src: local('PingFangTC-Ultralight'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/PingFang/PingFangTC-Ultralight-17.ttf) format('truetype');
 } */
 
-/* Proxima Nova */
+/* Proxima Nova (https://www.marksimonson.com/fonts/view/proxima-nova/) */
 
 /* @font-face {
   font-family: proximaNova;
@@ -1498,7 +1498,7 @@
   font-display: swap;
 }
 
-/* Publico Text */
+/* Publico Text(https://commercialtype.com/catalog/publico/publico_text) */
 
 @font-face {
   font-display: swap;
