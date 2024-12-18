@@ -84,8 +84,9 @@ export default class GenerativeAi extends Translator {
 
     const maybeGpt35Turbo16k = model === 'gpt-3.5-turbo-16k' ? null /* 16385 */ : 16384
     const maybeGpt4 = model.startsWith('gpt-4') ? null /* 8192 */ : maybeGpt35Turbo16k;
-    const maybeO1 = model.startsWith('o1') ? 32768 : maybeGpt4;
-    const maybeO1Mini = model.startsWith('o1-mini') ? 65536 : maybeO1;
+    const maybeO1 = model.startsWith('o1') ? 100000 : maybeGpt4;
+    const maybeO1Preview = model.startsWith('o1-preview') ? 32768 : maybeO1;
+    const maybeO1Mini = model.startsWith('o1-mini') ? 65536 : maybeO1Preview;
 
     const requestBody = {
       model,
