@@ -352,6 +352,22 @@
   font-display: swap;
   font-family: canelaText;
   font-style: normal;
+  font-weight: 600;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/CanelaText/CanelaText-Semibold-Cy-Gr-Web.woff2) format('woff2');
+}
+
+@font-face {
+  font-display: swap;
+  font-family: canelaText;
+  font-style: italic;
+  font-weight: 600;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/CanelaText/CanelaText-SemiboldItalic-Cy-Gr-Web.woff2) format('woff2');
+}
+
+@font-face {
+  font-display: swap;
+  font-family: canelaText;
+  font-style: normal;
   font-weight: 700;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/CanelaText/CanelaText-Bold-Cy-Gr-Web.woff2) format('woff2');
 }
@@ -812,7 +828,105 @@
 
 @font-face {
   font-display: swap;
-  font-family: newYork;
+  font-family: 'New York Small';
+  font-style: normal;
+  font-weight: 400;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/NY%20Fonts/NewYorkSmall-Regular.otf) format('opentype');
+}
+
+@font-face {
+  font-display: swap;
+  font-family: 'New York Small';
+  font-style: italic;
+  font-weight: 400;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/NY%20Fonts/NewYorkSmall-RegularItalic.otf) format('opentype');
+}
+
+@font-face {
+  font-display: swap;
+  font-family: 'New York Small';
+  font-style: normal;
+  font-weight: 500;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/NY%20Fonts/NewYorkSmall-Medium.otf) format('opentype');
+}
+
+@font-face {
+  font-display: swap;
+  font-family: 'New York Small';
+  font-style: italic;
+  font-weight: 500;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/NY%20Fonts/NewYorkSmall-MediumItalic.otf) format('opentype');
+}
+
+@font-face {
+  font-display: swap;
+  font-family: 'New York Small';
+  font-style: normal;
+  font-weight: 600;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/NY%20Fonts/NewYorkSmall-Semibold.otf) format('opentype');
+}
+
+@font-face {
+  font-display: swap;
+  font-family: 'New York Small';
+  font-style: italic;
+  font-weight: 600;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/NY%20Fonts/NewYorkSmall-SemiboldItalic.otf) format('opentype');
+}
+
+@font-face {
+  font-display: swap;
+  font-family: 'New York Small';
+  font-style: normal;
+  font-weight: 600;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/NY%20Fonts/NewYorkSmall-Bold.otf) format('opentype');
+}
+
+@font-face {
+  font-display: swap;
+  font-family: 'New York Small';
+  font-style: italic;
+  font-weight: 600;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/NY%20Fonts/NewYorkSmall-BoldItalic.otf) format('opentype');
+}
+
+@font-face {
+  font-display: swap;
+  font-family: 'New York Small';
+  font-style: normal;
+  font-weight: 800;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/NY%20Fonts/NewYorkSmall-Heavy.otf) format('opentype');
+}
+
+@font-face {
+  font-display: swap;
+  font-family: 'New York Small';
+  font-style: italic;
+  font-weight: 800;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/NY%20Fonts/NewYorkSmall-HeavyItalic.otf) format('opentype');
+}
+
+@font-face {
+  font-display: swap;
+  font-family: 'New York Small';
+  font-style: normal;
+  font-weight: 800;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/NY%20Fonts/NewYorkSmall-Black.otf) format('opentype');
+}
+
+@font-face {
+  font-display: swap;
+  font-family: 'New York Small';
+  font-style: italic;
+  font-weight: 800;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/NY%20Fonts/NewYorkSmall-BlackItalic.otf) format('opentype');
+}
+
+/* New York Medium */
+
+@font-face {
+  font-display: swap;
+  font-family: new-york;
   font-style: normal;
   font-weight: 400;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/NY%20Fonts/NewYorkMedium-Regular.otf) format('opentype');
@@ -820,7 +934,7 @@
 
 @font-face {
   font-display: swap;
-  font-family: newYork;
+  font-family: new-york;
   font-style: italic;
   font-weight: 400;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/NY%20Fonts/NewYorkMedium-RegularItalic.otf) format('opentype');
@@ -828,7 +942,7 @@
 
 @font-face {
   font-display: swap;
-  font-family: newYork;
+  font-family: new-york;
   font-style: normal;
   font-weight: 500;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/NY%20Fonts/NewYorkMedium-Medium.otf) format('opentype');
@@ -836,7 +950,7 @@
 
 @font-face {
   font-display: swap;
-  font-family: newYork;
+  font-family: new-york;
   font-style: italic;
   font-weight: 500;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/NY%20Fonts/NewYorkMedium-MediumItalic.otf) format('opentype');
@@ -844,7 +958,7 @@
 
 @font-face {
   font-display: swap;
-  font-family: newYork;
+  font-family: new-york;
   font-style: normal;
   font-weight: 600;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/NY%20Fonts/NewYorkMedium-Semibold.otf) format('opentype');
@@ -852,7 +966,7 @@
 
 @font-face {
   font-display: swap;
-  font-family: newYork;
+  font-family: new-york;
   font-style: italic;
   font-weight: 600;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/NY%20Fonts/NewYorkMedium-SemiboldItalic.otf) format('opentype');
@@ -860,7 +974,7 @@
 
 @font-face {
   font-display: swap;
-  font-family: newYork;
+  font-family: new-york;
   font-style: normal;
   font-weight: 600;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/NY%20Fonts/NewYorkMedium-Bold.otf) format('opentype');
@@ -868,7 +982,7 @@
 
 @font-face {
   font-display: swap;
-  font-family: newYork;
+  font-family: new-york;
   font-style: italic;
   font-weight: 600;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/NY%20Fonts/NewYorkMedium-BoldItalic.otf) format('opentype');
@@ -876,7 +990,7 @@
 
 @font-face {
   font-display: swap;
-  font-family: newYork;
+  font-family: new-york;
   font-style: normal;
   font-weight: 800;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/NY%20Fonts/NewYorkMedium-Heavy.otf) format('opentype');
@@ -884,7 +998,7 @@
 
 @font-face {
   font-display: swap;
-  font-family: newYork;
+  font-family: new-york;
   font-style: italic;
   font-weight: 800;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/NY%20Fonts/NewYorkMedium-HeavyItalic.otf) format('opentype');
@@ -892,7 +1006,7 @@
 
 @font-face {
   font-display: swap;
-  font-family: newYork;
+  font-family: new-york;
   font-style: normal;
   font-weight: 800;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/NY%20Fonts/NewYorkMedium-Black.otf) format('opentype');
@@ -900,7 +1014,7 @@
 
 @font-face {
   font-display: swap;
-  font-family: newYork;
+  font-family: new-york;
   font-style: italic;
   font-weight: 800;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/NY%20Fonts/NewYorkMedium-BlackItalic.otf) format('opentype');
@@ -1176,36 +1290,212 @@
 
 /* Proxima Nova */
 
-@font-face {
+/* @font-face {
+  font-family: proximaNova;
+  font-style: normal;
+  font-weight: 200;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Proxima%20Nova/bf242a6c7ca0a31a834b1996afe2d4d6df15e03e.woff2) format('woff2');
+  
+  line-gap-override: 0.0%;
+  ascent-override: 92.0%;
+  descent-override: 29.799999999999997%;
+  
   font-display: swap;
+}
+
+@font-face {
+  font-family: proximaNova;
+  font-style: italic;
+  font-weight: 200;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Proxima%20Nova/a47533902784448b8f3ac5c273ed09831d2ffb33.woff2) format('woff2');
+  
+  line-gap-override: 0.0%;
+  ascent-override: 92.0%;
+  descent-override: 29.799999999999997%;
+  
+  font-display: swap;
+}
+
+@font-face {
+  font-family: proximaNova;
+  font-style: normal;
+  font-weight: 300;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Proxima%20Nova/7992cc5eddba27452b103438fbff8d07d20cf96d.woff2) format('woff2');
+  
+  line-gap-override: 0.0%;
+  ascent-override: 92.0%;
+  descent-override: 29.799999999999997%;
+  
+  font-display: swap;
+}
+
+@font-face {
+  font-family: proximaNova;
+  font-style: italic;
+  font-weight: 300;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Proxima%20Nova/51272c326b1f0d44680450d3ae61c63aad732093.woff2) format('woff2');
+  
+  line-gap-override: 0.0%;
+  ascent-override: 92.0%;
+  descent-override: 29.799999999999997%;
+  
+  font-display: swap;
+} */
+
+@font-face {
   font-family: proximaNova;
   font-style: normal;
   font-weight: 400;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Proxima%20Nova/4804126351ff7b5bfa0a67af723b94214e61a5a9.woff2) format('woff2');
+  
+  line-gap-override: 0.0%;
+  ascent-override: 92.0%;
+  descent-override: 29.799999999999997%;
+  
+  font-display: swap;
 }
 
 @font-face {
-  font-display: swap;
   font-family: proximaNova;
   font-style: italic;
   font-weight: 400;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Proxima%20Nova/6a0c2be88d4ebb49a14db9f2eee90932fce78d16.woff2) format('woff2');
+  
+  line-gap-override: 0.0%;
+  ascent-override: 92.0%;
+  descent-override: 29.799999999999997%;
+  
+  font-display: swap;
 }
 
 @font-face {
+  font-family: proximaNova;
+  font-style: normal;
+  font-weight: 500;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Proxima%20Nova/036c5e6bf4749a56c97355302ca2d753039d5e55.woff2) format('woff2');
+  
+  line-gap-override: 0.0%;
+  ascent-override: 92.0%;
+  descent-override: 29.799999999999997%;
+  
   font-display: swap;
+}
+
+@font-face {
+  font-family: proximaNova;
+  font-style: italic;
+  font-weight: 500;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Proxima%20Nova/cad7f2fe7e528a4cc42a24c0e4b44fdc2f1bcbb6.woff2) format('woff2');
+  
+  line-gap-override: 0.0%;
+  ascent-override: 92.0%;
+  descent-override: 29.799999999999997%;
+  
+  font-display: swap;
+}
+
+@font-face {
+  font-family: proximaNova;
+  font-style: normal;
+  font-weight: 600;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Proxima%20Nova/4fa8ea7064af53af565ba9c043c57d54bf9b6afd.woff2) format('woff2');
+  
+  line-gap-override: 0.0%;
+  ascent-override: 92.0%;
+  descent-override: 29.799999999999997%;
+  
+  font-display: swap;
+}
+
+@font-face {
+  font-family: proximaNova;
+  font-style: italic;
+  font-weight: 600;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Proxima%20Nova/3d2daff9d0c56fbbf494adebf9d820ba6e85c7f2.woff2) format('woff2');
+  
+  line-gap-override: 0.0%;
+  ascent-override: 92.0%;
+  descent-override: 29.799999999999997%;
+  
+  font-display: swap;
+}
+
+@font-face {
   font-family: proximaNova;
   font-style: normal;
   font-weight: 700;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Proxima%20Nova/673177153f1e793e88431ef3075b282e3e488255.woff2) format('woff2');
+  
+  line-gap-override: 0.0%;
+  ascent-override: 92.0%;
+  descent-override: 29.799999999999997%;
+  
+  font-display: swap;
 }
 
 @font-face {
-  font-display: swap;
   font-family: proximaNova;
   font-style: italic;
   font-weight: 700;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Proxima%20Nova/a7082275f7512f7c366e32851722b7ee2fab1448.woff2) format('woff2');
+  
+  line-gap-override: 0.0%;
+  ascent-override: 92.0%;
+  descent-override: 29.799999999999997%;
+  
+  font-display: swap;
+}
+
+@font-face {
+  font-family: proximaNova;
+  font-style: normal;
+  font-weight: 800;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Proxima%20Nova/1020c0a7d1a9122c4f0ce6070f8ccb2b6ba5963e.woff2) format('woff2');
+  
+  line-gap-override: 0.0%;
+  ascent-override: 92.0%;
+  descent-override: 29.799999999999997%;
+  
+  font-display: swap;
+}
+
+@font-face {
+  font-family: proximaNova;
+  font-style: italic;
+  font-weight: 800;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Proxima%20Nova/6f288ad793c76cf3d86f99a629eedc2d7645de49.woff2) format('woff2');
+  
+  line-gap-override: 0.0%;
+  ascent-override: 92.0%;
+  descent-override: 29.799999999999997%;
+  
+  font-display: swap;
+}
+
+@font-face {
+  font-family: proximaNova;
+  font-style: normal;
+  font-weight: 900;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Proxima%20Nova/1104a738f64c8c10e5a8f55f8ed2732f7b4ca3cf.woff2) format('woff2');
+  
+  line-gap-override: 0.0%;
+  ascent-override: 92.0%;
+  descent-override: 29.799999999999997%;
+  
+  font-display: swap;
+}
+
+@font-face {
+  font-family: proximaNova;
+  font-style: italic;
+  font-weight: 900;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Proxima%20Nova/3427b19fc8771cf83d1b12f98005a2718f57a405.woff2) format('woff2');
+  
+  line-gap-override: 0.0%;
+  ascent-override: 92.0%;
+  descent-override: 29.799999999999997%;
+  
+  font-display: swap;
 }
 
 /* Publico Text */
@@ -1224,6 +1514,22 @@
   font-style: italic;
   font-weight: 400;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/PublicoText/PublicoText-Italic-Cy-Gr-Web.woff2) format('woff2');
+}
+
+@font-face {
+  font-display: swap;
+  font-family: publicoText;
+  font-style: normal;
+  font-weight: 600;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/PublicoText/PublicoText-Semibold-Cy-Gr-Web.woff2) format('woff2');
+}
+
+@font-face {
+  font-display: swap;
+  font-family: publicoText;
+  font-style: italic;
+  font-weight: 600;
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/PublicoText/PublicoText-SemiboldItalic-Cy-Gr-Web.woff2) format('woff2');
 }
 
 @font-face {
@@ -1280,7 +1586,7 @@
 
 /* @font-face {
   font-display: swap;
-  font-family: sfProText;
+  font-family: 'SF Pro Text';
   font-style: normal;
   font-weight: 100;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/SF%20Pro%20Fonts/SF-Pro-Text-Ultralight.otf) format('opentype');
@@ -1288,7 +1594,7 @@
 
 @font-face {
   font-display: swap;
-  font-family: sfProText;
+  font-family: 'SF Pro Text';
   font-style: italic;
   font-weight: 100;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/SF%20Pro%20Fonts/SF-Pro-Text-UltralightItalic.otf) format('opentype');
@@ -1296,7 +1602,7 @@
 
 @font-face {
   font-display: swap;
-  font-family: sfProText;
+  font-family: 'SF Pro Text';
   font-style: normal;
   font-weight: 200;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/SF%20Pro%20Fonts/SF-Pro-Text-Thin.otf) format('opentype');
@@ -1304,7 +1610,7 @@
 
 @font-face {
   font-display: swap;
-  font-family: sfProText;
+  font-family: 'SF Pro Text';
   font-style: italic;
   font-weight: 200;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/SF%20Pro%20Fonts/SF-Pro-Text-ThinItalic.otf) format('opentype');
@@ -1312,7 +1618,7 @@
 
 @font-face {
   font-display: swap;
-  font-family: sfProText;
+  font-family: 'SF Pro Text';
   font-style: normal;
   font-weight: 300;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/SF%20Pro%20Fonts/SF-Pro-Text-Light.otf) format('opentype');
@@ -1320,7 +1626,7 @@
 
 @font-face {
   font-display: swap;
-  font-family: sfProText;
+  font-family: 'SF Pro Text';
   font-style: italic;
   font-weight: 300;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/SF%20Pro%20Fonts/SF-Pro-Text-LightItalic.otf) format('opentype');
@@ -1328,7 +1634,7 @@
 
 @font-face {
   font-display: swap;
-  font-family: sfProText;
+  font-family: 'SF Pro Text';
   font-style: normal;
   font-weight: 400;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/SF%20Pro%20Fonts/SF-Pro-Text-Regular.otf) format('opentype');
@@ -1336,7 +1642,7 @@
 
 @font-face {
   font-display: swap;
-  font-family: sfProText;
+  font-family: 'SF Pro Text';
   font-style: italic;
   font-weight: 400;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/SF%20Pro%20Fonts/SF-Pro-Text-RegularItalic.otf) format('opentype');
@@ -1344,7 +1650,7 @@
 
 @font-face {
   font-display: swap;
-  font-family: sfProText;
+  font-family: 'SF Pro Text';
   font-style: normal;
   font-weight: 500;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/SF%20Pro%20Fonts/SF-Pro-Text-Medium.otf) format('opentype');
@@ -1352,7 +1658,7 @@
 
 @font-face {
   font-display: swap;
-  font-family: sfProText;
+  font-family: 'SF Pro Text';
   font-style: italic;
   font-weight: 500;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/SF%20Pro%20Fonts/SF-Pro-Text-MediumItalic.otf) format('opentype');
@@ -1360,7 +1666,7 @@
 
 @font-face {
   font-display: swap;
-  font-family: sfProText;
+  font-family: 'SF Pro Text';
   font-style: normal;
   font-weight: 600;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/SF%20Pro%20Fonts/SF-Pro-Text-Semibold.otf) format('opentype');
@@ -1368,7 +1674,7 @@
 
 @font-face {
   font-display: swap;
-  font-family: sfProText;
+  font-family: 'SF Pro Text';
   font-style: italic;
   font-weight: 600;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/SF%20Pro%20Fonts/SF-Pro-Text-SemiboldItalic.otf) format('opentype');
@@ -1376,7 +1682,7 @@
 
 @font-face {
   font-display: swap;
-  font-family: sfProText;
+  font-family: 'SF Pro Text';
   font-style: normal;
   font-weight: 700;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/SF%20Pro%20Fonts/SF-Pro-Text-Bold.otf) format('opentype');
@@ -1384,7 +1690,7 @@
 
 @font-face {
   font-display: swap;
-  font-family: sfProText;
+  font-family: 'SF Pro Text';
   font-style: italic;
   font-weight: 700;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/SF%20Pro%20Fonts/SF-Pro-Text-BoldItalic.otf) format('opentype');
@@ -1392,7 +1698,7 @@
 
 @font-face {
   font-display: swap;
-  font-family: sfProText;
+  font-family: 'SF Pro Text';
   font-style: normal;
   font-weight: 800;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/SF%20Pro%20Fonts/SF-Pro-Text-Heavy.otf) format('opentype');
@@ -1400,7 +1706,7 @@
 
 @font-face {
   font-display: swap;
-  font-family: sfProText;
+  font-family: 'SF Pro Text';
   font-style: italic;
   font-weight: 800;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/SF%20Pro%20Fonts/SF-Pro-Text-HeavyItalic.otf) format('opentype');
@@ -1408,7 +1714,7 @@
 
 @font-face {
   font-display: swap;
-  font-family: sfProText;
+  font-family: 'SF Pro Text';
   font-style: normal;
   font-weight: 900;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/SF%20Pro%20Fonts/SF-Pro-Text-Black.otf) format('opentype');
@@ -1416,7 +1722,7 @@
 
 @font-face {
   font-display: swap;
-  font-family: sfProText;
+  font-family: 'SF Pro Text';
   font-style: italic;
   font-weight: 900;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/SF%20Pro%20Fonts/SF-Pro-Text-BlackItalic.otf) format('opentype');
@@ -1705,7 +2011,7 @@
 }
 
 .new-york {
-  font-family: newYork;
+  font-family: 'New York Small';
 }
 
 .noto-serif {
@@ -1752,8 +2058,8 @@
   font-family: roboto;
 }
 
-.sfProText {
-  font-family: sfProText;
+.sf-pro-text {
+  font-family: 'SF Pro Text';
 }
 
 .stbshusong {

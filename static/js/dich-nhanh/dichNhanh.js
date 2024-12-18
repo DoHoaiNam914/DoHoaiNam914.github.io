@@ -109,10 +109,10 @@ const FONT_MAPPING = Object.entries({
   'Canela Text': 'canelaText',
   Charter: 'charter',
   'Iowan Old Style': 'iowanOldStyle',
-  'SF Pro Text': 'sfProText',
+  'SF Pro Text': 'SF Pro Text',
   'Proxima Nova': 'proximaNova',
   'Publico Text': 'publicoText',
-  'New York': 'newYork',
+  'New York': 'New York Small',
   // Seravek: 'seravek',
   'Times New Roman': 'Times New Roman',
 
@@ -132,6 +132,7 @@ const FONT_MAPPING = Object.entries({
   Lora: 'Lora',
   'PingFang SC': 'pingfangSc',
   'PingFang TC': 'pingfangTc',
+  'New York Medium': 'new-york',
   // Sitka: 'sitka',
   STBShusong: 'STBShusong',
   'STSong TC': 'STSong TC',
@@ -1260,7 +1261,7 @@ $fontSizeText.change(function onChange() {
 
 $themeDropdown.find('.dropdown-item').on('click', function onClick() {
   const $prevTheme = $themeDropdown.find('.active');
-  const prevFontStack = $prevTheme.data('font-family').replaceAll(/['"]/g, '').split(/, */).filter((element) => element.length > 0).map((element) => FONT_MAPPING[element.trim()] ?? element.trim()).join(', ');
+  const prevFontStack = $prevTheme.data('font-family').replaceAll(/['"]/g, '').split(/, */).filter((element) => element.length > 0).map((element) => element.length >= 3 && FONT_MAPPING.some(([first, second]) => first.toLowerCase().startsWith(element.toLowerCase().trim()) || second.toLowerCase().startsWith(element.toLowerCase().trim())) ? FONT_MAPPING.find(([first, second]) => first.toLowerCase().startsWith(element.toLowerCase().trim()) || second.toLowerCase().startsWith(element.toLowerCase().trim()))[1] : element.trim()).join(', ');
 
   $(document.body).removeClass($prevTheme.val());
   $themeDropdown.find('.dropdown-item').removeClass('active');
