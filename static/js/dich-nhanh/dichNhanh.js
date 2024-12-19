@@ -1277,19 +1277,13 @@ $themeDropdown.find('.dropdown-item').on('click', function onClick() {
   if (alignment != null && alignment.length > 0) $alignmentRadio.prop('checked', false).filter(`#${['com-amazon-kindle-', 'apple-books-quiet-', 'apple-books-focus-', 'bookwalker-'].some((element) => $(this).val().includes(element)) ? 'justify' : 'start'}-alignment-radio`).prop('checked', true).change();
   if (spacing != null) {
     if (spacing.startsWith('--')) {
-      const division = document.createElement('div');
-      $(division).addClass($textareas.prop('classList').entries());
-      division.style.cssText = `margin: 0; padding: 0; position: absolute; visibility: hidden; width: ${spacing};`;
-      $('.workspace > div').append(division);
-      $spacingText.val(division.offsetWidth / 16).change();
-      division.remove();
+      $spacingText.val(1.6).change();
       $(document.body).css('--opt-line-height', `var(${spacing})`);
       $spacingText.attr('readonly', true);
     } else {
       $spacingText.removeAttr('readonly');
       $spacingText.val(spacing).change();
     }
-
   }
   if (fontWeight != null) $boldTextSwitch.prop('checked', fontWeight === 'bold').change();
 });
