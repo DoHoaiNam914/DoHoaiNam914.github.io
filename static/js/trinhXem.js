@@ -74,7 +74,7 @@ function j_novelLoader(book, volume, spine) {
 <meta name="viewport" content="initial-scale=1, user-scalable=0, maximum-scale=1">`);
         const stylesheetHref = $('link[rel="stylesheet"]').attr('href').replace('..', `./${book}/${volume}`);
         $('link[rel="stylesheet"]').remove();
-        $(document.head).append('<link rel="stylesheet" href="/static/css/styles/ReadiumCSS-before.css">');
+        $(document.head).append('<link rel="stylesheet" href="/static/css/readium-css/ReadiumCSS-before.css">');
         $.get({
           async: false,
           crossDomain: false,
@@ -89,7 +89,7 @@ function j_novelLoader(book, volume, spine) {
           $(document.head).append(stylesheet);
         });
         $(document.head).append('<link rel="stylesheet" href="/static/css/styles/patches/j-novelclub_patch.css">');
-        $(document.head).append('<link rel="stylesheet" href="/static/css/styles/ReadiumCSS-after.css">');
+        $(document.head).append('<link rel="stylesheet" href="/static/css/readium-css/ReadiumCSS-after.css">');
 
         $('#view-select').val(localStorage.getItem('view') ?? 'pagination').change()
         $LAB.setOptions({AlwaysPreserveOrder: true})
@@ -140,7 +140,7 @@ function yenpressLoader(book, volume, spine) {
 <meta name="viewport" content="initial-scale=1, user-scalable=0, maximum-scale=1">`);
         const stylesheetHref = $('link[rel="stylesheet"]').attr('href').replace('..', `./${book}/${volume}`);
         $('link[rel="stylesheet"]').remove();
-        $(document.head).append('<link rel="stylesheet" href="/static/css/styles/ReadiumCSS-before.css">');
+        $(document.head).append('<link rel="stylesheet" href="/static/css/readium-css/ReadiumCSS-before.css">');
         $.get({
           async: false,
           crossDomain: false,
@@ -155,7 +155,7 @@ function yenpressLoader(book, volume, spine) {
           $(document.head).append(stylesheet);
         });
         $(document.head).append(`<link rel="stylesheet" href="/static/css/styles/patches/${book}_patch.css">`);
-        $(document.head).append('<link rel="stylesheet" href="/static/css/styles/ReadiumCSS-after.css">');
+        $(document.head).append('<link rel="stylesheet" href="/static/css/readium-css/ReadiumCSS-after.css">');
 
         $('#view-select').val(localStorage.getItem('view') ?? 'pagination').change()
         $LAB.setOptions({AlwaysPreserveOrder: true})
@@ -206,10 +206,10 @@ function customLoader(book, volume, spine) {
 <meta name="viewport" content="initial-scale=1, user-scalable=0, maximum-scale=1">`);
         const stylesheet = $('link[rel="stylesheet"]').prop('outerHTML').replace('..', `./${book}/${volume}`);
         $('link[rel="stylesheet"]').remove();
-        $(document.head).append('<link rel="stylesheet" href="/static/css/styles/cjk-horizontal/ReadiumCSS-before.css">');
+        $(document.head).append('<link rel="stylesheet" href="/static/css/readium-css/cjk-horizontal/ReadiumCSS-before.css">');
         $(document.head).append(stylesheet);
-        $(document.head).append('<link rel="stylesheet" href="/static/css/styles/ReadiumCSS-ebpaj_fonts_patch.css">');
-        $(document.head).append('<link rel="stylesheet" href="/static/css/styles/cjk-horizontal/ReadiumCSS-after.css">');
+        $(document.head).append('<link rel="stylesheet" href="/static/css/readium-css/ReadiumCSS-ebpaj_fonts_patch.css">');
+        $(document.head).append('<link rel="stylesheet" href="/static/css/readium-css/cjk-horizontal/ReadiumCSS-after.css">');
 
         $LAB.setOptions({AlwaysPreserveOrder: true})
         .script('https://code.jquery.com/jquery-3.7.1.min.js')

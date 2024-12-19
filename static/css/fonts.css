@@ -1920,40 +1920,8 @@
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Waka%20Fonts/Trixi%20Pro%20Regular.ttf) format('truetype');
 }
 
-.apple-sd-gothic-neo {
-  font-family: appleSdGothicNeo;
-}
-
-.aotf-ryumin-pr5 {
-  font-family: 'A-OTF Ryumin Pr5';
-}
-
-.atkinson-hyperlegible {
-  font-family: 'Atkinson Hyperlegible';
-}
-
-.avenir {
-  font-family: avenir;
-}
-
-.baskerville {
-  font-family: baskerville;
-}
-
 .bookerly {
   font-family: Bookerly;
-}
-
-.canela-text {
-  font-family: canelaText;
-}
-
-.charter {
-  font-family: charter;
-}
-
-.cochin {
-  font-family: cochin;
 }
 
 .crimson-text-regular {
@@ -1962,52 +1930,16 @@
   font-style: normal;
 }
 
-.fira-sans {
-  font-family: FiraSans;
-}
-
 .georgia {
   font-family: Georgia;
-}
-
-.helvetica {
-  font-family: helvetica;
-}
-
-.hiraginomin {
-  font-family: HiraginoMin;
-}
-
-.hiragino-mincho-pro {
-  font-family: hiraginoMinchoPro;
 }
 
 .hiragino-mincho-pron {
   font-family: hiraginoMinchoPron;
 }
 
-.hiragino-sans {
-  font-family: hiraginoSans;
-}
-
-.iciel-domaine-text {
-  font-family: 'iCiel Domaine Text';
-}
-
-.iowan-old-style {
-  font-family: iowanOldStyle;
-}
-
 .literata {
   font-family: Literata;
-}
-
-.lora {
-  font-family: 'Lora', serif;
-}
-
-.minion-pro {
-  font-family: 'Minion Pro';
 }
 
 .new-york {
@@ -2018,86 +1950,6 @@
   font-family: 'Noto Serif';
 }
 
-.opendyslexic {
-  font-family: OpenDyslexic;
-}
-
-.optima {
-  font-family: optima;
-}
-
-.p22-typewriter {
-  font-family: 'P22 Typewriter';
-}
-
-.palatino {
-  font-family: palatino;
-}
-
-.pingfang-sc {
-  font-family: pingfangSc;
-}
-
-.pingfang-tc {
-  font-family: pingfangTc;
-}
-
-.proxima-nova {
-  font-family: proximaNova;
-}
-
-.publico-text {
-  font-family: publicoText;
-}
-
-.quicksand {
-  font-family: Quicksand;
-}
-
-.roboto {
-  font-family: roboto;
-}
-
-.sf-pro-text {
-  font-family: 'SF Pro Text';
-}
-
-.stbshusong {
-  font-family: STBShusong;
-}
-
-.stsong-tc {
-  font-family: 'STSong TC';
-}
-
-.svnhelvetica-neue {
-  font-family: 'SVN-Helvetica Neue';
-}
-
-.svntimes-new-roman {
-  font-family: 'SVN-Times New Roman';
-}
-
-.tbmincho {
-  font-family: TBMincho;
-}
-
-.thonburi {
-  font-family: thonburi;
-}
-
-.times {
-  font-family: times;
-}
-
-.times-new-roman {
-  font-family: 'Times New Roman';
-}
-
-.trixi-pro {
-  font-family: 'Trixi Pro';
-}
-
-.verdana {
-  font-family: Verdana;
+.serif {
+  font-family: serif;
 }
