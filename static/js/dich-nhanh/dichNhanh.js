@@ -1276,7 +1276,7 @@ $themeDropdown.find('.dropdown-item').on('click', function onClick() {
   $(document.body).addClass($(this).val());
   if (alignment != null && alignment.length > 0) $alignmentRadio.prop('checked', false).filter(`#${['com-amazon-kindle-', 'apple-books-quiet-', 'apple-books-focus-', 'bookwalker-'].some((element) => $(this).val().includes(element)) ? 'justify' : 'start'}-alignment-radio`).prop('checked', true).change();
   if (spacing != null) {
-    if (typeof spacing === 'string') {
+    if (typeof spacing === 'string' && spacing.startsWith('--')) {
       $spacingText.val(1.6).change();
       $(document.body).css('--opt-line-height', `var(${spacing})`);
       $spacingText.attr('readonly', true);
