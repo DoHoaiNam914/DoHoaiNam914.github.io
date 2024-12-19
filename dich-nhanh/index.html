@@ -21,21 +21,23 @@
       :root {
         --system-font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantrell, "Helvetica Neue", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 
-        /* Default font-stacks */
-        --oldStyleTf: "Iowan Old Style", "Sitka Text", Palatino, "Book Antiqua", serif;
-        --modernTf: Athelas, Constantia, Georgia, serif;
-        --sansTf: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-        --humanistTf: Seravek, Calibri, Roboto, Arial, sans-serif;
-        --monospaceTf: "Andale Mono", Consolas, monospace;
+        --oldStyleTf:"Iowan Old Style", "Sitka Text", palatino, "Book Antiqua", serif;
+        --modernTf:athelas, constantia, georgia, serif;
+        --sansTf:-apple-system, system-ui, blinkmacsystemfont, "Segoe UI", roboto, "Helvetica Neue", arial, sans-serif;
+        --humanistTf:seravek, calibri, roboto, arial, sans-serif;
+        --monospaceTf:"Andale Mono", consolas, monospace;
 
-        --japaneseFontFamily: "游ゴシック体", YuGothic, "ヒラギノ丸ゴ", "Hiragino Sans", "Yu Gothic UI", "Meiryo UI", "MS Gothic", Roboto, Noto, "Noto Sans CJK JP", sans-serif;
-        --serif-ja: "ＭＳ Ｐ明朝", "MS PMincho", "Hiragino Mincho Pro", "ヒラギノ明朝 Pro W3", "游明朝", "YuMincho", "ＭＳ 明朝", "MS Mincho", "Hiragino Mincho ProN", serif;
-        --sans-serif-ja: "ＭＳ Ｐゴシック", "MS PGothic", "Hiragino Kaku Gothic Pro W3", "ヒラギノ角ゴ Pro W3", "Hiragino Sans GB", "ヒラギノ角ゴシック W3", "游ゴシック", "YuGothic", "ＭＳ ゴシック", "MS Gothic", "Hiragino Sans", sans-serif;
-        --serif-ja-v: "ＭＳ 明朝", "MS Mincho", "Hiragino Mincho Pro", "ヒラギノ明朝 Pro W3", "游明朝", "YuMincho", "ＭＳ Ｐ明朝", "MS PMincho", "Hiragino Mincho ProN", serif;
-        --sans-serif-ja-v: "ＭＳ ゴシック", "MS Gothic", "Hiragino Kaku Gothic Pro W3", "ヒラギノ角ゴ Pro W3", "Hiragino Sans GB", "ヒラギノ角ゴシック W3", "游ゴシック", "YuGothic", "ＭＳ Ｐゴシック", "MS PGothic", "Hiragino Sans", sans-serif;
+        --japaneseFontFamily:yugothic, "Hiragino Maru Gothic ProN", "Hiragino Sans", "Yu Gothic UI", "Meiryo UI", "MS Gothic", roboto, noto, "Noto Sans CJK JP", sans-serif;
+        --serif-ja:"Hiragino Mincho ProN", "Hiragino Mincho Pro", "YuMincho", "BIZ UDPMincho", "Yu Mincho", "ＭＳ Ｐ明朝", "MS PMincho", serif;
+        --sans-serif-ja:"Hiragino Sans", "Hiragino Kaku Gothic ProN", "Hiragino Kaku Gothic Pro", "ヒラギノ角ゴ W3", "YuGothic", "Yu Gothic Medium", "BIZ UDPGothic", "Yu Gothic", "ＭＳ Ｐゴシック", "MS PGothic", sans-serif;
+        --serif-ja-v:"Hiragino Mincho ProN", "Hiragino Mincho Pro", "YuMincho", "BIZ UDMincho", "Yu Mincho", "ＭＳ明朝", "MS Mincho", serif;
+        --sans-serif-ja-v:"Hiragino Sans", "Hiragino Kaku Gothic ProN", "Hiragino Kaku Gothic Pro", "ヒラギノ角ゴ W3", "YuGothic", "Yu Gothic Medium", "BIZ UDGothic", "Yu Gothic", "ＭＳゴシック", "MS Gothic", sans-serif;
 
-        --chineseFontFamily: "方体", "PingFang SC", "黑体", "Heiti SC", "Microsoft JhengHei UI", "Microsoft JhengHei", Roboto, Noto, "Noto Sans CJK SC", sans-serif;
-        --taiwanFontFamily: "方體", "PingFang TC", "黑體", "Heiti TC", "Microsoft JhengHei UI", "Microsoft JhengHei", Roboto, Noto, "Noto Sans CJK TC", sans-serif;
+        --chineseFontFamily:"方体", "PingFang SC", "黑体", "Heiti SC", "Microsoft JhengHei UI", "Microsoft JhengHei", roboto, noto, "Noto Sans CJK SC", sans-serif;
+        --taiwanFontFamily:"方體", "PingFang TC", "黑體", "Heiti TC", "Microsoft JhengHei UI", "Microsoft JhengHei", roboto, noto, "Noto Sans CJK TC", sans-serif;
+
+        --lineHeightCompensation:1;
+        --readiumLineHeight:calc((1em + (2ex - 1ch) - ((1rem - 16px) * 0.1667)) * var(--lineHeightCompensation));
 
         --opt-font-size: 1em;
         --opt-line-height: 1.2em;
@@ -58,6 +60,10 @@
 
       body {
         background-color: var(--opt-background-color) !important;
+      }
+
+      .old-style-tf {
+        font-family: var(--oldStyleTf);
       }
 
       .viewport {
@@ -464,6 +470,29 @@
 
       .rakuten-kobo-light, .rakuten-kobo-sepia, .rakuten-kobo-dark, .rakuten-kobo-charcoal {
         --opt-font-family: var(--rakuten-kobo-fallback-font-family);
+      }
+
+      .readium-day {
+        --opt-background-color: #FFFFFF;
+        --opt-color: #121212;
+      }
+
+      .readium-night {
+        --opt-background-color: #000000;
+        --opt-color: #FEFEFE;
+        --opt-hyperlink-color: #63caff;
+        --opt-visited-hyperlink-color: #0099E5;
+      }
+
+      .readium-sepia {
+        --opt-background-color: #faf4e8;
+        --opt-color: #121212;
+        --opt-hyperlink-color: #0000EE;
+        --opt-visited-hyperlink-color: #551A8B;
+      }
+
+      .readium-day, .readium-night, .readium-sepia {
+        --opt-font-family: var(--oldStyleTf);
       }
 
       .waka-white {
@@ -887,6 +916,18 @@
                   </li>
                   <li>
                     <button type="button" class="dropdown-item" value="rakuten-kobo-charcoal" data-font-size="1.25" data-line-height="1.5" data-text-align="">Charcoal</button>
+                  </li>
+                  <li>
+                    <h6 class="dropdown-header old-style-tf">Readium</h6>
+                  </li>
+                  <li>
+                    <button type="button" class="dropdown-item" data-font-family="--oldStyleTf" data-line-height="--readiumLineHeight" data-font-size="1.125" data-text-align="" value="readium-day">Day</button>
+                  </li>
+                  <li>
+                    <button type="button" class="dropdown-item" data-font-family="--oldStyleTf" data-line-height="--readiumLineHeight" data-font-size="1" data-text-align="" value="readium-night">Night</button>
+                  </li>
+                  <li>
+                    <button type="button" class="dropdown-item" data-font-family="--oldStyleTf" data-line-height="--readiumLineHeight" data-font-size="1" data-text-align="" value="readium-sepia">Sepia</button>
                   </li>
                   <li>
                     <h6 class="dropdown-header noto-serif">Waka</h6>

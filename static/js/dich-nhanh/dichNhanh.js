@@ -45,6 +45,7 @@ const $sourceLanguageSelect = $('#source-language-select');
 const $spacingText = $('#spacing-text');
 const $targetEntryTextarea = $('#target-entry-textarea');
 const $targetLanguageSelect = $('#target-language-select');
+const $textareas = $('.textarea');
 const $themeDropdown = $('#theme-dropdown');
 const $toneSelect = $('#tone-select');
 const $translateButton = $('#translate-button');
@@ -954,10 +955,7 @@ const quickTranslateEntry = function quickTranslateForSourceEntryInput(text, cur
 };
 
 $(document).ready(async () => {
-  if (Utils.isOnMobile()) {
-    const $textareas = $('.textarea');
-    $textareas.css('max-height', `${$(window).height() - (5.6875 * 16) - 15}px`);
-  }
+  if (Utils.isOnMobile()) $textareas.css('max-height', `${$(window).height() - (5.6875 * 16) - 15}px`);
 
   $resultTextarea.attr('contenteditable', !Utils.isOnMobile());
   const autocompleteFontStackTextSource = FONT_MAPPING.map(([first, second]) => ({ value: second, label: first }));
@@ -1007,10 +1005,7 @@ $(document).ready(async () => {
 });
 
 $(window).on('resize', () => {
-  if (Utils.isOnMobile()) {
-    const $textareas = $('.textarea');
-    $textareas.css('max-height', `${$(window).height() - (5.6875 * 16) - 15}px`);
-  }
+  if (Utils.isOnMobile()) $textareas.css('max-height', `${$(window).height() - (5.6875 * 16) - 15}px`);
 });
 
 $(window).on('keydown', (event) => {
@@ -1272,7 +1267,7 @@ $themeDropdown.find('.dropdown-item').on('click', function onClick() {
 
   const fontStack = $(this).data('font-family');
   const fontSize = $(this).data('font-size');
-  const spacing = $(this).data('line-height');
+  let spacing = $(this).data('line-height');
   const alignment = $(this).data('text-align');
   const fontWeight = $(this).data('font-weight');
 
@@ -1280,7 +1275,22 @@ $themeDropdown.find('.dropdown-item').on('click', function onClick() {
   if (fontSize != null) $fontSizeText.val(fontSize).change();
   $(document.body).addClass($(this).val());
   if (alignment != null && alignment.length > 0) $alignmentRadio.prop('checked', false).filter(`#${['com-amazon-kindle-', 'apple-books-quiet-', 'apple-books-focus-', 'bookwalker-'].some((element) => $(this).val().includes(element)) ? 'justify' : 'start'}-alignment-radio`).prop('checked', true).change();
-  if (spacing != null) $spacingText.val(spacing).change();
+  if (spacing != null) {
+    if (spacing.startsWith('--')) {
+      const division = document.createElement('div');
+      $(division).addClass($textareas.prop('classList').entries());
+      division.style.cssText = `margin: 0; padding: 0; position: absolute; visibility: hidden; width: ${spacing};`;
+      $('.workspace > div').append(division);
+      $spacingText.val(division.offsetWidth / 16).change();
+      division.remove();
+      $(document.body).css('--opt-line-height', `var(${spacing}`);
+      $spacingText.attr('readonly', true);
+    } else {
+      $spacingText.removeAttr('readonly');
+      $spacingText.val(spacing).change();
+    }
+
+  }
   if (fontWeight != null) $boldTextSwitch.prop('checked', fontWeight === 'bold').change();
 });
 
