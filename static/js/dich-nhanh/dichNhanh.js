@@ -1271,12 +1271,12 @@ $themeDropdown.find('.dropdown-item').on('click', function onClick() {
   const alignment = $(this).data('text-align');
   const fontWeight = $(this).data('font-weight');
 
-  if ($fontStackText.val().length === 0 || (new RegExp(`^${Utils.escapeRegExp($fontStackText.val())}(?:, |$)`)).test(prevFontStack)) $fontStackText.val(fontStack ?? '').change();
+  if (fontStack != null && ($fontStackText.val().length === 0 || (new RegExp(`^${Utils.escapeRegExp($fontStackText.val())}(?:, |$)`)).test(prevFontStack))) $fontStackText.val(fontStack.replaceAll(/['"]/g, '').split(/, */).filter((element) => element.length > 0).map((element) => element.length >= 3 && FONT_MAPPING.some(([__, second]) => second === element) ? FONT_MAPPING.find(([__, second]) => second === element)[1] : element)).change();
   if (fontSize != null) $fontSizeText.val(fontSize).change();
   $(document.body).addClass($(this).val());
   if (alignment != null && alignment.length > 0) $alignmentRadio.prop('checked', false).filter(`#${['com-amazon-kindle-', 'apple-books-quiet-', 'apple-books-focus-', 'bookwalker-'].some((element) => $(this).val().includes(element)) ? 'justify' : 'start'}-alignment-radio`).prop('checked', true).change();
   if (spacing != null) {
-    if (spacing.startsWith('--')) {
+    if (typeof spacing === 'string') {
       $spacingText.val(1.6).change();
       $(document.body).css('--opt-line-height', `var(${spacing})`);
       $spacingText.attr('readonly', true);
