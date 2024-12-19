@@ -1283,7 +1283,7 @@ $themeDropdown.find('.dropdown-item').on('click', function onClick() {
       $('.workspace > div').append(division);
       $spacingText.val(division.offsetWidth / 16).change();
       division.remove();
-      $(document.body).css('--opt-line-height', `var(${spacing}`);
+      $(document.body).css('--opt-line-height', `var(${spacing})`);
       $spacingText.attr('readonly', true);
     } else {
       $spacingText.removeAttr('readonly');
