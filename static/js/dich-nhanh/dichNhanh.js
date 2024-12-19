@@ -70,12 +70,7 @@ const FONT_MAPPING = Object.entries({
   'Họ phông chữ Trung Hoa': '--chineseFontFamily',
   'Họ phông chữ Đài Loan': '--taiwanFontFamily',
 
-  'Họ phông chữ dự phòng của Amazon Kindle': '--amazon-kindle-fallback-font-family',
-  'Họ phông chữ dự phòng của Apple Sách': '--apple-books-fallback-font-family',
-  'Họ phông chữ dự phòng của Apple Sách tiếng Hoa giản thể': '--apple-books-fallback-font-family-zh_CN',
-  'Họ phông chữ dự phòng của Apple Sách tiếng Hoa phồn thể cho Đài Loan': '---apple-books-fallback-font-family-zh_TW',
-  'Họ phông chữ dự phòng của Apple Sách tiếng Nhật Bản': '--apple-books-fallback-font-family-ja',
-  'Họ phông chữ dự phòng của xbreader': '--xbreader-fallback-font-family',
+  'Phông chữ dự phòng của xbreader': '--xbreader-fallback-font-family',
 
   /* Các phông chữ của Waka */
   Bookerly: 'Bookerly',

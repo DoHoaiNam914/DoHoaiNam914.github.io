@@ -184,21 +184,6 @@
     </style>
     <style>
       :root {
-        --amazon-kindle-fallback-font-family: Georgia, 'Times New Roman', Times, serif;
-
-        --apple-books-fallback-font-family: serif, '.PingFang SC', hiraginoSans, '.Apple SD Gothic Neo', '.Thonburi';
-        --apple-books-fallback-font-family-zh_CN: '.PingFang SC', hiraginoSans, '.Apple SD Gothic Neo', '.Thonburi';
-        --apple-books-fallback-font-family-zh_TW: '.PingFang TC', hiraginoSans, '.Apple SD Gothic Neo', '.Thonburi';
-        --apple-books-fallback-font-family-ja: hiraginoMinchoPro, '.PingFang SC', '.Apple SD Gothic Neo', '.Thonburi';
-
-        --google-play-books-fallback-font-family: Georgia;
-        --google-play-books-fallback-font-family-zh_CN: pingfangSc;
-        --google-play-books-fallback-font-family-zh_TW: pingfangTc;
-        --google-play-books-fallback-font-family-ja: hiraginoMinchoPron;
-
-        --rakuten-kobo-fallback-font-family: Georgia;
-        --rakuten-kobo-fallback-font-family-ja: hiraginomin;
-
         --xbreader-fallback-font-family: Roboto, sans-serif;
       }
 
@@ -242,10 +227,6 @@
         --opt-color: #acacac;
         --opt-background-color: #000;
         --opt-hyperlink-color: #8787ff;
-      }
-
-      .com-amazon-kindle-white, .jp-co-amazon-kindle-white, .com-amazon-kindle-sepia, .jp-co-amazon-kindle-sepia, .com-amazon-kindle-green, .jp-co-amazon-kindle-green, .com-amazon-kindle-black, .jp-co-amazon-kindle-black {
-        --opt-font-family: var(--amazon-kindle-fallback-font-family);
       }
 
       .apple-books-original-light {
@@ -318,10 +299,6 @@
         --opt-color: #fff9eb;
         --opt-background-color: #18160c;
         --opt-hyperlink-color: #009ddc;
-      }
-
-      .apple-books-quiet-light, .apple-books-quiet-dark, .apple-books-paper-light, .apple-books-paper-dark, .apple-books-bold-light, .apple-books-bold-dark, .apple-books-calm-light, .apple-books-calm-dark, .apple-books-focus-light, .apple-books-focus-dark {
-        --opt-font-family: var(--apple-books-fallback-font-family);
       }
 
       .apple-books-quiet-light .textarea > p > i, .apple-books-quiet-dark .textarea > p > i, .apple-books-paper-light .textarea > p > i, .apple-books-paper-dark .textarea > p > i, .apple-books-bold-light .textarea > p > i, .apple-books-bold-dark .textarea > p > i, .apple-books-calm-light .textarea > p > i, .apple-books-calm-dark .textarea > p > i, .apple-books-focus-light .textarea > p > i, .apple-books-focus-dark .textarea > p > i {
@@ -438,10 +415,6 @@
         --opt-color: #fff;
         --opt-background-color: #000;
         --opt-hyperlink-color: #00f;
-      }
-
-      .j_novel-white, .j_novel-sepia, .j_novel-gray, .j_novel-black {
-        --opt-font-family: var(--xbreader-fallback-font-family);
       }
 
       .rakuten-kobo-light {
@@ -858,22 +831,22 @@
                     <h6 class="dropdown-header serif">Calibre</h6>
                   </li>
                   <li>
-                    <button type="button" class="dropdown-item" data-font-size="1" value="calibre-black" data-font-family="serif">Black</button>
+                    <button type="button" class="dropdown-item" data-font-size="1" value="calibre-black" data-font-family="">Black</button>
                   </li>
                   <li>
-                    <button type="button" class="dropdown-item" data-font-size="1" value="calibre-sepia-dark" data-font-family="serif">Sepia dark</button>
+                    <button type="button" class="dropdown-item" data-font-size="1" value="calibre-sepia-dark" data-font-family="">Sepia dark</button>
                   </li>
                   <li>
-                    <button type="button" class="dropdown-item" data-font-size="1" value="calibre-sepia-light" data-font-family="serif">Sepia light</button>
+                    <button type="button" class="dropdown-item" data-font-size="1" value="calibre-sepia-light" data-font-family="">Sepia light</button>
                   </li>
                   <li>
-                    <button type="button" class="dropdown-item" data-font-size="1" value="calibre-system-light" data-font-family="serif">System - Light</button>
+                    <button type="button" class="dropdown-item" data-font-size="1" value="calibre-system-light" data-font-family="">System - Light</button>
                   </li>
                   <li>
-                    <button type="button" class="dropdown-item" data-font-size="1" value="calibre-system-dark" data-font-family="serif">System - Dark</button>
+                    <button type="button" class="dropdown-item" data-font-size="1" value="calibre-system-dark" data-font-family="">System - Dark</button>
                   </li>
                   <li>
-                    <button type="button" class="dropdown-item" data-font-size="1" value="calibre-white" data-font-family="serif">White</button>
+                    <button type="button" class="dropdown-item" data-font-size="1" value="calibre-white" data-font-family="">White</button>
                   </li>
                   <li>
                     <h6 class="dropdown-header literata">Google Play Sách</h6>
