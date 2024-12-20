@@ -337,7 +337,7 @@
   font-family: canelaText;
   font-style: normal;
   font-weight: 400;
-  src: local('CanelaText-Regular'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/CanelaText.ttc#CanelaText-Regular) format('collection');
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/CanelaText.ttc#CanelaText-Regular) format('collection');
 }
 
 @font-face {
@@ -345,7 +345,7 @@
   font-family: canelaText;
   font-style: italic;
   font-weight: 400;
-  src: local('CanelaText-RegularItalic'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/CanelaText.ttc#CanelaText-RegularItalic) format('collection');
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/CanelaText.ttc#CanelaText-RegularItalic) format('collection');
 }
 
 @font-face {
@@ -353,7 +353,7 @@
   font-family: canelaText;
   font-style: normal;
   font-weight: 500;
-  src: local('CanelaText-Medium'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/CanelaText.ttc#CanelaText-Medium) format('collection');
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/CanelaText.ttc#CanelaText-Medium) format('collection');
 }
 
 @font-face {
@@ -361,7 +361,7 @@
   font-family: canelaText;
   font-style: italic;
   font-weight: 500;
-  src: local('CanelaText-MediumItalic'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/CanelaText.ttc#CanelaText-MediumItalic) format('collection');
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/CanelaText.ttc#CanelaText-MediumItalic) format('collection');
 }
 
 @font-face {
@@ -369,7 +369,7 @@
   font-family: canelaText;
   font-style: normal;
   font-weight: 700;
-  src: local('CanelaText-Bold'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/CanelaText.ttc#CanelaText-Bold) format('collection');
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/CanelaText.ttc#CanelaText-Bold) format('collection');
 }
 
 @font-face {
@@ -377,7 +377,7 @@
   font-family: canelaText;
   font-style: italic;
   font-weight: 700;
-  src: local('CanelaText-BoldItalic'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/CanelaText.ttc#CanelaText-BoldItalic) format('collection');
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/CanelaText.ttc#CanelaText-BoldItalic) format('collection');
 }
 
 /* Charter */
@@ -1190,7 +1190,7 @@
   src: local('PingFangSC-Semibold'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/PingFang/PingFangSC-Semibold-09.ttf) format('truetype');
 }
 
-/* @font-face {
+@font-face {
   font-display: swap;
   font-family: pingfangSc;
   font-style: normal;
@@ -1212,7 +1212,7 @@
   font-style: normal;
   font-weight: 100;
   src: local('PingFangSC-Ultralight'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/PingFang/PingFangSC-Ultralight-18.ttf) format('truetype');
-} */
+}
 
 /* PingFang TC */
 
@@ -1264,7 +1264,7 @@
   src: local('PingFangTC-Semibold'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/PingFang/PingFangTC-Semibold-08.ttf) format('truetype');
 }
 
-/* @font-face {
+@font-face {
   font-display: swap;
   font-family: pingfangTc;
   font-style: normal;
@@ -1286,7 +1286,7 @@
   font-style: normal;
   font-weight: 100;
   src: local('PingFangTC-Ultralight'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/PingFang/PingFangTC-Ultralight-17.ttf) format('truetype');
-} */
+}
 
 /* Proxima Nova */
 
@@ -1294,7 +1294,7 @@
   font-family: proximaNova;
   font-style: normal;
   font-weight: 300;
-  src: local('ProximaNova-Light'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/ProximaNova.ttc#ProximaNova-Light) format('collection');
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/ProximaNova.ttc#ProximaNova-Light) format('collection');
   
   line-gap-override: 0.0%;
   ascent-override: 92.0%;
@@ -1307,7 +1307,7 @@
   font-family: proximaNova;
   font-style: italic;
   font-weight: 300;
-  src: local('ProximaNova-LightIt'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/ProximaNova.ttc#ProximaNova-LightIt) format('collection');
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/ProximaNova.ttc#ProximaNova-LightIt) format('collection');
   
   line-gap-override: 0.0%;
   ascent-override: 92.0%;
@@ -1320,7 +1320,7 @@
   font-family: proximaNova;
   font-style: normal;
   font-weight: 400;
-  src: local('ProximaNova-Regular'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/ProximaNova.ttc#ProximaNova-Regular) format('collection');
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/ProximaNova.ttc#ProximaNova-Regular) format('collection');
   
   line-gap-override: 0.0%;
   ascent-override: 92.0%;
@@ -1333,7 +1333,7 @@
   font-family: proximaNova;
   font-style: italic;
   font-weight: 400;
-  src: local('ProximaNova-RegularIt'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/ProximaNova.ttc#ProximaNova-RegularIt) format('collection');
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/ProximaNova.ttc#ProximaNova-RegularIt) format('collection');
   
   line-gap-override: 0.0%;
   ascent-override: 92.0%;
@@ -1346,7 +1346,7 @@
   font-family: proximaNova;
   font-style: normal;
   font-weight: 500;
-  src: local('ProximaNova-Medium'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/ProximaNova.ttc#ProximaNova-Medium) format('collection');
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/ProximaNova.ttc#ProximaNova-Medium) format('collection');
   
   line-gap-override: 0.0%;
   ascent-override: 92.0%;
@@ -1359,7 +1359,7 @@
   font-family: proximaNova;
   font-style: italic;
   font-weight: 500;
-  src: local('ProximaNova-MediumIt'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/ProximaNova.ttc#ProximaNova-MediumIt) format('collection');
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/ProximaNova.ttc#ProximaNova-MediumIt) format('collection');
   
   line-gap-override: 0.0%;
   ascent-override: 92.0%;
@@ -1372,7 +1372,7 @@
   font-family: proximaNova;
   font-style: normal;
   font-weight: 600;
-  src: local('ProximaNova-Semibold'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/ProximaNova.ttc#ProximaNova-Semibold) format('collection');
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/ProximaNova.ttc#ProximaNova-Semibold) format('collection');
   
   line-gap-override: 0.0%;
   ascent-override: 92.0%;
@@ -1385,7 +1385,7 @@
   font-family: proximaNova;
   font-style: italic;
   font-weight: 600;
-  src: local('ProximaNova-SemiboldIt'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/ProximaNova.ttc#ProximaNova-SemiboldIt) format('collection');
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/ProximaNova.ttc#ProximaNova-SemiboldIt) format('collection');
   
   line-gap-override: 0.0%;
   ascent-override: 92.0%;
@@ -1398,7 +1398,7 @@
   font-family: proximaNova;
   font-style: normal;
   font-weight: 700;
-  src: local('ProximaNova-Bold'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/ProximaNova.ttc#ProximaNova-Bold) format('collection');
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/ProximaNova.ttc#ProximaNova-Bold) format('collection');
   
   line-gap-override: 0.0%;
   ascent-override: 92.0%;
@@ -1411,7 +1411,7 @@
   font-family: proximaNova;
   font-style: italic;
   font-weight: 700;
-  src: local('ProximaNova-BoldIt'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/ProximaNova.ttc#ProximaNova-BoldIt) format('collection');
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/ProximaNova.ttc#ProximaNova-BoldIt) format('collection');
   
   line-gap-override: 0.0%;
   ascent-override: 92.0%;
@@ -1424,7 +1424,7 @@
   font-family: proximaNova;
   font-style: normal;
   font-weight: 800;
-  src: local('ProximaNova-Extrabld'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/ProximaNova.ttc#ProximaNova-Extrabld) format('collection');
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/ProximaNova.ttc#ProximaNova-Extrabld) format('collection');
   
   line-gap-override: 0.0%;
   ascent-override: 92.0%;
@@ -1437,7 +1437,7 @@
   font-family: proximaNova;
   font-style: italic;
   font-weight: 800;
-  src: local('ProximaNova-ExtrabldIt'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/ProximaNova.ttc#ProximaNova-ExtrabldIt) format('collection');
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/ProximaNova.ttc#ProximaNova-ExtrabldIt) format('collection');
   
   line-gap-override: 0.0%;
   ascent-override: 92.0%;
@@ -1453,7 +1453,7 @@
   font-family: publicoText;
   font-style: normal;
   font-weight: 400;
-  src: local('PublicoText-Roman'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/ProximaNova.ttc#PublicoText-Roman) format('collection');
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/ProximaNova.ttc#PublicoText-Roman) format('collection');
 }
 
 @font-face {
@@ -1461,7 +1461,7 @@
   font-family: publicoText;
   font-style: italic;
   font-weight: 400;
-  src: local('PublicoText-Italic'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/ProximaNova.ttc#PublicoText-Italic) format('collection');
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/ProximaNova.ttc#PublicoText-Italic) format('collection');
 }
 
 @font-face {
@@ -1469,7 +1469,7 @@
   font-family: publicoText;
   font-style: normal;
   font-weight: 600;
-  src: local('PublicoText-Semibold'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/ProximaNova.ttc#PublicoText-Semibold) format('collection');
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/ProximaNova.ttc#PublicoText-Semibold) format('collection');
 }
 
 @font-face {
@@ -1477,7 +1477,7 @@
   font-family: publicoText;
   font-style: italic;
   font-weight: 600;
-  src: local('PublicoText-SemiboldItalic'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/ProximaNova.ttc#PublicoText-SemiboldItalic) format('collection');
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/ProximaNova.ttc#PublicoText-SemiboldItalic) format('collection');
 }
 
 @font-face {
@@ -1485,7 +1485,7 @@
   font-family: publicoText;
   font-style: normal;
   font-weight: 700;
-  src: local('PublicoText-Bold'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/ProximaNova.ttc#PublicoText-Bold) format('collection');
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/ProximaNova.ttc#PublicoText-Bold) format('collection');
 }
 
 @font-face {
@@ -1493,7 +1493,7 @@
   font-family: publicoText;
   font-style: italic;
   font-weight: 700;
-  src: local('PublicoText-BoldItalic'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/ProximaNova.ttc#PublicoText-BoldItalic) format('collection');
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/ProximaNova.ttc#PublicoText-BoldItalic) format('collection');
 }
 
 /* Quicksand */
