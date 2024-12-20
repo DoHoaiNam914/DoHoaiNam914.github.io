@@ -111,7 +111,7 @@
       .font-options {
         font: normal var(--opt-font-weight) var(--opt-font-size)/1.6 var(--opt-font-family) !important;
         font-size: var(--opt-font-size) !important;
-        font-weight: var(--opt-font-weight) !important;
+        font-weight: var(--opt-font-weight);
         line-height: var(--opt-line-height) !important;
       }
 
@@ -120,6 +120,7 @@
       }
 
       .textarea {
+        -webkit-user-select: auto;
         background: none;
         border: none;
         box-sizing: border-box;
@@ -140,16 +141,15 @@
         width: 100%;
         max-width: 100%;
         min-width: 0;
-      }
-
-      .textarea > p {
-        -webkit-user-select: auto;
-        margin: 0;
         user-select: auto;
       }
 
+      .textarea > p {
+        margin: 0;
+      }
+
       .textarea > p > i {
-        font-weight: normal !important;
+        font-weight: initial;
       }
 
       .modal-body {
@@ -302,7 +302,7 @@
       }
 
       .apple-books-quiet-light .textarea > p > i, .apple-books-quiet-dark .textarea > p > i, .apple-books-paper-light .textarea > p > i, .apple-books-paper-dark .textarea > p > i, .apple-books-bold-light .textarea > p > i, .apple-books-bold-dark .textarea > p > i, .apple-books-calm-light .textarea > p > i, .apple-books-calm-dark .textarea > p > i, .apple-books-focus-light .textarea > p > i, .apple-books-focus-dark .textarea > p > i {
-        font-weight: 300 !important;
+        font-weight: 300;
       }
 
       .bookwalker-white {
