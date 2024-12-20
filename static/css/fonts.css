@@ -1389,8 +1389,8 @@
   font-family: 'Publico Text';
   font-style: normal;
   font-weight: 400;
-  /* src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/ProximaNova.ttc#PublicoText-Roman) format('collection'); */
-  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/ProximaNova/PublicoText-Roman.otf) format('opentype');
+  /* src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/PublicoText.ttc#PublicoText-Roman) format('collection'); */
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/PublicoText/PublicoText-Roman.otf) format('opentype');
 }
 
 @font-face {
@@ -1398,8 +1398,8 @@
   font-family: 'Publico Text';
   font-style: italic;
   font-weight: 400;
-  /* src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/ProximaNova.ttc#PublicoText-Italic) format('collection'); */
-  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/ProximaNova/PublicoText-Italic.otf) format('opentype');
+  /* src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/PublicoText.ttc#PublicoText-Italic) format('collection'); */
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/PublicoText/PublicoText-Italic.otf) format('opentype');
 }
 
 @font-face {
@@ -1407,8 +1407,8 @@
   font-family: 'Publico Text';
   font-style: normal;
   font-weight: 600;
-  /* src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/ProximaNova.ttc#PublicoText-Semibold) format('collection'); */
-  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/ProximaNova/PublicoText-Semibold.otf) format('opentype');
+  /* src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/PublicoText.ttc#PublicoText-Semibold) format('collection'); */
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/PublicoText/PublicoText-Semibold.otf) format('opentype');
 }
 
 @font-face {
@@ -1416,8 +1416,8 @@
   font-family: 'Publico Text';
   font-style: italic;
   font-weight: 600;
-  /* src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/ProximaNova.ttc#PublicoText-SemiboldItalic) format('collection'); */
-  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/ProximaNova/PublicoText-SemiboldItalic.otf) format('opentype');
+  /* src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/PublicoText.ttc#PublicoText-SemiboldItalic) format('collection'); */
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/PublicoText/PublicoText-SemiboldItalic.otf) format('opentype');
 }
 
 @font-face {
@@ -1425,8 +1425,8 @@
   font-family: 'Publico Text';
   font-style: normal;
   font-weight: 700;
-  /* src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/ProximaNova.ttc#PublicoText-Bold) format('collection'); */
-  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/ProximaNova/PublicoText-Bold.otf) format('opentype');
+  /* src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/PublicoText.ttc#PublicoText-Bold) format('collection'); */
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/PublicoText/PublicoText-Bold.otf) format('opentype');
 }
 
 @font-face {
@@ -1434,8 +1434,8 @@
   font-family: 'Publico Text';
   font-style: italic;
   font-weight: 700;
-  /* src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/ProximaNova.ttc#PublicoText-BoldItalic) format('collection'); */
-  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/ProximaNova/PublicoText-BoldItalic.otf) format('opentype');
+  /* src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/PublicoText.ttc#PublicoText-BoldItalic) format('collection'); */
+  src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/PublicoText/PublicoText-BoldItalic.otf) format('opentype');
 }
 
 /* Quicksand */
