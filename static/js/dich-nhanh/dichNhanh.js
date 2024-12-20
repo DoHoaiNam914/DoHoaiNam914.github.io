@@ -1256,7 +1256,7 @@ $fontSizeText.change(function onChange() {
 
 $themeDropdown.find('.dropdown-item').on('click', function onClick() {
   const $prevTheme = $themeDropdown.find('.active');
-  const prevFontStack = $prevTheme.data('font-family').replaceAll(/['"]/g, '').split(/, */).filter((element) => element.length > 0).map((element) => element.length >= 3 && FONT_MAPPING.some(([first, second]) => first === element || second === element) ? FONT_MAPPING.find(([first, second]) => first === element || second === element)[1] : element).join(', ');
+  const prevFontStack = $prevTheme.data('font-family')?.replaceAll(/['"]/g, '').split(/, */).filter((element) => element.length > 0).map((element) => element.length >= 3 && FONT_MAPPING.some(([first, second]) => first === element || second === element) ? FONT_MAPPING.find(([first, second]) => first === element || second === element)[1] : element).join(', ');
 
   $(document.body).removeClass($prevTheme.val());
   $themeDropdown.find('.dropdown-item').removeClass('active');
@@ -1268,7 +1268,7 @@ $themeDropdown.find('.dropdown-item').on('click', function onClick() {
   const alignment = $(this).data('text-align');
   const fontWeight = $(this).data('font-weight');
 
-  if (fontStack != null && ($fontStackText.val().length === 0 || (new RegExp(`^${Utils.escapeRegExp($fontStackText.val())}(?:, |$)`)).test(prevFontStack))) $fontStackText.val(fontStack.replaceAll(/['"]/g, '').split(/, */).filter((element) => element.length > 0).map((element) => element.length >= 3 && FONT_MAPPING.some(([first, second]) => first === element || second === element) ? FONT_MAPPING.find(([first, second]) => first === element || second === element)[1] : element).join(', ')).change();
+  if (fontStack != null && ($fontStackText.val().length === 0 || prevFontStack == null || (new RegExp(`^${Utils.escapeRegExp($fontStackText.val())}(?:, |$)`)).test(prevFontStack))) $fontStackText.val(fontStack.replaceAll(/['"]/g, '').split(/, */).filter((element) => element.length > 0).map((element) => element.length >= 3 && FONT_MAPPING.some(([first, second]) => first === element || second === element) ? FONT_MAPPING.find(([first, second]) => first === element || second === element)[1] : element).join(', ')).change();
   if (fontSize != null) $fontSizeText.val(fontSize).change();
   $(document.body).addClass($(this).val());
   if (alignment != null && alignment.length > 0) $alignmentRadio.prop('checked', false).filter(`#${['com-amazon-kindle-', 'apple-books-quiet-', 'apple-books-focus-', 'bookwalker-'].some((element) => $(this).val().includes(element)) ? 'justify' : 'start'}-alignment-radio`).prop('checked', true).change();
