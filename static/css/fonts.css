@@ -128,7 +128,8 @@
   font-display: swap;
   font-family: AvenirTtc;
   font-style: normal;
-  font-weight: 400;
+  /* font-weight: 400; */
+  font-weight: 350;
   src: local('Avenir-Book'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Avenir.ttc#Avenir-Book) format('collection');
 }
 
@@ -136,7 +137,8 @@
   font-display: swap;
   font-family: AvenirTtc;
   font-style: oblique;
-  font-weight: 400;
+  /* font-weight: 400; */
+  font-weight: 350;
   src: local('Avenir-BookOblique'), url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/Avenir.ttc#Avenir-BookOblique) format('collection');
 }
 
@@ -852,7 +854,8 @@
   font-display: swap;
   font-family: 'New York Small';
   font-style: normal;
-  font-weight: 600;
+  /* font-weight: 600; */
+  font-weight: 650;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/NY%20Fonts/NewYorkSmall-Bold.otf) format('opentype');
 }
 
@@ -860,7 +863,8 @@
   font-display: swap;
   font-family: 'New York Small';
   font-style: italic;
-  font-weight: 600;
+  /* font-weight: 600; */
+  font-weight: 650;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/NY%20Fonts/NewYorkSmall-BoldItalic.otf) format('opentype');
 }
 
@@ -884,7 +888,8 @@
   font-display: swap;
   font-family: 'New York Small';
   font-style: normal;
-  font-weight: 800;
+  /* font-weight: 800; */
+  font-weight: 850;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/NY%20Fonts/NewYorkSmall-Black.otf) format('opentype');
 }
 
@@ -892,7 +897,8 @@
   font-display: swap;
   font-family: 'New York Small';
   font-style: italic;
-  font-weight: 800;
+  /* font-weight: 800; */
+  font-weight: 850;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/NY%20Fonts/NewYorkSmall-BlackItalic.otf) format('opentype');
 }
 
@@ -950,7 +956,8 @@
   font-display: swap;
   font-family: new-york;
   font-style: normal;
-  font-weight: 600;
+  /* font-weight: 600; */
+  font-weight: 650;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/NY%20Fonts/NewYorkMedium-Bold.otf) format('opentype');
 }
 
@@ -958,7 +965,8 @@
   font-display: swap;
   font-family: new-york;
   font-style: italic;
-  font-weight: 600;
+  /* font-weight: 600; */
+  font-weight: 650;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/NY%20Fonts/NewYorkMedium-BoldItalic.otf) format('opentype');
 }
 
@@ -982,7 +990,8 @@
   font-display: swap;
   font-family: new-york;
   font-style: normal;
-  font-weight: 800;
+  /* font-weight: 800; */
+  font-weight: 850;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/NY%20Fonts/NewYorkMedium-Black.otf) format('opentype');
 }
 
@@ -990,7 +999,8 @@
   font-display: swap;
   font-family: new-york;
   font-style: italic;
-  font-weight: 800;
+  /* font-weight: 800; */
+  font-weight: 850;
   src: url(https://raw.githubusercontent.com/DoHoaiNam914/CDN/main/phong-chu/NY%20Fonts/NewYorkMedium-BlackItalic.otf) format('opentype');
 }
 
