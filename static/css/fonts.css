@@ -1871,35 +1871,54 @@
 }
 
 .bookerly {
-  font-family: Bookerly;
+  font-family: bookerly;
 }
 
-.crimson-text-regular {
+.canela-text {
+  font-family: 'canela text';
+}
+
+.charter {
+  font-family: charter-ttc;
+}
+
+.crimson-text {
   font-family: "Crimson Text", serif;
-  font-weight: 400;
-  font-style: normal;
 }
 
 .georgia {
-  font-family: Georgia;
+  font-family: georgia;
 }
 
 .hiragino-mincho-pron {
-  font-family: 'Hiragino Mincho ProN-otf';
+  font-family: 'hiragino mincho pron-otf';
 }
 
 .literata {
-  font-family: Literata;
+  font-family: literata;
 }
 
 .new-york {
-  font-family: 'New York Small';
+  font-family: 'new york small';
 }
 
 .noto-serif {
   font-family: 'Noto Serif';
 }
 
+.proxima-nova {
+  font-family: 'proxima nova';
+}
+
+.publico-text {
+  font-family: 'publico text';
+}
+
 .serif {
   font-family: serif;
+}
+
+.sf-pro-text-bold {
+  font-family: 'sf pro text';
+  font-weight: bold;
 }
