@@ -181,30 +181,6 @@ export default class GenerativeAi extends Translator {
   async runGemini(model, instructions, message) {
     const generativeModel = this.genAI.getGenerativeModel({ model });
 
-    const safetySettings = [
-      {
-        category: HarmCategory.HARM_CATEGORY_HARASSMENT,
-        threshold: HarmBlockThreshold.BLOCK_NONE,
-      },
-      {
-        category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
-        threshold: HarmBlockThreshold.BLOCK_NONE,
-      },
-      {
-        category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
-        threshold: HarmBlockThreshold.BLOCK_NONE,
-      },
-      {
-        category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
-        threshold: HarmBlockThreshold.BLOCK_NONE,
-      },
-      {
-        // FIXME: Thiếu biến `HarmCategory.HARM_CATEGORY_CIVIC_INTEGRITY`
-        category: 'HARM_CATEGORY_CIVIC_INTEGRITY',
-        threshold: HarmBlockThreshold.BLOCK_NONE,
-      },
-    ];
-
     const generationConfig = {
       temperature: 0.3, // Mặc định: 1
       topP: 0.3,  // Mặc định: model.startsWith('gemini-1.0-pro') ? 0.9 : 0.95
@@ -214,7 +190,6 @@ export default class GenerativeAi extends Translator {
     };
 
     const chatSession = generativeModel.startChat({
-      safetySettings,
       generationConfig,
       history: [
         {
@@ -226,6 +201,29 @@ export default class GenerativeAi extends Translator {
           ],
         },
       ],
+      safetySettings: [
+        {
+          category: HarmCategory.HARM_CATEGORY_HARASSMENT,
+          threshold: HarmBlockThreshold.BLOCK_NONE,
+        },
+        {
+          category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+          threshold: HarmBlockThreshold.BLOCK_NONE,
+        },
+        {
+          category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
+          threshold: HarmBlockThreshold.BLOCK_NONE,
+        },
+        {
+          category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+          threshold: HarmBlockThreshold.BLOCK_NONE,
+        },
+        {
+          // FIXME: Thiếu biến `HarmCategory.HARM_CATEGORY_CIVIC_INTEGRITY`
+          category: 'HARM_CATEGORY_CIVIC_INTEGRITY',
+          threshold: HarmBlockThreshold.BLOCK_NONE,
+        },
+      ],
     });
 
     const result = await chatSession.sendMessage(message);
@@ -235,9 +233,6 @@ export default class GenerativeAi extends Translator {
   async runMistral(model, instructions, message) {
     const chatResponse = await this.client.chat.complete({
       model,
-      temperature: 0.3,
-      top_p: 0.3,
-      max_tokens: model === 'mistral-small-latest' ? 32000 : 128000,
       messages: [
         {
           role: 'user',
@@ -248,6 +243,9 @@ export default class GenerativeAi extends Translator {
           content: message,
         },
       ],
+      temperature: 0.3,
+      top_p: 0.3,
+      max_tokens: model === 'mistral-small-latest' ? 32000 : 128000,
     });
 
     return chatResponse.choices[0].message.content;
