@@ -56,8 +56,10 @@ export default class BaiduTranslate extends Translator {
           qcSettings: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11'],
           domain: 'common',
         }), {
-          headers: { 'Content-Type': 'application/json' },
-          signal: this.controller.signal,
+          headers: {
+            'Content-Type': 'application/json',
+            Origin: null,
+          },
         }));
         requestLines = [];
       }
