@@ -269,10 +269,10 @@ ${nomenclatureList.join('\n')}
         queries = []
         if (queues.length > 0) {
           const splitedChunk = prechunkText.split(new RegExp(`${Utils.escapeRegExp(queues[0])}\\n*`))[0]
-          lineSeparatorChunkList.push(splitedChunk.split(/(\n)/).map(a => a.filter(b => b === '\n'))
+          lineSeparatorChunkList.push(splitedChunk.split(/(\n)/).filter(element => element === '\n'))
           prechunkText = prechunkText.replace(splitedChunk, '')
         } else {
-          lineSeparatorChunkList.push(prechunkText.split(/(\n)/).map(a => a.filter(b => b === '\n'))
+          lineSeparatorChunkList.push(prechunkText.split(/(\n)/).filter(element => element === '\n'))
         }
       }
     }
