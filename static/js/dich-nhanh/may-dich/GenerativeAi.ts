@@ -76,7 +76,7 @@ export default class GenerativeAi extends Translator {
     })
   }
 
-  public async runOpenai (model: string, instructions: string, message: string): Promise<string> {
+  public async runOpenai (model: string, instructions: string, message: string, prevChunk: string = ''): Promise<string> {
     const searchParams: URLSearchParams = new URLSearchParams(window.location.search)
     const isDebug: boolean = searchParams.has('debug')
     if (!isDebug && window.localStorage.getItem('OPENAI_API_KEY') == null && this.duckchat == null) await this.getDuckchatStatus()
@@ -91,6 +91,12 @@ export default class GenerativeAi extends Translator {
           content: instructions,
           role: 'user'
         },
+        ...(prevChunk.length > 0
+          ? [{
+              content: prevChunk,
+              role: 'user'
+            }]
+          : []),
         {
           content: message,
           role: 'user'
@@ -122,6 +128,12 @@ export default class GenerativeAi extends Translator {
             role: 'user',
             content: instructions
           },
+          ...(prevChunk.length > 0
+            ? [{
+                role: 'user',
+                content: prevChunk
+              }]
+            : []),
           {
             role: 'user',
             content: message
@@ -134,7 +146,7 @@ export default class GenerativeAi extends Translator {
     return result.choices[0].message.content
   }
 
-  public async runClaude (model: string, instructions: string, message: string): Promise<string> {
+  public async runClaude (model: string, instructions: string, message: string, prevChunk: string = ''): Promise<string> {
     if (window.localStorage.getItem('ANTHROPIC_API_KEY') == null && this.duckchat == null) await this.getDuckchatStatus()
     const msg = window.localStorage.getItem('ANTHROPIC_API_KEY') == null && model === 'claude-3-haiku-20240307' ? this.duckchat.post(null, window.JSON.stringify({
       model,
@@ -143,6 +155,12 @@ export default class GenerativeAi extends Translator {
           role: 'user',
           content: instructions
         },
+        ...(prevChunk.length > 0
+          ? [{
+              role: 'user',
+              content: prevChunk
+            }]
+          : []),
         {
           role: 'user',
           content: message
@@ -159,6 +177,12 @@ export default class GenerativeAi extends Translator {
           role: 'user',
           content: instructions
         },
+        ...(prevChunk.length > 0
+          ? [{
+              role: 'user',
+              content: prevChunk
+            }]
+          : []),
         {
           role: 'user',
           content: message
@@ -169,7 +193,7 @@ export default class GenerativeAi extends Translator {
     return msg
   }
 
-  public async runGemini (model: string, instructions: string, message: string): Promise<string> {
+  public async runGemini (model: string, instructions: string, message: string, prevChunk: string = ''): Promise<string> {
     const generativeModel = this.genAI.getGenerativeModel({ model })
     const generationConfig: { [key: string]: number | string } = {
       temperature: 0.3, // Mặc định: 1
@@ -188,7 +212,17 @@ export default class GenerativeAi extends Translator {
               text: instructions
             }
           ]
-        }
+        },
+        ...(prevChunk.length > 0
+          ? [{
+              role: 'user',
+              parts: [
+                {
+                  text: prevChunk
+                }
+              ]
+            }]
+          : [])
       ],
       safetySettings: [
         {
@@ -218,7 +252,7 @@ export default class GenerativeAi extends Translator {
     return result.response.text()
   }
 
-  public async runMistral (model: string, instructions: string, message: string): Promise<string> {
+  public async runMistral (model: string, instructions: string, message: string, prevChunk: string = ''): Promise<string> {
     const chatResponse = await this.client.chat.complete({
       model,
       messages: [
@@ -226,6 +260,12 @@ export default class GenerativeAi extends Translator {
           role: 'user',
           content: instructions
         },
+        ...(prevChunk.length > 0
+          ? [{
+              role: 'user',
+              content: prevChunk
+            }]
+          : []),
         {
           role: 'user',
           content: message
@@ -238,7 +278,7 @@ export default class GenerativeAi extends Translator {
     return chatResponse.choices[0].message.content
   }
 
-  public async translateText (text: string, targetLanguage: string, model: string = 'gpt-4o-mini', nomenclature: string[][] = []): Promise<string> {
+  public async translateText (text: string, targetLanguage: string, chunking: boolean, model: string = 'gpt-4o-mini', nomenclature: string[][] = []): Promise<string> {
     const nomenclatureList: string[] = nomenclature.filter(([first]) => text.includes(first)).map(element => element.join('\t'))
     const INSTRUCTIONS: string = `Translate the following text into ${targetLanguage}. ${nomenclatureList.length > 0 ? 'Accurately map proper names of people, ethnic groups, species, or place-names, and other concepts listed in the Nomenclature Lookup Table to enhance the accuracy and consistency in your translations. ' : ''}Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text and cannot include explanations or other information.${nomenclatureList.length > 0
 ? `
@@ -254,16 +294,18 @@ ${nomenclatureList.join('\n')}
     const queues: string[] = [...cleanedLines]
     const responses: Array<Promise<string>> = []
     const isGemini = model.startsWith('gemini')
-    const maybeIsClaude = async (query: string) => model.startsWith('claude') ? await this.runClaude(model, INSTRUCTIONS, query) : await this.runOpenai(model, INSTRUCTIONS, query)
-    const maybeIsGemini = async (query: string) => isGemini ? await this.runGemini(model, INSTRUCTIONS, query) : await maybeIsClaude(query)
-    const lineSeparatorChunkList: Array<string[]> = []
+    const maybeIsClaude = async (query: string, prevChunk: string) => model.startsWith('claude') ? await this.runClaude(model, INSTRUCTIONS, query, prevChunk) : await this.runOpenai(model, INSTRUCTIONS, query, prevChunk)
+    const maybeIsGemini = async (query: string, prevChunk: string) => isGemini ? await this.runGemini(model, INSTRUCTIONS, query, prevChunk) : await maybeIsClaude(query, prevChunk)
+    const lineSeparatorChunkList: string[][] = []
     let queries: string[] = []
+    let prevChunk: string = ''
     let prechunkText: string = text
     while (queues.length > 0) {
       queries.push(queues.shift() as string)
-      if (queues.length === 0 || [...queries, queues[0]].join('\n').length > this.maxContentLengthPerRequest) {
-        const request: string = queries.join('\n')
-        responses.push(/^(?:open-)?[^-]+tral/.test(model) ? this.runMistral(model, INSTRUCTIONS, request) : maybeIsGemini(request))
+      if (queues.length === 0 || (chunking && [...queries, queues[0]].join('\n').length > this.maxContentLengthPerRequest)) {
+        const query: string = queries.join('\n')
+        responses.push(/^(?:open-)?[^-]+tral/.test(model) ? this.runMistral(model, INSTRUCTIONS, query, prevChunk) : maybeIsGemini(query, prevChunk))
+        if (chunking) prevChunk = query
         queries = []
         if (queues.length > 0) {
           const splitedChunk = prechunkText.split(new RegExp(`${Utils.escapeRegExp(queues[0])}\\n*`))[0]
@@ -277,10 +319,10 @@ ${nomenclatureList.join('\n')}
     const result: string = await Promise.all(responses).then(function (responses) {
       const resultLines: string[] = responses.map(function (value, index) {
         const lineSeperators: string[] = lineSeparatorChunkList[index]
-        return value.split(value.split(/(\n{1,2})/).filter(element => element.includes('\n')).map((element, index) => element !== lineSeperators[index]).reduce((accumulator, currentValue) => accumulator + (currentValue ? 1 : -1), 0) > 0 ? '\n\n' : '\n')
+        return (isGemini ? value.replace(/\n$/, '') : value).split(value.split(/(\n{1,2})/).filter(element => element.includes('\n')).map((element, index) => element !== lineSeperators[index]).reduce((accumulator, currentValue) => accumulator + (currentValue ? 1 : -1), 0) > 0 ? '\n\n' : '\n')
       }).flat()
       const resultMap: { [key: string]: string } = Object.fromEntries(cleanedLines.map((element, index) => [element, resultLines[index]]))
-      return lines.map(element => (element !== '\n' ? `${(element.match(/^\s*/) as string[])[0]}${resultMap[element] ?? element}` : element)).join('')
+      return lines.map(element => (element !== '\n' ? `${(element.match(/^\s*/) as string[])[0]}${(resultMap[element] ?? element).replace(/^\s+/, '')}` : element)).join('')
     }).catch(error => {
       throw error
     })

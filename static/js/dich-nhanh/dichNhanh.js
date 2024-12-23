@@ -728,7 +728,7 @@ const translate = async function translateContentInTextarea(controller = new Abo
     switch ($activeTranslator.val()) {
       case Translators.GENERATIVE_AI: {
         currentTranslator.controller = controller;
-        result = await currentTranslator.translateText(text, targetLanguage, model, Object.entries(glossary.nomenclature));
+        result = await currentTranslator.translateText(text, targetLanguage, $('#chunking-switch').prop('checked'), model, Object.entries(glossary.nomenclature));
         break;
       }
       default: {
@@ -782,7 +782,7 @@ ${rawTranslationLines.map((element) => element.replace(/^\s/, '')).join('\n')}
       const originalLineSeperators = lines.filter((element) => element === '\n')
       const resultLines = polishResult.split(polishResult.split(/(\n{1,2})/).filter(element => element.includes('\n')).map((element, index) => element !== originalLineSeperators[index]).reduce((accumulator, currentValue) => accumulator + (currentValue ? 1 : -1), 0) > 0 ? '\n\n' : '\n')
       const resultMap = Object.fromEntries(query.map((element, index) => [element, resultLines[index]]))
-      result = lines.map((element, index) => (element !== '\n' ? `${(rawTranslationLines[index] ?? element).match(/^\s*/)[0]}${resultMap[element] ?? rawTranslationLines[index] ?? element}` : element)).join('')
+      result = lines.map((element, index) => (element !== '\n' ? `${(rawTranslationLines[index] ?? element).match(/^\s*/)[0]}${(resultMap[element] ?? rawTranslationLines[index] ?? element).replace(/^\s+/, '')}` : element)).join('')
     }
 
     if (controller.signal.aborted) return;
@@ -1699,7 +1699,7 @@ $translateEntryButtons.click(async function onClick() {
         switch (activeTranslator) {
           case Translators.GENERATIVE_AI: {
             translator.controller = entryTranslationController;
-            result = await translator.translateText(text, targetLanguage, $('#translate-entry-model-select').val(), $('#apply-nomenclature-switch').prop('checked') ? Object.entries(glossary.nomenclature) : []);
+            result = await translator.translateText(text, targetLanguage, false, $('#translate-entry-model-select').val(), $('#apply-nomenclature-switch').prop('checked') ? Object.entries(glossary.nomenclature) : []);
             break;
           }
           default: {
