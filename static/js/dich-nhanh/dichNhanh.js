@@ -749,7 +749,7 @@ const translate = async function translateContentInTextarea(controller = new Abo
       const query = lines.map((element) => element !== '\n' && element.replace(/^\s/, ''));
       const rawTranslationLines = result.split('\n');
 
-      const INSTRUCTIONS = `Rewrite the rough translation provided, correcting any errors, omissions, or merged lines in the translation by referencing the original text. ${nomenclature.length > 0 ? `Accurately map proper names of people, ethnic groups, species, or place-names, and other concepts listed in the Nomenclature Lookup Table. ` : ''}If a line is missing, has incorrect content, or includes content from another line due to merging errors, split and translate it correctly from the original text. Your output must only contain the entire corrected translated text without codeblock and cannot include explanations or other information.${nomenclature.length > 0 ? `
+      const INSTRUCTIONS = `Rewrite the rough translation provided, correcting any errors, omissions, or merged lines in the translation by referencing the original text in the language ò rough translation. ${nomenclature.length > 0 ? `Accurately map proper names of people, ethnic groups, species, or place-names, and other concepts listed in the Nomenclature Lookup Table. ` : ''}If a line is missing, has incorrect content, or includes content from another line due to merging errors, split and translate it correctly from the original text. Your output must only contain the entire corrected translated text without codeblock and cannot include explanations or other information.${nomenclature.length > 0 ? `
 
 Nomenclature Lookup Table:
 \`\`\`tsv
