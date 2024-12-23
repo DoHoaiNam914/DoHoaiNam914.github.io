@@ -46,7 +46,6 @@ export default class GoogleTranslate extends Translator {
       this.key = key
       this.token = token
     }).catch((error: {}) => {
-      this.controller.abort()
       console.error('Bản dịch lỗi: Không thể lấy được dữ liệu:', error)
     })
   }
@@ -55,12 +54,12 @@ export default class GoogleTranslate extends Translator {
     if (this.IG == null || this.IID == null || this.token == null || this.key == null) await this.setToneAndFetchData(this.tone)
     const lines: string[] = text.split('\n')
     const responses: Array<Promise<{ data: Array<{ translations: Array<{ text: string }> }> }>> = []
-    let requestLines: string[] = []
+    let queries: string[] = []
     let requestIndex: number = 1
     while (lines.length > 0) {
-      requestLines.push(lines.shift() as string)
-      if (lines.length === 0 || [...requestLines, lines[0]].join('\n').length > this.maxContentLengthPerRequest) {
-        const queryText = requestLines.join('\n')
+      queries.push(lines.shift() as string)
+      if (lines.length === 0 || [...queries, lines[0]].join('\n').length > this.maxContentLengthPerRequest) {
+        const queryText = queries.join('\n')
         responses.push(this.instance.post('/ttranslatev3', `&fromLang=${sourceLanguage ?? this.DefaultLanguage.SOURCE_LANGUAGE}&to=${targetLanguage}&token=${this.token}&key=${this.key}${this.tone === 'Standard' ? `&text=${queryText}&tryFetchingGenderDebiasedTranslations=true` : `&tone=${this.tone}&text=${queryText}`}`, {
           headers: { 'Content-type': 'application/x-www-form-urlencoded' },
           params: {
@@ -69,7 +68,7 @@ export default class GoogleTranslate extends Translator {
             IID: `${this.IID}${this.tone !== 'Standard' ? `.${requestIndex}` : ''}`
           }
         }))
-        requestLines = []
+        queries = []
         requestIndex += 1
       }
     }

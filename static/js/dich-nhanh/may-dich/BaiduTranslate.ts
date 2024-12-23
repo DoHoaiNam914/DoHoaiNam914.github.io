@@ -34,16 +34,15 @@ export default class BaiduTranslate extends Translator {
   public async translateText (text: string, targetLanguage: string, sourceLanguage: string | null = null): Promise<string> {
     const lines: string[] = text.split('\n')
     const lan: string = (sourceLanguage ?? this.DefaultLanguage.SOURCE_LANGUAGE) === 'auto' ? await this.instance.post('/langdetect', `query=${encodeURIComponent(text)}`).then(({ data: { lan } }) => lan).catch((error: {}) => {
-        this.controller.abort()
         throw error
     }) : sourceLanguage
     const responses: Array<Promise<{ data: string }>> = []
-    let requestLines: string[] = []
+    let queries: string[] = []
     while (lines.length > 0) {
-      requestLines.push(lines.shift() as string)
-      if (lines.length === 0 || [...requestLines, lines[0]].join('\n').length > this.maxContentLengthPerRequest) {
+      queries.push(lines.shift() as string)
+      if (lines.length === 0 || [...queries, lines[0]].join('\n').length > this.maxContentLengthPerRequest) {
         responses.push(this.instance.post('/ait/text/translate', JSON.stringify({
-          query: requestLines.join('\n'),
+          query: queries.join('\n'),
           from: lan,
           to: targetLanguage,
           reference: '',
@@ -51,11 +50,9 @@ export default class BaiduTranslate extends Translator {
           qcSettings: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11'],
           domain: 'common'
         }), {
-          headers: {
-            'Content-Type': 'application/json'
-          }
+          headers: { 'Content-Type': 'application/json' }
         }))
-        requestLines = []
+        queries = []
       }
     }
     const result: string = await Promise.all(responses).then(responses => responses.map(({ data }) => JSON.parse(data.split('\n').filter(element => element.includes('"event":"Translating"'))[0].replace(/^data: /, '')).data.list.map(({ dst }) => dst).join('\n')).join('\n')).catch((error: {}) => {

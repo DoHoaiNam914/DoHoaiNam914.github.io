@@ -64,11 +64,9 @@ export default class Papago extends Translator {
       await this.instance.get(`/${a.data.match(/\/(main.*\.js)/)[1]}`).then((b) => {
         this.version = b.data.match(/"PPG .*,"(v[^"]*)/)[1]
       }).catch((error) => {
-        this.controller.abort()
         throw error
       })
     }).catch((error) => {
-      this.controller.abort()
       throw error
     })
   }
@@ -78,12 +76,12 @@ export default class Papago extends Translator {
     const lines = text.split('\n')
     const responses = []
     const date = new Date()
-    let requestLines = []
+    let queries = []
     while (lines.length > 0) {
-      requestLines.push(lines.shift())
-      if (lines.length === 0 || [...requestLines, lines[0]].join('\n').length > this.maxContentLengthPerRequest) {
+      queries.push(lines.shift())
+      if (lines.length === 0 || [...queries, lines[0]].join('\n').length > this.maxContentLengthPerRequest) {
         const timeStamp = date.getTime()
-        responses.push(this.instance.post('/apis/n2mt/translate', `deviceId=${this.uuid}&locale=vi&dict=true&dictDisplay=30&honorific=true&instant=false&paging=false&source=${sourceLanguage}&target=${targetLanguage}&text=${encodeURIComponent(requestLines.join('\n'))}`, {
+        responses.push(this.instance.post('/apis/n2mt/translate', `deviceId=${this.uuid}&locale=vi&dict=true&dictDisplay=30&honorific=true&instant=false&paging=false&source=${sourceLanguage}&target=${targetLanguage}&text=${encodeURIComponent(queries.join('\n'))}`, {
           headers: {
             Accept: 'application/json',
             'Accept-Language': 'vi',
@@ -93,7 +91,7 @@ export default class Papago extends Translator {
             Timestamp: timeStamp
           }
         }))
-        requestLines = []
+        queries = []
       }
     }
     const result = await Promise.all(responses).then(responses => responses.map(({ data: { translatedText } }) => translatedText).join('\n')).catch((error) => {

@@ -15,11 +15,11 @@ export default class CoccocEduTranslate extends Translator {
   async translateText (text, targetLanguage, sourceLanguage = null) {
     const lines = text.split('\n')
     const responses = []
-    let requestLines = []
+    let queries = []
     while (lines.length > 0) {
-      requestLines.push(lines.shift())
-      if (lines.length === 0 || [...requestLines, lines[0]].join('\n').length > this.maxContentLengthPerRequest || (requestLines.length + 1) > this.maxContentLinePerRequest) {
-        responses.push(axios.post(`${Utils.CORS_HEADER_PROXY}https://hoctap.coccoc.com/composer/proxyapi/translate`, JSON.stringify({ Text: requestLines.join('\n') }), {
+      queries.push(lines.shift())
+      if (lines.length === 0 || [...queries, lines[0]].join('\n').length > this.maxContentLengthPerRequest || (queries.length + 1) > this.maxContentLinePerRequest) {
+        responses.push(axios.post(`${Utils.CORS_HEADER_PROXY}https://hoctap.coccoc.com/composer/proxyapi/translate`, JSON.stringify({ Text: queries.join('\n') }), {
           headers: { 'Content-Type': 'application/json' },
           params: {
             from: sourceLanguage ?? this.DefaultLanguage.SOURCE_LANGUAGE,
@@ -28,7 +28,7 @@ export default class CoccocEduTranslate extends Translator {
           },
           signal: this.controller.signal
         }))
-        requestLines = []
+        queries = []
       }
     }
     const result = await Promise.all(responses).then(responses => responses.map(({ data: { proxyapi: [{ translations: [{ text }] }] } }) => text).join('\n')).catch((error) => {

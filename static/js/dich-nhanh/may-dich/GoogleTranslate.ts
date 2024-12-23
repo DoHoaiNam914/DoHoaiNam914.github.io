@@ -20,10 +20,10 @@ export default class GoogleTranslate extends Translator {
   public async translateText (text: string, targetLanguage: string, sourceLanguage: string | null = null): Promise<string> {
     const lines: string[] = text.split('\n')
     const responses: Array<Promise<{ data: { data: { translations: Array<{ translatedText: string }> } } }>> = []
-    let requestLines: string[] = []
+    let queries: string[] = []
     while (lines.length > 0) {
-      requestLines.push(lines.shift() as string)
-      if (lines.length === 0 || `${Utils.CORS_HEADER_PROXY}https://translation.googleapis.com/language/translate/v2?prettyPrint=false${sourceLanguage !== this.DefaultLanguage.SOURCE_LANGUAGE ? `&source=${sourceLanguage}` : ''}&target=${targetLanguage}&q=${[...requestLines, lines[0]].map((element) => encodeURIComponent(element)).join('&q=')}&key=${this.key}`.length > this.maxRequestUrlLength) {
+      queries.push(lines.shift() as string)
+      if (lines.length === 0 || `${Utils.CORS_HEADER_PROXY}https://translation.googleapis.com/language/translate/v2?prettyPrint=false${sourceLanguage !== this.DefaultLanguage.SOURCE_LANGUAGE ? `&source=${sourceLanguage}` : ''}&target=${targetLanguage}&q=${[...queries, lines[0]].map((element) => encodeURIComponent(element)).join('&q=')}&key=${this.key}`.length > this.maxRequestUrlLength) {
         responses.push(axios.post(`${Utils.CORS_HEADER_PROXY}https://translation.googleapis.com/language/translate/v2`, undefined, {
           headers: {
             'User-Agent': 'com.google.GoogleBooks/6.8.1 google-api-objc-client/3.0 iPhone/18.2 hw/iPhone17_2 (gzip)',
@@ -31,10 +31,10 @@ export default class GoogleTranslate extends Translator {
             'accept-language': 'vi-VN,vi;q=0.9',
             'cache-control': 'no-cache'
           },
-          params: new URLSearchParams(`prettyPrint=false&q=${requestLines.map((element: string) => encodeURIComponent(element)).join('&q=')}&${sourceLanguage != null && sourceLanguage !== this.DefaultLanguage.SOURCE_LANGUAGE ? `source=${sourceLanguage}&` : ''}target=${targetLanguage}&key=${this.key}`),
+          params: new URLSearchParams(`prettyPrint=false&q=${queries.map((element: string) => encodeURIComponent(element)).join('&q=')}&${sourceLanguage != null && sourceLanguage !== this.DefaultLanguage.SOURCE_LANGUAGE ? `source=${sourceLanguage}&` : ''}target=${targetLanguage}&key=${this.key}`),
           signal: this.controller.signal
         }))
-        requestLines = []
+        queries = []
       }
     }
     const result: string = await Promise.all(responses).then(responses => Utils.convertHtmlToText(responses.map(({ data: { data: { translations } } }) => translations.map(({ translatedText }) => translatedText)).flat().join('\n'))).catch((error: {}) => {

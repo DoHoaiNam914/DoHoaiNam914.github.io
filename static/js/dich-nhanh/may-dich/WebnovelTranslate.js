@@ -2017,17 +2017,17 @@ export default class WebnovelTranslate extends Translator {
     const lines = text.split(/(\n)/)
     const cleanedLines = lines.filter((element) => element !== '\n' && element.replace(/^\s+/, '').length > 0)
     const responses = []
-    let query = cleanedLines.map((element) => `${isCj ? '\u3000\u3000' : ''}${element}`).join(EOL)
-    let request = []
-    query = (isCj ? query.replace(EOL, EOL.repeat(2)) : query).split(new RegExp(`(?<=\\.{3}|[${!isCj ? '!,.:;?' : ''}…${isCj ? '、。！，：；？' : ''}](?:[^${!isCj ? '!,.:;?' : ''}…${isCj ? '、。！，：；？' : ''}]*$${!isCj ? '|\\s+' : ''}|))`))
-    while (query.length > 0) {
-      request.push((query).shift())
-      if (query.length === 0 || request.join('').concat(query[0].trimEnd()).length > this.maxContentLengthPerRequest) {
+    let queue = cleanedLines.map((element) => `${isCj ? '\u3000\u3000' : ''}${element}`).join(EOL)
+    queue = (isCj ? queue.replace(EOL, EOL.repeat(2)) : queue).split(new RegExp(`(?<=\\.{3}|[${!isCj ? '!,.:;?' : ''}…${isCj ? '、。！，：；？' : ''}](?:[^${!isCj ? '!,.:;?' : ''}…${isCj ? '、。！，：；？' : ''}]*$${!isCj ? '|\\s+' : ''}|))`))
+    let queries = []
+    while (queue.length > 0) {
+      queries.push(queue.shift())
+      if (queue.length === 0 || queries.join('').concat(queue[0].trimEnd()).length > this.maxContentLengthPerRequest) {
         responses.push(axios.get(`${Utils.CORS_HEADER_PROXY}http://translate.google.com/translate_a/single`, {
-          params: new URLSearchParams(`client=${this.clientName}&ie=UTF-8&oe=UTF-8&dt=bd&dt=ex&dt=ld&dt=md&dt=rw&dt=rm&dt=ss&dt=t&dt=at&dt=gt&dt=qc&sl=${sourceLanguage ?? this.DefaultLanguage.SOURCE_LANGUAGE}&tl=${targetLanguage}&hl=${targetLanguage}&q=${encodeURIComponent(request.join('').trimEnd())}`),
+          params: new URLSearchParams(`client=${this.clientName}&ie=UTF-8&oe=UTF-8&dt=bd&dt=ex&dt=ld&dt=md&dt=rw&dt=rm&dt=ss&dt=t&dt=at&dt=gt&dt=qc&sl=${sourceLanguage ?? this.DefaultLanguage.SOURCE_LANGUAGE}&tl=${targetLanguage}&hl=${targetLanguage}&q=${encodeURIComponent(queries.join('').trimEnd())}`),
           signal: this.controller.signal
         }))
-        request = []
+        queries = []
       }
     }
     const result = await Promise.all(responses).then(function (responses) {

@@ -27,22 +27,21 @@ export default class DeeplTranslate extends Translator {
 
   public async translateText (text: string, targetLanguage: string, sourceLanguage: string | null = null): Promise<string> {
     const usage = await this.instance.get('/v2/usage').then(({ data }) => data).catch((error: {}) => {
-      this.controller.abort()
       throw error
     })
     if ((usage.character_limit - usage.character_count) < text.length) throw new Error(`Bản dịch lỗi: Đã đạt đến giới hạn sử dụng của Auth Key này: ${usage.character_count}/${usage.character_limit}`)
     const lines: string[] = text.split('\n')
     const responses: Array<Promise<{ data: { translations: Array<{ text: string }> } }>> = []
-    let requestLines: string[] = []
+    let queries: string[] = []
     while (lines.length > 0) {
-      requestLines.push(lines.shift() as string)
-      if (lines.length === 0 || (requestLines.length + 1) > this.maxContentLinePerRequest) {
+      queries.push(lines.shift() as string)
+      if (lines.length === 0 || (queries.length + 1) > this.maxContentLinePerRequest) {
         responses.push(this.instance.post('/v2/translate', new URLSearchParams({
-          text: requestLines,
+          text: queries,
           target_lang: targetLanguage,
           source_lang: sourceLanguage != null && sourceLanguage !== '' ? sourceLanguage : null
         })))
-        requestLines = []
+        queries = []
       }
     }
     const result: string = await Promise.all(responses).then(responses => responses.map(({ data: { translations } }) => translations.map(({ text }) => text)).join('\n')).catch((error: {}) => {

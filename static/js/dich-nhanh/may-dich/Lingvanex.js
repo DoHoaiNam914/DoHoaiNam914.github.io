@@ -17,7 +17,6 @@ export default class GoogleTranslate extends Translator {
     await this.instance.get(`${Utils.CORS_HEADER_PROXY}https://lingvanex.com/lingvanex_demo_page/js/api-base.js`).then(({ data }) => {
       this.authToken = data.match(/B2B_AUTH_TOKEN="([^"]+)"/)[1]
     }).catch((error) => {
-      this.controller.abort()
       throw error
     })
   }
@@ -26,11 +25,11 @@ export default class GoogleTranslate extends Translator {
     if (this.authToken == null) { await this.fetchApiKey() }
     const lines = text.split('\n')
     const responses = []
-    let requestLines = []
+    let queries = []
     while (lines.length > 0) {
-      requestLines.push(lines.shift())
-      if (lines.length === 0 || [...requestLines, lines[0]].join('\n').length > this.maxContentLengthPerRequest) {
-        responses.push(this.instance.post('https://api-b2b.backenster.com/b1/api/v3/translate/', `from=${sourceLanguage}&to=${targetLanguage}&text=${encodeURIComponent(requestLines.join('\n'))}&platform=dp`, {
+      queries.push(lines.shift())
+      if (lines.length === 0 || [...queries, lines[0]].join('\n').length > this.maxContentLengthPerRequest) {
+        responses.push(this.instance.post('https://api-b2b.backenster.com/b1/api/v3/translate/', `from=${sourceLanguage}&to=${targetLanguage}&text=${encodeURIComponent(queries.join('\n'))}&platform=dp`, {
           headers: {
             Accept: 'application/json, text/javascript, */*; q=0.01',
             Authorization: this.authToken
@@ -41,7 +40,7 @@ export default class GoogleTranslate extends Translator {
             lang_pair: 'en_te'
           }
         }))
-        requestLines = []
+        queries = []
       }
     }
     const result = await Promise.all(responses).then(responses => responses.map(({ data: { result } }) => result).flat().join('\n')).catch((error) => {

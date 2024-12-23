@@ -72,7 +72,6 @@ export default class GenerativeAi extends Translator {
         signal: this.controller.signal
       })
     }).catch((error) => {
-      this.controller.abort()
       throw error
     })
   }
@@ -105,7 +104,7 @@ export default class GenerativeAi extends Translator {
       presence_penalty: model.startsWith('o1') ? undefined : 0
     }
     const maybeIsDebug = async () => isDebug
-      ? await axios.post(`${Utils.CORS_HEADER_PROXY}https://gateway.api.airapps.co/aa_service=server5/aa_apikey=5N3NR9SDGLS7VLUWSEN9J30P//v3/proxy/open-ai/v1/chat/completions`, JSON.stringify(requestBody), {
+      ? await axios.post(`${Utils.CORS_HEADER_PROXY}https://gateway.api.airapps.co/aa_service=server5/aa_apikey=5N3NR9SDGLS7VLUWSEN9J30P//v3/proxy/open-ai/v1/chat/completions`, window.JSON.stringify(requestBody), {
         headers: {
           'User-Agent': 'iOS-TranslateNow/8.8.0.1016 CFNetwork/1568.200.51 Darwin/24.1.0',
           'Content-Type': 'application/json',
@@ -114,10 +113,9 @@ export default class GenerativeAi extends Translator {
         },
         signal: this.controller.signal
       }).then(({ data }) => data).catch((error) => {
-        this.controller.abort()
         throw error
       })
-      : model === 'gpt-4o-mini' && await this.duckchat.post('', JSON.stringify({
+      : model === 'gpt-4o-mini' && await this.duckchat.post(null, window.JSON.stringify({
         model,
         messages: [
           {
@@ -129,8 +127,7 @@ export default class GenerativeAi extends Translator {
             content: message
           }
         ]
-      })).then(({ data }) => ({ choices: [{ message: { content: data.split('\n').filter((element) => /data: {(?:"role":"assistant",)?"message"/.test(element)).map((element) => JSON.parse(element.replace(/^data: /, '')).message).join('') } }] })).catch((error) => {
-        this.controller.abort()
+      })).then(({ data }) => ({ choices: [{ message: { content: data.split('\n').filter((element) => /data: {(?:"role":"assistant",)?"message"/.test(element)).map((element) => window.JSON.parse(element.replace(/^data: /, '')).message).join('') } }] })).catch((error) => {
         throw error
       })
     const result = window.localStorage.getItem('OPENAI_API_KEY') == null ? await maybeIsDebug() : await this.openai.chat.completions.create(requestBody)
@@ -140,7 +137,7 @@ export default class GenerativeAi extends Translator {
   async runClaude (model, instructions, message) {
     if (window.localStorage.getItem('ANTHROPIC_API_KEY') == null && this.duckchat == null) { await this.getDuckchatStatus() }
     const msg = window.localStorage.getItem('ANTHROPIC_API_KEY') == null && model === 'claude-3-haiku-20240307'
-      ? this.duckchat.post(JSON.stringify({
+      ? this.duckchat.post(null, window.JSON.stringify({
         model,
         messages: [
           {
@@ -152,8 +149,7 @@ export default class GenerativeAi extends Translator {
             content: message
           }
         ]
-      })).then(({ data }) => data.split('\n').filter((element) => /data: {(?:"role":"assistant",)?"message"/.test(element)).map((element) => JSON.parse(element.replace(/^data: /, '')).message).join('')).catch((error) => {
-        this.controller.abort()
+      })).then(({ data }) => data.split('\n').filter((element) => /data: {(?:"role":"assistant",)?"message"/.test(element)).map((element) => window.JSON.parse(element.replace(/^data: /, '')).message).join('')).catch((error) => {
         throw error
       })
       : await this.anthropic.messages.create({
@@ -257,24 +253,34 @@ ${nomenclatureList.join('\n')}
             : ''}`
     const lines = text.split(/(\n)/)
     const cleanedLines = lines.filter(element => element !== '\n' && element.replace(/^\s+/, '').length > 0)
-    const queueLines = cleanedLines
+    const queues = [...cleanedLines]
     const responses = []
-    let requestLines = []
     const isGemini = model.startsWith('gemini')
     const maybeIsClaude = async (query) => model.startsWith('claude') ? await this.runClaude(model, INSTRUCTIONS, query) : await this.runOpenai(model, INSTRUCTIONS, query)
     const maybeIsGemini = async (query) => isGemini ? await this.runGemini(model, INSTRUCTIONS, query) : await maybeIsClaude(query)
-    while (queueLines.length > 0) {
-      requestLines.push(queueLines.shift())
-      if (queueLines.length === 0 || [...queueLines, queueLines[0]].join('\n').length > this.maxContentLengthPerRequest) {
-        const request = requestLines.join('\n')
+    const lineSeparatorChunkList = []
+    let queries = []
+    let prechunkText = text
+    while (queues.length > 0) {
+      queries.push(queues.shift())
+      if (queues.length === 0 || [...queries, queues[0]].join('\n').length > this.maxContentLengthPerRequest) {
+        const request = queries.join('\n')
         responses.push(/^(?:open-)?[^-]+tral/.test(model) ? this.runMistral(model, INSTRUCTIONS, request) : maybeIsGemini(request))
-        requestLines = []
+        queries = []
+        if (queues.length > 0) {
+          const splitedChunk = prechunkText.split(new RegExp(`${Utils.escapeRegExp(queues[0])}\\n*`))[0]
+          lineSeparatorChunkList.push(splitedChunk.split(/(\n)/).map(a => a.filter(b => b === '\n'))
+          prechunkText = prechunkText.replace(splitedChunk, '')
+        } else {
+          lineSeparatorChunkList.push(prechunkText.split(/(\n)/).map(a => a.filter(b => b === '\n'))
+        }
       }
     }
     const result = await Promise.all(responses).then(function (responses) {
-      const joinedResults = responses.map(value => value).join('\n')
-      const originalLineSeperators = lines.filter((element) => element === '\n')
-      const resultLines = joinedResults.split(joinedResults.split(/(\n{1,2})/).filter(element => element.includes('\n')).map((element, index) => element !== originalLineSeperators[index]).reduce((accumulator, currentValue) => accumulator + (currentValue ? 1 : -1), 0) > 0 ? '\n\n' : '\n')
+      const resultLines = responses.map(function (value, index) {
+        const lineSeperators = lineSeparatorChunkList[index]
+        return value.split(value.split(/(\n{1,2})/).filter(element => element.includes('\n')).map((element, index) => element !== lineSeperators[index]).reduce((accumulator, currentValue) => accumulator + (currentValue ? 1 : -1), 0) > 0 ? '\n\n' : '\n')
+      }).flat()
       const resultMap = Object.fromEntries(cleanedLines.map((element, index) => [element, resultLines[index]]))
       return lines.map(element => (element !== '\n' ? `${element.match(/^\s*/)[0]}${resultMap[element] ?? element}` : element)).join('')
     }).catch(error => {

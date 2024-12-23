@@ -27,22 +27,21 @@ export default class DeeplTranslate extends Translator {
 
   async translateText (text, targetLanguage, sourceLanguage = null) {
     const usage = await this.instance.get('/v2/usage').then(({ data }) => data).catch((error) => {
-      this.controller.abort()
       throw error
     })
     if ((usage.character_limit - usage.character_count) < text.length) { throw new Error(`Bản dịch lỗi: Đã đạt đến giới hạn sử dụng của Auth Key này: ${usage.character_count}/${usage.character_limit}`) }
     const lines = text.split('\n')
     const responses = []
-    let requestLines = []
+    let queries = []
     while (lines.length > 0) {
-      requestLines.push(lines.shift())
-      if (lines.length === 0 || (requestLines.length + 1) > this.maxContentLinePerRequest) {
+      queries.push(lines.shift())
+      if (lines.length === 0 || (queries.length + 1) > this.maxContentLinePerRequest) {
         responses.push(this.instance.post('/v2/translate', new URLSearchParams({
-          text: requestLines,
+          text: queries,
           target_lang: targetLanguage,
           source_lang: sourceLanguage != null && sourceLanguage !== '' ? sourceLanguage : null
         })))
-        requestLines = []
+        queries = []
       }
     }
     const result = await Promise.all(responses).then(responses => responses.map(({ data: { translations } }) => translations.map(({ text }) => text)).join('\n')).catch((error) => {
