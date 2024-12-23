@@ -779,7 +779,6 @@ ${rawTranslationLines.map((element) => element.replace(/^\s/, '')).join('\n')}
       let polishResult = /^(?:open-)?[^-]+tral/.test(model) ? await generativeAi.runMistral(model, INSTRUCTIONS, query) : await maybeIsGemini();
       if (polishResult == null) return;
       if (isGemini) polishResult = polishResult.replace(/\n$/, '');
-      
       const originalLineSeperators = lines.filter((element) => element === '\n')
       const resultLines = polishResult.split(polishResult.split(/(\n{1,2})/).filter(element => element.includes('\n')).map((element, index) => element !== originalLineSeperators[index]).reduce((accumulator, currentValue) => accumulator + (currentValue ? 1 : -1), 0) > 0 ? '\n\n' : '\n')
       const resultMap = Object.fromEntries(query.map((element, index) => [element, resultLines[index]]))

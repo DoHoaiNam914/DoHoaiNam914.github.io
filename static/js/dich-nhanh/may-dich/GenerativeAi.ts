@@ -114,7 +114,7 @@ export default class GenerativeAi extends Translator {
         },
         signal: this.controller.signal
       }).then(({ data }) => data).catch((error: {}) => {
-        this.controller.signal.abort()
+        this.controller.abort()
         throw error
       })
       : model === 'gpt-4o-mini' && await this.duckchat.post('', JSON.stringify({
@@ -130,7 +130,7 @@ export default class GenerativeAi extends Translator {
           }
         ]
       })).then(({ data }) => ({ choices: [{ message: { content: data.split('\n').filter((element: string) => /data: {(?:"role":"assistant",)?"message"/.test(element)).map((element: string) => JSON.parse(element.replace(/^data: /, '')).message).join('') } }] })).catch((error: {}) => {
-        this.controller.signal.abort()
+        this.controller.abort()
         throw error
       })
     const result: { choices: Array<{ message: { content: string } }> } = window.localStorage.getItem('OPENAI_API_KEY') == null ? await maybeIsDebug() : await this.openai.chat.completions.create(requestBody)
@@ -152,7 +152,7 @@ export default class GenerativeAi extends Translator {
         }
       ]
     })).then(({ data }) => data.split('\n').filter((element: string) => /data: {(?:"role":"assistant",)?"message"/.test(element)).map((element: string) => JSON.parse(element.replace(/^data: /, '')).message).join('')).catch((error: {}) => {
-      this.controller.signal.abort()
+      this.controller.abort()
       throw error
     }) : await this.anthropic.messages.create({
       model,
