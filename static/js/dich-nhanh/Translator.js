@@ -4,7 +4,6 @@ export default class Translator {
   constructor () {
     this.controller = new AbortController()
     this.lastRequestData = null
-    this.result = ''
   }
 
   async translateText (text, targetLanguage, sourceLanguage = null) {
@@ -13,6 +12,6 @@ export default class Translator {
       targetLanguage,
       text
     }
-    return this.result
+    return null
   }
 }

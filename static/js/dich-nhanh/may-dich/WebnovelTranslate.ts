@@ -2004,24 +2004,24 @@ export default class WebnovelTranslate extends Translator {
 }
 `)
 
-  DefaultLanguage = {
+  public readonly DefaultLanguage: { SOURCE_LANGUAGE: string, TARGET_LANGUAGE: string } = {
     SOURCE_LANGUAGE: 'auto',
     TARGET_LANGUAGE: 'vi'
   }
 
-  maxContentLengthPerRequest = 900
-  clientName = 'gtx'
-  async translateText (text, targetLanguage, sourceLanguage = null) {
-    const isCj = ['ja', 'zh-CN', 'zh-TW'].some((element) => sourceLanguage === element)
-    const EOL = isCj ? '||||' : '\\n'
-    const lines = text.split(/(\n)/)
-    const cleanedLines = lines.filter((element) => element !== '\n' && element.replace(/^\s+/, '').length > 0)
-    const responses = []
-    let query = cleanedLines.map((element) => `${isCj ? '\u3000\u3000' : ''}${element}`).join(EOL)
-    let request = []
+  private readonly maxContentLengthPerRequest: number = 900
+  private readonly clientName: string = 'gtx'
+  public async translateText (text: string, targetLanguage: string, sourceLanguage: string | null = null): Promise<string> {
+    const isCj: boolean = ['ja', 'zh-CN', 'zh-TW'].some((element) => sourceLanguage === element)
+    const EOL: string = isCj ? '||||' : '\\n'
+    const lines: string[] = text.split(/(\n)/)
+    const cleanedLines: string[] = lines.filter((element) => element !== '\n' && element.replace(/^\s+/, '').length > 0)
+    const responses: Array<Promise<{ data: string[][][] }>> = []
+    let query: string | string[] = cleanedLines.map((element) => `${isCj ? '\u3000\u3000' : ''}${element}`).join(EOL)
+    let request: string[] = []
     query = (isCj ? query.replace(EOL, EOL.repeat(2)) : query).split(new RegExp(`(?<=\\.{3}|[${!isCj ? '!,.:;?' : ''}…${isCj ? '、。！，：；？' : ''}](?:[^${!isCj ? '!,.:;?' : ''}…${isCj ? '、。！，：；？' : ''}]*$${!isCj ? '|\\s+' : ''}|))`))
     while (query.length > 0) {
-      request.push((query).shift())
+      request.push((query).shift() as string)
       if (query.length === 0 || request.join('').concat(query[0].trimEnd()).length > this.maxContentLengthPerRequest) {
         responses.push(axios.get(`${Utils.CORS_HEADER_PROXY}http://translate.google.com/translate_a/single`, {
           params: new URLSearchParams(`client=${this.clientName}&ie=UTF-8&oe=UTF-8&dt=bd&dt=ex&dt=ld&dt=md&dt=rw&dt=rm&dt=ss&dt=t&dt=at&dt=gt&dt=qc&sl=${sourceLanguage ?? this.DefaultLanguage.SOURCE_LANGUAGE}&tl=${targetLanguage}&hl=${targetLanguage}&q=${encodeURIComponent(request.join('').trimEnd())}`),
@@ -2030,15 +2030,15 @@ export default class WebnovelTranslate extends Translator {
         request = []
       }
     }
-    const result = await Promise.all(responses).then(function (responses) {
-      const results = responses.map(({ data: [a] }) => a.filter(([, second]) => second != null).map(([b, second]) => [second, b.replaceAll(new RegExp(` ?${isCj ? '(?:\\|[ |]*|[ |]*\\|)' : Utils.getTrieRegexPatternFromWords([EOL].sort((a, b) => b.length - a.length)).source}\\s*`, 'g'), '\n')]).map(([b, second]) => {
-        const adjustedText = isCj ? b.replace(EOL.repeat(2), EOL) : b
-        const lineCountDifference = [...adjustedText.matchAll(new RegExp(Utils.escapeRegExp(EOL), 'g'))].length - [...second.matchAll(/\n/g)].length
+    const result: string = await Promise.all(responses).then(function (responses) {
+      const results: string[] = responses.map(({ data: [a] }) => a.filter(([, second]) => second != null).map(([b, second]) => [second, b.replaceAll(new RegExp(` ?${isCj ? '(?:\\|[ |]*|[ |]*\\|)' : Utils.getTrieRegexPatternFromWords([EOL].sort((a, b) => b.length - a.length)).source as string}\\s*`, 'g'), '\n')]).map(([b, second]) => {
+        const adjustedText: string = isCj ? b.replace(EOL.repeat(2), EOL) : b
+        const lineCountDifference: number = [...adjustedText.matchAll(new RegExp(Utils.escapeRegExp(EOL), 'g'))].length - [...second.matchAll(/\n/g)].length
         return (lineCountDifference < 0 ? second.replace(new RegExp(`\\n{${Math.abs(lineCountDifference)}}$`), '') : second).concat('\n'.repeat(lineCountDifference > 0 ? lineCountDifference : 0))
       })).flat().join('').split('\n')
-      const translationMap = Object.fromEntries(cleanedLines.map((element, index) => [element, results[index]]))
+      const translationMap: { [key: string]: string } = Object.fromEntries(cleanedLines.map((element, index) => [element, results[index]]))
       return lines.map(element => translationMap[element]).join('')
-    }).catch((error) => {
+    }).catch((error: {}) => {
       throw error
     })
     super.translateText(text, targetLanguage, sourceLanguage)

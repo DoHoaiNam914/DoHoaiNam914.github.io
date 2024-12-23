@@ -3,7 +3,7 @@
 import Translator from '/static/js/dich-nhanh/Translator.js'
 import * as Utils from '/static/js/Utils.js'
 export default class BaiduTranslate extends Translator {
-  SOURCE_LANGUAGE_LIST = {
+  public readonly SOURCE_LANGUAGE_LIST: { [key: string]: string } = {
     auto: 'Automatic detection',
     jp: 'Japanese',
     en: 'English',
@@ -12,7 +12,7 @@ export default class BaiduTranslate extends Translator {
     cht: 'Traditional Chinese'
   }
 
-  TARGET_LANGUAGE_LIST = {
+  public readonly TARGET_LANGUAGE_LIST: { [key: string]: string } = {
     jp: 'Japanese',
     en: 'English',
     vie: 'Vietnamese',
@@ -20,29 +20,27 @@ export default class BaiduTranslate extends Translator {
     cht: 'Traditional Chinese'
   }
 
-  DefaultLanguage = {
+  public readonly DefaultLanguage: { SOURCE_LANGUAGE: string, TARGET_LANGUAGE: string } = {
     SOURCE_LANGUAGE: 'auto',
     TARGET_LANGUAGE: 'vie'
   }
 
-  maxContentLengthPerRequest = 1000
-  instance = axios.create({
+  private readonly maxContentLengthPerRequest: number = 1000
+  private readonly instance = axios.create({
     baseURL: `${Utils.CORS_HEADER_PROXY}https://fanyi.baidu.com`,
     signal: this.controller.signal
   })
 
-  async translateText (text, targetLanguage, sourceLanguage = null) {
-    const lines = text.split('\n')
-    const lan = (sourceLanguage ?? this.DefaultLanguage.SOURCE_LANGUAGE) === 'auto'
-      ? await this.instance.post('/langdetect', `query=${encodeURIComponent(text)}`).then(({ data: { lan } }) => lan).catch((error) => {
+  public async translateText (text: string, targetLanguage: string, sourceLanguage: string | null = null): Promise<string> {
+    const lines: string[] = text.split('\n')
+    const lan: string = (sourceLanguage ?? this.DefaultLanguage.SOURCE_LANGUAGE) === 'auto' ? await this.instance.post('/langdetect', `query=${encodeURIComponent(text)}`).then(({ data: { lan } }) => lan).catch((error: {}) => {
         this.controller.abort()
         throw error
-      })
-      : sourceLanguage
-    const responses = []
-    let requestLines = []
+    }) : sourceLanguage
+    const responses: Array<Promise<{ data: string }>> = []
+    let requestLines: string[] = []
     while (lines.length > 0) {
-      requestLines.push(lines.shift())
+      requestLines.push(lines.shift() as string)
       if (lines.length === 0 || [...requestLines, lines[0]].join('\n').length > this.maxContentLengthPerRequest) {
         responses.push(this.instance.post('/ait/text/translate', JSON.stringify({
           query: requestLines.join('\n'),
@@ -61,7 +59,7 @@ export default class BaiduTranslate extends Translator {
         requestLines = []
       }
     }
-    const result = await Promise.all(responses).then(responses => responses.map(({ data }) => JSON.parse(data.split('\n').filter(element => element.includes('"event":"Translating"'))[0].replace(/^data: /, '')).data.list.map(({ dst }) => dst).join('\n')).join('\n')).catch((error) => {
+    const result: string = await Promise.all(responses).then(responses => responses.map(({ data }) => JSON.parse(data.split('\n').filter(element => element.includes('"event":"Translating"'))[0].replace(/^data: /, '')).data.list.map(({ dst }) => dst).join('\n')).join('\n')).catch((error: {}) => {
       throw error
     })
     super.translateText(text, targetLanguage, sourceLanguage)

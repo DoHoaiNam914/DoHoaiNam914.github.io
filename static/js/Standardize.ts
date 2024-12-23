@@ -32,7 +32,7 @@ const VOS: { [key: string]: string | string[] } = {
   Tr: ['oà', 'oả', 'oã', 'oá', 'oạ', 'oè', 'oẻ', 'oẽ', 'oé', 'oẹ', 'uỳ', 'uỷ', 'uỹ', 'uý', 'uỵ', 'OÀ', 'OẢ', 'OÃ', 'OÁ', 'OẠ', 'OÈ', 'OẺ', 'OẼ', 'OÉ', 'OẸ', 'UỲ', 'UỶ', 'UỸ', 'UÝ', 'UỴ', 'Oà', 'Oả', 'Oã', 'Oá', 'Oạ', 'Oè', 'Oẻ', 'Oẽ', 'Oé', 'Oẹ', 'Uỳ', 'Uỷ', 'Uỹ', 'Uý', 'Uỵ']
 }
 function vosYToI (text: string): string {
-  const Cc: string = String(VOS.Cf)
+  const Cc: string = VOS.Cf as string
   const Y: string = [...VOS.Y].join('')
   const I: string = [...VOS.I].join('')
   const Ux: string = [...VOS.Ux].join('')
@@ -49,7 +49,7 @@ function vosYToI (text: string): string {
   return result
 }
 function vosIToY (text: string): string {
-  const Cc: string = String(VOS.Cf)
+  const Cc: string = VOS.Cf as string
   const I: string = [...VOS.I].join('')
   const Y: string = [...VOS.Y].join('')
   let result: string = text
@@ -60,7 +60,7 @@ function vosIToY (text: string): string {
   return result
 }
 function vosOaoeuy (text: string): string {
-  const Cf: string = String(VOS.Cf)
+  const Cf: string = VOS.Cf as string
   // OA, OE, UY: incorrect tone marks position
   const wrong: string[] = [...VOS.Tw]
   // OA, OE, UY: corrected tone marks position
@@ -73,7 +73,7 @@ function vosOaoeuy (text: string): string {
   return result
 }
 function reversedVosOaoeuy (text: string): string {
-  const Cf: string = String(VOS.Cf)
+  const Cf: string = VOS.Cf as string
   // OA, OE, UY: corrected tone marks position
   const right: string[] = [...VOS.Tr]
   // OA, OE, UY: incorrect tone marks position

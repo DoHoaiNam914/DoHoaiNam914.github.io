@@ -468,7 +468,7 @@ const getSourceLangOptionList = function getSourceLanguageOptionListHtmlFromTran
 
   switch (translator) {
     case Translators.BAIDU_TRANSLATE: {
-      Object.entries(BaiduTranslate.SOURCE_LANGUAGE_LIST).forEach(([languageCode, name]) => {
+      Object.entries(currentTranslator.SOURCE_LANGUAGE_LIST).forEach(([languageCode, name]) => {
         const option = document.createElement('option');
         option.innerText = name;
         option.value = languageCode;
@@ -477,7 +477,7 @@ const getSourceLangOptionList = function getSourceLanguageOptionListHtmlFromTran
       break;
     }
     case Translators.COCCOC_EDU_TRANSLATE: {
-      CoccocEduTranslate.LANGUAGE_LIST.forEach(({ label, value }) => {
+      currentTranslator.LANGUAGE_LIST.forEach(({ label, value }) => {
         if (!['auto', 'en', 'vi', 'ja', 'zh-Hans', 'zh-Hant'].includes(value)) return;
         const option = document.createElement('option');
         option.innerText = label;
@@ -487,7 +487,7 @@ const getSourceLangOptionList = function getSourceLanguageOptionListHtmlFromTran
       break;
     }
     case Translators.DEEPL_TRANSLATE: {
-      [{ language: '', name: 'Detect language' }, ...DeeplTranslate.SOURCE_LANGUAGE_LIST].forEach(({ language, name }) => {
+      [{ language: '', name: 'Detect language' }, ...currentTranslator.SOURCE_LANGUAGE_LIST].forEach(({ language, name }) => {
         if (!['', 'EN', 'JA', 'ZH'].includes(language)) return;
         const option = document.createElement('option');
         option.innerText = name;
@@ -497,7 +497,7 @@ const getSourceLangOptionList = function getSourceLanguageOptionListHtmlFromTran
       break;
     }
     case Translators.GENERATIVE_AI: {
-      [{ label: 'Tự động nhận diện', value: 'Auto-detect' }, ...GenerativeAi.LANGUAGE_LIST].forEach(({ label, value }) => {
+      [{ label: 'Tự động nhận diện', value: 'Auto' }, ...currentTranslator.LANGUAGE_LIST].forEach(({ label, value }) => {
         const option = document.createElement('option');
         option.innerText = label;
         option.value = value;
@@ -506,7 +506,7 @@ const getSourceLangOptionList = function getSourceLanguageOptionListHtmlFromTran
       break;
     }
     case Translators.LINGVANEX: {
-      [{ full_code: '', englishName: 'Auto-detect language', codeName: 'Ngôn ngữ tự động phát hiện' }, ...Lingvanex.LANGUAGE_LIST].forEach(({ full_code, englishName }) => {
+      [{ full_code: '', englishName: 'Auto-detect language', codeName: 'Ngôn ngữ tự động phát hiện' }, ...currentTranslator.LANGUAGE_LIST].forEach(({ full_code, englishName }) => {
         if (!['', 'zh-Hans_CN', 'zh-Hant_TW', 'en_US', 'ja_JP', 'vi_VN'].includes(full_code)) return;
         const option = document.createElement('option');
         option.innerText = englishName;
@@ -516,7 +516,7 @@ const getSourceLangOptionList = function getSourceLanguageOptionListHtmlFromTran
       break;
     }
     case Translators.MICROSOFT_TRANSLATOR: {
-      Object.entries({ 'auto-detect': { nativeName: 'Auto-detect', name: 'Tự phát hiện' }, ...MicrosoftTranslator.LANGUAGE_LIST }).forEach(([languageCode, { name }]) => {
+      Object.entries({ 'auto-detect': { nativeName: 'Auto-detect', name: 'Tự phát hiện' }, ...currentTranslator.LANGUAGE_LIST }).forEach(([languageCode, { name }]) => {
         if (!['auto-detect', 'en', 'ja', 'zh-Hans', 'zh-Hant', 'vi'].includes(languageCode)) return;
         const option = document.createElement('option');
         option.innerText = name;
@@ -526,7 +526,7 @@ const getSourceLangOptionList = function getSourceLanguageOptionListHtmlFromTran
       break;
     }
     case Translators.PAPAGO: {
-      Object.entries(Papago.SOURCE_LANGUAGE_LIST).forEach(([languageCode, name]) => {
+      Object.entries(currentTranslator.SOURCE_LANGUAGE_LIST).forEach(([languageCode, name]) => {
         if (!['auto', 'en', 'ja', 'zh-CN', 'zh-TW', 'vi'].includes(languageCode)) return;
         const option = document.createElement('option');
         option.innerText = name;
@@ -536,7 +536,7 @@ const getSourceLangOptionList = function getSourceLanguageOptionListHtmlFromTran
       break;
     }
     case Translators.WEBNOVEL_TRANSLATE: {
-      WebnovelTranslate.LANGUAGE_LIST.sourceLanguages.forEach(({ language, name }) => {
+      currentTranslator.LANGUAGE_LIST.sourceLanguages.forEach(({ language, name }) => {
         if (!['auto', 'en', 'ja', 'zh-CN', 'vi'].includes(language)) return;
         const option = document.createElement('option');
         option.innerText = name;
@@ -546,7 +546,7 @@ const getSourceLangOptionList = function getSourceLanguageOptionListHtmlFromTran
       break;
     }
     default: {
-      [{ language: 'auto', name: 'Phát hiện ngôn ngữ' }, ...GoogleTranslate.LANGUAGE_LIST].forEach(({ language, name }) => {
+      [{ language: 'auto', name: 'Phát hiện ngôn ngữ' }, ...currentTranslator.LANGUAGE_LIST].forEach(({ language, name }) => {
         if (!['auto', 'en', 'ja', 'zh', 'zh-TW', 'vi'].includes(language)) return;
         const option = document.createElement('option');
         option.innerText = name;
@@ -565,7 +565,7 @@ const getTargetLangOptionList = function getTargetLanguageOptionListHtmlFromTran
 
   switch (translator) {
     case Translators.BAIDU_TRANSLATE: {
-      Object.entries(BaiduTranslate.TARGET_LANGUAGE_LIST).forEach(([languageCode, name]) => {
+      Object.entries(currentTranslator.TARGET_LANGUAGE_LIST).forEach(([languageCode, name]) => {
         const option = document.createElement('option');
         option.innerText = name;
         option.value = languageCode;
@@ -574,7 +574,7 @@ const getTargetLangOptionList = function getTargetLanguageOptionListHtmlFromTran
       break;
     }
     case Translators.COCCOC_EDU_TRANSLATE: {
-      CoccocEduTranslate.LANGUAGE_LIST.forEach(({ label, value }) => {
+      currentTranslator.LANGUAGE_LIST.forEach(({ label, value }) => {
         if (!['en', 'vi', 'ja', 'zh-Hans', 'zh-Hant'].includes(value)) return;
         const option = document.createElement('option');
         option.innerText = label;
@@ -584,7 +584,7 @@ const getTargetLangOptionList = function getTargetLanguageOptionListHtmlFromTran
       break;
     }
     case Translators.DEEPL_TRANSLATE: {
-      DeeplTranslate.TARGET_LANGUAGE_LIST.forEach(({ language, name }) => {
+      currentTranslator.TARGET_LANGUAGE_LIST.forEach(({ language, name }) => {
         if (!['EN-GB', 'EN-US', 'JA', 'ZH', 'ZH-HANS'].includes(language)) return;
         const option = document.createElement('option');
         option.innerText = name;
@@ -594,7 +594,7 @@ const getTargetLangOptionList = function getTargetLanguageOptionListHtmlFromTran
       break;
     }
     case Translators.GENERATIVE_AI: {
-      GenerativeAi.LANGUAGE_LIST.forEach(({ label, value }) => {
+      translators[translator].LANGUAGE_LIST.forEach(({ label, value }) => {
         const option = document.createElement('option');
         option.innerText = label;
         option.value = value;
@@ -603,7 +603,7 @@ const getTargetLangOptionList = function getTargetLanguageOptionListHtmlFromTran
       break;
     }
     case Translators.LINGVANEX: {
-      Lingvanex.LANGUAGE_LIST.forEach(({ full_code, englishName }) => {
+      currentTranslator.LANGUAGE_LIST.forEach(({ full_code, englishName }) => {
         if (!['zh-Hans_CN', 'zh-Hant_TW', 'en_US', 'ja_JP', 'vi_VN'].includes(full_code)) return;
         const option = document.createElement('option');
         option.innerText = englishName;
@@ -613,7 +613,7 @@ const getTargetLangOptionList = function getTargetLanguageOptionListHtmlFromTran
       break;
     }
     case Translators.MICROSOFT_TRANSLATOR: {
-      Object.entries(MicrosoftTranslator.LANGUAGE_LIST).forEach(([languageCode, { name }]) => {
+      Object.entries(currentTranslator.LANGUAGE_LIST).forEach(([languageCode, { name }]) => {
         if (!['en', 'ja', 'zh-Hans', 'zh-Hant', 'vi'].includes(languageCode)) return;
         const option = document.createElement('option');
         option.innerText = name;
@@ -623,7 +623,7 @@ const getTargetLangOptionList = function getTargetLanguageOptionListHtmlFromTran
       break;
     }
     case Translators.PAPAGO: {
-      Object.entries(Papago.TARGET_LANGUAGE_LIST).forEach(([languageCode, name]) => {
+      Object.entries(currentTranslator.TARGET_LANGUAGE_LIST).forEach(([languageCode, name]) => {
         if (!['auto', 'en', 'ja', 'zh-CN', 'zh-TW', 'vi'].includes(languageCode)) return;
         const option = document.createElement('option');
         option.innerText = name;
@@ -633,7 +633,7 @@ const getTargetLangOptionList = function getTargetLanguageOptionListHtmlFromTran
       break;
     }
     case Translators.WEBNOVEL_TRANSLATE: {
-      WebnovelTranslate.LANGUAGE_LIST.targetLanguages.forEach(({ language, name }) => {
+      currentTranslator.LANGUAGE_LIST.targetLanguages.forEach(({ language, name }) => {
         if (!['en', 'ja', 'zh-CN', 'zh-TW', 'vi'].includes(language)) return;
         const option = document.createElement('option');
         option.innerText = name;
@@ -643,7 +643,7 @@ const getTargetLangOptionList = function getTargetLanguageOptionListHtmlFromTran
       break;
     }
     default: {
-      GoogleTranslate.LANGUAGE_LIST.forEach(({ language, name }) => {
+      currentTranslator.LANGUAGE_LIST.forEach(({ language, name }) => {
         if (!['en', 'ja', 'zh', 'zh-TW', 'vi'].includes(language)) return;
         const option = document.createElement('option');
         option.innerText = name;
@@ -723,27 +723,31 @@ const translate = async function translateContentInTextarea(controller = new Abo
     const model = $('#model-select').val();
     const text = $inputTextarea.val();
     const targetLanguage = $targetLanguageSelect.val();
+    let result = ''
 
     switch ($activeTranslator.val()) {
       case Translators.GENERATIVE_AI: {
         currentTranslator.controller = controller;
-        await currentTranslator.translateText(text, targetLanguage, model, Object.entries(glossary.nomenclature));
+        result = await currentTranslator.translateText(text, targetLanguage, model, Object.entries(glossary.nomenclature));
         break;
       }
       default: {
         currentTranslator.controller = controller;
-        await currentTranslator.translateText(text, targetLanguage, $sourceLanguageSelect.val());
+        result = await currentTranslator.translateText(text, targetLanguage, $sourceLanguageSelect.val());
       }
     }
 
     if (controller.signal.aborted) return;
-
     if ($activeTranslator.val() !== Translators.GENERATIVE_AI || $('#polish-switch').prop('checked')) {
-      if (!isRetranslate) $resultTextarea.html(buildResult(text, currentTranslator.result, $activeTranslator.val()));
+      if (!isRetranslate) {
+        $resultTextarea.html(buildResult(text, result, $activeTranslator.val()));
+        window.sessionStorage.setItem('translation', result);
+      }
+
       const nomenclature = Object.entries(glossary.nomenclature).filter(([first]) => text.includes(first));
-      const lines = text.split('\n');
-      const query = lines.map((element) => element.replace(/^\s/, '')).join('\n');
-      const rawTranslationLines = currentTranslator.result.split('\n');
+      const lines = text.split(/(\n)/);
+      const query = lines.map((element) => element !== '\n' && element.replace(/^\s/, ''));
+      const rawTranslationLines = result.split('\n');
 
       const INSTRUCTIONS = `Rewrite the rough translation provided, correcting any errors, omissions, or merged lines in the translation by referencing the original text. ${nomenclature.length > 0 ? `Accurately map proper names of people, ethnic groups, species, or place-names, and other concepts listed in the Nomenclature Lookup Table. ` : ''}If a line is missing, has incorrect content, or includes content from another line due to merging errors, split and translate it correctly from the original text. Your output must only contain the entire corrected translated text without codeblock and cannot include explanations or other information.${nomenclature.length > 0 ? `
 
@@ -754,7 +758,7 @@ ${nomenclature.map((element) => element.join('\t')).join('\n')}
 \`\`\`` : ''}`;
       const MESSAGE = `Original text:
 \`\`\`txt
-${query}
+${query.join('\n')}
 \`\`\`
 
 Rough translation:
@@ -773,18 +777,18 @@ ${rawTranslationLines.map((element) => element.replace(/^\s/, '')).join('\n')}
       const maybeIsClaude = async () => model.startsWith('claude') ? await generativeAi.runClaude(model, INSTRUCTIONS, MESSAGE) : await generativeAi.runOpenai(model, INSTRUCTIONS, MESSAGE);
       const maybeIsGemini = async () => isGemini ? await generativeAi.runGemini(model, INSTRUCTIONS, MESSAGE) : await maybeIsClaude();
       let polishResult = /^(?:open-)?[^-]+tral/.test(model) ? await generativeAi.runMistral(model, INSTRUCTIONS, query) : await maybeIsGemini();
-
-      if (controller.signal.aborted || polishResult == null) return;
+      if (polishResult == null) return;
       if (isGemini) polishResult = polishResult.replace(/\n$/, '');
-      const lineSeperators = text.split(/(\n)/).filter((element) => element.includes('\n'));
-      const lineSeparatorBooleans = polishResult.split(/(\n{1,2})/).filter((element) => element.includes('\n')).map((element, index) => element !== lineSeperators[index]);
-      polishResult = polishResult.split(lineSeparatorBooleans.reduce((accumulator, currentValue) => accumulator + (currentValue ? 1 : -1), 0) > 0 ? '\n\n' : '\n');
-      const maybeTextLengthBiggerThanZero = (text) => text.replace(/^\s+/, '').length > 0 ? text.match(/^\s*/)[0] : text;
-      currentTranslator.result = lines.map((element, index) => (polishResult[index] != null ? (rawTranslationLines[index] ?? maybeTextLengthBiggerThanZero(element)).match(/^\s*/)[0].concat(polishResult[index].replace(/^\s+/, '')) : (rawTranslationLines[index] ?? element))).join('\n');
+      
+      const originalLineSeperators = lines.filter((element) => element === '\n')
+      const resultLines = polishResult.split(polishResult.split(/(\n{1,2})/).filter(element => element.includes('\n')).map((element, index) => element !== originalLineSeperators[index]).reduce((accumulator, currentValue) => accumulator + (currentValue ? 1 : -1), 0) > 0 ? '\n\n' : '\n')
+      const resultMap = Object.fromEntries(query.map((element, index) => [element, resultLines[index]]))
+      result = lines.map((element, index) => (element !== '\n' ? `${rawTranslationLines[index].match(/^\s*/)[0]}${resultMap[element] ?? rawTranslationLines[index] ?? element}` : element)).join('')
     }
 
-    $resultTextarea.html(buildResult(text, currentTranslator.result, $activeTranslator.val()));
     if (controller.signal.aborted) return;
+    $resultTextarea.html(buildResult(text, result, $activeTranslator.val()));
+    window.sessionStorage.setItem('translation', result);
     $resultTextarea.find('p > i').on('dblclick', function onDblclick() {
       const range = document.createRange();
       const selection = getSelection();
@@ -797,6 +801,7 @@ ${rawTranslationLines.map((element) => element.replace(/^\s/, '')).join('\n')}
     $translateTimer.text(Date.now() - startTime);
   } catch (error) {
     console.error(error);
+    window.sessionStorage.removeItem('translation');
     if (controller.signal.aborted) return;
     const paragraph = document.createElement('p');
     paragraph.innerText = `Bản dịch thất bại: ${error}`;
@@ -1010,7 +1015,10 @@ $(window).on('keydown', (event) => {
 });
 
 $(window).on('unload', () => {
-  sessionStorage.removeItem('glossary');
+  Object.keys(window.sessionStorage).forEach(element => {
+    window.sessionStorage.removeItem(element)
+  })
+  
   Object.keys(localStorage).filter((element) => element.includes('eruda') || element.startsWith('vConsole')).forEach((element) => {
     localStorage.removeItem(element);
   });
@@ -1081,12 +1089,12 @@ $copyButtons.on('click', async function onClick() {
     const $target = $(target);
 
     if ($target.length > 0) {
-      if ($target.attr('id') === $resultTextarea.attr('id') && currentTranslator.result.length > 0) await navigator.clipboard.writeText(currentTranslator.result);
+      if ($target.attr('id') === $resultTextarea.attr('id') && window.sessionStorage.getItem('translation') != null) await navigator.clipboard.writeText(window.sessionStorage.getItem('translation'));
       else if ($target.val().length > 0) await navigator.clipboard.writeText($target.val());
       return;
     }
 
-    if (sessionStorage.getItem(target) != null && sessionStorage.getItem(target).length > 0) await navigator.clipboard.writeText(sessionStorage.getItem(target));
+    if (window.sessionStorage.getItem(target) != null && window.sessionStorage.getItem(target).length > 0) await navigator.clipboard.writeText(window.sessionStorage.getItem(target));
   } catch (__) {}
 });
 
@@ -1685,17 +1693,19 @@ $translateEntryButtons.click(async function onClick() {
           break;
         }
       }
+      
+      let result = ''
 
       if (translator != null) {
         switch (activeTranslator) {
           case Translators.GENERATIVE_AI: {
             translator.controller = entryTranslationController;
-            await translator.translateText(text, targetLanguage, $('#translate-entry-model-select').val(), $('#apply-nomenclature-switch').prop('checked') ? Object.entries(glossary.nomenclature) : []);
+            result = await translator.translateText(text, targetLanguage, $('#translate-entry-model-select').val(), $('#apply-nomenclature-switch').prop('checked') ? Object.entries(glossary.nomenclature) : []);
             break;
           }
           default: {
             translator.controller = entryTranslationController;
-            await translator.translateText(text, targetLanguage);
+            result = await translator.translateText(text, targetLanguage);
             break;
           }
         }
@@ -1718,7 +1728,7 @@ $translateEntryButtons.click(async function onClick() {
             return !this[first] && (this[first] = 1);
           }, {})));
         } else {
-          $targetEntryTextarea.val(translator.result).trigger('input');
+          $targetEntryTextarea.val(result).trigger('input');
         }
       }
     } catch (error) {

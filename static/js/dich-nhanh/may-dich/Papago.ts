@@ -4,7 +4,7 @@ import Translator from '/static/js/dich-nhanh/Translator.js'
 import * as Utils from '/static/js/Utils.js'
 import CryptoJS from 'https://esm.run/crypto-js'
 export default class Papago extends Translator {
-  SOURCE_LANGUAGE_LIST = {
+  public readonly SOURCE_LANGUAGE_LIST: { [key: string]: string } = {
     auto: 'Phát hiện ngôn ngữ',
     ko: 'Hàn',
     en: 'Anh',
@@ -23,7 +23,7 @@ export default class Papago extends Translator {
     hi: 'Hindi'
   }
 
-  TARGET_LANGUAGE_LIST = {
+  public readonly TARGET_LANGUAGE_LIST: { [key: string]: string } = {
     ko: 'Hàn',
     en: 'Anh',
     ja: 'Nhật',
@@ -41,48 +41,48 @@ export default class Papago extends Translator {
     hi: 'Hindi'
   }
 
-  DefaultLanguage = {
+  public readonly DefaultLanguage: { SOURCE_LANGUAGE: string, TARGET_LANGUAGE: string } = {
     SOURCE_LANGUAGE: 'auto',
     TARGET_LANGUAGE: 'vi'
   }
 
-  maxContentLengthPerRequest = 3000
-  instance = axios.create({
+  private readonly maxContentLengthPerRequest: number = 3000
+  private readonly instance: axios = axios.create({
     baseURL: `${Utils.CORS_HEADER_PROXY}https://papago.naver.com`,
     signal: this.controller.signal
   })
 
-  uuid
-  version
-  constructor (uuid) {
+  private readonly uuid: string
+  private version: string
+  constructor (uuid: string) {
     super()
     this.uuid = uuid
   }
 
-  async fetchVersion () {
-    await this.instance.get().then(async (a) => {
-      await this.instance.get(`/${a.data.match(/\/(main.*\.js)/)[1]}`).then((b) => {
-        this.version = b.data.match(/"PPG .*,"(v[^"]*)/)[1]
-      }).catch((error) => {
+  private async fetchVersion (): Promise<void> {
+    await this.instance.get().then(async (a: { data: string }) => {
+      await this.instance.get(`/${(a.data.match(/\/(main.*\.js)/) as string[])[1]}`).then((b: { data: string }) => {
+        this.version = (b.data.match(/"PPG .*,"(v[^"]*)/) as string[])[1]
+      }).catch((error: {}) => {
         this.controller.abort()
         throw error
       })
-    }).catch((error) => {
+    }).catch((error: {}) => {
       this.controller.abort()
       throw error
     })
   }
 
-  async translateText (text, targetLanguage, sourceLanguage = null) {
-    if (this.version == null) { await this.fetchVersion() }
-    const lines = text.split('\n')
-    const responses = []
-    const date = new Date()
-    let requestLines = []
+  public async translateText (text: string, targetLanguage: string, sourceLanguage: string | null = null): Promise<string> {
+    if (this.version == null) await this.fetchVersion()
+    const lines: string[] = text.split('\n')
+    const responses: Array<Promise<{ data: { translatedText: string } }>> = []
+    const date: Date = new Date()
+    let requestLines: string[] = []
     while (lines.length > 0) {
-      requestLines.push(lines.shift())
+      requestLines.push(lines.shift() as string)
       if (lines.length === 0 || [...requestLines, lines[0]].join('\n').length > this.maxContentLengthPerRequest) {
-        const timeStamp = date.getTime()
+        const timeStamp: number = date.getTime()
         responses.push(this.instance.post('/apis/n2mt/translate', `deviceId=${this.uuid}&locale=vi&dict=true&dictDisplay=30&honorific=true&instant=false&paging=false&source=${sourceLanguage}&target=${targetLanguage}&text=${encodeURIComponent(requestLines.join('\n'))}`, {
           headers: {
             Accept: 'application/json',
@@ -96,7 +96,7 @@ export default class Papago extends Translator {
         requestLines = []
       }
     }
-    const result = await Promise.all(responses).then(responses => responses.map(({ data: { translatedText } }) => translatedText).join('\n')).catch((error) => {
+    const result: string = await Promise.all(responses).then(responses => responses.map(({ data: { translatedText } }) => translatedText).join('\n')).catch((error: {}) => {
       throw error
     })
     super.translateText(text, targetLanguage, sourceLanguage)

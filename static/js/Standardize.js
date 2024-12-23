@@ -1,6 +1,5 @@
 // sourceURL=https://s.ngonngu.net/static/common.js?20240113
 'use strict'
-
 const VOS = {
   // Initial characters
   C: '[bdđhklmnrstvxBDĐHKLMNRSTVX]',
@@ -33,7 +32,7 @@ const VOS = {
   Tr: ['oà', 'oả', 'oã', 'oá', 'oạ', 'oè', 'oẻ', 'oẽ', 'oé', 'oẹ', 'uỳ', 'uỷ', 'uỹ', 'uý', 'uỵ', 'OÀ', 'OẢ', 'OÃ', 'OÁ', 'OẠ', 'OÈ', 'OẺ', 'OẼ', 'OÉ', 'OẸ', 'UỲ', 'UỶ', 'UỸ', 'UÝ', 'UỴ', 'Oà', 'Oả', 'Oã', 'Oá', 'Oạ', 'Oè', 'Oẻ', 'Oẽ', 'Oé', 'Oẹ', 'Uỳ', 'Uỷ', 'Uỹ', 'Uý', 'Uỵ']
 }
 function vosYToI (text) {
-  const Cc = String(VOS.Cf)
+  const Cc = VOS.Cf
   const Y = [...VOS.Y].join('')
   const I = [...VOS.I].join('')
   const Ux = [...VOS.Ux].join('')
@@ -41,27 +40,27 @@ function vosYToI (text) {
   let result = text
   for (let i = 0; i < Y.length; i++) {
     // quí- > quý-
-    result = result.replaceAll(new RegExp(`((?:\\P{L}|^)[Qq][Uu])${I[i]}([ptuPTU]|nh|NH|ch|CH)?(?=^|$|\\P{L})`, 'gui'), `$1${Y[i]}$2`)
+    result = result.replaceAll(new RegExp(`(?<=(?:\\P{L}|^)[Qq][Uu])${I[i]}([ptuPTU]|nh|NH|ch|CH)?(?=^|$|\\P{L})`, 'gui'), `${Y[i]}$1`)
     // qụi- > quỵ-
-    result = result.replaceAll(new RegExp(`((?:\\P{L}|^)[Qq])${Ux[i]}i([ptuPTU]|nh|NH|ch|CH)?(?=^|$|\\P{L})`, 'gui'), `$1${U1[i]}${Y[i]}$2`)
+    result = result.replaceAll(new RegExp(`(?<=(?:\\P{L}|^)[Qq])${Ux[i]}i([ptuPTU]|nh|NH|ch|CH)?(?=^|$|\\P{L})`, 'gui'), `${U1[i]}${Y[i]}$1`)
     // hy, kỳ, lý > hi, kì, lí
-    result = result.replaceAll(new RegExp(`((?:\\P{L}|^)${Cc})${Y[i]}(?=^|$|\\P{L})`, 'gui'), `$1${I[i]}`)
+    result = result.replaceAll(new RegExp(`(?<=(?:\\P{L}|^)${Cc})${Y[i]}(?=^|$|\\P{L})`, 'gui'), I[i])
   }
   return result
 }
 function vosIToY (text) {
-  const Cc = String(VOS.Cf)
+  const Cc = VOS.Cf
   const I = [...VOS.I].join('')
   const Y = [...VOS.Y].join('')
   let result = text
   for (let i = 0; i < I.length; i++) {
     // hi, kì, lí > hy, kỳ, lý
-    result = result.replaceAll(new RegExp(`((?:\\P{L}|^)${Cc})${I[i]}(?=^|$|\\P{L})`, 'gui'), `$1${Y[i]}`)
+    result = result.replaceAll(new RegExp(`(?<=(?:\\P{L}|^)${Cc})${I[i]}(?=^|$|\\P{L})`, 'gui'), Y[i])
   }
   return result
 }
 function vosOaoeuy (text) {
-  const Cf = String(VOS.Cf)
+  const Cf = VOS.Cf
   // OA, OE, UY: incorrect tone marks position
   const wrong = [...VOS.Tw]
   // OA, OE, UY: corrected tone marks position
@@ -69,12 +68,12 @@ function vosOaoeuy (text) {
   let result = text
   for (let i = 0; i < wrong.length; i++) {
     // Replace wrong
-    result = result.replaceAll(new RegExp(`((?:\\P{L}|^)${Cf}?)${wrong[i]}`, 'gu'), `$1${right[i]}`)
+    result = result.replaceAll(new RegExp(`(?<=(?:\\P{L}|^)${Cf}?)${wrong[i]}`, 'gu'), right[i])
   }
   return result
 }
 function reversedVosOaoeuy (text) {
-  const Cf = String(VOS.Cf)
+  const Cf = VOS.Cf
   // OA, OE, UY: corrected tone marks position
   const right = [...VOS.Tr]
   // OA, OE, UY: incorrect tone marks position
@@ -82,7 +81,7 @@ function reversedVosOaoeuy (text) {
   let result = text
   for (let i = 0; i < right.length; i++) {
     // Replace right
-    result = result.replaceAll(new RegExp(`((?:\\P{L}|^)${Cf}?)${right[i]}`, 'gu'), `$1${wrong[i]}`)
+    result = result.replaceAll(new RegExp(`(?<=(?:\\P{L}|^)${Cf}?)${right[i]}`, 'gu'), wrong[i])
   }
   return result
 }
