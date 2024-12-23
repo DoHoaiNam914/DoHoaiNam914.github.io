@@ -782,7 +782,7 @@ ${rawTranslationLines.map((element) => element.replace(/^\s/, '')).join('\n')}
       const originalLineSeperators = lines.filter((element) => element === '\n')
       const resultLines = polishResult.split(polishResult.split(/(\n{1,2})/).filter(element => element.includes('\n')).map((element, index) => element !== originalLineSeperators[index]).reduce((accumulator, currentValue) => accumulator + (currentValue ? 1 : -1), 0) > 0 ? '\n\n' : '\n')
       const resultMap = Object.fromEntries(query.map((element, index) => [element, resultLines[index]]))
-      result = lines.map((element, index) => (element !== '\n' ? `${rawTranslationLines[index].match(/^\s*/)[0]}${resultMap[element] ?? rawTranslationLines[index] ?? element}` : element)).join('')
+      result = lines.map((element, index) => (element !== '\n' ? `${(rawTranslationLines[index] ?? element).match(/^\s*/)[0]}${resultMap[element] ?? rawTranslationLines[index] ?? element}` : element)).join('')
     }
 
     if (controller.signal.aborted) return;
