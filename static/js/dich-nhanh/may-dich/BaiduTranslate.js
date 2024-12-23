@@ -55,7 +55,6 @@ export default class BaiduTranslate extends Translator {
         }), {
           headers: {
             'Content-Type': 'application/json',
-            'x-cors-headers': { Origin: null }
           }
         }))
         requestLines = []
