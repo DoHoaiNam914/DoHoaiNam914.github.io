@@ -16,8 +16,8 @@ export default class GoogleTranslate extends Translator {
   async fetchApiKey () {
     await this.instance.get(`${Utils.CORS_HEADER_PROXY}https://lingvanex.com/lingvanex_demo_page/js/api-base.js`).then(({ data }) => {
       this.authToken = data.match(/B2B_AUTH_TOKEN="([^"]+)"/)[1]
-    }).catch((error) => {
-      throw error
+    }).catch(({ data }) => {
+      throw new Error(data)
     })
   }
 
@@ -43,8 +43,8 @@ export default class GoogleTranslate extends Translator {
         queries = []
       }
     }
-    const result = await Promise.all(responses).then(responses => responses.map(({ data: { result } }) => result).flat().join('\n')).catch((error) => {
-      throw error
+    const result = await Promise.all(responses).then(responses => responses.map(({ data: { result } }) => result).flat().join('\n')).catch(({ data }) => {
+      throw new Error(data)
     })
     super.translateText(text, targetLanguage, sourceLanguage)
     return result

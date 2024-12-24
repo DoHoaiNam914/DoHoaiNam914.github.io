@@ -63,11 +63,11 @@ export default class Papago extends Translator {
     await this.instance.get().then(async (a) => {
       await this.instance.get(`/${a.data.match(/\/(main.*\.js)/)[1]}`).then((b) => {
         this.version = b.data.match(/"PPG .*,"(v[^"]*)/)[1]
-      }).catch((error) => {
-        throw error
+      }).catch(({ data }) => {
+        throw new Error(data)
       })
-    }).catch((error) => {
-      throw error
+    }).catch(({ data }) => {
+      throw new Error(data)
     })
   }
 
@@ -94,8 +94,8 @@ export default class Papago extends Translator {
         queries = []
       }
     }
-    const result = await Promise.all(responses).then(responses => responses.map(({ data: { translatedText } }) => translatedText).join('\n')).catch((error) => {
-      throw error
+    const result = await Promise.all(responses).then(responses => responses.map(({ data: { translatedText } }) => translatedText).join('\n')).catch(({ data }) => {
+      throw new Error(data)
     })
     super.translateText(text, targetLanguage, sourceLanguage)
     return result

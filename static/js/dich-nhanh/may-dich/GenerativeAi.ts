@@ -42,7 +42,7 @@ export default class GenerativeAi extends Translator {
   private readonly genAI: GoogleGenerativeAI
   private readonly client: Mistral
   private duckchat: axios
-  constructor (uuid: string, openaiApiKey: string, geminiApiKey: string, anthropicApiKey: string, mistralApiKey: string) {
+  public constructor (uuid: string, openaiApiKey: string, geminiApiKey: string, anthropicApiKey: string, mistralApiKey: string) {
     super()
     this.uuid = uuid
     this.openai = new OpenAI({
@@ -71,8 +71,8 @@ export default class GenerativeAi extends Translator {
         },
         signal: this.controller.signal
       })
-    }).catch((error: {}) => {
-      throw error
+    }).catch(({ data }) => {
+      throw new Error(data)
     })
   }
 
@@ -80,10 +80,6 @@ export default class GenerativeAi extends Translator {
     const searchParams: URLSearchParams = new URLSearchParams(window.location.search)
     const isDebug: boolean = searchParams.has('debug')
     if (!isDebug && window.localStorage.getItem('OPENAI_API_KEY') == null && this.duckchat == null) await this.getDuckchatStatus()
-    const maybeGpt4: number | undefined = model === 'gpt-4' || model.startsWith('gpt-4-') ? undefined /* 8192 */ : 16384
-    const maybeO1: number | undefined = model.startsWith('o1') ? 100000 : maybeGpt4
-    const maybeO1Preview: number | undefined = model.startsWith('o1-preview') ? 32768 : maybeO1
-    const maybeO1Mini: number | undefined = model.startsWith('o1-mini') ? 65536 : maybeO1Preview
     const requestBody: string | {} | number = {
       model,
       messages: [
@@ -104,7 +100,7 @@ export default class GenerativeAi extends Translator {
       ],
       response_format: model.startsWith('o1') ? undefined : { type: 'text' },
       temperature: model.startsWith('o1') ? undefined : 0.3, // Mặc định: 1
-      max_completion_tokens: ['gpt-4o-2024-05-13', 'gpt-4-turbo', 'gpt-4-turbo-2024-04-09', 'gpt-4-turbo-preview', 'gpt-4-0125-preview', 'gpt-4-1106-preview', 'gpt-3.5-turbo-0125', 'gpt-3.5-turbo', 'gpt-3.5-turbo-1106'].some((element) => model === element) ? 4096 : maybeO1Mini, // Mặc định: model.startsWith('gpt-4o-mini') || model === 'gpt-3.5-turbo-16k' ? (model.startsWith('gpt-3.5-turbo') ? (/^gpt-3.5-turbo-\d+$/.test(model) ? 4095 : 4096) : 10000) : 2048
+      max_completion_tokens: ['gpt-4o-2024-05-13', 'gpt-4-turbo', 'gpt-4-turbo-2024-04-09', 'gpt-4-turbo-preview', 'gpt-4-0125-preview', 'gpt-4-1106-preview', 'gpt-3.5-turbo-0125', 'gpt-3.5-turbo', 'gpt-3.5-turbo-1106'].some((element) => model === element) ? 4096 : (model.startsWith('o1-mini') ? 65536 : (model.startsWith('o1-preview') ? 32768 : (model.startsWith('o1') ? 100000 : (model === 'gpt-4' || model.startsWith('gpt-4-') ? undefined /* 8192 */ : 16384)))), // Mặc định: model.startsWith('gpt-4o-mini') || model === 'gpt-3.5-turbo-16k' ? (model.startsWith('gpt-3.5-turbo') ? (/^gpt-3.5-turbo-\d+$/.test(model) ? 4095 : 4096) : 10000) : 2048
       top_p: model.startsWith('o1') ? undefined : 0.3, // Mặc định: 1
       frequency_penalty: model.startsWith('o1') ? undefined : 0,
       presence_penalty: model.startsWith('o1') ? undefined : 0
@@ -118,8 +114,8 @@ export default class GenerativeAi extends Translator {
           'air-user-id': this.uuid
         },
         signal: this.controller.signal
-      }).then(({ data }) => data).catch((error: {}) => {
-        throw error
+      }).then(({ data }) => data).catch(({ data }) => {
+        throw new Error(data)
       })
       : model === 'gpt-4o-mini' && await this.duckchat.post(null, window.JSON.stringify({
         model,
@@ -139,8 +135,8 @@ export default class GenerativeAi extends Translator {
             content: message
           }
         ]
-      })).then(({ data }) => ({ choices: [{ message: { content: data.split('\n').filter((element: string) => /data: {(?:"role":"assistant",)?"message"/.test(element)).map((element: string) => window.JSON.parse(element.replace(/^data: /, '')).message).join('') } }] })).catch((error: {}) => {
-        throw error
+      })).then(({ data }) => ({ choices: [{ message: { content: data.split('\n').filter((element: string) => /data: {(?:"role":"assistant",)?"message"/.test(element)).map((element: string) => window.JSON.parse(element.replace(/^data: /, '')).message).join('') } }] })).catch(({ data }) => {
+        throw new Error(data)
       })
     const result: { choices: Array<{ message: { content: string } }> } = window.localStorage.getItem('OPENAI_API_KEY') == null ? await maybeIsDebug() : await this.openai.chat.completions.create(requestBody)
     return result.choices[0].message.content
@@ -166,8 +162,8 @@ export default class GenerativeAi extends Translator {
           content: message
         }
       ]
-    })).then(({ data }) => data.split('\n').filter((element: string) => /data: {(?:"role":"assistant",)?"message"/.test(element)).map((element: string) => window.JSON.parse(element.replace(/^data: /, '')).message).join('')).catch((error: {}) => {
-      throw error
+    })).then(({ data }) => data.split('\n').filter((element: string) => /data: {(?:"role":"assistant",)?"message"/.test(element)).map((element: string) => window.JSON.parse(element.replace(/^data: /, '')).message).join('')).catch(({ data }) => {
+      throw new Error(data)
     }) : await this.anthropic.messages.create({
       model,
       max_tokens: !model.startsWith('claude-3-5') ? 4096 : 8192, // Mặc định: 1000
@@ -278,7 +274,7 @@ export default class GenerativeAi extends Translator {
     return chatResponse.choices[0].message.content
   }
 
-  public async translateText (text: string, targetLanguage: string, chunking: boolean, model: string = 'gpt-4o-mini', nomenclature: string[][] = []): Promise<string> {
+  public async translateText (text: string, targetLanguage: string, model: string = 'gpt-4o-mini', nomenclature: string[][] = [], splitChunkEnabled: boolean = false): Promise<string | null> {
     const nomenclatureList: string[] = nomenclature.filter(([first]) => text.includes(first)).map(element => element.join('\t'))
     const INSTRUCTIONS: string = `Translate the following text into ${targetLanguage}. ${/\n\s*[^\s]+/.test(text) ? 'Each line break in the original text is preserved in the translation. ' : ''}${nomenclatureList.length > 0 ? 'Ensure the accurate mapping of proper names of people, ethnic groups, species, or place-names, and other concepts listed in the Nomenclature Lookup Table. ' : ''}Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text and cannot include explanations or other information.${nomenclatureList.length > 0
 ? `
@@ -289,41 +285,21 @@ source\ttarget
 ${nomenclatureList.join('\n')}
 \`\`\``
 : ''}`
-    const lines: string[] = text.split(/(\n)/)
-    const cleanedLines: string[] = lines.filter(element => element !== '\n' && element.replace(/^\s+/, '').length > 0)
-    const queues: string[] = [...cleanedLines]
+    const queues: string[] = text.split('\n')
     const responses: Array<Promise<string>> = []
     const isGemini = model.startsWith('gemini')
-    const maybeIsClaude = async (query: string, prevChunk: string) => model.startsWith('claude') ? await this.runClaude(model, INSTRUCTIONS, query, prevChunk) : await this.runOpenai(model, INSTRUCTIONS, query, prevChunk)
-    const maybeIsGemini = async (query: string, prevChunk: string) => isGemini ? await this.runGemini(model, INSTRUCTIONS, query, prevChunk) : await maybeIsClaude(query, prevChunk)
-    const lineSeparatorChunkList: string[][] = []
     let queries: string[] = []
     let prevChunk: string = ''
-    let prechunkText: string = text
     while (queues.length > 0) {
       queries.push(queues.shift() as string)
-      if (queues.length === 0 || (chunking && [...queries, queues[0]].join('\n').length > this.maxContentLengthPerRequest)) {
-        const query: string = queries.join('\n')
-        responses.push(/^(?:open-)?[^-]+tral/.test(model) ? this.runMistral(model, INSTRUCTIONS, query, prevChunk) : maybeIsGemini(query, prevChunk))
-        if (chunking) prevChunk = query
+      if (queues.length === 0 || (splitChunkEnabled && [...queries, queues[0]].join('\n').length > this.maxContentLengthPerRequest)) {
+        const query: string = queries.join('')
+        responses.push(/^(?:open-)?[^-]+tral/.test(model) ? this.runMistral(model, INSTRUCTIONS, query, prevChunk) : (isGemini ? this.runGemini(model, INSTRUCTIONS, query, prevChunk) : (model.startsWith('claude') ? this.runClaude(model, INSTRUCTIONS, query, prevChunk) : this.runOpenai(model, INSTRUCTIONS, query, prevChunk))))
+        if (splitChunkEnabled) prevChunk = query
         queries = []
-        if (queues.length > 0) {
-          const splitedChunk = prechunkText.split(new RegExp(`${Utils.escapeRegExp(queues[0])}\\n*`))[0]
-          lineSeparatorChunkList.push(splitedChunk.split(/(\n)/).filter(element => element === '\n'))
-          prechunkText = prechunkText.replace(splitedChunk, '')
-        } else {
-          lineSeparatorChunkList.push(prechunkText.split(/(\n)/).filter(element => element === '\n'))
-        }
       }
     }
-    const result: string = await Promise.all(responses).then(function (responses) {
-      const resultLines: string[] = responses.map(function (value, index) {
-        const lineSeperators: string[] = lineSeparatorChunkList[index]
-        return (isGemini ? value.replace(/\n$/, '') : value).split(value.split(/(\n{1,2})/).filter(element => element.includes('\n')).map((element, index) => element !== lineSeperators[index]).reduce((accumulator, currentValue) => accumulator + (currentValue ? 1 : -1), 0) > 0 ? '\n\n' : '\n')
-      }).flat()
-      const resultMap: { [key: string]: string } = Object.fromEntries(cleanedLines.map((element, index) => [element, resultLines[index]]))
-      return lines.map(element => (element !== '\n' && element.replace(/^\s+/, '').length > 0 ? `${(element.match(/^\s*/) as string[])[0]}${(resultMap[element] ?? element).replace(/^\s+/, '')}` : element)).join('')
-    }).catch(error => {
+    const result: string = await Promise.all(responses).then(responses => responses.flat().join('\n')).catch(error => {
       throw error
     })
     super.translateText(text, targetLanguage, this.DefaultLanguage.SOURCE_LANGUAGE)

@@ -21,7 +21,7 @@ export default class GoogleTranslate extends Translator {
   private IID: string
   private key: string
   private token: string
-  constructor (tone: string) {
+  public constructor (tone: string) {
     super()
     this.tone = tone
   }
@@ -45,12 +45,12 @@ export default class GoogleTranslate extends Translator {
       const [, key, token] = data.match(/var params_AbusePreventionHelper = \[([0-9]+),"([^"]+)",[^\]]+\];/)
       this.key = key
       this.token = token
-    }).catch((error: {}) => {
-      console.error('Bản dịch lỗi: Không thể lấy được dữ liệu:', error)
+    }).catch(({ data }) => {
+      throw new Error(data)
     })
   }
 
-  public async translateText (text: string, targetLanguage: string, sourceLanguage: string | null = null): Promise<string> {
+  public async translateText (text: string, targetLanguage: string, sourceLanguage: string | null = null): Promise<string | null> {
     if (this.IG == null || this.IID == null || this.token == null || this.key == null) await this.setToneAndFetchData(this.tone)
     const lines: string[] = text.split('\n')
     const responses: Array<Promise<{ data: Array<{ translations: Array<{ text: string }> }> }>> = []
@@ -72,8 +72,8 @@ export default class GoogleTranslate extends Translator {
         requestIndex += 1
       }
     }
-    const result: string = await Promise.all(responses).then(responses => responses.map(({ data: [{ translations: [{ text }] }] }) => text).join('\n')).catch((error: {}) => {
-      throw error
+    const result: string = await Promise.all(responses).then(responses => responses.map(({ data: [{ translations: [{ text }] }] }) => text).join('\n')).catch(({ data }) => {
+      throw new Error(data)
     })
     super.translateText(text, targetLanguage, sourceLanguage)
     return result

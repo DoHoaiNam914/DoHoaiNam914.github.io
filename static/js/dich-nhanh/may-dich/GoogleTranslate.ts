@@ -12,12 +12,12 @@ export default class GoogleTranslate extends Translator {
 
   private readonly maxRequestUrlLength: number = 2048
   private readonly key: string
-  constructor (key: string) {
+  public constructor (key: string) {
     super()
     this.key = key
   }
 
-  public async translateText (text: string, targetLanguage: string, sourceLanguage: string | null = null): Promise<string> {
+  public async translateText (text: string, targetLanguage: string, sourceLanguage: string | null = null): Promise<string | null> {
     const lines: string[] = text.split('\n')
     const responses: Array<Promise<{ data: { data: { translations: Array<{ translatedText: string }> } } }>> = []
     let queries: string[] = []
@@ -37,8 +37,8 @@ export default class GoogleTranslate extends Translator {
         queries = []
       }
     }
-    const result: string = await Promise.all(responses).then(responses => Utils.convertHtmlToText(responses.map(({ data: { data: { translations } } }) => translations.map(({ translatedText }) => translatedText)).flat().join('\n'))).catch((error: {}) => {
-      throw error
+    const result: string = await Promise.all(responses).then(responses => Utils.convertHtmlToText(responses.map(({ data: { data: { translations } } }) => translations.map(({ translatedText }) => translatedText)).flat().join('\n'))).catch(({ data }) => {
+      throw new Error(data)
     })
     super.translateText(text, targetLanguage, sourceLanguage)
     return result

@@ -34,8 +34,8 @@ export default class BaiduTranslate extends Translator {
   async translateText (text, targetLanguage, sourceLanguage = null) {
     const lines = text.split('\n')
     const lan = (sourceLanguage ?? this.DefaultLanguage.SOURCE_LANGUAGE) === 'auto'
-      ? await this.instance.post('/langdetect', `query=${encodeURIComponent(text)}`).then(({ data: { lan } }) => lan).catch((error) => {
-        throw error
+      ? await this.instance.post('/langdetect', new URLSearchParams(`query=${text}`)).then(({ data: { lan } }) => lan).catch(({ data }) => {
+        throw new Error(data)
       })
       : sourceLanguage
     const responses = []
@@ -57,8 +57,8 @@ export default class BaiduTranslate extends Translator {
         queries = []
       }
     }
-    const result = await Promise.all(responses).then(responses => responses.map(({ data }) => JSON.parse(data.split('\n').filter(element => element.includes('"event":"Translating"'))[0].replace(/^data: /, '')).data.list.map(({ dst }) => dst).join('\n')).join('\n')).catch((error) => {
-      throw error
+    const result = await Promise.all(responses).then(responses => responses.map(({ data }) => window.JSON.parse(data.split('\n').filter(element => element.includes('"event":"Translating"'))[0].replace(/^data: /, '')).data.list.map(({ dst }) => dst).join('\n')).join('\n')).catch(({ data }) => {
+      throw new Error(data)
     })
     super.translateText(text, targetLanguage, sourceLanguage)
     return result

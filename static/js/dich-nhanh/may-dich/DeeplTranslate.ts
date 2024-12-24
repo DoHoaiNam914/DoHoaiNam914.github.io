@@ -14,7 +14,7 @@ export default class DeeplTranslate extends Translator {
   private readonly maxContentLinePerRequest: number = 50
   private readonly maxRequestSize: number = 128 * 1024
   private readonly instance: axios
-  constructor (authKey: string) {
+  public constructor (authKey: string) {
     super()
     this.instance = axios.create({
       baseURL: authKey.endsWith(':fx') ? 'https://api-free.deepl.com' : 'https://api.deepl.com',
@@ -25,9 +25,9 @@ export default class DeeplTranslate extends Translator {
     })
   }
 
-  public async translateText (text: string, targetLanguage: string, sourceLanguage: string | null = null): Promise<string> {
-    const usage = await this.instance.get('/v2/usage').then(({ data }) => data).catch((error: {}) => {
-      throw error
+  public async translateText (text: string, targetLanguage: string, sourceLanguage: string | null = null): Promise<string | null> {
+    const usage = await this.instance.get('/v2/usage').then(({ data }) => data).catch(({ data }) => {
+      throw new Error(data)
     })
     if ((usage.character_limit - usage.character_count) < text.length) throw new Error(`Bản dịch lỗi: Đã đạt đến giới hạn sử dụng của Auth Key này: ${usage.character_count}/${usage.character_limit}`)
     const lines: string[] = text.split('\n')
@@ -44,8 +44,8 @@ export default class DeeplTranslate extends Translator {
         queries = []
       }
     }
-    const result: string = await Promise.all(responses).then(responses => responses.map(({ data: { translations } }) => translations.map(({ text }) => text)).join('\n')).catch((error: {}) => {
-      throw error
+    const result: string = await Promise.all(responses).then(responses => responses.map(({ data: { translations } }) => translations.map(({ text }) => text)).join('\n')).catch(({ data }) => {
+      throw new Error(data)
     })
     super.translateText(text, targetLanguage, sourceLanguage)
     return result

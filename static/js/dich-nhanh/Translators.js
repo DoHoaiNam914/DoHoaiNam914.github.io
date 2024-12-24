@@ -1,6 +1,6 @@
 'use strict'
-
-var Translators = /* #__PURE__ */(function (Translators) {
+let Translators;
+(function (Translators) {
   Translators.BAIDU_TRANSLATE = 'baiduTranslate'
   Translators.COCCOC_EDU_TRANSLATE = 'coccocEduTranslate'
   Translators.DEEPL_TRANSLATE = 'deeplTranslate'
@@ -10,6 +10,5 @@ var Translators = /* #__PURE__ */(function (Translators) {
   Translators.MICROSOFT_TRANSLATOR = 'microsoftTranslator'
   Translators.PAPAGO = 'papago'
   Translators.WEBNOVEL_TRANSLATE = 'webnovelTranslate'
-  return Translators
-}(Translators || {}))
+})(Translators || (Translators = {}))
 export default Translators

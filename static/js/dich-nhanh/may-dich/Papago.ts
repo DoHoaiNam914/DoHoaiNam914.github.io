@@ -54,7 +54,7 @@ export default class Papago extends Translator {
 
   private readonly uuid: string
   private version: string
-  constructor (uuid: string) {
+  public constructor (uuid: string) {
     super()
     this.uuid = uuid
   }
@@ -63,15 +63,15 @@ export default class Papago extends Translator {
     await this.instance.get().then(async (a: { data: string }) => {
       await this.instance.get(`/${(a.data.match(/\/(main.*\.js)/) as string[])[1]}`).then((b: { data: string }) => {
         this.version = (b.data.match(/"PPG .*,"(v[^"]*)/) as string[])[1]
-      }).catch((error: {}) => {
-        throw error
+      }).catch(({ data }) => {
+        throw new Error(data)
       })
-    }).catch((error: {}) => {
-      throw error
+    }).catch(({ data }) => {
+      throw new Error(data)
     })
   }
 
-  public async translateText (text: string, targetLanguage: string, sourceLanguage: string | null = null): Promise<string> {
+  public async translateText (text: string, targetLanguage: string, sourceLanguage: string | null = null): Promise<string | null> {
     if (this.version == null) await this.fetchVersion()
     const lines: string[] = text.split('\n')
     const responses: Array<Promise<{ data: { translatedText: string } }>> = []
@@ -94,8 +94,8 @@ export default class Papago extends Translator {
         queries = []
       }
     }
-    const result: string = await Promise.all(responses).then(responses => responses.map(({ data: { translatedText } }) => translatedText).join('\n')).catch((error: {}) => {
-      throw error
+    const result: string = await Promise.all(responses).then(responses => responses.map(({ data: { translatedText } }) => translatedText).join('\n')).catch(({ data }) => {
+      throw new Error(data)
     })
     super.translateText(text, targetLanguage, sourceLanguage)
     return result

@@ -546,7 +546,7 @@ const getSourceLangOptionList = function getSourceLanguageOptionListHtmlFromTran
       break;
     }
     default: {
-      [{ language: 'auto', name: 'Phát hiện ngôn ngữ' }, ...currentTranslator.LANGUAGE_LIST].forEach(({ language, name }) => {
+      [{ language: 'auto', name: 'Phát hiện ngôn ngữ' }, ...translators[Translators.GOOGLE_TRANSLATE].LANGUAGE_LIST].forEach(({ language, name }) => {
         if (!['auto', 'en', 'ja', 'zh', 'zh-TW', 'vi'].includes(language)) return;
         const option = document.createElement('option');
         option.innerText = name;
@@ -643,7 +643,7 @@ const getTargetLangOptionList = function getTargetLanguageOptionListHtmlFromTran
       break;
     }
     default: {
-      currentTranslator.LANGUAGE_LIST.forEach(({ language, name }) => {
+      translators[Translators.GOOGLE_TRANSLATE].LANGUAGE_LIST.forEach(({ language, name }) => {
         if (!['en', 'ja', 'zh', 'zh-TW', 'vi'].includes(language)) return;
         const option = document.createElement('option');
         option.innerText = name;
@@ -705,11 +705,8 @@ const buildResult = function buildResultContentForTextarea(text, result, activeT
         resultDiv.appendChild(paragraph);
       }
     }
-  } catch (error) {
-    console.error('Lỗi hiển thị bản dịch:', error);
-    const paragraph = document.createElement('p');
-    paragraph.appendChild(document.createTextNode(error));
-    resultDiv.insertBefore(paragraph, resultDiv.firstChild);
+  } catch (e) {
+    throw e
   }
 
   return resultDiv.innerHTML;
@@ -721,14 +718,14 @@ const translate = async function translateContentInTextarea(controller = new Abo
   try {
     const startTime = Date.now();
     const model = $('#model-select').val();
-    const text = $inputTextarea.val();
+    const text = [Translators.GENERATIVE_AI, Translators.WEBNOVEL_TRANSLATE].some(element => $activeTranslator.val() === element) ? $inputTextarea.val().split('\n').filter(element => element.replace(/^\s+/, '').length > 0).join('\n') : $inputTextarea.val()
     const targetLanguage = $targetLanguageSelect.val();
     let result = ''
 
     switch ($activeTranslator.val()) {
       case Translators.GENERATIVE_AI: {
         currentTranslator.controller = controller;
-        result = await currentTranslator.translateText(text, targetLanguage, $('#chunking-switch').prop('checked'), model, Object.entries(glossary.nomenclature));
+        result = await currentTranslator.translateText(text, targetLanguage, model, Object.entries(glossary.nomenclature), $('#split-chunk-switch').prop('checked'));
         break;
       }
       default: {
@@ -736,59 +733,8 @@ const translate = async function translateContentInTextarea(controller = new Abo
         result = await currentTranslator.translateText(text, targetLanguage, $sourceLanguageSelect.val());
       }
     }
-
     if (controller.signal.aborted) return;
-    if ($activeTranslator.val() !== Translators.GENERATIVE_AI && $('#polish-switch').prop('checked')) {
-      if (!isRetranslate) {
-        $resultTextarea.html(buildResult(text, result, $activeTranslator.val()))
-        $resultTextarea.find('p > i').on('dblclick', function onDblclick() {
-          const range = document.createRange()
-          const selection = getSelection()
-          range.selectNodeContents(this)
-          selection.removeAllRanges()
-          selection.addRange(range)
-          $glossaryManagerButton.trigger('mousedown')
-          $glossaryManagerButton.click()
-        })
-        $translateTimer.text(Date.now() - startTime)
-        window.sessionStorage.setItem('translation', result)
-      }
-      const nomenclature = Object.entries(glossary.nomenclature).filter(([first]) => text.includes(first));
-      const INSTRUCTIONS = `Translate the following text into the same language as the raw translation. ${/\n\s*[^\s]+/.test(text) ? 'Each line break in the original text is preserved in the translation. ' : ''}${nomenclature.length > 0 ? 'Ensure the accurate mapping of proper names of people, ethnic groups, species, or place-names, and other concepts listed in the Nomenclature Lookup Table. ' : ''}Use the raw translation as a reference. Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the entire corrected translated text and cannot include explanations, codeblocks, or other information.${nomenclature.length > 0 ? `
-
-Nomenclature Lookup Table:
-\`\`\`tsv
-source\ttarget
-${nomenclature.map((element) => element.join('\t')).join('\n')}
-\`\`\`` : ''}`
-      const lines = text.split(/(\n)/)
-      const query = lines.filter((element) => element !== '\n' && element.replace(/^\s+/, '').length > 0)
-      const rawTranslationLines = result.split(/(\n)/).map((element, index) => (lines[index] === '\n' ? '/* EOL */' : element)).join('').split(/(\/\* EOL \*\/)/).map(element => (element === '/* EOL */' ? '\n' : element))
-      const MESSAGE = `Original text:
-\`\`\`txt
-${query.join('\n')}
-\`\`\`
-
-Raw translation:
-\`\`\`txt
-${rawTranslationLines.filter((element, index) => element !== '\n' && lines[index].replace(/^\s+/, '').length > 0).join('\n')}
-\`\`\``
-      let generativeAi = translators[Translators.GENERATIVE_AI]
-      if (generativeAi == null) {
-        generativeAi = new GenerativeAi(UUID.toLowerCase(), $openaiApiKeyText.val(), $geminiApiKeyText.val(), $anthropicApiKeyText.val(), $mistralApiKeyText.val())
-        translators[Translators.GENERATIVE_AI] = generativeAi
-      }
-      const isGemini = model.startsWith('gemini');
-      const maybeIsClaude = async () => model.startsWith('claude') ? await generativeAi.runClaude(model, INSTRUCTIONS, MESSAGE) : await generativeAi.runOpenai(model, INSTRUCTIONS, MESSAGE)
-      const maybeIsGemini = async () => isGemini ? await generativeAi.runGemini(model, INSTRUCTIONS, MESSAGE) : await maybeIsClaude()
-      const polishResult = /^(?:open-)?[^-]+tral/.test(model) ? await generativeAi.runMistral(model, INSTRUCTIONS, query) : await maybeIsGemini()
-      if (polishResult == null) return
-      const lineSeperators = lines.map((element) => element === '\n')
-      const resultLines = (isGemini ? polishResult.replace(/\n$/, '') : polishResult).split(polishResult.split(/(\n{1,2})/).filter(element => element.includes('\n')).map((element, index) => element !== lineSeperators[index]).reduce((accumulator, currentValue) => accumulator + (currentValue ? 1 : -1), 0) > 0 ? '\n\n' : '\n')
-      const resultMap = Object.fromEntries(query.map((element, index) => [element, resultLines[index]]))
-      result = lines.map((element, index) => (element !== '\n' && element.replace(/^\s+/, '').length > 0 ? `${(rawTranslationLines[index] ?? element).match(/^\s*/)[0]}${(resultMap[element] ?? rawTranslationLines[index] ?? element).replace(/^\s+/, '')}` : element)).join('')
-    }
-    if (controller.signal.aborted) return;
+    $translateTimer.text(Date.now() - startTime)
     $resultTextarea.html(buildResult(text, result, $activeTranslator.val()));
     $resultTextarea.find('p > i').on('dblclick', function onDblclick() {
       const range = document.createRange()
@@ -799,14 +745,12 @@ ${rawTranslationLines.filter((element, index) => element !== '\n' && lines[index
       $glossaryManagerButton.trigger('mousedown')
       $glossaryManagerButton.click()
     })
-    $translateTimer.text(Date.now() - startTime)
     window.sessionStorage.setItem('translation', result)
-  } catch (error) {
-    console.error(error);
-    window.sessionStorage.removeItem('translation');
+  } catch (e) {
+    console.error(e);
     if (controller.signal.aborted) return;
     const paragraph = document.createElement('p');
-    paragraph.innerText = `Bản dịch thất bại: ${error}`;
+    paragraph.innerText = `Bản dịch thất bại: ${e}`;
     $resultTextarea.html(null);
     $resultTextarea.append(paragraph);
   }
@@ -1046,6 +990,7 @@ $translateButton.on('click', function onClick() {
       $translateTimer.text(0);
       $resultTextarea.hide();
       $inputTextarea.show();
+      window.sessionStorage.removeItem('translation')
       $copyButton.data('target', `#${$inputTextarea.attr('id')}`);
       $copyButton.removeClass('disabled');
       $pasteButton.removeClass('disabled');
@@ -1702,7 +1647,7 @@ $translateEntryButtons.click(async function onClick() {
         switch (activeTranslator) {
           case Translators.GENERATIVE_AI: {
             translator.controller = entryTranslationController;
-            result = await translator.translateText(text, targetLanguage, false, $('#translate-entry-model-select').val(), $('#apply-nomenclature-switch').prop('checked') ? Object.entries(glossary.nomenclature) : []);
+            result = await translator.translateText(text, targetLanguage, $('#translate-entry-model-select').val(), $('#apply-nomenclature-switch').prop('checked') ? Object.entries(glossary.nomenclature) : []);
             break;
           }
           default: {

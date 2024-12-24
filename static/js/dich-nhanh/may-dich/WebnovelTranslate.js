@@ -2014,14 +2014,13 @@ export default class WebnovelTranslate extends Translator {
   async translateText (text, targetLanguage, sourceLanguage = null) {
     const isCj = ['ja', 'zh-CN', 'zh-TW'].some((element) => sourceLanguage === element)
     const EOL = isCj ? '||||' : '\\n'
-    const lines = text.split(/(\n)/)
-    const cleanedLines = lines.filter((element) => element !== '\n' && element.replace(/^\s+/, '').length > 0)
+    const lines = text.split('\n')
     const responses = []
-    let queue = cleanedLines.map((element) => `${isCj ? '\u3000\u3000' : ''}${element}`).join(EOL)
+    let queue = lines.map((element) => `${isCj ? '\u3000\u3000' : ''}${element}`).join(EOL)
     queue = (isCj ? queue.replace(EOL, EOL.repeat(2)) : queue).split(new RegExp(`(?<=\\.{3}|[${!isCj ? '!,.:;?' : ''}…${isCj ? '、。！，：；？' : ''}](?:[^${!isCj ? '!,.:;?' : ''}…${isCj ? '、。！，：；？' : ''}]*$${!isCj ? '|\\s+' : ''}|))`))
     let queries = []
     while (queue.length > 0) {
-      queries.push(queue.shift())
+      queries.push((queue).shift())
       if (queue.length === 0 || queries.join('').concat(queue[0].trimEnd()).length > this.maxContentLengthPerRequest) {
         responses.push(axios.get(`${Utils.CORS_HEADER_PROXY}http://translate.google.com/translate_a/single`, {
           params: new URLSearchParams(`client=${this.clientName}&ie=UTF-8&oe=UTF-8&dt=bd&dt=ex&dt=ld&dt=md&dt=rw&dt=rm&dt=ss&dt=t&dt=at&dt=gt&dt=qc&sl=${sourceLanguage ?? this.DefaultLanguage.SOURCE_LANGUAGE}&tl=${targetLanguage}&hl=${targetLanguage}&q=${encodeURIComponent(queries.join('').trimEnd())}`),
@@ -2030,16 +2029,12 @@ export default class WebnovelTranslate extends Translator {
         queries = []
       }
     }
-    const result = await Promise.all(responses).then(function (responses) {
-      const resultLines = responses.map(({ data: [a] }) => a.filter(([, second]) => second != null).map(([b, second]) => [second, b.replaceAll(new RegExp(` ?${isCj ? '(?:\\|[ |]*|[ |]*\\|)' : Utils.getTrieRegexPatternFromWords([EOL].sort((a, b) => b.length - a.length)).source}\\s*`, 'g'), '\n')]).map(([b, second]) => {
-        const adjustedText = isCj ? b.replace(EOL.repeat(2), EOL) : b
-        const lineCountDifference = [...adjustedText.matchAll(new RegExp(Utils.escapeRegExp(EOL), 'g'))].length - [...second.matchAll(/\n/g)].length
-        return (lineCountDifference < 0 ? second.replace(new RegExp(`\\n{${Math.abs(lineCountDifference)}}$`), '') : second).concat('\n'.repeat(lineCountDifference > 0 ? lineCountDifference : 0))
-      })).flat().join('').split('\n')
-      const resultMap = Object.fromEntries(cleanedLines.map((element, index) => [element, resultLines[index] == null || (resultLines[index].replace(/^\s+/, '').length === 0 && element.replace(/^\s+/, '').length > 0) ? element : resultLines[index]]))
-      return lines.map(element => element !== '\n' && element.replace(/^\s+/, '').length > 0 ? `${element.match(/^\s*/)[0]}${resultMap[element].replace(/^\s+/, '')}` : element).join('')
-    }).catch((error) => {
-      throw error
+    const result = await Promise.all(responses).then(responses => responses.map(({ data: [a] }) => a.filter(([, second]) => second != null).map(([b, second]) => [second, b.replaceAll(new RegExp(` ?${isCj ? '(?:\\|[ |]*|[ |]*\\|)' : Utils.getTrieRegexPatternFromWords([EOL].sort((a, b) => b.length - a.length)).source}\\s*`, 'g'), '\n')]).map(([b, second]) => {
+      const adjustedText = isCj ? b.replace(EOL.repeat(2), EOL) : b
+      const lineCountDifference = [...adjustedText.matchAll(new RegExp(Utils.escapeRegExp(EOL), 'g'))].length - [...second.matchAll(/\n/g)].length
+      return (lineCountDifference < 0 ? second.replace(new RegExp(`\\n{${Math.abs(lineCountDifference)}}$`), '') : second).concat('\n'.repeat(lineCountDifference > 0 ? lineCountDifference : 0))
+    })).flat().join('')).catch(({ data }) => {
+      throw new Error(data)
     })
     super.translateText(text, targetLanguage, sourceLanguage)
     return result

@@ -12,7 +12,7 @@ export default class CoccocEduTranslate extends Translator {
 
   private readonly maxContentLengthPerRequest: number = 1000 - 282
   private readonly maxContentLinePerRequest: number = 25 - 24
-  public async translateText (text: string, targetLanguage: string, sourceLanguage: string | null = null): Promise<string> {
+  public async translateText (text: string, targetLanguage: string, sourceLanguage: string | null = null): Promise<string | null> {
     const lines: string[] = text.split('\n')
     const responses: Array<Promise<{ data: { proxyapi: Array<{ translations: Array<{ text: string }> }> } }>> = []
     let queries: string[] = []
@@ -31,8 +31,8 @@ export default class CoccocEduTranslate extends Translator {
         queries = []
       }
     }
-    const result: string = await Promise.all(responses).then(responses => responses.map(({ data: { proxyapi: [{ translations: [{ text }] }] } }) => text).join('\n')).catch((error: {}) => {
-      throw error
+    const result: string = await Promise.all(responses).then(responses => responses.map(({ data: { proxyapi: [{ translations: [{ text }] }] } }) => text).join('\n')).catch(({ data }) => {
+      throw new Error(data)
     })
     super.translateText(text, targetLanguage, sourceLanguage)
     return result

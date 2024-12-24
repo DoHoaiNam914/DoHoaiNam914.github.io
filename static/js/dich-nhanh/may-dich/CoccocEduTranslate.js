@@ -31,8 +31,8 @@ export default class CoccocEduTranslate extends Translator {
         queries = []
       }
     }
-    const result = await Promise.all(responses).then(responses => responses.map(({ data: { proxyapi: [{ translations: [{ text }] }] } }) => text).join('\n')).catch((error) => {
-      throw error
+    const result = await Promise.all(responses).then(responses => responses.map(({ data: { proxyapi: [{ translations: [{ text }] }] } }) => text).join('\n')).catch(({ data }) => {
+      throw new Error(data)
     })
     super.translateText(text, targetLanguage, sourceLanguage)
     return result

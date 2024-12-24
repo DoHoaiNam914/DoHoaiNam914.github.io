@@ -26,8 +26,8 @@ export default class DeeplTranslate extends Translator {
   }
 
   async translateText (text, targetLanguage, sourceLanguage = null) {
-    const usage = await this.instance.get('/v2/usage').then(({ data }) => data).catch((error) => {
-      throw error
+    const usage = await this.instance.get('/v2/usage').then(({ data }) => data).catch(({ data }) => {
+      throw new Error(data)
     })
     if ((usage.character_limit - usage.character_count) < text.length) { throw new Error(`Bản dịch lỗi: Đã đạt đến giới hạn sử dụng của Auth Key này: ${usage.character_count}/${usage.character_limit}`) }
     const lines = text.split('\n')
@@ -44,8 +44,8 @@ export default class DeeplTranslate extends Translator {
         queries = []
       }
     }
-    const result = await Promise.all(responses).then(responses => responses.map(({ data: { translations } }) => translations.map(({ text }) => text)).join('\n')).catch((error) => {
-      throw error
+    const result = await Promise.all(responses).then(responses => responses.map(({ data: { translations } }) => translations.map(({ text }) => text)).join('\n')).catch(({ data }) => {
+      throw new Error(data)
     })
     super.translateText(text, targetLanguage, sourceLanguage)
     return result

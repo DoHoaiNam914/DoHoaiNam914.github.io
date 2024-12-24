@@ -45,8 +45,8 @@ export default class GoogleTranslate extends Translator {
       const [, key, token] = data.match(/var params_AbusePreventionHelper = \[([0-9]+),"([^"]+)",[^\]]+\];/)
       this.key = key
       this.token = token
-    }).catch((error) => {
-      console.error('Bản dịch lỗi: Không thể lấy được dữ liệu:', error)
+    }).catch(({ data }) => {
+      throw new Error(data)
     })
   }
 
@@ -72,8 +72,8 @@ export default class GoogleTranslate extends Translator {
         requestIndex += 1
       }
     }
-    const result = await Promise.all(responses).then(responses => responses.map(({ data: [{ translations: [{ text }] }] }) => text).join('\n')).catch((error) => {
-      throw error
+    const result = await Promise.all(responses).then(responses => responses.map(({ data: [{ translations: [{ text }] }] }) => text).join('\n')).catch(({ data }) => {
+      throw new Error(data)
     })
     super.translateText(text, targetLanguage, sourceLanguage)
     return result
