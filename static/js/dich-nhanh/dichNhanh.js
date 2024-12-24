@@ -762,7 +762,7 @@ source\ttarget
 ${nomenclature.map((element) => element.join('\t')).join('\n')}
 \`\`\`` : ''}`
       const lines = text.split(/(\n)/)
-      const cleanedLines = lines.filter((element) => element !== '\n' && element.replace(/^\s/, ''))
+      const cleanedLines = lines.filter((element) => element !== '\n' && element.replace(/^\s+/, '').length > 0)
       const query = [...cleanedLines]
       const rawTranslationLines = result.split('\n')
       const MESSAGE = `Original text:
@@ -772,7 +772,7 @@ ${query.join('\n')}
 
 Raw translation:
 \`\`\`txt
-${rawTranslationLines.map((element) => element.replace(/^\s/, '')).join('\n')}
+${rawTranslationLines.filter((element) => element.replace(/^\s+/, '').length > 0).join('\n')}
 \`\`\``
       let generativeAi = translators[Translators.GENERATIVE_AI]
       if (generativeAi == null) {
@@ -785,7 +785,7 @@ ${rawTranslationLines.map((element) => element.replace(/^\s/, '')).join('\n')}
       let polishResult = /^(?:open-)?[^-]+tral/.test(model) ? await generativeAi.runMistral(model, INSTRUCTIONS, query) : await maybeIsGemini()
       if (polishResult == null) return
       const lineSeperators = lines.map((element) => element === '\n')
-      polishResult = (isGemini ? polishResult.replace(/\n$/, '') : value).split(polishResult.split(/(\n{1,2})/).filter(element => element.includes('\n')).map((element, index) => element !== lineSeperators[index]).reduce((accumulator, currentValue) => accumulator + (currentValue ? 1 : -1), 0) > 0 ? '\n\n' : '\n')
+      polishResult = (isGemini ? polishResult.replace(/\n$/, '') : polishResult).split(polishResult.split(/(\n{1,2})/).filter(element => element.includes('\n')).map((element, index) => element !== lineSeperators[index]).reduce((accumulator, currentValue) => accumulator + (currentValue ? 1 : -1), 0) > 0 ? '\n\n' : '\n')
       const resultMap = Object.fromEntries(cleanedLines.map((element, index) => [element, resultLines[index]]))
       result = lines.map(element => (element !== '\n' ? `${(rawTranslationLines[index] ?? element).match(/^\s*/)[0]}${(resultMap[element] ?? rawTranslationLines[index] ?? element).replace(/^\s+/, '')}` : (rawTranslationLines[index] ?? element))).join('')
     }
