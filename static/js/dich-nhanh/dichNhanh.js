@@ -762,9 +762,8 @@ source\ttarget
 ${nomenclature.map((element) => element.join('\t')).join('\n')}
 \`\`\`` : ''}`
       const lines = text.split(/(\n)/)
-      const cleanedLines = lines.filter((element) => element !== '\n' && element.replace(/^\s+/, '').length > 0)
-      const query = [...cleanedLines]
-      const rawTranslationLines = result.split(/(\n)/).map((element, index) => (lines[index] === '\n' lines ? '/* EOL */' : element)).join('\n').split('(/* EOL */)').map((element) => (element === '/* EOL */' ? '\n' : element))
+      const query = lines.filter((element) => element !== '\n' && element.replace(/^\s+/, '').length > 0)
+      const rawTranslationLines = result.split(/(\n)/).map((element, index) => (lines[index] === '\n' ? '/* EOL */' : element)).join('\n').split('(/* EOL */)').map((element) => (element === '/* EOL */' ? '\n' : element))
       const MESSAGE = `Original text:
 \`\`\`txt
 ${query.join('\n')}
@@ -786,7 +785,7 @@ ${rawTranslationLines.filter((element, index) => element !== '\n' || lines[index
       if (polishResult == null) return
       const lineSeperators = lines.map((element) => element === '\n')
       const resultLines = (isGemini ? polishResult.replace(/\n$/, '') : polishResult).split(polishResult.split(/(\n{1,2})/).filter(element => element.includes('\n')).map((element, index) => element !== lineSeperators[index]).reduce((accumulator, currentValue) => accumulator + (currentValue ? 1 : -1), 0) > 0 ? '\n\n' : '\n')
-      const resultMap = Object.fromEntries(cleanedLines.map((element, index) => [element, resultLines[index]]))
+      const resultMap = Object.fromEntries(query.map((element, index) => [element, resultLines[index]]))
       result = lines.map(element => (element !== '\n' && element.replace(/^\s+/, '').length > 0 ? `${element.match(/^\s*/)[0]}${(resultMap[element] ?? element).replace(/^\s+/, '')}` : element)).join('')
     }
     if (controller.signal.aborted) return;
