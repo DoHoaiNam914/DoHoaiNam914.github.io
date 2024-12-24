@@ -2036,7 +2036,7 @@ export default class WebnovelTranslate extends Translator {
         const lineCountDifference = [...adjustedText.matchAll(new RegExp(Utils.escapeRegExp(EOL), 'g'))].length - [...second.matchAll(/\n/g)].length
         return (lineCountDifference < 0 ? second.replace(new RegExp(`\\n{${Math.abs(lineCountDifference)}}$`), '') : second).concat('\n'.repeat(lineCountDifference > 0 ? lineCountDifference : 0))
       })).flat().join('').split('\n')
-      const resultMap = Object.fromEntries(cleanedLines.map((element, index) => [element, resultLines[index]]))
+      const resultMap = Object.fromEntries(cleanedLines.map((element, index) => [element, resultLines[index].replace(/^\s+/, '').length === 0 && element.replace(/^\s+/, '').length > 0 ? element : resultLines[index]]))
       return lines.map(element => element !== '\n' && element.replace(/^\s+/, '').length > 0 ? `${element.match(/^\s*/)[0]}${resultMap[element].replace(/^\s+/, '')}` : element).join('')
     }).catch((error) => {
       throw error

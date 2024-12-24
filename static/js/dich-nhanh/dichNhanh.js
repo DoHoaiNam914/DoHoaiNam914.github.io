@@ -763,7 +763,7 @@ ${nomenclature.map((element) => element.join('\t')).join('\n')}
 \`\`\`` : ''}`
       const lines = text.split(/(\n)/)
       const query = lines.filter((element) => element !== '\n' && element.replace(/^\s+/, '').length > 0)
-      const rawTranslationLines = result.split(/(\n)/).map((element, index) => (lines[index] === '\n' ? '/* EOL */' : element)).join('\n').split('/* EOL */')
+      const rawTranslationLines = result.split(/(\n)/).map((element, index) => (lines[index] === '\n' ? '/* EOL */' : element)).join('').split(/(\/\* EOL \*\/)/).map(element => (element === '/* EOL */' ? '\n' : element))
       const MESSAGE = `Original text:
 \`\`\`txt
 ${query.join('\n')}
@@ -771,7 +771,7 @@ ${query.join('\n')}
 
 Raw translation:
 \`\`\`txt
-${rawTranslationLines.filter((element, index) => element !== '\n' || lines[index].replace(/^\s+/, '').length > 0).join('\n')}
+${rawTranslationLines.filter((element, index) => element !== '\n' && lines[index].replace(/^\s+/, '').length > 0).join('\n')}
 \`\`\``
       let generativeAi = translators[Translators.GENERATIVE_AI]
       if (generativeAi == null) {
@@ -786,7 +786,7 @@ ${rawTranslationLines.filter((element, index) => element !== '\n' || lines[index
       const lineSeperators = lines.map((element) => element === '\n')
       const resultLines = (isGemini ? polishResult.replace(/\n$/, '') : polishResult).split(polishResult.split(/(\n{1,2})/).filter(element => element.includes('\n')).map((element, index) => element !== lineSeperators[index]).reduce((accumulator, currentValue) => accumulator + (currentValue ? 1 : -1), 0) > 0 ? '\n\n' : '\n')
       const resultMap = Object.fromEntries(query.map((element, index) => [element, resultLines[index]]))
-      result = lines.map(element => (element !== '\n' && element.replace(/^\s+/, '').length > 0 ? `${element.match(/^\s*/)[0]}${(resultMap[element] ?? element).replace(/^\s+/, '')}` : element)).join('')
+      result = lines.map((element) => (element !== '\n' && element.replace(/^\s+/, '').length > 0 ? `${(rawTranslationLines[index] ?? element).match(/^\s*/)[0]}${(resultMap[element] ?? rawTranslationLines[index] ?? element).replace(/^\s+/, '')}` : element)).join('')
     }
     if (controller.signal.aborted) return;
     $resultTextarea.html(buildResult(text, result, $activeTranslator.val()));
