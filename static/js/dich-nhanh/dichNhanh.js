@@ -786,7 +786,7 @@ ${rawTranslationLines.filter((element, index) => element !== '\n' && lines[index
       const lineSeperators = lines.map((element) => element === '\n')
       const resultLines = (isGemini ? polishResult.replace(/\n$/, '') : polishResult).split(polishResult.split(/(\n{1,2})/).filter(element => element.includes('\n')).map((element, index) => element !== lineSeperators[index]).reduce((accumulator, currentValue) => accumulator + (currentValue ? 1 : -1), 0) > 0 ? '\n\n' : '\n')
       const resultMap = Object.fromEntries(query.map((element, index) => [element, resultLines[index]]))
-      result = lines.map((element) => (element !== '\n' && element.replace(/^\s+/, '').length > 0 ? `${(rawTranslationLines[index] ?? element).match(/^\s*/)[0]}${(resultMap[element] ?? rawTranslationLines[index] ?? element).replace(/^\s+/, '')}` : element)).join('')
+      result = lines.map((element, index) => (element !== '\n' && element.replace(/^\s+/, '').length > 0 ? `${(rawTranslationLines[index] ?? element).match(/^\s*/)[0]}${(resultMap[element] ?? rawTranslationLines[index] ?? element).replace(/^\s+/, '')}` : element)).join('')
     }
     if (controller.signal.aborted) return;
     $resultTextarea.html(buildResult(text, result, $activeTranslator.val()));
