@@ -763,7 +763,7 @@ ${nomenclature.map((element) => element.join('\t')).join('\n')}
 \`\`\`` : ''}`
       const lines = text.split(/(\n)/)
       const query = lines.filter((element) => element !== '\n' && element.replace(/^\s+/, '').length > 0)
-      const rawTranslationLines = result.split(/(\n)/).map((element, index) => (lines[index] === '\n' ? '/* EOL */' : element)).join('\n').split('(/\* EOL \*/)').map(element => (element === '/* EOL */' ? '\n' : element))
+      const rawTranslationLines = result.split(/(\n)/).map((element, index) => (lines[index] === '\n' ? '/* EOL */' : element)).join('\n').split('/* EOL */')
       const MESSAGE = `Original text:
 \`\`\`txt
 ${query.join('\n')}
