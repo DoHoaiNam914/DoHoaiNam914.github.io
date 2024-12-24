@@ -4,7 +4,7 @@ import Translator from '/static/js/dich-nhanh/Translator.js'
 import * as Utils from '/static/js/Utils.js'
 export default class WebnovelTranslate extends Translator {
   /* https://translate-pa.googleapis.com/v1/supportedLanguages?client=gtx&display_language=vi&key=${key} */
-  static LANGUAGE_LIST = JSON.parse(`{
+  LANGUAGE_LIST = JSON.parse(`{
   "sourceLanguages": [
     {
       "language": "auto",
@@ -2031,13 +2031,13 @@ export default class WebnovelTranslate extends Translator {
       }
     }
     const result = await Promise.all(responses).then(function (responses) {
-      const results = responses.map(({ data: [a] }) => a.filter(([, second]) => second != null).map(([b, second]) => [second, b.replaceAll(new RegExp(` ?${isCj ? '(?:\\|[ |]*|[ |]*\\|)' : Utils.getTrieRegexPatternFromWords([EOL].sort((a, b) => b.length - a.length)).source}\\s*`, 'g'), '\n')]).map(([b, second]) => {
+      const resultLines = responses.map(({ data: [a] }) => a.filter(([, second]) => second != null).map(([b, second]) => [second, b.replaceAll(new RegExp(` ?${isCj ? '(?:\\|[ |]*|[ |]*\\|)' : Utils.getTrieRegexPatternFromWords([EOL].sort((a, b) => b.length - a.length)).source}\\s*`, 'g'), '\n')]).map(([b, second]) => {
         const adjustedText = isCj ? b.replace(EOL.repeat(2), EOL) : b
         const lineCountDifference = [...adjustedText.matchAll(new RegExp(Utils.escapeRegExp(EOL), 'g'))].length - [...second.matchAll(/\n/g)].length
         return (lineCountDifference < 0 ? second.replace(new RegExp(`\\n{${Math.abs(lineCountDifference)}}$`), '') : second).concat('\n'.repeat(lineCountDifference > 0 ? lineCountDifference : 0))
       })).flat().join('').split('\n')
-      const translationMap = Object.fromEntries(cleanedLines.map((element, index) => [element, results[index]]))
-      return lines.map(element => translationMap[element]).join('')
+      const resultMap = Object.fromEntries(cleanedLines.map((element, index) => [element, resultLines[index]]))
+      return lines.map(element => element !== '\n' && element.replace(/^\s+/, '').length > 0 ? `${element.match(/^\s*/)[0]}${resultMap[element].replace(/^\s+/, '')}` : element).join('')
     }).catch((error) => {
       throw error
     })

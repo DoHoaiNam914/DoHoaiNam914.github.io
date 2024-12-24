@@ -282,7 +282,7 @@ export default class GenerativeAi extends Translator {
 
   async translateText (text, targetLanguage, chunking, model = 'gpt-4o-mini', nomenclature = []) {
     const nomenclatureList = nomenclature.filter(([first]) => text.includes(first)).map(element => element.join('\t'))
-    const INSTRUCTIONS = `Translate the following text into ${targetLanguage}. ${nomenclatureList.length > 0 ? 'Ensure the accurate mapping of proper names of people, ethnic groups, species, or place-names, and other concepts listed in the Nomenclature Lookup Table. ' : ''}Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text and cannot include explanations or other information.${nomenclatureList.length > 0
+    const INSTRUCTIONS = `Translate the following text into ${targetLanguage}. ${/\n\s*[^\s]+/.test(text) ? 'Each line break in the original text is preserved in the translation. ' : ''}${nomenclatureList.length > 0 ? 'Ensure the accurate mapping of proper names of people, ethnic groups, species, or place-names, and other concepts listed in the Nomenclature Lookup Table. ' : ''}Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text and cannot include explanations or other information.${nomenclatureList.length > 0
             ? `
 
 Nomenclature Lookup Table:
@@ -324,7 +324,7 @@ ${nomenclatureList.join('\n')}
         return (isGemini ? value.replace(/\n$/, '') : value).split(value.split(/(\n{1,2})/).filter(element => element.includes('\n')).map((element, index) => element !== lineSeperators[index]).reduce((accumulator, currentValue) => accumulator + (currentValue ? 1 : -1), 0) > 0 ? '\n\n' : '\n')
       }).flat()
       const resultMap = Object.fromEntries(cleanedLines.map((element, index) => [element, resultLines[index]]))
-      return lines.map(element => (element !== '\n' ? `${element.match(/^\s*/)[0]}${(resultMap[element] ?? element).replace(/^\s+/, '')}` : element)).join('')
+      return lines.map(element => (element !== '\n' && element.replace(/^\s+/, '').length > 0 ? `${element.match(/^\s*/)[0]}${(resultMap[element] ?? element).replace(/^\s+/, '')}` : element)).join('')
     }).catch(error => {
       throw error
     })
