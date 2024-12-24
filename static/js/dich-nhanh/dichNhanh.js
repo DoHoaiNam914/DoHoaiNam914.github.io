@@ -754,7 +754,7 @@ const translate = async function translateContentInTextarea(controller = new Abo
         window.sessionStorage.setItem('translation', result)
       }
       const nomenclature = Object.entries(glossary.nomenclature).filter(([first]) => text.includes(first));
-      const INSTRUCTIONS = `Translate the following text into the language of the raw translation. ${nomenclature.length > 0 ? 'Ensure the accurate mapping of proper names of people, ethnic groups, species, or place-names, and other concepts listed in the Nomenclature Lookup Table. ' : ''}Use the raw translation as a reference. Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the entire corrected translated text and cannot include explanations, code blocks, or other information.${nomenclature.length > 0 ? `
+      const INSTRUCTIONS = `Translate the following text into the same language as the raw translation. ${/\n\s*[^\s]+/.test(text) ? 'Each line break in the original text is preserved in the translation. ' : ''}${nomenclature.length > 0 ? 'Ensure the accurate mapping of proper names of people, ethnic groups, species, or place-names, and other concepts listed in the Nomenclature Lookup Table. ' : ''}Use the raw translation as a reference. Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the entire corrected translated text and cannot include explanations, code blocks, or other information.${nomenclature.length > 0 ? `
 
 Nomenclature Lookup Table:
 \`\`\`tsv
@@ -787,7 +787,7 @@ ${rawTranslationLines.filter((element) => element.replace(/^\s+/, '').length > 0
       const lineSeperators = lines.map((element) => element === '\n')
       const resultLines = (isGemini ? polishResult.replace(/\n$/, '') : polishResult).split(polishResult.split(/(\n{1,2})/).filter(element => element.includes('\n')).map((element, index) => element !== lineSeperators[index]).reduce((accumulator, currentValue) => accumulator + (currentValue ? 1 : -1), 0) > 0 ? '\n\n' : '\n')
       const resultMap = Object.fromEntries(cleanedLines.map((element, index) => [element, resultLines[index]]))
-      result = lines.map((element, index) => (element !== '\n' ? `${(rawTranslationLines[index] ?? element).match(/^\s*/)[0]}${(resultMap[element] ?? rawTranslationLines[index] ?? element).replace(/^\s+/, '')}` : (rawTranslationLines[index] ?? element))).join('')
+      result = lines.map((element, index) => (element !== '\n' && element.replace(/^\s+/, '').length > 0 ? `${element.match(/^\s*/)[0]}${(resultMap[element] ?? element).replace(/^\s+/, '')}` : element)).join('')
     }
     if (controller.signal.aborted) return;
     $resultTextarea.html(buildResult(text, result, $activeTranslator.val()));
