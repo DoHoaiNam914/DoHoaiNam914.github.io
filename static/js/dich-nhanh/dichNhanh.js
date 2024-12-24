@@ -749,7 +749,7 @@ const translate = async function translateContentInTextarea(controller = new Abo
       const query = lines.map((element) => element !== '\n' && element.replace(/^\s/, ''));
       const rawTranslationLines = result.split('\n');
 
-      const INSTRUCTIONS = `Translate the following original text into the language of rough translation by line by line referencing that rough translation. ${nomenclature.length > 0 ? `Accurately map proper names of people, ethnic groups, species, or place-names, and other concepts listed in the Nomenclature Lookup Table. ` : ''}Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the entire corrected translated text without codeblock and cannot include explanations or other information.${nomenclature.length > 0 ? `
+      const INSTRUCTIONS = `Translate the following original text into the language of the raw translation by referring to that raw translation line by line. ${nomenclature.length > 0 ? `Accurately map proper names of people, ethnic groups, species, or place-names, and other concepts listed in the Nomenclature Lookup Table. ` : ''}Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the entire corrected translated text without codeblock and cannot include explanations or other information.${nomenclature.length > 0 ? `
 
 Nomenclature Lookup Table:
 \`\`\`tsv
@@ -761,7 +761,7 @@ ${nomenclature.map((element) => element.join('\t')).join('\n')}
 ${query.join('\n')}
 \`\`\`
 
-Rough translation:
+Raw translation:
 \`\`\`txt
 ${rawTranslationLines.map((element) => element.replace(/^\s/, '')).join('\n')}
 \`\`\``;
