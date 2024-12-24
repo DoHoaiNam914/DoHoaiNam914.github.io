@@ -295,7 +295,7 @@ ${nomenclatureList.join('\n')}
     while (queues.length > 0) {
       queries.push(queues.shift())
       if (queues.length === 0 || (splitChunkEnabled && [...queries, queues[0]].join('\n').length > this.maxContentLengthPerRequest)) {
-        const query = queries.join('')
+        const query = queries.join('\n')
         responses.push(/^(?:open-)?[^-]+tral/.test(model) ? this.runMistral(model, INSTRUCTIONS, query, prevChunk) : (isGemini ? this.runGemini(model, INSTRUCTIONS, query, prevChunk) : (model.startsWith('claude') ? this.runClaude(model, INSTRUCTIONS, query, prevChunk) : this.runOpenai(model, INSTRUCTIONS, query, prevChunk))))
         if (splitChunkEnabled) { prevChunk = query }
         queries = []
