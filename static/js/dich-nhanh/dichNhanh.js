@@ -782,12 +782,12 @@ ${rawTranslationLines.filter((element) => element.replace(/^\s+/, '').length > 0
       const isGemini = model.startsWith('gemini');
       const maybeIsClaude = async () => model.startsWith('claude') ? await generativeAi.runClaude(model, INSTRUCTIONS, MESSAGE) : await generativeAi.runOpenai(model, INSTRUCTIONS, MESSAGE)
       const maybeIsGemini = async () => isGemini ? await generativeAi.runGemini(model, INSTRUCTIONS, MESSAGE) : await maybeIsClaude()
-      let polishResult = /^(?:open-)?[^-]+tral/.test(model) ? await generativeAi.runMistral(model, INSTRUCTIONS, query) : await maybeIsGemini()
+      const polishResult = /^(?:open-)?[^-]+tral/.test(model) ? await generativeAi.runMistral(model, INSTRUCTIONS, query) : await maybeIsGemini()
       if (polishResult == null) return
       const lineSeperators = lines.map((element) => element === '\n')
       const resultLines = (isGemini ? polishResult.replace(/\n$/, '') : polishResult).split(polishResult.split(/(\n{1,2})/).filter(element => element.includes('\n')).map((element, index) => element !== lineSeperators[index]).reduce((accumulator, currentValue) => accumulator + (currentValue ? 1 : -1), 0) > 0 ? '\n\n' : '\n')
       const resultMap = Object.fromEntries(cleanedLines.map((element, index) => [element, resultLines[index]]))
-      result = lines.map(element => (element !== '\n' ? `${(rawTranslationLines[index] ?? element).match(/^\s*/)[0]}${(resultMap[element] ?? rawTranslationLines[index] ?? element).replace(/^\s+/, '')}` : (rawTranslationLines[index] ?? element))).join('')
+      result = lines.map((element, index) => (element !== '\n' ? `${(rawTranslationLines[index] ?? element).match(/^\s*/)[0]}${(resultMap[element] ?? rawTranslationLines[index] ?? element).replace(/^\s+/, '')}` : (rawTranslationLines[index] ?? element))).join('')
     }
     if (controller.signal.aborted) return;
     $resultTextarea.html(buildResult(text, result, $activeTranslator.val()));
