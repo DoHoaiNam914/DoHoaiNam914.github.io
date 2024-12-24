@@ -740,22 +740,31 @@ const translate = async function translateContentInTextarea(controller = new Abo
     if (controller.signal.aborted) return;
     if ($activeTranslator.val() !== Translators.GENERATIVE_AI || $('#polish-switch').prop('checked')) {
       if (!isRetranslate) {
-        $resultTextarea.html(buildResult(text, result, $activeTranslator.val()));
-        window.sessionStorage.setItem('translation', result);
+        $resultTextarea.html(buildResult(text, result, $activeTranslator.val()))
+        $resultTextarea.find('p > i').on('dblclick', function onDblclick() {
+          const range = document.createRange()
+          const selection = getSelection()
+          range.selectNodeContents(this)
+          selection.removeAllRanges()
+          selection.addRange(range)
+          $glossaryManagerButton.trigger('mousedown')
+          $glossaryManagerButton.click()
+        })
+        $translateTimer.text(Date.now() - startTime)
+        window.sessionStorage.setItem('translation', result)
       }
-
       const nomenclature = Object.entries(glossary.nomenclature).filter(([first]) => text.includes(first));
-      const lines = text.split(/(\n)/);
-      const query = lines.map((element) => element !== '\n' && element.replace(/^\s/, ''));
-      const rawTranslationLines = result.split('\n');
-
       const INSTRUCTIONS = `Translate the following text into the language of the raw translation. ${nomenclature.length > 0 ? 'Ensure the accurate mapping of proper names of people, ethnic groups, species, or place-names, and other concepts listed in the Nomenclature Lookup Table. ' : ''}Use the raw translation as a reference. Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the entire corrected translated text and cannot include explanations, code blocks, or other information.${nomenclature.length > 0 ? `
 
 Nomenclature Lookup Table:
 \`\`\`tsv
 source\ttarget
 ${nomenclature.map((element) => element.join('\t')).join('\n')}
-\`\`\`` : ''}`;
+\`\`\`` : ''}`
+      const lines = text.split(/(\n)/)
+      const cleanedLines = lines.filter((element) => element !== '\n' && element.replace(/^\s/, ''))
+      const query = [...cleanedLines]
+      const rawTranslationLines = result.split('\n')
       const MESSAGE = `Original text:
 \`\`\`txt
 ${query.join('\n')}
@@ -764,40 +773,35 @@ ${query.join('\n')}
 Raw translation:
 \`\`\`txt
 ${rawTranslationLines.map((element) => element.replace(/^\s/, '')).join('\n')}
-\`\`\``;
-
-      let generativeAi = translators[Translators.GENERATIVE_AI];
-
+\`\`\``
+      let generativeAi = translators[Translators.GENERATIVE_AI]
       if (generativeAi == null) {
-        generativeAi = new GenerativeAi(UUID.toLowerCase(), $openaiApiKeyText.val(), $geminiApiKeyText.val(), $anthropicApiKeyText.val(), $mistralApiKeyText.val());
-        translators[Translators.GENERATIVE_AI] = generativeAi;
+        generativeAi = new GenerativeAi(UUID.toLowerCase(), $openaiApiKeyText.val(), $geminiApiKeyText.val(), $anthropicApiKeyText.val(), $mistralApiKeyText.val())
+        translators[Translators.GENERATIVE_AI] = generativeAi
       }
-
       const isGemini = model.startsWith('gemini');
-      const maybeIsClaude = async () => model.startsWith('claude') ? await generativeAi.runClaude(model, INSTRUCTIONS, MESSAGE) : await generativeAi.runOpenai(model, INSTRUCTIONS, MESSAGE);
-      const maybeIsGemini = async () => isGemini ? await generativeAi.runGemini(model, INSTRUCTIONS, MESSAGE) : await maybeIsClaude();
-      let polishResult = /^(?:open-)?[^-]+tral/.test(model) ? await generativeAi.runMistral(model, INSTRUCTIONS, query) : await maybeIsGemini();
-      if (polishResult == null) return;
-      if (isGemini) polishResult = polishResult.replace(/\n$/, '');
-      const originalLineSeperators = lines.filter((element) => element === '\n')
-      const resultLines = polishResult.split(polishResult.split(/(\n{1,2})/).filter(element => element.includes('\n')).map((element, index) => element !== originalLineSeperators[index]).reduce((accumulator, currentValue) => accumulator + (currentValue ? 1 : -1), 0) > 0 ? '\n\n' : '\n')
-      const resultMap = Object.fromEntries(query.map((element, index) => [element, resultLines[index]]))
-      result = lines.map((element, index) => (element !== '\n' ? `${(rawTranslationLines[index] ?? element).match(/^\s*/)[0]}${(resultMap[element] ?? rawTranslationLines[index] ?? element).replace(/^\s+/, '')}` : element)).join('')
+      const maybeIsClaude = async () => model.startsWith('claude') ? await generativeAi.runClaude(model, INSTRUCTIONS, MESSAGE) : await generativeAi.runOpenai(model, INSTRUCTIONS, MESSAGE)
+      const maybeIsGemini = async () => isGemini ? await generativeAi.runGemini(model, INSTRUCTIONS, MESSAGE) : await maybeIsClaude()
+      let polishResult = /^(?:open-)?[^-]+tral/.test(model) ? await generativeAi.runMistral(model, INSTRUCTIONS, query) : await maybeIsGemini()
+      if (polishResult == null) return
+      const lineSeperators = lines.map((element) => element === '\n')
+      polishResult = (isGemini ? polishResult.replace(/\n$/, '') : value).split(polishResult.split(/(\n{1,2})/).filter(element => element.includes('\n')).map((element, index) => element !== lineSeperators[index]).reduce((accumulator, currentValue) => accumulator + (currentValue ? 1 : -1), 0) > 0 ? '\n\n' : '\n')
+      const resultMap = Object.fromEntries(cleanedLines.map((element, index) => [element, resultLines[index]]))
+      result = lines.map(element => (element !== '\n' ? `${(rawTranslationLines[index] ?? element).match(/^\s*/)[0]}${(resultMap[element] ?? rawTranslationLines[index] ?? element).replace(/^\s+/, '')}` : (rawTranslationLines[index] ?? element))).join('')
     }
-
     if (controller.signal.aborted) return;
     $resultTextarea.html(buildResult(text, result, $activeTranslator.val()));
-    window.sessionStorage.setItem('translation', result);
     $resultTextarea.find('p > i').on('dblclick', function onDblclick() {
-      const range = document.createRange();
-      const selection = getSelection();
-      range.selectNodeContents(this);
-      selection.removeAllRanges();
-      selection.addRange(range);
-      $glossaryManagerButton.trigger('mousedown');
-      $glossaryManagerButton.click();
-    });
-    $translateTimer.text(Date.now() - startTime);
+      const range = document.createRange()
+      const selection = getSelection()
+      range.selectNodeContents(this)
+      selection.removeAllRanges()
+      selection.addRange(range)
+      $glossaryManagerButton.trigger('mousedown')
+      $glossaryManagerButton.click()
+    })
+    $translateTimer.text(Date.now() - startTime)
+    window.sessionStorage.setItem('translation', result)
   } catch (error) {
     console.error(error);
     window.sessionStorage.removeItem('translation');
