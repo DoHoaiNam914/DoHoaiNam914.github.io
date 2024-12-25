@@ -94,8 +94,8 @@ export default class Papago extends Translator {
         queries = []
       }
     }
-    const result: string = await Promise.all(responses).then(responses => responses.map(({ data: { translatedText } }) => translatedText).join('\n')).catch(({ data }) => {
-      throw new Error(data)
+    const result: string = await Promise.all(responses).then(responses => responses.map(({ data: { translatedText } }) => translatedText).join('\n')).catch((reason: Error) => {
+      throw reason
     })
     super.translateText(text, targetLanguage, sourceLanguage)
     return result

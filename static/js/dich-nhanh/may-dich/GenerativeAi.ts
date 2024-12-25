@@ -299,8 +299,8 @@ ${nomenclatureList.join('\n')}
         queries = []
       }
     }
-    const result: string = await Promise.all(responses).then(responses => responses.flat().join('\n')).catch(error => {
-      throw error
+    const result: string = await Promise.all(responses).then(responses => responses.flat().join('\n')).catch((reason: Error) => {
+      throw reason
     })
     super.translateText(text, targetLanguage, this.DefaultLanguage.SOURCE_LANGUAGE)
     return result

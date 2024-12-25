@@ -37,8 +37,8 @@ export default class GoogleTranslate extends Translator {
         queries = []
       }
     }
-    const result: string = await Promise.all(responses).then(responses => Utils.convertHtmlToText(responses.map(({ data: { data: { translations } } }) => translations.map(({ translatedText }) => translatedText)).flat().join('\n'))).catch(({ data }) => {
-      throw new Error(data)
+    const result: string = await Promise.all(responses).then(responses => Utils.convertHtmlToText(responses.map(({ data: { data: { translations } } }) => translations.map(({ translatedText }) => translatedText)).flat().join('\n'))).catch((reason: Error) => {
+      throw reason
     })
     super.translateText(text, targetLanguage, sourceLanguage)
     return result

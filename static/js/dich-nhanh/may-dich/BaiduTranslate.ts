@@ -55,8 +55,8 @@ export default class BaiduTranslate extends Translator {
         queries = []
       }
     }
-    const result: string = await Promise.all(responses).then(responses => responses.map(({ data }) => window.JSON.parse(data.split('\n').filter(element => element.includes('"event":"Translating"'))[0].replace(/^data: /, '')).data.list.map(({ dst }) => dst).join('\n')).join('\n')).catch(({ data }) => {
-      throw new Error(data)
+    const result: string = await Promise.all(responses).then(responses => responses.map(({ data }) => window.JSON.parse(data.split('\n').filter(element => element.includes('"event":"Translating"'))[0].replace(/^data: /, '')).data.list.map(({ dst }) => dst).join('\n')).join('\n')).catch((reason: Error) => {
+      throw reason
     })
     super.translateText(text, targetLanguage, sourceLanguage)
     return result

@@ -2033,8 +2033,8 @@ export default class WebnovelTranslate extends Translator {
       const adjustedText: string = isCj ? b.replace(EOL.repeat(2), EOL) : b
       const lineCountDifference: number = [...adjustedText.matchAll(new RegExp(Utils.escapeRegExp(EOL), 'g'))].length - [...second.matchAll(/\n/g)].length
       return (lineCountDifference < 0 ? second.replace(new RegExp(`\\n{${Math.abs(lineCountDifference)}}$`), '') : second).concat('\n'.repeat(lineCountDifference > 0 ? lineCountDifference : 0))
-    })).flat().join('')).catch(({ data }) => {
-      throw new Error(data)
+    })).flat().join('')).catch((reason: Error) => {
+      throw reason
     })
     super.translateText(text, targetLanguage, sourceLanguage)
     return result
