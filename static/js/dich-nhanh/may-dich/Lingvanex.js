@@ -29,7 +29,7 @@ export default class GoogleTranslate extends Translator {
     while (lines.length > 0) {
       queries.push(lines.shift())
       if (lines.length === 0 || [...queries, lines[0]].join('\n').length > this.maxContentLengthPerRequest) {
-        responses.push(this.instance.post('https://api-b2b.backenster.com/b1/api/v3/translate/', `from=${sourceLanguage}&to=${targetLanguage}&text=${encodeURIComponent(queries.join('\n'))}&platform=dp`, {
+        responses.push(this.instance.post('https://api-b2b.backenster.com/b1/api/v3/translate/', `from=${sourceLanguage ?? this.DefaultLanguage.SOURCE_LANGUAGE}&to=${targetLanguage}&text=${encodeURIComponent(queries.join('\n'))}&platform=dp`, {
           headers: {
             Accept: 'application/json, text/javascript, */*; q=0.01',
             Authorization: this.authToken
