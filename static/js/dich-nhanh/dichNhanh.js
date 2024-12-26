@@ -1250,7 +1250,8 @@ $alignmentRadio.change(function onChange() {
 });
 
 $boldTextSwitch.change(function onChange() {
-  $(document.body).css('--opt-font-weight', $(this).prop('checked') ? 'bold' : ($themeDropdown.find('.active').data('font-weight') ?? 'normal'));
+  const fontWeight = $themeDropdown.find('.active').data('font-weight')
+  $(document.body).css('--opt-font-weight', $(this).prop('checked') ? 'bold' : (fontWeight != null && fontWeight != 'bold' ? fontWeight : 'normal'));
 });
 
 $translatorDropdown.find('.dropdown-item').click(async function onClick() {
