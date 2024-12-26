@@ -13,7 +13,7 @@ export default class DeeplTranslate extends Translator {
 
   private readonly maxContentLinePerRequest: number = 50
   private readonly maxRequestSize: number = 128 * 1024
-  private readonly instance: axios
+  private readonly instance: AxiosInstance
   public constructor (authKey: string) {
     super()
     this.instance = axios.create({

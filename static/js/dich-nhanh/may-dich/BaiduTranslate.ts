@@ -26,7 +26,7 @@ export default class BaiduTranslate extends Translator {
   }
 
   private readonly maxContentLengthPerRequest: number = 1000
-  private readonly instance = axios.create({
+  private readonly instance: AxiosInstance = axios.create({
     baseURL: `${Utils.CORS_HEADER_PROXY}https://fanyi.baidu.com`,
     signal: this.controller.signal
   })

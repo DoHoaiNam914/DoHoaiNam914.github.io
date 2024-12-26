@@ -11,7 +11,7 @@ export default class GoogleTranslate extends Translator {
   }
 
   private readonly maxContentLengthPerRequest: number = 1000
-  private readonly instance: axios = axios.create({
+  private readonly instance: AxiosInstance = axios.create({
     baseURL: `${Utils.CORS_HEADER_PROXY}https://www.bing.com`,
     signal: this.controller.signal
   })

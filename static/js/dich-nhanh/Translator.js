@@ -5,6 +5,6 @@ export default class Translator {
   result = ''
   async translateText (text, targetLanguage, sourceLanguage = null) {
     this.lastRequestData = { sourceLanguage, targetLanguage, text }
-    return this.result
+    return null
   }
 }

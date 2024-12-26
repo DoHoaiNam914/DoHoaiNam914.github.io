@@ -11,7 +11,7 @@ export default class GoogleTranslate extends Translator {
   }
 
   private readonly maxContentLengthPerRequest: number = 3000
-  private readonly instance: axios = axios.create({ signal: this.controller.signal })
+  private readonly instance: AxiosInstance = axios.create({ signal: this.controller.signal })
   private authToken: string
   private async fetchApiKey (): Promise<void> {
     await this.instance.get(`${Utils.CORS_HEADER_PROXY}https://lingvanex.com/lingvanex_demo_page/js/api-base.js`).then(({ data }) => {

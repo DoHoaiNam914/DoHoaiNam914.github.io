@@ -76,7 +76,7 @@ export default class GenerativeAi extends Translator {
     })
   }
 
-  async runOpenai (model, instructions, message, prevChunk = '') {
+  async runOpenai (model, instructions, message) {
     const searchParams = new URLSearchParams(window.location.search)
     const isDebug = searchParams.has('debug')
     if (!isDebug && window.localStorage.getItem('OPENAI_API_KEY') == null && this.duckchat == null) { await this.getDuckchatStatus() }
@@ -87,62 +87,51 @@ export default class GenerativeAi extends Translator {
           content: instructions,
           role: 'user'
         },
-        ...(prevChunk.length > 0
-          ? [{
-              content: prevChunk,
-              role: 'user'
-            }]
-          : []),
         {
           content: message,
           role: 'user'
         }
       ],
       response_format: model.startsWith('o1') ? undefined : { type: 'text' },
-      temperature: model.startsWith('o1') ? undefined : 0.3,
-      max_completion_tokens: ['gpt-4o-2024-05-13', 'gpt-4-turbo', 'gpt-4-turbo-2024-04-09', 'gpt-4-turbo-preview', 'gpt-4-0125-preview', 'gpt-4-1106-preview', 'gpt-3.5-turbo-0125', 'gpt-3.5-turbo', 'gpt-3.5-turbo-1106'].some((element) => model === element) ? 4096 : (model.startsWith('o1-mini') ? 65536 : (model.startsWith('o1-preview') ? 32768 : (model.startsWith('o1') ? 100000 : (model === 'gpt-4' || model.startsWith('gpt-4-') ? undefined /* 8192 */ : 16384)))),
-      top_p: model.startsWith('o1') ? undefined : 0.3,
+      temperature: model.startsWith('o1') ? undefined : 0.3, // Mặc định: 1
+      max_completion_tokens: ['gpt-4o-2024-05-13', 'gpt-4-turbo', 'gpt-4-turbo-2024-04-09', 'gpt-4-turbo-preview', 'gpt-4-0125-preview', 'gpt-4-1106-preview', 'gpt-3.5-turbo-0125', 'gpt-3.5-turbo', 'gpt-3.5-turbo-1106'].some((element) => model === element) ? 4096 : (model.startsWith('o1-mini') ? 65536 : (model.startsWith('o1-preview') ? 32768 : (model.startsWith('o1') ? 100000 : (model === 'gpt-4' || model.startsWith('gpt-4-') ? undefined /* 8192 */ : 16384)))), // Mặc định: model.startsWith('gpt-4o-mini') || model === 'gpt-3.5-turbo-16k' ? (model.startsWith('gpt-3.5-turbo') ? (/^gpt-3.5-turbo-\d+$/.test(model) ? 4095 : 4096) : 10000) : 2048
+      top_p: model.startsWith('o1') ? undefined : 0.3, // Mặc định: 1
       frequency_penalty: model.startsWith('o1') ? undefined : 0,
       presence_penalty: model.startsWith('o1') ? undefined : 0
     }
-    const maybeIsDebug = async () => isDebug
-      ? await axios.post(`${Utils.CORS_HEADER_PROXY}https://gateway.api.airapps.co/aa_service=server5/aa_apikey=5N3NR9SDGLS7VLUWSEN9J30P//v3/proxy/open-ai/v1/chat/completions`, window.JSON.stringify(requestBody), {
-        headers: {
-          'User-Agent': 'iOS-TranslateNow/8.8.0.1016 CFNetwork/1568.200.51 Darwin/24.1.0',
-          'Content-Type': 'application/json',
-          'accept-language': 'vi-VN,vi;q=0.9',
-          'air-user-id': this.uuid
-        },
-        signal: this.controller.signal
-      }).then(({ data }) => data).catch(({ data }) => {
-        throw new Error(data)
-      })
-      : model === 'gpt-4o-mini' && await this.duckchat.post(null, window.JSON.stringify({
-        model,
-        messages: [
-          {
-            role: 'user',
-            content: instructions
-          },
-          ...(prevChunk.length > 0
-            ? [{
+    const result = window.localStorage.getItem('OPENAI_API_KEY') == null
+      ? (isDebug
+          ? await axios.post(`${Utils.CORS_HEADER_PROXY}https://gateway.api.airapps.co/aa_service=server5/aa_apikey=5N3NR9SDGLS7VLUWSEN9J30P//v3/proxy/open-ai/v1/chat/completions`, window.JSON.stringify(requestBody), {
+            headers: {
+              'User-Agent': 'iOS-TranslateNow/8.8.0.1016 CFNetwork/1568.200.51 Darwin/24.1.0',
+              'Content-Type': 'application/json',
+              'accept-language': 'vi-VN,vi;q=0.9',
+              'air-user-id': this.uuid
+            },
+            signal: this.controller.signal
+          }).then(({ data }) => data).catch(({ data }) => {
+            throw new Error(data)
+          })
+          : model === 'gpt-4o-mini' && await this.duckchat.post(null, window.JSON.stringify({
+            model,
+            messages: [
+              {
                 role: 'user',
-                content: prevChunk
-              }]
-            : []),
-          {
-            role: 'user',
-            content: message
-          }
-        ]
-      })).then(({ data }) => ({ choices: [{ message: { content: data.split('\n').filter((element) => /data: {(?:"role":"assistant",)?"message"/.test(element)).map((element) => window.JSON.parse(element.replace(/^data: /, '')).message).join('') } }] })).catch(({ data }) => {
-        throw new Error(data)
-      })
-    const result = window.localStorage.getItem('OPENAI_API_KEY') == null ? await maybeIsDebug() : await this.openai.chat.completions.create(requestBody)
+                content: instructions
+              },
+              {
+                role: 'user',
+                content: message
+              }
+            ]
+          })).then(({ data }) => ({ choices: [{ message: { content: data.split('\n').filter((element) => /data: {(?:"role":"assistant",)?"message"/.test(element)).map((element) => window.JSON.parse(element.replace(/^data: /, '')).message).join('') } }] })).catch(({ data }) => {
+            throw new Error(data)
+          }))
+      : await this.openai.chat.completions.create(requestBody)
     return result.choices[0].message.content
   }
 
-  async runClaude (model, instructions, message, prevChunk = '') {
+  async runClaude (model, instructions, message) {
     if (window.localStorage.getItem('ANTHROPIC_API_KEY') == null && this.duckchat == null) { await this.getDuckchatStatus() }
     const msg = window.localStorage.getItem('ANTHROPIC_API_KEY') == null && model === 'claude-3-haiku-20240307'
       ? this.duckchat.post(null, window.JSON.stringify({
@@ -152,12 +141,6 @@ export default class GenerativeAi extends Translator {
             role: 'user',
             content: instructions
           },
-          ...(prevChunk.length > 0
-            ? [{
-                role: 'user',
-                content: prevChunk
-              }]
-            : []),
           {
             role: 'user',
             content: message
@@ -168,19 +151,13 @@ export default class GenerativeAi extends Translator {
       })
       : await this.anthropic.messages.create({
         model,
-        max_tokens: !model.startsWith('claude-3-5') ? 4096 : 8192,
-        temperature: 0.3,
+        max_tokens: !model.startsWith('claude-3-5') ? 4096 : 8192, // Mặc định: 1000
+        temperature: 0.3, // Mặc định: 0
         messages: [
           {
             role: 'user',
             content: instructions
           },
-          ...(prevChunk.length > 0
-            ? [{
-                role: 'user',
-                content: prevChunk
-              }]
-            : []),
           {
             role: 'user',
             content: message
@@ -191,11 +168,11 @@ export default class GenerativeAi extends Translator {
     return msg
   }
 
-  async runGemini (model, instructions, message, prevChunk = '') {
+  async runGemini (model, instructions, message) {
     const generativeModel = this.genAI.getGenerativeModel({ model })
     const generationConfig = {
-      temperature: 0.3,
-      topP: 0.3,
+      temperature: 0.3, // Mặc định: 1
+      topP: 0.3, // Mặc định: model.startsWith('gemini-1.0-pro') ? 0.9 : 0.95
       topK: /^gemini-1\.5-[^-]+-001$/.test(model) ? 64 : 40,
       maxOutputTokens: 8192,
       responseMimeType: 'text/plain'
@@ -210,17 +187,7 @@ export default class GenerativeAi extends Translator {
               text: instructions
             }
           ]
-        },
-        ...(prevChunk.length > 0
-          ? [{
-              role: 'user',
-              parts: [
-                {
-                  text: prevChunk
-                }
-              ]
-            }]
-          : [])
+        }
       ],
       safetySettings: [
         {
@@ -250,7 +217,7 @@ export default class GenerativeAi extends Translator {
     return result.response.text()
   }
 
-  async runMistral (model, instructions, message, prevChunk = '') {
+  async runMistral (model, instructions, message) {
     const chatResponse = await this.client.chat.complete({
       model,
       messages: [
@@ -258,12 +225,6 @@ export default class GenerativeAi extends Translator {
           role: 'user',
           content: instructions
         },
-        ...(prevChunk.length > 0
-          ? [{
-              role: 'user',
-              content: prevChunk
-            }]
-          : []),
         {
           role: 'user',
           content: message
@@ -291,13 +252,11 @@ ${nomenclatureList.join('\n')}
     const responses = []
     const isGemini = model.startsWith('gemini')
     let queries = []
-    let prevChunk = ''
     while (queues.length > 0) {
       queries.push(queues.shift())
       if (queues.length === 0 || (splitChunkEnabled && [...queries, queues[0]].join('\n').length > this.maxContentLengthPerRequest)) {
         const query = queries.join('\n')
-        responses.push(/^(?:open-)?[^-]+tral/.test(model) ? this.runMistral(model, INSTRUCTIONS, query, prevChunk) : (isGemini ? this.runGemini(model, INSTRUCTIONS, query, prevChunk) : (model.startsWith('claude') ? this.runClaude(model, INSTRUCTIONS, query, prevChunk) : this.runOpenai(model, INSTRUCTIONS, query, prevChunk))))
-        if (splitChunkEnabled) { prevChunk = query }
+        responses.push(/^(?:open-)?[^-]+tral/.test(model) ? this.runMistral(model, INSTRUCTIONS, query) : (isGemini ? this.runGemini(model, INSTRUCTIONS, query) : (model.startsWith('claude') ? this.runClaude(model, INSTRUCTIONS, query) : this.runOpenai(model, INSTRUCTIONS, query))))
         queries = []
       }
     }

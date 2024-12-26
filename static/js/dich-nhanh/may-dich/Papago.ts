@@ -47,7 +47,7 @@ export default class Papago extends Translator {
   }
 
   private readonly maxContentLengthPerRequest: number = 3000
-  private readonly instance: axios = axios.create({
+  private readonly instance: AxiosInstance = axios.create({
     baseURL: `${Utils.CORS_HEADER_PROXY}https://papago.naver.com`,
     signal: this.controller.signal
   })
