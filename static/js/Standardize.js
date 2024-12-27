@@ -40,11 +40,11 @@ function vosYToI (text) {
   let result = text
   for (let i = 0; i < Y.length; i++) {
     // quí- > quý-
-    result = result.replaceAll(new RegExp(`(?<=(?:\\P{L}|^)[Qq][Uu])${I[i]}([ptuPTU]|nh|NH|ch|CH)?(?=^|$|\\P{L})`, 'gui'), `${Y[i]}$1`)
+    result = result.replaceAll(new RegExp(`((?:\\P{L}|^)[Qq][Uu])${I[i]}([ptuPTU]|nh|NH|ch|CH)?(?=^|$|\\P{L})`, 'gui'), `$1${Y[i]}$2`)
     // qụi- > quỵ-
-    result = result.replaceAll(new RegExp(`(?<=(?:\\P{L}|^)[Qq])${Ux[i]}i([ptuPTU]|nh|NH|ch|CH)?(?=^|$|\\P{L})`, 'gui'), `${U1[i]}${Y[i]}$1`)
+    result = result.replaceAll(new RegExp(`((?:\\P{L}|^)[Qq])${Ux[i]}i([ptuPTU]|nh|NH|ch|CH)?(?=^|$|\\P{L})`, 'gui'), `$1${U1[i]}${Y[i]}$2`)
     // hy, kỳ, lý > hi, kì, lí
-    result = result.replaceAll(new RegExp(`(?<=(?:\\P{L}|^)${Cc})${Y[i]}(?=^|$|\\P{L})`, 'gui'), I[i])
+    result = result.replaceAll(new RegExp(`((?:\\P{L}|^)${Cc})${Y[i]}(?=^|$|\\P{L})`, 'gui'), `$1${I[i]}`)
   }
   return result
 }
@@ -55,7 +55,7 @@ function vosIToY (text) {
   let result = text
   for (let i = 0; i < I.length; i++) {
     // hi, kì, lí > hy, kỳ, lý
-    result = result.replaceAll(new RegExp(`(?<=(?:\\P{L}|^)${Cc})${I[i]}(?=^|$|\\P{L})`, 'gui'), Y[i])
+    result = result.replaceAll(new RegExp(`((?:\\P{L}|^)${Cc})${I[i]}(?=^|$|\\P{L})`, 'gui'), `$1${Y[i]}`)
   }
   return result
 }
@@ -68,7 +68,7 @@ function vosOaoeuy (text) {
   let result = text
   for (let i = 0; i < wrong.length; i++) {
     // Replace wrong
-    result = result.replaceAll(new RegExp(`(?<=(?:\\P{L}|^)${Cf}?)${wrong[i]}`, 'gu'), right[i])
+    result = result.replaceAll(new RegExp(`((?:\\P{L}|^)${Cf}?)${wrong[i]}`, 'gu'), `$1${right[i]}`)
   }
   return result
 }
@@ -81,7 +81,7 @@ function reversedVosOaoeuy (text) {
   let result = text
   for (let i = 0; i < right.length; i++) {
     // Replace right
-    result = result.replaceAll(new RegExp(`(?<=(?:\\P{L}|^)${Cf}?)${right[i]}`, 'gu'), wrong[i])
+    result = result.replaceAll(new RegExp(`((?:\\P{L}|^)${Cf}?)${right[i]}`, 'gu'), `$1${wrong[i]}`)
   }
   return result
 }
