@@ -1070,10 +1070,16 @@ $retranslateButton.on('click', () => {
   $translateButton.text('Dịch').click();
 });
 
-$glossaryManagerButton.on('mousedown click', () => {
+$glossaryManagerButton.on('mousedown', (event) => {
+  event.preventDefault()
   if ($resultTextarea.is(':visible')) $sourceEntryInput.val((window.getSelection().toString() || '').replaceAll(/\n/g, ' '))
-  window.getSelection().removeAllRanges()
-});
+  if ($sourceEntryInput.val() === (window.getSelection().toString() || '').replaceAll(/\n/g, ' ')) window.getSelection().removeAllRanges()
+})
+
+$glossaryManagerButton.on('click', () => {
+  if ($resultTextarea.is(':visible')) $sourceEntryInput.val((window.getSelection().toString() || '').replaceAll(/\n/g, ' '))
+  if ($sourceEntryInput.val() === (window.getSelection().toString() || '').replaceAll(/\n/g, ' ')) window.getSelection().removeAllRanges()
+})
 
 $inputTextarea.on('input', function onInput() {
   $('#input-textarea-counter').text($(this).val().replaceAll('\n', $translatorDropdown.find('.active').val() === Translators.GOOGLE_TRANSLATE ? '\r\n' : '\n').length);
