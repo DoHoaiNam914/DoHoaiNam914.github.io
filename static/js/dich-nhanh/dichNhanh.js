@@ -451,8 +451,8 @@ const glossary = {
     ['ㇿ', '~ro'],
   ],
   sinovietnameses: [],
-  phonetics: { ...JSON.parse(localStorage.getItem('glossary') ?? JSON.stringify({ phonetics: {} })).phonetics },
-  nomenclature: { ...JSON.parse(localStorage.getItem('glossary') ?? JSON.stringify({ nomenclature: {} })).nomenclature },
+  phonetics: { ...window.localStorage.getItem('glossary') != null ? JSON.parse(window.localStorage.getItem('glossary')).phonetics : {} },
+  nomenclature: { ...window.localStorage.getItem('glossary') != null ? JSON.parse(window.localStorage.getItem('glossary')).nomenclature : {} },
 };
 
 const translators = {};
@@ -738,7 +738,7 @@ const translate = async function translateContentInTextarea(controller = new Abo
     $resultTextarea.html(buildResult(text, result, $activeTranslator.val()));
     $resultTextarea.find('p > i').on('dblclick', function onDblclick() {
       const range = document.createRange()
-      const selection = getSelection()
+      const selection = window.getSelection()
       range.selectNodeContents(this)
       selection.removeAllRanges()
       selection.addRange(range)
@@ -1070,9 +1070,9 @@ $retranslateButton.on('click', () => {
   $translateButton.text('Dịch').click();
 });
 
-$glossaryManagerButton.on('mousedown', () => {
-  if ($resultTextarea.is(':visible')) $sourceEntryInput.val((getSelection().toString() || '').replaceAll(/\n/g, ' '));
-  if (getSelection != null) window.getSelection().removeAllRanges();
+$glossaryManagerButton.on('mousedown click', () => {
+  if ($resultTextarea.is(':visible')) $sourceEntryInput.val((window.getSelection().toString() || '').replaceAll(/\n/g, ' '))
+  window.getSelection().removeAllRanges()
 });
 
 $inputTextarea.on('input', function onInput() {
@@ -1516,15 +1516,15 @@ $('.define-button').on('click', function onClick() {
     open(href, '_blank', 'width=1000,height=577');
   }
 
-  if (getSelection != null) getSelection().removeAllRanges();
-  else if (document.selection != null) document.selection.empty();
+  window.getSelection().removeAllRanges();
+  if (document.selection != null) document.selection.empty();
   $sourceEntryInput.blur();
 });
 
 $('.translate-webpage-button').on('click', function onClick() {
   if ($sourceEntryInput.val().length > 0) open($(this).data('href').replace('%s', encodeURIComponent($sourceEntryInput.val().trimEnd())), '_blank', 'width=1000,height=577');
-  if (getSelection != null) getSelection().removeAllRanges();
-  else if (document.selection != null) document.selection.empty();
+  window.getSelection().removeAllRanges();
+  if (document.selection != null) document.selection.empty();
   $sourceEntryInput.blur();
 });
 
