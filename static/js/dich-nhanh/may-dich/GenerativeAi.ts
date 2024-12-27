@@ -239,7 +239,7 @@ export default class GenerativeAi extends Translator {
 
   public async translateText (text: string, targetLanguage: string, model: string = 'gpt-4o-mini', nomenclature: string[][] = [], splitChunkEnabled: boolean = false): Promise<string | null> {
     const nomenclatureList: string[] = nomenclature.filter(([first]) => text.includes(first)).map(element => element.join('\t'))
-    const INSTRUCTIONS: string = `Translate the following text into ${targetLanguage}. ${/\n\s*[^\s]+/.test(text) ? 'Preserve each end of line in the original text during the translation. ' : ''}${nomenclatureList.length > 0 ? 'Ensure the accurate mapping of proper names of people, ethnic groups, species, or place-names, and other concepts listed in the Nomenclature Lookup Table. ' : ''}Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text and cannot include explanations or other information.${nomenclatureList.length > 0
+    const INSTRUCTIONS: string = `Translate the following text into ${targetLanguage}. ${nomenclatureList.length > 0 ? 'Ensure the accurate mapping of proper names of people, ethnic groups, species, or place-names, and other concepts listed in the Nomenclature Lookup Table. ' : ''}Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text and cannot include explanations or other information.${nomenclatureList.length > 0
 ? `
 
 Nomenclature Lookup Table:
@@ -253,7 +253,7 @@ ${nomenclatureList.join('\n')}
     const isGemini = model.startsWith('gemini')
     let queries: string[] = []
     while (queues.length > 0) {
-      queries.push(queues.shift())
+      queries.push(queues.shift() as string)
       if (queues.length === 0 || (splitChunkEnabled && [...queries, queues[0]].join('\n').length > this.maxContentLengthPerRequest)) {
         const query: string = queries.join('\n')
         responses.push(/^(?:open-)?[^-]+tral/.test(model) ? this.runMistral(model, INSTRUCTIONS, query) : (isGemini ? this.runGemini(model, INSTRUCTIONS, query) : (model.startsWith('claude') ? this.runClaude(model, INSTRUCTIONS, query) : this.runOpenai(model, INSTRUCTIONS, query))))
