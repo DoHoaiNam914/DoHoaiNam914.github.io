@@ -786,7 +786,7 @@ const saveGlossary = function saveGlossaryToLocalStorage() {
   const activeGlossaryList = $glossaryListSelect.val();
   reloadGlossary(activeGlossaryList);
   const glossaryStorage = { phonetics: glossary.phonetics, nomenclature: glossary.nomenclature };
-  if (Object.keys(glossaryStorage).includes(activeGlossaryList)) glossary[activeGlossaryList] = Object.fromEntries(Object.entries(glossary[activeGlossaryList]) /* .toSorted */ .sort((a, b) => a[1].localeCompare(b[1], 'vi', { ignorePunctuation: true }) || a[0].localeCompare(b[0], 'vi', { ignorePunctuation: true })));
+  if (Object.keys(glossaryStorage).includes(activeGlossaryList)) glossary[activeGlossaryList] = Object.fromEntries(Object.entries(glossary[activeGlossaryList]).toSorted((a, b) => a[1].localeCompare(b[1], 'vi', { ignorePunctuation: true }) || a[0].localeCompare(b[0], 'vi', { ignorePunctuation: true })));
   localStorage.setItem('glossary', JSON.stringify(glossaryStorage));
 };
 
