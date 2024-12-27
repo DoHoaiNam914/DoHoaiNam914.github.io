@@ -1071,12 +1071,6 @@ $retranslateButton.on('click', () => {
 });
 
 $glossaryManagerButton.on('mousedown', (event) => {
-  event.preventDefault()
-  if ($resultTextarea.is(':visible')) $sourceEntryInput.val((window.getSelection().toString() || '').replaceAll(/\n/g, ' '))
-  if ($sourceEntryInput.val() === (window.getSelection().toString() || '').replaceAll(/\n/g, ' ')) window.getSelection().removeAllRanges()
-})
-
-$glossaryManagerButton.on('click', () => {
   if ($resultTextarea.is(':visible')) $sourceEntryInput.val((window.getSelection().toString() || '').replaceAll(/\n/g, ' '))
   if ($sourceEntryInput.val() === (window.getSelection().toString() || '').replaceAll(/\n/g, ' ')) window.getSelection().removeAllRanges()
 })
