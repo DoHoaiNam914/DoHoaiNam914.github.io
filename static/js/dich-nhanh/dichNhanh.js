@@ -735,8 +735,8 @@ const translate = async function translateContentInTextarea(controller = new Abo
     }
     if (controller.signal.aborted) return
     $translateTimer.text(Date.now() - startTime)
-    const lineSeperators = text.split(/(\n)/)
-    $resultTextarea.html(buildResult(text, $activeTranslator.val() === Translators.GENERATIVE_AI && /\n\s*[^\s]+/.test(text) && result.split(/(\n{1,2})/).filter(element => element.includes('\n')).map((element, index) => element !== lineSeperators[index]).reduce((accumulator, currentValue) => accumulator + (currentValue ? 1 : -1), 0) > 0 ? result.replaceAll(/(\n)\n/g, '$1') : result, $activeTranslator.val()))
+    const lineSeperators = [...text.matchAll(/\n/g)]
+    $resultTextarea.html(buildResult(text, $activeTranslator.val() === Translators.GENERATIVE_AI && /\n\s*[^\s]+/.test(text) && [...result.matchAll(/\n{1,2}/g)].map(([first], index) => first === lineSeperators[index][0]).reduce((accumulator, currentValue) => accumulator + (currentValue ? 1 : -1), 0) < 0 ? result.replaceAll(/(\n)\n/g, '$1') : result, $activeTranslator.val()))
     $resultTextarea.find('p > i').on('dblclick', function onDblclick() {
       const range = document.createRange()
       const selection = window.getSelection()
