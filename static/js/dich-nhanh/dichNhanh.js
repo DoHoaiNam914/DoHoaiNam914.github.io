@@ -716,26 +716,27 @@ const translate = async function translateContentInTextarea(controller = new Abo
   const $activeTranslator = $translatorDropdown.find('.active');
 
   try {
-    const startTime = Date.now();
-    const model = $('#model-select').val();
+    const startTime = Date.now()
+    const model = $('#model-select').val()
     const text = [Translators.GENERATIVE_AI, Translators.WEBNOVEL_TRANSLATE].some(element => $activeTranslator.val() === element) ? $inputTextarea.val().split('\n').filter(element => element.replace(/^\s+/, '').length > 0).join('\n') : $inputTextarea.val()
-    const targetLanguage = $targetLanguageSelect.val();
+    const targetLanguage = $targetLanguageSelect.val()
     let result = ''
 
     switch ($activeTranslator.val()) {
       case Translators.GENERATIVE_AI: {
-        currentTranslator.controller = controller;
-        result = await currentTranslator.translateText(text, targetLanguage, model, Object.entries(glossary.nomenclature), $('#split-chunk-switch').prop('checked'));
-        break;
+        currentTranslator.controller = controller
+        result = await currentTranslator.translateText(text, targetLanguage, model, Object.entries(glossary.nomenclature), $('#split-chunk-switch').prop('checked'))
+        break
       }
       default: {
-        currentTranslator.controller = controller;
-        result = await currentTranslator.translateText(text, targetLanguage, $sourceLanguageSelect.val());
+        currentTranslator.controller = controller
+        result = await currentTranslator.translateText(text, targetLanguage, $sourceLanguageSelect.val())
       }
     }
-    if (controller.signal.aborted) return;
+    if (controller.signal.aborted) return
     $translateTimer.text(Date.now() - startTime)
-    $resultTextarea.html(buildResult(text, result, $activeTranslator.val()));
+    const lineSeperators = text.split(/(\n)/)
+    $resultTextarea.html(buildResult(text, $activeTranslator.val() === Translators.GENERATIVE_AI && /\n\s*[^\s]+/.test(text) && result.split(/(\n{1,2})/).filter(element => element.includes('\n')).map((element, index) => element !== lineSeperators[index]).reduce((accumulator, currentValue) => accumulator + (currentValue ? 1 : -1), 0) > 0 ? result.replaceAll(/(\n)\n/g, '$1') : result, $activeTranslator.val()))
     $resultTextarea.find('p > i').on('dblclick', function onDblclick() {
       const range = document.createRange()
       const selection = window.getSelection()
@@ -747,12 +748,12 @@ const translate = async function translateContentInTextarea(controller = new Abo
     })
     window.sessionStorage.setItem('translation', result)
   } catch (e) {
-    console.error(e);
-    if (controller.signal.aborted) return;
+    console.error(e)
+    if (controller.signal.aborted) return
     const paragraph = document.createElement('p');
-    paragraph.innerText = `Bản dịch thất bại: ${e}`;
-    $resultTextarea.html(null);
-    $resultTextarea.append(paragraph);
+    paragraph.innerText = `Bản dịch thất bại: ${e}`
+    $resultTextarea.html(null)
+    $resultTextarea.append(paragraph)
   }
 };
 
