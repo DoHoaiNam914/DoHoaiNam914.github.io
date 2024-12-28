@@ -735,8 +735,7 @@ const translate = async function translateContentInTextarea(controller = new Abo
     }
     if (controller.signal.aborted) return
     $translateTimer.text(Date.now() - startTime)
-    const lineSeperators = [...text.matchAll(/\n/g)]
-    $resultTextarea.html(buildResult(text, $activeTranslator.val() === Translators.GENERATIVE_AI && /\n\s*[^\s]+/.test(text) && [...result.matchAll(/\n{1,2}/g)].map(([first], index) => first === lineSeperators[index][0]).reduce((accumulator, currentValue) => accumulator - (currentValue ? 1 : -1), 0) > 0 ? result.replaceAll(/(\n)\n/g, '$1') : result, $activeTranslator.val()))
+    $resultTextarea.html(buildResult(text, $activeTranslator.val() === Translators.GENERATIVE_AI && /\n\s*[^\s]+/.test(text) && [...result.matchAll(/\n{1,2}/g)].length >= ([...result.matchAll(/\n(?!\n)/g)].length / 4) ? result.replaceAll(/(\n)\n/g, '$1') : result, $activeTranslator.val()))
     $resultTextarea.find('p > i').on('dblclick', function onDblclick() {
       const range = document.createRange()
       const selection = window.getSelection()
@@ -1642,21 +1641,18 @@ $translateEntryButtons.click(async function onClick() {
           break;
         }
       }
-      
+      const model = $('#translate-entry-model-select').val()
       let result = ''
-
       if (translator != null) {
         switch (activeTranslator) {
-          case Translators.GENERATIVE_AI: {
-            translator.controller = entryTranslationController;
-            result = await translator.translateText(text, targetLanguage, $('#translate-entry-model-select').val(), $('#apply-nomenclature-switch').prop('checked') ? Object.entries(glossary.nomenclature) : []);
+          case Translators.GENERATIVE_AI:
+            translator.controller = entryTranslationController
+            result = await translator.translateText(text, targetLanguage, model, $('#apply-nomenclature-switch').prop('checked') ? Object.entries(glossary.nomenclature) : [])
+            if (model.startsWith('gemini')) result = result.trimEnd()
             break;
-          }
-          default: {
-            translator.controller = entryTranslationController;
-            result = await translator.translateText(text, targetLanguage);
-            break;
-          }
+          default:
+            translator.controller = entryTranslationController
+            result = await translator.translateText(text, targetLanguage)
         }
       }
 
