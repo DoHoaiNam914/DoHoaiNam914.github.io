@@ -261,7 +261,7 @@ ${nomenclatureList.join('\n')}
         responses.push((async function () {
           const response: Promise<string>  = isMistral ? INSTANCE.runMistral(model, INSTRUCTIONS, query) : (isGemini ? INSTANCE.runGemini(model, INSTRUCTIONS, query) : (model.startsWith('claude') ? INSTANCE.runClaude(model, INSTRUCTIONS, query) : INSTANCE.runOpenai(model, INSTRUCTIONS, query)))
           if (isMistral)
-            await Utils.sleep(1000)
+            await Utils.sleep(2000)
           return response
         }()))
         queries = []
