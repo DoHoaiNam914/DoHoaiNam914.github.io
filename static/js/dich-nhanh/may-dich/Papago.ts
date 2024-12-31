@@ -72,7 +72,8 @@ export default class Papago extends Translator {
   }
 
   public async translateText (text: string, targetLanguage: string, sourceLanguage: string | null = null): Promise<string | null> {
-    if (this.version == null) await this.fetchVersion()
+    if (this.version == null)
+      await this.fetchVersion()
     const lines: string[] = text.split('\n')
     const responses: Array<Promise<{ data: { translatedText: string } }>> = []
     const date: Date = new Date()

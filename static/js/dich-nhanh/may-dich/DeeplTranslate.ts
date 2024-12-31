@@ -29,7 +29,8 @@ export default class DeeplTranslate extends Translator {
     const usage = await this.instance.get('/v2/usage').then(({ data }) => data).catch(({ data }) => {
       throw new Error(data)
     })
-    if ((usage.character_limit - usage.character_count) < text.length) throw new Error(`Bản dịch lỗi: Đã đạt đến giới hạn sử dụng của Auth Key này: ${usage.character_count}/${usage.character_limit}`)
+    if ((usage.character_limit - usage.character_count) < text.length)
+      throw new Error(`Bản dịch lỗi: Đã đạt đến giới hạn sử dụng của Auth Key này: ${usage.character_count}/${usage.character_limit}`)
     const lines: string[] = text.split('\n')
     const responses: Array<Promise<{ data: { translations: Array<{ text: string }> } }>> = []
     let queries: string[] = []

@@ -246,13 +246,14 @@ ${nomenclatureList.join('\n')}
         const responses = [];
         const isGemini = model.startsWith('gemini');
         const isMistral = /^(?:open-)?[^-]+tral/.test(model);
+        const INSTANCE = this;
         let queries = [];
         while (queues.length > 0) {
             queries.push(queues.shift());
             if (queues.length === 0 || (splitChunkEnabled && [...queries, queues[0]].join('\n').length > this.maxContentLengthPerRequest)) {
                 const query = queries.join('\n');
                 responses.push((async function () {
-                    const response = isMistral ? this.runMistral(model, INSTRUCTIONS, query) : (isGemini ? this.runGemini(model, INSTRUCTIONS, query) : (model.startsWith('claude') ? this.runClaude(model, INSTRUCTIONS, query) : this.runOpenai(model, INSTRUCTIONS, query)));
+                    const response = isMistral ? INSTANCE.runMistral(model, INSTRUCTIONS, query) : (isGemini ? INSTANCE.runGemini(model, INSTRUCTIONS, query) : (model.startsWith('claude') ? INSTANCE.runClaude(model, INSTRUCTIONS, query) : INSTANCE.runOpenai(model, INSTRUCTIONS, query)));
                     if (isMistral)
                         await Utils.sleep(1000);
                     return response;
