@@ -982,7 +982,7 @@ $translateButton.on('click', function onClick() {
     case 'Huỷ':
     case 'Sửa': {
       if ($(this).text() === 'Huỷ') {
-        translationController.abort();
+        if (translationController != null) translationController.abort();
         isRetranslate = false;
       }
 
@@ -1005,7 +1005,7 @@ $translateButton.on('click', function onClick() {
       $inputTextarea.hide();
       $resultTextarea.show();
       $copyButton.addClass('disabled');
-      $copyButton.data('target', `#${$resultTextarea.attr('id')}`);
+      $copyButton.data('target', 'translation');
       $pasteButton.addClass('disabled');
       $translatorDropdown.find('.dropdown-item').addClass('disabled');
       translationController = new AbortController();
@@ -1035,9 +1035,8 @@ $copyButtons.on('click', async function onClick() {
     const target = $(this).data('target');
     const $target = $(target);
 
-    if ($target.length > 0) {
-      if ($target.attr('id') === $resultTextarea.attr('id') && window.sessionStorage.getItem('translation') != null) await navigator.clipboard.writeText(window.sessionStorage.getItem('translation'));
-      else if ($target.val().length > 0) await navigator.clipboard.writeText($target.val());
+    if ($target.length > 0 && $target.val().length > 0) {
+      await navigator.clipboard.writeText($target.val());
       return;
     }
 
