@@ -33,7 +33,7 @@ $(document).ready(async () => {
           const dataList = data.split('\r').map((element) => element.split('|')).filter((element) => element.length === 3);
           const searchResults = dataList.filter(([first, second]) => [define, ...oldAccentDefines].some((element) => pm.search(second.split('/')[0].toLowerCase(), element).length > 0 || first.startsWith(element) || pm.search(element, first).length > 0)).map(([first]) => first);
 
-          dataList.filter(([first]) => searchResults.includes(first.toLowerCase())).toSorted((a, b) => [define, ...oldAccentDefines].some((element) => element.indexOf(a[0]) - element.indexOf(b[0])) || b[0].split(/(?:)/u).length - a[0].split(/(?:)/u).length).forEach(([first, second, third]) => {
+          dataList.filter(([first]) => searchResults.includes(first.toLowerCase())) /* .toSorted */ .sort((a, b) => [define, ...oldAccentDefines].some((element) => element.indexOf(a[0]) - element.indexOf(b[0])) || b[0].split(/(?:)/u).length - a[0].split(/(?:)/u).length).forEach(([first, second, third]) => {
             sectionHeading.innerText = first;
             $(document.body).append(sectionHeading.cloneNode(true));
 
@@ -136,7 +136,7 @@ $(document).ready(async () => {
           const dataList = data.split('\n').filter((element) => !element.startsWith('##')).map((element) => element.split('\t')).filter((element) => element.length === 2);
           const searchResults = dataList.filter(([a, second]) => [define, ...oldAccentDefines].some((b) => (['N-V', 'T-V'].some((c) => dict === c) ? a.startsWith(b) || pm.search(b, a).length > 0 || (dict === 'N-V' && [...second.replaceAll('<span class="east">', '').replaceAll('</span>', '').replaceAll('<b>', '').replaceAll('</b>', '').matchAll(/【[^】]+】/g)].some(([c]) => c.replaceAll(/[【】]/g, '').startsWith(b) || pm.search(b, c.replaceAll(/[【】]/g, '')).length > 0)) : a.toLowerCase().startsWith(b) || pm.search(b, `${a} `).length > 0 || pm.search(b, ` ${a}`).length > 0))).map(([first]) => first);
 
-          dataList.filter(([first]) => searchResults.includes(first)).toSorted((a, b) => [define, ...oldAccentDefines].some((element) => element.indexOf(a[0]) - element.indexOf(b[0])) || b[0].split(/(?:)/u).length - a[0].split(/(?:)/u).length).forEach(([first, second]) => {
+          dataList.filter(([first]) => searchResults.includes(first)) /* .toSorted */ .sort((a, b) => [define, ...oldAccentDefines].some((element) => element.indexOf(a[0]) - element.indexOf(b[0])) || b[0].split(/(?:)/u).length - a[0].split(/(?:)/u).length).forEach(([first, second]) => {
             sectionHeading.innerText = first;
             $(document.body).append(sectionHeading.cloneNode(true));
 

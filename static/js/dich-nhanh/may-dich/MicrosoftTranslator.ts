@@ -19,8 +19,8 @@ export default class GoogleTranslate extends Translator {
   private tone: string
   private IG: string
   private IID: string
-  private key: string
-  private token: string
+  private key: string | null
+  private token: string | null
   public constructor (tone: string) {
     super()
     this.tone = tone

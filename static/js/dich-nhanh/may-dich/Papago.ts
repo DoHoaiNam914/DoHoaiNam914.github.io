@@ -2,7 +2,7 @@
 /* global axios */
 import Translator from '/static/js/dich-nhanh/Translator.js'
 import * as Utils from '/static/js/Utils.js'
-import CryptoJS from 'https://esm.run/crypto-js'
+import CryptoJS from '/static/lib/crypto-js+esm.js'
 export default class Papago extends Translator {
   public readonly SOURCE_LANGUAGE_LIST: { [key: string]: string } = {
     auto: 'Phát hiện ngôn ngữ',

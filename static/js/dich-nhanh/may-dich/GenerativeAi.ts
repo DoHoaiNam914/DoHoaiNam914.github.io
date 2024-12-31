@@ -251,12 +251,17 @@ ${nomenclatureList.join('\n')}
     const queues: string[] = text.split('\n')
     const responses: Array<Promise<string>> = []
     const isGemini = model.startsWith('gemini')
+    const isMistral = /^(?:open-)?[^-]+tral/.test(model)
     let queries: string[] = []
     while (queues.length > 0) {
       queries.push(queues.shift() as string)
       if (queues.length === 0 || (splitChunkEnabled && [...queries, queues[0]].join('\n').length > this.maxContentLengthPerRequest)) {
         const query: string = queries.join('\n')
-        responses.push(/^(?:open-)?[^-]+tral/.test(model) ? this.runMistral(model, INSTRUCTIONS, query) : (isGemini ? this.runGemini(model, INSTRUCTIONS, query) : (model.startsWith('claude') ? this.runClaude(model, INSTRUCTIONS, query) : this.runOpenai(model, INSTRUCTIONS, query))))
+        responses.push((async function () {
+          const response: Promise<string>  = isMistral ? this.runMistral(model, INSTRUCTIONS, query) : (isGemini ? this.runGemini(model, INSTRUCTIONS, query) : (model.startsWith('claude') ? this.runClaude(model, INSTRUCTIONS, query) : this.runOpenai(model, INSTRUCTIONS, query)))
+          if (isMistral) await Utils.sleep(1000)
+          return response
+        }()))
         queries = []
       }
     }
