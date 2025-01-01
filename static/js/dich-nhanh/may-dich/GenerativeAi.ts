@@ -57,7 +57,10 @@ export default class GenerativeAi extends Translator {
     })
     this.genAI = new GoogleGenerativeAI(geminiApiKey)
     this.client = new Mistral({ apiKey: mistralApiKey })
-    this.groq = new Groq({ apiKey: groqApiKey })
+    this.groq = new Groq({
+      apiKey: groqApiKey,
+      dangerouslyAllowBrowser: true
+    })
   }
 
   public async getDuckchatStatus (): Promise<void> {
