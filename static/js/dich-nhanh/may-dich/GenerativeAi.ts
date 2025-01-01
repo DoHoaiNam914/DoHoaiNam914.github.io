@@ -217,6 +217,26 @@ export default class GenerativeAi extends Translator {
     return result.response.text()
   }
 
+  public async runLlama (model: string, instructions: string, message: string): Promise<string> {
+    if (this.duckchat == null) await this.getDuckchatStatus()
+    const msg = this.duckchat.post(null, window.JSON.stringify({
+      model,
+      messages: [
+        {
+          role: 'user',
+          content: instructions
+        },
+        {
+          role: 'user',
+          content: message
+        }
+      ]
+    })).then(({ data }) => data.split('\n').filter((element: string) => /data: {(?:"role":"assistant",)?"message"/.test(element)).map((element: string) => window.JSON.parse(element.replace(/^data: /, '')).message).join('')).catch(({ data }) => {
+      throw new Error(data)
+    })
+    return msg
+  }
+
   public async runMistral (model: string, instructions: string, message: string): Promise<string> {
     const chatResponse = await this.client.chat.complete({
       model,
@@ -250,20 +270,16 @@ ${nomenclatureList.join('\n')}
 : ''}`
     const queues: string[] = text.split('\n')
     const responses: Array<Promise<string>> = []
-    const isGemini = model.startsWith('gemini')
-    const isMistral = /^(?:open-)?[^-]+tral/.test(model)
-    const INSTANCE = this
+    const isMistral: boolean = /^(?:open-)?[^-]+tral/.test(model)
     let queries: string[] = []
     while (queues.length > 0) {
       queries.push(queues.shift() as string)
       if (queues.length === 0 || (splitChunkEnabled && [...queries, queues[0]].join('\n').length > this.maxContentLengthPerRequest)) {
         const query: string = queries.join('\n')
-        responses.push((async function () {
-          const response: Promise<string>  = isMistral ? INSTANCE.runMistral(model, INSTRUCTIONS, query) : (isGemini ? INSTANCE.runGemini(model, INSTRUCTIONS, query) : (model.startsWith('claude') ? INSTANCE.runClaude(model, INSTRUCTIONS, query) : INSTANCE.runOpenai(model, INSTRUCTIONS, query)))
-          if (isMistral)
-            await Utils.sleep(2000)
-          return response
-        }()))
+        responses.push((async (): Promise<string> => {
+          if (isMistral) await Utils.sleep(2500)
+          return isMistral ? await this.runMistral(model, INSTRUCTIONS, query) : (model.startsWith('meta-llama') ? await this.runLlama(model, INSTRUCTIONS, query) : (model.startsWith('gemini') ? await this.runGemini(model, INSTRUCTIONS, query) : (model.startsWith('claude') ? await this.runClaude(model, INSTRUCTIONS, query) : await this.runOpenai(model, INSTRUCTIONS, query))))
+        })())
         queries = []
       }
     }

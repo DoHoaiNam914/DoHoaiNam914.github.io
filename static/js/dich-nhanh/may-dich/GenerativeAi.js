@@ -212,6 +212,26 @@ export default class GenerativeAi extends Translator {
         const result = await chatSession.sendMessage(message);
         return result.response.text();
     }
+    async runLlama(model, instructions, message) {
+        if (this.duckchat == null)
+            await this.getDuckchatStatus();
+        const msg = this.duckchat.post(null, window.JSON.stringify({
+            model,
+            messages: [
+                {
+                    role: 'user',
+                    content: instructions
+                },
+                {
+                    role: 'user',
+                    content: message
+                }
+            ]
+        })).then(({ data }) => data.split('\n').filter((element) => /data: {(?:"role":"assistant",)?"message"/.test(element)).map((element) => window.JSON.parse(element.replace(/^data: /, '')).message).join('')).catch(({ data }) => {
+            throw new Error(data);
+        });
+        return msg;
+    }
     async runMistral(model, instructions, message) {
         const chatResponse = await this.client.chat.complete({
             model,
@@ -244,20 +264,17 @@ ${nomenclatureList.join('\n')}
             : ''}`;
         const queues = text.split('\n');
         const responses = [];
-        const isGemini = model.startsWith('gemini');
         const isMistral = /^(?:open-)?[^-]+tral/.test(model);
-        const INSTANCE = this;
         let queries = [];
         while (queues.length > 0) {
             queries.push(queues.shift());
             if (queues.length === 0 || (splitChunkEnabled && [...queries, queues[0]].join('\n').length > this.maxContentLengthPerRequest)) {
                 const query = queries.join('\n');
-                responses.push((async function () {
-                    const response = isMistral ? INSTANCE.runMistral(model, INSTRUCTIONS, query) : (isGemini ? INSTANCE.runGemini(model, INSTRUCTIONS, query) : (model.startsWith('claude') ? INSTANCE.runClaude(model, INSTRUCTIONS, query) : INSTANCE.runOpenai(model, INSTRUCTIONS, query)));
+                responses.push((async () => {
                     if (isMistral)
-                        await Utils.sleep(2000);
-                    return response;
-                }()));
+                        await Utils.sleep(2500);
+                    return isMistral ? await this.runMistral(model, INSTRUCTIONS, query) : (model.startsWith('meta-llama') ? await this.runLlama(model, INSTRUCTIONS, query) : (model.startsWith('gemini') ? await this.runGemini(model, INSTRUCTIONS, query) : (model.startsWith('claude') ? await this.runClaude(model, INSTRUCTIONS, query) : await this.runOpenai(model, INSTRUCTIONS, query))));
+                })());
                 queries = [];
             }
         }

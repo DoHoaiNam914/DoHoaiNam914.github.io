@@ -51,7 +51,7 @@ export default class GoogleTranslate extends Translator {
   }
 
   public async translateText (text: string, targetLanguage: string, sourceLanguage: string | null = null): Promise<string | null> {
-    if (this.IG == null || this.IID == null || this.token == null || this.key == null) { await this.setToneAndFetchData(this.tone) }
+    if (this.IG == null || this.IID == null || this.token == null || this.key == null) await this.setToneAndFetchData(this.tone)
     const lines: string[] = text.split('\n')
     const responses: Array<Promise<{ data: Array<{ translations: Array<{ text: string }> }> }>> = []
     let queries: string[] = []
