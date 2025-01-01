@@ -4,6 +4,7 @@ import Translator from '/static/js/dich-nhanh/Translator.js';
 import * as Utils from '/static/js/Utils.js';
 import Anthropic from 'https://esm.run/@anthropic-ai/sdk';
 import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from 'https://esm.run/@google/generative-ai';
+import Groq from 'https://esm.run/groq-sdk';
 import { Mistral } from 'https://esm.run/@mistralai/mistralai';
 import OpenAI from 'https://esm.run/openai';
 export default class GenerativeAi extends Translator {
@@ -39,8 +40,9 @@ export default class GenerativeAi extends Translator {
     anthropic;
     genAI;
     client;
+    groq;
     duckchat;
-    constructor(uuid, openaiApiKey, geminiApiKey, anthropicApiKey, mistralApiKey) {
+    constructor(uuid, openaiApiKey, geminiApiKey, anthropicApiKey, mistralApiKey, groqApiKey) {
         super();
         this.uuid = uuid;
         this.openai = new OpenAI({
@@ -53,6 +55,7 @@ export default class GenerativeAi extends Translator {
         });
         this.genAI = new GoogleGenerativeAI(geminiApiKey);
         this.client = new Mistral({ apiKey: mistralApiKey });
+        this.groq = new Groq({ apiKey: groqApiKey });
     }
     async getDuckchatStatus() {
         await axios.get(`${Utils.CORS_HEADER_PROXY}https://duckduckgo.com/duckchat/v1/status`, {
@@ -74,8 +77,9 @@ export default class GenerativeAi extends Translator {
     }
     async runOpenai(model, instructions, message) {
         const searchParams = new URLSearchParams(window.location.search);
+        const isNotAvailable = window.localStorage.getItem('OPENAI_API_KEY') == null;
         const isDebug = searchParams.has('debug');
-        if (!isDebug && window.localStorage.getItem('OPENAI_API_KEY') == null && this.duckchat == null)
+        if (!isDebug && isNotAvailable && this.duckchat == null)
             await this.getDuckchatStatus();
         const requestBody = {
             model,
@@ -96,9 +100,10 @@ export default class GenerativeAi extends Translator {
             frequency_penalty: model.startsWith('o1') ? undefined : 0,
             presence_penalty: model.startsWith('o1') ? undefined : 0
         };
-        const result = window.localStorage.getItem('OPENAI_API_KEY') == null
-            ? (isDebug
-                ? await axios.post(`${Utils.CORS_HEADER_PROXY}https://gateway.api.airapps.co/aa_service=server5/aa_apikey=5N3NR9SDGLS7VLUWSEN9J30P//v3/proxy/open-ai/v1/chat/completions`, window.JSON.stringify(requestBody), {
+        let content = '';
+        if (!isNotAvailable && (isDebug || model === 'gpt-4o-mini')) {
+            if (isDebug) {
+                const result = await axios.post(`${Utils.CORS_HEADER_PROXY}https://gateway.api.airapps.co/aa_service=server5/aa_apikey=5N3NR9SDGLS7VLUWSEN9J30P//v3/proxy/open-ai/v1/chat/completions`, JSON.stringify(requestBody), {
                     headers: {
                         'User-Agent': 'iOS-TranslateNow/8.8.0.1016 CFNetwork/1568.200.51 Darwin/24.1.0',
                         'Content-Type': 'application/json',
@@ -108,8 +113,11 @@ export default class GenerativeAi extends Translator {
                     signal: this.controller.signal
                 }).then(({ data }) => data).catch(({ data }) => {
                     throw new Error(data);
-                })
-                : model === 'gpt-4o-mini' && await this.duckchat.post(null, window.JSON.stringify({
+                });
+                content = result.choices[0].message.content;
+            }
+            else if (model === 'gpt-4o-mini') {
+                const result = await this.duckchat.post(null, JSON.stringify({
                     model,
                     messages: [
                         {
@@ -121,17 +129,25 @@ export default class GenerativeAi extends Translator {
                             content: message
                         }
                     ]
-                })).then(({ data }) => ({ choices: [{ message: { content: data.split('\n').filter((element) => /data: {(?:"role":"assistant",)?"message"/.test(element)).map((element) => window.JSON.parse(element.replace(/^data: /, '')).message).join('') } }] })).catch(({ data }) => {
+                })).then(({ data }) => data.split('\n').filter((element) => /data: {(?:"role":"assistant",)?"message"/.test(element)).map((element) => JSON.parse(element.replace(/^data: /, '')))).catch(({ data }) => {
                     throw new Error(data);
-                }))
-            : await this.openai.chat.completions.create(requestBody);
-        return result.choices[0].message.content;
+                });
+                content = result.map(({ message }) => message).join('');
+            }
+        }
+        else {
+            const result = await this.openai.chat.completions.create(requestBody);
+            content = result.choices[0].message.content;
+        }
+        return content;
     }
     async runClaude(model, instructions, message) {
-        if (window.localStorage.getItem('ANTHROPIC_API_KEY') == null && this.duckchat == null)
+        const isNotAvailable = window.localStorage.getItem('ANTHROPIC_API_KEY') == null;
+        if (isNotAvailable && this.duckchat == null)
             await this.getDuckchatStatus();
-        const msg = window.localStorage.getItem('ANTHROPIC_API_KEY') == null && model === 'claude-3-haiku-20240307'
-            ? this.duckchat.post(null, window.JSON.stringify({
+        let msg = '';
+        if (isNotAvailable && model === 'claude-3-haiku-20240307') {
+            msg = await this.duckchat.post(null, JSON.stringify({
                 model,
                 messages: [
                     {
@@ -143,10 +159,12 @@ export default class GenerativeAi extends Translator {
                         content: message
                     }
                 ]
-            })).then(({ data }) => data.split('\n').filter((element) => /data: {(?:"role":"assistant",)?"message"/.test(element)).map((element) => window.JSON.parse(element.replace(/^data: /, '')).message).join('')).catch(({ data }) => {
+            })).then(({ data }) => data.split('\n').filter((element) => /data: {(?:"role":"assistant",)?"message"/.test(element)).map((element) => JSON.parse(element.replace(/^data: /, '')).message).join('')).catch(({ data }) => {
                 throw new Error(data);
-            })
-            : await this.anthropic.messages.create({
+            });
+        }
+        else {
+            msg = await this.anthropic.messages.create({
                 model,
                 max_tokens: !model.startsWith('claude-3-5') ? 4096 : 8192, // Mặc định: 1000
                 temperature: 0.3, // Mặc định: 0
@@ -162,6 +180,7 @@ export default class GenerativeAi extends Translator {
                 ],
                 top_p: 0.3
             });
+        }
         return msg;
     }
     async runGemini(model, instructions, message) {
@@ -213,24 +232,52 @@ export default class GenerativeAi extends Translator {
         return result.response.text();
     }
     async runLlama(model, instructions, message) {
-        if (this.duckchat == null)
+        const isOnGroq = model.startsWith('llama');
+        if (!isOnGroq && this.duckchat == null)
             await this.getDuckchatStatus();
-        const msg = this.duckchat.post(null, window.JSON.stringify({
-            model,
-            messages: [
-                {
-                    role: 'user',
-                    content: instructions
-                },
-                {
-                    role: 'user',
-                    content: message
-                }
-            ]
-        })).then(({ data }) => data.split('\n').filter((element) => /data: {(?:"role":"assistant",)?"message"/.test(element)).map((element) => window.JSON.parse(element.replace(/^data: /, '')).message).join('')).catch(({ data }) => {
-            throw new Error(data);
-        });
-        return msg;
+        let content = '';
+        if (isOnGroq) {
+            const chatCompletion = await this.groq.chat.completions.create({
+                messages: [
+                    {
+                        content: instructions,
+                        role: 'user'
+                    },
+                    {
+                        content: message,
+                        role: 'user'
+                    }
+                ],
+                model,
+                max_tokens: model.endsWith('versatile') ? 32768 : 8192, // Mặc định: 1024
+                temperature: 0.3, // Mặc định: 1
+                top_p: 0.3, // Mặc định: 1
+                stream: true,
+                stop: null
+            });
+            for await (const chunk of chatCompletion) {
+                content += chunk.choices[0]?.delta?.content || '';
+            }
+        }
+        else {
+            const chatCompletion = await this.duckchat.post(null, JSON.stringify({
+                model,
+                messages: [
+                    {
+                        role: 'user',
+                        content: instructions
+                    },
+                    {
+                        role: 'user',
+                        content: message
+                    }
+                ]
+            })).then(({ data }) => data.split('\n').filter((element) => /data: {(?:"role":"assistant",)?"message"/.test(element)).map((element) => JSON.parse(element.replace(/^data: /, '')))).catch(({ data }) => {
+                throw new Error(data);
+            });
+            content = chatCompletion.map(({ message }) => message).join('');
+        }
+        return content;
     }
     async runMistral(model, instructions, message) {
         const chatResponse = await this.client.chat.complete({
@@ -273,7 +320,7 @@ ${nomenclatureList.join('\n')}
                 responses.push((async () => {
                     if (isMistral)
                         await Utils.sleep(2500);
-                    return isMistral ? await this.runMistral(model, INSTRUCTIONS, query) : (model.startsWith('meta-llama') ? await this.runLlama(model, INSTRUCTIONS, query) : (model.startsWith('gemini') ? await this.runGemini(model, INSTRUCTIONS, query) : (model.startsWith('claude') ? await this.runClaude(model, INSTRUCTIONS, query) : await this.runOpenai(model, INSTRUCTIONS, query))));
+                    return isMistral ? await this.runMistral(model, INSTRUCTIONS, query) : (model.startsWith('meta-llama') || model.startsWith('llama') ? await this.runLlama(model, INSTRUCTIONS, query) : (model.startsWith('gemini') ? await this.runGemini(model, INSTRUCTIONS, query) : (model.startsWith('claude') ? await this.runClaude(model, INSTRUCTIONS, query) : await this.runOpenai(model, INSTRUCTIONS, query))));
                 })());
                 queries = [];
             }
