@@ -279,6 +279,7 @@ ${nomenclatureList.join('\n')}
             }
         }
         const result = await Promise.all(responses).then(responses => responses.flat().join('\n')).catch((reason) => {
+            this.duckchat = null;
             throw reason;
         });
         super.translateText(text, targetLanguage, this.DefaultLanguage.SOURCE_LANGUAGE);
