@@ -104,7 +104,7 @@ export default class GenerativeAi extends Translator {
             presence_penalty: model.startsWith('o1') ? undefined : 0
         };
         let content = '';
-        if (!isNotAvailable && (isDebug || model === 'gpt-4o-mini')) {
+        if (isNotAvailable && (isDebug || model === 'gpt-4o-mini')) {
             if (isDebug) {
                 const result = await axios.post(`${Utils.CORS_HEADER_PROXY}https://gateway.api.airapps.co/aa_service=server5/aa_apikey=5N3NR9SDGLS7VLUWSEN9J30P//v3/proxy/open-ai/v1/chat/completions`, JSON.stringify(requestBody), {
                     headers: {
