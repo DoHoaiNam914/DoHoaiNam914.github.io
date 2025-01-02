@@ -252,7 +252,7 @@ export default class GenerativeAi extends Translator {
                     }
                 ],
                 model,
-                max_tokens: model === 'llama-3.1-70b-versatile' ? 8000 : (model.endsWith('versatile') ? 32768 : 8192), // Mặc định: 1024
+                max_tokens: model === 'llama-3.1-70b-versatile' || model.endsWith('instant') ? 8000 : (model.endsWith('versatile') ? 32768 : 8192), // Mặc định: 1024
                 temperature: 0.3, // Mặc định: 1
                 top_p: 0.3, // Mặc định: 1
                 stream: true,
