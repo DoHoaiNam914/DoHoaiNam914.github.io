@@ -126,7 +126,7 @@ export default class GenerativeAi extends Translator {
             requestBody.temperature = 0.3;
         if (Object.hasOwn(requestBody, 'top_p'))
             requestBody.top_p = 0.3;
-        if (this.OPENAI_API_KEY.length > 0 && searchParams.has('debug')) {
+        if (this.OPENAI_API_KEY.length === 0 && searchParams.has('debug')) {
             return await this.runTranslateNow(requestBody);
         }
         else {
