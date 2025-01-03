@@ -1050,7 +1050,7 @@ $pasteButtons.on('click', async function onClick() {
   try {
     await navigator.clipboard.readText().then((clipText) => {
       const $targetTextInput = $($(this).data('target'));
-      if (clipText === $targetTextInput.val()) return;
+      if (clipText.length === 0 || clipText === $targetTextInput.val()) return;
       $targetTextInput.prop('scrollLeft', 0);
       $targetTextInput.prop('scrollTop', 0);
   
