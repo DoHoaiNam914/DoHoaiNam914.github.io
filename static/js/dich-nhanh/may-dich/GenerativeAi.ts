@@ -237,8 +237,8 @@ export default class GenerativeAi extends Translator {
       top_p: 0.7
     }
     chatCompletionInput.max_tokens = 8192
-    if (['meta-llama/Llama-3.2-3B-Instruct', 'meta-llama/Llama-3.2-1B-Instruct', 'microsoft/Phi-3-mini-4k-instruct'].some(element => model === element)) chatCompletionInput.max_tokens = 4096 - (model.startsWith('google') || model.startsWith('meta-llama') ? getEncoding('gpt2').encode(`${instructions}${message}`).length : 0)
-    else if (model.startsWith('google') || model.startsWith('meta-llama')) chatCompletionInput.max_tokens = chatCompletionInput.max_tokens - getEncoding('gpt2').encode(`${instructions}${message}`).length
+    if (['meta-llama/Llama-3.2-3B-Instruct', 'google/gemma-2-9b-it', 'meta-llama/Llama-3.2-1B-Instruct', 'microsoft/Phi-3-mini-4k-instruct'].some(element => model === element)) chatCompletionInput.max_tokens = 4096 - (model.startsWith('google') || model.startsWith('meta-llama') ? encodingForModel('gpt-4').encode(`${instructions}${message}`).length : 0)
+    else if (model.startsWith('google') || model.startsWith('meta-llama')) chatCompletionInput.max_tokens = chatCompletionInput.max_tokens - getEncoding('gpt-4').encode(`${instructions}${message}`).length
     chatCompletionInput.messages = [
       {
         content: instructions,
