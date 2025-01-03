@@ -4,7 +4,7 @@ import Translator from '/static/js/dich-nhanh/Translator.js'
 import * as Utils from '/static/js/Utils.js'
 export default class WebnovelTranslate extends Translator {
   /* https://translate-pa.googleapis.com/v1/supportedLanguages?client=gtx&display_language=vi&key=${key} */
-  public readonly LANGUAGE_LIST = JSON.parse(`{
+  public readonly LANGUAGE_LIST: { [key: string]: { language: string, name: string }[] } = JSON.parse(`{
   "sourceLanguages": [
     {
       "language": "auto",

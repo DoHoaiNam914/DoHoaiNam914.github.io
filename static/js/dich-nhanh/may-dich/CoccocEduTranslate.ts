@@ -14,7 +14,7 @@ export default class CoccocEduTranslate extends Translator {
   private readonly maxContentLinePerRequest: number = 25 - 24
   public async translateText (text: string, targetLanguage: string, sourceLanguage: string | null = null): Promise<string | null> {
     const lines: string[] = text.split('\n')
-    const responses: Array<Promise<{ data: { proxyapi: Array<{ translations: Array<{ text: string }> }> } }>> = []
+    const responses: Array<Promise<{ data: { proxyapi: { translations: Array<{ text: string }[] }> } }>> = []
     let queries: string[] = []
     while (lines.length > 0) {
       queries.push(lines.shift() as string)

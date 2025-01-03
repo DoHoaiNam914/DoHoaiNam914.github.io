@@ -32,7 +32,7 @@ const $glossaryInput = $('#glossary-input');
 const $glossaryListSelect = $('#glossary-list-select');
 const $glossaryManagerButton = $('#glossary-manager-button');
 const $glossaryModal = $('#glossary-modal');
-const $groqApiKeyText = $('#groq-api-key-text')
+const $hfTokenText = $('#hf-token-text')
 const $inputTextarea = $('#input-textarea');
 const $mistralApiKeyText = $('#mistral-api-key-text');
 const $openaiApiKeyText = $('#openai-api-key-text');
@@ -948,8 +948,8 @@ $(document).ready(async () => {
   if (localStorage.getItem('OPENAI_API_KEY') != null) $openaiApiKeyText.val(localStorage.getItem('OPENAI_API_KEY')).change();
   if (localStorage.getItem('ANTHROPIC_API_KEY') != null) $anthropicApiKeyText.val(localStorage.getItem('ANTHROPIC_API_KEY')).change();
   if (localStorage.getItem('GEMINI_API_KEY') != null) $geminiApiKeyText.val(localStorage.getItem('GEMINI_API_KEY')).change();
+  if (localStorage.getItem('HF_TOKEN') != null) $hfTokenText.val(localStorage.getItem('HF_TOKEN')).change();
   if (localStorage.getItem('MISTRAL_API_KEY') != null) $mistralApiKeyText.val(localStorage.getItem('MISTRAL_API_KEY')).change();
-  if (localStorage.getItem('GROQ_API_KEY') != null) $groqApiKeyText.val(localStorage.getItem('GROQ_API_KEY')).change();
   reloadGlossary($glossaryListSelect.val());
   $inputTextarea.trigger('input');
 });
@@ -1288,7 +1288,7 @@ $translatorDropdown.find('.dropdown-item').click(async function onClick() {
     }
     case Translators.GENERATIVE_AI: {
       if (currentTranslator == null) {
-        currentTranslator = new GenerativeAi(UUID.toLowerCase(), $openaiApiKeyText.val(), $geminiApiKeyText.val(), $anthropicApiKeyText.val(), $mistralApiKeyText.val(), $groqApiKeyText.val());
+        currentTranslator = new GenerativeAi(UUID.toLowerCase(), $openaiApiKeyText.val(), $geminiApiKeyText.val(), $anthropicApiKeyText.val(), $hfTokenText.val(), $mistralApiKeyText.val());
         translators[activeTranslator] = currentTranslator;
       }
 
@@ -1386,12 +1386,12 @@ $mistralApiKeyText.change(function onChange() {
   else if (localStorage.getItem('MISTRAL_API_KEY') !== $(this).val()) localStorage.setItem('MISTRAL_API_KEY', $(this).val());
 });
 
-$groqApiKeyText.change(function onChange() {
+$hfTokenText.change(function onChange() {
   const $activeTranslator = $translatorDropdown.find('.active');
   translators[Translators.GENERATIVE_AI] = null;
   if ($activeTranslator.val() === Translators.GENERATIVE_AI) $activeTranslator.click();
-  if (localStorage.getItem('GROQ_API_KEY') != null && $(this).val().length === 0) localStorage.removeItem('GROQ_API_KEY');
-  else if ($(this).val().startsWith('gsk_') && localStorage.getItem('GROQ_API_KEY') !== $(this).val()) localStorage.setItem('GROQ_API_KEY', $(this).val());
+  if (localStorage.getItem('HF_TOKEN') != null && $(this).val().length === 0) localStorage.removeItem('HF_TOKEN');
+  else if ($(this).val().startsWith('hf_') && localStorage.getItem('HF_TOKEN') !== $(this).val()) localStorage.setItem('HF_TOKEN', $(this).val());
 });
 
 $glossaryModal.on('shown.bs.modal', () => {
@@ -1603,7 +1603,7 @@ $translateEntryButtons.click(async function onClick() {
         }
         case Translators.GENERATIVE_AI: {
           if (translator == null) {
-            translator = new GenerativeAi(UUID.toLowerCase(), $openaiApiKeyText.val(), $geminiApiKeyText.val(), $anthropicApiKeyText.val(), $mistralApiKeyText.val(), $groqApiKeyText.val());
+            translator = new GenerativeAi(UUID.toLowerCase(), $openaiApiKeyText.val(), $geminiApiKeyText.val(), $anthropicApiKeyText.val(), $hfTokenText.val(), $mistralApiKeyText.val());
             translators[activeTranslator] = translator;
           }
 

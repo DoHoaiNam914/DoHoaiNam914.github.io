@@ -1012,46 +1012,22 @@
               <input type="text" class="form-control mb-3" id="openai-api-key-text" placeholder="OpenAI API Key">
               <input type="text" class="form-control mb-3" id="anthropic-api-key-text" placeholder="Anthropic API Key">
               <input type="text" class="form-control mb-3" id="gemini-api-key-text" placeholder="Gemini API Key">
+              <input type="text" class="form-control mb-3" id="hf-token-text" placeholder="HF Token">
               <input type="text" class="form-control mb-3" id="mistral-api-key-text" placeholder="Mistral API Key">
-              <input type="text" class="form-control mb-3" id="groq-api-key-text" placeholder="Groq API Key">
               <div class="mb-3">
                 <label class="form-label" for="model-select">Mô hình AI tạo sinh:</label>
                 <select class="form-select form-select-sm" id="model-select">
-                  <optgroup label="Claude">
-                    <option value="claude-3-5-sonnet-20241022">Claude 3.5 Sonnet 20241022</option>
-                    <option value="claude-3-5-sonnet-latest">Claude 3.5 Sonnet (claude-3-5-sonnet-20241022)</option>
-                    <option value="claude-3-5-sonnet-20240620">Claude 3.5 Sonnet 20240620</option>
-                    <option value="claude-3-5-haiku-20241022">Claude 3.5 Haiku 20241022</option>
-                    <option value="claude-3-5-haiku-latest">Claude 3.5 Haiku</option>
-                    <option value="claude-3-opus-20240229">Claude 3 Opus 20240229</option>
-                    <option value="claude-3-opus-latest">Claude 3 Opus</option>
-                    <option value="claude-3-sonnet-20240229">Claude 3 Sonnet 20240229</option>
-                    <option value="claude-3-haiku-20240307">Claude 3 Haiku 20240307</option>
-                  </optgroup>
-                  <optgroup label="Gemini">
-                    <option value="gemini-2.0-flash-exp">(Thử nghiệm) Gemini 2.0 Flash</option>
-                    <option value="gemini-1.5-flash-latest">Gemini 1.5 Flash Latest</option>
-                    <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
-                    <option value="gemini-1.5-flash-001">Gemini 1.5 Flash 001</option>
-                    <option value="gemini-1.5-flash-002">Gemini 1.5 Flash 002</option>
-                    <option value="gemini-1.5-flash-8b-latest">Gemini 1.5 Flash-8B Latest</option>
-                    <option value="gemini-1.5-flash-8b">Gemini 1.5 Flash-8B</option>
-                    <!-- <option value="gemini-1.5-flash-8b-001">Gemini 1.5 Flash-8B 001</option> -->
-                    <option value="gemini-1.5-pro-latest">Gemini 1.5 Pro Latest (gemini-1.5-pro-002)</option>
-                    <option value="gemini-1.5-pro">Gemini 1.5 Pro (gemini-1.5-pro-002)</option>
-                    <option value="gemini-1.5-pro-001">Gemini 1.5 Pro 001</option>
-                    <!-- <option value="gemini-1.5-pro-002">Gemini 1.5 Pro 002</option> -->
-                    <option value="gemini-1.0-pro">(Không dùng nữa) Gemini 1.0 Pro</option>
-                  </optgroup>
-                  <optgroup label="Meta Llama">
-                    <option value="meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo">Llama 3.1 70B</option>
-                  </optgroup>
-                  <optgroup label="Groq Llama">
-                    <option>llama-3.3-70b-versatile</option>
-                    <option value="llama-3.1-70b-versatile">llama-3.1-70b-versatile (DEPRECATED)</option>
-                    <option>llama-3.1-8b-instant</option>
-                    <option>llama3-70b-8192</option>
-                    <option>llama3-8b-8192</option>
+                  <optgroup label="Mô hình mã nguồn mở">
+                    <option>meta-llama/Llama-3.2-3B-Instruct</option>
+                    <option>Qwen/Qwen2.5-72B-Instruct</option>
+                    <option>Qwen/QwQ-32B-Preview</option>
+                    <option>google/gemma-1.1-7b-it</option>
+                    <option>google/gemma-2-2b-it</option>
+                    <option>google/gemma-2-9b-it</option>
+                    <option>meta-llama/Llama-3.2-1B-Instruct</option>
+                    <option>meta-llama/Meta-Llama-3-8B-Instruct</option>
+                    <option>microsoft/Phi-3-mini-4k-instruct</option>
+                    <option>microsoft/Phi-3.5-mini-instruct</option>
                   </optgroup>
                   <optgroup label="Mistral">
                     <option value="mistral-large-latest">Mistral Large (mistral-large-2411)</option>
@@ -1074,6 +1050,32 @@
                     <option value="mistral-small-2402">Mistral Small 24.02</option>
                     <option value="mistral-large-2402">Mistral Large 24.02</option>
                     <option value="mistral-large-2407">Mistral Large 24.07</option>
+                  </optgroup>
+                  <optgroup label="Anthropic">
+                    <option value="claude-3-5-sonnet-20241022">Claude 3.5 Sonnet 20241022</option>
+                    <option value="claude-3-5-sonnet-latest">Claude 3.5 Sonnet (claude-3-5-sonnet-20241022)</option>
+                    <option value="claude-3-5-sonnet-20240620">Claude 3.5 Sonnet 20240620</option>
+                    <option value="claude-3-5-haiku-20241022">Claude 3.5 Haiku 20241022</option>
+                    <option value="claude-3-5-haiku-latest">Claude 3.5 Haiku</option>
+                    <option value="claude-3-opus-20240229">Claude 3 Opus 20240229</option>
+                    <option value="claude-3-opus-latest">Claude 3 Opus</option>
+                    <option value="claude-3-sonnet-20240229">Claude 3 Sonnet 20240229</option>
+                    <option value="claude-3-haiku-20240307">Claude 3 Haiku 20240307</option>
+                  </optgroup>
+                  <optgroup label="Google Generative AI">
+                    <option value="gemini-2.0-flash-exp">(Thử nghiệm) Gemini 2.0 Flash</option>
+                    <option value="gemini-1.5-flash-latest">Gemini 1.5 Flash Latest</option>
+                    <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
+                    <option value="gemini-1.5-flash-001">Gemini 1.5 Flash 001</option>
+                    <option value="gemini-1.5-flash-002">Gemini 1.5 Flash 002</option>
+                    <option value="gemini-1.5-flash-8b-latest">Gemini 1.5 Flash-8B Latest</option>
+                    <option value="gemini-1.5-flash-8b">Gemini 1.5 Flash-8B</option>
+                    <!-- <option value="gemini-1.5-flash-8b-001">Gemini 1.5 Flash-8B 001</option> -->
+                    <option value="gemini-1.5-pro-latest">Gemini 1.5 Pro Latest (gemini-1.5-pro-002)</option>
+                    <option value="gemini-1.5-pro">Gemini 1.5 Pro (gemini-1.5-pro-002)</option>
+                    <option value="gemini-1.5-pro-001">Gemini 1.5 Pro 001</option>
+                    <!-- <option value="gemini-1.5-pro-002">Gemini 1.5 Pro 002</option> -->
+                    <option value="gemini-1.0-pro">(Không dùng nữa) Gemini 1.0 Pro</option>
                   </optgroup>
                   <optgroup label="OpenAI">
                     <option value="gpt-4o">GPT-4o (gpt-4o-2024-08-06)</option>
@@ -1343,41 +1345,17 @@
               <div class="mb-3">
                 <label class="form-label" for="translate-entry-model-select">Mô hình AI tạo sinh:</label>
                 <select class="form-select form-select-sm" id="translate-entry-model-select">
-                  <optgroup label="Claude">
-                    <option value="claude-3-5-sonnet-20241022">Claude 3.5 Sonnet 20241022</option>
-                    <option value="claude-3-5-sonnet-latest">Claude 3.5 Sonnet (claude-3-5-sonnet-20241022)</option>
-                    <option value="claude-3-5-sonnet-20240620">Claude 3.5 Sonnet 20240620</option>
-                    <option value="claude-3-5-haiku-20241022">Claude 3.5 Haiku 20241022</option>
-                    <option value="claude-3-5-haiku-latest">Claude 3.5 Haiku</option>
-                    <option value="claude-3-opus-20240229">Claude 3 Opus 20240229</option>
-                    <option value="claude-3-opus-latest">Claude 3 Opus</option>
-                    <option value="claude-3-sonnet-20240229">Claude 3 Sonnet 20240229</option>
-                    <option value="claude-3-haiku-20240307">Claude 3 Haiku 20240307</option>
-                  </optgroup>
-                  <optgroup label="Gemini">
-                    <option value="gemini-2.0-flash-exp">(Thử nghiệm) Gemini 2.0 Flash</option>
-                    <option value="gemini-1.5-flash-latest">Gemini 1.5 Flash Latest</option>
-                    <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
-                    <option value="gemini-1.5-flash-001">Gemini 1.5 Flash 001</option>
-                    <option value="gemini-1.5-flash-002">Gemini 1.5 Flash 002</option>
-                    <option value="gemini-1.5-flash-8b-latest">Gemini 1.5 Flash-8B Latest</option>
-                    <option value="gemini-1.5-flash-8b">Gemini 1.5 Flash-8B</option>
-                    <!-- <option value="gemini-1.5-flash-8b-001">Gemini 1.5 Flash-8B 001</option> -->
-                    <option value="gemini-1.5-pro-latest">Gemini 1.5 Pro Latest (gemini-1.5-pro-002)</option>
-                    <option value="gemini-1.5-pro">Gemini 1.5 Pro (gemini-1.5-pro-002)</option>
-                    <option value="gemini-1.5-pro-001">Gemini 1.5 Pro 001</option>
-                    <!-- <option value="gemini-1.5-pro-002">Gemini 1.5 Pro 002</option> -->
-                    <option value="gemini-1.0-pro">(Không dùng nữa) Gemini 1.0 Pro</option>
-                  </optgroup>
-                  <optgroup label="Meta Llama">
-                    <option value="meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo">Llama 3.1 70B</option>
-                  </optgroup>
-                  <optgroup label="Groq Llama">
-                    <option>llama-3.3-70b-versatile</option>
-                    <option value="llama-3.1-70b-versatile">llama-3.1-70b-versatile (DEPRECATED)</option>
-                    <option>llama-3.1-8b-instant</option>
-                    <option>llama3-70b-8192</option>
-                    <option>llama3-8b-8192</option>
+                  <optgroup label="Mô hình mã nguồn mở">
+                    <option>meta-llama/Llama-3.2-3B-Instruct</option>
+                    <option>Qwen/Qwen2.5-72B-Instruct</option>
+                    <option>Qwen/QwQ-32B-Preview</option>
+                    <option>google/gemma-1.1-7b-it</option>
+                    <option>google/gemma-2-2b-it</option>
+                    <option>google/gemma-2-9b-it</option>
+                    <option>meta-llama/Llama-3.2-1B-Instruct</option>
+                    <option>meta-llama/Meta-Llama-3-8B-Instruct</option>
+                    <option>microsoft/Phi-3-mini-4k-instruct</option>
+                    <option>microsoft/Phi-3.5-mini-instruct</option>
                   </optgroup>
                   <optgroup label="Mistral">
                     <option value="mistral-large-latest">Mistral Large (mistral-large-2411)</option>
@@ -1401,10 +1379,36 @@
                     <option value="mistral-large-2402">Mistral Large 24.02</option>
                     <option value="mistral-large-2407">Mistral Large 24.07</option>
                   </optgroup>
+                  <optgroup label="Anthropic">
+                    <option value="claude-3-5-sonnet-20241022">Claude 3.5 Sonnet 20241022</option>
+                    <option value="claude-3-5-sonnet-latest">Claude 3.5 Sonnet (claude-3-5-sonnet-20241022)</option>
+                    <option value="claude-3-5-sonnet-20240620">Claude 3.5 Sonnet 20240620</option>
+                    <option value="claude-3-5-haiku-20241022">Claude 3.5 Haiku 20241022</option>
+                    <option value="claude-3-5-haiku-latest">Claude 3.5 Haiku</option>
+                    <option value="claude-3-opus-20240229">Claude 3 Opus 20240229</option>
+                    <option value="claude-3-opus-latest">Claude 3 Opus</option>
+                    <option value="claude-3-sonnet-20240229">Claude 3 Sonnet 20240229</option>
+                    <option value="claude-3-haiku-20240307">Claude 3 Haiku 20240307</option>
+                  </optgroup>
+                  <optgroup label="Google Generative AI">
+                    <option value="gemini-2.0-flash-exp">(Thử nghiệm) Gemini 2.0 Flash</option>
+                    <option value="gemini-1.5-flash-latest">Gemini 1.5 Flash Latest</option>
+                    <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
+                    <option value="gemini-1.5-flash-001">Gemini 1.5 Flash 001</option>
+                    <option value="gemini-1.5-flash-002">Gemini 1.5 Flash 002</option>
+                    <option value="gemini-1.5-flash-8b-latest">Gemini 1.5 Flash-8B Latest</option>
+                    <option value="gemini-1.5-flash-8b">Gemini 1.5 Flash-8B</option>
+                    <!-- <option value="gemini-1.5-flash-8b-001">Gemini 1.5 Flash-8B 001</option> -->
+                    <option value="gemini-1.5-pro-latest">Gemini 1.5 Pro Latest (gemini-1.5-pro-002)</option>
+                    <option value="gemini-1.5-pro">Gemini 1.5 Pro (gemini-1.5-pro-002)</option>
+                    <option value="gemini-1.5-pro-001">Gemini 1.5 Pro 001</option>
+                    <!-- <option value="gemini-1.5-pro-002">Gemini 1.5 Pro 002</option> -->
+                    <option value="gemini-1.0-pro">(Không dùng nữa) Gemini 1.0 Pro</option>
+                  </optgroup>
                   <optgroup label="OpenAI">
                     <option value="gpt-4o">GPT-4o (gpt-4o-2024-08-06)</option>
                     <option value="gpt-4o-2024-11-20">GPT-4o 2024-11-20</option>
-                    <!-- <option value="l">GPT-4o 2024-08-06</option> -->
+                    <!-- <option value="gpt-4o-2024-08-06">GPT-4o 2024-08-06</option> -->
                     <option value="gpt-4o-2024-05-13">GPT-4o 2024-05-13</option>
                     <option value="chatgpt-4o-latest">GPT-4o used in ChatGPT</option>
                     <option value="gpt-4o-mini" selected>GPT-4o mini</option>
