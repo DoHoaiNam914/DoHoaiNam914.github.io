@@ -244,7 +244,7 @@ export default class GenerativeAi extends Translator {
       },
       ...model.startsWith('google')
         ? [{
-            content: '',
+            content: 'Understood. Please provide the text you would like me to translate.',
             role: 'assistant'
           }]
         : [],
