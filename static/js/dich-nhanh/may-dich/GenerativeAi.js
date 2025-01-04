@@ -243,9 +243,9 @@ export default class GenerativeAi extends Translator {
             }
         ];
         if (['meta-llama/Llama-3.2-3B-Instruct', 'google/gemma-2-9b-it', 'meta-llama/Llama-3.2-1B-Instruct', 'microsoft/Phi-3-mini-4k-instruct'].some(element => model === element))
-            chatCompletionInput.max_tokens = 4096 - encodingForModel('gpt-4o').encode(`<|begin_of_text|>${chatCompletionInput.messages.map(({ content, role }) => `<|start_header_id|>${role}<|end_header_id|>${content}<|eot_id|>`).join('')}`).length;
+            chatCompletionInput.max_tokens = 4096 - encodingForModel('gpt-4o').encode(model.startsWith('meta-llama') ? `<|begin_of_text|>\n${chatCompletionInput.messages.map(({ content, role }) => `<|start_header_id|>${role}<|end_header_id|>\n\n${content}\n<|eot_id|>`).join('\n')}` : chatCompletionInput.messages.map(({ content, role }) => `${role}\n${content}`).join('\n')).length;
         else if (model.startsWith('google') || model.startsWith('meta-llama'))
-            chatCompletionInput.max_tokens = chatCompletionInput.max_tokens - encodingForModel('gpt-4o').encode(`<|begin_of_text|>${chatCompletionInput.messages.map(({ content, role }) => `<|start_header_id|>${role}<|end_header_id|>${content}<|eot_id|>`).join('')}`).length;
+            chatCompletionInput.max_tokens = chatCompletionInput.max_tokens - encodingForModel('gpt-4o').encode(model.startsWith('meta-llama') ? `<|begin_of_text|>\n${chatCompletionInput.messages.map(({ content, role }) => `<|start_header_id|>${role}<|end_header_id|>\n\n${content}\n<|eot_id|>`).join('\n')}` : chatCompletionInput.messages.map(({ content, role }) => `${role}\n${content}`).join('\n')).length;
         chatCompletionInput.temperature = 0.3;
         chatCompletionInput.top_p = 0.3;
         chatCompletionInput.model = model;
