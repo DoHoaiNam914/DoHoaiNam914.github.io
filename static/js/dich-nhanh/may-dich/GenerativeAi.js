@@ -241,7 +241,7 @@ export default class GenerativeAi extends Translator {
                 role: 'user'
             }
         ];
-        if (['meta-llama/Llama-3.2-3B-Instruct', 'google/gemma-2-9b-it', 'meta-llama/Llama-3.2-1B-Instruct', 'microsoft/Phi-3-mini-4k-instruct'].some(element => model === element))
+        if (['meta-llama/Llama-3.2-3B-Instruct', 'google/gemma-2-9b-it', 'meta-llama/Llama-3.2-1B-Instruct', 'microsoft/Phi-3-mini-4k-instruct', 'meta-llama/Llama-3.2-11B-Vision-Instruct', 'Qwen/Qwen2-VL-7B-Instruct'].some(element => model === element))
             chatCompletionInput.max_tokens = undefined; // 4096
         else if (model.startsWith('google') || model.startsWith('meta-llama'))
             chatCompletionInput.max_tokens = undefined;
@@ -297,7 +297,7 @@ ${nomenclatureList.join('\n')}
             if (queues.length === 0 || (splitChunkEnabled && [...queries, queues[0]].join('\n').length > this.maxContentLengthPerRequest)) {
                 const query = queries.join('\n');
                 responses.push((async () => {
-                    if (isMistral)
+                    if (splitChunkEnabled && isMistral)
                         await Utils.sleep(2500);
                     return isMistral ? await this.runMistral(model, INSTRUCTIONS, query) : (model.startsWith('gemini') ? await this.runGoogleGenerativeAI(model, INSTRUCTIONS, query) : (model.startsWith('claude') ? await this.runAnthropic(model, INSTRUCTIONS, query) : (model.startsWith('gpt') || model.startsWith('o1') ? await this.runOpenai(model, INSTRUCTIONS, query) : await this.runHfInference(model, INSTRUCTIONS, query))));
                 })());
