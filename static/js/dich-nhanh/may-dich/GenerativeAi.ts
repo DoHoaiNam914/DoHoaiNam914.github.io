@@ -11,7 +11,7 @@ import {
   ChatSession
 } from 'https://esm.run/@google/generative-ai'
 import { HfInference } from 'https://esm.run/@huggingface/inference'
-import { getEncoding, encodingForModel } from 'https://esm.run/js-tiktoken'
+import { encodingForModel } from 'https://esm.run/js-tiktoken'
 import { Mistral } from 'https://esm.run/@mistralai/mistralai'
 import OpenAI from 'https://esm.run/openai'
 export default class GenerativeAi extends Translator {
@@ -237,8 +237,6 @@ export default class GenerativeAi extends Translator {
       top_p: 0.7
     }
     chatCompletionInput.max_tokens = 8192
-    if (['meta-llama/Llama-3.2-3B-Instruct', 'google/gemma-2-9b-it', 'meta-llama/Llama-3.2-1B-Instruct', 'microsoft/Phi-3-mini-4k-instruct'].some(element => model === element)) chatCompletionInput.max_tokens = 4096 - encodingForModel('gpt-4').encode(`${instructions}${message}`).length
-    else if (model.startsWith('google') || model.startsWith('meta-llama')) chatCompletionInput.max_tokens = chatCompletionInput.max_tokens - getEncoding('gpt2').encode(`${instructions}${message}`).length
     chatCompletionInput.messages = [
       {
         content: instructions,
@@ -255,6 +253,8 @@ export default class GenerativeAi extends Translator {
         role: 'user'
       }
     ]
+    if (['meta-llama/Llama-3.2-3B-Instruct', 'google/gemma-2-9b-it', 'meta-llama/Llama-3.2-1B-Instruct', 'microsoft/Phi-3-mini-4k-instruct'].some(element => model === element)) chatCompletionInput.max_tokens = 4096 - encodingForModel('gpt-4o').encode(`<|begin_of_text|>${chatCompletionInput.messages.map(({ content, role }) => `<|start_header_id|>${role}<|end_header_id|>${content}<|eot_id|>`).join('')}`).length
+    else if (model.startsWith('google') || model.startsWith('meta-llama')) chatCompletionInput.max_tokens = chatCompletionInput.max_tokens - encodingForModel('gpt-4o').encode(`<|begin_of_text|>${chatCompletionInput.messages.map(({ content, role }) => `<|start_header_id|>${role}<|end_header_id|>${content}<|eot_id|>`).join('')}`).length
     chatCompletionInput.temperature = 0.3
     chatCompletionInput.top_p = 0.3
     chatCompletionInput.model = model
