@@ -1375,23 +1375,21 @@ $geminiApiKeyText.change(function onChange() {
   translators[Translators.GENERATIVE_AI] = null;
   if ($activeTranslator.val() === Translators.GENERATIVE_AI) $activeTranslator.click();
   if (localStorage.getItem('GEMINI_API_KEY') != null && $(this).val().length === 0) localStorage.removeItem('GEMINI_API_KEY');
-  else if ($(this).val().startsWith('AIzaSyD') && localStorage.getItem('GEMINI_API_KEY') !== $(this).val()) localStorage.setItem('GEMINI_API_KEY', $(this).val());
+  else if ($(this).val().startsWith('AIzaSy') && localStorage.getItem('GEMINI_API_KEY') !== $(this).val()) localStorage.setItem('GEMINI_API_KEY', $(this).val());
 });
-
+$hfTokenText.change(function onChange() {
+  const $activeTranslator = $translatorDropdown.find('.active')
+  translators[Translators.GENERATIVE_AI] = null
+  if ($activeTranslator.val() === Translators.GENERATIVE_AI) $activeTranslator.click()
+  if (localStorage.getItem('HF_TOKEN') != null && $(this).val().length === 0) localStorage.removeItem('HF_TOKEN')
+  else if ($(this).val().startsWith('hf_') && localStorage.getItem('HF_TOKEN') !== $(this).val()) localStorage.setItem('HF_TOKEN', $(this).val())
+})
 $mistralApiKeyText.change(function onChange() {
   const $activeTranslator = $translatorDropdown.find('.active');
   translators[Translators.GENERATIVE_AI] = null;
   if ($activeTranslator.val() === Translators.GENERATIVE_AI) $activeTranslator.click();
   if (localStorage.getItem('MISTRAL_API_KEY') != null && $(this).val().length === 0) localStorage.removeItem('MISTRAL_API_KEY');
   else if (localStorage.getItem('MISTRAL_API_KEY') !== $(this).val()) localStorage.setItem('MISTRAL_API_KEY', $(this).val());
-});
-
-$hfTokenText.change(function onChange() {
-  const $activeTranslator = $translatorDropdown.find('.active');
-  translators[Translators.GENERATIVE_AI] = null;
-  if ($activeTranslator.val() === Translators.GENERATIVE_AI) $activeTranslator.click();
-  if (localStorage.getItem('HF_TOKEN') != null && $(this).val().length === 0) localStorage.removeItem('HF_TOKEN');
-  else if ($(this).val().startsWith('hf_') && localStorage.getItem('HF_TOKEN') !== $(this).val()) localStorage.setItem('HF_TOKEN', $(this).val());
 });
 
 $glossaryModal.on('shown.bs.modal', () => {
