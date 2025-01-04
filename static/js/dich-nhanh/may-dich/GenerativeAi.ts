@@ -77,10 +77,10 @@ export default class GenerativeAi extends Translator {
         'air-user-id': this.AIR_USER_ID
       },
       signal: this.controller.signal
-    })
-    return response.then(({ data }) => data.choices[0].message.content).catch(({ data }) => {
+    }).then(({ data }) => data).catch(({ data }) => {
       throw new Error(data)
     })
+    return response.choices[0].message.content
   }
 
   public async runOpenai (model: string, instructions: string, message: string): Promise<string> {
