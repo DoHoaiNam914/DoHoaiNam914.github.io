@@ -43,7 +43,7 @@ export default class GenerativeAi extends Translator {
     TARGET_LANGUAGE: 'Vietnamese'
   }
 
-  private readonly maxContentLengthPerRequest: number = 1000
+  private readonly maxContentLengthPerRequest: number = 1024
   private readonly AIR_USER_ID: string
   private readonly OPENAI_API_KEY: string
   private readonly openai: OpenAI

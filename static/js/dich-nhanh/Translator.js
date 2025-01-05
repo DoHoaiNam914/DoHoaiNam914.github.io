@@ -1,8 +1,13 @@
 'use strict';
 export default class Translator {
-    controller = new AbortController();
-    lastRequestData = null;
-    result = '';
+    controller;
+    lastRequestData;
+    result;
+    constructor() {
+        this.controller = new AbortController();
+        this.lastRequestData = null;
+        this.result = '';
+    }
     async translateText(text, targetLanguage, sourceLanguage = null) {
         this.lastRequestData = { sourceLanguage, targetLanguage, text };
         return null;
