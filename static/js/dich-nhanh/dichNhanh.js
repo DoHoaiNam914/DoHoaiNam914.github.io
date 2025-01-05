@@ -973,7 +973,7 @@ $(document).ready(async () => {
         translators[element] = new MicrosoftTranslator($toneSelect.val())
         break
       case Translators.PAPAGO:
-        translator = new Papago(UUID)
+        translators[element] = new Papago(UUID)
         break
       case Translators.WEBNOVEL_TRANSLATE:
         translators[element] = new WebnovelTranslate()
