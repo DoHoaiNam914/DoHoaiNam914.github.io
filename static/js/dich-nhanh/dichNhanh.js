@@ -943,13 +943,44 @@ $(document).ready(async () => {
   glossary.sinovietnameses = window.cjkv.nam.map(([first, second]) => [first, Standardize.vosOaoeuy(Standardize.vosYToI(second.normalize()))]);
   console.log(`Đã tải xong bộ dữ liệu Hán-Việt (${glossary.sinovietnameses.length})!`);
 
+  if (localStorage.getItem('DEEPL_AUTH_KEY') != null) $deeplAuthKeyText.val(localStorage.getItem('DEEPL_AUTH_KEY')).change()
+  if (localStorage.getItem('OPENAI_API_KEY') != null) $openaiApiKeyText.val(localStorage.getItem('OPENAI_API_KEY')).change()
+  if (localStorage.getItem('ANTHROPIC_API_KEY') != null) $anthropicApiKeyText.val(localStorage.getItem('ANTHROPIC_API_KEY')).change()
+  if (localStorage.getItem('GEMINI_API_KEY') != null) $geminiApiKeyText.val(localStorage.getItem('GEMINI_API_KEY')).change()
+  if (localStorage.getItem('HF_TOKEN') != null) $hfTokenText.val(localStorage.getItem('HF_TOKEN')).change()
+  if (localStorage.getItem('MISTRAL_API_KEY') != null) $mistralApiKeyText.val(localStorage.getItem('MISTRAL_API_KEY')).change()
+  Object.values(Translators).forEach(element => {
+    switch (element) {
+      case Translators.BAIDU_TRANSLATE:
+        translators[element] = new BaiduTranslate()
+        break
+      case Translators.COCCOC_EDU_TRANSLATE:
+        translators[element] = new CoccocEduTranslate()
+        break
+      case Translators.DEEPL_TRANSLATE:
+        translators[element] = new DeeplTranslate($deeplAuthKeyText.val())
+        break
+      case Translators.GENERATIVE_AI:
+        translators[element] = new GenerativeAi(UUID.toLowerCase(), $openaiApiKeyText.val(), $geminiApiKeyText.val(), $anthropicApiKeyText.val(), $hfTokenText.val(), $mistralApiKeyText.val());
+        break
+      case Translators.GOOGLE_TRANSLATE:
+        translators[element] = new GoogleTranslate(GOOGLE_TRANSLATE_KEY)
+        break
+      case Translators.LINGVANEX:
+        translators[element] = new Lingvanex()
+        break
+      case Translators.MICROSOFT_TRANSLATOR:
+        translators[element] = new MicrosoftTranslator($toneSelect.val())
+        break
+      case Translators.PAPAGO:
+        translator = new Papago(UUID)
+        break
+      case Translators.WEBNOVEL_TRANSLATE: {
+        translators[element] = new WebnovelTranslate()
+      // no default
+    }
+  })
   $translatorDropdown.find('.active').click();
-  if (localStorage.getItem('DEEPL_AUTH_KEY') != null) $deeplAuthKeyText.val(localStorage.getItem('DEEPL_AUTH_KEY')).change();
-  if (localStorage.getItem('OPENAI_API_KEY') != null) $openaiApiKeyText.val(localStorage.getItem('OPENAI_API_KEY')).change();
-  if (localStorage.getItem('ANTHROPIC_API_KEY') != null) $anthropicApiKeyText.val(localStorage.getItem('ANTHROPIC_API_KEY')).change();
-  if (localStorage.getItem('GEMINI_API_KEY') != null) $geminiApiKeyText.val(localStorage.getItem('GEMINI_API_KEY')).change();
-  if (localStorage.getItem('HF_TOKEN') != null) $hfTokenText.val(localStorage.getItem('HF_TOKEN')).change();
-  if (localStorage.getItem('MISTRAL_API_KEY') != null) $mistralApiKeyText.val(localStorage.getItem('MISTRAL_API_KEY')).change();
   reloadGlossary($glossaryListSelect.val());
   $inputTextarea.trigger('input');
 });
