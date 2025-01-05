@@ -106,7 +106,6 @@ export default class GenerativeAi extends Translator {
                     maxCompletionTokens = 4096;
                 else if (['gpt-4', 'gpt-4-0613', 'gpt-4-0314'].some(element => model === element))
                     maxCompletionTokens = undefined; // 8192
-                break;
         }
         requestBody.messages = [
             {

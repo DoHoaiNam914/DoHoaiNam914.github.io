@@ -975,7 +975,7 @@ $(document).ready(async () => {
       case Translators.PAPAGO:
         translator = new Papago(UUID)
         break
-      case Translators.WEBNOVEL_TRANSLATE: {
+      case Translators.WEBNOVEL_TRANSLATE:
         translators[element] = new WebnovelTranslate()
       // no default
     }
