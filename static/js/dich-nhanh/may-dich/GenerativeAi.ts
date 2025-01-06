@@ -1,7 +1,6 @@
 'use strict'
-/* global axios */
-import Translator from '/static/js/dich-nhanh/Translator.js'
-import * as Utils from '/static/js/Utils.js'
+import Translator from '../../../static/js/dich-nhanh/Translator.js'
+import * as Utils from '../../../static/js/Utils.js'
 import Anthropic from 'https://esm.run/@anthropic-ai/sdk'
 import {
   GoogleGenerativeAI,
@@ -69,31 +68,33 @@ export default class GenerativeAi extends Translator {
 
   private async mainTranslatenow (requestBody: { [key: string]: Array<{}> | string | {} | number }): Promise<string> {
     const collectedMessages: string[] = []
-    await axios.post(`${Utils.CORS_HEADER_PROXY}https://gateway.api.airapps.co/aa_service=server5/aa_apikey=5N3NR9SDGLS7VLUWSEN9J30P//v3/proxy/open-ai/v1/chat/completions`, JSON.stringify(requestBody), {
+    await window.fetch(`${Utils.CORS_HEADER_PROXY}https://gateway.api.airapps.co/aa_service=server5/aa_apikey=5N3NR9SDGLS7VLUWSEN9J30P//v3/proxy/open-ai/v1/chat/completions`, {
+      body: JSON.stringify(requestBody),
       headers: {
         'User-Agent': 'iOS-TranslateNow/8.8.0.1016 CFNetwork/1568.200.51 Darwin/24.1.0',
         'Content-Type': 'application/json',
         'accept-language': 'vi-VN,vi;q=0.9',
         'air-user-id': this.AIR_USER_ID
       },
-      responseType: 'stream',
+      method: 'POST',
       signal: this.controller.signal
-    }).then(({ data }) => {
-      data.on('data', ({ chunk: { choices: [{ delta: { content } }] } }) => {
-        collectedMessages.push(content)
+    }).then(async (value: Response) => {
+      const reader: ReadableStreamDefaultReader<Uint8Array> = (value.body as ReadableStream<Uint8Array>).getReader()
+      const decoder = new TextDecoder()
+      await reader.read().then(async ({ done, value }) => {
+        collectedMessages.push(JSON.parse(decoder.decode(value, { stream: !done }).replace('data: ', '')).choices[0].delta.content)
+        if (done) return
+        return await reader.read()
       })
-      data.on('error', (error: Error) => {
-        throw error
-      })
-    }).catch(({ data }) => {
-      throw new Error(data)
+    }).catch((reason) => {
+      throw new Error(reason)
     })
     return collectedMessages.filter(element => element != null).join('')
   }
 
   public async mainOpenai (model: string, instructions: string, message: string): Promise<string> {
     const searchParams: URLSearchParams = new URLSearchParams(window.location.search)
-    let requestBody: { [key: string]: Array<{}> | string | {} | number | boolean } = {
+    let requestBody: { [key: string]: Array<{}> | undefined | string | {} | number | boolean } = {
       model: 'gpt-4o',
       messages: [],
       response_format: {
@@ -105,7 +106,7 @@ export default class GenerativeAi extends Translator {
       frequency_penalty: 0,
       presence_penalty: 0
     }
-    let maxCompletionTokens: number | null = requestBody.max_completion_tokens as number
+    let maxCompletionTokens: number | undefined = requestBody.max_completion_tokens as number
     switch (model) {
       case 'o1':
       case 'o1-2024-12-17':
@@ -134,7 +135,7 @@ export default class GenerativeAi extends Translator {
       }
     ]
     requestBody.model = model
-    if (Object.hasOwn(requestBody, 'max_completion_tokens')) requestBody.max_completion_tokens = maxCompletionTokens
+    if (Object.hasOwn(requestBody, 'max_completion_tokens')) requestBody.max_completion_tokens = maxCompletionTokens as number
     requestBody.stream = true
     if (Object.hasOwn(requestBody, 'temperature')) requestBody.temperature = 0.3
     if (Object.hasOwn(requestBody, 'top_p')) requestBody.top_p = 0.3

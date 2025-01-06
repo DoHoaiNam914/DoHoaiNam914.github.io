@@ -1,5 +1,4 @@
 'use strict';
-/* global axios */
 import Translator from '/static/js/dich-nhanh/Translator.js';
 import * as Utils from '/static/js/Utils.js';
 import Anthropic from 'https://esm.run/@anthropic-ai/sdk';
@@ -60,24 +59,27 @@ export default class GenerativeAi extends Translator {
     }
     async mainTranslatenow(requestBody) {
         const collectedMessages = [];
-        await axios.post(`${Utils.CORS_HEADER_PROXY}https://gateway.api.airapps.co/aa_service=server5/aa_apikey=5N3NR9SDGLS7VLUWSEN9J30P//v3/proxy/open-ai/v1/chat/completions`, JSON.stringify(requestBody), {
+        await window.fetch(`${Utils.CORS_HEADER_PROXY}https://gateway.api.airapps.co/aa_service=server5/aa_apikey=5N3NR9SDGLS7VLUWSEN9J30P//v3/proxy/open-ai/v1/chat/completions`, {
+            body: JSON.stringify(requestBody),
             headers: {
                 'User-Agent': 'iOS-TranslateNow/8.8.0.1016 CFNetwork/1568.200.51 Darwin/24.1.0',
                 'Content-Type': 'application/json',
                 'accept-language': 'vi-VN,vi;q=0.9',
                 'air-user-id': this.AIR_USER_ID
             },
-            responseType: 'stream',
+            method: 'POST',
             signal: this.controller.signal
-        }).then(({ data }) => {
-            data.on('data', ({ chunk: { choices: [{ delta: { content } }] } }) => {
-                collectedMessages.push(content);
-            })
-            data.on('error', (error) => {
-                throw error;
+        }).then(async (value) => {
+            const reader = value.body.getReader();
+            const decoder = new TextDecoder();
+            await reader.read().then(async ({ done, value }) => {
+                collectedMessages.push(JSON.parse(decoder.decode(value, { stream: !done }).replace('data: ', '')).choices[0].delta.content);
+                if (done)
+                    return;
+                return await reader.read();
             });
-        }).catch(({ data }) => {
-            throw new Error(data);
+        }).catch((reason) => {
+            throw new Error(reason);
         });
         return collectedMessages.filter(element => element != null).join('');
     }
