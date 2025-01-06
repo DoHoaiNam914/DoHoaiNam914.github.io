@@ -68,7 +68,7 @@ export default class GenerativeAi extends Translator {
     this.mistralClient = new Mistral({ apiKey: mistralApiKey })
   }
 
-  private async runTranslateNow (requestBody: { [key: string]: Array<{}> | string | {} | number }): Promise<string> {
+  private async mainTranslatenow (requestBody: { [key: string]: Array<{}> | string | {} | number }): Promise<string> {
     const collectedMessages: string[] = []
     await axios.post(`${Utils.CORS_HEADER_PROXY}https://gateway.api.airapps.co/aa_service=server5/aa_apikey=5N3NR9SDGLS7VLUWSEN9J30P//v3/proxy/open-ai/v1/chat/completions`, JSON.stringify(requestBody), {
       headers: {
@@ -86,7 +86,7 @@ export default class GenerativeAi extends Translator {
     return collectedMessages.filter(element => element != null).join('')
   }
 
-  public async runOpenai (model: string, instructions: string, message: string): Promise<string> {
+  public async mainOpenai (model: string, instructions: string, message: string): Promise<string> {
     const searchParams: URLSearchParams = new URLSearchParams(window.location.search)
     let requestBody: { [key: string]: Array<{}> | string | {} | number | boolean } = {
       model: 'gpt-4o',
@@ -134,7 +134,7 @@ export default class GenerativeAi extends Translator {
     if (Object.hasOwn(requestBody, 'temperature')) requestBody.temperature = 0.3
     if (Object.hasOwn(requestBody, 'top_p')) requestBody.top_p = 0.3
     if (this.OPENAI_API_KEY.length === 0 && searchParams.has('debug')) {
-      return await this.runTranslateNow(requestBody)
+      return await this.mainTranslatenow(requestBody)
     } else {
       const response = this.openai.chat.completions.create(requestBody)
       const collectedMessages: string[] = []
@@ -210,7 +210,7 @@ export default class GenerativeAi extends Translator {
     return collectedChunkTexts.join('')
   }
 
-  public async runAnthropic (model: string, instructions: string, message: string): Promise<string> {
+  public async mainAnthropic (model: string, instructions: string, message: string): Promise<string> {
     const body: { [key: string]: string | Array<{ role: string, content: string }> | number } = {
       model: 'claude-3-5-sonnet-20241022',
       max_tokens: 1000,
@@ -238,7 +238,7 @@ export default class GenerativeAi extends Translator {
     return collectedTexts.join('')
   }
 
-  public async runHfInference (model: string, instructions: string, message: string): Promise<string> {
+  public async launch (model: string, instructions: string, message: string): Promise<string> {
     let out: string = ''
 
     const chatCompletionInput = {
@@ -288,6 +288,9 @@ export default class GenerativeAi extends Translator {
   public async runMistral (model: string, instructions: string, message: string): Promise<string> {
     const result = await this.mistralClient.chat.stream({
       model,
+      temperature: 0.3,
+      topP: 0.3,
+      maxTokens: model === 'mistral-small-latest' ? 32000 : 128000,
       messages: [
         {
           role: 'user',
@@ -297,10 +300,7 @@ export default class GenerativeAi extends Translator {
           role: 'user',
           content: message
         }
-      ],
-      temperature: 0.3,
-      topP: 0.3,
-      maxTokens: model === 'mistral-small-latest' ? 32000 : 128000
+      ]
     })
     const collectedStreamTexts: string[] = []
     for await (const chunk of result) {
@@ -330,7 +330,7 @@ ${nomenclatureList.join('\n')}
         const query: string = queries.join('\n')
         responses.push((async (): Promise<string> => {
           if (splitChunkEnabled && isMistral) await Utils.sleep(2500)
-          return isMistral ? await this.runMistral(model, INSTRUCTIONS, query) : (model.startsWith('gemini') ? await this.runGoogleGenerativeAI(model, INSTRUCTIONS, query) : (model.startsWith('claude') ? await this.runAnthropic(model, INSTRUCTIONS, query) : (model.startsWith('gpt') || model === 'chatgpt-4o-latest' || model.startsWith('o1') ? await this.runOpenai(model, INSTRUCTIONS, query) : await this.runHfInference(model, INSTRUCTIONS, query))))
+          return isMistral ? await this.runMistral(model, INSTRUCTIONS, query) : (model.startsWith('claude') ? await this.mainAnthropic(model, INSTRUCTIONS, query) : (model.startsWith('gemini') ? await this.runGoogleGenerativeAI(model, INSTRUCTIONS, query) : (model.startsWith('gpt') || model === 'chatgpt-4o-latest' || model.startsWith('o1') ? await this.mainOpenai(model, INSTRUCTIONS, query) : await this.launch(model, INSTRUCTIONS, query))))
         })())
         queries = []
       }

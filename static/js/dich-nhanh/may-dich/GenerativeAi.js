@@ -58,7 +58,7 @@ export default class GenerativeAi extends Translator {
         this.hfInferenceClient = new HfInference(hfToken);
         this.mistralClient = new Mistral({ apiKey: mistralApiKey });
     }
-    async runTranslateNow(requestBody) {
+    async mainTranslatenow(requestBody) {
         const collectedMessages = [];
         await axios.post(`${Utils.CORS_HEADER_PROXY}https://gateway.api.airapps.co/aa_service=server5/aa_apikey=5N3NR9SDGLS7VLUWSEN9J30P//v3/proxy/open-ai/v1/chat/completions`, JSON.stringify(requestBody), {
             headers: {
@@ -75,7 +75,7 @@ export default class GenerativeAi extends Translator {
         });
         return collectedMessages.filter(element => element != null).join('');
     }
-    async runOpenai(model, instructions, message) {
+    async mainOpenai(model, instructions, message) {
         const searchParams = new URLSearchParams(window.location.search);
         let requestBody = {
             model: 'gpt-4o',
@@ -129,7 +129,7 @@ export default class GenerativeAi extends Translator {
         if (Object.hasOwn(requestBody, 'top_p'))
             requestBody.top_p = 0.3;
         if (this.OPENAI_API_KEY.length === 0 && searchParams.has('debug')) {
-            return await this.runTranslateNow(requestBody);
+            return await this.mainTranslatenow(requestBody);
         }
         else {
             const response = this.openai.chat.completions.create(requestBody);
@@ -200,7 +200,7 @@ export default class GenerativeAi extends Translator {
         }
         return collectedChunkTexts.join('');
     }
-    async runAnthropic(model, instructions, message) {
+    async mainAnthropic(model, instructions, message) {
         const body = {
             model: 'claude-3-5-sonnet-20241022',
             max_tokens: 1000,
@@ -227,7 +227,7 @@ export default class GenerativeAi extends Translator {
         });
         return collectedTexts.join('');
     }
-    async runHfInference(model, instructions, message) {
+    async launch(model, instructions, message) {
         let out = '';
         const chatCompletionInput = {
             model: 'meta-llama/Llama-3.1-8B-Instruct',
@@ -275,6 +275,9 @@ export default class GenerativeAi extends Translator {
     async runMistral(model, instructions, message) {
         const result = await this.mistralClient.chat.stream({
             model,
+            temperature: 0.3,
+            topP: 0.3,
+            maxTokens: model === 'mistral-small-latest' ? 32000 : 128000,
             messages: [
                 {
                     role: 'user',
@@ -284,10 +287,7 @@ export default class GenerativeAi extends Translator {
                     role: 'user',
                     content: message
                 }
-            ],
-            temperature: 0.3,
-            topP: 0.3,
-            maxTokens: model === 'mistral-small-latest' ? 32000 : 128000
+            ]
         });
         const collectedStreamTexts = [];
         for await (const chunk of result) {
@@ -317,7 +317,7 @@ ${nomenclatureList.join('\n')}
                 responses.push((async () => {
                     if (splitChunkEnabled && isMistral)
                         await Utils.sleep(2500);
-                    return isMistral ? await this.runMistral(model, INSTRUCTIONS, query) : (model.startsWith('gemini') ? await this.runGoogleGenerativeAI(model, INSTRUCTIONS, query) : (model.startsWith('claude') ? await this.runAnthropic(model, INSTRUCTIONS, query) : (model.startsWith('gpt') || model === 'chatgpt-4o-latest' || model.startsWith('o1') ? await this.runOpenai(model, INSTRUCTIONS, query) : await this.runHfInference(model, INSTRUCTIONS, query))));
+                    return isMistral ? await this.runMistral(model, INSTRUCTIONS, query) : (model.startsWith('claude') ? await this.mainAnthropic(model, INSTRUCTIONS, query) : (model.startsWith('gemini') ? await this.runGoogleGenerativeAI(model, INSTRUCTIONS, query) : (model.startsWith('gpt') || model === 'chatgpt-4o-latest' || model.startsWith('o1') ? await this.mainOpenai(model, INSTRUCTIONS, query) : await this.launch(model, INSTRUCTIONS, query))));
                 })());
                 queries = [];
             }
