@@ -1,4 +1,5 @@
 'use strict';
+/* global axios */
 import Translator from '../Translator.js';
 import * as Utils from '../../Utils.js';
 import Anthropic from 'https://esm.run/@anthropic-ai/sdk';
@@ -58,42 +59,18 @@ export default class GenerativeAi extends Translator {
         this.mistralClient = new Mistral({ apiKey: mistralApiKey });
     }
     async mainTranslatenow(requestBody) {
-        const collectedMessages = [];
-        await window.fetch(`${Utils.CORS_HEADER_PROXY}https://gateway.api.airapps.co/aa_service=server5/aa_apikey=5N3NR9SDGLS7VLUWSEN9J30P//v3/proxy/open-ai/v1/chat/completions`, {
-            body: JSON.stringify(requestBody),
+        const response = await axios.post(`${Utils.CORS_HEADER_PROXY}https://gateway.api.airapps.co/aa_service=server5/aa_apikey=5N3NR9SDGLS7VLUWSEN9J30P//v3/proxy/open-ai/v1/chat/completions`, JSON.stringify(requestBody), {
             headers: {
                 'User-Agent': 'iOS-TranslateNow/8.8.0.1016 CFNetwork/1568.200.51 Darwin/24.1.0',
                 'Content-Type': 'application/json',
                 'accept-language': 'vi-VN,vi;q=0.9',
                 'air-user-id': this.AIR_USER_ID
             },
-            method: 'POST',
             signal: this.controller.signal
-        }).then(value => value.body).then(async (value) => {
-            const reader = value.getReader();
-            const decoder = new TextDecoder();
-            let vaccantChunk = '';
-            async function pump() {
-                await reader.read().then(async ({ done, value }) => {
-                    if (done)
-                        return;
-                    decoder.decode(value, { stream: !done }).split('\n').filter(element => element.startsWith('data: ') && !element.startsWith('data: [DONE]')).forEach(element => {
-                        try {
-                            collectedMessages.push(JSON.parse(`{${vaccantChunk}${element.replace('data: ', '"data":')}}`).data.choices[0].delta.content);
-                            vaccantChunk = '';
-                        }
-                        catch (e) {
-                            vaccantChunk = element;
-                        }
-                    });
-                    await pump();
-                });
-            }
-            await pump();
-        }).catch(reason => {
-            throw reason;
+        }).then(response => response.data.split('\n').filter(element => element.startsWith('data: ') && !element.startsWith('data: [DONE]')).map(element => JSON.parse(`{${element.replace('data: ', '"data":')}}`).data.choices[0].delta.content).filter(element => element != null).join('')).catch(error => {
+            throw new Error(error.data);
         });
-        return collectedMessages.filter(element => element != null).join('');
+        return response;
     }
     async mainOpenai(model, instructions, message) {
         const searchParams = new URLSearchParams(window.location.search);
