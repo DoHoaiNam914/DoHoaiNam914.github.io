@@ -69,7 +69,8 @@ export default class GenerativeAi extends Translator {
   }
 
   private async runTranslateNow (requestBody: { [key: string]: Array<{}> | string | {} | number }): Promise<string> {
-    const response = await axios.post(`${Utils.CORS_HEADER_PROXY}https://gateway.api.airapps.co/aa_service=server5/aa_apikey=5N3NR9SDGLS7VLUWSEN9J30P//v3/proxy/open-ai/v1/chat/completions`, JSON.stringify(requestBody), {
+    const collectedMessages: string[] = []
+    await axios.post(`${Utils.CORS_HEADER_PROXY}https://gateway.api.airapps.co/aa_service=server5/aa_apikey=5N3NR9SDGLS7VLUWSEN9J30P//v3/proxy/open-ai/v1/chat/completions`, JSON.stringify(requestBody), {
       headers: {
         'User-Agent': 'iOS-TranslateNow/8.8.0.1016 CFNetwork/1568.200.51 Darwin/24.1.0',
         'Content-Type': 'application/json',
@@ -77,15 +78,17 @@ export default class GenerativeAi extends Translator {
         'air-user-id': this.AIR_USER_ID
       },
       signal: this.controller.signal
-    }).then(({ data }) => data).catch(({ data }) => {
+    }).then(({ data: { chunk: { choices: [{ delta: { content } }] } } }) => {
+      collectedMessages.push(content)
+    }).catch(({ data }) => {
       throw new Error(data)
     })
-    return response.choices[0].message.content
+    return collectedMessages.filter(element => element != null).join('')
   }
 
   public async runOpenai (model: string, instructions: string, message: string): Promise<string> {
     const searchParams: URLSearchParams = new URLSearchParams(window.location.search)
-    let requestBody: { [key: string]: Array<{}> | string | {} | number } = {
+    let requestBody: { [key: string]: Array<{}> | string | {} | number | boolean } = {
       model: 'gpt-4o',
       messages: [],
       response_format: {
@@ -127,39 +130,19 @@ export default class GenerativeAi extends Translator {
     ]
     requestBody.model = model
     if (Object.hasOwn(requestBody, 'max_completion_tokens')) requestBody.max_completion_tokens = maxCompletionTokens
+    requestBody.stream = true
     if (Object.hasOwn(requestBody, 'temperature')) requestBody.temperature = 0.3
     if (Object.hasOwn(requestBody, 'top_p')) requestBody.top_p = 0.3
     if (this.OPENAI_API_KEY.length === 0 && searchParams.has('debug')) {
       return await this.runTranslateNow(requestBody)
     } else {
-      const response = await this.openai.chat.completions.create(requestBody)
-      return response.choices[0].message.content
-    }
-  }
-
-  public async runAnthropic (model: string, instructions: string, message: string): Promise<string> {
-    const body: { [key: string]: string | Array<{ role: string, content: string }> | number } = {
-      model: 'claude-3-5-sonnet-20241022',
-      max_tokens: 1000,
-      temperature: 0,
-      messages: []
-    }
-    body.model = model
-    body.messages = [
-      {
-        role: 'user',
-        content: instructions
-      },
-      {
-        role: 'user',
-        content: message
+      const response = this.openai.chat.completions.create(requestBody)
+      const collectedMessages: string[] = []
+      for await (const chunk of response) {
+        collectedMessages.push(chunk.choices[0].delta.content)
       }
-    ]
-    body.max_tokens = !model.startsWith('claude-3-5') ? 4096 : 8192
-    body.temperature = 0.3
-    body.top_p = 0.3
-    const msg: string = await this.anthropic.messages.create(body)
-    return msg
+      return collectedMessages.filter(element => element != null).join('')
+    }
   }
 
   public async runGoogleGenerativeAI (model: string, instructions: string, message: string): Promise<string> {
@@ -219,8 +202,40 @@ export default class GenerativeAi extends Translator {
 
     const chatSession: ChatSession = generativeModel.startChat(startChatParams)
 
-    const result = await chatSession.sendMessage(message)
-    return result.response.text()
+    const result = await chatSession.sendMessageStream(message)
+    const collectedChunkTexts: string[] = []
+    for await (const chunk of result.stream) {
+      collectedChunkTexts.push(chunk.text())
+    }
+    return collectedChunkTexts.join('')
+  }
+
+  public async runAnthropic (model: string, instructions: string, message: string): Promise<string> {
+    const body: { [key: string]: string | Array<{ role: string, content: string }> | number } = {
+      model: 'claude-3-5-sonnet-20241022',
+      max_tokens: 1000,
+      temperature: 0,
+      messages: []
+    }
+    body.model = model
+    body.messages = [
+      {
+        role: 'user',
+        content: instructions
+      },
+      {
+        role: 'user',
+        content: message
+      }
+    ]
+    body.max_tokens = !model.startsWith('claude-3-5') ? 4096 : 8192
+    body.temperature = 0.3
+    body.top_p = 0.3
+    const collectedTexts: string[] = []
+    await this.anthropic.messages.stream(body).on('text', text => {
+      collectedTexts.push(text)
+    })
+    return collectedTexts.join('')
   }
 
   public async runHfInference (model: string, instructions: string, message: string): Promise<string> {
@@ -271,7 +286,7 @@ export default class GenerativeAi extends Translator {
   }
 
   public async runMistral (model: string, instructions: string, message: string): Promise<string> {
-    const chatResponse = await this.mistralClient.chat.complete({
+    const result = await this.mistralClient.chat.stream({
       model,
       messages: [
         {
@@ -287,7 +302,11 @@ export default class GenerativeAi extends Translator {
       top_p: 0.3,
       max_tokens: model === 'mistral-small-latest' ? 32000 : 128000
     })
-    return chatResponse.choices[0].message.content
+    const collectedStreamTexts: string[] = []
+    for await (const chunk of result) {
+      collectedStreamTexts.push(chunk.data.choices[0].delta.content)
+    }
+    return collectedStreamTexts.join('')
   }
 
   public async translateText (text: string, targetLanguage: string, model: string = 'gpt-4o-mini', nomenclature: string[][] = [], splitChunkEnabled: boolean = false): Promise<string | null> {

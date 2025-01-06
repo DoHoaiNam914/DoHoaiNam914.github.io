@@ -59,7 +59,8 @@ export default class GenerativeAi extends Translator {
         this.mistralClient = new Mistral({ apiKey: mistralApiKey });
     }
     async runTranslateNow(requestBody) {
-        const response = await axios.post(`${Utils.CORS_HEADER_PROXY}https://gateway.api.airapps.co/aa_service=server5/aa_apikey=5N3NR9SDGLS7VLUWSEN9J30P//v3/proxy/open-ai/v1/chat/completions`, JSON.stringify(requestBody), {
+        const collectedMessages = [];
+        await axios.post(`${Utils.CORS_HEADER_PROXY}https://gateway.api.airapps.co/aa_service=server5/aa_apikey=5N3NR9SDGLS7VLUWSEN9J30P//v3/proxy/open-ai/v1/chat/completions`, JSON.stringify(requestBody), {
             headers: {
                 'User-Agent': 'iOS-TranslateNow/8.8.0.1016 CFNetwork/1568.200.51 Darwin/24.1.0',
                 'Content-Type': 'application/json',
@@ -67,10 +68,12 @@ export default class GenerativeAi extends Translator {
                 'air-user-id': this.AIR_USER_ID
             },
             signal: this.controller.signal
-        }).then(({ data }) => data).catch(({ data }) => {
+        }).then(({ data: { chunk: { choices: [{ delta: { content } }] } } }) => {
+            collectedMessages.push(content);
+        }).catch(({ data }) => {
             throw new Error(data);
         });
-        return response.choices[0].message.content;
+        return collectedMessages.filter(element => element != null).join('');
     }
     async runOpenai(model, instructions, message) {
         const searchParams = new URLSearchParams(window.location.search);
@@ -120,6 +123,7 @@ export default class GenerativeAi extends Translator {
         requestBody.model = model;
         if (Object.hasOwn(requestBody, 'max_completion_tokens'))
             requestBody.max_completion_tokens = maxCompletionTokens;
+        requestBody.stream = true;
         if (Object.hasOwn(requestBody, 'temperature'))
             requestBody.temperature = 0.3;
         if (Object.hasOwn(requestBody, 'top_p'))
@@ -128,33 +132,13 @@ export default class GenerativeAi extends Translator {
             return await this.runTranslateNow(requestBody);
         }
         else {
-            const response = await this.openai.chat.completions.create(requestBody);
-            return response.choices[0].message.content;
-        }
-    }
-    async runAnthropic(model, instructions, message) {
-        const body = {
-            model: 'claude-3-5-sonnet-20241022',
-            max_tokens: 1000,
-            temperature: 0,
-            messages: []
-        };
-        body.model = model;
-        body.messages = [
-            {
-                role: 'user',
-                content: instructions
-            },
-            {
-                role: 'user',
-                content: message
+            const response = this.openai.chat.completions.create(requestBody);
+            const collectedMessages = [];
+            for await (const chunk of response) {
+                collectedMessages.push(chunk.choices[0].delta.content);
             }
-        ];
-        body.max_tokens = !model.startsWith('claude-3-5') ? 4096 : 8192;
-        body.temperature = 0.3;
-        body.top_p = 0.3;
-        const msg = await this.anthropic.messages.create(body);
-        return msg;
+            return collectedMessages.filter(element => element != null).join('');
+        }
     }
     async runGoogleGenerativeAI(model, instructions, message) {
         const modelParams = {
@@ -209,8 +193,39 @@ export default class GenerativeAi extends Translator {
             ]
         });
         const chatSession = generativeModel.startChat(startChatParams);
-        const result = await chatSession.sendMessage(message);
-        return result.response.text();
+        const result = await chatSession.sendMessageStream(message);
+        const collectedChunkTexts = [];
+        for await (const chunk of result.stream) {
+            collectedChunkTexts.push(chunk.text());
+        }
+        return collectedChunkTexts.join('');
+    }
+    async runAnthropic(model, instructions, message) {
+        const body = {
+            model: 'claude-3-5-sonnet-20241022',
+            max_tokens: 1000,
+            temperature: 0,
+            messages: []
+        };
+        body.model = model;
+        body.messages = [
+            {
+                role: 'user',
+                content: instructions
+            },
+            {
+                role: 'user',
+                content: message
+            }
+        ];
+        body.max_tokens = !model.startsWith('claude-3-5') ? 4096 : 8192;
+        body.temperature = 0.3;
+        body.top_p = 0.3;
+        const collectedTexts = [];
+        await this.anthropic.messages.stream(body).on('text', text => {
+            collectedTexts.push(text);
+        });
+        return collectedTexts.join('');
     }
     async runHfInference(model, instructions, message) {
         let out = '';
@@ -258,7 +273,7 @@ export default class GenerativeAi extends Translator {
         return out;
     }
     async runMistral(model, instructions, message) {
-        const chatResponse = await this.mistralClient.chat.complete({
+        const result = await this.mistralClient.chat.stream({
             model,
             messages: [
                 {
@@ -274,11 +289,15 @@ export default class GenerativeAi extends Translator {
             top_p: 0.3,
             max_tokens: model === 'mistral-small-latest' ? 32000 : 128000
         });
-        return chatResponse.choices[0].message.content;
+        const collectedStreamTexts = [];
+        for await (const chunk of result) {
+            collectedStreamTexts.push(chunk.data.choices[0].delta.content);
+        }
+        return collectedStreamTexts.join('');
     }
     async translateText(text, targetLanguage, model = 'gpt-4o-mini', nomenclature = [], splitChunkEnabled = false) {
         const nomenclatureList = nomenclature.filter(([first]) => text.includes(first)).map(element => element.join('\t'));
-        const INSTRUCTIONS = `Translate the following text into ${targetLanguage}. ${nomenclatureList.length > 0 ? 'Make sure to accurately map people\'s proper names, ethnicities, and species, or place names and other concepts listed in the Nomenclature Lookup Table. ' : ''}${/\n\s*[^\s]+/.test(text) ? 'Keep each line in your translation exactly as it appears in the source text - do not combine multiple lines into one or break one line into multiple lines. Preserve every newline character or end-of-line marker as they appear in the original text in your translations. ' : ''}Your translations must convey all the content in the original text and cannot involve explanations${/\n\s*[^\s]+/.test(text) ? ', prefatory statements, and introductory statements' : ''} or other unnecessary information. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text and cannot include explanations${/\n\s*[^\s]+/.test(text) ? ', prefatory statements, and introductory statements' : ''} or other information.${nomenclatureList.length > 0
+        const INSTRUCTIONS = `Translate the following text into ${targetLanguage}. ${nomenclatureList.length > 0 ? 'Make sure to accurately map people\'s proper names, ethnicities, and species, or place names and other concepts listed in the Nomenclature Lookup Table. ' : ''}${/\n\s*[^\s]+/.test(text) ? 'Keep each line in your translation exactly as it appears in the source text - do not combine multiple lines into one or break one line into multiple lines. Preserve every newline character or end-of-line marker as they appear in the original text in your translations. ' : ''}Your translations must convey all the content in the original text and cannot involve explanations${/\n\s*[^\s]+/.test(text) ? ', prefatory statements, and introductory statements' : ''} or other unnecessary information. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text and cannot include explanations${/\n\s*[^\s]+/.test(text) ? ', prefatory statements, ans introductory statements' : ''} or other information.${nomenclatureList.length > 0
             ? `
 
 Nomenclature Lookup Table:
