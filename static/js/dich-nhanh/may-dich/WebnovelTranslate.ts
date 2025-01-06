@@ -2029,8 +2029,8 @@ export default class WebnovelTranslate extends Translator {
         queries = []
       }
     }
-    const result: string = await Promise.all(responses).then(value => value.map(element => element.data[0].filter(([, second]) => second != null).map(([first, second]) => [second, first.replaceAll(new RegExp(` ?${isCj ? '(?:\\|[ |]*|[ |]*\\|)' : Utils.getTrieRegexPatternFromWords([EOL].sort((a, b) => b.length - a.length)).source as string}\\s*`, 'g'), '\n')]).map(([b, second]) => {
-      const adjustedText = isCj ? b.replace(EOL.repeat(2), EOL) : b
+    const result = await Promise.all(responses).then(value => value.map(element => element.data[0].filter(([, second]) => second != null).map(([first, second]) => [second, first.replaceAll(new RegExp(` ?${isCj ? '(?:\\|[ |]*|[ |]*\\|)' : Utils.getTrieRegexPatternFromWords([EOL].sort((a, b) => b.length - a.length)).source as string}\\s*`, 'g'), '\n')]).map(([first, second]) => {
+      const adjustedText = isCj ? first.replace(EOL.repeat(2), EOL) : first
       const lineCountDifference = [...adjustedText.matchAll(new RegExp(Utils.escapeRegExp(EOL), 'g'))].length - [...second.matchAll(/\n/g)].length
       return (lineCountDifference < 0 ? second.replace(new RegExp(`\\n{${Math.abs(lineCountDifference)}}$`), '') : second).concat('\n'.repeat(lineCountDifference > 0 ? lineCountDifference : 0))
     })).flat().join('')).catch(reason => {

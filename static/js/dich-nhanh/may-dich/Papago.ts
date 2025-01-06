@@ -80,7 +80,7 @@ export default class Papago extends Translator {
     while (lines.length > 0) {
       queries.push(lines.shift() as string)
       if (lines.length === 0 || [...queries, lines[0]].join('\n').length > this.maxContentLengthPerRequest) {
-        const timeStamp: string = date.getTime()
+        const timeStamp = date.getTime()
         responses.push(this.instance.post('/apis/n2mt/translate', `deviceId=${this.uuid}&locale=vi&dict=true&dictDisplay=30&honorific=true&instant=false&paging=false&source=${sourceLanguage ?? this.DefaultLanguage.SOURCE_LANGUAGE}&target=${targetLanguage}&text=${encodeURIComponent(queries.join('\n'))}`, {
           headers: {
             Accept: 'application/json',
@@ -94,7 +94,7 @@ export default class Papago extends Translator {
         queries = []
       }
     }
-    const result: string = await Promise.all(responses).then(value => value.map(element => element.data.translatedText).join('\n')).catch((reason: Error) => {
+    const result = await Promise.all(responses).then(value => value.map(element => element.data.translatedText).join('\n')).catch((reason: Error) => {
       throw reason
     })
     super.translateText(text, targetLanguage, sourceLanguage)

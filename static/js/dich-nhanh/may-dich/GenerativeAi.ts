@@ -79,11 +79,17 @@ export default class GenerativeAi extends Translator {
     }).then(value => value.body as ReadableStream<Uint8Array>).then(async value => {
       const reader = value.getReader()
       const decoder = new TextDecoder()
+      let vaccantChunk = ''
       async function pump (): Promise<void> {
         await reader.read().then(async ({ done, value }) => {
           if (done) return
           decoder.decode(value, { stream: !done }).split('\n').filter(element => element.startsWith('data: ') && !element.startsWith('data: [DONE]')).forEach(element => {
-            collectedMessages.push(JSON.parse(`{${element.replace('data', '"data"')}}`).data.choices[0].delta.content)
+            try {
+              collectedMessages.push(JSON.parse(`{${vaccantChunk}${element.replace('data: ', '"data":')}}`).data.choices[0].delta.content)
+              vaccantChunk = ''
+            } catch (e) {
+              vaccantChunk = element
+            }
           })
           await pump()
         })

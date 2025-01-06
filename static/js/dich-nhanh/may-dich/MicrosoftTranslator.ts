@@ -72,7 +72,7 @@ export default class MicrosoftTranslator extends Translator {
         requestIndex += 1
       }
     }
-    const result: string = await Promise.all(responses).then(value => value.map(element => element.data[0].translations[0].text).join('\n')).catch(reason => {
+    const result = await Promise.all(responses).then(value => value.map(element => element.data[0].translations[0].text).join('\n')).catch(reason => {
       this.key = null
       this.token = null
       throw reason
