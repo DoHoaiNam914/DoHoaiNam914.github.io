@@ -1686,7 +1686,7 @@ $translateEntryButtons.click(async function onClick() {
           case Translators.GENERATIVE_AI:
             translator.controller = entryTranslationController
             result = await translator.translateText(text, targetLanguage, model, $('#apply-nomenclature-switch').prop('checked') ? Object.entries(glossary.nomenclature) : [])
-            if (model.startsWith('gemini')) result = result.trimEnd()
+            result = result.trim()
             break;
           default:
             translator.controller = entryTranslationController

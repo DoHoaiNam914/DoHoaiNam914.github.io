@@ -299,8 +299,8 @@ export default class GenerativeAi extends Translator {
         }
       ],
       temperature: 0.3,
-      top_p: 0.3,
-      max_tokens: model === 'mistral-small-latest' ? 32000 : 128000
+      topP: 0.3,
+      maxTokens: model === 'mistral-small-latest' ? 32000 : 128000
     })
     const collectedStreamTexts: string[] = []
     for await (const chunk of result) {
