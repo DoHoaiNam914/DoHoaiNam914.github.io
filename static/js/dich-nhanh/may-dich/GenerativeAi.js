@@ -67,9 +67,15 @@ export default class GenerativeAi extends Translator {
                 'accept-language': 'vi-VN,vi;q=0.9',
                 'air-user-id': this.AIR_USER_ID
             },
+            responseType: 'stream',
             signal: this.controller.signal
-        }).then(({ data: { chunk: { choices: [{ delta: { content } }] } } }) => {
-            collectedMessages.push(content);
+        }).then(({ data }) => {
+            data.on('data', ({ chunk: { choices: [{ delta: { content } }] } }) => {
+                collectedMessages.push(content);
+            })
+            data.on('error', (error) => {
+                throw error;
+            });
         }).catch(({ data }) => {
             throw new Error(data);
         });

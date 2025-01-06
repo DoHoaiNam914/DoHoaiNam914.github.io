@@ -11,7 +11,6 @@ import {
   ChatSession
 } from 'https://esm.run/@google/generative-ai'
 import { HfInference } from 'https://esm.run/@huggingface/inference'
-import { encodingForModel } from 'https://esm.run/js-tiktoken'
 import { Mistral } from 'https://esm.run/@mistralai/mistralai'
 import OpenAI from 'https://esm.run/openai'
 export default class GenerativeAi extends Translator {
@@ -77,9 +76,15 @@ export default class GenerativeAi extends Translator {
         'accept-language': 'vi-VN,vi;q=0.9',
         'air-user-id': this.AIR_USER_ID
       },
+      responseType: 'stream',
       signal: this.controller.signal
-    }).then(({ data: { chunk: { choices: [{ delta: { content } }] } } }) => {
-      collectedMessages.push(content)
+    }).then(({ data }) => {
+      data.on('data', ({ chunk: { choices: [{ delta: { content } }] } }) => {
+        collectedMessages.push(content)
+      })
+      data.on('error', (error: Error) => {
+        throw error
+      })
     }).catch(({ data }) => {
       throw new Error(data)
     })
