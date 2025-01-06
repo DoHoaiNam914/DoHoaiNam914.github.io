@@ -1,7 +1,7 @@
 'use strict';
 /* global axios */
-import Translator from '/static/js/dich-nhanh/Translator.js';
-import * as Utils from '/static/js/Utils.js';
+import Translator from '../Translator.js';
+import * as Utils from '../../Utils.js';
 export default class WebnovelTranslate extends Translator {
     /* https://translate-pa.googleapis.com/v1/supportedLanguages?client=gtx&display_language=vi&key=${key} */
     LANGUAGE_LIST = JSON.parse(`{
@@ -2014,11 +2014,11 @@ export default class WebnovelTranslate extends Translator {
         const EOL = isCj ? '||||' : '\\n';
         const lines = text.split('\n');
         const responses = [];
-        let queue = lines.map((element) => `${isCj ? '\u3000\u3000' : ''}${element}`).join(EOL);
-        queue = (isCj ? queue.replace(EOL, EOL.repeat(2)) : queue).split(new RegExp(`(?:\\.{3}|[${!isCj ? '!,.:;?' : ''}…${isCj ? '、。！，：；？' : ''}](?:[^${!isCj ? '!,.:;?' : ''}…${isCj ? '、。！，：；？' : ''}]*$${!isCj ? '|\\s+' : ''}|))`));
+        let queue = lines.map(element => `${isCj ? '\u3000\u3000' : ''}${element}`).join(EOL);
+        queue = (isCj ? queue.replace(EOL, EOL.repeat(2)) : queue).split(new RegExp(`(?<=\\.{3}|[${!isCj ? '!,.:;?' : ''}…${isCj ? '、。！，：；？' : ''}](?:[^${!isCj ? '!,.:;?' : ''}…${isCj ? '、。！，：；？' : ''}]*$${!isCj ? '|\\s+' : ''}|))`));
         let queries = [];
         while (queue.length > 0) {
-            queries.push((queue).shift());
+            queries.push(queue.shift());
             if (queue.length === 0 || queries.join('').concat(queue[0].trimEnd()).length > this.maxContentLengthPerRequest) {
                 responses.push(axios.get(`${Utils.CORS_HEADER_PROXY}http://translate.google.com/translate_a/single`, {
                     params: new URLSearchParams(`client=${this.clientName}&ie=UTF-8&oe=UTF-8&dt=bd&dt=ex&dt=ld&dt=md&dt=rw&dt=rm&dt=ss&dt=t&dt=at&dt=gt&dt=qc&sl=${sourceLanguage ?? this.DefaultLanguage.SOURCE_LANGUAGE}&tl=${targetLanguage}&hl=${targetLanguage}&q=${encodeURIComponent(queries.join('').trimEnd())}`),
@@ -2027,11 +2027,11 @@ export default class WebnovelTranslate extends Translator {
                 queries = [];
             }
         }
-        const result = await Promise.all(responses).then(responses => responses.map(({ data: [a] }) => a.filter(([, second]) => second != null).map(([b, second]) => [second, b.replaceAll(new RegExp(` ?${isCj ? '(?:\\|[ |]*|[ |]*\\|)' : Utils.getTrieRegexPatternFromWords([EOL].sort((a, b) => b.length - a.length)).source}\\s*`, 'g'), '\n')]).map(([b, second]) => {
+        const result = await Promise.all(responses).then(value => value.map(element => element.data[0].filter(([, second]) => second != null).map(([first, second]) => [second, first.replaceAll(new RegExp(` ?${isCj ? '(?:\\|[ |]*|[ |]*\\|)' : Utils.getTrieRegexPatternFromWords([EOL].sort((a, b) => b.length - a.length)).source}\\s*`, 'g'), '\n')]).map(([b, second]) => {
             const adjustedText = isCj ? b.replace(EOL.repeat(2), EOL) : b;
             const lineCountDifference = [...adjustedText.matchAll(new RegExp(Utils.escapeRegExp(EOL), 'g'))].length - [...second.matchAll(/\n/g)].length;
             return (lineCountDifference < 0 ? second.replace(new RegExp(`\\n{${Math.abs(lineCountDifference)}}$`), '') : second).concat('\n'.repeat(lineCountDifference > 0 ? lineCountDifference : 0));
-        })).flat().join('')).catch((reason) => {
+        })).flat().join('')).catch(reason => {
             throw reason;
         });
         super.translateText(text, targetLanguage, sourceLanguage);

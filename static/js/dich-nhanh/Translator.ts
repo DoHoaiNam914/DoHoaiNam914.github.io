@@ -1,16 +1,15 @@
 'use strict'
 export default class Translator {
-  public controller: AbortController
-  public lastRequestData: { [key: string]: any } | null
-  protected result: string
+  public controller
+  public lastRequestData
+  protected result
   public constructor () {
     this.controller = new AbortController()
     this.lastRequestData = null
     this.result = ''
   }
 
-  public async translateText (text: string, targetLanguage: string, sourceLanguage: string | null = null): Promise<string | null> {
+  public async translateText (text, targetLanguage, sourceLanguage = null): Promise<void> {
     this.lastRequestData = { sourceLanguage, targetLanguage, text }
-    return null
   }
 }

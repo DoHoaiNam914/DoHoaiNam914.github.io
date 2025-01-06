@@ -1,8 +1,8 @@
 'use strict';
 /* global axios */
-import Translator from '/static/js/dich-nhanh/Translator.js';
-import * as Utils from '/static/js/Utils.js';
-import CryptoJS from '/static/lib/crypto-js+esm.js';
+import Translator from '../Translator.js';
+import * as Utils from '../../Utils.js';
+import CryptoJS from '../../../lib/crypto-js+esm.js';
 export default class Papago extends Translator {
     SOURCE_LANGUAGE_LIST = {
         auto: 'Phát hiện ngôn ngữ',
@@ -55,14 +55,14 @@ export default class Papago extends Translator {
         this.uuid = uuid;
     }
     async fetchVersion() {
-        await this.instance.get().then(async (a) => {
-            await this.instance.get(`/${a.data.match(/\/(main.*\.js)/)[1]}`).then((b) => {
-                this.version = b.data.match(/"PPG .*,"(v[^"]*)/)[1];
-            }).catch(({ data }) => {
-                throw new Error(data);
+        await this.instance.get().then(async (response) => {
+            await this.instance.get(`/${response.data.match(/\/(main.*\.js)/)[1]}`).then(response => {
+                this.version = response.data.match(/"PPG .*,"(v[^"]*)/)[1];
+            }).catch(error => {
+                throw new Error(error.data);
             });
-        }).catch(({ data }) => {
-            throw new Error(data);
+        }).catch(error => {
+            throw new Error(error.data);
         });
     }
     async translateText(text, targetLanguage, sourceLanguage = null) {
@@ -89,7 +89,7 @@ export default class Papago extends Translator {
                 queries = [];
             }
         }
-        const result = await Promise.all(responses).then(responses => responses.map(({ data: { translatedText } }) => translatedText).join('\n')).catch((reason) => {
+        const result = await Promise.all(responses).then(value => value.map(element => element.data.translatedText).join('\n')).catch((reason) => {
             throw reason;
         });
         super.translateText(text, targetLanguage, sourceLanguage);

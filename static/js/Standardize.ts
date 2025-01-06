@@ -1,6 +1,6 @@
 // #sourceURL=https://s.ngonngu.net/static/common.js?20240113
 'use strict'
-const VOS: { [key: string]: string | string[] } = {
+const VOS = {
   // Initial characters
   C: '[bdđhklmnrstvxBDĐHKLMNRSTVX]',
   // i/y non-standard words usually start with these ones
@@ -31,14 +31,14 @@ const VOS: { [key: string]: string | string[] } = {
   // oa, oe, uy with tone marks at right position
   Tr: ['oà', 'oả', 'oã', 'oá', 'oạ', 'oè', 'oẻ', 'oẽ', 'oé', 'oẹ', 'uỳ', 'uỷ', 'uỹ', 'uý', 'uỵ', 'OÀ', 'OẢ', 'OÃ', 'OÁ', 'OẠ', 'OÈ', 'OẺ', 'OẼ', 'OÉ', 'OẸ', 'UỲ', 'UỶ', 'UỸ', 'UÝ', 'UỴ', 'Oà', 'Oả', 'Oã', 'Oá', 'Oạ', 'Oè', 'Oẻ', 'Oẽ', 'Oé', 'Oẹ', 'Uỳ', 'Uỷ', 'Uỹ', 'Uý', 'Uỵ']
 }
-function vosYToI (text: string): string {
-  const Cc: string = VOS.Cf as string
-  const Y: string = [...VOS.Y].join('')
-  const I: string = [...VOS.I].join('')
-  const Ux: string = [...VOS.Ux].join('')
-  const U1: string = [...VOS.U1].join('')
-  let result: string = text
-  for (let i: number = 0; i < Y.length; i++) {
+function vosYToI (text): string {
+  const Cc = VOS.Cf
+  const Y = VOS.Y.join('')
+  const I = VOS.I.join('')
+  const Ux = VOS.Ux.join('')
+  const U1 = VOS.U1.join('')
+  let result = text
+  for (let i = 0; i < Y.length; i++) {
     // quí- > quý-
     result = result.replaceAll(new RegExp(`(?<=(?:\\P{L}|^)[Qq][Uu])${I[i]}([ptuPTU]|nh|NH|ch|CH)?(?=^|$|\\P{L})`, 'gui'), `${Y[i]}$1`)
     // qụi- > quỵ-
@@ -48,38 +48,38 @@ function vosYToI (text: string): string {
   }
   return result
 }
-function vosIToY (text: string): string {
-  const Cc: string = VOS.Cf as string
-  const I: string = [...VOS.I].join('')
-  const Y: string = [...VOS.Y].join('')
-  let result: string = text
-  for (let i: number = 0; i < I.length; i++) {
+function vosIToY (text): string {
+  const Cc = VOS.Cf
+  const I = VOS.I.join('')
+  const Y = VOS.Y.join('')
+  let result = text
+  for (let i = 0; i < I.length; i++) {
     // hi, kì, lí > hy, kỳ, lý
     result = result.replaceAll(new RegExp(`(?<=(?:\\P{L}|^)${Cc})${I[i]}(?=^|$|\\P{L})`, 'gui'), Y[i])
   }
   return result
 }
-function vosOaoeuy (text: string): string {
-  const Cf: string = VOS.Cf as string
+function vosOaoeuy (text): string {
+  const Cf = VOS.Cf
   // OA, OE, UY: incorrect tone marks position
-  const wrong: string[] = [...VOS.Tw]
+  const wrong = VOS.Tw
   // OA, OE, UY: corrected tone marks position
-  const right: string[] = [...VOS.Tr]
-  let result: string = text
-  for (let i: number = 0; i < wrong.length; i++) {
+  const right = VOS.Tr
+  let result = text
+  for (let i = 0; i < wrong.length; i++) {
     // Replace wrong
     result = result.replaceAll(new RegExp(`(?<=(?:\\P{L}|^)${Cf}?)${wrong[i]}`, 'gu'), right[i])
   }
   return result
 }
-function reversedVosOaoeuy (text: string): string {
-  const Cf: string = VOS.Cf as string
+function reversedVosOaoeuy (text): string {
+  const Cf = VOS.Cf
   // OA, OE, UY: corrected tone marks position
-  const right: string[] = [...VOS.Tr]
+  const right = VOS.Tr
   // OA, OE, UY: incorrect tone marks position
-  const wrong: string[] = [...VOS.Tw]
-  let result: string = text
-  for (let i: number = 0; i < right.length; i++) {
+  const wrong = VOS.Tw
+  let result = text
+  for (let i = 0; i < right.length; i++) {
     // Replace right
     result = result.replaceAll(new RegExp(`(?<=(?:\\P{L}|^)${Cf}?)${right[i]}`, 'gu'), wrong[i])
   }

@@ -1,10 +1,10 @@
 'use strict'
 /* global axios */
-import Translator from '/static/js/dich-nhanh/Translator.js'
-import * as Utils from '/static/js/Utils.js'
+import Translator from '../Translator.js'
+import * as Utils from '../../Utils.js'
 export default class WebnovelTranslate extends Translator {
   /* https://translate-pa.googleapis.com/v1/supportedLanguages?client=gtx&display_language=vi&key=${key} */
-  public readonly LANGUAGE_LIST: { [key: string]: { language: string, name: string }[] } = JSON.parse(`{
+  public readonly LANGUAGE_LIST = JSON.parse(`{
   "sourceLanguages": [
     {
       "language": "auto",
@@ -2004,36 +2004,36 @@ export default class WebnovelTranslate extends Translator {
 }
 `)
 
-  public readonly DefaultLanguage: { SOURCE_LANGUAGE: string, TARGET_LANGUAGE: string } = {
+  public readonly DefaultLanguage = {
     SOURCE_LANGUAGE: 'auto',
     TARGET_LANGUAGE: 'vi'
   }
 
-  private readonly maxContentLengthPerRequest: number = 900
+  private readonly maxContentLengthPerRequest = 900
   private readonly clientName: string = 'gtx'
-  public async translateText (text: string, targetLanguage: string, sourceLanguage: string | null = null): Promise<string | null> {
-    const isCj: boolean = ['ja', 'zh-CN', 'zh-TW'].some((element) => sourceLanguage === element)
-    const EOL: string = isCj ? '||||' : '\\n'
+  public async translateText (text, targetLanguage: string, sourceLanguage = null): Promise<string> {
+    const isCj = ['ja', 'zh-CN', 'zh-TW'].some((element) => sourceLanguage === element)
+    const EOL = isCj ? '||||' : '\\n'
     const lines: string[] = text.split('\n')
-    const responses: Array<Promise<{ data: string[][][] }>> = []
-    let queue: string | string[] = lines.map((element) => `${isCj ? '\u3000\u3000' : ''}${element}`).join(EOL)
+    const responses: Promise<{ [key: string]: any }>[] = []
+    let queue = lines.map(element => `${isCj ? '\u3000\u3000' : ''}${element}`).join(EOL)
     queue = (isCj ? queue.replace(EOL, EOL.repeat(2)) : queue).split(new RegExp(`(?<=\\.{3}|[${!isCj ? '!,.:;?' : ''}…${isCj ? '、。！，：；？' : ''}](?:[^${!isCj ? '!,.:;?' : ''}…${isCj ? '、。！，：；？' : ''}]*$${!isCj ? '|\\s+' : ''}|))`))
     let queries: string[] = []
     while (queue.length > 0) {
-      queries.push((queue).shift() as string)
+      queries.push(queue.shift())
       if (queue.length === 0 || queries.join('').concat(queue[0].trimEnd()).length > this.maxContentLengthPerRequest) {
-        responses.push(axios.get(`${Utils.CORS_HEADER_PROXY}http://translate.google.com/translate_a/single`, {
+        responses.push(axios.get(`${Utils.CORS_HEADER_PROXY as string}http://translate.google.com/translate_a/single`, {
           params: new URLSearchParams(`client=${this.clientName}&ie=UTF-8&oe=UTF-8&dt=bd&dt=ex&dt=ld&dt=md&dt=rw&dt=rm&dt=ss&dt=t&dt=at&dt=gt&dt=qc&sl=${sourceLanguage ?? this.DefaultLanguage.SOURCE_LANGUAGE}&tl=${targetLanguage}&hl=${targetLanguage}&q=${encodeURIComponent(queries.join('').trimEnd())}`),
           signal: this.controller.signal
         }))
         queries = []
       }
     }
-    const result: string = await Promise.all(responses).then(responses => responses.map(({ data: [a] }) => a.filter(([, second]) => second != null).map(([b, second]) => [second, b.replaceAll(new RegExp(` ?${isCj ? '(?:\\|[ |]*|[ |]*\\|)' : Utils.getTrieRegexPatternFromWords([EOL].sort((a, b) => b.length - a.length)).source as string}\\s*`, 'g'), '\n')]).map(([b, second]) => {
-      const adjustedText: string = isCj ? b.replace(EOL.repeat(2), EOL) : b
-      const lineCountDifference: number = [...adjustedText.matchAll(new RegExp(Utils.escapeRegExp(EOL), 'g'))].length - [...second.matchAll(/\n/g)].length
+    const result: string = await Promise.all(responses).then(value => value.map(element => element.data[0].filter(([, second]) => second != null).map(([first, second]) => [second, first.replaceAll(new RegExp(` ?${isCj ? '(?:\\|[ |]*|[ |]*\\|)' : Utils.getTrieRegexPatternFromWords([EOL].sort((a, b) => b.length - a.length)).source as string}\\s*`, 'g'), '\n')]).map(([b, second]) => {
+      const adjustedText = isCj ? b.replace(EOL.repeat(2), EOL) : b
+      const lineCountDifference = [...adjustedText.matchAll(new RegExp(Utils.escapeRegExp(EOL), 'g'))].length - [...second.matchAll(/\n/g)].length
       return (lineCountDifference < 0 ? second.replace(new RegExp(`\\n{${Math.abs(lineCountDifference)}}$`), '') : second).concat('\n'.repeat(lineCountDifference > 0 ? lineCountDifference : 0))
-    })).flat().join('')).catch((reason: Error) => {
+    })).flat().join('')).catch(reason => {
       throw reason
     })
     super.translateText(text, targetLanguage, sourceLanguage)

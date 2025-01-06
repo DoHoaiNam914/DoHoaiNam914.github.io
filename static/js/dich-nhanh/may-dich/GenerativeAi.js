@@ -1,6 +1,6 @@
 'use strict';
-import Translator from '/static/js/dich-nhanh/Translator.js';
-import * as Utils from '/static/js/Utils.js';
+import Translator from '../Translator.js';
+import * as Utils from '../../Utils.js';
 import Anthropic from 'https://esm.run/@anthropic-ai/sdk';
 import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from 'https://esm.run/@google/generative-ai';
 import { HfInference } from 'https://esm.run/@huggingface/inference';
@@ -69,17 +69,22 @@ export default class GenerativeAi extends Translator {
             },
             method: 'POST',
             signal: this.controller.signal
-        }).then(async (value) => {
-            const reader = value.body.getReader();
+        }).then(value => value.body).then(async (value) => {
+            const reader = value.getReader();
             const decoder = new TextDecoder();
-            await reader.read().then(async ({ done, value }) => {
-                collectedMessages.push(JSON.parse(decoder.decode(value, { stream: !done }).replace('data: ', '')).choices[0].delta.content);
-                if (done)
-                    return;
-                return await reader.read();
-            });
-        }).catch((reason) => {
-            throw new Error(reason);
+            async function pump() {
+                await reader.read().then(async ({ done, value }) => {
+                    if (done)
+                        return;
+                    decoder.decode(value, { stream: !done }).split('\n').filter(element => element.startsWith('data: ') && element.startsWith('data: [DONE]')).forEach(element => {
+                        collectedMessages.push(JSON.parse(`{${element}}`).data.choices[0].delta.content);
+                    });
+                    await pump();
+                });
+            }
+            await pump();
+        }).catch(reason => {
+            throw reason;
         });
         return collectedMessages.filter(element => element != null).join('');
     }
@@ -330,7 +335,7 @@ ${nomenclatureList.join('\n')}
                 queries = [];
             }
         }
-        const result = await Promise.all(responses).then(responses => responses.flat().join('\n')).catch((reason) => {
+        const result = await Promise.all(responses).then(value => value.flat().join('\n')).catch(reason => {
             throw reason;
         });
         super.translateText(text, targetLanguage, this.DefaultLanguage.SOURCE_LANGUAGE);

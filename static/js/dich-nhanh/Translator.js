@@ -10,6 +10,5 @@ export default class Translator {
     }
     async translateText(text, targetLanguage, sourceLanguage = null) {
         this.lastRequestData = { sourceLanguage, targetLanguage, text };
-        return null;
     }
 }

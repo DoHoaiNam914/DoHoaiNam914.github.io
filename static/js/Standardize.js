@@ -33,10 +33,10 @@ const VOS = {
 };
 function vosYToI(text) {
     const Cc = VOS.Cf;
-    const Y = [...VOS.Y].join('');
-    const I = [...VOS.I].join('');
-    const Ux = [...VOS.Ux].join('');
-    const U1 = [...VOS.U1].join('');
+    const Y = VOS.Y.join('');
+    const I = VOS.I.join('');
+    const Ux = VOS.Ux.join('');
+    const U1 = VOS.U1.join('');
     let result = text;
     for (let i = 0; i < Y.length; i++) {
         // quí- > quý-
@@ -50,8 +50,8 @@ function vosYToI(text) {
 }
 function vosIToY(text) {
     const Cc = VOS.Cf;
-    const I = [...VOS.I].join('');
-    const Y = [...VOS.Y].join('');
+    const I = VOS.I.join('');
+    const Y = VOS.Y.join('');
     let result = text;
     for (let i = 0; i < I.length; i++) {
         // hi, kì, lí > hy, kỳ, lý
@@ -62,9 +62,9 @@ function vosIToY(text) {
 function vosOaoeuy(text) {
     const Cf = VOS.Cf;
     // OA, OE, UY: incorrect tone marks position
-    const wrong = [...VOS.Tw];
+    const wrong = VOS.Tw;
     // OA, OE, UY: corrected tone marks position
-    const right = [...VOS.Tr];
+    const right = VOS.Tr;
     let result = text;
     for (let i = 0; i < wrong.length; i++) {
         // Replace wrong
@@ -75,9 +75,9 @@ function vosOaoeuy(text) {
 function reversedVosOaoeuy(text) {
     const Cf = VOS.Cf;
     // OA, OE, UY: corrected tone marks position
-    const right = [...VOS.Tr];
+    const right = VOS.Tr;
     // OA, OE, UY: incorrect tone marks position
-    const wrong = [...VOS.Tw];
+    const wrong = VOS.Tw;
     let result = text;
     for (let i = 0; i < right.length; i++) {
         // Replace right
