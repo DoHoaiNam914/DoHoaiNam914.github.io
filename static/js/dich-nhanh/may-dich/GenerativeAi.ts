@@ -110,7 +110,7 @@ export default class GenerativeAi extends Translator {
       default:
         if (['gpt-4o', 'gpt-4o-2024-11-20', 'gpt-4o-2024-08-06', 'chatgpt-4o-latest', 'gpt-4o-mini', 'gpt-4o-mini-2024-07-18'].some(element => model === element)) maxCompletionTokens = 16384
         else if (['gpt-4o-2024-05-13', 'gpt-4-turbo', 'gpt-4-turbo-2024-04-09', 'gpt-4-turbo-preview', 'gpt-4-0125-preview', 'gpt-4-1106-preview', 'gpt-3.5-turbo-0125', 'gpt-3.5-turbo', 'gpt-3.5-turbo-1106', 'gpt-3.5-turbo-instruct'].some(element => model === element)) maxCompletionTokens = 4096
-        else if (['gpt-4', 'gpt-4-0613', 'gpt-4-0314'].some(element => model === element)) maxCompletionTokens = undefined // 8192
+        else if (['gpt-4', 'gpt-4-0613', 'gpt-4-0314'].some(element => model === element)) maxCompletionTokens = 8192 / 2
     }
     requestBody.messages = [
       {
@@ -261,8 +261,8 @@ export default class GenerativeAi extends Translator {
         role: 'user'
       }
     ]
-    if (['meta-llama/Llama-3.2-3B-Instruct', 'google/gemma-2-9b-it', 'meta-llama/Llama-3.2-1B-Instruct', 'microsoft/Phi-3-mini-4k-instruct', 'meta-llama/Llama-3.2-11B-Vision-Instruct', 'Qwen/Qwen2-VL-7B-Instruct'].some(element => model === element)) chatCompletionInput.max_tokens = undefined // 4096
-    else if (model.startsWith('google') || model.startsWith('meta-llama')) chatCompletionInput.max_tokens = undefined
+    if (['meta-llama/Llama-3.2-3B-Instruct', 'google/gemma-2-9b-it', 'meta-llama/Llama-3.2-1B-Instruct', 'microsoft/Phi-3-mini-4k-instruct', 'meta-llama/Llama-3.2-11B-Vision-Instruct', 'Qwen/Qwen2-VL-7B-Instruct'].some(element => model === element)) chatCompletionInput.max_tokens = 4096 / 2
+    else if (model.startsWith('google') || model.startsWith('meta-llama')) chatCompletionInput.max_tokens /= 2
     chatCompletionInput.temperature = 0.3
     chatCompletionInput.top_p = 0.3
     chatCompletionInput.model = model
