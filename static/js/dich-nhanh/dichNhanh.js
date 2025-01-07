@@ -730,9 +730,9 @@ const translate = async function translateContentInTextarea(controller = new Abo
         currentTranslator.controller = controller
         result = await currentTranslator.translateText(text, targetLanguage, {
           model: $('#model-select').val(),
-          temperature: $temperatureText.val(),
-          maxTokens: $maxTokensText.val(),
-          topP: $topPText.val(),
+          temperature: parseFloat($temperatureText.val()),
+          maxTokens: parseInt($maxTokensText.val()),
+          topP: parseFloat($topPText.val()),
           nomenclature: Object.entries(glossary.nomenclature),
           splitChunkEnabled: $('#split-chunk-switch').prop('checked')
         })
