@@ -310,9 +310,9 @@ export default class GenerativeAi extends Translator {
 
   public async translateText (text, targetLanguage: string, options: { [key: string]: any } = { model: 'gpt-4o-mini', temperature: 0.3, maxTokens: 0, topP: 0.3, nomenclature: [], splitChunkEnabled: false }): Promise<string> {
     if (options.model == null) options.model = 'gpt-4o-mini'
-    if (options.temperature == null) options.temperature = 0.3
+    if (options.temperature == null) options.temperature = 1
     if (options.maxTokens == null) options.maxTokens = 0
-    if (options.topP == null) options.topP = 0.3
+    if (options.topP == null) options.topP = 1
     const nomenclature: string[][] = (options.nomenclature ?? []).filter(([first]) => text.includes(first)).map(element => element.join('\t'))
     const INSTRUCTIONS = `Translate the following text into ${targetLanguage}. ${nomenclature.length > 0 ? 'Make sure to accurately map people\'s proper names, ethnicities, and species, or place names and other concepts listed in the Nomenclature Lookup Table. ' : ''}${/\n\s*[^\s]+/.test(text) ? 'Keep each line in your translation exactly as it appears in the source text - do not combine multiple lines into one or break one line into multiple lines. Preserve every newline character or end-of-line marker as they appear in the original text in your translations. ' : ''}Your translations must convey all the content in the original text and cannot involve explanations${/\n\s*[^\s]+/.test(text) ? ', prefatory statements, and introductory statements' : ''} or other unnecessary information. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text and cannot include explanations${/\n\s*[^\s]+/.test(text) ? ', prefatory statements, ans introductory statements' : ''} or other information.${nomenclature.length > 0
 ? `
