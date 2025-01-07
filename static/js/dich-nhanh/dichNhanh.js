@@ -1247,7 +1247,7 @@ $fontStackText.on('blur', function onBlur() {
 
 $fontSizeText.change(function onChange() {
   const value = $(this).val()
-  $(this).val(Math.min(parseFloat($(this).attr('max')), Math.max(parseFloat($(this).attr('min')), parseFloat(value.length === 0 ? $(this).attr('value') : value.val()))));
+  $(this).val(Math.min(parseFloat($(this).attr('max')), Math.max(parseFloat($(this).attr('min')), parseFloat(value.length === 0 ? $(this).attr('value') : value))));
   $(document.body).css('--opt-font-size', `${$(this).val()}em`);
 });
 
@@ -1284,7 +1284,7 @@ $themeDropdown.find('.dropdown-item').on('click', function onClick() {
 
 $spacingText.change(function onChange() {
   const value = $(this).val()
-  $(this).val(Math.min(parseFloat($(this).attr('max')), Math.max(parseFloat($(this).attr('min')), parseFloat(value.length === 0 ? $(this).attr('value') : value.val()))));
+  $(this).val(Math.min(parseFloat($(this).attr('max')), Math.max(parseFloat($(this).attr('min')), parseFloat(value.length === 0 ? $(this).attr('value') : value))));
   $(document.body).css('--opt-line-height', `${$(this).val()}em`);
 });
 
@@ -1435,15 +1435,15 @@ $mistralApiKeyText.change(function onChange() {
 });
 $temperatureText.change(function onChange() {
   const value = $(this).val()
-  $(this).val(Math.min(parseFloat($(this).attr('max')), Math.max(parseFloat($(this).attr('min')), parseFloat(value.length === 0 ? $(this).attr('value') : value.val()))))
+  $(this).val(Math.min(parseFloat($(this).attr('max')), Math.max(parseFloat($(this).attr('min')), parseFloat(value.length === 0 ? $(this).attr('value') : value))))
 })
 $maxTokensText.change(function onChange() {
   const value = $(this).val()
-  $(this).val(Math.min(parseInt($(this).attr('max')), Math.max(parseInt($(this).attr('min')), parseInt(value.length === 0 ? $(this).attr('value') : value.val()))))
+  $(this).val(Math.min(parseInt($(this).attr('max')), Math.max(parseInt($(this).attr('min')), parseInt(value.length === 0 ? $(this).attr('value') : value))))
 })
 $topPText.change(function onChange() {
   const value = $(this).val()
-  $(this).val(Math.min(parseFloat($(this).attr('max')), Math.max(parseFloat($(this).attr('min')), parseFloat(value.length === 0 ? $(this).attr('value') : value.val()))))
+  $(this).val(Math.min(parseFloat($(this).attr('max')), Math.max(parseFloat($(this).attr('min')), parseFloat(value.length === 0 ? $(this).attr('value') : value))))
 })
 $glossaryModal.on('shown.bs.modal', () => {
   const text = $sourceEntryInput.val();
