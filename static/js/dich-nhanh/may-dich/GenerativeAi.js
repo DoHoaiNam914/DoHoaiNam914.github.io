@@ -311,12 +311,10 @@ ${nomenclatureList.join('\n')}
             queries.push(queues.shift());
             if (queues.length === 0 || (splitChunkEnabled && [...queries, queues[0]].join('\n').length > this.maxContentLengthPerRequest)) {
                 const query = queries.join('\n');
-                responses.push((async () => {
-                    if (splitChunkEnabled && isMistral)
-                        await Utils.sleep(2500);
-                    return isMistral ? await this.runMistral(model, INSTRUCTIONS, query) : (model.startsWith('claude') ? await this.mainAnthropic(model, INSTRUCTIONS, query) : (model.startsWith('gemini') ? await this.runGoogleGenerativeAI(model, INSTRUCTIONS, query) : (model.startsWith('gpt') || model === 'chatgpt-4o-latest' || model.startsWith('o1') ? await this.mainOpenai(model, INSTRUCTIONS, query) : await this.launch(model, INSTRUCTIONS, query))));
-                })());
+                responses.push(isMistral ? this.runMistral(model, INSTRUCTIONS, query) : (model.startsWith('claude') ? this.mainAnthropic(model, INSTRUCTIONS, query) : (model.startsWith('gemini') ? this.runGoogleGenerativeAI(model, INSTRUCTIONS, query) : (model.startsWith('gpt') || model === 'chatgpt-4o-latest' || model.startsWith('o1') ? this.mainOpenai(model, INSTRUCTIONS, query) : this.launch(model, INSTRUCTIONS, query)))));
                 queries = [];
+                if (splitChunkEnabled && isMistral && queues.length > 0)
+                    await Utils.sleep(2500);
             }
         }
         const result = await Promise.all(responses).then(value => value.flat().join('\n')).catch(reason => {
