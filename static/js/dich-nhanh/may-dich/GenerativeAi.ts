@@ -250,13 +250,7 @@ export default class GenerativeAi extends Translator {
       top_p: 0.7
     }
     const { model, temperature, maxTokens, topP } = options as { model: string, temperature: number, maxTokens: number, topP: number }
-    if (maxTokens > 0) {
-      chatCompletionInput.max_tokens = maxTokens
-    } else {
-      chatCompletionInput.max_tokens = 8192
-      if (['meta-llama/Llama-3.2-3B-Instruct', 'google/gemma-2-9b-it', 'meta-llama/Llama-3.2-1B-Instruct', 'microsoft/Phi-3-mini-4k-instruct', 'meta-llama/Llama-3.2-11B-Vision-Instruct', 'Qwen/Qwen2-VL-7B-Instruct'].some(element => model === element)) chatCompletionInput.max_tokens = 4096 / 2
-      else if (model.startsWith('google') || model.startsWith('meta-llama')) chatCompletionInput.max_tokens /= 2
-    }
+    chatCompletionInput.max_tokens = maxTokens > 0 ? maxTokens : (['meta-llama/Llama-3.2-3B-Instruct', 'google/gemma-2-9b-it', 'meta-llama/Llama-3.2-1B-Instruct', 'microsoft/Phi-3-mini-4k-instruct', 'meta-llama/Llama-3.2-11B-Vision-Instruct', 'Qwen/Qwen2-VL-7B-Instruct'].some(element => model === element) ? 4096 : 8192)
     chatCompletionInput.messages = [
       {
         content: instructions,
