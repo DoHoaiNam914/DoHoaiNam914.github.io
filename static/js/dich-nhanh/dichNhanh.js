@@ -34,6 +34,7 @@ const $glossaryManagerButton = $('#glossary-manager-button');
 const $glossaryModal = $('#glossary-modal');
 const $hfTokenText = $('#hf-token-text')
 const $inputTextarea = $('#input-textarea');
+const $maxTokensText = $('#max-tokens-text')
 const $mistralApiKeyText = $('#mistral-api-key-text');
 const $openaiApiKeyText = $('#openai-api-key-text');
 const $pasteButtons = $('.paste-button');
@@ -46,9 +47,11 @@ const $sourceLanguageSelect = $('#source-language-select');
 const $spacingText = $('#spacing-text');
 const $targetEntryTextarea = $('#target-entry-textarea');
 const $targetLanguageSelect = $('#target-language-select');
+const $temperatureText = $('#temperature-text')
 const $textareas = $('.textarea');
 const $themeDropdown = $('#theme-dropdown');
 const $toneSelect = $('#tone-select');
+const $topPText = $('#top-p-text')
 const $translateButton = $('#translate-button');
 const $translateEntryButton = $('#translate-entry-button');
 const $translateEntryButtons = $('.translate-entry-button');
@@ -718,7 +721,6 @@ const translate = async function translateContentInTextarea(controller = new Abo
 
   try {
     const startTime = Date.now()
-    const model = $('#model-select').val()
     const text = [Translators.GENERATIVE_AI, Translators.WEBNOVEL_TRANSLATE].some(element => $activeTranslator.val() === element) ? $inputTextarea.val().split('\n').filter(element => element.replace(/^\s+/, '').length > 0).join('\n') : $inputTextarea.val()
     const targetLanguage = $targetLanguageSelect.val()
     let result = ''
@@ -726,7 +728,14 @@ const translate = async function translateContentInTextarea(controller = new Abo
     switch ($activeTranslator.val()) {
       case Translators.GENERATIVE_AI: {
         currentTranslator.controller = controller
-        result = await currentTranslator.translateText(text, targetLanguage, model, Object.entries(glossary.nomenclature), $('#split-chunk-switch').prop('checked'))
+        result = await currentTranslator.translateText(text, targetLanguage, {
+          model: $('#model-select').val(),
+          temperature: $temperatureText.val(),
+          maxTokens: $maxTokensText.val(),
+          topP: $topPText.val(),
+          nomenclature: Object.entries(glossary.nomenclature),
+          splitChunkEnabled: $('#split-chunk-switch').prop('checked')
+        })
         break
       }
       default: {
@@ -1422,7 +1431,15 @@ $mistralApiKeyText.change(function onChange() {
   if (localStorage.getItem('MISTRAL_API_KEY') != null && $(this).val().length === 0) localStorage.removeItem('MISTRAL_API_KEY');
   else if (localStorage.getItem('MISTRAL_API_KEY') !== $(this).val()) localStorage.setItem('MISTRAL_API_KEY', $(this).val());
 });
-
+$temperatureText.change(function onChange() {
+  $(this).val(Math.min(parseFloat($(this).attr('max')), Math.max(parseFloat($(this).attr('min')), parseFloat($(this).val()))))
+})
+$maxTokensText.change(function onChange() {
+  $(this).val(Math.min(parseInt($(this).attr('max')), Math.max(parseInt($(this).attr('min')), parseInt($(this).val()))))
+})
+$topPText.change(function onChange() {
+  $(this).val(Math.min(parseFloat($(this).attr('max')), Math.max(parseFloat($(this).attr('min')), parseFloat($(this).val()))))
+})
 $glossaryModal.on('shown.bs.modal', () => {
   const text = $sourceEntryInput.val();
 
@@ -1679,13 +1696,15 @@ $translateEntryButtons.click(async function onClick() {
           break;
         }
       }
-      const model = $('#translate-entry-model-select').val()
       let result = ''
       if (translator != null) {
         switch (activeTranslator) {
           case Translators.GENERATIVE_AI:
             translator.controller = entryTranslationController
-            result = await translator.translateText(text, targetLanguage, model, $('#apply-nomenclature-switch').prop('checked') ? Object.entries(glossary.nomenclature) : [])
+            result = await translator.translateText(text, targetLanguage, {
+              model: $('#translate-entry-model-select').val(),
+              nomenclature: $('#apply-nomenclature-switch').prop('checked') ? Object.entries(glossary.nomenclature) : [],
+            })
             result = result.trim()
             break;
           default:

@@ -80,8 +80,9 @@ export default class GenerativeAi extends Translator {
     return response
   }
 
-  public async mainOpenai (model, instructions, message): Promise<string> {
+  public async mainOpenai (options, instructions, message): Promise<string> {
     const searchParams = new URLSearchParams(window.location.search)
+    const { model, temperature, maxTokens, topP } = options
     let requestBody: { [key: string]: any } = {
       model: 'gpt-4o',
       messages: [],
@@ -123,10 +124,11 @@ export default class GenerativeAi extends Translator {
       }
     ]
     requestBody.model = model
-    if (Object.hasOwn(requestBody, 'max_completion_tokens')) requestBody.max_completion_tokens = maxCompletionTokens
+    if (maxTokens > 0) requestBody.max_completion_tokens = maxTokens
+    else if (Object.hasOwn(requestBody, 'max_completion_tokens')) requestBody.max_completion_tokens = maxCompletionTokens
     requestBody.stream = true
-    if (Object.hasOwn(requestBody, 'temperature')) requestBody.temperature = 0.3
-    if (Object.hasOwn(requestBody, 'top_p')) requestBody.top_p = 0.3
+    if (Object.hasOwn(requestBody, 'temperature') || temperature > 1) requestBody.temperature = temperature
+    if (Object.hasOwn(requestBody, 'top_p') || topP > 1) requestBody.top_p = topP
     if (this.OPENAI_API_KEY.length === 0 && searchParams.has('debug')) {
       return await this.mainTranslatenow(requestBody)
     } else {
@@ -139,10 +141,11 @@ export default class GenerativeAi extends Translator {
     }
   }
 
-  public async runGoogleGenerativeAI (model, instructions, message): Promise<string> {
+  public async runGoogleGenerativeAI (options, instructions, message): Promise<string> {
     const modelParams = {
       model: 'gemini-2.0-flash-exp'
     }
+    const { model, temperature, maxTokens, topP } = options
     modelParams.model = model
     const generativeModel = this.genAI.getGenerativeModel(modelParams)
 
@@ -154,8 +157,9 @@ export default class GenerativeAi extends Translator {
       responseMimeType: 'text/plain'
     }
 
-    generationConfig.temperature = 0.3
-    generationConfig.topP = 0.3
+    if (maxTokens > 0) generationConfig.maxOutputTokens = maxTokens
+    generationConfig.temperature = temperature
+    generationConfig.topP = topP
     if (/^gemini-1\.5-[^-]+-001$/.test(model)) generationConfig.topK = 64
     const startChatParams: { [key: string]: any } = {
       generationConfig,
@@ -204,14 +208,14 @@ export default class GenerativeAi extends Translator {
     return collectedChunkTexts.join('')
   }
 
-  public async mainAnthropic (model: string, instructions, message): Promise<string> {
+  public async mainAnthropic (options, instructions, message): Promise<string> {
     const body: { [key: string]: any } = {
       model: 'claude-3-5-sonnet-20241022',
       max_tokens: 1000,
       temperature: 0,
       messages: []
     }
-    body.model = model
+    body.model = options.model
     body.messages = [
       {
         role: 'user',
@@ -222,9 +226,10 @@ export default class GenerativeAi extends Translator {
         content: message
       }
     ]
-    body.max_tokens = !model.startsWith('claude-3-5') ? 4096 : 8192
-    body.temperature = 0.3
-    body.top_p = 0.3
+    const { model, temperature, maxTokens, topP } = options as { model: string, temperature: number, maxTokens: number, topP: number }
+    body.max_tokens = maxTokens > 0 ? maxTokens : (!model.startsWith('claude-3-5') ? 4096 : 8192)
+    body.temperature = temperature
+    body.top_p = topP
     const collectedTexts: string[] = []
     await this.anthropic.messages.stream(body).on('text', text => {
       collectedTexts.push(text)
@@ -232,7 +237,7 @@ export default class GenerativeAi extends Translator {
     return collectedTexts.join('')
   }
 
-  public async launch (model: string, instructions, message): Promise<string> {
+  public async launch (options, instructions, message): Promise<string> {
     let out = ''
 
     const chatCompletionInput: { [key: string]: any } = {
@@ -244,7 +249,14 @@ export default class GenerativeAi extends Translator {
       max_tokens: 2048,
       top_p: 0.7
     }
-    chatCompletionInput.max_tokens = 8192
+    const { model, temperature, maxTokens, topP } = options as { model: string, temperature: number, maxTokens: number, topP: number }
+    if (maxTokens > 0) {
+      chatCompletionInput.max_tokens = maxTokens
+    } else {
+      chatCompletionInput.max_tokens = 8192
+      if (['meta-llama/Llama-3.2-3B-Instruct', 'google/gemma-2-9b-it', 'meta-llama/Llama-3.2-1B-Instruct', 'microsoft/Phi-3-mini-4k-instruct', 'meta-llama/Llama-3.2-11B-Vision-Instruct', 'Qwen/Qwen2-VL-7B-Instruct'].some(element => model === element)) chatCompletionInput.max_tokens = 4096 / 2
+      else if (model.startsWith('google') || model.startsWith('meta-llama')) chatCompletionInput.max_tokens /= 2
+    }
     chatCompletionInput.messages = [
       {
         content: instructions,
@@ -252,7 +264,7 @@ export default class GenerativeAi extends Translator {
       },
       ...model.startsWith('google')
         ? [{
-            content: 'Understood. Please provide the text you would like me to translate.',
+            content: '',
             role: 'assistant'
           }]
         : [],
@@ -261,11 +273,9 @@ export default class GenerativeAi extends Translator {
         role: 'user'
       }
     ]
-    if (['meta-llama/Llama-3.2-3B-Instruct', 'google/gemma-2-9b-it', 'meta-llama/Llama-3.2-1B-Instruct', 'microsoft/Phi-3-mini-4k-instruct', 'meta-llama/Llama-3.2-11B-Vision-Instruct', 'Qwen/Qwen2-VL-7B-Instruct'].some(element => model === element)) chatCompletionInput.max_tokens = 4096 / 2
-    else if (model.startsWith('google') || model.startsWith('meta-llama')) chatCompletionInput.max_tokens /= 2
-    chatCompletionInput.temperature = 0.3
-    chatCompletionInput.top_p = 0.3
-    chatCompletionInput.model = model
+    chatCompletionInput.temperature = temperature
+    chatCompletionInput.top_p = topP
+    chatCompletionInput.model = options.model
 
     const stream = this.hfInferenceClient.chatCompletionStream(chatCompletionInput)
 
@@ -279,12 +289,13 @@ export default class GenerativeAi extends Translator {
     return out
   }
 
-  public async runMistral (model, instructions, message): Promise<string> {
+  public async runMistral (options, instructions, message): Promise<string> {
+    const { model, temperature, maxTokens, topP } = options
     const result = await this.mistralClient.chat.stream({
       model,
-      temperature: 0.3,
-      topP: 0.3,
-      maxTokens: model === 'mistral-small-latest' ? 32000 : 128000,
+      temperature,
+      topP,
+      maxTokens: maxTokens > 0 ? maxTokens : (model === 'mistral-small-latest' ? 32000 : 128000),
       messages: [
         {
           role: 'user',
@@ -303,26 +314,32 @@ export default class GenerativeAi extends Translator {
     return collectedStreamTexts.join('')
   }
 
-  public async translateText (text, targetLanguage: string, model = 'gpt-4o-mini', nomenclature: string[][] = [], splitChunkEnabled = false): Promise<string> {
-    const nomenclatureList = nomenclature.filter(([first]) => text.includes(first)).map(element => element.join('\t'))
-    const INSTRUCTIONS = `Translate the following text into ${targetLanguage}. ${nomenclatureList.length > 0 ? 'Make sure to accurately map people\'s proper names, ethnicities, and species, or place names and other concepts listed in the Nomenclature Lookup Table. ' : ''}${/\n\s*[^\s]+/.test(text) ? 'Keep each line in your translation exactly as it appears in the source text - do not combine multiple lines into one or break one line into multiple lines. Preserve every newline character or end-of-line marker as they appear in the original text in your translations. ' : ''}Your translations must convey all the content in the original text and cannot involve explanations${/\n\s*[^\s]+/.test(text) ? ', prefatory statements, and introductory statements' : ''} or other unnecessary information. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text and cannot include explanations${/\n\s*[^\s]+/.test(text) ? ', prefatory statements, ans introductory statements' : ''} or other information.${nomenclatureList.length > 0
+  public async translateText (text, targetLanguage: string, options: { [key: string]: any } = { model: 'gpt-4o-mini', temperature: 0.3, maxTokens: 0, topP: 0.3, nomenclature: [], splitChunkEnabled: false }): Promise<string> {
+    if (options.model == null) options.model = 'gpt-4o-mini'
+    if (options.temperature == null) options.temperature = 0.3
+    if (options.maxTokens == null) options.maxTokens = 0
+    if (options.topP == null) options.topP = 0.3
+    const nomenclature: string[][] = (options.nomenclature ?? []).filter(([first]) => text.includes(first)).map(element => element.join('\t'))
+    const INSTRUCTIONS = `Translate the following text into ${targetLanguage}. ${nomenclature.length > 0 ? 'Make sure to accurately map people\'s proper names, ethnicities, and species, or place names and other concepts listed in the Nomenclature Lookup Table. ' : ''}${/\n\s*[^\s]+/.test(text) ? 'Keep each line in your translation exactly as it appears in the source text - do not combine multiple lines into one or break one line into multiple lines. Preserve every newline character or end-of-line marker as they appear in the original text in your translations. ' : ''}Your translations must convey all the content in the original text and cannot involve explanations${/\n\s*[^\s]+/.test(text) ? ', prefatory statements, and introductory statements' : ''} or other unnecessary information. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text and cannot include explanations${/\n\s*[^\s]+/.test(text) ? ', prefatory statements, ans introductory statements' : ''} or other information.${nomenclature.length > 0
 ? `
 
 Nomenclature Lookup Table:
 \`\`\`tsv
 source\ttarget
-${nomenclatureList.join('\n')}
+${nomenclature.join('\n')}
 \`\`\``
 : ''}`
     const queues = text.split('\n')
     const responses: Array<Promise<string>> = []
+    const splitChunkEnabled: boolean = options.splitChunkEnabled ?? false
+    const { model } = options as { model: string }
     const isMistral = /^(?:open-)?[^-]+tral/.test(model)
     let queries: string[] = []
     while (queues.length > 0) {
       queries.push(queues.shift() as string)
       if (queues.length === 0 || (splitChunkEnabled && [...queries, queues[0]].join('\n').length > this.maxContentLengthPerRequest)) {
         const query = queries.join('\n')
-        responses.push(isMistral ? this.runMistral(model, INSTRUCTIONS, query) : (model.startsWith('claude') ? this.mainAnthropic(model, INSTRUCTIONS, query) : (model.startsWith('gemini') ? this.runGoogleGenerativeAI(model, INSTRUCTIONS, query) : (model.startsWith('gpt') || model === 'chatgpt-4o-latest' || model.startsWith('o1') ? this.mainOpenai(model, INSTRUCTIONS, query) : this.launch(model, INSTRUCTIONS, query)))))
+        responses.push(isMistral ? this.runMistral(options, INSTRUCTIONS, query) : (model.startsWith('claude') ? this.mainAnthropic(options, INSTRUCTIONS, query) : (model.startsWith('gemini') ? this.runGoogleGenerativeAI(options, INSTRUCTIONS, query) : (model.startsWith('gpt') || model === 'chatgpt-4o-latest' || model.startsWith('o1') ? this.mainOpenai(options, INSTRUCTIONS, query) : this.launch(options, INSTRUCTIONS, query)))))
         queries = []
         if (splitChunkEnabled && isMistral && queues.length > 0) await Utils.sleep(2500)
       }
