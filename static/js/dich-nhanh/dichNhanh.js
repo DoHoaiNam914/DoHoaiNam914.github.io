@@ -47,11 +47,11 @@ const $sourceLanguageSelect = $('#source-language-select');
 const $spacingText = $('#spacing-text');
 const $targetEntryTextarea = $('#target-entry-textarea');
 const $targetLanguageSelect = $('#target-language-select');
-const $temperatureText = $('#temperature-text')
+const $temperatureText = $('#temperature-text, #translate-entry-temperature-text')
 const $textareas = $('.textarea');
 const $themeDropdown = $('#theme-dropdown');
 const $toneSelect = $('#tone-select');
-const $topPText = $('#top-p-text')
+const $topPText = $('#top-p-text, #translate-entry-top-p-text')
 const $translateButton = $('#translate-button');
 const $translateEntryButton = $('#translate-entry-button');
 const $translateEntryButtons = $('.translate-entry-button');
@@ -730,9 +730,9 @@ const translate = async function translateContentInTextarea(controller = new Abo
         currentTranslator.controller = controller
         result = await currentTranslator.translateText(text, targetLanguage, {
           model: $('#model-select').val(),
-          temperature: parseFloat($temperatureText.val()),
+          temperature: parseFloat($('#temperature-text').val()),
           maxTokens: parseInt($maxTokensText.val()),
-          topP: parseFloat($topPText.val()),
+          topP: parseFloat($('#top-p-text').val()),
           nomenclature: Object.entries(glossary.nomenclature),
           splitChunkEnabled: $('#split-chunk-switch').prop('checked')
         })
@@ -1708,9 +1708,9 @@ $translateEntryButtons.click(async function onClick() {
             translator.controller = entryTranslationController
             result = await translator.translateText(text, targetLanguage, {
               model: $('#translate-entry-model-select').val(),
-              temperature: 0.2,
+              temperature: parseFloat($('#translate-entry-temperature-text').val()),
               maxTokens: 2048,
-              topP: 0.4,
+              topP: parseFloat($('#translate-entry-top-p-text').val()),
               nomenclature: $('#apply-nomenclature-switch').prop('checked') ? Object.entries(glossary.nomenclature) : [],
             })
             result = result.trim()
