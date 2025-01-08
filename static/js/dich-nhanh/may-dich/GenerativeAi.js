@@ -67,7 +67,7 @@ export default class GenerativeAi extends Translator {
                 'air-user-id': this.AIR_USER_ID
             },
             signal: this.controller.signal
-        }).then(response => response.data.split('\n').filter(element => element.startsWith('data: ') && !element.startsWith('data: [DONE]')).map(element => JSON.parse(`{${element.replace('data: ', '"data":')}}`).data.choices[0].delta.content).filter(element => element != null).join('')).catch(error => {
+        }).then(response => (requestBody.stream === true ? response.data.split('\n').filter(element => element.startsWith('data: ') && !element.startsWith('data: [DONE]')).map(element => JSON.parse(`{${element.replace('data: ', '"data":')}}`).data.choices[0].delta.content).filter(element => element != null).join('') : response.data.choices[0].message.content)).catch(error => {
             throw new Error(error.data);
         });
         return response;
@@ -123,7 +123,8 @@ export default class GenerativeAi extends Translator {
             requestBody.max_completion_tokens = maxTokens;
         else if (Object.hasOwn(requestBody, 'max_completion_tokens'))
             requestBody.max_completion_tokens = maxCompletionTokens;
-        requestBody.stream = true;
+        if (model !== 'o1')
+            requestBody.stream = true;
         if (Object.hasOwn(requestBody, 'temperature') || temperature > 1)
             requestBody.temperature = temperature;
         if (Object.hasOwn(requestBody, 'top_p') || topP > 1)
@@ -133,11 +134,16 @@ export default class GenerativeAi extends Translator {
         }
         else {
             const response = this.openai.chat.completions.create(requestBody);
-            const collectedMessages = [];
-            for await (const chunk of response) {
-                collectedMessages.push(chunk.choices[0].delta.content);
+            if (requestBody.stream === true) {
+                const collectedMessages = [];
+                for await (const chunk of response) {
+                    collectedMessages.push(chunk.choices[0].delta.content);
+                }
+                return collectedMessages.filter(element => element != null).join('');
             }
-            return collectedMessages.filter(element => element != null).join('');
+            else {
+                return response.choices[0].message.content;
+            }
         }
     }
     async runGoogleGenerativeAI(options, instructions, message) {
@@ -297,7 +303,7 @@ export default class GenerativeAi extends Translator {
         }
         return collectedStreamTexts.join('');
     }
-    async translateText(text, targetLanguage, options = { model: 'gpt-4o-mini', temperature: 0.3, maxTokens: 0, topP: 0.3, nomenclature: [], splitChunkEnabled: false }) {
+    async translateText(text, targetLanguage, options = { model: 'gpt-4o-mini', temperature: 1, maxTokens: 0, topP: 1, nomenclature: [], splitChunkEnabled: false }) {
         if (options.model == null)
             options.model = 'gpt-4o-mini';
         if (options.temperature == null)

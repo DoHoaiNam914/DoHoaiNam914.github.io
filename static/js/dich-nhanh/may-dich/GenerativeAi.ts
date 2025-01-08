@@ -74,7 +74,7 @@ export default class GenerativeAi extends Translator {
         'air-user-id': this.AIR_USER_ID
       },
       signal: this.controller.signal
-    }).then(response => (response.data as string).split('\n').filter(element => element.startsWith('data: ') && !element.startsWith('data: [DONE]')).map(element => JSON.parse(`{${element.replace('data: ', '"data":')}}`).data.choices[0].delta.content).filter(element => element != null).join('')).catch(error => {
+    }).then(response => (requestBody.stream === true ? (response.data as string).split('\n').filter(element => element.startsWith('data: ') && !element.startsWith('data: [DONE]')).map(element => JSON.parse(`{${element.replace('data: ', '"data":')}}`).data.choices[0].delta.content).filter(element => element != null).join('') : response.data.choices[0].message.content)).catch(error => {
       throw new Error(error.data)
     })
     return response
@@ -126,18 +126,22 @@ export default class GenerativeAi extends Translator {
     requestBody.model = model
     if (maxTokens > 0) requestBody.max_completion_tokens = maxTokens
     else if (Object.hasOwn(requestBody, 'max_completion_tokens')) requestBody.max_completion_tokens = maxCompletionTokens
-    requestBody.stream = true
+    if (model !== 'o1') requestBody.stream = true
     if (Object.hasOwn(requestBody, 'temperature') || temperature > 1) requestBody.temperature = temperature
     if (Object.hasOwn(requestBody, 'top_p') || topP > 1) requestBody.top_p = topP
     if (this.OPENAI_API_KEY.length === 0 && searchParams.has('debug')) {
       return await this.mainTranslatenow(requestBody)
     } else {
       const response = this.openai.chat.completions.create(requestBody)
-      const collectedMessages: string[] = []
-      for await (const chunk of response) {
-        collectedMessages.push(chunk.choices[0].delta.content)
+      if (requestBody.stream === true) {
+        const collectedMessages: string[] = []
+        for await (const chunk of response) {
+          collectedMessages.push(chunk.choices[0].delta.content)
+        }
+        return collectedMessages.filter(element => element != null).join('')
+      } else {
+        return response.choices[0].message.content
       }
-      return collectedMessages.filter(element => element != null).join('')
     }
   }
 
@@ -308,7 +312,7 @@ export default class GenerativeAi extends Translator {
     return collectedStreamTexts.join('')
   }
 
-  public async translateText (text, targetLanguage: string, options: { [key: string]: any } = { model: 'gpt-4o-mini', temperature: 0.3, maxTokens: 0, topP: 0.3, nomenclature: [], splitChunkEnabled: false }): Promise<string> {
+  public async translateText (text, targetLanguage: string, options: { [key: string]: any } = { model: 'gpt-4o-mini', temperature: 1, maxTokens: 0, topP: 1, nomenclature: [], splitChunkEnabled: false }): Promise<string> {
     if (options.model == null) options.model = 'gpt-4o-mini'
     if (options.temperature == null) options.temperature = 1
     if (options.maxTokens == null) options.maxTokens = 0
