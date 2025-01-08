@@ -1708,9 +1708,9 @@ $translateEntryButtons.click(async function onClick() {
             translator.controller = entryTranslationController
             result = await translator.translateText(text, targetLanguage, {
               model: $('#translate-entry-model-select').val(),
-              temperature: parseFloat($temperatureText.val()),
+              temperature: 0.2,
               maxTokens: 2048,
-              topP: parseFloat($topPText.val()),
+              topP: 0.4,
               nomenclature: $('#apply-nomenclature-switch').prop('checked') ? Object.entries(glossary.nomenclature) : [],
             })
             result = result.trim()
