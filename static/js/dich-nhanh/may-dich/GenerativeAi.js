@@ -312,16 +312,7 @@ export default class GenerativeAi extends Translator {
             options.maxTokens = 0;
         if (options.topP == null)
             options.topP = 1;
-        const nomenclature = (options.nomenclature ?? []).filter(([first]) => text.includes(first)).map(element => element.join('\t'));
-        const INSTRUCTIONS = `Translate the following text into ${targetLanguage}. ${nomenclature.length > 0 ? 'Make sure to accurately map people\'s proper names, ethnicities, and species, or place names and other concepts listed in the Nomenclature Lookup Table. ' : ''}${/\n\s*[^\s]+/.test(text) ? 'Keep each line in your translation exactly as it appears in the source text - do not combine multiple lines into one or break one line into multiple lines. Preserve every newline character or end-of-line marker as they appear in the original text in your translations. ' : ''}Your translations must convey all the content in the original text and cannot involve explanations${/\n\s*[^\s]+/.test(text) ? ', prefatory statements, and introductory statements' : ''} or other unnecessary information. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text and cannot include explanations${/\n\s*[^\s]+/.test(text) ? ', prefatory statements, ans introductory statements' : ''} or other information.${nomenclature.length > 0
-            ? `
-
-Nomenclature Lookup Table:
-\`\`\`tsv
-source\ttarget
-${nomenclature.join('\n')}
-\`\`\``
-            : ''}`;
+        const INSTRUCTIONS = `Translate the following text into ${targetLanguage}. ${nomenclature.length > 0 ? 'Make sure to accurately map people\'s proper names, ethnicities, and species, or place names and other concepts listed in the nomenclature mapping table. ' : ''}${/\n\s*[^\s]+/.test(text) ? 'Keep each line in your translation exactly as it appears in the source text - do not combine multiple lines into one or break one line into multiple lines. Preserve every newline character or end-of-line marker as they appear in the original text in your translations. ' : ''}Your translations must convey all the content in the original text and cannot involve explanations${/\n\s*[^\s]+/.test(text) ? ', prefatory statements, and introductory statements' : ''} or other unnecessary information. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text and cannot include explanations${/\n\s*[^\s]+/.test(text) ? ', prefatory statements, ans introductory statements' : ''} or other information.`;
         const queues = text.split('\n');
         const responses = [];
         const splitChunkEnabled = options.splitChunkEnabled ?? false;
@@ -332,7 +323,9 @@ ${nomenclature.join('\n')}
             queries.push(queues.shift());
             if (queues.length === 0 || (splitChunkEnabled && [...queries, queues[0]].join('\n').length > this.maxContentLengthPerRequest)) {
                 const query = queries.join('\n');
-                responses.push(isMistral ? this.runMistral(options, INSTRUCTIONS, query) : (model.startsWith('claude') ? this.mainAnthropic(options, INSTRUCTIONS, query) : (model.startsWith('gemini') ? this.runGoogleGenerativeAI(options, INSTRUCTIONS, query) : (model.startsWith('gpt') || model === 'chatgpt-4o-latest' || model.startsWith('o1') ? this.mainOpenai(options, INSTRUCTIONS, query) : this.launch(options, INSTRUCTIONS, query)))));
+                const nomenclature = (options.nomenclature ?? []).filter(([first]) => query.includes(first)).map(element => element.join('\t'));
+                const MESSAGE = nomenclature.length > 0 ? `<start_of_nomenclature_mapping_table>source\ttarget\n${nomenclature.join('\n')}<end_of_nomenclature_mapping_table>\n<start_of_text>${query}<end_of_text>\n` : query;
+                responses.push(isMistral ? this.runMistral(options, INSTRUCTIONS, MESSAGE) : (model.startsWith('claude') ? this.mainAnthropic(options, INSTRUCTIONS, MESSAGE) : (model.startsWith('gemini') ? this.runGoogleGenerativeAI(options, INSTRUCTIONS, MESSAGE) : (model.startsWith('gpt') || model === 'chatgpt-4o-latest' || model.startsWith('o1') ? this.mainOpenai(options, INSTRUCTIONS, MESSAGE) : this.launch(options, INSTRUCTIONS, MESSAGE)))));
                 queries = [];
                 if (splitChunkEnabled && isMistral && queues.length > 0)
                     await Utils.sleep(2500);
