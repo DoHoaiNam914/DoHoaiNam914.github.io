@@ -315,7 +315,8 @@ export default class GenerativeAi extends Translator {
   public async translateText (text, targetLanguage: string, options: { [key: string]: any } = { model: 'gpt-4o-mini', temperature: 1, maxTokens: 0, topP: 1, nomenclature: [], splitChunkEnabled: false }): Promise<string> {
     if (options.model == null) options.model = 'gpt-4o-mini'
     if (options.temperature == null) options.temperature = 1
-    if (options.maxTokens == null) options.maxTokens = 0
+    if (options.splitChunkEnabled === true) options.maxTokens = 2048
+    else if (options.maxTokens == null) options.maxTokens = 0
     if (options.topP == null) options.topP = 1
     const queues = text.split('\n')
     const responses: Array<Promise<string>> = []
@@ -339,6 +340,6 @@ export default class GenerativeAi extends Translator {
       throw reason
     })
     super.translateText(text, targetLanguage, this.DefaultLanguage.SOURCE_LANGUAGE)
-    return result.replaceAll(/^<s>(?:.+(?:\n.+)+)?\[TEXT] | ?\[\/TEXT]<\/s>/g, '')
+    return result.replaceAll(/^<s>\[TEXT] | (?:\[\/TEXT])?<\/s>/g, '')
   }
 }
