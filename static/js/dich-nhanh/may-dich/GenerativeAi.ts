@@ -338,8 +338,8 @@ export default class GenerativeAi extends Translator {
     }
     const result = await Promise.all(responses).then(value => value.flat().join('\n')).catch(reason => {
       throw reason
-    })
     super.translateText(text, targetLanguage, this.DefaultLanguage.SOURCE_LANGUAGE)
-    return result.replaceAll(/^<s>\[TEXT] | (?:\[\/TEXT])?<\/s>/g, '')
+    })
+    return result.replaceAll(/^<s>(:\[TEXT])?(?: |\n)|(?: |\n)(?:\[\/TEXT])?<\/s>/g, '')
   }
 }
