@@ -80,7 +80,7 @@ export default class GenerativeAi extends Translator {
     return response
   }
 
-  public async mainOpenai (options, instructions, message): Promise<string> {
+  public async mainOpenai (options, promptInstructions, message): Promise<string> {
     const searchParams = new URLSearchParams(window.location.search)
     const { model, temperature, maxTokens, topP } = options
     let requestBody: { [key: string]: any } = {
@@ -115,7 +115,7 @@ export default class GenerativeAi extends Translator {
     }
     requestBody.messages = [
       {
-        content: instructions,
+        content: promptInstructions,
         role: 'user'
       },
       {
@@ -145,7 +145,7 @@ export default class GenerativeAi extends Translator {
     }
   }
 
-  public async runGoogleGenerativeAI (options, instructions, message): Promise<string> {
+  public async runGoogleGenerativeAI (options, promptInstructions, message): Promise<string> {
     const modelParams = {
       model: 'gemini-2.0-flash-exp'
     }
@@ -197,7 +197,7 @@ export default class GenerativeAi extends Translator {
       role: 'user',
       parts: [
         {
-          text: instructions
+          text: promptInstructions
         }
       ]
     })
@@ -212,7 +212,7 @@ export default class GenerativeAi extends Translator {
     return collectedChunkTexts.join('')
   }
 
-  public async mainAnthropic (options, instructions, message): Promise<string> {
+  public async mainAnthropic (options, promptInstructions, message): Promise<string> {
     const body: { [key: string]: any } = {
       model: 'claude-3-5-sonnet-20241022',
       max_tokens: 1000,
@@ -223,7 +223,7 @@ export default class GenerativeAi extends Translator {
     body.messages = [
       {
         role: 'user',
-        content: instructions
+        content: promptInstructions
       },
       {
         role: 'user',
@@ -241,7 +241,7 @@ export default class GenerativeAi extends Translator {
     return collectedTexts.join('')
   }
 
-  public async launch (options, instructions, message): Promise<string> {
+  public async launch (options, promptInstructions, message): Promise<string> {
     let out = ''
 
     const chatCompletionInput: { [key: string]: any } = {
@@ -257,7 +257,7 @@ export default class GenerativeAi extends Translator {
     chatCompletionInput.max_tokens = maxTokens > 0 ? maxTokens : (['meta-llama/Llama-3.2-3B-Instruct', 'google/gemma-2-9b-it', 'meta-llama/Llama-3.2-1B-Instruct', 'microsoft/Phi-3-mini-4k-instruct', 'meta-llama/Llama-3.2-11B-Vision-Instruct', 'Qwen/Qwen2-VL-7B-Instruct'].some(element => model === element) ? 4096 : 8192)
     chatCompletionInput.messages = [
       {
-        content: instructions,
+        content: promptInstructions,
         role: 'user'
       },
       ...model.startsWith('google')
@@ -287,7 +287,7 @@ export default class GenerativeAi extends Translator {
     return out
   }
 
-  public async runMistral (options, instructions, message): Promise<string> {
+  public async runMistral (options, promptInstructions, message): Promise<string> {
     const { model, temperature, maxTokens, topP } = options
     const result = await this.mistralClient.chat.stream({
       model,
@@ -297,7 +297,7 @@ export default class GenerativeAi extends Translator {
       messages: [
         {
           role: 'user',
-          content: instructions
+          content: promptInstructions
         },
         {
           role: 'user',
@@ -328,9 +328,9 @@ export default class GenerativeAi extends Translator {
       if (queues.length === 0 || (splitChunkEnabled && [...queries, queues[0]].join('\n').length > this.maxContentLengthPerRequest)) {
         const query = queries.join('\n')
         const nomenclature: string[][] = (options.nomenclature ?? []).filter(([first]) => query.includes(first)).map(element => element.join('\t'))
-        const INSTRUCTIONS = `Translate the following text into ${targetLanguage}. ${nomenclature.length > 0 ? 'Make sure to accurately map people\'s proper names, ethnicities, and species, or place names and other concepts listed in the Nomenclature Mapping Table. ' : ''}${/\n\s*[^\s]+/.test(query) ? 'Keep each line in your translation exactly as it appears in the source text - do not combine multiple lines into one or break one line into multiple lines. Preserve every newline character or end-of-line marker as they appear in the original text in your translations. ' : ''}Your translations must convey all the content in the original text and cannot involve explanations${nomenclature.length > 0 ? ', tags' : ''} or other unnecessary information. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text and cannot include explanations${nomenclature.length > 0 ? ', tags' : ''} or other information.`
-        const MESSAGE = INSTRUCTIONS.includes('Nomenclature Mapping Table') ? `<start_of_nomenclature_mapping_table>source\ttarget\n${nomenclature.join('\n')}<end_of_nomenclature_mapping_table>\n<start_of_text>${query}<end_of_text>\n` : query
-        responses.push(isMistral ? this.runMistral(options, INSTRUCTIONS, MESSAGE) : (model.startsWith('claude') ? this.mainAnthropic(options, INSTRUCTIONS, MESSAGE) : (model.startsWith('gemini') ? this.runGoogleGenerativeAI(options, INSTRUCTIONS, MESSAGE) : (model.startsWith('gpt') || model === 'chatgpt-4o-latest' || model.startsWith('o1') ? this.mainOpenai(options, INSTRUCTIONS, MESSAGE) : this.launch(options, INSTRUCTIONS, MESSAGE)))))
+        const PROMPT_INSTRUCTIONS = `Translate the following text into ${targetLanguage}. ${nomenclature.length > 0 ? 'Make sure to accurately map people\'s proper names, ethnicities, and species, or place names and other concepts listed in the Nomenclature Mapping Table. ' : ''}${/\n\s*[^\s]+/.test(query) ? 'Keep each line in your translation exactly as it appears in the source text - do not combine multiple lines into one or break one line into multiple lines. Preserve every newline character or end-of-line marker as they appear in the original text in your translations. ' : ''}Your translations must convey all the content in the original text and cannot involve explanations${nomenclature.length > 0 ? ', tags' : ''} or other unnecessary information. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text and cannot include explanations${nomenclature.length > 0 ? ', tags' : ''} or other information.`
+        const MESSAGE = PROMPT_INSTRUCTIONS.includes('Nomenclature Mapping Table') ? `<|begin_of_nomenclature_mapping_table|>source\ttarget\n${nomenclature.join('\n')}<|end_of_nomenclature_mapping_table|>\n<|begin_of_text|>${query}<|end_of_text|>\n` : query
+        responses.push(isMistral ? this.runMistral(options, PROMPT_INSTRUCTIONS, MESSAGE) : (model.startsWith('claude') ? this.mainAnthropic(options, PROMPT_INSTRUCTIONS, MESSAGE) : (model.startsWith('gemini') ? this.runGoogleGenerativeAI(options, PROMPT_INSTRUCTIONS, MESSAGE) : (model.startsWith('gpt') || model === 'chatgpt-4o-latest' || model.startsWith('o1') ? this.mainOpenai(options, PROMPT_INSTRUCTIONS, MESSAGE) : this.launch(options, PROMPT_INSTRUCTIONS, MESSAGE)))))
         queries = []
         if (splitChunkEnabled && isMistral && queues.length > 0) await Utils.sleep(2500)
       }
