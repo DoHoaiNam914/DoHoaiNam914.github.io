@@ -339,6 +339,6 @@ export default class GenerativeAi extends Translator {
       throw reason
     })
     super.translateText(text, targetLanguage, this.DefaultLanguage.SOURCE_LANGUAGE)
-    return result
+    return result.replaceAll(/^(?:.+(?:\n{1,2}.+)+)?<\|start_header_id\|>text<\|end_header_id\|>\n{2}|<\|eot_id\|>/g, '')
   }
 }
