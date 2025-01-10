@@ -339,6 +339,6 @@ export default class GenerativeAi extends Translator {
       throw reason
     })
     super.translateText(text, targetLanguage, this.DefaultLanguage.SOURCE_LANGUAGE)
-    return result
+    return result.replaceAll(/^<s>.*\[TEXT] |\[\/TEXT]<\/s>$/g, '')
   }
 }
