@@ -111,7 +111,7 @@ export default class GenerativeAi extends Translator {
         requestBody.messages = [
             {
                 content: promptInstructions,
-                role: 'system'
+                role: model === 'o1-mini' ? 'user' : 'system'
             },
             {
                 content: message,
@@ -152,7 +152,8 @@ export default class GenerativeAi extends Translator {
         };
         const { model, temperature, maxTokens, topP } = options;
         modelParams.model = model;
-        modelParams.systemInstruction = promptInstructions;
+        if (model !== 'gemini-1.0-pro')
+            modelParams.systemInstruction = promptInstructions;
         const generativeModel = this.genAI.getGenerativeModel(modelParams);
         const generationConfig = {
             temperature: 1,
@@ -194,6 +195,16 @@ export default class GenerativeAi extends Translator {
                 threshold: HarmBlockThreshold.BLOCK_NONE
             }
         ];
+        if (model === 'gemini-1.0-pro') {
+            startChatParams.history.push({
+                role: 'user',
+                parts: [
+                    {
+                        text: promptInstructions
+                    }
+                ]
+            });
+        }
         const chatSession = generativeModel.startChat(startChatParams);
         const result = await chatSession.sendMessageStream(message);
         const collectedChunkTexts = [];

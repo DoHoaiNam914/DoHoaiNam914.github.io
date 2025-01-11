@@ -116,7 +116,7 @@ export default class GenerativeAi extends Translator {
     requestBody.messages = [
       {
         content: promptInstructions,
-        role: 'system'
+        role: model === 'o1-mini' ? 'user' : 'system'
       },
       {
         content: message,
@@ -151,7 +151,7 @@ export default class GenerativeAi extends Translator {
     }
     const { model, temperature, maxTokens, topP } = options
     modelParams.model = model
-    modelParams.systemInstruction = promptInstructions
+    if (model !== 'gemini-1.0-pro') modelParams.systemInstruction = promptInstructions
     const generativeModel = this.genAI.getGenerativeModel(modelParams)
 
     const generationConfig = {
@@ -194,6 +194,16 @@ export default class GenerativeAi extends Translator {
         threshold: HarmBlockThreshold.BLOCK_NONE
       }
     ]
+    if (model === 'gemini-1.0-pro') {
+      startChatParams.history.push({
+        role: 'user',
+        parts: [
+          {
+            text: promptInstructions
+          }
+        ]
+      })
+    }
 
     const chatSession = generativeModel.startChat(startChatParams)
 
@@ -315,7 +325,7 @@ export default class GenerativeAi extends Translator {
     const responses: Array<Promise<string>> = []
     const splitChunkEnabled: boolean = options.splitChunkEnabled ?? false
     const { model } = options as { model: string }
-    isMistral = /^(?:open-)?[^-]+tral/.test(model) && !model.includes('/')
+    const isMistral = /^(?:open-)?[^-]+tral/.test(model) && !model.includes('/')
     let queries: string[] = []
     while (queues.length > 0) {
       queries.push(queues.shift() as string)
