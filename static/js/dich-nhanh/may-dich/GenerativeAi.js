@@ -55,7 +55,7 @@ export default class GenerativeAi extends Translator {
             dangerouslyAllowBrowser: true
         });
         this.genAI = new GoogleGenerativeAI(geminiApiKey);
-        this.hfInferenceClient = new HfInference(hfToken);
+        this.hfInferenceClient = new HfInference(hfToken, { signal: this.controller.signal });
         this.mistralClient = new Mistral({ apiKey: mistralApiKey });
     }
     async mainTranslatenow(requestBody) {
@@ -133,7 +133,7 @@ export default class GenerativeAi extends Translator {
             return await this.mainTranslatenow(requestBody);
         }
         else {
-            const response = this.openai.chat.completions.create(requestBody);
+            const response = this.openai.chat.completions.create(requestBody, { signal: this.controller.signal });
             if (requestBody.stream === true) {
                 const collectedMessages = [];
                 for await (const chunk of response) {
@@ -206,7 +206,7 @@ export default class GenerativeAi extends Translator {
             });
         }
         const chatSession = generativeModel.startChat(startChatParams);
-        const result = await chatSession.sendMessageStream(message);
+        const result = await chatSession.sendMessageStream(message, { signal: this.controller.signal });
         const collectedChunkTexts = [];
         for await (const chunk of result.stream) {
             collectedChunkTexts.push(chunk.text());
@@ -231,7 +231,7 @@ export default class GenerativeAi extends Translator {
         body.temperature = temperature;
         body.top_p = topP;
         const collectedTexts = [];
-        await this.anthropic.messages.stream(body).on('text', text => {
+        await this.anthropic.messages.stream(body, { signal: this.controller.signal }).on('text', text => {
             collectedTexts.push(text);
         });
         return collectedTexts.join('');
@@ -301,7 +301,7 @@ export default class GenerativeAi extends Translator {
                     content: message
                 }
             ]
-        });
+        }, { fetchOptions: { signal: this.controller.signal } });
         const collectedStreamTexts = [];
         for await (const chunk of result) {
             collectedStreamTexts.push(chunk.data.choices[0].delta.content);
