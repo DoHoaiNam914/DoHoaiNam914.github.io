@@ -315,7 +315,7 @@ export default class GenerativeAi extends Translator {
     const responses: Array<Promise<string>> = []
     const splitChunkEnabled: boolean = options.splitChunkEnabled ?? false
     const { model } = options as { model: string }
-    const isMistral = /^(?:open-)?[^-]+tral/.test(model)
+    isMistral = /^(?:open-)?[^-]+tral/.test(model) && !model.includes('/')
     let queries: string[] = []
     while (queues.length > 0) {
       queries.push(queues.shift() as string)

@@ -312,7 +312,7 @@ export default class GenerativeAi extends Translator {
         const responses = [];
         const splitChunkEnabled = options.splitChunkEnabled ?? false;
         const { model } = options;
-        const isMistral = /^(?:open-)?[^-]+tral/.test(model);
+        const isMistral = /^(?:open-)?[^-]+tral/.test(model) && !model.includes('/');
         let queries = [];
         while (queues.length > 0) {
             queries.push(queues.shift());
