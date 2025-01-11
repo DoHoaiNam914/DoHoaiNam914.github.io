@@ -329,8 +329,8 @@ export default class GenerativeAi extends Translator {
       if (queues.length === 0 || (splitChunkEnabled && [...queries, queues[0]].join('\n').length > this.maxContentLengthPerRequest)) {
         const query = queries.join('\n')
         const nomenclature: string[][] = (options.nomenclature ?? []).filter(([first]) => query.includes(first)).map(element => element.join('\t'))
-        const PROMPT_INSTRUCTIONS = `Translate the following text ${nomenclature.length > 0 ? 'in the [TEXT] ' : ''}into ${targetLanguage}. ${nomenclature.length > 0 ? 'Ensure to accurately map people\'s proper names, ethnicities, and species, or place names and other concepts listed in the [NOMENCLATURE_MAPPING_TABLE]. ' : ''}${/\n\s*[^\s]+/.test(query) ? 'Make sure to keep each line in your translation exactly as it appears in the source text - do not combine multiple lines into one or break one line into multiple lines. Preserve every newline character or end-of-line marker as they appear in the original text in your translations. ' : ''}Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text and cannot include explanations or other information.`
-        const MESSAGE = PROMPT_INSTRUCTIONS.includes('map people\'s proper names, ethnicities, and species, or place names and other concepts') ? `<s>[NOMENCLATURE_MAPPING_TABLE] ${`source\ttarget\n${nomenclature.join('\n')} `}[/NOMENCLATURE_MAPPING_TABLE][TEXT] ${`${query} `}[/TEXT]</s>` : query
+        const PROMPT_INSTRUCTIONS = `Translate the following text into ${targetLanguage}. ${nomenclature.length > 0 ? 'Ensure to accurately map people\'s proper names, ethnicities, and species, or place names and other concepts listed in the Nomenclature Mapping Table. ' : ''}${/\n\s*[^\s]+/.test(query) ? 'Strictly preserve every newline character or end-of-line marker as they appear in the original text in your translations. ' : ''}Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text and cannot include explanations or other information.`
+        const MESSAGE = PROMPT_INSTRUCTIONS.includes('map people\'s proper names, ethnicities, and species, or place names and other concepts') ? `<nomenclature_mapping_table_start>source\ttarget\n${nomenclature.join('\n')}<nomenclature_mapping_table_end>\n<text_start>${query}<text_end>` : query
         responses.push(isMistral ? this.runMistral(options, PROMPT_INSTRUCTIONS, MESSAGE) : (model.startsWith('claude') ? this.mainAnthropic(options, PROMPT_INSTRUCTIONS, MESSAGE) : (model.startsWith('gemini') ? this.runGoogleGenerativeAI(options, PROMPT_INSTRUCTIONS, MESSAGE) : (model.startsWith('gpt') || model === 'chatgpt-4o-latest' || model.startsWith('o1') ? this.mainOpenai(options, PROMPT_INSTRUCTIONS, MESSAGE) : this.launch(options, PROMPT_INSTRUCTIONS, MESSAGE)))))
         queries = []
         if (splitChunkEnabled && isMistral && queues.length > 0) await Utils.sleep(2500)
@@ -338,8 +338,8 @@ export default class GenerativeAi extends Translator {
     }
     const result = await Promise.all(responses).then(value => value.flat().join('\n')).catch(reason => {
       throw reason
-    super.translateText(text, targetLanguage, this.DefaultLanguage.SOURCE_LANGUAGE)
     })
-    return result.replaceAll(/^<s>(?:\[TEXT])?(?: |\n)?|(?: |\n)?(?:\[\/TEXT])?<\/s>/g, '')
+    super.translateText(text, targetLanguage, this.DefaultLanguage.SOURCE_LANGUAGE)
+    return result
   }
 }
