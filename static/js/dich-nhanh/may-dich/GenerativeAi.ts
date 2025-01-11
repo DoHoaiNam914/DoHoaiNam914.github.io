@@ -116,7 +116,7 @@ export default class GenerativeAi extends Translator {
     requestBody.messages = [
       {
         content: promptInstructions,
-        role: 'user'
+        role: 'system'
       },
       {
         content: message,
@@ -151,6 +151,7 @@ export default class GenerativeAi extends Translator {
     }
     const { model, temperature, maxTokens, topP } = options
     modelParams.model = model
+    modelParams.systemInstruction = promptInstructions
     const generativeModel = this.genAI.getGenerativeModel(modelParams)
 
     const generationConfig = {
@@ -193,14 +194,6 @@ export default class GenerativeAi extends Translator {
         threshold: HarmBlockThreshold.BLOCK_NONE
       }
     ]
-    startChatParams.history.push({
-      role: 'user',
-      parts: [
-        {
-          text: promptInstructions
-        }
-      ]
-    })
 
     const chatSession = generativeModel.startChat(startChatParams)
 
@@ -220,18 +213,13 @@ export default class GenerativeAi extends Translator {
       messages: []
     }
     body.model = options.model
-    body.messages = [
-      {
-        role: 'user',
-        content: promptInstructions
-      },
-      {
-        role: 'user',
-        content: message
-      }
-    ]
+    body.messages.push({
+      role: 'user',
+      content: message
+    })
     const { model, temperature, maxTokens, topP } = options as { model: string, temperature: number, maxTokens: number, topP: number }
     body.max_tokens = maxTokens > 0 ? maxTokens : (!model.startsWith('claude-3-5') ? 4096 : 8192)
+    body.system = promptInstructions
     body.temperature = temperature
     body.top_p = topP
     const collectedTexts: string[] = []
@@ -256,16 +244,21 @@ export default class GenerativeAi extends Translator {
     const { model, temperature, maxTokens, topP } = options as { model: string, temperature: number, maxTokens: number, topP: number }
     chatCompletionInput.max_tokens = maxTokens > 0 ? maxTokens : (['meta-llama/Llama-3.2-3B-Instruct', 'google/gemma-2-9b-it', 'meta-llama/Llama-3.2-1B-Instruct', 'microsoft/Phi-3-mini-4k-instruct', 'meta-llama/Llama-3.2-11B-Vision-Instruct', 'Qwen/Qwen2-VL-7B-Instruct'].some(element => model === element) ? 4096 : 8192)
     chatCompletionInput.messages = [
-      {
-        content: promptInstructions,
-        role: 'user'
-      },
       ...model.startsWith('google')
-        ? [{
-            content: '',
-            role: 'assistant'
-          }]
-        : [],
+        ? [
+            {
+              content: promptInstructions,
+              role: 'user'
+            },
+            {
+              content: '',
+              role: 'assistant'
+            }
+          ]
+        : [{
+            content: promptInstructions,
+            role: 'system'
+          }],
       {
         content: message,
         role: 'user'
@@ -296,7 +289,7 @@ export default class GenerativeAi extends Translator {
       maxTokens: maxTokens > 0 ? maxTokens : (model === 'mistral-small-latest' ? 32000 : 128000),
       messages: [
         {
-          role: 'user',
+          role: 'system',
           content: promptInstructions
         },
         {
@@ -330,7 +323,7 @@ export default class GenerativeAi extends Translator {
         const query = queries.join('\n')
         const nomenclature: string[][] = (options.nomenclature ?? []).filter(([first]) => query.includes(first)).map(element => element.join('\t'))
         const PROMPT_INSTRUCTIONS = `Translate the following text into ${targetLanguage}. ${nomenclature.length > 0 ? 'Ensure to accurately map people\'s proper names, ethnicities, and species, or place names and other concepts listed in the Nomenclature Mapping Table. ' : ''}${/\n\s*[^\s]+/.test(query) ? 'Strictly preserve every newline character or end-of-line marker as they appear in the original text in your translations. ' : ''}Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text and cannot include explanations or other information.`
-        const MESSAGE = PROMPT_INSTRUCTIONS.includes('map people\'s proper names, ethnicities, and species, or place names and other concepts') ? `<nomenclature_mapping_table_start>source\ttarget\n${nomenclature.join('\n')}<nomenclature_mapping_table_end>\n<text_start>${query}<text_end>` : query
+        const MESSAGE = PROMPT_INSTRUCTIONS.includes('map people\'s proper names, ethnicities, and species, or place names and other concepts') ? `<|start_of_nomenclature_mapping_table|>source\ttarget\n${nomenclature.join('\n')}<|end_of_nomenclature_mapping_table|>\n<|start_of_text|>${query}<|end_of_text|>` : query
         responses.push(isMistral ? this.runMistral(options, PROMPT_INSTRUCTIONS, MESSAGE) : (model.startsWith('claude') ? this.mainAnthropic(options, PROMPT_INSTRUCTIONS, MESSAGE) : (model.startsWith('gemini') ? this.runGoogleGenerativeAI(options, PROMPT_INSTRUCTIONS, MESSAGE) : (model.startsWith('gpt') || model === 'chatgpt-4o-latest' || model.startsWith('o1') ? this.mainOpenai(options, PROMPT_INSTRUCTIONS, MESSAGE) : this.launch(options, PROMPT_INSTRUCTIONS, MESSAGE)))))
         queries = []
         if (splitChunkEnabled && isMistral && queues.length > 0) await Utils.sleep(2500)
