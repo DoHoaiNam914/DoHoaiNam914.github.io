@@ -1469,7 +1469,12 @@ $glossaryModal.on('shown.bs.modal', () => {
 
 $glossaryModal.on('hide.bs.modal', () => {
   $sourceEntryInput.autocomplete('disable');
-  if (entryTranslationController != null) entryTranslationController.abort();
+  if (entryTranslationController != null) {
+    entryTranslationController.abort()
+    $sourceEntryInput.removeAttr('readonly');
+    $translateEntryButtons.removeClass('disabled');
+    $translateEntryButton.removeClass('disabled')
+  }
   $sourceEntryInput.val(null).trigger('input');
   $addButton.addClass('disabled');
   $removeButton.addClass('disabled');
@@ -1741,9 +1746,9 @@ $translateEntryButtons.click(async function onClick() {
           $targetEntryTextarea.val(result).trigger('input');
         }
       }
-    } catch (error) {
-      $targetEntryTextarea.val(error);
-      console.error(error);
+    } catch (e) {
+      if (!translator.controller.signal.aborted) $targetEntryTextarea.val(e)
+      console.error(e);
     }
 
     entryTranslationController = null;
