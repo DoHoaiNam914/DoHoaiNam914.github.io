@@ -342,7 +342,7 @@ export default class GenerativeAi extends Translator {
       }
     }
     const result = await Promise.all(responses).then(value => {
-      const results = value.map(element => element.split('\n')).map((element, index) => splitChunkEnabled && element.length < requestedLines[index] ? [...element, '\n'.repeat(requestedLines[index] - element.length).split('')] : element)
+      const results = value.map(element => element.split('\n')).map((element, index) => splitChunkEnabled && element.length < requestedLines[index] ? [...element, ...'\n'.repeat(requestedLines[index] - element.length - 1).split('')] : element)
       return results.flat().join('\n')
     }).catch(reason => {
       throw reason
