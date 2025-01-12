@@ -74,7 +74,7 @@ export default class GenerativeAi extends Translator {
         'air-user-id': this.AIR_USER_ID
       },
       signal: this.controller.signal
-    }).then(response => (requestBody.stream === true ? (response.data as string).split('\n').filter(element => element.startsWith('data: ') && !element.startsWith('data: [DONE]')).map(element => JSON.parse(`{${element.replace('data: ', '"data":')}}`).data.choices[0].delta.content).filter(element => element != null).join('') : response.data.choices[0].message.content)).catch(error => {
+    }).then(response => requestBody.stream === true ? (response.data as string).split('\n').filter(element => element.startsWith('data: ') && !element.startsWith('data: [DONE]')).map(element => JSON.parse(`{${element.replace('data: ', '"data":')}}`).data.choices[0].delta.content).filter(element => element != null).join('') : response.data.choices[0].message.content).catch(error => {
       throw new Error(error.data)
     })
     return response
@@ -291,12 +291,12 @@ export default class GenerativeAi extends Translator {
   }
 
   public async runMistral (options, promptInstructions, message): Promise<string> {
-    const { model, temperature, maxTokens, topP } = options
+    const { model, temperature, maxTokens, topP } = options as { model: string, temperature: number, maxTokens: number, topP: number }
     const result = await this.mistralClient.chat.stream({
       model,
       temperature,
       topP,
-      maxTokens: maxTokens > 0 ? maxTokens : (model === 'mistral-small-latest' ? 32000 : 128000),
+      maxTokens: maxTokens > 0 ? maxTokens : (model.startsWith('mistral-small') ? 32768 : 131072),
       messages: [
         {
           role: 'system',
@@ -326,6 +326,7 @@ export default class GenerativeAi extends Translator {
     const splitChunkEnabled: boolean = options.splitChunkEnabled ?? false
     const { model } = options as { model: string }
     const isMistral = /^(?:open-)?[^-]+tral/.test(model) && !model.includes('/')
+    const requestedLines: number[] = []
     let queries: string[] = []
     while (queues.length > 0) {
       queries.push(queues.shift() as string)
@@ -335,11 +336,15 @@ export default class GenerativeAi extends Translator {
         const PROMPT_INSTRUCTIONS = `Translate the following text into ${targetLanguage}. ${nomenclature.length > 0 ? 'Ensure to accurately map people\'s proper names, ethnicities, and species, or place names and other concepts listed in the Nomenclature Mapping Table. ' : ''}${/\n\s*[^\s]+/.test(query) ? 'Strictly preserve every newline character or end-of-line marker as they appear in the original text in your translations. ' : ''}Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text and cannot include explanations or other information.`
         const MESSAGE = PROMPT_INSTRUCTIONS.includes('map people\'s proper names, ethnicities, and species, or place names and other concepts') ? `<|nomenclature_mapping_table_start|>source\ttarget\n${nomenclature.join('\n')}<|nomenclature_mapping_table_end|>\n<|text_start|>${query}<|text_end|>` : query
         responses.push(isMistral ? this.runMistral(options, PROMPT_INSTRUCTIONS, MESSAGE) : (model.startsWith('claude') ? this.mainAnthropic(options, PROMPT_INSTRUCTIONS, MESSAGE) : (model.startsWith('gemini') || model.startsWith('learnlm') ? this.runGoogleGenerativeAI(options, PROMPT_INSTRUCTIONS, MESSAGE) : (model.startsWith('gpt') || model === 'chatgpt-4o-latest' || model.startsWith('o1') ? this.mainOpenai(options, PROMPT_INSTRUCTIONS, MESSAGE) : this.launch(options, PROMPT_INSTRUCTIONS, MESSAGE)))))
+        requestedLines.push(queries.length)
         queries = []
         if (splitChunkEnabled && isMistral && queues.length > 0) await Utils.sleep(2500)
       }
     }
-    const result = await Promise.all(responses).then(value => value.flat().join('\n')).catch(reason => {
+    const result = await Promise.all(responses).then(value => {
+      const results = value.map(element => element.split('\n')).map((element, index) => splitChunkEnabled && element.length < requestedLines[index] ? [...element, '\n'.repeat(requestedLines[index] - element.length).split('')] : element)
+      return results.flat().join('\n')
+    }).catch(reason => {
       throw reason
     })
     super.translateText(text, targetLanguage, this.DefaultLanguage.SOURCE_LANGUAGE)
