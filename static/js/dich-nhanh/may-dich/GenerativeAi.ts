@@ -333,7 +333,7 @@ export default class GenerativeAi extends Translator {
     while (queues.length > 0) {
       queries.push(queues.shift() as string)
       if (queues.length === 0 || (splitChunkEnabled && ((!isGoogleGenerativeAi || (text.length < this.maxContentLengthPerRequest * 15 && text.split('\n').length < this.maxContentLengthPerRequest * 15)) && ([...queries, queues[0]].join('\n').length > this.maxContentLengthPerRequest || [...queries, queues[0]].length > this.maxContentLinePerRequest)))) {
-        const query = queries.map((element, index) => `[${index + 1}]${element}`).join('\n')
+        const query = ( /* /\n\s*[^\s]+/.test(queries.join('\n')) ? queries.map((element, _index, _array) => `[${index + 1}]${element}`) : */ queries).join('\n')
         const nomenclature: string[][] = (options.nomenclature ?? []).filter(([first]) => query.includes(first)).map(element => element.join('\t'))
         const PROMPT_INSTRUCTIONS = `Translate the following text into ${targetLanguage}. ${nomenclature.length > 0 ? 'Ensure to accurately map people\'s proper names, ethnicities, and species, or place names and other concepts listed in the Nomenclature Mapping Table. Remove start and end tags from your output. ' : ''}Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text and cannot include explanations or other information.${/\n\s*[^\s]+/.test(query) ? ' Ensure the output keeps the line number structure of the original text intact.' : ''}`
         const MESSAGE = PROMPT_INSTRUCTIONS.includes('map people\'s proper names, ethnicities, and species, or place names and other concepts') ? `<|nomenclature_mapping_table_start|>source\ttarget\n${nomenclature.join('\n')}<|nomenclature_mapping_table_end|>\n<|text_start|>${query}<|text_end|>` : query
@@ -343,7 +343,7 @@ export default class GenerativeAi extends Translator {
         if (splitChunkEnabled && isMistral && queues.length > 0) await Utils.sleep(2500)
       }
     }
-    const result = await Promise.all(responses).then(value => value.map(element => element.split('\n').map(element => element.replace(/^\[\d+] /, '').trimEnd())).flat().join('\n')).catch(reason => {
+    const result = await Promise.all(responses).then(value => value.map(element => element.split('\n').map(element => element /* .replace(/^\[\d+] ?/, '') */ .trimEnd())).flat().join('\n')).catch(reason => {
       throw reason
     })
     super.translateText(text, targetLanguage, this.DefaultLanguage.SOURCE_LANGUAGE)
