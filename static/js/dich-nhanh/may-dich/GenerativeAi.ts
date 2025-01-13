@@ -343,7 +343,7 @@ export default class GenerativeAi extends Translator {
         if (splitChunkEnabled && isMistral && queues.length > 0) await Utils.sleep(2500)
       }
     }
-    const result = await Promise.all(responses).then(value => value.map(element => element.replaceAll(/^<\|text_start\|>| ?<\|text_end\|>$/g, '').split('\n').map(element => element.replace(/^\[\d+]/, ''))).map((element, index) => splitChunkEnabled && element.length < requestedLines[index] ? [...element, ...'\n'.repeat(requestedLines[index] - element.length - 1).split('')] : element).flat().map(element => element.trimEnd()).join('\n')).catch(reason => {
+    const result = await Promise.all(responses).then(value => value.map(element => element.split('\n').map(element => element.replace(/^\[\d+] /, ''))).flat().map(element => element.trimEnd()).join('\n')).catch(reason => {
       throw reason
     })
     super.translateText(text, targetLanguage, this.DefaultLanguage.SOURCE_LANGUAGE)
