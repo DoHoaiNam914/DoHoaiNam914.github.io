@@ -41,7 +41,7 @@ export default class GenerativeAi extends Translator {
   }
 
   private readonly maxContentLengthPerRequest = 1000
-  private readonly maxContentLinePerRequest = 15
+  private readonly maxContentLinePerRequest = 25
   private readonly AIR_USER_ID
   private readonly OPENAI_API_KEY
   private readonly openai
@@ -332,7 +332,7 @@ export default class GenerativeAi extends Translator {
     let queries: string[] = []
     while (queues.length > 0) {
       queries.push(queues.shift() as string)
-      if (queues.length === 0 || (splitChunkEnabled && [...queries, queues[0]].join('\n').length > this.maxContentLengthPerRequest && ((!isGoogleGenerativeAi && [...queries, queues[0]].length > this.maxContentLengthPerRequest) || text.length >= this.maxContentLengthPerRequest * 15 || text.split('\n').length >= this.maxContentLengthPerRequest * 15))) {
+      if (queues.length === 0 || (splitChunkEnabled && ([...queries, queues[0]].join('\n').length > this.maxContentLengthPerRequest || ((!isGoogleGenerativeAi && [...queries, queues[0]].length > this.maxContentLengthPerRequest) || text.length >= this.maxContentLengthPerRequest * 15 || text.split('\n').length >= this.maxContentLengthPerRequest * 15)))) {
         const query = queries.join('\n')
         const nomenclature: string[][] = (options.nomenclature ?? []).filter(([first]) => query.includes(first)).map(element => element.join('\t'))
         const PROMPT_INSTRUCTIONS = `Translate the following text into ${targetLanguage}. ${nomenclature.length > 0 ? 'Ensure to accurately map people\'s proper names, ethnicities, and species, or place names and other concepts listed in the Nomenclature Mapping Table. ' : ''}${/\n\s*[^\s]+/.test(query) ? 'Strictly preserve every newline character or end-of-line marker as they appear in the original text in your translations. ' : ''}Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text and cannot include explanations or other information.`
