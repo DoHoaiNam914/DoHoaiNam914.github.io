@@ -41,7 +41,7 @@ export default class GenerativeAi extends Translator {
   }
 
   private readonly maxContentLengthPerRequest = 1000
-  private readonly maxContentLinePerRequest = 25
+  private readonly maxContentLinePerRequest = 15
   private readonly AIR_USER_ID
   private readonly OPENAI_API_KEY
   private readonly openai
