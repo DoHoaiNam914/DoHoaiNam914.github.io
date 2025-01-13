@@ -40,7 +40,8 @@ export default class GenerativeAi extends Translator {
     TARGET_LANGUAGE: 'Vietnamese'
   }
 
-  private readonly maxContentLengthPerRequest = 1024
+  private readonly maxContentLengthPerRequest = 1000
+  private readonly maxContentLinePerRequest = 25
   private readonly AIR_USER_ID
   private readonly OPENAI_API_KEY
   private readonly openai
@@ -146,7 +147,7 @@ export default class GenerativeAi extends Translator {
   }
 
   public async runGoogleGenerativeAI (options, promptInstructions, message): Promise<string> {
-    const modelParams = {
+    const modelParams: { [key: string]: any } = {
       model: 'gemini-2.0-flash-exp'
     }
     const { model, temperature, maxTokens, topP } = options
@@ -325,17 +326,18 @@ export default class GenerativeAi extends Translator {
     const responses: Array<Promise<string>> = []
     const splitChunkEnabled: boolean = options.splitChunkEnabled ?? false
     const { model } = options as { model: string }
+    const isGoogleGenerativeAi = model.startsWith('gemini') || model.startsWith('learnlm')
     const isMistral = /^(?:open-)?[^-]+tral/.test(model) && !model.includes('/')
     const requestedLines: number[] = []
     let queries: string[] = []
     while (queues.length > 0) {
       queries.push(queues.shift() as string)
-      if (queues.length === 0 || (splitChunkEnabled && [...queries, queues[0]].join('\n').length > this.maxContentLengthPerRequest)) {
+      if (queues.length === 0 || (splitChunkEnabled && [...queries, queues[0]].join('\n').length > this.maxContentLengthPerRequest && ((!isGoogleGenerativeAi && [...queries, queues[0]].length > this.maxContentLengthPerRequest) || text.length >= this.maxContentLengthPerRequest * 15 || text.split('\n').length >= this.maxContentLengthPerRequest * 15))) {
         const query = queries.join('\n')
         const nomenclature: string[][] = (options.nomenclature ?? []).filter(([first]) => query.includes(first)).map(element => element.join('\t'))
         const PROMPT_INSTRUCTIONS = `Translate the following text into ${targetLanguage}. ${nomenclature.length > 0 ? 'Ensure to accurately map people\'s proper names, ethnicities, and species, or place names and other concepts listed in the Nomenclature Mapping Table. ' : ''}${/\n\s*[^\s]+/.test(query) ? 'Strictly preserve every newline character or end-of-line marker as they appear in the original text in your translations. ' : ''}Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information. Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices. Your output must only contain the translated text and cannot include explanations or other information.`
         const MESSAGE = PROMPT_INSTRUCTIONS.includes('map people\'s proper names, ethnicities, and species, or place names and other concepts') ? `<|nomenclature_mapping_table_start|>source\ttarget\n${nomenclature.join('\n')}<|nomenclature_mapping_table_end|>\n<|text_start|>${query}<|text_end|>` : query
-        responses.push(isMistral ? this.runMistral(options, PROMPT_INSTRUCTIONS, MESSAGE) : (model.startsWith('claude') ? this.mainAnthropic(options, PROMPT_INSTRUCTIONS, MESSAGE) : (model.startsWith('gemini') || model.startsWith('learnlm') ? this.runGoogleGenerativeAI(options, PROMPT_INSTRUCTIONS, MESSAGE) : (model.startsWith('gpt') || model === 'chatgpt-4o-latest' || model.startsWith('o1') ? this.mainOpenai(options, PROMPT_INSTRUCTIONS, MESSAGE) : this.launch(options, PROMPT_INSTRUCTIONS, MESSAGE)))))
+        responses.push(isMistral ? this.runMistral(options, PROMPT_INSTRUCTIONS, MESSAGE) : (model.startsWith('claude') ? this.mainAnthropic(options, PROMPT_INSTRUCTIONS, MESSAGE) : (isGoogleGenerativeAi ? this.runGoogleGenerativeAI(options, PROMPT_INSTRUCTIONS, MESSAGE) : (model.startsWith('gpt') || model === 'chatgpt-4o-latest' || model.startsWith('o1') ? this.mainOpenai(options, PROMPT_INSTRUCTIONS, MESSAGE) : this.launch(options, PROMPT_INSTRUCTIONS, MESSAGE)))))
         requestedLines.push(queries.length)
         queries = []
         if (splitChunkEnabled && isMistral && queues.length > 0) await Utils.sleep(2500)
