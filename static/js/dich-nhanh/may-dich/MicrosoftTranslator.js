@@ -56,7 +56,7 @@ export default class MicrosoftTranslator extends Translator {
         while (lines.length > 0) {
             queries.push(lines.shift());
             if (lines.length === 0 || [...queries, lines[0]].join('\n').length > this.maxContentLengthPerRequest) {
-                const queryText = queries.join('\n');
+                const queryText = encodeURIComponent(queries.join('\n'));
                 responses.push(this.instance.post('/ttranslatev3', `&fromLang=${sourceLanguage ?? this.DefaultLanguage.SOURCE_LANGUAGE}&to=${targetLanguage}&token=${this.token}&key=${this.key}${this.tone !== 'Standard' ? `&tone=${this.tone}&text=${queryText}` : `&text=${queryText}&tryFetchingGenderDebiasedTranslations=true`}`, {
                     headers: { 'Content-type': 'application/x-www-form-urlencoded' },
                     params: {
