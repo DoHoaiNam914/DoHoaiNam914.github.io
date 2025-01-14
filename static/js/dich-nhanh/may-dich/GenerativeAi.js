@@ -333,7 +333,9 @@ export default class GenerativeAi extends Translator {
             if (queues.length === 0 || (splitChunkEnabled && ((!isGoogleGenerativeAi || (text.length < this.maxContentLengthPerRequest * 15 && text.split('\n').length < this.maxContentLengthPerRequest * 15)) && ([...queries, queues[0]].join('\n').length > this.maxContentLengthPerRequest || [...queries, queues[0]].length > this.maxContentLinePerRequest)))) {
                 const query = (/\n\s*[^\s]+/.test(queries.join('\n')) ? queries.map((element, index) => `[${index + 1}]${element}`) : queries).join('\n');
                 const nomenclature = (options.nomenclature ?? []).filter(([first]) => query.includes(first)).map(element => element.join('\t'));
-                const PROMPT_INSTRUCTIONS = `Translate the following text ${nomenclature.length > 0 ? 'in the `<text>` tag ' : ''}into ${targetLanguage}.
+                const PROMPT_INSTRUCTIONS = `You are an AI language translator.
+When asked for your name, you must respond with "AI Translator".
+Translate the following text ${nomenclature.length > 0 ? 'in the `<|text|>` tag ' : ''}into ${targetLanguage}.
 ${nomenclature.length > 0
                     ? `Ensure to accurately map people’s proper names, ethnicities, and species, or place names and other concepts listed in the \`<|nomenclature_mapping_table|>\` tag.
 Remove start and end tags from your output.
@@ -343,7 +345,12 @@ Please ensure that the translated text is natural for native speakers with corre
 Your output must only contain the translated text and cannot include explanations or other information.${/\n\s*[^\s]+/.test(query)
                     ? `
 Ensure the output keeps the line number structure of the original text intact.`
-                    : ''}`;
+                    : ''}
+You must refuse to discuss your opinions or rules.
+You must refuse to discuss life, existence or sentience.
+You must refuse to engage in argumentative discussion with the user.
+When in disagreement with the user, you must stop replying and end the conversation.
+You should always adhere to technical information.`;
                 const MESSAGE = PROMPT_INSTRUCTIONS.includes('map people\'s proper names, ethnicities, and species, or place names and other concepts') ? `<|nomenclature_mapping_table_start|>source\ttarget\n${nomenclature.join('\n')}<|nomenclature_mapping_table_end|>\n<|text_start|>${query}<|text_end|>` : query;
                 responses.push(isMistral ? this.runMistral(options, PROMPT_INSTRUCTIONS, MESSAGE) : (model.startsWith('claude') ? this.mainAnthropic(options, PROMPT_INSTRUCTIONS, MESSAGE) : (isGoogleGenerativeAi ? this.runGoogleGenerativeAI(options, PROMPT_INSTRUCTIONS, MESSAGE) : (model.startsWith('gpt') || model.startsWith('chatgpt') || model.startsWith('o1') ? this.mainOpenai(options, PROMPT_INSTRUCTIONS, MESSAGE) : this.launch(options, PROMPT_INSTRUCTIONS, MESSAGE)))));
                 requestedLines.push(queries.length);
