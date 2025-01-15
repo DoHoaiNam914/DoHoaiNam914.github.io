@@ -333,6 +333,7 @@ export default class GenerativeAi extends Translator {
     while (queues.length > 0) {
       queries.push(queues.shift() as string)
       if (queues.length === 0 || (splitChunkEnabled && ((!isGoogleGenerativeAi || (text.length < this.maxContentLengthPerRequest * 15 && text.split('\n').length < this.maxContentLengthPerRequest * 15)) && ([...queries, queues[0]].join('\n').length > this.maxContentLengthPerRequest || [...queries, queues[0]].length > this.maxContentLinePerRequest)))) {
+        const MESSAGE = queries.join('\n')
         const nomenclature: string[][] = (options.nomenclature ?? []).filter(([first]) => query.includes(first)).map(element => element.join('\t'))
         const PROMPT_INSTRUCTIONS = `You are an AI language translator.
 When asked for your name, you must respond with “AI Translator”.
@@ -355,7 +356,6 @@ Eliminate any other introduction and quotation.
 Don’t use Markdown formatting in your answers.
 Avoid wrapping the whole response in markup tag.
 You can only give one reply for each conversation turn.`
-        const MESSAGE = queries.join('\n')
         responses.push(isMistral ? this.runMistral(options, PROMPT_INSTRUCTIONS, MESSAGE) : (model.startsWith('claude') ? this.mainAnthropic(options, PROMPT_INSTRUCTIONS, MESSAGE) : (isGoogleGenerativeAi ? this.runGoogleGenerativeAI(options, PROMPT_INSTRUCTIONS, MESSAGE) : (model.startsWith('gpt') || model.startsWith('chatgpt') || model.startsWith('o1') ? this.mainOpenai(options, PROMPT_INSTRUCTIONS, MESSAGE) : this.launch(options, PROMPT_INSTRUCTIONS, MESSAGE)))))
         requestedLines.push(queries.length)
         queries = []
