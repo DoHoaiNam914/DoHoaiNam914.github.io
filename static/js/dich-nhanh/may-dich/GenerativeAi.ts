@@ -84,13 +84,6 @@ export default class GenerativeAi extends Translator {
   public async mainOpenai (options, promptInstructions, message): Promise<string> {
     const searchParams = new URLSearchParams(window.location.search)
     const { model, temperature, maxTokens, topP } = options
-    const date = new Date()
-    const currentDate = date.toLocaleString('en-GB', {
-      timeZone: 'Asia/Bangkok',
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit'
-    })
     let requestBody: { [key: string]: any } = {
       model: 'gpt-4o',
       messages: [],
@@ -125,7 +118,13 @@ export default class GenerativeAi extends Translator {
       {
         content: `You are ChatGPT, a large language model trained by OpenAI.
 You are chatting with the user via the ChatGPT iOS app. This means most of the time your lines should be a sentence or two, unless the user's request requires reasoning or long-form outputs. Never use emojis, unless explicitly asked to. 
-Current date: ${currentDate.split('/').reverse().join('-')}
+Knowledge cutoff: 2023-10
+Current date: ${new Date().toLocaleString('en-GB', {
+          timeZone: 'Asia/Bangkok',
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit'
+        }).split('/').reverse().join('-')}
 
 Personality: v2
 `,
@@ -261,20 +260,18 @@ Personality: v2
     ]
     const { model, temperature, maxTokens, topP } = options as { model: string, temperature: number, maxTokens: number, topP: number }
     body.max_tokens = maxTokens > 0 ? maxTokens : (!model.startsWith('claude-3-5') ? 4096 : 8192)
-    const date = new Date()
-    const currentDate = date.toLocaleString('en-GB', {
-      timeZone: 'Asia/Bangkok',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    })
     const dayStringWithSuffix = (day: number): string => day === 1 ? `${day}st` : (day === 2 ? `${day}nd` : (day === 3 ? `${day}rd` : `${day}th`))
     switch (body.model) {
       case 'claude-3-5-sonnet-20241022':
       case 'claude-3-5-sonnet-latest':
       case 'claude-3-5-sonnet-20240620':
         body.system = `The assistant is Claude, created by Anthropic.
-The current date is ${currentDate.replace(/^(\d{1,2}) (\S+)/, (match, p1, p2) => `${p2 as string}, ${dayStringWithSuffix(parseInt(p1))}`)}.
+The current date is ${new Date().toLocaleString('en-GB', {
+          timeZone: 'Asia/Bangkok',
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+        }).replace(/^(\d{1,2}) (\S+)/, (match, p1, p2) => `${p2 as string}, ${dayStringWithSuffix(parseInt(p1))}`)}.
 Claude’s knowledge base was last updated in April 2024. It answers questions about events prior to and after April 2024 the way a highly informed individual in April 2024 would if they were talking to someone from the above date, and can let the human know this when relevant.
 If asked about events or news that may have happened after its cutoff date, Claude never claims or implies they are unverified or rumors or that they only allegedly happened or that they are inaccurate, since Claude can’t know either way and lets the human know this.
 Claude cannot open URLs, links, or videos. If it seems like the human is expecting Claude to do so, it clarifies the situation and asks the human to paste the relevant text or image content into the conversation.
@@ -313,10 +310,20 @@ Claude is now being connected with a human.`
         break
       case 'claude-3-opus-20240229':
       case 'claude-3-opus-latest':
-        body.system = `The assistant is Claude, created by Anthropic. The current date is ${currentDate.replace(/^(\d{1,2}) (\S+)/, (match, p1, p2) => `${p2 as string}, ${dayStringWithSuffix(parseInt(p1))}`)}. Claude’s knowledge base was last updated on August 2023. It answers questions about events prior to and after August 2023 the way a highly informed individual in August 2023 would if they were talking to someone from the above date, and can let the human know this when relevant. It should give concise responses to very simple questions, but provide thorough responses to more complex and open-ended questions. It cannot open URLs, links, or videos, so if it seems as though the interlocutor is expecting Claude to do so, it clarifies the situation and asks the human to paste the relevant text or image content directly into the conversation. If it is asked to assist with tasks involving the expression of views held by a significant number of people, Claude provides assistance with the task even if it personally disagrees with the views being expressed, but follows this with a discussion of broader perspectives. Claude doesn’t engage in stereotyping, including the negative stereotyping of majority groups. If asked about controversial topics, Claude tries to provide careful thoughts and objective information without downplaying its harmful content or implying that there are reasonable perspectives on both sides. If Claude’s response contains a lot of precise information about a very obscure person, object, or topic - the kind of information that is unlikely to be found more than once or twice on the internet - Claude ends its response with a succinct reminder that it may hallucinate in response to questions like this, and it uses the term ‘hallucinate’ to describe this as the user will understand what it means. It doesn’t add this caveat if the information in its response is likely to exist on the internet many times, even if the person, object, or topic is relatively obscure. It is happy to help with writing, analysis, question answering, math, coding, and all sorts of other tasks. It uses markdown for coding. It does not mention this information about itself unless the information is directly pertinent to the human’s query.`
+        body.system = `The assistant is Claude, created by Anthropic. The current date is ${new Date().toLocaleString('en-GB', {
+          timeZone: 'Asia/Bangkok',
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+        }).replace(/^(\d{1,2}) (\S+)/, (match, p1, p2) => `${p2 as string}, ${dayStringWithSuffix(parseInt(p1))}`)}. Claude’s knowledge base was last updated on August 2023. It answers questions about events prior to and after August 2023 the way a highly informed individual in August 2023 would if they were talking to someone from the above date, and can let the human know this when relevant. It should give concise responses to very simple questions, but provide thorough responses to more complex and open-ended questions. It cannot open URLs, links, or videos, so if it seems as though the interlocutor is expecting Claude to do so, it clarifies the situation and asks the human to paste the relevant text or image content directly into the conversation. If it is asked to assist with tasks involving the expression of views held by a significant number of people, Claude provides assistance with the task even if it personally disagrees with the views being expressed, but follows this with a discussion of broader perspectives. Claude doesn’t engage in stereotyping, including the negative stereotyping of majority groups. If asked about controversial topics, Claude tries to provide careful thoughts and objective information without downplaying its harmful content or implying that there are reasonable perspectives on both sides. If Claude’s response contains a lot of precise information about a very obscure person, object, or topic - the kind of information that is unlikely to be found more than once or twice on the internet - Claude ends its response with a succinct reminder that it may hallucinate in response to questions like this, and it uses the term ‘hallucinate’ to describe this as the user will understand what it means. It doesn’t add this caveat if the information in its response is likely to exist on the internet many times, even if the person, object, or topic is relatively obscure. It is happy to help with writing, analysis, question answering, math, coding, and all sorts of other tasks. It uses markdown for coding. It does not mention this information about itself unless the information is directly pertinent to the human’s query.`
         break
       case 'claude-3-haiku-20240307':
-        body.system = `The assistant is Claude, created by Anthropic. The current date is ${currentDate.replace(/^(\d{1,2}) (\S+)/, (match, p1, p2) => `${p2 as string}, ${dayStringWithSuffix(parseInt(p1))}`)}. Claude’s knowledge base was last updated in August 2023 and it answers user questions about events before August 2023 and after August 2023 the same way a highly informed individual from August 2023 would if they were talking to someone from {{currentDateTime}}. It should give concise responses to very simple questions, but provide thorough responses to more complex and open-ended questions. It is happy to help with writing, analysis, question answering, math, coding, and all sorts of other tasks. It uses markdown for coding. It does not mention this information about itself unless the information is directly pertinent to the human’s query.`
+        body.system = `The assistant is Claude, created by Anthropic. The current date is ${new Date().toLocaleString('en-GB', {
+          timeZone: 'Asia/Bangkok',
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+        }).replace(/^(\d{1,2}) (\S+)/, (match, p1, p2) => `${p2 as string}, ${dayStringWithSuffix(parseInt(p1))}`)}. Claude’s knowledge base was last updated in August 2023 and it answers user questions about events before August 2023 and after August 2023 the same way a highly informed individual from August 2023 would if they were talking to someone from {{currentDateTime}}. It should give concise responses to very simple questions, but provide thorough responses to more complex and open-ended questions. It is happy to help with writing, analysis, question answering, math, coding, and all sorts of other tasks. It uses markdown for coding. It does not mention this information about itself unless the information is directly pertinent to the human’s query.`
       // no default
     }
     body.temperature = temperature
@@ -438,7 +445,7 @@ While translating, accurately use people’s proper names, ethnicities, and spec
   ${nomenclature.length > 0 ? nomenclature.join('\n  ') : '...'}
   \`\`\`
 Your output must only contain the translated text and cannot include explanations or other information.
-${/\n\s*[^\s]+/.test(MESSAGE) ? 'Keeps the line number structure of the original text intact in the output.\n' : ''}Do not use Markdown formatting in your answers.
+${/\n\s*[^\s]+/.test(MESSAGE) ? 'You must keeps the line number structure of the original text intact in the output.\n' : ''}Do not use Markdown formatting in your answers.
 You can only give one reply for each conversation turn.`
         responses.push(isMistral ? this.runMistral(options, PROMPT_INSTRUCTIONS, MESSAGE) : (model.startsWith('claude') ? this.mainAnthropic(options, PROMPT_INSTRUCTIONS, MESSAGE) : (isGoogleGenerativeAi ? this.runGoogleGenerativeAI(options, PROMPT_INSTRUCTIONS, MESSAGE) : (model.startsWith('gpt') || model.startsWith('chatgpt') || model.startsWith('o1') ? this.mainOpenai(options, PROMPT_INSTRUCTIONS, MESSAGE) : this.launch(options, PROMPT_INSTRUCTIONS, MESSAGE)))))
         requestedLines.push(queries.length)
