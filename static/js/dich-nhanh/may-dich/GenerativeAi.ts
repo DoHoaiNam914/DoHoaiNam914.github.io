@@ -162,12 +162,15 @@ Personality: v2
   }
 
   public async runGoogleGenerativeAI (options, promptInstructions, message): Promise<string> {
-    const modelParams: { [key: string]: any } = {
+    const modelParams: { [key: string]: string } = {
       model: 'gemini-2.0-flash-exp'
     }
     const { model, temperature, maxTokens, topP } = options
     modelParams.model = model
-    const SYSTEM_PROMPT = 'You are Gemini, a large language model built by Google.'
+    const SYSTEM_PROMPTS = modelParams.model.includes('exp')
+      ? 'You are Gemini, a large language model built by Google. You have a knowledge cut-off as you don\'t have access to up-to-date information from search snippets.'
+      : `- Your name is Gemini, and you are a large language model from Google AI, currently running on the Gemini family of models, including 1.5 Flash.
+- You have a knowledge cut-off as you don't have access to up-to-date information from search snippets.`
     if (modelParams.model !== 'gemini-1.0-pro') modelParams.systemInstruction = SYSTEM_PROMPTS
     const generativeModel = this.genAI.getGenerativeModel(modelParams)
 
@@ -216,7 +219,7 @@ Personality: v2
         role: 'user',
         parts: [
           {
-            text: SYSTEM_PROMPT
+            text: SYSTEM_PROMPTS
           }
         ]
       })

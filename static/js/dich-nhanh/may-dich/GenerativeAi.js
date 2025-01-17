@@ -104,9 +104,9 @@ export default class GenerativeAi extends Translator {
             default:
                 if (['gpt-4o', 'gpt-4o-2024-11-20', 'gpt-4o-2024-08-06', 'chatgpt-4o-latest', 'gpt-4o-mini', 'gpt-4o-mini-2024-07-18'].some(element => model === element))
                     maxCompletionTokens = 16384;
-                else if (['gpt-4o-2024-05-13', 'gpt-4-turbo', 'gpt-4-turbo-2024-04-09', 'gpt-4-turbo-preview', 'gpt-4-0125-preview', 'gpt-4-1106-preview', 'gpt-3.5-turbo-0125', 'gpt-3.5-turbo', 'gpt-3.5-turbo-1106', 'gpt-3.5-turbo-instruct'].some(element => model === element))
+                else if (['gpt-4o-2024-05-13', 'gpt-4-turbo', 'gpt-4-turbo-2024-04-09', 'gpt-4-turbo-preview', 'gpt-4-0125-preview', 'gpt-4-1106-preview', 'gpt-3.5-turbo-0125', 'gpt-3.5-turbo', 'gpt-3.5-turbo-1106'].some(element => model === element))
                     maxCompletionTokens = 4096;
-                else if (['gpt-4', 'gpt-4-0613', 'gpt-4-0314'].some(element => model === element))
+                else if (['gpt-4', 'gpt-4-0613'].some(element => model === element))
                     maxCompletionTokens = 8192;
         }
         requestBody.messages = [
@@ -168,7 +168,10 @@ Personality: v2
         };
         const { model, temperature, maxTokens, topP } = options;
         modelParams.model = model;
-        const SYSTEM_PROMPT = 'You are Gemini, a large language model built by Google.';
+        const SYSTEM_PROMPTS = modelParams.model.includes('exp')
+            ? 'You are Gemini, a large language model built by Google. You have a knowledge cut-off as you don\'t have access to up-to-date information from search snippets.'
+            : `- Your name is Gemini, and you are a large language model from Google AI, currently running on the Gemini family of models, including 1.5 Flash.
+- You have a knowledge cut-off as you don't have access to up-to-date information from search snippets.`;
         if (modelParams.model !== 'gemini-1.0-pro')
             modelParams.systemInstruction = SYSTEM_PROMPTS;
         const generativeModel = this.genAI.getGenerativeModel(modelParams);
@@ -217,7 +220,7 @@ Personality: v2
                 role: 'user',
                 parts: [
                     {
-                        text: SYSTEM_PROMPT
+                        text: SYSTEM_PROMPTS
                     }
                 ]
             });
