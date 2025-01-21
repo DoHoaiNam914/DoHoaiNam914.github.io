@@ -430,13 +430,13 @@ Claude is now being connected with a human.`;
         Translate the following text into ${targetLanguage}.
 Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information.
 Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices.
-While translating, accurately use people’s proper names, ethnicities, and species, or place names and other concepts listed in the following Nomenclature Mapping Table:
+Accurately use listed entries in the following Nomenclature Mapping Table to translate people’s proper names, ethnicities, and species, or place names and other concepts:
   \`\`\`tsv
   source\ttarget
   ${nomenclature.length > 0 ? nomenclature.join('\n  ') : '...'}
   \`\`\`
 Your output must only contain the translated text and cannot include explanations or other information.
-${/\n\s*[^\s]+/.test(MESSAGE) ? 'You must preserve the line number structure of the original text intact in the output.\n' : ''}Do not use Markdown formatting in your answers.`;
+${/\n\s*[^\s]+/.test(MESSAGE) ? 'You must preserve the line number structure of the original text intact in the output.' : ''}`;
                 responses.push(isMistral ? this.runMistral(options, PROMPT_INSTRUCTIONS, MESSAGE) : (model.startsWith('claude') ? this.mainAnthropic(options, PROMPT_INSTRUCTIONS, MESSAGE, !/\n\s*[^\s]+/.test(MESSAGE)) : (isGoogleGenerativeAi ? this.runGoogleGenerativeAI(options, PROMPT_INSTRUCTIONS, MESSAGE, !/\n\s*[^\s]+/.test(MESSAGE)) : (model.startsWith('gpt') || model.startsWith('chatgpt') || model.startsWith('o1') ? this.mainOpenai(options, PROMPT_INSTRUCTIONS, MESSAGE, !/\n\s*[^\s]+/.test(MESSAGE)) : this.launch(options, PROMPT_INSTRUCTIONS, MESSAGE)))));
                 requestedLines.push(queries.length);
                 queries = [];
