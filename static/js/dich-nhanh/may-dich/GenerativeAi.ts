@@ -117,7 +117,7 @@ export default class GenerativeAi extends Translator {
     requestBody.messages = [
       {
         content: promptInstructions,
-        role: model === 'o1-mini' ? 'user' : 'system'
+        role: model.startsWith('o1') ? 'developer' : 'system'
       },
       {
         content: message,
