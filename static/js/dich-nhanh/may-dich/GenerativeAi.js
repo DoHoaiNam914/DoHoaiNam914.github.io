@@ -113,7 +113,7 @@ export default class GenerativeAi extends Translator {
             ...useChatgpt
                 ? [{
                         content: `You are ChatGPT, a large language model trained by OpenAI.
-You are chatting with the user via the ChatGPT iOS app. This means most of the time your lines should be a sentence or two, unless the user's request requires reasoning or long-form outputs. Never use emojis, unless explicitly asked to. 
+You are chatting with the user via the ChatGPT iOS app. This means most of the time your lines should be a sentence or two, unless the user's request requires reasoning or long-form outputs. Never use emojis, unless explicitly asked to.
 Knowledge cutoff: ${['gpt-4-turbo', 'gpt-4-turbo-2024-04-09', 'gpt-4-turbo-preview', 'gpt-4-0125-preview', 'gpt-4-1106-preview', 'gpt-4', 'gpt-4-0613'].some(element => model === element) ? '2023-12' : (['gpt-3.5-turbo-0125', 'gpt-3.5-turbo', 'gpt-3.5-turbo-1106'].some(element => model === element) ? '2021-09' : '2023-10')}
 Current date: ${new Date().toLocaleString('en-CA', {
                             timeZone: 'Asia/Bangkok',
@@ -426,8 +426,7 @@ Claude is now being connected with a human.`;
             if (queues.length === 0 || (splitChunkEnabled && ((!isGoogleGenerativeAi || (text.length < this.maxContentLengthPerRequest * 15 && text.split('\n').length < this.maxContentLengthPerRequest * 15)) && ([...queries, queues[0]].join('\n').length > this.maxContentLengthPerRequest || [...queries, queues[0]].length > this.maxContentLinePerRequest)))) {
                 const MESSAGE = (/\n\s*[^\s]+/.test(queries.join('\n')) ? queries.map((element, index) => `[${index + 1}]${element}`) : queries).join('\n');
                 const nomenclature = (options.nomenclature ?? []).filter(([first]) => MESSAGE.includes(first)).map(element => element.join('\t'));
-                const PROMPT_INSTRUCTIONS = `
-        Translate the following text into ${targetLanguage}.
+                const PROMPT_INSTRUCTIONS = `Translate the following text into ${targetLanguage}.
 Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information.
 Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices.
 Accurately use listed entries in the following Nomenclature Mapping Table to translate people’s proper names, ethnicities, and species, or place names and other concepts:
