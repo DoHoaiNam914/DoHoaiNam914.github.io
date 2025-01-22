@@ -83,7 +83,7 @@ export default class GenerativeAi extends Translator {
 
   public async mainOpenai (options, promptInstructions, message): Promise<string> {
     const searchParams = new URLSearchParams(window.location.search)
-    const { model, temperature, maxTokens, topP } = options
+    const { model, temperature, maxTokens, topP } = options as { model: string }
     let requestBody: { [key: string]: any } = {
       model: 'gpt-4o',
       messages: [],
@@ -223,12 +223,12 @@ export default class GenerativeAi extends Translator {
       temperature: 0,
       messages: []
     }
-    body.model = options.model
+    const { model, temperature, maxTokens, topP } = options as { model: string, temperature: number, maxTokens: number, topP: number }
+    body.model = model
     body.messages.push({
       role: 'user',
       content: message
     })
-    const { model, temperature, maxTokens, topP } = options as { model: string, temperature: number, maxTokens: number, topP: number }
     body.max_tokens = maxTokens > 0 ? maxTokens : (!model.startsWith('claude-3-5') ? 4096 : 8192)
     body.system = promptInstructions
     body.temperature = temperature
@@ -338,20 +338,22 @@ export default class GenerativeAi extends Translator {
         const PROMPT_INSTRUCTIONS = `Translate the following text into ${targetLanguage}.
 Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information.
 Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices.
-Accurately use listed entries in the following Nomenclature Mapping Table to translate people’s proper names, ethnicities, and species, or place names and other concepts:
+${nomenclature.length > 0 || /\n\s*[^\s]+/.test(MESSAGE)
+? `Accurately use listed entries in the following Nomenclature Mapping Table to translate people’s proper names, ethnicities, and species, or place names and other concepts:
   \`\`\`tsv
   source\ttarget
   ${nomenclature.length > 0 ? nomenclature.join('\n  ') : '...'}
   \`\`\`
 Your output must only contain the translated text and cannot include explanations or other information.
 ${/\n\s*[^\s]+/.test(MESSAGE) ? 'You must preserve the line number structure of the original text intact in the output.' : ''}`
+: ''}`
         responses.push(isMistral ? this.runMistral(options, PROMPT_INSTRUCTIONS, MESSAGE) : (model.startsWith('claude') ? this.mainAnthropic(options, PROMPT_INSTRUCTIONS, MESSAGE) : (isGoogleGenerativeAi ? this.runGoogleGenerativeAI(options, PROMPT_INSTRUCTIONS, MESSAGE) : (model.startsWith('gpt') || model.startsWith('chatgpt') || model.startsWith('o1') ? this.mainOpenai(options, PROMPT_INSTRUCTIONS, MESSAGE) : this.launch(options, PROMPT_INSTRUCTIONS, MESSAGE)))))
         requestedLines.push(queries.length)
         queries = []
         if (splitChunkEnabled && isMistral && queues.length > 0) await Utils.sleep(2500)
       }
     }
-    const result = await Promise.all(responses).then(value => value.map(element => element.split('\n').map(element => element.replace(/^\[\d+] ?/, ''))).flat().join('\n')).catch(reason => {
+    const result = await Promise.all(responses).then(value => value.map(element => element.split('\n').map(element => element.replace(/(^ ?)\[\d+] ?/, '$1'))).flat().join('\n')).catch(reason => {
       throw reason
     })
     super.translateText(text, targetLanguage, this.DefaultLanguage.SOURCE_LANGUAGE)
