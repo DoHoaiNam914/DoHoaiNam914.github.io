@@ -315,7 +315,7 @@ export default class GenerativeAi extends Translator {
         while (queues.length > 0) {
             queries.push(queues.shift());
             if (queues.length === 0 || (splitChunkEnabled && ((!isGoogleGenerativeAi || (text.length < this.maxContentLengthPerRequest * 15 && text.split('\n').length < this.maxContentLengthPerRequest * 15)) && ([...queries, queues[0]].join('\n').length > this.maxContentLengthPerRequest || [...queries, queues[0]].length > this.maxContentLinePerRequest)))) {
-                const MESSAGE = queries.join('\n');
+                const MESSAGE = (/\n\s*[^\s]+/.test(queries.join('\n')) ? queries.map((element, index) => `[${index + 1}]${element}`) : queries).join('\n');
                 const filteredNomenclature = nomenclature.filter(([first]) => MESSAGE.includes(first)).map(element => element.join('\t'));
                 const SYSTEM_PROMPTS = [`I want you to act as a ${targetLanguage} translator.
 You are trained on data up to October 2023.`, `I will speak to you in ${sourceLanguage != null && sourceLanguage !== this.DefaultLanguage.SOURCE_LANGUAGE ? `${sourceLanguage} and you will ` : 'any language and you will detect the language, '}translate it and answer in the corrected version of my text, exclusively in ${targetLanguage}, while keeping the format.
@@ -328,7 +328,7 @@ ${filteredNomenclature.length > 0 || /\n\s*[^\s]+/.test(MESSAGE)
 `
                         : ''}Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information.
 Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices.
-Your output must only contain the translated text and cannot include explanations or other information.`];
+Your output must only contain the translated text and cannot include explanations or other information.${/\n\s*[^\s]+/.test(MESSAGE) ? '\nYou must preserve the line number structure of the original text intact in the output.' : ''}`];
                 responses.push(isMistral ? this.runMistral(options, SYSTEM_PROMPTS, MESSAGE) : (model.startsWith('claude') ? this.mainAnthropic(options, SYSTEM_PROMPTS, MESSAGE) : (isGoogleGenerativeAi ? this.runGoogleGenerativeAI(options, SYSTEM_PROMPTS, MESSAGE) : (model.startsWith('gpt') || model.startsWith('chatgpt') || model.startsWith('o1') ? this.mainOpenai(options, SYSTEM_PROMPTS, MESSAGE) : this.launch(options, SYSTEM_PROMPTS, MESSAGE)))));
                 requestedLines.push(queries.length);
                 queries = [];
@@ -336,7 +336,7 @@ Your output must only contain the translated text and cannot include explanation
                     await Utils.sleep(2500);
             }
         }
-        const result = await Promise.all(responses).then(value => value.map(element => element.split('\n')).flat().join('\n')).catch(reason => {
+        const result = await Promise.all(responses).then(value => value.map(element => element.split('\n').map(element => element.replace(/(^ ?)\[\d+] ?/, '$1'))).flat().join('\n')).catch(reason => {
             throw reason;
         });
         super.translateText(text, targetLanguage, sourceLanguage);
