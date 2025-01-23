@@ -723,12 +723,14 @@ const translate = async function translateContentInTextarea(controller = new Abo
     const startTime = Date.now()
     const text = [Translators.GENERATIVE_AI, Translators.WEBNOVEL_TRANSLATE].some(element => $activeTranslator.val() === element) ? $inputTextarea.val().split('\n').filter(element => element.replace(/^\s+/, '').length > 0).join('\n') : $inputTextarea.val()
     const targetLanguage = $targetLanguageSelect.val()
+    const sourceLanguage = $sourceLanguageSelect.val()
     let result = ''
 
     switch ($activeTranslator.val()) {
       case Translators.GENERATIVE_AI: {
         currentTranslator.controller = controller
         result = await currentTranslator.translateText(text, targetLanguage, {
+          sourceLanguage,
           model: $('#model-select').val(),
           temperature: parseFloat($('#temperature-text').val()),
           maxTokens: parseInt($maxTokensText.val()),
@@ -740,7 +742,7 @@ const translate = async function translateContentInTextarea(controller = new Abo
       }
       default: {
         currentTranslator.controller = controller
-        result = await currentTranslator.translateText(text, targetLanguage, $sourceLanguageSelect.val())
+        result = await currentTranslator.translateText(text, targetLanguage, sourceLanguage)
       }
     }
     if (controller.signal.aborted) return

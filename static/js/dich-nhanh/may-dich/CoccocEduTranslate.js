@@ -30,7 +30,7 @@ export default class CoccocEduTranslate extends Translator {
                 queries = [];
             }
         }
-        const result = await Promise.all(responses).then(value => value.map(element => element.data.proxyai[0].translations[0].text).join('\n')).catch(reason => {
+        const result = await Promise.all(responses).then(value => value.map(element => element.data.proxyapi[0].translations[0].text).join('\n')).catch(reason => {
             throw reason;
         });
         super.translateText(text, targetLanguage, sourceLanguage);
