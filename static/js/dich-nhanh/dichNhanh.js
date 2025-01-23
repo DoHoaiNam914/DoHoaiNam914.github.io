@@ -1594,7 +1594,7 @@ $('.translate-webpage-button').on('click', function onClick() {
 });
 
 $targetEntryTextarea.on('input', function onInput() {
-  $(this).val($(this).val().replaceAll(/\n/g, ' '));
+  $(this).val($(this).val().replaceAll(/\n/g, ''));
 });
 
 $targetEntryTextarea.on('keypress', (event) => {

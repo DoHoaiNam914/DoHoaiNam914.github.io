@@ -167,7 +167,7 @@ export default class GenerativeAi extends Translator {
             generationConfig.maxOutputTokens = maxTokens;
         generationConfig.temperature = temperature;
         generationConfig.topP = topP;
-        if (/^gemini-1\.5-[^-]+-001$/.test(modelParams.model))
+        if (/^gemini-1\.(?:0|5-[^-]+-001$)/.test(modelParams.model))
             generationConfig.topK = 64;
         const startChatParams = {
             generationConfig,
