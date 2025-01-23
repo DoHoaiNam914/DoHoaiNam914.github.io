@@ -23,11 +23,11 @@ export default class GenerativeAi extends Translator {
     },
     {
       label: 'Tiếng Trung giản thể',
-      value: 'Simplified Chinese'
+      value: 'Chinese (Simplified)'
     },
     {
       label: 'Tiếng Trung phồn thể',
-      value: 'Traditional Chinese'
+      value: 'Chinese (Traditional)'
     },
     {
       label: 'Tiếng Việt',
