@@ -328,8 +328,7 @@ ${filteredNomenclature.length > 0 || /\n\s*[^\s]+/.test(MESSAGE)
 `
                         : ''}Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information.
 Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices.
-Your output must only contain the translated text and cannot include explanations or other information.
-${/\n\s*[^\s]+/.test(MESSAGE) ? 'You must preserve the line number structure of the original text intact in the output.' : ''}`];
+Your output must only contain the translated text and cannot include explanations or other information.`];
                 responses.push(isMistral ? this.runMistral(options, SYSTEM_PROMPTS, MESSAGE) : (model.startsWith('claude') ? this.mainAnthropic(options, SYSTEM_PROMPTS, MESSAGE) : (isGoogleGenerativeAi ? this.runGoogleGenerativeAI(options, SYSTEM_PROMPTS, MESSAGE) : (model.startsWith('gpt') || model.startsWith('chatgpt') || model.startsWith('o1') ? this.mainOpenai(options, SYSTEM_PROMPTS, MESSAGE) : this.launch(options, SYSTEM_PROMPTS, MESSAGE)))));
                 requestedLines.push(queries.length);
                 queries = [];
@@ -337,7 +336,7 @@ ${/\n\s*[^\s]+/.test(MESSAGE) ? 'You must preserve the line number structure of 
                     await Utils.sleep(2500);
             }
         }
-        const result = await Promise.all(responses).then(value => value.map(element => element.split('\n').map(element => element.replace(/(^ ?)\[\d+] ?/, '$1'))).flat().join('\n')).catch(reason => {
+        const result = await Promise.all(responses).then(value => value.map(element => element.split('\n')).flat().join('\n')).catch(reason => {
             throw reason;
         });
         super.translateText(text, targetLanguage, sourceLanguage);
