@@ -315,7 +315,7 @@ export default class GenerativeAi extends Translator {
         while (queues.length > 0) {
             queries.push(queues.shift());
             if (queues.length === 0 || (splitChunkEnabled && ((!isGoogleGenerativeAi || (text.length < this.maxContentLengthPerRequest * 15 && text.split('\n').length < this.maxContentLengthPerRequest * 15)) && ([...queries, queues[0]].join('\n').length > this.maxContentLengthPerRequest || [...queries, queues[0]].length > this.maxContentLinePerRequest)))) {
-                const MESSAGE = (/\n\s*[^\s]+/.test(queries.join('\n')) ? queries.map((element, index) => `[${index + 1}]${element}`) : queries).join('\n');
+                const MESSAGE = queries.join('\n');
                 const filteredNomenclature = nomenclature.filter(([first]) => MESSAGE.includes(first)).map(element => element.join('\t'));
                 const SYSTEM_PROMPTS = [`I want you to act as a ${targetLanguage} translator.
 You are trained on data up to October 2023.`, `I will speak to you in ${sourceLanguage != null && sourceLanguage !== this.DefaultLanguage.SOURCE_LANGUAGE ? `${sourceLanguage} and you will ` : 'any language and you will detect the language, '}translate it and answer in the corrected version of my text, exclusively in ${targetLanguage}, while keeping the format.
