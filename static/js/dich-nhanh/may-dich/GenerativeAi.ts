@@ -69,7 +69,7 @@ export default class GenerativeAi extends Translator {
   private async mainTranslatenow (requestBody): Promise<string> {
     const response = await axios.post(`${Utils.CORS_HEADER_PROXY as string}https://gateway.api.airapps.co/aa_service=server5/aa_apikey=5N3NR9SDGLS7VLUWSEN9J30P//v3/proxy/open-ai/v1/chat/completions`, JSON.stringify(requestBody), {
       headers: {
-        'User-Agent': 'iOS-TranslateNow/8.9.0.1002 CFNetwork/1568.300.101 Darwin/24.2.0',
+        'User-Agent': 'iOS-TranslateNow/8.10.0.1001 CFNetwork/1568.300.101 Darwin/24.2.0',
         'Content-Type': 'application/json',
         'accept-language': 'vi-VN,vi;q=0.9',
         'air-user-id': this.AIR_USER_ID
@@ -195,6 +195,7 @@ export default class GenerativeAi extends Translator {
     startChatParams.history.push(modelParams.model === 'gemini-1.0-pro'
       ? systemPrompts.map(element => ({ role: 'user', parts: [{ text: element }] }))
       : {
+          role: 'user',
           parts: [
             {
               text: systemPrompts[1]
