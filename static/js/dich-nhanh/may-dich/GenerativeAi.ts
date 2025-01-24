@@ -192,16 +192,16 @@ export default class GenerativeAi extends Translator {
         threshold: HarmBlockThreshold.BLOCK_NONE
       }
     ]
-    startChatParams.history.push(modelParams.model === 'gemini-1.0-pro'
+    startChatParams.history.push(...modelParams.model === 'gemini-1.0-pro'
       ? systemPrompts.map(element => ({ role: 'user', parts: [{ text: element }] }))
-      : {
+      : [{
           role: 'user',
           parts: [
             {
               text: systemPrompts[1]
             }
           ]
-        })
+        }])
 
     const chatSession = generativeModel.startChat(startChatParams)
 
