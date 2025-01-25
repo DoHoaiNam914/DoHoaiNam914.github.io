@@ -196,13 +196,13 @@ export default class GenerativeAi extends Translator {
         startChatParams.history.push(...modelParams.model === 'gemini-1.0-pro'
             ? systemPrompts.map(element => ({ role: 'user', parts: [{ text: element }] }))
             : [{
-                role: 'user',
-                parts: [
-                    {
-                        text: systemPrompts[1]
-                    }
-                ]
-            }]);
+                    role: 'user',
+                    parts: [
+                        {
+                            text: systemPrompts[1]
+                        }
+                    ]
+                }]);
         const chatSession = generativeModel.startChat(startChatParams);
         const result = await chatSession.sendMessageStream(message, { signal: this.controller.signal });
         const collectedChunkTexts = [];
@@ -310,6 +310,7 @@ export default class GenerativeAi extends Translator {
         const responses = [];
         const { sourceLanguage, model, nomenclature, splitChunkEnabled } = options;
         const isGoogleGenerativeAi = model.startsWith('gemini') || model.startsWith('learnlm');
+        const isOpenai = model.startsWith('gpt') || model === 'chatgpt-4o-latest' || model.startsWith('o1');
         const isMistral = /^(?:open-)?[^-]+tral/.test(model) && !model.includes('/');
         const requestedLines = [];
         let queries = [];
@@ -318,8 +319,10 @@ export default class GenerativeAi extends Translator {
             if (queues.length === 0 || (splitChunkEnabled && ((!isGoogleGenerativeAi || (text.length < this.maxContentLengthPerRequest * 15 && text.split('\n').length < this.maxContentLengthPerRequest * 15)) && ([...queries, queues[0]].join('\n').length > this.maxContentLengthPerRequest || [...queries, queues[0]].length > this.maxContentLinePerRequest)))) {
                 const MESSAGE = (/\n\s*[^\s]+/.test(queries.join('\n')) ? queries.map((element, index) => `[${index + 1}]${element}`) : queries).join('\n');
                 const filteredNomenclature = nomenclature.filter(([first]) => MESSAGE.includes(first)).map(element => element.join('\t'));
-                const SYSTEM_PROMPTS = [`I want you to act as a ${targetLanguage} translator.
-You are trained on data up to October 2023.`, `I will speak to you in ${sourceLanguage != null && sourceLanguage !== this.DefaultLanguage.SOURCE_LANGUAGE ? `${sourceLanguage} and you will ` : 'any language and you will detect the language, '}translate it and answer in the corrected version of my text, exclusively in ${targetLanguage}, while keeping the format.
+                const SYSTEM_PROMPTS = [`I want you to act as a ${targetLanguage} translator.${isOpenai
+                        ? `
+You are trained on data up to ${/^gpt-4[^o]?/.test(model) ? 'December 2023' : (model.startsWith('gpt-3.5') ? 'September 2021' : 'October 2023')}.`
+                        : ''}`, `I will speak to you in ${sourceLanguage != null && sourceLanguage !== this.DefaultLanguage.SOURCE_LANGUAGE ? `${sourceLanguage} and you will ` : 'any language and you will detect the language, '}translate it and answer in the corrected version of my text, exclusively in ${targetLanguage}, while keeping the format.
 ${filteredNomenclature.length > 0 || /\n\s*[^\s]+/.test(MESSAGE)
                         ? `Accurately use listed entries in the following Nomenclature Mapping Table to translate people’s proper names, ethnicities, and species, or place names and other concepts:
   \`\`\`tsv
@@ -330,7 +333,7 @@ ${filteredNomenclature.length > 0 || /\n\s*[^\s]+/.test(MESSAGE)
                         : ''}Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information.
 Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices.
 Your output must only contain the translated text and cannot include explanations or other information.${/\n\s*[^\s]+/.test(MESSAGE) ? '\nYou must preserve the line number structure of the original text intact in the output.' : ''}`];
-                responses.push(isMistral ? this.runMistral(options, SYSTEM_PROMPTS, MESSAGE) : (model.startsWith('claude') ? this.mainAnthropic(options, SYSTEM_PROMPTS, MESSAGE) : (isGoogleGenerativeAi ? this.runGoogleGenerativeAI(options, SYSTEM_PROMPTS, MESSAGE) : (model.startsWith('gpt') || model.startsWith('chatgpt') || model.startsWith('o1') ? this.mainOpenai(options, SYSTEM_PROMPTS, MESSAGE) : this.launch(options, SYSTEM_PROMPTS, MESSAGE)))));
+                responses.push(isMistral ? this.runMistral(options, SYSTEM_PROMPTS, MESSAGE) : (model.startsWith('claude') ? this.mainAnthropic(options, SYSTEM_PROMPTS, MESSAGE) : (isGoogleGenerativeAi ? this.runGoogleGenerativeAI(options, SYSTEM_PROMPTS, MESSAGE) : (isOpenai ? this.mainOpenai(options, SYSTEM_PROMPTS, MESSAGE) : this.launch(options, SYSTEM_PROMPTS, MESSAGE)))));
                 requestedLines.push(queries.length);
                 queries = [];
                 if (splitChunkEnabled && isMistral && queues.length > 0)
