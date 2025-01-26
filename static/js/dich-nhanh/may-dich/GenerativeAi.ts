@@ -254,7 +254,7 @@ export default class GenerativeAi extends Translator {
     const { model, temperature, maxTokens, topP } = options as { model: string, temperature: number, maxTokens: number, topP: number }
     if (maxTokens > 0) chatCompletionInput.max_tokens = maxTokens
     chatCompletionInput.messages = [
-      ...systemPrompts.flatMap(element => model.startsWith('google') ? [{ content: element, role: 'user' }, { content: '', role: 'assistant' }] : { content: element, role: 'system' }),
+      ...systemPrompts.flatMap(element => model.startsWith('google') || model.startsWith('mistralai') ? [{ content: element, role: 'user' }, { content: '', role: 'assistant' }] : { content: element, role: 'system' }),
       {
         content: message,
         role: 'user'
