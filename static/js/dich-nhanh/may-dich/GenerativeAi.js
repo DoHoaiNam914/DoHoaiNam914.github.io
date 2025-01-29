@@ -76,39 +76,23 @@ export default class GenerativeAi extends Translator {
     async mainOpenai(options, systemPrompts, message) {
         const searchParams = new URLSearchParams(window.location.search);
         const { model, temperature, maxTokens, topP } = options;
-        let requestBody = {
-            model: 'gpt-4o',
-            messages: [],
-            response_format: {
-                type: 'text'
-            },
-            temperature: 1,
-            max_completion_tokens: 2048,
-            top_p: 1,
-            frequency_penalty: 0,
-            presence_penalty: 0
-        };
-        let maxCompletionTokens = requestBody.max_completion_tokens;
-        switch (model) {
-            case 'o1':
-            case 'o1-2024-12-17':
-            case 'o1-mini':
-            case 'o1-mini-2024-09-12':
-            case 'o1-preview':
-            case 'o1-preview-2024-09-12':
-                requestBody = {
-                    model: 'o1-mini',
-                    messages: []
-                };
-                break;
-            default:
-                if (['gpt-4o', 'gpt-4o-2024-11-20', 'gpt-4o-2024-08-06', 'chatgpt-4o-latest', 'gpt-4o-mini', 'gpt-4o-mini-2024-07-18'].some(element => model === element))
-                    maxCompletionTokens = 16384;
-                else if (['gpt-4o-2024-05-13', 'gpt-4-turbo', 'gpt-4-turbo-2024-04-09', 'gpt-4-turbo-preview', 'gpt-4-0125-preview', 'gpt-4-1106-preview', 'gpt-3.5-turbo-0125', 'gpt-3.5-turbo', 'gpt-3.5-turbo-1106'].some(element => model === element))
-                    maxCompletionTokens = 4096;
-                else if (['gpt-4', 'gpt-4-0613'].some(element => model === element))
-                    maxCompletionTokens = 8192;
-        }
+        const requestBody = model.startsWith('o1')
+            ? {
+                model: 'o1-mini',
+                messages: []
+            }
+            : {
+                model: 'gpt-4o',
+                messages: [],
+                response_format: {
+                    type: 'text'
+                },
+                temperature: 1,
+                max_completion_tokens: 2048,
+                top_p: 1,
+                frequency_penalty: 0,
+                presence_penalty: 0
+            };
         requestBody.messages = [
             ...systemPrompts.map(element => ({ content: element, role: model.startsWith('o1') ? (model === 'o1-mini' ? 'user' : 'developer') : 'system' })),
             {
@@ -117,10 +101,7 @@ export default class GenerativeAi extends Translator {
             }
         ];
         requestBody.model = model;
-        if (maxTokens > 0)
-            requestBody.max_completion_tokens = maxTokens;
-        else if (Object.hasOwn(requestBody, 'max_completion_tokens'))
-            requestBody.max_completion_tokens = maxCompletionTokens;
+        requestBody.max_completion_tokens = maxTokens > 0 ? maxTokens : null;
         if (model !== 'o1')
             requestBody.stream = true;
         if (Object.hasOwn(requestBody, 'temperature') || temperature > 1)
@@ -160,11 +141,10 @@ export default class GenerativeAi extends Translator {
             maxOutputTokens: 8192,
             responseMimeType: 'text/plain'
         };
-        if (maxTokens > 0)
-            generationConfig.maxOutputTokens = maxTokens;
+        generationConfig.maxOutputTokens = maxTokens > 0 ? maxTokens : undefined;
         generationConfig.temperature = temperature;
         generationConfig.topP = topP;
-        if (/^gemini-1\.(?:0|5-[^-]+-001$)/.test(modelParams.model))
+        if (/^(?:gemini-(?:1\.(?:0|5-(?:pro|flash)-001$)|exp|2\.0-flash-thinking-exp)|learnlm-1\.5-pro-experimental)/.test(modelParams.model))
             generationConfig.topK = 64;
         const startChatParams = {
             generationConfig,
@@ -226,7 +206,7 @@ export default class GenerativeAi extends Translator {
                 content: message
             }
         ];
-        body.max_tokens = maxTokens > 0 ? maxTokens : (!model.startsWith('claude-3-5') ? 4096 : 8192);
+        body.max_tokens = maxTokens > 1 ? maxTokens : undefined;
         body.system = systemPrompts.map(element => ({ text: element, type: 'text' }));
         body.temperature = temperature;
         body.top_p = topP;
@@ -248,8 +228,7 @@ export default class GenerativeAi extends Translator {
             top_p: 0.7
         };
         const { model, temperature, maxTokens, topP } = options;
-        if (maxTokens > 0)
-            chatCompletionInput.max_tokens = maxTokens;
+        chatCompletionInput.max_tokens = maxTokens > 0 ? maxTokens : undefined;
         chatCompletionInput.messages = [
             ...systemPrompts.flatMap(element => model.startsWith('google') || model.startsWith('mistralai') ? [{ content: element, role: 'user' }, { content: '', role: 'assistant' }] : { content: element, role: 'system' }),
             {
@@ -276,7 +255,7 @@ export default class GenerativeAi extends Translator {
             model,
             temperature,
             topP,
-            maxTokens: maxTokens > 0 ? maxTokens : (model.startsWith('mistral-small') ? 32768 : 131072),
+            maxTokens: maxTokens > 0 ? maxTokens : undefined,
             messages: [
                 ...systemPrompts.map(element => ({ role: 'system', content: element })),
                 {
@@ -321,7 +300,7 @@ export default class GenerativeAi extends Translator {
                 const filteredNomenclature = nomenclature.filter(([first]) => MESSAGE.includes(first)).map(element => element.join('\t'));
                 const SYSTEM_PROMPTS = [`I want you to act as a ${targetLanguage} translator.${isOpenai
                         ? `
-You are trained on data up to ${/^gpt-4[^o]?/.test(model) ? 'December 2023' : (model.startsWith('gpt-3.5') ? 'September 2021' : 'October 2023')}.`
+You are trained on data up to ${/^gpt-4[^o]/.test(model) ? 'December 2023' : (model.startsWith('gpt-3.5') ? 'September 2021' : 'October 2023')}.`
                         : ''}`, `I will speak to you in ${sourceLanguage != null && sourceLanguage !== this.DefaultLanguage.SOURCE_LANGUAGE ? `${sourceLanguage} and you will ` : 'any language and you will detect the language, '}translate it and answer in the corrected version of my text, exclusively in ${targetLanguage}, while keeping the format.
 ${filteredNomenclature.length > 0 || /\n\s*[^\s]+/.test(MESSAGE)
                         ? `Accurately use listed entries in the following Nomenclature Mapping Table to translate people’s proper names, ethnicities, and species, or place names and other concepts:
