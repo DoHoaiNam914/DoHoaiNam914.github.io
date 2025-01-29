@@ -83,7 +83,7 @@ export default class GenerativeAi extends Translator {
 
   public async mainOpenai (options, systemPrompts, message): Promise<string> {
     const searchParams = new URLSearchParams(window.location.search)
-    const { model, temperature, maxTokens, topP } = options as { model: string, temperature: number, maxTokens: number, topP: number }
+    const { model, temperature, topP } = options as { model: string, temperature: number, topP: number }
     const requestBody: { [key: string]: any } = model.startsWith('o1')
       ? {
           model: 'o1-mini',
@@ -109,7 +109,7 @@ export default class GenerativeAi extends Translator {
       }
     ]
     requestBody.model = model
-    requestBody.max_completion_tokens = maxTokens > 0 ? maxTokens : null
+    if (Object.hasOwn(requestBody, 'max_completion_tokens')) requestBody.max_completion_tokens = null
     if (model !== 'o1') requestBody.stream = true
     if (Object.hasOwn(requestBody, 'temperature') || temperature > 1) requestBody.temperature = temperature
     if (Object.hasOwn(requestBody, 'top_p') || topP > 1) requestBody.top_p = topP
@@ -133,7 +133,7 @@ export default class GenerativeAi extends Translator {
     const modelParams: { [key: string]: string } = {
       model: 'gemini-2.0-flash-exp'
     }
-    const { model, temperature, maxTokens, topP } = options
+    const { model, temperature, topP } = options
     modelParams.model = model
     if (modelParams.model !== 'gemini-1.0-pro') modelParams.systemInstruction = systemPrompts[0]
     const generativeModel = this.genAI.getGenerativeModel(modelParams)
@@ -146,7 +146,7 @@ export default class GenerativeAi extends Translator {
       responseMimeType: 'text/plain'
     }
 
-    generationConfig.maxOutputTokens = maxTokens > 0 ? maxTokens : undefined
+    generationConfig.maxOutputTokens = undefined
     generationConfig.temperature = temperature
     generationConfig.topP = topP
     if (/^(?:gemini-(?:1\.(?:0|5-(?:pro|flash)-001$)|exp|2\.0-flash-thinking-exp)|learnlm-1\.5-pro-experimental)/.test(modelParams.model)) generationConfig.topK = 64
@@ -206,7 +206,7 @@ export default class GenerativeAi extends Translator {
       temperature: 0,
       messages: []
     }
-    const { model, temperature, maxTokens, topP } = options as { model: string, temperature: number, maxTokens: number, topP: number }
+    const { model, temperature, topP } = options as { model: string, temperature: number, topP: number }
     body.model = model
     body.messages = [
       {
@@ -214,7 +214,7 @@ export default class GenerativeAi extends Translator {
         content: message
       }
     ]
-    body.max_tokens = maxTokens > 1 ? maxTokens : undefined
+    body.max_tokens = undefined
     body.system = systemPrompts.map(element => ({ text: element, type: 'text' }))
     body.temperature = temperature
     body.top_p = topP
@@ -237,8 +237,8 @@ export default class GenerativeAi extends Translator {
       max_tokens: 2048,
       top_p: 0.7
     }
-    const { model, temperature, maxTokens, topP } = options as { model: string, temperature: number, maxTokens: number, topP: number }
-    chatCompletionInput.max_tokens = maxTokens > 0 ? maxTokens : undefined
+    const { model, temperature, topP } = options as { model: string, temperature: number, topP: number }
+    chatCompletionInput.max_tokens = undefined
     chatCompletionInput.messages = [
       ...systemPrompts.flatMap(element => ['google', 'mistralai', 'tiiuae'].some(element => model.startsWith(element)) ? [{ content: element, role: 'user' }, { content: '', role: 'assistant' }] : { content: element, role: 'system' }),
       {
@@ -263,12 +263,12 @@ export default class GenerativeAi extends Translator {
   }
 
   public async runMistral (options, systemPrompts, message): Promise<string> {
-    const { model, temperature, maxTokens, topP } = options as { model: string, temperature: number, maxTokens: number, topP: number }
+    const { model, temperature, topP } = options as { model: string, temperature: number, topP: number }
     const result = await this.mistralClient.chat.stream({
       model,
       temperature,
       topP,
-      maxTokens: maxTokens > 0 ? maxTokens : undefined,
+      maxTokens: undefined,
       messages: [
         ...systemPrompts.map(element => ({ role: 'system', content: element })),
         {
@@ -284,11 +284,9 @@ export default class GenerativeAi extends Translator {
     return collectedStreamTexts.join('')
   }
 
-  public async translateText (text, targetLanguage: string, options: { sourceLanguage: string | null, model: string, temperature: number, maxTokens: number, topP: number, nomenclature: string[][], splitChunkEnabled: boolean } = { sourceLanguage: null, model: 'gpt-4o-mini', temperature: 1, maxTokens: 0, topP: 1, nomenclature: [], splitChunkEnabled: false }): Promise<string> {
+  public async translateText (text, targetLanguage: string, options: { sourceLanguage: string | null, model: string, temperature: number, topP: number, nomenclature: string[][], splitChunkEnabled: boolean } = { sourceLanguage: null, model: 'gpt-4o-mini', temperature: 1, topP: 1, nomenclature: [], splitChunkEnabled: false }): Promise<string> {
     if (options.model == null) options.model = 'gpt-4o-mini'
     if (options.temperature == null) options.temperature = 1
-    if (options.splitChunkEnabled == null || options.splitChunkEnabled) options.maxTokens = 2048
-    else if (options.maxTokens == null) options.maxTokens = 0
     if (options.topP == null) options.topP = 1
     if (options.nomenclature == null) options.nomenclature = []
     if (options.splitChunkEnabled == null) options.splitChunkEnabled = false

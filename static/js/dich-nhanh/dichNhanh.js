@@ -34,7 +34,6 @@ const $glossaryManagerButton = $('#glossary-manager-button');
 const $glossaryModal = $('#glossary-modal');
 const $hfTokenText = $('#hf-token-text')
 const $inputTextarea = $('#input-textarea');
-const $maxTokensText = $('#max-tokens-text')
 const $mistralApiKeyText = $('#mistral-api-key-text');
 const $openaiApiKeyText = $('#openai-api-key-text');
 const $pasteButtons = $('.paste-button');
@@ -733,7 +732,6 @@ const translate = async function translateContentInTextarea(controller = new Abo
           sourceLanguage,
           model: $('#model-select').val(),
           temperature: parseFloat($('#temperature-text').val()),
-          maxTokens: parseInt($maxTokensText.val()),
           topP: parseFloat($('#top-p-text').val()),
           nomenclature: Object.entries(glossary.nomenclature),
           splitChunkEnabled: $('#split-chunk-switch').prop('checked')
@@ -1439,10 +1437,6 @@ $temperatureText.change(function onChange() {
   const value = $(this).val()
   $(this).val(Math.min(parseFloat($(this).attr('max')), Math.max(parseFloat($(this).attr('min')), parseFloat(value.length === 0 ? $(this).attr('value') : value))))
 })
-$maxTokensText.change(function onChange() {
-  const value = $(this).val()
-  $(this).val(Math.min(parseInt($(this).attr('max')), Math.max(parseInt($(this).attr('min')), parseInt(value.length === 0 ? $(this).attr('value') : value))))
-})
 $topPText.change(function onChange() {
   const value = $(this).val()
   $(this).val(Math.min(parseFloat($(this).attr('max')), Math.max(parseFloat($(this).attr('min')), parseFloat(value.length === 0 ? $(this).attr('value') : value))))
@@ -1716,7 +1710,6 @@ $translateEntryButtons.click(async function onClick() {
             result = await translator.translateText(text, targetLanguage, {
               model: $('#translate-entry-model-select').val(),
               temperature: parseFloat($('#translate-entry-temperature-text').val()),
-              maxTokens: 2048,
               topP: parseFloat($('#translate-entry-top-p-text').val()),
               nomenclature: $('#apply-nomenclature-switch').prop('checked') ? Object.entries(glossary.nomenclature) : [],
             })

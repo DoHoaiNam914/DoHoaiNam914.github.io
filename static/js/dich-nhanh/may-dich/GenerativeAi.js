@@ -75,7 +75,7 @@ export default class GenerativeAi extends Translator {
     }
     async mainOpenai(options, systemPrompts, message) {
         const searchParams = new URLSearchParams(window.location.search);
-        const { model, temperature, maxTokens, topP } = options;
+        const { model, temperature, topP } = options;
         const requestBody = model.startsWith('o1')
             ? {
                 model: 'o1-mini',
@@ -101,7 +101,8 @@ export default class GenerativeAi extends Translator {
             }
         ];
         requestBody.model = model;
-        requestBody.max_completion_tokens = maxTokens > 0 ? maxTokens : null;
+        if (Object.hasOwn(requestBody, 'max_completion_tokens'))
+            requestBody.max_completion_tokens = null;
         if (model !== 'o1')
             requestBody.stream = true;
         if (Object.hasOwn(requestBody, 'temperature') || temperature > 1)
@@ -129,7 +130,7 @@ export default class GenerativeAi extends Translator {
         const modelParams = {
             model: 'gemini-2.0-flash-exp'
         };
-        const { model, temperature, maxTokens, topP } = options;
+        const { model, temperature, topP } = options;
         modelParams.model = model;
         if (modelParams.model !== 'gemini-1.0-pro')
             modelParams.systemInstruction = systemPrompts[0];
@@ -141,7 +142,7 @@ export default class GenerativeAi extends Translator {
             maxOutputTokens: 8192,
             responseMimeType: 'text/plain'
         };
-        generationConfig.maxOutputTokens = maxTokens > 0 ? maxTokens : undefined;
+        generationConfig.maxOutputTokens = undefined;
         generationConfig.temperature = temperature;
         generationConfig.topP = topP;
         if (/^(?:gemini-(?:1\.(?:0|5-(?:pro|flash)-001$)|exp|2\.0-flash-thinking-exp)|learnlm-1\.5-pro-experimental)/.test(modelParams.model))
@@ -198,7 +199,7 @@ export default class GenerativeAi extends Translator {
             temperature: 0,
             messages: []
         };
-        const { model, temperature, maxTokens, topP } = options;
+        const { model, temperature, topP } = options;
         body.model = model;
         body.messages = [
             {
@@ -206,7 +207,7 @@ export default class GenerativeAi extends Translator {
                 content: message
             }
         ];
-        body.max_tokens = maxTokens > 1 ? maxTokens : undefined;
+        body.max_tokens = undefined;
         body.system = systemPrompts.map(element => ({ text: element, type: 'text' }));
         body.temperature = temperature;
         body.top_p = topP;
@@ -227,8 +228,8 @@ export default class GenerativeAi extends Translator {
             max_tokens: 2048,
             top_p: 0.7
         };
-        const { model, temperature, maxTokens, topP } = options;
-        chatCompletionInput.max_tokens = maxTokens > 0 ? maxTokens : undefined;
+        const { model, temperature, topP } = options;
+        chatCompletionInput.max_tokens = undefined;
         chatCompletionInput.messages = [
             ...systemPrompts.flatMap(element => ['google', 'mistralai', 'tiiuae'].some(element => model.startsWith(element)) ? [{ content: element, role: 'user' }, { content: '', role: 'assistant' }] : { content: element, role: 'system' }),
             {
@@ -250,12 +251,12 @@ export default class GenerativeAi extends Translator {
         return out;
     }
     async runMistral(options, systemPrompts, message) {
-        const { model, temperature, maxTokens, topP } = options;
+        const { model, temperature, topP } = options;
         const result = await this.mistralClient.chat.stream({
             model,
             temperature,
             topP,
-            maxTokens: maxTokens > 0 ? maxTokens : undefined,
+            maxTokens: undefined,
             messages: [
                 ...systemPrompts.map(element => ({ role: 'system', content: element })),
                 {
@@ -270,15 +271,11 @@ export default class GenerativeAi extends Translator {
         }
         return collectedStreamTexts.join('');
     }
-    async translateText(text, targetLanguage, options = { sourceLanguage: null, model: 'gpt-4o-mini', temperature: 1, maxTokens: 0, topP: 1, nomenclature: [], splitChunkEnabled: false }) {
+    async translateText(text, targetLanguage, options = { sourceLanguage: null, model: 'gpt-4o-mini', temperature: 1, topP: 1, nomenclature: [], splitChunkEnabled: false }) {
         if (options.model == null)
             options.model = 'gpt-4o-mini';
         if (options.temperature == null)
             options.temperature = 1;
-        if (options.splitChunkEnabled == null || options.splitChunkEnabled)
-            options.maxTokens = 2048;
-        else if (options.maxTokens == null)
-            options.maxTokens = 0;
         if (options.topP == null)
             options.topP = 1;
         if (options.nomenclature == null)
