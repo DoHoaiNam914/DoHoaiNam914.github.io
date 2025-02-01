@@ -84,7 +84,7 @@ export default class GenerativeAi extends Translator {
   public async mainOpenai (options, systemPrompts, message): Promise<string> {
     const searchParams = new URLSearchParams(window.location.search)
     const { model, temperature, topP } = options as { model: string, temperature: number, topP: number }
-    const requestBody: { [key: string]: any } = model.startsWith('o1')
+    const requestBody: { [key: string]: any } = /^o\d/.test(model)
       ? {
           model: 'o1-mini',
           messages: []
@@ -102,7 +102,7 @@ export default class GenerativeAi extends Translator {
           presence_penalty: 0
         }
     requestBody.messages = [
-      ...systemPrompts.map(element => ({ content: element, role: model.startsWith('o1') ? (model === 'o1-mini' ? 'user' : 'developer') : 'system' })),
+      ...systemPrompts.map(element => ({ content: element, role: /^o\d/.test(model) ? (model === 'o1-mini' ? 'user' : 'developer') : 'system' })),
       {
         content: message,
         role: 'user'
@@ -294,7 +294,7 @@ export default class GenerativeAi extends Translator {
     const responses: Array<Promise<string>> = []
     const { sourceLanguage, model, nomenclature, splitChunkEnabled } = options
     const isGoogleGenerativeAi = model.startsWith('gemini') || model.startsWith('learnlm')
-    const isOpenai = model.startsWith('gpt') || model === 'chatgpt-4o-latest' || model.startsWith('o1')
+    const isOpenai = model.startsWith('gpt') || model === 'chatgpt-4o-latest' || /^o\d/.test(model)
     const isMistral = /^(?:open-)?[^-]+tral/.test(model) && !model.includes('/')
     const requestedLines: number[] = []
     let queries: string[] = []
