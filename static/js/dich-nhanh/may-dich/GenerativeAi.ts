@@ -111,8 +111,8 @@ export default class GenerativeAi extends Translator {
     requestBody.model = model
     if (Object.hasOwn(requestBody, 'max_completion_tokens')) requestBody.max_completion_tokens = null
     if (model !== 'o1') requestBody.stream = true
-    if (Object.hasOwn(requestBody, 'temperature') || temperature > 1) requestBody.temperature = temperature
-    if (Object.hasOwn(requestBody, 'top_p') || topP > 1) requestBody.top_p = topP
+    if (Object.hasOwn(requestBody, 'temperature') && model !== 'chatgpt-4o-latest') requestBody.temperature = temperature
+    if (Object.hasOwn(requestBody, 'top_p') && model !== 'chatgpt-4o-latest') requestBody.top_p = topP
     if (this.OPENAI_API_KEY.length === 0 && searchParams.has('debug')) {
       return await this.mainTranslatenow(requestBody)
     } else {
