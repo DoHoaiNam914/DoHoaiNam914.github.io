@@ -62,7 +62,6 @@ body{
   max-width:var(--RS__maxLineLength) !important;
   padding:0 var(--RS__pageGutter) !important;
   margin:0 auto !important;
-  box-sizing:border-box;
 }
 
 @media screen and (min-width: 35em){
