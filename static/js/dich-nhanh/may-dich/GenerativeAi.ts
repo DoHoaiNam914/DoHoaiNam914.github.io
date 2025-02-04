@@ -305,7 +305,7 @@ export default class GenerativeAi extends Translator {
         const filteredNomenclature: string[] = nomenclature.filter(([first]) => MESSAGE.includes(first)).map(element => element.join('\t'))
         const SYSTEM_PROMPTS = [`I want you to act as a ${targetLanguage} translator.${isOpenai
 ? `
-You are trained on data up to ${/^gpt-4[^o]/.test(model) ? 'December 2023' : (model.startsWith('gpt-3.5') ? 'September 2021' : 'October 2023')}.`
+You are trained on data up to ${/^gpt-4[^o]/.test(model) ? 'December 2023' : (model === 'chatgpt-4o-latest' ? 'June 2024' : (model.startsWith('gpt-3.5') ? 'September 2021' : 'October 2023'))}.`
 : ''}`, `I will speak to you in ${sourceLanguage != null && sourceLanguage !== this.DefaultLanguage.SOURCE_LANGUAGE ? `${sourceLanguage} and you will ` : 'any language and you will detect the language, '}translate it and answer in the corrected version of my text, exclusively in ${targetLanguage}, while keeping the format.
 ${filteredNomenclature.length > 0 || /\n\s*[^\s]+/.test(MESSAGE)
 ? `Accurately use listed entries in the following Nomenclature Mapping Table to translate people’s proper names, ethnicities, and species, or place names and other concepts:
