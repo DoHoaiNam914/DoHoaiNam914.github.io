@@ -23,6 +23,7 @@ const $anthropicApiKeyText = $('#anthropic-api-key-text');
 const $boldTextSwitch = $('#bold-text-switch');
 const $copyButtons = $('.copy-button');
 const $deeplAuthKeyText = $('#deepl-auth-key-text');
+const $deepseekApiKeyText = $('#deepseek-api-key-text');
 const $dropdownHasCollapse = $('.dropdown-has-collapse');
 const $fontStackText = $('#font-stack-text');
 const $fontSizeText = $('#font-size-text');
@@ -958,6 +959,7 @@ $(document).ready(async () => {
   if (localStorage.getItem('GEMINI_API_KEY') != null) $geminiApiKeyText.val(localStorage.getItem('GEMINI_API_KEY')).change()
   if (localStorage.getItem('HF_TOKEN') != null) $hfTokenText.val(localStorage.getItem('HF_TOKEN')).change()
   if (localStorage.getItem('MISTRAL_API_KEY') != null) $mistralApiKeyText.val(localStorage.getItem('MISTRAL_API_KEY')).change()
+  if (localStorage.getItem('DEEPSEEK_API_KEY') != null) $deepseekApiKeyText.val(localStorage.getItem('DEEPSEEK_API_KEY')).change()
   Object.values(Translators).forEach(element => {
     switch (element) {
       case Translators.BAIDU_TRANSLATE:
@@ -970,7 +972,7 @@ $(document).ready(async () => {
         translators[element] = new DeeplTranslate($deeplAuthKeyText.val())
         break
       case Translators.GENERATIVE_AI:
-        translators[element] = new GenerativeAi(UUID.toLowerCase(), $openaiApiKeyText.val(), $geminiApiKeyText.val(), $anthropicApiKeyText.val(), $hfTokenText.val(), $mistralApiKeyText.val());
+        translators[element] = new GenerativeAi(UUID.toLowerCase(), $openaiApiKeyText.val(), $geminiApiKeyText.val(), $anthropicApiKeyText.val(), $hfTokenText.val(), $mistralApiKeyText.val(), $deepseekApiKeyText.val());
         break
       case Translators.GOOGLE_TRANSLATE:
         translators[element] = new GoogleTranslate(GOOGLE_TRANSLATE_KEY)
@@ -1330,7 +1332,7 @@ $translatorDropdown.find('.dropdown-item').click(async function onClick() {
     }
     case Translators.GENERATIVE_AI: {
       if (currentTranslator == null) {
-        currentTranslator = new GenerativeAi(UUID.toLowerCase(), $openaiApiKeyText.val(), $geminiApiKeyText.val(), $anthropicApiKeyText.val(), $hfTokenText.val(), $mistralApiKeyText.val());
+        currentTranslator = new GenerativeAi(UUID.toLowerCase(), $openaiApiKeyText.val(), $geminiApiKeyText.val(), $anthropicApiKeyText.val(), $hfTokenText.val(), $mistralApiKeyText.val(), $deepseekApiKeyText.val());
         translators[activeTranslator] = currentTranslator;
       }
 
@@ -1432,6 +1434,13 @@ $mistralApiKeyText.change(function onChange() {
   if ($activeTranslator.val() === Translators.GENERATIVE_AI) $activeTranslator.click();
   if (localStorage.getItem('MISTRAL_API_KEY') != null && $(this).val().length === 0) localStorage.removeItem('MISTRAL_API_KEY');
   else if (localStorage.getItem('MISTRAL_API_KEY') !== $(this).val()) localStorage.setItem('MISTRAL_API_KEY', $(this).val());
+});
+$deepseekApiKeyText.change(function onChange() {
+  const $activeTranslator = $translatorDropdown.find('.active');
+  translators[Translators.GENERATIVE_AI] = null;
+  if ($activeTranslator.val() === Translators.GENERATIVE_AI) $activeTranslator.click();
+  if (localStorage.getItem('DEEPSEEK_API_KEY') != null && $(this).val().length === 0) localStorage.removeItem('DEEPSEEK_API_KEY');
+  else if ($(this).val().startsWith('sk-') && localStorage.getItem('DEEPSEEK_API_KEY') !== $(this).val()) localStorage.setItem('DEEPSEEK_API_KEY', $(this).val());
 });
 $temperatureText.change(function onChange() {
   const value = $(this).val()
@@ -1655,7 +1664,7 @@ $translateEntryButtons.click(async function onClick() {
         }
         case Translators.GENERATIVE_AI: {
           if (translator == null) {
-            translator = new GenerativeAi(UUID.toLowerCase(), $openaiApiKeyText.val(), $geminiApiKeyText.val(), $anthropicApiKeyText.val(), $hfTokenText.val(), $mistralApiKeyText.val());
+            translator = new GenerativeAi(UUID.toLowerCase(), $openaiApiKeyText.val(), $geminiApiKeyText.val(), $anthropicApiKeyText.val(), $hfTokenText.val(), $mistralApiKeyText.val(), $deepseekApiKeyText.val());
             translators[activeTranslator] = translator;
           }
 

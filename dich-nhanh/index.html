@@ -1011,9 +1011,14 @@
               <input type="text" class="form-control mb-3" id="gemini-api-key-text" placeholder="Gemini API Key">
               <input type="text" class="form-control mb-3" id="hf-token-text" placeholder="HF Token">
               <input type="text" class="form-control mb-3" id="mistral-api-key-text" placeholder="Mistral API Key">
+              <input type="text" class="form-control mb-3" id="deepseek-api-key-text" placeholder="DeepSeek API Key">
               <div class="mb-3">
                 <label class="form-label" for="model-select">Mô hình AI tạo sinh:</label>
                 <select class="form-select form-select-sm" id="model-select">
+                  <optgroup label="DeepSeek">
+                    <option>deepseek-chat</option>
+                    <option>deepseek-reasoner</option>
+                  </optgroup>
                   <optgroup label="Mistral">
                     <option value="mistral-large-latest">Mistral Large (mistral-large-2411)</option>
                     <option value="pixtral-large-latest">Pixtral Large</option>
@@ -1132,7 +1137,7 @@
               </div>
               <div class="mb-3">
                 <label class="form-check-label" for="top-p-text">Top-P</label>
-                <input type="number" class="form-control" id="top-p-text" placeholder="0.7" value="0.9" max="1" min="0" step="0.1">
+                <input type="number" class="form-control" id="top-p-text" placeholder="0.7" value="1" max="1" min="0" step="0.1">
               </div>
               <div class="form-check form-switch mb-3">
                 <input type="checkbox" class="form-check-input" id="split-chunk-switch" role="switch">
@@ -1375,6 +1380,10 @@
               <div class="mb-3">
                 <label class="form-label" for="translate-entry-model-select">Mô hình AI tạo sinh:</label>
                 <select class="form-select form-select-sm" id="translate-entry-model-select">
+                  <optgroup label="DeepSeek">
+                    <option>deepseek-chat</option>
+                    <option>deepseek-reasoner</option>
+                  </optgroup>
                   <optgroup label="Mistral">
                     <option value="mistral-large-latest">Mistral Large (mistral-large-2411)</option>
                     <option value="pixtral-large-latest">Pixtral Large</option>
@@ -1493,7 +1502,7 @@
               </div>
               <div class="mb-3">
                 <label class="form-check-label" for="translate-entry-top-p-text">Top-P</label>
-                <input type="number" class="form-control" id="translate-entry-top-p-text" placeholder="0.7" value="0.9" max="1" min="0" step="0.1">
+                <input type="number" class="form-control" id="translate-entry-top-p-text" placeholder="0.7" value="1" max="1" min="0" step="0.1">
               </div>
             </div>
           </div>

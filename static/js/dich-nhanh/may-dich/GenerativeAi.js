@@ -43,7 +43,7 @@ export default class GenerativeAi extends Translator {
     genAI;
     hfInferenceClient;
     mistralClient;
-    constructor(airUserId, openaiApiKey, geminiApiKey, anthropicApiKey, hfToken, mistralApiKey) {
+    constructor(airUserId, openaiApiKey, geminiApiKey, anthropicApiKey, hfToken, mistralApiKey, deepseekApiKey) {
         super();
         this.AIR_USER_ID = airUserId;
         this.OPENAI_API_KEY = openaiApiKey;
@@ -58,6 +58,11 @@ export default class GenerativeAi extends Translator {
         this.genAI = new GoogleGenerativeAI(geminiApiKey);
         this.hfInferenceClient = new HfInference(hfToken, { signal: this.controller.signal });
         this.mistralClient = new Mistral({ apiKey: mistralApiKey });
+        this.deepseek = new OpenAI({
+            baseURL: 'https://api.deepseek.com',
+            apiKey: deepseekApiKey,
+            dangerouslyAllowBrowser: true
+        });
     }
     async mainTranslatenow(requestBody) {
         const response = await axios.post(`${Utils.CORS_HEADER_PROXY}https://gateway.api.airapps.co/aa_service=server5/aa_apikey=5N3NR9SDGLS7VLUWSEN9J30P//v3/proxy/open-ai/v1/chat/completions`, JSON.stringify(requestBody), {
@@ -114,7 +119,7 @@ export default class GenerativeAi extends Translator {
         }
         else {
             const response = this.openai.chat.completions.create(requestBody, { signal: this.controller.signal });
-            if (requestBody.stream === true) {
+            if (requestBody.stream) {
                 const collectedMessages = [];
                 for await (const chunk of response) {
                     collectedMessages.push(chunk.choices[0].delta.content);
@@ -271,6 +276,30 @@ export default class GenerativeAi extends Translator {
         }
         return collectedStreamTexts.join('');
     }
+    async mainDeepseek(options, systemPrompts, message) {
+        const { model, temperature, topP } = options;
+        const requestBody = {
+            messages: [{ role: 'system', content: 'You are a helpful assistant.' }],
+            model: 'deepseek-chat'
+        };
+        requestBody.model = model;
+        requestBody.messages = [
+            ...systemPrompts.map(element => ({ content: element, role: 'system' })),
+            {
+                content: message,
+                role: 'user'
+            }
+        ];
+        requestBody.stream = true;
+        requestBody.temperature = temperature;
+        requestBody.top_p = topP;
+        const response = this.deepseek.chat.completions.create(requestBody, { signal: this.controller.signal });
+        const collectedMessages = [];
+        for await (const chunk of response) {
+            collectedMessages.push(chunk.choices[0].delta.content);
+        }
+        return collectedMessages.filter(element => element != null).join('');
+    }
     async translateText(text, targetLanguage, options = { sourceLanguage: null, model: 'gpt-4o-mini', temperature: 1, topP: 1, nomenclature: [], splitChunkEnabled: false }) {
         if (options.model == null)
             options.model = 'gpt-4o-mini';
@@ -309,7 +338,7 @@ ${filteredNomenclature.length > 0 || /\n\s*[^\s]+/.test(MESSAGE)
                         : ''}Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information.
 Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices.
 Your output must only contain the translated text and cannot include explanations or other information.${/\n\s*[^\s]+/.test(MESSAGE) ? '\nYou must preserve the line number structure of the original text intact in the output.' : ''}`];
-                responses.push(isMistral ? this.runMistral(options, SYSTEM_PROMPTS, MESSAGE) : (model.startsWith('claude') ? this.mainAnthropic(options, SYSTEM_PROMPTS, MESSAGE) : (isGoogleGenerativeAi ? this.runGoogleGenerativeAI(options, SYSTEM_PROMPTS, MESSAGE) : (isOpenai ? this.mainOpenai(options, SYSTEM_PROMPTS, MESSAGE) : this.launch(options, SYSTEM_PROMPTS, MESSAGE)))));
+                responses.push(model.startsWith('deepseek') && !model.includes('/') ? this.mainDeepseek(options, SYSTEM_PROMPTS, MESSAGE) : (isMistral ? this.runMistral(options, SYSTEM_PROMPTS, MESSAGE) : (model.startsWith('claude') ? this.mainAnthropic(options, SYSTEM_PROMPTS, MESSAGE) : (isGoogleGenerativeAi ? this.runGoogleGenerativeAI(options, SYSTEM_PROMPTS, MESSAGE) : (isOpenai ? this.mainOpenai(options, SYSTEM_PROMPTS, MESSAGE) : this.launch(options, SYSTEM_PROMPTS, MESSAGE))))));
                 requestedLines.push(queries.length);
                 queries = [];
                 if (splitChunkEnabled && isMistral && queues.length > 0)
