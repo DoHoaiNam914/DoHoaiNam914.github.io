@@ -39,11 +39,12 @@ export default class GenerativeAi extends Translator {
     AIR_USER_ID;
     OPENAI_API_KEY;
     openai;
+    deepseek;
     anthropic;
     genAI;
-    hfInferenceClient;
     mistralClient;
-    constructor(airUserId, openaiApiKey, geminiApiKey, anthropicApiKey, hfToken, mistralApiKey, deepseekApiKey) {
+    hfInferenceClient;
+    constructor(airUserId, openaiApiKey, deepseekApiKey, geminiApiKey, anthropicApiKey, mistralApiKey, hfToken) {
         super();
         this.AIR_USER_ID = airUserId;
         this.OPENAI_API_KEY = openaiApiKey;
@@ -51,18 +52,18 @@ export default class GenerativeAi extends Translator {
             apiKey: this.OPENAI_API_KEY,
             dangerouslyAllowBrowser: true
         });
-        this.anthropic = new Anthropic({
-            apiKey: anthropicApiKey,
-            dangerouslyAllowBrowser: true
-        });
-        this.genAI = new GoogleGenerativeAI(geminiApiKey);
-        this.hfInferenceClient = new HfInference(hfToken, { signal: this.controller.signal });
-        this.mistralClient = new Mistral({ apiKey: mistralApiKey });
         this.deepseek = new OpenAI({
             baseURL: 'https://api.deepseek.com',
             apiKey: deepseekApiKey,
             dangerouslyAllowBrowser: true
         });
+        this.anthropic = new Anthropic({
+            apiKey: anthropicApiKey,
+            dangerouslyAllowBrowser: true
+        });
+        this.genAI = new GoogleGenerativeAI(geminiApiKey);
+        this.mistralClient = new Mistral({ apiKey: mistralApiKey });
+        this.hfInferenceClient = new HfInference(hfToken, { signal: this.controller.signal });
     }
     async mainTranslatenow(requestBody) {
         const response = await axios.post(`${Utils.CORS_HEADER_PROXY}https://gateway.api.airapps.co/aa_service=server5/aa_apikey=5N3NR9SDGLS7VLUWSEN9J30P//v3/proxy/open-ai/v1/chat/completions`, JSON.stringify(requestBody), {
@@ -79,61 +80,87 @@ export default class GenerativeAi extends Translator {
         return response;
     }
     async mainOpenai(options, systemPrompts, message) {
-        const searchParams = new URLSearchParams(window.location.search);
         const { model, temperature, topP } = options;
-        const requestBody = /^o\d/.test(model)
+        const isDeepseek = model.startsWith('deepseek');
+        const requestBody = isDeepseek
             ? {
-                model: 'o1-mini',
-                messages: []
+                messages: [{ role: 'system', content: 'You are a helpful assistant.' }],
+                model: 'deepseek-chat'
             }
-            : {
-                model: 'gpt-4o',
-                messages: [],
-                response_format: {
-                    type: 'text'
-                },
-                temperature: 1,
-                max_completion_tokens: 2048,
-                top_p: 1,
-                frequency_penalty: 0,
-                presence_penalty: 0
-            };
-        requestBody.messages = [
-            ...systemPrompts.map(element => ({ content: element, role: /^o\d/.test(model) ? (model === 'o1-mini' ? 'user' : 'developer') : 'system' })),
-            {
-                content: message,
-                role: 'user'
-            }
-        ];
-        requestBody.model = model;
-        if (Object.hasOwn(requestBody, 'max_completion_tokens'))
-            requestBody.max_completion_tokens = null;
-        if (model !== 'o1')
+            : (/^o\d/.test(model)
+                ? {
+                    model: 'o1-mini',
+                    messages: []
+                }
+                : {
+                    model: 'gpt-4o',
+                    messages: [],
+                    response_format: {
+                        type: 'text'
+                    },
+                    temperature: 1,
+                    max_completion_tokens: 2048,
+                    top_p: 1,
+                    frequency_penalty: 0,
+                    presence_penalty: 0
+                });
+        if (isDeepseek) {
+            requestBody.model = model;
+            requestBody.messages = [
+                ...systemPrompts.map(element => ({ content: element, role: 'system' })),
+                {
+                    content: message,
+                    role: 'user'
+                }
+            ];
             requestBody.stream = true;
-        if (Object.hasOwn(requestBody, 'temperature') && model !== 'chatgpt-4o-latest')
             requestBody.temperature = temperature;
-        if (Object.hasOwn(requestBody, 'top_p') && model !== 'chatgpt-4o-latest')
             requestBody.top_p = topP;
-        if (this.OPENAI_API_KEY.length === 0 && searchParams.has('debug')) {
-            return await this.mainTranslatenow(requestBody);
+            const response = this.deepseek.chat.completions.create(requestBody, { signal: this.controller.signal });
+            const collectedMessages = [];
+            for await (const chunk of response) {
+                collectedMessages.push(chunk.choices[0].delta.content);
+            }
+            return collectedMessages.filter(element => element != null).join('');
         }
         else {
-            const response = this.openai.chat.completions.create(requestBody, { signal: this.controller.signal });
-            if (requestBody.stream) {
-                const collectedMessages = [];
-                for await (const chunk of response) {
-                    collectedMessages.push(chunk.choices[0].delta.content);
+            requestBody.messages = [
+                ...systemPrompts.map(element => ({ content: element, role: /^o\d/.test(model) ? (model === 'o1-mini' ? 'user' : 'developer') : 'system' })),
+                {
+                    content: message,
+                    role: 'user'
                 }
-                return collectedMessages.filter(element => element != null).join('');
+            ];
+            requestBody.model = model;
+            if (Object.hasOwn(requestBody, 'max_completion_tokens'))
+                requestBody.max_completion_tokens = null;
+            if (model !== 'o1')
+                requestBody.stream = true;
+            if (Object.hasOwn(requestBody, 'temperature') && model !== 'chatgpt-4o-latest')
+                requestBody.temperature = temperature;
+            if (Object.hasOwn(requestBody, 'top_p') && model !== 'chatgpt-4o-latest')
+                requestBody.top_p = topP;
+            if (this.OPENAI_API_KEY.length === 0 && new URLSearchParams(window.location.search).has('debug')) {
+                return await this.mainTranslatenow(requestBody);
             }
             else {
-                return response.choices[0].message.content;
+                const response = this.openai.chat.completions.create(requestBody, { signal: this.controller.signal });
+                if (requestBody.stream) {
+                    const collectedMessages = [];
+                    for await (const chunk of response) {
+                        collectedMessages.push(chunk.choices[0].delta.content);
+                    }
+                    return collectedMessages.filter(element => element != null).join('');
+                }
+                else {
+                    return response.choices[0].message.content;
+                }
             }
         }
     }
     async runGoogleGenerativeAI(options, systemPrompts, message) {
         const modelParams = {
-            model: 'gemini-2.0-flash-exp'
+            model: 'gemini-2.0-flash'
         };
         const { model, temperature, topP } = options;
         modelParams.model = model;
@@ -222,6 +249,27 @@ export default class GenerativeAi extends Translator {
         });
         return collectedTexts.join('');
     }
+    async runMistral(options, systemPrompts, message) {
+        const { model, temperature, topP } = options;
+        const result = await this.mistralClient.chat.stream({
+            model,
+            temperature,
+            topP,
+            maxTokens: undefined,
+            messages: [
+                ...systemPrompts.map(element => ({ role: 'system', content: element })),
+                {
+                    role: 'user',
+                    content: message
+                }
+            ]
+        }, { fetchOptions: { signal: this.controller.signal } });
+        const collectedStreamTexts = [];
+        for await (const chunk of result) {
+            collectedStreamTexts.push(chunk.data.choices[0].delta.content);
+        }
+        return collectedStreamTexts.join('');
+    }
     async launch(options, systemPrompts, message) {
         let out = '';
         const chatCompletionInput = {
@@ -255,51 +303,6 @@ export default class GenerativeAi extends Translator {
         }
         return out;
     }
-    async runMistral(options, systemPrompts, message) {
-        const { model, temperature, topP } = options;
-        const result = await this.mistralClient.chat.stream({
-            model,
-            temperature,
-            topP,
-            maxTokens: undefined,
-            messages: [
-                ...systemPrompts.map(element => ({ role: 'system', content: element })),
-                {
-                    role: 'user',
-                    content: message
-                }
-            ]
-        }, { fetchOptions: { signal: this.controller.signal } });
-        const collectedStreamTexts = [];
-        for await (const chunk of result) {
-            collectedStreamTexts.push(chunk.data.choices[0].delta.content);
-        }
-        return collectedStreamTexts.join('');
-    }
-    async mainDeepseek(options, systemPrompts, message) {
-        const { model, temperature, topP } = options;
-        const requestBody = {
-            messages: [{ role: 'system', content: 'You are a helpful assistant.' }],
-            model: 'deepseek-chat'
-        };
-        requestBody.model = model;
-        requestBody.messages = [
-            ...systemPrompts.map(element => ({ content: element, role: 'system' })),
-            {
-                content: message,
-                role: 'user'
-            }
-        ];
-        requestBody.stream = true;
-        requestBody.temperature = temperature;
-        requestBody.top_p = topP;
-        const response = this.deepseek.chat.completions.create(requestBody, { signal: this.controller.signal });
-        const collectedMessages = [];
-        for await (const chunk of response) {
-            collectedMessages.push(chunk.choices[0].delta.content);
-        }
-        return collectedMessages.filter(element => element != null).join('');
-    }
     async translateText(text, targetLanguage, options = { sourceLanguage: null, model: 'gpt-4o-mini', temperature: 1, topP: 1, nomenclature: [], splitChunkEnabled: false }) {
         if (options.model == null)
             options.model = 'gpt-4o-mini';
@@ -315,8 +318,7 @@ export default class GenerativeAi extends Translator {
         const responses = [];
         const { sourceLanguage, model, nomenclature, splitChunkEnabled } = options;
         const isGoogleGenerativeAi = model.startsWith('gemini') || model.startsWith('learnlm');
-        const isOpenai = model.startsWith('gpt') || model === 'chatgpt-4o-latest' || /^o\d/.test(model);
-        const isMistral = /^(?:open-)?[^-]+tral/.test(model) && !model.includes('/');
+        const isMistral = /^(?:open-)?[^-]+tral/.test(model);
         const requestedLines = [];
         let queries = [];
         while (queues.length > 0) {
@@ -324,7 +326,7 @@ export default class GenerativeAi extends Translator {
             if (queues.length === 0 || (splitChunkEnabled && ((!isGoogleGenerativeAi || (text.length < this.maxContentLengthPerRequest * 15 && text.split('\n').length < this.maxContentLengthPerRequest * 15)) && ([...queries, queues[0]].join('\n').length > this.maxContentLengthPerRequest || [...queries, queues[0]].length > this.maxContentLinePerRequest)))) {
                 const MESSAGE = (/\n\s*[^\s]+/.test(queries.join('\n')) ? queries.map((element, index) => `[${index + 1}]${element}`) : queries).join('\n');
                 const filteredNomenclature = nomenclature.filter(([first]) => MESSAGE.includes(first)).map(element => element.join('\t'));
-                const SYSTEM_PROMPTS = [`I want you to act as a ${targetLanguage} translator.${isOpenai
+                const SYSTEM_PROMPTS = [`I want you to act as a ${targetLanguage} translator.${model.startsWith('gpt') || model === 'chatgpt-4o-latest' || /^o\d/.test(model)
                         ? `
 You are trained on data up to ${/^gpt-4[^o]/.test(model) ? 'December 2023' : (model === 'chatgpt-4o-latest' ? 'June 2024' : (model.startsWith('gpt-3.5') ? 'September 2021' : 'October 2023'))}.`
                         : ''}`, `I will speak to you in ${sourceLanguage != null && sourceLanguage !== this.DefaultLanguage.SOURCE_LANGUAGE ? `${sourceLanguage} and you will ` : 'any language and you will detect the language, '}translate it and answer in the corrected version of my text, exclusively in ${targetLanguage}, while keeping the format.
@@ -338,14 +340,14 @@ ${filteredNomenclature.length > 0 || /\n\s*[^\s]+/.test(MESSAGE)
                         : ''}Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information.
 Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices.
 Your output must only contain the translated text and cannot include explanations or other information.${/\n\s*[^\s]+/.test(MESSAGE) ? '\nYou must preserve the line number structure of the original text intact in the output.' : ''}`];
-                responses.push(model.startsWith('deepseek') && !model.includes('/') ? this.mainDeepseek(options, SYSTEM_PROMPTS, MESSAGE) : (isMistral ? this.runMistral(options, SYSTEM_PROMPTS, MESSAGE) : (model.startsWith('claude') ? this.mainAnthropic(options, SYSTEM_PROMPTS, MESSAGE) : (isGoogleGenerativeAi ? this.runGoogleGenerativeAI(options, SYSTEM_PROMPTS, MESSAGE) : (isOpenai ? this.mainOpenai(options, SYSTEM_PROMPTS, MESSAGE) : this.launch(options, SYSTEM_PROMPTS, MESSAGE))))));
+                responses.push(model.includes('/') ? this.launch(options, SYSTEM_PROMPTS, MESSAGE) : (isMistral ? this.runMistral(options, SYSTEM_PROMPTS, MESSAGE) : (model.startsWith('claude') ? this.mainAnthropic(options, SYSTEM_PROMPTS, MESSAGE) : (isGoogleGenerativeAi ? this.runGoogleGenerativeAI(options, SYSTEM_PROMPTS, MESSAGE) : this.mainOpenai(options, SYSTEM_PROMPTS, MESSAGE)))));
                 requestedLines.push(queries.length);
                 queries = [];
                 if (splitChunkEnabled && isMistral && queues.length > 0)
                     await Utils.sleep(2500);
             }
         }
-        const result = await Promise.all(responses).then(value => value.map(element => element.split('\n').map(element => element.replace(/(^ ?)\[\d+] ?/, '$1'))).flat().join('\n')).catch(reason => {
+        const result = await Promise.all(responses).then(value => value.map(element => element.split('\n').map(element => element.replace(/^( ?)\[\d+] ?/, '$1'))).flat().join('\n')).catch(reason => {
             throw reason;
         });
         super.translateText(text, targetLanguage, sourceLanguage);
