@@ -180,7 +180,7 @@ export default class GenerativeAi extends Translator {
     generationConfig.maxOutputTokens = undefined
     generationConfig.temperature = temperature
     generationConfig.topP = topP
-    if (/^(?:gemini-(?:1\.(?:0|5-(?:pro|flash)-001$)|exp|2\.0-flash-thinking-exp)|learnlm-1\.5-pro-experimental)/.test(modelParams.model)) generationConfig.topK = 64
+    if (['gemini-2.0-flash-lite-preview-02-05', 'gemini-1.5-flash-001', 'gemini-1.5-pro-001', 'gemini-2.0-pro-exp-02-05', 'gemini-exp-1206', 'gemini-2.0-flash-thinking-exp-01-21', 'learnlm-1.5-pro-experimental'].some(element => modelParams.model === element)) generationConfig.topK = 64
     const startChatParams: { [key: string]: any } = {
       generationConfig,
       history: [
