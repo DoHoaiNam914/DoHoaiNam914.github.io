@@ -107,7 +107,14 @@ export default class GenerativeAi extends Translator {
         if (isDeepseek) {
             requestBody.model = model;
             requestBody.messages = [
-                ...systemPrompts.map(element => ({ content: element, role: 'system' })),
+                {
+                    content: systemPrompts[0],
+                    role: 'system'
+                },
+                {
+                    content: systemPrompts[1],
+                    role: 'user'
+                },
                 {
                     content: message,
                     role: 'user'
@@ -116,16 +123,17 @@ export default class GenerativeAi extends Translator {
             requestBody.stream = true;
             requestBody.temperature = temperature;
             requestBody.top_p = topP;
-            const response = this.deepseek.chat.completions.create(requestBody, { signal: this.controller.signal });
-            const collectedMessages = [];
-            for await (const chunk of response) {
-                collectedMessages.push(chunk.choices[0].delta.content);
-            }
-            return collectedMessages.filter(element => element != null).join('');
         }
         else {
             requestBody.messages = [
-                ...systemPrompts.map(element => ({ content: element, role: /^o\d/.test(model) ? (model === 'o1-mini' ? 'user' : 'developer') : 'system' })),
+                {
+                    content: systemPrompts[0],
+                    role: /^o\d/.test(model) ? (model === 'o1-mini' ? 'user' : 'developer') : 'system'
+                },
+                {
+                    content: systemPrompts[1],
+                    role: 'user'
+                },
                 {
                     content: message,
                     role: 'user'
@@ -140,21 +148,21 @@ export default class GenerativeAi extends Translator {
                 requestBody.temperature = temperature;
             if (Object.hasOwn(requestBody, 'top_p') && model !== 'chatgpt-4o-latest')
                 requestBody.top_p = topP;
-            if (this.OPENAI_API_KEY.length === 0 && new URLSearchParams(window.location.search).has('debug')) {
-                return await this.mainTranslatenow(requestBody);
+        }
+        if (!isDeepseek && this.OPENAI_API_KEY.length === 0 && new URLSearchParams(window.location.search).has('debug')) {
+            return await this.mainTranslatenow(requestBody);
+        }
+        else {
+            const response = (isDeepseek ? this.deepseek : this.openai).chat.completions.create(requestBody, { signal: this.controller.signal });
+            if (requestBody.stream) {
+                const collectedMessages = [];
+                for await (const chunk of response) {
+                    collectedMessages.push(chunk.choices[0].delta.content);
+                }
+                return collectedMessages.filter(element => element != null).join('');
             }
             else {
-                const response = this.openai.chat.completions.create(requestBody, { signal: this.controller.signal });
-                if (requestBody.stream) {
-                    const collectedMessages = [];
-                    for await (const chunk of response) {
-                        collectedMessages.push(chunk.choices[0].delta.content);
-                    }
-                    return collectedMessages.filter(element => element != null).join('');
-                }
-                else {
-                    return response.choices[0].message.content;
-                }
+                return response.choices[0].message.content;
             }
         }
     }
@@ -331,7 +339,7 @@ export default class GenerativeAi extends Translator {
 You are trained on data up to ${/^gpt-4[^o]/.test(model) ? 'December 2023' : (model === 'chatgpt-4o-latest' ? 'June 2024' : (model.startsWith('gpt-3.5') ? 'September 2021' : 'October 2023'))}.`
                         : ''}`, `I will speak to you in ${sourceLanguage != null && sourceLanguage !== this.DefaultLanguage.SOURCE_LANGUAGE ? `${sourceLanguage} and you will ` : 'any language and you will detect the language, '}translate it and answer in the corrected version of my text, exclusively in ${targetLanguage}, while keeping the format.
 ${filteredNomenclature.length > 0
-                        ? `Use this Nomenclature Mapping Table to accurately translate people’s proper names, ethnicities, and species, or place names and other concepts:
+                        ? `You must use this nomenclature table to accurately translate people’s proper names, ethnicities, and species, or place names and other concepts:
   \`\`\`tsv
   source\ttarget
   ${filteredNomenclature.join('\n  ')}
