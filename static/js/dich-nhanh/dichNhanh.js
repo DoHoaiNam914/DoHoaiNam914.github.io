@@ -1719,6 +1719,7 @@ $translateEntryButtons.click(async function onClick() {
               model: $('#translate-entry-model-select').val(),
               temperature: parseFloat($('#translate-entry-temperature-text').val()),
               topP: parseFloat($('#translate-entry-top-p-text').val()),
+              instructions: $instructionsTextarea.val(),
               dictionary: $('#apply-dictionary-switch').prop('checked') ? Object.entries(glossary.dictionary) : [],
             })
             result = result.trim()
