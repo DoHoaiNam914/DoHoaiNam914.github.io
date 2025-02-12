@@ -1,6 +1,5 @@
 'use strict'
-/* global axios */
-import Papa from '../../../lib/papaparse.min.js'
+/* global axios, Papa */
 import Translator from '../Translator.js'
 import * as Utils from '../../Utils.js'
 import Anthropic from 'https://esm.run/@anthropic-ai/sdk'
