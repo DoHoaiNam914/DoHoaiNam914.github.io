@@ -115,14 +115,7 @@ export default class GenerativeAi extends Translator {
     if (isDeepseek) {
       requestBody.model = model
       requestBody.messages = [
-        {
-          content: systemPrompts[0],
-          role: 'system'
-        },
-        {
-          content: systemPrompts[1],
-          role: 'user'
-        },
+        ...systemPrompts.map(element => ({ content: element, role: 'system' })),
         {
           content: message,
           role: 'user'
@@ -133,14 +126,7 @@ export default class GenerativeAi extends Translator {
       requestBody.top_p = topP
     } else {
       requestBody.messages = [
-        {
-          content: systemPrompts[0],
-          role: /^o\d/.test(model) ? (model === 'o1-mini' ? 'user' : 'developer') : 'system'
-        },
-        {
-          content: systemPrompts[1],
-          role: 'user'
-        },
+        ...systemPrompts.map(element => ({ content: element, role: /^o\d/.test(model) ? (model === 'o1-mini' ? 'user' : 'developer') : 'system' })),
         {
           content: message,
           role: 'user'
@@ -156,212 +142,219 @@ export default class GenerativeAi extends Translator {
     if (!isDeepseek && this.OPENAI_API_KEY.length === 0 && new URLSearchParams(window.location.search).has('debug')) {
       return await this.mainTranslatenow(requestBody)
     } else {
-      const response = (isDeepseek ? this.deepseek : this.openai).chat.completions.create(requestBody, { signal: this.controller.signal })
-      if (requestBody.stream as boolean) {
-        const collectedMessages: string[] = []
-        for await (const chunk of response) {
-          collectedMessages.push(chunk.choices[0].delta.content)
+      try {
+        const response = (isDeepseek ? this.deepseek : this.openai).chat.completions.create(requestBody, { signal: this.controller.signal })
+        if (requestBody.stream as boolean) {
+          const collectedMessages: string[] = []
+          for await (const chunk of response) {
+            collectedMessages.push(chunk.choices[0].delta.content)
+          }
+          return collectedMessages.filter(element => element != null).join('')
+        } else {
+          return response.choices[0].message.content
         }
-        return collectedMessages.filter(element => element != null).join('')
-      } else {
-        return response.choices[0].message.content
+      } catch (e) {
+        throw e
       }
     }
   }
 
   public async runGoogleGenerativeAI (options, systemPrompts, message): Promise<string> {
-    const modelParams: { [key: string]: string } = {
-      model: 'gemini-2.0-flash'
-    }
-    const { model, temperature, topP } = options
-    modelParams.model = model
-    if (modelParams.model !== 'gemini-1.0-pro') modelParams.systemInstruction = systemPrompts[0]
-    const generativeModel = this.genAI.getGenerativeModel(modelParams)
-
-    const generationConfig = {
-      temperature: 1,
-      topP: 0.95,
-      topK: 40,
-      maxOutputTokens: 8192,
-      responseMimeType: 'text/plain'
-    }
-
-    generationConfig.maxOutputTokens = undefined
-    generationConfig.temperature = temperature
-    generationConfig.topP = topP
-    if (['gemini-2.0-flash-lite-preview-02-05', 'gemini-1.5-flash-001', 'gemini-1.5-pro-001', 'gemini-2.0-pro-exp-02-05', 'gemini-exp-1206', 'gemini-2.0-flash-thinking-exp-01-21', 'learnlm-1.5-pro-experimental'].some(element => modelParams.model === element)) generationConfig.topK = 64
-    const startChatParams: { [key: string]: any } = {
-      generationConfig,
-      history: [
-      ]
-    }
-    startChatParams.safetySettings = [
-      {
-        category: HarmCategory.HARM_CATEGORY_HARASSMENT,
-        threshold: HarmBlockThreshold.BLOCK_NONE
-      },
-      {
-        category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
-        threshold: HarmBlockThreshold.BLOCK_NONE
-      },
-      {
-        category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
-        threshold: HarmBlockThreshold.BLOCK_NONE
-      },
-      {
-        category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
-        threshold: HarmBlockThreshold.BLOCK_NONE
-      },
-      {
-        // FIXME: Thiếu biến `HarmCategory.HARM_CATEGORY_CIVIC_INTEGRITY`
-        category: 'HARM_CATEGORY_CIVIC_INTEGRITY',
-        threshold: HarmBlockThreshold.BLOCK_NONE
+    try {
+      const modelParams: { [key: string]: string } = {
+        model: 'gemini-2.0-flash'
       }
-    ]
-    startChatParams.history.push(...modelParams.model === 'gemini-1.0-pro'
-      ? systemPrompts.map(element => ({ role: 'user', parts: [{ text: element }] }))
-      : [{
-          role: 'user',
-          parts: [
-            {
-              text: systemPrompts[1]
-            }
-          ]
-        }])
+      const { model, temperature, topP } = options
+      modelParams.model = model
+      if (modelParams.model !== 'gemini-1.0-pro') modelParams.systemInstruction = systemPrompts[0]
+      const generativeModel = this.genAI.getGenerativeModel(modelParams)
 
-    const chatSession = generativeModel.startChat(startChatParams)
+      const generationConfig = {
+        temperature: 1,
+        topP: 0.95,
+        topK: 40,
+        maxOutputTokens: 8192,
+        responseMimeType: 'text/plain'
+      }
 
-    const result = await chatSession.sendMessageStream(message, { signal: this.controller.signal })
-    const collectedChunkTexts: string[] = []
-    for await (const chunk of result.stream) {
-      collectedChunkTexts.push(chunk.text())
+      generationConfig.maxOutputTokens = undefined
+      generationConfig.temperature = temperature
+      generationConfig.topP = topP
+      if (['gemini-2.0-flash-lite-preview-02-05', 'gemini-1.5-flash-001', 'gemini-1.5-pro-001', 'gemini-2.0-pro-exp-02-05', 'gemini-exp-1206', 'gemini-2.0-flash-thinking-exp-01-21', 'learnlm-1.5-pro-experimental'].some(element => modelParams.model === element)) generationConfig.topK = 64
+      const startChatParams: { [key: string]: any } = {
+        generationConfig,
+        history: [
+        ]
+      }
+      startChatParams.safetySettings = [
+        {
+          category: HarmCategory.HARM_CATEGORY_HARASSMENT,
+          threshold: HarmBlockThreshold.BLOCK_NONE
+        },
+        {
+          category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+          threshold: HarmBlockThreshold.BLOCK_NONE
+        },
+        {
+          category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
+          threshold: HarmBlockThreshold.BLOCK_NONE
+        },
+        {
+          category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+          threshold: HarmBlockThreshold.BLOCK_NONE
+        },
+        {
+          // FIXME: Thiếu biến `HarmCategory.HARM_CATEGORY_CIVIC_INTEGRITY`
+          category: 'HARM_CATEGORY_CIVIC_INTEGRITY',
+          threshold: HarmBlockThreshold.BLOCK_NONE
+        }
+      ]
+      startChatParams.history.push(...(modelParams.model === 'gemini-1.0-pro' ? systemPrompts : systemPrompts.slice(1)).map(element => ({ role: 'user', parts: [{ text: element }] })))
+
+      const chatSession = generativeModel.startChat(startChatParams)
+
+      const result = await chatSession.sendMessageStream(message, { signal: this.controller.signal })
+      const collectedChunkTexts: string[] = []
+      for await (const chunk of result.stream) {
+        collectedChunkTexts.push(chunk.text())
+      }
+      return collectedChunkTexts.join('')
+    } catch (e) {
+      throw e
     }
-    return collectedChunkTexts.join('')
   }
 
   public async mainAnthropic (options, systemPrompts, message): Promise<string> {
-    const body: { [key: string]: any } = {
-      model: 'claude-3-5-sonnet-20241022',
-      max_tokens: 1000,
-      temperature: 0,
-      messages: []
-    }
-    const { model, temperature, topP } = options as { model: string, temperature: number, topP: number }
-    body.model = model
-    body.messages = [
-      {
-        role: 'user',
-        content: message
+    try {
+      const body: { [key: string]: any } = {
+        model: 'claude-3-5-sonnet-20241022',
+        max_tokens: 1000,
+        temperature: 0,
+        messages: []
       }
-    ]
-    body.max_tokens = undefined
-    body.system = systemPrompts.map(element => ({ text: element, type: 'text' }))
-    body.temperature = temperature
-    body.top_p = topP
-    const collectedTexts: string[] = []
-    await this.anthropic.messages.stream(body, { signal: this.controller.signal }).on('text', text => {
-      collectedTexts.push(text)
-    })
-    return collectedTexts.join('')
-  }
-
-  public async runMistral (options, systemPrompts, message): Promise<string> {
-    const { model, temperature, topP } = options as { model: string, temperature: number, topP: number }
-    const result = await this.mistralClient.chat.stream({
-      model,
-      temperature,
-      topP,
-      maxTokens: undefined,
-      messages: [
-        ...systemPrompts.map(element => ({ role: 'system', content: element })),
+      const { model, temperature, topP } = options as { model: string, temperature: number, topP: number }
+      body.model = model
+      body.messages = [
         {
           role: 'user',
           content: message
         }
       ]
-    }, { fetchOptions: { signal: this.controller.signal } })
-    const collectedStreamTexts: string[] = []
-    for await (const chunk of result) {
-      collectedStreamTexts.push(chunk.data.choices[0].delta.content)
+      body.max_tokens = undefined
+      body.system = systemPrompts.map(element => ({ text: element, type: 'text' }))
+      body.temperature = temperature
+      body.top_p = topP
+      const collectedTexts: string[] = []
+      await this.anthropic.messages.stream(body, { signal: this.controller.signal }).on('text', text => {
+        collectedTexts.push(text)
+      })
+      return collectedTexts.join('')
+    } catch (e) {
+      throw e
     }
-    return collectedStreamTexts.join('')
+  }
+
+  public async runMistral (options, systemPrompts, message): Promise<string> {
+    const { model, temperature, topP } = options as { model: string, temperature: number, topP: number }
+    try {
+      const result = await this.mistralClient.chat.stream({
+        model,
+        temperature,
+        topP,
+        maxTokens: undefined,
+        messages: [
+          ...systemPrompts.map(element => ({ role: 'system', content: element })),
+          {
+            role: 'user',
+            content: message
+          }
+        ]
+      }, { fetchOptions: { signal: this.controller.signal } })
+      const collectedStreamTexts: string[] = []
+      for await (const chunk of result) {
+        collectedStreamTexts.push(chunk.data.choices[0].delta.content)
+      }
+      return collectedStreamTexts.join('')
+    } catch (e) {
+      throw e
+    }
   }
 
   public async launch (options, systemPrompts, message): Promise<string> {
-    let out = ''
+    try {
+      let out = ''
 
-    const chatCompletionInput: { [key: string]: any } = {
-      model: 'meta-llama/Llama-3.1-8B-Instruct',
-      messages: [
-        { role: 'user', content: 'Tell me a story' }
-      ],
-      temperature: 0.5,
-      max_tokens: 2048,
-      top_p: 0.7
-    }
-    const { model, temperature, topP } = options as { model: string, temperature: number, topP: number }
-    chatCompletionInput.max_tokens = undefined
-    chatCompletionInput.messages = [
-      ...systemPrompts.flatMap(element => ['google', 'mistralai', 'tiiuae'].some(element => model.startsWith(element)) ? [{ content: element, role: 'user' }, { content: '', role: 'assistant' }] : { content: element, role: 'system' }),
-      {
-        content: message,
-        role: 'user'
+      const chatCompletionInput: { [key: string]: any } = {
+        model: 'meta-llama/Llama-3.1-8B-Instruct',
+        messages: [
+          { role: 'user', content: 'Tell me a story' }
+        ],
+        temperature: 0.5,
+        max_tokens: 2048,
+        top_p: 0.7
       }
-    ]
-    chatCompletionInput.temperature = temperature
-    chatCompletionInput.top_p = topP
-    chatCompletionInput.model = options.model
+      const { model, temperature, topP } = options as { model: string, temperature: number, topP: number }
+      chatCompletionInput.max_tokens = undefined
+      chatCompletionInput.messages = [
+        ...systemPrompts.flatMap(element => ['google', 'mistralai', 'tiiuae'].some(element => model.startsWith(element)) ? [{ content: element, role: 'user' }, { content: '', role: 'assistant' }] : { content: element, role: 'system' }),
+        {
+          content: message,
+          role: 'user'
+        }
+      ]
+      chatCompletionInput.temperature = temperature
+      chatCompletionInput.top_p = topP
+      chatCompletionInput.model = options.model
 
-    const stream = this.hfInferenceClient.chatCompletionStream(chatCompletionInput)
+      const stream = this.hfInferenceClient.chatCompletionStream(chatCompletionInput)
 
-    for await (const chunk of stream) {
-      if (chunk.choices != null && chunk.choices.length > 0) {
-        const newContent: string = chunk.choices[0].delta.content
-        out += newContent
-        // console.log(newContent)
+      for await (const chunk of stream) {
+        if (chunk.choices != null && chunk.choices.length > 0) {
+          const newContent: string = chunk.choices[0].delta.content
+          out += newContent
+          // console.log(newContent)
+        }
       }
+      return out
+    } catch (e) {
+      throw e
     }
-    return out
   }
 
-  public async translateText (text, targetLanguage: string, options: { sourceLanguage: string | null, model: string, temperature: number, topP: number, nomenclature: string[][], splitChunkEnabled: boolean } = { sourceLanguage: null, model: 'gpt-4o-mini', temperature: 1, topP: 1, nomenclature: [], splitChunkEnabled: false }): Promise<string> {
+  public async translateText (text, targetLanguage: string, options: { sourceLanguage: string | null, model?: string, temperature?: number, topP?: number, instructions?: string, dictionary?: string[][] } = { sourceLanguage: null }): Promise<string> {
     if (options.model == null) options.model = 'gpt-4o-mini'
-    if (options.temperature == null) options.temperature = 1
+    if (options.temperature == null) options.temperature = 0.2
     if (options.topP == null) options.topP = 1
-    if (options.nomenclature == null) options.nomenclature = []
-    if (options.splitChunkEnabled == null) options.splitChunkEnabled = false
-    const queues = text.split('\n')
-    const responses: Array<Promise<string>> = []
-    const { sourceLanguage, model, nomenclature, splitChunkEnabled } = options
+    if (options.instructions == null) options.instructions = ''
+    if (options.dictionary == null) options.dictionary = []
+    const { sourceLanguage, model, instructions, dictionary } = options
     const isGoogleGenerativeAi = model.startsWith('gemini') || model.startsWith('learnlm')
     const isMistral = /^(?:open-)?[^-]+tral/.test(model)
-    const requestedLines: number[] = []
-    let queries: string[] = []
-    while (queues.length > 0) {
-      queries.push(queues.shift() as string)
-      if (queues.length === 0 || (splitChunkEnabled && ((!isGoogleGenerativeAi || (text.length < this.maxContentLengthPerRequest * 15 && text.split('\n').length < this.maxContentLengthPerRequest * 15)) && ([...queries, queues[0]].join('\n').length > this.maxContentLengthPerRequest || [...queries, queues[0]].length > this.maxContentLinePerRequest)))) {
-        const MESSAGE = (/\n\s*[^\s]+/.test(queries.join('\n')) ? queries.map((element, index) => `[${index + 1}]${element}`) : queries).join('\n')
-        const filteredNomenclature: string[] = nomenclature.filter(([first]) => MESSAGE.includes(first))
-        const SYSTEM_PROMPTS = [`I want you to act as a ${targetLanguage} translator.${model.startsWith('gpt') || model === 'chatgpt-4o-latest' || /^o\d/.test(model)
+    const SYSTEM_PROMPTS: string[] = []
+    SYSTEM_PROMPTS.push(`I want you to act as a ${targetLanguage} translator.${model.startsWith('gpt') || model === 'chatgpt-4o-latest' || /^o\d/.test(model)
 ? `
 You are trained on data up to ${/^gpt-4[^o]/.test(model) ? 'December 2023' : (model === 'chatgpt-4o-latest' ? 'June 2024' : (model.startsWith('gpt-3.5') ? 'September 2021' : 'October 2023'))}.`
-: ''}`, `I will speak to you in ${sourceLanguage != null && sourceLanguage !== this.DefaultLanguage.SOURCE_LANGUAGE ? `${sourceLanguage} and you will ` : 'any language and you will detect the language, '}translate it and answer in the corrected version of my text, exclusively in ${targetLanguage}, while keeping the format.
-${filteredNomenclature.length > 0
-? `You MUST use the following dictionary to accurately translate people’s proper names, ethnicities, and species, or place names and other concepts:
-  \`\`\`csv
-${Papa.unparse({ fields: ['sourceText', 'targetText'], data: filteredNomenclature }, { newline: '\n' }).replaceAll(/(^|\n)/g, '$1  ') as string}
-  \`\`\`
-`
-: ''}Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information.
-Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices.
-Your output must only contain the translated text and cannot include explanations or other information.${/\n\s*[^\s]+/.test(MESSAGE) ? '\nYou must preserve the line number structure of the original text intact in the output.' : ''}`]
-        responses.push(model.includes('/') ? this.launch(options, SYSTEM_PROMPTS, MESSAGE) : (isMistral ? this.runMistral(options, SYSTEM_PROMPTS, MESSAGE) : (model.startsWith('claude') ? this.mainAnthropic(options, SYSTEM_PROMPTS, MESSAGE) : (isGoogleGenerativeAi ? this.runGoogleGenerativeAI(options, SYSTEM_PROMPTS, MESSAGE) : this.mainOpenai(options, SYSTEM_PROMPTS, MESSAGE)))))
-        requestedLines.push(queries.length)
-        queries = []
-        if (splitChunkEnabled && isMistral && queues.length > 0) await Utils.sleep(2500)
-      }
+: ''}`)
+    if (instructions.replaceAll(/^\s+|\s+$/g, '').length > 0) {
+      SYSTEM_PROMPTS.push(`# User’s Instructions
+
+The user provided the additional info about how they would like you to translate:
+\`\`\`${instructions}\`\`\``)
     }
-    const result = await Promise.all(responses).then(value => value.map(element => element.split('\n').map(element => element.replace(/^( ?)\[\d+] ?/, '$1'))).flat().join('\n')).catch(reason => {
+    const filteredDictionary: string[][] = dictionary.filter(([first]) => text.includes(first))
+    if (filteredDictionary.length > 0) {
+      SYSTEM_PROMPTS.push(`# User’s Dictionary
+
+The user provided the dictionary for specific term translations:
+\`\`\`csv
+${Papa.unparse({ fields: ['sourceText', 'targetText'], data: filteredDictionary }, { newline: '\n' }) as string}
+\`\`\``)
+    }
+    SYSTEM_PROMPTS.push(`I will speak to you in ${sourceLanguage != null && sourceLanguage !== this.DefaultLanguage.SOURCE_LANGUAGE ? `${sourceLanguage} and you will ` : 'any language and you will detect the language, '}translate it and answer in the corrected version of my text, exclusively in ${targetLanguage}, while keeping the format.
+Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information.
+Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices.
+Your output must only contain the translated text and cannot include explanations or other information.`)
+    const result = await (model.includes('/') ? this.launch(options, SYSTEM_PROMPTS, text) : (isMistral ? this.runMistral(options, SYSTEM_PROMPTS, text) : (model.startsWith('claude') ? this.mainAnthropic(options, SYSTEM_PROMPTS, text) : (isGoogleGenerativeAi ? this.runGoogleGenerativeAI(options, SYSTEM_PROMPTS, text) : this.mainOpenai(options, SYSTEM_PROMPTS, text))))).catch(reason => {
       throw reason
     })
     super.translateText(text, targetLanguage, sourceLanguage)

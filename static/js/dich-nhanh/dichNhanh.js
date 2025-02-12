@@ -35,6 +35,7 @@ const $glossaryManagerButton = $('#glossary-manager-button');
 const $glossaryModal = $('#glossary-modal');
 const $hfTokenText = $('#hf-token-text')
 const $inputTextarea = $('#input-textarea');
+const $instructionsTextarea = $('#instructions-textarea');
 const $mistralApiKeyText = $('#mistral-api-key-text');
 const $openaiApiKeyText = $('#openai-api-key-text');
 const $pasteButtons = $('.paste-button');
@@ -456,7 +457,7 @@ const glossary = {
   ],
   sinovietnameses: [],
   phonetics: { ...window.localStorage.getItem('glossary') != null ? JSON.parse(window.localStorage.getItem('glossary')).phonetics : {} },
-  nomenclature: { ...window.localStorage.getItem('glossary') != null ? JSON.parse(window.localStorage.getItem('glossary')).nomenclature : {} },
+  dictionary: { ...window.localStorage.getItem('glossary') != null ? JSON.parse(window.localStorage.getItem('glossary')).dictionary : {} },
 };
 
 const translators = {};
@@ -734,8 +735,8 @@ const translate = async function translateContentInTextarea(controller = new Abo
           model: $('#model-select').val(),
           temperature: parseFloat($('#temperature-text').val()),
           topP: parseFloat($('#top-p-text').val()),
-          nomenclature: Object.entries(glossary.nomenclature),
-          splitChunkEnabled: $('#split-chunk-switch').prop('checked')
+          instructions: $instructionsTextarea.val(),
+          dictionary: Object.entries(glossary.dictionary)
         })
         break
       }
@@ -769,7 +770,7 @@ const translate = async function translateContentInTextarea(controller = new Abo
 
 const reloadGlossary = function reloadActiveGlossary(glossaryList) {
   const glossaryKeys = Object.keys(glossary[glossaryList]);
-  const glossaryStorage = { phonetics: glossary.phonetics, nomenclature: glossary.nomenclature };
+  const glossaryStorage = { phonetics: glossary.phonetics, dictionary: glossary.dictionary };
   $glossaryEntryCounter.text(glossaryKeys.length);
   if (Object.keys(glossaryStorage).includes(glossaryList)) glossary[glossaryList] = Object.fromEntries(Object.entries(glossary[glossaryList]).sort((a, b) => a[1].localeCompare(b[1], 'vi', { ignorePunctuation: true }) || a[0].localeCompare(b[0], 'vi', { ignorePunctuation: true })));
   const autocompleteGlossarySource = glossaryKeys.map((element) => ({ value: element, label: `${element} → ${glossary[glossaryList][element]}` }));
@@ -796,7 +797,7 @@ const reloadGlossary = function reloadActiveGlossary(glossaryList) {
 const saveGlossary = function saveGlossaryToLocalStorage() {
   const activeGlossaryList = $glossaryListSelect.val();
   reloadGlossary(activeGlossaryList);
-  const glossaryStorage = { phonetics: glossary.phonetics, nomenclature: glossary.nomenclature };
+  const glossaryStorage = { phonetics: glossary.phonetics, dictionary: glossary.dictionary };
   if (Object.keys(glossaryStorage).includes(activeGlossaryList)) glossary[activeGlossaryList] = Object.fromEntries(Object.entries(glossary[activeGlossaryList]) /* .toSorted */ .sort((a, b) => a[1].localeCompare(b[1], 'vi', { ignorePunctuation: true }) || a[0].localeCompare(b[0], 'vi', { ignorePunctuation: true })));
   localStorage.setItem('glossary', JSON.stringify(glossaryStorage));
 };
@@ -1718,7 +1719,7 @@ $translateEntryButtons.click(async function onClick() {
               model: $('#translate-entry-model-select').val(),
               temperature: parseFloat($('#translate-entry-temperature-text').val()),
               topP: parseFloat($('#translate-entry-top-p-text').val()),
-              nomenclature: $('#apply-nomenclature-switch').prop('checked') ? Object.entries(glossary.nomenclature) : [],
+              dictionary: $('#apply-dictionary-switch').prop('checked') ? Object.entries(glossary.dictionary) : [],
             })
             result = result.trim()
             break;

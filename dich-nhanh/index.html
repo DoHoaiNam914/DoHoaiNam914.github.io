@@ -1137,16 +1137,16 @@
                 </select>
               </div>
               <div class="mb-3">
-                <label class="form-check-label" for="temperature-text">Temperature</label>
+                <label class="form-check-label" for="temperature-text">Temperature:</label>
                 <input type="number" class="form-control" id="temperature-text" value="0.2" max="2" min="0" step="0.1">
               </div>
               <div class="mb-3">
-                <label class="form-check-label" for="top-p-text">Top-P</label>
+                <label class="form-check-label" for="top-p-text">Top-P:</label>
                 <input type="number" class="form-control" id="top-p-text" placeholder="1" value="1" max="1" min="0" step="0.1">
               </div>
-              <div class="form-check form-switch mb-3">
-                <input type="checkbox" class="form-check-input" id="split-chunk-switch" role="switch">
-                <label class="form-check-label" for="split-chunk-switch">Chia ra nhiều khúc</label>
+              <div class="mb-3">
+                <label class="form-check-label" for="instructions-textarea">Tuỳ chỉnh thông minh:</label>
+                <textarea class="form-control" id="instructions-textarea" placeholder="Đối với mỗi thuật ngữ, hãy đặt thuật ngữ gốc vào dấu ngoặc. Ví dụ: thuật ngữ đã dịch (thuật ngữ gốc)" rows="8"></textarea>
               </div>
             </div>
           </div>
@@ -1170,7 +1170,7 @@
               </div>
               <select class="form-select form-select-sm mb-3" id="glossary-list-select">
                 <option value="phonetics">Phiên âm chữ Hán</option>
-                <option value="nomenclature" selected>Danh pháp</option>
+                <option value="dictionary" selected>Từ điển</option>
               </select>
               <div class="input-group mb-2 dropstart dropdown-scrollable dropdown-has-collapse">
                 <input type="text" class="form-control entry-input" id="source-entry-input" placeholder="Mục nguồn">
@@ -1376,11 +1376,11 @@
                 </svg>
                 Xoá
               </button>
-              <button type="button" class="btn btn-sm btn-primary mb-3" id="translate-entry-button">Dịch</button>
+              <button type="button" class="btn btn-sm btn-primary mb-3" id="translate-entry-button">Dịch lại</button>
               <button type="button" class="btn btn-sm btn-secondary mb-3 copy-button" data-target="glossary">Sao chép (<span id="glossary-entry-counter">0</span>)</button>
               <div class="form-check form-switch mb-3">
-                <input type="checkbox" class="form-check-input" id="apply-nomenclature-switch" role="switch">
-                <label class="form-check-label" for="apply-nomenclature-switch">Áp dụng danh pháp</label>
+                <input type="checkbox" class="form-check-input" id="apply-dictionary-switch" role="switch">
+                <label class="form-check-label" for="apply-dictionary-switch">Sử dụng từ điển</label>
               </div>
               <div class="mb-3">
                 <label class="form-label" for="translate-entry-model-select">Mô hình AI tạo sinh:</label>
