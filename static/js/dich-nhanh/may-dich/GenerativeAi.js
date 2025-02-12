@@ -1,5 +1,6 @@
 'use strict';
 /* global axios */
+import Papa from '../../../lib/papaparse.min.js';
 import Translator from '../Translator.js';
 import * as Utils from '../../Utils.js';
 import Anthropic from 'https://esm.run/@anthropic-ai/sdk';
@@ -333,16 +334,15 @@ export default class GenerativeAi extends Translator {
             queries.push(queues.shift());
             if (queues.length === 0 || (splitChunkEnabled && ((!isGoogleGenerativeAi || (text.length < this.maxContentLengthPerRequest * 15 && text.split('\n').length < this.maxContentLengthPerRequest * 15)) && ([...queries, queues[0]].join('\n').length > this.maxContentLengthPerRequest || [...queries, queues[0]].length > this.maxContentLinePerRequest)))) {
                 const MESSAGE = (/\n\s*[^\s]+/.test(queries.join('\n')) ? queries.map((element, index) => `[${index + 1}]${element}`) : queries).join('\n');
-                const filteredNomenclature = nomenclature.filter(([first]) => MESSAGE.includes(first)).map(element => element.join('\t'));
+                const filteredNomenclature = nomenclature.filter(([first]) => MESSAGE.includes(first));
                 const SYSTEM_PROMPTS = [`I want you to act as a ${targetLanguage} translator.${model.startsWith('gpt') || model === 'chatgpt-4o-latest' || /^o\d/.test(model)
                         ? `
 You are trained on data up to ${/^gpt-4[^o]/.test(model) ? 'December 2023' : (model === 'chatgpt-4o-latest' ? 'June 2024' : (model.startsWith('gpt-3.5') ? 'September 2021' : 'October 2023'))}.`
                         : ''}`, `I will speak to you in ${sourceLanguage != null && sourceLanguage !== this.DefaultLanguage.SOURCE_LANGUAGE ? `${sourceLanguage} and you will ` : 'any language and you will detect the language, '}translate it and answer in the corrected version of my text, exclusively in ${targetLanguage}, while keeping the format.
 ${filteredNomenclature.length > 0
-                        ? `You must use this nomenclature table to accurately translate people’s proper names, ethnicities, and species, or place names and other concepts:
-  \`\`\`tsv
-  source\ttarget
-  ${filteredNomenclature.join('\n  ')}
+                        ? `You MUST use the following dictionary to accurately translate people’s proper names, ethnicities, and species, or place names and other concepts:
+  \`\`\`csv
+${Papa.unparse({ fields: ['sourceText', 'targetText'], data: filteredNomenclature }, { newline: '\n' }).replaceAll(/(^|\n)/g, '$1  ')}
   \`\`\`
 `
                         : ''}Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information.
