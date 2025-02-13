@@ -354,7 +354,8 @@ ${Papa.unparse({ fields: ['sourceText', 'targetText'], data: filteredDictionary 
 Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information.
 Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices.
 Your output must only contain the translated text and cannot include explanations or other information.`)
-    const result = await (model.includes('/') ? this.launch(options, SYSTEM_PROMPTS, text) : (isMistral ? this.runMistral(options, SYSTEM_PROMPTS, text) : (model.startsWith('claude') ? this.mainAnthropic(options, SYSTEM_PROMPTS, text) : (isGoogleGenerativeAi ? this.runGoogleGenerativeAI(options, SYSTEM_PROMPTS, text) : this.mainOpenai(options, SYSTEM_PROMPTS, text))))).catch(reason => {
+    const MESSAGE = /\n\s*[^\s]+/.test(text) ? text.split('\n').map((element: string, index: number) => `[${index + 1}]${element}`).join('\n') : text
+    const result = await (model.includes('/') ? this.launch(options, SYSTEM_PROMPTS, MESSAGE) : (isMistral ? this.runMistral(options, SYSTEM_PROMPTS, MESSAGE) : (model.startsWith('claude') ? this.mainAnthropic(options, SYSTEM_PROMPTS, MESSAGE) : (isGoogleGenerativeAi ? this.runGoogleGenerativeAI(options, SYSTEM_PROMPTS, MESSAGE) : this.mainOpenai(options, SYSTEM_PROMPTS, MESSAGE))))).then(value => /\n\s*[^\s]+/.test(text) ? value.split('\n').map(element => element.replace(/^( ?)\[\d+] ?/, '$1')).join('\n') : value).catch(reason => {
       throw reason
     })
     super.translateText(text, targetLanguage, sourceLanguage)
