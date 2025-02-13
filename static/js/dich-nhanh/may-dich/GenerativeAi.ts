@@ -335,10 +335,6 @@ export default class GenerativeAi extends Translator {
 ? `
 You are trained on data up to ${/^gpt-4[^o]/.test(model) ? 'December 2023' : (model === 'chatgpt-4o-latest' ? 'June 2024' : (model.startsWith('gpt-3.5') ? 'September 2021' : 'October 2023'))}.`
 : ''}`)
-    SYSTEM_PROMPTS.push(`I will speak to you in ${sourceLanguage != null && sourceLanguage !== this.DefaultLanguage.SOURCE_LANGUAGE ? `${sourceLanguage} and you will ` : 'any language and you will detect the language, '}translate it and answer in the corrected version of my text, exclusively in ${targetLanguage}, while keeping the format.
-Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information.
-Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices.
-Your output must only contain the translated text and cannot include explanations or other information.`)
     if (instructions.replaceAll(/^\s+|\s+$/g, '').length > 0) {
       SYSTEM_PROMPTS.push(`# User’s Instructions
 
@@ -354,6 +350,10 @@ The user provided the dictionary for specific term translations:
 ${Papa.unparse({ fields: ['sourceText', 'targetText'], data: filteredDictionary }, { newline: '\n' }) as string}
 \`\`\``)
     }
+    SYSTEM_PROMPTS.push(`I will speak to you in ${sourceLanguage != null && sourceLanguage !== this.DefaultLanguage.SOURCE_LANGUAGE ? `${sourceLanguage} and you will ` : 'any language and you will detect the language, '}translate it and answer in the corrected version of my text, exclusively in ${targetLanguage}, while keeping the format.
+Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information.
+Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices.
+Your output must only contain the translated text and cannot include explanations or other information.`)
     const result = await (model.includes('/') ? this.launch(options, SYSTEM_PROMPTS, text) : (isMistral ? this.runMistral(options, SYSTEM_PROMPTS, text) : (model.startsWith('claude') ? this.mainAnthropic(options, SYSTEM_PROMPTS, text) : (isGoogleGenerativeAi ? this.runGoogleGenerativeAI(options, SYSTEM_PROMPTS, text) : this.mainOpenai(options, SYSTEM_PROMPTS, text))))).catch(reason => {
       throw reason
     })
