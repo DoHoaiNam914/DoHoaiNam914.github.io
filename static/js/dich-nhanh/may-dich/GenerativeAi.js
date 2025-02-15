@@ -38,16 +38,18 @@ export default class GenerativeAi extends Translator {
     maxContentLinePerRequest = 25;
     AIR_USER_ID;
     OPENAI_API_KEY;
+    HYPERBOLIC_API_KEY;
     openai;
     deepseek;
     anthropic;
     genAI;
     mistralClient;
     hfInferenceClient;
-    constructor(airUserId, openaiApiKey, deepseekApiKey, geminiApiKey, anthropicApiKey, mistralApiKey, hfToken) {
+    constructor(airUserId, openaiApiKey, deepseekApiKey, geminiApiKey, anthropicApiKey, mistralApiKey, hfToken, hyperbolicApiKey) {
         super();
         this.AIR_USER_ID = airUserId;
         this.OPENAI_API_KEY = openaiApiKey;
+        this.HYPERBOLIC_API_KEY = hyperbolicApiKey;
         this.openai = new OpenAI({
             apiKey: this.OPENAI_API_KEY,
             dangerouslyAllowBrowser: true
@@ -139,179 +141,194 @@ export default class GenerativeAi extends Translator {
             return await this.mainTranslatenow(requestBody);
         }
         else {
-            try {
-                const response = (isDeepseek ? this.deepseek : this.openai).chat.completions.create(requestBody, { signal: this.controller.signal });
-                if (requestBody.stream) {
-                    const collectedMessages = [];
-                    for await (const chunk of response) {
-                        collectedMessages.push(chunk.choices[0].delta.content);
-                    }
-                    return collectedMessages.filter(element => element != null).join('');
+            const response = (isDeepseek ? this.deepseek : this.openai).chat.completions.create(requestBody, { signal: this.controller.signal });
+            if (requestBody.stream) {
+                const collectedMessages = [];
+                for await (const chunk of response) {
+                    collectedMessages.push(chunk.choices[0].delta.content);
                 }
-                else {
-                    return response.choices[0].message.content;
-                }
+                return collectedMessages.filter(element => element != null).join('');
             }
-            catch (e) {
-                throw e;
+            else {
+                return response.choices[0].message.content;
             }
         }
     }
     async runGoogleGenerativeAI(options, systemPrompts, message) {
-        try {
-            const modelParams = {
-                model: 'gemini-2.0-flash'
-            };
-            const { model, temperature, topP } = options;
-            modelParams.model = model;
-            if (modelParams.model !== 'gemini-1.0-pro')
-                modelParams.systemInstruction = systemPrompts[0];
-            const generativeModel = this.genAI.getGenerativeModel(modelParams);
-            const generationConfig = {
-                temperature: 1,
-                topP: 0.95,
-                topK: 40,
-                maxOutputTokens: 8192,
-                responseMimeType: 'text/plain'
-            };
-            generationConfig.maxOutputTokens = undefined;
-            generationConfig.temperature = temperature;
-            generationConfig.topP = topP;
-            if (['gemini-2.0-flash-lite-preview-02-05', 'gemini-1.5-flash-001', 'gemini-1.5-pro-001', 'gemini-2.0-pro-exp-02-05', 'gemini-exp-1206', 'gemini-2.0-flash-thinking-exp-01-21', 'learnlm-1.5-pro-experimental'].some(element => modelParams.model === element))
-                generationConfig.topK = 64;
-            const startChatParams = {
-                generationConfig,
-                history: []
-            };
-            startChatParams.safetySettings = [
-                {
-                    category: HarmCategory.HARM_CATEGORY_HARASSMENT,
-                    threshold: HarmBlockThreshold.BLOCK_NONE
-                },
-                {
-                    category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
-                    threshold: HarmBlockThreshold.BLOCK_NONE
-                },
-                {
-                    category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
-                    threshold: HarmBlockThreshold.BLOCK_NONE
-                },
-                {
-                    category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
-                    threshold: HarmBlockThreshold.BLOCK_NONE
-                },
-                {
-                    // FIXME: Thiếu biến `HarmCategory.HARM_CATEGORY_CIVIC_INTEGRITY`
-                    category: 'HARM_CATEGORY_CIVIC_INTEGRITY',
-                    threshold: HarmBlockThreshold.BLOCK_NONE
-                }
-            ];
-            startChatParams.history.push(...(modelParams.model === 'gemini-1.0-pro' ? systemPrompts : systemPrompts.slice(1)).map(element => ({ role: 'user', parts: [{ text: element }] })));
-            const chatSession = generativeModel.startChat(startChatParams);
-            const result = await chatSession.sendMessageStream(message, { signal: this.controller.signal });
-            const collectedChunkTexts = [];
-            for await (const chunk of result.stream) {
-                collectedChunkTexts.push(chunk.text());
+        const modelParams = {
+            model: 'gemini-2.0-flash'
+        };
+        const { model, temperature, topP } = options;
+        modelParams.model = model;
+        if (modelParams.model !== 'gemini-1.0-pro')
+            modelParams.systemInstruction = systemPrompts[0];
+        const generativeModel = this.genAI.getGenerativeModel(modelParams);
+        const generationConfig = {
+            temperature: 1,
+            topP: 0.95,
+            topK: 40,
+            maxOutputTokens: 8192,
+            responseMimeType: 'text/plain'
+        };
+        generationConfig.maxOutputTokens = undefined;
+        generationConfig.temperature = temperature;
+        generationConfig.topP = topP;
+        if (['gemini-2.0-flash-lite-preview-02-05', 'gemini-1.5-flash-001', 'gemini-1.5-pro-001', 'gemini-2.0-pro-exp-02-05', 'gemini-exp-1206', 'gemini-2.0-flash-thinking-exp-01-21', 'learnlm-1.5-pro-experimental'].some(element => modelParams.model === element))
+            generationConfig.topK = 64;
+        const startChatParams = {
+            generationConfig,
+            history: []
+        };
+        startChatParams.safetySettings = [
+            {
+                category: HarmCategory.HARM_CATEGORY_HARASSMENT,
+                threshold: HarmBlockThreshold.BLOCK_NONE
+            },
+            {
+                category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+                threshold: HarmBlockThreshold.BLOCK_NONE
+            },
+            {
+                category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
+                threshold: HarmBlockThreshold.BLOCK_NONE
+            },
+            {
+                category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+                threshold: HarmBlockThreshold.BLOCK_NONE
+            },
+            {
+                // FIXME: Thiếu biến `HarmCategory.HARM_CATEGORY_CIVIC_INTEGRITY`
+                category: 'HARM_CATEGORY_CIVIC_INTEGRITY',
+                threshold: HarmBlockThreshold.BLOCK_NONE
             }
-            return collectedChunkTexts.join('');
+        ];
+        startChatParams.history.push(...(modelParams.model === 'gemini-1.0-pro' ? systemPrompts : systemPrompts.slice(1)).map(element => ({ role: 'user', parts: [{ text: element }] })));
+        const chatSession = generativeModel.startChat(startChatParams);
+        const result = await chatSession.sendMessageStream(message, { signal: this.controller.signal });
+        const collectedChunkTexts = [];
+        for await (const chunk of result.stream) {
+            collectedChunkTexts.push(chunk.text());
         }
-        catch (e) {
-            throw e;
-        }
+        return collectedChunkTexts.join('');
     }
     async mainAnthropic(options, systemPrompts, message) {
-        try {
-            const body = {
-                model: 'claude-3-5-sonnet-20241022',
-                max_tokens: 1000,
-                temperature: 0,
-                messages: []
-            };
-            const { model, temperature, topP } = options;
-            body.model = model;
-            body.messages = [
+        const body = {
+            model: 'claude-3-5-sonnet-20241022',
+            max_tokens: 1000,
+            temperature: 0,
+            messages: []
+        };
+        const { model, temperature, topP } = options;
+        body.model = model;
+        body.messages = [
+            {
+                role: 'user',
+                content: message
+            }
+        ];
+        body.max_tokens = undefined;
+        body.system = systemPrompts.map(element => ({ text: element, type: 'text' }));
+        body.temperature = temperature;
+        body.top_p = topP;
+        const collectedTexts = [];
+        await this.anthropic.messages.stream(body, { signal: this.controller.signal }).on('text', text => {
+            collectedTexts.push(text);
+        });
+        return collectedTexts.join('');
+    }
+    async runMistral(options, systemPrompts, message) {
+        const { model, temperature, topP } = options;
+        const result = await this.mistralClient.chat.stream({
+            model,
+            temperature,
+            topP,
+            maxTokens: undefined,
+            messages: [
+                ...systemPrompts.map(element => ({ role: 'system', content: element })),
                 {
                     role: 'user',
                     content: message
                 }
-            ];
-            body.max_tokens = undefined;
-            body.system = systemPrompts.map(element => ({ text: element, type: 'text' }));
-            body.temperature = temperature;
-            body.top_p = topP;
-            const collectedTexts = [];
-            await this.anthropic.messages.stream(body, { signal: this.controller.signal }).on('text', text => {
-                collectedTexts.push(text);
-            });
-            return collectedTexts.join('');
+            ]
+        }, { fetchOptions: { signal: this.controller.signal } });
+        const collectedStreamTexts = [];
+        for await (const chunk of result) {
+            collectedStreamTexts.push(chunk.data.choices[0].delta.content);
         }
-        catch (e) {
-            throw e;
-        }
-    }
-    async runMistral(options, systemPrompts, message) {
-        const { model, temperature, topP } = options;
-        try {
-            const result = await this.mistralClient.chat.stream({
-                model,
-                temperature,
-                topP,
-                maxTokens: undefined,
-                messages: [
-                    ...systemPrompts.map(element => ({ role: 'system', content: element })),
-                    {
-                        role: 'user',
-                        content: message
-                    }
-                ]
-            }, { fetchOptions: { signal: this.controller.signal } });
-            const collectedStreamTexts = [];
-            for await (const chunk of result) {
-                collectedStreamTexts.push(chunk.data.choices[0].delta.content);
-            }
-            return collectedStreamTexts.join('');
-        }
-        catch (e) {
-            throw e;
-        }
+        return collectedStreamTexts.join('');
     }
     async launch(options, systemPrompts, message) {
-        try {
-            let out = '';
-            const chatCompletionInput = {
-                model: 'meta-llama/Llama-3.1-8B-Instruct',
-                messages: [
-                    { role: 'user', content: 'Tell me a story' }
-                ],
-                temperature: 0.5,
-                max_tokens: 2048,
-                top_p: 0.7
-            };
-            const { model, temperature, topP } = options;
-            chatCompletionInput.max_tokens = undefined;
-            chatCompletionInput.messages = [
-                ...systemPrompts.flatMap(element => ['google', 'mistralai', 'tiiuae'].some(element => model.startsWith(element)) ? [{ content: element, role: 'user' }, { content: '', role: 'assistant' }] : { content: element, role: 'system' }),
-                {
-                    content: message,
-                    role: 'user'
-                }
-            ];
-            chatCompletionInput.temperature = temperature;
-            chatCompletionInput.top_p = topP;
-            chatCompletionInput.model = options.model;
-            const stream = this.hfInferenceClient.chatCompletionStream(chatCompletionInput);
-            for await (const chunk of stream) {
-                if (chunk.choices != null && chunk.choices.length > 0) {
-                    const newContent = chunk.choices[0].delta.content;
-                    out += newContent;
-                    // console.log(newContent)
-                }
+        let out = '';
+        const chatCompletionInput = {
+            model: 'meta-llama/Llama-3.1-8B-Instruct',
+            messages: [
+                { role: 'user', content: 'Tell me a story' }
+            ],
+            temperature: 0.5,
+            max_tokens: 2048,
+            top_p: 0.7
+        };
+        const { model, temperature, topP } = options;
+        chatCompletionInput.max_tokens = undefined;
+        chatCompletionInput.messages = [
+            ...systemPrompts.flatMap(element => ['google', 'mistralai', 'tiiuae'].some(element => model.startsWith(element)) ? [{ content: element, role: 'user' }, { content: '', role: 'assistant' }] : { content: element, role: 'system' }),
+            {
+                content: message,
+                role: 'user'
             }
-            return out;
+        ];
+        chatCompletionInput.temperature = temperature;
+        chatCompletionInput.top_p = topP;
+        chatCompletionInput.model = model;
+        const stream = this.hfInferenceClient.chatCompletionStream(chatCompletionInput);
+        for await (const chunk of stream) {
+            if (chunk.choices != null && chunk.choices.length > 0) {
+                const newContent = chunk.choices[0].delta.content;
+                out += newContent;
+                // console.log(newContent)
+            }
         }
-        catch (e) {
-            throw e;
-        }
+        return out;
+    }
+    async fetch(options, systemPrompts, message) {
+        const url = 'https://api.hyperbolic.xyz/v1/chat/completions';
+        const body = {
+            model: 'deepseek-ai/DeepSeek-R1-Zero',
+            messages: [
+                {
+                    role: 'user',
+                    content: 'What can I do in SF?'
+                }
+            ],
+            max_tokens: 508,
+            temperature: 0.1,
+            top_p: 0.9,
+            stream: false
+        };
+        const { model, temperature, topP } = options;
+        body.model = model;
+        body.messages = [
+            ...systemPrompts.flatMap(element => ({ role: 'system', content: element })),
+            {
+                content: message,
+                role: 'user'
+            }
+        ];
+        body.max_tokens = null;
+        body.temperature = temperature;
+        body.top_p = topP;
+        body.stream = true;
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${this.HYPERBOLIC_API_KEY}`
+            },
+            body: JSON.stringify(body)
+        });
+        const text = await response.text();
+        const output = text.split('\n').filter(element => element.startsWith('data: ') && !element.startsWith('data: [DONE]')).map(element => JSON.parse(`{${element.replace('data: ', '"data":')}}`).data.choices[0].delta.content).filter(element => element != null).join('');
+        return output;
     }
     async translateText(text, targetLanguage, options = { sourceLanguage: null }) {
         if (options.model == null)
@@ -352,7 +369,7 @@ Your translations must convey all the content in the original text and cannot in
 Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices.
 Your output must only contain the translated text and cannot include explanations or other information.`);
         const MESSAGE = /\n\s*[^\s]+/.test(text) ? text.split('\n').map((element, index) => `[${index + 1}]${element}`).join('\n') : text;
-        const result = await (model.includes('/') ? this.launch(options, SYSTEM_PROMPTS, MESSAGE) : (isMistral ? this.runMistral(options, SYSTEM_PROMPTS, MESSAGE) : (model.startsWith('claude') ? this.mainAnthropic(options, SYSTEM_PROMPTS, MESSAGE) : (isGoogleGenerativeAi ? this.runGoogleGenerativeAI(options, SYSTEM_PROMPTS, MESSAGE) : this.mainOpenai(options, SYSTEM_PROMPTS, MESSAGE))))).then(value => /\n\s*[^\s]+/.test(text) ? value.split('\n').map(element => element.replace(/^( ?)\[\d+] ?/, '$1')).join('\n') : value).catch(reason => {
+        const result = await (model.includes('/') ? (['deepseek-ai/DeepSeek-R1-Zero', 'deepseek-ai/DeepSeek-R1', 'deepseek-ai/DeepSeek-V3', 'meta-llama/Llama-3.3-70B-Instruct', 'meta-llama/Meta-Llama-3-70B-Instruct', 'meta-llama/Meta-Llama-3.1-405B', 'meta-llama/Meta-Llama-3.1-405B-FP8', 'meta-llama/Meta-Llama-3.1-405B-Instruct', 'meta-llama/Meta-Llama-3.1-70B-Instruct', 'meta-llama/Meta-Llama-3.1-8B-Instruct'].some(element => element === model) ? this.fetch(options, SYSTEM_PROMPTS, MESSAGE) : this.launch(options, SYSTEM_PROMPTS, MESSAGE)) : (isMistral ? this.runMistral(options, SYSTEM_PROMPTS, MESSAGE) : (model.startsWith('claude') ? this.mainAnthropic(options, SYSTEM_PROMPTS, MESSAGE) : (isGoogleGenerativeAi ? this.runGoogleGenerativeAI(options, SYSTEM_PROMPTS, MESSAGE) : this.mainOpenai(options, SYSTEM_PROMPTS, MESSAGE))))).then(value => /\n\s*[^\s]+/.test(text) ? value.split('\n').map(element => element.replace(/^( ?)\[\d+] ?/, '$1')).join('\n') : value).catch(reason => {
             throw reason;
         });
         super.translateText(text, targetLanguage, sourceLanguage);
