@@ -338,7 +338,8 @@ export default class GenerativeAi extends Translator {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${this.HYPERBOLIC_API_KEY}`
       },
-      body: JSON.stringify(body)
+      body: JSON.stringify(body),
+      signal: this.controller.signal
     })
 
     const text = await response.text()

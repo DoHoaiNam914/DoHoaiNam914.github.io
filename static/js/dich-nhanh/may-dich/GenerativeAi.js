@@ -324,7 +324,8 @@ export default class GenerativeAi extends Translator {
                 'Content-Type': 'application/json',
                 Authorization: `Bearer ${this.HYPERBOLIC_API_KEY}`
             },
-            body: JSON.stringify(body)
+            body: JSON.stringify(body),
+            signal: this.controller.signal
         });
         const text = await response.text();
         const output = text.split('\n').filter(element => element.startsWith('data: ') && !element.startsWith('data: [DONE]')).map(element => JSON.parse(`{${element.replace('data: ', '"data":')}}`).data.choices[0].delta.content).filter(element => element != null).join('');
