@@ -4,6 +4,7 @@ import Translator from '../Translator.js';
 import * as Utils from '../../Utils.js';
 import Anthropic from 'https://esm.run/@anthropic-ai/sdk';
 import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from 'https://esm.run/@google/generative-ai';
+import Groq from 'https://esm.run/groq-sdk';
 import { HfInference } from 'https://esm.run/@huggingface/inference';
 import { Mistral } from 'https://esm.run/@mistralai/mistralai';
 import OpenAI from 'https://esm.run/openai';
@@ -44,12 +45,12 @@ export default class GenerativeAi extends Translator {
     anthropic;
     genAI;
     mistralClient;
+    groq;
     hfInferenceClient;
-    constructor(airUserId, openaiApiKey, deepseekApiKey, geminiApiKey, anthropicApiKey, mistralApiKey, hfToken, hyperbolicApiKey) {
+    constructor(apiKey, airUserId) {
         super();
-        this.AIR_USER_ID = airUserId;
+        const { openaiApiKey, deepseekApiKey, geminiApiKey, anthropicApiKey, mistralApiKey, hfToken, groqApiKey } = apiKey;
         this.OPENAI_API_KEY = openaiApiKey;
-        this.HYPERBOLIC_API_KEY = hyperbolicApiKey;
         this.openai = new OpenAI({
             apiKey: this.OPENAI_API_KEY,
             dangerouslyAllowBrowser: true
@@ -66,8 +67,13 @@ export default class GenerativeAi extends Translator {
         this.genAI = new GoogleGenerativeAI(geminiApiKey);
         this.mistralClient = new Mistral({ apiKey: mistralApiKey });
         this.hfInferenceClient = new HfInference(hfToken, { signal: this.controller.signal });
+        this.groq = new Groq({
+            apiKey: groqApiKey,
+            dangerouslyAllowBrowser: true
+        });
+        this.AIR_USER_ID = airUserId;
     }
-    async mainTranslatenow(requestBody) {
+    async translatenowMain(requestBody) {
         const response = await axios.post(`${Utils.CORS_HEADER_PROXY}https://gateway.api.airapps.co/aa_service=server5/aa_apikey=5N3NR9SDGLS7VLUWSEN9J30P//v3/proxy/open-ai/v1/chat/completions`, JSON.stringify(requestBody), {
             headers: {
                 'User-Agent': 'iOS-TranslateNow/8.12.0.1002 CFNetwork/3826.400.120 Darwin/24.3.0',
@@ -81,7 +87,7 @@ export default class GenerativeAi extends Translator {
         });
         return response;
     }
-    async mainOpenai(options, systemPrompts, message) {
+    async openaiMain(options, systemPrompts, message) {
         const { model, temperature, topP } = options;
         const isDeepseek = model.startsWith('deepseek');
         const requestBody = isDeepseek
@@ -138,7 +144,7 @@ export default class GenerativeAi extends Translator {
                 requestBody.top_p = topP;
         }
         if (!isDeepseek && this.OPENAI_API_KEY.length === 0 && new URLSearchParams(window.location.search).has('debug')) {
-            return await this.mainTranslatenow(requestBody);
+            return await this.translatenowMain(requestBody);
         }
         else {
             const response = (isDeepseek ? this.deepseek : this.openai).chat.completions.create(requestBody, { signal: this.controller.signal });
@@ -211,7 +217,7 @@ export default class GenerativeAi extends Translator {
         }
         return collectedChunkTexts.join('');
     }
-    async mainAnthropic(options, systemPrompts, message) {
+    async anthropicMain(options, systemPrompts, message) {
         const body = {
             model: 'claude-3-5-sonnet-20241022',
             max_tokens: 1000,
@@ -251,11 +257,11 @@ export default class GenerativeAi extends Translator {
                 }
             ]
         }, { fetchOptions: { signal: this.controller.signal } });
-        const collectedStreamTexts = [];
+        const collectedMessages = [];
         for await (const chunk of result) {
-            collectedStreamTexts.push(chunk.data.choices[0].delta.content);
+            collectedMessages.push(chunk.data.choices[0].delta.content);
         }
-        return collectedStreamTexts.join('');
+        return collectedMessages.join('');
     }
     async launch(options, systemPrompts, message) {
         let out = '';
@@ -290,46 +296,34 @@ export default class GenerativeAi extends Translator {
         }
         return out;
     }
-    async fetch(options, systemPrompts, message) {
-        const url = 'https://api.hyperbolic.xyz/v1/chat/completions';
-        const body = {
-            model: 'deepseek-ai/DeepSeek-R1-Zero',
-            messages: [
-                {
-                    role: 'user',
-                    content: 'What can I do in SF?'
-                }
-            ],
-            max_tokens: 508,
-            temperature: 0.1,
-            top_p: 0.9,
-            stream: false
-        };
+    async groqMain(options, systemPrompts, message) {
         const { model, temperature, topP } = options;
-        body.model = model;
-        body.messages = [
-            ...systemPrompts.flatMap(element => ({ role: 'system', content: element })),
+        const requestBody = {
+            messages: [],
+            model: 'llama-3.3-70b-versatile',
+            temperature: 1,
+            max_completion_tokens: 1024,
+            top_p: 1,
+            stream: true,
+            stop: null
+        };
+        requestBody.max_completion_tokens = null;
+        requestBody.messages = [
+            ...systemPrompts.flatMap(element => ({ content: element, role: 'system' })),
             {
                 content: message,
                 role: 'user'
             }
         ];
-        body.max_tokens = null;
-        body.temperature = temperature;
-        body.top_p = topP;
-        body.stream = true;
-        const response = await fetch(url, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${this.HYPERBOLIC_API_KEY}`
-            },
-            body: JSON.stringify(body),
-            signal: this.controller.signal
-        });
-        const text = await response.text();
-        const output = text.split('\n').filter(element => element.startsWith('data: ') && !element.startsWith('data: [DONE]')).map(element => JSON.parse(`{${element.replace('data: ', '"data":')}}`).data.choices[0].delta.content).filter(element => element != null).join('');
-        return output;
+        requestBody.model = model;
+        requestBody.temperature = temperature;
+        requestBody.top_p = topP;
+        const chatCompletion = await this.groq.chat.completions.create(requestBody);
+        const collectedMessages = [];
+        for await (const chunk of chatCompletion) {
+            collectedMessages.push(chunk.choices[0]?.delta?.content ?? '');
+        }
+        return collectedMessages.join('');
     }
     async translateText(text, targetLanguage, options = { sourceLanguage: null }) {
         if (options.model == null)
@@ -370,7 +364,7 @@ Your translations must convey all the content in the original text and cannot in
 Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices.
 Your output must only contain the translated text and cannot include explanations or other information.`);
         const MESSAGE = /\n\s*[^\s]+/.test(text) ? text.split('\n').map((element, index) => `[${index + 1}]${element}`).join('\n') : text;
-        const result = await (model.includes('/') ? (['deepseek-ai/DeepSeek-R1-Zero', 'deepseek-ai/DeepSeek-R1', 'deepseek-ai/DeepSeek-V3', 'meta-llama/Llama-3.3-70B-Instruct', 'meta-llama/Meta-Llama-3-70B-Instruct', 'meta-llama/Meta-Llama-3.1-405B', 'meta-llama/Meta-Llama-3.1-405B-FP8', 'meta-llama/Meta-Llama-3.1-405B-Instruct', 'meta-llama/Meta-Llama-3.1-70B-Instruct', 'meta-llama/Meta-Llama-3.1-8B-Instruct'].some(element => element === model) ? this.fetch(options, SYSTEM_PROMPTS, MESSAGE) : this.launch(options, SYSTEM_PROMPTS, MESSAGE)) : (isMistral ? this.runMistral(options, SYSTEM_PROMPTS, MESSAGE) : (model.startsWith('claude') ? this.mainAnthropic(options, SYSTEM_PROMPTS, MESSAGE) : (isGoogleGenerativeAi ? this.runGoogleGenerativeAI(options, SYSTEM_PROMPTS, MESSAGE) : this.mainOpenai(options, SYSTEM_PROMPTS, MESSAGE))))).then(value => /\n\s*[^\s]+/.test(text) ? value.split('\n').map(element => element.replace(/^( ?)\[\d+] ?/, '$1')).join('\n') : value).catch(reason => {
+        const result = await (['gemma2-9b-it', 'llama-3.3-70b-versatile', 'llama-3.1-8b-instant', 'llama3-70b-8192', 'llama3-8b-8192', 'qwen-2.5-32b', 'deepseek-r1-distill-qwen-32b', 'deepseek-r1-distill-llama-70b-specdec', 'deepseek-r1-distill-llama-70b', 'llama-3.3-70b-specdec', 'llama-3.2-1b-preview', 'llama-3.2-3b-preview', 'llama-3.2-11b-vision-preview', 'llama-3.2-90b-vision-preview'].some(element => element === model) ? this.groqMain(options, SYSTEM_PROMPTS, MESSAGE) : (model.includes('/') ? this.launch(options, SYSTEM_PROMPTS, MESSAGE) : (isMistral ? this.runMistral(options, SYSTEM_PROMPTS, MESSAGE) : (model.startsWith('claude') ? this.anthropicMain(options, SYSTEM_PROMPTS, MESSAGE) : (isGoogleGenerativeAi ? this.runGoogleGenerativeAI(options, SYSTEM_PROMPTS, MESSAGE) : this.openaiMain(options, SYSTEM_PROMPTS, MESSAGE)))))).then(value => /\n\s*[^\s]+/.test(text) ? value.split('\n').map(element => element.replace(/^( ?)\[\d+] ?/, '$1')).join('\n') : value).catch(reason => {
             throw reason;
         });
         super.translateText(text, targetLanguage, sourceLanguage);

@@ -1013,59 +1013,77 @@
               <input type="text" class="form-control mb-3" id="gemini-api-key-text" placeholder="Gemini API Key">
               <input type="text" class="form-control mb-3" id="mistral-api-key-text" placeholder="Mistral API Key">
               <input type="text" class="form-control mb-3" id="hf-token-text" placeholder="HF Token">
-              <input type="text" class="form-control mb-3" id="hyperbolic-api-key-text" placeholder="Hyperbolic API Key">
+              <input type="text" class="form-control mb-3" id="groq-api-key-text" placeholder="Groq API Key">
               <div class="mb-3">
                 <label class="form-label" for="model-select">Mô hình AI tạo sinh:</label>
                 <select class="form-select form-select-sm" id="model-select">
-                  <optgroup label="Hyperbolic">
-                    <option value="deepseek-ai/DeepSeek-R1-Zero">DeepSeek-R1-Zero</option>
-                    <option value="deepseek-ai/DeepSeek-R1">DeepSeek-R1</option>
-                    <option value="deepseek-ai/DeepSeek-V3">DeepSeek-V3</option>
-                    <option value="meta-llama/Llama-3.3-70B-Instruct">Llama-3.3-70B</option>
-                    <!-- <option value="Qwen/QwQ-32B-Preview">QwQ-32B-Preview</option>
-                    <option value="Qwen/Qwen2.5-Coder-32B-Instruct">Qwen2.5-Coder-32B</option>
-                    <option value="meta-llama/Llama-3.2-3B-Instruct">Llama-3.2-3B</option>
-                    <option value="Qwen/Qwen2.5-72B-Instruct">Qwen2.5-72B</option> -->
-                    <option value="meta-llama/Meta-Llama-3-70B-Instruct">Llama-3-70B</option>
-                    <!-- <option value="meta-llama/Meta-Llama-3.1-405B">Llama-3.1-405B</option>
-                    <option value="meta-llama/Meta-Llama-3.1-405B-FP8">Llama-3.1-405B (FP8)</option> -->
-                    <option value="meta-llama/Meta-Llama-3.1-405B-Instruct">Llama-3.1-405B (Instruct)</option>
-                    <option value="meta-llama/Meta-Llama-3.1-70B-Instruct">Llama-3.1-70B</option>
-                    <option value="meta-llama/Meta-Llama-3.1-8B-Instruct">Llama-3.1-8B</option>
+                  <optgroup label="Groq">
+                    <option>gemma2-9b-it</option>
+                    <option>llama-3.3-70b-versatile</option>
+                    <option>llama-3.1-8b-instant</option>
+                    <option>llama3-70b-8192</option>
+                    <option>llama3-8b-8192</option>
+                    <option>qwen-2.5-32b</option>
+                    <option>deepseek-r1-distill-qwen-32b</option>
+                    <option>deepseek-r1-distill-llama-70b-specdec</option>
+                    <option>deepseek-r1-distill-llama-70b</option>
+                    <option>llama-3.3-70b-specdec</option>
+                    <option>llama-3.2-1b-preview</option>
+                    <option>llama-3.2-3b-preview</option>
+                    <option>llama-3.2-11b-vision-preview</option>
+                    <option>llama-3.2-90b-vision-preview</option>
                   </optgroup>
                   <optgroup label="HF Inference">
-                    <!-- <option>meta-llama/Llama-3.1-8B-Instruct</option> -->
+                    <option>meta-llama/Llama-3.1-8B-Instruct</option>
                     <option>meta-llama/Llama-3.2-3B-Instruct</option>
-                    <!-- <option>meta-llama/Llama-3.3-70B-Instruct</option> -->
+                    <option>meta-llama/Llama-3.3-70B-Instruct</option>
                     <option>Qwen/Qwen2.5-72B-Instruct</option>
                     <option>Qwen/QwQ-32B-Preview</option>
                     <!-- Other Models -->
+                    <option>deepseek-ai/deepseek-llm-67b-chat</option>
+                    <option>deepseek-ai/DeepSeek-R1</option>
+                    <option>deepseek-ai/DeepSeek-R1-Distill-Llama-70B</option>
                     <option>deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B</option>
                     <option>deepseek-ai/DeepSeek-R1-Distill-Qwen-32B</option>
+                    <option>deepseek-ai/DeepSeek-R1-Zero</option>
+                    <option>deepseek-ai/DeepSeek-V2.5</option>
+                    <option>deepseek-ai/DeepSeek-V3</option>
                     <option>google/gemma-1.1-2b-it</option>
                     <option>google/gemma-1.1-7b-it</option>
                     <option>google/gemma-2-27b-it</option>
                     <option>google/gemma-2-2b-it</option>
                     <option>google/gemma-2-9b-it</option>
+                    <option>google/gemma-2b-it</option>
+                    <option>meta-llama/Llama-2-13b-chat-hf</option>
                     <option>meta-llama/Llama-2-7b-chat-hf</option>
+                    <option>meta-llama/Llama-3.1-405B-Instruct</option>
                     <option>meta-llama/Llama-3.1-70B-Instruct</option>
                     <option>meta-llama/Llama-3.2-1B-Instruct</option>
-                    <option>meta-llama/Llama-Guard-3-8B</option>
-                    <!-- <option>meta-llama/Meta-Llama-3-70B-Instruct</option> -->
+                    <option>meta-llama/Meta-Llama-3-70B-Instruct</option>
                     <option>meta-llama/Meta-Llama-3-8B-Instruct</option>
-                    <option>microsoft/DialoGPT-medium</option>
+                    <option>microsoft/Phi-3-mini-128k-instruct</option>
                     <option>microsoft/Phi-3-mini-4k-instruct</option>
                     <option>microsoft/Phi-3.5-mini-instruct</option>
+                    <option>mistralai/Ministral-3b-instruct</option>
                     <option>mistralai/Mistral-7B-Instruct-v0.2</option>
                     <option>mistralai/Mistral-7B-Instruct-v0.3</option>
                     <option>mistralai/Mistral-Nemo-Instruct-2407</option>
+                    <option>mistralai/Mistral-Small-24B-Instruct-2501</option>
+                    <option>mistralai/Mixtral-8x22B-Instruct-v0.1</option>
                     <option>mistralai/Mixtral-8x7B-Instruct-v0.1</option>
-                    <option>Qwen/Qwen2.5-0.5B</option>
+                    <option>Qwen/Qwen1.5-0.5B-Chat</option>
+                    <option>Qwen/Qwen1.5-1.8B-Chat</option>
+                    <option>Qwen/Qwen1.5-4B-Chat</option>
+                    <option>Qwen/Qwen2-0.5B-Instruct</option>
+                    <option>Qwen/Qwen2-1.5B-Instruct</option>
+                    <option>Qwen/Qwen2-72B-Instruct</option>
                     <option>Qwen/Qwen2.5-0.5B-Instruct</option>
-                    <option>Qwen/Qwen2.5-1.5B</option>
                     <option>Qwen/Qwen2.5-1.5B-Instruct</option>
-                    <option>Qwen/Qwen2.5-Coder-32B-Instruct</option>
+                    <option>Qwen/Qwen2.5-3B-Instruct</option>
+                    <option>Qwen/Qwen2.5-7B-Instruct</option>
                     <option>tiiuae/falcon-7b-instruct</option>
+                    <option>tiiuae/Falcon3-1B-Instruct</option>
+                    <option>vinai/PhoGPT-4B-Chat</option>
                   </optgroup>
                   <optgroup label="Mistral">
                     <option value="mistral-large-latest">Mistral Large (2411)</option>
@@ -1402,55 +1420,73 @@
               <div class="mb-3">
                 <label class="form-label" for="translate-entry-model-select">Mô hình AI tạo sinh:</label>
                 <select class="form-select form-select-sm" id="translate-entry-model-select">
-                  <optgroup label="Hyperbolic">
-                    <option value="deepseek-ai/DeepSeek-R1-Zero">DeepSeek-R1-Zero</option>
-                    <option value="deepseek-ai/DeepSeek-R1">DeepSeek-R1</option>
-                    <option value="deepseek-ai/DeepSeek-V3">DeepSeek-V3</option>
-                    <option value="meta-llama/Llama-3.3-70B-Instruct">Llama-3.3-70B</option>
-                    <!-- <option value="Qwen/QwQ-32B-Preview">QwQ-32B-Preview</option>
-                    <option value="Qwen/Qwen2.5-Coder-32B-Instruct">Qwen2.5-Coder-32B</option>
-                    <option value="meta-llama/Llama-3.2-3B-Instruct">Llama-3.2-3B</option>
-                    <option value="Qwen/Qwen2.5-72B-Instruct">Qwen2.5-72B</option> -->
-                    <option value="meta-llama/Meta-Llama-3-70B-Instruct">Llama-3-70B</option>
-                    <!-- <option value="meta-llama/Meta-Llama-3.1-405B">Llama-3.1-405B</option>
-                    <option value="meta-llama/Meta-Llama-3.1-405B-FP8">Llama-3.1-405B (FP8)</option> -->
-                    <option value="meta-llama/Meta-Llama-3.1-405B-Instruct">Llama-3.1-405B (Instruct)</option>
-                    <option value="meta-llama/Meta-Llama-3.1-70B-Instruct">Llama-3.1-70B</option>
-                    <option value="meta-llama/Meta-Llama-3.1-8B-Instruct">Llama-3.1-8B</option>
+                  <optgroup label="Groq">
+                    <option>gemma2-9b-it</option>
+                    <option>llama-3.3-70b-versatile</option>
+                    <option>llama-3.1-8b-instant</option>
+                    <option>llama3-70b-8192</option>
+                    <option>llama3-8b-8192</option>
+                    <option>qwen-2.5-32b</option>
+                    <option>deepseek-r1-distill-qwen-32b</option>
+                    <option>deepseek-r1-distill-llama-70b-specdec</option>
+                    <option>deepseek-r1-distill-llama-70b</option>
+                    <option>llama-3.3-70b-specdec</option>
+                    <option>llama-3.2-1b-preview</option>
+                    <option>llama-3.2-3b-preview</option>
+                    <option>llama-3.2-11b-vision-preview</option>
+                    <option>llama-3.2-90b-vision-preview</option>
                   </optgroup>
                   <optgroup label="HF Inference">
-                    <!-- <option>meta-llama/Llama-3.1-8B-Instruct</option> -->
+                    <option>meta-llama/Llama-3.1-8B-Instruct</option>
                     <option>meta-llama/Llama-3.2-3B-Instruct</option>
-                    <!-- <option>meta-llama/Llama-3.3-70B-Instruct</option> -->
+                    <option>meta-llama/Llama-3.3-70B-Instruct</option>
                     <option>Qwen/Qwen2.5-72B-Instruct</option>
                     <option>Qwen/QwQ-32B-Preview</option>
                     <!-- Other Models -->
+                    <option>deepseek-ai/deepseek-llm-67b-chat</option>
+                    <option>deepseek-ai/DeepSeek-R1</option>
+                    <option>deepseek-ai/DeepSeek-R1-Distill-Llama-70B</option>
                     <option>deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B</option>
                     <option>deepseek-ai/DeepSeek-R1-Distill-Qwen-32B</option>
+                    <option>deepseek-ai/DeepSeek-R1-Zero</option>
+                    <option>deepseek-ai/DeepSeek-V2.5</option>
+                    <option>deepseek-ai/DeepSeek-V3</option>
                     <option>google/gemma-1.1-2b-it</option>
                     <option>google/gemma-1.1-7b-it</option>
                     <option>google/gemma-2-27b-it</option>
                     <option>google/gemma-2-2b-it</option>
                     <option>google/gemma-2-9b-it</option>
+                    <option>google/gemma-2b-it</option>
+                    <option>meta-llama/Llama-2-13b-chat-hf</option>
                     <option>meta-llama/Llama-2-7b-chat-hf</option>
+                    <option>meta-llama/Llama-3.1-405B-Instruct</option>
                     <option>meta-llama/Llama-3.1-70B-Instruct</option>
                     <option>meta-llama/Llama-3.2-1B-Instruct</option>
-                    <option>meta-llama/Llama-Guard-3-8B</option>
-                    <!-- <option>meta-llama/Meta-Llama-3-70B-Instruct</option> -->
+                    <option>meta-llama/Meta-Llama-3-70B-Instruct</option>
                     <option>meta-llama/Meta-Llama-3-8B-Instruct</option>
-                    <option>microsoft/DialoGPT-medium</option>
+                    <option>microsoft/Phi-3-mini-128k-instruct</option>
                     <option>microsoft/Phi-3-mini-4k-instruct</option>
                     <option>microsoft/Phi-3.5-mini-instruct</option>
+                    <option>mistralai/Ministral-3b-instruct</option>
                     <option>mistralai/Mistral-7B-Instruct-v0.2</option>
                     <option>mistralai/Mistral-7B-Instruct-v0.3</option>
                     <option>mistralai/Mistral-Nemo-Instruct-2407</option>
+                    <option>mistralai/Mistral-Small-24B-Instruct-2501</option>
+                    <option>mistralai/Mixtral-8x22B-Instruct-v0.1</option>
                     <option>mistralai/Mixtral-8x7B-Instruct-v0.1</option>
-                    <option>Qwen/Qwen2.5-0.5B</option>
+                    <option>Qwen/Qwen1.5-0.5B-Chat</option>
+                    <option>Qwen/Qwen1.5-1.8B-Chat</option>
+                    <option>Qwen/Qwen1.5-4B-Chat</option>
+                    <option>Qwen/Qwen2-0.5B-Instruct</option>
+                    <option>Qwen/Qwen2-1.5B-Instruct</option>
+                    <option>Qwen/Qwen2-72B-Instruct</option>
                     <option>Qwen/Qwen2.5-0.5B-Instruct</option>
-                    <option>Qwen/Qwen2.5-1.5B</option>
                     <option>Qwen/Qwen2.5-1.5B-Instruct</option>
-                    <option>Qwen/Qwen2.5-Coder-32B-Instruct</option>
+                    <option>Qwen/Qwen2.5-3B-Instruct</option>
+                    <option>Qwen/Qwen2.5-7B-Instruct</option>
                     <option>tiiuae/falcon-7b-instruct</option>
+                    <option>tiiuae/Falcon3-1B-Instruct</option>
+                    <option>vinai/PhoGPT-4B-Chat</option>
                   </optgroup>
                   <optgroup label="Mistral">
                     <option value="mistral-large-latest">Mistral Large (2411)</option>

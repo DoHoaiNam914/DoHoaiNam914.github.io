@@ -33,8 +33,8 @@ const $glossaryInput = $('#glossary-input');
 const $glossaryListSelect = $('#glossary-list-select');
 const $glossaryManagerButton = $('#glossary-manager-button');
 const $glossaryModal = $('#glossary-modal');
+const $groqApiKeyText = $('#groq-api-key-text')
 const $hfTokenText = $('#hf-token-text')
-const $hyperbolicApiKeyText = $('#hyperbolic-api-key-text');
 const $inputTextarea = $('#input-textarea');
 const $instructionsTextarea = $('#instructions-textarea');
 const $mistralApiKeyText = $('#mistral-api-key-text');
@@ -962,7 +962,7 @@ $(document).ready(async () => {
   if (localStorage.getItem('GEMINI_API_KEY') != null) $geminiApiKeyText.val(localStorage.getItem('GEMINI_API_KEY')).change()
   if (localStorage.getItem('MISTRAL_API_KEY') != null) $mistralApiKeyText.val(localStorage.getItem('MISTRAL_API_KEY')).change()
   if (localStorage.getItem('HF_TOKEN') != null) $hfTokenText.val(localStorage.getItem('HF_TOKEN')).change()
-  if (localStorage.getItem('HYPERBOLIC_API_KEY') != null) $hyperbolicApiKeyText.val(localStorage.getItem('HYPERBOLIC_API_KEY')).change()
+  if (localStorage.getItem('GROQ_API_KEY') != null) $groqApiKeyText.val(localStorage.getItem('GROQ_API_KEY')).change()
   Object.values(Translators).forEach(element => {
     switch (element) {
       case Translators.BAIDU_TRANSLATE:
@@ -975,7 +975,15 @@ $(document).ready(async () => {
         translators[element] = new DeeplTranslate($deeplAuthKeyText.val())
         break
       case Translators.GENERATIVE_AI:
-        translators[element] = new GenerativeAi(UUID.toLowerCase(), $openaiApiKeyText.val(), $deepseekApiKeyText.val(), $geminiApiKeyText.val(), $anthropicApiKeyText.val(), $mistralApiKeyText.val(), $hfTokenText.val(), $hyperbolicApiKeyText.val());
+        translators[element] = new GenerativeAi({
+          openaiApiKey: $openaiApiKeyText.val(),
+          deepseekApiKey: $deepseekApiKeyText.val(),
+          geminiApiKey: $geminiApiKeyText.val(),
+          anthropicApiKey: $anthropicApiKeyText.val(),
+          mistralApiKey: $mistralApiKeyText.val(),
+          hfToken: $hfTokenText.val(),
+          groqApiKey: $groqApiKeyText.val()
+        }, UUID.toLowerCase())
         break
       case Translators.GOOGLE_TRANSLATE:
         translators[element] = new GoogleTranslate(GOOGLE_TRANSLATE_KEY)
@@ -1335,7 +1343,15 @@ $translatorDropdown.find('.dropdown-item').click(async function onClick() {
     }
     case Translators.GENERATIVE_AI: {
       if (currentTranslator == null) {
-        currentTranslator = new GenerativeAi(UUID.toLowerCase(), $openaiApiKeyText.val(), $deepseekApiKeyText.val(), $geminiApiKeyText.val(), $anthropicApiKeyText.val(), $mistralApiKeyText.val(), $hfTokenText.val(), $hyperbolicApiKeyText.val());
+        currentTranslator = new GenerativeAi({
+          openaiApiKey: $openaiApiKeyText.val(),
+          deepseekApiKey: $deepseekApiKeyText.val(),
+          geminiApiKey: $geminiApiKeyText.val(),
+          anthropicApiKey: $anthropicApiKeyText.val(),
+          mistralApiKey: $mistralApiKeyText.val(),
+          hfToken: $hfTokenText.val(),
+          groqApiKey: $groqApiKeyText.val()
+        }, UUID.toLowerCase())
         translators[activeTranslator] = currentTranslator;
       }
 
@@ -1443,12 +1459,12 @@ $hfTokenText.change(function onChange() {
   if (localStorage.getItem('HF_TOKEN') != null && $(this).val().length === 0) localStorage.removeItem('HF_TOKEN')
   else if ($(this).val().startsWith('hf_') && localStorage.getItem('HF_TOKEN') !== $(this).val()) localStorage.setItem('HF_TOKEN', $(this).val())
 })
-$hyperbolicApiKeyText.change(function onChange() {
+$groqApiKeyText.change(function onChange() {
   const $activeTranslator = $translatorDropdown.find('.active')
   translators[Translators.GENERATIVE_AI] = null
   if ($activeTranslator.val() === Translators.GENERATIVE_AI) $activeTranslator.click()
-  if (localStorage.getItem('HYPERBOLIC_API_KEY') != null && $(this).val().length === 0) localStorage.removeItem('HYPERBOLIC_API_KEY')
-  else if (localStorage.getItem('HYPERBOLIC_API_KEY') !== $(this).val()) localStorage.setItem('HYPERBOLIC_API_KEY', $(this).val())
+  if (localStorage.getItem('GROQ_API_KEY') != null && $(this).val().length === 0) localStorage.removeItem('GROQ_API_KEY')
+  else if ($(this).val().startsWith('gsk_') && localStorage.getItem('GROQ_API_KEY') !== $(this).val()) localStorage.setItem('GROQ_API_KEY', $(this).val())
 })
 $temperatureText.change(function onChange() {
   const value = $(this).val()
@@ -1672,7 +1688,15 @@ $translateEntryButtons.click(async function onClick() {
         }
         case Translators.GENERATIVE_AI: {
           if (translator == null) {
-            translator = new GenerativeAi(UUID.toLowerCase(), $openaiApiKeyText.val(), $deepseekApiKeyText.val(), $geminiApiKeyText.val(), $anthropicApiKeyText.val(), $mistralApiKeyText.val(), $hfTokenText.val(), $hyperbolicApiKeyText.val());
+            translator = new GenerativeAi({
+              openaiApiKey: $openaiApiKeyText.val(),
+              deepseekApiKey: $deepseekApiKeyText.val(),
+              geminiApiKey: $geminiApiKeyText.val(),
+              anthropicApiKey: $anthropicApiKeyText.val(),
+              mistralApiKey: $mistralApiKeyText.val(),
+              hfToken: $hfTokenText.val(),
+              groqApiKey: $groqApiKeyText.val()
+            }, UUID.toLowerCase())
             translators[activeTranslator] = translator;
           }
 
