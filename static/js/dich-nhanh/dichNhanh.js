@@ -36,7 +36,6 @@ const $glossaryModal = $('#glossary-modal');
 const $groqApiKeyText = $('#groq-api-key-text')
 const $hfTokenText = $('#hf-token-text')
 const $inputTextarea = $('#input-textarea');
-const $instructionsTextarea = $('#instructions-textarea');
 const $mistralApiKeyText = $('#mistral-api-key-text');
 const $openaiApiKeyText = $('#openai-api-key-text');
 const $pasteButtons = $('.paste-button');
@@ -736,7 +735,7 @@ const translate = async function translateContentInTextarea(controller = new Abo
           model: $('#model-select').val(),
           temperature: parseFloat($('#temperature-text').val()),
           topP: parseFloat($('#top-p-text').val()),
-          instructions: $instructionsTextarea.val(),
+          instructions: $('#instructions-textarea').val(),
           dictionary: Object.entries(glossary.dictionary)
         })
         break
@@ -1752,7 +1751,7 @@ $translateEntryButtons.click(async function onClick() {
               model: $('#translate-entry-model-select').val(),
               temperature: parseFloat($('#translate-entry-temperature-text').val()),
               topP: parseFloat($('#translate-entry-top-p-text').val()),
-              instructions: $instructionsTextarea.val(),
+              instructions: $('#translate-entry-instructions-textarea').val(),
               dictionary: $('#apply-dictionary-switch').prop('checked') ? Object.entries(glossary.dictionary) : [],
             })
             result = result.trim()
