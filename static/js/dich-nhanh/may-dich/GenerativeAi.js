@@ -351,13 +351,13 @@ The user provided the additional info about how they would like you to translate
 \`\`\`${instructions}\`\`\`
 For each terminology, put the original terminology in the bracket. An example: translated_terminology (original_terminology)`);
         }
-        const filteredDictionary = dictionary.filter(([first]) => text.includes(first));
+        const filteredDictionary = dictionary.map(([first, second]) => [sourceLanguage ?? '', first, targetLanguage, second]).filter(([_first, second]) => text.includes(second));
         if (filteredDictionary.length > 0) {
             SYSTEM_PROMPTS.push(`# User’s Dictionary
 
 The user provided the dictionary for specific term translations:
 \`\`\`csv
-${Papa.unparse({ fields: ['sourceText', 'targetText'], data: filteredDictionary }, { newline: '\n' })}
+${Papa.unparse({ fields: ['Source language', 'Original word', 'Destination language', 'Destination word'], data: filteredDictionary }, { newline: '\n' })}
 \`\`\``);
         }
         SYSTEM_PROMPTS.push(`I will speak to you in ${sourceLanguage != null && sourceLanguage !== this.DefaultLanguage.SOURCE_LANGUAGE ? `${sourceLanguage} and you will ` : 'any language and you will detect the language, '}translate it and answer in the corrected version of my text, exclusively in ${targetLanguage}, while keeping the format.
