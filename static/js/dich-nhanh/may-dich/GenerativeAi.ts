@@ -358,8 +358,7 @@ You are trained on data up to ${/^gpt-4[^o]/.test(model) ? 'December 2023' : (mo
       SYSTEM_PROMPTS.push(`# User’s Instructions
 
 The user provided the additional info about how they would like you to translate:
-\`\`\`${instructions}\`\`\`
-For each terminology, put the original terminology in the bracket. An example: translated_terminology (original_terminology)`)
+\`\`\`${instructions}\`\`\``)
     }
     const filteredDictionary: string[][] = dictionary.map(([first, second]) => [sourceLanguage ?? '', first, targetLanguage, second]).filter(([_first, second]) => text.includes(second))
     if (filteredDictionary.length > 0) {
