@@ -138,9 +138,9 @@ export default class GenerativeAi extends Translator {
                 requestBody.max_completion_tokens = null;
             if (model !== 'o1')
                 requestBody.stream = true;
-            if (Object.hasOwn(requestBody, 'temperature') && model !== 'chatgpt-4o-latest')
+            if (Object.hasOwn(requestBody, 'temperature'))
                 requestBody.temperature = temperature;
-            if (Object.hasOwn(requestBody, 'top_p') && model !== 'chatgpt-4o-latest')
+            if (Object.hasOwn(requestBody, 'top_p'))
                 requestBody.top_p = topP;
         }
         if (!isDeepseek && this.OPENAI_API_KEY.length === 0 && new URLSearchParams(window.location.search).has('debug')) {
@@ -164,7 +164,7 @@ export default class GenerativeAi extends Translator {
         const modelParams = {
             model: 'gemini-2.0-flash'
         };
-        const { model, temperature, topP } = options;
+        const { model, temperature, topP, topK } = options;
         modelParams.model = model;
         if (modelParams.model !== 'gemini-1.0-pro')
             modelParams.systemInstruction = systemPrompts[0];
@@ -179,8 +179,7 @@ export default class GenerativeAi extends Translator {
         generationConfig.maxOutputTokens = undefined;
         generationConfig.temperature = temperature;
         generationConfig.topP = topP;
-        if (['gemini-2.0-flash-lite-preview-02-05', 'gemini-1.5-flash-001', 'gemini-1.5-pro-001', 'gemini-2.0-pro-exp-02-05', 'gemini-exp-1206', 'gemini-2.0-flash-thinking-exp-01-21', 'learnlm-1.5-pro-experimental'].some(element => modelParams.model === element))
-            generationConfig.topK = 64;
+        generationConfig.topK = topK;
         const startChatParams = {
             generationConfig,
             history: []

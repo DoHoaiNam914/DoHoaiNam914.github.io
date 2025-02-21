@@ -48,11 +48,9 @@ const $sourceLanguageSelect = $('#source-language-select');
 const $spacingText = $('#spacing-text');
 const $targetEntryTextarea = $('#target-entry-textarea');
 const $targetLanguageSelect = $('#target-language-select');
-const $temperatureText = $('#temperature-text, #translate-entry-temperature-text')
 const $textareas = $('.textarea');
 const $themeDropdown = $('#theme-dropdown');
 const $toneSelect = $('#tone-select');
-const $topPText = $('#top-p-text, #translate-entry-top-p-text')
 const $translateButton = $('#translate-button');
 const $translateEntryButton = $('#translate-entry-button');
 const $translateEntryButtons = $('.translate-entry-button');
@@ -735,6 +733,7 @@ const translate = async function translateContentInTextarea(controller = new Abo
           model: $('#model-select').val(),
           temperature: parseFloat($('#temperature-text').val()),
           topP: parseFloat($('#top-p-text').val()),
+          topK: parseInt($('#top-k-text').val()),
           instructions: $('#instructions-textarea').val(),
           dictionary: Object.entries(glossary.dictionary)
         })
@@ -1465,13 +1464,17 @@ $groqApiKeyText.change(function onChange() {
   if (localStorage.getItem('GROQ_API_KEY') != null && $(this).val().length === 0) localStorage.removeItem('GROQ_API_KEY')
   else if ($(this).val().startsWith('gsk_') && localStorage.getItem('GROQ_API_KEY') !== $(this).val()) localStorage.setItem('GROQ_API_KEY', $(this).val())
 })
-$temperatureText.change(function onChange() {
+$('#temperature-text, #translate-entry-temperature-text').change(function onChange() {
   const value = $(this).val()
   $(this).val(Math.min(parseFloat($(this).attr('max')), Math.max(parseFloat($(this).attr('min')), parseFloat(value.length === 0 ? $(this).attr('value') : value))))
 })
-$topPText.change(function onChange() {
+$('#top-p-text, #translate-entry-top-p-text').change(function onChange() {
   const value = $(this).val()
   $(this).val(Math.min(parseFloat($(this).attr('max')), Math.max(parseFloat($(this).attr('min')), parseFloat(value.length === 0 ? $(this).attr('value') : value))))
+})
+$('#top-k-text, #translate-entry-top-k-text').change(function onChange() {
+  const value = $(this).val()
+  $(this).val(Math.min(parseInt($(this).attr('max')), Math.max(parseInt($(this).attr('min')), parseInt(value.length === 0 ? $(this).attr('value') : value))))
 })
 $glossaryModal.on('shown.bs.modal', () => {
   const text = $sourceEntryInput.val();
@@ -1751,6 +1754,7 @@ $translateEntryButtons.click(async function onClick() {
               model: $('#translate-entry-model-select').val(),
               temperature: parseFloat($('#translate-entry-temperature-text').val()),
               topP: parseFloat($('#translate-entry-top-p-text').val()),
+              topK: parseInt($('#translate-entry-top-k-text').val()),
               instructions: $('#translate-entry-instructions-textarea').val(),
               dictionary: $('#apply-dictionary-switch').prop('checked') ? Object.entries(glossary.dictionary) : [],
             })
