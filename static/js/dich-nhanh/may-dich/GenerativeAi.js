@@ -178,8 +178,6 @@ export default class GenerativeAi extends Translator {
             maxOutputTokens: 8192,
             responseMimeType: 'text/plain'
         };
-        if (!/\n\s*[^\s]+/.test(message) && modelParams.model !== 'gemini-1.0-pro')
-            generationConfig.candidateCount = 5;
         generationConfig.maxOutputTokens = undefined;
         generationConfig.temperature = temperature;
         generationConfig.topP = topP;
@@ -216,7 +214,7 @@ export default class GenerativeAi extends Translator {
         const result = await chatSession.sendMessageStream(message, { signal: this.controller.signal });
         const collectedChunkTexts = [];
         for await (const chunk of result.stream) {
-            collectedChunkTexts.push(generationConfig.candidateCount != null ? chunk.candidates[generationConfig.candidateCount - 1].parts[0].text : chunk.text());
+            collectedChunkTexts.push(chunk.text());
         }
         return collectedChunkTexts.join('');
     }
@@ -263,7 +261,8 @@ export default class GenerativeAi extends Translator {
         }, { fetchOptions: { signal: this.controller.signal } });
         const collectedMessages = [];
         for await (const chunk of result) {
-            collectedMessages.push(chunk.data.choices[!/\n\s*[^\s]+/.test(message) ? 4 : 0].delta.content);
+            if (/\n\s*[^\s]+/.test(message) || chunk.data.choices[0].index === 4)
+                collectedMessages.push(chunk.data.choices[0].delta.content);
         }
         return collectedMessages.join('');
     }
