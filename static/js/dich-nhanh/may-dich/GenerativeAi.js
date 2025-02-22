@@ -136,7 +136,7 @@ export default class GenerativeAi extends Translator {
             requestBody.model = model;
             if (Object.hasOwn(requestBody, 'max_completion_tokens'))
                 requestBody.max_completion_tokens = null;
-            if (!/\n\s*[^\s]+/.test(message))
+            if (!/\n\s*[^\s]+/.test(message) && requestBody.model !== 'chatgpt-4o-latest')
                 requestBody.n = 5;
             if (model !== 'o1')
                 requestBody.stream = true;
