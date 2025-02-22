@@ -89,7 +89,7 @@ export default class GenerativeAi extends Translator {
         'air-user-id': this.AIR_USER_ID
       },
       signal: this.controller.signal
-    }).then(response => requestBody.stream === true ? (response.data as string).split('\n').filter(element => element.startsWith('data: ') && !element.startsWith('data: [DONE]')).map(element => JSON.parse(`{${element.replace('data: ', '"data":')}}`).data.choices[0].delta.content).filter(element => element != null).join('') : response.data.choices[0].message.content).catch(error => {
+    }).then(response => requestBody.stream === true ? (response.data as string).split('\n').filter(element => element.startsWith('data: ') && !element.startsWith('data: [DONE]')).map(element => JSON.parse(`{${element.replace('data: ', '"data":')}}`).data.choices[requestBody.n != null ? requestBody.n - 1 : 0].delta.content).filter(element => element != null).join('') : response.data.choices[requestBody.n != null ? requestBody.n - 1 : 0].message.content).catch(error => {
       throw new Error(error.data)
     })
     return response
@@ -142,11 +142,11 @@ export default class GenerativeAi extends Translator {
       ]
       requestBody.model = model
       if (Object.hasOwn(requestBody, 'max_completion_tokens')) requestBody.max_completion_tokens = null
+      if (!/\n\s*[^\s]+/.test(message)) requestBody.n = 5
       if (model !== 'o1') requestBody.stream = true
       if (Object.hasOwn(requestBody, 'temperature')) requestBody.temperature = temperature
       if (Object.hasOwn(requestBody, 'top_p')) requestBody.top_p = topP
     }
-
     if (!isDeepseek && this.OPENAI_API_KEY.length === 0 && new URLSearchParams(window.location.search).has('debug')) {
       return await this.translatenowMain(requestBody)
     } else {
@@ -154,7 +154,7 @@ export default class GenerativeAi extends Translator {
       if (requestBody.stream as boolean) {
         const collectedMessages: string[] = []
         for await (const chunk of response) {
-          collectedMessages.push(chunk.choices[0].delta.content)
+          collectedMessages.push(chunk.choices[requestBody.n != null ? requestBody.n - 1 : 0].delta.content)
         }
         return collectedMessages.filter(element => element != null).join('')
       } else {
@@ -180,6 +180,7 @@ export default class GenerativeAi extends Translator {
       responseMimeType: 'text/plain'
     }
 
+    if (!/\n\s*[^\s]+/.test(message) && modelParams.model !== 'gemini-1.0-pro') generationConfig.candidateCount = 5
     generationConfig.maxOutputTokens = undefined
     generationConfig.temperature = temperature
     generationConfig.topP = topP
@@ -219,7 +220,7 @@ export default class GenerativeAi extends Translator {
     const result = await chatSession.sendMessageStream(message, { signal: this.controller.signal })
     const collectedChunkTexts: string[] = []
     for await (const chunk of result.stream) {
-      collectedChunkTexts.push(chunk.text())
+      collectedChunkTexts.push(generationConfig.candidateCount != null ? chunk.candidates[generationConfig.candidateCount - 1].parts[0].text : chunk.text())
     }
     return collectedChunkTexts.join('')
   }
@@ -263,11 +264,12 @@ export default class GenerativeAi extends Translator {
           role: 'user',
           content: message
         }
-      ]
+      ],
+      ...!/\n\s*[^\s]+/.test(message) ? { n: 5 } : {}
     }, { fetchOptions: { signal: this.controller.signal } })
     const collectedMessages: string[] = []
     for await (const chunk of result) {
-      collectedMessages.push(chunk.data.choices[0].delta.content)
+      collectedMessages.push(chunk.data.choices[!/\n\s*[^\s]+/.test(message) ? 4 : 0].delta.content)
     }
     return collectedMessages.join('')
   }
@@ -329,13 +331,14 @@ export default class GenerativeAi extends Translator {
       }
     ]
     requestBody.model = model
+    if (!/\n\s*[^\s]+/.test(message)) requestBody.n = 1
     requestBody.temperature = temperature
     requestBody.top_p = topP
     const chatCompletion = await this.groq.chat.completions.create(requestBody)
 
     const collectedMessages: string[] = []
     for await (const chunk of chatCompletion) {
-      collectedMessages.push(chunk.choices[0]?.delta?.content ?? '')
+      collectedMessages.push(chunk.choices[requestBody.n != null ? requestBody.n - 1 : 0]?.delta?.content ?? '')
     }
     return collectedMessages.join('')
   }
