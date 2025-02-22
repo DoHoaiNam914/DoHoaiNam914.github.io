@@ -89,7 +89,7 @@ export default class GenerativeAi extends Translator {
         'air-user-id': this.AIR_USER_ID
       },
       signal: this.controller.signal
-    }).then(response => requestBody.stream === true ? (response.data as string).split('\n').filter(element => element.startsWith('data: ') && !element.startsWith('data: [DONE]')).map(element => JSON.parse(`{${element.replace('data: ', '"data":')}}`).data.choices[requestBody.n != null ? requestBody.n - 1 : 0].delta.content).filter(element => element != null).join('') : response.data.choices[requestBody.n != null ? requestBody.n - 1 : 0].message.content).catch(error => {
+    }).then(response => requestBody.stream === true ? (response.data as string).split('\n').filter(element => element.startsWith('data: ') && !element.startsWith('data: [DONE]')).map(element => JSON.parse(`{${element.replace('data: ', '"data":')}}`).data).map(element => requestBody.n == null || element.choices[0].index === requestBody.n - 1).map(element => element.choices[0].delta.content).filter(element => element != null).join('') : response.data.choices[requestBody.n != null ? requestBody.n - 1 : 0].message.content).catch(error => {
       throw new Error(error.data)
     })
     return response
@@ -154,11 +154,11 @@ export default class GenerativeAi extends Translator {
       if (requestBody.stream as boolean) {
         const collectedMessages: string[] = []
         for await (const chunk of response) {
-          collectedMessages.push(chunk.choices[requestBody.n != null ? requestBody.n - 1 : 0].delta.content)
+          if (requestBody.n == null || chunk.choices[0].index === requestBody.n - 1) collectedMessages.push(chunk.choices[0].delta.content)
         }
         return collectedMessages.filter(element => element != null).join('')
       } else {
-        return response.choices[0].message.content
+        return response.choices[requestBody.n != null ? requestBody.n - 1 : 0].message.content
       }
     }
   }
