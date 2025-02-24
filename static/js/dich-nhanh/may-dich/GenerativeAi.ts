@@ -380,6 +380,6 @@ Your output must only contain the translated text and cannot include explanation
       throw reason
     })
     super.translateText(text, targetLanguage, sourceLanguage)
-    return model.toLowerCase().includes('deepseek-r1') ? result.replace(/<think>\n(?:.*\n?)+\n<\/think>\n/, '') : result
+    return model.toLowerCase().includes('deepseek-r1') ? result.replace(/<think>\n(?:.+\n+)+<\/think>\n{2}/, '') : result
   }
 }
