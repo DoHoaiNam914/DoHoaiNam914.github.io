@@ -1465,16 +1465,13 @@ $groqApiKeyText.change(function onChange() {
   else if ($(this).val().startsWith('gsk_') && localStorage.getItem('GROQ_API_KEY') !== $(this).val()) localStorage.setItem('GROQ_API_KEY', $(this).val())
 })
 $('#temperature-text, #translate-entry-temperature-text').change(function onChange() {
-  const value = $(this).val()
-  $(this).val(Math.min(parseFloat($(this).attr('max')), Math.max(parseFloat($(this).attr('min')), parseFloat(value.length === 0 ? $(this).attr('value') : value))))
+  $(this).val(Math.min(parseFloat($(this).attr('max')), Math.max(parseFloat($(this).attr('min')), parseFloat($(this).val()))))
 })
 $('#top-p-text, #translate-entry-top-p-text').change(function onChange() {
-  const value = $(this).val()
-  $(this).val(Math.min(parseFloat($(this).attr('max')), Math.max(parseFloat($(this).attr('min')), parseFloat(value.length === 0 ? $(this).attr('value') : value))))
+  $(this).val(Math.min(parseFloat($(this).attr('max')), Math.max(parseFloat($(this).attr('min')), parseFloat($(this).val()))))
 })
 $('#top-k-text, #translate-entry-top-k-text').change(function onChange() {
-  const value = $(this).val()
-  $(this).val(Math.min(parseInt($(this).attr('max')), Math.max(parseInt($(this).attr('min')), parseInt(value.length === 0 ? $(this).attr('value') : value))))
+  $(this).val(Math.max(parseInt($(this).attr('min')), parseInt($(this).val())))
 })
 $glossaryModal.on('shown.bs.modal', () => {
   const text = $sourceEntryInput.val();
