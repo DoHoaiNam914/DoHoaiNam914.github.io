@@ -136,6 +136,7 @@ export default class GenerativeAi extends Translator {
             requestBody.model = model;
             if (Object.hasOwn(requestBody, 'max_completion_tokens'))
                 requestBody.max_completion_tokens = null;
+            requestBody.seed = 1234;
             if (!/\n\s*[^\s]+/.test(message) && requestBody.model !== 'chatgpt-4o-latest')
                 requestBody.n = 5;
             if (model !== 'o1')
@@ -183,6 +184,7 @@ export default class GenerativeAi extends Translator {
         generationConfig.temperature = temperature;
         generationConfig.topP = topP;
         generationConfig.topK = topK;
+        generationConfig.seed = 1234;
         const startChatParams = {
             generationConfig,
             history: []
@@ -260,6 +262,7 @@ export default class GenerativeAi extends Translator {
                     content: message
                 }
             ],
+            random_seed: 1234,
             ...!/\n\s*[^\s]+/.test(message) ? { n: 5 } : {}
         }, { fetchOptions: { signal: this.controller.signal } });
         const collectedMessages = [];
@@ -289,6 +292,7 @@ export default class GenerativeAi extends Translator {
                 role: 'user'
             }
         ];
+        chatCompletionInput.seed = 1234;
         chatCompletionInput.temperature = temperature;
         chatCompletionInput.top_p = topP;
         chatCompletionInput.model = model;
@@ -324,6 +328,7 @@ export default class GenerativeAi extends Translator {
         requestBody.model = model;
         if (!/\n\s*[^\s]+/.test(message))
             requestBody.n = 1;
+        requestBody.seed = 1234;
         requestBody.temperature = temperature;
         requestBody.top_p = topP;
         const chatCompletion = await this.groq.chat.completions.create(requestBody);
@@ -337,11 +342,11 @@ export default class GenerativeAi extends Translator {
         if (options.model == null)
             options.model = 'gpt-4o-mini';
         if (options.temperature == null)
-            options.temperature = 0.2;
+            options.temperature = 1;
         if (options.topP == null)
             options.topP = 1;
         if (options.topK == null)
-            options.topK = 40;
+            options.topK = 10;
         if (options.instructions == null)
             options.instructions = '';
         if (options.dictionary == null)
