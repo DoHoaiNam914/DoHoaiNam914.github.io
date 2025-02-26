@@ -142,6 +142,7 @@ export default class GenerativeAi extends Translator {
       ]
       requestBody.model = model
       if (Object.hasOwn(requestBody, 'max_completion_tokens')) requestBody.max_completion_tokens = null
+      requestBody.seed = 1234
       if (!/\n\s*[^\s]+/.test(message) && requestBody.model !== 'chatgpt-4o-latest') requestBody.n = 5
       if (model !== 'o1') requestBody.stream = true
       if (Object.hasOwn(requestBody, 'temperature')) requestBody.temperature = temperature
@@ -184,6 +185,7 @@ export default class GenerativeAi extends Translator {
     generationConfig.temperature = temperature
     generationConfig.topP = topP
     generationConfig.topK = topK
+    generationConfig.seed = 1234
     const startChatParams: { [key: string]: any } = {
       generationConfig,
       history: [
@@ -266,6 +268,7 @@ export default class GenerativeAi extends Translator {
           content: message
         }
       ],
+      random_seed: 1234,
       ...!/\n\s*[^\s]+/.test(message) ? { n: 5 } : {}
     }, { fetchOptions: { signal: this.controller.signal } })
     const collectedMessages: string[] = []
@@ -296,6 +299,7 @@ export default class GenerativeAi extends Translator {
         role: 'user'
       }
     ]
+    chatCompletionInput.seed = 1234
     chatCompletionInput.temperature = temperature
     chatCompletionInput.top_p = topP
     chatCompletionInput.model = model
@@ -333,6 +337,7 @@ export default class GenerativeAi extends Translator {
     ]
     requestBody.model = model
     if (!/\n\s*[^\s]+/.test(message)) requestBody.n = 1
+    requestBody.seed = 1234
     requestBody.temperature = temperature
     requestBody.top_p = topP
     const chatCompletion = await this.groq.chat.completions.create(requestBody)
@@ -346,9 +351,9 @@ export default class GenerativeAi extends Translator {
 
   public async translateText (text, targetLanguage: string, options: { sourceLanguage: string | null, model?: string, temperature?: number, topP?: number, topK?: number, instructions?: string, dictionary?: string[][] } = { sourceLanguage: null }): Promise<string> {
     if (options.model == null) options.model = 'gpt-4o-mini'
-    if (options.temperature == null) options.temperature = 0.2
+    if (options.temperature == null) options.temperature = 1
     if (options.topP == null) options.topP = 1
-    if (options.topK == null) options.topK = 40
+    if (options.topK == null) options.topK = 10
     if (options.instructions == null) options.instructions = ''
     if (options.dictionary == null) options.dictionary = []
     const { sourceLanguage, model, instructions, dictionary } = options
