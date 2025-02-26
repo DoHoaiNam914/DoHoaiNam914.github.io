@@ -87,7 +87,7 @@ export default class GenerativeAi extends Translator {
         });
         return response;
     }
-    async openaiMain(options, systemPrompts, message) {
+    async openaiMain(options, systemInstructions, message) {
         const { model, temperature, topP } = options;
         const isDeepseek = model.startsWith('deepseek');
         const requestBody = isDeepseek
@@ -115,7 +115,7 @@ export default class GenerativeAi extends Translator {
         if (isDeepseek) {
             requestBody.model = model;
             requestBody.messages = [
-                ...systemPrompts.map(element => ({ content: element, role: 'system' })),
+                ...systemInstructions.map((element, index) => ({ content: element, role: index > 0 ? 'user' : 'system' })),
                 {
                     content: message,
                     role: 'user'
@@ -127,7 +127,7 @@ export default class GenerativeAi extends Translator {
         }
         else {
             requestBody.messages = [
-                ...systemPrompts.map(element => ({ content: element, role: /^o\d/.test(model) ? (model === 'o1-mini' ? 'user' : 'developer') : 'system' })),
+                ...systemInstructions.map((element, index) => ({ content: element, role: index > 0 ? 'user' : (/^o\d/.test(model) ? (model === 'o1-mini' ? 'user' : 'developer') : 'system') })),
                 {
                     content: message,
                     role: 'user'
@@ -163,14 +163,14 @@ export default class GenerativeAi extends Translator {
             }
         }
     }
-    async runGoogleGenerativeAI(options, systemPrompts, message) {
+    async runGoogleGenerativeAI(options, systemInstructions, message) {
         const modelParams = {
             model: 'gemini-2.0-flash'
         };
         const { model, temperature, topP, topK } = options;
         modelParams.model = model;
         if (modelParams.model !== 'gemini-1.0-pro')
-            modelParams.systemInstruction = systemPrompts[0];
+            modelParams.systemInstruction = systemInstructions[0];
         const generativeModel = this.genAI.getGenerativeModel(modelParams);
         const generationConfig = {
             temperature: 1,
@@ -210,7 +210,7 @@ export default class GenerativeAi extends Translator {
                 threshold: HarmBlockThreshold.BLOCK_NONE
             }
         ];
-        startChatParams.history.push(...(modelParams.model === 'gemini-1.0-pro' ? systemPrompts : systemPrompts.slice(1)).map(element => ({ role: 'user', parts: [{ text: element }] })));
+        startChatParams.history.push(...(modelParams.model === 'gemini-1.0-pro' ? systemInstructions : systemInstructions.slice(1)).map(element => ({ role: 'user', parts: [{ text: element }] })));
         const chatSession = generativeModel.startChat(startChatParams);
         const result = await chatSession.sendMessageStream(message, { signal: this.controller.signal });
         const collectedChunkTexts = [];
@@ -219,24 +219,26 @@ export default class GenerativeAi extends Translator {
         }
         return collectedChunkTexts.join('');
     }
-    async anthropicMain(options, systemPrompts, message) {
+    async anthropicMain(options, systemInstructions, message) {
         const body = {
             model: 'claude-3-5-sonnet-20241022',
             max_tokens: 1000,
             temperature: 0,
             messages: []
         };
-        const { model, temperature, topP } = options;
+        const { model, temperature, topP, topK } = options;
         body.model = model;
         body.messages = [
+            ...systemInstructions.slice(1).map(element => ({ role: 'user', content: element })),
             {
                 role: 'user',
                 content: message
             }
         ];
         body.max_tokens = undefined;
-        body.system = systemPrompts.map(element => ({ text: element, type: 'text' }));
+        body.system = systemInstructions[0];
         body.temperature = temperature;
+        body.top_k = topK;
         body.top_p = topP;
         const collectedTexts = [];
         await this.anthropic.messages.stream(body, { signal: this.controller.signal }).on('text', text => {
@@ -244,7 +246,7 @@ export default class GenerativeAi extends Translator {
         });
         return collectedTexts.join('');
     }
-    async runMistral(options, systemPrompts, message) {
+    async runMistral(options, systemInstructions, message) {
         const { model, temperature, topP } = options;
         const result = await this.mistralClient.chat.stream({
             model,
@@ -252,7 +254,7 @@ export default class GenerativeAi extends Translator {
             topP,
             maxTokens: undefined,
             messages: [
-                ...systemPrompts.map(element => ({ role: 'system', content: element })),
+                ...systemInstructions.map((element, index) => ({ role: index > 0 ? 'user' : 'system', content: element })),
                 {
                     role: 'user',
                     content: message
@@ -267,7 +269,7 @@ export default class GenerativeAi extends Translator {
         }
         return collectedMessages.join('');
     }
-    async launch(options, systemPrompts, message) {
+    async launch(options, systemInstructions, message) {
         let out = '';
         const chatCompletionInput = {
             model: 'meta-llama/Llama-3.1-8B-Instruct',
@@ -281,7 +283,7 @@ export default class GenerativeAi extends Translator {
         const { model, temperature, topP } = options;
         chatCompletionInput.max_tokens = undefined;
         chatCompletionInput.messages = [
-            ...systemPrompts.flatMap(element => ['google', 'mistralai', 'tiiuae'].some(element => model.startsWith(element)) ? [{ content: element, role: 'user' }, { content: '', role: 'assistant' }] : { content: element, role: 'system' }),
+            ...systemInstructions.flatMap((element, index) => ['google', 'mistralai', 'tiiuae'].some(element => model.startsWith(element)) ? [{ content: element, role: 'user' }, { content: '', role: 'assistant' }] : { content: element, role: index > 0 ? 'user' : 'system' }),
             {
                 content: message,
                 role: 'user'
@@ -300,7 +302,7 @@ export default class GenerativeAi extends Translator {
         }
         return out;
     }
-    async groqMain(options, systemPrompts, message) {
+    async groqMain(options, systemInstructions, message) {
         const { model, temperature, topP } = options;
         const requestBody = {
             messages: [],
@@ -313,7 +315,7 @@ export default class GenerativeAi extends Translator {
         };
         requestBody.max_completion_tokens = null;
         requestBody.messages = [
-            ...systemPrompts.flatMap(element => ({ content: element, role: 'system' })),
+            ...systemInstructions.flatMap((element, index) => ({ content: element, role: index > 0 ? 'user' : 'system' })),
             {
                 content: message,
                 role: 'user'
@@ -338,6 +340,8 @@ export default class GenerativeAi extends Translator {
             options.temperature = 0.2;
         if (options.topP == null)
             options.topP = 1;
+        if (options.topK == null)
+            options.topK = 40;
         if (options.instructions == null)
             options.instructions = '';
         if (options.dictionary == null)
