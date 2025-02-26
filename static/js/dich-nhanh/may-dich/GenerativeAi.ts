@@ -95,7 +95,7 @@ export default class GenerativeAi extends Translator {
     return response
   }
 
-  public async openaiMain (options, systemPrompts, message): Promise<string> {
+  public async openaiMain (options, systemInstructions, message): Promise<string> {
     const { model, temperature, topP } = options as { model: string, temperature: number, topP: number }
     const isDeepseek = model.startsWith('deepseek')
     const requestBody: { [key: string]: any } = isDeepseek
@@ -123,7 +123,7 @@ export default class GenerativeAi extends Translator {
     if (isDeepseek) {
       requestBody.model = model
       requestBody.messages = [
-        ...systemPrompts.map(element => ({ content: element, role: 'system' })),
+        ...systemInstructions.map((element, index) => ({ content: element, role: index > 0 ? 'user' : 'system' })),
         {
           content: message,
           role: 'user'
@@ -134,7 +134,7 @@ export default class GenerativeAi extends Translator {
       requestBody.top_p = topP
     } else {
       requestBody.messages = [
-        ...systemPrompts.map(element => ({ content: element, role: /^o\d/.test(model) ? (model === 'o1-mini' ? 'user' : 'developer') : 'system' })),
+        ...systemInstructions.map((element, index) => ({ content: element, role: index > 0 ? 'user' : (/^o\d/.test(model) ? (model === 'o1-mini' ? 'user' : 'developer') : 'system') })),
         {
           content: message,
           role: 'user'
@@ -163,16 +163,16 @@ export default class GenerativeAi extends Translator {
     }
   }
 
-  public async runGoogleGenerativeAI (options, systemPrompts, message): Promise<string> {
+  public async runGoogleGenerativeAI (options, systemInstructions, message): Promise<string> {
     const modelParams: { [key: string]: string } = {
       model: 'gemini-2.0-flash'
     }
     const { model, temperature, topP, topK } = options
     modelParams.model = model
-    if (modelParams.model !== 'gemini-1.0-pro') modelParams.systemInstruction = systemPrompts[0]
+    if (modelParams.model !== 'gemini-1.0-pro') modelParams.systemInstruction = systemInstructions[0]
     const generativeModel = this.genAI.getGenerativeModel(modelParams)
 
-    const generationConfig = {
+    const generationConfig: { [key: string]: any } = {
       temperature: 1,
       topP: 0.95,
       topK: 40,
@@ -212,7 +212,7 @@ export default class GenerativeAi extends Translator {
         threshold: HarmBlockThreshold.BLOCK_NONE
       }
     ]
-    startChatParams.history.push(...(modelParams.model === 'gemini-1.0-pro' ? systemPrompts : systemPrompts.slice(1)).map(element => ({ role: 'user', parts: [{ text: element }] })))
+    startChatParams.history.push(...(modelParams.model === 'gemini-1.0-pro' ? systemInstructions : systemInstructions.slice(1)).map(element => ({ role: 'user', parts: [{ text: element }] })))
 
     const chatSession = generativeModel.startChat(startChatParams)
 
@@ -224,24 +224,26 @@ export default class GenerativeAi extends Translator {
     return collectedChunkTexts.join('')
   }
 
-  public async anthropicMain (options, systemPrompts, message): Promise<string> {
+  public async anthropicMain (options, systemInstructions, message): Promise<string> {
     const body: { [key: string]: any } = {
       model: 'claude-3-5-sonnet-20241022',
       max_tokens: 1000,
       temperature: 0,
       messages: []
     }
-    const { model, temperature, topP } = options as { model: string, temperature: number, topP: number }
+    const { model, temperature, topP, topK } = options as { model: string, temperature: number, topP: number, topK: number }
     body.model = model
     body.messages = [
+      ...systemInstructions.slice(1).map(element => ({ role: 'user', content: element })),
       {
         role: 'user',
         content: message
       }
     ]
     body.max_tokens = undefined
-    body.system = systemPrompts.map(element => ({ text: element, type: 'text' }))
+    body.system = systemInstructions[0]
     body.temperature = temperature
+    body.top_k = topK
     body.top_p = topP
     const collectedTexts: string[] = []
     await this.anthropic.messages.stream(body, { signal: this.controller.signal }).on('text', text => {
@@ -250,7 +252,7 @@ export default class GenerativeAi extends Translator {
     return collectedTexts.join('')
   }
 
-  public async runMistral (options, systemPrompts, message): Promise<string> {
+  public async runMistral (options, systemInstructions, message): Promise<string> {
     const { model, temperature, topP } = options as { model: string, temperature: number, topP: number }
     const result = await this.mistralClient.chat.stream({
       model,
@@ -258,7 +260,7 @@ export default class GenerativeAi extends Translator {
       topP,
       maxTokens: undefined,
       messages: [
-        ...systemPrompts.map(element => ({ role: 'system', content: element })),
+        ...systemInstructions.map((element, index) => ({ role: index > 0 ? 'user' : 'system', content: element })),
         {
           role: 'user',
           content: message
@@ -273,7 +275,7 @@ export default class GenerativeAi extends Translator {
     return collectedMessages.join('')
   }
 
-  public async launch (options, systemPrompts, message): Promise<string> {
+  public async launch (options, systemInstructions, message): Promise<string> {
     let out = ''
 
     const chatCompletionInput: { [key: string]: any } = {
@@ -288,7 +290,7 @@ export default class GenerativeAi extends Translator {
     const { model, temperature, topP } = options as { model: string, temperature: number, topP: number }
     chatCompletionInput.max_tokens = undefined
     chatCompletionInput.messages = [
-      ...systemPrompts.flatMap(element => ['google', 'mistralai', 'tiiuae'].some(element => model.startsWith(element)) ? [{ content: element, role: 'user' }, { content: '', role: 'assistant' }] : { content: element, role: 'system' }),
+      ...systemInstructions.flatMap((element, index) => ['google', 'mistralai', 'tiiuae'].some(element => model.startsWith(element)) ? [{ content: element, role: 'user' }, { content: '', role: 'assistant' }] : { content: element, role: index > 0 ? 'user' : 'system' }),
       {
         content: message,
         role: 'user'
@@ -310,7 +312,7 @@ export default class GenerativeAi extends Translator {
     return out
   }
 
-  public async groqMain (options, systemPrompts, message): Promise<string> {
+  public async groqMain (options, systemInstructions, message): Promise<string> {
     const { model, temperature, topP } = options as { model: string, temperature: number, topP: number }
     const requestBody: { [key: string]: any } = {
       messages: [],
@@ -323,7 +325,7 @@ export default class GenerativeAi extends Translator {
     }
     requestBody.max_completion_tokens = null
     requestBody.messages = [
-      ...systemPrompts.flatMap(element => ({ content: element, role: 'system' })),
+      ...systemInstructions.flatMap((element, index) => ({ content: element, role: index > 0 ? 'user' : 'system' })),
       {
         content: message,
         role: 'user'
@@ -346,6 +348,7 @@ export default class GenerativeAi extends Translator {
     if (options.model == null) options.model = 'gpt-4o-mini'
     if (options.temperature == null) options.temperature = 0.2
     if (options.topP == null) options.topP = 1
+    if (options.topK == null) options.topK = 40
     if (options.instructions == null) options.instructions = ''
     if (options.dictionary == null) options.dictionary = []
     const { sourceLanguage, model, instructions, dictionary } = options
