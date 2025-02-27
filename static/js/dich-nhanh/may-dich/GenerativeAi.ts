@@ -143,7 +143,7 @@ export default class GenerativeAi extends Translator {
       requestBody.model = model
       if (Object.hasOwn(requestBody, 'max_completion_tokens')) requestBody.max_completion_tokens = null
       requestBody.seed = 1234
-      if (!/\n\s*[^\s]+/.test(message) && ['chatgpt-4o-latest', 'o3-mini'].some(element => requestBody.model !== element)) requestBody.n = 5
+      if (!/\n\s*[^\s]+/.test(message) && ['chatgpt-4o-latest', 'o3-mini'].every(element => requestBody.model !== element)) requestBody.n = 5
       if (model !== 'o1') requestBody.stream = true
       if (Object.hasOwn(requestBody, 'temperature')) requestBody.temperature = temperature
       if (Object.hasOwn(requestBody, 'top_p')) requestBody.top_p = topP
