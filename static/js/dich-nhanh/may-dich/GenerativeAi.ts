@@ -155,7 +155,7 @@ export default class GenerativeAi extends Translator {
       if (requestBody.stream as boolean) {
         const collectedMessages: string[] = []
         for await (const chunk of response) {
-          if (requestBody.n == null || requestBody.model === 'o3-mini' || chunk.choices[0].index === requestBody.n - 1) collectedMessages.push(chunk.choices[0].delta.content)
+          if (isDeepseek || requestBody.n == null || requestBody.model === 'o3-mini' || chunk.choices[0].index === requestBody.n - 1) collectedMessages.push(chunk.choices[0].delta.content)
         }
         return collectedMessages.filter(element => element != null).join('')
       } else {
