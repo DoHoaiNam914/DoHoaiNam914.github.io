@@ -351,9 +351,9 @@ export default class GenerativeAi extends Translator {
 
   public async translateText (text, targetLanguage: string, options: { sourceLanguage: string | null, model?: string, temperature?: number, topP?: number, topK?: number, instructions?: string, dictionary?: string[][] } = { sourceLanguage: null }): Promise<string> {
     if (options.model == null) options.model = 'gpt-4o-mini'
-    if (options.temperature == null) options.temperature = 1
-    if (options.topP == null) options.topP = 1
-    if (options.topK == null) options.topK = 10
+    if (options.temperature == null) options.temperature = 0.1
+    if (options.topP == null) options.topP = 0.95
+    if (options.topK == null) options.topK = 50
     if (options.instructions == null) options.instructions = ''
     if (options.dictionary == null) options.dictionary = []
     const { sourceLanguage, model, instructions, dictionary } = options
