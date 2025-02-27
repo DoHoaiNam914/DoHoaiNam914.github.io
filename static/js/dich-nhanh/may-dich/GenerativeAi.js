@@ -82,7 +82,7 @@ export default class GenerativeAi extends Translator {
                 'air-user-id': this.AIR_USER_ID
             },
             signal: this.controller.signal
-        }).then(response => requestBody.stream === true ? response.data.split('\n').filter(element => element.startsWith('data: ') && !element.startsWith('data: [DONE]')).map(element => JSON.parse(`{${element.replace('data: ', '"data":')}}`).data).filter(element => requestBody.n == null || requestBody.model === 'o3-mini' || element.choices[0].index === requestBody.n - 1).map(element => element.choices[0].delta.content).filter(element => element != null).join('') : response.data.choices[requestBody.n != null ? requestBody.n - 1 : 0].message.content).catch(error => {
+        }).then(response => requestBody.stream === true ? response.data.split('\n').filter(element => element.startsWith('data: ') && !element.startsWith('data: [DONE]')).map(element => JSON.parse(`{${element.replace('data: ', '"data":')}}`).data).filter(element => requestBody.n == null || element.choices[0].index === requestBody.n - 1).map(element => element.choices[0].delta.content).filter(element => element != null).join('') : response.data.choices[requestBody.n != null ? requestBody.n - 1 : 0].message.content).catch(error => {
             throw new Error(error.data);
         });
         return response;
@@ -137,7 +137,7 @@ export default class GenerativeAi extends Translator {
             if (Object.hasOwn(requestBody, 'max_completion_tokens'))
                 requestBody.max_completion_tokens = null;
             requestBody.seed = 1234;
-            if (!/\n\s*[^\s]+/.test(message) && requestBody.model !== 'chatgpt-4o-latest')
+            if (!/\n\s*[^\s]+/.test(message) && ['chatgpt-4o-latest', 'o3-mini'].some(element => requestBody.model !== element))
                 requestBody.n = 5;
             if (model !== 'o1')
                 requestBody.stream = true;
@@ -154,7 +154,7 @@ export default class GenerativeAi extends Translator {
             if (requestBody.stream) {
                 const collectedMessages = [];
                 for await (const chunk of response) {
-                    if (isDeepseek || requestBody.n == null || requestBody.model === 'o3-mini' || chunk.choices[0].index === requestBody.n - 1)
+                    if (requestBody.n == null || chunk.choices[0].index === requestBody.n - 1)
                         collectedMessages.push(chunk.choices[0].delta.content);
                 }
                 return collectedMessages.filter(element => element != null).join('');
