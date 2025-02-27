@@ -342,11 +342,11 @@ export default class GenerativeAi extends Translator {
         if (options.model == null)
             options.model = 'gpt-4o-mini';
         if (options.temperature == null)
-            options.temperature = 1;
+            options.temperature = 0.1;
         if (options.topP == null)
-            options.topP = 1;
+            options.topP = 0.95;
         if (options.topK == null)
-            options.topK = 10;
+            options.topK = 50;
         if (options.instructions == null)
             options.instructions = '';
         if (options.dictionary == null)
