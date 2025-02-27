@@ -746,7 +746,7 @@ const translate = async function translateContentInTextarea(controller = new Abo
     }
     if (controller.signal.aborted) return
     $translateTimer.text(Date.now() - startTime)
-    $resultTextarea.html(buildResult(text, result, $activeTranslator.val()))
+    $resultTextarea.html(buildResult(text, $activeTranslator.val() === Translators.GENERATIVE_AI ? result.replaceAll(/\n{2}/g, '\n') : result, $activeTranslator.val()))
     $resultTextarea.find('p > i').on('dblclick', function onDblclick() {
       const range = document.createRange()
       const selection = window.getSelection()
@@ -1759,7 +1759,7 @@ $translateEntryButtons.click(async function onClick() {
               instructions: $('#translate-entry-instructions-textarea').val(),
               dictionary: $('#apply-dictionary-switch').prop('checked') ? Object.entries(glossary.dictionary) : [],
             })
-            result = result.trim()
+            result = result.trim().replaceAll(/\n/g, ' ')
             break;
           default:
             translator.controller = entryTranslationController
