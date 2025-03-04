@@ -245,7 +245,7 @@ export default class GenerativeAi extends Translator {
     body.max_tokens = undefined
     body.system = systemInstructions[0]
     body.temperature = temperature
-    if (/-thinking$/.test(model) {
+    if (/-thinking$/.test(model)) {
       body.thinking = {
         type: 'enabled',
         budget_tokens: 16000
