@@ -244,15 +244,16 @@ export default class GenerativeAi extends Translator {
     ]
     body.max_tokens = undefined
     body.system = systemInstructions[0]
-    body.temperature = temperature
     if (/-thinking$/.test(model)) {
       body.thinking = {
         type: 'enabled',
         budget_tokens: 16000
       }
+    } else {
+      body.temperature = temperature
+      body.top_k = topK
+      body.top_p = topP
     }
-    body.top_k = topK
-    body.top_p = topP
     const collectedTexts: string[] = []
     await this.anthropic.messages.stream(body, { signal: this.controller.signal }).on('text', text => {
       collectedTexts.push(text)
