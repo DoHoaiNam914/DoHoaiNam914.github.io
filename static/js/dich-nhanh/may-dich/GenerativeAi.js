@@ -222,9 +222,9 @@ export default class GenerativeAi extends Translator {
     }
     async anthropicMain(options, systemInstructions, message) {
         const body = {
-            model: 'claude-3-5-sonnet-20241022',
-            max_tokens: 1000,
-            temperature: 0,
+            model: 'claude-3-7-sonnet-20250219',
+            max_tokens: 20000,
+            temperature: 1,
             messages: []
         };
         const { model, temperature, topP, topK } = options;
