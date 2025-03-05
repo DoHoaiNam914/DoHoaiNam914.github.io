@@ -282,7 +282,7 @@ export default class GenerativeAi extends Translator {
     }, { fetchOptions: { signal: this.controller.signal } })
     const collectedMessages: string[] = []
     for await (const chunk of result) {
-      if (canMultiCompletion || chunk.data.choices[0].index === 4) collectedMessages.push(chunk.data.choices[0].delta.content)
+      if (!canMultiCompletion || chunk.data.choices[0].index === 4) collectedMessages.push(chunk.data.choices[0].delta.content)
     }
     return collectedMessages.join('')
   }
