@@ -1692,10 +1692,10 @@ $translateEntryButtons.click(async function onClick() {
           if (translator == null) {
             translator = new GenerativeAi({
               openaiApiKey: $openaiApiKeyText.val(),
-              deepseekApiKey: $deepseekApiKeyText.val(),
               geminiApiKey: $geminiApiKeyText.val(),
               anthropicApiKey: $anthropicApiKeyText.val(),
               mistralApiKey: $mistralApiKeyText.val(),
+              deepseekApiKey: $deepseekApiKeyText.val(),
               hfToken: $hfTokenText.val(),
               groqApiKey: $groqApiKeyText.val()
             }, UUID.toLowerCase())
