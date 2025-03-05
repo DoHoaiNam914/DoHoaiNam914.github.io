@@ -2,8 +2,8 @@
 
 /* global DTM_ExactMatcher */
 
-import * as Standardize from '/static/js/Standardize.js';
-import * as Utils from '/static/js/Utils.js';
+import * as Standardize from './Standardize.js';
+import * as Utils from './Utils.js';
 
 $(document).ready(async () => {
   const searchParams = new URLSearchParams(window.location.search);
