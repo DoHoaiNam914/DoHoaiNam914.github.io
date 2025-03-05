@@ -144,7 +144,7 @@ export default class GenerativeAi extends Translator {
       if (/^(?:o1|o3-mini).*-(?:low|medium|high)$/.test(model)) requestBody.reasoning_effort = model.match(/-([^-]+)$/)[1]
       if (Object.hasOwn(requestBody, 'max_completion_tokens')) requestBody.max_completion_tokens = null
       requestBody.seed = 1234
-      if (!/\n\s*[^\s]+/.test(message) && ['chatgpt-4o-latest', 'o1', 'o3-mini'].every(element => requestBody.model !== element)) requestBody.n = 5
+      if (['chatgpt-4o-latest', 'o1', 'o3-mini'].every(element => requestBody.model !== element) && !/\n\s*[^\s]+/.test(message)) requestBody.n = 5
       requestBody.stream = true
       if (Object.hasOwn(requestBody, 'temperature')) requestBody.temperature = temperature
       if (Object.hasOwn(requestBody, 'top_p')) requestBody.top_p = topP
@@ -264,6 +264,7 @@ export default class GenerativeAi extends Translator {
 
   public async runMistral (options, systemInstructions, message): Promise<string> {
     const { model, temperature, topP } = options as { model: string, temperature: number, topP: number }
+    const canMultiCompletion = ['pixtral-12b-2409', 'open-mixtral-8x7b', 'open-mixtral-8x22b', 'mistral-medium-2312'].every(element => model !== element) && !/\n\s*[^\s]+/.test(message)
     const result = await this.mistralClient.chat.stream({
       model,
       temperature,
@@ -277,11 +278,11 @@ export default class GenerativeAi extends Translator {
         }
       ],
       random_seed: 1234,
-      ...!/\n\s*[^\s]+/.test(message) ? { n: 5 } : {}
+      ...canMultipleCompletion ? { n: 5 } : {}
     }, { fetchOptions: { signal: this.controller.signal } })
     const collectedMessages: string[] = []
     for await (const chunk of result) {
-      if (/\n\s*[^\s]+/.test(message) || chunk.data.choices[0].index === 4) collectedMessages.push(chunk.data.choices[0].delta.content)
+      if (canMultiCompletion || chunk.data.choices[0].index === 4) collectedMessages.push(chunk.data.choices[0].delta.content)
     }
     return collectedMessages.join('')
   }
