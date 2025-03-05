@@ -139,7 +139,7 @@ export default class GenerativeAi extends Translator {
             if (Object.hasOwn(requestBody, 'max_completion_tokens'))
                 requestBody.max_completion_tokens = null;
             requestBody.seed = 1234;
-            if (!/\n\s*[^\s]+/.test(message) && ['chatgpt-4o-latest', 'o1', 'o3-mini'].every(element => requestBody.model !== element))
+            if (['chatgpt-4o-latest', 'o1', 'o3-mini'].every(element => requestBody.model !== element) && !/\n\s*[^\s]+/.test(message))
                 requestBody.n = 5;
             requestBody.stream = true;
             if (Object.hasOwn(requestBody, 'temperature'))
@@ -257,6 +257,7 @@ export default class GenerativeAi extends Translator {
     }
     async runMistral(options, systemInstructions, message) {
         const { model, temperature, topP } = options;
+        const canMultiCompletion = ['pixtral-12b-2409', 'open-mixtral-8x7b', 'open-mixtral-8x22b', 'mistral-medium-2312'].every(element => model !== element) && !/\n\s*[^\s]+/.test(message);
         const result = await this.mistralClient.chat.stream({
             model,
             temperature,
@@ -270,11 +271,11 @@ export default class GenerativeAi extends Translator {
                 }
             ],
             random_seed: 1234,
-            ...!/\n\s*[^\s]+/.test(message) ? { n: 5 } : {}
+            ...canMultiCompletion ? { n: 5 } : {}
         }, { fetchOptions: { signal: this.controller.signal } });
         const collectedMessages = [];
         for await (const chunk of result) {
-            if (/\n\s*[^\s]+/.test(message) || chunk.data.choices[0].index === 4)
+            if (!canMultiCompletion || chunk.data.choices[0].index === 4)
                 collectedMessages.push(chunk.data.choices[0].delta.content);
         }
         return collectedMessages.join('');
