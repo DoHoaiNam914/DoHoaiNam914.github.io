@@ -47,31 +47,31 @@ export default class GenerativeAi extends Translator {
   private readonly OPENAI_API_KEY
   private readonly HYPERBOLIC_API_KEY: string
   private readonly openai
-  private readonly deepseek
-  private readonly anthropic
   private readonly genAI
+  private readonly anthropic
   private readonly mistralClient
+  private readonly deepseek
   private readonly groq
   private readonly hfInferenceClient
   public constructor (apiKey, airUserId) {
     super()
-    const { openaiApiKey, deepseekApiKey, geminiApiKey, anthropicApiKey, mistralApiKey, hfToken, groqApiKey } = apiKey
+    const { openaiApiKey, geminiApiKey, anthropicApiKey, mistralApiKey, deepseekApiKey, hfToken, groqApiKey } = apiKey
     this.OPENAI_API_KEY = openaiApiKey
     this.openai = new OpenAI({
       apiKey: this.OPENAI_API_KEY,
       dangerouslyAllowBrowser: true
     })
+    this.genAI = new GoogleGenerativeAI(geminiApiKey)
+    this.anthropic = new Anthropic({
+      apiKey: anthropicApiKey,
+      dangerouslyAllowBrowser: true
+    })
+    this.mistralClient = new Mistral({ apiKey: mistralApiKey })
     this.deepseek = new OpenAI({
       baseURL: 'https://api.deepseek.com',
       apiKey: deepseekApiKey,
       dangerouslyAllowBrowser: true
     })
-    this.anthropic = new Anthropic({
-      apiKey: anthropicApiKey,
-      dangerouslyAllowBrowser: true
-    })
-    this.genAI = new GoogleGenerativeAI(geminiApiKey)
-    this.mistralClient = new Mistral({ apiKey: mistralApiKey })
     this.hfInferenceClient = new HfInference(hfToken, { signal: this.controller.signal })
     this.groq = new Groq({
       apiKey: groqApiKey,
