@@ -41,10 +41,10 @@ export default class GenerativeAi extends Translator {
     OPENAI_API_KEY;
     HYPERBOLIC_API_KEY;
     openai;
-    deepseek;
-    anthropic;
     genAI;
+    anthropic;
     mistralClient;
+    deepseek;
     groq;
     hfInferenceClient;
     constructor(apiKey, airUserId) {
@@ -55,17 +55,17 @@ export default class GenerativeAi extends Translator {
             apiKey: this.OPENAI_API_KEY,
             dangerouslyAllowBrowser: true
         });
+        this.genAI = new GoogleGenerativeAI(geminiApiKey);
+        this.anthropic = new Anthropic({
+            apiKey: anthropicApiKey,
+            dangerouslyAllowBrowser: true
+        });
+        this.mistralClient = new Mistral({ apiKey: mistralApiKey });
         this.deepseek = new OpenAI({
             baseURL: 'https://api.deepseek.com',
             apiKey: deepseekApiKey,
             dangerouslyAllowBrowser: true
         });
-        this.anthropic = new Anthropic({
-            apiKey: anthropicApiKey,
-            dangerouslyAllowBrowser: true
-        });
-        this.genAI = new GoogleGenerativeAI(geminiApiKey);
-        this.mistralClient = new Mistral({ apiKey: mistralApiKey });
         this.hfInferenceClient = new HfInference(hfToken, { signal: this.controller.signal });
         this.groq = new Groq({
             apiKey: groqApiKey,
