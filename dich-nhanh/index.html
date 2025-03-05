@@ -696,11 +696,16 @@
         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
           <div class="modal-content">
             <div class="modal-header">
-              <h5 class="modal-title">Thiết lập</h5>
+              <h5 class="modal-title">
+                <svg class="bi" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor">
+                  <use xlink:href="#sliders2"></use>
+                </svg>
+                Tuỳ chọn
+              </h5>
               <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-              <h2 class="fs-5">Thiết lập giao diện</h2>
+              <h2 class="fs-5">Giao diện</h2>
               <div class="dropdown mb-3">
                 <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" id="bd-theme" data-bs-toggle="dropdown">
                   <svg class="bi my-1 theme-icon-active" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor">
@@ -740,7 +745,7 @@
               <div class="dropdown dropdown-scrollable mb-3" id="theme-dropdown">
                 <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
                   <svg class="bi" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor">
-                    <use xlink:href="#translate"></use>
+                    <use xlink:href="#palette"></use>
                   </svg>
                   Thay đổi chủ đề
                 </button>
@@ -953,17 +958,17 @@
                 <label class="form-check-label" for="bold-text-switch">Chữ đậm</label>
               </div>
               <hr>
-              <h2 class="fs-5">Thiết lập trình dịch</h2>
+              <h2 class="fs-5">Trình dịch văn bản</h2>
               <div class="dropdown mb-3" id="translator-dropdown">
                 <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
                   <svg class="bi" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor">
                     <use xlink:href="#translate"></use>
                   </svg>
-                  Thay đổi trình dịch
+                  Lựa chọn trình dịch
                 </button>
                 <ul class="dropdown-menu">
                   <li>
-                    <button type="button" class="dropdown-item" value="generativeAi">AI tạo sinh (Yêu cầu khoá API)</button>
+                    <button type="button" class="dropdown-item" value="generativeAi">AI tạo sinh (&lt;= 8192)</button>
                   </li>
                   <li>
                     <button type="button" class="dropdown-item" value="baiduTranslate">Baidu Translate</button>
@@ -992,11 +997,10 @@
                 <input type="checkbox" class="form-check-input" id="show-original-text-switch" role="switch">
                 <label class="form-check-label" for="show-original-text-switch">Hiển thị văn bản gốc</label>
               </div>
-              <hr>
-              <h2 class="fs-5">DeepL Translate</h2>
+              <h3 class="fs-5">DeepL Translate</h3>
               <input type="text" class="form-control mb-3" id="deepl-auth-key-text" placeholder="DeepL Auth Key">
               <hr>
-              <h2 class="fs-5">Trình dịch Microsoft</h2>
+              <h3 class="fs-5">Trình dịch Microsoft</h3>
               <div class="mb-3">
                 <label class="form-label" for="tone-select">Giọng điệu:</label>
                 <select class="form-select form-select-sm" id="tone-select">
@@ -1006,12 +1010,12 @@
                 </select>
               </div>
               <hr>
-              <h2 class="fs-5">Dịch với trí tuệ nhân tạo tạo sinh</h2>
+              <h3 class="fs-5">Dịch với AI tạo sinh</h3>
               <input type="text" class="form-control mb-3" id="openai-api-key-text" placeholder="OpenAI API Key">
-              <input type="text" class="form-control mb-3" id="deepseek-api-key-text" placeholder="DeepSeek API Key">
               <input type="text" class="form-control mb-3" id="anthropic-api-key-text" placeholder="Anthropic API Key">
               <input type="text" class="form-control mb-3" id="gemini-api-key-text" placeholder="Gemini API Key">
               <input type="text" class="form-control mb-3" id="mistral-api-key-text" placeholder="Mistral API Key">
+              <input type="text" class="form-control mb-3" id="deepseek-api-key-text" placeholder="DeepSeek API Key">
               <input type="text" class="form-control mb-3" id="hf-token-text" placeholder="HF Token">
               <input type="text" class="form-control mb-3" id="groq-api-key-text" placeholder="Groq API Key">
               <div class="mb-3">
@@ -1076,27 +1080,28 @@
                     <option>tiiuae/Falcon3-1B-Instruct</option>
                     <option>vinai/PhoGPT-4B-Chat</option>
                   </optgroup>
+                  <optgroup label="DeepSeek OpenAI">
+                    <option>deepseek-chat</option>
+                  </optgroup>
                   <optgroup label="Mistral">
-                    <option value="mistral-large-latest">Mistral Large (2411)</option>
                     <option value="pixtral-large-latest">Pixtral Large</option>
+                    <option value="mistral-saba-latest">Mistral Saba</option>
                     <option value="ministral-3b-latest">Ministral 3B</option>
                     <option value="ministral-8b-latest">Ministral 8B</option>
-                    <option value="mistral-small-latest">Mistral Small (2409)</option>
+                    <option value="mistral-small-latest">Mistral Small (2501)</option>
                     <option value="pixtral-12b-2409">Pixtral</option>
                     <option value="open-mistral-nemo">Mistral Nemo</option>
-                    <!-- <option>mistral-large-2411</option> -->
-                    <!-- <option>pixtral-large-2411</option> -->
-                    <!-- <option>ministral-3b-2410</option> -->
-                    <!-- <option>ministral-8b-2410</option> -->
-                    <!-- <option>open-mistral-nemo-2407</option> -->
-                    <!-- <option>mistral-small-2409</option> -->
+                    <!-- <option>pixtral-large-2411</option>
+                    <option>ministral-3b-2410</option>
+                    <option>ministral-8b-2410</option>
+                    <option>open-mistral-nemo-2407</option>
+                    <option>mistral-small-2501</option>
+                    <option>mistral-saba-2502</option> -->
                     <option value="open-mistral-7b">Mistral 7B</option>
                     <option value="open-mixtral-8x7b">Mixtral 8x7B</option>
                     <option value="open-mixtral-8x22b">Mixtral 8x22B</option>
                     <option value="mistral-medium-2312">Mistral Medium</option>
                     <option value="mistral-small-2402">Mistral Small 24.02</option>
-                    <option value="mistral-large-2402">Mistral Large 24.02</option>
-                    <option value="mistral-large-2407">Mistral Large 24.07</option>
                   </optgroup>
                   <optgroup label="Anthropic">
                     <option value="claude-3-7-sonnet-20250219">Claude 3.7 Sonnet</option>
@@ -1128,9 +1133,6 @@
                     <option>gemini-2.0-pro-exp-02-05</option>
                     <option>gemini-exp-1206</option>
                     <option>learnlm-1.5-pro-experimental</option>
-                  </optgroup>
-                  <optgroup label="DeepSeek OpenAI">
-                    <option>deepseek-chat</option>
                   </optgroup>
                   <optgroup label="OpenAI">
                     <option>gpt-4.5-preview</option>
@@ -1179,7 +1181,12 @@
         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
           <div class="modal-content">
             <div class="modal-header">
-              <h5 class="modal-title">Bảng chú giải thuật ngữ</h5>
+              <h5 class="modal-title">
+                <svg class="bi" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor">
+                  <use xlink:href="#translate"></use>
+                </svg>
+                Từ điển của tôi
+              </h5>
               <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
@@ -1196,7 +1203,7 @@
                 <option value="dictionary" selected>Từ điển</option>
               </select>
               <div class="input-group mb-2 dropstart dropdown-scrollable dropdown-has-collapse">
-                <input type="text" class="form-control entry-input" id="source-entry-input" placeholder="Mục nguồn">
+                <input type="text" class="form-control entry-input" id="source-entry-input" placeholder="Văn bản gốc">
                 <button type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" id="source-entry-dropdown-toggle" data-bs-toggle="dropdown" data-bs-auto-close="outside"></button>
                 <ul class="dropdown-menu">
                   <li>
@@ -1270,7 +1277,7 @@
                 </ul>
               </div>
               <div class="input-group mb-3 dropstart dropdown-scrollable dropdown-has-collapse">
-                <textarea class="form-control entry-input" id="target-entry-textarea" placeholder="Mục đích" spellcheck="false" rows="8"></textarea>
+                <textarea class="form-control entry-input" id="target-entry-textarea" placeholder="Văn bản đích" spellcheck="false" rows="8"></textarea>
                 <button type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" data-bs-auto-close="outside"></button>
                 <ul class="dropdown-menu">
                   <li>
@@ -1476,20 +1483,26 @@
                     <option>tiiuae/Falcon3-1B-Instruct</option>
                     <option>vinai/PhoGPT-4B-Chat</option>
                   </optgroup>
+                  <optgroup label="DeepSeek OpenAI">
+                    <option>deepseek-chat</option>
+                    <option>deepseek-reasoner</option>
+                  </optgroup>
                   <optgroup label="Mistral">
                     <option value="mistral-large-latest">Mistral Large (2411)</option>
                     <option value="pixtral-large-latest">Pixtral Large</option>
+                    <option value="mistral-saba-latest">Mistral Saba</option>
                     <option value="ministral-3b-latest">Ministral 3B</option>
                     <option value="ministral-8b-latest">Ministral 8B</option>
-                    <option value="mistral-small-latest">Mistral Small (2409)</option>
+                    <option value="mistral-small-latest">Mistral Small (2501)</option>
                     <option value="pixtral-12b-2409">Pixtral</option>
                     <option value="open-mistral-nemo">Mistral Nemo</option>
-                    <!-- <option>mistral-large-2411</option> -->
-                    <!-- <option>pixtral-large-2411</option> -->
-                    <!-- <option>ministral-3b-2410</option> -->
-                    <!-- <option>ministral-8b-2410</option> -->
-                    <!-- <option>open-mistral-nemo-2407</option> -->
-                    <!-- <option>mistral-small-2409</option> -->
+                    <!-- <option>mistral-large-2411</option>
+                    <option>pixtral-large-2411</option>
+                    <option>ministral-3b-2410</option>
+                    <option>ministral-8b-2410</option>
+                    <option>open-mistral-nemo-2407</option>
+                    <option>mistral-small-2501</option>
+                    <option>mistral-saba-2502</option> -->
                     <option value="open-mistral-7b">Mistral 7B</option>
                     <option value="open-mixtral-8x7b">Mixtral 8x7B</option>
                     <option value="open-mixtral-8x22b">Mixtral 8x22B</option>
@@ -1530,10 +1543,6 @@
                     <option>gemini-2.0-flash-thinking-exp-01-21</option>
                     <option>gemini-exp-1206</option>
                     <option>learnlm-1.5-pro-experimental</option>
-                  </optgroup>
-                  <optgroup label="DeepSeek OpenAI">
-                    <option>deepseek-chat</option>
-                    <option>deepseek-reasoner</option>
                   </optgroup>
                   <optgroup label="OpenAI">
                     <option>gpt-4.5-preview</option>
@@ -1602,8 +1611,8 @@
         <path d="M6 .278a.768.768 0 0 1 .08.858 7.208 7.208 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277.527 0 1.04-.055 1.533-.16a.787.787 0 0 1 .81.316.733.733 0 0 1-.031.893A8.349 8.349 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.752.752 0 0 1 6 .278z"/>
         <path d="M10.794 3.148a.217.217 0 0 1 .412 0l.387 1.162c.173.518.579.924 1.097 1.097l1.162.387a.217.217 0 0 1 0 .412l-1.162.387a1.734 1.734 0 0 0-1.097 1.097l-.387 1.162a.217.217 0 0 1-.412 0l-.387-1.162A1.734 1.734 0 0 0 9.31 6.593l-1.162-.387a.217.217 0 0 1 0-.412l1.162-.387a1.734 1.734 0 0 0 1.097-1.097l.387-1.162zM13.863.099a.145.145 0 0 1 .274 0l.258.774c.115.346.386.617.732.732l.774.258a.145.145 0 0 1 0 .274l-.774.258a1.156 1.156 0 0 0-.732.732l-.258.774a.145.145 0 0 1-.274 0l-.258-.774a1.156 1.156 0 0 0-.732-.732l-.774-.258a.145.145 0 0 1 0-.274l.774-.258c.346-.115.617-.386.732-.732L13.863.1z"/>
       </symbol>
-      <symbol id="fonts" viewBox="0 0 16 16">
-        <path d="M12.258 3h-8.51l-.083 2.46h.479c.26-1.544.758-1.783 2.693-1.845l.424-.013v7.827c0 .663-.144.82-1.3.923v.52h4.082v-.52c-1.162-.103-1.306-.26-1.306-.923V3.602l.431.013c1.934.062 2.434.301 2.693 1.846h.479L12.258 3z"/>
+      <symbol id="palette" viewBox="0 0 16 16">
+        <path d="M12.433 10.07C14.133 10.585 16 11.15 16 8a8 8 0 1 0-8 8c1.996 0 1.826-1.504 1.649-3.08-.124-1.101-.252-2.237.351-2.92.465-.527 1.42-.237 2.433.07M8 5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m4.5 3a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3M5 6.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m.5 6.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3"/>
       </symbol>
       <symbol id="translate" viewBox="0 0 16 16">
         <path d="M4.545 6.714 4.11 8H3l1.862-5h1.284L8 8H6.833l-.435-1.286H4.545zm1.634-.736L5.5 3.956h-.049l-.679 2.022H6.18z"/>
