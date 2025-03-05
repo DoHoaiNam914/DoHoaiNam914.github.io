@@ -133,7 +133,9 @@ export default class GenerativeAi extends Translator {
                     role: 'user'
                 }
             ];
-            requestBody.model = model;
+            requestBody.model = model.replace(/-(?:low|medium|high)$/, '');
+            if (/^(?:o1|o3-mini).*-(?:low|medium|high)$/.test(message))
+                requestBody.reasoning_effort = model.match(/-([^-]+)$/)[1];
             if (Object.hasOwn(requestBody, 'max_completion_tokens'))
                 requestBody.max_completion_tokens = null;
             requestBody.seed = 1234;
