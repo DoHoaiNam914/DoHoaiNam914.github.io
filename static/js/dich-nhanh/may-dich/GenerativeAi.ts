@@ -278,7 +278,7 @@ export default class GenerativeAi extends Translator {
         }
       ],
       random_seed: 1234,
-      ...canMultipleCompletion ? { n: 5 } : {}
+      ...canMultiCompletion ? { n: 5 } : {}
     }, { fetchOptions: { signal: this.controller.signal } })
     const collectedMessages: string[] = []
     for await (const chunk of result) {
