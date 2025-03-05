@@ -955,10 +955,10 @@ $(document).ready(async () => {
 
   if (localStorage.getItem('DEEPL_AUTH_KEY') != null) $deeplAuthKeyText.val(localStorage.getItem('DEEPL_AUTH_KEY')).change()
   if (localStorage.getItem('OPENAI_API_KEY') != null) $openaiApiKeyText.val(localStorage.getItem('OPENAI_API_KEY')).change()
-  if (localStorage.getItem('DEEPSEEK_API_KEY') != null) $deepseekApiKeyText.val(localStorage.getItem('DEEPSEEK_API_KEY')).change()
-  if (localStorage.getItem('ANTHROPIC_API_KEY') != null) $anthropicApiKeyText.val(localStorage.getItem('ANTHROPIC_API_KEY')).change()
   if (localStorage.getItem('GEMINI_API_KEY') != null) $geminiApiKeyText.val(localStorage.getItem('GEMINI_API_KEY')).change()
+  if (localStorage.getItem('ANTHROPIC_API_KEY') != null) $anthropicApiKeyText.val(localStorage.getItem('ANTHROPIC_API_KEY')).change()
   if (localStorage.getItem('MISTRAL_API_KEY') != null) $mistralApiKeyText.val(localStorage.getItem('MISTRAL_API_KEY')).change()
+  if (localStorage.getItem('DEEPSEEK_API_KEY') != null) $deepseekApiKeyText.val(localStorage.getItem('DEEPSEEK_API_KEY')).change()
   if (localStorage.getItem('HF_TOKEN') != null) $hfTokenText.val(localStorage.getItem('HF_TOKEN')).change()
   if (localStorage.getItem('GROQ_API_KEY') != null) $groqApiKeyText.val(localStorage.getItem('GROQ_API_KEY')).change()
   Object.values(Translators).forEach(element => {
@@ -975,10 +975,10 @@ $(document).ready(async () => {
       case Translators.GENERATIVE_AI:
         translators[element] = new GenerativeAi({
           openaiApiKey: $openaiApiKeyText.val(),
-          deepseekApiKey: $deepseekApiKeyText.val(),
           geminiApiKey: $geminiApiKeyText.val(),
           anthropicApiKey: $anthropicApiKeyText.val(),
           mistralApiKey: $mistralApiKeyText.val(),
+          deepseekApiKey: $deepseekApiKeyText.val(),
           hfToken: $hfTokenText.val(),
           groqApiKey: $groqApiKeyText.val()
         }, UUID.toLowerCase())
@@ -1343,10 +1343,10 @@ $translatorDropdown.find('.dropdown-item').click(async function onClick() {
       if (currentTranslator == null) {
         currentTranslator = new GenerativeAi({
           openaiApiKey: $openaiApiKeyText.val(),
-          deepseekApiKey: $deepseekApiKeyText.val(),
           geminiApiKey: $geminiApiKeyText.val(),
           anthropicApiKey: $anthropicApiKeyText.val(),
           mistralApiKey: $mistralApiKeyText.val(),
+          deepseekApiKey: $deepseekApiKeyText.val(),
           hfToken: $hfTokenText.val(),
           groqApiKey: $groqApiKeyText.val()
         }, UUID.toLowerCase())
@@ -1422,12 +1422,12 @@ $openaiApiKeyText.change(function onChange() {
   if (localStorage.getItem('OPENAI_API_KEY') != null && $(this).val().length === 0) localStorage.removeItem('OPENAI_API_KEY');
   else if (($(this).val().startsWith('sk-proj-') || $(this).val().startsWith('sk-svcacct-')) && localStorage.getItem('OPENAI_API_KEY') !== $(this).val()) localStorage.setItem('OPENAI_API_KEY', $(this).val());
 });
-$deepseekApiKeyText.change(function onChange() {
+$geminiApiKeyText.change(function onChange() {
   const $activeTranslator = $translatorDropdown.find('.active');
   translators[Translators.GENERATIVE_AI] = null;
   if ($activeTranslator.val() === Translators.GENERATIVE_AI) $activeTranslator.click();
-  if (localStorage.getItem('DEEPSEEK_API_KEY') != null && $(this).val().length === 0) localStorage.removeItem('DEEPSEEK_API_KEY');
-  else if ($(this).val().startsWith('sk-') && localStorage.getItem('DEEPSEEK_API_KEY') !== $(this).val()) localStorage.setItem('DEEPSEEK_API_KEY', $(this).val());
+  if (localStorage.getItem('GEMINI_API_KEY') != null && $(this).val().length === 0) localStorage.removeItem('GEMINI_API_KEY');
+  else if ($(this).val().startsWith('AIzaSy') && localStorage.getItem('GEMINI_API_KEY') !== $(this).val()) localStorage.setItem('GEMINI_API_KEY', $(this).val());
 });
 $anthropicApiKeyText.change(function onChange() {
   const $activeTranslator = $translatorDropdown.find('.active');
@@ -1436,19 +1436,19 @@ $anthropicApiKeyText.change(function onChange() {
   if (localStorage.getItem('ANTHROPIC_API_KEY') != null && $(this).val().length === 0) localStorage.removeItem('ANTHROPIC_API_KEY');
   else if ($(this).val().startsWith('sk-ant-api03-') && localStorage.getItem('ANTHROPIC_API_KEY') !== $(this).val()) localStorage.setItem('ANTHROPIC_API_KEY', $(this).val());
 });
-$geminiApiKeyText.change(function onChange() {
-  const $activeTranslator = $translatorDropdown.find('.active');
-  translators[Translators.GENERATIVE_AI] = null;
-  if ($activeTranslator.val() === Translators.GENERATIVE_AI) $activeTranslator.click();
-  if (localStorage.getItem('GEMINI_API_KEY') != null && $(this).val().length === 0) localStorage.removeItem('GEMINI_API_KEY');
-  else if ($(this).val().startsWith('AIzaSy') && localStorage.getItem('GEMINI_API_KEY') !== $(this).val()) localStorage.setItem('GEMINI_API_KEY', $(this).val());
-});
 $mistralApiKeyText.change(function onChange() {
   const $activeTranslator = $translatorDropdown.find('.active');
   translators[Translators.GENERATIVE_AI] = null;
   if ($activeTranslator.val() === Translators.GENERATIVE_AI) $activeTranslator.click();
   if (localStorage.getItem('MISTRAL_API_KEY') != null && $(this).val().length === 0) localStorage.removeItem('MISTRAL_API_KEY');
   else if (localStorage.getItem('MISTRAL_API_KEY') !== $(this).val()) localStorage.setItem('MISTRAL_API_KEY', $(this).val());
+});
+$deepseekApiKeyText.change(function onChange() {
+  const $activeTranslator = $translatorDropdown.find('.active');
+  translators[Translators.GENERATIVE_AI] = null;
+  if ($activeTranslator.val() === Translators.GENERATIVE_AI) $activeTranslator.click();
+  if (localStorage.getItem('DEEPSEEK_API_KEY') != null && $(this).val().length === 0) localStorage.removeItem('DEEPSEEK_API_KEY');
+  else if ($(this).val().startsWith('sk-') && localStorage.getItem('DEEPSEEK_API_KEY') !== $(this).val()) localStorage.setItem('DEEPSEEK_API_KEY', $(this).val());
 });
 $hfTokenText.change(function onChange() {
   const $activeTranslator = $translatorDropdown.find('.active')
@@ -1465,7 +1465,6 @@ $groqApiKeyText.change(function onChange() {
   else if ($(this).val().startsWith('gsk_') && localStorage.getItem('GROQ_API_KEY') !== $(this).val()) localStorage.setItem('GROQ_API_KEY', $(this).val())
 })
 $('#temperature-text, #translate-entry-temperature-text').change(function onChange() {
-
   const value = $(this).val()
   $(this).val(Math.min(parseFloat($(this).attr('max')), Math.max(parseFloat($(this).attr('min')), parseFloat(value.length === 0 ? $(this).attr('value') : value))))
 })
