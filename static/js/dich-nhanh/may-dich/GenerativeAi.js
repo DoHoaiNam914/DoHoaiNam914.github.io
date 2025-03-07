@@ -49,7 +49,7 @@ export default class GenerativeAi extends Translator {
     hfInferenceClient;
     constructor(apiKey, airUserId) {
         super();
-        const { openaiApiKey, deepseekApiKey, geminiApiKey, anthropicApiKey, mistralApiKey, hfToken, groqApiKey } = apiKey;
+        const { openaiApiKey, geminiApiKey, anthropicApiKey, mistralApiKey, deepseekApiKey, hfToken, groqApiKey } = apiKey;
         this.OPENAI_API_KEY = openaiApiKey;
         this.openai = new OpenAI({
             apiKey: this.OPENAI_API_KEY,
@@ -244,7 +244,8 @@ export default class GenerativeAi extends Translator {
                 type: 'enabled',
                 budget_tokens: 16000
             };
-        } else { 
+        }
+        else {
             body.temperature = temperature;
             body.top_k = topK;
             body.top_p = topP;
@@ -386,8 +387,7 @@ ${Papa.unparse({ fields: ['Source language', 'Original word', 'Destination langu
 Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information.
 Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices.
 Your output must only contain the translated text and cannot include explanations or other information.`);
-        const MESSAGE = /\n\s*[^\s]+/.test(text) ? text.split('\n').map((element, index) => `[${index + 1}]${element}`).join('\n') : text;
-        const result = await (['gemma2-9b-it', 'llama-3.3-70b-versatile', 'llama-3.1-8b-instant', 'llama3-70b-8192', 'llama3-8b-8192', 'qwen-2.5-32b', 'deepseek-r1-distill-qwen-32b', 'deepseek-r1-distill-llama-70b-specdec', 'deepseek-r1-distill-llama-70b', 'llama-3.3-70b-specdec', 'llama-3.2-1b-preview', 'llama-3.2-3b-preview', 'llama-3.2-11b-vision-preview', 'llama-3.2-90b-vision-preview'].some(element => element === model) ? this.groqMain(options, SYSTEM_PROMPTS, MESSAGE) : (model.includes('/') ? this.launch(options, SYSTEM_PROMPTS, MESSAGE) : (isMistral ? this.runMistral(options, SYSTEM_PROMPTS, MESSAGE) : (model.startsWith('claude') ? this.anthropicMain(options, SYSTEM_PROMPTS, MESSAGE) : (isGoogleGenerativeAi ? this.runGoogleGenerativeAI(options, SYSTEM_PROMPTS, MESSAGE) : this.openaiMain(options, SYSTEM_PROMPTS, MESSAGE)))))).then(value => /\n\s*[^\s]+/.test(text) ? value.split('\n').map(element => element.replace(/^( ?)\[\d+] ?/, '$1')).join('\n') : value).catch(reason => {
+        const result = await (['gemma2-9b-it', 'llama-3.3-70b-versatile', 'llama-3.1-8b-instant', 'llama3-70b-8192', 'llama3-8b-8192', 'qwen-2.5-32b', 'deepseek-r1-distill-qwen-32b', 'deepseek-r1-distill-llama-70b-specdec', 'deepseek-r1-distill-llama-70b', 'llama-3.3-70b-specdec', 'llama-3.2-1b-preview', 'llama-3.2-3b-preview', 'llama-3.2-11b-vision-preview', 'llama-3.2-90b-vision-preview'].some(element => element === model) ? this.groqMain(options, SYSTEM_PROMPTS, text) : (model.includes('/') ? this.launch(options, SYSTEM_PROMPTS, text) : (isMistral ? this.runMistral(options, SYSTEM_PROMPTS, text) : (model.startsWith('claude') ? this.anthropicMain(options, SYSTEM_PROMPTS, text) : (isGoogleGenerativeAi ? this.runGoogleGenerativeAI(options, SYSTEM_PROMPTS, text) : this.openaiMain(options, SYSTEM_PROMPTS, text)))))).catch(reason => {
             throw reason;
         });
         super.translateText(text, targetLanguage, sourceLanguage);
