@@ -358,14 +358,16 @@ export default class GenerativeAi extends Translator {
     return collectedMessages.join('')
   }
 
-  public async translateText (text, targetLanguage: string, options: { sourceLanguage: string | null, model?: string, temperature?: number, topP?: number, topK?: number, instructions?: string, dictionary?: string[][] } = { sourceLanguage: null }): Promise<string> {
+  public async translateText (text, targetLanguage: string, options: { sourceLanguage: string | null, model?: string, temperature?: number, topP?: number, topK?: number, tone?: string, domain?: string, instructions?: string, dictionary?: string[][] } = { sourceLanguage: null }): Promise<string> {
     if (options.model == null) options.model = 'gpt-4o-mini'
     if (options.temperature == null) options.temperature = 0.1
     if (options.topP == null) options.topP = 0.95
     if (options.topK == null) options.topK = 50
+    if (options.tone == null) options.tone = ''
+    if (options.domain == null) options.domain = ''
     if (options.instructions == null) options.instructions = ''
     if (options.dictionary == null) options.dictionary = []
-    const { sourceLanguage, model, instructions, dictionary } = options
+    const { sourceLanguage, model, tone, domain, instructions, dictionary } = options
     const isGoogleGenerativeAi = model.startsWith('gemini') || model.startsWith('learnlm')
     const isMistral = /^(?:open-)?[^-]+tral/.test(model)
     const SYSTEM_PROMPTS: string[] = []
@@ -390,7 +392,7 @@ ${Papa.unparse({ fields: ['Source language', 'Original word', 'Destination langu
     }
     SYSTEM_PROMPTS.push(`I will speak to you in ${sourceLanguage != null && sourceLanguage !== this.DefaultLanguage.SOURCE_LANGUAGE ? `${sourceLanguage} and you will ` : 'any language and you will detect the language, '}translate it and answer in the corrected version of my text, exclusively in ${targetLanguage}, while keeping the format.
 Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information.
-Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices.
+Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices.${tone !== '' ? `\n${tone !== 'Smart deêtction' ? `Maintain the ${tone} style throughout the translation to ensure consistency in expression and tone.` : 'Automatically detect and apply the most suitable tone based on the content and context of the text.'}` : ''}${domain !== '' ? `\n${domain !== 'Smart deêtction' ? `Use terminology and phrasing appropriate for the ${domain} domain to ensure accuracy and contextual relevance.` : 'Automatically detect the appropriate domain of the text and apply specialized terminology accordingly.'}` : ''}
 Your output must only contain the translated text and cannot include explanations or other information.`)
     const result = await (['gemma2-9b-it', 'llama-3.3-70b-versatile', 'llama-3.1-8b-instant', 'llama3-70b-8192', 'llama3-8b-8192', 'qwen-2.5-32b', 'deepseek-r1-distill-qwen-32b', 'deepseek-r1-distill-llama-70b-specdec', 'deepseek-r1-distill-llama-70b', 'llama-3.3-70b-specdec', 'llama-3.2-1b-preview', 'llama-3.2-3b-preview', 'llama-3.2-11b-vision-preview', 'llama-3.2-90b-vision-preview'].some(element => element === model) ? this.groqMain(options, SYSTEM_PROMPTS, text) : (model.includes('/') ? this.launch(options, SYSTEM_PROMPTS, text) : (isMistral ? this.runMistral(options, SYSTEM_PROMPTS, text) : (model.startsWith('claude') ? this.anthropicMain(options, SYSTEM_PROMPTS, text) : (isGoogleGenerativeAi ? this.runGoogleGenerativeAI(options, SYSTEM_PROMPTS, text) : this.openaiMain(options, SYSTEM_PROMPTS, text)))))).catch(reason => {
       throw reason
