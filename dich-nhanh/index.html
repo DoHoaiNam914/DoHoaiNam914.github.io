@@ -135,7 +135,7 @@
         orphans: 1;
         outline: none;
         overflow-x: hidden;
-        padding: 10px 0 0 !important;
+        padding: 0 !important;
         position: relative;
         text-align: var(--opt-text-align);
         text-align-last: left;
@@ -665,7 +665,7 @@
       </nav>
       <div class="slide-navbar bg-light-subtle w-100" id="action-navbar">
         <ul class="nav m-auto viewport">
-          <li class="nav-item px-3">Thời gian dịch: <span id="translate-timer">0</span>ms</li>
+          <li class="nav-item px-3">Số lượng ký tự: <span id="input-textarea-counter">0</span></li>
           <li>
             <button type="button" class="nav-item nav-link copy-button" data-target="#input-textarea">Sao chép</button>
           </li>
@@ -685,11 +685,8 @@
       </div>
     </div>
     <main class="container-fluid viewport workspace">
-      <div class="position-relative">
-        <textarea class="textarea font-options" id="input-textarea" spellcheck="false" placeholder="Nhập văn bản của bạn ở đây..."></textarea>
-        <div class="textarea font-options" id="result-textarea" inputmode="none" spellcheck="false" style="display: none;"></div>
-        <span class="badge text-bg-secondary position-absolute translate-middle top-0 start-50">Số lượng ký tự: <span id="input-textarea-counter">0</span></span>
-      </div>
+      <textarea class="textarea font-options" id="input-textarea" spellcheck="false" placeholder="Nhập văn bản của bạn ở đây..."></textarea>
+      <div class="textarea font-options" id="result-textarea" inputmode="none" spellcheck="false" style="display: none;"></div>
     </main>
     <div class="modals viewport">
       <div class="modal fade" id="settings-modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
