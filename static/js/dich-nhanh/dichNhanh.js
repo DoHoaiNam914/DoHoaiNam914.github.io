@@ -54,7 +54,6 @@ const $toneSelect = $('#tone-select');
 const $translateButton = $('#translate-button');
 const $translateEntryButton = $('#translate-entry-button');
 const $translateEntryButtons = $('.translate-entry-button');
-const $translateTimer = $('#translate-timer');
 const $translatorDropdown = $('#translator-dropdown');
 const $upperCaseButtons = $('.upper-case-button');
 
@@ -745,7 +744,6 @@ const translate = async function translateContentInTextarea(controller = new Abo
       }
     }
     if (controller.signal.aborted) return
-    $translateTimer.text(Date.now() - startTime)
     $resultTextarea.html(buildResult(text, $activeTranslator.val() === Translators.GENERATIVE_AI ? result.replaceAll(/\n{2}/g, '\n') : result, $activeTranslator.val()))
     $resultTextarea.find('p > i').on('dblclick', function onDblclick() {
       const range = document.createRange()
@@ -1040,7 +1038,6 @@ $translateButton.on('click', function onClick() {
       }
 
       $resultTextarea.html(null);
-      $translateTimer.text(0);
       $resultTextarea.hide();
       $inputTextarea.show();
       window.sessionStorage.removeItem('translation')
