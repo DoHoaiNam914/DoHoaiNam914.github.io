@@ -24,6 +24,7 @@ const $boldTextSwitch = $('#bold-text-switch');
 const $copyButtons = $('.copy-button');
 const $deeplAuthKeyText = $('#deepl-auth-key-text');
 const $deepseekApiKeyText = $('#deepseek-api-key-text');
+const $domainSelect = $('#domain-select')
 const $dropdownHasCollapse = $('.dropdown-has-collapse');
 const $fontStackText = $('#font-stack-text');
 const $fontSizeText = $('#font-size-text');
@@ -733,6 +734,8 @@ const translate = async function translateContentInTextarea(controller = new Abo
           temperature: parseFloat($('#temperature-text').val()),
           topP: parseFloat($('#top-p-text').val()),
           topK: parseInt($('#top-k-text').val()),
+          tone: $('#generative-ai-tone-select').val(),
+          domain: $domainSelect.val(),
           instructions: $('#instructions-textarea').val(),
           dictionary: Object.entries(glossary.dictionary)
         })
@@ -1752,6 +1755,7 @@ $translateEntryButtons.click(async function onClick() {
               temperature: parseFloat($('#translate-entry-temperature-text').val()),
               topP: parseFloat($('#translate-entry-top-p-text').val()),
               topK: parseInt($('#translate-entry-top-k-text').val()),
+              domain: $domainSelect.val(),
               instructions: $('#translate-entry-instructions-textarea').val(),
               dictionary: $('#apply-dictionary-switch').prop('checked') ? Object.entries(glossary.dictionary) : [],
             })
