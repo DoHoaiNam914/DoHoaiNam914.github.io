@@ -383,7 +383,7 @@ The user provided the additional info about how they would like you to translate
     if (filteredDictionary.length > 0) {
       SYSTEM_PROMPTS.push(`# User’s Dictionary
 
-The user provided the dictionary for specific term translations:
+The user provided the personalized glossaries to define preferred translations for specific terms:
 \`\`\`csv
 ${Papa.unparse({ fields: ['Source language', 'Original word', 'Destination language', 'Destination word'], data: filteredDictionary }, { newline: '\n' }) as string}
 \`\`\``)
