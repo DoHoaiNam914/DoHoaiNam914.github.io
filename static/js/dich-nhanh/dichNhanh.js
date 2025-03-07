@@ -50,7 +50,7 @@ const $targetEntryTextarea = $('#target-entry-textarea');
 const $targetLanguageSelect = $('#target-language-select');
 const $textareas = $('.textarea');
 const $themeDropdown = $('#theme-dropdown');
-const $toneSelect = $('#tone-select');
+const $microsoftTranslatorToneSelect = $('#microsoft-translator-tone-select');
 const $translateButton = $('#translate-button');
 const $translateEntryButton = $('#translate-entry-button');
 const $translateEntryButtons = $('.translate-entry-button');
@@ -988,7 +988,7 @@ $(document).ready(async () => {
         translators[element] = new Lingvanex()
         break
       case Translators.MICROSOFT_TRANSLATOR:
-        translators[element] = new MicrosoftTranslator($toneSelect.val())
+        translators[element] = new MicrosoftTranslator($microsoftTranslatorToneSelect.val())
         break
       case Translators.PAPAGO:
         translators[element] = new Papago(UUID)
@@ -1405,10 +1405,10 @@ $deeplAuthKeyText.change(function onChange() {
   else if (localStorage.getItem('DEEPL_AUTH_KEY') !== $(this).val()) localStorage.setItem('DEEPL_AUTH_KEY', $(this).val());
 });
 
-$toneSelect.on('change', () => {
+$microsoftTranslatorToneSelect.on('change', function onChange () => {
   const $activeTranslator = $translatorDropdown.find('.active');
   if (translators[Translators.MICROSOFT_TRANSLATOR] == null) return;
-  translators[Translators.MICROSOFT_TRANSLATOR].setToneAndFetchData($toneSelect.val());
+  translators[Translators.MICROSOFT_TRANSLATOR].setToneAndFetchData($(this).val());
   if ($activeTranslator.val() === Translators.MICROSOFT_TRANSLATOR) $activeTranslator.click();
 });
 
@@ -1719,7 +1719,7 @@ $translateEntryButtons.click(async function onClick() {
         }
         case Translators.MICROSOFT_TRANSLATOR: {
           if (translator == null) {
-            translator = new MicrosoftTranslator($toneSelect.val());
+            translator = new MicrosoftTranslator($microsoftTranslatorToneSelect.val());
             translators[activeTranslator] = translator;
           }
 
