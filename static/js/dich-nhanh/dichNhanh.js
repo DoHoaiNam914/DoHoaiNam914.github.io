@@ -37,6 +37,7 @@ const $glossaryModal = $('#glossary-modal');
 const $groqApiKeyText = $('#groq-api-key-text')
 const $hfTokenText = $('#hf-token-text')
 const $inputTextarea = $('#input-textarea');
+const $microsoftTranslatorToneSelect = $('#microsoft-translator-tone-select');
 const $mistralApiKeyText = $('#mistral-api-key-text');
 const $openaiApiKeyText = $('#openai-api-key-text');
 const $pasteButtons = $('.paste-button');
@@ -51,7 +52,6 @@ const $targetEntryTextarea = $('#target-entry-textarea');
 const $targetLanguageSelect = $('#target-language-select');
 const $textareas = $('.textarea');
 const $themeDropdown = $('#theme-dropdown');
-const $microsoftTranslatorToneSelect = $('#microsoft-translator-tone-select');
 const $translateButton = $('#translate-button');
 const $translateEntryButton = $('#translate-entry-button');
 const $translateEntryButtons = $('.translate-entry-button');
@@ -1408,7 +1408,7 @@ $deeplAuthKeyText.change(function onChange() {
   else if (localStorage.getItem('DEEPL_AUTH_KEY') !== $(this).val()) localStorage.setItem('DEEPL_AUTH_KEY', $(this).val());
 });
 
-$microsoftTranslatorToneSelect.on('change', function onChange () => {
+$microsoftTranslatorToneSelect.on('change', function onChange () {
   const $activeTranslator = $translatorDropdown.find('.active');
   if (translators[Translators.MICROSOFT_TRANSLATOR] == null) return;
   translators[Translators.MICROSOFT_TRANSLATOR].setToneAndFetchData($(this).val());
