@@ -1758,8 +1758,8 @@ $translateEntryButtons.click(async function onClick() {
               temperature: parseFloat($('#translate-entry-temperature-text').val()),
               topP: parseFloat($('#translate-entry-top-p-text').val()),
               topK: parseInt($('#translate-entry-top-k-text').val()),
-              ...$('#tone-translate).prop('checked') ? { tone: tone === '' ? 'Serious' : tone } : {},
-              ...$('#domain-translate).prop('checked') ? { domain: domain === '' ? 'Smart detection' : domain } : {},
+              ...$('#tone-translate').prop('checked') ? { tone: tone === '' ? 'Serious' : tone } : {},
+              ...$('#domain-translate').prop('checked') ? { domain: domain === '' ? 'Smart detection' : domain } : {},
               instructions: $('#translate-entry-instructions-textarea').val(),
               dictionary: $('#apply-dictionary-switch').prop('checked') ? Object.entries(glossary.dictionary) : [],
             })
