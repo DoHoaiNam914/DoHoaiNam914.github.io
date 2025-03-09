@@ -1129,7 +1129,8 @@ $glossaryManagerButton.on('mousedown', (event) => {
 })
 
 $inputTextarea.on('input', function onInput() {
-  $('#input-textarea-counter').text($(this).val().replaceAll('\n', $translatorDropdown.find('.active').val() === Translators.GOOGLE_TRANSLATE ? '\r\n' : '\n').length);
+  const activeTranslator = $translatorDropdown.find('.active').val()
+  $('#input-textarea-counter').text(([Translators.GENERATIVE_AI, Translators.WEBNOVEL_TRANSLATE].some(element => activeTranslator === element) ? $(this).val().split('\n').filter(element => element.replace(/^\s+/, '').length > 0).join('\n') : $(this).val().replaceAll('\n', activeTranslator === Translators.GOOGLE_TRANSLATE ? '\r\n' : '\n')).length);
 });
 
 $inputTextarea.on('change', function onChange() {
