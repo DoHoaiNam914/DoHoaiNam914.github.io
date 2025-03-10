@@ -1754,13 +1754,14 @@ $translateEntryButtons.click(async function onClick() {
             translator.controller = entryTranslationController
             const tone = $generativeAiToneSelect.val()
             const domain = $domainSelect.val()
+            const $toneTranslateSwitch = $('#tone-translate-switch')
+            const $domainTranslateSwitch = $('#domain-translate-switch')
             result = await translator.translateText(text, targetLanguage, {
               model: $('#translate-entry-model-select').val(),
               temperature: parseFloat($('#translate-entry-temperature-text').val()),
               topP: parseFloat($('#translate-entry-top-p-text').val()),
               topK: parseInt($('#translate-entry-top-k-text').val()),
-              ...$('#tone-translate').prop('checked') ? { tone: tone === '' ? 'Serious' : tone } : {},
-              ...$('#domain-translate').prop('checked') ? { domain: domain === '' ? 'Smart detection' : domain } : {},
+              ...$toneTranslateSwitch.prop('checked') || $domainTranslateSwitch.prop('checked') ? { tone: !$toneTranslateSwitch.prop('checked') || tone === '' ? 'Serious' : tone, domain: !$domainTranslateSwitch.prop('checked') || domain === '' ? 'Smart detection' : domain } : {},
               instructions: $('#translate-entry-instructions-textarea').val(),
               dictionary: $('#apply-dictionary-switch').prop('checked') ? Object.entries(glossary.dictionary) : [],
             })
