@@ -356,8 +356,8 @@ export default class GenerativeAi extends Translator {
             options.topP = 0.95;
         if (options.topK == null)
             options.topK = 50;
-        if (options.prompt == null)
-            options.prompt = 'Basic';
+        if (options.systemPrompt == null)
+            options.systemPrompt = 'Basic';
         if (options.tone == null)
             options.tone = '';
         if (options.domain == null)
@@ -366,12 +366,12 @@ export default class GenerativeAi extends Translator {
             options.customPrompt = '';
         if (options.dictionary == null)
             options.dictionary = [];
-        const { sourceLanguage, model, prompt, tone, domain, customPrompt, dictionary } = options;
+        const { sourceLanguage, model, systemPrompt, tone, domain, customPrompt, dictionary } = options;
         const isGoogleGenerativeAi = model.startsWith('gemini') || model.startsWith('learnlm');
         const isMistral = /^(?:open-)?[^-]+tral/.test(model);
         const SYSTEM_PROMPTS = [];
         const dictionaryEntries = dictionary.filter(([first]) => text.includes(first));
-        switch (prompt) {
+        switch (systemPrompt) {
             case 'Advanced': {
                 const TONE_MAP = {
                     None: [
