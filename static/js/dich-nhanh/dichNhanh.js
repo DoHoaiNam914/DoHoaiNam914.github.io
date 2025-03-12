@@ -735,9 +735,10 @@ const translate = async function translateContentInTextarea(controller = new Abo
           temperature: parseFloat($('#temperature-text').val()),
           topP: parseFloat($('#top-p-text').val()),
           topK: parseInt($('#top-k-text').val()),
+          prompt: $('#prompt-select').val(),
           tone: $generativeAiToneSelect.val(),
           domain: $domainSelect.val(),
-          instructions: $('#instructions-textarea').val(),
+          customPrompt: $('#custom-prompt-textarea').val(),
           dictionary: Object.entries(glossary.dictionary)
         })
         break
@@ -1744,17 +1745,15 @@ $translateEntryButtons.click(async function onClick() {
         switch (activeTranslator) {
           case Translators.GENERATIVE_AI:
             translator.controller = entryTranslationController
-            const tone = $generativeAiToneSelect.val()
-            const domain = $domainSelect.val()
-            const $toneTranslateSwitch = $('#tone-translate-switch')
-            const $domainTranslateSwitch = $('#domain-translate-switch')
             result = await translator.translateText(text, targetLanguage, {
               model: $('#translate-entry-model-select').val(),
               temperature: parseFloat($('#translate-entry-temperature-text').val()),
               topP: parseFloat($('#translate-entry-top-p-text').val()),
               topK: parseInt($('#translate-entry-top-k-text').val()),
-              ...$toneTranslateSwitch.prop('checked') || $domainTranslateSwitch.prop('checked') ? { tone: !$toneTranslateSwitch.prop('checked') || tone === '' ? 'Serious' : tone, domain: !$domainTranslateSwitch.prop('checked') || domain === '' ? 'Smart detection' : domain } : {},
-              instructions: $('#translate-entry-instructions-textarea').val(),
+              prompt: $('#glossaries-prompt-select').val(),
+              tone: 'Serious',
+              domain: $domainSelect.val(),
+              customPrompt: $('#glossaries-custom-prompt-textarea').val(),
               dictionary: $('#apply-dictionary-switch').prop('checked') ? Object.entries(glossary.dictionary) : [],
             })
             result = result.trim().replaceAll(/\n/g, ' ')
