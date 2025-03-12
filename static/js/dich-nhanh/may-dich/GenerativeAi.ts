@@ -358,22 +358,22 @@ export default class GenerativeAi extends Translator {
     return collectedMessages.join('')
   }
 
-  public async translateText (text, targetLanguage: string, options: { sourceLanguage: string | null, model?: string, temperature?: number, topP?: number, topK?: number, prompt?: string, tone?: string, domain?: string, customPrompt?: string, dictionary?: string[][] } = { sourceLanguage: null }): Promise<string> {
+  public async translateText (text, targetLanguage: string, options: { sourceLanguage: string | null, model?: string, temperature?: number, topP?: number, topK?: number, systemPrompt?: string, tone?: string, domain?: string, customPrompt?: string, dictionary?: string[][] } = { sourceLanguage: null }): Promise<string> {
     if (options.model == null) options.model = 'gpt-4o-mini'
     if (options.temperature == null) options.temperature = 0.1
     if (options.topP == null) options.topP = 0.95
     if (options.topK == null) options.topK = 50
-    if (options.prompt == null) options.prompt = 'Basic'
+    if (options.systemPrompt == null) options.systemPrompt = 'Basic'
     if (options.tone == null) options.tone = ''
     if (options.domain == null) options.domain = ''
     if (options.customPrompt == null) options.customPrompt = ''
     if (options.dictionary == null) options.dictionary = []
-    const { sourceLanguage, model, prompt, tone, domain, customPrompt, dictionary } = options
+    const { sourceLanguage, model, systemPrompt, tone, domain, customPrompt, dictionary } = options
     const isGoogleGenerativeAi = model.startsWith('gemini') || model.startsWith('learnlm')
     const isMistral = /^(?:open-)?[^-]+tral/.test(model)
     const SYSTEM_PROMPTS: string[] = []
     const dictionaryEntries: string[][] = dictionary.filter(([first]) => text.includes(first))
-    switch (prompt) {
+    switch (systemPrompt) {
       case 'Advanced': {
         const TONE_MAP: { [key: string]: string[] } = {
           None: [
