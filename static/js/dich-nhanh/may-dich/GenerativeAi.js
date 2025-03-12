@@ -127,7 +127,7 @@ export default class GenerativeAi extends Translator {
         }
         else {
             requestBody.messages = [
-                ...systemInstructions.map((element, index) => ({ content: element, role: index > 0 ? 'user' : (/^(?:o\d|gpt-4\.5)/.test(model) ? (model === 'o1-mini' ? 'user' : 'developer') : 'system') })),
+                ...systemInstructions.map((element, index) => ({ content: element, role: index > 0 ? 'user' : (/^o\d/.test(model) ? (model === 'o1-mini' ? 'user' : 'developer') : 'system') })),
                 {
                     content: message,
                     role: 'user'
