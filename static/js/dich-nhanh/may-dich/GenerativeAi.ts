@@ -399,7 +399,7 @@ export default class GenerativeAi extends Translator {
           ]
         }
         const originalLang: string = targetLanguage === 'English' ? sourceLanguage.toUpperCase() : sourceLanguage
-        const destLang: string = targetLanguage === 'English' ? sourceLanguage.toUpperCase() : sourceLanguage
+        const destLang: string = targetLanguage === 'English' ? targetLanguage.toUpperCase() : targetLanguage
         const DOMAIN_MAP = {
           'Economics - Finance': ' - focus on presenting and analyzing information related to the domain.\n - use technical terminology that is precise, clear, neutral, and objective.\n - sentence structure is coherent, presenting information in a logical order.',
           'Literature - Arts': ' - use local words/dialect words/slang/jargon, morphological function words - express emotions/feelings/attitudes.\n - sentences have a structured arrangement, words are selected and polished to create artistic and aesthetic value.\n - use words that are appropriate to the setting and timeline of the story.\n - use words that are easy to understand, easy to visualize, and bring emotions to the reader.\n - make sure the words and sentences flow together like a story from beginning to end.\n - the relationships between characters must be clearly defined and not confused.\n - character names, minor character names, the way characters address each other, and the way the narrator addresses and refers to other characters must be consistent from beginning to end of the story and cannot be changed arbitrarily.\n - the writing is always carefully crafted, emotional, and brings indescribable emotions to the reader.',
