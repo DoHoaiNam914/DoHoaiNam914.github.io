@@ -82,7 +82,7 @@ export default class GenerativeAi extends Translator {
                 'air-user-id': this.AIR_USER_ID
             },
             signal: this.controller.signal
-        }).then(response => requestBody.stream === true ? response.data.split('\n').filter(element => element.startsWith('data: ') && !element.startsWith('data: [DONE]')).map(element => JSON.parse(`{${element.replace('data: ', '"data":')}}`).data).filter(element => requestBody.n == null || element.choices[0].index === requestBody.n - 1).map(element => element.choices[0].delta.content).filter(element => element != null).join('') : response.data.choices[requestBody.n != null ? requestBody.n - 1 : 0].message.content).catch(error => {
+        }).then(response => requestBody.stream === true ? response.data.split('\n').filter(element => element.startsWith('data: ') && !element.startsWith('data: [DONE]')).map(element => JSON.parse(`{${element.replace('data: ', '"data":')}}`).data).map(element => element.choices[0].delta.content).filter(element => element != null).join('') : response.data.choices[0].message.content).catch(error => {
             throw new Error(error.data);
         });
         return response;
@@ -138,9 +138,6 @@ export default class GenerativeAi extends Translator {
                 requestBody.reasoning_effort = model.match(/-([^-]+)$/)[1];
             if (Object.hasOwn(requestBody, 'max_completion_tokens'))
                 requestBody.max_completion_tokens = null;
-            requestBody.seed = 1234;
-            if (['chatgpt-4o-latest', 'o1', 'o3-mini'].every(element => requestBody.model !== element) && !/\n\s*[^\s]+/.test(message))
-                requestBody.n = 5;
             requestBody.stream = true;
             if (Object.hasOwn(requestBody, 'temperature'))
                 requestBody.temperature = temperature;
@@ -155,13 +152,12 @@ export default class GenerativeAi extends Translator {
             if (requestBody.stream) {
                 const collectedMessages = [];
                 for await (const chunk of response) {
-                    if (requestBody.n == null || chunk.choices[0].index === requestBody.n - 1)
-                        collectedMessages.push(chunk.choices[0].delta.content);
+                    collectedMessages.push(chunk.choices[0].delta.content);
                 }
                 return collectedMessages.filter(element => element != null).join('');
             }
             else {
-                return response.choices[requestBody.n != null ? requestBody.n - 1 : 0].message.content;
+                return response.choices[0].message.content;
             }
         }
     }
@@ -184,7 +180,6 @@ export default class GenerativeAi extends Translator {
         generationConfig.temperature = temperature;
         generationConfig.topP = topP;
         generationConfig.topK = topK;
-        generationConfig.seed = 1234;
         const startChatParams = {
             generationConfig,
             history: []
@@ -258,7 +253,6 @@ export default class GenerativeAi extends Translator {
     }
     async runMistral(options, systemInstructions, message) {
         const { model, temperature, topP } = options;
-        const canMultiCompletion = ['pixtral-12b-2409', 'open-mixtral-8x7b', 'open-mixtral-8x22b', 'mistral-medium-2312'].every(element => model !== element) && !/\n\s*[^\s]+/.test(message);
         const result = await this.mistralClient.chat.stream({
             model,
             temperature,
@@ -270,14 +264,11 @@ export default class GenerativeAi extends Translator {
                     role: 'user',
                     content: message
                 }
-            ],
-            random_seed: 1234,
-            ...canMultiCompletion ? { n: 5 } : {}
+            ]
         }, { fetchOptions: { signal: this.controller.signal } });
         const collectedMessages = [];
         for await (const chunk of result) {
-            if (!canMultiCompletion || chunk.data.choices[0].index === 4)
-                collectedMessages.push(chunk.data.choices[0].delta.content);
+            collectedMessages.push(chunk.data.choices[0].delta.content);
         }
         return collectedMessages.join('');
     }
@@ -301,7 +292,6 @@ export default class GenerativeAi extends Translator {
                 role: 'user'
             }
         ];
-        chatCompletionInput.seed = 1234;
         chatCompletionInput.temperature = temperature;
         chatCompletionInput.top_p = topP;
         chatCompletionInput.model = model;
@@ -335,15 +325,12 @@ export default class GenerativeAi extends Translator {
             }
         ];
         requestBody.model = model;
-        if (!/\n\s*[^\s]+/.test(message))
-            requestBody.n = 1;
-        requestBody.seed = 1234;
         requestBody.temperature = temperature;
         requestBody.top_p = topP;
         const chatCompletion = await this.groq.chat.completions.create(requestBody);
         const collectedMessages = [];
         for await (const chunk of chatCompletion) {
-            collectedMessages.push(chunk.choices[requestBody.n != null ? requestBody.n - 1 : 0]?.delta?.content ?? '');
+            collectedMessages.push(chunk.choices[0]?.delta?.content ?? '');
         }
         return collectedMessages.join('');
     }
