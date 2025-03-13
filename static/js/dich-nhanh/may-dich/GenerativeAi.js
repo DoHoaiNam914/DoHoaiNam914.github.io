@@ -392,7 +392,7 @@ export default class GenerativeAi extends Translator {
                         ' - language must be emotional, poetic, and artistic.\n - choose flowery, sentimental, and erotic words.\n - the writing is gentle, focusing on subtle feelings about love and deep character emotions.'
                     ]
                 };
-                const originalLang = targetLanguage === 'English' ? sourceLanguage.toUpperCase() : sourceLanguage.toLowerCase().replace(/^(\p{Ll})/u, (_match, p1) => p1.toUpperCase());
+                const originalLang = targetLanguage === 'English' ? sourceLanguage?.toUpperCase() : sourceLanguage?.toLowerCase().replace(/^(\p{Ll})/u, (_match, p1) => p1.toUpperCase());
                 const destLang = targetLanguage === 'English' ? targetLanguage.toUpperCase() : targetLanguage.toLowerCase().replace(/^(\p{Ll})/u, (_match, p1) => p1.toUpperCase());
                 const DOMAIN_MAP = {
                     'Economics - Finance': ' - focus on presenting and analyzing information related to the domain.\n - use technical terminology that is precise, clear, neutral, and objective.\n - sentence structure is coherent, presenting information in a logical order.',
