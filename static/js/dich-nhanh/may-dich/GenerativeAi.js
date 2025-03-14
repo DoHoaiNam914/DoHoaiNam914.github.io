@@ -311,7 +311,7 @@ export default class GenerativeAi extends Translator {
                 role: 'user'
             }
         ];
-        if (requestBody.messages[0].content.includes('uuid'))
+        if (chatCompletionInput.messages[0].content.includes('uuid'))
             chatCompletionInput.response_format = { type: 'json' };
         chatCompletionInput.temperature = temperature;
         chatCompletionInput.top_p = topP;
