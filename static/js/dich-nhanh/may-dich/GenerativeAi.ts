@@ -127,6 +127,7 @@ export default class GenerativeAi extends Translator {
           role: 'user'
         }
       ]
+      if ((requestBody.messages[0].content as string).includes('uuid')) requestBody.response_format = { type: 'json_object' }
       requestBody.stream = true
       requestBody.temperature = temperature
       requestBody.top_p = topP
@@ -139,14 +140,15 @@ export default class GenerativeAi extends Translator {
         }
       ]
       requestBody.model = model.replace(/-(?:low|medium|high)$/, '')
-      if (model.startsWith('gpt-4o(?:-mini)?-search')) {
+      if (/^gpt-4o(?:-mini)?-search/.test(requestBody.model)) {
         requestBody.frequency_penalty = null
         requestBody.presence_penalty = null
       }
-      if (/^(?:o1|o3-mini).*-(?:low|medium|high)$/.test(model)) requestBody.reasoning_effort = model.match(/-([^-]+)$/)[1]
       if (Object.hasOwn(requestBody, 'max_completion_tokens')) requestBody.max_completion_tokens = null
+      if (/^(?:o1|o3-mini).*-(?:low|medium|high)$/.test(model)) requestBody.reasoning_effort = model.match(/-([^-]+)$/)[1]
+      if (/^(?:o1-mini|gpt-(?:4(?:-0613|o(?:-mini)?-search)?|3.5-turbo-instruct))/.test(requestBody.model) && (requestBody.messages[0].content as string).includes('uuid')) requestBody.response_format = { type: 'json_object' }
       requestBody.stream = true
-      if (model.startsWith('gpt-4o(?:-mini)?-search')) {
+      if (/^gpt-4o(?:-mini)?-search/.test(requestBody.model)) {
         requestBody.temperature = null
         requestBody.top_p = null
       } else {
@@ -187,6 +189,7 @@ export default class GenerativeAi extends Translator {
       responseMimeType: 'text/plain'
     }
 
+    if (modelParams.systemInstruction.includes('uuid')) generationConfig.responseMimeType = 'application/jaon'
     generationConfig.maxOutputTokens = undefined
     generationConfig.temperature = temperature
     generationConfig.topP = topP
@@ -292,10 +295,14 @@ export default class GenerativeAi extends Translator {
     let out = ''
 
     const chatCompletionInput: { [key: string]: any } = {
-      model: 'meta-llama/Llama-3.1-8B-Instruct',
+      model: 'Qwen/QwQ-32B',
       messages: [
-        { role: 'user', content: 'Tell me a story' }
+        {
+          role: 'user',
+          content: ''
+        }
       ],
+      provider: 'hf-inference',
       temperature: 0.5,
       max_tokens: 2048,
       top_p: 0.7
@@ -345,6 +352,7 @@ export default class GenerativeAi extends Translator {
       }
     ]
     requestBody.model = model
+    if ((requestBody.messages[0].content as string).includes('uuid')) requestBody.response_format = { type: 'json_object' }
     requestBody.temperature = temperature
     requestBody.top_p = topP
     const chatCompletion = await this.groq.chat.completions.create(requestBody)
@@ -496,13 +504,13 @@ Your translations must convey all the content in the original text and cannot in
 Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices.
 Your output must only contain the translated text and cannot include explanations or other information.`)
     }
-    const requestText = systemPrompt === 'Advanced' ? JSON.stringify(Object.fromEntries(text.split('\n').map(element => [window.crypto.randomUUID(), element]))) : text
+    const requestText = systemPrompt === 'Advanced' ? `\`\`\`jaon\n${JSON.stringify(Object.fromEntries(text.split('\n').map(element => [window.crypto.randomUUID(), element])))}\n\`\`\`` : text
     let result = await (['gemma2-9b-it', 'llama-3.3-70b-versatile', 'llama-3.1-8b-instant', 'llama3-70b-8192', 'llama3-8b-8192', 'mixtral-8x7b-32768', 'qwen-qwq-32b', 'mistral-saba-24b', 'qwen-2.5-32b', 'deepseek-r1-distill-qwen-32b', 'deepseek-r1-distill-llama-70b-specdec', 'deepseek-r1-distill-llama-70b', 'llama-3.3-70b-specdec', 'llama-3.2-1b-preview', 'llama-3.2-3b-preview', 'llama-3.2-11b-vision-preview', 'llama-3.2-90b-vision-preview'].some(element => element === model) ? this.groqMain(options, SYSTEM_PROMPTS, requestText) : (model.includes('/') ? this.launch(options, SYSTEM_PROMPTS, text) : (isMistral ? this.runMistral(options, SYSTEM_PROMPTS, requestText) : (model.startsWith('claude') ? this.anthropicMain(options, SYSTEM_PROMPTS, requestText) : (isGoogleGenerativeAi ? this.runGoogleGenerativeAI(options, SYSTEM_PROMPTS, requestText) : this.openaiMain(options, SYSTEM_PROMPTS, requestText)))))).catch(reason => {
       throw reason
     })
     if (model.toLowerCase().includes('deepseek-r1')) result.replace(/<think>\n(?:.+\n+)+<\/think>\n{2}/, '')
     if (systemPrompt === 'Advanced') {
-      const translationMap = JSON.parse(result)
+      const translationMap = JSON.parse(result.replaceAll(/^\[|]$/, ''))
       result = Object.keys(JSON.parse(requestText)).map(element => translationMap[element] ?? '').join('\n')
     }
     super.translateText(text, targetLanguage, sourceLanguage)
