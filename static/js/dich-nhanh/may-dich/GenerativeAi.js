@@ -35,8 +35,6 @@ export default class GenerativeAi extends Translator {
         SOURCE_LANGUAGE: 'Auto',
         TARGET_LANGUAGE: 'Vietnamese'
     };
-    maxContentLengthPerRequest = 1000;
-    maxContentLinePerRequest = 25;
     AIR_USER_ID;
     OPENAI_API_KEY;
     HYPERBOLIC_API_KEY;
