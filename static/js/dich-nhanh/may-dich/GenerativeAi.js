@@ -345,14 +345,21 @@ export default class GenerativeAi extends Translator {
         requestBody.model = model;
         if (requestBody.messages[0].content.includes('uuid'))
             requestBody.response_format = { type: 'json_object' };
+        if (requestBody.response_format.type === 'json_object')
+            requestBody.stream = false;
         requestBody.temperature = temperature;
         requestBody.top_p = topP;
         const chatCompletion = await this.groq.chat.completions.create(requestBody);
-        const collectedMessages = [];
-        for await (const chunk of chatCompletion) {
-            collectedMessages.push(chunk.choices[0]?.delta?.content ?? '');
+        if (requestbody.stream) {
+            const collectedMessages = [];
+            for await (const chunk of chatCompletion) {
+                collectedMessages.push(chunk.choices[0]?.delta?.content ?? '');
+            }
+            return collectedMessages.join('');
         }
-        return collectedMessages.join('');
+        else {
+            return chatCompletion.choices[0].message.content;
+        }
     }
     async translateText(text, targetLanguage, options = { sourceLanguage: null }) {
         if (options.model == null)
