@@ -278,7 +278,8 @@ export default class GenerativeAi extends Translator {
                     role: 'user',
                     content: message
                 }
-            ]
+            ],
+            ...systemInstructions[0].includes('uuid') ? { response_format: { type: 'json_object' } } : {}
         }, { fetchOptions: { signal: this.controller.signal } });
         const collectedMessages = [];
         for await (const chunk of result) {
@@ -310,6 +311,8 @@ export default class GenerativeAi extends Translator {
                 role: 'user'
             }
         ];
+        if (requestBody.messages[0].content.includes('uuid'))
+            chatCompletionInput.response_format = { type: 'json' };
         chatCompletionInput.temperature = temperature;
         chatCompletionInput.top_p = topP;
         chatCompletionInput.model = model;
@@ -345,7 +348,7 @@ export default class GenerativeAi extends Translator {
         requestBody.model = model;
         if (requestBody.messages[0].content.includes('uuid'))
             requestBody.response_format = { type: 'json_object' };
-        if (requestBody.response_format.type === 'json_object')
+        if (requestBody.response_format != null && requestBody.response_format.type === 'json_object')
             requestBody.stream = false;
         requestBody.temperature = temperature;
         requestBody.top_p = topP;
@@ -510,8 +513,8 @@ Your translations must convey all the content in the original text and cannot in
 Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices.
 Your output must only contain the translated text and cannot include explanations or other information.`);
         }
-        const requestText = systemPrompt === 'Advanced' ? `\`\`\`json\n${JSON.stringify(Object.fromEntries(text.split('\n').map(element => [window.crypto.randomUUID(), element])))}\n\`\`\`` : text;
-        let result = await (['gemma2-9b-it', 'llama-3.3-70b-versatile', 'llama-3.1-8b-instant', 'llama3-70b-8192', 'llama3-8b-8192', 'mixtral-8x7b-32768', 'qwen-qwq-32b', 'mistral-saba-24b', 'qwen-2.5-32b', 'deepseek-r1-distill-qwen-32b', 'deepseek-r1-distill-llama-70b-specdec', 'deepseek-r1-distill-llama-70b', 'llama-3.3-70b-specdec', 'llama-3.2-1b-preview', 'llama-3.2-3b-preview', 'llama-3.2-11b-vision-preview', 'llama-3.2-90b-vision-preview'].some(element => element === model) ? this.groqMain(options, SYSTEM_PROMPTS, requestText) : (model.includes('/') ? this.launch(options, SYSTEM_PROMPTS, text) : (isMistral ? this.runMistral(options, SYSTEM_PROMPTS, requestText) : (model.startsWith('claude') ? this.anthropicMain(options, SYSTEM_PROMPTS, requestText) : (isGoogleGenerativeAi ? this.runGoogleGenerativeAI(options, SYSTEM_PROMPTS, requestText) : this.openaiMain(options, SYSTEM_PROMPTS, requestText)))))).catch(reason => {
+        const requestText = systemPrompt === 'Advanced' ? JSON.stringify(Object.fromEntries(text.split('\n').map(element => [window.crypto.randomUUID(), element]))) : text;
+        let result = await (['gemma2-9b-it', 'llama-3.3-70b-versatile', 'llama-3.1-8b-instant', 'llama3-70b-8192', 'llama3-8b-8192', 'mixtral-8x7b-32768', 'qwen-qwq-32b', 'mistral-saba-24b', 'qwen-2.5-32b', 'deepseek-r1-distill-qwen-32b', 'deepseek-r1-distill-llama-70b-specdec', 'deepseek-r1-distill-llama-70b', 'llama-3.3-70b-specdec', 'llama-3.2-1b-preview', 'llama-3.2-3b-preview', 'llama-3.2-11b-vision-preview', 'llama-3.2-90b-vision-preview'].some(element => element === model) ? this.groqMain(options, SYSTEM_PROMPTS, `\`\`\`json\n${requestText}\n\`\`\``) : (model.includes('/') ? this.launch(options, SYSTEM_PROMPTS, text) : (isMistral ? this.runMistral(options, SYSTEM_PROMPTS, requestText) : (model.startsWith('claude') ? this.anthropicMain(options, SYSTEM_PROMPTS, requestText) : (isGoogleGenerativeAi ? this.runGoogleGenerativeAI(options, SYSTEM_PROMPTS, requestText) : this.openaiMain(options, SYSTEM_PROMPTS, `\`\`\`json\n${requestText}\n\`\`\``)))))).catch(reason => {
             throw reason;
         });
         if (model.toLowerCase().includes('deepseek-r1'))
