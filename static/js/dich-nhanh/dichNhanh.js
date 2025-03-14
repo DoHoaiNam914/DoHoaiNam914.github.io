@@ -1743,21 +1743,24 @@ $translateEntryButtons.click(async function onClick() {
       let result = ''
       if (translator != null) {
         switch (activeTranslator) {
-          case Translators.GENERATIVE_AI:
+          case Translators.GENERATIVE_AI: {
             translator.controller = entryTranslationController
+            const tone = $('glossaries-generative-ai-tone-select').val()
+            const domain = $('glossaries-domain-select').val()
             result = await translator.translateText(text, targetLanguage, {
               model: $('#translate-entry-model-select').val(),
               temperature: parseFloat($('#translate-entry-temperature-text').val()),
               topP: parseFloat($('#translate-entry-top-p-text').val()),
               topK: parseInt($('#translate-entry-top-k-text').val()),
               systemPrompt: $('#glossaries-system-prompt-select').val(),
-              tone: 'Serious',
-              domain: $domainSelect.val(),
+              tone: tone === 'General Setting' ? $generativeAiToneSelect.val(): tone,
+              domain: domain === 'General Setting' ? $domainSelect.val() : domain,
               customPrompt: $('#glossaries-custom-prompt-textarea').val(),
               dictionary: $('#apply-dictionary-switch').prop('checked') ? Object.entries(glossary.dictionary) : [],
             })
             result = result.trim().replaceAll(/\n/g, ' ')
             break;
+          }
           default:
             translator.controller = entryTranslationController
             result = await translator.translateText(text, targetLanguage)
