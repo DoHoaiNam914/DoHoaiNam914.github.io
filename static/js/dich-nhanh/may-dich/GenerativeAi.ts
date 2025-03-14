@@ -141,11 +141,20 @@ export default class GenerativeAi extends Translator {
         }
       ]
       requestBody.model = model.replace(/-(?:low|medium|high)$/, '')
+      if (model.startsWith('gpt-4o(?:-mini)?-search')) {
+        requestBody.frequency_penalty = null
+        requestBody.presence_penalty = null
+      }
       if (/^(?:o1|o3-mini).*-(?:low|medium|high)$/.test(model)) requestBody.reasoning_effort = model.match(/-([^-]+)$/)[1]
       if (Object.hasOwn(requestBody, 'max_completion_tokens')) requestBody.max_completion_tokens = null
       requestBody.stream = true
-      if (Object.hasOwn(requestBody, 'temperature')) requestBody.temperature = temperature
-      if (Object.hasOwn(requestBody, 'top_p')) requestBody.top_p = topP
+      if (model.startsWith('gpt-4o(?:-mini)?-search')) {
+        requestBody.temperature = null
+        requestBody.top_p = null
+      } else {
+        if (Object.hasOwn(requestBody, 'temperature')) requestBody.temperature = temperature
+        if (Object.hasOwn(requestBody, 'top_p')) requestBody.top_p = topP
+      }
     }
     if (!isDeepseek && this.OPENAI_API_KEY.length === 0 && new URLSearchParams(window.location.search).has('debug')) {
       return await this.translatenowMain(requestBody)
