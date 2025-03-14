@@ -353,15 +353,20 @@ export default class GenerativeAi extends Translator {
     ]
     requestBody.model = model
     if ((requestBody.messages[0].content as string).includes('uuid')) requestBody.response_format = { type: 'json_object' }
+    if (requestBody.response_format.type === 'json_object') requestBody.stream = false
     requestBody.temperature = temperature
     requestBody.top_p = topP
     const chatCompletion = await this.groq.chat.completions.create(requestBody)
 
-    const collectedMessages: string[] = []
-    for await (const chunk of chatCompletion) {
-      collectedMessages.push(chunk.choices[0]?.delta?.content ?? '')
+    if (requestbody.stream as boolean) {
+      const collectedMessages: string[] = []
+      for await (const chunk of chatCompletion) {
+        collectedMessages.push(chunk.choices[0]?.delta?.content ?? '')
+      }
+      return collectedMessages.join('')
+    } else {
+      return chatCompletion.choices[0].message.content
     }
-    return collectedMessages.join('')
   }
 
   public async translateText (text, targetLanguage: string, options: { sourceLanguage: string | null, model?: string, temperature?: number, topP?: number, topK?: number, systemPrompt?: string, tone?: string, domain?: string, customPrompt?: string, dictionary?: string[][] } = { sourceLanguage: null }): Promise<string> {
