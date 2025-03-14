@@ -350,7 +350,7 @@ export default class GenerativeAi extends Translator {
         requestBody.temperature = temperature;
         requestBody.top_p = topP;
         const chatCompletion = await this.groq.chat.completions.create(requestBody);
-        if (requestbody.stream) {
+        if (requestBody.stream) {
             const collectedMessages = [];
             for await (const chunk of chatCompletion) {
                 collectedMessages.push(chunk.choices[0]?.delta?.content ?? '');
