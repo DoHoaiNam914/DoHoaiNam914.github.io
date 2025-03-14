@@ -189,7 +189,7 @@ export default class GenerativeAi extends Translator {
             responseMimeType: 'text/plain'
         };
         if (modelParams.systemInstruction.includes('uuid'))
-            generationConfig.responseMimeType = 'application/jaon';
+            generationConfig.responseMimeType = 'application/json';
         generationConfig.maxOutputTokens = undefined;
         generationConfig.temperature = temperature;
         generationConfig.topP = topP;
