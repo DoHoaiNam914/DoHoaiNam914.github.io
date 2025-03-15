@@ -520,8 +520,8 @@ Your output must only contain the translated text and cannot include explanation
         if (model.toLowerCase().includes('deepseek-r1'))
             result.replace(/<think>\n(?:.+\n+)+<\/think>\n{2}/, '');
         if (systemPrompt === 'Advanced') {
-            const translationMap = JSON.parse(result.replace(/^\[\s*/, '').replace(/ *(})\n?]$/g, '$1'));
-            result = Object.keys(JSON.parse(requestText)).map(element => translationMap[element] ?? '').join('\n');
+            const translationMap = JSON.parse(result);
+            result = Object.keys(JSON.parse(requestText)).map(element => (Array.isArray(translationMap) ? translationMap[0] : translationMap)[element] ?? '').join('\n');
         }
         super.translateText(text, targetLanguage, sourceLanguage);
         return result;
