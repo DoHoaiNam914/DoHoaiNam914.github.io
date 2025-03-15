@@ -521,7 +521,7 @@ Your output must only contain the translated text and cannot include explanation
             result.replace(/<think>\n(?:.+\n+)+<\/think>\n{2}/, '');
         if (systemPrompt === 'Advanced') {
             let translationMap = JSON.parse(result.replaceAll(/^`{3}json\n|\n`{3}$/g, ''));
-            translationMap = Array.isArray(translationMap) ? (translationMap.length > 1 ? translationMap.reduce((accumulator, currentValue) => ({ accumulator, ...currentValue }), {}) : translationMap[0]) : translationMap;
+            translationMap = Array.isArray(translationMap) ? (translationMap.length > 1 ? translationMap.reduce((accumulator, currentValue) => ({ ...accumulator, ...currentValue }), {}) : translationMap[0]) : translationMap;
             result = Object.keys(JSON.parse(requestText)).map(element => translationMap[element] ?? '').join('\n');
         }
         super.translateText(text, targetLanguage, sourceLanguage);
