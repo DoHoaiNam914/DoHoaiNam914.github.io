@@ -188,7 +188,7 @@ export default class GenerativeAi extends Translator {
             maxOutputTokens: 8192,
             responseMimeType: 'text/plain'
         };
-        if (modelParams.systemInstruction.includes('uuid'))
+        if (modelParams.model !== 'gemini-2.0-flash-thinking-exp-01-21' && modelParams.systemInstruction.includes('uuid'))
             generationConfig.responseMimeType = 'application/json';
         generationConfig.maxOutputTokens = undefined;
         generationConfig.temperature = temperature;
