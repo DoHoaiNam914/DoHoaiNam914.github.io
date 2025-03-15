@@ -146,10 +146,8 @@ export default class GenerativeAi extends Translator {
                 requestBody.response_format = { type: 'json_object' };
             requestBody.stream = true;
             if (/^gpt-4o(?:-mini)?-search/.test(requestBody.model)) {
-                if (Object.hasOwn(requestBody, 'temperature'))
-                    requestBody.temperature = undefined;
-                if (Object.hasOwn(requestBody, 'top_p'))
-                    requestBody.top_p = undefined;
+                requestBody.temperature = undefined;
+                requestBody.top_p = undefined;
             }
             else {
                 if (Object.hasOwn(requestBody, 'temperature'))
