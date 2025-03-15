@@ -389,7 +389,7 @@ export default class GenerativeAi extends Translator {
         const SYSTEM_PROMPTS = [];
         const dictionaryEntries = dictionary.filter(([first]) => text.includes(first));
         switch (systemPrompt) {
-            case 'Advanced': {
+            case 'Professional': {
                 const TONE_MAP = {
                     serious: [
                         'You are a serious translator and logical and clear wordsmith',
@@ -496,13 +496,13 @@ ${dictionaryEntries.map(element => element.join(' : ')).join('\n')}
             default:
                 PROMPTS.push(`You will be provided with a user input${sourceLanguage != null && sourceLanguage !== this.DefaultLanguage.SOURCE_LANGUAGE ? ` in ${sourceLanguage}` : ''}.\nTranslate the text into ${targetLanguage}.\nOnly output the translated text, without any additional text.`);
         }
-        const requestText = systemPrompt === 'Advanced' ? JSON.stringify(Object.fromEntries(text.split('\n').map(element => [window.crypto.randomUUID(), element]))) : text;
-        let result = await (['gemma2-9b-it', 'llama-3.3-70b-versatile', 'llama-3.1-8b-instant', 'llama3-70b-8192', 'llama3-8b-8192', 'mixtral-8x7b-32768', 'qwen-qwq-32b', 'mistral-saba-24b', 'qwen-2.5-32b', 'deepseek-r1-distill-qwen-32b', 'deepseek-r1-distill-llama-70b-specdec', 'deepseek-r1-distill-llama-70b', 'llama-3.3-70b-specdec', 'llama-3.2-1b-preview', 'llama-3.2-3b-preview', 'llama-3.2-11b-vision-preview', 'llama-3.2-90b-vision-preview'].some(element => element === model) ? this.groqMain(options, SYSTEM_PROMPTS, systemPrompt === 'Advanced' ? `\`\`\`json\n${requestText}\n\`\`\`` : requestText) : (model.includes('/') ? this.launch(options, SYSTEM_PROMPTS, text) : (isMistral ? this.runMistral(options, SYSTEM_PROMPTS, requestText) : (model.startsWith('claude') ? this.anthropicMain(options, SYSTEM_PROMPTS, requestText) : (isGoogleGenerativeAi ? this.runGoogleGenerativeAI(options, SYSTEM_PROMPTS, systemPrompt === 'Advanced' ? `\`\`\`json\n${requestText}\n\`\`\`` : requestText) : this.openaiMain(options, SYSTEM_PROMPTS, systemPrompt === 'Advanced' ? `\`\`\`json\n${requestText}\n\`\`\`` : requestText)))))).catch(reason => {
+        const requestText = systemPrompt === 'Professional' ? JSON.stringify(Object.fromEntries(text.split('\n').map(element => [window.crypto.randomUUID(), element]))) : text;
+        let result = await (['gemma2-9b-it', 'llama-3.3-70b-versatile', 'llama-3.1-8b-instant', 'llama3-70b-8192', 'llama3-8b-8192', 'mixtral-8x7b-32768', 'qwen-qwq-32b', 'mistral-saba-24b', 'qwen-2.5-32b', 'deepseek-r1-distill-qwen-32b', 'deepseek-r1-distill-llama-70b-specdec', 'deepseek-r1-distill-llama-70b', 'llama-3.3-70b-specdec', 'llama-3.2-1b-preview', 'llama-3.2-3b-preview', 'llama-3.2-11b-vision-preview', 'llama-3.2-90b-vision-preview'].some(element => element === model) ? this.groqMain(options, SYSTEM_PROMPTS, systemPrompt === 'Professional' ? `\`\`\`json\n${requestText}\n\`\`\`` : requestText) : (model.includes('/') ? this.launch(options, SYSTEM_PROMPTS, text) : (isMistral ? this.runMistral(options, SYSTEM_PROMPTS, requestText) : (model.startsWith('claude') ? this.anthropicMain(options, SYSTEM_PROMPTS, requestText) : (isGoogleGenerativeAi ? this.runGoogleGenerativeAI(options, SYSTEM_PROMPTS, systemPrompt === 'Professional' ? `\`\`\`json\n${requestText}\n\`\`\`` : requestText) : this.openaiMain(options, SYSTEM_PROMPTS, systemPrompt === 'Professional' ? `\`\`\`json\n${requestText}\n\`\`\`` : requestText)))))).catch(reason => {
             throw reason;
         });
         if (model.toLowerCase().includes('deepseek-r1'))
             result.replace(/<think>\n(?:.+\n+)+<\/think>\n{2}/, '');
-        if (systemPrompt === 'Advanced') {
+        if (systemPrompt === 'Professional') {
             let translationMap = JSON.parse(result.replaceAll(/^`{3}json\n|\n`{3}$/g, ''));
             translationMap = Array.isArray(translationMap) ? (translationMap.length > 1 ? translationMap.reduce((accumulator, currentValue) => ({ ...accumulator, ...currentValue }), {}) : translationMap[0]) : translationMap;
             result = Object.keys(JSON.parse(requestText)).map(element => translationMap[element] ?? '').join('\n');
