@@ -1,5 +1,5 @@
 'use strict'
-/* global axios, Papa */
+/* global axios */
 import Translator from '../Translator.js'
 import * as Utils from '../../Utils.js'
 import Anthropic from 'https://esm.run/@anthropic-ai/sdk'
@@ -377,8 +377,8 @@ export default class GenerativeAi extends Translator {
     if (options.topP == null) options.topP = 0.95
     if (options.topK == null) options.topK = 50
     if (options.systemPrompt == null) options.systemPrompt = 'Basic'
-    if (options.tone == null) options.tone = ''
-    if (options.domain == null) options.domain = ''
+    if (options.tone == null) options.tone = 'Serious'
+    if (options.domain == null) options.domain = 'None'
     if (options.customPrompt == null) options.customPrompt = ''
     if (options.dictionary == null) options.dictionary = []
     const { sourceLanguage, model, systemPrompt, tone, domain, customPrompt, dictionary } = options
@@ -486,33 +486,16 @@ ${dictionaryEntries.map(element => element.join(' : ')).join('\n')}
 - ${customPrompt.replaceAll(/^\s+|\s+$/g, '')}`)
         break
       }
+      case 'Intermediate':
+        SYSTEM_PROMPTS.push(`I want you to act as a ${targetLanguage} translator.${model.startsWith('gpt') || model === 'chatgpt-4o-latest' || /^o\d/.test(model) ? `\nYou are trained on data up to ${/^gpt-4[^o]/.test(model) ? 'December 2023' : (model === 'chatgpt-4o-latest' ? 'June 2024' : (model.startsWith('gpt-3.5') ? 'September 2021' : 'October 2023'))}.` : ''}`)
+        SYSTEM_PROMPTS.push(`I will speak to you in ${sourceLanguage != null && sourceLanguage !== this.DefaultLanguage.SOURCE_LANGUAGE ? `${sourceLanguage} and you will ` : 'any language and you will detect the language, '}translate it and answer in the corrected version of my text, exclusively in ${targetLanguage}, while keeping the format.\nYour translations must convey all the content in the original text and cannot involve explanations or other unnecessary information.\nPlease ensure that the translated text is natural for native speakers with correct grammar and proper word choices.\nYour output must only contain the translated text and cannot include explanations or other information.`)
+        break
       case 'Basic':
       default:
-        SYSTEM_PROMPTS.push(`I want you to act as a ${targetLanguage} translator.${model.startsWith('gpt') || model === 'chatgpt-4o-latest' || /^o\d/.test(model)
-? `
-You are trained on data up to ${/^gpt-4[^o]/.test(model) ? 'December 2023' : (model === 'chatgpt-4o-latest' ? 'June 2024' : (model.startsWith('gpt-3.5') ? 'September 2021' : 'October 2023'))}.`
-: ''}`)
-        if (dictionaryEntries.length > 0) {
-          SYSTEM_PROMPTS.push(`# User’s Dictionary
-
-The user provided the personalized glossaries to define preferred translations for specific terms:
-\`\`\`csv
-${Papa.unparse({ fields: ['Original word', 'Destination word'], data: dictionaryEntries }, { newline: '\n' }) as string}
-\`\`\``)
-        }
-        if (customPrompt.replaceAll(/^\s+|\s+$/g, '').length > 0) {
-          SYSTEM_PROMPTS.push(`# User’s Instructions
-
-The user provided the additional info about how they would like you to translate:
-\`\`\`${customPrompt}\`\`\``)
-        }
-        SYSTEM_PROMPTS.push(`I will speak to you in ${sourceLanguage != null && sourceLanguage !== this.DefaultLanguage.SOURCE_LANGUAGE ? `${sourceLanguage} and you will ` : 'any language and you will detect the language, '}translate it and answer in the corrected version of my text, exclusively in ${targetLanguage}, while keeping the format.
-Your translations must convey all the content in the original text and cannot involve explanations or other unnecessary information.
-Please ensure that the translated text is natural for native speakers with correct grammar and proper word choices.
-Your output must only contain the translated text and cannot include explanations or other information.`)
+        PROMPTS.push(`You will be provided with a user input${sourceLanguage != null && sourceLanguage !== this.DefaultLanguage.SOURCE_LANGUAGE ? ` in ${sourceLanguage}` : ''}.\nTranslate the text into ${targetLanguage}.\nOnly output the translated text, without any additional text.`)
     }
     const requestText: string = systemPrompt === 'Advanced' ? JSON.stringify(Object.fromEntries(text.split('\n').map(element => [window.crypto.randomUUID(), element]))) : text
-    let result = await (['gemma2-9b-it', 'llama-3.3-70b-versatile', 'llama-3.1-8b-instant', 'llama3-70b-8192', 'llama3-8b-8192', 'mixtral-8x7b-32768', 'qwen-qwq-32b', 'mistral-saba-24b', 'qwen-2.5-32b', 'deepseek-r1-distill-qwen-32b', 'deepseek-r1-distill-llama-70b-specdec', 'deepseek-r1-distill-llama-70b', 'llama-3.3-70b-specdec', 'llama-3.2-1b-preview', 'llama-3.2-3b-preview', 'llama-3.2-11b-vision-preview', 'llama-3.2-90b-vision-preview'].some(element => element === model) ? this.groqMain(options, SYSTEM_PROMPTS, `\`\`\`json\n${requestText}\n\`\`\``) : (model.includes('/') ? this.launch(options, SYSTEM_PROMPTS, text) : (isMistral ? this.runMistral(options, SYSTEM_PROMPTS, requestText) : (model.startsWith('claude') ? this.anthropicMain(options, SYSTEM_PROMPTS, requestText) : (isGoogleGenerativeAi ? this.runGoogleGenerativeAI(options, SYSTEM_PROMPTS, `\`\`\`json\n${requestText}\n\`\`\``) : this.openaiMain(options, SYSTEM_PROMPTS, `\`\`\`json\n${requestText}\n\`\`\``)))))).catch(reason => {
+    let result = await (['gemma2-9b-it', 'llama-3.3-70b-versatile', 'llama-3.1-8b-instant', 'llama3-70b-8192', 'llama3-8b-8192', 'mixtral-8x7b-32768', 'qwen-qwq-32b', 'mistral-saba-24b', 'qwen-2.5-32b', 'deepseek-r1-distill-qwen-32b', 'deepseek-r1-distill-llama-70b-specdec', 'deepseek-r1-distill-llama-70b', 'llama-3.3-70b-specdec', 'llama-3.2-1b-preview', 'llama-3.2-3b-preview', 'llama-3.2-11b-vision-preview', 'llama-3.2-90b-vision-preview'].some(element => element === model) ? this.groqMain(options, SYSTEM_PROMPTS, systemPrompt === 'Advanced' ? `\`\`\`json\n${requestText}\n\`\`\`` : requestText) : (model.includes('/') ? this.launch(options, SYSTEM_PROMPTS, text) : (isMistral ? this.runMistral(options, SYSTEM_PROMPTS, requestText) : (model.startsWith('claude') ? this.anthropicMain(options, SYSTEM_PROMPTS, requestText) : (isGoogleGenerativeAi ? this.runGoogleGenerativeAI(options, SYSTEM_PROMPTS, systemPrompt === 'Advanced' ? `\`\`\`json\n${requestText}\n\`\`\`` : requestText) : this.openaiMain(options, SYSTEM_PROMPTS, systemPrompt === 'Advanced' ? `\`\`\`json\n${requestText}\n\`\`\`` : requestText)))))).catch(reason => {
       throw reason
     })
     if (model.toLowerCase().includes('deepseek-r1')) result.replace(/<think>\n(?:.+\n+)+<\/think>\n{2}/, '')
