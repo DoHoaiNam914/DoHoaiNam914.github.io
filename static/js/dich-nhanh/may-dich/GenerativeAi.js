@@ -135,8 +135,8 @@ export default class GenerativeAi extends Translator {
             ];
             requestBody.model = model.replace(/-(?:low|medium|high)$/, '');
             if (/^gpt-4o(?:-mini)?-search/.test(requestBody.model)) {
-                requestBody.frequency_penalty = null;
-                requestBody.presence_penalty = null;
+                requestBody.frequency_penalty = undefined;
+                requestBody.presence_penalty = undefined;
             }
             if (Object.hasOwn(requestBody, 'max_completion_tokens'))
                 requestBody.max_completion_tokens = null;
@@ -146,8 +146,10 @@ export default class GenerativeAi extends Translator {
                 requestBody.response_format = { type: 'json_object' };
             requestBody.stream = true;
             if (/^gpt-4o(?:-mini)?-search/.test(requestBody.model)) {
-                requestBody.temperature = null;
-                requestBody.top_p = null;
+                if (Object.hasOwn(requestBody, 'temperature'))
+                    requestBody.temperature = undefined;
+                if (Object.hasOwn(requestBody, 'top_p'))
+                    requestBody.top_p = undefined;
             }
             else {
                 if (Object.hasOwn(requestBody, 'temperature'))
