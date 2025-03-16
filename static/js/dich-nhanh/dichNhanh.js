@@ -721,7 +721,7 @@ const translate = async function translateContentInTextarea(controller = new Abo
 
   try {
     const startTime = Date.now()
-    const text = $activeTranslator.val() === Translators.WEBNOVEL_TRANSLATE ? $inputTextarea.val().split('\n').filter(element => element.replace(/^\s+/, '').length > 0).join('\n') : $inputTextarea.val()
+    const text = [Translators.GENERATIVE_AI, Translators.WEBNOVEL_TRANSLATE].some(element => $activeTranslator.val() === element) ? $inputTextarea.val().split('\n').filter(element => element.replace(/^\s+/, '').length > 0).join('\n') : $inputTextarea.val()
     const targetLanguage = $targetLanguageSelect.val()
     const sourceLanguage = $sourceLanguageSelect.val()
     let result = ''
@@ -749,7 +749,7 @@ const translate = async function translateContentInTextarea(controller = new Abo
       }
     }
     if (controller.signal.aborted) return
-    $resultTextarea.html(buildResult($activeTranslator.val() === Translators.GENERATIVE_AI && !/\n{2,}/.test(result) ? text.split('\n').filter(element => element.replace(/^\s+/, '').length > 0).join('\n') : text, result, $activeTranslator.val()))
+    $resultTextarea.html(buildResult(text, $activeTranslator.val() === Translators.GENERATIVE_AI ? result.replaceAll(/\n{2}/g, '\n') : result, $activeTranslator.val()))
     $resultTextarea.find('p > i').on('dblclick', function onDblclick() {
       const range = document.createRange()
       const selection = window.getSelection()
