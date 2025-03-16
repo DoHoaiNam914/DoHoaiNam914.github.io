@@ -142,7 +142,7 @@ export default class GenerativeAi extends Translator {
                 requestBody.max_completion_tokens = null;
             if (/^(?:o1|o3-mini).*-(?:low|medium|high)$/.test(model))
                 requestBody.reasoning_effort = model.match(/-([^-]+)$/)[1];
-            if (!/^(?:o1-mini|gpt-(?:4(?:-0613|o(?:-mini)?-search)?|3.5-turbo-instruct))/.test(requestBody.model) && requestBody.messages[0].content.includes('uuid'))
+            if (!/^(?:o1-mini|gpt-(?:4(?:$|-0613|o(?:-mini)?-search)|3.5-turbo-instruct))/.test(requestBody.model) && requestBody.messages[0].content.includes('uuid'))
                 requestBody.response_format = { type: 'json_object' };
             requestBody.stream = true;
             if (/^gpt-4o(?:-mini)?-search/.test(requestBody.model)) {
