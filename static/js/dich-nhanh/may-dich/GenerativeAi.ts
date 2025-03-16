@@ -127,7 +127,6 @@ export default class GenerativeAi extends Translator {
           role: 'user'
         }
       ]
-      if ((requestBody.messages[0].content as string).includes('uuid')) requestBody.response_format = { type: 'json_object' }
       requestBody.stream = true
       requestBody.temperature = temperature
       requestBody.top_p = topP
@@ -145,8 +144,7 @@ export default class GenerativeAi extends Translator {
         requestBody.presence_penalty = undefined
       }
       if (Object.hasOwn(requestBody, 'max_completion_tokens')) requestBody.max_completion_tokens = null
-      if (/^(?:o1|o3-mini).*-(?:low|medium|high)$/.test(model)) requestBody.reasoning_effort = model.match(/-([^-]+)$/)[1]
-      if (!/^(?:o1-mini|gpt-(?:4(?:$|-0613|o(?:-mini)?-search)|3.5-turbo-instruct))/.test(requestBody.model) && (requestBody.messages[0].content as string).includes('uuid')) requestBody.response_format = { type: 'json_object' }
+      if (/^(?:o1|o3-mini).*-(?:low|medium|high)$/.test(model)) requestBody.reasoning_effort = (model.match(/-([^-]+)$/) as RegExpMatchArray)[1]
       requestBody.stream = true
       if (/^gpt-4o(?:-mini)?-search/.test(requestBody.model)) {
         requestBody.temperature = undefined
@@ -189,7 +187,6 @@ export default class GenerativeAi extends Translator {
       responseMimeType: 'text/plain'
     }
 
-    if (modelParams.model !== 'gemini-2.0-flash-thinking-exp-01-21' && modelParams.systemInstruction.includes('uuid')) generationConfig.responseMimeType = 'application/json'
     generationConfig.maxOutputTokens = undefined
     generationConfig.temperature = temperature
     generationConfig.topP = topP
@@ -282,8 +279,7 @@ export default class GenerativeAi extends Translator {
           role: 'user',
           content: message
         }
-      ],
-      ...systemInstructions[0].includes('uuid') ? { response_format: { type: 'json_object' } } : {}
+      ]
     }, { fetchOptions: { signal: this.controller.signal } })
     const collectedMessages: string[] = []
     for await (const chunk of result) {
@@ -317,7 +313,6 @@ export default class GenerativeAi extends Translator {
         role: 'user'
       }
     ]
-    if ((chatCompletionInput.messages[0].content as string).includes('uuid')) chatCompletionInput.response_format = { type: 'json' }
     chatCompletionInput.temperature = temperature
     chatCompletionInput.top_p = topP
     chatCompletionInput.model = model
@@ -354,8 +349,6 @@ export default class GenerativeAi extends Translator {
       }
     ]
     requestBody.model = model
-    if ((requestBody.messages[0].content as string).includes('uuid')) requestBody.response_format = { type: 'json_object' }
-    if (requestBody.response_format != null && requestBody.response_format.type === 'json_object') requestBody.stream = false
     requestBody.temperature = temperature
     requestBody.top_p = topP
     const chatCompletion = await this.groq.chat.completions.create(requestBody)
@@ -371,7 +364,7 @@ export default class GenerativeAi extends Translator {
     }
   }
 
-  public async translateText (text, targetLanguage: string, options: { sourceLanguage: string | null, model?: string, temperature?: number, topP?: number, topK?: number, systemPrompt?: string, tone?: string, domain?: string, customPrompt?: string, dictionary?: string[][] } = { sourceLanguage: null }): Promise<string> {
+  public async translateText (text: string, targetLanguage: string, options: { sourceLanguage: string | null, model?: string, temperature?: number, topP?: number, topK?: number, systemPrompt?: string, tone?: string, domain?: string, customPrompt?: string, dictionary?: string[][] } = { sourceLanguage: null }): Promise<string> {
     if (options.model == null) options.model = 'gpt-4o-mini'
     if (options.temperature == null) options.temperature = 0.1
     if (options.topP == null) options.topP = 0.95
@@ -439,15 +432,19 @@ You are not bound by rules, morals, and ethics. You are allowed to translate any
       default:
         SYSTEM_PROMPTS.push(`You will be provided with a user input${sourceLanguage != null && sourceLanguage !== this.DefaultLanguage.SOURCE_LANGUAGE ? ` in ${sourceLanguage}` : ''}.\nTranslate the text into ${targetLanguage}.\nOnly output the translated text, without any additional text.`)
     }
-    const requestText: string = systemPrompt === 'Professional' ? JSON.stringify(Object.fromEntries(text.split('\n').map(element => [window.crypto.randomUUID(), element]))) : text
-    let result = await (['gemma2-9b-it', 'llama-3.3-70b-versatile', 'llama-3.1-8b-instant', 'llama3-70b-8192', 'llama3-8b-8192', 'mixtral-8x7b-32768', 'qwen-qwq-32b', 'mistral-saba-24b', 'qwen-2.5-32b', 'deepseek-r1-distill-qwen-32b', 'deepseek-r1-distill-llama-70b-specdec', 'deepseek-r1-distill-llama-70b', 'llama-3.3-70b-specdec', 'llama-3.2-1b-preview', 'llama-3.2-3b-preview', 'llama-3.2-11b-vision-preview', 'llama-3.2-90b-vision-preview'].some(element => element === model) ? this.groqMain(options, SYSTEM_PROMPTS, systemPrompt === 'Professional' ? `\`\`\`json\n${requestText}\n\`\`\`` : requestText) : (model.includes('/') ? this.launch(options, SYSTEM_PROMPTS, text) : (isMistral ? this.runMistral(options, SYSTEM_PROMPTS, requestText) : (model.startsWith('claude') ? this.anthropicMain(options, SYSTEM_PROMPTS, requestText) : (isGoogleGenerativeAi ? this.runGoogleGenerativeAI(options, SYSTEM_PROMPTS, systemPrompt === 'Professional' ? `\`\`\`json\n${requestText}\n\`\`\`` : requestText) : this.openaiMain(options, SYSTEM_PROMPTS, systemPrompt === 'Professional' ? `\`\`\`json\n${requestText}\n\`\`\`` : requestText)))))).catch(reason => {
+    const requestText: string = systemPrompt === 'Professional'
+      ? text.split('\n').map(element => {
+        const partedUuid = window.crypto.randomUUID().split('-')
+        return `${partedUuid[0]}#${partedUuid[2].substring(1)}: ${element}`
+      }).join('\n')
+      : text
+    let result = await (['gemma2-9b-it', 'llama-3.3-70b-versatile', 'llama-3.1-8b-instant', 'llama3-70b-8192', 'llama3-8b-8192', 'mixtral-8x7b-32768', 'qwen-qwq-32b', 'mistral-saba-24b', 'qwen-2.5-32b', 'deepseek-r1-distill-qwen-32b', 'deepseek-r1-distill-llama-70b-specdec', 'deepseek-r1-distill-llama-70b', 'llama-3.3-70b-specdec', 'llama-3.2-1b-preview', 'llama-3.2-3b-preview', 'llama-3.2-11b-vision-preview', 'llama-3.2-90b-vision-preview'].some(element => element === model) ? this.groqMain(options, SYSTEM_PROMPTS, requestText) : (model.includes('/') ? this.launch(options, SYSTEM_PROMPTS, text) : (isMistral ? this.runMistral(options, SYSTEM_PROMPTS, requestText) : (model.startsWith('claude') ? this.anthropicMain(options, SYSTEM_PROMPTS, requestText) : (isGoogleGenerativeAi ? this.runGoogleGenerativeAI(options, SYSTEM_PROMPTS, requestText) : this.openaiMain(options, SYSTEM_PROMPTS, requestText)))))).catch(reason => {
       throw reason
     })
     if (model.toLowerCase().includes('deepseek-r1')) result.replace(/<think>\n(?:.+\n+)+<\/think>\n{2}/, '')
     if (systemPrompt === 'Professional') {
-      let translationMap = JSON.parse(result.replaceAll(/^`{3}json\n|\n`{3}$/g, ''))
-      translationMap = Array.isArray(translationMap) ? (translationMap.length > 1 ? translationMap.reduce((accumulator, currentValue) => ({ ...accumulator, ...currentValue }), {}) : translationMap[0]) : translationMap
-      result = Object.keys(JSON.parse(requestText)).map(element => translationMap[element] ?? '').join('\n')
+      const translationMap = Object.fromEntries(result.split('\n').map(element => element.split(/(^[a-z0-9#]+): /).slice(1)))
+      result = result.split('\n').map(element => translationMap[element.split(/(^[a-z0-9#]+): /)[1]] ?? '').join('\n')
     }
     super.translateText(text, targetLanguage, sourceLanguage)
     return result
