@@ -721,7 +721,8 @@ const translate = async function translateContentInTextarea(controller = new Abo
 
   try {
     const startTime = Date.now()
-    const text = [Translators.GENERATIVE_AI, Translators.WEBNOVEL_TRANSLATE].some(element => $activeTranslator.val() === element) ? $inputTextarea.val().split('\n').filter(element => element.replace(/^\s+/, '').length > 0).join('\n') : $inputTextarea.val()
+    const systemPrompt = $('#system-prompt-select').val()
+    const text = [Translators.GENERATIVE_AI, Translators.WEBNOVEL_TRANSLATE].some((element, index) => $activeTranslator.val() === element && index === 0 && systemPrompt !== 'Professional') ? $inputTextarea.val().split('\n').filter(element => element.replace(/^\s+/, '').length > 0).join('\n') : $inputTextarea.val()
     const targetLanguage = $targetLanguageSelect.val()
     const sourceLanguage = $sourceLanguageSelect.val()
     let result = ''
@@ -735,7 +736,7 @@ const translate = async function translateContentInTextarea(controller = new Abo
           temperature: parseFloat($('#temperature-text').val()),
           topP: parseFloat($('#top-p-text').val()),
           topK: parseInt($('#top-k-text').val()),
-          systemPrompt: $('#system-prompt-select').val(),
+          systemPrompt,
           tone: $generativeAiToneSelect.val(),
           domain: $domainSelect.val(),
           customPrompt: $('#custom-prompt-textarea').val(),
@@ -749,7 +750,7 @@ const translate = async function translateContentInTextarea(controller = new Abo
       }
     }
     if (controller.signal.aborted) return
-    $resultTextarea.html(buildResult(text, $activeTranslator.val() === Translators.GENERATIVE_AI ? result.replaceAll(/\n{2}/g, '\n') : result, $activeTranslator.val()))
+    $resultTextarea.html(buildResult(text, $activeTranslator.val() === Translators.GENERATIVE_AI && systemPrompt !== 'Professional' ? result.replaceAll(/\n{2}/g, '\n') : result, $activeTranslator.val()))
     $resultTextarea.find('p > i').on('dblclick', function onDblclick() {
       const range = document.createRange()
       const selection = window.getSelection()
