@@ -431,19 +431,23 @@ export default class GenerativeAi extends Translator {
       default:
         SYSTEM_PROMPTS.push(`You will be provided with a user input${sourceLanguage != null && sourceLanguage !== this.DefaultLanguage.SOURCE_LANGUAGE ? ` in ${sourceLanguage}` : ''}.\nTranslate the text into ${targetLanguage}.\nOnly output the translated text, without any additional text.`)
     }
-    const requestText: string = systemPrompt === 'Professional'
-      ? text.split('\n').map(element => {
+
+    let queryText = text.split('\n')
+    let requestText = queryText.join('\n')
+    if (systemPrompt === 'Professional') {
+      queryText = text.split('\n').map(element => {
         const partedUuid = window.crypto.randomUUID().split('-')
         return `${partedUuid[0]}#${partedUuid[2].substring(1)}: ${element}`
-      }).join('\n')
-      : text
+      })
+      requestText = queryText.filter(element => element.split(/(^[a-z0-9#]{12}): /)[2].replace(/^\s+/, '').length > 0).join('\n')
+    }
     let result = await (['gemma2-9b-it', 'llama-3.3-70b-versatile', 'llama-3.1-8b-instant', 'llama3-70b-8192', 'llama3-8b-8192', 'mixtral-8x7b-32768', 'qwen-qwq-32b', 'mistral-saba-24b', 'qwen-2.5-32b', 'deepseek-r1-distill-qwen-32b', 'deepseek-r1-distill-llama-70b-specdec', 'deepseek-r1-distill-llama-70b', 'llama-3.3-70b-specdec', 'llama-3.2-1b-preview', 'llama-3.2-3b-preview', 'llama-3.2-11b-vision-preview', 'llama-3.2-90b-vision-preview'].some(element => element === model) ? this.groqMain(options, SYSTEM_PROMPTS, requestText) : (model.includes('/') ? this.launch(options, SYSTEM_PROMPTS, text) : (isMistral ? this.runMistral(options, SYSTEM_PROMPTS, requestText) : (model.startsWith('claude') ? this.anthropicMain(options, SYSTEM_PROMPTS, requestText) : (isGoogleGenerativeAi ? this.runGoogleGenerativeAI(options, SYSTEM_PROMPTS, requestText) : this.openaiMain(options, SYSTEM_PROMPTS, requestText)))))).catch(reason => {
       throw reason
     })
     if (model.toLowerCase().includes('deepseek-r1')) result.replace(/<think>\n(?:.+\n+)+<\/think>\n{2}/, '')
     if (systemPrompt === 'Professional') {
       const translationMap = Object.fromEntries(result.split('\n').map(element => element.split(/(^[a-z0-9#]{12}): /).slice(1)))
-      result = requestText.split('\n').map(element => translationMap[element.match(/^[a-z0-9#]{12}/)[0]] ?? '').join('\n')
+      result = queryText.map(element => translationMap[(element.match(/^[a-z0-9#]{12}/) as RegExpMatchArray)[0]] ?? '').join('\n')
     }
     super.translateText(text, targetLanguage, sourceLanguage)
     return result
