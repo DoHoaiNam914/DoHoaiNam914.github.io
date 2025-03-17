@@ -440,7 +440,7 @@ export default class GenerativeAi extends Translator {
             result.replace(/<think>\n(?:.+\n+)+<\/think>\n{2}/, '');
         if (systemPrompt === 'Professional') {
             const translationMap = Object.fromEntries(result.split('\n').map(element => element.split(/(^[a-z0-9#]{12}): /).slice(1)));
-            result = result.split('\n').map(element => translationMap[element.match(/^[a-z0-9#]{12}/)[0]] ?? '').join('\n');
+            result = requestText.split('\n').map(element => translationMap[element.match(/^[a-z0-9#]{12}/)[0]] ?? '').join('\n');
         }
         super.translateText(text, targetLanguage, sourceLanguage);
         return result;
