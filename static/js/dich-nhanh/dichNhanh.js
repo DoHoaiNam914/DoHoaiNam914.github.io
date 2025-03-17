@@ -501,7 +501,7 @@ const getSourceLangOptionList = function getSourceLanguageOptionListHtmlFromTran
       break;
     }
     case Translators.GENERATIVE_AI: {
-      [{ label: 'Tự động nhận diện', value: 'Auto' }, ...currentTranslator.LANGUAGE_LIST].forEach(({ label, value }) => {
+      [{ label: 'Phát hiện ngôn ngữ', value: 'null' }, ...currentTranslator.LANGUAGE_LIST].forEach(({ label, value }) => {
         const option = document.createElement('option');
         option.innerText = label;
         option.value = value;
