@@ -19,25 +19,25 @@ export default class GenerativeAi extends Translator {
       value: 'English'
     },
     {
+      label: 'Tiếng Việt',
+      value: 'Vietnamese'
+    },
+    {
       label: 'Tiếng Nhật',
       value: 'Japanese'
     },
     {
-      label: 'Tiếng Trung giản thể',
-      value: 'Chinese (Simplified)'
+      label: 'Tiếng Trung (giản thể)',
+      value: 'Chinese (simplified)'
     },
     {
-      label: 'Tiếng Trung phồn thể',
-      value: 'Chinese (Traditional)'
-    },
-    {
-      label: 'Tiếng Việt',
-      value: 'Vietnamese'
+      label: 'Tiếng Trung (phồn thể)',
+      value: 'Chinese (traditional)'
     }
   ]
 
   public readonly DefaultLanguage = {
-    SOURCE_LANGUAGE: 'Auto',
+    SOURCE_LANGUAGE: 'null',
     TARGET_LANGUAGE: 'Vietnamese'
   }
 
