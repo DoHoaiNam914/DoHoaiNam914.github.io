@@ -722,7 +722,7 @@ const translate = async function translateContentInTextarea(controller = new Abo
   try {
     const startTime = Date.now()
     const systemPrompt = $('#system-prompt-select').val()
-    const text = [Translators.GENERATIVE_AI, Translators.WEBNOVEL_TRANSLATE].some((element, index) => $activeTranslator.val() === element && index === 0 && systemPrompt !== 'Professional') ? $inputTextarea.val().split('\n').filter(element => element.replace(/^\s+/, '').length > 0).join('\n') : $inputTextarea.val()
+    const text = [Translators.GENERATIVE_AI, Translators.WEBNOVEL_TRANSLATE].some(element => $activeTranslator.val() === element) ? $inputTextarea.val().split('\n').map(element => $activeTranslator.val() === GENERATIVE_AI && systemPrompt === 'Professional' ? element.replace(/^\s+/, '') : element).filter(element => element.replace(/^\s+/, '').length > 0).join('\n') : $inputTextarea.val()
     const targetLanguage = $targetLanguageSelect.val()
     const sourceLanguage = $sourceLanguageSelect.val()
     let result = ''
