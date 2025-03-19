@@ -444,7 +444,7 @@ export default class GenerativeAi extends Translator {
       throw reason
     })
     if (model.toLowerCase().includes('deepseek-r1')) result.replace(/<think>\n(?:.+\n+)+<\/think>\n{2}/, '')
-    if (systemPrompt === 'Professional') {
+    if (systemPrompt === 'Professional' && /(?:^|\n)[a-z0-9#]{12}: /.test(result)) {
       const translationMap = Object.fromEntries(result.split('\n').map(element => element.split(/(^[a-z0-9#]{12}): /).slice(1)))
       result = queryText.map(element => translationMap[(element.match(/^[a-z0-9#]{12}/) as RegExpMatchArray)[0]] ?? '').join('\n')
     }
