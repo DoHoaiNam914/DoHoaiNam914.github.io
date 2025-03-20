@@ -750,7 +750,7 @@ const translate = async function translateContentInTextarea(controller = new Abo
     }
     if (controller.signal.aborted) return
     $resultTextarea.html(buildResult(text, $activeTranslator.val() === Translators.GENERATIVE_AI && systemPrompt !== 'Professional' ? result.replaceAll(/\n{2}/g, '\n') : result, $activeTranslator.val()))
-    $resultTextarea.find('p > i').on('dblclick', function onDblclick() {
+    $resultTextarea.find('p > .original-text').on('dblclick', function onDblclick() {
       const range = document.createRange()
       const selection = window.getSelection()
       range.selectNodeContents(this)
