@@ -693,9 +693,10 @@ const buildResult = function buildResultContentForTextarea(text, result, activeT
 
         if (originalLines[i + lostLineFixedNumber].replace(/^\s+/, '').length > 0) {
           if ($showOriginalTextSwitch.prop('checked')) {
-            const idiomaticText = document.createElement('i');
-            idiomaticText.innerText = originalLines[i + lostLineFixedNumber];
-            paragraph.appendChild(idiomaticText);
+            const originalText = document.createElement('span');
+            originalText.classList.add('original-text')
+            originalText.innerText = originalLines[i + lostLineFixedNumber];
+            paragraph.appendChild(originalText);
             paragraph.innerHTML += resultLine.replace(/^\s+/, '').length > 0 ? lineBreak.cloneNode(true).outerHTML : '';
           }
 
