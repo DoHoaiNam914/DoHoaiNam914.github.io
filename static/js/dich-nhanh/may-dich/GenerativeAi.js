@@ -36,7 +36,6 @@ export default class GenerativeAi extends Translator {
     };
     AIR_USER_ID;
     OPENAI_API_KEY;
-    HYPERBOLIC_API_KEY;
     openai;
     genAI;
     anthropic;
@@ -44,6 +43,7 @@ export default class GenerativeAi extends Translator {
     deepseek;
     hfInferenceClient;
     groq;
+    OPENROUTER_API_KEY;
     openrouter;
     constructor(apiKey, airUserId) {
         super();
@@ -68,6 +68,7 @@ export default class GenerativeAi extends Translator {
             apiKey: groqApiKey,
             dangerouslyAllowBrowser: true
         });
+        this.OPENROUTER_API_KEY = openrouterApiKey;
         this.openrouter = new OpenAI({
             baseURL: 'https://openrouter.ai/api/v1',
             apiKey: openrouterApiKey,
@@ -341,10 +342,61 @@ export default class GenerativeAi extends Translator {
         request.temperature = temperature;
         request.top_p = topP;
         request.top_k = topK;
-        const completion = await this.openrouter.chat.completions.create(request, { signal: this.controller.signal });
+        // const completion = await this.openrouter.chat.completions.create(request, { signal: this.controller.signal })
         const collectedMessages = [];
-        for await (const chunk of completion) {
-            collectedMessages.push(chunk.choices[0].delta.content);
+        /** for await (const chunk of completion) {
+          collectedMessages.push(chunk.choices[0].delta.content)
+        } */
+        const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+                Authorization: `Bearer ${this.OPENROUTER_API_KEY}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(request),
+            signal: this.controller.signal
+        });
+        const reader = response.body?.getReader();
+        if (reader == null) {
+            throw new Error('Response body is not readable');
+        }
+        const decoder = new TextDecoder();
+        let buffer = '';
+        try {
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done)
+                    break;
+                // Append new chunk to buffer
+                buffer += decoder.decode(value, { stream: true });
+                // Process complete lines from buffer
+                while (true) {
+                    const lineEnd = buffer.indexOf('\n');
+                    if (lineEnd === -1)
+                        break;
+                    const line = buffer.slice(0, lineEnd).trim();
+                    buffer = buffer.slice(lineEnd + 1);
+                    if (line.startsWith('data: ')) {
+                        const data = line.slice(6);
+                        if (data === '[DONE]')
+                            break;
+                        try {
+                            const parsed = JSON.parse(data);
+                            const content = parsed.choices[0].delta.content;
+                            if (content != null) {
+                                // console.log(content);
+                                collectedMessages.push(content);
+                            }
+                        }
+                        catch (e) {
+                            // Ignore invalid JSON
+                        }
+                    }
+                }
+            }
+        }
+        finally {
+            await reader.cancel();
         }
         return collectedMessages.filter(element => element != null).join('');
     }
