@@ -341,7 +341,7 @@ export default class GenerativeAi extends Translator {
         request.temperature = temperature;
         request.top_p = topP;
         request.top_k = topK;
-        const completion = await this.openrouter.chat.completions.create(request);
+        const completion = await this.openrouter.chat.completions.create(request, { signal: this.controller.signal });
         const collectedMessages = [];
         for await (const chunk of completion) {
             collectedMessages.push(chunk.choices[0].delta.content);
