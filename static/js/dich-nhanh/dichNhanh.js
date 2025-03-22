@@ -35,11 +35,11 @@ const $glossaryListSelect = $('#glossary-list-select');
 const $glossaryManagerButton = $('#glossary-manager-button');
 const $glossaryModal = $('#glossary-modal');
 const $groqApiKeyText = $('#groq-api-key-text')
-const $hfTokenText = $('#hf-token-text')
 const $inputTextarea = $('#input-textarea');
 const $microsoftTranslatorToneSelect = $('#microsoft-translator-tone-select');
 const $mistralApiKeyText = $('#mistral-api-key-text');
 const $openaiApiKeyText = $('#openai-api-key-text');
+const $openrouterApiKeyText = $('#openrouter-api-key-text')
 const $pasteButtons = $('.paste-button');
 const $removeButton = $('#remove-button');
 const $resultTextarea = $('#result-textarea');
@@ -958,8 +958,8 @@ $(document).ready(async () => {
   if (localStorage.getItem('ANTHROPIC_API_KEY') != null) $anthropicApiKeyText.val(localStorage.getItem('ANTHROPIC_API_KEY')).change()
   if (localStorage.getItem('MISTRAL_API_KEY') != null) $mistralApiKeyText.val(localStorage.getItem('MISTRAL_API_KEY')).change()
   if (localStorage.getItem('DEEPSEEK_API_KEY') != null) $deepseekApiKeyText.val(localStorage.getItem('DEEPSEEK_API_KEY')).change()
-  if (localStorage.getItem('HF_TOKEN') != null) $hfTokenText.val(localStorage.getItem('HF_TOKEN')).change()
   if (localStorage.getItem('GROQ_API_KEY') != null) $groqApiKeyText.val(localStorage.getItem('GROQ_API_KEY')).change()
+  if (localStorage.getItem('OPENROUTER_API_KEY') != null) $openrouterApiKeyText.val(localStorage.getItem('OPENROUTER_API_KEY')).change()
   Object.values(Translators).forEach(element => {
     switch (element) {
       case Translators.BAIDU_TRANSLATE:
@@ -978,8 +978,8 @@ $(document).ready(async () => {
           anthropicApiKey: $anthropicApiKeyText.val(),
           mistralApiKey: $mistralApiKeyText.val(),
           deepseekApiKey: $deepseekApiKeyText.val(),
-          hfToken: $hfTokenText.val(),
-          groqApiKey: $groqApiKeyText.val()
+          groqApiKey: $groqApiKeyText.val(),
+          openrouterApiKey: $openrouterApiKeyText.val()
         }, UUID.toLowerCase())
         break
       case Translators.GOOGLE_TRANSLATE:
@@ -1346,8 +1346,8 @@ $translatorDropdown.find('.dropdown-item').click(async function onClick() {
           anthropicApiKey: $anthropicApiKeyText.val(),
           mistralApiKey: $mistralApiKeyText.val(),
           deepseekApiKey: $deepseekApiKeyText.val(),
-          hfToken: $hfTokenText.val(),
-          groqApiKey: $groqApiKeyText.val()
+          groqApiKey: $groqApiKeyText.val(),
+          openrouterApiKey: $openrouterApiKeyText.val()
         }, UUID.toLowerCase())
         translators[activeTranslator] = currentTranslator;
       }
@@ -1449,19 +1449,19 @@ $deepseekApiKeyText.change(function onChange() {
   if (localStorage.getItem('DEEPSEEK_API_KEY') != null && $(this).val().length === 0) localStorage.removeItem('DEEPSEEK_API_KEY');
   else if ($(this).val().startsWith('sk-') && localStorage.getItem('DEEPSEEK_API_KEY') !== $(this).val()) localStorage.setItem('DEEPSEEK_API_KEY', $(this).val());
 });
-$hfTokenText.change(function onChange() {
-  const $activeTranslator = $translatorDropdown.find('.active')
-  translators[Translators.GENERATIVE_AI] = null
-  if ($activeTranslator.val() === Translators.GENERATIVE_AI) $activeTranslator.click()
-  if (localStorage.getItem('HF_TOKEN') != null && $(this).val().length === 0) localStorage.removeItem('HF_TOKEN')
-  else if ($(this).val().startsWith('hf_') && localStorage.getItem('HF_TOKEN') !== $(this).val()) localStorage.setItem('HF_TOKEN', $(this).val())
-})
 $groqApiKeyText.change(function onChange() {
   const $activeTranslator = $translatorDropdown.find('.active')
   translators[Translators.GENERATIVE_AI] = null
   if ($activeTranslator.val() === Translators.GENERATIVE_AI) $activeTranslator.click()
   if (localStorage.getItem('GROQ_API_KEY') != null && $(this).val().length === 0) localStorage.removeItem('GROQ_API_KEY')
   else if ($(this).val().startsWith('gsk_') && localStorage.getItem('GROQ_API_KEY') !== $(this).val()) localStorage.setItem('GROQ_API_KEY', $(this).val())
+})
+$openrouterApiKeyText.change(function onChange() {
+  const $activeTranslator = $translatorDropdown.find('.active')
+  translators[Translators.GENERATIVE_AI] = null
+  if ($activeTranslator.val() === Translators.GENERATIVE_AI) $activeTranslator.click()
+  if (localStorage.getItem('OPENROUTER_API_KEY') != null && $(this).val().length === 0) localStorage.removeItem('OPENROUTER_API_KEY')
+  else if ($(this).val().startsWith('sk-or-v1-') && localStorage.getItem('OPENROUTER_API_KEY') !== $(this).val()) localStorage.setItem('OPENROUTER_API_KEY', $(this).val())
 })
 $temperatureText.change(function onChange() {
   const value = $(this).val()
@@ -1698,8 +1698,8 @@ $translateEntryButtons.click(async function onClick() {
               anthropicApiKey: $anthropicApiKeyText.val(),
               mistralApiKey: $mistralApiKeyText.val(),
               deepseekApiKey: $deepseekApiKeyText.val(),
-              hfToken: $hfTokenText.val(),
-              groqApiKey: $groqApiKeyText.val()
+              groqApiKey: $groqApiKeyText.val(),
+              openrouterApiKey: $openrouterApiKeyText.val()
             }, UUID.toLowerCase())
             translators[activeTranslator] = translator;
           }
