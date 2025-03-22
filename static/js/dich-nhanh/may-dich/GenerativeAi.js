@@ -5,7 +5,6 @@ import * as Utils from '../../Utils.js';
 import Anthropic from 'https://esm.run/@anthropic-ai/sdk';
 import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from 'https://esm.run/@google/generative-ai';
 import Groq from 'https://esm.run/groq-sdk';
-import { HfInference } from 'https://esm.run/@huggingface/inference';
 import { Mistral } from 'https://esm.run/@mistralai/mistralai';
 import OpenAI from 'https://esm.run/openai';
 export default class GenerativeAi extends Translator {
@@ -43,11 +42,12 @@ export default class GenerativeAi extends Translator {
     anthropic;
     mistralClient;
     deepseek;
-    groq;
     hfInferenceClient;
+    groq;
+    openrouter;
     constructor(apiKey, airUserId) {
         super();
-        const { openaiApiKey, geminiApiKey, anthropicApiKey, mistralApiKey, deepseekApiKey, hfToken, groqApiKey } = apiKey;
+        const { openaiApiKey, geminiApiKey, anthropicApiKey, mistralApiKey, deepseekApiKey, groqApiKey, openrouterApiKey } = apiKey;
         this.OPENAI_API_KEY = openaiApiKey;
         this.openai = new OpenAI({
             apiKey: this.OPENAI_API_KEY,
@@ -64,9 +64,13 @@ export default class GenerativeAi extends Translator {
             apiKey: deepseekApiKey,
             dangerouslyAllowBrowser: true
         });
-        this.hfInferenceClient = new HfInference(hfToken, { signal: this.controller.signal });
         this.groq = new Groq({
             apiKey: groqApiKey,
+            dangerouslyAllowBrowser: true
+        });
+        this.openrouter = new OpenAI({
+            baseURL: 'https://openrouter.ai/api/v1',
+            apiKey: openrouterApiKey,
             dangerouslyAllowBrowser: true
         });
         this.AIR_USER_ID = airUserId;
@@ -280,45 +284,7 @@ export default class GenerativeAi extends Translator {
         }
         return collectedMessages.join('');
     }
-    async launch(options, systemInstructions, message) {
-        let out = '';
-        const chatCompletionInput = {
-            model: 'Qwen/QwQ-32B',
-            messages: [
-                {
-                    role: 'user',
-                    content: ''
-                }
-            ],
-            provider: 'hf-inference',
-            temperature: 0.5,
-            max_tokens: 2048,
-            top_p: 0.7
-        };
-        const { model, temperature, topP } = options;
-        chatCompletionInput.max_tokens = undefined;
-        chatCompletionInput.messages = [
-            ...systemInstructions.flatMap((element, index) => ['google', 'mistralai', 'tiiuae'].some(element => model.startsWith(element)) ? [{ content: element, role: 'user' }, { content: '', role: 'assistant' }] : { content: element, role: index > 0 ? 'user' : 'system' }),
-            {
-                content: message,
-                role: 'user'
-            }
-        ];
-        chatCompletionInput.temperature = temperature;
-        chatCompletionInput.top_p = topP;
-        chatCompletionInput.model = model;
-        const stream = this.hfInferenceClient.chatCompletionStream(chatCompletionInput);
-        for await (const chunk of stream) {
-            if (chunk.choices != null && chunk.choices.length > 0) {
-                const newContent = chunk.choices[0].delta.content;
-                out += newContent;
-                // console.log(newContent)
-            }
-        }
-        return out;
-    }
     async groqMain(options, systemInstructions, message) {
-        const { model, temperature, topP } = options;
         const requestBody = {
             messages: [],
             model: 'llama-3.3-70b-versatile',
@@ -328,6 +294,7 @@ export default class GenerativeAi extends Translator {
             stream: true,
             stop: null
         };
+        const { model, temperature, topP } = options;
         requestBody.max_completion_tokens = null;
         requestBody.messages = [
             ...systemInstructions.flatMap((element, index) => ({ content: element, role: index > 0 ? 'user' : 'system' })),
@@ -350,6 +317,36 @@ export default class GenerativeAi extends Translator {
         else {
             return chatCompletion.choices[0].message.content;
         }
+    }
+    async openrouterMain(options, systemInstructions, message) {
+        const request = {
+            model: 'openai/gpt-4o',
+            messages: [
+                {
+                    role: 'user',
+                    content: 'What is the meaning of life?'
+                }
+            ]
+        };
+        const { model, temperature, topP, topK } = options;
+        request.model = model;
+        request.messages = [
+            ...systemInstructions.map((element, index) => ({ role: index > 0 ? 'user' : (/^openai\/o\d/.test(model) ? (model === 'openai/o1-mini' ? 'user' : 'developer') : 'system'), content: element })),
+            {
+                role: 'user',
+                content: message
+            }
+        ];
+        request.stream = true;
+        request.temperature = temperature;
+        request.top_p = topP;
+        request.top_k = topK;
+        const completion = await this.openrouter.chat.completions.create(request);
+        const collectedMessages = [];
+        for await (const chunk of completion) {
+            collectedMessages.push(chunk.choices[0].delta.content);
+        }
+        return collectedMessages.filter(element => element != null).join('');
     }
     async translateText(text, targetLanguage, options = { sourceLanguage: null }) {
         if (options.model == null)
@@ -436,7 +433,7 @@ export default class GenerativeAi extends Translator {
             });
             requestText = queryText.filter(element => element.split(/(^[a-z0-9#]{12}): /)[2].replace(/^\s+/, '').length > 0).join('\n');
         }
-        let result = await (['gemma2-9b-it', 'llama-3.3-70b-versatile', 'llama-3.1-8b-instant', 'llama3-70b-8192', 'llama3-8b-8192', 'mixtral-8x7b-32768', 'qwen-qwq-32b', 'mistral-saba-24b', 'qwen-2.5-32b', 'deepseek-r1-distill-qwen-32b', 'deepseek-r1-distill-llama-70b-specdec', 'deepseek-r1-distill-llama-70b', 'llama-3.3-70b-specdec', 'llama-3.2-1b-preview', 'llama-3.2-3b-preview', 'llama-3.2-11b-vision-preview', 'llama-3.2-90b-vision-preview'].some(element => element === model) ? this.groqMain(options, SYSTEM_PROMPTS, requestText) : (model.includes('/') ? this.launch(options, SYSTEM_PROMPTS, text) : (isMistral ? this.runMistral(options, SYSTEM_PROMPTS, requestText) : (model.startsWith('claude') ? this.anthropicMain(options, SYSTEM_PROMPTS, requestText) : (isGoogleGenerativeAi ? this.runGoogleGenerativeAI(options, SYSTEM_PROMPTS, requestText) : this.openaiMain(options, SYSTEM_PROMPTS, requestText)))))).catch(reason => {
+        let result = await (model.includes('/') ? this.openrouterMain(options, SYSTEM_PROMPTS, text) : (['gemma2-9b-it', 'llama-3.3-70b-versatile', 'llama-3.1-8b-instant', 'llama3-70b-8192', 'llama3-8b-8192', 'mixtral-8x7b-32768', 'qwen-qwq-32b', 'mistral-saba-24b', 'qwen-2.5-32b', 'deepseek-r1-distill-qwen-32b', 'deepseek-r1-distill-llama-70b-specdec', 'deepseek-r1-distill-llama-70b', 'llama-3.3-70b-specdec', 'llama-3.2-1b-preview', 'llama-3.2-3b-preview', 'llama-3.2-11b-vision-preview', 'llama-3.2-90b-vision-preview'].some(element => element === model) ? this.groqMain(options, SYSTEM_PROMPTS, requestText) : (isMistral ? this.runMistral(options, SYSTEM_PROMPTS, requestText) : (model.startsWith('claude') ? this.anthropicMain(options, SYSTEM_PROMPTS, requestText) : (isGoogleGenerativeAi ? this.runGoogleGenerativeAI(options, SYSTEM_PROMPTS, requestText) : this.openaiMain(options, SYSTEM_PROMPTS, requestText)))))).catch(reason => {
             throw reason;
         });
         if (model.toLowerCase().includes('deepseek-r1'))
