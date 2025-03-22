@@ -24,7 +24,7 @@ const $boldTextSwitch = $('#bold-text-switch');
 const $copyButtons = $('.copy-button');
 const $deeplAuthKeyText = $('#deepl-auth-key-text');
 const $deepseekApiKeyText = $('#deepseek-api-key-text');
-const $domainSelect = $('#domain-select')
+const $domainSelects = $('#domain-select, #glossaries-domain-select')
 const $dropdownHasCollapse = $('.dropdown-has-collapse');
 const $fontStackText = $('#font-stack-text');
 const $fontSizeText = $('#font-size-text');
@@ -741,7 +741,7 @@ const translate = async function translateContentInTextarea(controller = new Abo
           topK: parseInt($topKText.val()),
           systemPrompt,
           tone: $('#generative-ai-tone-select').val(),
-          domain: $domainSelect.val(),
+          domain: $('#domain-select').val(),
           customPrompt: $('#custom-prompt-textarea').val(),
           dictionary: Object.entries(glossary.dictionary)
         })
@@ -1463,17 +1463,20 @@ $groqApiKeyText.change(function onChange() {
   if (localStorage.getItem('GROQ_API_KEY') != null && $(this).val().length === 0) localStorage.removeItem('GROQ_API_KEY')
   else if ($(this).val().startsWith('gsk_') && localStorage.getItem('GROQ_API_KEY') !== $(this).val()) localStorage.setItem('GROQ_API_KEY', $(this).val())
 })
-$('#temperature-text, #translate-entry-temperature-text').change(function onChange() {
+$temperatureText.change(function onChange() {
   const value = $(this).val()
   $(this).val(Math.min(parseFloat($(this).attr('max')), Math.max(parseFloat($(this).attr('min')), parseFloat(value.length === 0 ? $(this).attr('value') : value))))
 })
-$('#top-p-text, #translate-entry-top-p-text').change(function onChange() {
+$topPText.change(function onChange() {
   const value = $(this).val()
   $(this).val(Math.min(parseFloat($(this).attr('max')), Math.max(parseFloat($(this).attr('min')), parseFloat(value.length === 0 ? $(this).attr('value') : value))))
 })
-$('#top-k-text, #translate-entry-top-k-text').change(function onChange() {
+$topKText.change(function onChange() {
   const value = $(this).val()
   $(this).val(Math.max(parseInt($(this).attr('min')), parseInt(value.length === 0 ? $(this).attr('value') : value)))
+})
+$domainSelects.change(function onChange() {
+  $domainSelects.val($(this).val())
 })
 $glossaryModal.on('shown.bs.modal', () => {
   const text = $sourceEntryInput.val();
@@ -1756,7 +1759,7 @@ $translateEntryButtons.click(async function onClick() {
               topK: parseInt($topKText.val()),
               systemPrompt: $('#glossaries-system-prompt-select').val(),
               tone: $('#glossaries-generative-ai-tone-select').val(),
-              domain: $domainSelect.val(),
+              domain: $('#glossaries-domain-select').val(),
               customPrompt: $('#glossaries-custom-prompt-textarea').val(),
               dictionary: $('#apply-dictionary-switch').prop('checked') ? Object.entries(glossary.dictionary) : [],
             })
