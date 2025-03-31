@@ -50,11 +50,8 @@ const $sourceLanguageSelect = $('#source-language-select');
 const $spacingText = $('#spacing-text');
 const $targetEntryTextarea = $('#target-entry-textarea');
 const $targetLanguageSelect = $('#target-language-select');
-const $temperatureText = $('#temperature-text')
 const $textareas = $('.textarea');
 const $themeDropdown = $('#theme-dropdown');
-const $topKText = $('#top-k-text')
-const $topPText = $('#top-p-text')
 const $translateButton = $('#translate-button');
 const $translateEntryButton = $('#translate-entry-button');
 const $translateEntryButtons = $('.translate-entry-button');
@@ -736,9 +733,9 @@ const translate = async function translateContentInTextarea(controller = new Abo
         result = await currentTranslator.translateText(text, targetLanguage, {
           sourceLanguage,
           model: $('#model-select').val(),
-          temperature: parseFloat($temperatureText.val()),
-          topP: parseFloat($topPText.val()),
-          topK: parseInt($topKText.val()),
+          temperature: parseFloat($('#temperature-text').val()),
+          topP: parseFloat($('#top-p-text').val()),
+          topK: parseInt($('#top-k-text').val()),
           systemPrompt,
           tone: $('#generative-ai-tone-select').val(),
           domain: $('#domain-select').val(),
@@ -1463,15 +1460,15 @@ $openrouterApiKeyText.change(function onChange() {
   if (localStorage.getItem('OPENROUTER_API_KEY') != null && $(this).val().length === 0) localStorage.removeItem('OPENROUTER_API_KEY')
   else if ($(this).val().startsWith('sk-or-v1-') && localStorage.getItem('OPENROUTER_API_KEY') !== $(this).val()) localStorage.setItem('OPENROUTER_API_KEY', $(this).val())
 })
-$temperatureText.change(function onChange() {
+$('#temperature-text, #glossaries-temperature-text').change(function onChange() {
   const value = $(this).val()
   $(this).val(Math.min(parseFloat($(this).attr('max')), Math.max(parseFloat($(this).attr('min')), parseFloat(value.length === 0 ? $(this).attr('value') : value))))
 })
-$topPText.change(function onChange() {
+$('#top-p-text, #glossaries-top-p-text').change(function onChange() {
   const value = $(this).val()
   $(this).val(Math.min(parseFloat($(this).attr('max')), Math.max(parseFloat($(this).attr('min')), parseFloat(value.length === 0 ? $(this).attr('value') : value))))
 })
-$topKText.change(function onChange() {
+$('#top-k-text, #glossaries-top-k-text').change(function onChange() {
   const value = $(this).val()
   $(this).val(Math.max(parseInt($(this).attr('min')), parseInt(value.length === 0 ? $(this).attr('value') : value)))
 })
@@ -1753,10 +1750,11 @@ $translateEntryButtons.click(async function onClick() {
           case Translators.GENERATIVE_AI: {
             translator.controller = entryTranslationController
             result = await translator.translateText(text, targetLanguage, {
+              sourceLanguage: $('#glossaries-language-select').val(),
               model: $('#translate-entry-model-select').val(),
-              temperature: parseFloat($temperatureText.val()),
-              topP: parseFloat($topPText.val()),
-              topK: parseInt($topKText.val()),
+              temperature: parseFloat($('#glossaries-temperature-text').val()),
+              topP: parseFloat($('#glossaries-top-p-text').val()),
+              topK: parseInt($('#glossaries-top-k-text').val()),
               systemPrompt: $('#glossaries-system-prompt-select').val(),
               tone: $('#glossaries-generative-ai-tone-select').val(),
               domain: $('#glossaries-domain-select').val(),
