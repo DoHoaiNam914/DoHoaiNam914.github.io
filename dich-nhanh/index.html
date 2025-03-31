@@ -1008,13 +1008,81 @@
               </div>
               <hr>
               <h3 class="fs-5">Dịch với AI tạo sinh</h3>
-              <input type="text" class="form-control mb-3" id="openai-api-key-text" placeholder="OpenAI API Key">
-              <input type="text" class="form-control mb-3" id="gemini-api-key-text" placeholder="Gemini API Key">
-              <input type="text" class="form-control mb-3" id="anthropic-api-key-text" placeholder="Anthropic API Key">
-              <input type="text" class="form-control mb-3" id="mistral-api-key-text" placeholder="Mistral API Key">
-              <input type="text" class="form-control mb-3" id="deepseek-api-key-text" placeholder="DeepSeek API Key">
-              <input type="text" class="form-control mb-3" id="groq-api-key-text" placeholder="Groq API Key">
-              <input type="text" class="form-control mb-3" id="openrouter-api-key-text" placeholder="OpenRouter API Key">
+              <div class="mb-3">
+                <label class="form-check-label" for="system-prompt-select">Lời nhắc hệ thống:</label>
+                <select class="form-select form-select-sm" id="system-prompt-select">
+                  <option value="Basic" selected>GPT-4o mini (Cơ bản)</option>
+                  <option value="Intermediate">Cốc Cốc Học tập (Trung cấp)</option>
+                  <option value="Professional">Doctranslate.io (Chuyên nghiệp)</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label class="form-check-label" for="generative-ai-tone-select">Phong cách (Chuyên nghiệp):</label>
+                <select class="form-select form-select-sm" id="generative-ai-tone-select">
+                  <option value="None">AI tự nhận diện (Nghiêm túc)</option>
+                  <option value="Serious" selected>Nghiêm túc</option>
+                  <option value="Friendly">Thân thiện</option>
+                  <option value="Humorous">Hài hước</option>
+                  <option value="Formal">Trang trọng</option>
+                  <option value="Romantic">Lãng mạn</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label class="form-check-label" for="domain-select">Chuyên ngành (Chuyên nghiệp):</label>
+                <select class="form-select form-select-sm" id="domain-select">
+                  <optgroup label="Kinh tế - Tài chính">
+                    <option value="Banking">Ngân hàng</option>
+                    <option value="Accounting">Kế toán</option>
+                    <option value="Management">Quản trị</option>
+                    <option value="Law">Luật</option>
+                    <option value="Logistics">Logistic</option>
+                    <option>Marketing</option>
+                    <option value="Securities - Investment">Chứng khoán & đầu tư</option>
+                    <option value="Insurance">Bảo hiểm</option>
+                    <option value="Real Estate">Bất động sản</option>
+                  </optgroup>
+                  <optgroup label="Văn học - Nghệ thuật">
+                    <option value="Music">Âm nhạc</option>
+                    <option value="Painting">Hội hoạ</option>
+                    <option value="Theater - Cinema">Sân khấu - Điện ảnh</option>
+                    <option value="Poetry">Thơ</option>
+                    <option value="Epic">Sử thi</option>
+                    <option value="Children's Stories">Truyện thiếu nhi</option>
+                    <option value="Historical Stories">Truyện cổ trang</option>
+                    <option value="Fiction">Truyện hư cấu</option>
+                    <option value="Short Stories">Truyện ngắn</option>
+                  </optgroup>
+                  <optgroup label="Khoa học - Công nghệ">
+                    <option value="Physics">Vật lí</option>
+                    <option value="Chemistry">Hoá học</option>
+                    <option value="Informatics">Tin học</option>
+                    <option value="Electronics">Điện tử</option>
+                    <option value="Medicine">Y học</option>
+                    <option value="Mechanics">Cơ khí</option>
+                    <option value="Meteorology - Hydrology">Khí tượng - Thuỷ văn</option>
+                    <option value="Agriculture">Nông nghiệp</option>
+                  </optgroup>
+                  <optgroup label="Văn bản hành chính">
+                    <option value="Legal Documents">Văn bản Pháp luật</option>
+                    <option value="Internal Documents">Văn bản nội bộ</option>
+                    <option>Email</option>
+                  </optgroup>
+                  <optgroup label="Đời sống">
+                    <option value="Health">Sức khoẻ</option>
+                    <option value="Sports">Thể thao</option>
+                    <option value="Culture - Tourism">Văn hoá - Du lịch</option>
+                    <option value="Press">Báo chí</option>
+                    <option value="Animals">Động vật</option>
+                  </optgroup>
+                  <optgroup label="Khác">
+                    <option value="None" selected>AI tự nhận diện (Đời sống)</option>
+                  </optgroup>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label class="form-check-label" for="custom-prompt-textarea">Tuỳ chỉnh thông minh (Chuyên nghiệp):</label>
+                <textarea class="form-control" id="custom-prompt-textarea" placeholder="Đối với mỗi thuật ngữ, hãy đặt thuật ngữ gốc vào dấu ngoặc. Ví dụ: thuật ngữ đã dịch (thuật ngữ gốc)" rows="8"></textarea>
+              </div>
               <div class="mb-3">
                 <label class="form-label" for="model-select">Mô hình AI tạo sinh:</label>
                 <select class="form-select form-select-sm" id="model-select">
@@ -1153,81 +1221,13 @@
                 <label class="form-check-label" for="top-k-text">Top-K:</label>
                 <input type="number" class="form-control" id="top-k-text" placeholder="10" value="50" min="0" step="1">
               </div>
-              <div class="mb-3">
-                <label class="form-check-label" for="system-prompt-select">Lời nhắc hệ thống:</label>
-                <select class="form-select form-select-sm" id="system-prompt-select">
-                  <option value="Basic" selected>GPT-4o mini (Cơ bản)</option>
-                  <option value="Intermediate">Cốc Cốc Học tập (Trung cấp)</option>
-                  <option value="Professional">Doctranslate.io (Chuyên nghiệp)</option>
-                </select>
-              </div>
-              <div class="mb-3">
-                <label class="form-check-label" for="generative-ai-tone-select">Phong cách (Chuyên nghiệp):</label>
-                <select class="form-select form-select-sm" id="generative-ai-tone-select">
-                  <option value="None">AI tự nhận diện (Nghiêm túc)</option>
-                  <option value="Serious" selected>Nghiêm túc</option>
-                  <option value="Friendly">Thân thiện</option>
-                  <option value="Humorous">Hài hước</option>
-                  <option value="Formal">Trang trọng</option>
-                  <option value="Romantic">Lãng mạn</option>
-                </select>
-              </div>
-              <div class="mb-3">
-                <label class="form-check-label" for="domain-select">Chuyên ngành (Chuyên nghiệp):</label>
-                <select class="form-select form-select-sm" id="domain-select">
-                  <optgroup label="Kinh tế - Tài chính">
-                    <option value="Banking">Ngân hàng</option>
-                    <option value="Accounting">Kế toán</option>
-                    <option value="Management">Quản trị</option>
-                    <option value="Law">Luật</option>
-                    <option value="Logistics">Logistic</option>
-                    <option>Marketing</option>
-                    <option value="Securities - Investment">Chứng khoán & đầu tư</option>
-                    <option value="Insurance">Bảo hiểm</option>
-                    <option value="Real Estate">Bất động sản</option>
-                  </optgroup>
-                  <optgroup label="Văn học - Nghệ thuật">
-                    <option value="Music">Âm nhạc</option>
-                    <option value="Painting">Hội hoạ</option>
-                    <option value="Theater - Cinema">Sân khấu - Điện ảnh</option>
-                    <option value="Poetry">Thơ</option>
-                    <option value="Epic">Sử thi</option>
-                    <option value="Children's Stories">Truyện thiếu nhi</option>
-                    <option value="Historical Stories">Truyện cổ trang</option>
-                    <option value="Fiction">Truyện hư cấu</option>
-                    <option value="Short Stories">Truyện ngắn</option>
-                  </optgroup>
-                  <optgroup label="Khoa học - Công nghệ">
-                    <option value="Physics">Vật lí</option>
-                    <option value="Chemistry">Hoá học</option>
-                    <option value="Informatics">Tin học</option>
-                    <option value="Electronics">Điện tử</option>
-                    <option value="Medicine">Y học</option>
-                    <option value="Mechanics">Cơ khí</option>
-                    <option value="Meteorology - Hydrology">Khí tượng - Thuỷ văn</option>
-                    <option value="Agriculture">Nông nghiệp</option>
-                  </optgroup>
-                  <optgroup label="Văn bản hành chính">
-                    <option value="Legal Documents">Văn bản Pháp luật</option>
-                    <option value="Internal Documents">Văn bản nội bộ</option>
-                    <option>Email</option>
-                  </optgroup>
-                  <optgroup label="Đời sống">
-                    <option value="Health">Sức khoẻ</option>
-                    <option value="Sports">Thể thao</option>
-                    <option value="Culture - Tourism">Văn hoá - Du lịch</option>
-                    <option value="Press">Báo chí</option>
-                    <option value="Animals">Động vật</option>
-                  </optgroup>
-                  <optgroup label="Khác">
-                    <option value="None" selected>AI tự nhận diện (Đời sống)</option>
-                  </optgroup>
-                </select>
-              </div>
-              <div class="mb-3">
-                <label class="form-check-label" for="custom-prompt-textarea">Tuỳ chỉnh thông minh (Chuyên nghiệp):</label>
-                <textarea class="form-control" id="custom-prompt-textarea" placeholder="Đối với mỗi thuật ngữ, hãy đặt thuật ngữ gốc vào dấu ngoặc. Ví dụ: thuật ngữ đã dịch (thuật ngữ gốc)" rows="8"></textarea>
-              </div>
+              <input type="text" class="form-control mb-3" id="openai-api-key-text" placeholder="OpenAI API Key">
+              <input type="text" class="form-control mb-3" id="gemini-api-key-text" placeholder="Gemini API Key">
+              <input type="text" class="form-control mb-3" id="anthropic-api-key-text" placeholder="Anthropic API Key">
+              <input type="text" class="form-control mb-3" id="mistral-api-key-text" placeholder="Mistral API Key">
+              <input type="text" class="form-control mb-3" id="deepseek-api-key-text" placeholder="DeepSeek API Key">
+              <input type="text" class="form-control mb-3" id="groq-api-key-text" placeholder="Groq API Key">
+              <input type="text" class="form-control mb-3" id="openrouter-api-key-text" placeholder="OpenRouter API Key">
             </div>
           </div>
         </div>
@@ -1376,8 +1376,8 @@
                       <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="generativeAi" data-lang="Vietnamese">Tiếng Việt</button>
                       <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="generativeAi" data-lang="English">Tiếng Anh</button>
                       <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="generativeAi" data-lang="Japanese">Tiếng Nhật</button>
-                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="generativeAi" data-lang="Chinese (traditional)">Tiếng Trung (phồn thể)</button>
                       <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="generativeAi" data-lang="Chinese (simplified)">Tiếng Trung (giản thể)</button>
+                      <button type="button" class="dropdown-item collapse-item translate-entry-button" data-translator="generativeAi" data-lang="Chinese (traditional)">Tiếng Trung (phồn thể)</button>
                     </div>
                   </li>
                   <li>
@@ -1466,9 +1466,95 @@
               </button>
               <button type="button" class="btn btn-sm btn-primary mb-3" id="translate-entry-button">Dịch lại</button>
               <button type="button" class="btn btn-sm btn-secondary mb-3 copy-button" data-target="glossary">Sao chép (<span id="glossary-entry-counter">0</span>)</button>
+              <div class="mb-3">
+                <label class="form-label" for="glossaries-language-select">Ngôn ngữ gốc:</label>
+                <select class="form-select" id="glossaries-language-select">
+                  <option value="null" selected>Phát hiện ngôn ngữ</option>
+                  <option value="Vietnamese">Tiếng Việt</option>
+                  <option value="English">Tiếng Anh</option>
+                  <option value="Japanese">Tiếng Nhật</option>
+                  <option value="Chinese (simplified)">Tiếng Trung (giản thể)</option>
+                  <option value="Chinese (traditional)">Tiếng Trung (phồn thể)</option>
+                </select>
+              </div>
               <div class="form-check form-switch mb-3">
                 <input type="checkbox" class="form-check-input" id="apply-dictionary-switch" role="switch">
                 <label class="form-check-label" for="apply-dictionary-switch">Sử dụng từ điển</label>
+              </div>
+              <div class="mb-3">
+                <label class="form-check-label" for="glossaries-system-prompt-select">Lời nhắc hệ thống:</label>
+                <select class="form-select form-select-sm" id="glossaries-system-prompt-select">
+                  <option value="Basic" selected>GPT-4o mini (Cơ bản)</option>
+                  <option value="Intermediate">Cốc Cốc Học tập (Trung cấp)</option>
+                  <option value="Professional">Doctranslate.io (Chuyên nghiệp)</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label class="form-check-label" for="glossaries-generative-ai-tone-select">Phong cách (Chuyên nghiệp):</label>
+                <select class="form-select form-select-sm" id="glossaries-generative-ai-tone-select">
+                  <option value="None">AI tự nhận diện (Nghiêm túc)</option>
+                  <option value="Serious" selected>Nghiêm túc</option>
+                  <option value="Friendly">Thân thiện</option>
+                  <option value="Humorous">Hài hước</option>
+                  <option value="Formal">Trang trọng</option>
+                  <option value="Romantic">Lãng mạn</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label class="form-check-label" for="glossaries-domain-select">Chuyên ngành (Chuyên nghiệp):</label>
+                <select class="form-select form-select-sm" id="glossaries-domain-select">
+                  <optgroup label="Kinh tế - Tài chính">
+                    <option value="Banking">Ngân hàng</option>
+                    <option value="Accounting">Kế toán</option>
+                    <option value="Management">Quản trị</option>
+                    <option value="Law">Luật</option>
+                    <option value="Logistics">Logistic</option>
+                    <option>Marketing</option>
+                    <option value="Securities - Investment">Chứng khoán & đầu tư</option>
+                    <option value="Insurance">Bảo hiểm</option>
+                    <option value="Real Estate">Bất động sản</option>
+                  </optgroup>
+                  <optgroup label="Văn học - Nghệ thuật">
+                    <option value="Music">Âm nhạc</option>
+                    <option value="Painting">Hội hoạ</option>
+                    <option value="Theater - Cinema">Sân khấu - Điện ảnh</option>
+                    <option value="Poetry">Thơ</option>
+                    <option value="Epic">Sử thi</option>
+                    <option value="Children's Stories">Truyện thiếu nhi</option>
+                    <option value="Historical Stories">Truyện cổ trang</option>
+                    <option value="Fiction">Truyện hư cấu</option>
+                    <option value="Short Stories">Truyện ngắn</option>
+                  </optgroup>
+                  <optgroup label="Khoa học - Công nghệ">
+                    <option value="Physics">Vật lí</option>
+                    <option value="Chemistry">Hoá học</option>
+                    <option value="Informatics">Tin học</option>
+                    <option value="Electronics">Điện tử</option>
+                    <option value="Medicine">Y học</option>
+                    <option value="Mechanics">Cơ khí</option>
+                    <option value="Meteorology - Hydrology">Khí tượng - Thuỷ văn</option>
+                    <option value="Agriculture">Nông nghiệp</option>
+                  </optgroup>
+                  <optgroup label="Văn bản hành chính">
+                    <option value="Legal Documents">Văn bản Pháp luật</option>
+                    <option value="Internal Documents">Văn bản nội bộ</option>
+                    <option>Email</option>
+                  </optgroup>
+                  <optgroup label="Đời sống">
+                    <option value="Health">Sức khoẻ</option>
+                    <option value="Sports">Thể thao</option>
+                    <option value="Culture - Tourism">Văn hoá - Du lịch</option>
+                    <option value="Press">Báo chí</option>
+                    <option value="Animals">Động vật</option>
+                  </optgroup>
+                  <optgroup label="Khác">
+                    <option value="None" selected>AI tự nhận diện (Đời sống)</option>
+                  </optgroup>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label class="form-check-label" for="glossaries-custom-prompt-textarea">Tuỳ chỉnh thông minh (Chuyên nghiệp):</label>
+                <textarea class="form-control" id="glossaries-custom-prompt-textarea" placeholder="Đối với mỗi thuật ngữ, hãy đặt thuật ngữ gốc vào dấu ngoặc. Ví dụ: thuật ngữ đã dịch (thuật ngữ gốc)" rows="8"></textarea>
               </div>
               <div class="mb-3">
                 <label class="form-label" for="translate-entry-model-select">Mô hình AI tạo sinh:</label>
@@ -1635,79 +1721,16 @@
                 </select>
               </div>
               <div class="mb-3">
-                <label class="form-check-label" for="glossaries-system-prompt-select">Lời nhắc hệ thống:</label>
-                <select class="form-select form-select-sm" id="glossaries-system-prompt-select">
-                  <option value="Basic" selected>GPT-4o mini (Cơ bản)</option>
-                  <option value="Intermediate">Cốc Cốc Học tập (Trung cấp)</option>
-                  <option value="Professional">Doctranslate.io (Chuyên nghiệp)</option>
-                </select>
+                <label class="form-check-label" for="glossaries-temperature-text">Temperature:</label>
+                <input type="number" class="form-control" id="glossaries-temperature-text" placeholder="1" value="0.1" max="2" min="0" step="0.1">
               </div>
               <div class="mb-3">
-                <label class="form-check-label" for="glossaries-generative-ai-tone-select">Phong cách (Chuyên nghiệp):</label>
-                <select class="form-select form-select-sm" id="glossaries-generative-ai-tone-select">
-                  <option value="None">AI tự nhận diện (Nghiêm túc)</option>
-                  <option value="Serious" selected>Nghiêm túc</option>
-                  <option value="Friendly">Thân thiện</option>
-                  <option value="Humorous">Hài hước</option>
-                  <option value="Formal">Trang trọng</option>
-                  <option value="Romantic">Lãng mạn</option>
-                </select>
+                <label class="form-check-label" for="glossaries-top-p-text">Top-P:</label>
+                <input type="number" class="form-control" id="glossaries-top-p-text" placeholder="1" value="0.95" max="1" min="0" step="0.1">
               </div>
               <div class="mb-3">
-                <label class="form-check-label" for="glossaries-domain-select">Chuyên ngành (Chuyên nghiệp):</label>
-                <select class="form-select form-select-sm" id="glossaries-domain-select">
-                  <optgroup label="Kinh tế - Tài chính">
-                    <option value="Banking">Ngân hàng</option>
-                    <option value="Accounting">Kế toán</option>
-                    <option value="Management">Quản trị</option>
-                    <option value="Law">Luật</option>
-                    <option value="Logistics">Logistic</option>
-                    <option>Marketing</option>
-                    <option value="Securities - Investment">Chứng khoán & đầu tư</option>
-                    <option value="Insurance">Bảo hiểm</option>
-                    <option value="Real Estate">Bất động sản</option>
-                  </optgroup>
-                  <optgroup label="Văn học - Nghệ thuật">
-                    <option value="Music">Âm nhạc</option>
-                    <option value="Painting">Hội hoạ</option>
-                    <option value="Theater - Cinema">Sân khấu - Điện ảnh</option>
-                    <option value="Poetry">Thơ</option>
-                    <option value="Epic">Sử thi</option>
-                    <option value="Children's Stories">Truyện thiếu nhi</option>
-                    <option value="Historical Stories">Truyện cổ trang</option>
-                    <option value="Fiction">Truyện hư cấu</option>
-                    <option value="Short Stories">Truyện ngắn</option>
-                  </optgroup>
-                  <optgroup label="Khoa học - Công nghệ">
-                    <option value="Physics">Vật lí</option>
-                    <option value="Chemistry">Hoá học</option>
-                    <option value="Informatics">Tin học</option>
-                    <option value="Electronics">Điện tử</option>
-                    <option value="Medicine">Y học</option>
-                    <option value="Mechanics">Cơ khí</option>
-                    <option value="Meteorology - Hydrology">Khí tượng - Thuỷ văn</option>
-                    <option value="Agriculture">Nông nghiệp</option>
-                  </optgroup>
-                  <optgroup label="Văn bản hành chính">
-                    <option value="Legal Documents">Văn bản Pháp luật</option>
-                    <option value="Internal Documents">Văn bản nội bộ</option>
-                    <option>Email</option>
-                  </optgroup>
-                  <optgroup label="Đời sống">
-                    <option value="Health">Sức khoẻ</option>
-                    <option value="Sports">Thể thao</option>
-                    <option value="Culture - Tourism">Văn hoá - Du lịch</option>
-                    <option value="Press">Báo chí</option>
-                    <option value="Animals">Động vật</option>
-                  </optgroup>
-                  <optgroup label="Khác">
-                    <option value="None" selected>AI tự nhận diện (Đời sống)</option>
-                  </optgroup>
-                </select>
-              </div>
-              <div class="mb-3">
-                <label class="form-check-label" for="glossaries-custom-prompt-textarea">Tuỳ chỉnh thông minh (Chuyên nghiệp):</label>
-                <textarea class="form-control" id="glossaries-custom-prompt-textarea" placeholder="Đối với mỗi thuật ngữ, hãy đặt thuật ngữ gốc vào dấu ngoặc. Ví dụ: thuật ngữ đã dịch (thuật ngữ gốc)" rows="8"></textarea>
+                <label class="form-check-label" for="glossaries-top-k-text">Top-K:</label>
+                <input type="number" class="form-control" id="glossaries-top-k-text" placeholder="10" value="50" min="0" step="1">
               </div>
             </div>
           </div>
