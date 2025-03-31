@@ -1410,7 +1410,21 @@ $microsoftTranslatorToneSelect.on('change', function onChange () {
   translators[Translators.MICROSOFT_TRANSLATOR].setToneAndFetchData($(this).val());
   if ($activeTranslator.val() === Translators.MICROSOFT_TRANSLATOR) $activeTranslator.click();
 });
-
+$domainSelects.change(function onChange() {
+  $domainSelects.val($(this).val())
+})
+$('#temperature-text, #glossaries-temperature-text').change(function onChange() {
+  const value = $(this).val()
+  $(this).val(Math.min(parseFloat($(this).attr('max')), Math.max(parseFloat($(this).attr('min')), parseFloat(value.length === 0 ? $(this).attr('value') : value))))
+})
+$('#top-p-text, #glossaries-top-p-text').change(function onChange() {
+  const value = $(this).val()
+  $(this).val(Math.min(parseFloat($(this).attr('max')), Math.max(parseFloat($(this).attr('min')), parseFloat(value.length === 0 ? $(this).attr('value') : value))))
+})
+$('#top-k-text, #glossaries-top-k-text').change(function onChange() {
+  const value = $(this).val()
+  $(this).val(Math.max(parseInt($(this).attr('min')), parseInt(value.length === 0 ? $(this).attr('value') : value)))
+})
 $openaiApiKeyText.change(function onChange() {
   const $activeTranslator = $translatorDropdown.find('.active');
   translators[Translators.GENERATIVE_AI] = null;
@@ -1459,21 +1473,6 @@ $openrouterApiKeyText.change(function onChange() {
   if ($activeTranslator.val() === Translators.GENERATIVE_AI) $activeTranslator.click()
   if (localStorage.getItem('OPENROUTER_API_KEY') != null && $(this).val().length === 0) localStorage.removeItem('OPENROUTER_API_KEY')
   else if ($(this).val().startsWith('sk-or-v1-') && localStorage.getItem('OPENROUTER_API_KEY') !== $(this).val()) localStorage.setItem('OPENROUTER_API_KEY', $(this).val())
-})
-$('#temperature-text, #glossaries-temperature-text').change(function onChange() {
-  const value = $(this).val()
-  $(this).val(Math.min(parseFloat($(this).attr('max')), Math.max(parseFloat($(this).attr('min')), parseFloat(value.length === 0 ? $(this).attr('value') : value))))
-})
-$('#top-p-text, #glossaries-top-p-text').change(function onChange() {
-  const value = $(this).val()
-  $(this).val(Math.min(parseFloat($(this).attr('max')), Math.max(parseFloat($(this).attr('min')), parseFloat(value.length === 0 ? $(this).attr('value') : value))))
-})
-$('#top-k-text, #glossaries-top-k-text').change(function onChange() {
-  const value = $(this).val()
-  $(this).val(Math.max(parseInt($(this).attr('min')), parseInt(value.length === 0 ? $(this).attr('value') : value)))
-})
-$domainSelects.change(function onChange() {
-  $domainSelects.val($(this).val())
 })
 $glossaryModal.on('shown.bs.modal', () => {
   const text = $sourceEntryInput.val();
