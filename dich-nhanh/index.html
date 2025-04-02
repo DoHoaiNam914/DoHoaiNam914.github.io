@@ -965,7 +965,7 @@
                 </button>
                 <ul class="dropdown-menu">
                   <li>
-                    <button type="button" class="dropdown-item" value="generativeAi">AI tạo sinh (&lt;=1000)</button>
+                    <button type="button" class="dropdown-item" value="generativeAi">AI tạo sinh</button>
                   </li>
                   <li>
                     <button type="button" class="dropdown-item" value="baiduTranslate">Baidu Translate</button>
@@ -1129,6 +1129,7 @@
                     <option>deepseek-chat</option>
                   </optgroup>
                   <optgroup label="Mistral">
+                    <option value="mistral-large-latest">Mistral Large (2411)</option>
                     <option value="pixtral-large-latest">Pixtral Large</option>
                     <option value="mistral-saba-latest">Mistral Saba</option>
                     <option value="ministral-3b-latest">Ministral 3B</option>
@@ -1136,7 +1137,8 @@
                     <option value="mistral-small-latest">Mistral Small (2503)</option>
                     <option value="pixtral-12b-2409">Pixtral</option>
                     <option value="open-mistral-nemo">Mistral Nemo</option>
-                    <!-- <option>pixtral-large-2411</option>
+                    <!-- <option>mistral-large-2411</option>
+                    <option>pixtral-large-2411</option>
                     <option>ministral-3b-2410</option>
                     <option>ministral-8b-2410</option>
                     <option>open-mistral-nemo-2407</option>
@@ -1147,6 +1149,8 @@
                     <option value="open-mixtral-8x22b">Mixtral 8x22B</option>
                     <option value="mistral-medium-2312">Mistral Medium</option>
                     <option value="mistral-small-2402">Mistral Small 24.02</option>
+                    <option value="mistral-large-2402">Mistral Large 24.02</option>
+                    <option value="mistral-large-2407">Mistral Large 24.07</option>
                   </optgroup>
                   <optgroup label="Anthropic">
                     <option value="claude-3-7-sonnet-20250219">Claude 3.7 Sonnet</option>
@@ -1466,7 +1470,7 @@
               <button type="button" class="btn btn-sm btn-primary mb-3" id="translate-entry-button">Dịch lại</button>
               <button type="button" class="btn btn-sm btn-secondary mb-3 copy-button" data-target="glossary">Sao chép (<span id="glossary-entry-counter">0</span>)</button>
               <div class="mb-3">
-                <label class="form-label" for="glossaries-language-select">Ngôn ngữ gốc:</label>
+                <label class="form-label" for="glossaries-language-select">Ngôn ngữ gốc (AI tạo sinh):</label>
                 <select class="form-select" id="glossaries-language-select">
                   <option value="null" selected>Phát hiện ngôn ngữ</option>
                   <option value="Vietnamese">Tiếng Việt</option>
