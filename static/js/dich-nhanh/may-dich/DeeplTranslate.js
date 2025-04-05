@@ -24,11 +24,11 @@ export default class DeeplTranslate extends Translator {
         });
     }
     async translateText(text, targetLanguage, sourceLanguage = null) {
-        const usage = await this.instance.get('/v2/usage').then(response => response.data).catch(error => {
+        /** const usage = await this.instance.get('/v2/usage').then(response => response.data).catch(error => {
             throw new Error(error.data);
         });
         if ((usage.character_limit - usage.character_count) < text.length)
-            throw new Error(`Bản dịch lỗi: Đã đạt đến giới hạn sử dụng của Auth Key này: ${usage.character_count}/${usage.character_limit}`);
+            throw new Error(`Bản dịch lỗi: Đã đạt đến giới hạn sử dụng của Auth Key này: ${usage.character_count}/${usage.character_limit}`); */
         const lines = text.split('\n');
         const responses = [];
         let queries = [];
