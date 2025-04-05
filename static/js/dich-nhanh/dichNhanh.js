@@ -588,7 +588,7 @@ const getTargetLangOptionList = function getTargetLanguageOptionListHtmlFromTran
     }
     case Translators.DEEPL_TRANSLATE: {
       currentTranslator.TARGET_LANGUAGE_LIST.forEach(({ language, name }) => {
-        if (!['EN-GB', 'EN-US', 'JA', 'ZH', 'ZH-HANS'].includes(language)) return;
+        if (!['EN-US', 'JA', 'ZH', 'ZH-HANS'].includes(language)) return;
         const option = document.createElement('option');
         option.innerText = name;
         option.value = language;
