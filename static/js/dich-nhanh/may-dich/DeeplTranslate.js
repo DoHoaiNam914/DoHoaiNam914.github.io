@@ -1,7 +1,6 @@
 'use strict';
 /* global axios */
 import Translator from '../Translator.js';
-import * as Utils from '../../Utils.js';
 export default class DeeplTranslate extends Translator {
     /* https://api-free.deepl.com/v2/languages?type=source */
     SOURCE_LANGUAGE_LIST = JSON.parse('[{"language":"BG","name":"Bulgarian"},{"language":"CS","name":"Czech"},{"language":"DA","name":"Danish"},{"language":"DE","name":"German"},{"language":"EL","name":"Greek"},{"language":"EN","name":"English"},{"language":"ES","name":"Spanish"},{"language":"ET","name":"Estonian"},{"language":"FI","name":"Finnish"},{"language":"FR","name":"French"},{"language":"HU","name":"Hungarian"},{"language":"ID","name":"Indonesian"},{"language":"IT","name":"Italian"},{"language":"JA","name":"Japanese"},{"language":"KO","name":"Korean"},{"language":"LT","name":"Lithuanian"},{"language":"LV","name":"Latvian"},{"language":"NB","name":"Norwegian"},{"language":"NL","name":"Dutch"},{"language":"PL","name":"Polish"},{"language":"PT","name":"Portuguese"},{"language":"RO","name":"Romanian"},{"language":"RU","name":"Russian"},{"language":"SK","name":"Slovak"},{"language":"SL","name":"Slovenian"},{"language":"SV","name":"Swedish"},{"language":"TR","name":"Turkish"},{"language":"UK","name":"Ukrainian"},{"language":"ZH","name":"Chinese"},{"language":"AR","name":"arabic"}]');
@@ -17,7 +16,7 @@ export default class DeeplTranslate extends Translator {
     constructor(authKey) {
         super();
         this.instance = axios.create({
-            baseURL: `${Utils.CORS_PROXY}${authKey.endsWith(':fx') ? 'https://api-free.deepl.com' : 'https://api.deepl.com'}`,
+            baseURL: authKey.endsWith(':fx') ? 'https://api-free.deepl.com' : 'https://api.deepl.com',
             params: {
                 auth_key: authKey
             },
