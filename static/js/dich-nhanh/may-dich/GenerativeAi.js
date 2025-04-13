@@ -176,7 +176,7 @@ export default class GenerativeAi extends Translator {
     }
     async runGoogleGenerativeAI(options, systemInstructions, message) {
         const modelParams = {
-            model: 'gemini-2.0-flash'
+            model: 'gemini-2.5-pro-preview-03-25'
         };
         const { model, temperature, topP, topK } = options;
         modelParams.model = model;
@@ -185,8 +185,10 @@ export default class GenerativeAi extends Translator {
         const generationConfig = {
             temperature: 1,
             topP: 0.95,
-            topK: 40,
-            maxOutputTokens: 8192,
+            topK: 64,
+            maxOutputTokens: 65536,
+            responseModalities: [
+            ],
             responseMimeType: 'text/plain'
         };
         generationConfig.maxOutputTokens = undefined;
@@ -222,12 +224,8 @@ export default class GenerativeAi extends Translator {
         ];
         startChatParams.history.push(...systemInstructions.slice(1).map(element => ({ role: 'user', parts: [{ text: element }] })));
         const chatSession = generativeModel.startChat(startChatParams);
-        const result = await chatSession.sendMessageStream(message, { signal: this.controller.signal });
-        const collectedChunkTexts = [];
-        for await (const chunk of result.stream) {
-            collectedChunkTexts.push(chunk.text());
-        }
-        return collectedChunkTexts.join('');
+        const result = await chatSession.sendMessage(message, { signal: this.controller.signal });
+        return result.response.text();
     }
     async anthropicMain(options, systemInstructions, message) {
         const body = {
