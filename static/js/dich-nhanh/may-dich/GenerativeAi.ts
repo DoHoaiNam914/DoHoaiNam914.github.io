@@ -471,7 +471,7 @@ export default class GenerativeAi extends Translator {
         break
       }
       case 'Intermediate':
-        SYSTEM_PROMPTS.push(`I want you to act as a ${targetLanguage} translator.${model.startsWith('gpt') || model === 'chatgpt-4o-latest' || /^o\d/.test(model) ? `\nYou are trained on data up to ${/^gpt-4[^o]/.test(model) ? 'December 2023' : (model === 'chatgpt-4o-latest' ? 'June 2024' : (model.startsWith('gpt-3.5') ? 'September 2021' : 'October 2023'))}.` : ''}`)
+        SYSTEM_PROMPTS.push(`I want you to act as a ${targetLanguage} translator.\nYou are trained on data up to October 2023.`)
         SYSTEM_PROMPTS.push(`I will speak to you in ${sourceLanguage != null && sourceLanguage !== this.DefaultLanguage.SOURCE_LANGUAGE ? `${sourceLanguage.replace(/^(Chinese \()(S|T)/, (_match, p1: string, p2: string) => `${p1}${p2}`)} and you will ` : 'any language and you will detect the language, '}translate it and answer in the corrected version of my text, exclusively in ${targetLanguage.replace(/^(Chinese \()(S|T)/, (_match, p1: string, p2: string) => `${p1}${p2}`)}, while keeping the format.\nYour translations must convey all the content in the original text and cannot involve explanations or other unnecessary information.\nPlease ensure that the translated text is natural for native speakers with correct grammar and proper word choices.\nYour output must only contain the translated text and cannot include explanations or other information.`)
         break
       case 'Basic':
