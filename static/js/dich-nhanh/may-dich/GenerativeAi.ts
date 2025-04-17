@@ -204,7 +204,9 @@ export default class GenerativeAi extends Translator {
         threshold: HarmBlockThreshold.BLOCK_NONE // Block none
       }
     ]
-    config.systemInstructions = systemInstructions[0]
+    config.systemInstruction = systemInstructions.map(element => ({
+      text: element
+    }))
     config.temperature = temperature
     config.topP = topP
     config.topK = topK
@@ -219,7 +221,16 @@ export default class GenerativeAi extends Translator {
         ]
       }
     ]
-    contents = [...systemInstructions.slice(1), message].map(element => ({ role: 'user', parts: [{ text: element }] }))
+    contents = [
+      {
+        role: 'user',
+        parts: [
+          {
+            text: message
+          }
+        ]
+      }
+    ]
 
     const response = await this.ai.models.generateContentStream({
       model,
@@ -244,7 +255,10 @@ export default class GenerativeAi extends Translator {
     const { model, temperature, topP, topK } = options
     body.model = model.replace(/-thinking$/, '')
     body.messages = [
-      ...systemInstructions.slice(1).map(element => ({ role: 'user', content: element })),
+      ...systemInstructions.slice(1).map(element => ({
+        role: 'user',
+        content: element
+      })),
       {
         role: 'user',
         content: message
@@ -277,7 +291,10 @@ export default class GenerativeAi extends Translator {
       topP,
       maxTokens: undefined,
       messages: [
-        ...systemInstructions.map((element, index) => ({ role: index > 0 ? 'user' : 'system', content: element })),
+        ...systemInstructions.map((element, index) => ({
+          role: index > 0 ? 'user' : 'system',
+          content: element
+        })),
         {
           role: 'user',
           content: message
@@ -304,7 +321,10 @@ export default class GenerativeAi extends Translator {
     const { model, temperature, topP } = options
     requestBody.max_completion_tokens = null
     requestBody.messages = [
-      ...systemInstructions.flatMap((element, index) => ({ content: element, role: index > 0 ? 'user' : 'system' })),
+      ...systemInstructions.flatMap((element, index) => ({
+        content: element,
+        role: index > 0 ? 'user' : 'system'
+      })),
       {
         content: message,
         role: 'user'
@@ -339,7 +359,10 @@ export default class GenerativeAi extends Translator {
     const { model, temperature, topP, topK } = options
     request.model = model
     request.messages = [
-      ...systemInstructions.map((element, index) => ({ role: index > 0 ? 'user' : (/^openai\/o\d/.test(model) ? (model === 'openai/o1-mini' ? 'user' : 'developer') : 'system'), content: element })),
+      ...systemInstructions.map((element, index) => ({
+        role: index > 0 ? 'user' : (/^openai\/o\d/.test(model) ? (model === 'openai/o1-mini' ? 'user' : 'developer') : 'system'),
+        content: element
+      })),
       {
         role: 'user',
         content: message
