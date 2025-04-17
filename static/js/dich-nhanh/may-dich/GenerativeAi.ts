@@ -4,10 +4,10 @@ import Translator from '../Translator.js'
 import * as Utils from '../../Utils.js'
 import Anthropic from 'https://esm.run/@anthropic-ai/sdk'
 import {
-  GoogleGenerativeAI,
-  HarmCategory,
-  HarmBlockThreshold
-} from 'https://esm.run/@google/generative-ai'
+  GoogleGenAI,
+  HarmBlockThreshold,
+  HarmCategory
+} from 'https://esm.run/@google/genai'
 import Groq from 'https://esm.run/groq-sdk'
 import { Mistral } from 'https://esm.run/@mistralai/mistralai'
 import OpenAI from 'https://esm.run/openai'
@@ -43,11 +43,10 @@ export default class GenerativeAi extends Translator {
   private readonly AIR_USER_ID
   private readonly OPENAI_API_KEY
   private readonly openai
-  private readonly genAI
+  private readonly ai
   private readonly anthropic
   private readonly mistralClient
   private readonly deepseek
-  private readonly hfInferenceClient
   private readonly groq
   private readonly OPENROUTER_API_KEY: string
   private readonly openrouter
@@ -59,7 +58,9 @@ export default class GenerativeAi extends Translator {
       apiKey: this.OPENAI_API_KEY,
       dangerouslyAllowBrowser: true
     })
-    this.genAI = new GoogleGenerativeAI(geminiApiKey)
+    this.ai = new GoogleGenAI({
+      apiKey: geminiApiKey
+    })
     this.anthropic = new Anthropic({
       apiKey: anthropicApiKey,
       dangerouslyAllowBrowser: true
@@ -109,10 +110,11 @@ export default class GenerativeAi extends Translator {
       : (/^o\d/.test(model)
           ? {
               model: 'o1-mini',
-              messages: []
+              messages: [],
+              store: false
             }
           : {
-              model: 'gpt-4o',
+              model: 'gpt-4.1',
               messages: [],
               response_format: {
                 type: 'text'
@@ -121,7 +123,8 @@ export default class GenerativeAi extends Translator {
               max_completion_tokens: 2048,
               top_p: 1,
               frequency_penalty: 0,
-              presence_penalty: 0
+              presence_penalty: 0,
+              store: false
             })
     if (isDeepseek) {
       requestBody.model = model
@@ -137,7 +140,7 @@ export default class GenerativeAi extends Translator {
       requestBody.top_p = topP
     } else {
       requestBody.messages = [
-        ...systemInstructions.map((element, index) => ({ content: element, role: index > 0 ? 'user' : (/^o\d/.test(model) ? (model === 'o1-mini' ? 'user' : 'developer') : 'system') })),
+        ...systemInstructions.map((element, index) => ({ content: [{ type: 'text', text: element }], role: index > 0 ? 'user' : (/^o\d/.test(model) ? (model === 'o1-mini' ? 'user' : 'developer') : 'system') })),
         {
           content: message,
           role: 'user'
@@ -175,63 +178,60 @@ export default class GenerativeAi extends Translator {
     }
   }
 
-  public async runGoogleGenerativeAI (options, systemInstructions, message): Promise<string> {
-    const modelParams: { [key: string]: string } = {
-      model: 'gemini-2.5-pro-preview-03-25'
-    }
+  public async googleGenAiMain (options, systemInstructions, message): Promise<string> {
     const { model, temperature, topP, topK } = options
-    modelParams.model = model
-    modelParams.systemInstruction = systemInstructions[0]
-    const generativeModel = this.genAI.getGenerativeModel(modelParams)
-
-    const generationConfig: { [key: string]: any } = {
-      temperature: 1,
-      topP: 0.95,
-      topK: 64,
-      maxOutputTokens: 65536,
-      responseModalities: [
-      ],
+    const tools: object[] = []
+    // if (doSearch) tools.push({ googleSearch: {} })
+    const config: { [key: string]: any } = {
       responseMimeType: 'text/plain'
     }
-
-    generationConfig.maxOutputTokens = undefined
-    generationConfig.temperature = temperature
-    generationConfig.topP = topP
-    generationConfig.topK = topK
-    const startChatParams: { [key: string]: any } = {
-      generationConfig,
-      history: [
-      ]
-    }
-    startChatParams.safetySettings = [
+    if (tools.length > 0) config.tools = tools
+    config.safetySettings = [
       {
         category: HarmCategory.HARM_CATEGORY_HARASSMENT,
-        threshold: HarmBlockThreshold.BLOCK_NONE
+        threshold: HarmBlockThreshold.BLOCK_NONE // Block none
       },
       {
         category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
-        threshold: HarmBlockThreshold.BLOCK_NONE
+        threshold: HarmBlockThreshold.BLOCK_NONE // Block none
       },
       {
         category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
-        threshold: HarmBlockThreshold.BLOCK_NONE
+        threshold: HarmBlockThreshold.BLOCK_NONE // Block none
       },
       {
         category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
-        threshold: HarmBlockThreshold.BLOCK_NONE
-      },
-      {
-        // FIXME: Thiếu biến `HarmCategory.HARM_CATEGORY_CIVIC_INTEGRITY`
-        category: 'HARM_CATEGORY_CIVIC_INTEGRITY',
-        threshold: HarmBlockThreshold.BLOCK_NONE
+        threshold: HarmBlockThreshold.BLOCK_NONE // Block none
       }
     ]
-    startChatParams.history.push(...systemInstructions.slice(1).map(element => ({ role: 'user', parts: [{ text: element }] })))
+    config.systemInstructions = systemInstructions[0]
+    config.temperature = temperature
+    config.topP = topP
+    config.topK = topK
+    // const model = 'gemini-2.5-pro-preview-03-25';
+    let contents = [
+      {
+        role: 'user',
+        parts: [
+          {
+            text: 'INSERT_INPUT_HERE'
+          }
+        ]
+      }
+    ]
+    contents = [...systemInstructions.slice(1), message].map(element => ({ role: 'user', parts: [{ text: element }] }))
 
-    const chatSession = generativeModel.startChat(startChatParams)
-
-    const result = await chatSession.sendMessage(message, { signal: this.controller.signal })
-    return result.response.text()
+    const response = await this.ai.models.generateContentStream({
+      model,
+      config,
+      contents
+    })
+    const collectedChunkTexts: string[] = []
+    for await (const chunk of response) {
+      // console.log(chunk.text);
+      collectedChunkTexts.push(chunk.text)
+    }
+    return collectedChunkTexts.join('')
   }
 
   public async anthropicMain (options, systemInstructions, message): Promise<string> {
@@ -487,12 +487,12 @@ export default class GenerativeAi extends Translator {
       })
       requestText = queryText.filter(element => element.split(/(^[a-z0-9#]{12}): /)[2].replace(/^\s+/, '').length > 0).join('\n')
     }
-    let result = await (['gemma2-9b-it', 'llama-3.3-70b-versatile', 'llama-3.1-8b-instant', 'llama3-70b-8192', 'llama3-8b-8192', 'meta-llama/llama-4-scout-17b-16e-instruct', 'meta-llama/llama-4-maverick-17b-128e-instruct', 'qwen-qwq-32b', 'mistral-saba-24b', 'qwen-2.5-32b', 'deepseek-r1-distill-qwen-32b', 'deepseek-r1-distill-llama-70b-specdec', 'deepseek-r1-distill-llama-70b', 'llama-3.3-70b-specdec', 'llama-3.2-1b-preview', 'llama-3.2-3b-preview', 'llama-3.2-11b-vision-preview', 'llama-3.2-90b-vision-preview'].some(element => element === model) ? this.groqMain(options, SYSTEM_PROMPTS, requestText) : (model.includes('/') ? this.openrouterMain(options, SYSTEM_PROMPTS, requestText) : (isMistral ? this.runMistral(options, SYSTEM_PROMPTS, requestText) : (model.startsWith('claude') ? this.anthropicMain(options, SYSTEM_PROMPTS, requestText) : (isGoogleGenerativeAi ? this.runGoogleGenerativeAI(options, SYSTEM_PROMPTS, requestText) : this.openaiMain(options as { model: string, temperature: number, topP: number }, SYSTEM_PROMPTS, requestText)))))).catch(reason => {
+    let result = await (['gemma2-9b-it', 'llama-3.3-70b-versatile', 'llama-3.1-8b-instant', 'llama3-70b-8192', 'llama3-8b-8192', 'meta-llama/llama-4-scout-17b-16e-instruct', 'meta-llama/llama-4-maverick-17b-128e-instruct', 'qwen-qwq-32b', 'mistral-saba-24b', 'qwen-2.5-32b', 'deepseek-r1-distill-qwen-32b', 'deepseek-r1-distill-llama-70b-specdec', 'deepseek-r1-distill-llama-70b', 'llama-3.3-70b-specdec', 'llama-3.2-1b-preview', 'llama-3.2-3b-preview', 'llama-3.2-11b-vision-preview', 'llama-3.2-90b-vision-preview'].some(element => element === model) ? this.groqMain(options, SYSTEM_PROMPTS, requestText) : (model.includes('/') ? this.openrouterMain(options, SYSTEM_PROMPTS, requestText) : (isMistral ? this.runMistral(options, SYSTEM_PROMPTS, requestText) : (model.startsWith('claude') ? this.anthropicMain(options, SYSTEM_PROMPTS, requestText) : (isGoogleGenerativeAi ? this.googleGenAiMain(options, SYSTEM_PROMPTS, requestText) : this.openaiMain(options as { model: string, temperature: number, topP: number }, SYSTEM_PROMPTS, requestText)))))).catch(reason => {
       throw reason
     })
     if (model.toLowerCase().includes('deepseek-r1')) result.replace(/<think>\n(?:.+\n+)+<\/think>\n{2}/, '')
     if (systemPrompt === 'Professional' && /(?:^|\n)[a-z0-9#]{12}: ?/.test(result)) {
-      const translationMap = Object.fromEntries(result.split('\n').map(element => element.split(/(^[a-z0-9#]{12}): ?/).slice(1)))
+      const translationMap = result.startsWith('```json') ? JSON.parse(result.trimEnd().replaceAll(/^`{3}json\n|\n?`{3}$/g, '')) : Object.fromEntries(result.split('\n').map(element => element.split(/(^[a-z0-9#]{12}): ?/).slice(1)))
       result = queryText.map(element => translationMap[(element.match(/^[a-z0-9#]{12}/) as RegExpMatchArray)[0]] ?? '').join('\n')
     }
     super.translateText(text, targetLanguage, sourceLanguage)
