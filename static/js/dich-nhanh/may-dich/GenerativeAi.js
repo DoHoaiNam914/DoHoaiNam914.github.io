@@ -210,6 +210,11 @@ export default class GenerativeAi extends Translator {
         config.temperature = temperature;
         config.topP = topP;
         config.topK = topK;
+        if (model.startsWith('gemini-2.5-flash') && model.endsWith('-normal')) {
+            config.thinkingConfig = {
+                thinkingBudget: 0
+            };
+        }
         // const model = 'gemini-2.5-pro-preview-03-25';
         let contents = [
             {
@@ -232,7 +237,7 @@ export default class GenerativeAi extends Translator {
             }
         ];
         const response = await this.ai.models.generateContentStream({
-            model,
+            model: model.replace(/-normal$/, ''),
             config,
             contents
         });
