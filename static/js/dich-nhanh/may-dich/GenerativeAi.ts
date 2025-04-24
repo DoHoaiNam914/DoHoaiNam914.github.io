@@ -249,17 +249,26 @@ export default class GenerativeAi extends Translator {
       }
     ]
 
-    const response = await this.ai.models.generateContentStream({
-      model: model.replace(/-normal$/, ''),
-      config,
-      contents
-    })
-    const collectedChunkTexts: string[] = []
-    for await (const chunk of response) {
-      // console.log(chunk.text);
-      collectedChunkTexts.push(chunk.text)
+    if (model.startsWith('gemma-3')) {
+      const response = await this.ai.models.generateContent({
+        model: model.replace(/-normal$/, ''),
+        config,
+        contents
+      })
+      return response.text
+    } else {
+      const response = await this.ai.models.generateContentStream({
+        model: model.replace(/-normal$/, ''),
+        config,
+        contents
+      })
+      const collectedChunkTexts: string[] = []
+      for await (const chunk of response) {
+        // console.log(chunk.text);
+        collectedChunkTexts.push(chunk.text)
+      }
+      return collectedChunkTexts.join('')
     }
-    return collectedChunkTexts.join('')
   }
 
   public async anthropicMain (options, systemInstructions, message): Promise<string> {
