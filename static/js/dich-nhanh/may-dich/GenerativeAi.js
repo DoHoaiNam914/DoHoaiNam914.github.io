@@ -212,7 +212,7 @@ export default class GenerativeAi extends Translator {
         config.temperature = temperature;
         config.topP = topP;
         config.topK = topK;
-        if (/* model.startsWith('gemma-3') || */ (model.startsWith('gemini-2.5-flash') && model.endsWith('-normal'))) {
+        if ( /* model.startsWith('gemma-3') || */(model.startsWith('gemini-2.5-flash') && model.endsWith('-normal'))) {
             config.thinkingConfig = {
                 thinkingBudget: 0
             };
@@ -229,14 +229,16 @@ export default class GenerativeAi extends Translator {
             }
         ];
         contents = [
-            ...model.startsWith('gemma') ? systemInstructions.map(element => ({
-                role: 'user',
-                parts: [
-                    {
-                        text: element
-                    }
-                ]
-            })) : [],
+            ...model.startsWith('gemma')
+                ? systemInstructions.map(element => ({
+                    role: 'user',
+                    parts: [
+                        {
+                            text: element
+                        }
+                    ]
+                }))
+                : [],
             {
                 role: 'user',
                 parts: [
@@ -246,17 +248,27 @@ export default class GenerativeAi extends Translator {
                 ]
             }
         ];
-        const response = await this.ai.models.generateContentStream({
-            model: model.replace(/-normal$/, ''),
-            config,
-            contents
-        });
-        const collectedChunkTexts = [];
-        for await (const chunk of response) {
-            // console.log(chunk.text);
-            collectedChunkTexts.push(chunk.text);
+        if (model.startsWith('gemma-3')) {
+            const response = await this.ai.models.generateContent({
+                model: model.replace(/-normal$/, ''),
+                config,
+                contents
+            });
+            return response.text;
         }
-        return collectedChunkTexts.join('');
+        else {
+            const response = await this.ai.models.generateContentStream({
+                model: model.replace(/-normal$/, ''),
+                config,
+                contents
+            });
+            const collectedChunkTexts = [];
+            for await (const chunk of response) {
+                // console.log(chunk.text);
+                collectedChunkTexts.push(chunk.text);
+            }
+            return collectedChunkTexts.join('');
+        }
     }
     async anthropicMain(options, systemInstructions, message) {
         const body = {
