@@ -204,9 +204,11 @@ export default class GenerativeAi extends Translator {
         threshold: HarmBlockThreshold.BLOCK_NONE // Block none
       }
     ]
-    config.systemInstruction = systemInstructions.map(element => ({
-      text: element
-    }))
+    if (!model.startsWith('gemma-3')) {
+      config.systemInstruction = systemInstructions.map(element => ({
+        text: element
+      }))
+    }
     config.temperature = temperature
     config.topP = topP
     config.topK = topK
@@ -227,6 +229,16 @@ export default class GenerativeAi extends Translator {
       }
     ]
     contents = [
+      ...model.startsWith('gemma-3')
+        ? systemInstructions.map(element => ({
+          role: 'user',
+          parts: [
+            {
+              text: element
+            }
+          ]
+        }))
+        : [],
       {
         role: 'user',
         parts: [
