@@ -204,7 +204,7 @@ export default class GenerativeAi extends Translator {
                 threshold: HarmBlockThreshold.BLOCK_NONE // Block none
             }
         ];
-        if (!model.startsWith('gemma-3')) {
+        if (!model.startsWith('gemma')) {
             config.systemInstruction = systemInstructions.map(element => ({
                 text: element
             }));
@@ -212,7 +212,7 @@ export default class GenerativeAi extends Translator {
         config.temperature = temperature;
         config.topP = topP;
         config.topK = topK;
-        if (model.startsWith('gemma-3') || (model.startsWith('gemini-2.5-flash') && model.endsWith('-normal'))) {
+        if (/* model.startsWith('gemma-3') || */ (model.startsWith('gemini-2.5-flash') && model.endsWith('-normal'))) {
             config.thinkingConfig = {
                 thinkingBudget: 0
             };
@@ -229,7 +229,7 @@ export default class GenerativeAi extends Translator {
             }
         ];
         contents = [
-            ...model.startsWith('gemma-3') ? systemInstructions.map(element => ({
+            ...model.startsWith('gemma') ? systemInstructions.map(element => ({
                 role: 'user',
                 parts: [
                     {
