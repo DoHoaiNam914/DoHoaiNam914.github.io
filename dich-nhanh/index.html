@@ -1261,7 +1261,7 @@
               </div>
               <div class="mb-3">
                 <label class="form-check-label" for="temperature-text">Temperature:</label>
-                <input type="number" class="form-control" id="temperature-text" placeholder="1" value="0.1" max="2" min="0" step="0.1">
+                <input type="number" class="form-control" id="temperature-text" placeholder="1" value="1" max="2" min="0" step="0.1">
               </div>
               <div class="mb-3">
                 <label class="form-check-label" for="top-p-text">Top-P:</label>
@@ -1269,7 +1269,7 @@
               </div>
               <div class="mb-3">
                 <label class="form-check-label" for="top-k-text">Top-K:</label>
-                <input type="number" class="form-control" id="top-k-text" placeholder="64" value="50" min="-1" step="1">
+                <input type="number" class="form-control" id="top-k-text" placeholder="64" value="40" min="-1" step="1">
               </div>
               <input type="text" class="form-control mb-3" id="openai-api-key-text" placeholder="OpenAI API Key">
               <input type="text" class="form-control mb-3" id="gemini-api-key-text" placeholder="Gemini API Key">
@@ -1691,7 +1691,7 @@
                     <option>gemini-2.5-flash-preview-04-17-normal</option>
                     <option>gemini-2.5-pro-preview-03-25</option>
                     <option>gemini-2.5-pro-exp-03-25</option>
-                    <option value="gemini-2.0-flash" selected>Gemini 2.0 Flash</option>
+                    <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
                     <!-- <option>gemini-2.0-flash-001</option> -->
                     <!-- <option>gemini-2.0-flash-exp</option> -->
                     <option>gemini-2.0-flash-exp-image-generation</option>
@@ -1743,7 +1743,7 @@
                     <option>o1-pro-high</option>
                     <option value="gpt-4.1">GPT-4.1</option>
                     <!-- <option>gpt-4.1-2025-04-14</option> -->
-                    <option>gpt-4.5-preview</option>
+                    <option selected>gpt-4.5-preview</option>
                     <!-- <option>gpt-4.5-preview-2025-02-27</option> -->
                     <option value="gpt-4o">GPT-4o (2024-08-06)</option>
                     <option>gpt-4o-2024-11-20</option>
@@ -1778,15 +1778,15 @@
               </div>
               <div class="mb-3">
                 <label class="form-check-label" for="glossaries-temperature-text">Temperature:</label>
-                <input type="number" class="form-control" id="glossaries-temperature-text" placeholder="1" value="0.1" max="2" min="0" step="0.1">
+                <input type="number" class="form-control" id="glossaries-temperature-text" placeholder="1" value="1" max="2" min="0" step="0.1">
               </div>
               <div class="mb-3">
                 <label class="form-check-label" for="glossaries-top-p-text">Top-P:</label>
-                <input type="number" class="form-control" id="glossaries-top-p-text" placeholder="1" value="0.95" max="1" min="0" step="0.05">
+                <input type="number" class="form-control" id="glossaries-top-p-text" placeholder="1" value="1" max="1" min="0" step="0.05">
               </div>
               <div class="mb-3">
                 <label class="form-check-label" for="glossaries-top-k-text">Top-K:</label>
-                <input type="number" class="form-control" id="glossaries-top-k-text" placeholder="64" value="50" min="-1" step="1">
+                <input type="number" class="form-control" id="glossaries-top-k-text" placeholder="64" value="64" min="-1" step="1">
               </div>
             </div>
           </div>
