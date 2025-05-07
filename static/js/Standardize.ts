@@ -84,13 +84,13 @@ function vosY2i (sample): string {
 
   for (let i = 0; i < Y.length; i++) {
     // quí- > quý-
-    sample = sample.replaceAll(new RegExp(`(?<=(?:\\P{L}|^)[Qq][Uu])${I[i]}([ptuPTU]|nh|NH|ch|CH)?(?=^|$|\\P{L})`, 'gui'), `${Y[i]}$1`)
+    sample = sample.replaceAll(new RegExp(`(?<=(?:\\P{L}|^)[Qq][Uu])${I[i]}([ptuPTU]|nh|NH|ch|CH)?(?=^|$|\\P{L})`, 'giu'), `${Y[i]}$1`)
 
     // qụi- > quỵ-
-    sample = sample.replaceAll(new RegExp(`(?<=(?:\\P{L}|^)[Qq])${Ux[i]}i([ptuPTU]|nh|NH|ch|CH)?(?=^|$|\\P{L})`, 'gui'), `${U1[i]}${Y[i]}$1`)
+    sample = sample.replaceAll(new RegExp(`(?<=(?:\\P{L}|^)[Qq])${Ux[i]}i([ptuPTU]|nh|NH|ch|CH)?(?=^|$|\\P{L})`, 'giu'), `${U1[i]}${Y[i]}$1`)
 
     // hy, kỳ, lý > hi, kì, lí
-    sample = sample.replaceAll(new RegExp(`(?<=(?:\\P{L}|^)${Cc})${Y[i]}(?=^|$|\\P{L})`, 'gui'), I[i])
+    sample = sample.replaceAll(new RegExp(`(?<=(?:\\P{L}|^)${Cc})${Y[i]}(?=^|$|\\P{L})`, 'giu'), I[i])
   }
 
   return sample
@@ -106,13 +106,13 @@ function vosI2y (sample): string {
 
   for (let i = 0; i < I.length; i++) {
     // quí- > quý-
-    sample = sample.replaceAll(new RegExp(`(?<=(?:\\P{L}|^)[Qq][Uu])${I[i]}([ptuPTU]|nh|NH|ch|CH)?(?=^|$|\\P{L})`, 'gui'), `${Y[i]}$1`)
+    sample = sample.replaceAll(new RegExp(`(?<=(?:\\P{L}|^)[Qq][Uu])${I[i]}([ptuPTU]|nh|NH|ch|CH)?(?=^|$|\\P{L})`, 'giu'), `${Y[i]}$1`)
 
     // qụi- > quỵ-
-    sample = sample.replaceAll(new RegExp(`(?<=(?:\\P{L}|^)[Qq])${Ux[i]}i([ptuPTU]|nh|NH|ch|CH)?(?=^|$|\\P{L})`, 'gui'), `${U1[i]}${Y[i]}$1`)
+    sample = sample.replaceAll(new RegExp(`(?<=(?:\\P{L}|^)[Qq])${Ux[i]}i([ptuPTU]|nh|NH|ch|CH)?(?=^|$|\\P{L})`, 'giu'), `${U1[i]}${Y[i]}$1`)
 
     // hi, kì, lí > hy, kỳ, lý
-    sample = sample.replaceAll(new RegExp(`(?<=(?:\\P{L}|^)${Cc})${I[i]}(?=^|$|\\P{L})`, 'gui'), Y[i])
+    sample = sample.replaceAll(new RegExp(`(?<=(?:\\P{L}|^)${Cc})${I[i]}(?=^|$|\\P{L})`, 'giu'), Y[i])
   }
 
   return sample
@@ -207,7 +207,7 @@ function vosFixTonemarkPosition (sample): string {
 
   // Apply corrections
   for (const [wrong, correct] of Object.entries(replacing)) {
-    if (!/^([iu][àảãáạ]|u[ìỉĩíị])$/ui.test(wrong)) {
+    if (!/^([iu][àảãáạ]|u[ìỉĩíị])$/iu.test(wrong)) {
       sample = sample.replaceAll(new RegExp(`(?<=\\p{L}*)${wrong}(?=\\w*|\\P{L})`, 'gu'), correct)
     } else {
       sample = sample.replace(new RegExp(`(?<=\\P{L})${wrong}`, 'gu'), correct)
