@@ -385,7 +385,7 @@ export default class GenerativeAi extends Translator {
     const { model, temperature, topP, topK } = options
     request.model = model.startsWith('qwen/qwen3') ? model.replace('-no-think', '') : model
     request.messages = [
-      ...request.model.startsWith('qwen/qwen3') && /-no-think(?::free)?$/.test(model)
+      ...request.model.startsWith('qwen/qwen3') && model.includes('no-think')
         ? [{
           role: 'system',
           content: '/no_think'
