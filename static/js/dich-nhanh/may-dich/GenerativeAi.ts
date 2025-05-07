@@ -385,19 +385,13 @@ export default class GenerativeAi extends Translator {
     const { model, temperature, topP, topK } = options
     request.model = model.startsWith('qwen/qwen3') ? model.replace('-no-think', '') : model
     request.messages = [
-      ...request.model.startsWith('qwen/qwen3') && model.includes('no-think')
-        ? [{
-          role: 'system',
-          content: '/no_think'
-        }]
-        : [],
       ...systemInstructions.map((element, index) => ({
         role: index > 0 ? 'user' : (/^openai\/o\d/.test(model) ? (model === 'openai/o1-mini' ? 'user' : 'developer') : 'system'),
         content: element
       })),
       {
         role: 'user',
-        content: message
+        content: message + (request.model.startsWith('qwen/qwen3') && model.includes('no-think') ? '/no_think' : '/think')
       }
     ]
     request.stream = true
