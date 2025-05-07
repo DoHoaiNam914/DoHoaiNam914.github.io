@@ -71,7 +71,7 @@ const VOS = {
     'ạặậẹệịọộợụựỵ'
   ],
 
-  tonePatternRegex: /[bcdđhklmnprstvx][aoôơuư][ìỉĩíị](?=\P{L}|$)|[u][ìỉĩíị](?=\P{L}|$)|[ae][òỏõóọ](?=\P{L}|$)|[bcdđhklmnprstvx][aâêiyươ][ùũủúụ](?=\P{L}|$)|(?=\P{L}|^)[aâêiyươ][ùũủúụ](?=\P{L}|$)|[aâ][ỳỷỹýỵ](?=\P{L}|$)|[bcdđhklmnprstvx][iu][àảãáạ](?=\P{L}|$)|[iu][àảãáạ](?=\P{L}|$)|[òỏõóọ][aăeo]|[ùũủúụ]yê|[ùũủúụ][âêyơô]|[ìỉĩíịỳỷỹýỵ]ê|[ừửữứự]ơ|g[ìỉĩíị][aăeêoôơuư]|q[ùũủúụ][ai]/gui
+  tonePatternRegex: /[bcdđhklmnprstvx][aoôơuư][ìỉĩíị](?=\P{L}|$)|[u][ìỉĩíị](?=\P{L}|$)|[ae][òỏõóọ](?=\P{L}|$)|[bcdđhklmnprstvx][aâêiyươ][ùũủúụ](?=\P{L}|$)|(?=\P{L}|^)[aâêiyươ][ùũủúụ](?=\P{L}|$)|[aâ][ỳỷỹýỵ](?=\P{L}|$)|[bcdđhklmnprstvx][iu][àảãáạ](?=\P{L}|$)|[iu][àảãáạ](?=\P{L}|$)|[òỏõóọ][aăeo]|[ùũủúụ]yê|[ùũủúụ][âêyơô]|[ìỉĩíịỳỷỹýỵ]ê|[ừửữứự]ơ|g[ìỉĩíị][aăeêoôơuư]|q[ùũủúụ][ai]/giu
 }
 
 function vosY2i (sample): string {
