@@ -19,7 +19,7 @@ $(document).ready(async () => {
     const statusParagraph = document.createElement('p');
     statusParagraph.innerText = 'Đang tải...';
     $(document.body).append(statusParagraph);
-    const oldAccentDefines = [Standardize.reversedVosOaoeuy(define), Standardize.vosI2y(define), Standardize.reversedVosOaoeuy(Standardize.vosI2y(define))];
+    const tonemarkPositionDefines = [Standardize.vosY2i(Standardize.vosFixTonemarkPosition(define)), Standardize.vosFixTonemarkPosition(define), Standardize.vosY2i(define), Standardize.reversedVosOaoeuy(define), Standardize.vosI2y(define), Standardize.reversedVosOaoeuy(Standardize.vosI2y(define))];
     const pm = new DTM_ExactMatcher();
     define = define.toLowerCase();
 
@@ -31,9 +31,9 @@ $(document).ready(async () => {
           url: '/static/datasource/cjkvmap.txt',
         }).done((data) => {
           const dataList = data.split('\r').map((element) => element.split('|')).filter((element) => element.length === 3);
-          const searchResults = dataList.filter(([first, second]) => [define, ...oldAccentDefines].some((element) => pm.search(second.split('/')[0].toLowerCase(), element).length > 0 || first.startsWith(element) || pm.search(element, first).length > 0)).map(([first]) => first);
+          const searchResults = dataList.filter(([first, second]) => [define, ...tonemarkPositionDefines].some((element) => pm.search(second.split('/')[0].toLowerCase(), element).length > 0 || first.startsWith(element) || pm.search(element, first).length > 0)).map(([first]) => first);
 
-          dataList.filter(([first]) => searchResults.includes(first.toLowerCase())) /* .toSorted */ .sort((a, b) => [define, ...oldAccentDefines].some((element) => element.indexOf(a[0]) - element.indexOf(b[0])) || b[0].split(/(?:)/u).length - a[0].split(/(?:)/u).length).forEach(([first, second, third]) => {
+          dataList.filter(([first]) => searchResults.includes(first.toLowerCase())) /* .toSorted */ .sort((a, b) => [define, ...tonemarkPositionDefines].some((element) => element.indexOf(a[0]) - element.indexOf(b[0])) || b[0].split(/(?:)/u).length - a[0].split(/(?:)/u).length).forEach(([first, second, third]) => {
             sectionHeading.innerText = first;
             $(document.body).append(sectionHeading.cloneNode(true));
 
@@ -64,7 +64,7 @@ $(document).ready(async () => {
         break;
       }
       case 'td': {
-        [define, ...oldAccentDefines].filter(function filter(first) {
+        [define, ...tonemarkPositionDefines].filter(function filter(first) {
           return !this[first] && (this[first] = 1);
         }, {}).forEach(async (a) => {
           await $.ajax({
@@ -134,9 +134,9 @@ $(document).ready(async () => {
           url: dictionaryUrl,
         }).done((data) => {
           const dataList = data.split('\n').filter((element) => !element.startsWith('##')).map((element) => element.split('\t')).filter((element) => element.length === 2);
-          const searchResults = dataList.filter(([a, second]) => [define, ...oldAccentDefines].some((b) => (['N-V', 'T-V'].some((c) => dict === c) ? a.startsWith(b) || pm.search(b, a).length > 0 || (dict === 'N-V' && [...second.replaceAll('<span class="east">', '').replaceAll('</span>', '').replaceAll('<b>', '').replaceAll('</b>', '').matchAll(/【[^】]+】/g)].some(([c]) => c.replaceAll(/[【】]/g, '').startsWith(b) || pm.search(b, c.replaceAll(/[【】]/g, '')).length > 0)) : a.toLowerCase().startsWith(b) || pm.search(b, `${a} `).length > 0 || pm.search(b, ` ${a}`).length > 0))).map(([first]) => first);
+          const searchResults = dataList.filter(([a, second]) => [define, ...tonemarkPositionDefines].some((b) => (['N-V', 'T-V'].some((c) => dict === c) ? a.startsWith(b) || pm.search(b, a).length > 0 || (dict === 'N-V' && [...second.replaceAll('<span class="east">', '').replaceAll('</span>', '').replaceAll('<b>', '').replaceAll('</b>', '').matchAll(/【[^】]+】/g)].some(([c]) => c.replaceAll(/[【】]/g, '').startsWith(b) || pm.search(b, c.replaceAll(/[【】]/g, '')).length > 0)) : a.toLowerCase().startsWith(b) || pm.search(b, `${a} `).length > 0 || pm.search(b, ` ${a}`).length > 0))).map(([first]) => first);
 
-          dataList.filter(([first]) => searchResults.includes(first)) /* .toSorted */ .sort((a, b) => [define, ...oldAccentDefines].some((element) => element.indexOf(a[0]) - element.indexOf(b[0])) || b[0].split(/(?:)/u).length - a[0].split(/(?:)/u).length).forEach(([first, second]) => {
+          dataList.filter(([first]) => searchResults.includes(first)) /* .toSorted */ .sort((a, b) => [define, ...tonemarkPositionDefines].some((element) => element.indexOf(a[0]) - element.indexOf(b[0])) || b[0].split(/(?:)/u).length - a[0].split(/(?:)/u).length).forEach(([first, second]) => {
             sectionHeading.innerText = first;
             $(document.body).append(sectionHeading.cloneNode(true));
 
