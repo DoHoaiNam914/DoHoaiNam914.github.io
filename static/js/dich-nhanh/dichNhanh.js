@@ -946,7 +946,7 @@ $(document).ready(async () => {
     }, 5000);
   });
 
-  glossary.sinovietnameses = window.cjkv.nam.map(([first, second]) => [first, Standardize.vosOaoeuy(Standardize.vosYToI(second.normalize()))]);
+  glossary.sinovietnameses = window.cjkv.nam.map(([first, second]) => [first, Standardize.vosY2i(Standardize.vosFixTonemarkPosition(second.normalize()))]);
   console.log(`Đã tải xong bộ dữ liệu Hán-Việt (${glossary.sinovietnameses.length})!`);
 
   if (localStorage.getItem('DEEPL_AUTH_KEY') != null) $deeplAuthKeyText.val(localStorage.getItem('DEEPL_AUTH_KEY')).change()
