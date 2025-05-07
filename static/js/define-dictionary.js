@@ -19,7 +19,7 @@ $(document).ready(async () => {
     const statusParagraph = document.createElement('p');
     statusParagraph.innerText = 'Đang tải...';
     $(document.body).append(statusParagraph);
-    const oldAccentDefines = [Standardize.reversedVosOaoeuy(define), Standardize.vosIToY(define), Standardize.vosIToY(Standardize.reversedVosOaoeuy(define))];
+    const oldAccentDefines = [Standardize.reversedVosOaoeuy(define), Standardize.vosI2y(define), Standardize.reversedVosOaoeuy(Standardize.vosI2y(define))];
     const pm = new DTM_ExactMatcher();
     define = define.toLowerCase();
 
