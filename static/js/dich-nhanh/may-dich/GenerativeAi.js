@@ -388,7 +388,7 @@ export default class GenerativeAi extends Translator {
             })),
             {
                 role: 'user',
-                content: message + request.model.startsWith('qwen/qwen3') ? ` ${model.includes('no-think') ? '/no_think' : '/think'}` : ''
+                content: message + (request.model.startsWith('qwen/qwen3') ? ` ${model.includes('no-think') ? '/no_think' : '/think'}` : '')
             }
         ];
         request.stream = true;
