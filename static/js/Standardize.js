@@ -54,7 +54,7 @@ const VOS = {
         'áắấéếíóốớúứý',
         'ạặậẹệịọộợụựỵ'
     ],
-    tonePatternRegex: /[bcdđhklmnprstvx][aoôơuư][ìỉĩíị](?=\P{L}|$)|[u][ìỉĩíị](?=\P{L}|$)|[ae][òỏõóọ](?=\P{L}|$)|[bcdđhklmnprstvx][aâêiyươ][ùũủúụ](?=\P{L}|$)|(?=\P{L}|^)[aâêiyươ][ùũủúụ](?=\P{L}|$)|[aâ][ỳỷỹýỵ](?=\P{L}|$)|[bcdđhklmnprstvx][iu][àảãáạ](?=\P{L}|$)|[iu][àảãáạ](?=\P{L}|$)|[òỏõóọ][aăeo]|[ùũủúụ]yê|[ùũủúụ][âêyơô]|[ìỉĩíịỳỷỹýỵ]ê|[ừửữứự]ơ|g[ìỉĩíị][aăeêoôơuư]|q[ùũủúụ][ai]/gui
+    tonePatternRegex: /[bcdđhklmnprstvx][aoôơuư][ìỉĩíị](?=\P{L}|$)|[u][ìỉĩíị](?=\P{L}|$)|[ae][òỏõóọ](?=\P{L}|$)|[bcdđhklmnprstvx][aâêiyươ][ùũủúụ](?=\P{L}|$)|(?=\P{L}|^)[aâêiyươ][ùũủúụ](?=\P{L}|$)|[aâ][ỳỷỹýỵ](?=\P{L}|$)|[bcdđhklmnprstvx][iu][àảãáạ](?=\P{L}|$)|[iu][àảãáạ](?=\P{L}|$)|[òỏõóọ][aăeo]|[ùũủúụ]yê|[ùũủúụ][âêyơô]|[ìỉĩíịỳỷỹýỵ]ê|[ừửữứự]ơ|g[ìỉĩíị][aăeêoôơuư]|q[ùũủúụ][ai]/giu
 };
 function vosY2i(sample) {
     const Y = VOS.Y.join('');
@@ -64,11 +64,11 @@ function vosY2i(sample) {
     const Cc = VOS.Cf;
     for (let i = 0; i < Y.length; i++) {
         // quí- > quý-
-        sample = sample.replaceAll(new RegExp(`(\\P{L}|^)([Qq])([Uu])${I[i]}([ptuPTU]|nh|NH|ch|CH)?(?=^|$|\\P{L})`, 'gui'), `$1$2$3${Y[i]}$4`);
+        sample = sample.replaceAll(new RegExp(`(\\P{L}|^)([Qq])([Uu])${I[i]}([ptuPTU]|nh|NH|ch|CH)?(?=^|$|\\P{L})`, 'giu'), `$1$2$3${Y[i]}$4`);
         // qụi- > quỵ-
-        sample = sample.replaceAll(new RegExp(`(\\P{L}|^)([Qq])${Ux[i]}i([ptuPTU]|nh|NH|ch|CH)?(?=^|$|\\P{L})`, 'gui'), `$1$2${U1[i]}${Y[i]}$3`);
+        sample = sample.replaceAll(new RegExp(`(\\P{L}|^)([Qq])${Ux[i]}i([ptuPTU]|nh|NH|ch|CH)?(?=^|$|\\P{L})`, 'giu'), `$1$2${U1[i]}${Y[i]}$3`);
         // hy, kỳ, lý > hi, kì, lí
-        sample = sample.replaceAll(new RegExp(`(\\P{L}|^)(${Cc})${Y[i]}(?=^|$|\\P{L})`, 'gui'), `$1$2${I[i]}`);
+        sample = sample.replaceAll(new RegExp(`(\\P{L}|^)(${Cc})${Y[i]}(?=^|$|\\P{L})`, 'giu'), `$1$2${I[i]}`);
     }
     return sample;
 }
