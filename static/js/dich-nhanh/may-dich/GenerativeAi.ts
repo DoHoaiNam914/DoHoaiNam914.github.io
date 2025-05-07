@@ -387,8 +387,8 @@ export default class GenerativeAi extends Translator {
     request.messages = [
       ...request.model.startsWith('qwen/qwen3') && /-no-think(?::free)?$/.test(model)
         ? [{
-              role: 'system',
-              content: '/no_think'
+          role: 'system',
+          content: '/no_think'
         }]
         : [],
       ...systemInstructions.map((element, index) => ({
