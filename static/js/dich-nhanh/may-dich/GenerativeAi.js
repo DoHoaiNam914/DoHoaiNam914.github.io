@@ -522,7 +522,7 @@ export default class GenerativeAi extends Translator {
         });
         if (model.toLowerCase().includes('deepseek-r1'))
             result.replace(/<think>\n(?:.+\n+)+<\/think>\n{2}/, '');
-        if (systemPrompt === 'Professional' && Utils.isValidJson(result.replaceAll(/^`{3}json\n|\n?`{3}$/g, ''))) {
+        if (systemPrompt === 'Professional' && Utils.isValidJson(result.replaceAll(/^`{3}json\n|\n?`{3}$/g, '')) && Object.fromEntries(JSON.parse(result.replaceAll(/^`{3}json\n|\n`{3}$/g, '')).translated_string != null) {
             const translationMap = Object.fromEntries(JSON.parse(result.replaceAll(/^`{3}json\n|\n`{3}$/g, '')).translated_string.split('\n').map(element => element.split(/(^[a-z0-9#]{12}): ?/).slice(1)));
             result = queryText.map(element => translationMap[element.match(/^[a-z0-9#]{12}/)[0]] ?? '').join('\n');
         }
