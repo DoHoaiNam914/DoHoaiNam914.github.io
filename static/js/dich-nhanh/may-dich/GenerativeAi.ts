@@ -518,12 +518,12 @@ export default class GenerativeAi extends Translator {
     let result = await (['gemma2-9b-it', 'llama-3.3-70b-versatile', 'llama-3.1-8b-instant', 'llama3-70b-8192', 'llama3-8b-8192', 'deepseek-r1-distill-llama-70b', 'meta-llama/llama-4-maverick-17b-128e-instruct', 'meta-llama/llama-4-scout-17b-16e-instruct', 'mistral-saba-24b', 'qwen-qwq-32b'].some(element => element === model) ? this.groqMain(options, SYSTEM_PROMPTS, requestText) : (model.includes('/') ? this.openrouterMain(options, SYSTEM_PROMPTS, requestText) : (isMistral ? this.runMistral(options, SYSTEM_PROMPTS, requestText) : (model.startsWith('claude') ? this.anthropicMain(options, SYSTEM_PROMPTS, requestText) : (isGoogleGenAi ? this.googleGenAiMain(options, SYSTEM_PROMPTS, requestText) : this.openaiMain(options as { model: string, temperature: number, topP: number }, SYSTEM_PROMPTS, requestText)))))).catch(reason => {
       throw reason
     })
-    if (model.toLowerCase().includes('deepseek-r1')) result.replace(/<think>\n(?:.+\n+)+<\/think>\n{2}/, '')
+    if (model.toLowerCase().includes('deepseek-r1')) result = result.replace(/<think>\n(?:.+\n+)+<\/think>\n{2}/, '')
     result = result.replaceAll(/^`{3}json\n|\n?`{3}$/g, '')
-    if (systemPrompt === 'Professional' && Utils.isValidJson(result.replaceAll('\n', '\\n')) as boolean) {
-      const translatedString = JSON.parse(result.replaceAll('\n', '\\n')).translated_string
+    if (systemPrompt === 'Professional' && (Utils.isValidJson(result) as boolean || Utils.isValidJson(result.replaceAll('\n', '\\n')) as boolean)) {
+      const translatedString = JSON.parse(Utils.isValidJson(result.replaceAll('\n', '\\n')) as boolean ? result.replaceAll('\n', '\\n') : result).translated_string
       if (translatedString != null && /(?:^|\n)[a-z0-9#]{12}: ?/.test(translatedString)) {
-        const translationMap = Object.fromEntries(JSON.parse(result.replaceAll(/^`{3}json\n|\n`{3}$/g, '')).translated_string.split('\n').map(element => element.split(/(^[a-z0-9#]{12}): ?/).slice(1)))
+        const translationMap = Object.fromEntries(translatedString.split('\n').map(element => element.split(/(^[a-z0-9#]{12}): ?/).slice(1)))
         result = queryText.map(element => translationMap[(element.match(/^[a-z0-9#]{12}/) as RegExpMatchArray)[0]] ?? '').join('\n')
       }
     }
