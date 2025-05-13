@@ -523,7 +523,7 @@ export default class GenerativeAi extends Translator {
         if (model.toLowerCase().includes('deepseek-r1'))
             result = result.replace(/<think>\n(?:.+\n+)+<\/think>\n{2}/, '');
         if (systemPrompt === 'Professional') {
-            result = result.replaceAll(/^`{3}(?:json)?\n|\n?`{3}$/g, '').replaceAll(/\n(?=[a-z0-9#]{12}: ?|"\n}$)/g, '\\n');
+            result = result.replaceAll(/^`{3}(?:json)?\n|\n?`{3}$/g, '').replaceAll(/\n(?!\{\n|"(?:|insight|rule|translated_text)"|\}$)/g, '\\n');
             const jsonMatch = result.match(/(\{[\s\S]*\})/);
             const potentialJsonString = jsonMatch != null ? jsonMatch[0] : result;
             if (Utils.isValidJson(potentialJsonString)) {
