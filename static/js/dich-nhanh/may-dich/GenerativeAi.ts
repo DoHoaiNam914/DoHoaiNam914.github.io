@@ -520,8 +520,8 @@ export default class GenerativeAi extends Translator {
     })
     if (model.toLowerCase().includes('deepseek-r1')) result = result.replace(/<think>\n(?:.+\n+)+<\/think>\n{2}/, '')
     result = result.replaceAll(/^`{3}json\n|\n?`{3}$/g, '')
-    if (systemPrompt === 'Professional' && Utils.isValidJson(result.replaceAll(/\n(?=[a-z0-9#]{12}: ?)|\n$/g, '\\n')) as boolean) {
-      const translatedString = JSON.parse(result.replaceAll(/\n(?=[a-z0-9#]{12}: ?)|\n$/g, '\\n')).translated_string
+    if (systemPrompt === 'Professional' && Utils.isValidJson(result.replaceAll(/\n(?=[a-z0-9#]{12}: ?|"\n})/g, '\\n')) as boolean) {
+      const translatedString = JSON.parse(result.replaceAll(/\n(?=[a-z0-9#]{12}: ?|"\n})/g, '\\n')).translated_string
       if (translatedString != null) {
         if (/(?:^|\n)[a-z0-9#]{12}: ?/.test(translatedString) || typeof translatedString === 'object') {
           const translationMap = typeof translatedString === 'object' ? translatedString : Object.fromEntries(translatedString.split('\n').map(element => element.split(/(^[a-z0-9#]{12}): ?/).slice(1)))
