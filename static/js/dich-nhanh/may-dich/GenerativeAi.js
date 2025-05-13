@@ -522,234 +522,126 @@ export default class GenerativeAi extends Translator {
         });
         if (model.toLowerCase().includes('deepseek-r1'))
             result = result.replace(/<think>\n(?:.+\n+)+<\/think>\n{2}/, '');
-        // Sửa phần post-process của Professional Prompt với xử lý toàn diện các định dạng không chuẩn
+        // Enhanced post-processing for Professional Prompt format
         if (systemPrompt === 'Professional') {
-            // Loại bỏ các backticks và định dạng JSON nếu có
-            result = result.replaceAll(/^`{3}(?:json)?\n|\n?`{3}$/g, '');
-            // Loại bỏ thông tin debug hoặc thừa mà AI có thể trả về trước hoặc sau JSON
-            const jsonMatch = result.match(/(\{[\s\S]*\})/);
-            const potentialJsonString = (jsonMatch != null) ? jsonMatch[0] : result;
-            // Một số biến để lưu trữ các trường hợp khác nhau của output
-            let extractedTranslation = null;
-            let translationMap = {};
-            let parsedResult = null;
-            const originalUuids = queryText.map(element => {
-                const match = element.match(/^([a-z0-9#]{12})/);
-                return (match != null) ? match[0] : null;
-            }).filter(Boolean);
-            // Trường hợp 1: Trả về JSON hợp lệ với cấu trúc như yêu cầu
-            try {
-                // Chuẩn bị chuỗi JSON bằng cách xử lý các dòng mới trong translated_string
-                const jsonString = potentialJsonString.replaceAll(/\n(?=[a-z0-9#]{12}: ?|"\n})/g, '\\n');
-                if (Utils.isValidJson(jsonString)) {
-                    parsedResult = JSON.parse(jsonString);
-                    // Trích xuất translated_string nếu có
-                    if (parsedResult != null && typeof parsedResult === 'object') {
-                        // Kiểm tra các trường hợp khác nhau của cấu trúc JSON
-                        if (parsedResult.translated_string !== undefined) {
-                            extractedTranslation = parsedResult.translated_string;
-                        }
-                        else if (parsedResult.translation !== undefined) {
-                            extractedTranslation = parsedResult.translation;
-                        }
-                        else if (parsedResult.result !== undefined) {
-                            extractedTranslation = parsedResult.result;
-                        }
-                        else if (parsedResult.text !== undefined) {
-                            extractedTranslation = parsedResult.text;
-                        }
-                        else if (parsedResult.content !== undefined) {
-                            extractedTranslation = parsedResult.content;
-                        }
-                        else if (parsedResult.output !== undefined) {
-                            extractedTranslation = parsedResult.output;
-                        }
-                        else {
-                            for (const key in parsedResult) {
-                                const value = parsedResult[key];
-                                if (typeof value === 'string' && value.length > 0) {
-                                    // Kiểm tra xem chuỗi này có chứa UUID hoặc có số dòng tương tự với văn bản gốc không
-                                    if (/[a-z0-9#]{12}/.test(value) ||
-                                        value.split('\n').length === queryText.length ||
-                                        // Nếu chuỗi đủ dài để có thể là bản dịch (heuristic)
-                                        value.length > text.length / 2) {
-                                        extractedTranslation = value;
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+          try {
+            // Clean up the response to ensure it's valid JSON
+            let cleanedResult = result
+              .replace(/^```json\s*|\s*```$/g, '') // Remove code blocks if present
+              .replace(/\\'/g, "'")               // Fix escaped single quotes
+              .trim();
+
+            // Handle multi-line translations properly by normalizing newlines in JSON
+            if (!/^\{/.test(cleanedResult)) {
+              // If response doesn't start with '{', try to find the JSON part
+              const jsonMatch = cleanedResult.match(/(\{[\s\S]*\})/);
+              if (jsonMatch) {
+                cleanedResult = jsonMatch[1];
+              }
             }
-            catch (error) {
-                console.error('Error processing JSON translation result:', error);
-                // Tiếp tục để thử các phương pháp khác
-            }
-            // Nếu không tìm thấy bản dịch từ JSON, thử phương pháp khác
-            if (extractedTranslation == null) {
-                // Trường hợp 2: AI trả về văn bản thuần với các UUID
-                const uuidPattern = /(?:^|\n)([a-z0-9#]{12}): ?(.*)/g;
-                let match;
-                let foundUuids = false;
-                while ((match = uuidPattern.exec(result)) !== null) {
-                    foundUuids = true;
-                    translationMap[match[1]] = match[2];
+
+            // Normalize newlines in the JSON before parsing
+            cleanedResult = cleanedResult.replaceAll(/\n(?=[a-z0-9#]{12}: ?|"\n})/g, '\\n');
+
+            // Try to parse the response as JSON
+            if (Utils.isValidJson(cleanedResult)) {
+              const parsedResponse = JSON.parse(cleanedResult);
+
+              // Case 1: Standard format with translated_string as a string with UUID markers
+              if (parsedResponse && typeof parsedResponse.translated_string === 'string') {
+                const translatedString = parsedResponse.translated_string;
+
+                // Case 1a: translated_string contains UUIDs in the expected format
+                if (/(?:^|\n)[a-z0-9#]{12}: ?/.test(translatedString)) {
+                  // Split by line and create a mapping of UUID to translated text
+                  const translationMap = Object.fromEntries(
+                    translatedString.split('\n')
+                      .filter(line => /^[a-z0-9#]{12}: ?/.test(line))
+                      .map(element => {
+                        const parts = element.split(/(^[a-z0-9#]{12}): ?/);
+                        return [parts[1], parts.slice(2).join(': ')];
+                      })
+                  );
+
+                  // Reconstruct the result by mapping each original line to its translation
+                  result = queryText.map(element => {
+                    const uuid = (element.match(/^[a-z0-9#]{12}/) || [''])[0];
+                    return translationMap[uuid] || '';
+                  }).join('\n');
                 }
-                if (foundUuids) {
-                    // Đã tìm thấy các UUID trong kết quả, sử dụng translationMap
-                    extractedTranslation = translationMap;
+                // Case 1b: translated_string is already an object with UUID keys
+                else if (typeof translatedString === 'object') {
+                  const translationMap = translatedString;
+                  result = queryText.map(element => {
+                    const uuid = (element.match(/^[a-z0-9#]{12}/) || [''])[0];
+                    return translationMap[uuid] || '';
+                  }).join('\n');
                 }
+                // Case 1c: translated_string is a simple single line without UUIDs
+                else if (translatedString.split('\n').length === 1) {
+                  result = translatedString;
+                }
+                // Case 1d: translated_string has multiple lines but no UUIDs
                 else {
-                    // Trường hợp 3: AI trả về văn bản thuần không có UUID
-                    // Kiểm tra xem có phải là một danh sách các câu dịch tương ứng không
-                    const lines = result.split('\n').filter(line => line.trim() !== '');
-                    // Nếu số dòng khớp với văn bản gốc, có thể là bản dịch theo thứ tự
-                    if (lines.length === queryText.filter(line => line.trim() !== '').length) {
-                        extractedTranslation = lines.join('\n');
-                    }
-                    else {
-                        extractedTranslation = result;
-                    }
+                  // If there are the same number of lines in the translation as the original,
+                  // we can assume they match up in order
+                  const translatedLines = translatedString.split('\n');
+                  if (translatedLines.length === queryText.length) {
+                    result = translatedLines.join('\n');
+                  } else {
+                    // Otherwise, just return the whole translated string
+                    result = translatedString;
+                  }
                 }
+              }
+              // Case 2: Alternative format with translations directly as top-level property
+              else if (parsedResponse && typeof parsedResponse.translations === 'object') {
+                const translations = parsedResponse.translations;
+                result = queryText.map(element => {
+                  const uuid = (element.match(/^[a-z0-9#]{12}/) || [''])[0];
+                  return translations[uuid] || '';
+                }).join('\n');
+              }
+              // Case 3: Array of translations with UUID keys
+              else if (parsedResponse && Array.isArray(parsedResponse.translations)) {
+                const translationMap = Object.fromEntries(
+                  parsedResponse.translations.map(item => [item.uuid, item.text])
+                );
+                result = queryText.map(element => {
+                  const uuid = (element.match(/^[a-z0-9#]{12}/) || [''])[0];
+                  return translationMap[uuid] || '';
+                }).join('\n');
+              }
+              // Case 4: Response has direct mapping of UUIDs to translations
+              else if (parsedResponse && Object.keys(parsedResponse).some(key => /^[a-z0-9#]{12}$/.test(key))) {
+                result = queryText.map(element => {
+                  const uuid = (element.match(/^[a-z0-9#]{12}/) || [''])[0];
+                  return parsedResponse[uuid] || '';
+                }).join('\n');
+              }
+            } else {
+              // Case 5: The response isn't valid JSON, but might have UUID-prefixed lines
+              if (/(?:^|\n)[a-z0-9#]{12}: /.test(result)) {
+                // Extract translations directly from the text
+                const translationLines = result.split('\n').filter(line => /^[a-z0-9#]{12}: /.test(line));
+                const translationMap = Object.fromEntries(
+                  translationLines.map(line => {
+                    const parts = line.split(/(^[a-z0-9#]{12}): /);
+                    return [parts[1], parts.slice(2).join(': ')];
+                  })
+                );
+
+                result = queryText.map(element => {
+                  const uuid = (element.match(/^[a-z0-9#]{12}/) || [''])[0];
+                  return translationMap[uuid] || '';
+                }).join('\n');
+              }
+              // If we can't extract structured data, leave the result as is
             }
-            // Xử lý bản dịch đã trích xuất
-            if (extractedTranslation !== null) {
-                // Trường hợp 1: extractedTranslation là object (có thể là map UUID -> translation)
-                if (typeof extractedTranslation === 'object' && !Array.isArray(extractedTranslation)) {
-                    translationMap = extractedTranslation;
-                }
-                else if (typeof extractedTranslation === 'string' && /(?:^|\n)[a-z0-9#]{12}: ?/.test(extractedTranslation)) {
-                    // Tạo map từ chuỗi có định dạng UUID: translation
-                    extractedTranslation.split('\n').forEach(line => {
-                        const match = line.match(/^([a-z0-9#]{12}): ?(.*)/);
-                        if ((match != null) && match.length >= 3) {
-                            translationMap[match[1]] = match[2];
-                        }
-                    });
-                }
-                else if (Array.isArray(extractedTranslation)) {
-                    // Nếu số lượng phần tử khớp với văn bản gốc, giả định theo thứ tự
-                    if (extractedTranslation.length === queryText.length) {
-                        result = extractedTranslation.join('\n');
-                    }
-                    else {
-                        // Thử tìm các phần tử có UUID
-                        let hasUuids = false;
-                        extractedTranslation.forEach(item => {
-                            if (typeof item === 'string') {
-                                const match = item.match(/^([a-z0-9#]{12}): ?(.*)/);
-                                if ((match != null) && match.length >= 3) {
-                                    hasUuids = true;
-                                    translationMap[match[1]] = match[2];
-                                }
-                            }
-                            else if (typeof item === 'object' && item !== null) {
-                                // Kiểm tra nếu object có thuộc tính là UUID
-                                let foundUuid = false;
-                                for (const key in item) {
-                                    if (/^[a-z0-9#]{12}$/.test(key)) {
-                                        foundUuid = true;
-                                        translationMap[key] = item[key];
-                                    }
-                                }
-                                // Nếu không tìm thấy UUID là key, tìm kiếm trong các giá trị
-                                if (!foundUuid && item.uuid != null && item.translation != null) {
-                                    translationMap[item.uuid] = item.translation;
-                                }
-                            }
-                        });
-                        if (!hasUuids) {
-                            // Không tìm thấy UUID, chỉ nối mảng
-                            result = extractedTranslation.join('\n');
-                        }
-                    }
-                }
-                else if (typeof extractedTranslation === 'string') {
-                    // Kiểm tra nếu số dòng trong bản dịch tương đương với văn bản gốc
-                    const translatedLines = extractedTranslation.split('\n');
-                    const nonEmptyOriginalLines = queryText.filter(line => line.trim() !== '').length;
-                    const nonEmptyTranslatedLines = translatedLines.filter(line => line.trim() !== '').length;
-                    if (nonEmptyTranslatedLines === nonEmptyOriginalLines) {
-                        // Số dòng khớp, giả định mỗi dòng tương ứng với một dòng trong queryText
-                        result = extractedTranslation;
-                    }
-                    else {
-                        // Số dòng không khớp, kiểm tra xem có thể tách được UUID không
-                        const uuidPattern = /(?:^|\n)([a-z0-9#]{12}): ?(.*)/g;
-                        let match;
-                        let hasUuid = false;
-                        while ((match = uuidPattern.exec(extractedTranslation)) !== null) {
-                            hasUuid = true;
-                            translationMap[match[1]] = match[2];
-                        }
-                        if (!hasUuid) {
-                            // Không tìm thấy UUID, giữ nguyên chuỗi
-                            result = extractedTranslation;
-                        }
-                    }
-                }
-                // Nếu có translationMap, áp dụng mapping
-                if (Object.keys(translationMap).length > 0) {
-                    // Kiểm tra xem có tất cả UUID cần thiết không
-                    const missingUuids = originalUuids.filter(uuid => translationMap[uuid] == null);
-                    if (missingUuids.length === 0 || (missingUuids.length < originalUuids.length / 2)) {
-                        // Có đủ UUID để mapping hoặc thiếu ít, map các phần tử trong queryText theo translationMap
-                        result = queryText.map(element => {
-                            const uuid = ((element.match(/^[a-z0-9#]{12}/) != null) || [''])[0];
-                            return uuid.length > 0 && translationMap[uuid] != null ? translationMap[uuid] : element;
-                        }).join('\n');
-                    }
-                    else {
-                        // Thiếu quá nhiều UUID, có thể map không chính xác
-                        // Kiểm tra tổng số dòng để xác định có lấy bản dịch toàn bộ hay không
-                        const allTranslations = Object.values(translationMap).join('\n');
-                        const translatedLines = allTranslations.split('\n');
-                        if (translatedLines.length === queryText.length) {
-                            result = allTranslations;
-                        }
-                        else {
-                            // Không thể xác định bản dịch chính xác, quay trở lại kết quả ban đầu đã làm sạch
-                            const cleanedResult = result.replace(/```json|```/g, '').trim();
-                            // Loại bỏ các dòng trông giống như phần giải thích hoặc metadata
-                            result = cleanedResult.split('\n')
-                                .filter(line => line.match(/^(explanation|note|metadata|insight|rule|example):/i) == null)
-                                .join('\n');
-                        }
-                    }
-                }
-            }
-            // Xử lý đặc biệt cho định dạng chuẩn như trong ví dụ
-            if (parsedResult?.translated_string != null &&
-                (typeof parsedResult.translated_string === 'string') &&
-                /[a-z0-9#]{12}/.test(parsedResult.translated_string) &&
-                parsedResult?.insight != null && Array.isArray(parsedResult.insight) &&
-                parsedResult?.rule != null && Array.isArray(parsedResult.rule)) {
-                // Đây là định dạng chuẩn như trong ví dụ
-                const stdTranslatedString = parsedResult.translated_string;
-                // Tạo map từ định dạng UUID: translation
-                const stdTranslationMap = {};
-                const stdUuidPattern = /(?:^|\n)([a-z0-9#]{12}): ?(.*)/g;
-                let stdMatch;
-                while ((stdMatch = stdUuidPattern.exec(stdTranslatedString)) !== null) {
-                    stdTranslationMap[stdMatch[1]] = stdMatch[2];
-                }
-                if (Object.keys(stdTranslationMap).length > 0) {
-                    // Áp dụng mapping từ định dạng chuẩn
-                    result = queryText.map(element => {
-                        const uuid = ((element.match(/^[a-z0-9#]{12}/) != null) || [''])[0];
-                        return uuid.length > 0 && stdTranslationMap[uuid] != null ? stdTranslationMap[uuid] : element;
-                    }).join('\n');
-                }
-                else {
-                    // Nếu không tìm thấy UUID trong định dạng chuẩn, sử dụng toàn bộ chuỗi
-                    result = stdTranslatedString;
-                }
-            }
-            // Làm sạch kết quả cuối cùng
-            result = result.trim();
-            // Loại bỏ UUID khỏi kết quả cuối cùng nếu còn sót lại
-            result = result.replace(/^[a-z0-9#]{12}: /gm, '');
+          } catch (error) {
+            throw new Error(`Error processing Professional translation result:${error}`);
+            // In case of error, we'll return the original result
+          }
         }
         super.translateText(text, targetLanguage, sourceLanguage);
         return result;
