@@ -519,17 +519,147 @@ export default class GenerativeAi extends Translator {
       throw reason
     })
     if (model.toLowerCase().includes('deepseek-r1')) result = result.replace(/<think>\n(?:.+\n+)+<\/think>\n{2}/, '')
-    result = result.replaceAll(/^`{3}json\n|\n?`{3}$/g, '')
-    if (systemPrompt === 'Professional' && Utils.isValidJson(result.replaceAll(/\n(?=[a-z0-9#]{12}: ?|"\n})/g, '\\n')) as boolean) {
-      const translatedString = JSON.parse(result.replaceAll(/\n(?=[a-z0-9#]{12}: ?|"\n})/g, '\\n')).translated_string
-      if (translatedString != null) {
-        if (/(?:^|\n)[a-z0-9#]{12}: ?/.test(translatedString) || typeof translatedString === 'object') {
-          const translationMap = typeof translatedString === 'object' ? translatedString : Object.fromEntries(translatedString.split('\n').map(element => element.split(/(^[a-z0-9#]{12}): ?/).slice(1)))
-          result = queryText.map(element => translationMap[(element.match(/^[a-z0-9#]{12}/) as RegExpMatchArray)[0]] ?? '').join('\n')
-        } else if (translatedString.split('\n').length === 1) {
-          result = translatedString
+    if (systemPrompt === 'Professional') {
+      result = result.replaceAll(/^`{3}(?:json)?\n|\n?`{3}$/g, '')
+      const jsonMatch = result.match(/(\{[\s\S]*\})/)
+      const potentialJsonString = (jsonMatch != null) ? jsonMatch[0] : result
+      let extractedTranslation = null
+      let translationMap = {}
+      let parsedResult = null
+      const originalUuids = queryText.map(element => {
+        const match = element.match(/^([a-z0-9#]{12})/)
+        return match != null ? match[0] : null
+      }).filter(Boolean)
+      try {
+        const jsonString = potentialJsonString.replaceAll(/\n(?=[a-z0-9#]{12}: ?|"\n})/g, '\\n')
+        if (Utils.isValidJson(jsonString) as boolean) {
+          parsedResult = JSON.parse(jsonString)
+          if (parsedResult != null && typeof parsedResult === 'object') {
+            if (parsedResult.translated_string !== undefined) {
+              extractedTranslation = parsedResult.translated_string
+            } else if (parsedResult.translation !== undefined) {
+              extractedTranslation = parsedResult.translation
+            } else if (parsedResult.result !== undefined) {
+              extractedTranslation = parsedResult.result
+            } else if (parsedResult.text !== undefined) {
+              extractedTranslation = parsedResult.text
+            } else if (parsedResult.content !== undefined) {
+              extractedTranslation = parsedResult.content
+            } else if (parsedResult.output !== undefined) {
+              extractedTranslation = parsedResult.output
+            } else {
+              for (const key in parsedResult) {
+                const value = parsedResult[key]
+                if (typeof value === 'string' && value.length > 0) {
+                  if (/[a-z0-9#]{12}/.test(value) || value.split('\n').length === queryText.length || value.length > text.length / 2) {
+                    extractedTranslation = value
+                    break
+                  }
+                }
+              }
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Error processing JSON translation result:', error)
+      }
+      if (extractedTranslation.length === 0) {
+        const uuidPattern = /(?:^|\n)([a-z0-9#]{12}): ?(.*)/g
+        let match
+        let foundUuids = false
+        while ((match = uuidPattern.exec(result)) !== null) {
+          foundUuids = true
+          translationMap[match[1]] = match[2]
+        }
+        if (foundUuids) {
+          extractedTranslation = translationMap
+        } else {
+          const lines = result.split('\n').filter(element => element.trim() !== '')
+          if (lines.length === queryText.filter(element => element.trim() !== '').length) {
+            extractedTranslation = lines.join('\n')
+          } else {
+            extractedTranslation = result
+          }
         }
       }
+      if (extractedTranslation !== null) {
+        if (typeof extractedTranslation === 'object' && !Array.isArray(extractedTranslation)) {
+          translationMap = extractedTranslation
+        } else if (typeof extractedTranslation === 'string' && /(?:^|\n)[a-z0-9#]{12}: ?/.test(extractedTranslation)) {
+          extractedTranslation.split('\n').forEach(element => {
+            const match = element.match(/^([a-z0-9#]{12}): ?(.*)/)
+            if (match != null && match.length >= 3) {
+              translationMap[match[1]] = match[2]
+            }
+          })
+        } else if (Array.isArray(extractedTranslation)) {
+          if (extractedTranslation.length === queryText.length) {
+            result = extractedTranslation.join('\n')
+          } else {
+            let hasUuids = false
+            extractedTranslation.forEach(element => {
+              if (typeof element === 'string') {
+                const match = element.match(/^([a-z0-9#]{12}): ?(.*)/)
+                if ((match != null) && match.length >= 3) {
+                  hasUuids = true
+                  translationMap[match[1]] = match[2]
+                }
+              } else if (typeof element === 'object' && element !== null) {
+                let foundUuid = false
+                for (const key in element) {
+                  if (/^[a-z0-9#]{12}$/.test(key)) {
+                    foundUuid = true
+                    translationMap[key] = element[key]
+                  }
+                }
+                if (!foundUuid && element.uuid != null && element.translation != null) {
+                  translationMap[element.uuid] = element.translation
+                }
+              }
+            })
+            if (!hasUuids) {
+              result = extractedTranslation.join('\n')
+            }
+          }
+        } else if (typeof extractedTranslation === 'string') {
+          const translatedLines = extractedTranslation.split('\n')
+          const nonEmptyOriginalLines = queryText.filter(element => element.trim() !== '').length
+          const nonEmptyTranslatedLines = translatedLines.filter(element => element.trim() !== '').length
+          if (nonEmptyTranslatedLines === nonEmptyOriginalLines) {
+            result = extractedTranslation
+          } else {
+            const uuidPattern = /(?:^|\n)([a-z0-9#]{12}): ?(.*)/g
+            let match
+            let hasUuid = false
+            while ((match = uuidPattern.exec(extractedTranslation)) !== null) {
+              hasUuid = true
+              translationMap[match[1]] = match[2]
+            }
+            if (!hasUuid) {
+              result = extractedTranslation
+            }
+          }
+        }
+        if (Object.keys(translationMap).length > 0) {
+          const missingUuids = originalUuids.filter(element => translationMap[element] != null)
+          if (missingUuids.length === 0 || (missingUuids.length < originalUuids.length / 2)) {
+            result = queryText.map(element => {
+              const uuid = ((element.match(/^[a-z0-9#]{12}/) != null) || [''])[0]
+              return uuid.length > 0 && translationMap[uuid] != null ? translationMap[uuid] : element
+            }).join('\n')
+          } else {
+            const allTranslations = Object.values(translationMap).join('\n')
+            const translatedLines = allTranslations.split('\n')
+            if (translatedLines.length === queryText.length) {
+              result = allTranslations
+            } else {
+              const cleanedResult = result.replace(/```json|```/g, '').trim()
+              result = cleanedResult.split('\n').filter(element => element.match(/^(explanation|note|metadata|insight|rule|example):/i) == null).join('\n')
+            }
+          }
+        }
+      }
+      result = result.trim()
     }
     super.translateText(text, targetLanguage, sourceLanguage)
     return result
