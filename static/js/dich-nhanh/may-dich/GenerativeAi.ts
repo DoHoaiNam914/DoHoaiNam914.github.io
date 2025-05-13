@@ -533,7 +533,7 @@ export default class GenerativeAi extends Translator {
         } else {
           const translatedStringParts = parsedResult.translated_string.split(/\n?([a-z0-9#]{12}): (?:[a-z0-9#]{12}: )?/).slice(1)
           for (let i = 0; i < translatedStringParts.length; i += 2) {
-            translatedStringMap[translatedStringParts[i]] = translatedStringParts[i + 1].trim()
+            translatedStringMap[translatedStringParts[i]] = translatedStringParts[i + 1].replace(/\n+$/, '')
           }
         }
         if (Object.keys(translatedStringMap).length > 0) {
