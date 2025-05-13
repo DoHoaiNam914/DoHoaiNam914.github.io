@@ -563,7 +563,7 @@ export default class GenerativeAi extends Translator {
       } catch (error) {
         console.error('Error processing JSON translation result:', error)
       }
-      if (extractedTranslation.length === 0) {
+      if (extractedTranslation == null) {
         const uuidPattern = /(?:^|\n)([a-z0-9#]{12}): ?(.*)/g
         let match
         let foundUuids = false
@@ -582,7 +582,7 @@ export default class GenerativeAi extends Translator {
           }
         }
       }
-      if (extractedTranslation !== null) {
+      if (extractedTranslation != null) {
         if (typeof extractedTranslation === 'object' && !Array.isArray(extractedTranslation)) {
           translationMap = extractedTranslation
         } else if (typeof extractedTranslation === 'string' && /(?:^|\n)[a-z0-9#]{12}: ?/.test(extractedTranslation)) {
