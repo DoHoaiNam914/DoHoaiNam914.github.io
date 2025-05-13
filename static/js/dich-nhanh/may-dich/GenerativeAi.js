@@ -497,7 +497,7 @@ export default class GenerativeAi extends Translator {
                     Romantic: '\n    - Language must be emotional, poetic and artistic.\n    - Choose flowery, sentimental, and erotic words.\n    - The writing is gentle, focusing on subtle feelings about love and deep character emotions.'
                 };
                 const dictionaryEntries = dictionary.filter(([first]) => text.includes(first));
-                SYSTEM_PROMPTS.push(`### ROLE:\nYou are a translation professional with many years of experience, able to translate accurately and naturally between languages. You have a good understanding of the grammar, vocabulary and style of both ${originalLang} and ${destLang}. You also know how to maintain the original meaning and emotion of the text when translating.\n\n### INSTRUCTION:\n- Translate the following paragraphs into ${destLang}, ensuring each sentence is fully understood and free from confusion.\n- Avoid adding any new information, explaining or changing the meaning of the original text.\n- Each translated text segment must have a UUID that exactly matches the UUID of the original text segment.\n- The UUIDs must exactly correspond to the UUIDs in the original text. Do not make up your own UUIDs or confuse the UUIDs of one text with those of another.\n- Only translated into ${destLang} language, not into any other language other than ${destLang}\n- The only priority is translation, do not arbitrarily add your own thoughts and explanations that are not in the original text.\n- Do not insert additional notes or explanations with the words in the translation.\n- Spaces and line breaks must be kept intact, not changed or replaced with /t /n\n- If UUID not have text to translate, just return ""\n- Follow the instruction for translate with domain ${domainValue}:\n${DOMAIN_INSTRUCTION_MAP[['Banking', 'Accounting', 'Management', 'Law', 'Logistics', 'Marketing', 'Securities - Investment', 'Insurance', 'Real Estate'].some(element => domain === element) ? 'Economics - Finance' : (['Music', 'Painting', 'Theater - Cinema', 'Poetry', 'Epic', "Children's Stories", 'Historical Stories', 'Fiction', 'Short Stories'].some(element => domain === element) ? 'Literature - Arts' : (['Physics', 'Chemistry', 'Informatics', 'Electronics', 'Medicine', 'Mechanics', 'Meteorology - Hydrology', 'Agriculture'].some(element => domain === element) ? 'Science - Technology' : (['Legal Documents', 'Internal Documents', 'Email'].some(element => domain === element) ? 'Administrative documents' : 'Lifestyle')))]}\n- Handle special case:\n+ Numbers: Maintain the original numeric values, but adapt formats if necessary (e.g., decimal separators, digit grouping).\n+ Currencies: Convert currency symbols or codes as appropriate for the target language and region.\n+ Dates: Adjust date formats to match the conventions of the target language and culture.\n+ Proper nouns: Generally, do not translate names of people, places, or organizations unless there's a widely accepted equivalent in the target language.\n+ Units of measurement: if they cannot be translated into ${destLang}, convert the unit of measurement to an equivalent system in ${destLang}, but precise calculations are required when converting units and detailed\n### CHAIN OF THOUGHT: Lets thinks step by step to translate but only return the translation:\n1.  Depend on the Input text, find the context and insight of the text by answer all the question below:\n- What is this document about, what is its purpose, who is it for, what is the domain of this document\n- What should be noted when translating this document from ${originalLang} to ${destLang} to ensure the translation is accurate. Especially the technical parameters, measurement units, acronym, technical standards, unit standards are different between ${originalLang} and ${destLang}\n- What is ${originalLang} abbreviations in the context of the document should be understood correctly and translated accurately into ${destLang}. It is necessary to clearly understand the meaning of the abbreviation and not to mistake a ${originalLang} abbreviation for an ${destLang} word.\n- Always make sure that users of the language ${destLang} do not find it difficult to understand when reading\n2. Based on the instructions and rules in INSTRUCTION and what you learned in step 1, proceed to translate the text.\n3. Acting as a reader, give comments on the translation based on the following criteria:\n- Do you understand what the translation is talking about\n- Does the translation follow the rules given in the INSTRUCTION\n- Is the translation really good, perfect? \u200b\u200bIf not good, what is not good, what needs improvement?\n4. Based on the comments in step 3, revise the translation (if necessary).\n### STYLE INSTRUCTION:\n\n        The style of the output must be ${toneValue}:\n        -${TONE_INSTRUCTION_MAP[toneValue]}\n\n\n### ADVANCED MISSION (HIGHEST PRIORITY):\n${dictionaryEntries.length > 0 ? dictionaryEntries.map(([first, second]) => `Must translate: ${first} into ${second}`).join('\n') : ''}\n- Follow the instruction below when translate:\n${customPrompt.replaceAll(/^\s+|\s+$/g, '')}\n### OUTPUT FORMAT MUST BE IN JSON:\n{\n  "type": "object",\n  "properties": {\n    "insight": {\n      "type": "array",\n      "items": {\n        "type": "string"\n      }\n    },\n    "rule": {\n      "type": "array",\n      "items": {\n        "type": "string"\n      }\n    },\n    "translated_string": {\n      "type": "string"\n    }\n  },\n  "required": ["insight", "rule", "translated_string"]\n}`);
+                SYSTEM_PROMPTS.push(`### ROLE:\nYou are a translation professional with many years of experience, able to translate accurately and naturally between languages. You have a good understanding of the grammar, vocabulary and style of both ${originalLang} and ${destLang}. You also know how to maintain the original meaning and emotion of the text when translating.\n\n### INSTRUCTION:\n- Translate the following paragraphs into ${destLang}, ensuring each sentence is fully understood and free from confusion.\n- Avoid adding any new information, explaining or changing the meaning of the original text.\n- Each translated text segment must have a UUID that exactly matches the UUID of the original text segment.\n- The UUIDs must exactly correspond to the UUIDs in the original text. Do not make up your own UUIDs or confuse the UUIDs of one text with those of another.\n- Only translated into ${destLang} language, not into any other language other than ${destLang}\n- The only priority is translation, do not arbitrarily add your own thoughts and explanations that are not in the original text.\n- Do not insert additional notes or explanations with the words in the translation.\n- Spaces and line breaks must be kept intact, not changed or replaced with /t /n\n- If UUID not have text to translate, just return ""\n- Follow the instruction for translate with domain ${domainValue}:\n${DOMAIN_INSTRUCTION_MAP[['Banking', 'Accounting', 'Management', 'Law', 'Logistics', 'Marketing', 'Securities - Investment', 'Insurance', 'Real Estate'].some(element => domain === element) ? 'Economics - Finance' : (['Music', 'Painting', 'Theater - Cinema', 'Poetry', 'Epic', "Children's Stories", 'Historical Stories', 'Fiction', 'Short Stories'].some(element => domain === element) ? 'Literature - Arts' : (['Physics', 'Chemistry', 'Informatics', 'Electronics', 'Medicine', 'Mechanics', 'Meteorology - Hydrology', 'Agriculture'].some(element => domain === element) ? 'Science - Technology' : (['Legal Documents', 'Internal Documents', 'Email'].some(element => domain === element) ? 'Administrative documents' : 'Lifestyle')))]}\n- Handle special case:\n+ Numbers: Maintain the original numeric values, but adapt formats if necessary (e.g., decimal separators, digit grouping).\n+ Currencies: Convert currency symbols or codes as appropriate for the target language and region.\n+ Dates: Adjust date formats to match the conventions of the target language and culture.\n+ Proper nouns: Generally, do not translate names of people, places, or organizations unless there's a widely accepted equivalent in the target language.\n+ Units of measurement: if they cannot be translated into ${destLang}, convert the unit of measurement to an equivalent system in ${destLang}, but precise calculations are required when converting units and detailed\n### CHAIN OF THOUGHT: Lets thinks step by step to translate but only return the translation:\n1.  Depend on the Input text, find the context and insight of the text by answer all the question below:\n- What is this document about, what is its purpose, who is it for, what is the domain of this document\n- What should be noted when translating this document from ${originalLang} to ${destLang} to ensure the translation is accurate. Especially the technical parameters, measurement units, acronym, technical standards, unit standards are different between ${originalLang} and ${destLang}\n- What is ${originalLang} abbreviations in the context of the document should be understood correctly and translated accurately into ${destLang}. It is necessary to clearly understand the meaning of the abbreviation and not to mistake a ${originalLang} abbreviation for an ${destLang} word.\n- Always make sure that users of the language ${destLang} do not find it difficult to understand when reading\n2. Based on the instructions and rules in INSTRUCTION and what you learned in step 1, proceed to translate the text.\n3. Acting as a reader, give comments on the translation based on the following criteria:\n- Do you understand what the translation is talking about\n- Does the translation follow the rules given in the INSTRUCTION\n- Is the translation really good, perfect? \u200b\u200bIf not good, what is not good, what needs improvement?\n4. Based on the comments in step 3, revise the translation (if necessary).\n### STYLE INSTRUCTION:\n\n        The style of the output must be ${toneValue}:\n        -${TONE_INSTRUCTION_MAP[toneValue]}\n\n\n### ADVANCED MISSION (HIGHEST PRIORITY):\n${dictionaryEntries.length > 0 ? dictionaryEntries.map(([first, second]) => `Must translate: ${first} into ${second}`).join('\n') : ''}\n- Follow the instruction below when translate:\n${customPrompt.replaceAll(/^\s+|\s+$/g, '')}\n### OUTPUT FORMAT MUST BE IN JSON:\n{\n"insight": {\n"type": "array",\n"items": {\n"type": "string"\n}\n},\n"rule": {\n"type": "array",\n"items": {\n"type": "string"\n}\n},\n"translated_string": {\n"type": "string"\n}\n},\n"required": ["insight", "rule", "translated_string"]\n}`);
                 break;
             }
             case 'Intermediate':
@@ -522,126 +522,31 @@ export default class GenerativeAi extends Translator {
         });
         if (model.toLowerCase().includes('deepseek-r1'))
             result = result.replace(/<think>\n(?:.+\n+)+<\/think>\n{2}/, '');
-        // Enhanced post-processing for Professional Prompt format
         if (systemPrompt === 'Professional') {
-          try {
-            // Clean up the response to ensure it's valid JSON
-            let cleanedResult = result
-              .replace(/^```json\s*|\s*```$/g, '') // Remove code blocks if present
-              .replace(/\\'/g, "'")               // Fix escaped single quotes
-              .trim();
-
-            // Handle multi-line translations properly by normalizing newlines in JSON
-            if (!/^\{/.test(cleanedResult)) {
-              // If response doesn't start with '{', try to find the JSON part
-              const jsonMatch = cleanedResult.match(/(\{[\s\S]*\})/);
-              if (jsonMatch) {
-                cleanedResult = jsonMatch[1];
-              }
-            }
-
-            // Normalize newlines in the JSON before parsing
-            cleanedResult = cleanedResult.replaceAll(/\n(?=[a-z0-9#]{12}: ?|"\n})/g, '\\n');
-
-            // Try to parse the response as JSON
-            if (Utils.isValidJson(cleanedResult)) {
-              const parsedResponse = JSON.parse(cleanedResult);
-
-              // Case 1: Standard format with translated_string as a string with UUID markers
-              if (parsedResponse && typeof parsedResponse.translated_string === 'string') {
-                const translatedString = parsedResponse.translated_string;
-
-                // Case 1a: translated_string contains UUIDs in the expected format
-                if (/(?:^|\n)[a-z0-9#]{12}: ?/.test(translatedString)) {
-                  // Split by line and create a mapping of UUID to translated text
-                  const translationMap = Object.fromEntries(
-                    translatedString.split('\n')
-                      .filter(line => /^[a-z0-9#]{12}: ?/.test(line))
-                      .map(element => {
-                        const parts = element.split(/(^[a-z0-9#]{12}): ?/);
-                        return [parts[1], parts.slice(2).join(': ')];
-                      })
-                  );
-
-                  // Reconstruct the result by mapping each original line to its translation
-                  result = queryText.map(element => {
-                    const uuid = (element.match(/^[a-z0-9#]{12}/) || [''])[0];
-                    return translationMap[uuid] || '';
-                  }).join('\n');
+            result = result.replaceAll(/^`{3}(?:json)?\n|\n?`{3}$/g, '').replaceAll(/\n(?=[a-z0-9#]{12}: ?|"\n}$)/g, '\\n');
+            const jsonMatch = result.match(/(\{[\s\S]*\})/);
+            const potentialJsonString = jsonMatch != null ? jsonMatch[0] : result;
+            if (Utils.isValidJson(potentialJsonString)) {
+                const parsedResult = JSON.parse(potentialJsonString);
+                let translatedStringMap = {};
+                if (typeof parsedResult.translated_string !== 'string') {
+                    translatedStringMap = parsedResult.translated_string;
                 }
-                // Case 1b: translated_string is already an object with UUID keys
-                else if (typeof translatedString === 'object') {
-                  const translationMap = translatedString;
-                  result = queryText.map(element => {
-                    const uuid = (element.match(/^[a-z0-9#]{12}/) || [''])[0];
-                    return translationMap[uuid] || '';
-                  }).join('\n');
-                }
-                // Case 1c: translated_string is a simple single line without UUIDs
-                else if (translatedString.split('\n').length === 1) {
-                  result = translatedString;
-                }
-                // Case 1d: translated_string has multiple lines but no UUIDs
                 else {
-                  // If there are the same number of lines in the translation as the original,
-                  // we can assume they match up in order
-                  const translatedLines = translatedString.split('\n');
-                  if (translatedLines.length === queryText.length) {
-                    result = translatedLines.join('\n');
-                  } else {
-                    // Otherwise, just return the whole translated string
-                    result = translatedString;
-                  }
+                    translatedStringMap = Utils.isValidJson(parsedResult.translated_string)
+                        ? JSON.parse(parsedResult.translated_string)
+                        : Object.fromEntries(parsedResult.translated_string.filter(element => /^[a-z0-9#]{12}: ?/.test(element)).map(element => {
+                            const parts = element.split(/(^[a-z0-9#]{12}): ?/);
+                            return [parts[1], parts.slice(2).join(': ')];
+                        }));
                 }
-              }
-              // Case 2: Alternative format with translations directly as top-level property
-              else if (parsedResponse && typeof parsedResponse.translations === 'object') {
-                const translations = parsedResponse.translations;
-                result = queryText.map(element => {
-                  const uuid = (element.match(/^[a-z0-9#]{12}/) || [''])[0];
-                  return translations[uuid] || '';
-                }).join('\n');
-              }
-              // Case 3: Array of translations with UUID keys
-              else if (parsedResponse && Array.isArray(parsedResponse.translations)) {
-                const translationMap = Object.fromEntries(
-                  parsedResponse.translations.map(item => [item.uuid, item.text])
-                );
-                result = queryText.map(element => {
-                  const uuid = (element.match(/^[a-z0-9#]{12}/) || [''])[0];
-                  return translationMap[uuid] || '';
-                }).join('\n');
-              }
-              // Case 4: Response has direct mapping of UUIDs to translations
-              else if (parsedResponse && Object.keys(parsedResponse).some(key => /^[a-z0-9#]{12}$/.test(key))) {
-                result = queryText.map(element => {
-                  const uuid = (element.match(/^[a-z0-9#]{12}/) || [''])[0];
-                  return parsedResponse[uuid] || '';
-                }).join('\n');
-              }
-            } else {
-              // Case 5: The response isn't valid JSON, but might have UUID-prefixed lines
-              if (/(?:^|\n)[a-z0-9#]{12}: /.test(result)) {
-                // Extract translations directly from the text
-                const translationLines = result.split('\n').filter(line => /^[a-z0-9#]{12}: /.test(line));
-                const translationMap = Object.fromEntries(
-                  translationLines.map(line => {
-                    const parts = line.split(/(^[a-z0-9#]{12}): /);
-                    return [parts[1], parts.slice(2).join(': ')];
-                  })
-                );
-
-                result = queryText.map(element => {
-                  const uuid = (element.match(/^[a-z0-9#]{12}/) || [''])[0];
-                  return translationMap[uuid] || '';
-                }).join('\n');
-              }
-              // If we can't extract structured data, leave the result as is
+                if (Object.keys(translatedStringMap).length > 0) {
+                    result = queryText.map(element => {
+                        const uuid = (element.match(/^[a-z0-9#]{12}/) ?? [''])[0];
+                        return translatedStringMap[uuid] ?? '';
+                    }).join('\n');
+                }
             }
-          } catch (error) {
-            throw new Error(`Error processing Professional translation result:${error}`);
-            // In case of error, we'll return the original result
-          }
         }
         super.translateText(text, targetLanguage, sourceLanguage);
         return result;
