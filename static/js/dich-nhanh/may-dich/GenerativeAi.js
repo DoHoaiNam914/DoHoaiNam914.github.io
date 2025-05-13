@@ -525,8 +525,8 @@ export default class GenerativeAi extends Translator {
         result = result.replaceAll(/^`{3}json\n|\n?`{3}$/g, '');
         if (systemPrompt === 'Professional' && (Utils.isValidJson(result) || Utils.isValidJson(result.replaceAll('\n', '\\n')))) {
             const translatedString = JSON.parse(Utils.isValidJson(result.replaceAll('\n', '\\n')) ? result.replaceAll('\n', '\\n') : result).translated_string;
-            if (translatedString != null && /(?:^|\n)[a-z0-9#]{12}: ?/.test(translatedString)) {
-                const translationMap = Object.fromEntries(translatedString.split('\n').map(element => element.split(/(^[a-z0-9#]{12}): ?/).slice(1)));
+            if (translatedString != null && (/(?:^|\n)[a-z0-9#]{12}: ?/.test(translatedString) || typeof translatedString === 'object')) {
+                const translationMap = typeof translatedString === 'object' ? translatedString : Object.fromEntries(translatedString.split('\n').map(element => element.split(/(^[a-z0-9#]{12}): ?/).slice(1)));
                 result = queryText.map(element => translationMap[element.match(/^[a-z0-9#]{12}/)[0]] ?? '').join('\n');
             }
         }
