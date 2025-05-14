@@ -531,7 +531,7 @@ export default class GenerativeAi extends Translator {
         } else if (Utils.isValidJson(parsedResult.translated_string) as boolean) {
           translatedStringMap = JSON.parse(parsedResult.translated_string)
         } else {
-          const translatedStringParts = parsedResult.translated_string.split(/\n? *([a-z0-9#]{12}): (?:[a-z0-9#]{12}: )?/).slice(1)
+          const translatedStringParts = parsedResult.translated_string.split(/\n? *([a-z0-9#]{12}): (?:[a-z0-9#]{12}: )*/).slice(1)
           for (let i = 0; i < translatedStringParts.length; i += 2) {
             translatedStringMap[translatedStringParts[i]] = translatedStringParts[i + 1].replace(/\n+$/, '')
           }
