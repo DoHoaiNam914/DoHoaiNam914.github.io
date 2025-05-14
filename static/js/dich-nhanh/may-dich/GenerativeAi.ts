@@ -520,7 +520,7 @@ export default class GenerativeAi extends Translator {
     })
     if (model.toLowerCase().includes('deepseek-r1')) result = result.replace(/<think>\n(?:.+\n+)+<\/think>\n{2}/, '')
     if (systemPrompt === 'Professional') {
-      result = result.replaceAll(/^`{3}(?:json)?\n|\n?`{3}$/g, '').replace(/(\\")?"?(\n\})?$/, '$1"\n}').replace(/insight": "[\s\S]+(?=translated_string": ")/, '').replaceAll(/\n(?! *"translated_string"|\}$)/g, '\\n')
+      result = result.replaceAll(/^`{3}(?:json)?\n|\n?`{3}$/g, '').replace(/(\\")?"?(\n\})?$/, '$1"\n}').replace(/insight": "[\s\S]+(?=translated_string": ")/, '').replaceAll(/\n(?! *"(?:translated_string|[a-z0-9#]{12})"|\}$)/g, '\\n')
       const jsonMatch = result.match(/(\{[\s\S]+\})/)
       const potentialJsonString = jsonMatch != null ? jsonMatch[0] : result
       if (Utils.isValidJson(potentialJsonString) as boolean) {
@@ -531,7 +531,7 @@ export default class GenerativeAi extends Translator {
         } else if (Utils.isValidJson(parsedResult.translated_string) as boolean) {
           translatedStringMap = JSON.parse(parsedResult.translated_string)
         } else {
-          const translatedStringParts = parsedResult.translated_string.split(/\n?([a-z0-9#]{12}): (?:[a-z0-9#]{12}: )?/).slice(1)
+          const translatedStringParts = parsedResult.translated_string.split(/\n? *([a-z0-9#]{12}): (?:[a-z0-9#]{12}: )?/).slice(1)
           for (let i = 0; i < translatedStringParts.length; i += 2) {
             translatedStringMap[translatedStringParts[i]] = translatedStringParts[i + 1].replace(/\n+$/, '')
           }
