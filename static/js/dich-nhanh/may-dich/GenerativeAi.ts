@@ -518,7 +518,7 @@ export default class GenerativeAi extends Translator {
     let result = await (['gemma2-9b-it', 'llama-3.3-70b-versatile', 'llama-3.1-8b-instant', 'llama3-70b-8192', 'llama3-8b-8192', 'deepseek-r1-distill-llama-70b', 'meta-llama/llama-4-maverick-17b-128e-instruct', 'meta-llama/llama-4-scout-17b-16e-instruct', 'mistral-saba-24b', 'qwen-qwq-32b'].some(element => element === model) ? this.groqMain(options, SYSTEM_PROMPTS, requestText) : (model.includes('/') ? this.openrouterMain(options, SYSTEM_PROMPTS, requestText) : (isMistral ? this.runMistral(options, SYSTEM_PROMPTS, requestText) : (model.startsWith('claude') ? this.anthropicMain(options, SYSTEM_PROMPTS, requestText) : (isGoogleGenAi ? this.googleGenAiMain(options, SYSTEM_PROMPTS, requestText) : this.openaiMain(options as { model: string, temperature: number, topP: number }, SYSTEM_PROMPTS, requestText)))))).catch(reason => {
       throw reason
     })
-    if (model.toLowerCase().includes('deepseek-r1')) result = result.replace(/<think>\n(?:.+\n+)+<\/think>\n{2}/, '')
+    if (model.toLowerCase().includes('deepseek-r1') || model.toLowerCase().includes('qwq-32b')) result = result.replace(/<think>[\s\S]+<\/think>\n{2}/, '')
     if (systemPrompt === 'Professional') {
       result = result.replaceAll(/^`{3}(?:json)?\n|\n?`{3}$/g, '').replace(/(\\")?"?(\n\})?$/, '$1"\n}').replace(/insight": "[\s\S]+(?=translated_string": ")/, '').replaceAll(/\n(?! *"(?:translated_string|[a-z0-9#]{12})"|\}$)/g, '\\n')
       const jsonMatch = result.match(/(\{[\s\S]+\})/)
