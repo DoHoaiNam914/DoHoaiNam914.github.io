@@ -525,7 +525,7 @@ export default class GenerativeAi extends Translator {
           if (window.confirm('Sao chép phản hồi')) await navigator.clipboard.writeText(result)
         })
       }
-      result = result.replaceAll(/(\\")?"?(?:\n?\})?(?:\n?`{3})?$/g, '$1"\n}').replaceAll(/\n(?! *"(?:translated_string|[a-z0-9]{8}#[a-z0-9]{2,3})"|\}$)/g, '\\n').replace(/("translated_string": ")([[\s--\n]\S]+)(?=")/v, (_match, p1: string, p2: string) => `${p1}${p2.replaceAll(/([^\\])"/g, '$1"')}`).replace(/insight": "[\s\S]+(?=translated_string": ")/, '')
+      result = result.replaceAll(/(\\")?"?(?:(?:\n|\\n)?\})?(?=(?:\n?`{3})?$)/g, '$1"\n}').replaceAll(/\n(?! *"(?:translated_string|[a-z0-9]{8}#[a-z0-9]{2,3})"|\}$)/g, '\\n').replace(/("translated_string": ")([[\s--\n]\S]+)(?=")/v, (_match, p1: string, p2: string) => `${p1}${p2.replaceAll(/([^\\])"/g, '$1"')}`).replace(/insight": "[\s\S]+(?=translated_string": ")/, '')
       const jsonMatch = result.match(/(\{[\s\S]+\})/)
       const potentialJsonString = jsonMatch != null ? jsonMatch[0] : result
       if (Utils.isValidJson(potentialJsonString) as boolean) {
