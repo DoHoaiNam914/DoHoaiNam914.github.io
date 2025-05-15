@@ -522,7 +522,8 @@ export default class GenerativeAi extends Translator {
     if (systemPrompt === 'Professional') {
       if (new URLSearchParams(window.location.search).has('debug')) {
         $(document).one('click', async () => {
-          if (window.confirm('Sao chép phản hồi')) await navigator.clipboard.writeText(result)
+          const response = result
+          if (window.confirm('Sao chép phản hồi')) await navigator.clipboard.writeText(response)
         })
       }
       result = result.replaceAll(/(\\")?"?(?:(?:\n|\\n)?\})?(?=(?:\n?`{3})?$)/g, '$1"\n}').replaceAll(/\n(?! *"(?:translated_string|[a-z0-9]{8}#[a-z0-9]{2,3})"|\}$)/g, '\\n').replace(/("translated_string": ")([[\s--\n]\S]+)(?=")/v, (_match, p1: string, p2: string) => `${p1}${p2.replaceAll(/([^\\])"/g, '$1"')}`).replace(/insight": "[\s\S]+(?=translated_string": ")/, '')
