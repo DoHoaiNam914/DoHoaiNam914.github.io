@@ -532,7 +532,7 @@ export default class GenerativeAi extends Translator {
             }
             result = result.replace('({)\\n', '$1\n').replace(/(\\")?"?(?:(?:\n|\\n)?\})?(?=\n?`{0,3}$)/, '$1"\n}');
             const jsonMatch = result.match(/(\{[\s\S]+\})/);
-            const potentialJsonString = (jsonMatch != null ? jsonMatch[0] : result.replace(/^`{3}json\n/, '')).replaceAll(/\n(?! *"(?:insight|rule|translated_string|[a-z0-9]{8}#[a-z0-9]{2,3})"|\}$)/g, '\\n').replace(/("translated_string": ")([[\s--\n]\S]+)(?=")/v, (_match, p1, p2) => `${p1}${p2.replaceAll(/([^\\])"/g, '$1\\"')}`).replace(/insight": "[\s\S]+(?=translated_string": ")/, '');
+            const potentialJsonString = (jsonMatch != null ? jsonMatch[0] : result.replace(/^`{3}json\n/, '')).replaceAll(/\n(?! *"(?:insight|rule|translated_string|[a-z0-9]{7,8}#[a-z0-9]{2,3})"|\}$)/g, '\\n').replace(/("translated_string": ")([[\s--\n]\S]+)(?=")/v, (_match, p1, p2) => `${p1}${p2.replaceAll(/([^\\])"/g, '$1\\"')}`).replace(/insight": "[\s\S]+(?=translated_string": ")/, '');
             if (Utils.isValidJson(potentialJsonString)) {
                 const parsedResult = JSON.parse(potentialJsonString);
                 let translatedStringMap = {};
@@ -543,14 +543,14 @@ export default class GenerativeAi extends Translator {
                     translatedStringMap = JSON.parse(parsedResult.translated_string);
                 }
                 else {
-                    const translatedStringParts = parsedResult.translated_string.split(/\s*([a-z0-9]{8}#[a-z0-9]{2,3}): (?:[a-z0-9]{8}#[a-z0-9]{2,3}: )?/).slice(1);
+                    const translatedStringParts = parsedResult.translated_string.split(/\s*([a-z0-9]{7,8}#[a-z0-9]{2,3}): (?:[a-z0-9]{7,8}#[a-z0-9]{2,3}: )?/).slice(1);
                     for (let i = 0; i < translatedStringParts.length; i += 2) {
                         translatedStringMap[translatedStringParts[i]] = translatedStringParts[i + 1].replace(/\n+$/, '');
                     }
                 }
                 if (Object.keys(translatedStringMap).length > 0) {
                     result = queryText.map(element => {
-                        const uuid = (element.match(/^[a-z0-9]{8}#[a-z0-9]{2,3}/) ?? [''])[0];
+                        const uuid = (element.match(/^[a-z0-9]{8}#[a-z0-9]{3}/) ?? [''])[0];
                         return translatedStringMap[uuid] ?? '';
                     }).join('\n');
                 }
