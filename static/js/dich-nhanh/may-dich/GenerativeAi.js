@@ -523,7 +523,7 @@ export default class GenerativeAi extends Translator {
         if (model.toLowerCase().includes('deepseek-r1') || model.toLowerCase().includes('qwq-32b'))
             result = result.replace(/^<think>[\s\S]+<\/think>\n{2}/, '');
         if (systemPrompt === 'Professional') {
-            result = result.replaceAll(/^`{3}(?:json)?\n|\n?`{3}$/g, '').replace(/(\\")?"?(?:\n?\})?$/, '$1"\n}').replace(/insight": "[\s\S]+(?=translated_string": ")/, '').replaceAll(/\n(?! *"(?:translated_string|[a-z0-9]{8}#[a-z0-9]{2,3})"|\}$)/g, '\\n').replace(/("translated_string": ")([\s\S--\n]+)(?=")/v, (_match, p1, p2) => `${p1}${p2.replaceAll(/([^\\])"/g, '$1"')}`);
+            result = result.replaceAll(/^`{3}(?:json)?\n|(?:\n|\\n)?`{3}$/g, '').replace(/(\\")?"?(?:(?:\n|\\n)?\})?$/, '$1"\n}').replace(/insight": "[\s\S]+(?=translated_string": ")/, '').replaceAll(/\n(?! *"(?:translated_string|[a-z0-9]{8}#[a-z0-9]{2,3})"|\}$)/g, '\\n').replace(/("translated_string": ")([[\s--\n]\S]+)(?=")/v, (_match, p1, p2) => `${p1}${p2.replaceAll(/([^\\])"/g, '$1"')}`);
             const jsonMatch = result.match(/(\{[\s\S]+\})/);
             const potentialJsonString = jsonMatch != null ? jsonMatch[0] : result;
             if (Utils.isValidJson(potentialJsonString)) {
@@ -536,7 +536,7 @@ export default class GenerativeAi extends Translator {
                     translatedStringMap = JSON.parse(parsedResult.translated_string);
                 }
                 else {
-                    const translatedStringParts = parsedResult.translated_string.split(/\n? *([a-z0-9]{8}#[a-z0-9]{2,3}): (?:[a-z0-9]{8}#[a-z0-9]{2,3}: )?/).slice(1);
+                    const translatedStringParts = parsedResult.translated_string.split(/(?:\n|\\n)? *([a-z0-9]{8}#[a-z0-9]{2,3}): (?:[a-z0-9]{8}#[a-z0-9]{2,3}: )?/).slice(1);
                     for (let i = 0; i < translatedStringParts.length; i += 2) {
                         translatedStringMap[translatedStringParts[i]] = translatedStringParts[i + 1].replace(/\n+$/, '');
                     }
