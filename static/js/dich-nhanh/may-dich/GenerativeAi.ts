@@ -211,7 +211,7 @@ export default class GenerativeAi extends Translator {
     }
     config.temperature = temperature
     config.topP = topP
-    config.topK = topK
+    if (topK > -1) config.topK = topK
     if (/* model.startsWith('gemma-3') || */ (model.startsWith('gemini-2.5-flash') && model.endsWith('-normal'))) {
       config.thinkingConfig = {
         thinkingBudget: 0
@@ -299,7 +299,7 @@ export default class GenerativeAi extends Translator {
       }
     } else {
       body.temperature = temperature
-      body.top_k = topK
+      if (topK > -1) body.top_k = topK
       body.top_p = topP
     }
     const collectedTexts: string[] = []
@@ -397,7 +397,7 @@ export default class GenerativeAi extends Translator {
     request.stream = true
     request.temperature = temperature
     request.top_p = topP
-    request.top_k = topK
+    if (topK > -1) request.top_k = topK
     // const completion = await this.openrouter.chat.completions.create(request, { signal: this.controller.signal })
     const collectedMessages: string[] = []
     /** for await (const chunk of completion) {
