@@ -1,0 +1,1208 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>Biên tập và biến đổi văn bản</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --page-bg: #f3f6f9;
+      --panel-bg: #fff;
+      --field-bg: #fff;
+      --text: #17202a;
+      --muted: #52606d;
+      --border: #c8d2dc;
+      --border-strong: #8091a3;
+      --primary: #087f6f;
+      --primary-hover: #06695d;
+      --primary-active: #05574e;
+      --secondary-bg: #e9eef3;
+      --secondary-hover: #dce4eb;
+      --secondary-active: #cdd8e2;
+      --danger: #b42318;
+      --danger-hover: #912018;
+      --danger-active: #761b16;
+      --focus: #f59e0b;
+      --success-bg: #ecfdf3;
+      --success-border: #15803d;
+      --warning-bg: #fffbeb;
+      --warning-border: #b45309;
+      --error-bg: #fff1f2;
+      --error-border: #be123c;
+      --processing-bg: #eff6ff;
+      --processing-border: #1d4ed8;
+      --neutral-bg: #f8fafc;
+      --neutral-border: #64748b;
+      --shadow: 0 8px 24px rgba(23, 32, 42, 0.08);
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    html {
+      min-width: 0;
+      background: var(--page-bg);
+    }
+
+    body {
+      min-width: 0;
+      margin: 0;
+      background: var(--page-bg);
+      color: var(--text);
+      font: 16px/1.5 system-ui, -apple-system, blinkmacsystemfont, 'segoe ui', sans-serif;
+    }
+
+    button,
+    textarea {
+      font: inherit;
+    }
+
+    button {
+      min-height: 44px;
+      max-width: 100%;
+      padding: 0.65rem 1rem;
+      border: 1px solid transparent;
+      border-radius: 6px;
+      color: var(--text);
+      cursor: pointer;
+      font-weight: 650;
+      line-height: 1.2;
+      overflow-wrap: anywhere;
+      transition: background-color 120ms ease, border-color 120ms ease, color 120ms ease, transform 80ms ease;
+    }
+
+    button:active:not(:disabled) {
+      transform: translateY(1px);
+    }
+
+    button:disabled,
+    textarea:disabled {
+      cursor: not-allowed;
+      opacity: 0.58;
+    }
+
+    button:focus-visible,
+    textarea:focus-visible {
+      outline: 3px solid var(--focus);
+      outline-offset: 2px;
+    }
+
+    code {
+      font-family: ui-monospace, sfmono-regular, consolas, 'liberation mono', monospace;
+      overflow-wrap: anywhere;
+    }
+
+    .page-header {
+      border-bottom: 1px solid var(--border);
+      background: #fff;
+    }
+
+    .header-inner,
+    .page-main {
+      width: min(calc(100% - 2rem), 1440px);
+      margin: 0 auto;
+    }
+
+    .header-inner {
+      padding: 1.35rem 0;
+    }
+
+    .page-title {
+      margin: 0;
+      font-size: clamp(1.45rem, 2.5vw, 2rem);
+      line-height: 1.2;
+    }
+
+    .page-summary {
+      max-width: 72ch;
+      margin: 0.4rem 0 0;
+      color: var(--muted);
+    }
+
+    .page-main {
+      padding: 1.25rem 0 2rem;
+    }
+
+    .workspace {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 1.25rem;
+      align-items: start;
+      min-width: 0;
+    }
+
+    .panel {
+      min-width: 0;
+      padding: 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--panel-bg);
+      box-shadow: var(--shadow);
+    }
+
+    .panel-heading {
+      margin: 0;
+      font-size: 1.2rem;
+      line-height: 1.3;
+    }
+
+    .panel-description {
+      margin: 0.35rem 0 1rem;
+      color: var(--muted);
+    }
+
+    .field-label {
+      display: block;
+      margin-bottom: 0.45rem;
+      font-weight: 700;
+    }
+
+    .field-help {
+      margin: 0 0 0.65rem;
+      color: var(--muted);
+      font-size: 0.925rem;
+    }
+
+    textarea {
+      display: block;
+      width: 100%;
+      min-width: 0;
+      max-width: 100%;
+      padding: 0.85rem;
+      border: 1px solid var(--border-strong);
+      border-radius: 6px;
+      background: var(--field-bg);
+      color: var(--text);
+      line-height: 1.55;
+      resize: vertical;
+    }
+
+    textarea:hover:not(:disabled) {
+      border-color: var(--primary);
+    }
+
+    #text-editor {
+      min-height: 360px;
+    }
+
+    #code-editor {
+      min-height: 300px;
+      font-family: ui-monospace, sfmono-regular, consolas, 'liberation mono', monospace;
+      font-size: 0.95rem;
+      line-height: 1.6;
+      tab-size: 2;
+    }
+
+    .statistics {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0;
+      margin: 0 0 1rem;
+      border-block: 1px solid var(--border);
+    }
+
+    .statistic {
+      min-width: 0;
+      padding: 0.7rem 0.5rem;
+      text-align: center;
+    }
+
+    .statistic + .statistic {
+      border-left: 1px solid var(--border);
+    }
+
+    .statistic dt {
+      color: var(--muted);
+      font-size: 0.82rem;
+      font-weight: 650;
+    }
+
+    .statistic dd {
+      margin: 0.1rem 0 0;
+      font-size: 1.15rem;
+      font-weight: 750;
+      overflow-wrap: anywhere;
+    }
+
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.65rem;
+      margin-top: 1rem;
+    }
+
+    .button-row button {
+      flex: 0 1 auto;
+    }
+
+    .button-primary {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    .button-secondary {
+      border-color: var(--border);
+      background: var(--secondary-bg);
+    }
+
+    .button-danger {
+      background: var(--danger);
+      color: #fff;
+    }
+
+    @media (hover: hover) {
+      .button-primary:hover:not(:disabled) {
+        background: var(--primary-hover);
+      }
+
+      .button-secondary:hover:not(:disabled) {
+        border-color: var(--border-strong);
+        background: var(--secondary-hover);
+      }
+
+      .button-danger:hover:not(:disabled) {
+        background: var(--danger-hover);
+      }
+    }
+
+    .button-primary:active:not(:disabled) {
+      background: var(--primary-active);
+    }
+
+    .button-secondary:active:not(:disabled) {
+      background: var(--secondary-active);
+    }
+
+    .button-danger:active:not(:disabled) {
+      background: var(--danger-active);
+    }
+
+    .contract-list {
+      margin: 0 0 1rem;
+      padding-left: 1.25rem;
+      color: var(--muted);
+    }
+
+    .contract-list li + li {
+      margin-top: 0.35rem;
+    }
+
+    .security-warning {
+      margin: 1rem 0 0;
+      padding: 0.85rem 1rem;
+      border-left: 4px solid var(--warning-border);
+      background: var(--warning-bg);
+      color: #713f12;
+    }
+
+    .status-section {
+      margin-top: 1.25rem;
+    }
+
+    .status-area {
+      min-height: 52px;
+      padding: 0.85rem 1rem;
+      border: 1px solid var(--neutral-border);
+      border-left-width: 5px;
+      border-radius: 6px;
+      background: var(--neutral-bg);
+      font-weight: 650;
+      overflow-wrap: anywhere;
+    }
+
+    .status-area[data-state='success'] {
+      border-color: var(--success-border);
+      background: var(--success-bg);
+      color: #14532d;
+    }
+
+    .status-area[data-state='warning'] {
+      border-color: var(--warning-border);
+      background: var(--warning-bg);
+      color: #713f12;
+    }
+
+    .status-area[data-state='error'] {
+      border-color: var(--error-border);
+      background: var(--error-bg);
+      color: #881337;
+    }
+
+    .status-area[data-state='processing'] {
+      border-color: var(--processing-border);
+      background: var(--processing-bg);
+      color: #1e3a8a;
+    }
+
+    .visually-hidden {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      border: 0;
+      margin: -1px;
+      clip: rect(0 0 0 0);
+      clip-path: inset(50%);
+      overflow: hidden;
+      white-space: nowrap;
+    }
+
+    @media (max-width: 860px) {
+      .workspace {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      #text-editor {
+        min-height: 320px;
+      }
+
+      #code-editor {
+        min-height: 260px;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .header-inner,
+      .page-main {
+        width: min(calc(100% - 1rem), 1440px);
+      }
+
+      .header-inner {
+        padding: 1rem 0;
+      }
+
+      .page-main {
+        padding-top: 0.75rem;
+      }
+
+      .workspace {
+        gap: 0.75rem;
+      }
+
+      .panel {
+        padding: 1rem;
+      }
+
+      textarea {
+        min-height: 220px;
+        font-size: 16px;
+      }
+
+      #text-editor {
+        min-height: 280px;
+      }
+
+      #code-editor {
+        min-height: 240px;
+        font-size: 16px;
+      }
+
+      .button-row button {
+        flex: 1 1 9rem;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      button {
+        transition: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="page-header">
+    <div class="header-inner">
+      <h1 class="page-title">Biên tập và biến đổi văn bản</h1>
+      <p class="page-summary">Soạn văn bản thuần, theo dõi thống kê, quản lý lịch sử và áp dụng mã JavaScript tùy chỉnh ngay trong trình duyệt.</p>
+    </div>
+  </header>
+
+  <main class="page-main">
+    <div class="workspace" id="workspace">
+      <section class="panel" aria-labelledby="editor-heading">
+        <h2 class="panel-heading" id="editor-heading">Trình biên tập văn bản</h2>
+        <p class="panel-description">Nội dung được giữ nguyên như đã nhập, kể cả khoảng trắng và dòng trống.</p>
+
+        <dl class="statistics" aria-label="Thống kê văn bản">
+          <div class="statistic">
+            <dt>Ký tự</dt>
+            <dd><output id="character-count">0</output></dd>
+          </div>
+          <div class="statistic">
+            <dt>Từ</dt>
+            <dd><output id="word-count">0</output></dd>
+          </div>
+          <div class="statistic">
+            <dt>Dòng</dt>
+            <dd><output id="line-count">0</output></dd>
+          </div>
+        </dl>
+
+        <label class="field-label" for="text-editor">Văn bản</label>
+        <p class="field-help" id="editor-help">Từ được đếm theo các nhóm ký tự không phải khoảng trắng. Văn bản rỗng có 0 dòng.</p>
+        <textarea id="text-editor" aria-describedby="editor-help" placeholder="Nhập hoặc dán văn bản tại đây…" spellcheck="true"></textarea>
+
+        <div class="button-row" aria-label="Công cụ văn bản">
+          <button class="button-secondary" id="copy-button" type="button">Sao chép</button>
+          <button class="button-secondary" id="download-button" type="button">Tải xuống</button>
+          <button class="button-danger" id="clear-button" type="button">Xóa</button>
+          <button class="button-secondary" id="undo-button" type="button" disabled>Hoàn tác</button>
+          <button class="button-secondary" id="redo-button" type="button" disabled>Làm lại</button>
+        </div>
+      </section>
+
+      <section class="panel" aria-labelledby="code-heading">
+        <h2 class="panel-heading" id="code-heading">JavaScript tùy chỉnh</h2>
+        <p class="panel-description">Viết phần thân của một hàm đồng bộ để biến đổi toàn bộ văn bản.</p>
+
+        <ul class="contract-list" id="code-contract">
+          <li><code>text</code> chứa toàn bộ văn bản hiện tại.</li>
+          <li>Mã được dùng làm phần thân của một hàm đồng bộ.</li>
+          <li>Mã phải <code>return</code> toàn bộ văn bản mới dưới dạng chuỗi nguyên thủy.</li>
+          <li>Nhấn <code>Ctrl+Enter</code> hoặc <code>Cmd+Enter</code> để chạy.</li>
+        </ul>
+
+        <label class="field-label" for="code-editor">Mã JavaScript</label>
+        <textarea id="code-editor" aria-describedby="code-contract security-warning" wrap="off" spellcheck="false" autocapitalize="off" autocomplete="off">return text.toUpperCase();</textarea>
+
+        <div class="button-row" aria-label="Công cụ JavaScript">
+          <button class="button-primary" id="run-button" type="button">Chạy JavaScript</button>
+          <button class="button-secondary" id="load-example-button" type="button">Nạp lại mã ví dụ</button>
+        </div>
+
+        <aside class="security-warning" id="security-warning">
+          <strong>Cảnh báo:</strong> Chỉ chạy mã bạn tin cậy. Web Worker giúp giới hạn thời gian chạy nhưng không phải môi trường bảo mật tuyệt đối.
+        </aside>
+      </section>
+    </div>
+
+    <section class="status-section" aria-labelledby="status-heading">
+      <h2 class="visually-hidden" id="status-heading">Trạng thái ứng dụng</h2>
+      <div class="status-area" id="status-area" data-state="neutral" role="status" aria-live="polite" aria-atomic="true">
+        Sẵn sàng: Nhập văn bản hoặc viết mã JavaScript.
+      </div>
+    </section>
+  </main>
+
+  <script>
+    'use strict'
+
+    const MAX_HISTORY_STATES = 50
+    const EXECUTION_TIMEOUT_MS = 2000
+    const DOWNLOAD_FILE_NAME = 'van-ban.txt'
+    const HISTORY_DEBOUNCE_MS = 600
+    const EXAMPLE_CODE = 'return text.toUpperCase();'
+
+    const WORKER_SOURCE = [
+      "'use strict'",
+      'self.onmessage = function (event) {',
+      '  const data = event.data',
+      "  if (!data || typeof data.token !== 'string') {",
+      '    return',
+      '  }',
+      '  const token = data.token',
+      '  const sendMessage = self.postMessage.bind(self)',
+      '  const toErrorPayload = function (error) {',
+      "    let name = 'Error'",
+      "    let message = ''",
+      '    try {',
+      "      if (error && typeof error.name === 'string' && error.name) {",
+      '        name = error.name',
+      '      }',
+      '    } catch {',
+      "      name = 'Error'",
+      '    }',
+      '    try {',
+      "      if (error && typeof error.message === 'string') {",
+      '        message = error.message',
+      '      } else if (error !== undefined) {',
+      '        message = String(error)',
+      '      }',
+      '    } catch {',
+      "      message = ''",
+      '    }',
+      '    return {',
+      '      name: name.slice(0, 80),',
+      '      message: message.slice(0, 300)',
+      '    }',
+      '  }',
+      '  const sendFailure = function (phase, error) {',
+      '    sendMessage({',
+      '      token: token,',
+      '      ok: false,',
+      '      phase: phase,',
+      '      error: toErrorPayload(error)',
+      '    })',
+      '  }',
+      "  if (typeof data.code !== 'string' || typeof data.text !== 'string') {",
+      '    sendMessage({',
+      '      token: token,',
+      '      ok: false,',
+      "      phase: 'input',",
+      '      error: {',
+      "        name: 'TypeError',",
+      "        message: 'Dữ liệu đầu vào không hợp lệ.'",
+      '      }',
+      '    })',
+      '    return',
+      '  }',
+      '  let transform',
+      '  try {',
+      "    transform = Function('text', data.code)",
+      '  } catch (error) {',
+      "    sendFailure('compile', error)",
+      '    return',
+      '  }',
+      '  let result',
+      '  try {',
+      '    result = transform(data.text)',
+      '  } catch (error) {',
+      "    sendFailure('runtime', error)",
+      '    return',
+      '  }',
+      "  if (typeof result !== 'string') {",
+      '    sendMessage({',
+      '      token: token,',
+      '      ok: false,',
+      "      phase: 'result',",
+      '      error: {',
+      "        name: 'TypeError',",
+      "        message: 'Hàm phải trả về một chuỗi nguyên thủy.'",
+      '      }',
+      '    })',
+      '    return',
+      '  }',
+      '  sendMessage({',
+      '    token: token,',
+      '    ok: true,',
+      '    result: result',
+      '  })',
+      '}'
+    ].join('\n')
+
+    const workspace = document.getElementById('workspace')
+    const editor = document.getElementById('text-editor')
+    const codeEditor = document.getElementById('code-editor')
+    const characterCount = document.getElementById('character-count')
+    const wordCount = document.getElementById('word-count')
+    const lineCount = document.getElementById('line-count')
+    const copyButton = document.getElementById('copy-button')
+    const downloadButton = document.getElementById('download-button')
+    const clearButton = document.getElementById('clear-button')
+    const undoButton = document.getElementById('undo-button')
+    const redoButton = document.getElementById('redo-button')
+    const runButton = document.getElementById('run-button')
+    const loadExampleButton = document.getElementById('load-example-button')
+    const statusArea = document.getElementById('status-area')
+
+    let history = [editor.value]
+    let historyIndex = 0
+    let pendingHistoryTimer = null
+    let isRunning = false
+    let activeExecution = null
+
+    const downloadObjectUrls = new Set()
+
+    function setStatus (type, message) {
+      statusArea.dataset.state = type
+      statusArea.textContent = message
+      statusArea.setAttribute('aria-busy', type === 'processing' ? 'true' : 'false')
+    }
+
+    function countCharacters (text) {
+      return Array.from(text).length
+    }
+
+    function countWords (text) {
+      const textForCounting = text.trim()
+      return textForCounting === '' ? 0 : textForCounting.split(/\s+/u).length
+    }
+
+    function countLines (text) {
+      if (text === '') return 0
+
+      let total = 1
+      for (let index = 0; index < text.length; index += 1) {
+        if (text.charCodeAt(index) === 10) total += 1
+      }
+      return total
+    }
+
+    function updateStatistics () {
+      const text = editor.value
+      characterCount.textContent = String(countCharacters(text))
+      wordCount.textContent = String(countWords(text))
+      lineCount.textContent = String(countLines(text))
+    }
+
+    function syncControls () {
+      const textIsEmpty = editor.value.length === 0
+      const hasUncommittedText = editor.value !== history[historyIndex]
+      const canUndo = hasUncommittedText || historyIndex > 0
+      const canRedo = !hasUncommittedText && historyIndex < history.length - 1
+
+      editor.disabled = isRunning
+      codeEditor.disabled = isRunning
+      copyButton.disabled = isRunning || textIsEmpty
+      downloadButton.disabled = isRunning
+      clearButton.disabled = isRunning || textIsEmpty
+      undoButton.disabled = isRunning || !canUndo
+      redoButton.disabled = isRunning || !canRedo
+      runButton.disabled = isRunning
+      loadExampleButton.disabled = isRunning
+      runButton.textContent = isRunning ? 'Đang chạy…' : 'Chạy JavaScript'
+      runButton.setAttribute('aria-busy', isRunning ? 'true' : 'false')
+      workspace.setAttribute('aria-busy', isRunning ? 'true' : 'false')
+    }
+
+    function cancelPendingHistoryCommit () {
+      if (pendingHistoryTimer === null) return
+
+      window.clearTimeout(pendingHistoryTimer)
+      pendingHistoryTimer = null
+    }
+
+    function commitHistoryState (value) {
+      if (value === history[historyIndex]) {
+        syncControls()
+        return false
+      }
+
+      if (historyIndex < history.length - 1) {
+        history = history.slice(0, historyIndex + 1)
+      }
+
+      history.push(value)
+
+      if (history.length > MAX_HISTORY_STATES) {
+        history.splice(0, history.length - MAX_HISTORY_STATES)
+      }
+
+      historyIndex = history.length - 1
+      syncControls()
+      return true
+    }
+
+    function scheduleHistoryCommit () {
+      cancelPendingHistoryCommit()
+
+      if (editor.value === history[historyIndex]) return
+
+      pendingHistoryTimer = window.setTimeout(function () {
+        pendingHistoryTimer = null
+        commitHistoryState(editor.value)
+      }, HISTORY_DEBOUNCE_MS)
+    }
+
+    function flushPendingHistory () {
+      cancelPendingHistoryCommit()
+      return commitHistoryState(editor.value)
+    }
+
+    function focusElement (element) {
+      if (!element || typeof element.focus !== 'function') return
+
+      try {
+        element.focus({ preventScroll: true })
+      } catch {
+        try {
+          element.focus()
+        } catch {
+          return
+        }
+      }
+    }
+
+    function focusEditorAtEnd () {
+      focusElement(editor)
+      const end = editor.value.length
+
+      try {
+        editor.setSelectionRange(end, end)
+      } catch {
+        return
+      }
+    }
+
+    function applyHistoryState () {
+      cancelPendingHistoryCommit()
+      editor.value = history[historyIndex]
+      updateStatistics()
+      syncControls()
+      focusEditorAtEnd()
+    }
+
+    function undo () {
+      if (isRunning) return
+
+      flushPendingHistory()
+      if (historyIndex <= 0) return
+
+      historyIndex -= 1
+      applyHistoryState()
+      setStatus('success', 'Thành công: Đã hoàn tác thay đổi gần nhất.')
+    }
+
+    function redo () {
+      if (isRunning) return
+
+      flushPendingHistory()
+      if (historyIndex >= history.length - 1) return
+
+      historyIndex += 1
+      applyHistoryState()
+      setStatus('success', 'Thành công: Đã làm lại thay đổi.')
+    }
+
+    function clearEditor () {
+      if (isRunning || editor.value === '') return
+
+      const confirmed = window.confirm('Bạn có chắc muốn xóa toàn bộ văn bản không?')
+      if (!confirmed) return
+
+      flushPendingHistory()
+      editor.value = ''
+      updateStatistics()
+      commitHistoryState('')
+      syncControls()
+      setStatus('success', 'Thành công: Đã xóa toàn bộ văn bản.')
+      focusElement(editor)
+    }
+
+    function copyWithFallback (text) {
+      if (typeof document.execCommand !== 'function') {
+        throw new Error('Không có phương thức sao chép dự phòng.')
+      }
+
+      const previousActiveElement = document.activeElement
+      const savedSelectionStart = editor.selectionStart
+      const savedSelectionEnd = editor.selectionEnd
+      const savedScrollTop = editor.scrollTop
+      const savedScrollLeft = editor.scrollLeft
+      const temporaryTextarea = document.createElement('textarea')
+
+      temporaryTextarea.value = text
+      temporaryTextarea.readOnly = true
+      temporaryTextarea.tabIndex = -1
+      temporaryTextarea.setAttribute('aria-label', 'Nội dung tạm để sao chép')
+      temporaryTextarea.style.position = 'fixed'
+      temporaryTextarea.style.top = '0'
+      temporaryTextarea.style.left = '0'
+      temporaryTextarea.style.width = '1px'
+      temporaryTextarea.style.height = '1px'
+      temporaryTextarea.style.padding = '0'
+      temporaryTextarea.style.border = '0'
+      temporaryTextarea.style.opacity = '0'
+      temporaryTextarea.style.pointerEvents = 'none'
+
+      try {
+        document.body.appendChild(temporaryTextarea)
+        temporaryTextarea.focus()
+        temporaryTextarea.select()
+        temporaryTextarea.setSelectionRange(0, temporaryTextarea.value.length)
+
+        const copied = document.execCommand('copy')
+        if (!copied) throw new Error('Trình duyệt từ chối sao chép.')
+      } finally {
+        if (temporaryTextarea.parentNode) {
+          temporaryTextarea.parentNode.removeChild(temporaryTextarea)
+        }
+
+        if (previousActiveElement && document.contains(previousActiveElement)) {
+          focusElement(previousActiveElement)
+        }
+
+        try {
+          editor.setSelectionRange(savedSelectionStart, savedSelectionEnd)
+          editor.scrollTop = savedScrollTop
+          editor.scrollLeft = savedScrollLeft
+        } catch {
+          return
+        }
+      }
+    }
+
+    async function copyText () {
+      if (isRunning || editor.value === '') return
+
+      const text = editor.value
+
+      try {
+        if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+          try {
+            await navigator.clipboard.writeText(text)
+            setStatus('success', 'Thành công: Đã sao chép văn bản vào bộ nhớ tạm.')
+            return
+          } catch {
+            copyWithFallback(text)
+            setStatus('success', 'Thành công: Đã sao chép văn bản bằng phương thức dự phòng.')
+            return
+          }
+        }
+
+        copyWithFallback(text)
+        setStatus('success', 'Thành công: Đã sao chép văn bản bằng phương thức dự phòng.')
+      } catch {
+        setStatus('error', 'Lỗi — ClipboardError: Không thể sao chép văn bản trên trình duyệt này.')
+      }
+    }
+
+    function revokeDownloadUrl (objectUrl) {
+      if (!downloadObjectUrls.has(objectUrl)) return
+
+      downloadObjectUrls.delete(objectUrl)
+
+      try {
+        URL.revokeObjectURL(objectUrl)
+      } catch {
+        return
+      }
+    }
+
+    function downloadText () {
+      if (isRunning) return
+
+      let link = null
+      let objectUrl = null
+      let revocationScheduled = false
+
+      try {
+        const blob = new Blob([editor.value], { type: 'text/plain;charset=utf-8' })
+        objectUrl = URL.createObjectURL(blob)
+        downloadObjectUrls.add(objectUrl)
+
+        link = document.createElement('a')
+        link.href = objectUrl
+        link.download = DOWNLOAD_FILE_NAME
+        link.hidden = true
+        document.body.appendChild(link)
+        link.click()
+
+        const urlToRevoke = objectUrl
+        window.setTimeout(function () {
+          revokeDownloadUrl(urlToRevoke)
+        }, 0)
+        revocationScheduled = true
+
+        setStatus('success', 'Thành công: Đã tạo tệp van-ban.txt để tải xuống.')
+      } catch {
+        setStatus('error', 'Lỗi — DownloadError: Không thể tạo tệp tải xuống.')
+      } finally {
+        if (link && link.parentNode) {
+          link.parentNode.removeChild(link)
+        }
+
+        if (objectUrl && !revocationScheduled) {
+          revokeDownloadUrl(objectUrl)
+        }
+      }
+    }
+
+    function createTaskToken () {
+      try {
+        if (window.crypto && typeof window.crypto.getRandomValues === 'function') {
+          const values = new Uint32Array(4)
+          window.crypto.getRandomValues(values)
+          return Array.from(values, function (value) {
+            return value.toString(16).padStart(8, '0')
+          }).join('')
+        }
+      } catch {
+        return String(Date.now()) + '-' + String(Math.random()).slice(2)
+      }
+
+      return String(Date.now()) + '-' + String(Math.random()).slice(2)
+    }
+
+    function normalizeErrorName (errorLike) {
+      const rawName = errorLike && typeof errorLike.name === 'string'
+        ? errorLike.name.trim()
+        : 'Error'
+      const safeName = rawName.replace(/[^A-Za-z0-9_.-]/g, '').slice(0, 40)
+      return safeName || 'Error'
+    }
+
+    function getRuntimeErrorSummary (errorName) {
+      if (errorName === 'ReferenceError') {
+        return 'Mã đã tham chiếu tới một tên không tồn tại.'
+      }
+
+      if (errorName === 'TypeError') {
+        return 'Mã đã thực hiện một thao tác không hợp lệ.'
+      }
+
+      if (errorName === 'RangeError') {
+        return 'Mã đã sử dụng một giá trị nằm ngoài phạm vi cho phép.'
+      }
+
+      if (errorName === 'SyntaxError') {
+        return 'Mã đã phát sinh lỗi cú pháp trong lúc chạy.'
+      }
+
+      if (errorName === 'URIError') {
+        return 'Mã đã xử lý địa chỉ hoặc chuỗi mã hóa không hợp lệ.'
+      }
+
+      return 'Mã JavaScript đã dừng vì lỗi trong lúc chạy.'
+    }
+
+    function getReportedWorkerErrorMessage (data) {
+      const errorName = normalizeErrorName(data && data.error)
+      const phase = data && typeof data.phase === 'string' ? data.phase : 'worker'
+      let summary = 'Tiến trình thực thi đã báo lỗi.'
+
+      if (phase === 'compile') {
+        summary = errorName === 'SyntaxError'
+          ? 'Mã JavaScript có lỗi cú pháp và chưa được chạy.'
+          : 'Không thể biên dịch mã JavaScript.'
+      } else if (phase === 'runtime') {
+        summary = getRuntimeErrorSummary(errorName)
+      } else if (phase === 'result') {
+        summary = 'Hàm phải trả về một chuỗi nguyên thủy; Promise và các kiểu khác không được hỗ trợ.'
+      } else if (phase === 'input') {
+        summary = 'Dữ liệu gửi tới tiến trình thực thi không hợp lệ.'
+      }
+
+      return 'Lỗi — ' + errorName + ': ' + summary
+    }
+
+    function cleanupExecution (task) {
+      if (!task || task.cleaned) return
+
+      task.cleaned = true
+
+      if (task.timeoutId !== null) {
+        window.clearTimeout(task.timeoutId)
+        task.timeoutId = null
+      }
+
+      if (task.worker) {
+        task.worker.onmessage = null
+        task.worker.onerror = null
+        task.worker.onmessageerror = null
+
+        try {
+          task.worker.terminate()
+        } catch {
+          task.worker = null
+        }
+
+        task.worker = null
+      }
+
+      if (task.objectUrl) {
+        try {
+          URL.revokeObjectURL(task.objectUrl)
+        } catch {
+          task.objectUrl = null
+        }
+
+        task.objectUrl = null
+      }
+    }
+
+    function completeExecution (task, callback) {
+      if (!task || task.finished || activeExecution !== task) return
+
+      task.finished = true
+      cleanupExecution(task)
+      activeExecution = null
+      isRunning = false
+
+      try {
+        syncControls()
+        callback()
+      } catch (error) {
+        const errorName = normalizeErrorName(error)
+        setStatus('error', 'Lỗi — ' + errorName + ': Giao diện không thể hoàn tất cập nhật.')
+      }
+    }
+
+    function handleSuccessfulResult (task, result) {
+      if (result === task.sourceText) {
+        setStatus('warning', 'Cảnh báo: Mã đã chạy xong nhưng văn bản không có thay đổi.')
+        focusEditorAtEnd()
+        return
+      }
+
+      editor.value = result
+      updateStatistics()
+      commitHistoryState(result)
+      syncControls()
+      setStatus('success', 'Thành công: Đã áp dụng kết quả JavaScript vào văn bản.')
+      focusEditorAtEnd()
+    }
+
+    function handleWorkerMessage (task, event) {
+      if (task.finished || activeExecution !== task) return
+
+      const data = event.data
+      if (!data || data.token !== task.token) return
+
+      if (data.ok === true) {
+        if (typeof data.result !== 'string') {
+          completeExecution(task, function () {
+            setStatus('error', 'Lỗi — WorkerResponseError: Tiến trình trả về dữ liệu không hợp lệ.')
+            focusElement(codeEditor)
+          })
+          return
+        }
+
+        completeExecution(task, function () {
+          handleSuccessfulResult(task, data.result)
+        })
+        return
+      }
+
+      if (data.ok === false) {
+        completeExecution(task, function () {
+          setStatus('error', getReportedWorkerErrorMessage(data))
+          focusElement(codeEditor)
+        })
+        return
+      }
+
+      completeExecution(task, function () {
+        setStatus('error', 'Lỗi — WorkerResponseError: Không thể đọc phản hồi từ tiến trình thực thi.')
+        focusElement(codeEditor)
+      })
+    }
+
+    function runTransform () {
+      if (isRunning) return
+
+      const code = codeEditor.value
+      if (code.trim() === '') {
+        setStatus('error', 'Lỗi — ValidationError: Hãy nhập mã JavaScript trước khi chạy.')
+        focusElement(codeEditor)
+        return
+      }
+
+      flushPendingHistory()
+
+      const task = {
+        token: createTaskToken(),
+        sourceText: editor.value,
+        worker: null,
+        objectUrl: null,
+        timeoutId: null,
+        finished: false,
+        cleaned: false
+      }
+
+      activeExecution = task
+      isRunning = true
+      syncControls()
+      setStatus('processing', 'Đang xử lý: JavaScript đang biến đổi văn bản, vui lòng chờ.')
+
+      try {
+        const blob = new Blob([WORKER_SOURCE], { type: 'text/javascript' })
+        task.objectUrl = URL.createObjectURL(blob)
+        task.worker = new Worker(task.objectUrl)
+
+        task.worker.onmessage = function (event) {
+          handleWorkerMessage(task, event)
+        }
+
+        task.worker.onerror = function (event) {
+          if (event && typeof event.preventDefault === 'function') {
+            event.preventDefault()
+          }
+
+          completeExecution(task, function () {
+            setStatus('error', 'Lỗi — WorkerError: Tiến trình thực thi gặp lỗi ngoài dự kiến.')
+            focusElement(codeEditor)
+          })
+        }
+
+        task.worker.onmessageerror = function () {
+          completeExecution(task, function () {
+            setStatus('error', 'Lỗi — DataCloneError: Không thể đọc dữ liệu phản hồi từ tiến trình thực thi.')
+            focusElement(codeEditor)
+          })
+        }
+
+        task.timeoutId = window.setTimeout(function () {
+          completeExecution(task, function () {
+            setStatus('error', 'Lỗi — TimeoutError: Mã chạy quá 2 giây và đã bị dừng.')
+            focusElement(codeEditor)
+          })
+        }, EXECUTION_TIMEOUT_MS)
+
+        task.worker.postMessage({
+          token: task.token,
+          code: code,
+          text: task.sourceText
+        })
+      } catch {
+        completeExecution(task, function () {
+          setStatus('error', 'Lỗi — WorkerInitError: Không thể khởi tạo tiến trình thực thi trên trình duyệt này.')
+          focusElement(codeEditor)
+        })
+      }
+    }
+
+    function loadExample () {
+      if (isRunning) return
+
+      codeEditor.value = EXAMPLE_CODE
+      setStatus('success', 'Thành công: Đã nạp mã ví dụ; mã chưa được chạy.')
+      focusElement(codeEditor)
+
+      try {
+        codeEditor.setSelectionRange(EXAMPLE_CODE.length, EXAMPLE_CODE.length)
+      } catch {
+        return
+      }
+    }
+
+    editor.addEventListener('input', function () {
+      updateStatistics()
+      scheduleHistoryCommit()
+      syncControls()
+    })
+
+    codeEditor.addEventListener('keydown', function (event) {
+      const usesRunShortcut = (event.ctrlKey || event.metaKey) && event.key === 'Enter'
+      if (!usesRunShortcut || event.isComposing) return
+
+      event.preventDefault()
+      runTransform()
+    })
+
+    copyButton.addEventListener('click', function () {
+      copyText()
+    })
+
+    downloadButton.addEventListener('click', downloadText)
+    clearButton.addEventListener('click', clearEditor)
+    undoButton.addEventListener('click', undo)
+    redoButton.addEventListener('click', redo)
+    runButton.addEventListener('click', runTransform)
+    loadExampleButton.addEventListener('click', loadExample)
+
+    window.addEventListener('pagehide', function () {
+      cancelPendingHistoryCommit()
+
+      if (activeExecution) {
+        activeExecution.finished = true
+        cleanupExecution(activeExecution)
+        activeExecution = null
+        isRunning = false
+      }
+
+      Array.from(downloadObjectUrls).forEach(function (objectUrl) {
+        revokeDownloadUrl(objectUrl)
+      })
+    })
+
+    updateStatistics()
+    syncControls()
+  </script>
+</body>
+</html>
