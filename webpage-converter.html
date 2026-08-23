@@ -1,0 +1,1253 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Trình chuyển đổi HTML sang Data URI hoặc Base64</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --color-background: #f3f6fa;
+      --color-surface: #fff;
+      --color-surface-muted: #f7f9fc;
+      --color-text: #172033;
+      --color-muted: #596579;
+      --color-border: #cbd4e1;
+      --color-accent: #0967d2;
+      --color-accent-hover: #0755af;
+      --color-accent-contrast: #fff;
+      --color-success: #176b3a;
+      --color-success-background: #eaf8ef;
+      --color-error: #a82424;
+      --color-error-background: #fff0f0;
+      --color-info: #305a91;
+      --color-info-background: #edf5ff;
+      --color-danger-hover: #8d1d1d;
+      --space-1: 0.5rem;
+      --space-2: 0.75rem;
+      --space-3: 1rem;
+      --space-4: 1.5rem;
+      --space-5: 2rem;
+      --radius: 8px;
+      --shadow: 0 12px 32px rgb(23 32 51 / 10%);
+      --transition: 160ms ease;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --color-background: #0f141c;
+        --color-surface: #171e29;
+        --color-surface-muted: #111822;
+        --color-text: #edf3fc;
+        --color-muted: #afbacb;
+        --color-border: #3b4657;
+        --color-accent: #69aaff;
+        --color-accent-hover: #8dbdff;
+        --color-accent-contrast: #07172a;
+        --color-success: #70dfa0;
+        --color-success-background: #133524;
+        --color-error: #ff9393;
+        --color-error-background: #3b1d22;
+        --color-info: #9bc5ff;
+        --color-info-background: #172b46;
+        --color-danger-hover: #ffb0b0;
+        --shadow: 0 14px 36px rgb(0 0 0 / 32%);
+      }
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    html {
+      min-width: 0;
+      background: var(--color-background);
+      font-family:
+        system-ui,
+        -apple-system,
+        blinkmacsystemfont,
+        'Segoe UI',
+        sans-serif;
+      line-height: 1.5;
+    }
+
+    body {
+      min-width: 0;
+      min-height: 100vh;
+      margin: 0;
+      background: var(--color-background);
+      color: var(--color-text);
+      overflow-wrap: anywhere;
+    }
+
+    button,
+    input,
+    textarea {
+      font: inherit;
+    }
+
+    button,
+    label,
+    input[type='radio'] {
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .app {
+      width: min(100% - 2rem, 90rem);
+      margin-inline: auto;
+      padding-block: var(--space-5);
+    }
+
+    .page-header {
+      margin-bottom: var(--space-4);
+    }
+
+    .page-header h1 {
+      max-width: 52rem;
+      margin: 0;
+      font-size: clamp(1.75rem, 4vw, 2.6rem);
+      line-height: 1.15;
+    }
+
+    .page-header p {
+      max-width: 54rem;
+      margin: var(--space-2) 0 0;
+      color: var(--color-muted);
+      font-size: 1.02rem;
+    }
+
+    .surface {
+      min-width: 0;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      background: var(--color-surface);
+      box-shadow: var(--shadow);
+    }
+
+    .format-selector {
+      min-width: 0;
+      margin: 0 0 var(--space-4);
+      padding: var(--space-3);
+    }
+
+    .format-selector legend {
+      padding: 0 var(--space-1);
+      font-weight: 750;
+    }
+
+    .format-options {
+      display: grid;
+      min-width: 0;
+      gap: var(--space-2);
+      margin-top: var(--space-1);
+    }
+
+    .format-option {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      align-items: center;
+      min-width: 0;
+      min-height: 52px;
+      gap: var(--space-2);
+      padding: var(--space-2);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      background: var(--color-surface-muted);
+      cursor: pointer;
+      transition:
+        border-color var(--transition),
+        background-color var(--transition);
+    }
+
+    .format-option input {
+      width: 1.25rem;
+      height: 1.25rem;
+      margin: 0;
+      accent-color: var(--color-accent);
+      cursor: pointer;
+    }
+
+    .format-option__text {
+      display: grid;
+      min-width: 0;
+      gap: 0.15rem;
+    }
+
+    .format-option__text strong {
+      line-height: 1.3;
+    }
+
+    .format-option__text small {
+      color: var(--color-muted);
+      line-height: 1.35;
+    }
+
+    .format-option input:checked + .format-option__text strong {
+      color: var(--color-accent);
+    }
+
+    .format-option:focus-within {
+      border-color: var(--color-accent);
+      outline: 3px solid color-mix(in srgb, var(--color-accent) 28%, transparent);
+      outline-offset: 2px;
+    }
+
+    .converter-grid {
+      display: grid;
+      min-width: 0;
+      gap: var(--space-4);
+    }
+
+    .editor-panel {
+      min-width: 0;
+      padding: var(--space-3);
+    }
+
+    .editor-header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      justify-content: space-between;
+      min-width: 0;
+      gap: var(--space-1) var(--space-2);
+      margin-bottom: var(--space-2);
+    }
+
+    .editor-header h2 {
+      margin: 0;
+      font-size: 1.1rem;
+      line-height: 1.3;
+    }
+
+    .format-badge {
+      max-width: 100%;
+      padding: 0.2rem 0.45rem;
+      border: 1px solid var(--color-border);
+      border-radius: 4px;
+      color: var(--color-muted);
+      font-size: 0.78rem;
+      font-weight: 700;
+      overflow-wrap: anywhere;
+    }
+
+    .field-help {
+      margin: 0 0 var(--space-2);
+      color: var(--color-muted);
+      font-size: 0.9rem;
+    }
+
+    textarea {
+      display: block;
+      width: 100%;
+      min-width: 0;
+      min-height: 18rem;
+      padding: var(--space-3);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      background: var(--color-surface-muted);
+      color: var(--color-text);
+      font-family:
+        ui-monospace,
+        sfmono-regular,
+        consolas,
+        'Liberation Mono',
+        monospace;
+      font-size: 0.9rem;
+      line-height: 1.55;
+      overflow-wrap: anywhere;
+      tab-size: 2;
+      resize: vertical;
+      transition:
+        border-color var(--transition),
+        box-shadow var(--transition);
+    }
+
+    textarea[readonly] {
+      background: color-mix(
+        in srgb,
+        var(--color-surface-muted) 84%,
+        var(--color-accent) 4%
+      );
+    }
+
+    textarea:focus-visible {
+      border-color: var(--color-accent);
+      outline: 0;
+      box-shadow: 0 0 0 3px color-mix(
+        in srgb,
+        var(--color-accent) 28%,
+        transparent
+      );
+    }
+
+    .statistics {
+      min-width: 0;
+      margin-top: var(--space-4);
+      padding: var(--space-3);
+    }
+
+    .statistics h2 {
+      margin: 0 0 var(--space-3);
+      font-size: 1.1rem;
+    }
+
+    .statistics dl {
+      display: grid;
+      min-width: 0;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+      gap: var(--space-2);
+      margin: 0;
+    }
+
+    .statistic {
+      min-width: 0;
+      padding: var(--space-2);
+      border-left: 4px solid var(--color-accent);
+      background: var(--color-surface-muted);
+    }
+
+    .statistic dt {
+      color: var(--color-muted);
+      font-size: 0.86rem;
+    }
+
+    .statistic dd {
+      min-width: 0;
+      margin: 0.2rem 0 0;
+      font-size: 1.25rem;
+      font-weight: 750;
+      overflow-wrap: anywhere;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      min-width: 0;
+      gap: var(--space-2);
+      margin-top: var(--space-4);
+    }
+
+    button {
+      display: inline-flex;
+      flex: 1 1 10rem;
+      align-items: center;
+      justify-content: center;
+      min-width: 0;
+      min-height: 44px;
+      padding: 0.7rem 1rem;
+      border: 1px solid transparent;
+      border-radius: var(--radius);
+      font-weight: 720;
+      line-height: 1.2;
+      text-align: center;
+      cursor: pointer;
+      transition:
+        background-color var(--transition),
+        border-color var(--transition),
+        color var(--transition),
+        transform var(--transition),
+        box-shadow var(--transition);
+    }
+
+    .button-primary {
+      border-color: var(--color-accent);
+      background: var(--color-accent);
+      color: var(--color-accent-contrast);
+    }
+
+    .button-secondary {
+      border-color: var(--color-border);
+      background: var(--color-surface);
+      color: var(--color-text);
+    }
+
+    .button-danger {
+      border-color: color-mix(
+        in srgb,
+        var(--color-error) 55%,
+        var(--color-border)
+      );
+      background: var(--color-surface);
+      color: var(--color-error);
+    }
+
+    button:active:not(:disabled) {
+      transform: translateY(1px);
+    }
+
+    button:focus-visible {
+      outline: 3px solid color-mix(in srgb, var(--color-accent) 32%, transparent);
+      outline-offset: 2px;
+    }
+
+    button:disabled {
+      border-color: var(--color-border);
+      background: var(--color-surface-muted);
+      color: var(--color-muted);
+      cursor: not-allowed;
+      opacity: 0.62;
+      transform: none;
+    }
+
+    .status {
+      min-width: 0;
+      min-height: 3rem;
+      margin: var(--space-3) 0 0;
+      padding: var(--space-2) var(--space-3);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      background: var(--color-info-background);
+      color: var(--color-info);
+      font-weight: 650;
+    }
+
+    .status[data-state='success'] {
+      border-color: color-mix(
+        in srgb,
+        var(--color-success) 55%,
+        var(--color-border)
+      );
+      background: var(--color-success-background);
+      color: var(--color-success);
+    }
+
+    .status[data-state='error'] {
+      border-color: color-mix(
+        in srgb,
+        var(--color-error) 55%,
+        var(--color-border)
+      );
+      background: var(--color-error-background);
+      color: var(--color-error);
+    }
+
+    .noscript-message {
+      margin: var(--space-3) 0;
+      padding: var(--space-3);
+      border: 1px solid var(--color-error);
+      background: var(--color-error-background);
+      color: var(--color-error);
+      font-weight: 700;
+    }
+
+    @media (hover: hover) {
+      .format-option:hover {
+        border-color: var(--color-accent);
+      }
+
+      .button-primary:hover:not(:disabled) {
+        border-color: var(--color-accent-hover);
+        background: var(--color-accent-hover);
+      }
+
+      .button-secondary:hover:not(:disabled) {
+        border-color: var(--color-accent);
+        color: var(--color-accent);
+      }
+
+      .button-danger:hover:not(:disabled) {
+        border-color: var(--color-danger-hover);
+        color: var(--color-danger-hover);
+      }
+    }
+
+    @media (min-width: 42rem) {
+      .format-options {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .format-selector,
+      .editor-panel,
+      .statistics {
+        padding: var(--space-4);
+      }
+
+      button {
+        flex-grow: 0;
+      }
+    }
+
+    @media (min-width: 64rem) {
+      .converter-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      textarea {
+        min-height: 25rem;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+        transition-delay: 0ms !important;
+      }
+
+      button:active:not(:disabled) {
+        transform: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="page-header">
+      <h1>Chuyển đổi HTML sang Data URI hoặc Base64</h1>
+      <p>
+        Mã hóa nguyên vẹn nội dung HTML thành Data URI mã hóa URL, Base64 thuần
+        hoặc Data URI Base64 mà không thực thi hay xem trước mã nguồn.
+      </p>
+    </header>
+
+    <noscript>
+      <p class="noscript-message">
+        Lỗi: Trình duyệt cần bật JavaScript để công cụ hoạt động.
+      </p>
+    </noscript>
+
+    <main>
+      <fieldset class="format-selector surface">
+        <legend>Định dạng đầu ra</legend>
+
+        <div class="format-options">
+          <label class="format-option">
+            <input
+              type="radio"
+              name="output-format"
+              value="data-url"
+              checked
+            >
+            <span class="format-option__text">
+              <strong>Data URI mã hóa URL</strong>
+              <small>Data URI dùng mã hóa phần trăm.</small>
+            </span>
+          </label>
+
+          <label class="format-option">
+            <input
+              type="radio"
+              name="output-format"
+              value="base64"
+            >
+            <span class="format-option__text">
+              <strong>Base64 thuần</strong>
+              <small>Chỉ tạo chuỗi Base64 của byte UTF-8.</small>
+            </span>
+          </label>
+
+          <label class="format-option">
+            <input
+              type="radio"
+              name="output-format"
+              value="data-base64"
+            >
+            <span class="format-option__text">
+              <strong>Data URI Base64</strong>
+              <small>Chuỗi Base64 kèm tiền tố Data URI.</small>
+            </span>
+          </label>
+        </div>
+      </fieldset>
+
+      <div class="converter-grid">
+        <section class="editor-panel surface" aria-labelledby="input-heading">
+          <div class="editor-header">
+            <h2 id="input-heading">Mã HTML đầu vào</h2>
+          </div>
+
+          <p class="field-help" id="input-help">
+            Khoảng trắng ở đầu và cuối được giữ nguyên khi chuyển đổi.
+          </p>
+
+          <textarea
+            id="html-input"
+            aria-describedby="input-help"
+            spellcheck="false"
+            autocomplete="off"
+            autocapitalize="off"
+            placeholder="Nhập hoặc dán mã HTML tại đây..."
+          ></textarea>
+        </section>
+
+        <section class="editor-panel surface" aria-labelledby="result-heading">
+          <div class="editor-header">
+            <h2 id="result-heading">Kết quả</h2>
+            <span class="format-badge" id="output-format-name">
+              Data URI mã hóa URL
+            </span>
+          </div>
+
+          <p class="field-help" id="result-help">
+            Vùng chỉ đọc; có thể chọn hoặc sao chép toàn bộ kết quả.
+          </p>
+
+          <textarea
+            id="result-output"
+            aria-describedby="result-help"
+            spellcheck="false"
+            readonly
+            placeholder="Kết quả hợp lệ sẽ xuất hiện tại đây..."
+          ></textarea>
+        </section>
+      </div>
+
+      <section class="statistics surface" aria-labelledby="statistics-heading">
+        <h2 id="statistics-heading">Thống kê</h2>
+
+        <dl>
+          <div class="statistic">
+            <dt>Số ký tự đầu vào</dt>
+            <dd id="input-character-count">0</dd>
+          </div>
+
+          <div class="statistic">
+            <dt>Kích thước đầu vào UTF-8</dt>
+            <dd id="input-byte-count">0 byte</dd>
+          </div>
+
+          <div class="statistic">
+            <dt>Số ký tự kết quả</dt>
+            <dd id="output-character-count">0</dd>
+          </div>
+        </dl>
+      </section>
+
+      <section class="actions" aria-label="Thao tác">
+        <button
+          class="button-primary"
+          id="convert-button"
+          type="button"
+          aria-keyshortcuts="Control+Enter Meta+Enter"
+        >
+          Chuyển đổi
+        </button>
+
+        <button
+          class="button-secondary"
+          id="copy-button"
+          type="button"
+          disabled
+        >
+          Sao chép kết quả
+        </button>
+
+        <button
+          class="button-secondary"
+          id="download-button"
+          type="button"
+          disabled
+        >
+          Tải kết quả
+        </button>
+
+        <button
+          class="button-secondary"
+          id="sample-button"
+          type="button"
+        >
+          Dữ liệu mẫu
+        </button>
+
+        <button
+          class="button-danger"
+          id="clear-button"
+          type="button"
+        >
+          Xóa tất cả
+        </button>
+      </section>
+
+      <p
+        class="status"
+        id="status-message"
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+        data-state="info"
+      >
+        Thông tin: Sẵn sàng chuyển đổi.
+      </p>
+    </main>
+  </div>
+
+  <script>
+    'use strict'
+
+    const htmlInput = document.querySelector('#html-input')
+    const resultOutput = document.querySelector('#result-output')
+    const convertButton = document.querySelector('#convert-button')
+    const copyButton = document.querySelector('#copy-button')
+    const downloadButton = document.querySelector('#download-button')
+    const sampleButton = document.querySelector('#sample-button')
+    const clearButton = document.querySelector('#clear-button')
+    const statusMessage = document.querySelector('#status-message')
+    const outputFormatName = document.querySelector('#output-format-name')
+    const inputCharacterCount = document.querySelector('#input-character-count')
+    const inputByteCount = document.querySelector('#input-byte-count')
+    const outputCharacterCount = document.querySelector('#output-character-count')
+    const formatControls = document.querySelectorAll(
+      'input[name="output-format"]'
+    )
+
+    const formatLabels = Object.freeze({
+      'data-url': 'Data URI mã hóa URL',
+      base64: 'Base64 thuần',
+      'data-base64': 'Data URI Base64'
+    })
+
+    const downloadFileNames = Object.freeze({
+      'data-url': 'ket-qua-data-uri-ma-hoa-url.txt',
+      base64: 'ket-qua-base64-thuan.txt',
+      'data-base64': 'ket-qua-data-uri-base64.txt'
+    })
+
+    const applicationState = {
+      valid: false,
+      sourceHtml: '',
+      format: '',
+      result: ''
+    }
+
+    const textEncoder = typeof window.TextEncoder === 'function'
+      ? new window.TextEncoder()
+      : null
+
+    const numberFormatter =
+      typeof window.Intl === 'object' &&
+      typeof window.Intl.NumberFormat === 'function'
+        ? new window.Intl.NumberFormat('vi-VN')
+        : null
+
+    const sampleHtml = `<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Trang HTML mẫu</title>
+</head>
+<body>
+  <main>
+    <h1>Xin chào, thế giới! 👋</h1>
+    <p>Tiếng Việt đầy đủ dấu: Trăng sáng, biển xanh và những ước mơ.</p>
+    <p>Ký tự Unicode: 你好 · こんにちは · 안녕하세요 · 🌍🚀</p>
+  </main>
+</body>
+</html>`
+
+    function formatNumber (value) {
+      return numberFormatter ? numberFormatter.format(value) : String(value)
+    }
+
+    function setStatus (state, message) {
+      const prefixes = {
+        success: 'Thành công:',
+        error: 'Lỗi:',
+        info: 'Thông tin:'
+      }
+
+      statusMessage.dataset.state = state
+      statusMessage.textContent = `${prefixes[state] || prefixes.info} ${message}`
+    }
+
+    function getSelectedFormat () {
+      const selectedControl = document.querySelector(
+        'input[name="output-format"]:checked'
+      )
+
+      return selectedControl ? selectedControl.value : ''
+    }
+
+    function encodeUtf8Fallback (text) {
+      const bytes = []
+
+      for (let index = 0; index < text.length; index += 1) {
+        let codePoint = text.charCodeAt(index)
+
+        if (codePoint >= 0xd800 && codePoint <= 0xdbff) {
+          const nextCodeUnit = text.charCodeAt(index + 1)
+
+          if (nextCodeUnit >= 0xdc00 && nextCodeUnit <= 0xdfff) {
+            codePoint =
+              0x10000 +
+              ((codePoint - 0xd800) << 10) +
+              (nextCodeUnit - 0xdc00)
+            index += 1
+          } else {
+            codePoint = 0xfffd
+          }
+        } else if (codePoint >= 0xdc00 && codePoint <= 0xdfff) {
+          codePoint = 0xfffd
+        }
+
+        if (codePoint <= 0x7f) {
+          bytes.push(codePoint)
+        } else if (codePoint <= 0x7ff) {
+          bytes.push(
+            0xc0 | (codePoint >> 6),
+            0x80 | (codePoint & 0x3f)
+          )
+        } else if (codePoint <= 0xffff) {
+          bytes.push(
+            0xe0 | (codePoint >> 12),
+            0x80 | ((codePoint >> 6) & 0x3f),
+            0x80 | (codePoint & 0x3f)
+          )
+        } else {
+          bytes.push(
+            0xf0 | (codePoint >> 18),
+            0x80 | ((codePoint >> 12) & 0x3f),
+            0x80 | ((codePoint >> 6) & 0x3f),
+            0x80 | (codePoint & 0x3f)
+          )
+        }
+      }
+
+      return new Uint8Array(bytes)
+    }
+
+    function getUtf8Bytes (text) {
+      return textEncoder
+        ? textEncoder.encode(text)
+        : encodeUtf8Fallback(text)
+    }
+
+    function encodeBase64WithoutBtoa (bytes) {
+      const alphabet =
+        'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
+      const parts = []
+      let part = ''
+
+      for (let index = 0; index < bytes.length; index += 3) {
+        const first = bytes[index]
+        const hasSecond = index + 1 < bytes.length
+        const hasThird = index + 2 < bytes.length
+        const second = hasSecond ? bytes[index + 1] : 0
+        const third = hasThird ? bytes[index + 2] : 0
+        const combined = (first << 16) | (second << 8) | third
+
+        part += alphabet[(combined >> 18) & 0x3f]
+        part += alphabet[(combined >> 12) & 0x3f]
+        part += hasSecond ? alphabet[(combined >> 6) & 0x3f] : '='
+        part += hasThird ? alphabet[combined & 0x3f] : '='
+
+        if (part.length >= 16384) {
+          parts.push(part)
+          part = ''
+        }
+      }
+
+      if (part.length > 0) {
+        parts.push(part)
+      }
+
+      return parts.join('')
+    }
+
+    function bytesToBase64 (bytes) {
+      if (typeof window.btoa !== 'function') {
+        return encodeBase64WithoutBtoa(bytes)
+      }
+
+      const binaryParts = []
+      const safeChunkSize = 0x8000
+
+      // Chia mảng byte thành các khối nhỏ để không vượt giới hạn đối số.
+      for (
+        let offset = 0;
+        offset < bytes.length;
+        offset += safeChunkSize
+      ) {
+        const chunk = bytes.subarray(
+          offset,
+          Math.min(offset + safeChunkSize, bytes.length)
+        )
+
+        binaryParts.push(String.fromCharCode.apply(null, chunk))
+      }
+
+      return window.btoa(binaryParts.join(''))
+    }
+
+    function utf8ToBase64 (text) {
+      return bytesToBase64(getUtf8Bytes(text))
+    }
+
+    function updateStatistics () {
+      const inputValue = htmlInput.value
+      const outputValue = resultOutput.value
+
+      inputCharacterCount.textContent = formatNumber(inputValue.length)
+      outputCharacterCount.textContent = formatNumber(outputValue.length)
+
+      try {
+        const byteLength = getUtf8Bytes(inputValue).byteLength
+        inputByteCount.textContent = `${formatNumber(byteLength)} byte`
+      } catch {
+        inputByteCount.textContent = 'Không tính được'
+      }
+    }
+
+    function updateFormatName () {
+      const selectedFormat = getSelectedFormat()
+      outputFormatName.textContent =
+        formatLabels[selectedFormat] || 'Chưa chọn định dạng'
+    }
+
+    function isResultCurrent () {
+      const selectedFormat = getSelectedFormat()
+
+      return (
+        applicationState.valid &&
+        applicationState.sourceHtml === htmlInput.value &&
+        applicationState.format === selectedFormat &&
+        applicationState.result === resultOutput.value &&
+        applicationState.result.length > 0
+      )
+    }
+
+    function updateActionButtons () {
+      const hasCurrentResult = isResultCurrent()
+
+      copyButton.disabled = !hasCurrentResult
+      downloadButton.disabled = !hasCurrentResult
+    }
+
+    function invalidateResult (clearResult) {
+      applicationState.valid = false
+      applicationState.sourceHtml = ''
+      applicationState.format = ''
+      applicationState.result = ''
+
+      if (clearResult) {
+        resultOutput.value = ''
+      }
+
+      updateActionButtons()
+    }
+
+    function getConversionErrorMessage (error) {
+      if (error instanceof URIError) {
+        return (
+          'Không thể mã hóa URL vì nội dung chứa cặp mã Unicode không hợp lệ.'
+        )
+      }
+
+      if (error instanceof Error && error.message) {
+        return `Không thể chuyển đổi nội dung. ${error.message}`
+      }
+
+      return 'Không thể chuyển đổi nội dung do lỗi không xác định.'
+    }
+
+    function convertInput () {
+      const html = htmlInput.value
+      const selectedFormat = getSelectedFormat()
+
+      if (html.length === 0) {
+        invalidateResult(true)
+        updateStatistics()
+        setStatus(
+          'error',
+          'Hãy nhập dữ liệu HTML trước khi chuyển đổi.'
+        )
+        htmlInput.focus()
+        return
+      }
+
+      if (!formatLabels[selectedFormat]) {
+        invalidateResult(true)
+        updateStatistics()
+        setStatus(
+          'error',
+          'Hãy chọn một định dạng đầu ra hợp lệ.'
+        )
+        return
+      }
+
+      try {
+        let result = ''
+
+        switch (selectedFormat) {
+          case 'data-url':
+            result =
+              'data:text/html;charset=UTF-8,' +
+              window.encodeURIComponent(html)
+            break
+
+          case 'base64':
+            result = utf8ToBase64(html)
+            break
+
+          case 'data-base64':
+            result =
+              'data:text/html;charset=UTF-8;base64,' +
+              utf8ToBase64(html)
+            break
+
+          default:
+            throw new Error('Định dạng đầu ra không được hỗ trợ.')
+        }
+
+        resultOutput.value = result
+        applicationState.valid = true
+        applicationState.sourceHtml = html
+        applicationState.format = selectedFormat
+        applicationState.result = result
+
+        updateStatistics()
+        updateActionButtons()
+        setStatus(
+          'success',
+          `Đã tạo ${formatLabels[selectedFormat]} với ${formatNumber(
+            result.length
+          )} ký tự.`
+        )
+      } catch (error) {
+        invalidateResult(true)
+        updateStatistics()
+        setStatus('error', getConversionErrorMessage(error))
+      }
+    }
+
+    function focusWithoutScrolling (element) {
+      try {
+        element.focus({ preventScroll: true })
+      } catch {
+        element.focus()
+      }
+    }
+
+    function copyWithLegacyCommand () {
+      const previouslyFocusedElement = document.activeElement
+      const previousSelectionStart = resultOutput.selectionStart
+      const previousSelectionEnd = resultOutput.selectionEnd
+      const previousSelectionDirection = resultOutput.selectionDirection
+      let copied = false
+      let copyError = null
+
+      try {
+        focusWithoutScrolling(resultOutput)
+        resultOutput.select()
+        resultOutput.setSelectionRange(0, resultOutput.value.length)
+
+        if (typeof document.execCommand === 'function') {
+          copied = document.execCommand('copy')
+        }
+      } catch (error) {
+        copyError = error
+      } finally {
+        try {
+          resultOutput.setSelectionRange(
+            previousSelectionStart,
+            previousSelectionEnd,
+            previousSelectionDirection
+          )
+        } catch {
+          // Một số trình duyệt không cho khôi phục hướng vùng chọn.
+        }
+
+        if (
+          previouslyFocusedElement &&
+          previouslyFocusedElement !== resultOutput &&
+          typeof previouslyFocusedElement.focus === 'function'
+        ) {
+          focusWithoutScrolling(previouslyFocusedElement)
+        }
+      }
+
+      if (copyError) {
+        throw copyError
+      }
+
+      return copied
+    }
+
+    async function copyResult () {
+      if (!isResultCurrent()) {
+        updateActionButtons()
+        setStatus(
+          'error',
+          'Không có kết quả hợp lệ để sao chép. Hãy chuyển đổi lại.'
+        )
+        return
+      }
+
+      const textToCopy = applicationState.result
+
+      if (
+        navigator.clipboard &&
+        typeof navigator.clipboard.writeText === 'function'
+      ) {
+        try {
+          await navigator.clipboard.writeText(textToCopy)
+          setStatus('success', 'Đã sao chép toàn bộ kết quả.')
+          return
+        } catch {
+          // Tiếp tục bằng lệnh sao chép cũ nếu Clipboard API bị từ chối.
+        }
+      }
+
+      try {
+        const copied = copyWithLegacyCommand()
+
+        if (!copied) {
+          throw new Error('Lệnh sao chép dự phòng không thành công.')
+        }
+
+        setStatus('success', 'Đã sao chép toàn bộ kết quả.')
+      } catch {
+        setStatus(
+          'error',
+          'Không thể sao chép tự động. Hãy chọn vùng kết quả và sao chép thủ công.'
+        )
+      }
+    }
+
+    function downloadResult () {
+      if (!isResultCurrent()) {
+        updateActionButtons()
+        setStatus(
+          'error',
+          'Không có kết quả hợp lệ để tải xuống. Hãy chuyển đổi lại.'
+        )
+        return
+      }
+
+      let objectUrl = ''
+      let temporaryLink = null
+
+      try {
+        const selectedFormat = applicationState.format
+        const blob = new window.Blob(
+          [applicationState.result],
+          { type: 'text/plain;charset=UTF-8' }
+        )
+
+        objectUrl = window.URL.createObjectURL(blob)
+        temporaryLink = document.createElement('a')
+        temporaryLink.href = objectUrl
+        temporaryLink.download =
+          downloadFileNames[selectedFormat] || 'ket-qua-chuyen-doi.txt'
+        temporaryLink.hidden = true
+
+        document.body.appendChild(temporaryLink)
+        temporaryLink.click()
+
+        const urlToRevoke = objectUrl
+
+        window.setTimeout(function () {
+          window.URL.revokeObjectURL(urlToRevoke)
+        }, 1200)
+
+        objectUrl = ''
+        setStatus(
+          'success',
+          `Đã kích hoạt tải tệp ${temporaryLink.download}.`
+        )
+      } catch {
+        if (objectUrl) {
+          try {
+            window.URL.revokeObjectURL(objectUrl)
+          } catch {
+            // Không có thao tác bổ sung nếu việc dọn URL cũng thất bại.
+          }
+        }
+
+        setStatus(
+          'error',
+          'Không thể tạo hoặc kích hoạt tệp tải xuống.'
+        )
+      } finally {
+        if (temporaryLink && temporaryLink.parentNode) {
+          temporaryLink.parentNode.removeChild(temporaryLink)
+        }
+      }
+    }
+
+    function loadSample () {
+      htmlInput.value = sampleHtml
+      invalidateResult(true)
+      updateStatistics()
+      convertInput()
+      focusWithoutScrolling(htmlInput)
+    }
+
+    function clearAll () {
+      htmlInput.value = ''
+      resultOutput.value = ''
+      invalidateResult(false)
+      updateStatistics()
+      updateFormatName()
+      setStatus('info', 'Đã xóa toàn bộ nội dung và kết quả.')
+      htmlInput.focus()
+    }
+
+    htmlInput.addEventListener('input', function () {
+      const hadResult =
+        applicationState.valid || resultOutput.value.length > 0
+
+      invalidateResult(true)
+      updateStatistics()
+
+      if (hadResult) {
+        setStatus(
+          'info',
+          'Nội dung đầu vào đã thay đổi. Kết quả cũ đã được xóa; hãy chuyển đổi lại.'
+        )
+      } else if (htmlInput.value.length === 0) {
+        setStatus(
+          'info',
+          'Đầu vào đang trống. Hãy nhập dữ liệu HTML để chuyển đổi.'
+        )
+      }
+    })
+
+    formatControls.forEach(function (control) {
+      control.addEventListener('change', function () {
+        if (!control.checked) {
+          return
+        }
+
+        updateFormatName()
+        invalidateResult(true)
+        updateStatistics()
+
+        if (htmlInput.value.length > 0) {
+          convertInput()
+        } else {
+          setStatus(
+            'info',
+            `Đã chọn ${formatLabels[control.value]}. Hãy nhập dữ liệu HTML.`
+          )
+        }
+      })
+    })
+
+    document.addEventListener('keydown', function (event) {
+      if (
+        event.key === 'Enter' &&
+        (event.ctrlKey || event.metaKey) &&
+        !event.isComposing
+      ) {
+        event.preventDefault()
+        convertInput()
+      }
+    })
+
+    convertButton.addEventListener('click', convertInput)
+    copyButton.addEventListener('click', copyResult)
+    downloadButton.addEventListener('click', downloadResult)
+    sampleButton.addEventListener('click', loadSample)
+    clearButton.addEventListener('click', clearAll)
+
+    updateFormatName()
+    updateStatistics()
+    updateActionButtons()
+  </script>
+</body>
+</html>
