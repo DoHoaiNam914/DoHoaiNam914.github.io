@@ -1,0 +1,3556 @@
+<!doctype html>
+<html lang="vi" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Thái Sơ — AI Playground</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/be-vietnam-pro@5/300.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/be-vietnam-pro@5/400.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/be-vietnam-pro@5/500.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/be-vietnam-pro@5/600.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/be-vietnam-pro@5/700.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/jetbrains-mono@5/400.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/jetbrains-mono@5/500.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/jetbrains-mono@5/700.css">
+  <style>
+    :root {
+      --font-ui: 'be vietnam pro', system-ui, sans-serif;
+      --font-mono: 'jetbrains mono', ui-monospace, monospace;
+      --r-sm: 8px;
+      --r-md: 12px;
+      --r-lg: 16px;
+    }
+
+    html[data-theme='dark'] {
+      color-scheme: dark;
+      --bg: #0c0f13;
+      --panel: #12161d;
+      --panel-2: #181d26;
+      --hover: #1d2430;
+      --border: #242c38;
+      --border-soft: #1c232e;
+      --border-strong: #334052;
+      --text: #e8ecf3;
+      --muted: #94a1b3;
+      --faint: #64718a;
+      --accent: #e0663a;
+      --accent-strong: #ef7d50;
+      --accent-ink: #200d05;
+      --accent-soft: rgba(224, 102, 58, 0.14);
+      --gold: #d2a24c;
+      --gold-soft: rgba(210, 162, 76, 0.14);
+      --success: #43b280;
+      --error: #e25b52;
+      --error-soft: rgba(226, 91, 82, 0.12);
+      --code-bg: #0a0d11;
+      --user-bg: #161c26;
+      --dot: rgba(148, 161, 179, 0.13);
+      --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+      --scrim: rgba(4, 6, 9, 0.55);
+      --chevron: url(data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='10'%20height='6'%20viewBox='0%200%2010%206'%3E%3Cpath%20d='M1%201l4%204%204-4'%20fill='none'%20stroke='%2394a1b3'%20stroke-width='1.6'%20stroke-linecap='round'%20stroke-linejoin='round'/%3E%3C/svg%3E);
+    }
+
+    html[data-theme='light'] {
+      color-scheme: light;
+      --bg: #f3f0e8;
+      --panel: #fffdf8;
+      --panel-2: #f7f3ea;
+      --hover: #efe9db;
+      --border: #ded6c3;
+      --border-soft: #e7e0d0;
+      --border-strong: #c4b998;
+      --text: #232830;
+      --muted: #5d6874;
+      --faint: #8b93a0;
+      --accent: #c2491d;
+      --accent-strong: #a83d16;
+      --accent-ink: #fff6f0;
+      --accent-soft: rgba(194, 73, 29, 0.1);
+      --gold: #96700f;
+      --gold-soft: rgba(150, 112, 15, 0.12);
+      --success: #1f7d52;
+      --error: #c23a35;
+      --error-soft: rgba(194, 58, 53, 0.1);
+      --code-bg: #f6f2e7;
+      --user-bg: #f8f4ea;
+      --dot: rgba(93, 104, 116, 0.14);
+      --shadow: 0 10px 26px rgba(60, 48, 30, 0.14);
+      --scrim: rgba(38, 32, 20, 0.38);
+      --chevron: url(data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='10'%20height='6'%20viewBox='0%200%2010%206'%3E%3Cpath%20d='M1%201l4%204%204-4'%20fill='none'%20stroke='%235d6874'%20stroke-width='1.6'%20stroke-linecap='round'%20stroke-linejoin='round'/%3E%3C/svg%3E);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body { height: 100%; }
+
+    body {
+      margin: 0;
+      font-family: var(--font-ui);
+      font-size: 14px;
+      color: var(--text);
+      background: var(--bg);
+      overflow: hidden;
+    }
+
+    button, input, select, textarea { font: inherit; color: inherit; }
+
+    :focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+      border-radius: 4px;
+    }
+
+    ::selection { background: var(--accent-soft); }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+      white-space: nowrap;
+    }
+
+    .mono { font-family: var(--font-mono); }
+
+    .ic { width: 16px; height: 16px; flex: none; vertical-align: middle; }
+    .ic-sm { width: 14px; height: 14px; }
+    .ic-lg { width: 20px; height: 20px; }
+
+    .icon-btn, .mini-btn, .chip-x, .search-clear, .attach-btn, .send-btn,
+    .code-copy, .act-btn, .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .app {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      height: 100dvh;
+    }
+
+    aside { min-width: 0; }
+
+    .sidebar {
+      width: 290px;
+      background: var(--panel);
+      border-right: 1px solid var(--border);
+      overflow: hidden;
+      transition: width 0.22s ease;
+    }
+
+    .sidebar.closed { width: 0; border-right-color: transparent; }
+
+    .side-inner { width: 290px; height: 100%; display: flex; flex-direction: column; }
+
+    .side-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 14px 14px 10px;
+    }
+
+    .brand { display: flex; align-items: center; gap: 10px; min-width: 0; }
+
+    .brand-img {
+      width: 34px;
+      height: 34px;
+      flex: none;
+      border-radius: 10px;
+      object-fit: cover;
+      border: 1px solid var(--border);
+    }
+
+    .brand-name { font-weight: 700; font-size: 15px; letter-spacing: 0.2px; line-height: 1.1; }
+
+    .brand-sub {
+      display: block;
+      font-family: var(--font-mono);
+      font-size: 9.5px;
+      letter-spacing: 1.6px;
+      color: var(--faint);
+      text-transform: uppercase;
+      margin-top: 2px;
+    }
+
+    .side-body { flex: 1; min-height: 0; display: flex; flex-direction: column; padding: 0 12px; gap: 10px; }
+
+    .btn-new {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      min-height: 40px;
+      border-radius: var(--r-md);
+      border: 1px solid var(--accent);
+      background: var(--accent-soft);
+      color: var(--accent-strong);
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+
+    .btn-new:hover { background: var(--accent); color: var(--accent-ink); }
+
+    .search-wrap { position: relative; display: flex; align-items: center; }
+
+    .search-wrap > .ic {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--faint);
+      pointer-events: none;
+    }
+
+    .search-wrap input {
+      width: 100%;
+      padding: 9px 30px 9px 34px;
+      border-radius: var(--r-sm);
+      border: 1px solid var(--border);
+      background: var(--panel-2);
+      color: var(--text);
+    }
+
+    .search-wrap input::placeholder { color: var(--faint); }
+    .search-wrap input:focus { border-color: var(--accent); outline: none; }
+
+    .search-clear {
+      position: absolute;
+      right: 4px;
+      width: 26px;
+      height: 26px;
+      border: 0;
+      background: none;
+      color: var(--muted);
+      cursor: pointer;
+      border-radius: 6px;
+    }
+
+    .search-clear:hover { color: var(--text); background: var(--hover); }
+
+    .conv-list { flex: 1; min-height: 0; overflow-y: auto; padding-bottom: 8px; }
+
+    .conv-group-label {
+      margin: 10px 6px 4px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 1.4px;
+      text-transform: uppercase;
+      color: var(--faint);
+    }
+
+    .conv {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 9px 8px 9px 12px;
+      border-radius: var(--r-sm);
+      cursor: pointer;
+      border: 1px solid transparent;
+    }
+
+    .conv:hover, .conv:focus-visible { background: var(--hover); }
+
+    .conv.active { background: var(--accent-soft); border-color: var(--accent); }
+
+    .conv.active::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 8px;
+      bottom: 8px;
+      width: 3px;
+      border-radius: 3px;
+      background: var(--accent);
+    }
+
+    .conv-main { flex: 1; min-width: 0; }
+
+    .conv-title {
+      display: block;
+      font-weight: 500;
+      font-size: 13px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .conv.is-pinned .conv-title { font-weight: 600; }
+
+    .conv-meta { display: block; font-size: 11px; color: var(--faint); margin-top: 2px; }
+
+    .conv-actions { display: flex; align-items: center; gap: 2px; opacity: 0; }
+    .conv:hover .conv-actions, .conv:focus-within .conv-actions { opacity: 1; }
+
+    @media (hover: none) {
+      .conv-actions { opacity: 1; }
+    }
+
+    .mini-btn {
+      width: 28px;
+      height: 28px;
+      border: 0;
+      border-radius: 7px;
+      background: none;
+      color: var(--muted);
+      cursor: pointer;
+    }
+
+    .mini-btn:hover { background: var(--panel-2); color: var(--text); }
+    .mini-btn[aria-pressed='true'] { color: var(--gold); }
+
+    .side-empty {
+      margin: 24px 8px;
+      display: grid;
+      justify-items: center;
+      gap: 8px;
+      color: var(--faint);
+      text-align: center;
+      font-size: 12.5px;
+    }
+
+    .side-empty .ic { width: 26px; height: 26px; opacity: 0.7; }
+
+    .side-foot {
+      padding: 10px 16px;
+      border-top: 1px solid var(--border-soft);
+      font-size: 11px;
+      color: var(--faint);
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .dot { width: 7px; height: 7px; border-radius: 50%; flex: none; }
+    .dot-ok { background: var(--success); }
+    .dot-off { background: var(--error); }
+    .dot-idle { background: var(--faint); }
+
+    .main { display: flex; flex-direction: column; min-width: 0; height: 100dvh; }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px 10px;
+      padding: 9px 14px;
+      background: var(--panel);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .icon-btn {
+      width: 34px;
+      height: 34px;
+      flex: none;
+      border: 1px solid transparent;
+      border-radius: var(--r-sm);
+      background: none;
+      color: var(--muted);
+      cursor: pointer;
+      transition: background 0.15s ease, color 0.15s ease;
+    }
+
+    .icon-btn:hover { background: var(--hover); color: var(--text); }
+    .icon-btn[aria-expanded='true'] { color: var(--accent-strong); background: var(--accent-soft); }
+
+    .brand-mini { display: none; align-items: center; gap: 8px; min-width: 0; }
+    .brand-mini .brand-img { width: 28px; height: 28px; border-radius: 8px; }
+    .brand-mini strong { font-size: 13.5px; white-space: nowrap; }
+
+    .sel-field { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+
+    .sel-label {
+      font-family: var(--font-mono);
+      font-size: 9.5px;
+      letter-spacing: 1.3px;
+      text-transform: uppercase;
+      color: var(--faint);
+    }
+
+    .selwrap { position: relative; }
+
+    .selwrap select {
+      appearance: none;
+      -webkit-appearance: none;
+      max-width: 200px;
+      width: 100%;
+      padding: 6px 28px 6px 10px;
+      border-radius: var(--r-sm);
+      border: 1px solid var(--border);
+      background-color: var(--panel-2);
+      background-image: var(--chevron);
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      cursor: pointer;
+    }
+
+    .selwrap select:disabled { opacity: 0.55; cursor: not-allowed; }
+    .selwrap select:focus { border-color: var(--accent); outline: none; }
+
+    .btn-ghost {
+      border: 1px solid var(--border-strong);
+      background: none;
+      min-height: 32px;
+      gap: 7px;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--muted);
+      padding: 4px 12px;
+      border-radius: var(--r-sm);
+      cursor: pointer;
+    }
+
+    .btn-ghost:hover { color: var(--text); background: var(--hover); }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 9px;
+      border-radius: 999px;
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      letter-spacing: 0.8px;
+      font-weight: 500;
+      border: 1px solid;
+      white-space: nowrap;
+      max-width: 220px;
+    }
+
+    .badge > span:last-child { overflow: hidden; text-overflow: ellipsis; }
+    .badge-ready { color: var(--success); border-color: var(--success); }
+    .badge-idle { color: var(--muted); border-color: var(--border-strong); }
+    .badge-off { color: var(--error); border-color: var(--error); background: var(--error-soft); }
+    .badge-fmt { color: var(--gold); border-color: var(--gold); background: var(--gold-soft); }
+
+    .top-title {
+      flex: 1;
+      min-width: 0;
+      font-size: 13px;
+      color: var(--muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      text-align: center;
+    }
+
+    .top-spacer { flex: 1; }
+
+    .chat { position: relative; flex: 1; min-height: 0; display: flex; flex-direction: column; }
+
+    .chat-scroll {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      overflow-x: hidden;
+      background-image: radial-gradient(circle, var(--dot) 1px, transparent 1px);
+      background-size: 26px 26px;
+      scrollbar-width: thin;
+    }
+
+    .chat-inner { max-width: 880px; width: 100%; margin: 0 auto; padding: 18px 20px 10px; }
+
+    .chat-inner.is-empty {
+      min-height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .jump-btn {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: 130px;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 1px solid var(--border-strong);
+      background: var(--panel);
+      color: var(--muted);
+      cursor: pointer;
+      box-shadow: var(--shadow);
+      z-index: 5;
+    }
+
+    .jump-btn:hover { color: var(--text); }
+
+    .msg { display: flex; gap: 12px; padding: 16px 4px; }
+    .msg + .msg { border-top: 1px solid var(--border-soft); }
+
+    .msg-avatar {
+      width: 30px;
+      height: 30px;
+      flex: none;
+      border-radius: 9px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--border);
+    }
+
+    .av-user { background: var(--panel-2); color: var(--muted); }
+    .av-assistant { background: var(--accent-soft); color: var(--accent-strong); border-color: transparent; }
+
+    .msg-main { flex: 1; min-width: 0; }
+
+    .msg-head {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+
+    .msg-name { font-weight: 600; font-size: 13px; }
+
+    .msg-model {
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      color: var(--muted);
+      background: var(--panel-2);
+      border: 1px solid var(--border-soft);
+      padding: 2px 7px;
+      border-radius: 999px;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .msg-time { font-size: 11px; color: var(--faint); }
+
+    .msg-body { min-width: 0; }
+
+    .user-text {
+      background: var(--user-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--r-md);
+      padding: 10px 14px;
+      overflow-wrap: anywhere;
+    }
+
+    .msg-attach { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+
+    .att { border: 1px solid var(--border); background: var(--panel); border-radius: var(--r-sm); font-size: 12px; }
+
+    .att-file { display: flex; align-items: center; gap: 7px; padding: 7px 10px; color: var(--muted); max-width: 260px; }
+    .att-file .att-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .att-size { color: var(--faint); font-family: var(--font-mono); font-size: 10.5px; }
+
+    .att-img { overflow: hidden; max-width: 220px; }
+    .att-img img { display: block; width: 100%; max-height: 150px; object-fit: cover; }
+    .att-img figcaption {
+      padding: 5px 8px;
+      font-size: 11px;
+      color: var(--muted);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .msg-actions { display: flex; align-items: center; gap: 2px; margin-top: 8px; opacity: 0; transition: opacity 0.15s ease; }
+    .msg:hover .msg-actions, .msg:focus-within .msg-actions { opacity: 1; }
+
+    @media (hover: none) {
+      .msg-actions { opacity: 1; }
+    }
+
+    .act-btn {
+      height: 28px;
+      min-width: 28px;
+      padding: 0 7px;
+      gap: 5px;
+      border: 0;
+      border-radius: 7px;
+      background: none;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 11.5px;
+    }
+
+    .act-btn:hover { background: var(--hover); color: var(--text); }
+    .act-btn[aria-pressed='true'] { color: var(--accent-strong); background: var(--accent-soft); }
+
+    .err-card {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+      border: 1px solid var(--error);
+      background: var(--error-soft);
+      border-radius: var(--r-md);
+      padding: 12px 14px;
+      color: var(--text);
+    }
+
+    .err-card > .ic { color: var(--error); }
+    .err-card p { margin: 0; flex: 1; min-width: 180px; font-size: 13px; overflow-wrap: anywhere; }
+
+    .err-kind {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--error);
+      border: 1px solid var(--error);
+      padding: 2px 7px;
+      border-radius: 999px;
+    }
+
+    .stopped-note {
+      margin-top: 10px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--faint);
+    }
+
+    .dots { display: inline-flex; align-items: center; gap: 5px; padding: 8px 2px; }
+
+    .dots span {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: pulse 1.2s infinite ease-in-out;
+    }
+
+    .dots span:nth-child(2) { animation-delay: 0.15s; }
+    .dots span:nth-child(3) { animation-delay: 0.3s; }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.25; transform: scale(0.85); }
+      50% { opacity: 1; transform: scale(1); }
+    }
+
+    .cursor {
+      display: inline-block;
+      width: 8px;
+      height: 15px;
+      margin-left: 3px;
+      vertical-align: -2px;
+      background: var(--accent);
+      animation: blink 1s steps(2) infinite;
+    }
+
+    @keyframes blink { 50% { opacity: 0; } }
+
+    .md { line-height: 1.65; overflow-wrap: anywhere; }
+    .md > *:first-child { margin-top: 0; }
+    .md > *:last-child { margin-bottom: 0; }
+    .md p { margin: 8px 0; }
+    .md h3, .md h4, .md h5, .md h6 { margin: 16px 0 6px; line-height: 1.35; }
+    .md h3 { font-size: 15.5px; }
+    .md h4 { font-size: 14.5px; }
+    .md h5, .md h6 { font-size: 13.5px; }
+    .md ul, .md ol { margin: 8px 0; padding-left: 22px; }
+    .md li { margin: 3px 0; }
+    .md blockquote {
+      margin: 10px 0;
+      padding: 6px 14px;
+      border-left: 3px solid var(--gold);
+      background: var(--gold-soft);
+      border-radius: 0 var(--r-sm) var(--r-sm) 0;
+      color: var(--muted);
+    }
+    .md hr { border: 0; border-top: 1px solid var(--border); margin: 14px 0; }
+    .md a { color: var(--accent-strong); text-decoration: underline; text-underline-offset: 2px; }
+    .md code {
+      font-family: var(--font-mono);
+      font-size: 0.88em;
+      background: var(--panel-2);
+      border: 1px solid var(--border-soft);
+      border-radius: 5px;
+      padding: 1.5px 5px;
+    }
+
+    .codeblock { margin: 12px 0; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; background: var(--code-bg); }
+
+    .code-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 5px 8px 5px 12px;
+      border-bottom: 1px solid var(--border-soft);
+    }
+
+    .code-lang {
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--faint);
+    }
+
+    .code-copy {
+      gap: 5px;
+      border: 0;
+      background: none;
+      color: var(--muted);
+      font-size: 11px;
+      font-family: var(--font-mono);
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 6px;
+      min-height: 26px;
+    }
+
+    .code-copy:hover { background: var(--hover); color: var(--text); }
+    .code-copy.ok { color: var(--success); }
+
+    .codeblock pre { margin: 0; padding: 12px 14px; overflow: auto; max-height: 420px; }
+
+    .codeblock code {
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      line-height: 1.6;
+      color: var(--text);
+      background: none;
+      border: 0;
+      padding: 0;
+    }
+
+    .tbl-wrap { overflow-x: auto; margin: 10px 0; border: 1px solid var(--border); border-radius: 10px; }
+
+    .md table { border-collapse: collapse; width: 100%; min-width: 420px; font-size: 13px; }
+    .md th, .md td { border-bottom: 1px solid var(--border-soft); padding: 8px 12px; text-align: left; vertical-align: top; }
+    .md th { background: var(--panel-2); font-weight: 600; white-space: nowrap; }
+    .md tr:last-child td { border-bottom: 0; }
+
+    .welcome { max-width: 640px; width: 100%; padding: 24px 0; }
+
+    .welcome-mark {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      overflow: hidden;
+      margin-bottom: 16px;
+      border: 1px solid var(--border);
+    }
+
+    .welcome-mark img { width: 100%; height: 100%; object-fit: cover; }
+
+    .welcome h1 { margin: 0 0 6px; font-size: 24px; font-weight: 700; letter-spacing: -0.3px; }
+    .welcome > p { margin: 0 0 20px; color: var(--muted); }
+
+    .sugg-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+    .sugg {
+      text-align: left;
+      padding: 12px 14px;
+      border-radius: var(--r-md);
+      border: 1px solid var(--border);
+      background: var(--panel);
+      cursor: pointer;
+      transition: border-color 0.15s ease, transform 0.15s ease;
+      display: block;
+    }
+
+    .sugg:hover { border-color: var(--accent); transform: translateY(-1px); }
+
+    .sugg-t { display: block; font-weight: 600; font-size: 13px; margin-bottom: 3px; }
+
+    .sugg-p {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .welcome-actions { margin-top: 18px; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+
+    .welcome-demo {
+      margin-top: 14px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 12px;
+      color: var(--faint);
+    }
+
+    .composer-zone { padding: 8px 14px calc(12px + env(safe-area-inset-bottom)); background: linear-gradient(to top, var(--bg) 70%, transparent); }
+
+    .composer { max-width: 880px; margin: 0 auto; width: 100%; }
+
+    .attach-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      max-width: 240px;
+      padding: 5px 6px 5px 8px;
+      border: 1px solid var(--border);
+      background: var(--panel);
+      border-radius: var(--r-sm);
+      font-size: 12px;
+    }
+
+    .chip img { width: 26px; height: 26px; object-fit: cover; border-radius: 5px; }
+    .chip .ic { color: var(--muted); }
+
+    .chip-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 120px; }
+    .chip-size { color: var(--faint); font-family: var(--font-mono); font-size: 10px; }
+
+    .chip-x {
+      width: 24px;
+      height: 24px;
+      border: 0;
+      border-radius: 6px;
+      background: none;
+      color: var(--muted);
+      cursor: pointer;
+      flex: none;
+    }
+
+    .chip-x:hover { background: var(--error-soft); color: var(--error); }
+
+    .composer-box {
+      border: 1px solid var(--border-strong);
+      background: var(--panel);
+      border-radius: var(--r-lg);
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .composer-box:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+
+    .composer-box textarea {
+      display: block;
+      width: 100%;
+      border: 0;
+      background: none;
+      resize: none;
+      padding: 13px 15px 4px;
+      color: var(--text);
+      line-height: 1.55;
+      max-height: 220px;
+      outline: none;
+    }
+
+    .composer-box textarea::placeholder { color: var(--faint); }
+
+    .composer-bar { display: flex; align-items: center; gap: 8px; padding: 6px 8px 8px; }
+
+    .composer-hint { flex: 1; font-size: 11px; color: var(--faint); min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    .char-count { font-family: var(--font-mono); font-size: 10.5px; color: var(--faint); }
+
+    .attach-btn {
+      width: 38px;
+      height: 38px;
+      flex: none;
+      border: 0;
+      border-radius: 10px;
+      background: none;
+      color: var(--muted);
+      cursor: pointer;
+    }
+
+    .attach-btn:hover { background: var(--hover); color: var(--text); }
+
+    .send-btn {
+      width: 40px;
+      height: 40px;
+      flex: none;
+      border: 0;
+      border-radius: 11px;
+      background: var(--accent);
+      color: var(--accent-ink);
+      cursor: pointer;
+      transition: background 0.15s ease, opacity 0.15s ease;
+    }
+
+    .send-btn:hover:not(:disabled) { background: var(--accent-strong); }
+    .send-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .send-btn.stop { background: var(--error-soft); color: var(--error); border: 1px solid var(--error); }
+
+    .edit-box textarea {
+      width: 100%;
+      min-height: 72px;
+      resize: vertical;
+      padding: 10px 12px;
+      border-radius: var(--r-md);
+      border: 1px solid var(--accent);
+      background: var(--panel);
+      color: var(--text);
+      line-height: 1.55;
+    }
+
+    .edit-actions { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+
+    .settings {
+      width: 330px;
+      background: var(--panel);
+      border-left: 1px solid var(--border);
+      overflow: hidden;
+      transition: width 0.22s ease;
+    }
+
+    .settings.closed { width: 0; border-left-color: transparent; }
+
+    .set-inner { width: 330px; height: 100%; display: flex; flex-direction: column; }
+
+    .set-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 13px 14px;
+      border-bottom: 1px solid var(--border-soft);
+    }
+
+    .set-head h2 { margin: 0; font-size: 14px; font-weight: 700; }
+
+    .set-head-actions { display: flex; align-items: center; gap: 4px; }
+
+    .set-body { flex: 1; min-height: 0; overflow-y: auto; padding: 14px; }
+
+    .set-section { margin-bottom: 22px; }
+
+    .set-label {
+      margin: 0 0 10px;
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      font-weight: 500;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--faint);
+    }
+
+    .field { margin-bottom: 16px; position: relative; }
+    .field:last-child { margin-bottom: 0; }
+
+    .field-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 6px; }
+    .field-head label { font-size: 13px; font-weight: 500; }
+
+    .param-row { display: flex; align-items: center; gap: 10px; }
+
+    .param-row input[type='range'] { flex: 1 1 auto; min-width: 0; }
+
+    .param-row .param-num {
+      width: 58px;
+      flex: none;
+      text-align: right;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      padding: 4px 6px;
+    }
+
+    input[type='range'] { width: 100%; height: 26px; accent-color: var(--accent); cursor: pointer; }
+
+    .text-input, .sys-input, .num-input {
+      width: 100%;
+      padding: 9px 11px;
+      border-radius: var(--r-sm);
+      border: 1px solid var(--border);
+      background: var(--panel-2);
+      color: var(--text);
+    }
+
+    .text-input:focus, .sys-input:focus, .num-input:focus { border-color: var(--accent); outline: none; }
+
+    .sys-input { min-height: 84px; resize: vertical; line-height: 1.5; }
+
+    .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 7px; }
+    .chips:empty { display: none; }
+
+    .stop-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 4px 3px 9px;
+      border-radius: 7px;
+      border: 1px solid var(--border-strong);
+      background: var(--panel-2);
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      max-width: 100%;
+      overflow: hidden;
+    }
+
+    .stop-chip > span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+    .switch-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+
+    .switch {
+      position: relative;
+      width: 40px;
+      height: 22px;
+      flex: none;
+      border-radius: 999px;
+      border: 1px solid var(--border-strong);
+      background: var(--panel-2);
+      cursor: pointer;
+      padding: 0;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+
+    .switch .knob {
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--muted);
+      transition: transform 0.15s ease, background 0.15s ease;
+    }
+
+    .switch[aria-checked='true'] { background: var(--accent); border-color: var(--accent); }
+    .switch[aria-checked='true'] .knob { transform: translateX(18px); background: var(--accent-ink); }
+
+    .url-hint { margin: 6px 0 0; font-size: 11px; color: var(--faint); overflow-wrap: anywhere; }
+
+    .btn {
+      gap: 7px;
+      min-height: 36px;
+      padding: 7px 15px;
+      border-radius: var(--r-sm);
+      border: 1px solid var(--border-strong);
+      background: var(--panel-2);
+      color: var(--text);
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+
+    .btn:hover { background: var(--hover); }
+
+    .btn-accent { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+    .btn-accent:hover { background: var(--accent-strong); }
+
+    .btn-danger { background: var(--error); border-color: var(--error); color: #fff; }
+
+    .btn-sm { min-height: 30px; padding: 4px 11px; font-size: 12px; }
+
+    .toasts {
+      position: fixed;
+      bottom: calc(18px + env(safe-area-inset-bottom));
+      right: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      z-index: 120;
+      pointer-events: none;
+      max-width: min(380px, calc(100vw - 24px));
+    }
+
+    .toast {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 10px 14px;
+      border-radius: var(--r-md);
+      background: var(--panel);
+      border: 1px solid var(--border-strong);
+      box-shadow: var(--shadow);
+      font-size: 13px;
+      pointer-events: auto;
+      animation: toast-in 0.2s ease;
+    }
+
+    .toast.leaving { opacity: 0; transform: translateY(6px); transition: opacity 0.2s ease, transform 0.2s ease; }
+    .toast .ic { flex: none; }
+    .toast.t-success .ic { color: var(--success); }
+    .toast.t-error .ic { color: var(--error); }
+    .toast.t-info .ic { color: var(--gold); }
+
+    @keyframes toast-in {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: none; }
+    }
+
+    #modal-root { position: fixed; inset: 0; z-index: 150; display: none; }
+    #modal-root.open { display: block; }
+
+    .modal-backdrop { position: absolute; inset: 0; background: var(--scrim); }
+
+    .modal {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: min(440px, calc(100vw - 32px));
+      background: var(--panel);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--r-lg);
+      box-shadow: var(--shadow);
+      padding: 18px;
+    }
+
+    .modal h3 { margin: 0 0 8px; font-size: 15px; }
+    .modal-body { color: var(--muted); font-size: 13px; line-height: 1.55; margin-bottom: 12px; overflow-wrap: anywhere; }
+    .modal-actions { display: flex; justify-content: flex-end; align-items: center; gap: 8px; margin-top: 16px; }
+
+    #ep-root { position: fixed; inset: 0; z-index: 140; display: none; }
+    #ep-root.open { display: block; }
+
+    .ep-backdrop { position: absolute; inset: 0; background: var(--scrim); }
+
+    .ep-panel {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: min(720px, calc(100vw - 24px));
+      max-height: min(860px, 92dvh);
+      display: flex;
+      flex-direction: column;
+      background: var(--panel);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--r-lg);
+      box-shadow: var(--shadow);
+    }
+
+    .ep-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border-soft);
+    }
+
+    .ep-head h2 { margin: 0; font-size: 15px; }
+
+    .ep-body { flex: 1; min-height: 0; overflow-y: auto; padding: 16px; }
+
+    .ep-card {
+      border: 1px solid var(--border);
+      border-radius: var(--r-md);
+      padding: 12px 14px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: border-color 0.15s ease;
+    }
+
+    .ep-card:hover, .ep-card:focus-visible { border-color: var(--border-strong); }
+    .ep-card.active { border-color: var(--accent); background: var(--accent-soft); }
+
+    .ep-card-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+    .ep-name { font-size: 13.5px; }
+
+    .ep-url {
+      margin-top: 6px;
+      font-size: 11px;
+      color: var(--faint);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .ep-meta { margin-top: 4px; font-size: 11.5px; color: var(--muted); }
+
+    .ep-models { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+
+    .ep-card-actions { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
+
+    .ep-active-tag {
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      color: var(--success);
+      letter-spacing: 0.8px;
+    }
+
+    .ep-empty { color: var(--faint); font-size: 13px; text-align: center; padding: 18px 8px; }
+
+    .ep-form {
+      border-top: 1px dashed var(--border-strong);
+      margin-top: 12px;
+      padding-top: 14px;
+    }
+
+    .ep-form h3 { margin: 0 0 12px; font-size: 14px; }
+
+    .ep-form .selwrap select { max-width: none; width: 100%; }
+
+    .ep-model-row { display: flex; align-items: center; gap: 8px; }
+
+    .ep-headers { display: flex; flex-direction: column; gap: 8px; margin-bottom: 8px; }
+    .ep-headers:empty { display: none; }
+
+    .ep-header-row { display: flex; align-items: center; gap: 8px; }
+    .ep-header-row input { flex: 1; min-width: 0; padding: 7px 9px; font-size: 12.5px; }
+    .ep-header-row .ep-header-name { flex: 0 0 38%; }
+
+    .ep-form-actions { display: flex; justify-content: flex-end; align-items: center; gap: 8px; margin-top: 14px; }
+
+    .ep-foot { margin-top: 12px; display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+
+    .backdrop {
+      position: fixed;
+      inset: 0;
+      background: var(--scrim);
+      z-index: 55;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+
+    .backdrop.show { opacity: 1; pointer-events: auto; }
+
+    @media (max-width: 1279px) {
+      .app { grid-template-columns: 1fr; }
+
+      .sidebar, .settings {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        z-index: 60;
+        transition: transform 0.22s ease;
+        box-shadow: var(--shadow);
+      }
+
+      .sidebar { left: 0; width: min(320px, 88vw); transform: translateX(-104%); }
+      .sidebar.closed { width: min(320px, 88vw); }
+      .sidebar.drawer-open { transform: translateX(0); }
+      .side-inner { width: min(320px, 88vw); }
+
+      .settings { right: 0; width: min(350px, 92vw); transform: translateX(104%); }
+      .settings.closed { width: min(350px, 92vw); }
+      .settings.drawer-open { transform: translateX(0); }
+      .set-inner { width: min(350px, 92vw); }
+
+      .set-close { display: inline-flex; }
+      .brand-mini { display: flex; }
+    }
+
+    @media (min-width: 1280px) {
+      .set-close { display: none; }
+    }
+
+    @media (max-width: 767px) {
+      .topbar { padding: 8px 10px; gap: 6px 8px; }
+      .selwrap select { max-width: 138px; font-size: 12.5px; }
+      .sel-label { display: none; }
+      .top-title { display: none; }
+      .btn-ep-text { display: none; }
+      .btn-ghost { padding: 4px 9px; }
+      .chat-inner { padding: 12px 12px 8px; }
+      .composer-hint { display: none; }
+      .sugg-grid { grid-template-columns: 1fr; }
+      .toasts { right: 12px; left: 12px; align-items: stretch; }
+      .msg { gap: 9px; }
+      .ep-header-row { flex-wrap: wrap; }
+      .ep-header-row input { flex: 1 1 100%; }
+      .ep-header-row .ep-header-name { flex: 1 1 100%; }
+    }
+
+    @media (max-width: 359px) {
+      .selwrap select { max-width: 106px; }
+      .badge { display: none; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar" id="sidebar" aria-label="Lịch sử hội thoại">
+      <div class="side-inner">
+        <div class="side-head">
+          <div class="brand">
+            <img class="brand-img" src="https://image.qwenlm.ai/public_source/2a904459-04a0-4a16-97bd-8d2bc08ca7cf/1fb4640aa-2652-444a-833b-4a3a60129ba9.png" alt="">
+            <div>
+              <span class="brand-name">Thái Sơ</span>
+              <span class="brand-sub">AI Playground</span>
+            </div>
+          </div>
+          <button type="button" class="icon-btn" id="btn-side-collapse" data-icon="panelLeft" aria-label="Thu gọn thanh lịch sử"></button>
+        </div>
+        <div class="side-body">
+          <button type="button" class="btn-new" id="btn-new">
+            <span data-icon="plus"></span>
+            Cuộc trò chuyện mới
+          </button>
+          <div class="search-wrap">
+            <span data-icon="search"></span>
+            <input type="search" id="search" placeholder="Tìm hội thoại…" aria-label="Tìm kiếm lịch sử hội thoại" autocomplete="off">
+            <button type="button" class="search-clear" id="btn-search-clear" data-icon="x" aria-label="Xoá từ khoá tìm kiếm" hidden></button>
+          </div>
+          <nav class="conv-list" id="conv-list" aria-label="Danh sách hội thoại"></nav>
+        </div>
+        <div class="side-foot">
+          <span class="dot dot-idle"></span>
+          Lịch sử lưu cục bộ
+        </div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <button type="button" class="icon-btn" id="btn-menu" data-icon="panelLeft" aria-label="Mở hoặc đóng thanh lịch sử" aria-expanded="true"></button>
+        <div class="brand-mini">
+          <img class="brand-img" src="https://image.qwenlm.ai/public_source/2a904459-04a0-4a16-97bd-8d2bc08ca7cf/1fb4640aa-2652-444a-833b-4a3a60129ba9.png" alt="">
+          <strong>Thái Sơ</strong>
+        </div>
+        <div class="sel-field">
+          <span class="sel-label" id="lbl-endpoint">Kết nối</span>
+          <div class="selwrap">
+            <select id="endpoint-select" aria-labelledby="lbl-endpoint"></select>
+          </div>
+        </div>
+        <div class="sel-field">
+          <span class="sel-label" id="lbl-model">Model</span>
+          <div class="selwrap">
+            <select id="model-select" aria-labelledby="lbl-model"></select>
+          </div>
+        </div>
+        <button type="button" class="btn btn-ghost" id="btn-ep" aria-label="Quản lý kết nối API">
+          <span data-icon="plug"></span>
+          <span class="btn-ep-text">Kết nối</span>
+        </button>
+        <div class="top-title" id="top-title"></div>
+        <div class="top-spacer"></div>
+        <span class="badge badge-idle" id="status-chip"></span>
+        <button type="button" class="icon-btn" id="btn-settings" data-icon="sliders" aria-label="Mở hoặc đóng bảng cấu hình" aria-expanded="true"></button>
+        <button type="button" class="icon-btn" id="btn-theme" aria-label="Chuyển giao diện sáng tối"></button>
+      </header>
+
+      <section class="chat" aria-label="Khu vực hội thoại">
+        <div class="chat-scroll" id="chat-scroll">
+          <div class="chat-inner" id="messages" role="log"></div>
+        </div>
+        <button type="button" class="jump-btn" id="btn-jump" data-icon="arrowDown" aria-label="Về cuối hội thoại" hidden></button>
+        <div class="composer-zone">
+          <div class="composer">
+            <div class="attach-row" id="attach-row" hidden></div>
+            <div class="composer-box">
+              <textarea id="prompt" rows="1" placeholder="Nhắn tin tới model…" aria-label="Nội dung prompt"></textarea>
+              <div class="composer-bar">
+                <button type="button" class="attach-btn" id="btn-attach" data-icon="paperclip" aria-label="Đính kèm tệp"></button>
+                <span class="composer-hint">Enter để gửi · Shift+Enter xuống dòng</span>
+                <span class="char-count" id="char-count" aria-hidden="true"></span>
+                <button type="button" class="send-btn" id="btn-send" data-icon="send" aria-label="Gửi"></button>
+                <button type="button" class="send-btn stop" id="btn-stop" data-icon="stop" aria-label="Dừng tạo phản hồi" hidden></button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <aside class="settings" id="settings" aria-label="Bảng cấu hình">
+      <div class="set-inner">
+        <div class="set-head">
+          <h2>Cấu hình</h2>
+          <div class="set-head-actions">
+            <button type="button" class="btn btn-sm" id="btn-reset">
+              <span data-icon="rotate"></span>
+              Đặt lại
+            </button>
+            <button type="button" class="icon-btn set-close" id="btn-set-close" data-icon="x" aria-label="Đóng bảng cấu hình"></button>
+          </div>
+        </div>
+        <div class="set-body">
+          <section class="set-section">
+            <h3 class="set-label">Chỉ thị hệ thống</h3>
+            <textarea class="sys-input" id="sys-input" placeholder="Ví dụ: Bạn là trợ lý kỹ thuật, trả lời ngắn gọn bằng tiếng Việt…" aria-label="Chỉ thị hệ thống"></textarea>
+          </section>
+
+          <section class="set-section">
+            <h3 class="set-label">Tham số sinh</h3>
+
+            <div class="field">
+              <div class="field-head"><label for="temp">Temperature</label></div>
+              <div class="param-row">
+                <input type="range" id="temp" min="0" max="2" step="0.1">
+                <input type="number" class="num-input param-num" id="temp-num" min="0" max="2" step="0.1" aria-label="Temperature">
+              </div>
+            </div>
+
+            <div class="field">
+              <div class="field-head"><label for="topp">Top P</label></div>
+              <div class="param-row">
+                <input type="range" id="topp" min="0" max="1" step="0.05">
+                <input type="number" class="num-input param-num" id="topp-num" min="0" max="1" step="0.05" aria-label="Top P">
+              </div>
+            </div>
+
+            <div class="field">
+              <div class="field-head"><label for="maxt">Token đầu ra tối đa</label></div>
+              <input type="number" class="num-input" id="maxt" min="1" step="1" placeholder="Không giới hạn">
+            </div>
+
+            <div class="field">
+              <div class="switch-row">
+                <label for="sw-stream" style="cursor: pointer;">Streaming</label>
+                <button type="button" class="switch" id="sw-stream" role="switch" aria-checked="true" aria-label="Bật tắt streaming">
+                  <span class="knob"></span>
+                </button>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <div class="backdrop" id="backdrop"></div>
+  <div class="toasts" id="toasts" role="status" aria-live="polite"></div>
+  <div class="sr-only" id="sr-live" aria-live="polite"></div>
+  <div id="modal-root"></div>
+
+  <div id="ep-root">
+    <div class="ep-backdrop" data-ep-close></div>
+    <div class="ep-panel" role="dialog" aria-modal="true" aria-labelledby="ep-title">
+      <div class="ep-head">
+        <h2 id="ep-title">Kết nối API</h2>
+        <button type="button" class="icon-btn" id="btn-ep-close" data-icon="x" aria-label="Đóng quản lý kết nối"></button>
+      </div>
+      <div class="ep-body">
+        <div id="ep-list"></div>
+
+        <div class="ep-form" id="ep-form" hidden>
+          <h3 id="ep-form-title">Thêm kết nối</h3>
+          <div class="field">
+            <div class="field-head"><label for="ep-name">Tên kết nối</label></div>
+            <input type="text" class="text-input" id="ep-name" placeholder="Ví dụ: OpenAI của tôi">
+          </div>
+          <div class="field">
+            <div class="field-head"><label for="ep-format">Định dạng API</label></div>
+            <div class="selwrap"><select id="ep-format"></select></div>
+          </div>
+          <div class="field">
+            <div class="field-head"><label for="ep-base">Endpoint gốc</label></div>
+            <input type="text" class="text-input mono" id="ep-base" placeholder="https://…" autocomplete="off">
+            <p class="url-hint">URL sẽ gọi: <code id="ep-url-hint" class="mono"></code></p>
+          </div>
+          <div class="field">
+            <div class="field-head"><label for="ep-key">Khoá API</label></div>
+            <input type="password" class="text-input mono" id="ep-key" placeholder="Khoá bí mật…" autocomplete="off">
+          </div>
+          <div class="field">
+            <div class="field-head"><label for="ep-headers-list">Headers tuỳ chỉnh</label></div>
+            <div class="ep-headers" id="ep-headers-list"></div>
+            <button type="button" class="btn btn-sm" id="btn-ep-header-add">
+              <span data-icon="plus"></span>
+              Thêm header
+            </button>
+          </div>
+          <div class="field">
+            <div class="field-head"><label for="ep-model-input">Model tuỳ chỉnh</label></div>
+            <div class="chips" id="ep-model-chips"></div>
+            <div class="ep-model-row">
+              <input type="text" class="text-input mono" id="ep-model-input" placeholder="Nhập ID model rồi nhấn Enter">
+              <button type="button" class="btn btn-sm" id="btn-ep-model-add">Thêm</button>
+            </div>
+          </div>
+          <div class="ep-form-actions">
+            <button type="button" class="btn" id="btn-ep-cancel">Huỷ</button>
+            <button type="button" class="btn btn-accent" id="btn-ep-save">Lưu kết nối</button>
+          </div>
+        </div>
+
+        <div class="ep-foot">
+          <button type="button" class="btn btn-accent" id="btn-ep-add">
+            <span data-icon="plus"></span>
+            Thêm kết nối
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <input type="file" id="file-input" multiple hidden accept="image/png,image/jpeg,image/webp,image/gif,.txt,.md,.markdown,.pdf,.json,text/plain,text/markdown,application/pdf,application/json">
+  <noscript>Ứng dụng cần bật JavaScript để hoạt động.</noscript>
+
+  <script>
+    const $ = sel => document.querySelector(sel)
+    const $$ = sel => Array.from(document.querySelectorAll(sel))
+
+    function uid () {
+      if (window.crypto && crypto.randomUUID) return crypto.randomUUID()
+      return 'id-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10)
+    }
+
+    const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v))
+
+    function debounce (fn, ms) {
+      let t = null
+      return (...args) => {
+        clearTimeout(t)
+        t = setTimeout(() => fn(...args), ms)
+      }
+    }
+
+    function escapeHtml (s) {
+      return String(s).replace(/[&<>"']/g, c => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+      })[c])
+    }
+
+    function timeAgoVi (ts) {
+      const m = Math.floor((Date.now() - ts) / 60000)
+      if (m < 1) return 'vừa xong'
+      if (m < 60) return m + ' phút trước'
+      const h = Math.floor(m / 60)
+      if (h < 24) return h + ' giờ trước'
+      return new Date(ts).toLocaleDateString('vi-VN')
+    }
+
+    function fmtBytes (n) {
+      if (!Number.isFinite(n)) return ''
+      if (n < 1024) return n + ' B'
+      if (n < 1024 * 1024) return (n / 1024).toFixed(1) + ' KB'
+      return (n / 1024 / 1024).toFixed(1) + ' MB'
+    }
+
+    async function copyText (text) {
+      try {
+        await navigator.clipboard.writeText(text)
+        return true
+      } catch (err) {
+        try {
+          const ta = document.createElement('textarea')
+          ta.value = text
+          ta.style.position = 'fixed'
+          ta.style.opacity = '0'
+          document.body.appendChild(ta)
+          ta.select()
+          document.execCommand('copy')
+          ta.remove()
+          return true
+        } catch (err2) {
+          return false
+        }
+      }
+    }
+
+    function announce (text) {
+      const live = $('#sr-live')
+      live.textContent = ''
+      setTimeout(() => { live.textContent = text }, 30)
+    }
+
+    const enc64 = s => btoa(unescape(encodeURIComponent(s)))
+
+    function dec64 (s) {
+      try { return decodeURIComponent(escape(atob(s))) } catch (err) { return '' }
+    }
+
+    const trimBase = b => String(b || '').trim().replace(/\/+$/, '')
+
+    function parseDataUri (uri) {
+      const m = /^data:([^;]+);base64,([\s\S]*)$/.exec(uri || '')
+      if (!m) return null
+      return { mime: m[1], base64: m[2], url: uri }
+    }
+
+    const ICONS = {
+      plus: '<path d="M5 12h14"/><path d="M12 5v14"/>',
+      search: '<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>',
+      panelLeft: '<rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/>',
+      x: '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
+      sliders: '<line x1="21" x2="14" y1="4" y2="4"/><line x1="10" x2="3" y1="4" y2="4"/><line x1="21" x2="12" y1="12" y2="12"/><line x1="8" x2="3" y1="12" y2="12"/><line x1="21" x2="16" y1="20" y2="20"/><line x1="12" x2="3" y1="20" y2="20"/><line x1="14" x2="14" y1="2" y2="6"/><line x1="8" x2="8" y1="10" y2="14"/><line x1="16" x2="16" y1="18" y2="22"/>',
+      sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>',
+      moon: '<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>',
+      pin: '<path d="M12 17v5"/><path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1z"/>',
+      pinOff: '<path d="M12 17v5"/><path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1z"/><path d="m3 3 18 18"/>',
+      pencil: '<path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/>',
+      trash: '<path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/>',
+      copy: '<rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>',
+      check: '<path d="M20 6 9 17l-5-5"/>',
+      send: '<path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4z"/>',
+      stop: '<rect width="12" height="12" x="6" y="6" rx="1.5"/>',
+      paperclip: '<path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/>',
+      fileText: '<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/>',
+      thumbsUp: '<path d="M7 10v12"/><path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88Z"/>',
+      thumbsDown: '<path d="M17 14V2"/><path d="M9 18.12 10 14H4.17a2 2 0 0 1-1.92-2.56l2.33-8A2 2 0 0 1 6.5 2H20a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.76a2 2 0 0 0-1.79 1.11L12 22a3.13 3.13 0 0 1-3-3.88Z"/>',
+      rotate: '<path d="M21 12a9 9 0 1 1-2.64-6.36L21 8"/><path d="M21 3v5h-5"/>',
+      alert: '<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 20h16a2 2 0 0 0 1.73-2Z"/><path d="M12 9v4"/><path d="M12 17h.01"/>',
+      info: '<circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/>',
+      chevDown: '<path d="m6 9 6 6 6-6"/>',
+      arrowDown: '<path d="M12 5v14"/><path d="m19 12-7 7-7-7"/>',
+      spark: '<path d="M12 2l2.4 6.4L21 11l-6.6 2.6L12 20l-2.4-6.4L3 11l6.6-2.6z"/>',
+      user: '<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
+      message: '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
+      plug: '<path d="M12 22v-5"/><path d="M9 8V2"/><path d="M15 8V2"/><path d="M18 8v5a4 4 0 0 1-4 4h-4a4 4 0 0 1-4-4V8Z"/>'
+    }
+
+    function ic (name, extra) {
+      const cls = 'ic' + (extra ? ' ' + extra : '')
+      return `<svg class="${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[name] || ''}</svg>`
+    }
+
+    const BRAND = 'Thái Sơ'
+    const STR = {
+      newTitle: 'Cuộc trò chuyện mới',
+      you: 'Bạn',
+      copied: 'Đã sao chép',
+      copyFail: 'Không sao chép được',
+      copyCode: 'Sao chép mã',
+      copyMsg: 'Sao chép tin nhắn',
+      edit: 'Sửa',
+      regen: 'Tạo lại',
+      retry: 'Thử lại',
+      rateUp: 'Hữu ích',
+      rateDown: 'Chưa hữu ích',
+      save: 'Lưu',
+      cancel: 'Huỷ',
+      ok: 'OK',
+      delTitle: 'Xoá hội thoại?',
+      delBody: 'Hội thoại sẽ bị xoá vĩnh viễn khỏi thiết bị của bạn.',
+      delOk: 'Xoá',
+      renameTitle: 'Đổi tên hội thoại',
+      pinnedGroup: 'Đã ghim',
+      recentGroup: 'Gần đây',
+      emptyList: 'Chưa có hội thoại nào. Bấm “Cuộc trò chuyện mới” để bắt đầu.',
+      noResult: 'Không tìm thấy hội thoại phù hợp.',
+      clearSearch: 'Xoá từ khoá',
+      stopped: 'Đã dừng tạo phản hồi.',
+      stoppedNote: 'Đã dừng theo yêu cầu',
+      annGenerating: 'Đang gọi API',
+      annDone: 'Phản hồi đã hoàn tất',
+      annStopped: 'Đã dừng tạo phản hồi',
+      welcomeTitle: 'Chào Nam,',
+      welcomeSub: 'Chọn một gợi ý bên dưới hoặc nhập yêu cầu của bạn.',
+      welcomeNoEp: 'Bạn chưa có kết nối nào. Thêm endpoint và model tuỳ chỉnh để bắt đầu.',
+      addEp: 'Thêm kết nối API',
+      maxFiles: 'Tối đa 4 tệp đính kèm.',
+      fileTooBig: 'vượt quá 5MB.',
+      fileBadType: 'định dạng không được hỗ trợ.',
+      removeFile: 'Gỡ tệp',
+      genBusy: 'Hãy dừng phản hồi đang tạo trước.',
+      emptyPrompt: 'Không được để trống.',
+      needEndpoint: 'Hãy thêm kết nối API trước khi gửi.',
+      needModel: 'Kết nối này chưa có model nào. Mở “Kết nối” để thêm model tuỳ chỉnh.'
+    }
+
+    const SUGGESTIONS = [
+      { t: 'Giải thích cơ chế attention', p: 'Giải thích ngắn gọn cơ chế attention trong mô hình transformer, kèm một ẩn dụ dễ hiểu.' },
+      { t: 'Viết hàm debounce', p: 'Viết hàm debounce trong JavaScript, có chú thích và ví dụ dùng với ô tìm kiếm.' },
+      { t: 'So sánh REST và GraphQL', p: 'Lập bảng so sánh REST và GraphQL theo tiêu chí: hiệu năng, độ phức tạp, caching, học thuật, hệ sinh thái.' },
+      { t: 'Ý tưởng sản phẩm AI', p: 'Gợi ý 5 ý tưởng sản phẩm AI phù hợp thị trường Việt Nam, nêu rõ vấn đề và đối tượng.' }
+    ]
+
+    const FORMAT_ORDER = ['openai-chat', 'openai-responses', 'anthropic-messages', 'gemini-generate', 'gemini-interactions']
+
+    function extractInteractionText (it) {
+      if (!it) return ''
+      if (typeof it.output_text === 'string' && it.output_text) return it.output_text
+      const out = []
+      const steps = it.steps || it.output || []
+      steps.forEach(st => {
+        if (st && st.type === 'model_output' && Array.isArray(st.content)) {
+          st.content.forEach(c => {
+            if (c && c.type === 'text' && typeof c.text === 'string') out.push(c.text)
+          })
+        }
+      })
+      return out.join('')
+    }
+
+    function geminiPartsText (json) {
+      const cand = json.candidates && json.candidates[0]
+      if (!cand || !cand.content || !Array.isArray(cand.content.parts)) return ''
+      let text = ''
+      cand.content.parts.forEach(p => {
+        if (typeof p.text === 'string') text += p.text
+      })
+      return text
+    }
+
+    const API_FORMATS = {
+      'openai-chat': {
+        label: 'OpenAI Chat Completions',
+        presetBase: 'https://api.openai.com/v1',
+        buildUrl (base, model, stream) {
+          return trimBase(base) + '/chat/completions'
+        },
+        headers (key) {
+          return { 'content-type': 'application/json', authorization: 'Bearer ' + key }
+        },
+        build (ctx) {
+          const s = ctx.settings
+          const body = {
+            model: ctx.model,
+            stream: ctx.stream,
+            messages: ctx.messages.map(m => {
+              if (m.role === 'user' && m.images && m.images.length) {
+                const parts = [{ type: 'text', text: m.content }]
+                m.images.forEach(img => parts.push({ type: 'image_url', image_url: { url: img.url } }))
+                return { role: 'user', content: parts }
+              }
+              return { role: m.role, content: m.content }
+            })
+          }
+          body.temperature = s.temperature
+          body.top_p = s.topP
+          if (s.maxTokens != null) body.max_completion_tokens = s.maxTokens
+          return { url: this.buildUrl(ctx.base, ctx.model, ctx.stream), headers: this.headers(ctx.apiKey), body }
+        },
+        parseEvent (evt) {
+          if (evt.raw === '[DONE]') return { done: true }
+          const d = evt.data
+          if (d.error) return { error: d.error.message || 'Lỗi API' }
+          const delta = d.choices && d.choices[0] && d.choices[0].delta
+          if (delta && delta.content) return { delta: delta.content }
+          return {}
+        },
+        parseFull (json) {
+          const ch = json.choices && json.choices[0]
+          return ch && ch.message ? (ch.message.content || '') : ''
+        },
+        parseError (json) {
+          return json.error && json.error.message ? json.error.message : ''
+        }
+      },
+
+      'openai-responses': {
+        label: 'OpenAI Responses',
+        presetBase: 'https://api.openai.com/v1',
+        buildUrl (base, model, stream) {
+          return trimBase(base) + '/responses'
+        },
+        headers (key) {
+          return { 'content-type': 'application/json', authorization: 'Bearer ' + key }
+        },
+        build (ctx) {
+          const s = ctx.settings
+          const input = []
+          ctx.messages.forEach(m => {
+            const contentType = m.role === 'user' ? 'input_text' : 'output_text'
+            const content = [{ type: contentType, text: m.content }]
+            if (m.role === 'user' && m.images) {
+              m.images.forEach(img => content.push({ type: 'input_image', image_url: img.url, detail: 'auto' }))
+            }
+            input.push({ type: 'message', role: m.role, content })
+          })
+          const body = {
+            model: ctx.model,
+            input,
+            stream: ctx.stream,
+            store: false,
+            temperature: s.temperature,
+            top_p: s.topP
+          }
+          if (s.maxTokens != null) body.max_output_tokens = s.maxTokens
+          if (ctx.system) body.instructions = ctx.system
+          return { url: this.buildUrl(ctx.base, ctx.model, ctx.stream), headers: this.headers(ctx.apiKey), body }
+        },
+        parseEvent (evt) {
+          const d = evt.data
+          const t = d.type || evt.event
+          if (t === 'response.output_text.delta') return d.delta ? { delta: d.delta } : {}
+          if (t === 'error') return { error: d.message || 'Lỗi API' }
+          if (t === 'response.failed') {
+            const msg = d.response && d.response.error && d.response.error.message
+            return { error: msg || 'Lỗi API' }
+          }
+          if (t === 'response.completed') return { done: true }
+          return {}
+        },
+        parseFull (json) {
+          if (typeof json.output_text === 'string' && json.output_text) return json.output_text
+          const out = []
+          const items = Array.isArray(json.output) ? json.output : []
+          items.forEach(item => {
+            if (item && item.type === 'message' && Array.isArray(item.content)) {
+              item.content.forEach(c => {
+                if (c && c.type === 'output_text' && typeof c.text === 'string') out.push(c.text)
+              })
+            }
+          })
+          return out.join('')
+        },
+        parseError (json) {
+          return json.error && json.error.message ? json.error.message : ''
+        }
+      },
+
+      'anthropic-messages': {
+        label: 'Anthropic Messages (Claude)',
+        presetBase: 'https://api.anthropic.com',
+        buildUrl (base, model, stream) {
+          const root = trimBase(base)
+          return root.endsWith('/v1') ? root + '/messages' : root + '/v1/messages'
+        },
+        headers (key) {
+          return {
+            'content-type': 'application/json',
+            'x-api-key': key,
+            'anthropic-version': '2023-06-01',
+            'anthropic-dangerous-direct-browser-access': 'true'
+          }
+        },
+        build (ctx) {
+          const s = ctx.settings
+          const msgs = []
+          let curRole = null
+          let curParts = []
+          const flush = () => {
+            if (curRole && curParts.length) msgs.push({ role: curRole, content: curParts })
+            curParts = []
+          }
+          ctx.messages.forEach(m => {
+            const role = m.role === 'assistant' ? 'assistant' : 'user'
+            const parts = [{ type: 'text', text: m.content }]
+            if (m.role === 'user' && m.images) {
+              m.images.forEach(img => parts.push({ type: 'image', source: { type: 'base64', media_type: img.mime, data: img.base64 } }))
+            }
+            if (role !== curRole) {
+              flush()
+              curRole = role
+            }
+            parts.forEach(p => curParts.push(p))
+          })
+          flush()
+          if (!msgs.length) msgs.push({ role: 'user', content: [{ type: 'text', text: ' ' }] })
+          const body = {
+            model: ctx.model,
+            max_tokens: s.maxTokens != null ? s.maxTokens : 8192,
+            stream: ctx.stream,
+            messages: msgs,
+            temperature: clamp(s.temperature, 0, 1),
+            top_p: s.topP
+          }
+          if (ctx.system) body.system = ctx.system
+          return { url: this.buildUrl(ctx.base, ctx.model, ctx.stream), headers: this.headers(ctx.apiKey), body }
+        },
+        parseEvent (evt) {
+          const d = evt.data
+          const t = d.type
+          if (t === 'content_block_delta' && d.delta && d.delta.type === 'text_delta') {
+            return { delta: d.delta.text || '' }
+          }
+          if (t === 'error') return { error: (d.error && d.error.message) || 'Lỗi API' }
+          if (t === 'message_stop') return { done: true }
+          return {}
+        },
+        parseFull (json) {
+          const out = []
+          const blocks = Array.isArray(json.content) ? json.content : []
+          blocks.forEach(b => {
+            if (b && b.type === 'text' && typeof b.text === 'string') out.push(b.text)
+          })
+          return out.join('')
+        },
+        parseError (json) {
+          return json.error && json.error.message ? json.error.message : ''
+        }
+      },
+
+      'gemini-generate': {
+        label: 'Gemini Generate Content',
+        presetBase: 'https://generativelanguage.googleapis.com/v1beta',
+        buildUrl (base, model, stream) {
+          const root = trimBase(base)
+          const verb = stream ? ':streamGenerateContent?alt=sse' : ':generateContent'
+          return root + '/models/' + encodeURIComponent(model) + verb
+        },
+        headers (key) {
+          return { 'content-type': 'application/json', 'x-goog-api-key': key }
+        },
+        build (ctx) {
+          const s = ctx.settings
+          const contents = []
+          ctx.messages.forEach(m => {
+            const role = m.role === 'assistant' ? 'model' : 'user'
+            const parts = [{ text: m.content }]
+            if (m.role === 'user' && m.images) {
+              m.images.forEach(img => parts.push({ inlineData: { mimeType: img.mime, data: img.base64 } }))
+            }
+            const last = contents[contents.length - 1]
+            if (last && last.role === role) last.parts.push(...parts)
+            else contents.push({ role, parts })
+          })
+          const gen = {
+            temperature: s.temperature,
+            topP: s.topP
+          }
+          if (s.maxTokens != null) gen.maxOutputTokens = s.maxTokens
+          const body = { contents, generationConfig: gen }
+          if (ctx.system) body.systemInstruction = { parts: [{ text: ctx.system }] }
+          return { url: this.buildUrl(ctx.base, ctx.model, ctx.stream), headers: this.headers(ctx.apiKey), body }
+        },
+        parseEvent (evt) {
+          const d = evt.data
+          const block = d.promptFeedback && d.promptFeedback.blockReason
+          if (block) return { error: 'Yêu cầu bị chặn: ' + block }
+          const cand = d.candidates && d.candidates[0]
+          if (!cand) return {}
+          if (cand.finishReason === 'SAFETY' || cand.finishReason === 'PROHIBITED_CONTENT') {
+            return { error: 'Phản hồi bị bộ lọc an toàn chặn (' + cand.finishReason + ').' }
+          }
+          const text = geminiPartsText(d)
+          return text ? { delta: text } : {}
+        },
+        parseFull (json) {
+          const block = json.promptFeedback && json.promptFeedback.blockReason
+          if (block) throw apiError('api', 'Yêu cầu bị chặn: ' + block)
+          return geminiPartsText(json)
+        },
+        parseError (json) {
+          return json.error && json.error.message ? json.error.message : ''
+        }
+      },
+
+      'gemini-interactions': {
+        label: 'Gemini Interactions',
+        presetBase: 'https://generativelanguage.googleapis.com/v1beta',
+        buildUrl (base, model, stream) {
+          return trimBase(base) + '/interactions'
+        },
+        headers (key) {
+          return { 'content-type': 'application/json', 'x-goog-api-key': key }
+        },
+        build (ctx) {
+          const s = ctx.settings
+          const input = []
+          ctx.messages.forEach(m => {
+            const content = [{ type: 'text', text: m.content }]
+            if (m.role === 'user' && m.images) {
+              m.images.forEach(img => content.push({ type: 'image', data: img.base64, mime_type: img.mime }))
+            }
+            input.push(m.role === 'assistant' ? { type: 'model_output', content } : { type: 'user_input', content })
+          })
+          const body = { model: ctx.model, input, stream: ctx.stream }
+          if (ctx.system) body.system_instruction = ctx.system
+          const gc = {
+            temperature: s.temperature,
+            top_p: s.topP
+          }
+          if (s.maxTokens != null) gc.max_output_tokens = s.maxTokens
+          body.generation_config = gc
+          return { url: this.buildUrl(ctx.base, ctx.model, ctx.stream), headers: this.headers(ctx.apiKey), body }
+        },
+        parseEvent (evt) {
+          const d = evt.data
+          const t = d.event_type || evt.event
+          if (t === 'step.delta' && d.delta && d.delta.type === 'text') {
+            return { delta: d.delta.text || '' }
+          }
+          if (t === 'error') return { error: (d.error && d.error.message) || d.message || 'Lỗi API' }
+          if (t === 'interaction.completed') {
+            return { done: true, final: extractInteractionText(d.interaction) }
+          }
+          return {}
+        },
+        parseFull (json) {
+          return extractInteractionText(json)
+        },
+        parseError (json) {
+          return json.error && json.error.message ? json.error.message : ''
+        }
+      }
+    }
+
+    async function callApi (url, init) {
+      try {
+        return await fetch(url, init)
+      } catch (err) {
+        if (err && err.name === 'AbortError') throw err
+        throw apiError('network', 'Không gọi được API. Kiểm tra mạng, endpoint hoặc CORS.')
+      }
+    }
+
+    async function readSseStream (resp, onEvent) {
+      const reader = resp.body.getReader()
+      const decoder = new TextDecoder()
+      let buf = ''
+      let eventName = ''
+      let dataLines = []
+      const dispatch = () => {
+        if (dataLines.length) onEvent({ event: eventName, data: dataLines.join('\n'), raw: dataLines.join('\n') })
+        eventName = ''
+        dataLines = []
+      }
+      while (true) {
+        const step = await reader.read()
+        if (step.done) break
+        buf += decoder.decode(step.value, { stream: true })
+        let nl = buf.indexOf('\n')
+        while (nl !== -1) {
+          let line = buf.slice(0, nl)
+          buf = buf.slice(nl + 1)
+          if (line.endsWith('\r')) line = line.slice(0, -1)
+          if (!line) {
+            dispatch()
+          } else if (line.startsWith(':')) {
+            /* bỏ qua dòng comment của SSE */
+          } else if (line.startsWith('event:')) {
+            eventName = line.slice(6).trim()
+          } else if (line.startsWith('data:')) {
+            dataLines.push(line.slice(5).replace(/^ /, ''))
+          }
+          nl = buf.indexOf('\n')
+        }
+      }
+      dispatch()
+    }
+
+    function apiError (kind, message, status) {
+      const e = new Error(message)
+      e.kind = kind
+      e.status = status
+      return e
+    }
+
+    function normalizeError (err) {
+      if (err && err.kind) return { kind: err.kind, message: err.message, status: err.status }
+      return { kind: 'api', message: err && err.message ? err.message : 'Lỗi không xác định.' }
+    }
+
+    const STORAGE_KEY = 'thaiso.playground.v2'
+
+    function defaultSettings () {
+      return {
+        temperature: 1,
+        topP: 1,
+        maxTokens: 2048,
+        streaming: true,
+        systemInstructions: ''
+      }
+    }
+
+    function sanitizeMessage (raw) {
+      if (!raw || typeof raw !== 'object') return null
+      const role = raw.role === 'user' || raw.role === 'assistant' ? raw.role : null
+      if (!role) return null
+      const msg = {
+        id: typeof raw.id === 'string' ? raw.id : uid(),
+        role: role,
+        content: typeof raw.content === 'string' ? raw.content : '',
+        createdAt: Number.isFinite(raw.createdAt) ? raw.createdAt : Date.now(),
+        feedback: raw.feedback === 'up' || raw.feedback === 'down' ? raw.feedback : null
+      }
+      if (typeof raw.modelLabel === 'string') msg.modelLabel = raw.modelLabel
+      if (typeof raw.endpointName === 'string') msg.endpointName = raw.endpointName
+      let status = raw.status
+      if (status === 'streaming') status = 'stopped'
+      if (status !== 'complete' && status !== 'stopped' && status !== 'error') status = 'complete'
+      msg.status = status
+      if (raw.error && typeof raw.error.message === 'string') {
+        msg.error = { kind: typeof raw.error.kind === 'string' ? raw.error.kind : 'api', message: raw.error.message }
+      }
+      if (Array.isArray(raw.attachments)) {
+        msg.attachments = raw.attachments
+          .filter(a => a && typeof a.name === 'string')
+          .slice(0, 4)
+          .map(a => ({ name: a.name, size: Number(a.size) || 0, type: typeof a.type === 'string' ? a.type : '' }))
+      }
+      return msg
+    }
+
+    function sanitizeConv (raw) {
+      if (!raw || typeof raw !== 'object' || !Array.isArray(raw.messages)) return null
+      return {
+        id: typeof raw.id === 'string' ? raw.id : uid(),
+        title: typeof raw.title === 'string' && raw.title ? raw.title : STR.newTitle,
+        pinned: raw.pinned === true,
+        renamed: raw.renamed === true,
+        createdAt: Number.isFinite(raw.createdAt) ? raw.createdAt : Date.now(),
+        updatedAt: Number.isFinite(raw.updatedAt) ? raw.updatedAt : Date.now(),
+        messages: raw.messages.map(sanitizeMessage).filter(Boolean)
+      }
+    }
+
+    function sanitizeEndpoint (raw) {
+      if (!raw || typeof raw !== 'object') return null
+      const format = API_FORMATS[raw.format] ? raw.format : null
+      if (!format) return null
+      return {
+        id: typeof raw.id === 'string' ? raw.id : uid(),
+        name: typeof raw.name === 'string' && raw.name ? raw.name : 'Kết nối',
+        format: format,
+        baseUrl: typeof raw.baseUrl === 'string' ? raw.baseUrl : '',
+        models: Array.isArray(raw.models) ? raw.models.filter(m => typeof m === 'string' && m.trim()).slice(0, 50) : [],
+        headers: []
+      }
+    }
+
+    function sanitizeSettings (raw) {
+      const base = defaultSettings()
+      if (!raw || typeof raw !== 'object') return base
+      const num = (v, fb) => Number.isFinite(Number(v)) ? Number(v) : fb
+      base.temperature = clamp(num(raw.temperature, 1), 0, 2)
+      base.topP = clamp(num(raw.topP, 1), 0, 1)
+      if (raw.maxTokens === null) base.maxTokens = null
+      else base.maxTokens = Math.max(1, Math.floor(num(raw.maxTokens, 2048)))
+      base.streaming = raw.streaming !== false
+      base.systemInstructions = typeof raw.systemInstructions === 'string' ? raw.systemInstructions : ''
+      return base
+    }
+
+    function loadState () {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY)
+        if (!raw) return null
+        const parsed = JSON.parse(raw)
+        if (!parsed || parsed.v !== 2) return null
+        return parsed
+      } catch (err) {
+        return null
+      }
+    }
+
+    const saved = loadState()
+
+    const state = {
+      theme: saved && saved.theme === 'light' ? 'light' : 'dark',
+      endpoints: saved && Array.isArray(saved.endpoints) ? saved.endpoints.map(sanitizeEndpoint).filter(Boolean) : [],
+      endpointId: null,
+      modelId: '',
+      settings: sanitizeSettings(saved ? saved.settings : null),
+      conversations: saved && Array.isArray(saved.conversations) ? saved.conversations.map(sanitizeConv).filter(Boolean) : [],
+      activeId: null,
+      ui: {
+        sidebarOpen: !saved || !saved.ui || saved.ui.sidebarOpen !== false,
+        settingsOpen: !saved || !saved.ui || saved.ui.settingsOpen !== false
+      },
+      query: '',
+      draft: '',
+      attachments: [],
+      editingId: null,
+      generating: false,
+      aborter: null,
+      drawer: null
+    }
+
+    if (saved) {
+      const epOk = state.endpoints.some(e => e.id === saved.endpointId)
+      state.endpointId = epOk ? saved.endpointId : (state.endpoints[0] ? state.endpoints[0].id : null)
+      const ep = state.endpoints.find(e => e.id === state.endpointId)
+      state.modelId = ep && ep.models.includes(saved.modelId) ? saved.modelId : (ep && ep.models[0] ? ep.models[0] : '')
+      state.activeId = state.conversations.some(c => c.id === saved.activeId) ? saved.activeId : (state.conversations[0] ? state.conversations[0].id : null)
+    }
+
+    const keyStore = {}
+
+    const saveNow = debounce(() => {
+      try {
+        const convs = state.conversations.map(c => ({
+          ...c,
+          messages: c.messages.map(m => {
+            const cp = { ...m }
+            if (cp.status === 'streaming') cp.status = 'stopped'
+            if (cp.attachments) cp.attachments = cp.attachments.map(a => ({ name: a.name, size: a.size, type: a.type }))
+            return cp
+          })
+        }))
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+          v: 2,
+          theme: state.theme,
+          endpointId: state.endpointId,
+          modelId: state.modelId,
+          endpoints: state.endpoints.map(e => ({ id: e.id, name: e.name, format: e.format, baseUrl: e.baseUrl, models: e.models })),
+          settings: state.settings,
+          activeId: state.activeId,
+          ui: state.ui,
+          conversations: convs
+        }))
+      } catch (err) {
+        /* localStorage đầy hoặc bị chặn */
+      }
+    }, 250)
+
+    const endpointById = id => state.endpoints.find(e => e.id === id) || null
+    const currentEndpoint = () => endpointById(state.endpointId)
+    const currentConv = () => state.conversations.find(c => c.id === state.activeId) || null
+
+    const F3 = '\u0060\u0060\u0060'
+    const RE_INLINE_CODE = new RegExp('\u0060([^\u0060\\n]+)\u0060', 'g')
+
+    function inlineMd (s) {
+      const codes = []
+      s = s.replace(RE_INLINE_CODE, (m, c) => {
+        codes.push(c)
+        return '\u0000' + (codes.length - 1) + '\u0001'
+      })
+      s = s.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+      s = s.replace(/(^|[\s(])\*([^*\n]+)\*/g, '$1<em>$2</em>')
+      s = s.replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (m, txt, url) => {
+        if (!/^(https?:\/\/|mailto:)/i.test(url)) return txt
+        return `<a href="${url}" target="_blank" rel="noopener noreferrer">${txt}</a>`
+      })
+      s = s.replace(/\u0000(\d+)\u0001/g, (m, n) => `<code>${codes[Number(n)]}</code>`)
+      return s
+    }
+
+    function codeBlockHtml (lang, code) {
+      const clean = code.replace(/\n$/, '')
+      const b64 = enc64(clean)
+      return `<div class="codeblock"><div class="code-head"><span class="code-lang">${escapeHtml(lang || 'code')}</span>` +
+        `<button type="button" class="code-copy" data-copy="${b64}" aria-label="${STR.copyCode}">${ic('copy', 'ic-sm')}<span>${STR.copyCode}</span></button>` +
+        `</div><pre tabindex="0"><code>${escapeHtml(clean)}</code></pre></div>`
+    }
+
+    function renderBlocks (raw) {
+      const lines = escapeHtml(raw).split('\n')
+      let html = ''
+      let para = []
+      let i = 0
+      const flush = () => {
+        if (para.length) {
+          html += '<p>' + para.map(inlineMd).join('<br>') + '</p>'
+          para = []
+        }
+      }
+      const isTableSep = l => /^\s*\|?[\s:|-]+\|[\s:|-]*$/.test(l) && l.includes('-')
+      while (i < lines.length) {
+        const t = lines[i].trim()
+        if (!t) { flush(); i++; continue }
+        const h = t.match(/^(#{1,4})\s+(.+)$/)
+        if (h) {
+          flush()
+          const lvl = Math.min(h[1].length + 2, 6)
+          html += `<h${lvl}>${inlineMd(h[2])}</h${lvl}>`
+          i++
+          continue
+        }
+        if (/^(-{3,}|\*{3,}|_{3,})$/.test(t)) { flush(); html += '<hr>'; i++; continue }
+        if (/^&gt; ?/.test(t)) {
+          flush()
+          const qlines = []
+          while (i < lines.length && /^&gt; ?/.test(lines[i].trim())) {
+            qlines.push(lines[i].trim().replace(/^&gt; ?/, ''))
+            i++
+          }
+          html += '<blockquote>' + qlines.map(inlineMd).join('<br>') + '</blockquote>'
+          continue
+        }
+        if (/^[-*]\s+/.test(t)) {
+          flush()
+          const items = []
+          while (i < lines.length && /^[-*]\s+/.test(lines[i].trim())) {
+            items.push('<li>' + inlineMd(lines[i].trim().replace(/^[-*]\s+/, '')) + '</li>')
+            i++
+          }
+          html += '<ul>' + items.join('') + '</ul>'
+          continue
+        }
+        if (/^\d+[.)]\s+/.test(t)) {
+          flush()
+          const items = []
+          while (i < lines.length && /^\d+[.)]\s+/.test(lines[i].trim())) {
+            items.push('<li>' + inlineMd(lines[i].trim().replace(/^\d+[.)]\s+/, '')) + '</li>')
+            i++
+          }
+          html += '<ol>' + items.join('') + '</ol>'
+          continue
+        }
+        if (t.includes('|') && i + 1 < lines.length && isTableSep(lines[i + 1])) {
+          flush()
+          const cells = row => row.trim().replace(/^\||\|$/g, '').split('|').map(c => inlineMd(c.trim()))
+          let out = '<div class="tbl-wrap"><table><thead><tr>'
+          cells(lines[i]).forEach(c => { out += `<th>${c}</th>` })
+          out += '</tr></thead><tbody>'
+          i += 2
+          while (i < lines.length && lines[i].includes('|') && lines[i].trim()) {
+            out += '<tr>'
+            cells(lines[i]).forEach(c => { out += `<td>${c}</td>` })
+            out += '</tr>'
+            i++
+          }
+          out += '</tbody></table></div>'
+          html += out
+          continue
+        }
+        para.push(t)
+        i++
+      }
+      flush()
+      return html
+    }
+
+    function renderMarkdown (src) {
+      const parts = String(src || '').split(F3)
+      let html = ''
+      parts.forEach((part, idx) => {
+        if (idx % 2 === 0) {
+          html += renderBlocks(part)
+          return
+        }
+        const nl = part.indexOf('\n')
+        let lang = ''
+        let code = part
+        if (nl !== -1 && nl <= 30) {
+          const maybe = part.slice(0, nl).trim()
+          if (/^[\w+#.-]{0,24}$/.test(maybe)) {
+            lang = maybe
+            code = part.slice(nl + 1)
+          }
+        }
+        html += codeBlockHtml(lang, code)
+      })
+      return html
+    }
+
+    function toast (msg, kind = 'info', ms = 3400) {
+      const wrap = $('#toasts')
+      while (wrap.children.length >= 4) wrap.firstChild.remove()
+      const el = document.createElement('div')
+      el.className = 'toast t-' + kind
+      const iconName = kind === 'success' ? 'check' : kind === 'error' ? 'alert' : 'info'
+      el.innerHTML = ic(iconName) + '<span>' + escapeHtml(msg) + '</span>'
+      wrap.appendChild(el)
+      setTimeout(() => {
+        el.classList.add('leaving')
+        setTimeout(() => el.remove(), 220)
+      }, ms)
+    }
+
+    let modalState = null
+
+    function trapTab (e, box) {
+      const items = Array.from(box.querySelectorAll('button, input, textarea, select, a[href], [tabindex]:not([tabindex="-1"])'))
+        .filter(el => !el.disabled && el.offsetParent !== null)
+      if (!items.length) return
+      const first = items[0]
+      const last = items[items.length - 1]
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus() }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus() }
+    }
+
+    function openModal (opts) {
+      return new Promise(resolve => {
+        const root = $('#modal-root')
+        const prev = document.activeElement
+        root.innerHTML = `
+          <div class="modal-backdrop" data-close></div>
+          <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+            <h3 id="modal-title">${escapeHtml(opts.title)}</h3>
+            ${opts.body ? `<div class="modal-body">${escapeHtml(opts.body)}</div>` : ''}
+            ${opts.input != null ? `<input type="text" class="text-input" id="modal-input" value="${escapeHtml(opts.input)}" aria-label="${escapeHtml(opts.title)}">` : ''}
+            <div class="modal-actions">
+              <button type="button" class="btn" data-close>${STR.cancel}</button>
+              <button type="button" class="btn ${opts.danger ? 'btn-danger' : 'btn-accent'}" data-ok>${escapeHtml(opts.ok || STR.ok)}</button>
+            </div>
+          </div>`
+        modalState = { resolve, prev }
+        root.classList.add('open')
+        const modal = root.querySelector('.modal')
+        modal.addEventListener('keydown', e => {
+          if (e.key === 'Tab') trapTab(e, modal)
+          if (e.key === 'Enter' && e.target && e.target.id === 'modal-input') finishModal(e.target.value)
+        })
+        root.onclick = e => {
+          if (e.target.closest('[data-ok]')) {
+            const input = $('#modal-input')
+            finishModal(input ? input.value : true)
+          } else if (e.target.closest('[data-close]')) {
+            finishModal(null)
+          }
+        }
+        const input = $('#modal-input')
+        if (input) { input.focus(); input.select() } else { root.querySelector('[data-ok]').focus() }
+      })
+    }
+
+    function finishModal (value) {
+      if (!modalState) return
+      const ms = modalState
+      modalState = null
+      const root = $('#modal-root')
+      root.classList.remove('open')
+      root.innerHTML = ''
+      root.onclick = null
+      if (ms.prev && ms.prev.focus) ms.prev.focus()
+      ms.resolve(value)
+    }
+
+    function convItemHtml (c) {
+      const active = c.id === state.activeId
+      return `
+        <div class="conv ${active ? 'active' : ''} ${c.pinned ? 'is-pinned' : ''}" role="button" tabindex="0" data-id="${c.id}" aria-current="${active ? 'true' : 'false'}">
+          <div class="conv-main">
+            <span class="conv-title" title="${escapeHtml(c.title)}">${escapeHtml(c.title)}</span>
+            <span class="conv-meta">${timeAgoVi(c.updatedAt)} · ${c.messages.length} tin</span>
+          </div>
+          <div class="conv-actions">
+            <button type="button" class="mini-btn" data-cact="pin" aria-pressed="${c.pinned}" aria-label="${c.pinned ? 'Bỏ ghim' : 'Ghim'} hội thoại">${ic(c.pinned ? 'pin' : 'pinOff', 'ic-sm')}</button>
+            <button type="button" class="mini-btn" data-cact="rename" aria-label="Đổi tên hội thoại">${ic('pencil', 'ic-sm')}</button>
+            <button type="button" class="mini-btn" data-cact="del" aria-label="Xoá hội thoại">${ic('trash', 'ic-sm')}</button>
+          </div>
+        </div>`
+    }
+
+    function renderSidebar () {
+      const list = $('#conv-list')
+      const q = state.query.trim().toLowerCase()
+      let items = [...state.conversations]
+      if (q) {
+        items = items.filter(c =>
+          c.title.toLowerCase().includes(q) ||
+          c.messages.some(m => m.content && m.content.toLowerCase().includes(q))
+        )
+      }
+      $('#btn-search-clear').hidden = !state.query
+      if (!state.conversations.length) {
+        list.innerHTML = `<div class="side-empty">${ic('message')}<span>${STR.emptyList}</span></div>`
+        return
+      }
+      if (!items.length) {
+        list.innerHTML = `<div class="side-empty">${ic('search')}<span>${STR.noResult}</span><button type="button" class="btn btn-sm" data-act="clear-search">${STR.clearSearch}</button></div>`
+        return
+      }
+      const byTime = (a, b) => b.updatedAt - a.updatedAt
+      const pinned = items.filter(c => c.pinned).sort(byTime)
+      const rest = items.filter(c => !c.pinned).sort(byTime)
+      let html = ''
+      if (pinned.length) html += `<div class="conv-group-label">${STR.pinnedGroup}</div>` + pinned.map(convItemHtml).join('')
+      if (rest.length) html += `<div class="conv-group-label">${STR.recentGroup}</div>` + rest.map(convItemHtml).join('')
+      list.innerHTML = html
+    }
+
+    function createConversation (activate) {
+      const c = {
+        id: uid(),
+        title: STR.newTitle,
+        pinned: false,
+        renamed: false,
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+        messages: []
+      }
+      state.conversations.unshift(c)
+      if (activate) state.activeId = c.id
+      renderSidebar()
+      saveNow()
+      return c
+    }
+
+    function selectConversation (id) {
+      if (state.activeId === id) { closeDrawers(); return }
+      state.activeId = id
+      state.editingId = null
+      renderSidebar()
+      renderMessages()
+      renderTopBits()
+      saveNow()
+      closeDrawers()
+      scrollBottom(true)
+    }
+
+    async function onConvAction (act, id) {
+      const conv = state.conversations.find(c => c.id === id)
+      if (!conv) return
+      if (act === 'pin') {
+        conv.pinned = !conv.pinned
+        renderSidebar()
+        saveNow()
+        return
+      }
+      if (act === 'rename') {
+        const val = await openModal({ title: STR.renameTitle, input: conv.title, ok: STR.save })
+        if (val == null) return
+        const name = val.trim()
+        if (!name) { toast(STR.emptyPrompt, 'error'); return }
+        conv.title = name
+        conv.renamed = true
+        renderSidebar()
+        renderTopBits()
+        saveNow()
+        return
+      }
+      if (act === 'del') {
+        const ok = await openModal({ title: STR.delTitle, body: STR.delBody, ok: STR.delOk, danger: true })
+        if (ok !== true) return
+        revokeConvUrls(conv)
+        state.conversations = state.conversations.filter(c => c.id !== id)
+        if (state.activeId === id) state.activeId = state.conversations[0] ? state.conversations[0].id : null
+        renderSidebar()
+        renderMessages()
+        renderTopBits()
+        saveNow()
+      }
+    }
+
+    function revokeConvUrls (conv) {
+      conv.messages.forEach(m => {
+        if (m.attachments) {
+          m.attachments.forEach(a => {
+            if (a.url && a.url.startsWith('blob:')) URL.revokeObjectURL(a.url)
+          })
+        }
+      })
+    }
+
+    let stickBottom = true
+
+    function scrollBottom (force) {
+      const sc = $('#chat-scroll')
+      if (force || stickBottom) sc.scrollTop = sc.scrollHeight
+    }
+
+    function dotsHtml () {
+      return '<span class="dots" aria-hidden="true"><span></span><span></span><span></span></span>'
+    }
+
+    function userAttachHtml (list) {
+      if (!list || !list.length) return ''
+      const items = list.map(a => {
+        if (a.url && a.type.indexOf('image/') === 0) {
+          return `<figure class="att att-img"><img src="${a.url}" alt="${escapeHtml(a.name)}"><figcaption>${escapeHtml(a.name)}</figcaption></figure>`
+        }
+        return `<div class="att att-file">${ic('fileText', 'ic-sm')}<span class="att-name" title="${escapeHtml(a.name)}">${escapeHtml(a.name)}</span><span class="att-size">${fmtBytes(a.size)}</span></div>`
+      }).join('')
+      return `<div class="msg-attach">${items}</div>`
+    }
+
+    function assistantBodyHtml (m) {
+      if (m.status === 'error') {
+        return `<div class="err-card">${ic('alert')}<p>${escapeHtml(m.error ? m.error.message : 'Lỗi API')}</p>` +
+          `<span class="err-kind">${escapeHtml(m.error && m.error.kind ? m.error.kind : 'api')}</span>` +
+          `<button type="button" class="btn btn-sm btn-accent" data-act="retry" data-id="${m.id}">${ic('rotate', 'ic-sm')}${STR.retry}</button></div>`
+      }
+      if (m.status === 'streaming') {
+        return m.content ? renderMarkdown(m.content) + '<span class="cursor" aria-hidden="true"></span>' : dotsHtml()
+      }
+      let html = m.content ? renderMarkdown(m.content) : '<p>…</p>'
+      if (m.status === 'stopped') {
+        html += `<div class="stopped-note">${ic('stop', 'ic-sm')}${STR.stoppedNote}</div>`
+      }
+      return html
+    }
+
+    function actionsHtml (m) {
+      if (m.status === 'streaming' || m.status === 'error' || state.editingId === m.id) return ''
+      let btns = `<button type="button" class="act-btn" data-act="copy" data-id="${m.id}" aria-label="${STR.copyMsg}">${ic('copy', 'ic-sm')}<span>Sao chép</span></button>`
+      if (m.role === 'user') {
+        btns += `<button type="button" class="act-btn" data-act="edit" data-id="${m.id}">${ic('pencil', 'ic-sm')}<span>${STR.edit}</span></button>`
+        return `<div class="msg-actions">${btns}</div>`
+      }
+      btns += `<button type="button" class="act-btn" data-act="regen" data-id="${m.id}">${ic('rotate', 'ic-sm')}<span>${STR.regen}</span></button>`
+      btns += `<button type="button" class="act-btn" data-act="fb-up" data-id="${m.id}" aria-pressed="${m.feedback === 'up'}" aria-label="${STR.rateUp}">${ic('thumbsUp', 'ic-sm')}</button>`
+      btns += `<button type="button" class="act-btn" data-act="fb-down" data-id="${m.id}" aria-pressed="${m.feedback === 'down'}" aria-label="${STR.rateDown}">${ic('thumbsDown', 'ic-sm')}</button>`
+      return `<div class="msg-actions">${btns}</div>`
+    }
+
+    function editHtml (m) {
+      return `<div class="edit-box">
+        <textarea id="edit-area" aria-label="Chỉnh sửa prompt">${escapeHtml(m.content)}</textarea>
+        <div class="edit-actions">
+          <button type="button" class="btn btn-sm btn-accent" data-act="save-edit" data-id="${m.id}">${ic('check', 'ic-sm')}${STR.save}</button>
+          <button type="button" class="btn btn-sm" data-act="cancel-edit">${STR.cancel}</button>
+        </div>
+      </div>`
+    }
+
+    function buildMsgEl (m) {
+      const el = document.createElement('article')
+      el.className = 'msg msg-' + m.role + (m.status ? ' is-' + m.status : '')
+      el.setAttribute('data-msg', m.id)
+      const avatar = m.role === 'user' ? ic('user') : ic('spark')
+      const name = m.role === 'user' ? STR.you : BRAND
+      const modelTag = m.role === 'assistant' && m.modelLabel
+        ? `<span class="msg-model" title="${escapeHtml(m.endpointName || '')}">${escapeHtml(m.modelLabel)}</span>`
+        : ''
+      let body
+      if (state.editingId === m.id) body = editHtml(m)
+      else if (m.role === 'user') body = `<div class="user-text">${escapeHtml(m.content).replace(/\n/g, '<br>')}</div>` + userAttachHtml(m.attachments)
+      else body = assistantBodyHtml(m)
+      el.innerHTML = `
+        <div class="msg-avatar av-${m.role}">${avatar}</div>
+        <div class="msg-main">
+          <div class="msg-head">
+            <span class="msg-name">${name}</span>
+            ${modelTag}
+            <span class="msg-time">${timeAgoVi(m.createdAt)}</span>
+          </div>
+          <div class="msg-body md">${body}</div>
+          ${actionsHtml(m)}
+        </div>`
+      return el
+    }
+
+    function welcomeHtml () {
+      const cards = SUGGESTIONS.map((s, i) => `
+        <button type="button" class="sugg" data-sugg="${i}">
+          <span class="sugg-t">${escapeHtml(s.t)}</span>
+          <span class="sugg-p">${escapeHtml(s.p)}</span>
+        </button>`).join('')
+      const epAction = state.endpoints.length
+        ? ''
+        : `<button type="button" class="btn btn-accent" data-act="open-ep">${ic('plug')}${STR.addEp}</button>`
+      const epNote = state.endpoints.length
+        ? ''
+        : `<p class="welcome-demo">${ic('info', 'ic-sm')}<span>${STR.welcomeNoEp}</span></p>`
+      return `<div class="welcome">
+        <div class="welcome-mark"><img src="https://image.qwenlm.ai/public_source/2a904459-04a0-4a16-97bd-8d2bc08ca7cf/1fb4640aa-2652-444a-833b-4a3a60129ba9.png" alt=""></div>
+        <h1>${STR.welcomeTitle}</h1>
+        <p>${STR.welcomeSub}</p>
+        <div class="sugg-grid">${cards}</div>
+        <div class="welcome-actions">${epAction}</div>
+        ${epNote}
+      </div>`
+    }
+
+    function renderMessages () {
+      const wrap = $('#messages')
+      const conv = currentConv()
+      wrap.innerHTML = ''
+      if (!conv || !conv.messages.length) {
+        wrap.classList.add('is-empty')
+        wrap.innerHTML = welcomeHtml()
+        wrap.setAttribute('aria-busy', 'false')
+        return
+      }
+      wrap.classList.remove('is-empty')
+      const frag = document.createDocumentFragment()
+      conv.messages.forEach(m => frag.appendChild(buildMsgEl(m)))
+      wrap.appendChild(frag)
+      wrap.setAttribute('aria-busy', state.generating ? 'true' : 'false')
+      if (state.editingId) {
+        const ta = $('#edit-area')
+        if (ta) {
+          ta.focus()
+          ta.setSelectionRange(ta.value.length, ta.value.length)
+        }
+      }
+    }
+
+    function updateStreamingDom (m) {
+      const node = document.querySelector(`[data-msg="${m.id}"] .msg-body`)
+      if (!node) return
+      node.innerHTML = m.content ? renderMarkdown(m.content) + '<span class="cursor" aria-hidden="true"></span>' : dotsHtml()
+    }
+
+    function renderTopBits () {
+      const conv = currentConv()
+      $('#top-title').textContent = conv ? conv.title : ''
+      const chip = $('#status-chip')
+      if (!navigator.onLine) {
+        chip.className = 'badge badge-off'
+        chip.innerHTML = '<span class="dot dot-off"></span><span>Mất kết nối</span>'
+        chip.title = ''
+        return
+      }
+      const ep = currentEndpoint()
+      if (!ep) {
+        chip.className = 'badge badge-idle'
+        chip.innerHTML = '<span class="dot dot-idle"></span><span>Chưa cấu hình</span>'
+        chip.title = 'Chưa có kết nối API nào'
+        return
+      }
+      chip.className = 'badge badge-ready'
+      chip.innerHTML = '<span class="dot dot-ok"></span><span>' + escapeHtml(ep.name) + '</span>'
+      chip.title = API_FORMATS[ep.format].label + ' · ' + ep.baseUrl
+    }
+
+    const MAX_FILES = 4
+    const MAX_SIZE = 5 * 1024 * 1024
+    const RE_TYPE = /^image\/(png|jpe?g|webp|gif)$|^text\/(plain|markdown)$|^application\/(pdf|json)$/
+    const RE_EXT = /\.(txt|md|markdown|pdf|json)$/i
+
+    function addAttachment (file) {
+      if (state.attachments.length >= MAX_FILES) { toast(STR.maxFiles, 'error'); return }
+      if (!RE_TYPE.test(file.type || '') && !RE_EXT.test(file.name)) {
+        toast(`“${file.name}”: ${STR.fileBadType}`, 'error')
+        return
+      }
+      if (file.size > MAX_SIZE) {
+        toast(`“${file.name}”: ${STR.fileTooBig}`, 'error')
+        return
+      }
+      const isImg = (file.type || '').indexOf('image/') === 0
+      const item = { id: uid(), name: file.name, size: file.size, type: file.type || 'application/octet-stream', url: null, dataUrl: null }
+      if (isImg) {
+        item.url = URL.createObjectURL(file)
+        const reader = new FileReader()
+        reader.onload = () => { item.dataUrl = String(reader.result) }
+        reader.readAsDataURL(file)
+      }
+      state.attachments.push(item)
+      renderComposer()
+    }
+
+    function removeAttachment (id) {
+      const a = state.attachments.find(x => x.id === id)
+      if (a && a.url && a.url.startsWith('blob:')) URL.revokeObjectURL(a.url)
+      state.attachments = state.attachments.filter(x => x.id !== id)
+      renderComposer()
+    }
+
+    function renderComposer () {
+      const row = $('#attach-row')
+      if (!state.attachments.length) {
+        row.innerHTML = ''
+        row.hidden = true
+      } else {
+        row.hidden = false
+        row.innerHTML = state.attachments.map(a => `
+          <span class="chip">
+            ${a.url ? `<img src="${a.url}" alt="">` : ic('fileText', 'ic-sm')}
+            <span class="chip-name" title="${escapeHtml(a.name)}">${escapeHtml(a.name)}</span>
+            <span class="chip-size">${fmtBytes(a.size)}</span>
+            <button type="button" class="chip-x" data-rm="${a.id}" aria-label="${STR.removeFile}: ${escapeHtml(a.name)}">${ic('x', 'ic-sm')}</button>
+          </span>`).join('')
+      }
+      updateComposerButtons()
+    }
+
+    function updateComposerButtons () {
+      const hasInput = state.draft.trim().length > 0 || state.attachments.length > 0
+      const send = $('#btn-send')
+      const stop = $('#btn-stop')
+      send.hidden = state.generating
+      stop.hidden = !state.generating
+      send.disabled = !hasInput || state.generating
+    }
+
+    function autosize () {
+      const ta = $('#prompt')
+      ta.style.height = 'auto'
+      ta.style.height = Math.min(ta.scrollHeight, 220) + 'px'
+      ta.style.overflowY = ta.scrollHeight > 220 ? 'auto' : 'hidden'
+    }
+
+    function updateCharCount () {
+      $('#char-count').textContent = state.draft.length ? String(state.draft.length) : ''
+    }
+
+    function renderEndpointSelect () {
+      const sel = $('#endpoint-select')
+      if (!state.endpoints.length) {
+        sel.innerHTML = '<option value="">Chưa có kết nối</option>'
+        sel.disabled = true
+        return
+      }
+      sel.disabled = false
+      sel.innerHTML = state.endpoints.map(e => `<option value="${e.id}">${escapeHtml(e.name)}</option>`).join('')
+      sel.value = state.endpointId || ''
+    }
+
+    function renderModelSelect () {
+      const sel = $('#model-select')
+      const ep = currentEndpoint()
+      if (!ep || !ep.models.length) {
+        sel.innerHTML = '<option value="">Chưa có model</option>'
+        sel.disabled = true
+        return
+      }
+      sel.disabled = false
+      sel.innerHTML = ep.models.map(m => `<option value="${escapeHtml(m)}">${escapeHtml(m)}</option>`).join('')
+      if (!ep.models.includes(state.modelId)) state.modelId = ep.models[0]
+      sel.value = state.modelId
+    }
+
+    function setActiveEndpoint (id) {
+      state.endpointId = id
+      const ep = currentEndpoint()
+      state.modelId = ep && ep.models.length ? ep.models[0] : ''
+      renderEndpointSelect()
+      renderModelSelect()
+      renderTopBits()
+      saveNow()
+    }
+
+    let epModalOpen = false
+    let epEditingId = null
+    let epFormModels = []
+    let epFormHeaders = []
+    let epLastFocus = null
+
+    function openEpModal () {
+      epModalOpen = true
+      epLastFocus = document.activeElement
+      $('#ep-root').classList.add('open')
+      hideEpForm()
+      renderEpList()
+      $('#btn-ep-close').focus()
+    }
+
+    function closeEpModal () {
+      if (!epModalOpen) return
+      epModalOpen = false
+      $('#ep-root').classList.remove('open')
+      if (epLastFocus && epLastFocus.focus) epLastFocus.focus()
+    }
+
+    function epCardHtml (ep) {
+      const active = ep.id === state.endpointId
+      const hasKey = !!keyStore[ep.id]
+      const metaParts = [`${ep.models.length} model`]
+      if (ep.headers.length) metaParts.push(`${ep.headers.length} header`)
+      metaParts.push(hasKey ? 'đã nhập khoá (trong phiên)' : 'chưa nhập khoá')
+      return `
+        <div class="ep-card ${active ? 'active' : ''}" data-epid="${ep.id}" role="button" tabindex="0" aria-label="Dùng kết nối ${escapeHtml(ep.name)}">
+          <div class="ep-card-head">
+            <strong class="ep-name">${escapeHtml(ep.name)}</strong>
+            <span class="badge badge-fmt">${escapeHtml(API_FORMATS[ep.format].label)}</span>
+          </div>
+          <div class="ep-url mono" title="${escapeHtml(ep.baseUrl)}">${escapeHtml(ep.baseUrl)}</div>
+          <div class="ep-meta">${metaParts.join(' · ')}</div>
+          ${ep.models.length ? `<div class="ep-models">${ep.models.map(m => `<span class="stop-chip"><span>${escapeHtml(m)}</span></span>`).join('')}</div>` : ''}
+          <div class="ep-card-actions">
+            <button type="button" class="btn btn-sm" data-eact="edit" data-epid="${ep.id}">${STR.edit}</button>
+            <button type="button" class="btn btn-sm btn-danger" data-eact="del" data-epid="${ep.id}">Xoá</button>
+            ${active ? '<span class="ep-active-tag">ĐANG DÙNG</span>' : ''}
+          </div>
+        </div>`
+    }
+
+    function renderEpList () {
+      const list = $('#ep-list')
+      if (!state.endpoints.length) {
+        list.innerHTML = '<div class="ep-empty">Chưa có kết nối nào. Thêm endpoint và model tuỳ chỉnh để bắt đầu.</div>'
+        return
+      }
+      list.innerHTML = state.endpoints.map(epCardHtml).join('')
+    }
+
+    function renderEpModelChips () {
+      $('#ep-model-chips').innerHTML = epFormModels.map((m, i) => `
+        <span class="stop-chip"><span>${escapeHtml(m)}</span>
+          <button type="button" class="chip-x" data-mrm="${i}" aria-label="Xoá model ${escapeHtml(m)}">${ic('x', 'ic-sm')}</button>
+        </span>`).join('')
+    }
+
+    function renderEpHeaders () {
+      $('#ep-headers-list').innerHTML = epFormHeaders.map((h, i) => `
+        <div class="ep-header-row">
+          <input type="text" class="text-input mono ep-header-name" data-hname="${i}" value="${escapeHtml(h.name)}" placeholder="Tên header" aria-label="Tên header ${i + 1}">
+          <input type="text" class="text-input mono" data-hval="${i}" value="${escapeHtml(h.value)}" placeholder="Giá trị" aria-label="Giá trị header ${i + 1}">
+          <button type="button" class="chip-x" data-hrm="${i}" aria-label="Xoá header ${escapeHtml(h.name || String(i + 1))}">${ic('x', 'ic-sm')}</button>
+        </div>`).join('')
+    }
+
+    function showEpForm (ep) {
+      epEditingId = ep ? ep.id : null
+      epFormModels = ep ? ep.models.slice() : []
+      epFormHeaders = ep ? ep.headers.map(h => ({ name: h.name, value: h.value })) : []
+      $('#ep-form-title').textContent = ep ? 'Sửa kết nối' : 'Thêm kết nối'
+      $('#ep-name').value = ep ? ep.name : ''
+      const fmtSel = $('#ep-format')
+      fmtSel.innerHTML = FORMAT_ORDER.map(f => `<option value="${f}">${escapeHtml(API_FORMATS[f].label)}</option>`).join('')
+      fmtSel.value = ep ? ep.format : 'openai-chat'
+      $('#ep-base').value = ep ? ep.baseUrl : API_FORMATS['openai-chat'].presetBase
+      $('#ep-key').value = ''
+      $('#ep-key').placeholder = ep && keyStore[ep.id] ? 'Giữ nguyên nếu không đổi' : 'Khoá bí mật…'
+      renderEpModelChips()
+      renderEpHeaders()
+      updateEpUrlHint()
+      $('#ep-form').hidden = false
+      $('#ep-name').focus()
+    }
+
+    function hideEpForm () {
+      $('#ep-form').hidden = true
+      epEditingId = null
+      epFormModels = []
+      epFormHeaders = []
+    }
+
+    function updateEpUrlHint () {
+      const fmt = API_FORMATS[$('#ep-format').value]
+      const base = $('#ep-base').value || fmt.presetBase
+      $('#ep-url-hint').textContent = fmt.buildUrl(base, '{model}', true)
+    }
+
+    function addEpModel () {
+      const input = $('#ep-model-input')
+      const val = input.value.trim()
+      if (!val) return
+      if (epFormModels.includes(val)) { toast('Model này đã có.', 'error'); return }
+      epFormModels.push(val)
+      input.value = ''
+      renderEpModelChips()
+      input.focus()
+    }
+
+    function saveEpForm () {
+      const name = $('#ep-name').value.trim()
+      const format = $('#ep-format').value
+      const base = trimBase($('#ep-base').value)
+      const key = $('#ep-key').value.trim()
+      if (!name) { toast('Tên kết nối không được trống.', 'error'); return }
+      if (!/^https?:\/\//i.test(base)) { toast('Endpoint phải bắt đầu bằng http(s)://', 'error'); return }
+      const headers = epFormHeaders
+        .filter(h => h.name.trim())
+        .map(h => ({ name: h.name.trim(), value: h.value }))
+      const id = epEditingId || uid()
+      const existing = endpointById(id)
+      const ep = { id, name, format, baseUrl: base, models: epFormModels.slice(), headers }
+      if (existing) state.endpoints = state.endpoints.map(e => (e.id === id ? ep : e))
+      else state.endpoints.push(ep)
+      if (key) keyStore[id] = key
+      if (!state.endpointId) setActiveEndpoint(id)
+      else if (state.endpointId === id) renderModelSelect()
+      renderEpList()
+      renderEndpointSelect()
+      renderTopBits()
+      saveNow()
+      toast(`Đã lưu kết nối “${name}”.`, 'success')
+      hideEpForm()
+    }
+
+    async function deleteEndpoint (id) {
+      const ep = endpointById(id)
+      if (!ep) return
+      const ok = await openModal({
+        title: 'Xoá kết nối?',
+        body: `Kết nối “${ep.name}” và danh sách model của nó sẽ bị xoá. Hội thoại cũ vẫn được giữ.`,
+        ok: 'Xoá',
+        danger: true
+      })
+      if (ok !== true) return
+      delete keyStore[id]
+      state.endpoints = state.endpoints.filter(e => e.id !== id)
+      if (state.endpointId === id) {
+        state.endpointId = state.endpoints[0] ? state.endpoints[0].id : null
+        const next = currentEndpoint()
+        state.modelId = next && next.models.length ? next.models[0] : ''
+      }
+      renderEpList()
+      renderEndpointSelect()
+      renderModelSelect()
+      renderTopBits()
+      saveNow()
+    }
+
+    function renderSettingsPanel () {
+      const s = state.settings
+      $('#sys-input').value = s.systemInstructions
+      $('#temp').value = String(s.temperature)
+      $('#temp-num').value = String(s.temperature)
+      $('#topp').value = String(s.topP)
+      $('#topp-num').value = String(s.topP)
+      $('#maxt').value = s.maxTokens == null ? '' : String(s.maxTokens)
+      $('#sw-stream').setAttribute('aria-checked', s.streaming ? 'true' : 'false')
+    }
+
+    function resetParams () {
+      const keepSys = state.settings.systemInstructions
+      state.settings = defaultSettings()
+      state.settings.systemInstructions = keepSys
+      renderSettingsPanel()
+      saveNow()
+      toast('Đã khôi phục tham số mặc định.', 'success')
+    }
+
+    function bindParamPair (rangeId, numId, key) {
+      const range = $('#' + rangeId)
+      const num = $('#' + numId)
+      range.addEventListener('input', () => {
+        const v = Number(range.value)
+        num.value = String(v)
+        state.settings[key] = v
+        saveNow()
+      })
+      num.addEventListener('input', () => {
+        const v = Number(num.value)
+        if (!Number.isFinite(v)) return
+        const c = clamp(v, Number(range.min), Number(range.max))
+        state.settings[key] = c
+        range.value = String(c)
+        saveNow()
+      })
+      num.addEventListener('change', () => {
+        num.value = String(state.settings[key])
+      })
+    }
+
+    function buildCanonical (conv, until) {
+      const out = []
+      for (const m of conv.messages) {
+        if (until && m.id === until.id) break
+        if (m.role === 'system') continue
+        if (m.role === 'user') {
+          const images = (m.attachments || [])
+            .filter(a => a.dataUrl)
+            .map(a => parseDataUri(a.dataUrl))
+            .filter(Boolean)
+          out.push({ role: 'user', content: m.content, images })
+        } else if (m.role === 'assistant' && m.content) {
+          out.push({ role: 'assistant', content: m.content })
+        }
+      }
+      return out
+    }
+
+    function handleSseEvent (fmt, evt, msg) {
+      if (!evt.raw) return
+      let data = null
+      try { data = JSON.parse(evt.raw) } catch (err) { return }
+      const r = fmt.parseEvent({ event: evt.event, data, raw: evt.raw })
+      if (r.error) throw apiError('api', r.error)
+      if (r.delta) {
+        msg.content += r.delta
+        updateStreamingDom(msg)
+        scrollBottom(false)
+      }
+      if (r.final && !msg.content) {
+        msg.content = r.final
+        updateStreamingDom(msg)
+      }
+    }
+
+    async function startGeneration (conv, msg) {
+      state.generating = true
+      state.aborter = new AbortController()
+      updateComposerButtons()
+      $('#messages').setAttribute('aria-busy', 'true')
+      announce(STR.annGenerating)
+      const ep = endpointById(msg.endpointId || state.endpointId)
+      try {
+        if (!ep) throw apiError('config', STR.needEndpoint)
+        if (!msg.model) throw apiError('config', STR.needModel)
+        const key = keyStore[ep.id] || ''
+        if (!key) throw apiError('config', `Kết nối “${ep.name}” chưa có khoá API. Mở “Kết nối” để nhập (khoá chỉ giữ trong phiên).`)
+        const fmt = API_FORMATS[ep.format]
+        const stream = state.settings.streaming
+        const sysText = state.settings.systemInstructions.trim()
+        const built = fmt.build({
+          base: ep.baseUrl,
+          model: msg.model,
+          messages: buildCanonical(conv, msg),
+          system: sysText,
+          settings: state.settings,
+          stream,
+          apiKey: key
+        })
+        const headers = Object.assign({}, built.headers)
+        ep.headers.forEach(h => {
+          if (h.name) headers[h.name.trim().toLowerCase()] = h.value
+        })
+        const resp = await callApi(built.url, {
+          method: 'POST',
+          headers,
+          body: JSON.stringify(built.body),
+          signal: state.aborter.signal
+        })
+        if (!resp.ok) {
+          let msgErr = 'HTTP ' + resp.status
+          try {
+            const j = await resp.json()
+            const detail = fmt.parseError(j)
+            if (detail) msgErr = detail
+          } catch (err) { /* thân phản hồi không phải JSON */ }
+          throw apiError(resp.status === 429 ? 'rate' : 'http', msgErr, resp.status)
+        }
+        const ctype = resp.headers.get('content-type') || ''
+        if (stream && ctype.indexOf('text/event-stream') !== -1) {
+          await readSseStream(resp, evt => handleSseEvent(fmt, evt, msg))
+        } else {
+          let json = null
+          try { json = await resp.json() } catch (err) { throw apiError('api', 'Phản hồi không phải JSON hợp lệ.') }
+          if (json && json.error) {
+            const detail = fmt.parseError(json)
+            throw apiError('api', detail || 'Lỗi API')
+          }
+          msg.content = fmt.parseFull(json)
+          updateStreamingDom(msg)
+        }
+        msg.status = 'complete'
+      } catch (err) {
+        if (err && err.name === 'AbortError') {
+          msg.status = 'stopped'
+        } else {
+          msg.status = 'error'
+          msg.error = normalizeError(err)
+        }
+      }
+      state.generating = false
+      state.aborter = null
+      conv.updatedAt = Date.now()
+      renderMessages()
+      renderSidebar()
+      updateComposerButtons()
+      saveNow()
+      scrollBottom(true)
+      if (msg.status === 'complete') announce(STR.annDone)
+      else if (msg.status === 'stopped') { announce(STR.annStopped); toast(STR.stopped, 'info') }
+      else { announce(msg.error.message); toast(msg.error.message, 'error', 5200) }
+    }
+
+    function pushAssistantAndRun (conv) {
+      const ep = currentEndpoint()
+      const msg = {
+        id: uid(),
+        role: 'assistant',
+        content: '',
+        createdAt: Date.now(),
+        status: 'streaming',
+        model: state.modelId,
+        endpointId: state.endpointId,
+        endpointName: ep ? ep.name : '',
+        modelLabel: state.modelId,
+        feedback: null
+      }
+      conv.messages.push(msg)
+      conv.updatedAt = Date.now()
+      renderMessages()
+      scrollBottom(true)
+      startGeneration(conv, msg)
+    }
+
+    function sendMessage () {
+      if (state.generating) return
+      const text = state.draft.trim()
+      if (!text && !state.attachments.length) return
+      if (!navigator.onLine) { toast('Mất kết nối mạng. Hãy kiểm tra mạng rồi thử lại.', 'error'); return }
+      if (!currentEndpoint()) { toast(STR.needEndpoint, 'error'); openEpModal(); return }
+      if (!state.modelId) { toast(STR.needModel, 'error'); openEpModal(); return }
+      let conv = currentConv()
+      if (!conv) conv = createConversation(true)
+      conv.messages.push({
+        id: uid(),
+        role: 'user',
+        content: text,
+        createdAt: Date.now(),
+        attachments: state.attachments.map(a => ({ name: a.name, size: a.size, type: a.type, url: a.url, dataUrl: a.dataUrl }))
+      })
+      if (!conv.renamed) {
+        conv.title = text ? (text.length > 60 ? text.slice(0, 60) + '…' : text) : 'Tệp đính kèm'
+      }
+      state.draft = ''
+      state.attachments = []
+      const ta = $('#prompt')
+      ta.value = ''
+      autosize()
+      updateCharCount()
+      renderComposer()
+      renderSidebar()
+      renderTopBits()
+      saveNow()
+      pushAssistantAndRun(conv)
+    }
+
+    function stopGeneration () {
+      if (state.aborter) state.aborter.abort()
+    }
+
+    function regenerateFrom (msgId) {
+      if (state.generating) { toast(STR.genBusy, 'error'); return }
+      if (!navigator.onLine) { toast('Mất kết nối mạng. Hãy kiểm tra mạng rồi thử lại.', 'error'); return }
+      const conv = currentConv()
+      if (!conv) return
+      const idx = conv.messages.findIndex(m => m.id === msgId)
+      if (idx < 0) return
+      conv.messages = conv.messages.slice(0, idx)
+      saveNow()
+      pushAssistantAndRun(conv)
+    }
+
+    function saveEdit (msgId) {
+      const conv = currentConv()
+      if (!conv) return
+      const ta = $('#edit-area')
+      const val = ta ? ta.value.trim() : ''
+      if (!val) { toast(STR.emptyPrompt, 'error'); return }
+      if (state.generating) { toast(STR.genBusy, 'error'); return }
+      const idx = conv.messages.findIndex(m => m.id === msgId)
+      if (idx < 0) return
+      conv.messages = conv.messages.slice(0, idx)
+      state.editingId = null
+      state.draft = val
+      sendMessage()
+    }
+
+    function toggleFeedback (msgId, val) {
+      const conv = currentConv()
+      if (!conv) return
+      const m = conv.messages.find(x => x.id === msgId)
+      if (!m) return
+      m.feedback = m.feedback === val ? null : val
+      const up = document.querySelector(`[data-act="fb-up"][data-id="${msgId}"]`)
+      const down = document.querySelector(`[data-act="fb-down"][data-id="${msgId}"]`)
+      if (up) up.setAttribute('aria-pressed', m.feedback === 'up' ? 'true' : 'false')
+      if (down) down.setAttribute('aria-pressed', m.feedback === 'down' ? 'true' : 'false')
+      saveNow()
+    }
+
+    const mqMobile = window.matchMedia('(max-width: 1279px)')
+
+    function applyDesktopPanels () {
+      $('#sidebar').classList.toggle('closed', !state.ui.sidebarOpen)
+      $('#settings').classList.toggle('closed', !state.ui.settingsOpen)
+      $('#btn-menu').setAttribute('aria-expanded', state.ui.sidebarOpen ? 'true' : 'false')
+      $('#btn-settings').setAttribute('aria-expanded', state.ui.settingsOpen ? 'true' : 'false')
+    }
+
+    function refreshBackdrop () {
+      $('#backdrop').classList.toggle('show', !!state.drawer)
+    }
+
+    function openDrawer (which) {
+      state.drawer = which
+      $(which).classList.add('drawer-open')
+      refreshBackdrop()
+      const focusable = $(which).querySelector('button, input, textarea, select')
+      if (focusable) focusable.focus()
+    }
+
+    function closeDrawers () {
+      if (!state.drawer) return
+      $(state.drawer).classList.remove('drawer-open')
+      state.drawer = null
+      refreshBackdrop()
+    }
+
+    function toggleSidebar () {
+      if (mqMobile.matches) {
+        if (state.drawer === '#sidebar') closeDrawers()
+        else { closeDrawers(); openDrawer('#sidebar') }
+      } else {
+        state.ui.sidebarOpen = !state.ui.sidebarOpen
+        applyDesktopPanels()
+        saveNow()
+      }
+    }
+
+    function toggleSettings () {
+      if (mqMobile.matches) {
+        if (state.drawer === '#settings') closeDrawers()
+        else { closeDrawers(); openDrawer('#settings') }
+      } else {
+        state.ui.settingsOpen = !state.ui.settingsOpen
+        applyDesktopPanels()
+        saveNow()
+      }
+    }
+
+    function applyTheme () {
+      document.documentElement.setAttribute('data-theme', state.theme)
+      const btn = $('#btn-theme')
+      btn.innerHTML = ic(state.theme === 'dark' ? 'sun' : 'moon')
+      btn.setAttribute('aria-label', state.theme === 'dark' ? 'Chuyển sang giao diện sáng' : 'Chuyển sang giao diện tối')
+    }
+
+    function toggleTheme () {
+      state.theme = state.theme === 'dark' ? 'light' : 'dark'
+      applyTheme()
+      saveNow()
+    }
+
+    function bindEvents () {
+      $('#btn-menu').addEventListener('click', toggleSidebar)
+      $('#btn-side-collapse').addEventListener('click', toggleSidebar)
+      $('#btn-settings').addEventListener('click', toggleSettings)
+      $('#btn-set-close').addEventListener('click', closeDrawers)
+      $('#btn-theme').addEventListener('click', toggleTheme)
+      $('#backdrop').addEventListener('click', closeDrawers)
+
+      $('#endpoint-select').addEventListener('change', e => {
+        setActiveEndpoint(e.target.value)
+      })
+
+      $('#model-select').addEventListener('change', e => {
+        state.modelId = e.target.value
+        saveNow()
+      })
+
+      $('#btn-ep').addEventListener('click', openEpModal)
+
+      $('#btn-new').addEventListener('click', () => {
+        createConversation(true)
+        renderMessages()
+        renderTopBits()
+        closeDrawers()
+        $('#prompt').focus()
+      })
+
+      $('#search').addEventListener('input', e => {
+        state.query = e.target.value
+        renderSidebar()
+      })
+
+      $('#btn-search-clear').addEventListener('click', () => {
+        state.query = ''
+        $('#search').value = ''
+        renderSidebar()
+        $('#search').focus()
+      })
+
+      $('#conv-list').addEventListener('click', e => {
+        const clearBtn = e.target.closest('[data-act="clear-search"]')
+        if (clearBtn) {
+          state.query = ''
+          $('#search').value = ''
+          renderSidebar()
+          return
+        }
+        const actBtn = e.target.closest('[data-cact]')
+        const item = e.target.closest('.conv')
+        if (!item) return
+        const id = item.getAttribute('data-id')
+        if (actBtn) {
+          e.stopPropagation()
+          onConvAction(actBtn.getAttribute('data-cact'), id)
+          return
+        }
+        selectConversation(id)
+      })
+
+      $('#conv-list').addEventListener('keydown', e => {
+        if (e.key !== 'Enter' && e.key !== ' ') return
+        const item = e.target.closest('.conv')
+        if (item && e.target === item) {
+          e.preventDefault()
+          selectConversation(item.getAttribute('data-id'))
+        }
+      })
+
+      const messages = $('#messages')
+      messages.addEventListener('click', e => {
+        const sugg = e.target.closest('[data-sugg]')
+        if (sugg) {
+          const sg = SUGGESTIONS[Number(sugg.getAttribute('data-sugg'))]
+          if (sg) {
+            state.draft = sg.p
+            const ta = $('#prompt')
+            ta.value = sg.p
+            autosize()
+            updateCharCount()
+            updateComposerButtons()
+            ta.focus()
+          }
+          return
+        }
+        const cp = e.target.closest('[data-copy]')
+        if (cp) {
+          copyText(dec64(cp.getAttribute('data-copy'))).then(ok => {
+            toast(ok ? STR.copied : STR.copyFail, ok ? 'success' : 'error')
+            if (ok) {
+              cp.classList.add('ok')
+              setTimeout(() => cp.classList.remove('ok'), 1200)
+            }
+          })
+          return
+        }
+        const btn = e.target.closest('[data-act]')
+        if (!btn) return
+        const act = btn.getAttribute('data-act')
+        const id = btn.getAttribute('data-id')
+        if (act === 'open-ep') { openEpModal(); return }
+        const conv = currentConv()
+        if (!conv) return
+        if (act === 'copy') {
+          const m = conv.messages.find(x => x.id === id)
+          if (m) copyText(m.content).then(ok => toast(ok ? STR.copied : STR.copyFail, ok ? 'success' : 'error'))
+        } else if (act === 'edit') {
+          if (state.generating) { toast(STR.genBusy, 'error'); return }
+          state.editingId = id
+          renderMessages()
+        } else if (act === 'save-edit') {
+          saveEdit(id)
+        } else if (act === 'cancel-edit') {
+          state.editingId = null
+          renderMessages()
+        } else if (act === 'regen' || act === 'retry') {
+          regenerateFrom(id)
+        } else if (act === 'fb-up') {
+          toggleFeedback(id, 'up')
+        } else if (act === 'fb-down') {
+          toggleFeedback(id, 'down')
+        }
+      })
+
+      const sc = $('#chat-scroll')
+      sc.addEventListener('scroll', () => {
+        stickBottom = sc.scrollHeight - sc.scrollTop - sc.clientHeight < 90
+        const conv = currentConv()
+        $('#btn-jump').hidden = stickBottom || !conv || !conv.messages.length
+      })
+
+      $('#btn-jump').addEventListener('click', () => {
+        stickBottom = true
+        scrollBottom(true)
+        $('#btn-jump').hidden = true
+      })
+
+      const ta = $('#prompt')
+      let composing = false
+      ta.addEventListener('compositionstart', () => { composing = true })
+      ta.addEventListener('compositionend', () => { composing = false })
+      ta.addEventListener('input', () => {
+        state.draft = ta.value
+        autosize()
+        updateCharCount()
+        updateComposerButtons()
+      })
+      ta.addEventListener('keydown', e => {
+        if (e.key === 'Enter' && !e.shiftKey && !e.isComposing && !composing) {
+          e.preventDefault()
+          sendMessage()
+        }
+      })
+
+      $('#btn-send').addEventListener('click', sendMessage)
+      $('#btn-stop').addEventListener('click', stopGeneration)
+
+      $('#btn-attach').addEventListener('click', () => $('#file-input').click())
+      $('#file-input').addEventListener('change', e => {
+        Array.from(e.target.files).forEach(addAttachment)
+        e.target.value = ''
+      })
+
+      $('#attach-row').addEventListener('click', e => {
+        const rm = e.target.closest('[data-rm]')
+        if (rm) removeAttachment(rm.getAttribute('data-rm'))
+      })
+
+      $('#sys-input').addEventListener('input', e => {
+        state.settings.systemInstructions = e.target.value
+        saveNow()
+      })
+
+      bindParamPair('temp', 'temp-num', 'temperature')
+      bindParamPair('topp', 'topp-num', 'topP')
+
+      $('#maxt').addEventListener('input', e => {
+        const raw = e.target.value.trim()
+        state.settings.maxTokens = raw === '' ? null : Math.max(1, Math.floor(Number(raw) || 1))
+        saveNow()
+      })
+      $('#maxt').addEventListener('change', e => {
+        e.target.value = state.settings.maxTokens == null ? '' : String(state.settings.maxTokens)
+      })
+
+      $('#sw-stream').addEventListener('click', () => {
+        state.settings.streaming = !state.settings.streaming
+        $('#sw-stream').setAttribute('aria-checked', state.settings.streaming ? 'true' : 'false')
+        saveNow()
+      })
+
+      $('#btn-reset').addEventListener('click', resetParams)
+
+      $('#btn-ep-close').addEventListener('click', closeEpModal)
+      $('#ep-root').addEventListener('click', e => {
+        if (e.target.closest('[data-ep-close]')) closeEpModal()
+      })
+      $('.ep-panel').addEventListener('keydown', e => {
+        if (epModalOpen && e.key === 'Tab') trapTab(e, $('.ep-panel'))
+      })
+      $('#btn-ep-add').addEventListener('click', () => showEpForm(null))
+      $('#btn-ep-cancel').addEventListener('click', hideEpForm)
+      $('#btn-ep-save').addEventListener('click', saveEpForm)
+      $('#btn-ep-model-add').addEventListener('click', addEpModel)
+      $('#ep-model-input').addEventListener('keydown', e => {
+        if (e.key === 'Enter') { e.preventDefault(); addEpModel() }
+      })
+      $('#btn-ep-header-add').addEventListener('click', () => {
+        epFormHeaders.push({ name: '', value: '' })
+        renderEpHeaders()
+      })
+      $('#ep-headers-list').addEventListener('input', e => {
+        const nameInput = e.target.closest('[data-hname]')
+        const valInput = e.target.closest('[data-hval]')
+        if (nameInput) epFormHeaders[Number(nameInput.getAttribute('data-hname'))].name = e.target.value
+        else if (valInput) epFormHeaders[Number(valInput.getAttribute('data-hval'))].value = e.target.value
+      })
+      $('#ep-headers-list').addEventListener('click', e => {
+        const rm = e.target.closest('[data-hrm]')
+        if (!rm) return
+        epFormHeaders.splice(Number(rm.getAttribute('data-hrm')), 1)
+        renderEpHeaders()
+      })
+      $('#ep-format').addEventListener('change', () => {
+        const fmt = API_FORMATS[$('#ep-format').value]
+        const base = $('#ep-base').value.trim()
+        const isPreset = FORMAT_ORDER.some(f => base === API_FORMATS[f].presetBase)
+        if (!base || isPreset) $('#ep-base').value = fmt.presetBase
+        updateEpUrlHint()
+      })
+      $('#ep-base').addEventListener('input', updateEpUrlHint)
+      $('#ep-model-chips').addEventListener('click', e => {
+        const rm = e.target.closest('[data-mrm]')
+        if (!rm) return
+        epFormModels.splice(Number(rm.getAttribute('data-mrm')), 1)
+        renderEpModelChips()
+      })
+      $('#ep-list').addEventListener('click', e => {
+        const actBtn = e.target.closest('[data-eact]')
+        const card = e.target.closest('.ep-card')
+        if (!card) return
+        const id = card.getAttribute('data-epid')
+        if (actBtn) {
+          e.stopPropagation()
+          const act = actBtn.getAttribute('data-eact')
+          if (act === 'edit') {
+            showEpForm(endpointById(id))
+          } else if (act === 'del') {
+            deleteEndpoint(id)
+          }
+          return
+        }
+        setActiveEndpoint(id)
+        renderEpList()
+      })
+      $('#ep-list').addEventListener('keydown', e => {
+        if (e.key !== 'Enter' && e.key !== ' ') return
+        const card = e.target.closest('.ep-card')
+        if (card && e.target === card) {
+          e.preventDefault()
+          setActiveEndpoint(card.getAttribute('data-epid'))
+          renderEpList()
+        }
+      })
+
+      document.addEventListener('keydown', e => {
+        if (e.key !== 'Escape') return
+        if (modalState) { finishModal(null); return }
+        if (epModalOpen) { closeEpModal(); return }
+        if (state.drawer) closeDrawers()
+      })
+
+      window.addEventListener('online', () => { renderTopBits(); toast('Đã kết nối mạng.', 'success') })
+      window.addEventListener('offline', () => { renderTopBits(); toast('Mất kết nối mạng.', 'error') })
+
+      mqMobile.addEventListener('change', ev => {
+        if (!ev.matches) {
+          closeDrawers()
+          applyDesktopPanels()
+        }
+      })
+
+      window.addEventListener('beforeunload', saveNow)
+    }
+
+    function hydrateIcons () {
+      $$('[data-icon]').forEach(el => {
+        el.innerHTML = ic(el.getAttribute('data-icon'))
+      })
+    }
+
+    function init () {
+      hydrateIcons()
+      applyTheme()
+      renderEndpointSelect()
+      renderModelSelect()
+      renderSettingsPanel()
+      renderSidebar()
+      renderMessages()
+      renderComposer()
+      renderTopBits()
+      applyDesktopPanels()
+      updateCharCount()
+      bindEvents()
+      scrollBottom(true)
+    }
+
+    document.addEventListener('DOMContentLoaded', init)
+  </script>
+</body>
+</html>
