@@ -3,7 +3,6 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="description" content="Thái Sơ — AI Playground hợp nhất: endpoint tuỳ chỉnh, 5 định dạng API, translator phía client.">
   <title>Thái Sơ — AI Playground</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/be-vietnam-pro@5/300.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/be-vietnam-pro@5/400.css">
@@ -45,6 +44,7 @@
       --error-soft: rgba(226, 91, 82, 0.12);
       --code-bg: #0a0d11;
       --user-bg: #161c26;
+      --sys-bg: rgba(210, 162, 76, 0.08);
       --dot: rgba(148, 161, 179, 0.13);
       --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
       --scrim: rgba(4, 6, 9, 0.55);
@@ -74,6 +74,7 @@
       --error-soft: rgba(194, 58, 53, 0.1);
       --code-bg: #f6f2e7;
       --user-bg: #f8f4ea;
+      --sys-bg: rgba(150, 112, 15, 0.07);
       --dot: rgba(93, 104, 116, 0.14);
       --shadow: 0 10px 26px rgba(60, 48, 30, 0.14);
       --scrim: rgba(38, 32, 20, 0.38);
@@ -503,6 +504,7 @@
 
     .av-user { background: var(--panel-2); color: var(--muted); }
     .av-assistant { background: var(--accent-soft); color: var(--accent-strong); border-color: transparent; }
+    .av-system { background: var(--gold-soft); color: var(--gold); border-color: transparent; }
 
     .msg-main { flex: 1; min-width: 0; }
 
@@ -514,7 +516,25 @@
       margin-bottom: 6px;
     }
 
-    .msg-name { font-weight: 600; font-size: 13px; }
+    .role-select {
+      appearance: none;
+      -webkit-appearance: none;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--accent-strong);
+      background-color: var(--panel-2);
+      background-image: var(--chevron);
+      background-repeat: no-repeat;
+      background-position: right 8px center;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 2px 22px 2px 9px;
+      cursor: pointer;
+    }
+
+    .role-select:focus { border-color: var(--accent); outline: none; }
+    .role-select:disabled { opacity: 0.6; cursor: not-allowed; }
 
     .msg-model {
       font-family: var(--font-mono);
@@ -542,6 +562,27 @@
       overflow-wrap: anywhere;
     }
 
+    .system-text {
+      background: var(--sys-bg);
+      border: 1px dashed var(--gold);
+      border-radius: var(--r-md);
+      padding: 10px 14px;
+      overflow-wrap: anywhere;
+      white-space: pre-wrap;
+      font-size: 13px;
+    }
+
+    .tool-text {
+      background: var(--panel-2);
+      border: 1px dashed var(--border-strong);
+      border-radius: var(--r-md);
+      padding: 10px 14px;
+      overflow-wrap: anywhere;
+      white-space: pre-wrap;
+      font-size: 13px;
+      font-family: var(--font-mono);
+    }
+
     .msg-attach { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
 
     .att { border: 1px solid var(--border); background: var(--panel); border-radius: var(--r-sm); font-size: 12px; }
@@ -561,7 +602,7 @@
       white-space: nowrap;
     }
 
-    .msg-actions { display: flex; align-items: center; gap: 2px; margin-top: 8px; opacity: 0; transition: opacity 0.15s ease; }
+    .msg-actions { display: flex; align-items: center; gap: 2px; margin-top: 8px; opacity: 0; transition: opacity 0.15s ease; flex-wrap: wrap; }
     .msg:hover .msg-actions, .msg:focus-within .msg-actions { opacity: 1; }
 
     @media (hover: none) {
@@ -791,6 +832,32 @@
 
     .composer { max-width: 880px; margin: 0 auto; width: 100%; }
 
+    .add-row { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; flex-wrap: wrap; }
+
+    .add-label {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: var(--faint);
+      margin-right: 2px;
+    }
+
+    .add-role {
+      border: 1px solid var(--border);
+      background: var(--panel);
+      color: var(--muted);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 11px;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+    }
+
+    .add-role:hover { color: var(--text); border-color: var(--border-strong); background: var(--hover); }
+
     .attach-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
 
     .chip {
@@ -955,9 +1022,13 @@
       padding: 4px 6px;
     }
 
-    input[type='range'] { width: 100%; height: 26px; accent-color: var(--accent); cursor: pointer; }
+    .param-field.is-off label { color: var(--faint); }
+    .param-field.is-off input { opacity: 0.55; cursor: not-allowed; }
 
-    .text-input, .sys-input, .num-input {
+    input[type='range'] { width: 100%; height: 26px; accent-color: var(--accent); cursor: pointer; }
+    input[type='range']:disabled { opacity: 0.55; cursor: not-allowed; }
+
+    .text-input, .num-input {
       width: 100%;
       padding: 9px 11px;
       border-radius: var(--r-sm);
@@ -966,9 +1037,8 @@
       color: var(--text);
     }
 
-    .text-input:focus, .sys-input:focus, .num-input:focus { border-color: var(--accent); outline: none; }
-
-    .sys-input { min-height: 84px; resize: vertical; line-height: 1.5; }
+    .text-input:focus, .num-input:focus { border-color: var(--accent); outline: none; }
+    .text-input:disabled, .num-input:disabled { opacity: 0.55; cursor: not-allowed; }
 
     .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 7px; }
     .chips:empty { display: none; }
@@ -1340,6 +1410,15 @@
         <button type="button" class="jump-btn" id="btn-jump" data-icon="arrowDown" aria-label="Về cuối hội thoại" hidden></button>
         <div class="composer-zone">
           <div class="composer">
+            <div class="add-row">
+              <span class="add-label">Thêm tin nhắn</span>
+              <button type="button" class="add-role" data-addrole="system">system</button>
+              <button type="button" class="add-role" data-addrole="developer">developer</button>
+              <button type="button" class="add-role" data-addrole="user">user</button>
+              <button type="button" class="add-role" data-addrole="assistant">assistant</button>
+              <button type="button" class="add-role" data-addrole="model">model</button>
+              <button type="button" class="add-role" data-addrole="tool">tool</button>
+            </div>
             <div class="attach-row" id="attach-row" hidden></div>
             <div class="composer-box">
               <textarea id="prompt" rows="1" placeholder="Nhắn tin tới model…" aria-label="Nội dung prompt"></textarea>
@@ -1370,14 +1449,18 @@
         </div>
         <div class="set-body">
           <section class="set-section">
-            <h3 class="set-label">Chỉ thị hệ thống</h3>
-            <textarea class="sys-input" id="sys-input" placeholder="Ví dụ: Bạn là trợ lý kỹ thuật, trả lời ngắn gọn bằng tiếng Việt…" aria-label="Chỉ thị hệ thống"></textarea>
-          </section>
-
-          <section class="set-section">
             <h3 class="set-label">Tham số sinh</h3>
 
             <div class="field">
+              <div class="switch-row">
+                <label for="sw-sampling" style="cursor: pointer;">Tham số lấy mẫu</label>
+                <button type="button" class="switch" id="sw-sampling" role="switch" aria-checked="true" aria-label="Bật tắt tham số lấy mẫu">
+                  <span class="knob"></span>
+                </button>
+              </div>
+            </div>
+
+            <div class="field param-field">
               <div class="field-head"><label for="temp">Temperature</label></div>
               <div class="param-row">
                 <input type="range" id="temp" min="0" max="2" step="0.1">
@@ -1385,12 +1468,17 @@
               </div>
             </div>
 
-            <div class="field">
+            <div class="field param-field">
               <div class="field-head"><label for="topp">Top P</label></div>
               <div class="param-row">
                 <input type="range" id="topp" min="0" max="1" step="0.05">
                 <input type="number" class="num-input param-num" id="topp-num" min="0" max="1" step="0.05" aria-label="Top P">
               </div>
+            </div>
+
+            <div class="field param-field">
+              <div class="field-head"><label for="topk">Top K</label></div>
+              <input type="number" class="num-input" id="topk" min="1" step="1" placeholder="Không dùng">
             </div>
 
             <div class="field">
@@ -1595,6 +1683,7 @@
       spark: '<path d="M12 2l2.4 6.4L21 11l-6.6 2.6L12 20l-2.4-6.4L3 11l6.6-2.6z"/>',
       user: '<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
       message: '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
+      terminal: '<path d="m4 17 6-6-6-6"/><path d="M12 19h8"/>',
       plug: '<path d="M12 22v-5"/><path d="M9 8V2"/><path d="M15 8V2"/><path d="M18 8v5a4 4 0 0 1-4 4h-4a4 4 0 0 1-4-4V8Z"/>'
     }
 
@@ -1606,7 +1695,6 @@
     const BRAND = 'Thái Sơ'
     const STR = {
       newTitle: 'Cuộc trò chuyện mới',
-      you: 'Bạn',
       copied: 'Đã sao chép',
       copyFail: 'Không sao chép được',
       copyCode: 'Sao chép mã',
@@ -1634,9 +1722,12 @@
       annDone: 'Phản hồi đã hoàn tất',
       annStopped: 'Đã dừng tạo phản hồi',
       welcomeTitle: 'Chào Nam,',
-      welcomeSub: 'Chọn một gợi ý bên dưới hoặc nhập yêu cầu của bạn.',
+      welcomeSub: 'Chọn một gợi ý bên dưới, thêm tin nhắn theo vai trò, hoặc nhập yêu cầu của bạn.',
       welcomeNoEp: 'Bạn chưa có kết nối nào. Thêm endpoint và model tuỳ chỉnh để bắt đầu.',
       addEp: 'Thêm kết nối API',
+      addMsg: 'Thêm tin nhắn',
+      deleteMsg: 'Xoá tin nhắn',
+      roleLabel: 'Vai trò tin nhắn',
       maxFiles: 'Tối đa 4 tệp đính kèm.',
       fileTooBig: 'vượt quá 5MB.',
       fileBadType: 'định dạng không được hỗ trợ.',
@@ -1656,29 +1747,29 @@
 
     const FORMAT_ORDER = ['openai-chat', 'anthropic-messages', 'gemini-generate', 'openai-responses', 'gemini-interactions']
 
-    function extractInteractionText (it) {
-      if (!it) return ''
-      if (typeof it.output_text === 'string' && it.output_text) return it.output_text
-      const out = []
-      const steps = it.steps || it.output || []
-      steps.forEach(st => {
-        if (st && st.type === 'model_output' && Array.isArray(st.content)) {
-          st.content.forEach(c => {
-            if (c && c.type === 'text' && typeof c.text === 'string') out.push(c.text)
-          })
-        }
-      })
-      return out.join('')
+    const ROLES = ['system', 'developer', 'user', 'assistant', 'model', 'tool']
+
+    const TOOL_CALL_ID = 'call_playground'
+
+    function isSystemRole (r) {
+      return r === 'system' || r === 'developer'
     }
 
-    function geminiPartsText (json) {
-      const cand = json.candidates && json.candidates[0]
-      if (!cand || !cand.content || !Array.isArray(cand.content.parts)) return ''
-      let text = ''
-      cand.content.parts.forEach(p => {
-        if (typeof p.text === 'string') text += p.text
+    function isAssistantRole (r) {
+      return r === 'assistant' || r === 'model'
+    }
+
+    function splitMessages (messages) {
+      const sysParts = []
+      const rest = []
+      messages.forEach(m => {
+        if (isSystemRole(m.role)) {
+          if (m.content) sysParts.push(m.content)
+        } else {
+          rest.push(m)
+        }
       })
-      return text
+      return { sysParts, rest }
     }
 
     const API_FORMATS = {
@@ -1702,11 +1793,15 @@
                 m.images.forEach(img => parts.push({ type: 'image_url', image_url: { url: img.url } }))
                 return { role: 'user', content: parts }
               }
+              if (isAssistantRole(m.role)) return { role: 'assistant', content: m.content }
+              if (m.role === 'tool') return { role: 'tool', tool_call_id: TOOL_CALL_ID, content: m.content }
               return { role: m.role, content: m.content }
             })
           }
-          body.temperature = s.temperature
-          body.top_p = s.topP
+          if (s.sampling) {
+            body.temperature = s.temperature
+            body.top_p = s.topP
+          }
           if (s.maxTokens != null) body.max_completion_tokens = s.maxTokens
           return { url: this.buildUrl(ctx.base, ctx.model, ctx.stream), headers: this.headers(ctx.apiKey), body }
         },
@@ -1744,6 +1839,7 @@
         },
         build (ctx) {
           const s = ctx.settings
+          const { sysParts, rest } = splitMessages(ctx.messages)
           const msgs = []
           let curRole = null
           let curParts = []
@@ -1751,11 +1847,18 @@
             if (curRole && curParts.length) msgs.push({ role: curRole, content: curParts })
             curParts = []
           }
-          ctx.messages.forEach(m => {
-            const role = m.role === 'assistant' ? 'assistant' : 'user'
-            const parts = [{ type: 'text', text: m.content }]
-            if (m.role === 'user' && m.images) {
-              m.images.forEach(img => parts.push({ type: 'image', source: { type: 'base64', media_type: img.mime, data: img.base64 } }))
+          rest.forEach(m => {
+            let role
+            let parts
+            if (m.role === 'tool') {
+              role = 'user'
+              parts = [{ type: 'tool_result', tool_use_id: TOOL_CALL_ID, content: m.content }]
+            } else {
+              role = isAssistantRole(m.role) ? 'assistant' : 'user'
+              parts = [{ type: 'text', text: m.content }]
+              if (m.role === 'user' && m.images) {
+                m.images.forEach(img => parts.push({ type: 'image', source: { type: 'base64', media_type: img.mime, data: img.base64 } }))
+              }
             }
             if (role !== curRole) {
               flush()
@@ -1769,11 +1872,14 @@
             model: ctx.model,
             max_tokens: s.maxTokens != null ? s.maxTokens : 8192,
             stream: ctx.stream,
-            messages: msgs,
-            temperature: clamp(s.temperature, 0, 1),
-            top_p: s.topP
+            messages: msgs
           }
-          if (ctx.system) body.system = ctx.system
+          if (s.sampling) {
+            body.temperature = clamp(s.temperature, 0, 1)
+            body.top_p = s.topP
+            if (s.topK != null) body.top_k = s.topK
+          }
+          if (sysParts.length) body.system = sysParts.join('\n\n')
           return { url: this.buildUrl(ctx.base, ctx.model, ctx.stream), headers: this.headers(ctx.apiKey), body }
         },
         parseEvent (evt) {
@@ -1812,24 +1918,34 @@
         },
         build (ctx) {
           const s = ctx.settings
+          const { sysParts, rest } = splitMessages(ctx.messages)
           const contents = []
-          ctx.messages.forEach(m => {
-            const role = m.role === 'assistant' ? 'model' : 'user'
-            const parts = [{ text: m.content }]
-            if (m.role === 'user' && m.images) {
-              m.images.forEach(img => parts.push({ inlineData: { mimeType: img.mime, data: img.base64 } }))
+          rest.forEach(m => {
+            let role
+            let parts
+            if (m.role === 'tool') {
+              role = 'user'
+              parts = [{ functionResponse: { name: 'tool', response: { result: m.content } } }]
+            } else {
+              role = isAssistantRole(m.role) ? 'model' : 'user'
+              parts = [{ text: m.content }]
+              if (m.role === 'user' && m.images) {
+                m.images.forEach(img => parts.push({ inlineData: { mimeType: img.mime, data: img.base64 } }))
+              }
             }
             const last = contents[contents.length - 1]
             if (last && last.role === role) last.parts.push(...parts)
             else contents.push({ role, parts })
           })
-          const gen = {
-            temperature: s.temperature,
-            topP: s.topP
+          const gen = {}
+          if (s.sampling) {
+            gen.temperature = s.temperature
+            gen.topP = s.topP
+            if (s.topK != null) gen.topK = s.topK
           }
           if (s.maxTokens != null) gen.maxOutputTokens = s.maxTokens
           const body = { contents, generationConfig: gen }
-          if (ctx.system) body.systemInstruction = { parts: [{ text: ctx.system }] }
+          if (sysParts.length) body.systemInstruction = { parts: sysParts.map(t => ({ text: t })) }
           return { url: this.buildUrl(ctx.base, ctx.model, ctx.stream), headers: this.headers(ctx.apiKey), body }
         },
         parseEvent (evt) {
@@ -1865,25 +1981,33 @@
         },
         build (ctx) {
           const s = ctx.settings
+          const { sysParts, rest } = splitMessages(ctx.messages)
           const input = []
-          ctx.messages.forEach(m => {
-            const contentType = m.role === 'user' ? 'input_text' : 'output_text'
+          rest.forEach(m => {
+            if (m.role === 'tool') {
+              input.push({ type: 'function_call_output', call_id: TOOL_CALL_ID, output: m.content })
+              return
+            }
+            const role = isAssistantRole(m.role) ? 'assistant' : 'user'
+            const contentType = role === 'user' ? 'input_text' : 'output_text'
             const content = [{ type: contentType, text: m.content }]
             if (m.role === 'user' && m.images) {
               m.images.forEach(img => content.push({ type: 'input_image', image_url: img.url, detail: 'auto' }))
             }
-            input.push({ type: 'message', role: m.role, content })
+            input.push({ type: 'message', role, content })
           })
           const body = {
             model: ctx.model,
             input,
             stream: ctx.stream,
-            store: false,
-            temperature: s.temperature,
-            top_p: s.topP
+            store: false
+          }
+          if (s.sampling) {
+            body.temperature = s.temperature
+            body.top_p = s.topP
           }
           if (s.maxTokens != null) body.max_output_tokens = s.maxTokens
-          if (ctx.system) body.instructions = ctx.system
+          if (sysParts.length) body.instructions = sysParts.join('\n\n')
           return { url: this.buildUrl(ctx.base, ctx.model, ctx.stream), headers: this.headers(ctx.apiKey), body }
         },
         parseEvent (evt) {
@@ -1927,19 +2051,26 @@
         },
         build (ctx) {
           const s = ctx.settings
+          const { sysParts, rest } = splitMessages(ctx.messages)
           const input = []
-          ctx.messages.forEach(m => {
+          rest.forEach(m => {
+            if (m.role === 'tool') {
+              input.push({ type: 'function_result', name: 'tool', call_id: TOOL_CALL_ID, result: [{ type: 'text', text: m.content }] })
+              return
+            }
             const content = [{ type: 'text', text: m.content }]
             if (m.role === 'user' && m.images) {
               m.images.forEach(img => content.push({ type: 'image', data: img.base64, mime_type: img.mime }))
             }
-            input.push(m.role === 'assistant' ? { type: 'model_output', content } : { type: 'user_input', content })
+            input.push(isAssistantRole(m.role) ? { type: 'model_output', content } : { type: 'user_input', content })
           })
           const body = { model: ctx.model, input, stream: ctx.stream }
-          if (ctx.system) body.system_instruction = ctx.system
-          const gc = {
-            temperature: s.temperature,
-            top_p: s.topP
+          if (sysParts.length) body.system_instruction = sysParts.join('\n\n')
+          const gc = {}
+          if (s.sampling) {
+            gc.temperature = s.temperature
+            gc.top_p = s.topP
+            if (s.topK != null) gc.top_k = s.topK
           }
           if (s.maxTokens != null) gc.max_output_tokens = s.maxTokens
           body.generation_config = gc
@@ -1964,6 +2095,31 @@
           return json.error && json.error.message ? json.error.message : ''
         }
       }
+    }
+
+    function extractInteractionText (it) {
+      if (!it) return ''
+      if (typeof it.output_text === 'string' && it.output_text) return it.output_text
+      const out = []
+      const steps = it.steps || it.output || []
+      steps.forEach(st => {
+        if (st && st.type === 'model_output' && Array.isArray(st.content)) {
+          st.content.forEach(c => {
+            if (c && c.type === 'text' && typeof c.text === 'string') out.push(c.text)
+          })
+        }
+      })
+      return out.join('')
+    }
+
+    function geminiPartsText (json) {
+      const cand = json.candidates && json.candidates[0]
+      if (!cand || !cand.content || !Array.isArray(cand.content.parts)) return ''
+      let text = ''
+      cand.content.parts.forEach(p => {
+        if (typeof p.text === 'string') text += p.text
+      })
+      return text
     }
 
     async function callApi (url, init) {
@@ -2028,15 +2184,16 @@
       return {
         temperature: 1,
         topP: 1,
+        topK: null,
         maxTokens: 2048,
         streaming: true,
-        systemInstructions: ''
+        sampling: true
       }
     }
 
     function sanitizeMessage (raw) {
       if (!raw || typeof raw !== 'object') return null
-      const role = raw.role === 'user' || raw.role === 'assistant' ? raw.role : null
+      const role = ROLES.indexOf(raw.role) !== -1 ? raw.role : null
       if (!role) return null
       const msg = {
         id: typeof raw.id === 'string' ? raw.id : uid(),
@@ -2080,13 +2237,21 @@
       if (!raw || typeof raw !== 'object') return null
       const format = API_FORMATS[raw.format] ? raw.format : null
       if (!format) return null
+      let headers = []
+      if (Array.isArray(raw.headers)) {
+        headers = raw.headers
+          .filter(h => h && typeof h.name === 'string' && h.name.trim())
+          .slice(0, 20)
+          .map(h => ({ name: h.name.trim(), value: typeof h.value === 'string' ? h.value : '' }))
+      }
       return {
         id: typeof raw.id === 'string' ? raw.id : uid(),
         name: typeof raw.name === 'string' && raw.name ? raw.name : 'Kết nối',
         format: format,
         baseUrl: typeof raw.baseUrl === 'string' ? raw.baseUrl : '',
         models: Array.isArray(raw.models) ? raw.models.filter(m => typeof m === 'string' && m.trim()).slice(0, 50) : [],
-        headers: []
+        apiKey: typeof raw.apiKey === 'string' ? raw.apiKey : '',
+        headers
       }
     }
 
@@ -2096,10 +2261,12 @@
       const num = (v, fb) => Number.isFinite(Number(v)) ? Number(v) : fb
       base.temperature = clamp(num(raw.temperature, 1), 0, 2)
       base.topP = clamp(num(raw.topP, 1), 0, 1)
+      if (raw.topK == null || raw.topK === '') base.topK = null
+      else base.topK = Math.max(1, Math.floor(Number(raw.topK) || 1))
       if (raw.maxTokens === null) base.maxTokens = null
       else base.maxTokens = Math.max(1, Math.floor(num(raw.maxTokens, 2048)))
       base.streaming = raw.streaming !== false
-      base.systemInstructions = typeof raw.systemInstructions === 'string' ? raw.systemInstructions : ''
+      base.sampling = raw.sampling !== false
       return base
     }
 
@@ -2133,6 +2300,7 @@
       draft: '',
       attachments: [],
       editingId: null,
+      newMsgId: null,
       generating: false,
       aborter: null,
       drawer: null
@@ -2145,8 +2313,6 @@
       state.modelId = ep && ep.models.includes(saved.modelId) ? saved.modelId : (ep && ep.models[0] ? ep.models[0] : '')
       state.activeId = state.conversations.some(c => c.id === saved.activeId) ? saved.activeId : (state.conversations[0] ? state.conversations[0].id : null)
     }
-
-    const keyStore = {}
 
     const saveNow = debounce(() => {
       try {
@@ -2164,7 +2330,15 @@
           theme: state.theme,
           endpointId: state.endpointId,
           modelId: state.modelId,
-          endpoints: state.endpoints.map(e => ({ id: e.id, name: e.name, format: e.format, baseUrl: e.baseUrl, models: e.models })),
+          endpoints: state.endpoints.map(e => ({
+            id: e.id,
+            name: e.name,
+            format: e.format,
+            baseUrl: e.baseUrl,
+            models: e.models,
+            apiKey: e.apiKey,
+            headers: e.headers
+          })),
           settings: state.settings,
           activeId: state.activeId,
           ui: state.ui,
@@ -2445,6 +2619,7 @@
       if (state.activeId === id) { closeDrawers(); return }
       state.activeId = id
       state.editingId = null
+      state.newMsgId = null
       renderSidebar()
       renderMessages()
       renderTopBits()
@@ -2536,21 +2711,21 @@
     }
 
     function actionsHtml (m) {
-      if (m.status === 'streaming' || m.status === 'error' || state.editingId === m.id) return ''
+      if (m.status === 'streaming' || state.editingId === m.id) return ''
       let btns = `<button type="button" class="act-btn" data-act="copy" data-id="${m.id}" aria-label="${STR.copyMsg}">${ic('copy', 'ic-sm')}<span>Sao chép</span></button>`
-      if (m.role === 'user') {
-        btns += `<button type="button" class="act-btn" data-act="edit" data-id="${m.id}">${ic('pencil', 'ic-sm')}<span>${STR.edit}</span></button>`
-        return `<div class="msg-actions">${btns}</div>`
+      btns += `<button type="button" class="act-btn" data-act="edit" data-id="${m.id}">${ic('pencil', 'ic-sm')}<span>${STR.edit}</span></button>`
+      if (isAssistantRole(m.role) && m.status !== 'error') {
+        btns += `<button type="button" class="act-btn" data-act="regen" data-id="${m.id}">${ic('rotate', 'ic-sm')}<span>${STR.regen}</span></button>`
+        btns += `<button type="button" class="act-btn" data-act="fb-up" data-id="${m.id}" aria-pressed="${m.feedback === 'up'}" aria-label="${STR.rateUp}">${ic('thumbsUp', 'ic-sm')}</button>`
+        btns += `<button type="button" class="act-btn" data-act="fb-down" data-id="${m.id}" aria-pressed="${m.feedback === 'down'}" aria-label="${STR.rateDown}">${ic('thumbsDown', 'ic-sm')}</button>`
       }
-      btns += `<button type="button" class="act-btn" data-act="regen" data-id="${m.id}">${ic('rotate', 'ic-sm')}<span>${STR.regen}</span></button>`
-      btns += `<button type="button" class="act-btn" data-act="fb-up" data-id="${m.id}" aria-pressed="${m.feedback === 'up'}" aria-label="${STR.rateUp}">${ic('thumbsUp', 'ic-sm')}</button>`
-      btns += `<button type="button" class="act-btn" data-act="fb-down" data-id="${m.id}" aria-pressed="${m.feedback === 'down'}" aria-label="${STR.rateDown}">${ic('thumbsDown', 'ic-sm')}</button>`
+      btns += `<button type="button" class="act-btn" data-act="delete" data-id="${m.id}" aria-label="${STR.deleteMsg}">${ic('trash', 'ic-sm')}<span>${STR.delOk}</span></button>`
       return `<div class="msg-actions">${btns}</div>`
     }
 
     function editHtml (m) {
       return `<div class="edit-box">
-        <textarea id="edit-area" aria-label="Chỉnh sửa prompt">${escapeHtml(m.content)}</textarea>
+        <textarea id="edit-area" aria-label="Chỉnh sửa tin nhắn ${escapeHtml(m.role)}">${escapeHtml(m.content)}</textarea>
         <div class="edit-actions">
           <button type="button" class="btn btn-sm btn-accent" data-act="save-edit" data-id="${m.id}">${ic('check', 'ic-sm')}${STR.save}</button>
           <button type="button" class="btn btn-sm" data-act="cancel-edit">${STR.cancel}</button>
@@ -2560,22 +2735,26 @@
 
     function buildMsgEl (m) {
       const el = document.createElement('article')
-      el.className = 'msg msg-' + m.role + (m.status ? ' is-' + m.status : '')
+      el.className = 'msg msg-' + m.role + (m.status && isAssistantRole(m.role) ? ' is-' + m.status : '')
       el.setAttribute('data-msg', m.id)
-      const avatar = m.role === 'user' ? ic('user') : ic('spark')
-      const name = m.role === 'user' ? STR.you : BRAND
-      const modelTag = m.role === 'assistant' && m.modelLabel
+      const avatarIcon = m.role === 'user' ? 'user' : isAssistantRole(m.role) ? 'spark' : 'terminal'
+      const avClass = m.role === 'user' ? 'av-user' : isAssistantRole(m.role) ? 'av-assistant' : 'av-system'
+      const modelTag = isAssistantRole(m.role) && m.modelLabel
         ? `<span class="msg-model" title="${escapeHtml(m.endpointName || '')}">${escapeHtml(m.modelLabel)}</span>`
         : ''
+      const roleOptions = ROLES.map(r => `<option value="${r}"${m.role === r ? ' selected' : ''}>${r}</option>`).join('')
+      const disabled = m.status === 'streaming' ? ' disabled' : ''
       let body
       if (state.editingId === m.id) body = editHtml(m)
       else if (m.role === 'user') body = `<div class="user-text">${escapeHtml(m.content).replace(/\n/g, '<br>')}</div>` + userAttachHtml(m.attachments)
+      else if (isSystemRole(m.role)) body = `<div class="system-text">${escapeHtml(m.content)}</div>`
+      else if (m.role === 'tool') body = `<div class="tool-text">${escapeHtml(m.content)}</div>`
       else body = assistantBodyHtml(m)
       el.innerHTML = `
-        <div class="msg-avatar av-${m.role}">${avatar}</div>
+        <div class="msg-avatar ${avClass}">${ic(avatarIcon)}</div>
         <div class="msg-main">
           <div class="msg-head">
-            <span class="msg-name">${name}</span>
+            <select class="role-select" data-msg-role="${m.id}" aria-label="${STR.roleLabel}"${disabled}>${roleOptions}</select>
             ${modelTag}
             <span class="msg-time">${timeAgoVi(m.createdAt)}</span>
           </div>
@@ -2615,6 +2794,7 @@
         wrap.classList.add('is-empty')
         wrap.innerHTML = welcomeHtml()
         wrap.setAttribute('aria-busy', 'false')
+        updateComposerButtons()
         return
       }
       wrap.classList.remove('is-empty')
@@ -2629,6 +2809,7 @@
           ta.setSelectionRange(ta.value.length, ta.value.length)
         }
       }
+      updateComposerButtons()
     }
 
     function updateStreamingDom (m) {
@@ -2712,12 +2893,14 @@
     }
 
     function updateComposerButtons () {
+      const conv = currentConv()
+      const hasMsgs = !!(conv && conv.messages.length)
       const hasInput = state.draft.trim().length > 0 || state.attachments.length > 0
       const send = $('#btn-send')
       const stop = $('#btn-stop')
       send.hidden = state.generating
       stop.hidden = !state.generating
-      send.disabled = !hasInput || state.generating
+      send.disabled = state.generating || (!hasMsgs && !hasInput)
     }
 
     function autosize () {
@@ -2791,10 +2974,10 @@
 
     function epCardHtml (ep) {
       const active = ep.id === state.endpointId
-      const hasKey = !!keyStore[ep.id]
+      const hasKey = !!ep.apiKey
       const metaParts = [`${ep.models.length} model`]
       if (ep.headers.length) metaParts.push(`${ep.headers.length} header`)
-      metaParts.push(hasKey ? 'đã nhập khoá (trong phiên)' : 'chưa nhập khoá')
+      metaParts.push(hasKey ? 'đã nhập khoá' : 'chưa nhập khoá')
       return `
         <div class="ep-card ${active ? 'active' : ''}" data-epid="${ep.id}" role="button" tabindex="0" aria-label="Dùng kết nối ${escapeHtml(ep.name)}">
           <div class="ep-card-head">
@@ -2806,7 +2989,7 @@
           ${ep.models.length ? `<div class="ep-models">${ep.models.map(m => `<span class="stop-chip"><span>${escapeHtml(m)}</span></span>`).join('')}</div>` : ''}
           <div class="ep-card-actions">
             <button type="button" class="btn btn-sm" data-eact="edit" data-epid="${ep.id}">${STR.edit}</button>
-            <button type="button" class="btn btn-sm btn-danger" data-eact="del" data-epid="${ep.id}">Xoá</button>
+            <button type="button" class="btn btn-sm btn-danger" data-eact="del" data-epid="${ep.id}">${STR.delOk}</button>
             ${active ? '<span class="ep-active-tag">ĐANG DÙNG</span>' : ''}
           </div>
         </div>`
@@ -2848,7 +3031,7 @@
       fmtSel.value = ep ? ep.format : 'openai-chat'
       $('#ep-base').value = ep ? ep.baseUrl : API_FORMATS['openai-chat'].presetBase
       $('#ep-key').value = ''
-      $('#ep-key').placeholder = ep && keyStore[ep.id] ? 'Giữ nguyên nếu không đổi' : 'Khoá bí mật…'
+      $('#ep-key').placeholder = ep && ep.apiKey ? 'Giữ nguyên nếu không đổi' : 'Khoá bí mật…'
       renderEpModelChips()
       renderEpHeaders()
       updateEpUrlHint()
@@ -2892,10 +3075,17 @@
         .map(h => ({ name: h.name.trim(), value: h.value }))
       const id = epEditingId || uid()
       const existing = endpointById(id)
-      const ep = { id, name, format, baseUrl: base, models: epFormModels.slice(), headers }
+      const ep = {
+        id,
+        name,
+        format,
+        baseUrl: base,
+        models: epFormModels.slice(),
+        apiKey: key || (existing ? existing.apiKey : ''),
+        headers
+      }
       if (existing) state.endpoints = state.endpoints.map(e => (e.id === id ? ep : e))
       else state.endpoints.push(ep)
-      if (key) keyStore[id] = key
       if (!state.endpointId) setActiveEndpoint(id)
       else if (state.endpointId === id) renderModelSelect()
       renderEpList()
@@ -2916,7 +3106,6 @@
         danger: true
       })
       if (ok !== true) return
-      delete keyStore[id]
       state.endpoints = state.endpoints.filter(e => e.id !== id)
       if (state.endpointId === id) {
         state.endpointId = state.endpoints[0] ? state.endpoints[0].id : null
@@ -2932,19 +3121,22 @@
 
     function renderSettingsPanel () {
       const s = state.settings
-      $('#sys-input').value = s.systemInstructions
       $('#temp').value = String(s.temperature)
       $('#temp-num').value = String(s.temperature)
       $('#topp').value = String(s.topP)
       $('#topp-num').value = String(s.topP)
+      $('#topk').value = s.topK == null ? '' : String(s.topK)
       $('#maxt').value = s.maxTokens == null ? '' : String(s.maxTokens)
       $('#sw-stream').setAttribute('aria-checked', s.streaming ? 'true' : 'false')
+      $('#sw-sampling').setAttribute('aria-checked', s.sampling ? 'true' : 'false')
+      const off = !s.sampling
+      const ids = ['temp', 'temp-num', 'topp', 'topp-num', 'topk']
+      ids.forEach(id => { $('#' + id).disabled = off })
+      $$('.param-field').forEach(f => f.classList.toggle('is-off', off))
     }
 
     function resetParams () {
-      const keepSys = state.settings.systemInstructions
       state.settings = defaultSettings()
-      state.settings.systemInstructions = keepSys
       renderSettingsPanel()
       saveNow()
       toast('Đã khôi phục tham số mặc định.', 'success')
@@ -2976,15 +3168,18 @@
       const out = []
       for (const m of conv.messages) {
         if (until && m.id === until.id) break
-        if (m.role === 'system') continue
-        if (m.role === 'user') {
+        if (isSystemRole(m.role)) {
+          if (m.content) out.push({ role: m.role, content: m.content })
+        } else if (m.role === 'user') {
           const images = (m.attachments || [])
             .filter(a => a.dataUrl)
             .map(a => parseDataUri(a.dataUrl))
             .filter(Boolean)
           out.push({ role: 'user', content: m.content, images })
-        } else if (m.role === 'assistant' && m.content) {
-          out.push({ role: 'assistant', content: m.content })
+        } else if (m.role === 'tool') {
+          if (m.content) out.push({ role: 'tool', content: m.content })
+        } else if (isAssistantRole(m.role) && m.content) {
+          out.push({ role: m.role, content: m.content })
         }
       }
       return out
@@ -3017,16 +3212,14 @@
       try {
         if (!ep) throw apiError('config', STR.needEndpoint)
         if (!msg.model) throw apiError('config', STR.needModel)
-        const key = keyStore[ep.id] || ''
-        if (!key) throw apiError('config', `Kết nối “${ep.name}” chưa có khoá API. Mở “Kết nối” để nhập (khoá chỉ giữ trong phiên).`)
+        const key = ep.apiKey || ''
+        if (!key) throw apiError('config', `Kết nối “${ep.name}” chưa có khoá API. Mở “Kết nối” để nhập.`)
         const fmt = API_FORMATS[ep.format]
         const stream = state.settings.streaming
-        const sysText = state.settings.systemInstructions.trim()
         const built = fmt.build({
           base: ep.baseUrl,
           model: msg.model,
           messages: buildCanonical(conv, msg),
-          system: sysText,
           settings: state.settings,
           stream,
           apiKey: key
@@ -3077,7 +3270,6 @@
       conv.updatedAt = Date.now()
       renderMessages()
       renderSidebar()
-      updateComposerButtons()
       saveNow()
       scrollBottom(true)
       if (msg.status === 'complete') announce(STR.annDone)
@@ -3108,23 +3300,25 @@
 
     function sendMessage () {
       if (state.generating) return
-      const text = state.draft.trim()
-      if (!text && !state.attachments.length) return
       if (!navigator.onLine) { toast('Mất kết nối mạng. Hãy kiểm tra mạng rồi thử lại.', 'error'); return }
       if (!currentEndpoint()) { toast(STR.needEndpoint, 'error'); openEpModal(); return }
       if (!state.modelId) { toast(STR.needModel, 'error'); openEpModal(); return }
       let conv = currentConv()
       if (!conv) conv = createConversation(true)
-      conv.messages.push({
-        id: uid(),
-        role: 'user',
-        content: text,
-        createdAt: Date.now(),
-        attachments: state.attachments.map(a => ({ name: a.name, size: a.size, type: a.type, url: a.url, dataUrl: a.dataUrl }))
-      })
-      if (!conv.renamed) {
-        conv.title = text ? (text.length > 60 ? text.slice(0, 60) + '…' : text) : 'Tệp đính kèm'
+      const text = state.draft.trim()
+      if (text || state.attachments.length) {
+        conv.messages.push({
+          id: uid(),
+          role: 'user',
+          content: text,
+          createdAt: Date.now(),
+          attachments: state.attachments.map(a => ({ name: a.name, size: a.size, type: a.type, url: a.url, dataUrl: a.dataUrl }))
+        })
+        if (!conv.renamed && text) {
+          conv.title = text.length > 60 ? text.slice(0, 60) + '…' : text
+        }
       }
+      if (!conv.messages.length) return
       state.draft = ''
       state.attachments = []
       const ta = $('#prompt')
@@ -3142,6 +3336,77 @@
       if (state.aborter) state.aborter.abort()
     }
 
+    function addMessage (role) {
+      if (state.generating) { toast(STR.genBusy, 'error'); return }
+      if (state.editingId) return
+      if (ROLES.indexOf(role) === -1) return
+      let conv = currentConv()
+      if (!conv) conv = createConversation(true)
+      const m = { id: uid(), role, content: '', createdAt: Date.now() }
+      if (isAssistantRole(role)) m.status = 'complete'
+      conv.messages.push(m)
+      state.editingId = m.id
+      state.newMsgId = m.id
+      conv.updatedAt = Date.now()
+      renderMessages()
+      renderSidebar()
+      saveNow()
+      scrollBottom(true)
+    }
+
+    function cancelEdit () {
+      const conv = currentConv()
+      if (conv && state.newMsgId) {
+        const m = conv.messages.find(x => x.id === state.newMsgId)
+        if (m && !m.content) conv.messages = conv.messages.filter(x => x.id !== state.newMsgId)
+      }
+      state.editingId = null
+      state.newMsgId = null
+      renderMessages()
+      renderSidebar()
+      saveNow()
+    }
+
+    function saveMessageEdit (msgId) {
+      const conv = currentConv()
+      if (!conv) return
+      const ta = $('#edit-area')
+      const val = ta ? ta.value.trim() : ''
+      if (!val) { toast(STR.emptyPrompt, 'error'); return }
+      if (state.generating) { toast(STR.genBusy, 'error'); return }
+      const m = conv.messages.find(x => x.id === msgId)
+      if (!m) return
+      m.content = val
+      state.editingId = null
+      state.newMsgId = null
+      conv.updatedAt = Date.now()
+      saveNow()
+      renderMessages()
+      renderSidebar()
+    }
+
+    function deleteMessage (msgId) {
+      if (state.generating) { toast(STR.genBusy, 'error'); return }
+      const conv = currentConv()
+      if (!conv) return
+      const m = conv.messages.find(x => x.id === msgId)
+      if (!m) return
+      if (m.attachments) {
+        m.attachments.forEach(a => {
+          if (a.url && a.url.startsWith('blob:')) URL.revokeObjectURL(a.url)
+        })
+      }
+      conv.messages = conv.messages.filter(x => x.id !== msgId)
+      conv.updatedAt = Date.now()
+      if (state.editingId === msgId) {
+        state.editingId = null
+        state.newMsgId = null
+      }
+      renderMessages()
+      renderSidebar()
+      saveNow()
+    }
+
     function regenerateFrom (msgId) {
       if (state.generating) { toast(STR.genBusy, 'error'); return }
       if (!navigator.onLine) { toast('Mất kết nối mạng. Hãy kiểm tra mạng rồi thử lại.', 'error'); return }
@@ -3152,21 +3417,6 @@
       conv.messages = conv.messages.slice(0, idx)
       saveNow()
       pushAssistantAndRun(conv)
-    }
-
-    function saveEdit (msgId) {
-      const conv = currentConv()
-      if (!conv) return
-      const ta = $('#edit-area')
-      const val = ta ? ta.value.trim() : ''
-      if (!val) { toast(STR.emptyPrompt, 'error'); return }
-      if (state.generating) { toast(STR.genBusy, 'error'); return }
-      const idx = conv.messages.findIndex(m => m.id === msgId)
-      if (idx < 0) return
-      conv.messages = conv.messages.slice(0, idx)
-      state.editingId = null
-      state.draft = val
-      sendMessage()
     }
 
     function toggleFeedback (msgId, val) {
@@ -3352,13 +3602,16 @@
           if (m) copyText(m.content).then(ok => toast(ok ? STR.copied : STR.copyFail, ok ? 'success' : 'error'))
         } else if (act === 'edit') {
           if (state.generating) { toast(STR.genBusy, 'error'); return }
+          if (state.editingId) return
           state.editingId = id
+          state.newMsgId = null
           renderMessages()
         } else if (act === 'save-edit') {
-          saveEdit(id)
+          saveMessageEdit(id)
         } else if (act === 'cancel-edit') {
-          state.editingId = null
-          renderMessages()
+          cancelEdit()
+        } else if (act === 'delete') {
+          deleteMessage(id)
         } else if (act === 'regen' || act === 'retry') {
           regenerateFrom(id)
         } else if (act === 'fb-up') {
@@ -3366,6 +3619,25 @@
         } else if (act === 'fb-down') {
           toggleFeedback(id, 'down')
         }
+      })
+
+      messages.addEventListener('change', e => {
+        const sel = e.target.closest('[data-msg-role]')
+        if (!sel) return
+        if (state.generating) return
+        const conv = currentConv()
+        if (!conv) return
+        const m = conv.messages.find(x => x.id === sel.getAttribute('data-msg-role'))
+        if (!m || m.status === 'streaming') return
+        if (ROLES.indexOf(sel.value) === -1) return
+        m.role = sel.value
+        if (isAssistantRole(m.role) && !m.status) m.status = 'complete'
+        saveNow()
+        renderMessages()
+      })
+
+      $$('[data-addrole]').forEach(b => {
+        b.addEventListener('click', () => addMessage(b.getAttribute('data-addrole')))
       })
 
       const sc = $('#chat-scroll')
@@ -3412,13 +3684,17 @@
         if (rm) removeAttachment(rm.getAttribute('data-rm'))
       })
 
-      $('#sys-input').addEventListener('input', e => {
-        state.settings.systemInstructions = e.target.value
-        saveNow()
-      })
-
       bindParamPair('temp', 'temp-num', 'temperature')
       bindParamPair('topp', 'topp-num', 'topP')
+
+      $('#topk').addEventListener('input', e => {
+        const raw = e.target.value.trim()
+        state.settings.topK = raw === '' ? null : Math.max(1, Math.floor(Number(raw) || 1))
+        saveNow()
+      })
+      $('#topk').addEventListener('change', e => {
+        e.target.value = state.settings.topK == null ? '' : String(state.settings.topK)
+      })
 
       $('#maxt').addEventListener('input', e => {
         const raw = e.target.value.trim()
@@ -3427,6 +3703,12 @@
       })
       $('#maxt').addEventListener('change', e => {
         e.target.value = state.settings.maxTokens == null ? '' : String(state.settings.maxTokens)
+      })
+
+      $('#sw-sampling').addEventListener('click', () => {
+        state.settings.sampling = !state.settings.sampling
+        renderSettingsPanel()
+        saveNow()
       })
 
       $('#sw-stream').addEventListener('click', () => {
