@@ -1096,6 +1096,15 @@
 
     .text-input:disabled, .num-input:disabled { opacity: 0.55; cursor: not-allowed; }
 
+    .body-preview {
+      min-height: 180px;
+      resize: vertical;
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      line-height: 1.55;
+      white-space: pre;
+    }
+
     .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 7px; }
 
     .chips:empty { display: none; }
@@ -1512,7 +1521,6 @@
               <button type="button" class="add-role" data-addrole="developer">developer</button>
               <button type="button" class="add-role" data-addrole="user">user</button>
               <button type="button" class="add-role" data-addrole="assistant">assistant</button>
-              <button type="button" class="add-role" data-addrole="model">model</button>
               <button type="button" class="add-role" data-addrole="tool">tool</button>
             </div>
             <div class="attach-row" id="attach-row" hidden></div>
@@ -1588,6 +1596,27 @@
                 <button type="button" class="switch" id="sw-stream" role="switch" aria-checked="true" aria-label="Bật tắt streaming">
                   <span class="knob"></span>
                 </button>
+              </div>
+            </div>
+
+            <div class="field">
+              <div class="switch-row">
+                <label class="switch-label" for="sw-zdr">ZDR</label>
+                <button type="button" class="switch" id="sw-zdr" role="switch" aria-checked="true" aria-label="Bật tắt ZDR">
+                  <span class="knob"></span>
+                </button>
+              </div>
+              <p class="url-hint">Đặt “store”: false cho các API OpenAI.</p>
+            </div>
+          </section>
+
+          <section class="set-section">
+            <h3 class="set-label">Body yêu cầu</h3>
+            <div class="field">
+              <textarea class="text-input body-preview" id="req-body" rows="12" readonly placeholder="Bấm “Cập nhật” để tạo body yêu cầu." aria-label="Body yêu cầu"></textarea>
+              <div class="edit-actions">
+                <button type="button" class="btn btn-sm" id="btn-body-refresh">Cập nhật</button>
+                <button type="button" class="btn btn-sm btn-accent" id="btn-body-copy">Sao chép</button>
               </div>
             </div>
           </section>
@@ -1844,7 +1873,7 @@
 
     const FORMAT_ORDER = ['openai-chat', 'anthropic-messages', 'gemini-generate', 'openai-responses', 'gemini-interactions']
 
-    const ROLES = ['system', 'developer', 'user', 'assistant', 'model', 'tool']
+    const ROLES = ['system', 'developer', 'user', 'assistant', 'tool']
 
     const TOOL_CALL_ID = 'call_playground'
 
@@ -1853,7 +1882,7 @@
     }
 
     function isAssistantRole (r) {
-      return r === 'assistant' || r === 'model'
+      return r === 'assistant'
     }
 
     function splitMessages (messages) {
@@ -1900,6 +1929,7 @@
             body.top_p = s.topP
           }
           if (s.maxTokens != null) body.max_completion_tokens = s.maxTokens
+          if (s.zdr) body.store = false
           return { url: this.buildUrl(ctx.base, ctx.model, ctx.stream), headers: this.headers(ctx.apiKey), body }
         },
         parseEvent (evt) {
@@ -2096,9 +2126,9 @@
           const body = {
             model: ctx.model,
             input,
-            stream: ctx.stream,
-            store: false
+            stream: ctx.stream
           }
+          if (s.zdr) body.store = false
           if (s.sampling) {
             body.temperature = s.temperature
             body.top_p = s.topP
@@ -2284,12 +2314,14 @@
         topK: null,
         maxTokens: 2048,
         streaming: true,
-        sampling: true
+        sampling: true,
+        zdr: true
       }
     }
 
     function sanitizeMessage (raw) {
       if (!raw || typeof raw !== 'object') return null
+      if (raw.role === 'model') raw.role = 'assistant'
       const role = ROLES.indexOf(raw.role) !== -1 ? raw.role : null
       if (!role) return null
       const msg = {
@@ -2364,6 +2396,7 @@
       else base.maxTokens = Math.max(1, Math.floor(num(raw.maxTokens, 2048)))
       base.streaming = raw.streaming !== false
       base.sampling = raw.sampling !== false
+      base.zdr = raw.zdr !== false
       return base
     }
 
@@ -3226,6 +3259,7 @@
       $('#maxt-input').value = s.maxTokens == null ? '' : String(s.maxTokens)
       $('#sw-stream').setAttribute('aria-checked', s.streaming ? 'true' : 'false')
       $('#sw-sampling').setAttribute('aria-checked', s.sampling ? 'true' : 'false')
+      $('#sw-zdr').setAttribute('aria-checked', s.zdr ? 'true' : 'false')
       const off = !s.sampling
       const ids = ['temp-range', 'temp-num', 'topp-range', 'topp-num', 'topk-input']
       ids.forEach(id => { $('#' + id).disabled = off })
@@ -3280,6 +3314,36 @@
         }
       }
       return out
+    }
+
+    function previewMessages () {
+      const conv = currentConv()
+      if (conv && conv.messages.length) return buildCanonical(conv, null)
+      return [{ role: 'user', content: state.draft.trim() || 'Xin chào', images: [] }]
+    }
+
+    function refreshBodyPreview () {
+      const ta = $('#req-body')
+      if (!ta) return false
+      const ep = currentEndpoint()
+      if (!ep) {
+        ta.value = ''
+        return false
+      }
+      const fmt = API_FORMATS[ep.format]
+      const built = fmt.build({
+        base: ep.baseUrl,
+        model: state.modelId || '{model}',
+        messages: previewMessages(),
+        settings: state.settings,
+        stream: state.settings.streaming,
+        apiKey: ep.apiKey || ''
+      })
+      ep.headers.forEach(h => {
+        if (h.name) built.headers[h.name.trim().toLowerCase()] = h.value
+      })
+      ta.value = JSON.stringify(built.body, null, 2)
+      return true
     }
 
     function handleSseEvent (fmt, evt, msg) {
@@ -3812,6 +3876,25 @@
         state.settings.streaming = !state.settings.streaming
         $('#sw-stream').setAttribute('aria-checked', state.settings.streaming ? 'true' : 'false')
         saveNow()
+      })
+
+      $('#sw-zdr').addEventListener('click', () => {
+        state.settings.zdr = !state.settings.zdr
+        $('#sw-zdr').setAttribute('aria-checked', state.settings.zdr ? 'true' : 'false')
+        saveNow()
+      })
+
+      $('#btn-body-refresh').addEventListener('click', () => {
+        if (!refreshBodyPreview()) toast(STR.needEndpoint, 'error')
+      })
+
+      $('#btn-body-copy').addEventListener('click', () => {
+        const ta = $('#req-body')
+        if (!ta.value && !refreshBodyPreview()) {
+          toast(STR.needEndpoint, 'error')
+          return
+        }
+        copyText(ta.value).then(ok => toast(ok ? STR.copied : STR.copyFail, ok ? 'success' : 'error'))
       })
 
       $('#btn-reset').addEventListener('click', resetParams)
