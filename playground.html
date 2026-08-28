@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="description" content="Thái Sơ — AI Playground hợp nhất: endpoint tuỳ chỉnh, 5 định dạng API, translator phía client.">
   <title>Thái Sơ — AI Playground</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/be-vietnam-pro@5/300.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/be-vietnam-pro@5/400.css">
@@ -1653,7 +1654,7 @@
       { t: 'Ý tưởng sản phẩm AI', p: 'Gợi ý 5 ý tưởng sản phẩm AI phù hợp thị trường Việt Nam, nêu rõ vấn đề và đối tượng.' }
     ]
 
-    const FORMAT_ORDER = ['openai-chat', 'openai-responses', 'anthropic-messages', 'gemini-generate', 'gemini-interactions']
+    const FORMAT_ORDER = ['openai-chat', 'anthropic-messages', 'gemini-generate', 'openai-responses', 'gemini-interactions']
 
     function extractInteractionText (it) {
       if (!it) return ''
@@ -1682,7 +1683,7 @@
 
     const API_FORMATS = {
       'openai-chat': {
-        label: 'OpenAI Chat Completions',
+        label: 'Chat Completions',
         presetBase: 'https://api.openai.com/v1',
         buildUrl (base, model, stream) {
           return trimBase(base) + '/chat/completions'
@@ -1726,70 +1727,8 @@
         }
       },
 
-      'openai-responses': {
-        label: 'OpenAI Responses',
-        presetBase: 'https://api.openai.com/v1',
-        buildUrl (base, model, stream) {
-          return trimBase(base) + '/responses'
-        },
-        headers (key) {
-          return { 'content-type': 'application/json', authorization: 'Bearer ' + key }
-        },
-        build (ctx) {
-          const s = ctx.settings
-          const input = []
-          ctx.messages.forEach(m => {
-            const contentType = m.role === 'user' ? 'input_text' : 'output_text'
-            const content = [{ type: contentType, text: m.content }]
-            if (m.role === 'user' && m.images) {
-              m.images.forEach(img => content.push({ type: 'input_image', image_url: img.url, detail: 'auto' }))
-            }
-            input.push({ type: 'message', role: m.role, content })
-          })
-          const body = {
-            model: ctx.model,
-            input,
-            stream: ctx.stream,
-            store: false,
-            temperature: s.temperature,
-            top_p: s.topP
-          }
-          if (s.maxTokens != null) body.max_output_tokens = s.maxTokens
-          if (ctx.system) body.instructions = ctx.system
-          return { url: this.buildUrl(ctx.base, ctx.model, ctx.stream), headers: this.headers(ctx.apiKey), body }
-        },
-        parseEvent (evt) {
-          const d = evt.data
-          const t = d.type || evt.event
-          if (t === 'response.output_text.delta') return d.delta ? { delta: d.delta } : {}
-          if (t === 'error') return { error: d.message || 'Lỗi API' }
-          if (t === 'response.failed') {
-            const msg = d.response && d.response.error && d.response.error.message
-            return { error: msg || 'Lỗi API' }
-          }
-          if (t === 'response.completed') return { done: true }
-          return {}
-        },
-        parseFull (json) {
-          if (typeof json.output_text === 'string' && json.output_text) return json.output_text
-          const out = []
-          const items = Array.isArray(json.output) ? json.output : []
-          items.forEach(item => {
-            if (item && item.type === 'message' && Array.isArray(item.content)) {
-              item.content.forEach(c => {
-                if (c && c.type === 'output_text' && typeof c.text === 'string') out.push(c.text)
-              })
-            }
-          })
-          return out.join('')
-        },
-        parseError (json) {
-          return json.error && json.error.message ? json.error.message : ''
-        }
-      },
-
       'anthropic-messages': {
-        label: 'Anthropic Messages (Claude)',
+        label: 'Messages',
         presetBase: 'https://api.anthropic.com',
         buildUrl (base, model, stream) {
           const root = trimBase(base)
@@ -1861,7 +1800,7 @@
       },
 
       'gemini-generate': {
-        label: 'Gemini Generate Content',
+        label: 'Generate Content',
         presetBase: 'https://generativelanguage.googleapis.com/v1beta',
         buildUrl (base, model, stream) {
           const root = trimBase(base)
@@ -1915,8 +1854,70 @@
         }
       },
 
+      'openai-responses': {
+        label: 'Responses',
+        presetBase: 'https://api.openai.com/v1',
+        buildUrl (base, model, stream) {
+          return trimBase(base) + '/responses'
+        },
+        headers (key) {
+          return { 'content-type': 'application/json', authorization: 'Bearer ' + key }
+        },
+        build (ctx) {
+          const s = ctx.settings
+          const input = []
+          ctx.messages.forEach(m => {
+            const contentType = m.role === 'user' ? 'input_text' : 'output_text'
+            const content = [{ type: contentType, text: m.content }]
+            if (m.role === 'user' && m.images) {
+              m.images.forEach(img => content.push({ type: 'input_image', image_url: img.url, detail: 'auto' }))
+            }
+            input.push({ type: 'message', role: m.role, content })
+          })
+          const body = {
+            model: ctx.model,
+            input,
+            stream: ctx.stream,
+            store: false,
+            temperature: s.temperature,
+            top_p: s.topP
+          }
+          if (s.maxTokens != null) body.max_output_tokens = s.maxTokens
+          if (ctx.system) body.instructions = ctx.system
+          return { url: this.buildUrl(ctx.base, ctx.model, ctx.stream), headers: this.headers(ctx.apiKey), body }
+        },
+        parseEvent (evt) {
+          const d = evt.data
+          const t = d.type || evt.event
+          if (t === 'response.output_text.delta') return d.delta ? { delta: d.delta } : {}
+          if (t === 'error') return { error: d.message || 'Lỗi API' }
+          if (t === 'response.failed') {
+            const msg = d.response && d.response.error && d.response.error.message
+            return { error: msg || 'Lỗi API' }
+          }
+          if (t === 'response.completed') return { done: true }
+          return {}
+        },
+        parseFull (json) {
+          if (typeof json.output_text === 'string' && json.output_text) return json.output_text
+          const out = []
+          const items = Array.isArray(json.output) ? json.output : []
+          items.forEach(item => {
+            if (item && item.type === 'message' && Array.isArray(item.content)) {
+              item.content.forEach(c => {
+                if (c && c.type === 'output_text' && typeof c.text === 'string') out.push(c.text)
+              })
+            }
+          })
+          return out.join('')
+        },
+        parseError (json) {
+          return json.error && json.error.message ? json.error.message : ''
+        }
+      },
+
       'gemini-interactions': {
-        label: 'Gemini Interactions',
+        label: 'Interactions',
         presetBase: 'https://generativelanguage.googleapis.com/v1beta',
         buildUrl (base, model, stream) {
           return trimBase(base) + '/interactions'
