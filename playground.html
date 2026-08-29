@@ -1,4 +1,4 @@
-<result><!doctype html>
+<!doctype html>
 <html lang="vi" data-theme="dark">
 <head>
   <meta charset="utf-8">
@@ -1685,7 +1685,6 @@
     }
 
     #ta-sysprompt,
-    #ta-variables,
     #ta-tools {
       max-height: 320px;
       resize: none;
@@ -1694,10 +1693,6 @@
 
     #ta-sysprompt {
       min-height: 72px;
-    }
-
-    #ta-variables {
-      min-height: 96px;
     }
 
     #ta-tools {
@@ -1717,6 +1712,49 @@
     .num-input:disabled {
       opacity: 0.55;
       cursor: not-allowed;
+    }
+
+    .variable-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .variable-empty {
+      padding: 10px 11px;
+      border: 1px dashed var(--border-strong);
+      border-radius: var(--r-sm);
+      color: var(--faint);
+      font-size: 12px;
+      text-align: center;
+    }
+
+    .variable-row {
+      display: grid;
+      grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr) auto;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .variable-key,
+    .variable-value {
+      min-width: 0;
+      padding: 7px 9px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+    }
+
+    .variable-row [aria-invalid='true'] {
+      border-color: var(--error);
+      background: var(--error-soft);
+    }
+
+    .variable-error {
+      grid-column: 1 / -1;
+      color: var(--error);
+      font-size: 11px;
+      line-height: 1.4;
     }
 
     .chips {
@@ -2294,6 +2332,20 @@
       .ep-header-row .ep-header-name {
         flex: 1 1 100%;
       }
+
+      .variable-row {
+        grid-template-columns: minmax(0, 1fr) auto;
+      }
+
+      .variable-value {
+        grid-row: 2;
+        grid-column: 1 / -1;
+      }
+
+      .variable-remove {
+        grid-row: 1;
+        grid-column: 2;
+      }
     }
 
     @media (max-width: 359px) {
@@ -2434,8 +2486,24 @@
           <section class="set-section">
             <h3 class="set-label">Biến</h3>
             <div class="field">
-              <textarea class="text-input mono" id="ta-variables" rows="5" placeholder="Đối tượng JSON chứa các biến" aria-label="Biến cho system prompt và tin nhắn"></textarea>
-              <p class="url-hint">Ví dụ: <code>{"name":"Nam","user":{"city":"Hà Nội"}}</code>. Dùng <code>{{name}}</code> hoặc <code>{{user.city}}</code>. Biến không được áp dụng cho phản hồi assistant do mô hình tạo.</p>
+              <div
+                class="variable-list"
+                id="variable-list"
+                role="list"
+                aria-label="Từ điển biến"
+              ></div>
+              <button type="button" class="btn btn-sm" id="btn-variable-add">
+                <span data-icon="plus"></span>
+                Thêm biến
+              </button>
+              <p class="url-hint">
+                Mỗi giá trị dùng cú pháp JSON5. Ví dụ: khoá
+                <code>name</code> với giá trị <code>'Nam'</code>; khoá
+                <code>user</code> với giá trị
+                <code>{city: 'Hà Nội'}</code>. Dùng <code>{{name}}</code>
+                hoặc <code>{{user.city}}</code>. Biến không được áp dụng cho
+                phản hồi assistant do mô hình tạo.
+              </p>
             </div>
           </section>
 
@@ -2585,8 +2653,8 @@
           <section class="set-section">
             <h3 class="set-label">Tools</h3>
             <div class="field">
-              <textarea class="text-input mono" id="ta-tools" rows="7" placeholder="Mảng JSON tools theo định dạng API đang chọn" aria-label="Mảng tools"></textarea>
-              <p class="url-hint">Nhập trực tiếp một mảng JSON. Mỗi định dạng API sẽ nhận mảng này tại trường <code>tools</code>.</p>
+              <textarea class="text-input mono" id="ta-tools" rows="7" placeholder="Mảng JSON5 tools theo định dạng API đang chọn" aria-label="Mảng tools"></textarea>
+              <p class="url-hint">Nhập trực tiếp một mảng JSON5. Mỗi định dạng API sẽ nhận mảng này tại trường <code>tools</code>.</p>
             </div>
           </section>
 
@@ -2696,9 +2764,10 @@
   >
   <noscript>Ứng dụng cần bật JavaScript để hoạt động.</noscript>
 
+  <script src="https://unpkg.com/json5@2.2.3/dist/index.min.js"></script>
   <script src="https://unpkg.com/commonmark@0.31.2/dist/commonmark.js"></script>
   <script>
-    /* global AbortController, TextDecoder, URL, atob, btoa, escape, fetch, localStorage, unescape */
+    /* global AbortController, JSON5, TextDecoder, URL, atob, btoa, escape, fetch, localStorage, unescape */
 
     const $ = sel => document.querySelector(sel)
     const $$ = sel => Array.from(document.querySelectorAll(sel))
@@ -3111,6 +3180,18 @@
       }
     }
 
+    function parseJson5 (source) {
+      if (!window.JSON5 ||
+          typeof window.JSON5.parse !== 'function') {
+        throw apiError(
+          'config',
+          'Không tải được JSON5.'
+        )
+      }
+
+      return JSON5.parse(source)
+    }
+
     function parseToolsJson (source) {
       const text = String(source || '').trim()
 
@@ -3119,18 +3200,18 @@
       let value
 
       try {
-        value = JSON.parse(text)
+        value = parseJson5(text)
       } catch (err) {
         throw apiError(
           'config',
-          'Tools không phải JSON hợp lệ: ' + err.message
+          'Tools không phải JSON5 hợp lệ: ' + err.message
         )
       }
 
       if (!Array.isArray(value)) {
         throw apiError(
           'config',
-          'Tools phải là một mảng JSON.'
+          'Tools phải là một mảng JSON5.'
         )
       }
 
@@ -3145,11 +3226,11 @@
       let value
 
       try {
-        value = JSON.parse(text)
+        value = parseJson5(text)
       } catch (err) {
         throw apiError(
           'config',
-          'Biến không phải JSON hợp lệ: ' + err.message
+          'Biến không phải JSON5 hợp lệ: ' + err.message
         )
       }
 
@@ -3158,11 +3239,81 @@
           typeof value !== 'object') {
         throw apiError(
           'config',
-          'Biến phải là một đối tượng JSON.'
+          'Biến phải là một đối tượng JSON5.'
         )
       }
 
       return value
+    }
+
+    function variableValueSource (value) {
+      const source = JSON.stringify(value)
+
+      return source === undefined ? 'null' : source
+    }
+
+    function variableEntriesFromObject (variables) {
+      return Object.entries(variables || {}).map(([key, value]) => ({
+        id: uid(),
+        key,
+        source: variableValueSource(value)
+      }))
+    }
+
+    function variableEntryError (entry, field, message) {
+      const error = apiError('config', message)
+
+      error.entryId = entry.id
+      error.field = field
+
+      return error
+    }
+
+    function variablesFromEntries (entries) {
+      const variables = Object.create(null)
+      const keys = new Set()
+
+      entries.forEach(entry => {
+        const key = entry.key.trim()
+        const source = entry.source.trim()
+
+        if (!key && !source) return
+
+        if (!key) {
+          throw variableEntryError(
+            entry,
+            'key',
+            'Tên biến không được để trống.'
+          )
+        }
+
+        if (keys.has(key)) {
+          throw variableEntryError(
+            entry,
+            'key',
+            `Tên biến “${key}” bị trùng.`
+          )
+        }
+
+        let value = ''
+
+        if (source) {
+          try {
+            value = parseJson5(source)
+          } catch (err) {
+            throw variableEntryError(
+              entry,
+              'value',
+              `Giá trị của biến “${key}” không phải JSON5 hợp lệ: ${err.message}`
+            )
+          }
+        }
+
+        keys.add(key)
+        variables[key] = value
+      })
+
+      return variables
     }
 
     function findVariable (variables, key) {
@@ -3518,10 +3669,25 @@
 
         parseFull (json) {
           const choice = json.choices && json.choices[0]
-
-          return choice && choice.message
-            ? choice.message.content || ''
+          const content = choice && choice.message
+            ? choice.message.content
             : ''
+
+          if (typeof content === 'string') return content
+          if (!Array.isArray(content)) return ''
+
+          return content
+            .map(part => {
+              if (typeof part === 'string') return part
+
+              if (part && typeof part.text === 'string') {
+                return part.text
+              }
+
+              return ''
+            })
+            .filter(Boolean)
+            .join('\n\n')
         },
 
         parseError (json) {
@@ -3723,7 +3889,7 @@
             }
           })
 
-          return output.join('')
+          return output.join('\n\n')
         },
 
         parseError (json) {
@@ -3904,7 +4070,7 @@
             throw apiError('api', 'Request bị chặn: ' + block)
           }
 
-          return geminiPartsText(json)
+          return geminiPartsText(json, '\n\n')
         },
 
         parseError (json) {
@@ -4087,7 +4253,7 @@
             }
           })
 
-          return output.join('')
+          return output.join('\n\n')
         },
 
         parseError (json) {
@@ -4237,7 +4403,7 @@
         },
 
         parseFull (json) {
-          return extractInteractionText(json)
+          return extractInteractionText(json, '\n\n')
         },
 
         parseError (json) {
@@ -4248,7 +4414,7 @@
       }
     }
 
-    function extractInteractionText (interaction) {
+    function extractInteractionText (interaction, separator = '') {
       if (!interaction) return ''
 
       if (typeof interaction.output_text === 'string' &&
@@ -4273,10 +4439,10 @@
         }
       })
 
-      return output.join('')
+      return output.join(separator)
     }
 
-    function geminiPartsText (json) {
+    function geminiPartsText (json, separator = '') {
       const candidate = json.candidates && json.candidates[0]
 
       if (!candidate ||
@@ -4285,15 +4451,15 @@
         return ''
       }
 
-      let text = ''
+      const output = []
 
       candidate.content.parts.forEach(part => {
         if (!part.thought && typeof part.text === 'string') {
-          text += part.text
+          output.push(part.text)
         }
       })
 
-      return text
+      return output.join(separator)
     }
 
     async function callApi (url, init) {
@@ -4411,7 +4577,7 @@
         reasoning: false,
         zdr: true,
         systemPrompt: '',
-        variablesJson: '',
+        variables: {},
         toolsJson: '',
         verbosity: null,
         effort: null,
@@ -4641,10 +4807,19 @@
         ? raw.systemPrompt
         : ''
 
-      settings.variablesJson =
-        typeof raw.variablesJson === 'string'
-          ? raw.variablesJson
-          : ''
+      if (raw.variables &&
+          !Array.isArray(raw.variables) &&
+          typeof raw.variables === 'object') {
+        settings.variables = raw.variables
+      } else if (typeof raw.variablesJson === 'string') {
+        try {
+          settings.variables = parseVariablesJson(
+            raw.variablesJson
+          )
+        } catch (err) {
+          // Bỏ qua dữ liệu biến cũ không hợp lệ.
+        }
+      }
 
       settings.toolsJson = typeof raw.toolsJson === 'string'
         ? raw.toolsJson
@@ -4710,7 +4885,7 @@
 
         if (!raw) return null
 
-        const parsed = JSON.parse(raw)
+        const parsed = parseJson5(raw)
 
         if (!parsed || parsed.v !== 2) return null
         return parsed
@@ -4783,10 +4958,14 @@
           : null
     }
 
+    let variableEntries = variableEntriesFromObject(
+      state.settings.variables
+    )
+
     function effectiveSettings () {
-      const variables = parseVariablesJson(
-        state.settings.variablesJson
-      )
+      const variables = variablesFromEntries(variableEntries)
+
+      state.settings.variables = variables
 
       return {
         ...state.settings,
@@ -4801,11 +4980,9 @@
 
     function safeVariables () {
       try {
-        return parseVariablesJson(
-          state.settings.variablesJson
-        )
+        return variablesFromEntries(variableEntries)
       } catch (err) {
-        return {}
+        return state.settings.variables
       }
     }
 
@@ -4873,6 +5050,14 @@
       return state.conversations.find(conversation => {
         return conversation.id === state.activeId
       }) || null
+    }
+
+    function verifyJson5Engine () {
+      try {
+        return JSON5.parse('{ready: true,}').ready === true
+      } catch (err) {
+        return false
+      }
     }
 
     let markdownReader = null
@@ -6193,6 +6378,150 @@
       saveNow()
     }
 
+    function variableRowHtml (entry, index) {
+      const number = index + 1
+      const label = entry.key || String(number)
+
+      return `
+        <div
+          class="variable-row"
+          data-variable-id="${entry.id}"
+          role="listitem"
+        >
+          <input
+            type="text"
+            class="text-input variable-key"
+            value="${escapeHtml(entry.key)}"
+            placeholder="Tên biến"
+            aria-label="Tên biến ${number}"
+            data-variable-key
+            autocomplete="off"
+            spellcheck="false"
+          >
+          <input
+            type="text"
+            class="text-input variable-value"
+            value="${escapeHtml(entry.source)}"
+            placeholder="Giá trị JSON5"
+            aria-label="Giá trị biến ${escapeHtml(label)}"
+            data-variable-value
+            autocomplete="off"
+            spellcheck="false"
+          >
+          <button
+            type="button"
+            class="chip-x variable-remove"
+            data-variable-remove
+            aria-label="Xoá biến ${escapeHtml(label)}"
+          >${ic('x', 'ic-sm')}</button>
+          <span class="variable-error" hidden></span>
+        </div>`
+    }
+
+    function clearVariableErrors () {
+      $$('#variable-list [aria-invalid="true"]').forEach(input => {
+        input.removeAttribute('aria-invalid')
+      })
+
+      $$('#variable-list .variable-error').forEach(message => {
+        message.hidden = true
+        message.textContent = ''
+      })
+    }
+
+    function showVariableError (error) {
+      const rows = $$('#variable-list [data-variable-id]')
+      const row = rows.find(item => {
+        return item.getAttribute('data-variable-id') === error.entryId
+      })
+
+      if (!row) return
+
+      const selector = error.field === 'key'
+        ? '[data-variable-key]'
+        : '[data-variable-value]'
+
+      const input = row.querySelector(selector)
+      const message = row.querySelector('.variable-error')
+
+      if (input) input.setAttribute('aria-invalid', 'true')
+
+      if (message) {
+        message.hidden = false
+        message.textContent = error.message
+      }
+    }
+
+    function validateVariableEntries () {
+      clearVariableErrors()
+
+      try {
+        return variablesFromEntries(variableEntries)
+      } catch (err) {
+        showVariableError(err)
+        throw err
+      }
+    }
+
+    function renderVariableDictionary () {
+      const list = $('#variable-list')
+
+      if (!variableEntries.length) {
+        list.innerHTML =
+          '<div class="variable-empty">Chưa có biến nào.</div>'
+        return
+      }
+
+      list.innerHTML = variableEntries
+        .map(variableRowHtml)
+        .join('')
+
+      try {
+        validateVariableEntries()
+      } catch (err) {
+        // Lỗi được hiển thị ngay tại hàng tương ứng.
+      }
+    }
+
+    function syncVariableDictionary () {
+      try {
+        state.settings.variables = validateVariableEntries()
+        renderMessages()
+        saveNow()
+      } catch (err) {
+        refreshBodyPreview()
+      }
+    }
+
+    function addVariableEntry () {
+      const entry = {
+        id: uid(),
+        key: '',
+        source: ''
+      }
+
+      variableEntries.push(entry)
+      renderVariableDictionary()
+
+      const rows = $$('#variable-list [data-variable-id]')
+      const row = rows.find(item => {
+        return item.getAttribute('data-variable-id') === entry.id
+      })
+
+      const input = row && row.querySelector('[data-variable-key]')
+
+      if (input) input.focus()
+    }
+
+    function removeVariableEntry (id) {
+      variableEntries = variableEntries.filter(entry => {
+        return entry.id !== id
+      })
+
+      renderVariableDictionary()
+      syncVariableDictionary()
+    }
+
     function renderSettingsPanel () {
       const settings = state.settings
 
@@ -6230,8 +6559,8 @@
       )
 
       $('#ta-sysprompt').value = settings.systemPrompt
-      $('#ta-variables').value = settings.variablesJson
       $('#ta-tools').value = settings.toolsJson
+      renderVariableDictionary()
       $('#sel-verbosity').value = settings.verbosity || ''
       $('#sel-effort').value = settings.effort || ''
       $('#sel-mode').value = settings.mode || ''
@@ -6278,12 +6607,12 @@
       })
 
       autosizeTextarea($('#ta-sysprompt'), 320)
-      autosizeTextarea($('#ta-variables'), 320)
       autosizeTextarea($('#ta-tools'), 320)
     }
 
     function resetParams () {
       state.settings = defaultSettings()
+      variableEntries = []
       renderSettingsPanel()
       renderMessages()
       saveNow()
@@ -6427,7 +6756,7 @@
 
       if (event.raw !== '[DONE]') {
         try {
-          data = JSON.parse(event.raw)
+          data = parseJson5(event.raw)
         } catch (err) {
           return
         }
@@ -7482,11 +7811,45 @@
         saveNow()
       })
 
-      $('#ta-variables').addEventListener('input', event => {
-        state.settings.variablesJson = event.target.value
-        autosizeTextarea(event.target, 320)
-        renderMessages()
-        saveNow()
+      $('#btn-variable-add').addEventListener(
+        'click',
+        addVariableEntry
+      )
+
+      $('#variable-list').addEventListener('input', event => {
+        const row = event.target.closest('[data-variable-id]')
+
+        if (!row) return
+
+        const entry = variableEntries.find(item => {
+          return item.id === row.getAttribute('data-variable-id')
+        })
+
+        if (!entry) return
+
+        if (event.target.matches('[data-variable-key]')) {
+          entry.key = event.target.value
+        } else if (event.target.matches('[data-variable-value]')) {
+          entry.source = event.target.value
+        } else {
+          return
+        }
+
+        syncVariableDictionary()
+      })
+
+      $('#variable-list').addEventListener('click', event => {
+        const remove = event.target.closest('[data-variable-remove]')
+
+        if (!remove) return
+
+        const row = remove.closest('[data-variable-id]')
+
+        if (row) {
+          removeVariableEntry(
+            row.getAttribute('data-variable-id')
+          )
+        }
       })
 
       $('#ta-tools').addEventListener('input', event => {
@@ -7766,6 +8129,7 @@
     function init () {
       hydrateIcons()
 
+      const json5Ok = verifyJson5Engine()
       const commonmarkOk = verifyMarkdownEngine()
 
       applyTheme()
@@ -7783,6 +8147,14 @@
       refreshBodyPreview()
       scrollBottom(true)
 
+      if (!json5Ok) {
+        toast(
+          'Không tải được JSON5; các trường cấu hình JSON5 chưa thể sử dụng.',
+          'error',
+          5200
+        )
+      }
+
       if (!commonmarkOk) {
         toast(
           'Không tải được CommonMark; Markdown đang dùng chế độ văn bản thuần.',
@@ -7795,4 +8167,4 @@
     document.addEventListener('DOMContentLoaded', init)
   </script>
 </body>
-</html></result>
+</html>
