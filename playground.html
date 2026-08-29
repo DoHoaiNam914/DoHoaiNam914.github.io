@@ -1062,12 +1062,22 @@
       margin: 8px 0;
     }
 
+    .md h1,
+    .md h2,
     .md h3,
     .md h4,
     .md h5,
     .md h6 {
       margin: 16px 0 6px;
       line-height: 1.35;
+    }
+
+    .md h1 {
+      font-size: 20px;
+    }
+
+    .md h2 {
+      font-size: 17.5px;
     }
 
     .md h3 {
@@ -1112,6 +1122,13 @@
       color: var(--accent-strong);
       text-decoration: underline;
       text-underline-offset: 2px;
+    }
+
+    .md img {
+      display: block;
+      max-width: 100%;
+      height: auto;
+      border-radius: var(--r-sm);
     }
 
     .md code {
@@ -1512,7 +1529,9 @@
     .edit-box textarea {
       width: 100%;
       min-height: 72px;
-      resize: vertical;
+      max-height: 360px;
+      resize: none;
+      overflow-y: hidden;
       padding: 10px 12px;
       border-radius: var(--r-md);
       border: 1px solid var(--accent);
@@ -1675,6 +1694,13 @@
     textarea.text-input {
       resize: vertical;
       line-height: 1.5;
+    }
+
+    #ta-sysprompt {
+      min-height: 72px;
+      max-height: 280px;
+      resize: none;
+      overflow-y: hidden;
     }
 
     .body-preview {
@@ -2610,22 +2636,38 @@
     </div>
   </div>
 
-  <input type="file" id="file-input" multiple hidden accept="image/png,image/jpeg,image/webp,image/gif,.txt,.md,.markdown,.pdf,.json,text/plain,text/markdown,application/pdf,application/json">
+  <input
+    type="file"
+    id="file-input"
+    multiple
+    hidden
+    accept="image/png,image/jpeg,image/webp,image/gif,application/pdf,application/json,application/x-ndjson,application/yaml,application/x-yaml,application/rtf,text/*,.png,.jpg,.jpeg,.webp,.gif,.pdf,.txt,.text,.log,.md,.markdown,.mdown,.mkd,.mdx,.csv,.json,.jsonl,.ndjson,.html,.htm,.css,.js,.mjs,.cjs,.jsx,.ts,.tsx,.py,.xml,.yaml,.yml,.rtf,.toml,.ini,.cfg,.conf,.env,.sql,.sh,.bash,.zsh,.c,.cc,.cpp,.h,.hpp,.go,.java,.kt,.kts,.rs,.php,.rb,.swift,.vue,.svelte"
+  >
   <noscript>Ứng dụng cần bật JavaScript để hoạt động.</noscript>
 
+  <script src="https://unpkg.com/commonmark@0.31.2/dist/commonmark.js"></script>
   <script>
+    /* global AbortController, TextDecoder, URL, atob, btoa, escape, fetch, localStorage, unescape */
+
     const $ = sel => document.querySelector(sel)
     const $$ = sel => Array.from(document.querySelectorAll(sel))
 
     function uid () {
-      if (window.crypto && crypto.randomUUID) return crypto.randomUUID()
-      return 'id-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10)
+      if (window.crypto && window.crypto.randomUUID) {
+        return window.crypto.randomUUID()
+      }
+
+      return 'id-' +
+        Date.now().toString(36) +
+        '-' +
+        Math.random().toString(36).slice(2, 10)
     }
 
     const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v))
 
     function debounce (fn, ms) {
       let t = null
+
       return (...args) => {
         clearTimeout(t)
         t = setTimeout(() => fn(...args), ms)
@@ -2633,20 +2675,23 @@
     }
 
     function escapeHtml (s) {
-      return String(s).replace(/[&<>"']/g, c => ({
-        '&': '&amp;',
-        '<': '&lt;',
-        '>': '&gt;',
-        '"': '&quot;',
-        "'": '&#39;'
+      return String(s).replace(/[<&>"']/g, c => ({
+        '&': '\u0026amp;',
+        '<': '\u0026lt;',
+        '>': '\u0026gt;',
+        '"': '\u0026quot;',
+        "'": '\u0026#39;'
       })[c])
     }
 
     function timeAgoVi (ts) {
       const m = Math.floor((Date.now() - ts) / 60000)
+
       if (m < 1) return 'vừa xong'
       if (m < 60) return m + ' phút trước'
+
       const h = Math.floor(m / 60)
+
       if (h < 24) return h + ' giờ trước'
       return new Date(ts).toLocaleDateString('vi-VN')
     }
@@ -2665,6 +2710,7 @@
       } catch (err) {
         try {
           const ta = document.createElement('textarea')
+
           ta.value = text
           ta.style.position = 'fixed'
           ta.style.opacity = '0'
@@ -2672,6 +2718,7 @@
           ta.select()
           document.execCommand('copy')
           ta.remove()
+
           return true
         } catch (err2) {
           return false
@@ -2681,7 +2728,9 @@
 
     function announce (text) {
       const live = $('#sr-live')
+
       live.textContent = ''
+
       setTimeout(() => {
         live.textContent = text
       }, 30)
@@ -2733,6 +2782,7 @@
 
     function ic (name, extra) {
       const cls = 'ic' + (extra ? ' ' + extra : '')
+
       return `<svg class="${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[name] || ''}</svg>`
     }
 
@@ -2812,6 +2862,94 @@
     const ROLES = ['system', 'developer', 'user', 'assistant', 'tool']
     const TOOL_CALL_ID = 'call_playground'
 
+    const FILE_TYPE_BY_EXTENSION = {
+      '.bash': 'text/x-shellscript',
+      '.c': 'text/x-c',
+      '.cc': 'text/x-c++',
+      '.cfg': 'text/plain',
+      '.cjs': 'text/javascript',
+      '.conf': 'text/plain',
+      '.cpp': 'text/x-c++',
+      '.css': 'text/css',
+      '.csv': 'text/csv',
+      '.env': 'text/plain',
+      '.gif': 'image/gif',
+      '.go': 'text/x-go',
+      '.h': 'text/x-c',
+      '.hpp': 'text/x-c++',
+      '.htm': 'text/html',
+      '.html': 'text/html',
+      '.ini': 'text/plain',
+      '.java': 'text/x-java',
+      '.jpeg': 'image/jpeg',
+      '.jpg': 'image/jpeg',
+      '.js': 'text/javascript',
+      '.json': 'application/json',
+      '.jsonl': 'application/x-ndjson',
+      '.jsx': 'text/jsx',
+      '.kt': 'text/x-kotlin',
+      '.kts': 'text/x-kotlin',
+      '.log': 'text/plain',
+      '.markdown': 'text/markdown',
+      '.md': 'text/markdown',
+      '.mdown': 'text/markdown',
+      '.mdx': 'text/markdown',
+      '.mjs': 'text/javascript',
+      '.mkd': 'text/markdown',
+      '.ndjson': 'application/x-ndjson',
+      '.pdf': 'application/pdf',
+      '.php': 'text/x-php',
+      '.png': 'image/png',
+      '.py': 'text/x-python',
+      '.rb': 'text/x-ruby',
+      '.rs': 'text/x-rust',
+      '.rtf': 'text/rtf',
+      '.sh': 'text/x-shellscript',
+      '.sql': 'text/x-sql',
+      '.svelte': 'text/plain',
+      '.swift': 'text/x-swift',
+      '.text': 'text/plain',
+      '.toml': 'text/plain',
+      '.ts': 'text/x-typescript',
+      '.tsx': 'text/tsx',
+      '.txt': 'text/plain',
+      '.vue': 'text/plain',
+      '.webp': 'image/webp',
+      '.xml': 'text/xml',
+      '.yaml': 'text/yaml',
+      '.yml': 'text/yaml',
+      '.zsh': 'text/x-shellscript'
+    }
+
+    const MIME_TYPE_ALIASES = {
+      'application/acrobat': 'application/pdf',
+      'application/javascript': 'text/javascript',
+      'application/jsonl': 'application/x-ndjson',
+      'application/markdown': 'text/markdown',
+      'application/ndjson': 'application/x-ndjson',
+      'application/rtf': 'text/rtf',
+      'application/x-javascript': 'text/javascript',
+      'application/x-json': 'application/json',
+      'application/x-markdown': 'text/markdown',
+      'application/x-pdf': 'application/pdf',
+      'application/x-yaml': 'text/yaml',
+      'application/yaml': 'text/yaml',
+      'applications/vnd.pdf': 'application/pdf',
+      'image/jpg': 'image/jpeg',
+      'image/pjpeg': 'image/jpeg',
+      'text/json': 'application/json',
+      'text/md': 'text/markdown',
+      'text/pdf': 'application/pdf',
+      'text/x-markdown': 'text/markdown'
+    }
+
+    const IMAGE_TYPES = [
+      'image/gif',
+      'image/jpeg',
+      'image/png',
+      'image/webp'
+    ]
+
     function isSystemRole (role) {
       return role === 'system' || role === 'developer'
     }
@@ -2820,21 +2958,39 @@
       return role === 'assistant'
     }
 
-    function normalizeFileType (file) {
-      let type = String(file.type || '').toLowerCase()
-      const name = String(file.name || '').toLowerCase()
+    function fileExtension (name) {
+      const match = String(name || '')
+        .toLowerCase()
+        .match(/(\.[^.]+)$/)
 
-      if (type === 'image/jpg') type = 'image/jpeg'
-      if (type && type !== 'application/octet-stream') return type
-      if (name.endsWith('.md') || name.endsWith('.markdown')) return 'text/markdown'
-      if (name.endsWith('.txt')) return 'text/plain'
-      if (name.endsWith('.json')) return 'application/json'
-      if (name.endsWith('.pdf')) return 'application/pdf'
-      if (name.endsWith('.png')) return 'image/png'
-      if (name.endsWith('.jpg') || name.endsWith('.jpeg')) return 'image/jpeg'
-      if (name.endsWith('.webp')) return 'image/webp'
-      if (name.endsWith('.gif')) return 'image/gif'
-      return type
+      return match ? match[1] : ''
+    }
+
+    function normalizeFileType (file) {
+      const extension = fileExtension(file.name)
+
+      if (FILE_TYPE_BY_EXTENSION[extension]) {
+        return FILE_TYPE_BY_EXTENSION[extension]
+      }
+
+      const type = String(file.type || '')
+        .toLowerCase()
+        .split(';')[0]
+        .trim()
+
+      return MIME_TYPE_ALIASES[type] || type
+    }
+
+    function isTextMimeType (type) {
+      return /^text\//.test(type) ||
+        /^application\/(?:[\w.+-]+\+)?json$/.test(type) ||
+        /^application\/(?:[\w.+-]+\+)?xml$/.test(type) ||
+        type === 'application/x-ndjson' ||
+        type === 'application/yaml' ||
+        type === 'application/x-yaml' ||
+        type === 'application/rtf' ||
+        type === 'application/javascript' ||
+        type === 'application/x-javascript'
     }
 
     function arrayBufferToBase64 (buffer) {
@@ -2843,7 +2999,11 @@
       let binary = ''
 
       for (let i = 0; i < bytes.length; i += chunkSize) {
-        const chunk = bytes.subarray(i, Math.min(i + chunkSize, bytes.length))
+        const chunk = bytes.subarray(
+          i,
+          Math.min(i + chunkSize, bytes.length)
+        )
+
         binary += String.fromCharCode(...chunk)
       }
 
@@ -2851,7 +3011,7 @@
     }
 
     function isImageAttachment (attachment) {
-      return /^image\//.test(attachment.type || '')
+      return IMAGE_TYPES.includes(attachment.type || '')
     }
 
     function isPdfAttachment (attachment) {
@@ -2859,30 +3019,43 @@
     }
 
     function isTextAttachment (attachment) {
-      return /^text\//.test(attachment.type || '') ||
-        (attachment.type || '') === 'application/json'
+      return isTextMimeType(attachment.type || '')
+    }
+
+    function isSupportedAttachmentType (type) {
+      return IMAGE_TYPES.includes(type) ||
+        type === 'application/pdf' ||
+        isTextMimeType(type)
     }
 
     function attachmentDataUrl (attachment) {
       if (attachment.dataUrl) return attachment.dataUrl
       if (typeof attachment.base64 !== 'string') return ''
-      return 'data:' + (attachment.type || 'application/octet-stream') +
-        ';base64,' + attachment.base64
+
+      return 'data:' +
+        (attachment.type || 'application/octet-stream') +
+        ';base64,' +
+        attachment.base64
     }
 
     function unavailableAttachmentText (attachment) {
-      return '[Không thể gửi lại tệp “' + attachment.name +
+      return '[Không thể gửi lại tệp “' +
+        attachment.name +
         '” vì dữ liệu tệp không còn khả dụng.]'
     }
 
-    function portableRoleText (message) {
-      if (message.role === 'system') return '[system]\n' + message.content
-      if (message.role === 'developer') return '[developer]\n' + message.content
-      return message.content
+    function textAttachmentContent (attachment) {
+      if (typeof attachment.text !== 'string') {
+        return unavailableAttachmentText(attachment)
+      }
+
+      return 'Tệp “' +
+        attachment.name +
+        '”:\n\n' +
+        attachment.text
     }
 
     function openAiEffort (settings) {
-      if (!settings.reasoning) return 'none'
       const effort = settings.effort || 'medium'
       return effort === 'max' ? 'xhigh' : effort
     }
@@ -2893,16 +3066,27 @@
       let level = settings.level || settings.effort
 
       if (!level && settings.budget != null) {
-        if (settings.budget <= 512) level = 'minimal'
-        else if (settings.budget <= 2048) level = 'low'
-        else if (settings.budget <= 8192) level = 'medium'
-        else level = 'high'
+        if (settings.budget <= 512) {
+          level = 'minimal'
+        } else if (settings.budget <= 2048) {
+          level = 'low'
+        } else if (settings.budget <= 8192) {
+          level = 'medium'
+        } else {
+          level = 'high'
+        }
       }
 
       if (!level) return 'medium'
       if (level === 'minimal') return 'minimal'
       if (level === 'low') return 'low'
-      if (level === 'high' || level === 'xhigh' || level === 'max') return 'high'
+
+      if (level === 'high' ||
+          level === 'xhigh' ||
+          level === 'max') {
+        return 'high'
+      }
+
       return 'medium'
     }
 
@@ -2911,13 +3095,23 @@
       const cap = isPro ? 32768 : 24576
 
       if (!settings.reasoning) return isPro ? 128 : 0
-      if (settings.budget != null) return clamp(settings.budget, 1, cap)
+
+      if (settings.budget != null) {
+        return clamp(settings.budget, 1, cap)
+      }
 
       const effort = settings.effort
+
       if (!effort) return -1
       if (effort === 'minimal') return Math.min(512, cap)
       if (effort === 'low') return Math.min(1024, cap)
-      if (effort === 'high' || effort === 'xhigh' || effort === 'max') return cap
+
+      if (effort === 'high' ||
+          effort === 'xhigh' ||
+          effort === 'max') {
+        return cap
+      }
+
       return Math.min(8192, cap)
     }
 
@@ -2929,6 +3123,7 @@
       const id = String(model || '').toLowerCase()
 
       if (/claude-3(?:[-.]|$)/.test(id)) return true
+
       return /claude-(?:opus|sonnet|haiku)-4-(?![6-9](?:-|$))/.test(id)
     }
 
@@ -2938,9 +3133,7 @@
 
     function anthropicEffort (settings) {
       const effort = settings.effort || 'medium'
-      if (effort === 'minimal') return 'low'
-      if (effort === 'xhigh' || effort === 'max') return 'high'
-      return effort
+      return effort === 'minimal' ? 'low' : effort
     }
 
     function anthropicAttachmentPart (attachment) {
@@ -2989,10 +3182,9 @@
     }
 
     function geminiAttachmentPart (attachment) {
-      if (isTextAttachment(attachment) &&
-          typeof attachment.text === 'string') {
+      if (isTextAttachment(attachment)) {
         return {
-          text: 'Tệp “' + attachment.name + '”:\n' + attachment.text
+          text: textAttachmentContent(attachment)
         }
       }
 
@@ -3011,11 +3203,10 @@
     }
 
     function interactionAttachmentContent (attachment) {
-      if (isTextAttachment(attachment) &&
-          typeof attachment.text === 'string') {
+      if (isTextAttachment(attachment)) {
         return {
           type: 'text',
-          text: 'Tệp “' + attachment.name + '”:\n' + attachment.text
+          text: textAttachmentContent(attachment)
         }
       }
 
@@ -3048,7 +3239,7 @@
         label: 'Chat Completions',
         presetBase: 'https://api.openai.com/v1',
 
-        buildUrl (base, model, stream) {
+        buildUrl (base) {
           return trimBase(base) + '/chat/completions'
         },
 
@@ -3071,9 +3262,9 @@
           }
 
           ctx.messages.forEach(message => {
-            if (message.role === 'user' &&
-                message.attachments &&
-                message.attachments.length) {
+            const attachments = message.attachments || []
+
+            if (message.role === 'user' && attachments.length) {
               const parts = []
 
               if (message.content) {
@@ -3083,7 +3274,15 @@
                 })
               }
 
-              message.attachments.forEach(attachment => {
+              attachments.forEach(attachment => {
+                if (isTextAttachment(attachment)) {
+                  parts.push({
+                    type: 'text',
+                    text: textAttachmentContent(attachment)
+                  })
+                  return
+                }
+
                 if (isImageAttachment(attachment)) {
                   const url = attachmentDataUrl(attachment)
 
@@ -3104,12 +3303,14 @@
                   return
                 }
 
-                if (typeof attachment.base64 === 'string') {
+                const fileData = attachmentDataUrl(attachment)
+
+                if (fileData) {
                   parts.push({
                     type: 'file',
                     file: {
                       filename: attachment.name,
-                      file_data: attachment.base64
+                      file_data: fileData
                     }
                   })
                 } else {
@@ -3173,10 +3374,13 @@
           }
 
           if (s.zdr) body.store = false
-          body.reasoning_effort = openAiEffort(s)
+
+          if (s.reasoning) {
+            body.reasoning_effort = openAiEffort(s)
+          }
 
           return {
-            url: this.buildUrl(ctx.base, ctx.model, ctx.stream),
+            url: this.buildUrl(ctx.base),
             headers: this.headers(ctx.apiKey),
             body
           }
@@ -3184,6 +3388,7 @@
 
         parseEvent (evt) {
           if (evt.raw === '[DONE]') return { done: true }
+
           const data = evt.data
 
           if (data.error) {
@@ -3196,7 +3401,7 @@
             data.choices[0] &&
             data.choices[0].delta
 
-          if (delta && delta.content) {
+          if (delta && typeof delta.content === 'string') {
             return {
               delta: delta.content
             }
@@ -3207,6 +3412,7 @@
 
         parseFull (json) {
           const choice = json.choices && json.choices[0]
+
           return choice && choice.message
             ? choice.message.content || ''
             : ''
@@ -3223,8 +3429,9 @@
         label: 'Messages',
         presetBase: 'https://api.anthropic.com',
 
-        buildUrl (base, model, stream) {
+        buildUrl (base) {
           const root = trimBase(base)
+
           return root.endsWith('/v1')
             ? root + '/messages'
             : root + '/v1/messages'
@@ -3242,21 +3449,27 @@
         build (ctx) {
           const s = ctx.settings
           const messages = []
-          let currentRole = null
-          let currentParts = []
+          const system = []
 
-          const flush = () => {
-            if (currentRole && currentParts.length) {
-              messages.push({
-                role: currentRole,
-                content: currentParts
-              })
-            }
-
-            currentParts = []
+          if (s.systemPrompt) {
+            system.push({
+              type: 'text',
+              text: s.systemPrompt
+            })
           }
 
           ctx.messages.forEach(message => {
+            if (isSystemRole(message.role)) {
+              if (message.content) {
+                system.push({
+                  type: 'text',
+                  text: message.content
+                })
+              }
+
+              return
+            }
+
             let role
             let parts
 
@@ -3271,14 +3484,13 @@
               role = isAssistantRole(message.role)
                 ? 'assistant'
                 : 'user'
+
               parts = []
 
-              const text = portableRoleText(message)
-
-              if (text) {
+              if (message.content) {
                 parts.push({
                   type: 'text',
-                  text
+                  text: message.content
                 })
               }
 
@@ -3290,17 +3502,18 @@
               }
             }
 
-            if (role !== currentRole) {
-              flush()
-              currentRole = role
+            if (!parts.length) {
+              parts.push({
+                type: 'text',
+                text: ' '
+              })
             }
 
-            parts.forEach(part => {
-              currentParts.push(part)
+            messages.push({
+              role,
+              content: parts
             })
           })
-
-          flush()
 
           if (!messages.length) {
             messages.push({
@@ -3345,6 +3558,7 @@
               body.thinking = {
                 type: 'adaptive'
               }
+
               body.output_config = {
                 effort: anthropicEffort(s)
               }
@@ -3359,13 +3573,18 @@
           if (!s.reasoning && s.sampling) {
             body.temperature = clamp(s.temperature, 0, 1)
             body.top_p = s.topP
-            if (s.topK != null) body.top_k = s.topK
+
+            if (s.topK != null) {
+              body.top_k = s.topK
+            }
           }
 
-          if (s.systemPrompt) body.system = s.systemPrompt
+          if (system.length) {
+            body.system = system
+          }
 
           return {
-            url: this.buildUrl(ctx.base, ctx.model, ctx.stream),
+            url: this.buildUrl(ctx.base),
             headers: this.headers(ctx.apiKey),
             body
           }
@@ -3426,6 +3645,7 @@
           const verb = stream
             ? ':streamGenerateContent?alt=sse'
             : ':generateContent'
+
           return root + '/models/' + encodeURIComponent(model) + verb
         },
 
@@ -3439,8 +3659,25 @@
         build (ctx) {
           const s = ctx.settings
           const contents = []
+          const systemParts = []
+
+          if (s.systemPrompt) {
+            systemParts.push({
+              text: s.systemPrompt
+            })
+          }
 
           ctx.messages.forEach(message => {
+            if (isSystemRole(message.role)) {
+              if (message.content) {
+                systemParts.push({
+                  text: message.content
+                })
+              }
+
+              return
+            }
+
             let role
             let parts
 
@@ -3458,13 +3695,12 @@
               role = isAssistantRole(message.role)
                 ? 'model'
                 : 'user'
+
               parts = []
 
-              const text = portableRoleText(message)
-
-              if (text) {
+              if (message.content) {
                 parts.push({
-                  text
+                  text: message.content
                 })
               }
 
@@ -3482,24 +3718,30 @@
               })
             }
 
-            const last = contents[contents.length - 1]
-
-            if (last && last.role === role) {
-              last.parts.push(...parts)
-            } else {
-              contents.push({
-                role,
-                parts
-              })
-            }
+            contents.push({
+              role,
+              parts
+            })
           })
+
+          if (!contents.length) {
+            contents.push({
+              role: 'user',
+              parts: [{
+                text: ' '
+              }]
+            })
+          }
 
           const generationConfig = {}
 
           if (s.sampling) {
             generationConfig.temperature = s.temperature
             generationConfig.topP = s.topP
-            if (s.topK != null) generationConfig.topK = s.topK
+
+            if (s.topK != null) {
+              generationConfig.topK = s.topK
+            }
           }
 
           if (s.maxTokens != null) {
@@ -3520,11 +3762,9 @@
             generationConfig
           }
 
-          if (s.systemPrompt) {
+          if (systemParts.length) {
             body.systemInstruction = {
-              parts: [{
-                text: s.systemPrompt
-              }]
+              parts: systemParts
             }
           }
 
@@ -3547,17 +3787,20 @@
           }
 
           const candidate = data.candidates && data.candidates[0]
+
           if (!candidate) return {}
 
           if (candidate.finishReason === 'SAFETY' ||
               candidate.finishReason === 'PROHIBITED_CONTENT') {
             return {
               error: 'Phản hồi bị bộ lọc an toàn chặn (' +
-                candidate.finishReason + ').'
+                candidate.finishReason +
+                ').'
             }
           }
 
           const text = geminiPartsText(data)
+
           return text
             ? { delta: text }
             : {}
@@ -3585,7 +3828,7 @@
         label: 'Responses',
         presetBase: 'https://api.openai.com/v1',
 
-        buildUrl (base, model, stream) {
+        buildUrl (base) {
           return trimBase(base) + '/responses'
         },
 
@@ -3613,9 +3856,11 @@
             const role = isAssistantRole(message.role)
               ? 'assistant'
               : message.role
+
             const contentType = role === 'assistant'
               ? 'output_text'
               : 'input_text'
+
             const content = []
 
             if (message.content) {
@@ -3628,6 +3873,14 @@
             if (!isAssistantRole(message.role) &&
                 message.attachments) {
               message.attachments.forEach(attachment => {
+                if (isTextAttachment(attachment)) {
+                  content.push({
+                    type: 'input_text',
+                    text: textAttachmentContent(attachment)
+                  })
+                  return
+                }
+
                 if (isImageAttachment(attachment)) {
                   const url = attachmentDataUrl(attachment)
 
@@ -3647,10 +3900,12 @@
                   return
                 }
 
-                if (typeof attachment.base64 === 'string') {
+                const fileData = attachmentDataUrl(attachment)
+
+                if (fileData) {
                   content.push({
                     type: 'input_file',
-                    file_data: attachment.base64,
+                    file_data: fileData,
                     filename: attachment.name
                   })
                 } else {
@@ -3679,8 +3934,11 @@
           const body = {
             model: ctx.model,
             input,
-            stream: ctx.stream,
-            reasoning: {
+            stream: ctx.stream
+          }
+
+          if (s.reasoning) {
+            body.reasoning = {
               effort: openAiEffort(s)
             }
           }
@@ -3696,10 +3954,12 @@
             body.max_output_tokens = s.maxTokens
           }
 
-          if (s.systemPrompt) body.instructions = s.systemPrompt
+          if (s.systemPrompt) {
+            body.instructions = s.systemPrompt
+          }
 
           return {
-            url: this.buildUrl(ctx.base, ctx.model, ctx.stream),
+            url: this.buildUrl(ctx.base),
             headers: this.headers(ctx.apiKey),
             body
           }
@@ -3717,7 +3977,9 @@
 
           if (type === 'error') {
             return {
-              error: data.message || 'Lỗi API'
+              error: (data.error && data.error.message) ||
+                data.message ||
+                'Lỗi API'
             }
           }
 
@@ -3731,7 +3993,10 @@
             }
           }
 
-          if (type === 'response.completed') return { done: true }
+          if (type === 'response.completed') {
+            return { done: true }
+          }
+
           return {}
         },
 
@@ -3774,7 +4039,7 @@
         label: 'Interactions',
         presetBase: 'https://generativelanguage.googleapis.com/v1beta',
 
-        buildUrl (base, model, stream) {
+        buildUrl (base) {
           return trimBase(base) + '/interactions'
         },
 
@@ -3788,8 +4053,21 @@
         build (ctx) {
           const s = ctx.settings
           const input = []
+          const systemInstructions = []
+
+          if (s.systemPrompt) {
+            systemInstructions.push(s.systemPrompt)
+          }
 
           ctx.messages.forEach(message => {
+            if (isSystemRole(message.role)) {
+              if (message.content) {
+                systemInstructions.push(message.content)
+              }
+
+              return
+            }
+
             if (message.role === 'tool') {
               input.push({
                 type: 'function_result',
@@ -3804,19 +4082,20 @@
             }
 
             const content = []
-            const text = portableRoleText(message)
 
-            if (text) {
+            if (message.content) {
               content.push({
                 type: 'text',
-                text
+                text: message.content
               })
             }
 
             if (!isAssistantRole(message.role) &&
                 message.attachments) {
               message.attachments.forEach(attachment => {
-                content.push(interactionAttachmentContent(attachment))
+                content.push(
+                  interactionAttachmentContent(attachment)
+                )
               })
             }
 
@@ -3838,6 +4117,16 @@
                 })
           })
 
+          if (!input.length) {
+            input.push({
+              type: 'user_input',
+              content: [{
+                type: 'text',
+                text: ' '
+              }]
+            })
+          }
+
           const generationConfig = {
             thinking_level: geminiThinkingLevel(s)
           }
@@ -3845,7 +4134,10 @@
           if (s.sampling) {
             generationConfig.temperature = s.temperature
             generationConfig.top_p = s.topP
-            if (s.topK != null) generationConfig.top_k = s.topK
+
+            if (s.topK != null) {
+              generationConfig.top_k = s.topK
+            }
           }
 
           if (s.maxTokens != null) {
@@ -3861,12 +4153,13 @@
 
           if (s.zdr) body.store = false
 
-          if (s.systemPrompt) {
-            body.system_instruction = s.systemPrompt
+          if (systemInstructions.length) {
+            body.system_instruction =
+              systemInstructions.join('\n\n')
           }
 
           return {
-            url: this.buildUrl(ctx.base, ctx.model, ctx.stream),
+            url: this.buildUrl(ctx.base),
             headers: this.headers(ctx.apiKey),
             body
           }
@@ -3916,6 +4209,7 @@
 
     function extractInteractionText (interaction) {
       if (!interaction) return ''
+
       if (typeof interaction.output_text === 'string' &&
           interaction.output_text) {
         return interaction.output_text
@@ -3966,6 +4260,7 @@
         return await fetch(url, init)
       } catch (err) {
         if (err && err.name === 'AbortError') throw err
+
         throw apiError(
           'network',
           'Không gọi được API. Kiểm tra mạng, endpoint hoặc CORS.'
@@ -3983,6 +4278,7 @@
       const dispatch = () => {
         if (dataLines.length) {
           const raw = dataLines.join('\n')
+
           onEvent({
             event: eventName,
             data: raw,
@@ -3994,34 +4290,42 @@
         dataLines = []
       }
 
+      const consumeLine = rawLine => {
+        let line = rawLine
+
+        if (line.endsWith('\r')) {
+          line = line.slice(0, -1)
+        }
+
+        if (!line) {
+          dispatch()
+        } else if (line.startsWith(':')) {
+          // Bỏ qua dòng comment của SSE.
+        } else if (line.startsWith('event:')) {
+          eventName = line.slice(6).trim()
+        } else if (line.startsWith('data:')) {
+          dataLines.push(line.slice(5).replace(/^ /, ''))
+        }
+      }
+
       while (true) {
         const step = await reader.read()
+
         if (step.done) break
 
         buffer += decoder.decode(step.value, {
           stream: true
         })
 
-        let newline = buffer.indexOf('\n')
+        const lines = buffer.split('\n')
+        buffer = lines.pop() || ''
+        lines.forEach(consumeLine)
+      }
 
-        while (newline !== -1) {
-          let line = buffer.slice(0, newline)
-          buffer = buffer.slice(newline + 1)
+      buffer += decoder.decode()
 
-          if (line.endsWith('\r')) line = line.slice(0, -1)
-
-          if (!line) {
-            dispatch()
-          } else if (line.startsWith(':')) {
-            // Bỏ qua dòng comment của SSE.
-          } else if (line.startsWith('event:')) {
-            eventName = line.slice(6).trim()
-          } else if (line.startsWith('data:')) {
-            dataLines.push(line.slice(5).replace(/^ /, ''))
-          }
-
-          newline = buffer.indexOf('\n')
-        }
+      if (buffer) {
+        consumeLine(buffer)
       }
 
       dispatch()
@@ -4029,8 +4333,10 @@
 
     function apiError (kind, message, status) {
       const error = new Error(message)
+
       error.kind = kind
       error.status = status
+
       return error
     }
 
@@ -4071,7 +4377,8 @@
     }
 
     function sanitizeAttachment (raw) {
-      if (!raw || typeof raw !== 'object' ||
+      if (!raw ||
+          typeof raw !== 'object' ||
           typeof raw.name !== 'string') {
         return null
       }
@@ -4087,7 +4394,9 @@
         type: typeof raw.type === 'string' ? raw.type : '',
         url: typeof raw.url === 'string' ? raw.url : dataUrl,
         dataUrl,
-        base64: typeof raw.base64 === 'string' ? raw.base64 : null,
+        base64: typeof raw.base64 === 'string'
+          ? raw.base64
+          : null,
         text: typeof raw.text === 'string' ? raw.text : null
       }
     }
@@ -4104,11 +4413,14 @@
       const message = {
         id: typeof raw.id === 'string' ? raw.id : uid(),
         role,
-        content: typeof raw.content === 'string' ? raw.content : '',
+        content: typeof raw.content === 'string'
+          ? raw.content
+          : '',
         createdAt: Number.isFinite(raw.createdAt)
           ? raw.createdAt
           : Date.now(),
-        feedback: raw.feedback === 'up' || raw.feedback === 'down'
+        feedback: raw.feedback === 'up' ||
+          raw.feedback === 'down'
           ? raw.feedback
           : null
       }
@@ -4122,6 +4434,7 @@
       }
 
       let status = raw.status
+
       if (status === 'streaming') status = 'stopped'
 
       if (status !== 'complete' &&
@@ -4188,9 +4501,11 @@
 
       if (Array.isArray(raw.headers)) {
         headers = raw.headers
-          .filter(header => header &&
-            typeof header.name === 'string' &&
-            header.name.trim())
+          .filter(header => {
+            return header &&
+              typeof header.name === 'string' &&
+              header.name.trim()
+          })
           .slice(0, 20)
           .map(header => ({
             name: header.name.trim(),
@@ -4211,7 +4526,9 @@
           : '',
         models: Array.isArray(raw.models)
           ? raw.models
-              .filter(model => typeof model === 'string' && model.trim())
+              .filter(model => {
+                return typeof model === 'string' && model.trim()
+              })
               .slice(0, 50)
           : [],
         apiKey: typeof raw.apiKey === 'string'
@@ -4223,6 +4540,7 @@
 
     function sanitizeSettings (raw) {
       const settings = defaultSettings()
+
       if (!raw || typeof raw !== 'object') return settings
 
       const number = (value, fallback) => {
@@ -4231,7 +4549,12 @@
           : fallback
       }
 
-      settings.temperature = clamp(number(raw.temperature, 1), 0, 2)
+      settings.temperature = clamp(
+        number(raw.temperature, 1),
+        0,
+        2
+      )
+
       settings.topP = clamp(number(raw.topP, 1), 0, 1)
 
       if (raw.topK == null || raw.topK === '') {
@@ -4288,7 +4611,11 @@
 
       settings.reasoning = typeof raw.reasoning === 'boolean'
         ? raw.reasoning
-        : Boolean(settings.effort || settings.budget || settings.level)
+        : Boolean(
+            settings.effort ||
+            settings.budget ||
+            settings.level
+          )
 
       return settings
     }
@@ -4296,9 +4623,11 @@
     function loadState () {
       try {
         const raw = localStorage.getItem(STORAGE_KEY)
+
         if (!raw) return null
 
         const parsed = JSON.parse(raw)
+
         if (!parsed || parsed.v !== 2) return null
         return parsed
       } catch (err) {
@@ -4354,7 +4683,8 @@
         return item.id === state.endpointId
       })
 
-      state.modelId = endpoint && endpoint.models.includes(saved.modelId)
+      state.modelId = endpoint &&
+        endpoint.models.includes(saved.modelId)
         ? saved.modelId
         : endpoint && endpoint.models[0]
           ? endpoint.models[0]
@@ -4380,7 +4710,9 @@
               ...message
             }
 
-            if (copy.status === 'streaming') copy.status = 'stopped'
+            if (copy.status === 'streaming') {
+              copy.status = 'stopped'
+            }
 
             if (copy.attachments) {
               copy.attachments = copy.attachments.map(attachment => ({
@@ -4420,7 +4752,9 @@
     }, 250)
 
     const endpointById = id => {
-      return state.endpoints.find(endpoint => endpoint.id === id) || null
+      return state.endpoints.find(endpoint => {
+        return endpoint.id === id
+      }) || null
     }
 
     const currentEndpoint = () => endpointById(state.endpointId)
@@ -4431,234 +4765,103 @@
       }) || null
     }
 
-    const F3 = '\u0060\u0060\u0060'
-    const RE_INLINE_CODE = new RegExp(
-      '\u0060([^\u0060\\n]+)\u0060',
-      'g'
-    )
+    let markdownReader = null
+    let markdownWriter = null
 
-    function inlineMd (source) {
-      const codes = []
+    function markdownEngine () {
+      if (!window.commonmark) return null
 
-      source = source.replace(RE_INLINE_CODE, (match, code) => {
-        codes.push(code)
-        return '\u0000' + (codes.length - 1) + '\u0001'
+      if (!markdownReader || !markdownWriter) {
+        markdownReader = new window.commonmark.Parser()
+        markdownWriter = new window.commonmark.HtmlRenderer({
+          safe: true,
+          softbreak: '<br>\n'
+        })
+      }
+
+      return {
+        reader: markdownReader,
+        writer: markdownWriter
+      }
+    }
+
+    function decorateMarkdown (html) {
+      const template = document.createElement('template')
+
+      template.innerHTML = html
+
+      template.content.querySelectorAll('a').forEach(link => {
+        link.target = '_blank'
+        link.rel = 'noopener noreferrer'
       })
 
-      source = source.replace(
-        /\*\*([^*]+)\*\*/g,
-        '<strong>$1</strong>'
-      )
+      template.content
+        .querySelectorAll('pre > code')
+        .forEach(code => {
+          const pre = code.parentElement
 
-      source = source.replace(
-        /(^|[\s(])\*([^*\n]+)\*/g,
-        '$1<em>$2</em>'
-      )
+          if (!pre) return
 
-      source = source.replace(
-        /\[([^\]]+)\]\(([^)\s]+)\)/g,
-        (match, text, url) => {
-          if (!/^(https?:\/\/|mailto:)/i.test(url)) return text
-          return `<a href="${url}" target="_blank" rel="noopener noreferrer">${text}</a>`
-        }
-      )
-
-      source = source.replace(
-        /\u0000(\d+)\u0001/g,
-        (match, index) => `<code>${codes[Number(index)]}</code>`
-      )
-
-      return source
-    }
-
-    function codeBlockHtml (language, code) {
-      const clean = code.replace(/\n$/, '')
-      const encoded = enc64(clean)
-
-      return `<div class="codeblock"><div class="code-head"><span class="code-lang">${escapeHtml(language || 'code')}</span>` +
-        `<button type="button" class="code-copy" data-copy="${encoded}" aria-label="${STR.copyCode}">${ic('copy', 'ic-sm')}<span>${STR.copyCode}</span></button>` +
-        `</div><pre tabindex="0"><code>${escapeHtml(clean)}</code></pre></div>`
-    }
-
-    function renderBlocks (raw) {
-      const lines = escapeHtml(raw).split('\n')
-      let html = ''
-      let paragraph = []
-      let index = 0
-
-      const flush = () => {
-        if (paragraph.length) {
-          html += '<p>' +
-            paragraph.map(inlineMd).join('<br>') +
-            '</p>'
-          paragraph = []
-        }
-      }
-
-      const isTableSeparator = line => {
-        return /^\s*\|?[\s:|-]+\|[\s:|-]*$/.test(line) &&
-          line.includes('-')
-      }
-
-      while (index < lines.length) {
-        const text = lines[index].trim()
-
-        if (!text) {
-          flush()
-          index++
-          continue
-        }
-
-        const heading = text.match(/^(#{1,4})\s+(.+)$/)
-
-        if (heading) {
-          flush()
-          const level = Math.min(heading[1].length + 2, 6)
-          html += `<h${level}>${inlineMd(heading[2])}</h${level}>`
-          index++
-          continue
-        }
-
-        if (/^(-{3,}|\*{3,}|_{3,})$/.test(text)) {
-          flush()
-          html += '<hr>'
-          index++
-          continue
-        }
-
-        if (/^&gt; ?/.test(text)) {
-          flush()
-          const quoteLines = []
-
-          while (index < lines.length &&
-                 /^&gt; ?/.test(lines[index].trim())) {
-            quoteLines.push(
-              lines[index].trim().replace(/^&gt; ?/, '')
-            )
-            index++
-          }
-
-          html += '<blockquote>' +
-            quoteLines.map(inlineMd).join('<br>') +
-            '</blockquote>'
-          continue
-        }
-
-        if (/^[-*]\s+/.test(text)) {
-          flush()
-          const items = []
-
-          while (index < lines.length &&
-                 /^[-*]\s+/.test(lines[index].trim())) {
-            items.push(
-              '<li>' +
-              inlineMd(
-                lines[index].trim().replace(/^[-*]\s+/, '')
-              ) +
-              '</li>'
-            )
-            index++
-          }
-
-          html += '<ul>' + items.join('') + '</ul>'
-          continue
-        }
-
-        if (/^\d+[.)]\s+/.test(text)) {
-          flush()
-          const items = []
-
-          while (index < lines.length &&
-                 /^\d+[.)]\s+/.test(lines[index].trim())) {
-            items.push(
-              '<li>' +
-              inlineMd(
-                lines[index].trim().replace(/^\d+[.)]\s+/, '')
-              ) +
-              '</li>'
-            )
-            index++
-          }
-
-          html += '<ol>' + items.join('') + '</ol>'
-          continue
-        }
-
-        if (text.includes('|') &&
-            index + 1 < lines.length &&
-            isTableSeparator(lines[index + 1])) {
-          flush()
-
-          const cells = row => {
-            return row
-              .trim()
-              .replace(/^\||\|$/g, '')
-              .split('|')
-              .map(cell => inlineMd(cell.trim()))
-          }
-
-          let table = '<div class="tbl-wrap"><table><thead><tr>'
-
-          cells(lines[index]).forEach(cell => {
-            table += `<th>${cell}</th>`
-          })
-
-          table += '</tr></thead><tbody>'
-          index += 2
-
-          while (index < lines.length &&
-                 lines[index].includes('|') &&
-                 lines[index].trim()) {
-            table += '<tr>'
-
-            cells(lines[index]).forEach(cell => {
-              table += `<td>${cell}</td>`
+          const languageClass = Array
+            .from(code.classList)
+            .find(name => {
+              return name.indexOf('language-') === 0
             })
 
-            table += '</tr>'
-            index++
-          }
+          const language = languageClass
+            ? languageClass.slice(9)
+            : 'code'
 
-          table += '</tbody></table></div>'
-          html += table
-          continue
-        }
+          const wrapper = document.createElement('div')
+          const head = document.createElement('div')
+          const label = document.createElement('span')
+          const button = document.createElement('button')
 
-        paragraph.push(text)
-        index++
-      }
+          wrapper.className = 'codeblock'
+          head.className = 'code-head'
+          label.className = 'code-lang'
+          label.textContent = language
 
-      flush()
-      return html
+          button.type = 'button'
+          button.className = 'code-copy'
+          button.setAttribute(
+            'data-copy',
+            enc64(code.textContent || '')
+          )
+          button.setAttribute('aria-label', STR.copyCode)
+          button.innerHTML =
+            ic('copy', 'ic-sm') +
+            '<span>' +
+            STR.copyCode +
+            '</span>'
+
+          head.appendChild(label)
+          head.appendChild(button)
+          pre.replaceWith(wrapper)
+          wrapper.appendChild(head)
+          wrapper.appendChild(pre)
+        })
+
+      return template.innerHTML
     }
 
     function renderMarkdown (source) {
-      const parts = String(source || '').split(F3)
-      let html = ''
+      const value = String(source || '')
+      const engine = markdownEngine()
 
-      parts.forEach((part, index) => {
-        if (index % 2 === 0) {
-          html += renderBlocks(part)
-          return
-        }
+      if (!engine) {
+        return value
+          ? '<p>' +
+              escapeHtml(value).replace(/\n/g, '<br>') +
+              '</p>'
+          : ''
+      }
 
-        const newline = part.indexOf('\n')
-        let language = ''
-        let code = part
+      const parsed = engine.reader.parse(value)
 
-        if (newline !== -1 && newline <= 30) {
-          const candidate = part.slice(0, newline).trim()
-
-          if (/^[\w+#.-]{0,24}$/.test(candidate)) {
-            language = candidate
-            code = part.slice(newline + 1)
-          }
-        }
-
-        html += codeBlockHtml(language, code)
-      })
-
-      return html
+      return decorateMarkdown(
+        engine.writer.render(parsed)
+      )
     }
 
     function toast (message, kind = 'info', duration = 3400) {
@@ -4669,6 +4872,7 @@
       }
 
       const element = document.createElement('div')
+
       element.className = 'toast t-' + kind
 
       const iconName = kind === 'success'
@@ -4677,7 +4881,8 @@
           ? 'alert'
           : 'info'
 
-      element.innerHTML = ic(iconName) +
+      element.innerHTML =
+        ic(iconName) +
         '<span>' +
         escapeHtml(message) +
         '</span>'
@@ -4741,7 +4946,9 @@
         const modal = root.querySelector('.modal')
 
         modal.addEventListener('keydown', event => {
-          if (event.key === 'Tab') trapTab(event, modal)
+          if (event.key === 'Tab') {
+            trapTab(event, modal)
+          }
 
           if (event.key === 'Enter' &&
               event.target &&
@@ -4774,9 +4981,10 @@
       if (!modalState) return
 
       const current = modalState
+      const root = $('#modal-root')
+
       modalState = null
 
-      const root = $('#modal-root')
       root.classList.remove('open')
       root.innerHTML = ''
       root.onclick = null
@@ -4824,12 +5032,14 @@
       $('#btn-search-clear').hidden = !state.query
 
       if (!state.conversations.length) {
-        list.innerHTML = `<div class="side-empty">${ic('message')}<span>${STR.emptyList}</span></div>`
+        list.innerHTML =
+          `<div class="side-empty">${ic('message')}<span>${STR.emptyList}</span></div>`
         return
       }
 
       if (!items.length) {
-        list.innerHTML = `<div class="side-empty">${ic('search')}<span>${STR.noResult}</span><button type="button" class="btn btn-sm" data-act="clear-search">${STR.clearSearch}</button></div>`
+        list.innerHTML =
+          `<div class="side-empty">${ic('search')}<span>${STR.noResult}</span><button type="button" class="btn btn-sm" data-act="clear-search">${STR.clearSearch}</button></div>`
         return
       }
 
@@ -4848,12 +5058,14 @@
       let html = ''
 
       if (pinned.length) {
-        html += `<div class="conv-group-label">${STR.pinnedGroup}</div>` +
+        html +=
+          `<div class="conv-group-label">${STR.pinnedGroup}</div>` +
           pinned.map(convItemHtml).join('')
       }
 
       if (recent.length) {
-        html += `<div class="conv-group-label">${STR.recentGroup}</div>` +
+        html +=
+          `<div class="conv-group-label">${STR.recentGroup}</div>` +
           recent.map(convItemHtml).join('')
       }
 
@@ -4877,6 +5089,7 @@
 
       renderSidebar()
       saveNow()
+
       return conversation
     }
 
@@ -4983,7 +5196,10 @@
 
     function scrollBottom (force) {
       const scroll = $('#chat-scroll')
-      if (force || stickBottom) scroll.scrollTop = scroll.scrollHeight
+
+      if (force || stickBottom) {
+        scroll.scrollTop = scroll.scrollHeight
+      }
     }
 
     function dotsHtml () {
@@ -4994,7 +5210,8 @@
       if (!attachments || !attachments.length) return ''
 
       const items = attachments.map(attachment => {
-        const remove = `<button type="button" class="att-remove" data-msg-att-rm="${escapeHtml(attachment.id)}" data-msg-id="${escapeHtml(messageId)}" aria-label="${STR.removeFile}: ${escapeHtml(attachment.name)}">${ic('x', 'ic-sm')}</button>`
+        const remove =
+          `<button type="button" class="att-remove" data-msg-att-rm="${escapeHtml(attachment.id)}" data-msg-id="${escapeHtml(messageId)}" aria-label="${STR.removeFile}: ${escapeHtml(attachment.name)}">${ic('x', 'ic-sm')}</button>`
 
         if (attachment.url &&
             isImageAttachment(attachment)) {
@@ -5026,7 +5243,8 @@
         : '<p>…</p>'
 
       if (message.status === 'stopped') {
-        html += `<div class="stopped-note">${ic('stop', 'ic-sm')}${STR.stoppedNote}</div>`
+        html +=
+          `<div class="stopped-note">${ic('stop', 'ic-sm')}${STR.stoppedNote}</div>`
       }
 
       return html
@@ -5038,18 +5256,26 @@
         return ''
       }
 
-      let buttons = `<button type="button" class="act-btn" data-act="copy" data-id="${message.id}" aria-label="${STR.copyMsg}">${ic('copy', 'ic-sm')}<span>Sao chép</span></button>`
+      let buttons =
+        `<button type="button" class="act-btn" data-act="copy" data-id="${message.id}" aria-label="${STR.copyMsg}">${ic('copy', 'ic-sm')}<span>Sao chép</span></button>`
 
-      buttons += `<button type="button" class="act-btn" data-act="edit" data-id="${message.id}">${ic('pencil', 'ic-sm')}<span>${STR.edit}</span></button>`
+      buttons +=
+        `<button type="button" class="act-btn" data-act="edit" data-id="${message.id}">${ic('pencil', 'ic-sm')}<span>${STR.edit}</span></button>`
 
       if (isAssistantRole(message.role) &&
           message.status !== 'error') {
-        buttons += `<button type="button" class="act-btn" data-act="regen" data-id="${message.id}">${ic('rotate', 'ic-sm')}<span>${STR.regen}</span></button>`
-        buttons += `<button type="button" class="act-btn" data-act="fb-up" data-id="${message.id}" aria-pressed="${message.feedback === 'up'}" aria-label="${STR.rateUp}">${ic('thumbsUp', 'ic-sm')}</button>`
-        buttons += `<button type="button" class="act-btn" data-act="fb-down" data-id="${message.id}" aria-pressed="${message.feedback === 'down'}" aria-label="${STR.rateDown}">${ic('thumbsDown', 'ic-sm')}</button>`
+        buttons +=
+          `<button type="button" class="act-btn" data-act="regen" data-id="${message.id}">${ic('rotate', 'ic-sm')}<span>${STR.regen}</span></button>`
+
+        buttons +=
+          `<button type="button" class="act-btn" data-act="fb-up" data-id="${message.id}" aria-pressed="${message.feedback === 'up'}" aria-label="${STR.rateUp}">${ic('thumbsUp', 'ic-sm')}</button>`
+
+        buttons +=
+          `<button type="button" class="act-btn" data-act="fb-down" data-id="${message.id}" aria-pressed="${message.feedback === 'down'}" aria-label="${STR.rateDown}">${ic('thumbsDown', 'ic-sm')}</button>`
       }
 
-      buttons += `<button type="button" class="act-btn" data-act="delete" data-id="${message.id}" aria-label="${STR.deleteMsg}">${ic('trash', 'ic-sm')}<span>${STR.delOk}</span></button>`
+      buttons +=
+        `<button type="button" class="act-btn" data-act="delete" data-id="${message.id}" aria-label="${STR.deleteMsg}">${ic('trash', 'ic-sm')}<span>${STR.delOk}</span></button>`
 
       return `<div class="msg-actions">${buttons}</div>`
     }
@@ -5067,7 +5293,8 @@
     function buildMsgEl (message) {
       const element = document.createElement('article')
 
-      element.className = 'msg msg-' +
+      element.className =
+        'msg msg-' +
         message.role +
         (message.status && isAssistantRole(message.role)
           ? ' is-' + message.status
@@ -5110,13 +5337,16 @@
       if (state.editingId === message.id) {
         body = editHtml(message)
       } else if (message.role === 'user') {
-        body = `<div class="user-text">${escapeHtml(message.content).replace(/\n/g, '<br>')}</div>` +
+        body =
+          `<div class="user-text">${escapeHtml(message.content).replace(/\n/g, '<br>')}</div>` +
           attachments
       } else if (isSystemRole(message.role)) {
-        body = `<div class="system-text">${escapeHtml(message.content)}</div>` +
+        body =
+          `<div class="system-text">${escapeHtml(message.content)}</div>` +
           attachments
       } else if (message.role === 'tool') {
-        body = `<div class="tool-text">${escapeHtml(message.content)}</div>` +
+        body =
+          `<div class="tool-text">${escapeHtml(message.content)}</div>` +
           attachments
       } else {
         body = assistantBodyHtml(message) + attachments
@@ -5196,6 +5426,7 @@
         const textarea = $('#edit-area')
 
         if (textarea) {
+          autosizeTextarea(textarea, 360)
           textarea.focus()
           textarea.setSelectionRange(
             textarea.value.length,
@@ -5222,6 +5453,7 @@
 
     function renderTopBits () {
       const conversation = currentConv()
+
       $('#top-title').textContent = conversation
         ? conversation.title
         : ''
@@ -5230,7 +5462,8 @@
 
       if (!navigator.onLine) {
         chip.className = 'badge badge-off'
-        chip.innerHTML = '<span class="dot dot-off"></span><span>Mất kết nối</span>'
+        chip.innerHTML =
+          '<span class="dot dot-off"></span><span>Mất kết nối</span>'
         chip.title = ''
         return
       }
@@ -5239,23 +5472,26 @@
 
       if (!endpoint) {
         chip.className = 'badge badge-idle'
-        chip.innerHTML = '<span class="dot dot-idle"></span><span>Chưa cấu hình</span>'
+        chip.innerHTML =
+          '<span class="dot dot-idle"></span><span>Chưa cấu hình</span>'
         chip.title = 'Chưa có kết nối API nào'
         return
       }
 
       chip.className = 'badge badge-ready'
-      chip.innerHTML = '<span class="dot dot-ok"></span><span>' +
+      chip.innerHTML =
+        '<span class="dot dot-ok"></span><span>' +
         escapeHtml(endpoint.name) +
         '</span>'
-      chip.title = API_FORMATS[endpoint.format].label +
+
+      chip.title =
+        API_FORMATS[endpoint.format].label +
         ' · ' +
         endpoint.baseUrl
     }
 
     const MAX_FILES = 4
     const MAX_SIZE = 5 * 1024 * 1024
-    const RE_TYPE = /^image\/(png|jpe?g|webp|gif)$|^text\/(plain|markdown)$|^application\/(pdf|json)$/
 
     async function addAttachment (file) {
       if (state.attachments.length + state.uploading >= MAX_FILES) {
@@ -5265,7 +5501,7 @@
 
       const type = normalizeFileType(file)
 
-      if (!RE_TYPE.test(type)) {
+      if (!isSupportedAttachmentType(type)) {
         toast(`“${file.name}”: ${STR.fileBadType}`, 'error')
         return
       }
@@ -5281,10 +5517,12 @@
       try {
         const buffer = await file.arrayBuffer()
         const base64 = arrayBufferToBase64(buffer)
+
         const dataUrl = isImageAttachment({ type })
           ? 'data:' + type + ';base64,' + base64
           : null
-        const text = isTextAttachment({ type })
+
+        const text = isTextMimeType(type)
           ? new TextDecoder('utf-8').decode(buffer)
           : null
 
@@ -5331,6 +5569,7 @@
       }
 
       const conversation = currentConv()
+
       if (!conversation) return
 
       const message = conversation.messages.find(item => {
@@ -5393,31 +5632,44 @@
 
     function updateComposerButtons () {
       const conversation = currentConv()
+
       const hasMessages = Boolean(
         conversation && conversation.messages.length
       )
+
       const hasInput = state.draft.trim().length > 0 ||
         state.attachments.length > 0
+
       const send = $('#btn-send')
       const stop = $('#btn-stop')
 
       send.hidden = state.generating
       stop.hidden = !state.generating
+
       send.disabled = state.generating ||
         state.uploading > 0 ||
         (!hasMessages && !hasInput)
     }
 
-    function autosize () {
-      const textarea = $('#prompt')
+    function autosizeTextarea (textarea, maxHeight) {
+      if (!textarea) return
+
       textarea.style.height = 'auto'
-      textarea.style.height = Math.min(
+
+      const height = Math.min(
         textarea.scrollHeight,
-        220
-      ) + 'px'
-      textarea.style.overflowY = textarea.scrollHeight > 220
-        ? 'auto'
-        : 'hidden'
+        maxHeight
+      )
+
+      textarea.style.height = height + 'px'
+      textarea.style.overflowY =
+        textarea.scrollHeight > maxHeight
+          ? 'auto'
+          : 'hidden'
+    }
+
+    function autosizePrompt () {
+      autosizeTextarea($('#prompt'), 220)
     }
 
     function updateCharCount () {
@@ -5430,15 +5682,18 @@
       const select = $('#endpoint-select')
 
       if (!state.endpoints.length) {
-        select.innerHTML = '<option value="">Chưa có kết nối</option>'
+        select.innerHTML =
+          '<option value="">Chưa có kết nối</option>'
         select.disabled = true
         return
       }
 
       select.disabled = false
+
       select.innerHTML = state.endpoints.map(endpoint => {
         return `<option value="${endpoint.id}">${escapeHtml(endpoint.name)}</option>`
       }).join('')
+
       select.value = state.endpointId || ''
     }
 
@@ -5447,12 +5702,14 @@
       const endpoint = currentEndpoint()
 
       if (!endpoint || !endpoint.models.length) {
-        select.innerHTML = '<option value="">Chưa có mô hình</option>'
+        select.innerHTML =
+          '<option value="">Chưa có mô hình</option>'
         select.disabled = true
         return
       }
 
       select.disabled = false
+
       select.innerHTML = endpoint.models.map(model => {
         return `<option value="${escapeHtml(model)}">${escapeHtml(model)}</option>`
       }).join('')
@@ -5540,7 +5797,8 @@
       const list = $('#ep-list')
 
       if (!state.endpoints.length) {
-        list.innerHTML = '<div class="ep-empty">Chưa có kết nối nào. Thêm endpoint và mô hình để bắt đầu.</div>'
+        list.innerHTML =
+          '<div class="ep-empty">Chưa có kết nối nào. Thêm endpoint và mô hình để bắt đầu.</div>'
         return
       }
 
@@ -5575,6 +5833,7 @@
     function showEpForm (endpoint) {
       epEditingId = endpoint ? endpoint.id : null
       epFormModels = endpoint ? endpoint.models.slice() : []
+
       epFormHeaders = endpoint
         ? endpoint.headers.map(header => ({
             name: header.name,
@@ -5603,6 +5862,7 @@
         : API_FORMATS['chat-completions'].presetBase
 
       $('#ep-key').value = ''
+
       $('#ep-key').placeholder = endpoint && endpoint.apiKey
         ? 'Giữ nguyên nếu không đổi'
         : 'Khoá bí mật…'
@@ -5712,6 +5972,7 @@
 
     async function deleteEndpoint (id) {
       const endpoint = endpointById(id)
+
       if (!endpoint) return
 
       const confirmed = await openModal({
@@ -5753,9 +6014,11 @@
       $('#temp-num').value = String(settings.temperature)
       $('#topp').value = String(settings.topP)
       $('#topp-num').value = String(settings.topP)
+
       $('#topk').value = settings.topK == null
         ? ''
         : String(settings.topK)
+
       $('#maxt').value = settings.maxTokens == null
         ? ''
         : String(settings.maxTokens)
@@ -5782,12 +6045,15 @@
 
       $('#ta-sysprompt').value = settings.systemPrompt
       $('#sel-effort').value = settings.effort || ''
+
       $('#num-budget').value = settings.budget == null
         ? ''
         : String(settings.budget)
+
       $('#sel-level').value = settings.level || ''
 
       const samplingOff = !settings.sampling
+
       const samplingIds = [
         'temp',
         'temp-num',
@@ -5805,6 +6071,7 @@
       })
 
       const reasoningOff = !settings.reasoning
+
       const reasoningIds = [
         'sel-effort',
         'num-budget',
@@ -5818,6 +6085,8 @@
       $$('.reasoning-field').forEach(field => {
         field.classList.toggle('is-off', reasoningOff)
       })
+
+      autosizeTextarea($('#ta-sysprompt'), 280)
     }
 
     function resetParams () {
@@ -5833,6 +6102,7 @@
 
       range.addEventListener('input', () => {
         const value = Number(range.value)
+
         number.value = String(value)
         state.settings[key] = value
         saveNow()
@@ -5840,6 +6110,7 @@
 
       number.addEventListener('input', () => {
         const value = Number(number.value)
+
         if (!Number.isFinite(value)) return
 
         const limited = clamp(
@@ -5874,6 +6145,7 @@
                 .filter(Boolean)
             })
           }
+
           continue
         }
 
@@ -5898,6 +6170,7 @@
                 .filter(Boolean)
             })
           }
+
           continue
         }
 
@@ -5917,12 +6190,14 @@
 
     function previewMessages () {
       const conversation = currentConv()
+
       if (!conversation) return []
       return buildCanonical(conversation, null)
     }
 
     function refreshBodyPreview () {
       const textarea = $('#req-body')
+
       if (!textarea) return
 
       const endpoint = currentEndpoint()
@@ -5949,12 +6224,14 @@
     function handleSseEvent (format, event, message) {
       if (!event.raw) return
 
-      let data = null
+      let data = {}
 
-      try {
-        data = JSON.parse(event.raw)
-      } catch (err) {
-        return
+      if (event.raw !== '[DONE]') {
+        try {
+          data = JSON.parse(event.raw)
+        } catch (err) {
+          return
+        }
       }
 
       const result = format.parseEvent({
@@ -6025,7 +6302,8 @@
 
         endpoint.headers.forEach(header => {
           if (header.name) {
-            headers[header.name.trim().toLowerCase()] = header.value
+            headers[header.name.trim().toLowerCase()] =
+              header.value
           }
         })
 
@@ -6042,6 +6320,7 @@
           try {
             const json = await response.json()
             const detail = format.parseError(json)
+
             if (detail) errorMessage = detail
           } catch (err) {
             // Thân phản hồi không phải JSON.
@@ -6054,7 +6333,8 @@
           )
         }
 
-        const contentType = response.headers.get('content-type') || ''
+        const contentType =
+          response.headers.get('content-type') || ''
 
         if (stream &&
             contentType.indexOf('text/event-stream') !== -1) {
@@ -6075,7 +6355,11 @@
 
           if (json && json.error) {
             const detail = format.parseError(json)
-            throw apiError('api', detail || 'Lỗi API')
+
+            throw apiError(
+              'api',
+              detail || 'Lỗi API'
+            )
           }
 
           message.content = format.parseFull(json)
@@ -6203,9 +6487,10 @@
       state.attachments = []
 
       const textarea = $('#prompt')
+
       textarea.value = ''
 
-      autosize()
+      autosizePrompt()
       updateCharCount()
       renderComposer()
       renderSidebar()
@@ -6264,9 +6549,10 @@
         })
 
         if (message && !message.content) {
-          conversation.messages = conversation.messages.filter(item => {
-            return item.id !== state.newMsgId
-          })
+          conversation.messages =
+            conversation.messages.filter(item => {
+              return item.id !== state.newMsgId
+            })
         }
       }
 
@@ -6280,6 +6566,7 @@
 
     function saveMessageEdit (messageId) {
       const conversation = currentConv()
+
       if (!conversation) return
 
       const textarea = $('#edit-area')
@@ -6318,6 +6605,7 @@
       }
 
       const conversation = currentConv()
+
       if (!conversation) return
 
       const message = conversation.messages.find(item => {
@@ -6335,9 +6623,10 @@
         })
       }
 
-      conversation.messages = conversation.messages.filter(item => {
-        return item.id !== messageId
-      })
+      conversation.messages =
+        conversation.messages.filter(item => {
+          return item.id !== messageId
+        })
 
       conversation.updatedAt = Date.now()
 
@@ -6366,6 +6655,7 @@
       }
 
       const conversation = currentConv()
+
       if (!conversation) return
 
       const index = conversation.messages.findIndex(message => {
@@ -6374,7 +6664,8 @@
 
       if (index < 0) return
 
-      conversation.messages = conversation.messages.slice(0, index)
+      conversation.messages =
+        conversation.messages.slice(0, index)
 
       saveNow()
       pushAssistantAndRun(conversation)
@@ -6382,6 +6673,7 @@
 
     function toggleFeedback (messageId, value) {
       const conversation = currentConv()
+
       if (!conversation) return
 
       const message = conversation.messages.find(item => {
@@ -6531,9 +6823,18 @@
 
     function bindEvents () {
       $('#btn-menu').addEventListener('click', toggleSidebar)
-      $('#btn-side-collapse').addEventListener('click', toggleSidebar)
-      $('#btn-settings').addEventListener('click', toggleSettings)
-      $('#btn-set-close').addEventListener('click', closeDrawers)
+      $('#btn-side-collapse').addEventListener(
+        'click',
+        toggleSidebar
+      )
+      $('#btn-settings').addEventListener(
+        'click',
+        toggleSettings
+      )
+      $('#btn-set-close').addEventListener(
+        'click',
+        closeDrawers
+      )
       $('#btn-theme').addEventListener('click', toggleTheme)
       $('#backdrop').addEventListener('click', closeDrawers)
 
@@ -6580,7 +6881,9 @@
           return
         }
 
-        const actionButton = event.target.closest('[data-cact]')
+        const actionButton =
+          event.target.closest('[data-cact]')
+
         const item = event.target.closest('.conv')
 
         if (!item) return
@@ -6589,6 +6892,7 @@
 
         if (actionButton) {
           event.stopPropagation()
+
           onConvAction(
             actionButton.getAttribute('data-cact'),
             id
@@ -6600,7 +6904,9 @@
       })
 
       $('#conv-list').addEventListener('keydown', event => {
-        if (event.key !== 'Enter' && event.key !== ' ') return
+        if (event.key !== 'Enter' && event.key !== ' ') {
+          return
+        }
 
         const item = event.target.closest('.conv')
 
@@ -6624,9 +6930,10 @@
             state.draft = item.p
 
             const textarea = $('#prompt')
+
             textarea.value = item.p
 
-            autosize()
+            autosizePrompt()
             updateCharCount()
             updateComposerButtons()
             textarea.focus()
@@ -6650,25 +6957,28 @@
         const codeCopy = event.target.closest('[data-copy]')
 
         if (codeCopy) {
-          copyText(dec64(codeCopy.getAttribute('data-copy')))
-            .then(copied => {
-              toast(
-                copied ? STR.copied : STR.copyFail,
-                copied ? 'success' : 'error'
-              )
+          copyText(
+            dec64(codeCopy.getAttribute('data-copy'))
+          ).then(copied => {
+            toast(
+              copied ? STR.copied : STR.copyFail,
+              copied ? 'success' : 'error'
+            )
 
-              if (copied) {
-                codeCopy.classList.add('ok')
-                setTimeout(() => {
-                  codeCopy.classList.remove('ok')
-                }, 1200)
-              }
-            })
+            if (copied) {
+              codeCopy.classList.add('ok')
+
+              setTimeout(() => {
+                codeCopy.classList.remove('ok')
+              }, 1200)
+            }
+          })
 
           return
         }
 
         const button = event.target.closest('[data-act]')
+
         if (!button) return
 
         const action = button.getAttribute('data-act')
@@ -6680,6 +6990,7 @@
         }
 
         const conversation = currentConv()
+
         if (!conversation) return
 
         if (action === 'copy') {
@@ -6712,7 +7023,8 @@
           cancelEdit()
         } else if (action === 'delete') {
           deleteMessage(id)
-        } else if (action === 'regen' || action === 'retry') {
+        } else if (action === 'regen' ||
+                   action === 'retry') {
           regenerateFrom(id)
         } else if (action === 'fb-up') {
           toggleFeedback(id, 'up')
@@ -6721,15 +7033,25 @@
         }
       })
 
+      messages.addEventListener('input', event => {
+        if (event.target.id === 'edit-area') {
+          autosizeTextarea(event.target, 360)
+        }
+      })
+
       messages.addEventListener('change', event => {
-        const select = event.target.closest('[data-msg-role]')
+        const select =
+          event.target.closest('[data-msg-role]')
+
         if (!select || state.generating) return
 
         const conversation = currentConv()
+
         if (!conversation) return
 
         const message = conversation.messages.find(item => {
-          return item.id === select.getAttribute('data-msg-role')
+          return item.id ===
+            select.getAttribute('data-msg-role')
         })
 
         if (!message || message.status === 'streaming') return
@@ -6785,7 +7107,7 @@
 
       textarea.addEventListener('input', () => {
         state.draft = textarea.value
-        autosize()
+        autosizePrompt()
         updateCharCount()
         updateComposerButtons()
       })
@@ -6801,7 +7123,10 @@
       })
 
       $('#btn-send').addEventListener('click', sendMessage)
-      $('#btn-stop').addEventListener('click', stopGeneration)
+      $('#btn-stop').addEventListener(
+        'click',
+        stopGeneration
+      )
 
       $('#btn-attach').addEventListener('click', () => {
         $('#file-input').click()
@@ -6894,6 +7219,7 @@
 
       $('#ta-sysprompt').addEventListener('input', event => {
         state.settings.systemPrompt = event.target.value
+        autosizeTextarea(event.target, 280)
         saveNow()
       })
 
@@ -6936,7 +7262,10 @@
 
       $('#btn-reset').addEventListener('click', resetParams)
 
-      $('#btn-ep-close').addEventListener('click', closeEpModal)
+      $('#btn-ep-close').addEventListener(
+        'click',
+        closeEpModal
+      )
 
       $('#ep-root').addEventListener('click', event => {
         if (event.target.closest('[data-ep-close]')) {
@@ -6954,16 +7283,30 @@
         showEpForm(null)
       })
 
-      $('#btn-ep-cancel').addEventListener('click', hideEpForm)
-      $('#btn-ep-save').addEventListener('click', saveEpForm)
-      $('#btn-ep-model-add').addEventListener('click', addEpModel)
+      $('#btn-ep-cancel').addEventListener(
+        'click',
+        hideEpForm
+      )
 
-      $('#ep-model-input').addEventListener('keydown', event => {
-        if (event.key === 'Enter') {
-          event.preventDefault()
-          addEpModel()
+      $('#btn-ep-save').addEventListener(
+        'click',
+        saveEpForm
+      )
+
+      $('#btn-ep-model-add').addEventListener(
+        'click',
+        addEpModel
+      )
+
+      $('#ep-model-input').addEventListener(
+        'keydown',
+        event => {
+          if (event.key === 'Enter') {
+            event.preventDefault()
+            addEpModel()
+          }
         }
-      })
+      )
 
       $('#btn-ep-header-add').addEventListener('click', () => {
         epFormHeaders.push({
@@ -6974,32 +7317,43 @@
         renderEpHeaders()
       })
 
-      $('#ep-headers-list').addEventListener('input', event => {
-        const nameInput = event.target.closest('[data-hname]')
-        const valueInput = event.target.closest('[data-hval]')
+      $('#ep-headers-list').addEventListener(
+        'input',
+        event => {
+          const nameInput =
+            event.target.closest('[data-hname]')
 
-        if (nameInput) {
-          epFormHeaders[
-            Number(nameInput.getAttribute('data-hname'))
-          ].name = event.target.value
-        } else if (valueInput) {
-          epFormHeaders[
-            Number(valueInput.getAttribute('data-hval'))
-          ].value = event.target.value
+          const valueInput =
+            event.target.closest('[data-hval]')
+
+          if (nameInput) {
+            epFormHeaders[
+              Number(nameInput.getAttribute('data-hname'))
+            ].name = event.target.value
+          } else if (valueInput) {
+            epFormHeaders[
+              Number(valueInput.getAttribute('data-hval'))
+            ].value = event.target.value
+          }
         }
-      })
+      )
 
-      $('#ep-headers-list').addEventListener('click', event => {
-        const remove = event.target.closest('[data-hrm]')
-        if (!remove) return
+      $('#ep-headers-list').addEventListener(
+        'click',
+        event => {
+          const remove =
+            event.target.closest('[data-hrm]')
 
-        epFormHeaders.splice(
-          Number(remove.getAttribute('data-hrm')),
-          1
-        )
+          if (!remove) return
 
-        renderEpHeaders()
-      })
+          epFormHeaders.splice(
+            Number(remove.getAttribute('data-hrm')),
+            1
+          )
+
+          renderEpHeaders()
+        }
+      )
 
       $('#ep-format').addEventListener('change', () => {
         const format = API_FORMATS[$('#ep-format').value]
@@ -7016,22 +7370,32 @@
         updateEpUrlHint()
       })
 
-      $('#ep-base').addEventListener('input', updateEpUrlHint)
+      $('#ep-base').addEventListener(
+        'input',
+        updateEpUrlHint
+      )
 
-      $('#ep-model-chips').addEventListener('click', event => {
-        const remove = event.target.closest('[data-mrm]')
-        if (!remove) return
+      $('#ep-model-chips').addEventListener(
+        'click',
+        event => {
+          const remove =
+            event.target.closest('[data-mrm]')
 
-        epFormModels.splice(
-          Number(remove.getAttribute('data-mrm')),
-          1
-        )
+          if (!remove) return
 
-        renderEpModelChips()
-      })
+          epFormModels.splice(
+            Number(remove.getAttribute('data-mrm')),
+            1
+          )
+
+          renderEpModelChips()
+        }
+      )
 
       $('#ep-list').addEventListener('click', event => {
-        const actionButton = event.target.closest('[data-eact]')
+        const actionButton =
+          event.target.closest('[data-eact]')
+
         const card = event.target.closest('.ep-card')
 
         if (!card) return
@@ -7041,7 +7405,8 @@
         if (actionButton) {
           event.stopPropagation()
 
-          const action = actionButton.getAttribute('data-eact')
+          const action =
+            actionButton.getAttribute('data-eact')
 
           if (action === 'edit') {
             showEpForm(endpointById(id))
@@ -7057,7 +7422,9 @@
       })
 
       $('#ep-list').addEventListener('keydown', event => {
-        if (event.key !== 'Enter' && event.key !== ' ') return
+        if (event.key !== 'Enter' && event.key !== ' ') {
+          return
+        }
 
         const card = event.target.closest('.ep-card')
 
@@ -7123,6 +7490,7 @@
       renderComposer()
       renderTopBits()
       applyDesktopPanels()
+      autosizePrompt()
       updateCharCount()
       bindEvents()
       refreshBodyPreview()
