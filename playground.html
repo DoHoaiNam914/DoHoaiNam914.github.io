@@ -1,4 +1,4 @@
-<!doctype html>
+<result><!doctype html>
 <html lang="vi" data-theme="dark">
 <head>
   <meta charset="utf-8">
@@ -770,8 +770,8 @@
     }
 
     .role-select:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
+      opacity: 0.72;
+      cursor: default;
     }
 
     .msg-model {
@@ -811,19 +811,7 @@
       border-radius: var(--r-md);
       padding: 10px 14px;
       overflow-wrap: anywhere;
-      white-space: pre-wrap;
       font-size: 13px;
-    }
-
-    .tool-text {
-      background: var(--panel-2);
-      border: 1px dashed var(--border-strong);
-      border-radius: var(--r-md);
-      padding: 10px 14px;
-      overflow-wrap: anywhere;
-      white-space: pre-wrap;
-      font-size: 13px;
-      font-family: var(--font-mono);
     }
 
     .msg-attach {
@@ -1696,11 +1684,24 @@
       line-height: 1.5;
     }
 
-    #ta-sysprompt {
-      min-height: 72px;
-      max-height: 280px;
+    #ta-sysprompt,
+    #ta-variables,
+    #ta-tools {
+      max-height: 320px;
       resize: none;
       overflow-y: hidden;
+    }
+
+    #ta-sysprompt {
+      min-height: 72px;
+    }
+
+    #ta-variables {
+      min-height: 96px;
+    }
+
+    #ta-tools {
+      min-height: 124px;
     }
 
     .body-preview {
@@ -1795,6 +1796,11 @@
       font-size: 11px;
       color: var(--faint);
       overflow-wrap: anywhere;
+    }
+
+    .url-hint code {
+      font-family: var(--font-mono);
+      color: var(--muted);
     }
 
     .btn {
@@ -2387,7 +2393,6 @@
               <button type="button" class="add-role" data-addrole="developer">developer</button>
               <button type="button" class="add-role" data-addrole="user">user</button>
               <button type="button" class="add-role" data-addrole="assistant">assistant</button>
-              <button type="button" class="add-role" data-addrole="tool">tool</button>
             </div>
             <div class="attach-row" id="attach-row" hidden></div>
             <div class="composer-box">
@@ -2422,6 +2427,15 @@
             <h3 class="set-label">System prompt</h3>
             <div class="field">
               <textarea class="text-input" id="ta-sysprompt" rows="3" placeholder="Hướng dẫn áp dụng cho mọi lượt (tuỳ chọn)" aria-label="system prompt"></textarea>
+              <p class="url-hint">Có thể dùng biến theo cú pháp <code>{{ten_bien}}</code>.</p>
+            </div>
+          </section>
+
+          <section class="set-section">
+            <h3 class="set-label">Biến</h3>
+            <div class="field">
+              <textarea class="text-input mono" id="ta-variables" rows="5" placeholder="Đối tượng JSON chứa các biến" aria-label="Biến cho system prompt và tin nhắn"></textarea>
+              <p class="url-hint">Ví dụ: <code>{"name":"Nam","user":{"city":"Hà Nội"}}</code>. Dùng <code>{{name}}</code> hoặc <code>{{user.city}}</code>. Biến không được áp dụng cho phản hồi assistant do mô hình tạo.</p>
             </div>
           </section>
 
@@ -2472,6 +2486,21 @@
             </div>
 
             <div class="field">
+              <div class="field-head">
+                <label for="sel-verbosity">Verbosity</label>
+              </div>
+              <div class="selwrap">
+                <select id="sel-verbosity" aria-label="OpenAI verbosity">
+                  <option value="">Mặc định</option>
+                  <option value="low">low</option>
+                  <option value="medium">medium</option>
+                  <option value="high">high</option>
+                </select>
+              </div>
+              <p class="url-hint">Áp dụng cho OpenAI Chat Completions và Responses.</p>
+            </div>
+
+            <div class="field">
               <div class="switch-row">
                 <label for="sw-reasoning">Reasoning</label>
                 <button type="button" class="switch" id="sw-reasoning" role="switch" aria-checked="false" aria-label="Bật tắt reasoning">
@@ -2496,6 +2525,20 @@
                   <option value="max">max</option>
                 </select>
               </div>
+            </div>
+
+            <div class="field reasoning-field">
+              <div class="field-head">
+                <label for="sel-mode">Mode</label>
+              </div>
+              <div class="selwrap">
+                <select id="sel-mode" aria-label="OpenAI reasoning mode">
+                  <option value="">Mặc định</option>
+                  <option value="standard">standard</option>
+                  <option value="pro">pro</option>
+                </select>
+              </div>
+              <p class="url-hint">Áp dụng cho <code>reasoning.mode</code> của OpenAI Responses.</p>
             </div>
 
             <div class="field reasoning-field">
@@ -2536,6 +2579,14 @@
                   <span class="knob"></span>
                 </button>
               </div>
+            </div>
+          </section>
+
+          <section class="set-section">
+            <h3 class="set-label">Tools</h3>
+            <div class="field">
+              <textarea class="text-input mono" id="ta-tools" rows="7" placeholder="Mảng JSON tools theo định dạng API đang chọn" aria-label="Mảng tools"></textarea>
+              <p class="url-hint">Nhập trực tiếp một mảng JSON. Mỗi định dạng API sẽ nhận mảng này tại trường <code>tools</code>.</p>
             </div>
           </section>
 
@@ -2771,7 +2822,6 @@
       rotate: '<path d="M21 12a9 9 0 1 1-2.64-6.36L21 8"/><path d="M21 3v5h-5"/>',
       alert: '<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 20h16a2 2 0 0 0 1.73-2Z"/><path d="M12 9v4"/><path d="M12 17h.01"/>',
       info: '<circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/>',
-      chevDown: '<path d="m6 9 6 6 6-6"/>',
       arrowDown: '<path d="M12 5v14"/><path d="m19 12-7 7-7-7"/>',
       spark: '<path d="M12 2l2.4 6.4L21 11l-6.6 2.6L12 20l-2.4-6.4L3 11l6.6-2.6z"/>',
       user: '<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
@@ -2859,8 +2909,7 @@
       'interactions'
     ]
 
-    const ROLES = ['system', 'developer', 'user', 'assistant', 'tool']
-    const TOOL_CALL_ID = 'call_playground'
+    const ROLES = ['system', 'developer', 'user', 'assistant']
 
     const FILE_TYPE_BY_EXTENSION = {
       '.bash': 'text/x-shellscript',
@@ -2956,6 +3005,11 @@
 
     function isAssistantRole (role) {
       return role === 'assistant'
+    }
+
+    function isGeneratedAssistant (message) {
+      return isAssistantRole(message.role) &&
+        message.generated === true
     }
 
     function fileExtension (name) {
@@ -3055,6 +3109,127 @@
           }
         }
       }
+    }
+
+    function parseToolsJson (source) {
+      const text = String(source || '').trim()
+
+      if (!text) return []
+
+      let value
+
+      try {
+        value = JSON.parse(text)
+      } catch (err) {
+        throw apiError(
+          'config',
+          'Tools không phải JSON hợp lệ: ' + err.message
+        )
+      }
+
+      if (!Array.isArray(value)) {
+        throw apiError(
+          'config',
+          'Tools phải là một mảng JSON.'
+        )
+      }
+
+      return value
+    }
+
+    function parseVariablesJson (source) {
+      const text = String(source || '').trim()
+
+      if (!text) return {}
+
+      let value
+
+      try {
+        value = JSON.parse(text)
+      } catch (err) {
+        throw apiError(
+          'config',
+          'Biến không phải JSON hợp lệ: ' + err.message
+        )
+      }
+
+      if (!value ||
+          Array.isArray(value) ||
+          typeof value !== 'object') {
+        throw apiError(
+          'config',
+          'Biến phải là một đối tượng JSON.'
+        )
+      }
+
+      return value
+    }
+
+    function findVariable (variables, key) {
+      if (Object.prototype.hasOwnProperty.call(variables, key)) {
+        return {
+          found: true,
+          value: variables[key]
+        }
+      }
+
+      const parts = key.split('.')
+      let current = variables
+
+      for (const part of parts) {
+        if (!current ||
+            typeof current !== 'object' ||
+            !Object.prototype.hasOwnProperty.call(current, part)) {
+          return {
+            found: false
+          }
+        }
+
+        current = current[part]
+      }
+
+      return {
+        found: true,
+        value: current
+      }
+    }
+
+    function stringifyVariable (value) {
+      if (value == null) return ''
+      if (typeof value === 'string') return value
+
+      if (typeof value === 'object') {
+        return JSON.stringify(value)
+      }
+
+      return String(value)
+    }
+
+    function applyVariables (source, variables) {
+      return String(source || '').replace(
+        /\{\{\s*([^{}]+?)\s*\}\}/g,
+        (token, key) => {
+          const result = findVariable(
+            variables,
+            key.trim()
+          )
+
+          return result.found
+            ? stringifyVariable(result.value)
+            : token
+        }
+      )
+    }
+
+    function messageContentWithVariables (message, variables) {
+      if (isGeneratedAssistant(message)) {
+        return message.content || ''
+      }
+
+      return applyVariables(
+        message.content || '',
+        variables
+      )
     }
 
     function openAiEffort (settings) {
@@ -3231,15 +3406,6 @@
           ctx.messages.forEach(message => {
             const attachments = message.attachments || []
 
-            if (message.role === 'tool') {
-              messages.push({
-                role: 'tool',
-                tool_call_id: TOOL_CALL_ID,
-                content: message.content
-              })
-              return
-            }
-
             if (message.role === 'user') {
               const parts = [{
                 type: 'text',
@@ -3297,6 +3463,14 @@
 
           if (s.maxTokens != null) {
             body.max_completion_tokens = s.maxTokens
+          }
+
+          if (s.verbosity) {
+            body.verbosity = s.verbosity
+          }
+
+          if (s.tools && s.tools.length) {
+            body.tools = s.tools
           }
 
           if (s.zdr) body.store = false
@@ -3393,18 +3567,6 @@
                 system.push(message.content)
               }
 
-              return
-            }
-
-            if (message.role === 'tool') {
-              messages.push({
-                role: 'user',
-                content: [{
-                  type: 'tool_result',
-                  tool_use_id: TOOL_CALL_ID,
-                  content: message.content
-                }]
-              })
               return
             }
 
@@ -3514,6 +3676,10 @@
             body.system = system.join('\n\n')
           }
 
+          if (s.tools && s.tools.length) {
+            body.tools = s.tools
+          }
+
           return {
             url: this.buildUrl(ctx.base),
             headers: this.headers(ctx.apiKey),
@@ -3609,21 +3775,6 @@
               return
             }
 
-            if (message.role === 'tool') {
-              contents.push({
-                role: 'user',
-                parts: [{
-                  functionResponse: {
-                    name: 'tool',
-                    response: {
-                      result: message.content
-                    }
-                  }
-                }]
-              })
-              return
-            }
-
             const role = isAssistantRole(message.role)
               ? 'model'
               : 'user'
@@ -3703,6 +3854,10 @@
             }
           }
 
+          if (s.tools && s.tools.length) {
+            body.tools = s.tools
+          }
+
           return {
             url: this.buildUrl(ctx.base, ctx.model, ctx.stream),
             headers: this.headers(ctx.apiKey),
@@ -3779,15 +3934,6 @@
           const input = []
 
           ctx.messages.forEach(message => {
-            if (message.role === 'tool') {
-              input.push({
-                type: 'function_call_output',
-                call_id: TOOL_CALL_ID,
-                output: message.content
-              })
-              return
-            }
-
             const role = isAssistantRole(message.role)
               ? 'assistant'
               : message.role
@@ -3816,16 +3962,10 @@
               })
             }
 
-            const item = {
+            input.push({
               role,
               content
-            }
-
-            if (role === 'assistant') {
-              item.type = 'message'
-            }
-
-            input.push(item)
+            })
           })
 
           const body = {
@@ -3835,17 +3975,34 @@
           }
 
           if (s.reasoning) {
+            const reasoning = {}
             const effort = openAiEffort(s)
 
             if (effort) {
-              body.reasoning = {
-                effort
-              }
+              reasoning.effort = effort
+            }
+
+            if (s.mode) {
+              reasoning.mode = s.mode
+            }
+
+            if (Object.keys(reasoning).length) {
+              body.reasoning = reasoning
             }
           } else {
             body.reasoning = {
               effort: 'none'
             }
+          }
+
+          if (s.verbosity) {
+            body.text = {
+              verbosity: s.verbosity
+            }
+          }
+
+          if (s.tools && s.tools.length) {
+            body.tools = s.tools
           }
 
           if (s.zdr) body.store = false
@@ -3973,19 +4130,6 @@
               return
             }
 
-            if (message.role === 'tool') {
-              input.push({
-                type: 'function_result',
-                name: 'tool',
-                call_id: TOOL_CALL_ID,
-                result: [{
-                  type: 'text',
-                  text: message.content
-                }]
-              })
-              return
-            }
-
             const content = [{
               type: 'text',
               text: message.content || ''
@@ -4049,6 +4193,10 @@
           if (systemInstructions.length) {
             body.system_instruction =
               systemInstructions.join('\n\n')
+          }
+
+          if (s.tools && s.tools.length) {
+            body.tools = s.tools
           }
 
           return {
@@ -4263,7 +4411,11 @@
         reasoning: false,
         zdr: true,
         systemPrompt: '',
+        variablesJson: '',
+        toolsJson: '',
+        verbosity: null,
         effort: null,
+        mode: null,
         budget: null,
         level: null
       }
@@ -4315,7 +4467,13 @@
         feedback: raw.feedback === 'up' ||
           raw.feedback === 'down'
           ? raw.feedback
-          : null
+          : null,
+        generated: raw.generated === true ||
+          Boolean(
+            role === 'assistant' &&
+            typeof raw.modelLabel === 'string' &&
+            raw.modelLabel
+          )
       }
 
       if (typeof raw.modelLabel === 'string') {
@@ -4324,6 +4482,14 @@
 
       if (typeof raw.endpointName === 'string') {
         message.endpointName = raw.endpointName
+      }
+
+      if (typeof raw.model === 'string') {
+        message.model = raw.model
+      }
+
+      if (typeof raw.endpointId === 'string') {
+        message.endpointId = raw.endpointId
       }
 
       let status = raw.status
@@ -4475,6 +4641,23 @@
         ? raw.systemPrompt
         : ''
 
+      settings.variablesJson =
+        typeof raw.variablesJson === 'string'
+          ? raw.variablesJson
+          : ''
+
+      settings.toolsJson = typeof raw.toolsJson === 'string'
+        ? raw.toolsJson
+        : ''
+
+      settings.verbosity = [
+        'low',
+        'medium',
+        'high'
+      ].indexOf(raw.verbosity) !== -1
+        ? raw.verbosity
+        : null
+
       const efforts = [
         'minimal',
         'low',
@@ -4486,6 +4669,13 @@
 
       settings.effort = efforts.indexOf(raw.effort) !== -1
         ? raw.effort
+        : null
+
+      settings.mode = [
+        'standard',
+        'pro'
+      ].indexOf(raw.mode) !== -1
+        ? raw.mode
         : null
 
       settings.budget = Number.isFinite(Number(raw.budget)) &&
@@ -4506,6 +4696,7 @@
         ? raw.reasoning
         : Boolean(
             settings.effort ||
+            settings.mode ||
             settings.budget ||
             settings.level
           )
@@ -4590,6 +4781,32 @@
         : state.conversations[0]
           ? state.conversations[0].id
           : null
+    }
+
+    function effectiveSettings () {
+      const variables = parseVariablesJson(
+        state.settings.variablesJson
+      )
+
+      return {
+        ...state.settings,
+        systemPrompt: applyVariables(
+          state.settings.systemPrompt,
+          variables
+        ),
+        variables,
+        tools: parseToolsJson(state.settings.toolsJson)
+      }
+    }
+
+    function safeVariables () {
+      try {
+        return parseVariablesJson(
+          state.settings.variablesJson
+        )
+      } catch (err) {
+        return {}
+      }
     }
 
     const saveNow = debounce(() => {
@@ -4778,6 +4995,21 @@
           pre.replaceWith(wrapper)
           wrapper.appendChild(head)
           wrapper.appendChild(pre)
+        })
+
+      template.content
+        .querySelectorAll('table')
+        .forEach(table => {
+          if (table.parentElement &&
+              table.parentElement.classList.contains('tbl-wrap')) {
+            return
+          }
+
+          const wrapper = document.createElement('div')
+
+          wrapper.className = 'tbl-wrap'
+          table.replaceWith(wrapper)
+          wrapper.appendChild(table)
         })
 
       return template.innerHTML
@@ -5162,22 +5394,27 @@
       return `<div class="msg-attach">${items}</div>`
     }
 
-    function assistantBodyHtml (message) {
+    function assistantBodyHtml (message, variables) {
       if (message.status === 'error') {
         return `<div class="err-card">${ic('alert')}<p>${escapeHtml(message.error ? message.error.message : 'Lỗi API')}</p>` +
           `<span class="err-kind">${escapeHtml(message.error && message.error.kind ? message.error.kind : 'api')}</span>` +
           `<button type="button" class="btn btn-sm btn-accent" data-act="retry" data-id="${message.id}">${ic('rotate', 'ic-sm')}${STR.retry}</button></div>`
       }
 
+      const content = messageContentWithVariables(
+        message,
+        variables
+      )
+
       if (message.status === 'streaming') {
-        return message.content
-          ? renderMarkdown(message.content) +
+        return content
+          ? renderMarkdown(content) +
               '<span class="cursor" aria-hidden="true"></span>'
           : dotsHtml()
       }
 
-      let html = message.content
-        ? renderMarkdown(message.content)
+      let html = content
+        ? renderMarkdown(content)
         : '<p>…</p>'
 
       if (message.status === 'stopped') {
@@ -5228,7 +5465,7 @@
       </div>`
     }
 
-    function buildMsgEl (message) {
+    function buildMsgEl (message, variables) {
       const element = document.createElement('article')
 
       element.className =
@@ -5261,13 +5498,20 @@
         return `<option value="${role}"${message.role === role ? ' selected' : ''}>${role}</option>`
       }).join('')
 
-      const disabled = message.status === 'streaming'
-        ? ' disabled'
-        : ''
+      const roleEditable =
+        state.editingId === message.id &&
+        message.status !== 'streaming'
+
+      const disabled = roleEditable ? '' : ' disabled'
 
       const attachments = userAttachHtml(
         message.attachments,
         message.id
+      )
+
+      const resolvedContent = messageContentWithVariables(
+        message,
+        variables
       )
 
       let body
@@ -5276,18 +5520,14 @@
         body = editHtml(message)
       } else if (message.role === 'user') {
         body =
-          `<div class="user-text">${escapeHtml(message.content).replace(/\n/g, '<br>')}</div>` +
+          `<div class="user-text">${renderMarkdown(resolvedContent)}</div>` +
           attachments
       } else if (isSystemRole(message.role)) {
         body =
-          `<div class="system-text">${escapeHtml(message.content)}</div>` +
-          attachments
-      } else if (message.role === 'tool') {
-        body =
-          `<div class="tool-text">${escapeHtml(message.content)}</div>` +
+          `<div class="system-text">${renderMarkdown(resolvedContent)}</div>` +
           attachments
       } else {
-        body = assistantBodyHtml(message) + attachments
+        body = assistantBodyHtml(message, variables) + attachments
       }
 
       element.innerHTML = `
@@ -5335,6 +5575,7 @@
     function renderMessages () {
       const wrap = $('#messages')
       const conversation = currentConv()
+      const variables = safeVariables()
 
       wrap.innerHTML = ''
 
@@ -5351,7 +5592,9 @@
       const fragment = document.createDocumentFragment()
 
       conversation.messages.forEach(message => {
-        fragment.appendChild(buildMsgEl(message))
+        fragment.appendChild(
+          buildMsgEl(message, variables)
+        )
       })
 
       wrap.appendChild(fragment)
@@ -5383,8 +5626,13 @@
 
       if (!node) return
 
-      node.innerHTML = message.content
-        ? renderMarkdown(message.content) +
+      const content = messageContentWithVariables(
+        message,
+        safeVariables()
+      )
+
+      node.innerHTML = content
+        ? renderMarkdown(content) +
             '<span class="cursor" aria-hidden="true"></span>'
         : dotsHtml()
     }
@@ -5982,7 +6230,11 @@
       )
 
       $('#ta-sysprompt').value = settings.systemPrompt
+      $('#ta-variables').value = settings.variablesJson
+      $('#ta-tools').value = settings.toolsJson
+      $('#sel-verbosity').value = settings.verbosity || ''
       $('#sel-effort').value = settings.effort || ''
+      $('#sel-mode').value = settings.mode || ''
 
       $('#num-budget').value = settings.budget == null
         ? ''
@@ -6012,6 +6264,7 @@
 
       const reasoningIds = [
         'sel-effort',
+        'sel-mode',
         'num-budget',
         'sel-level'
       ]
@@ -6024,14 +6277,17 @@
         field.classList.toggle('is-off', reasoningOff)
       })
 
-      autosizeTextarea($('#ta-sysprompt'), 280)
+      autosizeTextarea($('#ta-sysprompt'), 320)
+      autosizeTextarea($('#ta-variables'), 320)
+      autosizeTextarea($('#ta-tools'), 320)
     }
 
     function resetParams () {
       state.settings = defaultSettings()
       renderSettingsPanel()
+      renderMessages()
       saveNow()
-      toast('Đã khôi phục tham số mặc định.', 'success')
+      toast('Đã khôi phục cấu hình mặc định.', 'success')
     }
 
     function bindParamPair (rangeId, numberId, key) {
@@ -6067,17 +6323,22 @@
       })
     }
 
-    function buildCanonical (conversation, until) {
+    function buildCanonical (conversation, until, variables) {
       const output = []
 
       for (const message of conversation.messages) {
         if (until && message.id === until.id) break
 
+        const content = messageContentWithVariables(
+          message,
+          variables
+        )
+
         if (isSystemRole(message.role)) {
-          if (message.content) {
+          if (content) {
             output.push({
               role: message.role,
-              content: message.content,
+              content,
               attachments: (message.attachments || [])
                 .map(sanitizeAttachment)
                 .filter(Boolean)
@@ -6090,7 +6351,7 @@
         if (message.role === 'user') {
           output.push({
             role: 'user',
-            content: message.content,
+            content,
             attachments: (message.attachments || [])
               .map(sanitizeAttachment)
               .filter(Boolean)
@@ -6098,24 +6359,10 @@
           continue
         }
 
-        if (message.role === 'tool') {
-          if (message.content) {
-            output.push({
-              role: 'tool',
-              content: message.content,
-              attachments: (message.attachments || [])
-                .map(sanitizeAttachment)
-                .filter(Boolean)
-            })
-          }
-
-          continue
-        }
-
-        if (isAssistantRole(message.role) && message.content) {
+        if (isAssistantRole(message.role) && content) {
           output.push({
             role: 'assistant',
-            content: message.content,
+            content,
             attachments: (message.attachments || [])
               .map(sanitizeAttachment)
               .filter(Boolean)
@@ -6126,11 +6373,16 @@
       return output
     }
 
-    function previewMessages () {
+    function previewMessages (variables) {
       const conversation = currentConv()
 
       if (!conversation) return []
-      return buildCanonical(conversation, null)
+
+      return buildCanonical(
+        conversation,
+        null,
+        variables
+      )
     }
 
     function refreshBodyPreview () {
@@ -6145,18 +6397,27 @@
         return
       }
 
-      const format = API_FORMATS[endpoint.format]
+      try {
+        const settings = effectiveSettings()
+        const format = API_FORMATS[endpoint.format]
 
-      const built = format.build({
-        base: endpoint.baseUrl,
-        model: state.modelId,
-        messages: previewMessages(),
-        settings: state.settings,
-        stream: state.settings.streaming,
-        apiKey: endpoint.apiKey || ''
-      })
+        const built = format.build({
+          base: endpoint.baseUrl,
+          model: state.modelId,
+          messages: previewMessages(settings.variables),
+          settings,
+          stream: settings.streaming,
+          apiKey: endpoint.apiKey || ''
+        })
 
-      textarea.value = JSON.stringify(built.body, null, 2)
+        textarea.value = JSON.stringify(built.body, null, 2)
+      } catch (err) {
+        textarea.value = JSON.stringify({
+          error: err && err.message
+            ? err.message
+            : 'Cấu hình không hợp lệ.'
+        }, null, 2)
+      }
     }
 
     function handleSseEvent (format, event, message) {
@@ -6225,9 +6486,14 @@
         }
 
         const format = API_FORMATS[endpoint.format]
-        const stream = state.settings.streaming
-        const canonicalMessages =
-          buildCanonical(conversation, message)
+        const settings = effectiveSettings()
+        const stream = settings.streaming
+
+        const canonicalMessages = buildCanonical(
+          conversation,
+          message,
+          settings.variables
+        )
 
         ensureAttachmentData(canonicalMessages)
 
@@ -6235,7 +6501,7 @@
           base: endpoint.baseUrl,
           model: message.model,
           messages: canonicalMessages,
-          settings: state.settings,
+          settings,
           stream,
           apiKey: key
         })
@@ -6347,6 +6613,7 @@
         content: '',
         createdAt: Date.now(),
         status: 'streaming',
+        generated: true,
         model: state.modelId,
         endpointId: state.endpointId,
         endpointName: endpoint ? endpoint.name : '',
@@ -6390,6 +6657,15 @@
         return
       }
 
+      let configured
+
+      try {
+        configured = effectiveSettings()
+      } catch (err) {
+        toast(err.message, 'error', 5200)
+        return
+      }
+
       let conversation = currentConv()
 
       if (!conversation) {
@@ -6404,6 +6680,7 @@
           role: 'user',
           content: text,
           createdAt: Date.now(),
+          generated: false,
           attachments: state.attachments.map(attachment => ({
             id: attachment.id,
             name: attachment.name,
@@ -6416,10 +6693,15 @@
           }))
         })
 
-        if (!conversation.renamed && text) {
-          conversation.title = text.length > 60
-            ? text.slice(0, 60) + '…'
-            : text
+        const titleText = applyVariables(
+          text,
+          configured.variables
+        )
+
+        if (!conversation.renamed && titleText) {
+          conversation.title = titleText.length > 60
+            ? titleText.slice(0, 60) + '…'
+            : titleText
         }
       }
 
@@ -6464,7 +6746,8 @@
         id: uid(),
         role,
         content: '',
-        createdAt: Date.now()
+        createdAt: Date.now(),
+        generated: false
       }
 
       if (isAssistantRole(role)) {
@@ -6531,6 +6814,13 @@
       if (!message) return
 
       message.content = value
+
+      if (isAssistantRole(message.role) &&
+          message.status === 'error') {
+        message.status = 'complete'
+        delete message.error
+      }
+
       state.editingId = null
       state.newMsgId = null
       conversation.updatedAt = Date.now()
@@ -6593,6 +6883,13 @@
           'Mất kết nối mạng. Hãy kiểm tra mạng rồi thử lại.',
           'error'
         )
+        return
+      }
+
+      try {
+        effectiveSettings()
+      } catch (err) {
+        toast(err.message, 'error', 5200)
         return
       }
 
@@ -6941,7 +7238,12 @@
           })
 
           if (message) {
-            copyText(message.content).then(copied => {
+            copyText(
+              messageContentWithVariables(
+                message,
+                safeVariables()
+              )
+            ).then(copied => {
               toast(
                 copied ? STR.copied : STR.copyFail,
                 copied ? 'success' : 'error'
@@ -6987,22 +7289,37 @@
 
         if (!select || state.generating) return
 
+        const messageId = select.getAttribute('data-msg-role')
+
+        if (state.editingId !== messageId) {
+          renderMessages()
+          return
+        }
+
         const conversation = currentConv()
 
         if (!conversation) return
 
         const message = conversation.messages.find(item => {
-          return item.id ===
-            select.getAttribute('data-msg-role')
+          return item.id === messageId
         })
 
         if (!message || message.status === 'streaming') return
         if (ROLES.indexOf(select.value) === -1) return
 
+        const previousRole = message.role
+
         message.role = select.value
 
-        if (isAssistantRole(message.role) && !message.status) {
-          message.status = 'complete'
+        if (isAssistantRole(message.role)) {
+          if (previousRole !== 'assistant' ||
+              message.status === 'error') {
+            message.status = 'complete'
+            delete message.error
+          }
+        } else if (previousRole === 'assistant') {
+          delete message.status
+          delete message.error
         }
 
         saveNow()
@@ -7161,12 +7478,37 @@
 
       $('#ta-sysprompt').addEventListener('input', event => {
         state.settings.systemPrompt = event.target.value
-        autosizeTextarea(event.target, 280)
+        autosizeTextarea(event.target, 320)
+        saveNow()
+      })
+
+      $('#ta-variables').addEventListener('input', event => {
+        state.settings.variablesJson = event.target.value
+        autosizeTextarea(event.target, 320)
+        renderMessages()
+        saveNow()
+      })
+
+      $('#ta-tools').addEventListener('input', event => {
+        state.settings.toolsJson = event.target.value
+        autosizeTextarea(event.target, 320)
+        saveNow()
+      })
+
+      $('#sel-verbosity').addEventListener('change', event => {
+        state.settings.verbosity =
+          event.target.value || null
+
         saveNow()
       })
 
       $('#sel-effort').addEventListener('change', event => {
         state.settings.effort = event.target.value || null
+        saveNow()
+      })
+
+      $('#sel-mode').addEventListener('change', event => {
+        state.settings.mode = event.target.value || null
         saveNow()
       })
 
@@ -7453,4 +7795,4 @@
     document.addEventListener('DOMContentLoaded', init)
   </script>
 </body>
-</html>
+</html></result>
