@@ -1633,13 +1633,13 @@
     }
 
     .param-field.is-off label,
-    .thinking-field.is-off label {
+    .reasoning-field.is-off label {
       color: var(--faint);
     }
 
     .param-field.is-off input,
-    .thinking-field.is-off input,
-    .thinking-field.is-off select {
+    .reasoning-field.is-off input,
+    .reasoning-field.is-off select {
       opacity: 0.55;
       cursor: not-allowed;
     }
@@ -2435,33 +2435,33 @@
               <div class="field-head">
                 <label for="topk">Top-k</label>
               </div>
-              <input type="number" class="num-input" id="topk" min="1" step="1" placeholder="default">
+              <input type="number" class="num-input" id="topk" min="1" step="1" placeholder="Mặc định">
             </div>
 
             <div class="field">
               <div class="field-head">
                 <label for="maxt">Token tối đa</label>
               </div>
-              <input type="number" class="num-input" id="maxt" min="1" step="1" placeholder="default">
+              <input type="number" class="num-input" id="maxt" min="1" step="1" placeholder="Mặc định">
             </div>
 
             <div class="field">
               <div class="switch-row">
-                <label for="sw-thinking">Suy nghĩ</label>
-                <button type="button" class="switch" id="sw-thinking" role="switch" aria-checked="false" aria-label="Bật tắt suy nghĩ">
+                <label for="sw-reasoning">Reasoning</label>
+                <button type="button" class="switch" id="sw-reasoning" role="switch" aria-checked="false" aria-label="Bật tắt reasoning">
                   <span class="knob"></span>
                 </button>
               </div>
               <p class="url-hint">Ánh xạ sang cấu hình reasoning hoặc thinking tương ứng của từng API.</p>
             </div>
 
-            <div class="field thinking-field">
+            <div class="field reasoning-field">
               <div class="field-head">
-                <label for="sel-effort">effort</label>
+                <label for="sel-effort">Mức độ</label>
               </div>
               <div class="selwrap">
-                <select id="sel-effort" aria-label="effort">
-                  <option value="">default</option>
+                <select id="sel-effort" aria-label="Mức độ">
+                  <option value="">Mặc định</option>
                   <option value="minimal">minimal</option>
                   <option value="low">low</option>
                   <option value="medium">medium</option>
@@ -2472,20 +2472,20 @@
               </div>
             </div>
 
-            <div class="field thinking-field">
+            <div class="field reasoning-field">
               <div class="field-head">
-                <label for="num-budget">budget</label>
+                <label for="num-budget">Budget</label>
               </div>
-              <input type="number" class="num-input" id="num-budget" min="1" step="1" placeholder="tokens">
+              <input type="number" class="num-input" id="num-budget" min="1" step="1" placeholder="Token">
             </div>
 
-            <div class="field thinking-field">
+            <div class="field reasoning-field">
               <div class="field-head">
-                <label for="sel-level">level</label>
+                <label for="sel-level">Level</label>
               </div>
               <div class="selwrap">
                 <select id="sel-level" aria-label="level">
-                  <option value="">default</option>
+                  <option value="">Mặc định</option>
                   <option value="minimal">minimal</option>
                   <option value="low">low</option>
                   <option value="medium">medium</option>
@@ -2514,9 +2514,9 @@
           </section>
 
           <section class="set-section">
-            <h3 class="set-label">Request body</h3>
+            <h3 class="set-label">Thân request</h3>
             <div class="field">
-              <textarea class="text-input body-preview mono" id="req-body" rows="12" readonly aria-label="Request body" placeholder="Request body"></textarea>
+              <textarea class="text-input body-preview mono" id="req-body" rows="12" readonly aria-label="Thân request" placeholder="Thân request"></textarea>
               <div class="edit-actions">
                 <button type="button" class="btn btn-sm" id="btn-body-copy">
                   <span data-icon="copy"></span>
@@ -2882,13 +2882,13 @@
     }
 
     function openAiEffort (settings) {
-      if (!settings.thinking) return 'none'
+      if (!settings.reasoning) return 'none'
       const effort = settings.effort || 'medium'
       return effort === 'max' ? 'xhigh' : effort
     }
 
     function geminiThinkingLevel (settings) {
-      if (!settings.thinking) return 'minimal'
+      if (!settings.reasoning) return 'minimal'
 
       let level = settings.level || settings.effort
 
@@ -2910,7 +2910,7 @@
       const isPro = /gemini-2[._-]?5-pro/i.test(model || '')
       const cap = isPro ? 32768 : 24576
 
-      if (!settings.thinking) return isPro ? 128 : 0
+      if (!settings.reasoning) return isPro ? 128 : 0
       if (settings.budget != null) return clamp(settings.budget, 1, cap)
 
       const effort = settings.effort
@@ -3325,7 +3325,7 @@
 
           const manualThinking = usesClaudeManualThinking(ctx.model)
 
-          if (s.thinking) {
+          if (s.reasoning) {
             if (manualThinking) {
               const budget = Math.max(
                 1024,
@@ -3356,7 +3356,7 @@
             }
           }
 
-          if (!s.thinking && s.sampling) {
+          if (!s.reasoning && s.sampling) {
             body.temperature = clamp(s.temperature, 0, 1)
             body.top_p = s.topP
             if (s.topK != null) body.top_k = s.topK
@@ -3542,7 +3542,7 @@
 
           if (block) {
             return {
-              error: 'Yêu cầu bị chặn: ' + block
+              error: 'Request bị chặn: ' + block
             }
           }
 
@@ -3568,7 +3568,7 @@
             json.promptFeedback.blockReason
 
           if (block) {
-            throw apiError('api', 'Yêu cầu bị chặn: ' + block)
+            throw apiError('api', 'Request bị chặn: ' + block)
           }
 
           return geminiPartsText(json)
@@ -4061,7 +4061,7 @@
         maxTokens: 2048,
         streaming: true,
         sampling: true,
-        thinking: false,
+        reasoning: false,
         zdr: true,
         systemPrompt: '',
         effort: null,
@@ -4286,8 +4286,8 @@
         ? raw.level
         : null
 
-      settings.thinking = typeof raw.thinking === 'boolean'
-        ? raw.thinking
+      settings.reasoning = typeof raw.reasoning === 'boolean'
+        ? raw.reasoning
         : Boolean(settings.effort || settings.budget || settings.level)
 
       return settings
@@ -5770,9 +5770,9 @@
         settings.sampling ? 'true' : 'false'
       )
 
-      $('#sw-thinking').setAttribute(
+      $('#sw-reasoning').setAttribute(
         'aria-checked',
-        settings.thinking ? 'true' : 'false'
+        settings.reasoning ? 'true' : 'false'
       )
 
       $('#sw-zdr').setAttribute(
@@ -5804,19 +5804,19 @@
         field.classList.toggle('is-off', samplingOff)
       })
 
-      const thinkingOff = !settings.thinking
-      const thinkingIds = [
+      const reasoningOff = !settings.reasoning
+      const reasoningIds = [
         'sel-effort',
         'num-budget',
         'sel-level'
       ]
 
-      thinkingIds.forEach(id => {
-        $('#' + id).disabled = thinkingOff
+      reasoningIds.forEach(id => {
+        $('#' + id).disabled = reasoningOff
       })
 
-      $$('.thinking-field').forEach(field => {
-        field.classList.toggle('is-off', thinkingOff)
+      $$('.reasoning-field').forEach(field => {
+        field.classList.toggle('is-off', reasoningOff)
       })
     }
 
@@ -6864,8 +6864,8 @@
         saveNow()
       })
 
-      $('#sw-thinking').addEventListener('click', () => {
-        state.settings.thinking = !state.settings.thinking
+      $('#sw-reasoning').addEventListener('click', () => {
+        state.settings.reasoning = !state.settings.reasoning
         renderSettingsPanel()
         saveNow()
       })
