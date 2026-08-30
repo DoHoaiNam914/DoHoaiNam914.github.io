@@ -1,4 +1,3 @@
-```html
 <!doctype html>
 <html lang="vi" data-theme="dark">
 <head>
@@ -2532,7 +2531,7 @@
             id="endpoint-select-label"
             for="endpoint-select"
           >
-            Kết nối
+            Endpoint
           </label>
           <div class="select-wrapper">
             <select
@@ -2564,10 +2563,10 @@
           id="manage-endpoints-button"
           aria-haspopup="dialog"
           aria-controls="endpoint-dialog-root"
-          aria-label="Quản lý kết nối API"
+          aria-label="Quản lí endpoint API"
         >
           <span data-icon="plug"></span>
-          <span class="manage-endpoints-label">Kết nối</span>
+          <span class="manage-endpoints-label">Endpoint</span>
         </button>
 
         <div
@@ -2765,7 +2764,7 @@
         <div class="settings-body">
           <section class="settings-section">
             <h3 class="settings-section-title">
-              Lệnh hệ thống
+              System prompt
             </h3>
 
             <div class="field">
@@ -2773,7 +2772,7 @@
                 class="screen-reader-only"
                 for="system-prompt"
               >
-                Lệnh hệ thống
+                System prompt
               </label>
               <textarea
                 class="text-field auto-resize-field system-prompt-field"
@@ -2931,15 +2930,15 @@
             <div class="field">
               <div class="field-header">
                 <label for="response-verbosity">
-                  Độ chi tiết phản hồi
+                  Verbosity câu trả lời
                 </label>
               </div>
               <div class="select-wrapper">
                 <select id="response-verbosity">
                   <option value="">Mặc định</option>
-                  <option value="low">Thấp</option>
-                  <option value="medium">Trung bình</option>
-                  <option value="high">Cao</option>
+                  <option value="low">Low</option>
+                  <option value="medium">Medium</option>
+                  <option value="high">High</option>
                 </select>
               </div>
               <p class="field-hint">
@@ -2974,18 +2973,18 @@
             <div class="field reasoning-field">
               <div class="field-header">
                 <label for="reasoning-effort">
-                  Mức độ suy luận
+                  Effort suy luận
                 </label>
               </div>
               <div class="select-wrapper">
                 <select id="reasoning-effort">
                   <option value="">Mặc định</option>
-                  <option value="minimal">Tối thiểu</option>
-                  <option value="low">Thấp</option>
-                  <option value="medium">Trung bình</option>
-                  <option value="high">Cao</option>
-                  <option value="xhigh">Rất cao</option>
-                  <option value="max">Tối đa</option>
+                  <option value="minimal">Minimal</option>
+                  <option value="low">Low</option>
+                  <option value="medium">Medium</option>
+                  <option value="high">High</option>
+                  <option value="xhigh">X-High</option>
+                  <option value="max">Max</option>
                 </select>
               </div>
             </div>
@@ -2993,14 +2992,14 @@
             <div class="field reasoning-field">
               <div class="field-header">
                 <label for="reasoning-mode">
-                  Chế độ suy luận
+                  Mode suy luận
                 </label>
               </div>
               <div class="select-wrapper">
                 <select id="reasoning-mode">
                   <option value="">Mặc định</option>
-                  <option value="standard">Tiêu chuẩn</option>
-                  <option value="pro">Chuyên sâu</option>
+                  <option value="standard">Standard</option>
+                  <option value="pro">Pro</option>
                 </select>
               </div>
               <p class="field-hint">
@@ -3011,15 +3010,15 @@
 
             <div class="field reasoning-field">
               <div class="field-header">
-                <label for="reasoning-budget">
-                  Ngân sách suy luận
+                <label for="thinking-budget">
+                  Ngân sách thinking
                 </label>
               </div>
               <input
                 type="number"
                 class="number-field"
-                id="reasoning-budget"
-                min="1"
+                id="thinking-budget"
+                min="-1"
                 step="1"
                 placeholder="Để trống để API tự xác định"
               >
@@ -3028,16 +3027,16 @@
             <div class="field reasoning-field">
               <div class="field-header">
                 <label for="thinking-level">
-                  Cấp độ suy luận
+                  Thinking level
                 </label>
               </div>
               <div class="select-wrapper">
                 <select id="thinking-level">
                   <option value="">Mặc định</option>
-                  <option value="minimal">Tối thiểu</option>
-                  <option value="low">Thấp</option>
-                  <option value="medium">Trung bình</option>
-                  <option value="high">Cao</option>
+                  <option value="minimal">Minimal</option>
+                  <option value="low">Low</option>
+                  <option value="medium">Medium</option>
+                  <option value="high">High</option>
                 </select>
               </div>
             </div>
@@ -3045,7 +3044,7 @@
             <div class="field">
               <div class="toggle-row">
                 <label for="streaming-toggle">
-                  Nhận phản hồi theo luồng
+                  Streaming
                 </label>
                 <button
                   type="button"
@@ -3065,7 +3064,7 @@
             <div class="field">
               <div class="toggle-row">
                 <label for="zero-data-retention-toggle">
-                  Không lưu dữ liệu (ZDR)
+                  Zero Data Retention
                 </label>
                 <button
                   type="button"
@@ -3091,7 +3090,7 @@
                 class="screen-reader-only"
                 for="tools-json"
               >
-                Cấu hình công cụ JSON5
+                Cấu hình tool JSON5
               </label>
               <textarea
                 class="text-field monospace auto-resize-field tools-field"
@@ -3108,7 +3107,7 @@
 
           <section class="settings-section">
             <h3 class="settings-section-title">
-              Nội dung yêu cầu API
+              Phần thân yêu cầu API
             </h3>
 
             <div class="field">
@@ -3116,14 +3115,14 @@
                 class="screen-reader-only"
                 for="request-body-preview"
               >
-                Nội dung yêu cầu API
+                Phần thân yêu cầu API
               </label>
               <textarea
                 class="text-field request-body-preview monospace"
                 id="request-body-preview"
                 rows="12"
                 readonly
-                placeholder="Nội dung yêu cầu API sẽ hiển thị tại đây"
+                placeholder="Phần thân yêu cầu API sẽ hiển thị tại đây"
               ></textarea>
 
               <div class="editor-actions">
@@ -3186,14 +3185,14 @@
     >
       <div class="endpoint-dialog-header">
         <h2 id="endpoint-dialog-title">
-          Quản lý kết nối API
+          Quản lí endpoint API
         </h2>
         <button
           type="button"
           class="icon-button"
           id="close-endpoint-dialog-button"
           data-icon="x"
-          aria-label="Đóng trình quản lý kết nối API"
+          aria-label="Đóng trình quản lí endpoint API"
         ></button>
       </div>
 
@@ -3205,12 +3204,12 @@
           id="endpoint-form"
           hidden
         >
-          <h3 id="endpoint-form-title">Thêm kết nối</h3>
+          <h3 id="endpoint-form-title">Thêm endpoint</h3>
 
           <div class="field">
             <div class="field-header">
               <label for="endpoint-name">
-                Tên kết nối
+                Tên endpoint
               </label>
             </div>
             <input
@@ -3259,14 +3258,14 @@
           <div class="field">
             <div class="field-header">
               <label for="endpoint-api-key">
-                Khoá API
+                API key
               </label>
             </div>
             <input
               type="password"
               class="text-field monospace"
               id="endpoint-api-key"
-              placeholder="Nhập khoá API"
+              placeholder="Nhập key API"
               autocomplete="new-password"
               spellcheck="false"
             >
@@ -3311,13 +3310,13 @@
                 class="screen-reader-only"
                 for="endpoint-model-input"
               >
-                Mã mô hình
+                ID mô hình
               </label>
               <input
                 type="text"
                 class="text-field monospace"
                 id="endpoint-model-input"
-                placeholder="Nhập mã mô hình, rồi nhấn Enter"
+                placeholder="Nhập ID mô hình, rồi nhấn Enter"
                 autocomplete="off"
                 spellcheck="false"
               >
@@ -3344,7 +3343,7 @@
               class="button button-accent"
               id="save-endpoint-button"
             >
-              Lưu kết nối
+              Lưu endpoint
             </button>
           </div>
         </div>
@@ -3356,7 +3355,7 @@
             id="add-endpoint-button"
           >
             <span data-icon="plus"></span>
-            Thêm kết nối
+            Thêm endpoint
           </button>
         </div>
       </div>
@@ -3600,8 +3599,8 @@
       welcomeSubtitle:
         'Chọn một gợi ý, thêm tin nhắn theo vai trò hoặc nhập yêu cầu của bạn.',
       noEndpoint:
-        'Bạn chưa có kết nối nào. Hãy thêm kết nối và mô hình để bắt đầu.',
-      addEndpoint: 'Thêm kết nối API',
+        'Bạn chưa có endpoint nào. Hãy thêm endpoint và mô hình để bắt đầu.',
+      addEndpoint: 'Thêm endpoint API',
       deleteMessage: 'Xoá tin nhắn',
       messageRole: 'Vai trò của tin nhắn',
       maximumFiles: 'Chỉ được đính kèm tối đa 4 tệp.',
@@ -3614,9 +3613,9 @@
         'Hãy dừng phản hồi đang tạo trước khi thực hiện thao tác này.',
       emptyMessage: 'Nội dung không được để trống.',
       endpointRequired:
-        'Hãy thêm kết nối API trước khi gửi.',
+        'Hãy thêm endpoint API trước khi gửi.',
       modelRequired:
-        'Kết nối này chưa có mô hình. Mở trình quản lý kết nối để thêm mô hình.'
+        'Endpoint này chưa có mô hình. Mở trình quản lí endpoint để thêm mô hình.'
     }
 
     const SUGGESTIONS = [
@@ -5879,7 +5878,7 @@
           typeof rawEndpoint.name === 'string' &&
           rawEndpoint.name
             ? rawEndpoint.name
-            : 'Kết nối',
+            : 'Endpoint',
         format,
         baseUrl:
           typeof rawEndpoint.baseUrl === 'string'
@@ -7353,7 +7352,7 @@
           '<span class="status-dot status-dot-idle" aria-hidden="true"></span><span>Chưa cấu hình</span>'
 
         status.title =
-          'Chưa có kết nối API'
+          'Chưa có endpoint API'
 
         return
       }
@@ -7655,7 +7654,7 @@
 
       if (!state.endpoints.length) {
         select.innerHTML =
-          '<option value="">Chưa có kết nối</option>'
+          '<option value="">Chưa có endpoint</option>'
 
         select.disabled = true
 
@@ -7785,8 +7784,8 @@
 
       metadata.push(
         hasApiKey
-          ? 'đã nhập khoá API'
-          : 'chưa nhập khoá API'
+          ? 'đã nhập key API'
+          : 'chưa nhập key API'
       )
 
       const currentAttribute = active
@@ -7799,7 +7798,7 @@
 
       return `
         <div class="endpoint-card ${active ? 'active' : ''}" data-endpoint-id="${endpoint.id}">
-          <button type="button" class="endpoint-select-button" data-select-endpoint="${endpoint.id}" aria-label="Sử dụng kết nối ${escapeHtml(endpoint.name)}"${currentAttribute}>
+          <button type="button" class="endpoint-select-button" data-select-endpoint="${endpoint.id}" aria-label="Sử dụng endpoint ${escapeHtml(endpoint.name)}"${currentAttribute}>
             <span class="endpoint-card-header">
               <strong class="endpoint-name">${escapeHtml(endpoint.name)}</strong>
               <span class="status-badge format-badge">${escapeHtml(API_FORMATS[endpoint.format].label)}</span>
@@ -7822,7 +7821,7 @@
 
       if (!state.endpoints.length) {
         list.innerHTML =
-          '<div class="endpoint-empty">Chưa có kết nối nào. Hãy thêm kết nối và mô hình để bắt đầu.</div>'
+          '<div class="endpoint-empty">Chưa có endpoint nào. Hãy thêm endpoint và mô hình để bắt đầu.</div>'
 
         return
       }
@@ -7879,8 +7878,8 @@
       selectElement(
         '#endpoint-form-title'
       ).textContent = endpoint
-        ? 'Sửa kết nối'
-        : 'Thêm kết nối'
+        ? 'Sửa endpoint'
+        : 'Thêm endpoint'
 
       selectElement('#endpoint-name').value =
         endpoint ? endpoint.name : ''
@@ -7912,8 +7911,8 @@
 
       apiKeyInput.placeholder =
         endpoint && endpoint.apiKey
-          ? 'Để trống để giữ nguyên khoá hiện tại'
-          : 'Nhập khoá API'
+          ? 'Để trống để giữ nguyên key hiện tại'
+          : 'Nhập key API'
 
       renderEndpointModelChips()
       renderEndpointHeaders()
@@ -8008,7 +8007,7 @@
 
       if (!name) {
         showToast(
-          'Tên kết nối không được để trống.',
+          'Tên endpoint không được để trống.',
           'error'
         )
 
@@ -8079,7 +8078,7 @@
       scheduleStateSave()
 
       showToast(
-        `Đã lưu kết nối “${name}”.`,
+        `Đã lưu endpoint “${name}”.`,
         'success'
       )
 
@@ -8093,9 +8092,9 @@
       if (!endpoint) return
 
       const confirmed = await openModal({
-        title: 'Xoá kết nối?',
+        title: 'Xoá endpoint?',
         body:
-          `Kết nối “${endpoint.name}” và danh sách mô hình của kết nối này sẽ bị xoá. Các cuộc trò chuyện cũ vẫn được giữ lại.`,
+          `Endpoint “${endpoint.name}” và danh sách mô hình của endpoint này sẽ bị xoá. Các cuộc trò chuyện cũ vẫn được giữ lại.`,
         confirmText: TEXT.delete,
         danger: true
       })
@@ -8367,7 +8366,7 @@
       ).value = settings.mode || ''
 
       selectElement(
-        '#reasoning-budget'
+        '#thinking-budget'
       ).value =
         settings.budget == null
           ? ''
@@ -8408,7 +8407,7 @@
       const reasoningControlIds = [
         'reasoning-effort',
         'reasoning-mode',
-        'reasoning-budget',
+        'thinking-budget',
         'thinking-level'
       ]
 
@@ -8837,7 +8836,7 @@
         if (!apiKey) {
           throw createApiError(
             'config',
-            `Kết nối “${endpoint.name}” chưa có khoá API. Hãy mở trình quản lý kết nối để nhập khoá.`
+            `Endpoint “${endpoint.name}” chưa có key API. Hãy mở trình quản lí endpoint để nhập key.`
           )
         }
 
@@ -10576,7 +10575,7 @@
       )
 
       selectElement(
-        '#reasoning-budget'
+        '#thinking-budget'
       ).addEventListener(
         'input',
         event => {
@@ -10598,7 +10597,7 @@
       )
 
       selectElement(
-        '#reasoning-budget'
+        '#thinking-budget'
       ).addEventListener(
         'change',
         event => {
