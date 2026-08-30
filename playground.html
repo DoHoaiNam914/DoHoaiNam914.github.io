@@ -6,6 +6,10 @@
     name="viewport"
     content="width=device-width, initial-scale=1, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
   >
+  <meta
+    name="description"
+    content="Môi trường thử nghiệm nhiều API trí tuệ nhân tạo với hỗ trợ streaming, suy luận, công cụ và tệp đính kèm."
+  >
   <title>Thái Sơ — AI Playground</title>
   <link
     rel="stylesheet"
@@ -581,6 +585,7 @@
     }
 
     select {
+      -webkit-appearance: none;
       appearance: none;
       background-color: var(--panel-secondary);
       background-image:
@@ -857,12 +862,17 @@
       font-size: 13px;
     }
 
+    .assistant-answer + .assistant-answer,
+    .assistant-answer + .reasoning-panel,
+    .reasoning-panel + .assistant-answer {
+      margin-top: 12px;
+    }
+
     .reasoning-panel {
       background: var(--reasoning-background);
       border: 1px solid var(--border);
       border-left: 3px solid var(--gold);
       border-radius: var(--radius);
-      margin: 0 0 12px;
       overflow: hidden;
     }
 
@@ -897,12 +907,19 @@
       transform: rotate(225deg);
     }
 
-    .reasoning-content {
+    .reasoning-trace {
       border-top: 1px solid var(--border-soft);
+    }
+
+    .trace-item {
       color: var(--muted);
       font-size: 12.5px;
       line-height: 1.65;
       padding: 9px 12px 11px;
+    }
+
+    .trace-item + .trace-item {
+      border-top: 1px solid var(--border-soft);
     }
 
     .reasoning-redacted {
@@ -911,7 +928,86 @@
       display: flex;
       font-size: 11.5px;
       gap: 6px;
-      margin-top: 8px;
+    }
+
+    .tool-activity-header {
+      align-items: center;
+      display: flex;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .tool-activity-name {
+      color: var(--text);
+      flex: 1;
+      font: 500 12px var(--font-mono);
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .tool-activity-state {
+      align-items: center;
+      color: var(--faint);
+      display: inline-flex;
+      flex: none;
+      font: 10.5px var(--font-mono);
+      gap: 6px;
+    }
+
+    .tool-activity-dot {
+      background: currentcolor;
+      border-radius: 50%;
+      height: 6px;
+      width: 6px;
+    }
+
+    .tool-activity-state.active {
+      color: var(--gold);
+    }
+
+    .tool-activity-state.active .tool-activity-dot {
+      animation: tool-pulse 1.15s infinite ease-in-out;
+    }
+
+    .tool-activity-state.completed {
+      color: var(--success);
+    }
+
+    .tool-activity-state.failed {
+      color: var(--error);
+    }
+
+    .tool-activity-payload {
+      background: var(--code-background);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius-small);
+      color: var(--muted);
+      font: 11px/1.55 var(--font-mono);
+      margin: 8px 0 0;
+      max-height: 180px;
+      overflow: auto;
+      padding: 8px 10px;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .tool-activity-output {
+      border-left: 2px solid var(--success);
+    }
+
+    @keyframes tool-pulse {
+      0%,
+      100% {
+        opacity: 0.35;
+        transform: scale(0.8);
+      }
+
+      50% {
+        opacity: 1;
+        transform: scale(1);
+      }
     }
 
     .message-attachments {
@@ -1020,7 +1116,12 @@
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
+      margin-top: 12px;
       padding: 12px 14px;
+    }
+
+    .error-card:first-child {
+      margin-top: 0;
     }
 
     .error-card > .icon {
@@ -1591,8 +1692,7 @@
     }
 
     .field-header,
-    .toggle-row,
-    .parameter-row {
+    .toggle-row {
       align-items: center;
       display: flex;
     }
@@ -1610,27 +1710,28 @@
     }
 
     .parameter-row {
+      align-items: center;
+      display: grid;
       gap: 10px;
+      grid-template-columns: minmax(0, 1fr) 64px;
+      width: 100%;
     }
 
     .parameter-row input[type='range'] {
-      flex: 1;
       min-width: 0;
+      width: 100%;
     }
 
-    .parameter-number {
-      flex: none;
-      font-family: var(--font-mono);
-      font-size: 12px;
+    .parameter-row .parameter-number {
+      min-width: 0;
       text-align: right;
-      width: 60px;
+      width: 100%;
     }
 
     input[type='range'] {
       accent-color: var(--accent);
       cursor: pointer;
       height: 26px;
-      width: 100%;
     }
 
     .text-field,
@@ -1768,7 +1869,6 @@
     }
 
     .toast-region {
-      bottom: calc(18px + env(safe-area-inset-bottom));
       display: flex;
       flex-direction: column;
       gap: 8px;
@@ -1776,6 +1876,7 @@
       pointer-events: none;
       position: fixed;
       right: 18px;
+      top: calc(18px + env(safe-area-inset-top));
       z-index: 120;
     }
 
@@ -1807,14 +1908,14 @@
 
     .toast.leaving {
       opacity: 0;
-      transform: translateY(6px);
+      transform: translateY(-6px);
       transition: opacity 0.2s ease, transform 0.2s ease;
     }
 
     @keyframes toast-in {
       from {
         opacity: 0;
-        transform: translateY(8px);
+        transform: translateY(-8px);
       }
 
       to {
@@ -2178,12 +2279,11 @@
     }
 
     @media (prefers-reduced-motion: reduce) {
-      *,
-      *::before,
-      *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
+      .generation-dots span,
+      .stream-cursor,
+      .toast,
+      .tool-activity-state.active .tool-activity-dot {
+        animation: none;
       }
     }
   </style>
@@ -2629,7 +2729,7 @@
                 type="number"
                 class="number-field"
                 id="top-k"
-                min="0"
+                min="1"
                 step="1"
                 placeholder="Dùng mặc định"
               >
@@ -2698,7 +2798,7 @@
                 </button>
               </div>
               <p class="field-hint">
-                Hiển thị reasoning, thinking hoặc bản tóm tắt mà
+                Hiển thị reasoning, thinking, công cụ hoặc bản tóm tắt mà
                 endpoint thực sự trả về.
               </p>
             </div>
@@ -3089,12 +3189,16 @@
     const MAXIMUM_FILES = 4
     const MAXIMUM_FILE_SIZE = 5 * 1024 * 1024
     const STREAM_RENDER_DELAY = 100
+    const TOOL_PAYLOAD_LIMIT = 12000
+    const MESSAGE_BLOCK_SEPARATOR = '\n\n'
+
     const MESSAGE_ROLES = [
       'system',
       'developer',
       'user',
       'assistant'
     ]
+
     const FORMAT_ORDER = [
       'chat-completions',
       'messages',
@@ -3102,12 +3206,91 @@
       'responses',
       'interactions'
     ]
+
     const IMAGE_MIME_TYPES = [
       'image/gif',
       'image/jpeg',
       'image/png',
       'image/webp'
     ]
+
+    const MESSAGE_METADATA_PROPERTIES = [
+      'endpointId',
+      'endpointName',
+      'model',
+      'modelLabel'
+    ]
+
+    const SAMPLING_CONTROL_IDS = [
+      'temperature-range',
+      'temperature-number',
+      'top-p-range',
+      'top-p-number',
+      'top-k'
+    ]
+
+    const REASONING_CONTROL_IDS = [
+      'show-reasoning-toggle',
+      'reasoning-effort',
+      'reasoning-mode',
+      'thinking-budget',
+      'thinking-level'
+    ]
+
+    const NUMERIC_SETTING_BINDINGS = [
+      ['top-k', 'topK'],
+      ['max-tokens', 'maxTokens'],
+      ['thinking-budget', 'budget']
+    ]
+
+    const SELECT_SETTING_BINDINGS = [
+      ['response-verbosity', 'verbosity'],
+      ['reasoning-effort', 'effort'],
+      ['reasoning-mode', 'mode'],
+      ['thinking-level', 'level']
+    ]
+
+    const ACTIVE_TOOL_STATUSES = [
+      'preparing',
+      'queued',
+      'running',
+      'searching',
+      'interpreting',
+      'generating'
+    ]
+
+    const TOOL_STATUS_LABELS = {
+      completed: 'Hoàn tất',
+      failed: 'Thất bại',
+      generating: 'Đang tạo',
+      interpreting: 'Đang thực thi',
+      preparing: 'Đang chuẩn bị',
+      queued: 'Đang chờ',
+      running: 'Đang chạy',
+      searching: 'Đang tìm kiếm',
+      waiting: 'Chờ xử lí'
+    }
+
+    const TOOL_TYPE_LABELS = {
+      apply_patch_call: 'Áp dụng bản vá',
+      code_execution_call: 'Thực thi mã',
+      code_interpreter_call: 'Code Interpreter',
+      computer_call: 'Điều khiển máy tính',
+      custom_tool_call: 'Công cụ tuỳ chỉnh',
+      file_search_call: 'Tìm kiếm tệp',
+      function_call: 'Gọi hàm',
+      google_maps_call: 'Google Maps',
+      google_search_call: 'Google Search',
+      image_generation_call: 'Tạo ảnh',
+      mcp_call: 'MCP',
+      server_tool_use: 'Công cụ máy chủ',
+      shell_call: 'Shell',
+      tool_call: 'Công cụ',
+      tool_search_call: 'Tìm công cụ',
+      tool_use: 'Gọi công cụ',
+      web_fetch_call: 'Tải nội dung web',
+      web_search_call: 'Tìm kiếm web'
+    }
 
     const TEXT = {
       cancel: 'Huỷ',
@@ -3155,7 +3338,8 @@
         '<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 20h16a2 2 0 0 0 1.73-2Z"/><path d="M12 9v4"/><path d="M12 17h.01"/>',
       'arrow-down':
         '<path d="M12 5v14"/><path d="m19 12-7 7-7-7"/>',
-      check: '<path d="M20 6 9 17l-5-5"/>',
+      check:
+        '<path d="M20 6 9 17l-5-5"/>',
       copy:
         '<rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>',
       'file-text':
@@ -3366,24 +3550,32 @@
         await navigator.clipboard.writeText(text)
         return true
       } catch {
-        const textarea = document.createElement('textarea')
+        try {
+          const textarea =
+            document.createElement('textarea')
 
-        textarea.value = text
-        textarea.style.opacity = '0'
-        textarea.style.position = 'fixed'
-        document.body.appendChild(textarea)
-        textarea.select()
+          textarea.value = text
+          textarea.style.opacity = '0'
+          textarea.style.position = 'fixed'
 
-        const copied = document.execCommand('copy')
+          document.body.appendChild(textarea)
+          textarea.select()
 
-        textarea.remove()
+          const copied =
+            document.execCommand('copy')
 
-        return copied
+          textarea.remove()
+
+          return copied
+        } catch {
+          return false
+        }
       }
     }
 
     function announce (text) {
-      const status = selectElement('#screen-reader-status')
+      const status =
+        selectElement('#screen-reader-status')
 
       status.textContent = ''
 
@@ -3395,7 +3587,7 @@
     function joinTextBlocks (blocks) {
       return blocks
         .filter(Boolean)
-        .join('\n\n')
+        .join(MESSAGE_BLOCK_SEPARATOR)
     }
 
     function getTextValue (value) {
@@ -3437,6 +3629,349 @@
         container.reasoning ||
         container.thinking
       )
+    }
+
+    function limitText (value, maximumLength) {
+      const text = String(value || '')
+      const maximum = maximumLength || TOOL_PAYLOAD_LIMIT
+
+      if (text.length <= maximum) return text
+
+      return text.slice(0, maximum) +
+        '\n\n… Nội dung đã được rút gọn.'
+    }
+
+    function stringifyToolPayload (value) {
+      if (value == null) return ''
+      if (typeof value === 'string') {
+        return limitText(value)
+      }
+
+      try {
+        return limitText(
+          JSON.stringify(value, null, 2)
+        )
+      } catch {
+        return limitText(String(value))
+      }
+    }
+
+    function normalizeToolStatus (status) {
+      return Object.prototype.hasOwnProperty.call(
+        TOOL_STATUS_LABELS,
+        status
+      )
+        ? status
+        : 'running'
+    }
+
+    function humanizeToolType (type) {
+      if (TOOL_TYPE_LABELS[type]) {
+        return TOOL_TYPE_LABELS[type]
+      }
+
+      return String(type || 'Công cụ')
+        .replace(/_/g, ' ')
+        .replace(/\b\w/g, character => {
+          return character.toUpperCase()
+        })
+    }
+
+    function createTextBlock (id, content) {
+      return {
+        content: content || '',
+        id: id || createUniqueId(),
+        type: 'text'
+      }
+    }
+
+    function createReasoningBlock (id, content) {
+      return {
+        content: content || '',
+        id: id || createUniqueId(),
+        type: 'reasoning'
+      }
+    }
+
+    function createRedactedBlock (id) {
+      return {
+        id: id || createUniqueId(),
+        type: 'redacted'
+      }
+    }
+
+    function createToolBlock (options) {
+      return {
+        id: options.id || createUniqueId(),
+        input: stringifyToolPayload(options.input),
+        name:
+          options.name ||
+          humanizeToolType(options.toolType),
+        output: stringifyToolPayload(options.output),
+        serverSide: options.serverSide === true,
+        status: normalizeToolStatus(
+          options.status ||
+          (
+            options.serverSide
+              ? 'running'
+              : 'waiting'
+          )
+        ),
+        toolType: options.toolType || 'tool_call',
+        type: 'tool'
+      }
+    }
+
+    function sanitizeOutputBlock (block) {
+      if (
+        !block ||
+        typeof block !== 'object'
+      ) {
+        return null
+      }
+
+      const id =
+        typeof block.id === 'string'
+          ? block.id
+          : createUniqueId()
+
+      if (
+        block.type === 'text' ||
+        block.type === 'reasoning'
+      ) {
+        return {
+          content:
+            typeof block.content === 'string'
+              ? block.content
+              : '',
+          id,
+          type: block.type
+        }
+      }
+
+      if (block.type === 'redacted') {
+        return {
+          id,
+          type: 'redacted'
+        }
+      }
+
+      if (block.type === 'tool') {
+        return createToolBlock({
+          id,
+          input: block.input,
+          name:
+            typeof block.name === 'string'
+              ? block.name
+              : '',
+          output: block.output,
+          serverSide: block.serverSide === true,
+          status: block.status,
+          toolType:
+            typeof block.toolType === 'string'
+              ? block.toolType
+              : 'tool_call'
+        })
+      }
+
+      return null
+    }
+
+    function createParsedResponse (blocks) {
+      const outputBlocks = blocks
+        .map(sanitizeOutputBlock)
+        .filter(Boolean)
+
+      return {
+        blocks: outputBlocks,
+        reasoning: joinTextBlocks(
+          outputBlocks
+            .filter(block => {
+              return block.type === 'reasoning'
+            })
+            .map(block => block.content)
+        ),
+        reasoningRedacted:
+          outputBlocks.some(block => {
+            return block.type === 'redacted'
+          }),
+        text: joinTextBlocks(
+          outputBlocks
+            .filter(block => {
+              return block.type === 'text'
+            })
+            .map(block => block.content)
+        )
+      }
+    }
+
+    function upsertParsedToolBlock (blocks, options) {
+      let block = blocks.find(item => {
+        return (
+          item.type === 'tool' &&
+          item.id === options.id
+        )
+      })
+
+      if (!block) {
+        block = createToolBlock(options)
+        blocks.push(block)
+
+        return block
+      }
+
+      if (options.name) {
+        block.name = options.name
+      }
+
+      if (options.toolType) {
+        block.toolType = options.toolType
+      }
+
+      if (options.status) {
+        block.status =
+          normalizeToolStatus(options.status)
+      }
+
+      if (options.serverSide != null) {
+        block.serverSide =
+          options.serverSide === true
+      }
+
+      if (options.input != null) {
+        block.input =
+          stringifyToolPayload(options.input)
+      }
+
+      if (options.output != null) {
+        block.output =
+          stringifyToolPayload(options.output)
+      }
+
+      return block
+    }
+
+    function finalizeParsedTools (blocks) {
+      blocks.forEach(block => {
+        if (
+          block.type !== 'tool' ||
+          !ACTIVE_TOOL_STATUSES.includes(
+            block.status
+          )
+        ) {
+          return
+        }
+
+        block.status = block.serverSide
+          ? 'completed'
+          : 'waiting'
+      })
+    }
+
+    function getMessageOutputBlocks (message) {
+      if (
+        Array.isArray(message.outputBlocks) &&
+        message.outputBlocks.length
+      ) {
+        return message.outputBlocks
+      }
+
+      const blocks = []
+
+      if (message.reasoning) {
+        blocks.push(
+          createReasoningBlock(
+            message.id + ':reasoning',
+            message.reasoning
+          )
+        )
+      }
+
+      if (message.reasoningRedacted) {
+        blocks.push(
+          createRedactedBlock(
+            message.id + ':redacted'
+          )
+        )
+      }
+
+      if (message.content) {
+        blocks.push(
+          createTextBlock(
+            message.id + ':text',
+            message.content
+          )
+        )
+      }
+
+      message.outputBlocks = blocks
+
+      return blocks
+    }
+
+    function syncMessageOutput (message) {
+      const parsed = createParsedResponse(
+        getMessageOutputBlocks(message)
+      )
+
+      message.outputBlocks = parsed.blocks
+      message.content = parsed.text
+      message.reasoning = parsed.reasoning
+      message.reasoningRedacted =
+        parsed.reasoningRedacted
+    }
+
+    function replaceMessageTextBlock (
+      message,
+      content
+    ) {
+      const blocks = getMessageOutputBlocks(message)
+        .filter(block => {
+          return block.type !== 'text'
+        })
+
+      if (content) {
+        blocks.push(
+          createTextBlock(
+            message.id + ':edited-text',
+            content
+          )
+        )
+      }
+
+      message.outputBlocks = blocks
+      syncMessageOutput(message)
+    }
+
+    function getSequentialStreamBlockId (
+      streamState,
+      namespace,
+      slot,
+      kind
+    ) {
+      const key = namespace + ':' + slot
+      const current =
+        streamState.sequentialBlocks[key]
+
+      if (current && current.kind === kind) {
+        return current.id
+      }
+
+      streamState.sequence += 1
+
+      const id =
+        namespace +
+        ':' +
+        kind +
+        ':' +
+        streamState.sequence
+
+      streamState.sequentialBlocks[key] = {
+        id,
+        kind
+      }
+
+      return id
     }
 
     function getFileExtension (name) {
@@ -3689,20 +4224,23 @@
       return role === 'assistant'
     }
 
-    function getInstructionText (context) {
-      const blocks = []
+    function isGeneratedAssistantMessage (message) {
+      return isAssistantRole(message.role) &&
+        message.generated === true
+    }
 
-      if (context.settings.systemPrompt) {
-        blocks.push(context.settings.systemPrompt)
+    function getRequestMessageContent (
+      message,
+      variables
+    ) {
+      if (isGeneratedAssistantMessage(message)) {
+        return message.content || ''
       }
 
-      context.messages.forEach(message => {
-        if (isInstructionRole(message.role)) {
-          blocks.push(message.content)
-        }
-      })
-
-      return joinTextBlocks(blocks)
+      return interpolateVariables(
+        message.content || '',
+        variables
+      )
     }
 
     function getGeminiCandidateParts (json) {
@@ -3719,21 +4257,6 @@
       }
 
       return candidate.content.parts
-    }
-
-    function extractGeminiText (json, thoughts) {
-      return joinTextBlocks(
-        getGeminiCandidateParts(json).map(part => {
-          if (
-            Boolean(part.thought) === thoughts &&
-            typeof part.text === 'string'
-          ) {
-            return part.text
-          }
-
-          return ''
-        })
-      )
     }
 
     function getInteractionContentText (content) {
@@ -3754,64 +4277,6 @@
           }
 
           return ''
-        })
-      )
-    }
-
-    function extractInteractionText (interaction) {
-      const steps = interaction &&
-        (
-          interaction.steps ||
-          interaction.output
-        )
-
-      if (!Array.isArray(steps)) return ''
-
-      return joinTextBlocks(
-        steps.map(step => {
-          return step &&
-            step.type === 'model_output'
-            ? getInteractionContentText(step.content)
-            : ''
-        })
-      )
-    }
-
-    function extractInteractionReasoning (interaction) {
-      const steps = interaction &&
-        (
-          interaction.steps ||
-          interaction.output
-        )
-
-      if (!Array.isArray(steps)) return ''
-
-      return joinTextBlocks(
-        steps.map(step => {
-          return step &&
-            step.type === 'thought'
-            ? getInteractionContentText(step.summary)
-            : ''
-        })
-      )
-    }
-
-    function extractResponseReasoning (response) {
-      const output = response &&
-        Array.isArray(response.output)
-        ? response.output
-        : []
-
-      return joinTextBlocks(
-        output.map(item => {
-          if (!item || item.type !== 'reasoning') {
-            return ''
-          }
-
-          const summary = getTextValue(item.summary)
-
-          return summary ||
-            getTextValue(item.content)
         })
       )
     }
@@ -3896,7 +4361,9 @@
     }
 
     function getGeminiThinkingLevel (settings) {
-      if (!settings.reasoningEnabled) return 'minimal'
+      if (!settings.reasoningEnabled) {
+        return 'minimal'
+      }
 
       const level = settings.level ||
         settings.effort
@@ -3960,6 +4427,634 @@
       error.status = status
 
       return error
+    }
+
+    function createChatToolBlock (
+      toolCall,
+      id,
+      status
+    ) {
+      const functionData =
+        toolCall.function || {}
+      const customData =
+        toolCall.custom || {}
+
+      return createToolBlock({
+        id,
+        input:
+          functionData.arguments ||
+          customData.input ||
+          toolCall.arguments,
+        name:
+          functionData.name ||
+          customData.name ||
+          toolCall.name,
+        serverSide: false,
+        status: status || 'waiting',
+        toolType:
+          toolCall.type === 'custom'
+            ? 'custom_tool_call'
+            : 'function_call'
+      })
+    }
+
+    function createChatResponseBlocks (message) {
+      const blocks = []
+
+      if (!message) {
+        return blocks
+      }
+
+      const reasoning =
+        getChatReasoning(message)
+
+      if (reasoning) {
+        blocks.push(
+          createReasoningBlock(
+            'chat:reasoning:0',
+            reasoning
+          )
+        )
+      }
+
+      const text =
+        getTextValue(message.content)
+
+      if (text) {
+        blocks.push(
+          createTextBlock(
+            'chat:text:0',
+            text
+          )
+        )
+      }
+
+      const toolCalls =
+        Array.isArray(message.tool_calls)
+          ? message.tool_calls
+          : []
+
+      toolCalls.forEach((toolCall, index) => {
+        blocks.push(
+          createChatToolBlock(
+            toolCall,
+            'chat:tool:' + index,
+            'waiting'
+          )
+        )
+      })
+
+      if (
+        message.function_call &&
+        !toolCalls.length
+      ) {
+        blocks.push(
+          createChatToolBlock(
+            {
+              function: message.function_call,
+              type: 'function'
+            },
+            'chat:tool:0',
+            'waiting'
+          )
+        )
+      }
+
+      return blocks
+    }
+
+    function isAnthropicToolResultType (type) {
+      return type === 'tool_result' ||
+        /_tool_result$/.test(type || '')
+    }
+
+    function createAnthropicResponseBlocks (json) {
+      const blocks = []
+      const content = Array.isArray(json.content)
+        ? json.content
+        : []
+
+      content.forEach((block, index) => {
+        if (!block) return
+
+        if (block.type === 'thinking') {
+          blocks.push(
+            createReasoningBlock(
+              'anthropic:reasoning:' + index,
+              block.thinking || ''
+            )
+          )
+
+          return
+        }
+
+        if (block.type === 'redacted_thinking') {
+          blocks.push(
+            createRedactedBlock(
+              'anthropic:redacted:' + index
+            )
+          )
+
+          return
+        }
+
+        if (block.type === 'text') {
+          blocks.push(
+            createTextBlock(
+              'anthropic:text:' + index,
+              block.text || ''
+            )
+          )
+
+          return
+        }
+
+        if (
+          block.type === 'tool_use' ||
+          block.type === 'server_tool_use'
+        ) {
+          blocks.push(
+            createToolBlock({
+              id:
+                'anthropic:tool:' +
+                (block.id || index),
+              input: block.input,
+              name: block.name,
+              serverSide:
+                block.type === 'server_tool_use',
+              status:
+                block.type === 'server_tool_use'
+                  ? 'running'
+                  : 'waiting',
+              toolType: block.type
+            })
+          )
+
+          return
+        }
+
+        if (isAnthropicToolResultType(block.type)) {
+          upsertParsedToolBlock(blocks, {
+            id:
+              'anthropic:tool:' +
+              (
+                block.tool_use_id ||
+                block.id ||
+                index
+              ),
+            output:
+              block.content ||
+              block.result,
+            serverSide: true,
+            status: 'completed',
+            toolType:
+              block.type.replace(
+                /_result$/,
+                '_call'
+              )
+          })
+        }
+      })
+
+      finalizeParsedTools(blocks)
+
+      return blocks
+    }
+
+    function createGeminiResponseBlocks (json) {
+      const blocks = []
+      let lastCodeToolId = null
+
+      getGeminiCandidateParts(json)
+        .forEach((part, index) => {
+          if (!part) return
+
+          if (
+            typeof part.text === 'string'
+          ) {
+            if (part.thought) {
+              blocks.push(
+                createReasoningBlock(
+                  'gemini:reasoning:' + index,
+                  part.text
+                )
+              )
+            } else {
+              blocks.push(
+                createTextBlock(
+                  'gemini:text:' + index,
+                  part.text
+                )
+              )
+            }
+          }
+
+          if (part.functionCall) {
+            const functionCall =
+              part.functionCall
+
+            blocks.push(
+              createToolBlock({
+                id:
+                  'gemini:tool:' +
+                  (
+                    functionCall.id ||
+                    functionCall.name ||
+                    index
+                  ),
+                input: functionCall.args,
+                name: functionCall.name,
+                serverSide: false,
+                status: 'waiting',
+                toolType: 'function_call'
+              })
+            )
+          }
+
+          if (part.executableCode) {
+            lastCodeToolId =
+              'gemini:code:' + index
+
+            blocks.push(
+              createToolBlock({
+                id: lastCodeToolId,
+                input:
+                  part.executableCode.code,
+                name: 'Thực thi mã',
+                serverSide: true,
+                status: 'running',
+                toolType: 'code_execution_call'
+              })
+            )
+          }
+
+          if (part.codeExecutionResult) {
+            const result =
+              part.codeExecutionResult
+
+            upsertParsedToolBlock(blocks, {
+              id:
+                lastCodeToolId ||
+                'gemini:code:' + index,
+              name: 'Thực thi mã',
+              output:
+                result.output ||
+                result.outcome,
+              serverSide: true,
+              status:
+                result.outcome === 'OUTCOME_FAILED'
+                  ? 'failed'
+                  : 'completed',
+              toolType: 'code_execution_call'
+            })
+          }
+
+          if (part.toolCall) {
+            const toolCall = part.toolCall
+
+            blocks.push(
+              createToolBlock({
+                id:
+                  'gemini:tool:' +
+                  (
+                    toolCall.id ||
+                    toolCall.name ||
+                    index
+                  ),
+                input:
+                  toolCall.args ||
+                  toolCall.arguments,
+                name: toolCall.name,
+                serverSide: true,
+                status: 'running',
+                toolType: 'tool_call'
+              })
+            )
+          }
+
+          if (part.toolResponse) {
+            const toolResponse =
+              part.toolResponse
+
+            upsertParsedToolBlock(blocks, {
+              id:
+                'gemini:tool:' +
+                (
+                  toolResponse.id ||
+                  toolResponse.name ||
+                  index
+                ),
+              name: toolResponse.name,
+              output:
+                toolResponse.response ||
+                toolResponse.result,
+              serverSide: true,
+              status: 'completed',
+              toolType: 'tool_call'
+            })
+          }
+        })
+
+      finalizeParsedTools(blocks)
+
+      return blocks
+    }
+
+    function isResponseToolItem (item) {
+      if (!item || typeof item.type !== 'string') {
+        return false
+      }
+
+      return item.type === 'function_call' ||
+        item.type === 'custom_tool_call' ||
+        /_call$/.test(item.type)
+    }
+
+    function createResponseToolBlock (item, index) {
+      const serverSide =
+        item.type !== 'function_call' &&
+        item.type !== 'custom_tool_call'
+
+      const status = serverSide
+        ? (
+            item.status === 'failed'
+              ? 'failed'
+              : item.status === 'completed'
+                ? 'completed'
+                : 'running'
+          )
+        : 'waiting'
+
+      return createToolBlock({
+        id:
+          'responses:tool:' +
+          (item.id || item.call_id || index),
+        input:
+          item.arguments ||
+          item.input ||
+          item.action ||
+          item.code ||
+          item.commands,
+        name:
+          item.name ||
+          humanizeToolType(item.type),
+        output:
+          item.output ||
+          item.outputs ||
+          item.results,
+        serverSide,
+        status,
+        toolType: item.type
+      })
+    }
+
+    function createResponseBlocks (json) {
+      const blocks = []
+      const output = Array.isArray(json.output)
+        ? json.output
+        : []
+
+      output.forEach((item, outputIndex) => {
+        if (!item) return
+
+        if (item.type === 'reasoning') {
+          const summary =
+            Array.isArray(item.summary)
+              ? item.summary
+              : []
+
+          summary.forEach((part, partIndex) => {
+            const text = getTextValue(part)
+
+            if (text) {
+              blocks.push(
+                createReasoningBlock(
+                  'responses:reasoning:' +
+                    outputIndex +
+                    ':' +
+                    partIndex,
+                  text
+                )
+              )
+            }
+          })
+
+          if (!summary.length) {
+            const text =
+              getTextValue(item.content)
+
+            if (text) {
+              blocks.push(
+                createReasoningBlock(
+                  'responses:reasoning:' +
+                    outputIndex,
+                  text
+                )
+              )
+            }
+          }
+
+          return
+        }
+
+        if (isResponseToolItem(item)) {
+          blocks.push(
+            createResponseToolBlock(
+              item,
+              outputIndex
+            )
+          )
+
+          return
+        }
+
+        if (
+          item.type === 'message' &&
+          Array.isArray(item.content)
+        ) {
+          item.content.forEach(
+            (content, contentIndex) => {
+              if (
+                content &&
+                content.type === 'output_text' &&
+                typeof content.text === 'string'
+              ) {
+                blocks.push(
+                  createTextBlock(
+                    'responses:text:' +
+                      outputIndex +
+                      ':' +
+                      contentIndex,
+                    content.text
+                  )
+                )
+              }
+            }
+          )
+        }
+      })
+
+      const hasText = blocks.some(block => {
+        return block.type === 'text'
+      })
+
+      if (
+        !hasText &&
+        typeof json.output_text === 'string' &&
+        json.output_text
+      ) {
+        blocks.push(
+          createTextBlock(
+            'responses:text:fallback',
+            json.output_text
+          )
+        )
+      }
+
+      finalizeParsedTools(blocks)
+
+      return blocks
+    }
+
+    function isInteractionResultType (type) {
+      return type === 'function_result' ||
+        /_result$/.test(type || '')
+    }
+
+    function isInteractionToolType (type) {
+      return type === 'function_call' ||
+        /_call$/.test(type || '')
+    }
+
+    function createInteractionBlocks (interaction) {
+      const blocks = []
+      const steps = interaction &&
+        (
+          interaction.steps ||
+          interaction.output
+        )
+
+      if (!Array.isArray(steps)) {
+        if (
+          interaction &&
+          typeof interaction.output_text === 'string' &&
+          interaction.output_text
+        ) {
+          blocks.push(
+            createTextBlock(
+              'interactions:text:fallback',
+              interaction.output_text
+            )
+          )
+        }
+
+        return blocks
+      }
+
+      steps.forEach((step, index) => {
+        if (!step) return
+
+        if (step.type === 'thought') {
+          const reasoning =
+            getTextValue(step.summary) ||
+            getTextValue(step.content)
+
+          if (reasoning) {
+            blocks.push(
+              createReasoningBlock(
+                'interactions:reasoning:' + index,
+                reasoning
+              )
+            )
+          }
+
+          return
+        }
+
+        if (step.type === 'model_output') {
+          const text =
+            getInteractionContentText(
+              step.content
+            )
+
+          if (text) {
+            blocks.push(
+              createTextBlock(
+                'interactions:text:' + index,
+                text
+              )
+            )
+          }
+
+          return
+        }
+
+        if (isInteractionToolType(step.type)) {
+          const serverSide =
+            step.type !== 'function_call'
+
+          blocks.push(
+            createToolBlock({
+              id:
+                'interactions:tool:' +
+                (step.id || index),
+              input:
+                step.arguments ||
+                step.input,
+              name:
+                step.name ||
+                humanizeToolType(step.type),
+              output:
+                step.output ||
+                step.result,
+              serverSide,
+              status:
+                serverSide
+                  ? (
+                      step.status === 'failed'
+                        ? 'failed'
+                        : step.status === 'done' ||
+                            step.status === 'completed'
+                          ? 'completed'
+                          : 'running'
+                    )
+                  : 'waiting',
+              toolType: step.type
+            })
+          )
+
+          return
+        }
+
+        if (isInteractionResultType(step.type)) {
+          upsertParsedToolBlock(blocks, {
+            id:
+              'interactions:tool:' +
+              (
+                step.call_id ||
+                step.id ||
+                index
+              ),
+            name: step.name,
+            output:
+              step.result ||
+              step.output ||
+              step.content,
+            serverSide:
+              step.type !== 'function_result',
+            status: 'completed',
+            toolType:
+              step.type.replace(
+                /_result$/,
+                '_call'
+              )
+          })
+        }
+      })
+
+      finalizeParsedTools(blocks)
+
+      return blocks
     }
 
     const API_FORMATS = {
@@ -4103,15 +5198,105 @@
             }
           }
 
-          const delta = data.choices &&
-            data.choices[0] &&
-            data.choices[0].delta
+          const choice = data.choices &&
+            data.choices[0]
+          const delta = choice && choice.delta
+          const updates = []
+
+          if (!delta) {
+            return {
+              updates
+            }
+          }
+
+          const reasoning =
+            getChatReasoning(delta)
+
+          if (reasoning) {
+            updates.push({
+              content: reasoning,
+              id: 'chat:reasoning:0',
+              kind: 'append',
+              type: 'reasoning'
+            })
+          }
+
+          const text =
+            getTextValue(delta.content)
+
+          if (text) {
+            updates.push({
+              content: text,
+              id: 'chat:text:0',
+              kind: 'append',
+              type: 'text'
+            })
+          }
+
+          const toolCalls =
+            Array.isArray(delta.tool_calls)
+              ? delta.tool_calls
+              : []
+
+          toolCalls.forEach(
+            (toolCall, index) => {
+              const callIndex =
+                Number.isFinite(toolCall.index)
+                  ? toolCall.index
+                  : index
+
+              const functionData =
+                toolCall.function || {}
+              const customData =
+                toolCall.custom || {}
+
+              updates.push({
+                id:
+                  'chat:tool:' +
+                  callIndex,
+                inputDelta:
+                  functionData.arguments ||
+                  customData.input ||
+                  '',
+                kind: 'tool',
+                name:
+                  functionData.name ||
+                  customData.name ||
+                  '',
+                serverSide: false,
+                status:
+                  choice.finish_reason ===
+                    'tool_calls'
+                    ? 'waiting'
+                    : 'preparing',
+                toolType:
+                  toolCall.type === 'custom'
+                    ? 'custom_tool_call'
+                    : 'function_call'
+              })
+            }
+          )
+
+          if (delta.function_call) {
+            updates.push({
+              id: 'chat:tool:0',
+              inputDelta:
+                delta.function_call.arguments ||
+                '',
+              kind: 'tool',
+              name:
+                delta.function_call.name ||
+                '',
+              serverSide: false,
+              status: 'preparing',
+              toolType: 'function_call'
+            })
+          }
 
           return {
-            reasoning: getChatReasoning(delta),
-            text: delta
-              ? getTextValue(delta.content)
-              : ''
+            finalizeTools:
+              Boolean(choice.finish_reason),
+            updates
           }
         },
 
@@ -4120,12 +5305,9 @@
             json.choices[0] &&
             json.choices[0].message
 
-          return {
-            reasoning: getChatReasoning(message),
-            text: message
-              ? getTextValue(message.content)
-              : ''
-          }
+          return createParsedResponse(
+            createChatResponseBlocks(message)
+          )
         },
 
         parseError (json) {
@@ -4162,17 +5344,14 @@
           const messages = []
 
           context.messages.forEach(message => {
-            if (isInstructionRole(message.role)) {
-              return
-            }
-
             const role = isAssistantRole(message.role)
               ? 'assistant'
               : 'user'
 
-            const attachments = isAssistantRole(message.role)
-              ? []
-              : message.attachments || []
+            const attachments =
+              isAssistantRole(message.role)
+                ? []
+                : message.attachments || []
 
             if (!attachments.length) {
               messages.push({
@@ -4220,9 +5399,10 @@
             stream: context.stream
           }
 
-          const system = getInstructionText(context)
-
-          if (system) body.system = system
+          if (context.settings.systemPrompt) {
+            body.system =
+              context.settings.systemPrompt
+          }
 
           if (context.settings.tools.length) {
             body.tools = context.settings.tools
@@ -4303,40 +5483,118 @@
           }
         },
 
-        parseEvent (streamEvent) {
+        parseEvent (streamEvent, streamState) {
           const data = streamEvent.data
           const type = data.type
+          const updates = []
 
           if (
             type === 'content_block_start' &&
             data.content_block
           ) {
-            if (
-              data.content_block.type ===
-              'thinking'
-            ) {
-              return {
-                reasoning:
-                  data.content_block.thinking || ''
-              }
-            }
+            const block = data.content_block
+            const index = data.index
 
-            if (
-              data.content_block.type ===
-              'redacted_thinking'
-            ) {
-              return {
-                reasoningRedacted: true
-              }
-            }
+            if (block.type === 'thinking') {
+              const id =
+                'anthropic:reasoning:' + index
 
-            if (
-              data.content_block.type === 'text'
-            ) {
-              return {
-                text:
-                  data.content_block.text || ''
+              streamState.anthropicBlocks[index] = {
+                id,
+                type: 'reasoning'
               }
+
+              if (block.thinking) {
+                updates.push({
+                  content: block.thinking,
+                  id,
+                  kind: 'append',
+                  type: 'reasoning'
+                })
+              }
+            } else if (
+              block.type === 'redacted_thinking'
+            ) {
+              updates.push({
+                id:
+                  'anthropic:redacted:' + index,
+                kind: 'redacted'
+              })
+            } else if (
+              block.type === 'text'
+            ) {
+              const id =
+                'anthropic:text:' + index
+
+              streamState.anthropicBlocks[index] = {
+                id,
+                type: 'text'
+              }
+
+              if (block.text) {
+                updates.push({
+                  content: block.text,
+                  id,
+                  kind: 'append',
+                  type: 'text'
+                })
+              }
+            } else if (
+              block.type === 'tool_use' ||
+              block.type === 'server_tool_use'
+            ) {
+              const id =
+                'anthropic:tool:' +
+                (block.id || index)
+
+              streamState.anthropicBlocks[index] = {
+                id,
+                serverSide:
+                  block.type ===
+                    'server_tool_use',
+                type: 'tool'
+              }
+
+              updates.push({
+                id,
+                input: block.input,
+                kind: 'tool',
+                name: block.name,
+                serverSide:
+                  block.type ===
+                    'server_tool_use',
+                status:
+                  block.type ===
+                    'server_tool_use'
+                    ? 'running'
+                    : 'preparing',
+                toolType: block.type
+              })
+            } else if (
+              isAnthropicToolResultType(
+                block.type
+              )
+            ) {
+              updates.push({
+                id:
+                  'anthropic:tool:' +
+                  (
+                    block.tool_use_id ||
+                    block.id ||
+                    index
+                  ),
+                kind: 'tool',
+                output:
+                  block.content ||
+                  block.result,
+                serverSide: true,
+                status: 'completed',
+                toolType:
+                  block.type.replace(
+                    /_result$/,
+                    '_call'
+                  )
+              })
             }
           }
 
@@ -4344,22 +5602,75 @@
             type === 'content_block_delta' &&
             data.delta
           ) {
-            if (
-              data.delta.type ===
-              'thinking_delta'
-            ) {
-              return {
-                reasoning:
-                  data.delta.thinking || ''
-              }
-            }
+            const blockState =
+              streamState.anthropicBlocks[
+                data.index
+              ]
 
             if (
-              data.delta.type === 'text_delta'
+              data.delta.type ===
+                'thinking_delta' &&
+              blockState
             ) {
-              return {
-                text: data.delta.text || ''
-              }
+              updates.push({
+                content:
+                  data.delta.thinking || '',
+                id: blockState.id,
+                kind: 'append',
+                type: 'reasoning'
+              })
+            } else if (
+              data.delta.type ===
+                'text_delta' &&
+              blockState
+            ) {
+              updates.push({
+                content: data.delta.text || '',
+                id: blockState.id,
+                kind: 'append',
+                type: 'text'
+              })
+            } else if (
+              data.delta.type ===
+                'input_json_delta' &&
+              blockState &&
+              blockState.type === 'tool'
+            ) {
+              updates.push({
+                id: blockState.id,
+                inputDelta:
+                  data.delta.partial_json || '',
+                kind: 'tool',
+                serverSide:
+                  blockState.serverSide,
+                status:
+                  blockState.serverSide
+                    ? 'running'
+                    : 'preparing'
+              })
+            }
+          }
+
+          if (type === 'content_block_stop') {
+            const blockState =
+              streamState.anthropicBlocks[
+                data.index
+              ]
+
+            if (
+              blockState &&
+              blockState.type === 'tool'
+            ) {
+              updates.push({
+                id: blockState.id,
+                kind: 'tool',
+                serverSide:
+                  blockState.serverSide,
+                status:
+                  blockState.serverSide
+                    ? 'running'
+                    : 'waiting'
+              })
             }
           }
 
@@ -4375,37 +5686,17 @@
           }
 
           return {
-            done: type === 'message_stop'
+            done: type === 'message_stop',
+            finalizeTools:
+              type === 'message_stop',
+            updates
           }
         },
 
         parseFull (json) {
-          const blocks = Array.isArray(json.content)
-            ? json.content
-            : []
-
-          return {
-            reasoning: joinTextBlocks(
-              blocks.map(block => {
-                return block &&
-                  block.type === 'thinking'
-                  ? block.thinking || ''
-                  : ''
-              })
-            ),
-            reasoningRedacted: blocks.some(block => {
-              return block &&
-                block.type === 'redacted_thinking'
-            }),
-            text: joinTextBlocks(
-              blocks.map(block => {
-                return block &&
-                  block.type === 'text'
-                  ? block.text || ''
-                  : ''
-              })
-            )
-          }
+          return createParsedResponse(
+            createAnthropicResponseBlocks(json)
+          )
         },
 
         parseError (json) {
@@ -4443,10 +5734,6 @@
           const contents = []
 
           context.messages.forEach(message => {
-            if (isInstructionRole(message.role)) {
-              return
-            }
-
             const parts = [{
               text: message.content || ''
             }]
@@ -4538,12 +5825,11 @@
             generationConfig
           }
 
-          const system = getInstructionText(context)
-
-          if (system) {
+          if (context.settings.systemPrompt) {
             body.systemInstruction = {
               parts: [{
-                text: system
+                text:
+                  context.settings.systemPrompt
               }]
             }
           }
@@ -4563,8 +5849,9 @@
           }
         },
 
-        parseEvent (streamEvent) {
+        parseEvent (streamEvent, streamState) {
           const data = streamEvent.data
+          const updates = []
 
           const blockReason =
             data.promptFeedback &&
@@ -4578,21 +5865,167 @@
             }
           }
 
+          getGeminiCandidateParts(data)
+            .forEach((part, index) => {
+              if (!part) return
+
+              if (
+                typeof part.text === 'string'
+              ) {
+                const kind = part.thought
+                  ? 'reasoning'
+                  : 'text'
+
+                const id =
+                  getSequentialStreamBlockId(
+                    streamState,
+                    'gemini',
+                    index,
+                    kind
+                  )
+
+                updates.push({
+                  content: part.text,
+                  id,
+                  kind: 'append',
+                  type: kind
+                })
+              }
+
+              if (part.functionCall) {
+                const functionCall =
+                  part.functionCall
+
+                updates.push({
+                  id:
+                    'gemini:tool:' +
+                    (
+                      functionCall.id ||
+                      functionCall.name ||
+                      index
+                    ),
+                  input: functionCall.args,
+                  kind: 'tool',
+                  name: functionCall.name,
+                  serverSide: false,
+                  status: 'waiting',
+                  toolType: 'function_call'
+                })
+              }
+
+              if (part.executableCode) {
+                const id =
+                  'gemini:code:' + index
+
+                streamState.lastGeminiCodeToolId =
+                  id
+
+                updates.push({
+                  id,
+                  input:
+                    part.executableCode.code,
+                  kind: 'tool',
+                  name: 'Thực thi mã',
+                  serverSide: true,
+                  status: 'running',
+                  toolType:
+                    'code_execution_call'
+                })
+              }
+
+              if (part.codeExecutionResult) {
+                const result =
+                  part.codeExecutionResult
+
+                updates.push({
+                  id:
+                    streamState
+                      .lastGeminiCodeToolId ||
+                    'gemini:code:' + index,
+                  kind: 'tool',
+                  name: 'Thực thi mã',
+                  output:
+                    result.output ||
+                    result.outcome,
+                  serverSide: true,
+                  status:
+                    result.outcome ===
+                      'OUTCOME_FAILED'
+                      ? 'failed'
+                      : 'completed',
+                  toolType:
+                    'code_execution_call'
+                })
+              }
+
+              if (part.toolCall) {
+                const toolCall =
+                  part.toolCall
+
+                updates.push({
+                  id:
+                    'gemini:tool:' +
+                    (
+                      toolCall.id ||
+                      toolCall.name ||
+                      index
+                    ),
+                  input:
+                    toolCall.args ||
+                    toolCall.arguments,
+                  kind: 'tool',
+                  name: toolCall.name,
+                  serverSide: true,
+                  status: 'running',
+                  toolType: 'tool_call'
+                })
+              }
+
+              if (part.toolResponse) {
+                const toolResponse =
+                  part.toolResponse
+
+                updates.push({
+                  id:
+                    'gemini:tool:' +
+                    (
+                      toolResponse.id ||
+                      toolResponse.name ||
+                      index
+                    ),
+                  kind: 'tool',
+                  name: toolResponse.name,
+                  output:
+                    toolResponse.response ||
+                    toolResponse.result,
+                  serverSide: true,
+                  status: 'completed',
+                  toolType: 'tool_call'
+                })
+              }
+            })
+
           return {
-            reasoning:
-              extractGeminiText(data, true),
-            text:
-              extractGeminiText(data, false)
+            updates
           }
         },
 
         parseFull (json) {
-          return {
-            reasoning:
-              extractGeminiText(json, true),
-            text:
-              extractGeminiText(json, false)
+          const blockReason =
+            json.promptFeedback &&
+            json.promptFeedback.blockReason
+
+          if (blockReason) {
+            throw createApiError(
+              'api',
+              'Yêu cầu bị chặn: ' +
+                blockReason
+            )
           }
+
+          return createParsedResponse(
+            createGeminiResponseBlocks(json)
+          )
         },
 
         parseError (json) {
@@ -4741,6 +6174,7 @@
           const type =
             data.type ||
             streamEvent.event
+          const updates = []
 
           if (
             type ===
@@ -4748,24 +6182,179 @@
             type ===
               'response.reasoning_text.delta'
           ) {
-            return {
-              reasoning:
+            updates.push({
+              content:
                 typeof data.delta === 'string'
                   ? data.delta
-                  : ''
-            }
+                  : '',
+              id:
+                'responses:reasoning:' +
+                (
+                  data.item_id ||
+                  data.output_index ||
+                  0
+                ) +
+                ':' +
+                (
+                  data.summary_index ||
+                  data.content_index ||
+                  0
+                ),
+              kind: 'append',
+              type: 'reasoning'
+            })
+          }
+
+          if (
+            type === 'response.output_text.delta' ||
+            type === 'response.refusal.delta'
+          ) {
+            updates.push({
+              content:
+                typeof data.delta === 'string'
+                  ? data.delta
+                  : '',
+              id:
+                'responses:text:' +
+                (
+                  data.item_id ||
+                  data.output_index ||
+                  0
+                ) +
+                ':' +
+                (
+                  data.content_index || 0
+                ),
+              kind: 'append',
+              type: 'text'
+            })
+          }
+
+          if (
+            type === 'response.output_item.added' &&
+            isResponseToolItem(data.item)
+          ) {
+            const block =
+              createResponseToolBlock(
+                data.item,
+                data.output_index || 0
+              )
+
+            updates.push({
+              ...block,
+              kind: 'tool'
+            })
           }
 
           if (
             type ===
-            'response.output_text.delta'
+            'response.function_call_arguments.delta'
           ) {
-            return {
-              text:
+            updates.push({
+              id:
+                'responses:tool:' +
+                (
+                  data.item_id ||
+                  data.output_index ||
+                  0
+                ),
+              inputDelta:
                 typeof data.delta === 'string'
                   ? data.delta
-                  : ''
-            }
+                  : '',
+              kind: 'tool',
+              serverSide: false,
+              status: 'preparing',
+              toolType: 'function_call'
+            })
+          }
+
+          if (
+            type ===
+            'response.function_call_arguments.done'
+          ) {
+            updates.push({
+              id:
+                'responses:tool:' +
+                (
+                  data.item_id ||
+                  data.output_index ||
+                  0
+                ),
+              input: data.arguments,
+              kind: 'tool',
+              name: data.name,
+              serverSide: false,
+              status: 'waiting',
+              toolType: 'function_call'
+            })
+          }
+
+          if (
+            type ===
+            'response.code_interpreter_call_code.delta'
+          ) {
+            updates.push({
+              id:
+                'responses:tool:' +
+                (
+                  data.item_id ||
+                  data.output_index ||
+                  0
+                ),
+              inputDelta:
+                typeof data.delta === 'string'
+                  ? data.delta
+                  : '',
+              kind: 'tool',
+              name: 'Code Interpreter',
+              serverSide: true,
+              status: 'interpreting',
+              toolType:
+                'code_interpreter_call'
+            })
+          }
+
+          const stateMatch = String(type || '')
+            .match(
+              /^response\.(.+_call)\.(in_progress|searching|interpreting|generating|completed|failed)$/
+            )
+
+          if (stateMatch) {
+            updates.push({
+              id:
+                'responses:tool:' +
+                (
+                  data.item_id ||
+                  data.output_index ||
+                  stateMatch[1]
+                ),
+              kind: 'tool',
+              name:
+                humanizeToolType(stateMatch[1]),
+              serverSide: true,
+              status:
+                stateMatch[2] === 'in_progress'
+                  ? 'running'
+                  : stateMatch[2],
+              toolType: stateMatch[1]
+            })
+          }
+
+          if (
+            type === 'response.output_item.done' &&
+            isResponseToolItem(data.item)
+          ) {
+            const block =
+              createResponseToolBlock(
+                data.item,
+                data.output_index || 0
+              )
+
+            updates.push({
+              ...block,
+              kind: 'tool'
+            })
           }
 
           if (type === 'error') {
@@ -4796,48 +6385,21 @@
 
             return {
               done: true,
-              finalReasoning: parsed.reasoning,
-              finalText: parsed.text
+              finalBlocks: parsed.blocks,
+              finalizeTools: true,
+              updates
             }
           }
 
-          return {}
+          return {
+            updates
+          }
         },
 
         parseFull (json) {
-          const output = Array.isArray(json.output)
-            ? json.output
-            : []
-
-          const text = typeof json.output_text ===
-            'string'
-            ? json.output_text
-            : joinTextBlocks(
-                output.map(item => {
-                  if (
-                    !item ||
-                    item.type !== 'message' ||
-                    !Array.isArray(item.content)
-                  ) {
-                    return ''
-                  }
-
-                  return joinTextBlocks(
-                    item.content.map(content => {
-                      return content &&
-                        content.type === 'output_text'
-                        ? content.text || ''
-                        : ''
-                    })
-                  )
-                })
-              )
-
-          return {
-            reasoning:
-              extractResponseReasoning(json),
-            text
-          }
+          return createParsedResponse(
+            createResponseBlocks(json)
+          )
         },
 
         parseError (json) {
@@ -4869,10 +6431,6 @@
           const input = []
 
           context.messages.forEach(message => {
-            if (isInstructionRole(message.role)) {
-              return
-            }
-
             const content = [{
               type: 'text',
               text: message.content || ''
@@ -4948,10 +6506,9 @@
             stream: context.stream
           }
 
-          const system = getInstructionText(context)
-
-          if (system) {
-            body.system_instruction = system
+          if (context.settings.systemPrompt) {
+            body.system_instruction =
+              context.settings.systemPrompt
           }
 
           if (context.settings.tools.length) {
@@ -4969,34 +6526,96 @@
           }
         },
 
-        parseEvent (streamEvent) {
+        parseEvent (streamEvent, streamState) {
           const data = streamEvent.data
           const type =
             data.event_type ||
             streamEvent.event
+          const updates = []
 
           if (
             type === 'step.start' &&
             data.step
           ) {
-            if (data.step.type === 'thought') {
-              return {
-                reasoning:
-                  getInteractionContentText(
-                    data.step.summary
-                  )
-              }
-            }
+            const step = data.step
+            const index = data.index
 
-            if (
-              data.step.type === 'model_output'
-            ) {
-              return {
-                text:
-                  getInteractionContentText(
-                    data.step.content
-                  )
+            streamState.interactionSteps[index] =
+              step
+
+            if (step.type === 'thought') {
+              streamState.interactionSteps[index] = {
+                ...step,
+                blockId:
+                  'interactions:reasoning:' +
+                  index
               }
+            } else if (
+              step.type === 'model_output'
+            ) {
+              streamState.interactionSteps[index] = {
+                ...step,
+                blockId:
+                  'interactions:text:' +
+                  index
+              }
+            } else if (
+              isInteractionToolType(step.type)
+            ) {
+              const serverSide =
+                step.type !== 'function_call'
+              const id =
+                'interactions:tool:' +
+                (step.id || index)
+
+              streamState.interactionSteps[index] = {
+                ...step,
+                blockId: id,
+                serverSide
+              }
+
+              updates.push({
+                id,
+                input:
+                  step.arguments ||
+                  step.input,
+                kind: 'tool',
+                name:
+                  step.name ||
+                  humanizeToolType(step.type),
+                serverSide,
+                status:
+                  serverSide
+                    ? 'running'
+                    : 'preparing',
+                toolType: step.type
+              })
+            } else if (
+              isInteractionResultType(step.type)
+            ) {
+              updates.push({
+                id:
+                  'interactions:tool:' +
+                  (
+                    step.call_id ||
+                    step.id ||
+                    index
+                  ),
+                kind: 'tool',
+                name: step.name,
+                output:
+                  step.result ||
+                  step.output ||
+                  step.content,
+                serverSide:
+                  step.type !== 'function_result',
+                status: 'completed',
+                toolType:
+                  step.type.replace(
+                    /_result$/,
+                    '_call'
+                  )
+              })
             }
           }
 
@@ -5004,24 +6623,151 @@
             type === 'step.delta' &&
             data.delta
           ) {
-            if (
-              data.delta.type ===
-              'thought_summary'
-            ) {
-              return {
-                reasoning:
-                  getInteractionContentText(
-                    data.delta.content
-                  )
-              }
-            }
+            const step =
+              streamState.interactionSteps[
+                data.index
+              ] || {}
 
             if (
+              data.delta.type === 'thought' ||
+              data.delta.type ===
+                'thought_summary'
+            ) {
+              updates.push({
+                content:
+                  data.delta.text ||
+                  getTextValue(
+                    data.delta.content
+                  ),
+                id:
+                  step.blockId ||
+                  'interactions:reasoning:' +
+                    data.index,
+                kind: 'append',
+                type: 'reasoning'
+              })
+            } else if (
               data.delta.type === 'text'
             ) {
-              return {
-                text: data.delta.text || ''
-              }
+              updates.push({
+                content:
+                  data.delta.text || '',
+                id:
+                  step.type === 'thought'
+                    ? (
+                        step.blockId ||
+                        'interactions:reasoning:' +
+                          data.index
+                      )
+                    : (
+                        step.blockId ||
+                        'interactions:text:' +
+                          data.index
+                      ),
+                kind: 'append',
+                type:
+                  step.type === 'thought'
+                    ? 'reasoning'
+                    : 'text'
+              })
+            } else if (
+              data.delta.type ===
+                'arguments_delta'
+            ) {
+              updates.push({
+                id:
+                  step.blockId ||
+                  'interactions:tool:' +
+                    data.index,
+                inputDelta:
+                  data.delta.arguments || '',
+                kind: 'tool',
+                name: step.name,
+                serverSide:
+                  step.serverSide === true,
+                status:
+                  step.serverSide
+                    ? 'running'
+                    : 'preparing',
+                toolType:
+                  step.type || 'function_call'
+              })
+            } else if (
+              isInteractionToolType(
+                data.delta.type
+              )
+            ) {
+              updates.push({
+                id:
+                  step.blockId ||
+                  'interactions:tool:' +
+                    data.index,
+                input:
+                  data.delta.arguments ||
+                  data.delta.input,
+                kind: 'tool',
+                name:
+                  data.delta.name ||
+                  step.name ||
+                  humanizeToolType(
+                    data.delta.type
+                  ),
+                serverSide: true,
+                status: 'running',
+                toolType: data.delta.type
+              })
+            } else if (
+              isInteractionResultType(
+                data.delta.type
+              )
+            ) {
+              updates.push({
+                id:
+                  'interactions:tool:' +
+                  (
+                    data.delta.call_id ||
+                    step.id ||
+                    data.index
+                  ),
+                kind: 'tool',
+                output:
+                  data.delta.result ||
+                  data.delta.output ||
+                  data.delta.content,
+                serverSide: true,
+                status: 'completed',
+                toolType:
+                  data.delta.type.replace(
+                    /_result$/,
+                    '_call'
+                  )
+              })
+            }
+          }
+
+          if (type === 'step.stop') {
+            const step =
+              streamState.interactionSteps[
+                data.index
+              ]
+
+            if (
+              step &&
+              isInteractionToolType(step.type)
+            ) {
+              updates.push({
+                id:
+                  step.blockId ||
+                  'interactions:tool:' +
+                    data.index,
+                kind: 'tool',
+                serverSide:
+                  step.serverSide === true,
+                status:
+                  step.serverSide
+                    ? 'completed'
+                    : 'waiting'
+              })
             }
           }
 
@@ -5040,29 +6786,40 @@
           if (
             type === 'interaction.completed'
           ) {
+            const parsed =
+              this.parseFull(
+                data.interaction || {}
+              )
+
             return {
               done: true,
-              finalReasoning:
-                extractInteractionReasoning(
-                  data.interaction
-                ),
-              finalText:
-                extractInteractionText(
-                  data.interaction
-                )
+              finalBlocks:
+                parsed.blocks.length
+                  ? parsed.blocks
+                  : null,
+              finalizeTools: true,
+              updates
             }
           }
 
-          return {}
+          if (
+            type === 'interaction.requires_action'
+          ) {
+            return {
+              finalizeTools: true,
+              updates
+            }
+          }
+
+          return {
+            updates
+          }
         },
 
         parseFull (json) {
-          return {
-            reasoning:
-              extractInteractionReasoning(json),
-            text:
-              extractInteractionText(json)
-          }
+          return createParsedResponse(
+            createInteractionBlocks(json)
+          )
         },
 
         parseError (json) {
@@ -5267,11 +7024,21 @@
             ? message.createdAt
             : Date.now(),
         generated:
-          message.generated === true,
+          message.generated === true ||
+          Boolean(
+            message.role === 'assistant' &&
+            message.modelLabel
+          ),
         id:
           typeof message.id === 'string'
             ? message.id
             : createUniqueId(),
+        outputBlocks:
+          Array.isArray(message.outputBlocks)
+            ? message.outputBlocks
+                .map(sanitizeOutputBlock)
+                .filter(Boolean)
+            : [],
         reasoning:
           typeof message.reasoning === 'string'
             ? message.reasoning
@@ -5287,16 +7054,15 @@
             : message.status || 'complete'
       }
 
-      ;[
-        'endpointId',
-        'endpointName',
-        'model',
-        'modelLabel'
-      ].forEach(property => {
-        if (typeof message[property] === 'string') {
-          output[property] = message[property]
+      MESSAGE_METADATA_PROPERTIES.forEach(
+        property => {
+          if (
+            typeof message[property] === 'string'
+          ) {
+            output[property] = message[property]
+          }
         }
-      })
+      )
 
       if (
         message.error &&
@@ -5317,6 +7083,41 @@
             .map(sanitizeAttachment)
             .filter(Boolean)
             .slice(0, MAXIMUM_FILES)
+      }
+
+      if (
+        isAssistantRole(output.role) &&
+        !output.outputBlocks.length
+      ) {
+        if (output.reasoning) {
+          output.outputBlocks.push(
+            createReasoningBlock(
+              output.id + ':reasoning',
+              output.reasoning
+            )
+          )
+        }
+
+        if (output.reasoningRedacted) {
+          output.outputBlocks.push(
+            createRedactedBlock(
+              output.id + ':redacted'
+            )
+          )
+        }
+
+        if (output.content) {
+          output.outputBlocks.push(
+            createTextBlock(
+              output.id + ':text',
+              output.content
+            )
+          )
+        }
+      }
+
+      if (isAssistantRole(output.role)) {
+        syncMessageOutput(output)
       }
 
       return output
@@ -5435,6 +7236,13 @@
       activeConversationId: null,
       attachments: [],
       conversationSearchQuery: '',
+      conversations:
+        savedState &&
+        Array.isArray(savedState.conversations)
+          ? savedState.conversations
+              .map(sanitizeConversation)
+              .filter(Boolean)
+          : [],
       editingMessageId: null,
       endpointId: null,
       endpoints:
@@ -5460,13 +7268,6 @@
         savedState.theme === 'light'
           ? 'light'
           : 'dark',
-      conversations:
-        savedState &&
-        Array.isArray(savedState.conversations)
-          ? savedState.conversations
-              .map(sanitizeConversation)
-              .filter(Boolean)
-          : [],
       ui: {
         settingsOpen:
           !savedState ||
@@ -5737,6 +7538,15 @@
       template.content
         .querySelectorAll('table')
         .forEach(table => {
+          if (
+            table.parentElement &&
+            table.parentElement.classList.contains(
+              'table-scroll'
+            )
+          ) {
+            return
+          }
+
           const wrapper =
             document.createElement('div')
 
@@ -6088,6 +7898,7 @@
           !conversation.pinned
         renderSidebar()
         scheduleStateSave()
+
         return
       }
 
@@ -6107,6 +7918,7 @@
             TEXT.emptyMessage,
             'error'
           )
+
           return
         }
 
@@ -6115,6 +7927,7 @@
         renderSidebar()
         renderTopBar()
         scheduleStateSave()
+
         return
       }
 
@@ -6155,31 +7968,154 @@
       return '<span class="generation-dots" aria-hidden="true"><span></span><span></span><span></span></span>'
     }
 
-    function createReasoningHtml (message) {
-      if (
-        message.showReasoning === false ||
-        (
-          !message.reasoning &&
-          !message.reasoningRedacted
-        )
-      ) {
-        return ''
+    function getToolStatusClass (status) {
+      if (status === 'completed') {
+        return 'completed'
       }
 
-      const content = message.reasoning
-        ? `<div class="reasoning-content markdown">${renderMarkdown(message.reasoning)}</div>`
-        : ''
+      if (status === 'failed') {
+        return 'failed'
+      }
 
-      const redacted = message.reasoningRedacted
-        ? `<div class="reasoning-content reasoning-redacted">${createIconSvg('info', 'icon-small')}<span>Một phần suy nghĩ đã được API ẩn.</span></div>`
+      if (ACTIVE_TOOL_STATUSES.includes(status)) {
+        return 'active'
+      }
+
+      return ''
+    }
+
+    function createToolActivityHtml (tool) {
+      const stateClass =
+        getToolStatusClass(tool.status)
+      const stateLabel =
+        TOOL_STATUS_LABELS[tool.status] ||
+        TOOL_STATUS_LABELS.running
+      const input = tool.input
+        ? `<pre class="tool-activity-payload">${escapeHtml(tool.input)}</pre>`
+        : ''
+      const output = tool.output
+        ? `<pre class="tool-activity-payload tool-activity-output">${escapeHtml(tool.output)}</pre>`
         : ''
 
       return `
+        <div class="trace-item tool-activity">
+          <div class="tool-activity-header">
+            ${createIconSvg('terminal', 'icon-small')}
+            <span class="tool-activity-name" title="${escapeHtml(tool.name)}">${escapeHtml(tool.name)}</span>
+            <span class="tool-activity-state ${stateClass}">
+              <span class="tool-activity-dot" aria-hidden="true"></span>
+              ${escapeHtml(stateLabel)}
+            </span>
+          </div>
+          ${input}
+          ${output}
+        </div>`
+    }
+
+    function createReasoningGroupHtml (
+      blocks,
+      message
+    ) {
+      const hasTool = blocks.some(block => {
+        return block.type === 'tool'
+      })
+
+      const items = blocks.map(block => {
+        if (block.type === 'reasoning') {
+          return `<div class="trace-item markdown">${renderMarkdown(block.content)}</div>`
+        }
+
+        if (block.type === 'redacted') {
+          return `
+            <div class="trace-item reasoning-redacted">
+              ${createIconSvg('info', 'icon-small')}
+              <span>Một phần suy nghĩ đã được API ẩn.</span>
+            </div>`
+        }
+
+        if (block.type === 'tool') {
+          return createToolActivityHtml(block)
+        }
+
+        return ''
+      }).join('')
+
+      const label = hasTool
+        ? 'Suy nghĩ và công cụ'
+        : 'Suy nghĩ'
+
+      return `
         <details class="reasoning-panel"${message.status === 'streaming' ? ' open' : ''}>
-          <summary>${createIconSvg('spark', 'icon-small')}<span>Suy nghĩ</span></summary>
-          ${content}
-          ${redacted}
+          <summary>
+            ${createIconSvg('spark', 'icon-small')}
+            <span>${label}</span>
+          </summary>
+          <div class="reasoning-trace">${items}</div>
         </details>`
+    }
+
+    function createAssistantOutputHtml (
+      message,
+      allowEmpty
+    ) {
+      const blocks = getMessageOutputBlocks(message)
+      const visibleBlocks = blocks.filter(block => {
+        if (block.type === 'text') return true
+
+        return message.showReasoning !== false
+      })
+
+      if (!visibleBlocks.length) {
+        if (message.status === 'streaming') {
+          return createLoadingDotsHtml()
+        }
+
+        return allowEmpty
+          ? ''
+          : '<div class="assistant-answer markdown"><p>…</p></div>'
+      }
+
+      const lastVisibleBlock =
+        visibleBlocks[visibleBlocks.length - 1]
+
+      let html = ''
+      let traceBlocks = []
+
+      const flushTraceBlocks = () => {
+        if (!traceBlocks.length) return
+
+        html += createReasoningGroupHtml(
+          traceBlocks,
+          message
+        )
+        traceBlocks = []
+      }
+
+      visibleBlocks.forEach(block => {
+        if (
+          block.type === 'reasoning' ||
+          block.type === 'redacted' ||
+          block.type === 'tool'
+        ) {
+          traceBlocks.push(block)
+          return
+        }
+
+        flushTraceBlocks()
+
+        const cursor =
+          message.status === 'streaming' &&
+          block === lastVisibleBlock
+            ? '<span class="stream-cursor" aria-hidden="true"></span>'
+            : ''
+
+        html +=
+          `<div class="assistant-answer markdown">${renderMarkdown(block.content)}${cursor}</div>`
+      })
+
+      flushTraceBlocks()
+
+      return html
     }
 
     function createMessageAttachmentsHtml (
@@ -6208,8 +8144,13 @@
     }
 
     function createAssistantBodyHtml (message) {
+      const output = createAssistantOutputHtml(
+        message,
+        message.status === 'error'
+      )
+
       if (message.status === 'error') {
-        return `
+        return output + `
           <div class="error-card">
             ${createIconSvg('alert')}
             <p>${escapeHtml(message.error ? message.error.message : 'API trả về lỗi.')}</p>
@@ -6218,24 +8159,12 @@
           </div>`
       }
 
-      const reasoning =
-        createReasoningHtml(message)
-      let answer = ''
-
-      if (message.status === 'streaming') {
-        answer = message.content
-          ? `<div class="assistant-answer markdown">${renderMarkdown(message.content)}<span class="stream-cursor" aria-hidden="true"></span></div>`
-          : createLoadingDotsHtml()
-      } else {
-        answer = `<div class="assistant-answer markdown">${message.content ? renderMarkdown(message.content) : '<p>…</p>'}</div>`
-      }
-
       if (message.status === 'stopped') {
-        answer +=
+        return output +
           `<div class="stopped-note">${createIconSvg('stop', 'icon-small')}${TEXT.stoppedNote}</div>`
       }
 
-      return reasoning + answer
+      return output
     }
 
     function createMessageActionsHtml (message) {
@@ -6402,6 +8331,7 @@
         list.innerHTML = createWelcomeHtml()
         list.setAttribute('aria-busy', 'false')
         updateComposerButtons()
+
         return
       }
 
@@ -6468,6 +8398,7 @@
           'status-badge status-badge-offline'
         status.innerHTML =
           '<span class="status-dot status-dot-offline" aria-hidden="true"></span><span>Mất kết nối mạng</span>'
+
         return
       }
 
@@ -6478,6 +8409,7 @@
           'status-badge status-badge-idle'
         status.innerHTML =
           '<span class="status-dot status-dot-idle" aria-hidden="true"></span><span>Chưa cấu hình</span>'
+
         return
       }
 
@@ -6568,6 +8500,7 @@
         list.hidden = true
         list.innerHTML = ''
         updateComposerButtons()
+
         return
       }
 
@@ -6608,6 +8541,7 @@
           'Chỉ được đính kèm tối đa 4 tệp.',
           'error'
         )
+
         return
       }
 
@@ -6618,6 +8552,7 @@
           `“${file.name}” có định dạng không được hỗ trợ.`,
           'error'
         )
+
         return
       }
 
@@ -6626,6 +8561,7 @@
           `“${file.name}” vượt quá 5 MB.`,
           'error'
         )
+
         return
       }
 
@@ -6662,7 +8598,12 @@
           'error'
         )
       } finally {
-        state.pendingAttachmentReads--
+        state.pendingAttachmentReads =
+          Math.max(
+            0,
+            state.pendingAttachmentReads - 1
+          )
+
         renderAttachmentList()
       }
     }
@@ -6685,6 +8626,7 @@
           TEXT.generationBusy,
           'error'
         )
+
         return
       }
 
@@ -6720,6 +8662,7 @@
         select.disabled = true
         select.innerHTML =
           '<option value="">Chưa có endpoint</option>'
+
         return
       }
 
@@ -6744,6 +8687,7 @@
         select.disabled = true
         select.innerHTML =
           '<option value="">Chưa có mô hình</option>'
+
         return
       }
 
@@ -6979,6 +8923,7 @@
           'Mô hình đã có trong danh sách.',
           'error'
         )
+
         return
       }
 
@@ -7009,6 +8954,7 @@
           'Tên endpoint không được để trống.',
           'error'
         )
+
         return
       }
 
@@ -7017,6 +8963,7 @@
           'URL API phải bắt đầu bằng https://.',
           'error'
         )
+
         return
       }
 
@@ -7295,24 +9242,12 @@
         settings.zeroDataRetention
       )
 
-      ;[
-        'temperature-range',
-        'temperature-number',
-        'top-p-range',
-        'top-p-number',
-        'top-k'
-      ].forEach(id => {
+      SAMPLING_CONTROL_IDS.forEach(id => {
         selectElement('#' + id).disabled =
           !settings.samplingEnabled
       })
 
-      ;[
-        'show-reasoning-toggle',
-        'reasoning-effort',
-        'reasoning-mode',
-        'thinking-budget',
-        'thinking-level'
-      ].forEach(id => {
+      REASONING_CONTROL_IDS.forEach(id => {
         selectElement('#' + id).disabled =
           !settings.reasoningEnabled
       })
@@ -7357,13 +9292,10 @@
         }
 
         const content =
-          message.generated === true &&
-          isAssistantRole(message.role)
-            ? message.content
-            : interpolateVariables(
-                message.content,
-                variables
-              )
+          getRequestMessageContent(
+            message,
+            variables
+          )
 
         if (
           !content &&
@@ -7387,18 +9319,20 @@
 
     function validateAttachmentData (messages) {
       messages.forEach(message => {
-        ;(message.attachments || [])
-          .forEach(attachment => {
-            if (
-              typeof attachment.base64 !==
+        const attachments =
+          message.attachments || []
+
+        attachments.forEach(attachment => {
+          if (
+            typeof attachment.base64 !==
               'string'
-            ) {
-              throw createApiError(
-                'attachment',
-                `Không thể gửi lại tệp “${attachment.name}” vì dữ liệu không còn khả dụng.`
-              )
-            }
-          })
+          ) {
+            throw createApiError(
+              'attachment',
+              `Không thể gửi lại tệp “${attachment.name}” vì dữ liệu không còn khả dụng.`
+            )
+          }
+        })
       })
     }
 
@@ -7410,6 +9344,7 @@
 
       if (!endpoint || !state.modelId) {
         textarea.value = ''
+
         return
       }
 
@@ -7540,15 +9475,151 @@
       dispatchEvent()
     }
 
+    function applyOutputUpdate (message, update) {
+      if (update.kind === 'replace-all') {
+        message.outputBlocks =
+          update.blocks
+            .map(sanitizeOutputBlock)
+            .filter(Boolean)
+
+        syncMessageOutput(message)
+
+        return
+      }
+
+      if (update.kind === 'finalize-tools') {
+        getMessageOutputBlocks(message)
+          .forEach(block => {
+            if (
+              block.type !== 'tool' ||
+              !ACTIVE_TOOL_STATUSES.includes(
+                block.status
+              )
+            ) {
+              return
+            }
+
+            block.status = block.serverSide
+              ? 'completed'
+              : 'waiting'
+          })
+
+        syncMessageOutput(message)
+
+        return
+      }
+
+      const blocks = getMessageOutputBlocks(message)
+
+      if (
+        update.kind === 'append' &&
+        (
+          update.type === 'text' ||
+          update.type === 'reasoning'
+        )
+      ) {
+        let block = blocks.find(item => {
+          return item.id === update.id
+        })
+
+        if (!block) {
+          block = update.type === 'text'
+            ? createTextBlock(update.id, '')
+            : createReasoningBlock(update.id, '')
+
+          blocks.push(block)
+        }
+
+        block.content += update.content || ''
+        syncMessageOutput(message)
+
+        return
+      }
+
+      if (update.kind === 'redacted') {
+        const exists = blocks.some(block => {
+          return block.id === update.id
+        })
+
+        if (!exists) {
+          blocks.push(
+            createRedactedBlock(update.id)
+          )
+        }
+
+        syncMessageOutput(message)
+
+        return
+      }
+
+      if (update.kind === 'tool') {
+        let block = blocks.find(item => {
+          return (
+            item.type === 'tool' &&
+            item.id === update.id
+          )
+        })
+
+        if (!block) {
+          block = createToolBlock({
+            id: update.id,
+            input: update.input,
+            name: update.name,
+            output: update.output,
+            serverSide:
+              update.serverSide === true,
+            status: update.status,
+            toolType:
+              update.toolType || 'tool_call'
+          })
+
+          blocks.push(block)
+        }
+
+        if (update.name) {
+          block.name = update.name
+        }
+
+        if (update.toolType) {
+          block.toolType = update.toolType
+        }
+
+        if (update.status) {
+          block.status =
+            normalizeToolStatus(update.status)
+        }
+
+        if (update.serverSide != null) {
+          block.serverSide =
+            update.serverSide === true
+        }
+
+        if (update.input != null) {
+          block.input =
+            stringifyToolPayload(update.input)
+        }
+
+        if (update.inputDelta) {
+          block.input = limitText(
+            (block.input || '') +
+            update.inputDelta
+          )
+        }
+
+        if (update.output != null) {
+          block.output =
+            stringifyToolPayload(update.output)
+        }
+
+        syncMessageOutput(message)
+      }
+    }
+
     function createStreamRenderer (message) {
       let scheduled = false
       let frameId = null
       let timeoutId = null
-      let pendingText = ''
-      let pendingReasoning = ''
-      let finalText = null
-      let finalReasoning = null
-      let redacted = false
+      let updates = []
       let drainResolvers = []
 
       function resolveDrains () {
@@ -7573,40 +9644,18 @@
           timeoutId = null
         }
 
-        if (finalText != null) {
-          message.content = finalText
-          finalText = null
-          pendingText = ''
-        } else if (pendingText) {
-          message.content += pendingText
-          pendingText = ''
-        }
+        const frameUpdates = updates
 
-        if (message.showReasoning !== false) {
-          if (finalReasoning != null) {
-            message.reasoning = finalReasoning
-            finalReasoning = null
-            pendingReasoning = ''
-          } else if (pendingReasoning) {
-            message.reasoning += pendingReasoning
-            pendingReasoning = ''
-          }
+        updates = []
 
-          if (redacted) {
-            message.reasoningRedacted = true
-            redacted = false
-          }
-        }
+        frameUpdates.forEach(update => {
+          applyOutputUpdate(message, update)
+        })
 
         updateStreamingMessageDom(message)
         scrollToBottom(false)
 
-        if (
-          pendingText ||
-          pendingReasoning ||
-          finalText != null ||
-          finalReasoning != null
-        ) {
+        if (updates.length) {
           scheduleRender()
         } else {
           resolveDrains()
@@ -7628,31 +9677,18 @@
           )
       }
 
+      function queueUpdate (update) {
+        if (!update) return
+
+        updates.push(update)
+        scheduleRender()
+      }
+
       return {
-        appendReasoning (text) {
-          if (
-            text &&
-            message.showReasoning !== false
-          ) {
-            pendingReasoning += text
-            scheduleRender()
-          }
-        },
-
-        appendText (text) {
-          if (text) {
-            pendingText += text
-            scheduleRender()
-          }
-        },
-
         drain () {
           if (
             !scheduled &&
-            !pendingText &&
-            !pendingReasoning &&
-            finalText == null &&
-            finalReasoning == null
+            !updates.length
           ) {
             return Promise.resolve()
           }
@@ -7662,26 +9698,31 @@
           })
         },
 
-        markReasoningRedacted () {
-          redacted = true
-          scheduleRender()
+        finalizeTools () {
+          queueUpdate({
+            kind: 'finalize-tools'
+          })
         },
 
-        replaceReasoning (text) {
-          if (
-            text &&
-            message.showReasoning !== false
-          ) {
-            finalReasoning = text
-            scheduleRender()
-          }
+        replaceAll (blocks) {
+          if (!Array.isArray(blocks)) return
+
+          queueUpdate({
+            blocks,
+            kind: 'replace-all'
+          })
         },
 
-        replaceText (text) {
-          if (text) {
-            finalText = text
-            scheduleRender()
+        update (update) {
+          queueUpdate(update)
+        },
+
+        updateMany (nextUpdates) {
+          if (!Array.isArray(nextUpdates)) {
+            return
           }
+
+          nextUpdates.forEach(queueUpdate)
         }
       }
     }
@@ -7703,7 +9744,8 @@
     function handleStreamEvent (
       format,
       streamEvent,
-      renderer
+      renderer,
+      streamState
     ) {
       const data = parseStreamData(
         streamEvent.raw
@@ -7711,11 +9753,14 @@
 
       if (data == null) return
 
-      const result = format.parseEvent({
-        data,
-        event: streamEvent.event,
-        raw: streamEvent.raw
-      })
+      const result = format.parseEvent(
+        {
+          data,
+          event: streamEvent.event,
+          raw: streamEvent.raw
+        },
+        streamState
+      )
 
       if (result.error) {
         throw createApiError(
@@ -7724,23 +9769,16 @@
         )
       }
 
-      renderer.appendText(result.text)
-      renderer.appendReasoning(result.reasoning)
+      renderer.updateMany(result.updates)
 
-      if (result.finalText) {
-        renderer.replaceText(
-          result.finalText
+      if (result.finalBlocks) {
+        renderer.replaceAll(
+          result.finalBlocks
         )
       }
 
-      if (result.finalReasoning) {
-        renderer.replaceReasoning(
-          result.finalReasoning
-        )
-      }
-
-      if (result.reasoningRedacted) {
-        renderer.markReasoningRedacted()
+      if (result.finalizeTools) {
+        renderer.finalizeTools()
       }
     }
 
@@ -7873,6 +9911,14 @@
             'text/event-stream'
           )
         ) {
+          const streamState = {
+            anthropicBlocks: {},
+            interactionSteps: {},
+            lastGeminiCodeToolId: null,
+            sequence: 0,
+            sequentialBlocks: {}
+          }
+
           renderer =
             createStreamRenderer(message)
 
@@ -7882,11 +9928,13 @@
               handleStreamEvent(
                 format,
                 streamEvent,
-                renderer
+                renderer,
+                streamState
               )
             }
           )
 
+          renderer.finalizeTools()
           await renderer.drain()
         } else {
           let json
@@ -7911,16 +9959,9 @@
           const parsed =
             format.parseFull(json)
 
-          message.content = parsed.text || ''
-
-          if (
-            message.showReasoning !== false
-          ) {
-            message.reasoning =
-              parsed.reasoning || ''
-            message.reasoningRedacted =
-              parsed.reasoningRedacted === true
-          }
+          message.outputBlocks =
+            parsed.blocks || []
+          syncMessageOutput(message)
         }
 
         message.status = 'complete'
@@ -7981,6 +10022,7 @@
         id: createUniqueId(),
         model: state.modelId,
         modelLabel: state.modelId,
+        outputBlocks: [],
         reasoning: '',
         reasoningRedacted: false,
         role: 'assistant',
@@ -8009,6 +10051,7 @@
           'Tệp đính kèm vẫn đang được đọc.',
           'info'
         )
+
         return
       }
 
@@ -8017,6 +10060,7 @@
           'Mất kết nối mạng.',
           'error'
         )
+
         return
       }
 
@@ -8026,6 +10070,7 @@
           'error'
         )
         openEndpointDialog()
+
         return
       }
 
@@ -8035,6 +10080,7 @@
           'error'
         )
         openEndpointDialog()
+
         return
       }
 
@@ -8046,6 +10092,7 @@
           'error',
           5200
         )
+
         return
       }
 
@@ -8123,6 +10170,7 @@
           TEXT.generationBusy,
           'error'
         )
+
         return
       }
 
@@ -8147,6 +10195,13 @@
         id: createUniqueId(),
         role,
         status: 'complete'
+      }
+
+      if (isAssistantRole(role)) {
+        message.outputBlocks = []
+        message.reasoning = ''
+        message.reasoningRedacted = false
+        message.showReasoning = true
       }
 
       conversation.messages.push(message)
@@ -8174,6 +10229,7 @@
           TEXT.emptyMessage,
           'error'
         )
+
         return
       }
 
@@ -8187,6 +10243,18 @@
       message.content = content
       message.status = 'complete'
       delete message.error
+
+      if (isAssistantRole(message.role)) {
+        replaceMessageTextBlock(
+          message,
+          content
+        )
+      } else {
+        delete message.outputBlocks
+        delete message.reasoning
+        delete message.reasoningRedacted
+        delete message.showReasoning
+      }
 
       state.editingMessageId = null
       state.newMessageId = null
@@ -8228,6 +10296,7 @@
           TEXT.generationBusy,
           'error'
         )
+
         return
       }
 
@@ -8256,6 +10325,7 @@
           TEXT.generationBusy,
           'error'
         )
+
         return
       }
 
@@ -8596,6 +10666,7 @@
               'data-conversation-id'
             )
           )
+
           return
         }
 
@@ -8664,6 +10735,7 @@
                 'data-message-attachment-id'
               )
             )
+
             return
           }
 
@@ -8701,6 +10773,7 @@
                 }, 1200)
               }
             })
+
             return
           }
 
@@ -8718,6 +10791,7 @@
 
           if (action === 'open-endpoint-dialog') {
             openEndpointDialog()
+
             return
           }
 
@@ -8733,12 +10807,9 @@
               })
 
             if (message) {
-              const text = joinTextBlocks([
-                message.reasoning,
-                message.content
-              ])
-
-              copyText(text).then(copied => {
+              copyText(
+                message.content || ''
+              ).then(copied => {
                 showToast(
                   copied
                     ? TEXT.copied
@@ -8755,6 +10826,7 @@
                 TEXT.generationBusy,
                 'error'
               )
+
               return
             }
 
@@ -8800,17 +10872,17 @@
       messageList.addEventListener(
         'change',
         event => {
-          const select =
+          const roleSelect =
             event.target.closest(
               '[data-message-role]'
             )
 
-          if (!select) return
+          if (!roleSelect) return
 
           const conversation =
             getCurrentConversation()
           const messageId =
-            select.getAttribute(
+            roleSelect.getAttribute(
               'data-message-role'
             )
 
@@ -8827,13 +10899,47 @@
             })
 
           if (
-            message &&
-            MESSAGE_ROLES.includes(select.value)
+            !message ||
+            !MESSAGE_ROLES.includes(
+              roleSelect.value
+            )
           ) {
-            message.role = select.value
-            renderMessages()
-            scheduleStateSave()
+            return
           }
+
+          const previousRole = message.role
+
+          message.role = roleSelect.value
+
+          if (isAssistantRole(message.role)) {
+            message.outputBlocks =
+              previousRole === 'assistant'
+                ? getMessageOutputBlocks(message)
+                : [
+                    createTextBlock(
+                      message.id + ':text',
+                      message.content
+                    )
+                  ]
+            message.reasoning =
+              message.reasoning || ''
+            message.reasoningRedacted =
+              message.reasoningRedacted === true
+            message.showReasoning =
+              message.showReasoning !== false
+            message.status = 'complete'
+            syncMessageOutput(message)
+          } else {
+            delete message.outputBlocks
+            delete message.reasoning
+            delete message.reasoningRedacted
+            delete message.showReasoning
+            delete message.error
+            message.status = 'complete'
+          }
+
+          renderMessages()
+          scheduleStateSave()
         }
       )
 
@@ -8964,26 +11070,24 @@
         'topP'
       )
 
-      ;[
-        ['top-k', 'topK'],
-        ['max-tokens', 'maxTokens'],
-        ['thinking-budget', 'budget']
-      ].forEach(([id, property]) => {
-        selectElement('#' + id)
-          .addEventListener('input', event => {
-            const raw = event.target.value.trim()
+      NUMERIC_SETTING_BINDINGS.forEach(
+        ([id, property]) => {
+          selectElement('#' + id)
+            .addEventListener('input', event => {
+              const raw = event.target.value.trim()
 
-            state.settings[property] =
-              raw === ''
-                ? null
-                : Math.max(
-                    1,
-                    Math.floor(Number(raw) || 1)
-                  )
+              state.settings[property] =
+                raw === ''
+                  ? null
+                  : Math.max(
+                      1,
+                      Math.floor(Number(raw) || 1)
+                    )
 
-            scheduleStateSave()
-          })
-      })
+              scheduleStateSave()
+            })
+        }
+      )
 
       bindSettingToggle(
         'sampling-toggle',
@@ -9027,19 +11131,16 @@
           scheduleStateSave()
         })
 
-      ;[
-        ['response-verbosity', 'verbosity'],
-        ['reasoning-effort', 'effort'],
-        ['reasoning-mode', 'mode'],
-        ['thinking-level', 'level']
-      ].forEach(([id, property]) => {
-        selectElement('#' + id)
-          .addEventListener('change', event => {
-            state.settings[property] =
-              event.target.value || null
-            scheduleStateSave()
-          })
-      })
+      SELECT_SETTING_BINDINGS.forEach(
+        ([id, property]) => {
+          selectElement('#' + id)
+            .addEventListener('change', event => {
+              state.settings[property] =
+                event.target.value || null
+              scheduleStateSave()
+            })
+        }
+      )
 
       selectElement(
         '#add-variable-button'
