@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta
     name="viewport"
-    content="width=device-width, initial-scale=1, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
   >
   <meta
     name="description"
@@ -399,8 +399,8 @@
       border: 1px solid transparent;
       border-radius: var(--radius);
       display: flex;
-      gap: 4px;
-      padding: 0 6px 0 4px;
+      gap: 2px;
+      padding: 0 4px;
       position: relative;
     }
 
@@ -480,8 +480,8 @@
     }
 
     .conversation-action-button {
-      height: 28px;
-      width: 28px;
+      height: 27px;
+      width: 27px;
     }
 
     .sidebar-empty {
@@ -664,10 +664,6 @@
       text-align: center;
       text-overflow: ellipsis;
       white-space: nowrap;
-    }
-
-    .top-bar-spacer {
-      flex: 1;
     }
 
     .status-badge {
@@ -1592,9 +1588,19 @@
       white-space: nowrap;
     }
 
+    .composer-submit {
+      align-items: center;
+      display: flex;
+      flex: none;
+      gap: 9px;
+      margin-left: auto;
+    }
+
     .character-count {
       color: var(--faint);
       font: 10.5px var(--font-mono);
+      min-width: 1ch;
+      text-align: right;
     }
 
     .attachment-button {
@@ -1616,6 +1622,7 @@
       cursor: pointer;
       flex: none;
       height: 40px;
+      transition: background 0.15s ease, color 0.15s ease;
       width: 40px;
     }
 
@@ -1627,6 +1634,11 @@
       background: var(--error-soft);
       border: 1px solid var(--error);
       color: var(--error);
+    }
+
+    .stop-generation-button:hover:not(:disabled) {
+      background: var(--error);
+      color: #fff;
     }
 
     .message-editor textarea {
@@ -1682,6 +1694,24 @@
       margin: 0 0 10px;
     }
 
+    .settings .select-field {
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+
+    .settings select,
+    .endpoint-dialog-panel select {
+      max-width: none;
+    }
+
+    .configuration-actions {
+      display: flex;
+    }
+
+    .configuration-actions .button {
+      width: 100%;
+    }
+
     .field {
       margin-bottom: 16px;
       position: relative;
@@ -1703,10 +1733,29 @@
       margin-bottom: 6px;
     }
 
-    .field-header label,
-    .toggle-row label {
+    .field-header > label:first-child,
+    .toggle-row > label:first-child {
       font-size: 13px;
       font-weight: 500;
+    }
+
+    .parameter-auto {
+      align-items: center;
+      color: var(--muted);
+      cursor: pointer;
+      display: inline-flex;
+      flex: none;
+      font-size: 10.5px;
+      gap: 5px;
+      white-space: nowrap;
+    }
+
+    .parameter-auto input {
+      accent-color: var(--accent);
+      cursor: pointer;
+      height: 14px;
+      margin: 0;
+      width: 14px;
     }
 
     .parameter-row {
@@ -1732,6 +1781,11 @@
       accent-color: var(--accent);
       cursor: pointer;
       height: 26px;
+    }
+
+    .sampling-field.disabled > .field-header > label:first-child,
+    .reasoning-field.disabled label {
+      color: var(--faint);
     }
 
     .text-field,
@@ -1814,6 +1868,10 @@
       font-size: 11px;
       margin: 6px 0 0;
       overflow-wrap: anywhere;
+    }
+
+    .field-hint:empty {
+      display: none;
     }
 
     .field-hint code {
@@ -2098,10 +2156,6 @@
       margin: 0 0 12px;
     }
 
-    .endpoint-form select {
-      max-width: none;
-    }
-
     .endpoint-model-row,
     .endpoint-header-row,
     .endpoint-dialog-footer {
@@ -2215,14 +2269,7 @@
         padding: 8px 10px;
       }
 
-      select {
-        font-size: 12.5px;
-        max-width: 138px;
-      }
-
-      .select-label,
       .current-conversation-title,
-      .manage-endpoints-label,
       .composer-hint {
         display: none;
       }
@@ -2266,13 +2313,13 @@
       .endpoint-header-name {
         flex: 1 1 100%;
       }
+
+      .parameter-auto span {
+        display: none;
+      }
     }
 
     @media (max-width: 359px) {
-      select {
-        max-width: 106px;
-      }
-
       .status-badge {
         display: none;
       }
@@ -2389,48 +2436,10 @@
           <strong>Thái Sơ</strong>
         </div>
 
-        <div class="select-field">
-          <label
-            class="select-label"
-            for="endpoint-select"
-          >
-            Endpoint
-          </label>
-          <div class="select-wrapper">
-            <select id="endpoint-select"></select>
-          </div>
-        </div>
-
-        <div class="select-field">
-          <label
-            class="select-label"
-            for="model-select"
-          >
-            Mô hình
-          </label>
-          <div class="select-wrapper">
-            <select id="model-select"></select>
-          </div>
-        </div>
-
-        <button
-          type="button"
-          class="button button-ghost"
-          id="manage-endpoints-button"
-          aria-haspopup="dialog"
-          aria-controls="endpoint-dialog-root"
-          aria-label="Quản lí endpoint API"
-        >
-          <span data-icon="plug"></span>
-          <span class="manage-endpoints-label">Endpoint</span>
-        </button>
-
         <div
           class="current-conversation-title"
           id="current-conversation-title"
         ></div>
-
-        <div class="top-bar-spacer"></div>
 
         <span
           class="status-badge status-badge-idle"
@@ -2553,28 +2562,20 @@
                   Enter để gửi · Shift+Enter để xuống dòng
                 </span>
 
-                <span
-                  class="character-count"
-                  id="character-count"
-                  aria-hidden="true"
-                ></span>
-
-                <button
-                  type="button"
-                  class="send-button"
-                  id="send-message-button"
-                  data-icon="send"
-                  aria-label="Gửi tin nhắn"
-                ></button>
-
-                <button
-                  type="button"
-                  class="send-button stop-generation-button"
-                  id="stop-generation-button"
-                  data-icon="stop"
-                  aria-label="Dừng tạo phản hồi"
-                  hidden
-                ></button>
+                <div class="composer-submit">
+                  <span
+                    class="character-count"
+                    id="character-count"
+                    aria-hidden="true"
+                  ></span>
+                  <button
+                    type="button"
+                    class="send-button"
+                    id="send-message-button"
+                    data-icon="send"
+                    aria-label="Gửi tin nhắn"
+                  ></button>
+                </div>
               </div>
             </div>
           </div>
@@ -2610,6 +2611,47 @@
         </div>
 
         <div class="settings-body">
+          <section class="settings-section">
+            <h3 class="section-title">Endpoint và mô hình</h3>
+
+            <div class="select-field">
+              <label
+                class="select-label"
+                for="endpoint-select"
+              >
+                Endpoint
+              </label>
+              <div class="select-wrapper">
+                <select id="endpoint-select"></select>
+              </div>
+            </div>
+
+            <div class="select-field">
+              <label
+                class="select-label"
+                for="model-select"
+              >
+                Mô hình
+              </label>
+              <div class="select-wrapper">
+                <select id="model-select"></select>
+              </div>
+            </div>
+
+            <div class="configuration-actions">
+              <button
+                type="button"
+                class="button button-ghost"
+                id="manage-endpoints-button"
+                aria-haspopup="dialog"
+                aria-controls="endpoint-dialog-root"
+              >
+                <span data-icon="plug"></span>
+                Quản lí endpoint
+              </button>
+            </div>
+          </section>
+
           <section class="settings-section">
             <h3 class="section-title">System prompt</h3>
             <div class="field">
@@ -2673,9 +2715,20 @@
               </div>
             </div>
 
-            <div class="field sampling-field">
+            <div
+              class="field sampling-field"
+              id="temperature-field"
+            >
               <div class="field-header">
                 <label for="temperature-range">Nhiệt độ</label>
+                <label class="parameter-auto">
+                  <input
+                    type="checkbox"
+                    id="temperature-auto"
+                    checked
+                  >
+                  <span>API tự xác định</span>
+                </label>
               </div>
               <div class="parameter-row">
                 <input
@@ -2695,11 +2748,26 @@
                   aria-label="Giá trị nhiệt độ"
                 >
               </div>
+              <p
+                class="field-hint"
+                id="temperature-hint"
+              ></p>
             </div>
 
-            <div class="field sampling-field">
+            <div
+              class="field sampling-field"
+              id="top-p-field"
+            >
               <div class="field-header">
                 <label for="top-p-range">Top-p</label>
+                <label class="parameter-auto">
+                  <input
+                    type="checkbox"
+                    id="top-p-auto"
+                    checked
+                  >
+                  <span>API tự xác định</span>
+                </label>
               </div>
               <div class="parameter-row">
                 <input
@@ -2719,6 +2787,10 @@
                   aria-label="Giá trị top-p"
                 >
               </div>
+              <p
+                class="field-hint"
+                id="top-p-hint"
+              ></p>
             </div>
 
             <div class="field sampling-field">
@@ -2785,7 +2857,7 @@
             <div class="field reasoning-field">
               <div class="toggle-row">
                 <label for="show-reasoning-toggle">
-                  Hiển thị suy nghĩ
+                  Hiển thị suy luận
                 </label>
                 <button
                   type="button"
@@ -2909,7 +2981,7 @@
               class="screen-reader-only"
               for="tools-json"
             >
-              Cấu hình tool JSON5
+              Cấu hình công cụ JSON5
             </label>
             <textarea
               class="text-field monospace auto-resize-field tools-field"
@@ -3186,6 +3258,7 @@
     }
 
     const STORAGE_KEY = 'thaiso.playground.v2'
+    const STORAGE_VERSION = 3
     const MAXIMUM_FILES = 4
     const MAXIMUM_FILE_SIZE = 5 * 1024 * 1024
     const STREAM_RENDER_DELAY = 100
@@ -3219,14 +3292,6 @@
       'endpointName',
       'model',
       'modelLabel'
-    ]
-
-    const SAMPLING_CONTROL_IDS = [
-      'temperature-range',
-      'temperature-number',
-      'top-p-range',
-      'top-p-number',
-      'top-k'
     ]
 
     const REASONING_CONTROL_IDS = [
@@ -3274,21 +3339,21 @@
     const TOOL_TYPE_LABELS = {
       apply_patch_call: 'Áp dụng bản vá',
       code_execution_call: 'Thực thi mã',
-      code_interpreter_call: 'Code Interpreter',
+      code_interpreter_call: 'Thông dịch mã',
       computer_call: 'Điều khiển máy tính',
       custom_tool_call: 'Công cụ tuỳ chỉnh',
       file_search_call: 'Tìm kiếm tệp',
       function_call: 'Gọi hàm',
       google_maps_call: 'Google Maps',
-      google_search_call: 'Google Search',
+      google_search_call: 'Google Tìm kiếm',
       image_generation_call: 'Tạo ảnh',
       mcp_call: 'MCP',
       server_tool_use: 'Công cụ máy chủ',
       shell_call: 'Shell',
       tool_call: 'Công cụ',
-      tool_search_call: 'Tìm công cụ',
-      tool_use: 'Gọi công cụ',
-      web_fetch_call: 'Tải nội dung web',
+      tool_search_call: 'Truy vấn công cụ',
+      tool_use: 'Sử dụng công cụ',
+      web_fetch_call: 'Fetch nội dung web',
       web_search_call: 'Tìm kiếm web'
     }
 
@@ -3297,6 +3362,8 @@
       copied: 'Đã sao chép',
       copyFailed: 'Không thể sao chép',
       delete: 'Xoá',
+      duplicate: 'Duplicate',
+      duplicatedConversation: 'Đã duplicate cuộc trò chuyện.',
       emptyMessage: 'Nội dung không được để trống.',
       endpointRequired: 'Hãy thêm endpoint API trước khi gửi.',
       generationBusy:
@@ -3373,7 +3440,7 @@
       spark:
         '<path d="M12 2l2.4 6.4L21 11l-6.6 2.6L12 20l-2.4-6.4L3 11l6.6-2.6z"/>',
       stop:
-        '<rect width="12" height="12" x="6" y="6" rx="1.5"/>',
+        '<rect width="12" height="12" x="6" y="6" rx="1"/>',
       sun:
         '<circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>',
       terminal:
@@ -3443,20 +3510,53 @@
         Math.random().toString(36).slice(2, 10)
     }
 
+    function cloneValue (value) {
+      if (typeof window.structuredClone === 'function') {
+        return window.structuredClone(value)
+      }
+
+      return JSON.parse(JSON.stringify(value))
+    }
+
     function clampValue (value, minimum, maximum) {
       return Math.min(maximum, Math.max(minimum, value))
     }
 
     function debounce (callback, delay) {
       let timeoutId = null
+      let latestArguments = []
 
-      return (...args) => {
+      const debounced = (...args) => {
+        latestArguments = args
         window.clearTimeout(timeoutId)
-        timeoutId = window.setTimeout(
-          () => callback(...args),
-          delay
-        )
+
+        timeoutId = window.setTimeout(() => {
+          const callbackArguments = latestArguments
+
+          timeoutId = null
+          latestArguments = []
+          callback(...callbackArguments)
+        }, delay)
       }
+
+      debounced.cancel = () => {
+        window.clearTimeout(timeoutId)
+        timeoutId = null
+        latestArguments = []
+      }
+
+      debounced.flush = () => {
+        if (timeoutId == null) return
+
+        const callbackArguments = latestArguments
+
+        window.clearTimeout(timeoutId)
+        timeoutId = null
+        latestArguments = []
+        callback(...callbackArguments)
+      }
+
+      return debounced
     }
 
     function escapeHtml (value) {
@@ -3643,6 +3743,7 @@
 
     function stringifyToolPayload (value) {
       if (value == null) return ''
+
       if (typeof value === 'string') {
         return limitText(value)
       }
@@ -4093,6 +4194,29 @@
       )
     }
 
+    function sanitizeVariableEntries (entries) {
+      if (!Array.isArray(entries)) return []
+
+      return entries
+        .filter(entry => {
+          return entry && typeof entry === 'object'
+        })
+        .map(entry => ({
+          id:
+            typeof entry.id === 'string'
+              ? entry.id
+              : createUniqueId(),
+          name:
+            typeof entry.name === 'string'
+              ? entry.name
+              : '',
+          source:
+            typeof entry.source === 'string'
+              ? entry.source
+              : ''
+        }))
+    }
+
     function buildVariablesFromEntries (entries) {
       const variables = Object.create(null)
       const names = new Set()
@@ -4418,6 +4542,79 @@
 
     function anthropicCannotDisableThinking (model) {
       return /(?:fable|mythos)/i.test(model || '')
+    }
+
+    function anthropicRequiresAutomaticSampling (model) {
+      const modelId = String(model || '')
+        .toLowerCase()
+
+      if (
+        /claude-(?:opus|sonnet|haiku)-[5-9](?:-|$)/.test(
+          modelId
+        )
+      ) {
+        return true
+      }
+
+      const versionMatch = modelId.match(
+        /claude-(?:opus|sonnet|haiku)-4[-.]([0-9]+)/
+      )
+
+      return Boolean(
+        versionMatch &&
+        Number(versionMatch[1]) >= 7
+      )
+    }
+
+    function getSamplingCapabilities (
+      endpoint,
+      model,
+      settings
+    ) {
+      const capabilities = {
+        reason: '',
+        temperature: true,
+        topK: true,
+        topP: true
+      }
+
+      if (!endpoint) return capabilities
+
+      if (endpoint.format === 'interactions') {
+        capabilities.reason =
+          'Interactions API tự xác định tham số lấy mẫu.'
+        capabilities.temperature = false
+        capabilities.topK = false
+        capabilities.topP = false
+
+        return capabilities
+      }
+
+      if (
+        endpoint.format === 'messages' &&
+        settings.reasoningEnabled
+      ) {
+        capabilities.reason =
+          'Messages API tự xác định tham số lấy mẫu khi suy luận được bật.'
+        capabilities.temperature = false
+        capabilities.topK = false
+        capabilities.topP = false
+
+        return capabilities
+      }
+
+      if (
+        endpoint.format === 'messages' &&
+        anthropicRequiresAutomaticSampling(model)
+      ) {
+        capabilities.reason =
+          'Mô hình Claude này yêu cầu API tự xác định tham số lấy mẫu.'
+        capabilities.temperature = false
+        capabilities.topK = false
+        capabilities.topP = false
+      }
+
+      return capabilities
     }
 
     function createApiError (kind, message, status) {
@@ -5142,9 +5339,14 @@
           }
 
           if (context.settings.samplingEnabled) {
-            body.temperature =
-              context.settings.temperature
-            body.top_p = context.settings.topP
+            if (!context.settings.temperatureAuto) {
+              body.temperature =
+                context.settings.temperature
+            }
+
+            if (!context.settings.topPAuto) {
+              body.top_p = context.settings.topP
+            }
           }
 
           if (context.settings.maxTokens != null) {
@@ -5460,16 +5662,27 @@
             }
           }
 
+          const automaticSampling =
+            anthropicRequiresAutomaticSampling(
+              context.model
+            )
+
           if (
             !context.settings.reasoningEnabled &&
+            !automaticSampling &&
             context.settings.samplingEnabled
           ) {
-            body.temperature = clampValue(
-              context.settings.temperature,
-              0,
-              1
-            )
-            body.top_p = context.settings.topP
+            if (!context.settings.temperatureAuto) {
+              body.temperature = clampValue(
+                context.settings.temperature,
+                0,
+                1
+              )
+            }
+
+            if (!context.settings.topPAuto) {
+              body.top_p = context.settings.topP
+            }
 
             if (context.settings.topK != null) {
               body.top_k = context.settings.topK
@@ -5774,10 +5987,15 @@
           const generationConfig = {}
 
           if (context.settings.samplingEnabled) {
-            generationConfig.temperature =
-              context.settings.temperature
-            generationConfig.topP =
-              context.settings.topP
+            if (!context.settings.temperatureAuto) {
+              generationConfig.temperature =
+                context.settings.temperature
+            }
+
+            if (!context.settings.topPAuto) {
+              generationConfig.topP =
+                context.settings.topP
+            }
 
             if (context.settings.topK != null) {
               generationConfig.topK =
@@ -6139,9 +6357,14 @@
           }
 
           if (context.settings.samplingEnabled) {
-            body.temperature =
-              context.settings.temperature
-            body.top_p = context.settings.topP
+            if (!context.settings.temperatureAuto) {
+              body.temperature =
+                context.settings.temperature
+            }
+
+            if (!context.settings.topPAuto) {
+              body.top_p = context.settings.topP
+            }
           }
 
           if (context.settings.maxTokens != null) {
@@ -6844,9 +7067,12 @@
         streaming: true,
         systemPrompt: '',
         temperature: 1,
+        temperatureAuto: true,
         toolsJson: '',
         topK: null,
         topP: 1,
+        topPAuto: true,
+        variableEntries: [],
         variables: {},
         verbosity: null,
         zeroDataRetention: true
@@ -6928,6 +7154,25 @@
           ? raw.variables
           : {}
 
+      settings.variableEntries =
+        Array.isArray(raw.variableEntries)
+          ? sanitizeVariableEntries(
+              raw.variableEntries
+            )
+          : createVariableEntries(
+              settings.variables
+            )
+
+      settings.temperatureAuto =
+        typeof raw.temperatureAuto === 'boolean'
+          ? raw.temperatureAuto
+          : !settings.samplingEnabled
+
+      settings.topPAuto =
+        typeof raw.topPAuto === 'boolean'
+          ? raw.topPAuto
+          : !settings.samplingEnabled
+
       settings.verbosity = [
         'low',
         'medium',
@@ -6964,6 +7209,46 @@
         : null
 
       return settings
+    }
+
+    function sanitizeConfiguration (
+      configuration,
+      fallbackConfiguration
+    ) {
+      const source = configuration &&
+        typeof configuration === 'object'
+        ? configuration
+        : {}
+
+      const fallback = fallbackConfiguration &&
+        typeof fallbackConfiguration === 'object'
+        ? fallbackConfiguration
+        : {}
+
+      return {
+        endpointId:
+          typeof source.endpointId === 'string'
+            ? source.endpointId
+            : typeof fallback.endpointId === 'string'
+              ? fallback.endpointId
+              : null,
+        modelId:
+          typeof source.modelId === 'string'
+            ? source.modelId
+            : typeof fallback.modelId === 'string'
+              ? fallback.modelId
+              : '',
+        settings: sanitizeSettings(
+          source.settings ||
+          fallback.settings
+        )
+      }
+    }
+
+    function cloneConfiguration (configuration) {
+      return sanitizeConfiguration(
+        cloneValue(configuration)
+      )
     }
 
     function sanitizeAttachment (attachment) {
@@ -7014,6 +7299,13 @@
         return null
       }
 
+      const allowedStatuses = [
+        'complete',
+        'error',
+        'stopped',
+        'streaming'
+      ]
+
       const output = {
         content:
           typeof message.content === 'string'
@@ -7051,7 +7343,11 @@
         status:
           message.status === 'streaming'
             ? 'stopped'
-            : message.status || 'complete'
+            : allowedStatuses.includes(
+                message.status
+              )
+              ? message.status
+              : 'complete'
       }
 
       MESSAGE_METADATA_PROPERTIES.forEach(
@@ -7123,7 +7419,10 @@
       return output
     }
 
-    function sanitizeConversation (conversation) {
+    function sanitizeConversation (
+      conversation,
+      fallbackConfiguration
+    ) {
       if (
         !conversation ||
         typeof conversation !== 'object' ||
@@ -7133,6 +7432,10 @@
       }
 
       return {
+        configuration: sanitizeConfiguration(
+          conversation.configuration,
+          fallbackConfiguration
+        ),
         createdAt:
           Number.isFinite(conversation.createdAt)
             ? conversation.createdAt
@@ -7231,8 +7534,30 @@
 
     const savedState = loadSavedState()
 
+    const legacyConfiguration =
+      sanitizeConfiguration(
+        savedState &&
+        savedState.workspaceConfiguration
+          ? savedState.workspaceConfiguration
+          : {
+              endpointId:
+                savedState
+                  ? savedState.endpointId
+                  : null,
+              modelId:
+                savedState
+                  ? savedState.modelId
+                  : '',
+              settings:
+                savedState
+                  ? savedState.settings
+                  : null
+            }
+      )
+
     const state = {
       abortController: null,
+      activeConfiguration: null,
       activeConversationId: null,
       attachments: [],
       conversationSearchQuery: '',
@@ -7240,7 +7565,12 @@
         savedState &&
         Array.isArray(savedState.conversations)
           ? savedState.conversations
-              .map(sanitizeConversation)
+              .map(conversation => {
+                return sanitizeConversation(
+                  conversation,
+                  legacyConfiguration
+                )
+              })
               .filter(Boolean)
           : [],
       editingMessageId: null,
@@ -7258,11 +7588,7 @@
       newMessageId: null,
       openDrawerSelector: null,
       pendingAttachmentReads: 0,
-      settings: sanitizeSettings(
-        savedState
-          ? savedState.settings
-          : null
-      ),
+      settings: createDefaultSettings(),
       theme:
         savedState &&
         savedState.theme === 'light'
@@ -7277,53 +7603,12 @@
           !savedState ||
           !savedState.ui ||
           savedState.ui.sidebarOpen !== false
-      }
+      },
+      workspaceConfiguration:
+        legacyConfiguration
     }
 
-    function initializeSelectedState () {
-      const savedEndpointId =
-        savedState && savedState.endpointId
-
-      state.endpointId =
-        state.endpoints.some(endpoint => {
-          return endpoint.id === savedEndpointId
-        })
-          ? savedEndpointId
-          : state.endpoints[0]
-            ? state.endpoints[0].id
-            : null
-
-      const endpoint = getCurrentEndpoint()
-      const savedModelId =
-        savedState && savedState.modelId
-
-      state.modelId =
-        endpoint &&
-        endpoint.models.includes(savedModelId)
-          ? savedModelId
-          : endpoint && endpoint.models[0]
-            ? endpoint.models[0]
-            : ''
-
-      const savedConversationId =
-        savedState && savedState.activeId
-
-      state.activeConversationId =
-        state.conversations.some(conversation => {
-          return conversation.id ===
-            savedConversationId
-        })
-          ? savedConversationId
-          : state.conversations[0]
-            ? state.conversations[0].id
-            : null
-    }
-
-    initializeSelectedState()
-
-    let variableEntries = createVariableEntries(
-      state.settings.variables
-    )
+    let variableEntries = []
     let markdownReader = null
     let markdownWriter = null
     let modalState = null
@@ -7333,6 +7618,7 @@
     let endpointFormModels = []
     let endpointFormHeaders = []
     let shouldStickToBottom = true
+    let scheduleVariableValidation = null
 
     const mobileLayoutMediaQuery =
       window.matchMedia('(max-width: 1279px)')
@@ -7356,14 +7642,125 @@
       ) || null
     }
 
-    function parseRequestInputs () {
+    function normalizeConfigurationSelection (
+      configuration
+    ) {
+      const endpointExists =
+        state.endpoints.some(endpoint => {
+          return endpoint.id ===
+            configuration.endpointId
+        })
+
+      if (!endpointExists) {
+        configuration.endpointId =
+          state.endpoints[0]
+            ? state.endpoints[0].id
+            : null
+      }
+
+      const endpoint =
+        getEndpointById(configuration.endpointId)
+
+      if (
+        !endpoint ||
+        !endpoint.models.includes(
+          configuration.modelId
+        )
+      ) {
+        configuration.modelId =
+          endpoint && endpoint.models[0]
+            ? endpoint.models[0]
+            : ''
+      }
+
+      return configuration
+    }
+
+    function activateConfiguration (configuration) {
+      const activeConfiguration =
+        normalizeConfigurationSelection(
+          configuration ||
+          state.workspaceConfiguration
+        )
+
+      state.activeConfiguration =
+        activeConfiguration
+      state.endpointId =
+        activeConfiguration.endpointId
+      state.modelId =
+        activeConfiguration.modelId
+      state.settings =
+        activeConfiguration.settings
+
+      if (
+        !Array.isArray(
+          state.settings.variableEntries
+        )
+      ) {
+        state.settings.variableEntries =
+          createVariableEntries(
+            state.settings.variables
+          )
+      }
+
+      variableEntries =
+        state.settings.variableEntries
+    }
+
+    function syncActiveConfiguration () {
+      const configuration =
+        state.activeConfiguration ||
+        state.workspaceConfiguration
+
+      configuration.endpointId =
+        state.endpointId
+      configuration.modelId =
+        state.modelId
+      configuration.settings =
+        state.settings
+    }
+
+    function initializeSelectedState () {
+      const savedConversationId =
+        savedState && savedState.activeId
+
+      state.activeConversationId =
+        state.conversations.some(conversation => {
+          return conversation.id ===
+            savedConversationId
+        })
+          ? savedConversationId
+          : state.conversations[0]
+            ? state.conversations[0].id
+            : null
+
+      const conversation =
+        getCurrentConversation()
+
+      activateConfiguration(
+        conversation
+          ? conversation.configuration
+          : state.workspaceConfiguration
+      )
+    }
+
+    initializeSelectedState()
+
+    function parseConfigurationInputs (
+      configuration
+    ) {
+      const settings =
+        configuration.settings
+
       const variables =
-        buildVariablesFromEntries(variableEntries)
+        buildVariablesFromEntries(
+          settings.variableEntries
+        )
 
       const tools =
-        parseToolsJson(state.settings.toolsJson)
+        parseToolsJson(settings.toolsJson)
 
-      state.settings.variables = variables
+      settings.variables = variables
 
       return {
         tools,
@@ -7371,13 +7768,29 @@
       }
     }
 
-    function buildRequestSettings () {
-      const inputs = parseRequestInputs()
+    function parseRequestInputs () {
+      return parseConfigurationInputs(
+        state.activeConfiguration
+      )
+    }
+
+    function buildRequestSettings (
+      configuration
+    ) {
+      const activeConfiguration =
+        configuration ||
+        state.activeConfiguration
+
+      const inputs =
+        parseConfigurationInputs(
+          activeConfiguration
+        )
 
       return {
-        ...state.settings,
+        ...activeConfiguration.settings,
         systemPrompt: interpolateVariables(
-          state.settings.systemPrompt,
+          activeConfiguration.settings
+            .systemPrompt,
           inputs.variables
         ),
         tools: inputs.tools,
@@ -7386,6 +7799,8 @@
     }
 
     function createStoredState () {
+      syncActiveConfiguration()
+
       return {
         activeId: state.activeConversationId,
         conversations:
@@ -7418,19 +7833,16 @@
                 return storedMessage
               })
           })),
-        endpointId: state.endpointId,
         endpoints: state.endpoints,
-        modelId: state.modelId,
-        settings: state.settings,
         theme: state.theme,
         ui: state.ui,
-        v: 2
+        v: STORAGE_VERSION,
+        workspaceConfiguration:
+          state.workspaceConfiguration
       }
     }
 
     function saveStateNow () {
-      refreshRequestBodyPreview()
-
       try {
         localStorage.setItem(
           STORAGE_KEY,
@@ -7441,10 +7853,39 @@
       }
     }
 
-    const scheduleStateSave = debounce(
+    const scheduleStorageSave = debounce(
       saveStateNow,
-      250
+      650
     )
+
+    const schedulePreviewRefresh = debounce(
+      refreshRequestBodyPreview,
+      180
+    )
+
+    function scheduleStateSave () {
+      syncActiveConfiguration()
+      schedulePreviewRefresh()
+      scheduleStorageSave()
+    }
+
+    function prepareConfigurationSwitch () {
+      if (scheduleVariableValidation) {
+        scheduleVariableValidation.cancel()
+      }
+
+      try {
+        state.settings.variables =
+          buildVariablesFromEntries(
+            variableEntries
+          )
+      } catch {
+        state.settings.variables =
+          state.settings.variables || {}
+      }
+
+      syncActiveConfiguration()
+    }
 
     function getMarkdownEngine () {
       if (!window.commonmark) return null
@@ -7663,7 +8104,7 @@
             ${options.body ? `<div class="modal-body">${escapeHtml(options.body)}</div>` : ''}
             ${options.input != null ? `<label class="screen-reader-only" for="modal-input">${escapeHtml(options.title)}</label><input type="text" class="text-field" id="modal-input" value="${escapeHtml(options.input)}">` : ''}
             <div class="modal-actions">
-              <button type="button" class="button" data-close-modal>Huỷ</button>
+              <button type="button" class="button" data-close-modal>${TEXT.cancel}</button>
               <button type="button" class="button ${options.danger ? 'button-danger' : 'button-accent'}" data-confirm-modal>${escapeHtml(options.confirmText || 'OK')}</button>
             </div>
           </div>`
@@ -7748,7 +8189,14 @@
     }
 
     function createConversation (activate = true) {
+      prepareConfigurationSwitch()
+
       const conversation = {
+        configuration:
+          cloneConfiguration(
+            state.activeConfiguration ||
+            state.workspaceConfiguration
+          ),
         createdAt: Date.now(),
         id: createUniqueId(),
         messages: [],
@@ -7763,12 +8211,104 @@
       if (activate) {
         state.activeConversationId =
           conversation.id
+        activateConfiguration(
+          conversation.configuration
+        )
       }
 
       renderSidebar()
       scheduleStateSave()
 
       return conversation
+    }
+
+    function cloneMessageForDuplicate (message) {
+      const cloned = cloneValue(message)
+      const messageId = createUniqueId()
+
+      cloned.id = messageId
+      cloned.createdAt = Date.now()
+
+      if (cloned.status === 'streaming') {
+        cloned.status = 'stopped'
+      }
+
+      if (Array.isArray(cloned.attachments)) {
+        cloned.attachments =
+          cloned.attachments.map(attachment => ({
+            ...attachment,
+            id: createUniqueId()
+          }))
+      }
+
+      if (Array.isArray(cloned.outputBlocks)) {
+        cloned.outputBlocks =
+          cloned.outputBlocks.map((block, index) => ({
+            ...block,
+            id:
+              messageId +
+              ':block:' +
+              index
+          }))
+      }
+
+      return sanitizeMessage(cloned)
+    }
+
+    function duplicateConversation (conversation) {
+      if (state.generating) {
+        showToast(
+          TEXT.generationBusy,
+          'error'
+        )
+
+        return
+      }
+
+      prepareConfigurationSwitch()
+
+      const now = Date.now()
+      const duplicate = {
+        configuration:
+          cloneConfiguration(
+            conversation.configuration
+          ),
+        createdAt: now,
+        id: createUniqueId(),
+        messages:
+          conversation.messages
+            .map(cloneMessageForDuplicate)
+            .filter(Boolean),
+        pinned: false,
+        renamed: true,
+        title:
+          conversation.title +
+          ' (bản sao)',
+        updatedAt: now
+      }
+
+      state.conversations.unshift(duplicate)
+      state.activeConversationId =
+        duplicate.id
+
+      activateConfiguration(
+        duplicate.configuration
+      )
+
+      renderEndpointSelect()
+      renderModelSelect()
+      renderSettingsPanel()
+      renderSidebar()
+      renderMessages()
+      renderTopBar()
+      scheduleStateSave()
+      closeDrawers()
+      scrollToBottom(true)
+
+      showToast(
+        TEXT.duplicatedConversation,
+        'success'
+      )
     }
 
     function createConversationItemHtml (
@@ -7786,6 +8326,7 @@
           </button>
           <div class="conversation-actions">
             <button type="button" class="conversation-action-button" data-conversation-action="pin" aria-pressed="${conversation.pinned}" aria-label="${conversation.pinned ? 'Bỏ ghim' : 'Ghim'} cuộc trò chuyện">${createIconSvg('pin', 'icon-small')}</button>
+            <button type="button" class="conversation-action-button" data-conversation-action="duplicate" aria-label="Duplicate cuộc trò chuyện">${createIconSvg('copy', 'icon-small')}</button>
             <button type="button" class="conversation-action-button" data-conversation-action="rename" aria-label="Đổi tên cuộc trò chuyện">${createIconSvg('pencil', 'icon-small')}</button>
             <button type="button" class="conversation-action-button" data-conversation-action="delete" aria-label="Xoá cuộc trò chuyện">${createIconSvg('trash', 'icon-small')}</button>
           </div>
@@ -7870,10 +8411,26 @@
     }
 
     function selectConversation (conversationId) {
+      const conversation =
+        state.conversations.find(item => {
+          return item.id === conversationId
+        })
+
+      if (!conversation) return
+
+      prepareConfigurationSwitch()
+
       state.activeConversationId = conversationId
       state.editingMessageId = null
       state.newMessageId = null
 
+      activateConfiguration(
+        conversation.configuration
+      )
+
+      renderEndpointSelect()
+      renderModelSelect()
+      renderSettingsPanel()
       renderSidebar()
       renderMessages()
       renderTopBar()
@@ -7892,6 +8449,11 @@
         })
 
       if (!conversation) return
+
+      if (action === 'duplicate') {
+        duplicateConversation(conversation)
+        return
+      }
 
       if (action === 'pin') {
         conversation.pinned =
@@ -7942,21 +8504,38 @@
 
         if (confirmed !== true) return
 
+        const deletingActive =
+          state.activeConversationId ===
+          conversationId
+
+        if (deletingActive) {
+          prepareConfigurationSwitch()
+        }
+
         state.conversations =
           state.conversations.filter(item => {
             return item.id !== conversationId
           })
 
-        if (
-          state.activeConversationId ===
-          conversationId
-        ) {
+        if (deletingActive) {
           state.activeConversationId =
             state.conversations[0]
               ? state.conversations[0].id
               : null
+
+          const nextConversation =
+            getCurrentConversation()
+
+          activateConfiguration(
+            nextConversation
+              ? nextConversation.configuration
+              : state.workspaceConfiguration
+          )
         }
 
+        renderEndpointSelect()
+        renderModelSelect()
+        renderSettingsPanel()
         renderSidebar()
         renderMessages()
         renderTopBar()
@@ -8029,7 +8608,7 @@
           return `
             <div class="trace-item reasoning-redacted">
               ${createIconSvg('info', 'icon-small')}
-              <span>Một phần suy nghĩ đã được API ẩn.</span>
+              <span>Một phần suy luận đã được API ẩn.</span>
             </div>`
         }
 
@@ -8041,8 +8620,8 @@
       }).join('')
 
       const label = hasTool
-        ? 'Suy nghĩ và công cụ'
-        : 'Suy nghĩ'
+        ? 'Suy luận và sử dụng công cụ'
+        : 'Suy luận'
 
       return `
         <details class="reasoning-panel"${message.status === 'streaming' ? ' open' : ''}>
@@ -8398,6 +8977,7 @@
           'status-badge status-badge-offline'
         status.innerHTML =
           '<span class="status-dot status-dot-offline" aria-hidden="true"></span><span>Mất kết nối mạng</span>'
+        status.title = ''
 
         return
       }
@@ -8409,6 +8989,7 @@
           'status-badge status-badge-idle'
         status.innerHTML =
           '<span class="status-dot status-dot-idle" aria-hidden="true"></span><span>Chưa cấu hình</span>'
+        status.title = ''
 
         return
       }
@@ -8421,6 +9002,8 @@
         '</span>'
       status.title =
         API_FORMATS[endpoint.format].label +
+        ' · ' +
+        state.modelId +
         ' · ' +
         endpoint.baseUrl
     }
@@ -8467,20 +9050,38 @@
         conversation.messages.length
       )
       const hasInput =
-        state.messageDraft.trim() ||
-        state.attachments.length
+        Boolean(
+          state.messageDraft.trim() ||
+          state.attachments.length
+        )
 
-      const send =
+      const button =
         selectElement('#send-message-button')
-      const stop =
-        selectElement('#stop-generation-button')
 
-      send.hidden = state.generating
-      stop.hidden = !state.generating
-      send.disabled =
-        state.generating ||
-        state.pendingAttachmentReads > 0 ||
-        (!hasMessages && !hasInput)
+      button.classList.toggle(
+        'stop-generation-button',
+        state.generating
+      )
+
+      button.innerHTML = createIconSvg(
+        state.generating
+          ? 'stop'
+          : 'send'
+      )
+
+      button.setAttribute(
+        'aria-label',
+        state.generating
+          ? 'Dừng tạo phản hồi'
+          : 'Gửi tin nhắn'
+      )
+
+      button.disabled =
+        !state.generating &&
+        (
+          state.pendingAttachmentReads > 0 ||
+          (!hasMessages && !hasInput)
+        )
 
       selectElement(
         '#character-count'
@@ -8684,6 +9285,8 @@
         !endpoint ||
         !endpoint.models.length
       ) {
+        state.modelId = ''
+        syncActiveConfiguration()
         select.disabled = true
         select.innerHTML =
           '<option value="">Chưa có mô hình</option>'
@@ -8695,6 +9298,7 @@
         !endpoint.models.includes(state.modelId)
       ) {
         state.modelId = endpoint.models[0]
+        syncActiveConfiguration()
       }
 
       select.disabled = false
@@ -8716,8 +9320,10 @@
           ? endpoint.models[0]
           : ''
 
+      syncActiveConfiguration()
       renderEndpointSelect()
       renderModelSelect()
+      renderSamplingControls()
       renderTopBar()
       renderEndpointList()
       scheduleStateSave()
@@ -9019,9 +9625,11 @@
             : endpoint.models[0] || ''
       }
 
+      syncActiveConfiguration()
       renderEndpointList()
       renderEndpointSelect()
       renderModelSelect()
+      renderSamplingControls()
       renderTopBar()
       scheduleStateSave()
       hideEndpointForm()
@@ -9069,9 +9677,11 @@
             : ''
       }
 
+      syncActiveConfiguration()
       renderEndpointList()
       renderEndpointSelect()
       renderModelSelect()
+      renderSamplingControls()
       renderTopBar()
       scheduleStateSave()
     }
@@ -9102,6 +9712,22 @@
         message.hidden = true
         message.textContent = ''
       })
+    }
+
+    function clearVariableRowError (row) {
+      row
+        .querySelectorAll('[aria-invalid="true"]')
+        .forEach(input => {
+          input.removeAttribute('aria-invalid')
+        })
+
+      const message =
+        row.querySelector('.variable-error')
+
+      if (message) {
+        message.hidden = true
+        message.textContent = ''
+      }
     }
 
     function validateVariableEntries () {
@@ -9165,8 +9791,19 @@
           validateVariableEntries()
         scheduleStateSave()
       } catch {
-        refreshRequestBodyPreview()
+        schedulePreviewRefresh()
       }
+    }
+
+    scheduleVariableValidation = debounce(
+      syncVariables,
+      360
+    )
+
+    function scheduleVariableDraftUpdate () {
+      syncActiveConfiguration()
+      scheduleStorageSave()
+      scheduleVariableValidation()
     }
 
     function renderToggle (id, checked) {
@@ -9174,6 +9811,109 @@
         'aria-checked',
         checked ? 'true' : 'false'
       )
+    }
+
+    function renderSamplingControls () {
+      const settings = state.settings
+      const capabilities =
+        getSamplingCapabilities(
+          getCurrentEndpoint(),
+          state.modelId,
+          settings
+        )
+
+      const samplingEnabled =
+        settings.samplingEnabled
+
+      const temperatureAutomatic =
+        settings.temperatureAuto ||
+        !capabilities.temperature
+
+      const topPAutomatic =
+        settings.topPAuto ||
+        !capabilities.topP
+
+      const temperatureAuto =
+        selectElement('#temperature-auto')
+      const topPAuto =
+        selectElement('#top-p-auto')
+
+      temperatureAuto.checked =
+        temperatureAutomatic
+      temperatureAuto.disabled =
+        !samplingEnabled ||
+        !capabilities.temperature
+
+      topPAuto.checked =
+        topPAutomatic
+      topPAuto.disabled =
+        !samplingEnabled ||
+        !capabilities.topP
+
+      selectElement(
+        '#temperature-range'
+      ).disabled =
+        !samplingEnabled ||
+        temperatureAutomatic
+
+      selectElement(
+        '#temperature-number'
+      ).disabled =
+        !samplingEnabled ||
+        temperatureAutomatic
+
+      selectElement(
+        '#top-p-range'
+      ).disabled =
+        !samplingEnabled ||
+        topPAutomatic
+
+      selectElement(
+        '#top-p-number'
+      ).disabled =
+        !samplingEnabled ||
+        topPAutomatic
+
+      selectElement('#top-k').disabled =
+        !samplingEnabled ||
+        !capabilities.topK
+
+      selectElement(
+        '#temperature-field'
+      ).classList.toggle(
+        'disabled',
+        !samplingEnabled ||
+        !capabilities.temperature
+      )
+
+      selectElement(
+        '#top-p-field'
+      ).classList.toggle(
+        'disabled',
+        !samplingEnabled ||
+        !capabilities.topP
+      )
+
+      const automaticHint =
+        'Tham số sẽ được bỏ khỏi yêu cầu để API dùng giá trị mặc định của mô hình.'
+
+      selectElement(
+        '#temperature-hint'
+      ).textContent =
+        !capabilities.temperature
+          ? capabilities.reason
+          : settings.temperatureAuto
+            ? automaticHint
+            : ''
+
+      selectElement(
+        '#top-p-hint'
+      ).textContent =
+        !capabilities.topP
+          ? capabilities.reason
+          : settings.topPAuto
+            ? automaticHint
+            : ''
     }
 
     function renderSettingsPanel () {
@@ -9242,16 +9982,21 @@
         settings.zeroDataRetention
       )
 
-      SAMPLING_CONTROL_IDS.forEach(id => {
-        selectElement('#' + id).disabled =
-          !settings.samplingEnabled
-      })
-
       REASONING_CONTROL_IDS.forEach(id => {
         selectElement('#' + id).disabled =
           !settings.reasoningEnabled
       })
 
+      selectElements(
+        '.reasoning-field'
+      ).forEach(field => {
+        field.classList.toggle(
+          'disabled',
+          !settings.reasoningEnabled
+        )
+      })
+
+      renderSamplingControls()
       renderVariableList()
       resizeTextarea(
         selectElement('#system-prompt'),
@@ -9266,7 +10011,10 @@
     function resetSettings () {
       state.settings =
         createDefaultSettings()
-      variableEntries = []
+      variableEntries =
+        state.settings.variableEntries
+      syncActiveConfiguration()
+
       renderSettingsPanel()
       scheduleStateSave()
 
@@ -9350,7 +10098,9 @@
 
       try {
         const settings =
-          buildRequestSettings()
+          buildRequestSettings(
+            state.activeConfiguration
+          )
         const conversation =
           getCurrentConversation()
         const messages = conversation
@@ -9833,7 +10583,9 @@
         }
 
         const settings =
-          buildRequestSettings()
+          buildRequestSettings(
+            conversation.configuration
+          )
         const messages =
           buildCanonicalMessages(
             conversation,
@@ -10084,9 +10836,14 @@
         return
       }
 
+      if (scheduleVariableValidation) {
+        scheduleVariableValidation.cancel()
+      }
+
       try {
         parseRequestInputs()
       } catch (error) {
+        validateVariableEntries()
         showToast(
           error.message,
           'error',
@@ -10161,6 +10918,14 @@
     function stopGeneration () {
       if (state.abortController) {
         state.abortController.abort()
+      }
+    }
+
+    function handleSubmitButton () {
+      if (state.generating) {
+        stopGeneration()
+      } else {
+        sendMessage()
       }
     }
 
@@ -10605,6 +11370,9 @@
         '#model-select'
       ).addEventListener('change', event => {
         state.modelId = event.target.value
+        syncActiveConfiguration()
+        renderSamplingControls()
+        renderTopBar()
         scheduleStateSave()
       })
 
@@ -10619,6 +11387,9 @@
         '#new-conversation-button'
       ).addEventListener('click', () => {
         createConversation()
+        renderEndpointSelect()
+        renderModelSelect()
+        renderSettingsPanel()
         renderMessages()
         renderTopBar()
         closeDrawers()
@@ -11013,7 +11784,10 @@
             !composing
           ) {
             event.preventDefault()
-            sendMessage()
+
+            if (!state.generating) {
+              sendMessage()
+            }
           }
         }
       )
@@ -11022,13 +11796,7 @@
         '#send-message-button'
       ).addEventListener(
         'click',
-        sendMessage
-      )
-      selectElement(
-        '#stop-generation-button'
-      ).addEventListener(
-        'click',
-        stopGeneration
+        handleSubmitButton
       )
       selectElement(
         '#attach-files-button'
@@ -11070,22 +11838,49 @@
         'topP'
       )
 
+      selectElement(
+        '#temperature-auto'
+      ).addEventListener('change', event => {
+        state.settings.temperatureAuto =
+          event.target.checked
+        renderSamplingControls()
+        scheduleStateSave()
+      })
+
+      selectElement(
+        '#top-p-auto'
+      ).addEventListener('change', event => {
+        state.settings.topPAuto =
+          event.target.checked
+        renderSamplingControls()
+        scheduleStateSave()
+      })
+
       NUMERIC_SETTING_BINDINGS.forEach(
         ([id, property]) => {
-          selectElement('#' + id)
-            .addEventListener('input', event => {
-              const raw = event.target.value.trim()
+          const input =
+            selectElement('#' + id)
 
-              state.settings[property] =
-                raw === ''
-                  ? null
-                  : Math.max(
-                      1,
-                      Math.floor(Number(raw) || 1)
-                    )
+          input.addEventListener('input', event => {
+            const raw = event.target.value.trim()
 
-              scheduleStateSave()
-            })
+            state.settings[property] =
+              raw === ''
+                ? null
+                : Math.max(
+                    1,
+                    Math.floor(Number(raw) || 1)
+                  )
+
+            scheduleStateSave()
+          })
+
+          input.addEventListener('change', event => {
+            event.target.value =
+              state.settings[property] == null
+                ? ''
+                : state.settings[property]
+          })
         }
       )
 
@@ -11153,6 +11948,7 @@
 
         variableEntries.push(entry)
         renderVariableList()
+        scheduleVariableDraftUpdate()
 
         const input = document.querySelector(
           `[data-variable-id="${entry.id}"] [data-variable-name]`
@@ -11191,9 +11987,12 @@
             )
           ) {
             entry.source = event.target.value
+          } else {
+            return
           }
 
-          syncVariables()
+          clearVariableRowError(row)
+          scheduleVariableDraftUpdate()
         })
 
       selectElement('#variable-list')
@@ -11215,6 +12014,9 @@
                   'data-variable-id'
                 )
             })
+
+          state.settings.variableEntries =
+            variableEntries
 
           renderVariableList()
           syncVariables()
@@ -11506,7 +12308,15 @@
 
       window.addEventListener(
         'beforeunload',
-        saveStateNow
+        () => {
+          if (scheduleVariableValidation) {
+            scheduleVariableValidation.cancel()
+          }
+
+          scheduleStorageSave.cancel()
+          schedulePreviewRefresh.cancel()
+          saveStateNow()
+        }
       )
     }
 
