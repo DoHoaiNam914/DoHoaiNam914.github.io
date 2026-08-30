@@ -2478,8 +2478,8 @@
           <section class="set-section">
             <h3 class="set-label">System prompt</h3>
             <div class="field">
-              <textarea class="text-input" id="ta-sysprompt" rows="3" placeholder="Hướng dẫn áp dụng cho mọi lượt (tuỳ chọn)" aria-label="system prompt"></textarea>
-              <p class="url-hint">Có thể dùng biến theo cú pháp <code>{{ten_bien}}</code>.</p>
+              <textarea class="text-input" id="ta-sysprompt" rows="3" placeholder="Hướng dẫn áp dụng cho mọi lượt (tuỳ chọn)" aria-label="System prompt"></textarea>
+              <p class="url-hint">Có thể dùng biến theo cú pháp <code>{{ten_bien}}</code>; biến chỉ được nội suy khi dựng thân request.</p>
             </div>
           </section>
 
@@ -2501,8 +2501,10 @@
                 <code>name</code> với giá trị <code>'Nam'</code>; khoá
                 <code>user</code> với giá trị
                 <code>{city: 'Hà Nội'}</code>. Dùng <code>{{name}}</code>
-                hoặc <code>{{user.city}}</code>. Biến không được áp dụng cho
-                phản hồi assistant do mô hình tạo.
+                hoặc <code>{{user.city}}</code>. Biến chỉ được nội suy trong
+                thân request; giao diện, tiêu đề, dữ liệu lưu và nội dung sao
+                chép luôn giữ nguyên. Phản hồi assistant do mô hình tạo cũng
+                không được nội suy.
               </p>
             </div>
           </section>
@@ -2762,7 +2764,7 @@
     hidden
     accept="image/png,image/jpeg,image/webp,image/gif,application/pdf,application/json,application/x-ndjson,application/yaml,application/x-yaml,application/rtf,text/*,.png,.jpg,.jpeg,.webp,.gif,.pdf,.txt,.text,.log,.md,.markdown,.mdown,.mkd,.mdx,.csv,.json,.jsonl,.ndjson,.html,.htm,.css,.js,.mjs,.cjs,.jsx,.ts,.tsx,.py,.xml,.yaml,.yml,.rtf,.toml,.ini,.cfg,.conf,.env,.sql,.sh,.bash,.zsh,.c,.cc,.cpp,.h,.hpp,.go,.java,.kt,.kts,.rs,.php,.rb,.swift,.vue,.svelte"
   >
-  <!-- <noscript>Ứng dụng cần bật JavaScript để hoạt động.</noscript> -->
+  <noscript>Ứng dụng cần bật JavaScript để hoạt động.</noscript>
 
   <script src="https://unpkg.com/json5@2.2.3/dist/index.min.js"></script>
   <script src="https://unpkg.com/commonmark@0.31.2/dist/commonmark.js"></script>
@@ -2979,6 +2981,8 @@
     ]
 
     const ROLES = ['system', 'developer', 'user', 'assistant']
+    const MESSAGE_BLOCK_SEPARATOR = '\n\n'
+    const STREAM_RENDER_FALLBACK_MS = 100
 
     const FILE_TYPE_BY_EXTENSION = {
       '.bash': 'text/x-shellscript',
@@ -3372,7 +3376,7 @@
       )
     }
 
-    function messageContentWithVariables (message, variables) {
+    function requestMessageContent (message, variables) {
       if (isGeneratedAssistant(message)) {
         return message.content || ''
       }
@@ -3524,6 +3528,67 @@
       }
     }
 
+    function joinTextBlocks (blocks) {
+      return blocks
+        .filter(Boolean)
+        .join(MESSAGE_BLOCK_SEPARATOR)
+    }
+
+    function chatContentText (content) {
+      if (typeof content === 'string') return content
+      if (!Array.isArray(content)) return ''
+
+      return joinTextBlocks(content.map(part => {
+        if (typeof part === 'string') return part
+
+        if (part && typeof part.text === 'string') {
+          return part.text
+        }
+
+        return ''
+      }))
+    }
+
+    function streamBlockId (...parts) {
+      const values = parts
+        .filter(part => part != null)
+        .map(String)
+
+      return values.length ? values.join(':') : null
+    }
+
+    function streamBlockText (text, blockId, streamState) {
+      if (!text || blockId == null || !streamState) {
+        return text || ''
+      }
+
+      const normalizedId = String(blockId)
+      const needsSeparator = streamState.blockId != null &&
+        streamState.blockId !== normalizedId
+
+      streamState.blockId = normalizedId
+
+      return needsSeparator
+        ? MESSAGE_BLOCK_SEPARATOR + text
+        : text
+    }
+
+    function interactionContentText (content) {
+      if (!Array.isArray(content)) return ''
+
+      const output = []
+
+      content.forEach(part => {
+        if (part &&
+            part.type === 'text' &&
+            typeof part.text === 'string') {
+          output.push(part.text)
+        }
+      })
+
+      return joinTextBlocks(output)
+    }
+
     const API_FORMATS = {
       'chat-completions': {
         label: 'Chat Completions',
@@ -3658,13 +3723,13 @@
             data.choices[0] &&
             data.choices[0].delta
 
-          if (delta && typeof delta.content === 'string') {
-            return {
-              delta: delta.content
-            }
-          }
+          const text = delta
+            ? chatContentText(delta.content)
+            : ''
 
-          return {}
+          return text
+            ? { delta: text }
+            : {}
         },
 
         parseFull (json) {
@@ -3673,21 +3738,7 @@
             ? choice.message.content
             : ''
 
-          if (typeof content === 'string') return content
-          if (!Array.isArray(content)) return ''
-
-          return content
-            .map(part => {
-              if (typeof part === 'string') return part
-
-              if (part && typeof part.text === 'string') {
-                return part.text
-              }
-
-              return ''
-            })
-            .filter(Boolean)
-            .join('\n\n')
+          return chatContentText(content)
         },
 
         parseError (json) {
@@ -3721,21 +3772,8 @@
         build (ctx) {
           const s = ctx.settings
           const messages = []
-          const system = []
-
-          if (s.systemPrompt) {
-            system.push(s.systemPrompt)
-          }
 
           ctx.messages.forEach(message => {
-            if (isSystemRole(message.role)) {
-              if (message.content) {
-                system.push(message.content)
-              }
-
-              return
-            }
-
             const role = isAssistantRole(message.role)
               ? 'assistant'
               : 'user'
@@ -3838,8 +3876,8 @@
             }
           }
 
-          if (system.length) {
-            body.system = system.join('\n\n')
+          if (s.systemPrompt) {
+            body.system = s.systemPrompt
           }
 
           if (s.tools && s.tools.length) {
@@ -3853,16 +3891,40 @@
           }
         },
 
-        parseEvent (evt) {
+        parseEvent (evt, streamState) {
           const data = evt.data
           const type = data.type
+
+          if (type === 'content_block_start' &&
+              data.content_block &&
+              data.content_block.type === 'text') {
+            const text = data.content_block.text || ''
+
+            return text
+              ? {
+                  delta: streamBlockText(
+                    text,
+                    streamBlockId(data.index),
+                    streamState
+                  )
+                }
+              : {}
+          }
 
           if (type === 'content_block_delta' &&
               data.delta &&
               data.delta.type === 'text_delta') {
-            return {
-              delta: data.delta.text || ''
-            }
+            const text = data.delta.text || ''
+
+            return text
+              ? {
+                  delta: streamBlockText(
+                    text,
+                    streamBlockId(data.index),
+                    streamState
+                  )
+                }
+              : {}
           }
 
           if (type === 'error') {
@@ -3889,7 +3951,7 @@
             }
           })
 
-          return output.join('\n\n')
+          return joinTextBlocks(output)
         },
 
         parseError (json) {
@@ -3922,25 +3984,8 @@
         build (ctx) {
           const s = ctx.settings
           const contents = []
-          const systemParts = []
-
-          if (s.systemPrompt) {
-            systemParts.push({
-              text: s.systemPrompt
-            })
-          }
 
           ctx.messages.forEach(message => {
-            if (isSystemRole(message.role)) {
-              if (message.content) {
-                systemParts.push({
-                  text: message.content
-                })
-              }
-
-              return
-            }
-
             const role = isAssistantRole(message.role)
               ? 'model'
               : 'user'
@@ -4014,9 +4059,11 @@
             body.generationConfig = generationConfig
           }
 
-          if (systemParts.length) {
+          if (s.systemPrompt) {
             body.systemInstruction = {
-              parts: systemParts
+              parts: [{
+                text: s.systemPrompt
+              }]
             }
           }
 
@@ -4070,7 +4117,7 @@
             throw apiError('api', 'Request bị chặn: ' + block)
           }
 
-          return geminiPartsText(json, '\n\n')
+          return geminiPartsText(json)
         },
 
         parseError (json) {
@@ -4193,13 +4240,27 @@
           }
         },
 
-        parseEvent (evt) {
+        parseEvent (evt, streamState) {
           const data = evt.data
           const type = data.type || evt.event
 
           if (type === 'response.output_text.delta') {
-            return data.delta
-              ? { delta: data.delta }
+            const text = typeof data.delta === 'string'
+              ? data.delta
+              : ''
+
+            return text
+              ? {
+                  delta: streamBlockText(
+                    text,
+                    streamBlockId(
+                      data.item_id,
+                      data.output_index,
+                      data.content_index
+                    ),
+                    streamState
+                  )
+                }
               : {}
           }
 
@@ -4222,7 +4283,16 @@
           }
 
           if (type === 'response.completed') {
-            return { done: true }
+            const final = data.response
+              ? this.parseFull(data.response)
+              : ''
+
+            return final
+              ? {
+                  done: true,
+                  final
+                }
+              : { done: true }
           }
 
           return {}
@@ -4253,7 +4323,7 @@
             }
           })
 
-          return output.join('\n\n')
+          return joinTextBlocks(output)
         },
 
         parseError (json) {
@@ -4281,21 +4351,8 @@
         build (ctx) {
           const s = ctx.settings
           const input = []
-          const systemInstructions = []
-
-          if (s.systemPrompt) {
-            systemInstructions.push(s.systemPrompt)
-          }
 
           ctx.messages.forEach(message => {
-            if (isSystemRole(message.role)) {
-              if (message.content) {
-                systemInstructions.push(message.content)
-              }
-
-              return
-            }
-
             const content = [{
               type: 'text',
               text: message.content || ''
@@ -4356,9 +4413,8 @@
 
           if (s.zdr) body.store = false
 
-          if (systemInstructions.length) {
-            body.system_instruction =
-              systemInstructions.join('\n\n')
+          if (s.systemPrompt) {
+            body.system_instruction = s.systemPrompt
           }
 
           if (s.tools && s.tools.length) {
@@ -4372,16 +4428,42 @@
           }
         },
 
-        parseEvent (evt) {
+        parseEvent (evt, streamState) {
           const data = evt.data
           const type = data.event_type || evt.event
+
+          if (type === 'step.start' &&
+              data.step &&
+              data.step.type === 'model_output') {
+            const text = interactionContentText(
+              data.step.content
+            )
+
+            return text
+              ? {
+                  delta: streamBlockText(
+                    text,
+                    streamBlockId(data.index),
+                    streamState
+                  )
+                }
+              : {}
+          }
 
           if (type === 'step.delta' &&
               data.delta &&
               data.delta.type === 'text') {
-            return {
-              delta: data.delta.text || ''
-            }
+            const text = data.delta.text || ''
+
+            return text
+              ? {
+                  delta: streamBlockText(
+                    text,
+                    streamBlockId(data.index),
+                    streamState
+                  )
+                }
+              : {}
           }
 
           if (type === 'error') {
@@ -4403,7 +4485,7 @@
         },
 
         parseFull (json) {
-          return extractInteractionText(json, '\n\n')
+          return extractInteractionText(json)
         },
 
         parseError (json) {
@@ -4414,7 +4496,7 @@
       }
     }
 
-    function extractInteractionText (interaction, separator = '') {
+    function extractInteractionText (interaction) {
       if (!interaction) return ''
 
       if (typeof interaction.output_text === 'string' &&
@@ -4426,23 +4508,17 @@
       const steps = interaction.steps || interaction.output || []
 
       steps.forEach(step => {
-        if (step &&
-            step.type === 'model_output' &&
-            Array.isArray(step.content)) {
-          step.content.forEach(content => {
-            if (content &&
-                content.type === 'text' &&
-                typeof content.text === 'string') {
-              output.push(content.text)
-            }
-          })
+        if (step && step.type === 'model_output') {
+          const text = interactionContentText(step.content)
+
+          if (text) output.push(text)
         }
       })
 
-      return output.join(separator)
+      return joinTextBlocks(output)
     }
 
-    function geminiPartsText (json, separator = '') {
+    function geminiPartsText (json) {
       const candidate = json.candidates && json.candidates[0]
 
       if (!candidate ||
@@ -4459,7 +4535,7 @@
         }
       })
 
-      return output.join(separator)
+      return joinTextBlocks(output)
     }
 
     async function callApi (url, init) {
@@ -4962,27 +5038,29 @@
       state.settings.variables
     )
 
-    function effectiveSettings () {
+    function parseRequestInputs () {
       const variables = variablesFromEntries(variableEntries)
+      const tools = parseToolsJson(state.settings.toolsJson)
 
       state.settings.variables = variables
+
+      return {
+        variables,
+        tools
+      }
+    }
+
+    function buildRequestSettings () {
+      const inputs = parseRequestInputs()
 
       return {
         ...state.settings,
         systemPrompt: applyVariables(
           state.settings.systemPrompt,
-          variables
+          inputs.variables
         ),
-        variables,
-        tools: parseToolsJson(state.settings.toolsJson)
-      }
-    }
-
-    function safeVariables () {
-      try {
-        return variablesFromEntries(variableEntries)
-      } catch (err) {
-        return state.settings.variables
+        variables: inputs.variables,
+        tools: inputs.tools
       }
     }
 
@@ -5579,17 +5657,14 @@
       return `<div class="msg-attach">${items}</div>`
     }
 
-    function assistantBodyHtml (message, variables) {
+    function assistantBodyHtml (message) {
       if (message.status === 'error') {
         return `<div class="err-card">${ic('alert')}<p>${escapeHtml(message.error ? message.error.message : 'Lỗi API')}</p>` +
           `<span class="err-kind">${escapeHtml(message.error && message.error.kind ? message.error.kind : 'api')}</span>` +
           `<button type="button" class="btn btn-sm btn-accent" data-act="retry" data-id="${message.id}">${ic('rotate', 'ic-sm')}${STR.retry}</button></div>`
       }
 
-      const content = messageContentWithVariables(
-        message,
-        variables
-      )
+      const content = message.content || ''
 
       if (message.status === 'streaming') {
         return content
@@ -5650,7 +5725,7 @@
       </div>`
     }
 
-    function buildMsgEl (message, variables) {
+    function buildMsgEl (message) {
       const element = document.createElement('article')
 
       element.className =
@@ -5694,10 +5769,7 @@
         message.id
       )
 
-      const resolvedContent = messageContentWithVariables(
-        message,
-        variables
-      )
+      const content = message.content || ''
 
       let body
 
@@ -5705,14 +5777,14 @@
         body = editHtml(message)
       } else if (message.role === 'user') {
         body =
-          `<div class="user-text">${renderMarkdown(resolvedContent)}</div>` +
+          `<div class="user-text">${renderMarkdown(content)}</div>` +
           attachments
       } else if (isSystemRole(message.role)) {
         body =
-          `<div class="system-text">${renderMarkdown(resolvedContent)}</div>` +
+          `<div class="system-text">${renderMarkdown(content)}</div>` +
           attachments
       } else {
-        body = assistantBodyHtml(message, variables) + attachments
+        body = assistantBodyHtml(message) + attachments
       }
 
       element.innerHTML = `
@@ -5760,7 +5832,6 @@
     function renderMessages () {
       const wrap = $('#messages')
       const conversation = currentConv()
-      const variables = safeVariables()
 
       wrap.innerHTML = ''
 
@@ -5778,7 +5849,7 @@
 
       conversation.messages.forEach(message => {
         fragment.appendChild(
-          buildMsgEl(message, variables)
+          buildMsgEl(message)
         )
       })
 
@@ -5811,10 +5882,7 @@
 
       if (!node) return
 
-      const content = messageContentWithVariables(
-        message,
-        safeVariables()
-      )
+      const content = message.content || ''
 
       node.innerHTML = content
         ? renderMarkdown(content) +
@@ -6486,7 +6554,6 @@
     function syncVariableDictionary () {
       try {
         state.settings.variables = validateVariableEntries()
-        renderMessages()
         saveNow()
       } catch (err) {
         refreshBodyPreview()
@@ -6614,7 +6681,6 @@
       state.settings = defaultSettings()
       variableEntries = []
       renderSettingsPanel()
-      renderMessages()
       saveNow()
       toast('Đã khôi phục cấu hình mặc định.', 'success')
     }
@@ -6658,7 +6724,7 @@
       for (const message of conversation.messages) {
         if (until && message.id === until.id) break
 
-        const content = messageContentWithVariables(
+        const content = requestMessageContent(
           message,
           variables
         )
@@ -6727,7 +6793,7 @@
       }
 
       try {
-        const settings = effectiveSettings()
+        const settings = buildRequestSettings()
         const format = API_FORMATS[endpoint.format]
 
         const built = format.build({
@@ -6749,7 +6815,105 @@
       }
     }
 
-    function handleSseEvent (format, event, message) {
+    function createStreamRenderer (message) {
+      let scheduled = false
+      let frameId = null
+      let fallbackId = null
+      let pendingText = ''
+      let replacementText = null
+      let drainResolvers = []
+
+      const settleDrains = () => {
+        const resolvers = drainResolvers
+
+        drainResolvers = []
+        resolvers.forEach(resolve => resolve())
+      }
+
+      const renderFrame = () => {
+        if (!scheduled) return
+
+        scheduled = false
+
+        if (frameId != null) {
+          window.cancelAnimationFrame(frameId)
+          frameId = null
+        }
+
+        if (fallbackId != null) {
+          window.clearTimeout(fallbackId)
+          fallbackId = null
+        }
+
+        if (replacementText != null) {
+          message.content = replacementText
+          replacementText = null
+          pendingText = ''
+        } else if (pendingText) {
+          message.content += pendingText
+          pendingText = ''
+        }
+
+        updateStreamingDom(message)
+        scrollBottom(false)
+
+        if (pendingText || replacementText != null) {
+          scheduleRender()
+        } else {
+          settleDrains()
+        }
+      }
+
+      function scheduleRender () {
+        if (scheduled) return
+
+        scheduled = true
+        frameId = window.requestAnimationFrame(renderFrame)
+        fallbackId = window.setTimeout(
+          renderFrame,
+          STREAM_RENDER_FALLBACK_MS
+        )
+      }
+
+      return {
+        append (text) {
+          if (!text) return
+
+          if (replacementText != null) {
+            replacementText += text
+          } else {
+            pendingText += text
+          }
+
+          scheduleRender()
+        },
+
+        replace (text) {
+          pendingText = ''
+          replacementText = String(text || '')
+          scheduleRender()
+        },
+
+        drain () {
+          if (!scheduled &&
+              !pendingText &&
+              replacementText == null) {
+            return Promise.resolve()
+          }
+
+          return new Promise(resolve => {
+            drainResolvers.push(resolve)
+          })
+        }
+      }
+    }
+
+    function handleSseEvent (
+      format,
+      event,
+      renderer,
+      streamState
+    ) {
       if (!event.raw) return
 
       let data = {}
@@ -6766,21 +6930,18 @@
         event: event.event,
         data,
         raw: event.raw
-      })
+      }, streamState)
 
       if (result.error) {
         throw apiError('api', result.error)
       }
 
       if (result.delta) {
-        message.content += result.delta
-        updateStreamingDom(message)
-        scrollBottom(false)
+        renderer.append(result.delta)
       }
 
-      if (result.final && !message.content) {
-        message.content = result.final
-        updateStreamingDom(message)
+      if (result.final) {
+        renderer.replace(result.final)
       }
     }
 
@@ -6795,6 +6956,8 @@
       const endpoint = endpointById(
         message.endpointId || state.endpointId
       )
+
+      let streamRenderer = null
 
       try {
         if (!endpoint) {
@@ -6815,7 +6978,7 @@
         }
 
         const format = API_FORMATS[endpoint.format]
-        const settings = effectiveSettings()
+        const settings = buildRequestSettings()
         const stream = settings.streaming
 
         const canonicalMessages = buildCanonical(
@@ -6875,9 +7038,22 @@
 
         if (stream &&
             contentType.indexOf('text/event-stream') !== -1) {
+          const streamState = {
+            blockId: null
+          }
+
+          streamRenderer = createStreamRenderer(message)
+
           await readSseStream(response, event => {
-            handleSseEvent(format, event, message)
+            handleSseEvent(
+              format,
+              event,
+              streamRenderer,
+              streamState
+            )
           })
+
+          await streamRenderer.drain()
         } else {
           let json = null
 
@@ -6905,6 +7081,10 @@
 
         message.status = 'complete'
       } catch (err) {
+        if (streamRenderer) {
+          await streamRenderer.drain()
+        }
+
         if (err && err.name === 'AbortError') {
           message.status = 'stopped'
         } else {
@@ -6986,10 +7166,8 @@
         return
       }
 
-      let configured
-
       try {
-        configured = effectiveSettings()
+        parseRequestInputs()
       } catch (err) {
         toast(err.message, 'error', 5200)
         return
@@ -7022,15 +7200,10 @@
           }))
         })
 
-        const titleText = applyVariables(
-          text,
-          configured.variables
-        )
-
-        if (!conversation.renamed && titleText) {
-          conversation.title = titleText.length > 60
-            ? titleText.slice(0, 60) + '…'
-            : titleText
+        if (!conversation.renamed && text) {
+          conversation.title = text.length > 60
+            ? text.slice(0, 60) + '…'
+            : text
         }
       }
 
@@ -7216,7 +7389,7 @@
       }
 
       try {
-        effectiveSettings()
+        parseRequestInputs()
       } catch (err) {
         toast(err.message, 'error', 5200)
         return
@@ -7567,12 +7740,7 @@
           })
 
           if (message) {
-            copyText(
-              messageContentWithVariables(
-                message,
-                safeVariables()
-              )
-            ).then(copied => {
+            copyText(message.content || '').then(copied => {
               toast(
                 copied ? STR.copied : STR.copyFail,
                 copied ? 'success' : 'error'
