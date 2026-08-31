@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="vi" data-theme="dark">
+<html lang="vi" data-theme="light">
 <head>
   <meta charset="utf-8">
   <meta
@@ -11,6 +11,14 @@
     content="Môi trường thử nghiệm nhiều API trí tuệ nhân tạo với hỗ trợ streaming, suy luận, công cụ và tệp đính kèm."
   >
   <title>Thái Sơ — AI Playground</title>
+  <link
+    rel="icon"
+    type="image/svg+xml"
+    href="https://superintelligence.io/wp-content/uploads/2025/01/mobile-logo.svg"
+  >
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="preconnect" href="https://unpkg.com" crossorigin>
+  <link rel="preconnect" href="https://superintelligence.io">
   <link
     rel="stylesheet"
     href="https://cdn.jsdelivr.net/npm/@fontsource/be-vietnam-pro@5/300.css"
@@ -47,36 +55,6 @@
       --radius-small: 6px;
     }
 
-    html[data-theme='dark'] {
-      --accent: #e0663a;
-      --accent-ink: #200d05;
-      --accent-soft: rgba(224, 102, 58, 0.14);
-      --accent-strong: #ef7d50;
-      --background: #0c0f13;
-      --border: #242c38;
-      --border-soft: #1c232e;
-      --border-strong: #334052;
-      --code-background: #0a0d11;
-      --dot: rgba(148, 161, 179, 0.13);
-      --error: #e25b52;
-      --error-soft: rgba(226, 91, 82, 0.12);
-      --faint: #64718a;
-      --gold: #d2a24c;
-      --gold-soft: rgba(210, 162, 76, 0.14);
-      --hover: #1d2430;
-      --muted: #94a1b3;
-      --panel: #12161d;
-      --panel-secondary: #181d26;
-      --reasoning-background: #111922;
-      --scrim: rgba(4, 6, 9, 0.58);
-      --shadow: 0 12px 32px rgba(0, 0, 0, 0.36);
-      --success: #43b280;
-      --system-background: rgba(210, 162, 76, 0.08);
-      --text: #e8ecf3;
-      --user-background: #161c26;
-      color-scheme: dark;
-    }
-
     html[data-theme='light'] {
       --accent: #c2491d;
       --accent-ink: #fff6f0;
@@ -105,6 +83,36 @@
       --text: #232830;
       --user-background: #f8f4ea;
       color-scheme: light;
+    }
+
+    html[data-theme='dark'] {
+      --accent: #e0663a;
+      --accent-ink: #200d05;
+      --accent-soft: rgba(224, 102, 58, 0.14);
+      --accent-strong: #ef7d50;
+      --background: #0c0f13;
+      --border: #242c38;
+      --border-soft: #1c232e;
+      --border-strong: #334052;
+      --code-background: #0a0d11;
+      --dot: rgba(148, 161, 179, 0.13);
+      --error: #e25b52;
+      --error-soft: rgba(226, 91, 82, 0.12);
+      --faint: #64718a;
+      --gold: #d2a24c;
+      --gold-soft: rgba(210, 162, 76, 0.14);
+      --hover: #1d2430;
+      --muted: #94a1b3;
+      --panel: #12161d;
+      --panel-secondary: #181d26;
+      --reasoning-background: #111922;
+      --scrim: rgba(4, 6, 9, 0.58);
+      --shadow: 0 12px 32px rgba(0, 0, 0, 0.36);
+      --success: #43b280;
+      --system-background: rgba(210, 162, 76, 0.08);
+      --text: #e8ecf3;
+      --user-background: #161c26;
+      color-scheme: dark;
     }
 
     * {
@@ -253,7 +261,7 @@
       border-radius: var(--radius);
       flex: none;
       height: 34px;
-      object-fit: cover;
+      object-fit: contain;
       width: 34px;
     }
 
@@ -328,11 +336,18 @@
       position: relative;
     }
 
-    .conversation-search > .icon {
+    .conversation-search > [data-icon='search'] {
+      align-items: center;
       color: var(--faint);
+      display: inline-flex;
+      height: 16px;
+      justify-content: center;
       left: 10px;
       pointer-events: none;
       position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 16px;
     }
 
     .conversation-search input {
@@ -1384,7 +1399,7 @@
 
     .welcome-mark img {
       height: 100%;
-      object-fit: cover;
+      object-fit: contain;
       width: 100%;
     }
 
@@ -2347,7 +2362,7 @@
           <div class="brand">
             <img
               class="brand-image"
-              src="https://image.qwenlm.ai/public_source/2a904459-04a0-4a16-97bd-8d2bc08ca7cf/1fb4640aa-2652-444a-833b-4a3a60129ba9.png"
+              src="https://superintelligence.io/wp-content/uploads/2025/01/mobile-logo.svg"
               alt=""
             >
             <div>
@@ -2430,7 +2445,7 @@
         <div class="compact-brand">
           <img
             class="brand-image"
-            src="https://image.qwenlm.ai/public_source/2a904459-04a0-4a16-97bd-8d2bc08ca7cf/1fb4640aa-2652-444a-833b-4a3a60129ba9.png"
+            src="https://superintelligence.io/wp-content/uploads/2025/01/mobile-logo.svg"
             alt=""
           >
           <strong>Thái Sơ</strong>
@@ -2450,18 +2465,18 @@
         <button
           type="button"
           class="icon-button"
-          id="settings-toggle-button"
-          data-icon="sliders"
-          aria-controls="settings"
-          aria-expanded="true"
-          aria-label="Thu gọn bảng cấu hình"
+          id="theme-toggle-button"
+          aria-label="Chuyển sang giao diện tối"
         ></button>
 
         <button
           type="button"
           class="icon-button"
-          id="theme-toggle-button"
-          aria-label="Chuyển sang giao diện sáng"
+          id="settings-toggle-button"
+          data-icon="sliders"
+          aria-controls="settings"
+          aria-expanded="true"
+          aria-label="Thu gọn bảng cấu hình"
         ></button>
       </header>
 
@@ -3249,21 +3264,22 @@
   <script src="https://unpkg.com/json5@2.2.3/dist/index.min.js"></script>
   <script src="https://unpkg.com/commonmark@0.31.2/dist/commonmark.js"></script>
   <script>
-    /* global AbortController, TextDecoder, TextEncoder, URL, atob, btoa, fetch, localStorage */
-
     const selectElement = selector => document.querySelector(selector)
 
     const selectElements = selector => {
       return Array.from(document.querySelectorAll(selector))
     }
 
-    const STORAGE_KEY = 'thaiso.playground.v2'
-    const STORAGE_VERSION = 3
+    const STORAGE_KEY = 'thaiso.playground.v1'
+    const STORAGE_VERSION = 1
     const MAXIMUM_FILES = 4
     const MAXIMUM_FILE_SIZE = 5 * 1024 * 1024
     const STREAM_RENDER_DELAY = 100
     const TOOL_PAYLOAD_LIMIT = 12000
     const MESSAGE_BLOCK_SEPARATOR = '\n\n'
+    const UTF8_DECODER = new TextDecoder()
+    const UTF8_ENCODER = new TextEncoder()
+    const VI_DATE_FORMATTER = new Intl.DateTimeFormat('vi-VN')
 
     const MESSAGE_ROLES = [
       'system',
@@ -3587,7 +3603,7 @@
 
       if (hours < 24) return hours + ' giờ trước'
 
-      return new Date(timestamp).toLocaleDateString('vi-VN')
+      return VI_DATE_FORMATTER.format(timestamp)
     }
 
     function formatBytes (bytes) {
@@ -3627,7 +3643,7 @@
 
     function encodeTextBase64 (value) {
       return bytesToBase64(
-        new TextEncoder().encode(String(value))
+        UTF8_ENCODER.encode(String(value))
       )
     }
 
@@ -3639,7 +3655,7 @@
           character => character.charCodeAt(0)
         )
 
-        return new TextDecoder().decode(bytes)
+        return UTF8_DECODER.decode(bytes)
       } catch {
         return ''
       }
@@ -7129,16 +7145,13 @@
       settings.streaming =
         raw.streaming !== false
       settings.samplingEnabled =
-        raw.samplingEnabled === true ||
-        raw.sampling === true
+        raw.samplingEnabled === true
       settings.reasoningEnabled =
-        raw.reasoningEnabled === true ||
-        raw.reasoning === true
+        raw.reasoningEnabled === true
       settings.showReasoning =
         raw.showReasoning !== false
       settings.zeroDataRetention =
-        raw.zeroDataRetention !== false &&
-        raw.zdr !== false
+        raw.zeroDataRetention !== false
       settings.systemPrompt =
         typeof raw.systemPrompt === 'string'
           ? raw.systemPrompt
@@ -7524,8 +7537,15 @@
         const source =
           localStorage.getItem(STORAGE_KEY)
 
-        return source
-          ? JSON.parse(source)
+        if (!source) return null
+
+        const storedState = JSON.parse(source)
+
+        return (
+          storedState &&
+          storedState.v === STORAGE_VERSION
+        )
+          ? storedState
           : null
       } catch {
         return null
@@ -7534,25 +7554,10 @@
 
     const savedState = loadSavedState()
 
-    const legacyConfiguration =
+    const savedWorkspaceConfiguration =
       sanitizeConfiguration(
         savedState &&
         savedState.workspaceConfiguration
-          ? savedState.workspaceConfiguration
-          : {
-              endpointId:
-                savedState
-                  ? savedState.endpointId
-                  : null,
-              modelId:
-                savedState
-                  ? savedState.modelId
-                  : '',
-              settings:
-                savedState
-                  ? savedState.settings
-                  : null
-            }
       )
 
     const state = {
@@ -7568,7 +7573,7 @@
               .map(conversation => {
                 return sanitizeConversation(
                   conversation,
-                  legacyConfiguration
+                  savedWorkspaceConfiguration
                 )
               })
               .filter(Boolean)
@@ -7591,9 +7596,9 @@
       settings: createDefaultSettings(),
       theme:
         savedState &&
-        savedState.theme === 'light'
-          ? 'light'
-          : 'dark',
+        savedState.theme === 'dark'
+          ? 'dark'
+          : 'light',
       ui: {
         settingsOpen:
           !savedState ||
@@ -7605,7 +7610,7 @@
           savedState.ui.sidebarOpen !== false
       },
       workspaceConfiguration:
-        legacyConfiguration
+        savedWorkspaceConfiguration
     }
 
     let variableEntries = []
@@ -8884,7 +8889,7 @@
       return `
         <div class="welcome">
           <div class="welcome-mark">
-            <img src="https://image.qwenlm.ai/public_source/2a904459-04a0-4a16-97bd-8d2bc08ca7cf/1fb4640aa-2652-444a-833b-4a3a60129ba9.png" alt="">
+            <img src="https://superintelligence.io/wp-content/uploads/2025/01/mobile-logo.svg" alt="">
           </div>
           <h1>Chào Nam,</h1>
           <p>Chọn một gợi ý, thêm tin nhắn theo vai trò hoặc nhập yêu cầu của bạn.</p>
@@ -9188,7 +9193,7 @@
           size: file.size,
           text:
             isTextMimeType(type)
-              ? new TextDecoder().decode(buffer)
+              ? UTF8_DECODER.decode(buffer)
               : null,
           type,
           url: dataUrl
@@ -11726,22 +11731,28 @@
       const chatArea =
         selectElement('#chat-scroll-area')
 
-      chatArea.addEventListener('scroll', () => {
-        shouldStickToBottom =
-          chatArea.scrollHeight -
-          chatArea.scrollTop -
-          chatArea.clientHeight < 90
+      chatArea.addEventListener(
+        'scroll',
+        () => {
+          shouldStickToBottom =
+            chatArea.scrollHeight -
+            chatArea.scrollTop -
+            chatArea.clientHeight < 90
 
-        const conversation =
-          getCurrentConversation()
+          const conversation =
+            getCurrentConversation()
 
-        selectElement(
-          '#scroll-bottom-button'
-        ).hidden =
-          shouldStickToBottom ||
-          !conversation ||
-          !conversation.messages.length
-      })
+          selectElement(
+            '#scroll-bottom-button'
+          ).hidden =
+            shouldStickToBottom ||
+            !conversation ||
+            !conversation.messages.length
+        },
+        {
+          passive: true
+        }
+      )
 
       selectElement(
         '#scroll-bottom-button'
@@ -12307,7 +12318,7 @@
       )
 
       window.addEventListener(
-        'beforeunload',
+        'pagehide',
         () => {
           if (scheduleVariableValidation) {
             scheduleVariableValidation.cancel()
@@ -12362,10 +12373,7 @@
       }
     }
 
-    document.addEventListener(
-      'DOMContentLoaded',
-      initializeApp
-    )
+    initializeApp()
   </script>
 </body>
 </html>
