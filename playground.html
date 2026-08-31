@@ -558,6 +558,14 @@
       padding: 9px 14px;
     }
 
+    .top-bar-actions {
+      align-items: center;
+      display: flex;
+      flex: none;
+      gap: 4px;
+      margin-left: auto;
+    }
+
     .icon-button {
       background: none;
       border: 1px solid transparent;
@@ -566,7 +574,10 @@
       cursor: pointer;
       flex: none;
       height: 34px;
-      transition: background 0.15s ease, color 0.15s ease;
+      transition:
+        background 0.15s ease,
+        border-color 0.15s ease,
+        color 0.15s ease;
       width: 34px;
     }
 
@@ -672,7 +683,7 @@
 
     .current-conversation-title {
       color: var(--muted);
-      flex: 1;
+      flex: 1 1 auto;
       font-size: 13px;
       min-width: 0;
       overflow: hidden;
@@ -1941,6 +1952,21 @@
       grid-column: 1 / -1;
     }
 
+    .drawer-backdrop {
+      background: var(--scrim);
+      inset: 0;
+      opacity: 0;
+      pointer-events: none;
+      position: fixed;
+      transition: opacity 0.2s ease;
+      z-index: 55;
+    }
+
+    .drawer-backdrop.visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
     .toast-region {
       display: flex;
       flex-direction: column;
@@ -2173,10 +2199,26 @@
 
     .endpoint-model-row,
     .endpoint-header-row,
-    .endpoint-dialog-footer {
+    .endpoint-dialog-footer,
+    .endpoint-api-key-row {
       align-items: center;
       display: flex;
       gap: 8px;
+    }
+
+    .endpoint-api-key-row .text-field {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .endpoint-api-key-delete-button {
+      border-color: var(--border-strong);
+    }
+
+    .endpoint-api-key-delete-button:hover:not(:disabled) {
+      background: var(--error-soft);
+      border-color: var(--error);
+      color: var(--error);
     }
 
     .endpoint-header-row input {
@@ -2196,21 +2238,6 @@
     .value-chip {
       font: 11.5px var(--font-mono);
       padding: 3px 4px 3px 9px;
-    }
-
-    .drawer-backdrop {
-      background: var(--scrim);
-      inset: 0;
-      opacity: 0;
-      pointer-events: none;
-      position: fixed;
-      transition: opacity 0.2s ease;
-      z-index: 55;
-    }
-
-    .drawer-backdrop.visible {
-      opacity: 1;
-      pointer-events: auto;
     }
 
     @media (hover: none) {
@@ -2462,22 +2489,24 @@
           role="status"
         ></span>
 
-        <button
-          type="button"
-          class="icon-button"
-          id="theme-toggle-button"
-          aria-label="Chuyển sang giao diện tối"
-        ></button>
+        <div class="top-bar-actions">
+          <button
+            type="button"
+            class="icon-button"
+            id="theme-toggle-button"
+            aria-label="Chuyển sang giao diện tối"
+          ></button>
 
-        <button
-          type="button"
-          class="icon-button"
-          id="settings-toggle-button"
-          data-icon="sliders"
-          aria-controls="settings"
-          aria-expanded="true"
-          aria-label="Thu gọn bảng cấu hình"
-        ></button>
+          <button
+            type="button"
+            class="icon-button"
+            id="settings-toggle-button"
+            data-icon="sliders"
+            aria-controls="settings"
+            aria-expanded="true"
+            aria-label="Thu gọn bảng cấu hình"
+          ></button>
+        </div>
       </header>
 
       <section
@@ -2514,34 +2543,10 @@
               aria-label="Thêm tin nhắn theo vai trò"
             >
               <span class="role-toolbar-label">Thêm tin nhắn</span>
-              <button
-                type="button"
-                class="add-role-button"
-                data-add-role="system"
-              >
-                system
-              </button>
-              <button
-                type="button"
-                class="add-role-button"
-                data-add-role="developer"
-              >
-                developer
-              </button>
-              <button
-                type="button"
-                class="add-role-button"
-                data-add-role="user"
-              >
-                user
-              </button>
-              <button
-                type="button"
-                class="add-role-button"
-                data-add-role="assistant"
-              >
-                assistant
-              </button>
+              <button type="button" class="add-role-button" data-add-role="system">system</button>
+              <button type="button" class="add-role-button" data-add-role="developer">developer</button>
+              <button type="button" class="add-role-button" data-add-role="user">user</button>
+              <button type="button" class="add-role-button" data-add-role="assistant">assistant</button>
             </div>
 
             <div
@@ -2552,10 +2557,7 @@
             ></div>
 
             <div class="composer-box">
-              <label
-                class="screen-reader-only"
-                for="message-input"
-              >
+              <label class="screen-reader-only" for="message-input">
                 Nội dung tin nhắn
               </label>
               <textarea
@@ -2630,10 +2632,7 @@
             <h3 class="section-title">Endpoint và mô hình</h3>
 
             <div class="select-field">
-              <label
-                class="select-label"
-                for="endpoint-select"
-              >
+              <label class="select-label" for="endpoint-select">
                 Endpoint
               </label>
               <div class="select-wrapper">
@@ -2642,10 +2641,7 @@
             </div>
 
             <div class="select-field">
-              <label
-                class="select-label"
-                for="model-select"
-              >
+              <label class="select-label" for="model-select">
                 Mô hình
               </label>
               <div class="select-wrapper">
@@ -2670,10 +2666,7 @@
           <section class="settings-section">
             <h3 class="section-title">System prompt</h3>
             <div class="field">
-              <label
-                class="screen-reader-only"
-                for="system-prompt"
-              >
+              <label class="screen-reader-only" for="system-prompt">
                 System prompt
               </label>
               <textarea
@@ -2713,27 +2706,7 @@
           <section class="settings-section">
             <h3 class="section-title">Tham số tạo sinh</h3>
 
-            <div class="field">
-              <div class="toggle-row">
-                <label for="sampling-toggle">
-                  Bật tham số lấy mẫu
-                </label>
-                <button
-                  type="button"
-                  class="toggle"
-                  id="sampling-toggle"
-                  role="switch"
-                  aria-checked="false"
-                >
-                  <span class="toggle-knob" aria-hidden="true"></span>
-                </button>
-              </div>
-            </div>
-
-            <div
-              class="field sampling-field"
-              id="temperature-field"
-            >
+            <div class="field sampling-field" id="temperature-field">
               <div class="field-header">
                 <label for="temperature-range">Nhiệt độ</label>
                 <label class="parameter-auto">
@@ -2742,7 +2715,7 @@
                     id="temperature-auto"
                     checked
                   >
-                  <span>API tự xác định</span>
+                  <span>Sử dụng</span>
                 </label>
               </div>
               <div class="parameter-row">
@@ -2763,25 +2736,18 @@
                   aria-label="Giá trị nhiệt độ"
                 >
               </div>
-              <p
-                class="field-hint"
-                id="temperature-hint"
-              ></p>
+              <p class="field-hint" id="temperature-hint"></p>
             </div>
 
-            <div
-              class="field sampling-field"
-              id="top-p-field"
-            >
+            <div class="field sampling-field" id="top-p-field">
               <div class="field-header">
                 <label for="top-p-range">Top-p</label>
                 <label class="parameter-auto">
                   <input
                     type="checkbox"
                     id="top-p-auto"
-                    checked
                   >
-                  <span>API tự xác định</span>
+                  <span>Sử dụng</span>
                 </label>
               </div>
               <div class="parameter-row">
@@ -2802,10 +2768,7 @@
                   aria-label="Giá trị top-p"
                 >
               </div>
-              <p
-                class="field-hint"
-                id="top-p-hint"
-              ></p>
+              <p class="field-hint" id="top-p-hint"></p>
             </div>
 
             <div class="field sampling-field">
@@ -2824,9 +2787,7 @@
 
             <div class="field">
               <div class="field-header">
-                <label for="max-tokens">
-                  Số token đầu ra tối đa
-                </label>
+                <label for="max-tokens">Số token đầu ra tối đa</label>
               </div>
               <input
                 type="number"
@@ -2840,9 +2801,7 @@
 
             <div class="field">
               <div class="field-header">
-                <label for="response-verbosity">
-                  Verbosity câu trả lời
-                </label>
+                <label for="response-verbosity">Verbosity câu trả lời</label>
               </div>
               <div class="select-wrapper">
                 <select id="response-verbosity">
@@ -2871,9 +2830,7 @@
 
             <div class="field reasoning-field">
               <div class="toggle-row">
-                <label for="show-reasoning-toggle">
-                  Hiển thị suy luận
-                </label>
+                <label for="show-reasoning-toggle">Hiển thị suy luận</label>
                 <button
                   type="button"
                   class="toggle"
@@ -2892,9 +2849,7 @@
 
             <div class="field reasoning-field">
               <div class="field-header">
-                <label for="reasoning-effort">
-                  Effort suy luận
-                </label>
+                <label for="reasoning-effort">Effort suy luận</label>
               </div>
               <div class="select-wrapper">
                 <select id="reasoning-effort">
@@ -2911,9 +2866,7 @@
 
             <div class="field reasoning-field">
               <div class="field-header">
-                <label for="reasoning-mode">
-                  Mode suy luận
-                </label>
+                <label for="reasoning-mode">Mode suy luận</label>
               </div>
               <div class="select-wrapper">
                 <select id="reasoning-mode">
@@ -2926,9 +2879,7 @@
 
             <div class="field reasoning-field">
               <div class="field-header">
-                <label for="thinking-budget">
-                  Ngân sách thinking
-                </label>
+                <label for="thinking-budget">Ngân sách thinking</label>
               </div>
               <input
                 type="number"
@@ -2942,9 +2893,7 @@
 
             <div class="field reasoning-field">
               <div class="field-header">
-                <label for="thinking-level">
-                  Thinking level
-                </label>
+                <label for="thinking-level">Thinking level</label>
               </div>
               <div class="select-wrapper">
                 <select id="thinking-level">
@@ -2992,10 +2941,7 @@
 
           <section class="settings-section">
             <h3 class="section-title">Công cụ</h3>
-            <label
-              class="screen-reader-only"
-              for="tools-json"
-            >
+            <label class="screen-reader-only" for="tools-json">
               Cấu hình công cụ JSON5
             </label>
             <textarea
@@ -3008,10 +2954,7 @@
 
           <section class="settings-section">
             <h3 class="section-title">Phần thân yêu cầu API</h3>
-            <label
-              class="screen-reader-only"
-              for="request-body-preview"
-            >
+            <label class="screen-reader-only" for="request-body-preview">
               Phần thân yêu cầu API
             </label>
             <textarea
@@ -3036,10 +2979,7 @@
     </aside>
   </div>
 
-  <div
-    class="drawer-backdrop"
-    id="drawer-backdrop"
-  ></div>
+  <div class="drawer-backdrop" id="drawer-backdrop"></div>
 
   <div
     class="toast-region"
@@ -3057,15 +2997,9 @@
     aria-atomic="true"
   ></div>
 
-  <div
-    class="modal-root"
-    id="modal-root"
-  ></div>
+  <div class="modal-root" id="modal-root"></div>
 
-  <div
-    class="endpoint-dialog-root"
-    id="endpoint-dialog-root"
-  >
+  <div class="endpoint-dialog-root" id="endpoint-dialog-root">
     <div
       class="endpoint-dialog-backdrop"
       data-close-endpoint-dialog
@@ -3078,9 +3012,7 @@
       aria-labelledby="endpoint-dialog-title"
     >
       <div class="endpoint-dialog-header">
-        <h2 id="endpoint-dialog-title">
-          Quản lí endpoint API
-        </h2>
+        <h2 id="endpoint-dialog-title">Quản lí endpoint API</h2>
         <button
           type="button"
           class="icon-button"
@@ -3093,11 +3025,7 @@
       <div class="endpoint-dialog-body">
         <div id="endpoint-list"></div>
 
-        <div
-          class="endpoint-form"
-          id="endpoint-form"
-          hidden
-        >
+        <div class="endpoint-form" id="endpoint-form" hidden>
           <h3 id="endpoint-form-title">Thêm endpoint</h3>
 
           <div class="field">
@@ -3115,9 +3043,7 @@
 
           <div class="field">
             <div class="field-header">
-              <label for="endpoint-format">
-                Định dạng API
-              </label>
+              <label for="endpoint-format">Định dạng API</label>
             </div>
             <div class="select-wrapper">
               <select id="endpoint-format"></select>
@@ -3126,9 +3052,7 @@
 
           <div class="field">
             <div class="field-header">
-              <label for="endpoint-base-url">
-                URL gốc của API
-              </label>
+              <label for="endpoint-base-url">URL gốc của API</label>
             </div>
             <input
               type="url"
@@ -3140,10 +3064,7 @@
             >
             <p class="field-hint">
               URL sẽ gọi:
-              <code
-                id="endpoint-url-preview"
-                class="monospace"
-              ></code>
+              <code id="endpoint-url-preview" class="monospace"></code>
             </p>
           </div>
 
@@ -3151,21 +3072,32 @@
             <div class="field-header">
               <label for="endpoint-api-key">API key</label>
             </div>
-            <input
-              type="password"
-              class="text-field monospace"
-              id="endpoint-api-key"
-              placeholder="Nhập key API"
-              autocomplete="new-password"
-              spellcheck="false"
-            >
+            <div class="endpoint-api-key-row">
+              <input
+                type="password"
+                class="text-field monospace"
+                id="endpoint-api-key"
+                placeholder="Nhập key API nếu endpoint yêu cầu"
+                autocomplete="new-password"
+                spellcheck="false"
+              >
+              <button
+                type="button"
+                class="icon-button endpoint-api-key-delete-button"
+                id="delete-endpoint-api-key-button"
+                data-icon="trash"
+                aria-label="Xoá key API"
+                title="Xoá key API"
+              ></button>
+            </div>
+            <p class="field-hint" id="endpoint-api-key-hint">
+              Có thể để trống nếu endpoint không yêu cầu key API.
+            </p>
           </div>
 
           <div class="field">
             <div class="field-header">
-              <span id="endpoint-headers-label">
-                Header tuỳ chỉnh
-              </span>
+              <span id="endpoint-headers-label">Header tuỳ chỉnh</span>
             </div>
             <div
               class="endpoint-header-list"
@@ -3192,10 +3124,7 @@
               aria-labelledby="endpoint-models-label"
             ></div>
             <div class="endpoint-model-row">
-              <label
-                class="screen-reader-only"
-                for="endpoint-model-input"
-              >
+              <label class="screen-reader-only" for="endpoint-model-input">
                 ID mô hình
               </label>
               <input
@@ -3270,8 +3199,23 @@
       return Array.from(document.querySelectorAll(selector))
     }
 
-    const STORAGE_KEY = 'thaiso.playground.v1'
-    const STORAGE_VERSION = 1
+    const STORAGE_PREFIX = 'thaiso.playground'
+    const LEGACY_STORAGE_KEY = 'thaiso.playground.v1'
+    const STORAGE_KEYS = {
+      activeConversationId:
+        STORAGE_PREFIX + '.activeConversationId',
+      conversations:
+        STORAGE_PREFIX + '.conversations',
+      endpoints:
+        STORAGE_PREFIX + '.endpoints',
+      theme:
+        STORAGE_PREFIX + '.theme',
+      ui:
+        STORAGE_PREFIX + '.ui',
+      workspaceConfiguration:
+        STORAGE_PREFIX + '.workspaceConfiguration'
+    }
+
     const MAXIMUM_FILES = 4
     const MAXIMUM_FILE_SIZE = 5 * 1024 * 1024
     const STREAM_RENDER_DELAY = 100
@@ -3279,7 +3223,8 @@
     const MESSAGE_BLOCK_SEPARATOR = '\n\n'
     const UTF8_DECODER = new TextDecoder()
     const UTF8_ENCODER = new TextEncoder()
-    const VI_DATE_FORMATTER = new Intl.DateTimeFormat('vi-VN')
+    const VI_DATE_FORMATTER =
+      new Intl.DateTimeFormat('vi-VN')
 
     const MESSAGE_ROLES = [
       'system',
@@ -3737,6 +3682,68 @@
       return ''
     }
 
+    function createConversationTitleFromText (value) {
+      const text = String(value || '')
+        .replace(/\s+/g, ' ')
+        .trim()
+
+      if (!text) return TEXT.newConversationTitle
+
+      return text.length > 60
+        ? text.slice(0, 60) + '…'
+        : text
+    }
+
+    function getAutomaticConversationTitle (
+      conversation
+    ) {
+      if (!conversation) {
+        return TEXT.newConversationTitle
+      }
+
+      const messages =
+        Array.isArray(conversation.messages)
+          ? conversation.messages
+          : []
+
+      const preferredMessage =
+        messages.find(message => {
+          return (
+            message.role === 'user' &&
+            typeof message.content === 'string' &&
+            message.content.trim()
+          )
+        }) ||
+        messages.find(message => {
+          return (
+            typeof message.content === 'string' &&
+            message.content.trim()
+          )
+        })
+
+      if (preferredMessage) {
+        return createConversationTitleFromText(
+          preferredMessage.content
+        )
+      }
+
+      const attachmentMessage =
+        messages.find(message => {
+          return (
+            Array.isArray(message.attachments) &&
+            message.attachments.length
+          )
+        })
+
+      if (attachmentMessage) {
+        return createConversationTitleFromText(
+          attachmentMessage.attachments[0].name
+        )
+      }
+
+      return TEXT.newConversationTitle
+    }
+
     function getChatReasoning (container) {
       if (!container) return ''
 
@@ -3749,7 +3756,8 @@
 
     function limitText (value, maximumLength) {
       const text = String(value || '')
-      const maximum = maximumLength || TOOL_PAYLOAD_LIMIT
+      const maximum =
+        maximumLength || TOOL_PAYLOAD_LIMIT
 
       if (text.length <= maximum) return text
 
@@ -5281,10 +5289,16 @@
         },
 
         headers (apiKey) {
-          return {
-            authorization: 'Bearer ' + apiKey,
+          const headers = {
             'content-type': 'application/json'
           }
+
+          if (apiKey) {
+            headers.authorization =
+              'Bearer ' + apiKey
+          }
+
+          return headers
         },
 
         build (context) {
@@ -5354,15 +5368,13 @@
             stream: context.stream
           }
 
-          if (context.settings.samplingEnabled) {
-            if (!context.settings.temperatureAuto) {
-              body.temperature =
-                context.settings.temperature
-            }
+          if (!context.settings.temperatureAuto) {
+            body.temperature =
+              context.settings.temperature
+          }
 
-            if (!context.settings.topPAuto) {
-              body.top_p = context.settings.topP
-            }
+          if (!context.settings.topPAuto) {
+            body.top_p = context.settings.topP
           }
 
           if (context.settings.maxTokens != null) {
@@ -5549,13 +5561,18 @@
         },
 
         headers (apiKey) {
-          return {
+          const headers = {
             'anthropic-dangerous-direct-browser-access':
               'true',
             'anthropic-version': '2023-06-01',
-            'content-type': 'application/json',
-            'x-api-key': apiKey
+            'content-type': 'application/json'
           }
+
+          if (apiKey) {
+            headers['x-api-key'] = apiKey
+          }
+
+          return headers
         },
 
         build (context) {
@@ -5685,8 +5702,7 @@
 
           if (
             !context.settings.reasoningEnabled &&
-            !automaticSampling &&
-            context.settings.samplingEnabled
+            !automaticSampling
           ) {
             if (!context.settings.temperatureAuto) {
               body.temperature = clampValue(
@@ -5953,10 +5969,15 @@
         },
 
         headers (apiKey) {
-          return {
-            'content-type': 'application/json',
-            'x-goog-api-key': apiKey
+          const headers = {
+            'content-type': 'application/json'
           }
+
+          if (apiKey) {
+            headers['x-goog-api-key'] = apiKey
+          }
+
+          return headers
         },
 
         build (context) {
@@ -6002,21 +6023,19 @@
 
           const generationConfig = {}
 
-          if (context.settings.samplingEnabled) {
-            if (!context.settings.temperatureAuto) {
-              generationConfig.temperature =
-                context.settings.temperature
-            }
+          if (!context.settings.temperatureAuto) {
+            generationConfig.temperature =
+              context.settings.temperature
+          }
 
-            if (!context.settings.topPAuto) {
-              generationConfig.topP =
-                context.settings.topP
-            }
+          if (!context.settings.topPAuto) {
+            generationConfig.topP =
+              context.settings.topP
+          }
 
-            if (context.settings.topK != null) {
-              generationConfig.topK =
-                context.settings.topK
-            }
+          if (context.settings.topK != null) {
+            generationConfig.topK =
+              context.settings.topK
           }
 
           if (context.settings.maxTokens != null) {
@@ -6280,10 +6299,16 @@
         },
 
         headers (apiKey) {
-          return {
-            authorization: 'Bearer ' + apiKey,
+          const headers = {
             'content-type': 'application/json'
           }
+
+          if (apiKey) {
+            headers.authorization =
+              'Bearer ' + apiKey
+          }
+
+          return headers
         },
 
         build (context) {
@@ -6372,15 +6397,13 @@
             }
           }
 
-          if (context.settings.samplingEnabled) {
-            if (!context.settings.temperatureAuto) {
-              body.temperature =
-                context.settings.temperature
-            }
+          if (!context.settings.temperatureAuto) {
+            body.temperature =
+              context.settings.temperature
+          }
 
-            if (!context.settings.topPAuto) {
-              body.top_p = context.settings.topP
-            }
+          if (!context.settings.topPAuto) {
+            body.top_p = context.settings.topP
           }
 
           if (context.settings.maxTokens != null) {
@@ -6660,10 +6683,15 @@
         },
 
         headers (apiKey) {
-          return {
-            'content-type': 'application/json',
-            'x-goog-api-key': apiKey
+          const headers = {
+            'content-type': 'application/json'
           }
+
+          if (apiKey) {
+            headers['x-goog-api-key'] = apiKey
+          }
+
+          return headers
         },
 
         build (context) {
@@ -7078,12 +7106,11 @@
         maxTokens: null,
         mode: null,
         reasoningEnabled: false,
-        samplingEnabled: false,
         showReasoning: true,
         streaming: true,
         systemPrompt: '',
         temperature: 1,
-        temperatureAuto: true,
+        temperatureAuto: false,
         toolsJson: '',
         topK: null,
         topP: 1,
@@ -7144,8 +7171,6 @@
 
       settings.streaming =
         raw.streaming !== false
-      settings.samplingEnabled =
-        raw.samplingEnabled === true
       settings.reasoningEnabled =
         raw.reasoningEnabled === true
       settings.showReasoning =
@@ -7179,12 +7204,12 @@
       settings.temperatureAuto =
         typeof raw.temperatureAuto === 'boolean'
           ? raw.temperatureAuto
-          : !settings.samplingEnabled
+          : false
 
       settings.topPAuto =
         typeof raw.topPAuto === 'boolean'
           ? raw.topPAuto
-          : !settings.samplingEnabled
+          : true
 
       settings.verbosity = [
         'low',
@@ -7444,7 +7469,17 @@
         return null
       }
 
-      return {
+      const messages =
+        conversation.messages
+          .map(sanitizeMessage)
+          .filter(Boolean)
+
+      const title =
+        typeof conversation.title === 'string'
+          ? conversation.title.trim()
+          : ''
+
+      const output = {
         configuration: sanitizeConfiguration(
           conversation.configuration,
           fallbackConfiguration
@@ -7457,22 +7492,24 @@
           typeof conversation.id === 'string'
             ? conversation.id
             : createUniqueId(),
-        messages:
-          conversation.messages
-            .map(sanitizeMessage)
-            .filter(Boolean),
+        messages,
         pinned: conversation.pinned === true,
-        renamed: conversation.renamed === true,
-        title:
-          typeof conversation.title === 'string' &&
-          conversation.title
-            ? conversation.title
-            : TEXT.newConversationTitle,
+        renamed:
+          conversation.renamed === true &&
+          Boolean(title),
+        title: title || TEXT.newConversationTitle,
         updatedAt:
           Number.isFinite(conversation.updatedAt)
             ? conversation.updatedAt
             : Date.now()
       }
+
+      if (!title) {
+        output.title =
+          getAutomaticConversationTitle(output)
+      }
+
+      return output
     }
 
     function sanitizeEndpoint (endpoint) {
@@ -7526,27 +7563,81 @@
             : [],
         name:
           typeof endpoint.name === 'string' &&
-          endpoint.name
-            ? endpoint.name
+          endpoint.name.trim()
+            ? endpoint.name.trim()
             : 'Endpoint'
+      }
+    }
+
+    let loadedLegacyStorage = false
+
+    function readStorageValue (key) {
+      const source = localStorage.getItem(key)
+
+      if (source == null) return null
+
+      try {
+        return JSON.parse(source)
+      } catch {
+        return null
       }
     }
 
     function loadSavedState () {
       try {
-        const source =
-          localStorage.getItem(STORAGE_KEY)
+        const hasSeparatedStorage =
+          Object.values(STORAGE_KEYS)
+            .some(key => {
+              return localStorage.getItem(key) != null
+            })
 
-        if (!source) return null
+        if (hasSeparatedStorage) {
+          return {
+            activeId:
+              readStorageValue(
+                STORAGE_KEYS.activeConversationId
+              ),
+            conversations:
+              readStorageValue(
+                STORAGE_KEYS.conversations
+              ),
+            endpoints:
+              readStorageValue(
+                STORAGE_KEYS.endpoints
+              ),
+            theme:
+              readStorageValue(
+                STORAGE_KEYS.theme
+              ),
+            ui:
+              readStorageValue(
+                STORAGE_KEYS.ui
+              ),
+            workspaceConfiguration:
+              readStorageValue(
+                STORAGE_KEYS.workspaceConfiguration
+              )
+          }
+        }
 
-        const storedState = JSON.parse(source)
+        const legacySource =
+          localStorage.getItem(LEGACY_STORAGE_KEY)
 
-        return (
-          storedState &&
-          storedState.v === STORAGE_VERSION
-        )
-          ? storedState
-          : null
+        if (!legacySource) return null
+
+        const legacyState =
+          JSON.parse(legacySource)
+
+        if (
+          !legacyState ||
+          typeof legacyState !== 'object'
+        ) {
+          return null
+        }
+
+        loadedLegacyStorage = true
+
+        return legacyState
       } catch {
         return null
       }
@@ -7622,8 +7713,12 @@
     let editingEndpointId = null
     let endpointFormModels = []
     let endpointFormHeaders = []
+    let endpointFormApiKeyCleared = false
     let shouldStickToBottom = true
     let scheduleVariableValidation = null
+    let apiRequestWorker = null
+
+    const apiWorkerRequests = new Map()
 
     const mobileLayoutMediaQuery =
       window.matchMedia('(max-width: 1279px)')
@@ -7841,7 +7936,6 @@
         endpoints: state.endpoints,
         theme: state.theme,
         ui: state.ui,
-        v: STORAGE_VERSION,
         workspaceConfiguration:
           state.workspaceConfiguration
       }
@@ -7849,10 +7943,40 @@
 
     function saveStateNow () {
       try {
+        const storedState =
+          createStoredState()
+
         localStorage.setItem(
-          STORAGE_KEY,
-          JSON.stringify(createStoredState())
+          STORAGE_KEYS.activeConversationId,
+          JSON.stringify(storedState.activeId)
         )
+        localStorage.setItem(
+          STORAGE_KEYS.conversations,
+          JSON.stringify(storedState.conversations)
+        )
+        localStorage.setItem(
+          STORAGE_KEYS.endpoints,
+          JSON.stringify(storedState.endpoints)
+        )
+        localStorage.setItem(
+          STORAGE_KEYS.theme,
+          JSON.stringify(storedState.theme)
+        )
+        localStorage.setItem(
+          STORAGE_KEYS.ui,
+          JSON.stringify(storedState.ui)
+        )
+        localStorage.setItem(
+          STORAGE_KEYS.workspaceConfiguration,
+          JSON.stringify(
+            storedState.workspaceConfiguration
+          )
+        )
+
+        localStorage.removeItem(
+          LEGACY_STORAGE_KEY
+        )
+        loadedLegacyStorage = false
       } catch {
         return
       }
@@ -8480,17 +8604,14 @@
 
         const title = value.trim()
 
-        if (!title) {
-          showToast(
-            TEXT.emptyMessage,
-            'error'
+        conversation.title =
+          title ||
+          getAutomaticConversationTitle(
+            conversation
           )
+        conversation.renamed =
+          Boolean(title)
 
-          return
-        }
-
-        conversation.title = title
-        conversation.renamed = true
         renderSidebar()
         renderTopBar()
         scheduleStateSave()
@@ -8999,16 +9120,24 @@
         return
       }
 
+      const statusLabel =
+        state.modelId || endpoint.name
+
       status.className =
         'status-badge status-badge-ready'
       status.innerHTML =
         '<span class="status-dot status-dot-ready" aria-hidden="true"></span><span>' +
-        escapeHtml(endpoint.name) +
+        escapeHtml(statusLabel) +
         '</span>'
       status.title =
-        API_FORMATS[endpoint.format].label +
+        endpoint.name +
         ' · ' +
-        state.modelId +
+        API_FORMATS[endpoint.format].label +
+        (
+          state.modelId
+            ? ' · ' + state.modelId
+            : ''
+        ) +
         ' · ' +
         endpoint.baseUrl
     }
@@ -9342,7 +9471,7 @@
         `${endpoint.headers.length} header`,
         endpoint.apiKey
           ? 'đã nhập key API'
-          : 'chưa nhập key API'
+          : 'không dùng key API'
       ]
 
       return `
@@ -9434,6 +9563,53 @@
         }).join('')
     }
 
+    function updateEndpointApiKeyControls () {
+      const input =
+        selectElement('#endpoint-api-key')
+      const button =
+        selectElement(
+          '#delete-endpoint-api-key-button'
+        )
+      const hint =
+        selectElement('#endpoint-api-key-hint')
+      const existing =
+        editingEndpointId
+          ? getEndpointById(editingEndpointId)
+          : null
+      const hasDraft =
+        Boolean(input.value.trim())
+      const hasStored =
+        Boolean(
+          existing &&
+          existing.apiKey &&
+          !endpointFormApiKeyCleared
+        )
+
+      button.disabled =
+        !hasDraft && !hasStored
+
+      if (endpointFormApiKeyCleared) {
+        hint.textContent =
+          'Endpoint sẽ được lưu mà không có key API.'
+      } else if (hasStored && !hasDraft) {
+        hint.textContent =
+          'Đang giữ key API đã lưu. Nhập key mới để thay thế hoặc dùng nút xoá để bỏ key.'
+      } else {
+        hint.textContent =
+          'Có thể để trống nếu endpoint không yêu cầu key API.'
+      }
+    }
+
+    function clearEndpointApiKey () {
+      const input =
+        selectElement('#endpoint-api-key')
+
+      input.value = ''
+      endpointFormApiKeyCleared = true
+      updateEndpointApiKeyControls()
+      input.focus()
+    }
+
     function showEndpointForm (endpoint) {
       editingEndpointId =
         endpoint ? endpoint.id : null
@@ -9446,6 +9622,7 @@
               value: header.value
             }))
           : []
+      endpointFormApiKeyCleared = false
 
       selectElement(
         '#endpoint-form-title'
@@ -9482,11 +9659,12 @@
       apiKeyInput.placeholder =
         endpoint && endpoint.apiKey
           ? 'Để trống để giữ key hiện tại'
-          : 'Nhập key API'
+          : 'Nhập key API nếu endpoint yêu cầu'
 
       renderEndpointModels()
       renderEndpointHeaders()
       updateEndpointUrlPreview()
+      updateEndpointApiKeyControls()
 
       selectElement(
         '#endpoint-form'
@@ -9501,6 +9679,7 @@
       editingEndpointId = null
       endpointFormModels = []
       endpointFormHeaders = []
+      endpointFormApiKeyCleared = false
     }
 
     function updateEndpointUrlPreview () {
@@ -9586,12 +9765,14 @@
 
       const endpoint = {
         apiKey:
-          apiKey ||
-          (
-            existing
-              ? existing.apiKey
-              : ''
-          ),
+          endpointFormApiKeyCleared
+            ? ''
+            : apiKey ||
+              (
+                existing
+                  ? existing.apiKey
+                  : ''
+              ),
         baseUrl,
         format,
         headers:
@@ -9635,6 +9816,7 @@
       renderEndpointSelect()
       renderModelSelect()
       renderSamplingControls()
+      renderMessages()
       renderTopBar()
       scheduleStateSave()
       hideEndpointForm()
@@ -9687,6 +9869,7 @@
       renderEndpointSelect()
       renderModelSelect()
       renderSamplingControls()
+      renderMessages()
       renderTopBar()
       scheduleStateSave()
     }
@@ -9827,9 +10010,6 @@
           settings
         )
 
-      const samplingEnabled =
-        settings.samplingEnabled
-
       const temperatureAutomatic =
         settings.temperatureAuto ||
         !capabilities.temperature
@@ -9844,50 +10024,42 @@
         selectElement('#top-p-auto')
 
       temperatureAuto.checked =
-        temperatureAutomatic
+        !temperatureAutomatic
       temperatureAuto.disabled =
-        !samplingEnabled ||
         !capabilities.temperature
 
       topPAuto.checked =
-        topPAutomatic
+        !topPAutomatic
       topPAuto.disabled =
-        !samplingEnabled ||
         !capabilities.topP
 
       selectElement(
         '#temperature-range'
       ).disabled =
-        !samplingEnabled ||
         temperatureAutomatic
 
       selectElement(
         '#temperature-number'
       ).disabled =
-        !samplingEnabled ||
         temperatureAutomatic
 
       selectElement(
         '#top-p-range'
       ).disabled =
-        !samplingEnabled ||
         topPAutomatic
 
       selectElement(
         '#top-p-number'
       ).disabled =
-        !samplingEnabled ||
         topPAutomatic
 
       selectElement('#top-k').disabled =
-        !samplingEnabled ||
         !capabilities.topK
 
       selectElement(
         '#temperature-field'
       ).classList.toggle(
         'disabled',
-        !samplingEnabled ||
         !capabilities.temperature
       )
 
@@ -9895,7 +10067,6 @@
         '#top-p-field'
       ).classList.toggle(
         'disabled',
-        !samplingEnabled ||
         !capabilities.topP
       )
 
@@ -9966,10 +10137,6 @@
       selectElement('#tools-json').value =
         settings.toolsJson
 
-      renderToggle(
-        'sampling-toggle',
-        settings.samplingEnabled
-      )
       renderToggle(
         'reasoning-toggle',
         settings.reasoningEnabled
@@ -10142,6 +10309,488 @@
       }
     }
 
+    function createApiRequestWorker () {
+      if (
+        !window.Worker ||
+        !window.Blob ||
+        !window.URL
+      ) {
+        return null
+      }
+
+      const source = `
+        const activeRequests = new Map()
+
+        function postMessageForRequest (id, type, payload) {
+          self.postMessage(Object.assign({
+            id: id,
+            type: type
+          }, payload || {}))
+        }
+
+        async function readServerSentEvents (response, requestId) {
+          const reader = response.body.getReader()
+          const decoder = new TextDecoder()
+          let buffer = ''
+          let eventName = ''
+          let dataLines = []
+          let events = []
+
+          function dispatchEvent () {
+            if (dataLines.length) {
+              events.push({
+                event: eventName,
+                raw: dataLines.join('\\n')
+              })
+            }
+
+            eventName = ''
+            dataLines = []
+          }
+
+          function flushEvents () {
+            if (!events.length) return
+
+            postMessageForRequest(
+              requestId,
+              'events',
+              {
+                events: events
+              }
+            )
+
+            events = []
+          }
+
+          function consumeLine (rawLine) {
+            const line = rawLine.endsWith('\\r')
+              ? rawLine.slice(0, -1)
+              : rawLine
+
+            if (!line) {
+              dispatchEvent()
+            } else if (line.startsWith(':')) {
+              return
+            } else if (line.startsWith('event:')) {
+              eventName = line.slice(6).trim()
+            } else if (line.startsWith('data:')) {
+              dataLines.push(
+                line.slice(5).replace(/^ /, '')
+              )
+            }
+          }
+
+          while (true) {
+            const result = await reader.read()
+
+            if (result.done) break
+
+            buffer += decoder.decode(
+              result.value,
+              {
+                stream: true
+              }
+            )
+
+            const lines = buffer.split('\\n')
+            buffer = lines.pop() || ''
+
+            for (const line of lines) {
+              consumeLine(line)
+            }
+
+            flushEvents()
+          }
+
+          buffer += decoder.decode()
+
+          if (buffer) consumeLine(buffer)
+
+          dispatchEvent()
+          flushEvents()
+        }
+
+        async function runRequest (data) {
+          const controller = new AbortController()
+
+          activeRequests.set(
+            data.id,
+            controller
+          )
+
+          try {
+            const response = await fetch(
+              data.url,
+              {
+                body: data.body,
+                headers: data.headers,
+                method: data.method,
+                signal: controller.signal
+              }
+            )
+
+            const contentType =
+              response.headers.get(
+                'content-type'
+              ) || ''
+
+            postMessageForRequest(
+              data.id,
+              'response',
+              {
+                contentType: contentType,
+                ok: response.ok,
+                status: response.status,
+                statusText: response.statusText
+              }
+            )
+
+            if (
+              response.ok &&
+              data.expectStream &&
+              response.body &&
+              contentType.includes(
+                'text/event-stream'
+              )
+            ) {
+              await readServerSentEvents(
+                response,
+                data.id
+              )
+
+              postMessageForRequest(
+                data.id,
+                'complete',
+                {
+                  streamed: true
+                }
+              )
+            } else {
+              const text =
+                await response.text()
+
+              postMessageForRequest(
+                data.id,
+                'body',
+                {
+                  streamed: false,
+                  text: text
+                }
+              )
+            }
+          } catch (error) {
+            postMessageForRequest(
+              data.id,
+              'error',
+              {
+                message:
+                  error && error.message
+                    ? error.message
+                    : 'Không thể gọi API.',
+                name:
+                  error && error.name
+                    ? error.name
+                    : 'Error'
+              }
+            )
+          } finally {
+            activeRequests.delete(data.id)
+          }
+        }
+
+        self.onmessage = event => {
+          const data = event.data || {}
+
+          if (data.type === 'abort') {
+            const controller =
+              activeRequests.get(data.id)
+
+            if (controller) {
+              controller.abort()
+            }
+
+            return
+          }
+
+          if (data.type === 'request') {
+            runRequest(data)
+          }
+        }
+      `
+
+      try {
+        const blob = new Blob(
+          [source],
+          {
+            type: 'text/javascript'
+          }
+        )
+        const url =
+          URL.createObjectURL(blob)
+        const worker =
+          new Worker(url)
+
+        URL.revokeObjectURL(url)
+
+        return worker
+      } catch {
+        return null
+      }
+    }
+
+    function createAbortError () {
+      try {
+        return new DOMException(
+          'Đã huỷ yêu cầu.',
+          'AbortError'
+        )
+      } catch {
+        const error =
+          new Error('Đã huỷ yêu cầu.')
+
+        error.name = 'AbortError'
+
+        return error
+      }
+    }
+
+    function finishApiWorkerRequest (
+      request,
+      callback,
+      value
+    ) {
+      if (!request || request.settled) return
+
+      request.settled = true
+
+      if (
+        request.signal &&
+        request.abortHandler
+      ) {
+        request.signal.removeEventListener(
+          'abort',
+          request.abortHandler
+        )
+      }
+
+      apiWorkerRequests.delete(request.id)
+      callback(value)
+    }
+
+    function handleApiWorkerMessage (event) {
+      const data = event.data || {}
+      const request =
+        apiWorkerRequests.get(data.id)
+
+      if (!request) return
+
+      if (data.type === 'response') {
+        request.metadata = {
+          contentType: data.contentType || '',
+          ok: data.ok === true,
+          status: Number(data.status) || 0,
+          statusText: data.statusText || ''
+        }
+
+        return
+      }
+
+      if (data.type === 'events') {
+        try {
+          if (request.onEvent) {
+            ;(data.events || []).forEach(
+              streamEvent => {
+                request.onEvent(streamEvent)
+              }
+            )
+          }
+        } catch (error) {
+          if (apiRequestWorker) {
+            apiRequestWorker.postMessage({
+              id: request.id,
+              type: 'abort'
+            })
+          }
+
+          finishApiWorkerRequest(
+            request,
+            request.reject,
+            error
+          )
+        }
+
+        return
+      }
+
+      if (data.type === 'body') {
+        finishApiWorkerRequest(
+          request,
+          request.resolve,
+          {
+            ...(request.metadata || {
+              contentType: '',
+              ok: false,
+              status: 0,
+              statusText: ''
+            }),
+            streamed: false,
+            text:
+              typeof data.text === 'string'
+                ? data.text
+                : ''
+          }
+        )
+
+        return
+      }
+
+      if (data.type === 'complete') {
+        finishApiWorkerRequest(
+          request,
+          request.resolve,
+          {
+            ...(request.metadata || {
+              contentType:
+                'text/event-stream',
+              ok: true,
+              status: 200,
+              statusText: ''
+            }),
+            streamed: true,
+            text: ''
+          }
+        )
+
+        return
+      }
+
+      if (data.type === 'error') {
+        const error =
+          data.name === 'AbortError'
+            ? createAbortError()
+            : createApiError(
+                'network',
+                data.message ||
+                  'Không thể gọi API. Hãy kiểm tra mạng, URL API hoặc CORS.'
+              )
+
+        finishApiWorkerRequest(
+          request,
+          request.reject,
+          error
+        )
+      }
+    }
+
+    function handleApiWorkerFailure () {
+      const error = createApiError(
+        'network',
+        'Tiến trình chạy ngầm của API đã dừng. Hãy thử gửi lại yêu cầu.'
+      )
+
+      Array.from(
+        apiWorkerRequests.values()
+      ).forEach(request => {
+        finishApiWorkerRequest(
+          request,
+          request.reject,
+          error
+        )
+      })
+
+      if (apiRequestWorker) {
+        apiRequestWorker.terminate()
+        apiRequestWorker = null
+      }
+    }
+
+    function executeApiRequestWithWorker (
+      url,
+      options,
+      onEvent
+    ) {
+      return new Promise((resolve, reject) => {
+        if (!apiRequestWorker) {
+          reject(
+            createApiError(
+              'network',
+              'Tiến trình chạy ngầm không khả dụng.'
+            )
+          )
+
+          return
+        }
+
+        const id = createUniqueId()
+        const signal = options.signal
+        const request = {
+          abortHandler: null,
+          id,
+          metadata: null,
+          onEvent,
+          reject,
+          resolve,
+          settled: false,
+          signal
+        }
+
+        request.abortHandler = () => {
+          if (apiRequestWorker) {
+            apiRequestWorker.postMessage({
+              id,
+              type: 'abort'
+            })
+          }
+
+          finishApiWorkerRequest(
+            request,
+            reject,
+            createAbortError()
+          )
+        }
+
+        if (signal && signal.aborted) {
+          request.abortHandler()
+          return
+        }
+
+        if (signal) {
+          signal.addEventListener(
+            'abort',
+            request.abortHandler,
+            {
+              once: true
+            }
+          )
+        }
+
+        apiWorkerRequests.set(id, request)
+
+        try {
+          apiRequestWorker.postMessage({
+            body: options.body,
+            expectStream:
+              typeof onEvent === 'function',
+            headers: options.headers,
+            id,
+            method: options.method || 'GET',
+            type: 'request',
+            url
+          })
+        } catch (error) {
+          finishApiWorkerRequest(
+            request,
+            reject,
+            createApiError(
+              'network',
+              error.message ||
+                'Không thể khởi tạo yêu cầu chạy ngầm.'
+            )
+          )
+        }
+      })
+    }
+
     async function fetchApiResponse (url, options) {
       try {
         return await fetch(url, options)
@@ -10230,6 +10879,75 @@
       dispatchEvent()
     }
 
+    async function executeApiRequestOnMainThread (
+      url,
+      options,
+      onEvent
+    ) {
+      const response =
+        await fetchApiResponse(
+          url,
+          options
+        )
+
+      const contentType =
+        response.headers.get(
+          'content-type'
+        ) || ''
+
+      if (
+        response.ok &&
+        onEvent &&
+        response.body &&
+        contentType.includes(
+          'text/event-stream'
+        )
+      ) {
+        await readServerSentEvents(
+          response,
+          onEvent
+        )
+
+        return {
+          contentType,
+          ok: response.ok,
+          status: response.status,
+          statusText: response.statusText,
+          streamed: true,
+          text: ''
+        }
+      }
+
+      return {
+        contentType,
+        ok: response.ok,
+        status: response.status,
+        statusText: response.statusText,
+        streamed: false,
+        text: await response.text()
+      }
+    }
+
+    function executeApiRequest (
+      url,
+      options,
+      onEvent
+    ) {
+      if (apiRequestWorker) {
+        return executeApiRequestWithWorker(
+          url,
+          options,
+          onEvent
+        )
+      }
+
+      return executeApiRequestOnMainThread(
+        url,
+        options,
+        onEvent
+      )
+    }
+
     function applyOutputUpdate (message, update) {
       if (update.kind === 'replace-all') {
         message.outputBlocks =
@@ -10237,9 +10955,7 @@
             .map(sanitizeOutputBlock)
             .filter(Boolean)
 
-        syncMessageOutput(message)
-
-        return
+        return true
       }
 
       if (update.kind === 'finalize-tools') {
@@ -10259,9 +10975,7 @@
               : 'waiting'
           })
 
-        syncMessageOutput(message)
-
-        return
+        return true
       }
 
       const blocks = getMessageOutputBlocks(message)
@@ -10286,9 +11000,8 @@
         }
 
         block.content += update.content || ''
-        syncMessageOutput(message)
 
-        return
+        return true
       }
 
       if (update.kind === 'redacted') {
@@ -10302,9 +11015,7 @@
           )
         }
 
-        syncMessageOutput(message)
-
-        return
+        return !exists
       }
 
       if (update.kind === 'tool') {
@@ -10366,8 +11077,10 @@
             stringifyToolPayload(update.output)
         }
 
-        syncMessageOutput(message)
+        return true
       }
+
+      return false
     }
 
     function createStreamRenderer (message) {
@@ -10375,20 +11088,9 @@
       let frameId = null
       let timeoutId = null
       let updates = []
-      let drainResolvers = []
+      let dirty = false
 
-      function resolveDrains () {
-        const resolvers = drainResolvers
-
-        drainResolvers = []
-        resolvers.forEach(resolve => resolve())
-      }
-
-      function renderFrame () {
-        if (!scheduled) return
-
-        scheduled = false
-
+      function clearScheduledHandles () {
         if (frameId != null) {
           window.cancelAnimationFrame(frameId)
           frameId = null
@@ -10398,22 +11100,46 @@
           window.clearTimeout(timeoutId)
           timeoutId = null
         }
+      }
+
+      function applyPendingUpdates () {
+        if (!updates.length) return
 
         const frameUpdates = updates
+        let changed = false
 
         updates = []
 
         frameUpdates.forEach(update => {
-          applyOutputUpdate(message, update)
+          changed =
+            applyOutputUpdate(
+              message,
+              update
+            ) || changed
         })
+
+        if (changed) {
+          syncMessageOutput(message)
+          dirty = true
+        }
+      }
+
+      function paint () {
+        if (!dirty || document.hidden) return
 
         updateStreamingMessageDom(message)
         scrollToBottom(false)
+        dirty = false
+      }
+
+      function renderFrame () {
+        scheduled = false
+        clearScheduledHandles()
+        applyPendingUpdates()
+        paint()
 
         if (updates.length) {
           scheduleRender()
-        } else {
-          resolveDrains()
         }
       }
 
@@ -10421,6 +11147,12 @@
         if (scheduled) return
 
         scheduled = true
+
+        if (document.hidden) {
+          window.queueMicrotask(renderFrame)
+          return
+        }
+
         frameId =
           window.requestAnimationFrame(
             renderFrame
@@ -10441,16 +11173,12 @@
 
       return {
         drain () {
-          if (
-            !scheduled &&
-            !updates.length
-          ) {
-            return Promise.resolve()
-          }
+          clearScheduledHandles()
+          scheduled = false
+          applyPendingUpdates()
+          paint()
 
-          return new Promise(resolve => {
-            drainResolvers.push(resolve)
-          })
+          return Promise.resolve()
         },
 
         finalizeTools () {
@@ -10550,6 +11278,21 @@
       }
     }
 
+    function parseApiResponseText (text) {
+      try {
+        return JSON.parse(text)
+      } catch {
+        try {
+          return parseJson5(text)
+        } catch {
+          throw createApiError(
+            'api',
+            'Phản hồi API không phải JSON hợp lệ.'
+          )
+        }
+      }
+    }
+
     async function generateAssistantResponse (
       conversation,
       message
@@ -10577,13 +11320,6 @@
           throw createApiError(
             'config',
             TEXT.modelRequired
-          )
-        }
-
-        if (!endpoint.apiKey) {
-          throw createApiError(
-            'config',
-            `Endpoint “${endpoint.name}” chưa có key API.`
           )
         }
 
@@ -10621,8 +11357,21 @@
           }
         })
 
-        const response =
-          await fetchApiResponse(
+        const streamState = {
+          anthropicBlocks: {},
+          interactionSteps: {},
+          lastGeminiCodeToolId: null,
+          sequence: 0,
+          sequentialBlocks: {}
+        }
+
+        if (settings.streaming) {
+          renderer =
+            createStreamRenderer(message)
+        }
+
+        const result =
+          await executeApiRequest(
             request.url,
             {
               body: JSON.stringify(request.body),
@@ -10630,80 +11379,56 @@
               method: 'POST',
               signal:
                 state.abortController.signal
-            }
+            },
+            renderer
+              ? streamEvent => {
+                  handleStreamEvent(
+                    format,
+                    streamEvent,
+                    renderer,
+                    streamState
+                  )
+                }
+              : null
           )
 
-        if (!response.ok) {
+        if (!result.ok) {
           let errorMessage =
-            'HTTP ' + response.status
+            'HTTP ' + result.status
 
-          try {
-            const json = await response.json()
-            const detail =
-              format.parseError(json)
+          if (result.text) {
+            try {
+              const json =
+                parseApiResponseText(
+                  result.text
+                )
+              const detail =
+                format.parseError(json)
 
-            if (detail) errorMessage = detail
-          } catch {
-            errorMessage =
-              'HTTP ' + response.status
+              if (detail) errorMessage = detail
+            } catch {
+              errorMessage =
+                'HTTP ' + result.status
+            }
           }
 
           throw createApiError(
-            response.status === 429
+            result.status === 429
               ? 'rate'
               : 'http',
             errorMessage,
-            response.status
+            result.status
           )
         }
 
-        const contentType =
-          response.headers.get(
-            'content-type'
-          ) || ''
-
-        if (
-          settings.streaming &&
-          contentType.includes(
-            'text/event-stream'
-          )
-        ) {
-          const streamState = {
-            anthropicBlocks: {},
-            interactionSteps: {},
-            lastGeminiCodeToolId: null,
-            sequence: 0,
-            sequentialBlocks: {}
-          }
-
-          renderer =
-            createStreamRenderer(message)
-
-          await readServerSentEvents(
-            response,
-            streamEvent => {
-              handleStreamEvent(
-                format,
-                streamEvent,
-                renderer,
-                streamState
-              )
-            }
-          )
-
+        if (result.streamed) {
           renderer.finalizeTools()
           await renderer.drain()
         } else {
-          let json
-
-          try {
-            json = await response.json()
-          } catch {
-            throw createApiError(
-              'api',
-              'Phản hồi API không phải JSON hợp lệ.'
+          const json =
+            parseApiResponseText(
+              result.text
             )
-          }
 
           if (json && json.error) {
             throw createApiError(
@@ -10889,12 +11614,17 @@
 
         if (
           !conversation.renamed &&
-          text
+          conversation.title ===
+            TEXT.newConversationTitle
         ) {
           conversation.title =
-            text.length > 60
-              ? text.slice(0, 60) + '…'
-              : text
+            text
+              ? createConversationTitleFromText(
+                  text
+                )
+              : getAutomaticConversationTitle(
+                  conversation
+                )
         }
       }
 
@@ -11026,12 +11756,24 @@
         delete message.showReasoning
       }
 
+      if (
+        !conversation.renamed &&
+        conversation.title ===
+          TEXT.newConversationTitle
+      ) {
+        conversation.title =
+          getAutomaticConversationTitle(
+            conversation
+          )
+      }
+
       state.editingMessageId = null
       state.newMessageId = null
       conversation.updatedAt = Date.now()
 
       renderMessages()
       renderSidebar()
+      renderTopBar()
       scheduleStateSave()
     }
 
@@ -11081,11 +11823,19 @@
         })
       conversation.updatedAt = Date.now()
 
+      if (!conversation.renamed) {
+        conversation.title =
+          getAutomaticConversationTitle(
+            conversation
+          )
+      }
+
       state.editingMessageId = null
       state.newMessageId = null
 
       renderMessages()
       renderSidebar()
+      renderTopBar()
       scheduleStateSave()
     }
 
@@ -11336,59 +12086,6 @@
         toggleSidebar
       )
       selectElement(
-        '#settings-toggle-button'
-      ).addEventListener(
-        'click',
-        toggleSettings
-      )
-      selectElement(
-        '#close-settings-button'
-      ).addEventListener(
-        'click',
-        closeDrawers
-      )
-      selectElement(
-        '#drawer-backdrop'
-      ).addEventListener(
-        'click',
-        closeDrawers
-      )
-      selectElement(
-        '#theme-toggle-button'
-      ).addEventListener('click', () => {
-        state.theme =
-          state.theme === 'dark'
-            ? 'light'
-            : 'dark'
-
-        applyTheme()
-        scheduleStateSave()
-      })
-
-      selectElement(
-        '#endpoint-select'
-      ).addEventListener('change', event => {
-        setActiveEndpoint(event.target.value)
-      })
-
-      selectElement(
-        '#model-select'
-      ).addEventListener('change', event => {
-        state.modelId = event.target.value
-        syncActiveConfiguration()
-        renderSamplingControls()
-        renderTopBar()
-        scheduleStateSave()
-      })
-
-      selectElement(
-        '#manage-endpoints-button'
-      ).addEventListener(
-        'click',
-        openEndpointDialog
-      )
-
-      selectElement(
         '#new-conversation-button'
       ).addEventListener('click', () => {
         createConversation()
@@ -11459,6 +12156,31 @@
           )
         }
       })
+
+      selectElement(
+        '#theme-toggle-button'
+      ).addEventListener('click', () => {
+        state.theme =
+          state.theme === 'dark'
+            ? 'light'
+            : 'dark'
+
+        applyTheme()
+        scheduleStateSave()
+      })
+
+      selectElement(
+        '#settings-toggle-button'
+      ).addEventListener(
+        'click',
+        toggleSettings
+      )
+      selectElement(
+        '#close-settings-button'
+      ).addEventListener(
+        'click',
+        closeDrawers
+      )
 
       const messageList =
         selectElement('#message-list')
@@ -11719,15 +12441,6 @@
         }
       )
 
-      selectElements('[data-add-role]')
-        .forEach(button => {
-          button.addEventListener('click', () => {
-            addMessage(
-              button.getAttribute('data-add-role')
-            )
-          })
-        })
-
       const chatArea =
         selectElement('#chat-scroll-area')
 
@@ -11763,6 +12476,15 @@
           '#scroll-bottom-button'
         ).hidden = true
       })
+
+      selectElements('[data-add-role]')
+        .forEach(button => {
+          button.addEventListener('click', () => {
+            addMessage(
+              button.getAttribute('data-add-role')
+            )
+          })
+        })
 
       const messageInput =
         selectElement('#message-input')
@@ -11809,11 +12531,13 @@
         'click',
         handleSubmitButton
       )
+
       selectElement(
         '#attach-files-button'
       ).addEventListener('click', () => {
         selectElement('#file-input').click()
       })
+
       selectElement(
         '#file-input'
       ).addEventListener('change', event => {
@@ -11822,6 +12546,7 @@
 
         event.target.value = ''
       })
+
       selectElement(
         '#attachment-list'
       ).addEventListener('click', event => {
@@ -11838,6 +12563,29 @@
         }
       })
 
+      selectElement(
+        '#endpoint-select'
+      ).addEventListener('change', event => {
+        setActiveEndpoint(event.target.value)
+      })
+
+      selectElement(
+        '#model-select'
+      ).addEventListener('change', event => {
+        state.modelId = event.target.value
+        syncActiveConfiguration()
+        renderSamplingControls()
+        renderTopBar()
+        scheduleStateSave()
+      })
+
+      selectElement(
+        '#manage-endpoints-button'
+      ).addEventListener(
+        'click',
+        openEndpointDialog
+      )
+
       bindSynchronizedNumberInputs(
         'temperature-range',
         'temperature-number',
@@ -11853,7 +12601,7 @@
         '#temperature-auto'
       ).addEventListener('change', event => {
         state.settings.temperatureAuto =
-          event.target.checked
+          !event.target.checked
         renderSamplingControls()
         scheduleStateSave()
       })
@@ -11862,7 +12610,7 @@
         '#top-p-auto'
       ).addEventListener('change', event => {
         state.settings.topPAuto =
-          event.target.checked
+          !event.target.checked
         renderSamplingControls()
         scheduleStateSave()
       })
@@ -11895,11 +12643,6 @@
         }
       )
 
-      bindSettingToggle(
-        'sampling-toggle',
-        'samplingEnabled',
-        true
-      )
       bindSettingToggle(
         'reasoning-toggle',
         'reasoningEnabled',
@@ -12062,11 +12805,19 @@
       )
 
       selectElement(
+        '#drawer-backdrop'
+      ).addEventListener(
+        'click',
+        closeDrawers
+      )
+
+      selectElement(
         '#close-endpoint-dialog-button'
       ).addEventListener(
         'click',
         closeEndpointDialog
       )
+
       selectElement(
         '#endpoint-dialog-root'
       ).addEventListener('click', event => {
@@ -12078,6 +12829,7 @@
           closeEndpointDialog()
         }
       })
+
       selectElement(
         '.endpoint-dialog-panel'
       ).addEventListener('keydown', event => {
@@ -12100,24 +12852,45 @@
         'click',
         () => showEndpointForm(null)
       )
+
       selectElement(
         '#cancel-endpoint-form-button'
       ).addEventListener(
         'click',
         hideEndpointForm
       )
+
       selectElement(
         '#save-endpoint-button'
       ).addEventListener(
         'click',
         saveEndpointForm
       )
+
+      selectElement(
+        '#endpoint-api-key'
+      ).addEventListener('input', event => {
+        if (event.target.value.trim()) {
+          endpointFormApiKeyCleared = false
+        }
+
+        updateEndpointApiKeyControls()
+      })
+
+      selectElement(
+        '#delete-endpoint-api-key-button'
+      ).addEventListener(
+        'click',
+        clearEndpointApiKey
+      )
+
       selectElement(
         '#add-endpoint-model-button'
       ).addEventListener(
         'click',
         addEndpointModel
       )
+
       selectElement(
         '#endpoint-model-input'
       ).addEventListener('keydown', event => {
@@ -12290,6 +13063,20 @@
         }
       )
 
+      document.addEventListener(
+        'visibilitychange',
+        () => {
+          if (document.hidden) {
+            scheduleStorageSave.flush()
+            return
+          }
+
+          renderMessages()
+          renderTopBar()
+          scrollToBottom(false)
+        }
+      )
+
       window.addEventListener('online', () => {
         renderTopBar()
         showToast(
@@ -12340,8 +13127,29 @@
         })
     }
 
+    function initializeApiWorker () {
+      apiRequestWorker =
+        createApiRequestWorker()
+
+      if (!apiRequestWorker) return
+
+      apiRequestWorker.addEventListener(
+        'message',
+        handleApiWorkerMessage
+      )
+      apiRequestWorker.addEventListener(
+        'error',
+        handleApiWorkerFailure
+      )
+      apiRequestWorker.addEventListener(
+        'messageerror',
+        handleApiWorkerFailure
+      )
+    }
+
     function initializeApp () {
       hydrateIcons()
+      initializeApiWorker()
       applyTheme()
       renderEndpointSelect()
       renderModelSelect()
@@ -12355,6 +13163,10 @@
       bindEvents()
       refreshRequestBodyPreview()
       scrollToBottom(true)
+
+      if (loadedLegacyStorage) {
+        saveStateNow()
+      }
 
       if (!window.JSON5) {
         showToast(
