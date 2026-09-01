@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="vi" data-accent="blue">
+<html lang="vi">
 <head>
   <meta charset="utf-8">
   <meta
@@ -45,74 +45,45 @@
 
   <style>
     :root {
-      --font-ui: 'be vietnam pro', sans-serif;
+      --accent: #00f6ff;
+      --accent-glow: rgba(0, 246, 255, 0.48);
+      --accent-ink: #020b10;
+      --accent-rgb: 0, 246, 255;
+      --accent-soft: rgba(0, 246, 255, 0.13);
+      --accent-strong: #8affff;
+      --background: #05080d;
+      --background-deep: #020508;
+      --border: #17394a;
+      --border-soft: rgba(23, 57, 74, 0.58);
+      --border-strong: #425866;
+      --code-background: #03090e;
+      --error: #ff2e55;
+      --error-rgb: 255, 46, 85;
+      --error-soft: rgba(var(--error-rgb), 0.11);
+      --faint: #607986;
       --font-mono: 'jetbrains mono', ui-monospace, monospace;
+      --font-ui: 'be vietnam pro', sans-serif;
+      --grid: rgba(23, 57, 74, 0.42);
+      --hover: rgba(var(--accent-rgb), 0.08);
+      --muted: #7a96a3;
+      --panel: #08131e;
+      --panel-secondary: #0b2230;
+      --panel-tertiary: #102c3b;
       --radius: 4px;
       --radius-small: 2px;
-      --background: #04080c;
-      --background-deep: #020508;
-      --panel: #081119;
-      --panel-secondary: #0c1721;
-      --panel-tertiary: #101e29;
-      --code-background: #03090e;
-      --user-background: #0b1822;
-      --text: #dff6ff;
-      --muted: #88a6b5;
-      --faint: #526e7d;
-      --border: #18303e;
-      --border-soft: #102430;
-      --border-strong: #2b5268;
-      --grid: rgba(88, 196, 238, 0.075);
-      --hover: #102431;
-      --scrim: rgba(0, 4, 8, 0.74);
-      --system: #ffb454;
-      --system-rgb: 255, 180, 84;
-      --system-soft: rgba(var(--system-rgb), 0.1);
-      --system-glow: rgba(var(--system-rgb), 0.26);
-      --developer: #f17cff;
-      --developer-rgb: 241, 124, 255;
-      --developer-soft: rgba(var(--developer-rgb), 0.1);
-      --developer-glow: rgba(var(--developer-rgb), 0.28);
-      --reasoning: #a990ff;
-      --reasoning-rgb: 169, 144, 255;
-      --reasoning-soft: rgba(var(--reasoning-rgb), 0.1);
-      --reasoning-glow: rgba(var(--reasoning-rgb), 0.26);
-      --reasoning-background: #100e20;
-      --tool: #39d8ff;
-      --tool-rgb: 57, 216, 255;
-      --tool-soft: rgba(var(--tool-rgb), 0.1);
-      --tool-glow: rgba(var(--tool-rgb), 0.28);
-      --success: #38e3a2;
-      --success-rgb: 56, 227, 162;
-      --success-soft: rgba(var(--success-rgb), 0.11);
-      --warning: #ffd166;
-      --warning-rgb: 255, 209, 102;
-      --warning-soft: rgba(var(--warning-rgb), 0.11);
-      --error: #ff6577;
-      --error-rgb: 255, 101, 119;
-      --error-soft: rgba(var(--error-rgb), 0.11);
+      --scrim: rgba(0, 4, 8, 0.76);
       --shadow:
         0 18px 46px rgba(0, 0, 0, 0.52),
         0 0 26px rgba(var(--accent-rgb), 0.07);
+      --success: #39ff88;
+      --success-rgb: 57, 255, 136;
+      --success-soft: rgba(var(--success-rgb), 0.11);
+      --text: #e8fbff;
+      --user-background: #0b2230;
+      --warning: #ffb000;
+      --warning-rgb: 255, 176, 0;
+      --warning-soft: rgba(var(--warning-rgb), 0.11);
       color-scheme: dark;
-    }
-
-    html[data-accent='blue'] {
-      --accent: #32cfff;
-      --accent-rgb: 50, 207, 255;
-      --accent-strong: #8aeaff;
-      --accent-ink: #020b10;
-      --accent-soft: rgba(var(--accent-rgb), 0.13);
-      --accent-glow: rgba(var(--accent-rgb), 0.48);
-    }
-
-    html[data-accent='green'] {
-      --accent: #00f47a;
-      --accent-rgb: 0, 244, 122;
-      --accent-strong: #78ffb8;
-      --accent-ink: #011008;
-      --accent-soft: rgba(var(--accent-rgb), 0.13);
-      --accent-glow: rgba(var(--accent-rgb), 0.48);
     }
 
     * {
@@ -342,8 +313,7 @@
 
     .brand-subtitle,
     .section-title,
-    .select-label,
-    .role-toolbar-label {
+    .select-label {
       color: var(--faint);
       font-family: var(--font-mono);
       text-transform: uppercase;
@@ -376,7 +346,8 @@
     .chip-remove-button,
     .attachment-button,
     .send-button,
-    .code-copy-button {
+    .code-copy-button,
+    .add-message-button {
       align-items: center;
       display: inline-flex;
       justify-content: center;
@@ -570,6 +541,11 @@
       margin-top: 2px;
     }
 
+    .conversation-runtime-status {
+      color: var(--accent);
+      text-shadow: 0 0 7px var(--accent-glow);
+    }
+
     .conversation-actions,
     .message-actions {
       align-items: center;
@@ -662,7 +638,7 @@
           rgba(var(--accent-rgb), 0.035),
           transparent 35%
         ),
-        rgba(8, 17, 25, 0.96);
+        rgba(8, 19, 30, 0.96);
       border-bottom: 1px solid var(--border-strong);
       flex-wrap: wrap;
       gap: 8px 10px;
@@ -778,9 +754,9 @@
     }
 
     .format-badge {
-      background: var(--tool-soft);
-      border-color: var(--tool);
-      color: var(--tool);
+      background: var(--accent-soft);
+      border-color: var(--accent);
+      color: var(--accent);
     }
 
     .chat-panel {
@@ -879,39 +855,18 @@
     }
 
     .avatar-assistant,
-    .message[data-role='assistant'] .message-avatar {
+    .avatar-system,
+    .avatar-developer,
+    .avatar-instruction,
+    .message[data-role='assistant'] .message-avatar,
+    .message[data-role='system'] .message-avatar,
+    .message[data-role='developer'] .message-avatar {
       background: var(--accent-soft);
       border-color: var(--accent);
       box-shadow:
         inset 0 0 10px var(--accent-soft),
         0 0 10px rgba(var(--accent-rgb), 0.16);
       color: var(--accent-strong);
-    }
-
-    .avatar-system,
-    .message[data-role='system'] .message-avatar {
-      background: var(--system-soft);
-      border-color: var(--system);
-      box-shadow:
-        inset 0 0 10px var(--system-soft),
-        0 0 10px var(--system-glow);
-      color: var(--system);
-    }
-
-    .avatar-developer,
-    .message[data-role='developer'] .message-avatar {
-      background: var(--developer-soft);
-      border-color: var(--developer);
-      box-shadow:
-        inset 0 0 10px var(--developer-soft),
-        0 0 10px var(--developer-glow);
-      color: var(--developer);
-    }
-
-    .avatar-instruction {
-      background: var(--system-soft);
-      border-color: var(--system);
-      color: var(--system);
     }
 
     .message-main,
@@ -934,7 +889,7 @@
 
     .message-role-select {
       background-color: var(--panel-secondary);
-      border-color: var(--border-strong);
+      border-color: rgba(var(--accent-rgb), 0.5);
       border-radius: 999px;
       color: var(--accent-strong);
       font: 600 11px var(--font-mono);
@@ -943,18 +898,10 @@
     }
 
     .message-role-select[data-role='system'],
-    .message[data-role='system'] .message-role-select {
-      border-color: rgba(var(--system-rgb), 0.5);
-      color: var(--system);
-    }
-
     .message-role-select[data-role='developer'],
-    .message[data-role='developer'] .message-role-select {
-      border-color: rgba(var(--developer-rgb), 0.5);
-      color: var(--developer);
-    }
-
     .message-role-select[data-role='assistant'],
+    .message[data-role='system'] .message-role-select,
+    .message[data-role='developer'] .message-role-select,
     .message[data-role='assistant'] .message-role-select {
       border-color: rgba(var(--accent-rgb), 0.5);
       color: var(--accent-strong);
@@ -995,18 +942,10 @@
       border: 1px solid var(--border);
     }
 
-    .instruction-message-content,
-    .message[data-role='system'] .message-body {
-      background: var(--system-soft);
-      border: 1px solid rgba(var(--system-rgb), 0.55);
-      box-shadow: inset 3px 0 0 var(--system);
-    }
-
-    .message[data-role='developer'] .instruction-message-content,
-    .message[data-role='developer'] .message-body {
-      background: var(--developer-soft);
-      border: 1px solid rgba(var(--developer-rgb), 0.55);
-      box-shadow: inset 3px 0 0 var(--developer);
+    .instruction-message-content {
+      background: var(--accent-soft);
+      border: 1px solid rgba(var(--accent-rgb), 0.48);
+      box-shadow: inset 3px 0 0 var(--accent);
     }
 
     .assistant-answer + .assistant-answer,
@@ -1019,29 +958,29 @@
       background:
         linear-gradient(
           135deg,
-          var(--reasoning-soft),
+          var(--accent-soft),
           transparent 55%
         ),
-        var(--reasoning-background);
-      border: 1px solid rgba(var(--reasoning-rgb), 0.42);
-      border-left: 3px solid var(--reasoning);
+        var(--panel);
+      border: 1px solid rgba(var(--accent-rgb), 0.42);
+      border-left: 3px solid var(--accent);
       border-radius: var(--radius);
       box-shadow:
-        inset 0 0 20px rgba(var(--reasoning-rgb), 0.035),
-        0 0 12px rgba(var(--reasoning-rgb), 0.08);
+        inset 0 0 20px rgba(var(--accent-rgb), 0.035),
+        0 0 12px rgba(var(--accent-rgb), 0.08);
       overflow: hidden;
     }
 
     .reasoning-panel summary {
       align-items: center;
-      color: var(--reasoning);
+      color: var(--accent);
       cursor: pointer;
       display: flex;
       font: 600 11px var(--font-mono);
       gap: 7px;
       list-style: none;
       padding: 8px 10px;
-      text-shadow: 0 0 8px var(--reasoning-glow);
+      text-shadow: 0 0 8px var(--accent-glow);
       user-select: none;
     }
 
@@ -1065,23 +1004,23 @@
     }
 
     .reasoning-trace {
-      border-top: 1px solid rgba(var(--reasoning-rgb), 0.2);
+      border-top: 1px solid rgba(var(--accent-rgb), 0.2);
     }
 
     .trace-item {
-      color: #b9acd9;
+      color: var(--muted);
       font-size: 12.5px;
       line-height: 1.65;
       padding: 9px 12px 11px;
     }
 
     .trace-item + .trace-item {
-      border-top: 1px solid rgba(var(--reasoning-rgb), 0.14);
+      border-top: 1px solid rgba(var(--accent-rgb), 0.14);
     }
 
     .reasoning-redacted {
       align-items: center;
-      color: rgba(var(--reasoning-rgb), 0.68);
+      color: rgba(var(--accent-rgb), 0.72);
       display: flex;
       font-size: 11.5px;
       gap: 6px;
@@ -1095,13 +1034,13 @@
     }
 
     .tool-activity-name {
-      color: var(--tool);
+      color: var(--accent);
       flex: 1;
       font: 500 12px var(--font-mono);
       min-width: 0;
       overflow: hidden;
       text-overflow: ellipsis;
-      text-shadow: 0 0 7px rgba(var(--tool-rgb), 0.25);
+      text-shadow: 0 0 7px rgba(var(--accent-rgb), 0.25);
       white-space: nowrap;
     }
 
@@ -1123,7 +1062,7 @@
     }
 
     .tool-activity-state.active {
-      color: var(--tool);
+      color: var(--accent);
     }
 
     .tool-activity-state.active .tool-activity-dot {
@@ -1142,14 +1081,14 @@
       background:
         linear-gradient(
           135deg,
-          var(--tool-soft),
+          var(--accent-soft),
           transparent 60%
         ),
         var(--code-background);
-      border: 1px solid rgba(var(--tool-rgb), 0.3);
-      border-left: 2px solid var(--tool);
+      border: 1px solid rgba(var(--accent-rgb), 0.3);
+      border-left: 2px solid var(--accent);
       border-radius: var(--radius-small);
-      color: #8fc7d8;
+      color: var(--muted);
       font: 11px/1.55 var(--font-mono);
       margin: 8px 0 0;
       max-height: 180px;
@@ -1161,7 +1100,7 @@
     }
 
     .tool-activity-output {
-      border-left-color: var(--success);
+      border-left-color: var(--accent);
     }
 
     @keyframes tool-pulse {
@@ -1446,10 +1385,10 @@
     }
 
     .markdown blockquote {
-      background: var(--system-soft);
-      border-left: 3px solid var(--system);
+      background: var(--accent-soft);
+      border-left: 3px solid var(--accent);
       border-radius: 0 var(--radius) var(--radius) 0;
-      color: #d7bc98;
+      color: var(--muted);
       margin: 10px 0;
       padding: 6px 14px;
     }
@@ -1471,35 +1410,35 @@
 
     .markdown code {
       background: var(--panel-secondary);
-      border: 1px solid rgba(var(--tool-rgb), 0.2);
+      border: 1px solid rgba(var(--accent-rgb), 0.2);
       border-radius: 2px;
-      color: #9ceaff;
+      color: var(--accent-strong);
       font: 0.88em var(--font-mono);
       padding: 1px 5px;
     }
 
     .code-block {
       background: var(--code-background);
-      border: 1px solid rgba(var(--tool-rgb), 0.28);
+      border: 1px solid rgba(var(--accent-rgb), 0.28);
       border-radius: var(--radius);
-      box-shadow: inset 0 0 22px rgba(var(--tool-rgb), 0.025);
+      box-shadow: inset 0 0 22px rgba(var(--accent-rgb), 0.025);
       margin: 12px 0;
       overflow: hidden;
     }
 
     .code-header {
       align-items: center;
-      background: var(--tool-soft);
-      border-bottom: 1px solid rgba(var(--tool-rgb), 0.22);
+      background: var(--accent-soft);
+      border-bottom: 1px solid rgba(var(--accent-rgb), 0.22);
       display: flex;
       justify-content: space-between;
       padding: 5px 8px 5px 12px;
     }
 
     .code-language {
-      color: var(--tool);
+      color: var(--accent);
       font: 10.5px var(--font-mono);
-      text-shadow: 0 0 7px var(--tool-glow);
+      text-shadow: 0 0 7px var(--accent-glow);
       text-transform: uppercase;
     }
 
@@ -1626,23 +1565,18 @@
     .role-toolbar {
       align-items: center;
       display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
       margin-bottom: 8px;
     }
 
-    .role-toolbar-label {
-      font-size: 10px;
-      margin-right: 2px;
-    }
-
-    .add-role-button {
+    .add-message-button {
       background: var(--panel);
       border: 1px solid var(--border);
-      border-radius: 999px;
+      border-radius: var(--radius);
       color: var(--muted);
       cursor: pointer;
       font: 600 11px var(--font-mono);
+      gap: 6px;
+      min-height: 30px;
       padding: 4px 11px;
       transition:
         background 0.15s ease,
@@ -1651,22 +1585,7 @@
         color 0.15s ease;
     }
 
-    .add-role-button[data-add-role='system']:hover {
-      background: var(--system-soft);
-      border-color: var(--system);
-      box-shadow: 0 0 10px var(--system-glow);
-      color: var(--system);
-    }
-
-    .add-role-button[data-add-role='developer']:hover {
-      background: var(--developer-soft);
-      border-color: var(--developer);
-      box-shadow: 0 0 10px var(--developer-glow);
-      color: var(--developer);
-    }
-
-    .add-role-button[data-add-role='assistant']:hover,
-    .add-role-button[data-add-role='user']:hover {
+    .add-message-button:hover {
       background: var(--accent-soft);
       border-color: var(--accent);
       box-shadow: 0 0 10px rgba(var(--accent-rgb), 0.2);
@@ -1731,13 +1650,7 @@
     }
 
     .composer-box {
-      background:
-        linear-gradient(
-          135deg,
-          rgba(var(--accent-rgb), 0.025),
-          transparent 50%
-        ),
-        var(--panel);
+      background: var(--panel);
       border: 1px solid var(--border-strong);
       border-radius: var(--radius);
       box-shadow: 0 0 18px rgba(0, 0, 0, 0.24);
@@ -1921,61 +1834,41 @@
       border-radius: var(--radius);
       display: flex;
       flex: none;
-      gap: 7px;
+      gap: 8px;
       min-height: 38px;
-      padding: 7px;
+      padding: 5px 7px;
     }
 
-    .accent-swatch {
-      background: var(--swatch);
-      border: 1px solid rgba(255, 255, 255, 0.28);
-      border-radius: 2px;
-      box-shadow: 0 0 7px var(--swatch-glow);
+    .accent-color-input {
+      appearance: none;
+      background: transparent;
+      border: 0;
       cursor: pointer;
-      height: 22px;
+      height: 26px;
       padding: 0;
-      position: relative;
-      transition:
-        box-shadow 0.15s ease,
-        transform 0.15s ease;
-      width: 22px;
+      width: 34px;
     }
 
-    .accent-swatch:hover {
-      box-shadow:
-        0 0 7px var(--swatch),
-        0 0 15px var(--swatch-glow);
-      transform: scale(1.08);
+    .accent-color-input::-webkit-color-swatch-wrapper {
+      padding: 0;
     }
 
-    .accent-swatch[aria-pressed='true'] {
-      border-color: #fff;
-      box-shadow:
-        0 0 0 2px var(--panel-secondary),
-        0 0 0 3px var(--swatch),
-        0 0 16px var(--swatch);
+    .accent-color-input::-webkit-color-swatch {
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      border-radius: 2px;
+      box-shadow: 0 0 10px var(--accent-glow);
     }
 
-    .accent-swatch[aria-pressed='true']::after {
-      background: #fff;
-      box-shadow: 0 0 5px #fff;
-      content: '';
-      height: 4px;
-      left: 50%;
-      position: absolute;
-      top: 50%;
-      transform: translate(-50%, -50%);
-      width: 4px;
+    .accent-color-input::-moz-color-swatch {
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      border-radius: 2px;
+      box-shadow: 0 0 10px var(--accent-glow);
     }
 
-    .accent-swatch-blue {
-      --swatch: #32cfff;
-      --swatch-glow: rgba(50, 207, 255, 0.58);
-    }
-
-    .accent-swatch-green {
-      --swatch: #00f47a;
-      --swatch-glow: rgba(0, 244, 122, 0.58);
+    .accent-color-value {
+      color: var(--muted);
+      font: 10.5px var(--font-mono);
+      min-width: 7ch;
     }
 
     .settings .select-field {
@@ -2194,17 +2087,14 @@
     }
 
     .system-prompt-field {
-      border-left: 2px solid var(--system);
       min-height: 72px;
     }
 
     .tools-field {
-      border-left: 2px solid var(--tool);
       min-height: 124px;
     }
 
     .request-body-preview {
-      border-left: 2px solid var(--accent);
       font-size: 11px;
       line-height: 1.5;
       min-height: 200px;
@@ -2275,7 +2165,7 @@
     }
 
     .field-hint code {
-      color: var(--tool);
+      color: var(--accent);
       font-family: var(--font-mono);
     }
 
@@ -2379,7 +2269,7 @@
     }
 
     .toast-info {
-      border-left: 3px solid var(--tool);
+      border-left: 3px solid var(--accent);
     }
 
     .toast-success .icon {
@@ -2391,7 +2281,7 @@
     }
 
     .toast-info .icon {
-      color: var(--tool);
+      color: var(--accent);
     }
 
     .toast.leaving {
@@ -2443,13 +2333,7 @@
 
     .modal,
     .endpoint-dialog-panel {
-      background:
-        linear-gradient(
-          135deg,
-          rgba(var(--accent-rgb), 0.035),
-          transparent 45%
-        ),
-        var(--panel);
+      background: var(--panel);
       border: 1px solid var(--border-strong);
       border-radius: var(--radius);
       box-shadow:
@@ -2961,42 +2845,14 @@
 
         <div class="composer-region">
           <div class="composer">
-            <div
-              class="role-toolbar"
-              aria-label="Thêm tin nhắn theo vai trò"
-            >
-              <span class="role-toolbar-label">Thêm tin nhắn</span>
-
+            <div class="role-toolbar">
               <button
                 type="button"
-                class="add-role-button"
-                data-add-role="system"
+                class="add-message-button"
+                id="add-message-button"
               >
-                system
-              </button>
-
-              <button
-                type="button"
-                class="add-role-button"
-                data-add-role="developer"
-              >
-                developer
-              </button>
-
-              <button
-                type="button"
-                class="add-role-button"
-                data-add-role="user"
-              >
-                user
-              </button>
-
-              <button
-                type="button"
-                class="add-role-button"
-                data-add-role="assistant"
-              >
-                assistant
+                <span data-icon="plus"></span>
+                Thêm tin nhắn
               </button>
             </div>
 
@@ -3085,41 +2941,32 @@
           <section class="settings-section">
             <h3 class="section-title">Giao diện</h3>
 
-            <div class="accent-setting-row">
-              <span
-                class="accent-setting-label"
-                id="accent-picker-label"
-              >
+            <label
+              class="accent-setting-row"
+              for="accent-color-input"
+            >
+              <span class="accent-setting-label">
                 Màu accent
               </span>
 
-              <div
-                class="accent-picker"
-                id="accent-picker"
-                role="group"
-                aria-labelledby="accent-picker-label"
-              >
-                <button
-                  type="button"
-                  class="accent-swatch accent-swatch-blue"
-                  id="accent-blue-button"
-                  data-accent-choice="blue"
-                  aria-label="Sử dụng màu Cyber Blue"
-                  aria-pressed="true"
-                  title="Cyber Blue"
-                ></button>
+              <span class="accent-picker">
+                <input
+                  type="color"
+                  class="accent-color-input"
+                  id="accent-color-input"
+                  value="#00f6ff"
+                  aria-label="Chọn màu accent"
+                >
 
-                <button
-                  type="button"
-                  class="accent-swatch accent-swatch-green"
-                  id="accent-green-button"
-                  data-accent-choice="green"
-                  aria-label="Sử dụng màu Digital Green"
-                  aria-pressed="false"
-                  title="Digital Green"
-                ></button>
-              </div>
-            </div>
+                <output
+                  class="accent-color-value"
+                  id="accent-color-value"
+                  for="accent-color-input"
+                >
+                  #00f6ff
+                </output>
+              </span>
+            </label>
           </section>
 
           <section class="settings-section">
@@ -3805,8 +3652,10 @@
     const selectElements = selector =>
       Array.from(document.querySelectorAll(selector))
 
-    const STORAGE_PREFIX = 'ai-workbench.v1'
+    const STORAGE_PREFIX = 'ai-workbench.v2'
+    const LEGACY_STORAGE_PREFIX = 'ai-workbench.v1'
     const LEGACY_ACCENT_STORAGE_KEY = 'ai-workbench-accent'
+    const DEFAULT_ACCENT = '#00f6ff'
 
     const STORAGE_KEYS = {
       activeConversationId:
@@ -3821,10 +3670,18 @@
         STORAGE_PREFIX + '.workspaceConfiguration'
     }
 
-    const ACCENTS = new Set([
-      'blue',
-      'green'
-    ])
+    const LEGACY_STORAGE_KEYS = {
+      activeConversationId:
+        LEGACY_STORAGE_PREFIX + '.activeConversationId',
+      conversations:
+        LEGACY_STORAGE_PREFIX + '.conversations',
+      endpoints:
+        LEGACY_STORAGE_PREFIX + '.endpoints',
+      ui:
+        LEGACY_STORAGE_PREFIX + '.ui',
+      workspaceConfiguration:
+        LEGACY_STORAGE_PREFIX + '.workspaceConfiguration'
+    }
 
     const MAXIMUM_FILES = 4
     const MAXIMUM_FILE_SIZE = 5 * 1024 * 1024
@@ -3933,7 +3790,7 @@
       endpointRequired:
         'Hãy thêm endpoint API trước khi gửi.',
       generationBusy:
-        'Hãy dừng phản hồi đang tạo trước khi thực hiện thao tác này.',
+        'Cuộc trò chuyện này đang tạo phản hồi.',
       modelRequired:
         'Endpoint này chưa có mô hình. Hãy thêm mô hình trước khi gửi.',
       newConversationTitle:
@@ -3946,53 +3803,53 @@
 
     const ICON_PATHS = {
       alert:
-        '<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 20h16a2 2 0 0 0 1.73-2Z"/><path d="M12 9v4"/><path d="M12 17h.01"/>',
+        '<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14a2 2 0 0 0 1.74 3h16a2 2 0 0 0 1.73-3z"/><path d="m12 9v4"/><path d="m12 17h.01"/>',
       'arrow-down':
-        '<path d="M12 5v14"/><path d="m19 12-7 7-7-7"/>',
+        '<path d="m12 5v14"/><path d="m19 12-7 7-7-7"/>',
       'arrow-up':
-        '<path d="M12 19V5"/><path d="m5 12 7-7 7 7"/>',
+        '<path d="m12 19v-14"/><path d="m5 12 7-7 7 7"/>',
       check:
-        '<path d="M20 6 9 17l-5-5"/>',
+        '<path d="m20 6-11 11-5-5"/>',
       copy:
-        '<rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>',
+        '<rect width="14" height="14" x="8" y="8" rx="2"/><path d="m4 16c-1.1 0-2-.9-2-2v-10c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>',
       'file-text':
-        '<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M16 13H8"/><path d="M16 17H8"/>',
+        '<path d="m15 2h-9a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-13z"/><path d="m14 2v4a2 2 0 0 0 2 2h4"/><path d="m16 13h-8"/><path d="m16 17h-8"/>',
       info:
-        '<circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/>',
+        '<circle cx="12" cy="12" r="10"/><path d="m12 16v-4"/><path d="m12 8h.01"/>',
       message:
-        '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
+        '<path d="m21 15a2 2 0 0 1-2 2h-12l-4 4v-16a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
       'panel-left':
-        '<rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/>',
+        '<rect width="18" height="18" x="3" y="3" rx="2"/><path d="m9 3v18"/>',
       paperclip:
-        '<path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/>',
+        '<path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57a4 4 0 1 1 5.67 5.66l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/>',
       pencil:
-        '<path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/>',
+        '<path d="m17 3a2.828 2.828 0 1 1 4 4l-13.5 13.5-5.5 1.5 1.5-5.5z"/>',
       pin:
-        '<path d="M12 17v5"/><path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1z"/>',
+        '<path d="m12 17v5"/><path d="m9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9a2 2 0 0 0-1.11 1.79v.76a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9a2 2 0 0 1-1.11-1.79v-3.76h1a2 2 0 0 0 0-4h-8a2 2 0 0 0 0 4h1z"/>',
       plug:
-        '<path d="M12 22v-5"/><path d="M9 8V2"/><path d="M15 8V2"/><path d="M18 8v5a4 4 0 0 1-4 4h-4a4 4 0 0 1-4-4V8Z"/>',
+        '<path d="m12 22v-5"/><path d="m9 8v-6"/><path d="m15 8v-6"/><path d="m18 8v5a4 4 0 0 1-4 4h-4a4 4 0 0 1-4-4v-5z"/>',
       plus:
-        '<path d="M5 12h14"/><path d="M12 5v14"/>',
+        '<path d="m5 12h14"/><path d="m12 5v14"/>',
       rotate:
-        '<path d="M21 12a9 9 0 1 1-2.64-6.36L21 8"/><path d="M21 3v5h-5"/>',
+        '<path d="m21 12a9 9 0 1 1-2.64-6.36l2.64 2.36"/><path d="m21 3v5h-5"/>',
       search:
         '<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>',
       send:
-        '<path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4z"/>',
+        '<path d="m22 2-11 11"/><path d="m22 2-7 20-4-9-9-4z"/>',
       sliders:
         '<line x1="21" x2="14" y1="4" y2="4"/><line x1="10" x2="3" y1="4" y2="4"/><line x1="21" x2="12" y1="12" y2="12"/><line x1="8" x2="3" y1="12" y2="12"/><line x1="21" x2="16" y1="20" y2="20"/><line x1="12" x2="3" y1="20" y2="20"/><line x1="14" x2="14" y1="2" y2="6"/><line x1="8" x2="8" y1="10" y2="14"/><line x1="16" x2="16" y1="18" y2="22"/>',
       spark:
-        '<path d="M12 2l2.4 6.4L21 11l-6.6 2.6L12 20l-2.4-6.4L3 11l6.6-2.6z"/>',
+        '<path d="m12 2 2.4 6.4 6.6 2.6-6.6 2.6-2.4 6.4-2.4-6.4-6.6-2.6 6.6-2.6z"/>',
       stop:
         '<rect width="12" height="12" x="6" y="6" rx="1"/>',
       terminal:
-        '<path d="m4 17 6-6-6-6"/><path d="M12 19h8"/>',
+        '<path d="m4 17 6-6-6-6"/><path d="m12 19h8"/>',
       trash:
-        '<path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>',
+        '<path d="m3 6h18"/><path d="m19 6v14a2 2 0 0 1-2 2h-10a2 2 0 0 1-2-2v-14"/><path d="m8 6v-2a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>',
       user:
-        '<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
+        '<path d="m19 21v-2a4 4 0 0 0-4-4h-6a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
       x:
-        '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>'
+        '<path d="m18 6-12 12"/><path d="m6 6 12 12"/>'
     }
 
     const FILE_TYPE_BY_EXTENSION = {
@@ -4038,7 +3895,7 @@
       const className =
         'icon' + (extraClass ? ' ' + extraClass : '')
 
-      return `<svg class="${className}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICON_PATHS[name] || ''}</svg>`
+      return `<svg class="${className}" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICON_PATHS[name] || ''}</svg>`
     }
 
     function createUniqueId () {
@@ -4066,10 +3923,128 @@
       return Math.min(maximum, Math.max(minimum, value))
     }
 
-    function sanitizeAccent (accent) {
-      return ACCENTS.has(accent)
-        ? accent
-        : 'blue'
+    function normalizeHexColor (value) {
+      const source = String(value || '').trim().toLowerCase()
+
+      if (/^#[0-9a-f]{6}$/.test(source)) {
+        return source
+      }
+
+      if (/^#[0-9a-f]{3}$/.test(source)) {
+        return (
+          '#' +
+          source
+            .slice(1)
+            .split('')
+            .map(character => character + character)
+            .join('')
+        )
+      }
+
+      if (source === 'blue') return DEFAULT_ACCENT
+      if (source === 'green') return '#39ff88'
+      return DEFAULT_ACCENT
+    }
+
+    function hexToRgb (color) {
+      const hex = normalizeHexColor(color).slice(1)
+
+      return {
+        blue: parseInt(hex.slice(4, 6), 16),
+        green: parseInt(hex.slice(2, 4), 16),
+        red: parseInt(hex.slice(0, 2), 16)
+      }
+    }
+
+    function rgbToHex (red, green, blue) {
+      return (
+        '#' +
+        [red, green, blue]
+          .map(value => {
+            return clampValue(
+              Math.round(value),
+              0,
+              255
+            ).toString(16).padStart(2, '0')
+          })
+          .join('')
+      )
+    }
+
+    function mixHexColors (
+      firstColor,
+      secondColor,
+      amount
+    ) {
+      const first = hexToRgb(firstColor)
+      const second = hexToRgb(secondColor)
+      const ratio = clampValue(amount, 0, 1)
+
+      return rgbToHex(
+        first.red +
+          (second.red - first.red) * ratio,
+        first.green +
+          (second.green - first.green) * ratio,
+        first.blue +
+          (second.blue - first.blue) * ratio
+      )
+    }
+
+    function getRelativeLuminance (color) {
+      const rgb = hexToRgb(color)
+
+      const channels = [
+        rgb.red,
+        rgb.green,
+        rgb.blue
+      ].map(value => {
+        const channel = value / 255
+
+        return channel <= 0.03928
+          ? channel / 12.92
+          : Math.pow(
+              (channel + 0.055) / 1.055,
+              2.4
+            )
+      })
+
+      return (
+        channels[0] * 0.2126 +
+        channels[1] * 0.7152 +
+        channels[2] * 0.0722
+      )
+    }
+
+    function applyAccentColor (value) {
+      const accent = normalizeHexColor(value)
+      const rgb = hexToRgb(accent)
+      const root = document.documentElement
+
+      root.style.setProperty('--accent', accent)
+      root.style.setProperty(
+        '--accent-rgb',
+        `${rgb.red}, ${rgb.green}, ${rgb.blue}`
+      )
+      root.style.setProperty(
+        '--accent-soft',
+        `rgba(${rgb.red}, ${rgb.green}, ${rgb.blue}, 0.13)`
+      )
+      root.style.setProperty(
+        '--accent-glow',
+        `rgba(${rgb.red}, ${rgb.green}, ${rgb.blue}, 0.48)`
+      )
+      root.style.setProperty(
+        '--accent-strong',
+        mixHexColors(accent, '#fff', 0.45)
+      )
+      root.style.setProperty(
+        '--accent-ink',
+        getRelativeLuminance(accent) > 0.42
+          ? '#020b10'
+          : '#e8fbff'
+      )
+
+      return accent
     }
 
     function debounce (callback, delay) {
@@ -4082,6 +4057,7 @@
 
         timeoutId = window.setTimeout(() => {
           const callbackArguments = latestArguments
+
           timeoutId = null
           latestArguments = []
           callback(...callbackArguments)
@@ -4098,6 +4074,7 @@
         if (timeoutId == null) return
 
         const callbackArguments = latestArguments
+
         window.clearTimeout(timeoutId)
         timeoutId = null
         latestArguments = []
@@ -4168,7 +4145,7 @@
         )
       }
 
-      return btoa(binary)
+      return window.btoa(binary)
     }
 
     function arrayBufferToBase64 (buffer) {
@@ -4183,7 +4160,7 @@
 
     function decodeTextBase64 (value) {
       try {
-        const binary = atob(value)
+        const binary = window.atob(value)
         const bytes = Uint8Array.from(
           binary,
           character => character.charCodeAt(0)
@@ -4742,6 +4719,7 @@
 
     function createApiError (kind, message, status) {
       const error = new Error(message)
+
       error.kind = kind
       error.status = status
       return error
@@ -4763,6 +4741,7 @@
 
     function parseToolsJson (source) {
       const text = String(source || '').trim()
+
       if (!text) return []
 
       let value
@@ -4789,6 +4768,7 @@
 
     function serializeVariableValue (value) {
       const source = JSON.stringify(value)
+
       return source === undefined ? 'null' : source
     }
 
@@ -5228,6 +5208,7 @@
     ) {
       const functionData =
         toolCall.function || {}
+
       const customData =
         toolCall.custom || {}
 
@@ -5252,6 +5233,7 @@
 
     function createChatResponseBlocks (message) {
       const blocks = []
+
       if (!message) return blocks
 
       const reasoning = getChatReasoning(message)
@@ -5707,6 +5689,7 @@
 
     function createInteractionBlocks (interaction) {
       const blocks = []
+
       const steps =
         interaction &&
         (
@@ -5939,7 +5922,8 @@
           }
 
           if (context.settings.maxTokens != null) {
-            body.max_completion_tokens =
+            // body.max_completion_tokens =
+            body.max_tokens =
               context.settings.maxTokens
           }
 
@@ -5989,6 +5973,7 @@
 
           const choice =
             data.choices && data.choices[0]
+
           const delta = choice && choice.delta
           const updates = []
 
@@ -6029,6 +6014,7 @@
 
             const functionData =
               toolCall.function || {}
+
             const customData =
               toolCall.custom || {}
 
@@ -6971,6 +6957,7 @@
           const data = streamEvent.data
           const type =
             data.type || streamEvent.event
+
           const updates = []
 
           if (
@@ -7277,6 +7264,7 @@
           }
 
           const generationConfig = {}
+
           const level =
             getGeminiThinkingLevel(context.settings)
 
@@ -7328,6 +7316,7 @@
           const data = streamEvent.data
           const type =
             data.event_type || streamEvent.event
+
           const updates = []
 
           if (type === 'step.start' && data.step) {
@@ -7355,6 +7344,7 @@
             ) {
               const serverSide =
                 step.type !== 'function_call'
+
               const id =
                 'interactions:tool:' +
                 (step.id || index)
@@ -7636,6 +7626,7 @@
 
     function sanitizeSettings (rawSettings) {
       const settings = createDefaultSettings()
+
       const raw =
         rawSettings &&
         typeof rawSettings === 'object'
@@ -7685,10 +7676,13 @@
 
       settings.streaming =
         raw.streaming !== false
+
       settings.reasoningEnabled =
         raw.reasoningEnabled === true
+
       settings.showReasoning =
         raw.showReasoning !== false
+
       settings.zeroDataRetention =
         raw.zeroDataRetention !== false
 
@@ -8092,7 +8086,8 @@
     }
 
     function readStorageValue (key) {
-      const source = localStorage.getItem(key)
+      const source = window.localStorage.getItem(key)
+
       if (source == null) return null
 
       try {
@@ -8102,30 +8097,48 @@
       }
     }
 
+    function readStorageWithFallback (
+      currentKey,
+      legacyKey
+    ) {
+      const current = readStorageValue(currentKey)
+
+      return current == null
+        ? readStorageValue(legacyKey)
+        : current
+    }
+
     function loadSavedState () {
       try {
         return {
           activeId:
-            readStorageValue(
-              STORAGE_KEYS.activeConversationId
+            readStorageWithFallback(
+              STORAGE_KEYS.activeConversationId,
+              LEGACY_STORAGE_KEYS.activeConversationId
             ),
           conversations:
-            readStorageValue(
-              STORAGE_KEYS.conversations
+            readStorageWithFallback(
+              STORAGE_KEYS.conversations,
+              LEGACY_STORAGE_KEYS.conversations
             ),
           endpoints:
-            readStorageValue(
-              STORAGE_KEYS.endpoints
+            readStorageWithFallback(
+              STORAGE_KEYS.endpoints,
+              LEGACY_STORAGE_KEYS.endpoints
             ),
           legacyAccent:
-            localStorage.getItem(
+            window.localStorage.getItem(
               LEGACY_ACCENT_STORAGE_KEY
             ),
           ui:
-            readStorageValue(STORAGE_KEYS.ui),
+            readStorageWithFallback(
+              STORAGE_KEYS.ui,
+              LEGACY_STORAGE_KEYS.ui
+            ),
           workspaceConfiguration:
-            readStorageValue(
-              STORAGE_KEYS.workspaceConfiguration
+            readStorageWithFallback(
+              STORAGE_KEYS.workspaceConfiguration,
+              LEGACY_STORAGE_KEYS.workspaceConfiguration
             )
         }
       } catch {
@@ -8142,7 +8155,6 @@
       )
 
     const state = {
-      abortController: null,
       activeConfiguration: null,
       activeConversationId: null,
       attachments: [],
@@ -8168,7 +8180,6 @@
               .map(sanitizeEndpoint)
               .filter(Boolean)
           : [],
-      generating: false,
       messageDraft: '',
       modelId: '',
       newMessageId: null,
@@ -8177,7 +8188,7 @@
       settings: createDefaultSettings(),
       ui: {
         accent:
-          sanitizeAccent(
+          normalizeHexColor(
             savedState &&
             savedState.ui &&
             savedState.ui.accent
@@ -8198,8 +8209,7 @@
         savedWorkspaceConfiguration
     }
 
-    document.documentElement.dataset.accent =
-      state.ui.accent
+    applyAccentColor(state.ui.accent)
 
     let variableEntries = []
     let markdownReader = null
@@ -8216,6 +8226,7 @@
     let apiRequestWorker = null
 
     const apiWorkerRequests = new Map()
+    const conversationRuntimes = new Map()
 
     const mobileLayoutMediaQuery =
       window.matchMedia('(max-width: 1279px)')
@@ -8241,6 +8252,67 @@
           )
         }) || null
       )
+    }
+
+    function getConversationRuntime (
+      conversationId,
+      create = true
+    ) {
+      if (!conversationId) return null
+
+      let runtime =
+        conversationRuntimes.get(conversationId)
+
+      if (!runtime && create) {
+        runtime = {
+          abortController: null,
+          generating: false
+        }
+
+        conversationRuntimes.set(
+          conversationId,
+          runtime
+        )
+      }
+
+      return runtime || null
+    }
+
+    function isConversationGenerating (
+      conversationId
+    ) {
+      const runtime =
+        getConversationRuntime(
+          conversationId,
+          false
+        )
+
+      return Boolean(
+        runtime && runtime.generating
+      )
+    }
+
+    function isCurrentConversationGenerating () {
+      return isConversationGenerating(
+        state.activeConversationId
+      )
+    }
+
+    function stopConversationRuntime (
+      conversationId
+    ) {
+      const runtime =
+        getConversationRuntime(
+          conversationId,
+          false
+        )
+
+      if (
+        runtime &&
+        runtime.abortController
+      ) {
+        runtime.abortController.abort()
+      }
     }
 
     function normalizeConfigurationSelection (
@@ -8288,10 +8360,13 @@
 
       state.activeConfiguration =
         activeConfiguration
+
       state.endpointId =
         activeConfiguration.endpointId
+
       state.modelId =
         activeConfiguration.modelId
+
       state.settings =
         activeConfiguration.settings
 
@@ -8317,8 +8392,10 @@
 
       configuration.endpointId =
         state.endpointId
+
       configuration.modelId =
         state.modelId
+
       configuration.settings =
         state.settings
     }
@@ -8452,27 +8529,27 @@
       try {
         const storedState = createStoredState()
 
-        localStorage.setItem(
+        window.localStorage.setItem(
           STORAGE_KEYS.activeConversationId,
           JSON.stringify(storedState.activeId)
         )
 
-        localStorage.setItem(
+        window.localStorage.setItem(
           STORAGE_KEYS.conversations,
           JSON.stringify(storedState.conversations)
         )
 
-        localStorage.setItem(
+        window.localStorage.setItem(
           STORAGE_KEYS.endpoints,
           JSON.stringify(storedState.endpoints)
         )
 
-        localStorage.setItem(
+        window.localStorage.setItem(
           STORAGE_KEYS.ui,
           JSON.stringify(storedState.ui)
         )
 
-        localStorage.setItem(
+        window.localStorage.setItem(
           STORAGE_KEYS.workspaceConfiguration,
           JSON.stringify(
             storedState.workspaceConfiguration
@@ -8512,25 +8589,22 @@
     }
 
     function renderAccentPicker () {
-      document.documentElement.dataset.accent =
-        state.ui.accent
+      state.ui.accent =
+        applyAccentColor(state.ui.accent)
 
-      selectElements('[data-accent-choice]')
-        .forEach(button => {
-          button.setAttribute(
-            'aria-pressed',
-            String(
-              button.getAttribute(
-                'data-accent-choice'
-              ) === state.ui.accent
-            )
-          )
-        })
+      const input =
+        selectElement('#accent-color-input')
+
+      const output =
+        selectElement('#accent-color-value')
+
+      if (input) input.value = state.ui.accent
+      if (output) output.textContent = state.ui.accent
     }
 
     function setAccent (accent) {
       const nextAccent =
-        sanitizeAccent(accent)
+        normalizeHexColor(accent)
 
       if (state.ui.accent === nextAccent) {
         renderAccentPicker()
@@ -8594,10 +8668,13 @@
 
           const wrapper =
             document.createElement('div')
+
           const header =
             document.createElement('div')
+
           const label =
             document.createElement('span')
+
           const button =
             document.createElement('button')
 
@@ -8862,6 +8939,7 @@
       }
 
       state.conversations.unshift(conversation)
+      getConversationRuntime(conversation.id)
 
       if (activate) {
         state.activeConversationId =
@@ -8915,7 +8993,9 @@
     }
 
     function duplicateConversation (conversation) {
-      if (state.generating) {
+      if (
+        isConversationGenerating(conversation.id)
+      ) {
         showToast(TEXT.generationBusy, 'error')
         return
       }
@@ -8923,6 +9003,7 @@
       prepareConfigurationSwitch()
 
       const now = Date.now()
+
       const duplicate = {
         configuration:
           cloneConfiguration(
@@ -8943,6 +9024,7 @@
 
       state.conversations.unshift(duplicate)
       state.activeConversationId = duplicate.id
+      getConversationRuntime(duplicate.id)
 
       activateConfiguration(
         duplicate.configuration
@@ -8971,11 +9053,20 @@
         conversation.id ===
         state.activeConversationId
 
+      const generating =
+        isConversationGenerating(
+          conversation.id
+        )
+
+      const runtimeStatus = generating
+        ? ' · <span class="conversation-runtime-status">đang tạo</span>'
+        : ''
+
       return `
         <div class="conversation-item ${active ? 'active' : ''}" data-conversation-id="${conversation.id}">
           <button type="button" class="conversation-select-button" data-select-conversation="${conversation.id}"${active ? ' aria-current="page"' : ''}>
             <span class="conversation-title" title="${escapeHtml(conversation.title)}">${escapeHtml(conversation.title)}</span>
-            <span class="conversation-meta">${formatRelativeTime(conversation.updatedAt)} · ${conversation.messages.length} tin nhắn</span>
+            <span class="conversation-meta">${formatRelativeTime(conversation.updatedAt)} · ${conversation.messages.length} tin nhắn${runtimeStatus}</span>
           </button>
           <div class="conversation-actions">
             <button type="button" class="conversation-action-button" data-conversation-action="pin" aria-pressed="${conversation.pinned}" aria-label="${conversation.pinned ? 'Bỏ ghim' : 'Ghim'} cuộc trò chuyện">${createIconSvg('pin', 'icon-small')}</button>
@@ -8989,6 +9080,7 @@
     function renderSidebar () {
       const list =
         selectElement('#conversation-list')
+
       const query =
         state.conversationSearchQuery
           .trim()
@@ -9140,9 +9232,16 @@
       }
 
       if (action === 'delete') {
+        const generating =
+          isConversationGenerating(
+            conversationId
+          )
+
         const confirmed = await openModal({
           body:
-            'Cuộc trò chuyện sẽ bị xoá vĩnh viễn khỏi thiết bị.',
+            generating
+              ? 'Yêu cầu đang chạy sẽ bị dừng và cuộc trò chuyện sẽ bị xoá vĩnh viễn khỏi thiết bị.'
+              : 'Cuộc trò chuyện sẽ bị xoá vĩnh viễn khỏi thiết bị.',
           confirmText: TEXT.delete,
           danger: true,
           title: 'Xoá cuộc trò chuyện?'
@@ -9157,6 +9256,9 @@
         if (deletingActive) {
           prepareConfigurationSwitch()
         }
+
+        stopConversationRuntime(conversationId)
+        conversationRuntimes.delete(conversationId)
 
         state.conversations =
           state.conversations.filter(item => {
@@ -9406,7 +9508,8 @@
     ) {
       if (
         getMessageStatus(message) === 'streaming' ||
-        state.editingMessageId === message.id
+        state.editingMessageId === message.id ||
+        isCurrentConversationGenerating()
       ) {
         return ''
       }
@@ -9469,8 +9572,10 @@
 
       const assistant =
         isAssistantRole(message.role)
+
       const instruction =
         isInstructionRole(message.role)
+
       const status =
         getMessageStatus(message)
 
@@ -9497,7 +9602,9 @@
           ? 'avatar-user'
           : assistant
             ? 'avatar-assistant'
-            : 'avatar-instruction'
+            : message.role === 'system'
+              ? 'avatar-system'
+              : 'avatar-developer'
 
       const roleOptions =
         MESSAGE_ROLES.map(role => {
@@ -9581,6 +9688,7 @@
 
       const fragment =
         document.createDocumentFragment()
+
       const total = conversation.messages.length
 
       conversation.messages.forEach(
@@ -9599,7 +9707,11 @@
 
       list.setAttribute(
         'aria-busy',
-        state.generating ? 'true' : 'false'
+        String(
+          isConversationGenerating(
+            conversation.id
+          )
+        )
       )
 
       if (state.editingMessageId) {
@@ -9619,7 +9731,17 @@
       updateComposerButtons()
     }
 
-    function updateStreamingMessageDom (message) {
+    function updateStreamingMessageDom (
+      message,
+      conversationId
+    ) {
+      if (
+        state.activeConversationId !==
+        conversationId
+      ) {
+        return
+      }
+
       const messageElement =
         document.querySelector(
           `[data-message-id="${message.id}"]`
@@ -9742,6 +9864,14 @@
       const conversation =
         getCurrentConversation()
 
+      const generating =
+        Boolean(
+          conversation &&
+          isConversationGenerating(
+            conversation.id
+          )
+        )
+
       const hasMessages = Boolean(
         conversation &&
         conversation.messages.length
@@ -9757,22 +9887,22 @@
 
       button.classList.toggle(
         'stop-generation-button',
-        state.generating
+        generating
       )
 
       button.innerHTML = createIconSvg(
-        state.generating ? 'stop' : 'send'
+        generating ? 'stop' : 'send'
       )
 
       button.setAttribute(
         'aria-label',
-        state.generating
+        generating
           ? 'Dừng tạo phản hồi'
           : 'Gửi tin nhắn'
       )
 
       button.disabled =
-        !state.generating &&
+        !generating &&
         (
           state.pendingAttachmentReads > 0 ||
           (!hasMessages && !hasInput)
@@ -9860,7 +9990,7 @@
         return
       }
 
-      state.pendingAttachmentReads++
+      state.pendingAttachmentReads += 1
       renderAttachmentList()
 
       try {
@@ -9914,13 +10044,16 @@
       messageId,
       attachmentId
     ) {
-      if (state.generating) {
+      const conversation =
+        getCurrentConversation()
+
+      if (
+        conversation &&
+        isConversationGenerating(conversation.id)
+      ) {
         showToast(TEXT.generationBusy, 'error')
         return
       }
-
-      const conversation =
-        getCurrentConversation()
 
       if (!conversation) return
 
@@ -9964,6 +10097,7 @@
     function renderModelSelect () {
       const select =
         selectElement('#model-select')
+
       const endpoint = getCurrentEndpoint()
 
       if (!endpoint || !endpoint.models.length) {
@@ -10118,10 +10252,12 @@
     function updateEndpointApiKeyControls () {
       const input =
         selectElement('#endpoint-api-key')
+
       const button =
         selectElement(
           '#delete-endpoint-api-key-button'
         )
+
       const hint =
         selectElement(
           '#endpoint-api-key-hint'
@@ -10258,6 +10394,7 @@
     function addEndpointModel () {
       const input =
         selectElement('#endpoint-model-input')
+
       const model = input.value.trim()
 
       if (!model) return
@@ -10377,6 +10514,7 @@
 
     async function deleteEndpoint (endpointId) {
       const endpoint = getEndpointById(endpointId)
+
       if (!endpoint) return
 
       const confirmed = await openModal({
@@ -10723,6 +10861,7 @@
 
     function resetSettings () {
       state.settings = createDefaultSettings()
+
       variableEntries =
         state.settings.variableEntries
 
@@ -10798,6 +10937,7 @@
     function refreshRequestBodyPreview () {
       const textarea =
         selectElement('#request-body-preview')
+
       const endpoint = getCurrentEndpoint()
 
       if (!endpoint || !state.modelId) {
@@ -10858,29 +10998,30 @@
       const source = `
         const activeRequests = new Map()
 
-        function send(id, type, payload) {
+        function send (id, type, payload) {
           self.postMessage(Object.assign({
             id,
             type
           }, payload || {}))
         }
 
-        async function readEvents(response, requestId) {
+        async function readEvents (response, requestId) {
           const reader = response.body.getReader()
           const decoder = new TextDecoder()
+
           let buffer = ''
           let eventName = ''
           let dataLines = []
           let events = []
           let flushTimer = null
 
-          function flushEvents() {
+          function flushEvents () {
             if (!events.length) return
             send(requestId, 'events', { events })
             events = []
           }
 
-          function scheduleFlush() {
+          function scheduleFlush () {
             if (flushTimer != null) return
 
             flushTimer = setTimeout(() => {
@@ -10889,7 +11030,7 @@
             }, 32)
           }
 
-          function dispatchEvent() {
+          function dispatchEvent () {
             if (dataLines.length) {
               events.push({
                 event: eventName,
@@ -10902,7 +11043,7 @@
             dataLines = []
           }
 
-          function consumeLine(rawLine) {
+          function consumeLine (rawLine) {
             const line = rawLine.endsWith('\\r')
               ? rawLine.slice(0, -1)
               : rawLine
@@ -10922,6 +11063,7 @@
 
           while (true) {
             const result = await reader.read()
+
             if (result.done) break
 
             buffer += decoder.decode(
@@ -10930,6 +11072,7 @@
             )
 
             const lines = buffer.split('\\n')
+
             buffer = lines.pop() || ''
 
             for (const line of lines) {
@@ -10951,8 +11094,9 @@
           flushEvents()
         }
 
-        async function runRequest(data) {
+        async function runRequest (data) {
           const controller = new AbortController()
+
           activeRequests.set(data.id, controller)
 
           try {
@@ -10988,6 +11132,7 @@
               })
             } else {
               const text = await response.text()
+
               send(data.id, 'body', {
                 streamed: false,
                 text
@@ -11082,6 +11227,7 @@
 
     function handleApiWorkerMessage (event) {
       const data = event.data || {}
+
       const request =
         apiWorkerRequests.get(data.id)
 
@@ -11294,7 +11440,7 @@
 
     async function fetchApiResponse (url, options) {
       try {
-        return await fetch(url, options)
+        return await window.fetch(url, options)
       } catch (error) {
         if (
           error &&
@@ -11354,6 +11500,7 @@
 
       while (true) {
         const result = await reader.read()
+
         if (result.done) break
 
         buffer += decoder.decode(
@@ -11362,6 +11509,7 @@
         )
 
         const lines = buffer.split('\n')
+
         buffer = lines.pop() || ''
 
         for (const line of lines) {
@@ -11536,6 +11684,7 @@
         }
 
         if (update.name) block.name = update.name
+
         if (update.toolType) {
           block.toolType = update.toolType
         }
@@ -11638,7 +11787,10 @@
       updates.push(update)
     }
 
-    function createStreamRenderer (message) {
+    function createStreamRenderer (
+      message,
+      conversationId
+    ) {
       let scheduled = false
       let frameId = null
       let timeoutId = null
@@ -11682,8 +11834,17 @@
       function paint () {
         if (!dirty || document.hidden) return
 
-        updateStreamingMessageDom(message)
-        scrollToBottom(false)
+        if (
+          state.activeConversationId ===
+          conversationId
+        ) {
+          updateStreamingMessageDom(
+            message,
+            conversationId
+          )
+          scrollToBottom(false)
+        }
+
         dirty = false
       }
 
@@ -11717,6 +11878,7 @@
 
       function queueUpdate (update) {
         if (!update) return
+
         mergeQueuedUpdate(updates, update)
         scheduleRender()
       }
@@ -11840,12 +12002,24 @@
       conversation,
       message
     ) {
-      state.generating = true
-      state.abortController =
+      const runtime =
+        getConversationRuntime(conversation.id)
+
+      if (runtime.generating) return
+
+      runtime.generating = true
+      runtime.abortController =
         new AbortController()
 
-      renderMessages()
-      announce('Đang gọi API')
+      if (
+        state.activeConversationId ===
+        conversation.id
+      ) {
+        renderMessages()
+        announce('Đang gọi API')
+      }
+
+      renderSidebar()
 
       const endpoint =
         getEndpointById(message.endpointId)
@@ -11913,7 +12087,10 @@
 
         if (settings.streaming) {
           renderer =
-            createStreamRenderer(message)
+            createStreamRenderer(
+              message,
+              conversation.id
+            )
         }
 
         const result =
@@ -11924,7 +12101,7 @@
               headers,
               method: 'POST',
               signal:
-                state.abortController.signal
+                runtime.abortController.signal
             },
             renderer
               ? streamEvent => {
@@ -12004,26 +12181,50 @@
         }
       }
 
-      state.generating = false
-      state.abortController = null
+      runtime.generating = false
+      runtime.abortController = null
       conversation.updatedAt = Date.now()
 
-      renderMessages()
+      const conversationStillExists =
+        state.conversations.some(item => {
+          return item.id === conversation.id
+        })
+
+      if (!conversationStillExists) return
+
+      const active =
+        state.activeConversationId ===
+        conversation.id
+
+      if (active) {
+        renderMessages()
+        renderTopBar()
+        scrollToBottom(true)
+      }
+
       renderSidebar()
-      renderTopBar()
       scheduleStateSave()
-      scrollToBottom(true)
 
       if (message.status === 'complete') {
-        announce('Phản hồi đã hoàn tất')
+        if (active) {
+          announce('Phản hồi đã hoàn tất')
+        }
       } else if (message.status === 'stopped') {
-        announce(TEXT.stopped)
-        showToast(TEXT.stopped, 'info')
-      } else {
+        if (active) {
+          announce(TEXT.stopped)
+          showToast(TEXT.stopped, 'info')
+        }
+      } else if (active) {
         announce(message.error.message)
 
         showToast(
           message.error.message,
+          'error',
+          5200
+        )
+      } else {
+        showToast(
+          `“${conversation.title}”: ${message.error.message}`,
           'error',
           5200
         )
@@ -12033,31 +12234,44 @@
     function createAssistantMessageAndGenerate (
       conversation
     ) {
-      const endpoint = getCurrentEndpoint()
+      const endpoint = getEndpointById(
+        conversation.configuration.endpointId
+      )
 
       const message = {
         content: '',
         createdAt: Date.now(),
-        endpointId: state.endpointId,
+        endpointId:
+          conversation.configuration.endpointId,
         endpointName:
           endpoint ? endpoint.name : '',
         id: createUniqueId(),
-        model: state.modelId,
-        modelLabel: state.modelId,
+        model:
+          conversation.configuration.modelId,
+        modelLabel:
+          conversation.configuration.modelId,
         outputBlocks: [],
         reasoning: '',
         reasoningRedacted: false,
         role: 'assistant',
         showReasoning:
-          state.settings.showReasoning,
+          conversation.configuration
+            .settings.showReasoning,
         status: 'streaming'
       }
 
       conversation.messages.push(message)
       conversation.updatedAt = Date.now()
 
-      renderMessages()
-      scrollToBottom(true)
+      if (
+        state.activeConversationId ===
+        conversation.id
+      ) {
+        renderMessages()
+        scrollToBottom(true)
+      }
+
+      renderSidebar()
 
       generateAssistantResponse(
         conversation,
@@ -12066,7 +12280,17 @@
     }
 
     function sendMessage () {
-      if (state.generating) return
+      const currentConversation =
+        getCurrentConversation()
+
+      if (
+        currentConversation &&
+        isConversationGenerating(
+          currentConversation.id
+        )
+      ) {
+        return
+      }
 
       if (state.pendingAttachmentReads) {
         showToast(
@@ -12166,31 +12390,39 @@
     }
 
     function stopGeneration () {
-      if (state.abortController) {
-        state.abortController.abort()
-      }
+      stopConversationRuntime(
+        state.activeConversationId
+      )
     }
 
     function handleSubmitButton () {
-      if (state.generating) {
+      if (isCurrentConversationGenerating()) {
         stopGeneration()
       } else {
         sendMessage()
       }
     }
 
-    function addMessage (role) {
-      if (state.generating) {
+    function addMessage (role = 'user') {
+      const currentConversation =
+        getCurrentConversation()
+
+      if (
+        currentConversation &&
+        isConversationGenerating(
+          currentConversation.id
+        )
+      ) {
         showToast(TEXT.generationBusy, 'error')
         return
       }
 
-      if (
-        state.editingMessageId ||
-        !MESSAGE_ROLES.includes(role)
-      ) {
-        return
-      }
+      if (state.editingMessageId) return
+
+      const messageRole =
+        MESSAGE_ROLES.includes(role)
+          ? role
+          : 'user'
 
       let conversation =
         getCurrentConversation()
@@ -12203,10 +12435,10 @@
         content: '',
         createdAt: Date.now(),
         id: createUniqueId(),
-        role
+        role: messageRole
       }
 
-      if (isAssistantRole(role)) {
+      if (isAssistantRole(messageRole)) {
         message.outputBlocks = []
         message.reasoning = ''
         message.reasoningRedacted = false
@@ -12252,6 +12484,7 @@
 
       if (isAssistantRole(message.role)) {
         message.status = 'complete'
+
         replaceMessageTextBlock(
           message,
           content
@@ -12312,13 +12545,16 @@
     }
 
     function deleteMessage (messageId) {
-      if (state.generating) {
+      const conversation =
+        getCurrentConversation()
+
+      if (
+        conversation &&
+        isConversationGenerating(conversation.id)
+      ) {
         showToast(TEXT.generationBusy, 'error')
         return
       }
-
-      const conversation =
-        getCurrentConversation()
 
       if (!conversation) return
 
@@ -12346,13 +12582,16 @@
     }
 
     function moveMessage (messageId, direction) {
-      if (state.generating) {
+      const conversation =
+        getCurrentConversation()
+
+      if (
+        conversation &&
+        isConversationGenerating(conversation.id)
+      ) {
         showToast(TEXT.generationBusy, 'error')
         return
       }
-
-      const conversation =
-        getCurrentConversation()
 
       if (!conversation) return
 
@@ -12373,8 +12612,10 @@
         return
       }
 
-      const [message] =
+      const removed =
         conversation.messages.splice(index, 1)
+
+      const message = removed[0]
 
       conversation.messages.splice(
         nextIndex,
@@ -12409,13 +12650,16 @@
     }
 
     function regenerateResponseFrom (messageId) {
-      if (state.generating) {
+      const conversation =
+        getCurrentConversation()
+
+      if (
+        conversation &&
+        isConversationGenerating(conversation.id)
+      ) {
         showToast(TEXT.generationBusy, 'error')
         return
       }
-
-      const conversation =
-        getCurrentConversation()
 
       if (!conversation) return
 
@@ -12571,6 +12815,7 @@
     ) {
       const range =
         selectElement('#' + rangeId)
+
       const number =
         selectElement('#' + numberId)
 
@@ -12628,24 +12873,9 @@
     }
 
     function bindEvents () {
-      selectElement('#accent-picker')
-        .addEventListener('click', event => {
-          if (!(event.target instanceof Element)) {
-            return
-          }
-
-          const button =
-            event.target.closest(
-              '[data-accent-choice]'
-            )
-
-          if (!button) return
-
-          setAccent(
-            button.getAttribute(
-              'data-accent-choice'
-            )
-          )
+      selectElement('#accent-color-input')
+        .addEventListener('input', event => {
+          setAccent(event.target.value)
         })
 
       selectElement('#sidebar-toggle-button')
@@ -12821,7 +13051,11 @@
               })
           }
         } else if (action === 'edit-message') {
-          if (state.generating) {
+          if (
+            isConversationGenerating(
+              conversation.id
+            )
+          ) {
             showToast(
               TEXT.generationBusy,
               'error'
@@ -12904,6 +13138,7 @@
         }
 
         const previousRole = message.role
+
         message.role = roleSelect.value
         roleSelect.dataset.role = message.role
 
@@ -12920,10 +13155,13 @@
 
           message.reasoning =
             message.reasoning || ''
+
           message.reasoningRedacted =
             message.reasoningRedacted === true
+
           message.showReasoning =
             message.showReasoning !== false
+
           message.status = 'complete'
           syncMessageOutput(message)
         } else {
@@ -12972,18 +13210,15 @@
         .addEventListener('click', () => {
           shouldStickToBottom = true
           scrollToBottom(true)
+
           selectElement(
             '#scroll-bottom-button'
           ).hidden = true
         })
 
-      selectElements('[data-add-role]')
-        .forEach(button => {
-          button.addEventListener('click', () => {
-            addMessage(
-              button.getAttribute('data-add-role')
-            )
-          })
+      selectElement('#add-message-button')
+        .addEventListener('click', () => {
+          addMessage('user')
         })
 
       const messageInput =
@@ -13022,7 +13257,7 @@
           ) {
             event.preventDefault()
 
-            if (!state.generating) {
+            if (!isCurrentConversationGenerating()) {
               sendMessage()
             }
           }
