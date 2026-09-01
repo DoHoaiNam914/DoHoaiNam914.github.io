@@ -330,8 +330,7 @@
     }
 
     .brand-subtitle,
-    .section-title,
-    .select-label {
+    .section-title {
       font-family: var(--font-mono);
       text-transform: uppercase;
     }
@@ -1994,8 +1993,8 @@
     }
 
     .select-label {
-      color: var(--faint);
-      font-size: 9.5px;
+      font-size: 13px;
+      font-weight: 500;
     }
 
     .select-wrapper {
@@ -3186,13 +3185,13 @@
             <div class="select-field">
               <label
                 class="select-label"
-                for="system-prompt-candidate-select"
+                for="system-prompt-select"
               >
-                Prompt đã lưu
+                System prompt đã lưu
               </label>
 
               <div class="select-wrapper">
-                <select id="system-prompt-candidate-select"></select>
+                <select id="system-prompt-select"></select>
               </div>
             </div>
 
@@ -3200,7 +3199,7 @@
               <button
                 type="button"
                 class="button button-small"
-                id="save-system-prompt-candidate-button"
+                id="save-system-prompt-button"
               >
                 <span data-icon="plus"></span>
                 Lưu thành mới
@@ -3209,7 +3208,7 @@
               <button
                 type="button"
                 class="button button-small"
-                id="rename-system-prompt-candidate-button"
+                id="rename-system-prompt-button"
               >
                 <span data-icon="pencil"></span>
                 Đổi tên
@@ -3218,7 +3217,7 @@
               <button
                 type="button"
                 class="button button-small"
-                id="delete-system-prompt-candidate-button"
+                id="delete-system-prompt-button"
               >
                 <span data-icon="trash"></span>
                 Xoá
@@ -3235,7 +3234,7 @@
 
             <p
               class="field-hint"
-              id="system-prompt-candidate-hint"
+              id="system-prompt-hint"
             ></p>
           </section>
 
@@ -3372,16 +3371,16 @@
             >
               <div class="field-header">
                 <label for="response-verbosity">
-                  Verbosity câu trả lời
+                  Độ chi tiết câu trả lời
                 </label>
               </div>
 
               <div class="select-wrapper">
                 <select id="response-verbosity">
                   <option value="">Mặc định</option>
-                  <option value="low">Low</option>
-                  <option value="medium">Medium</option>
-                  <option value="high">High</option>
+                  <option value="low">Thấp</option>
+                  <option value="medium">Trung bình</option>
+                  <option value="high">Cao</option>
                 </select>
               </div>
 
@@ -3434,32 +3433,32 @@
             <div class="field reasoning-field" id="reasoning-effort-field">
               <div class="field-header">
                 <label for="reasoning-effort">
-                  Effort suy luận
+                  Cường độ suy luận
                 </label>
               </div>
 
               <div class="select-wrapper">
                 <select id="reasoning-effort">
                   <option value="">Mặc định</option>
-                  <option value="minimal">Minimal</option>
-                  <option value="low">Low</option>
-                  <option value="medium">Medium</option>
-                  <option value="high">High</option>
-                  <option value="xhigh">X-High</option>
-                  <option value="max">Max</option>
+                  <option value="minimal">Tối thiểu</option>
+                  <option value="low">Thấp</option>
+                  <option value="medium">Trung bình</option>
+                  <option value="high">Cao</option>
+                  <option value="xhigh">Rất cao</option>
+                  <option value="max">Tối đa</option>
                 </select>
               </div>
             </div>
 
             <div class="field reasoning-field" id="reasoning-mode-field">
               <div class="field-header">
-                <label for="reasoning-mode">Mode suy luận</label>
+                <label for="reasoning-mode">Chế độ suy luận</label>
               </div>
 
               <div class="select-wrapper">
                 <select id="reasoning-mode">
                   <option value="">Mặc định</option>
-                  <option value="standard">Standard</option>
+                  <option value="standard">Tiêu chuẩn</option>
                   <option value="pro">Pro</option>
                 </select>
               </div>
@@ -3468,7 +3467,7 @@
             <div class="field reasoning-field" id="thinking-budget-field">
               <div class="field-header">
                 <label for="thinking-budget">
-                  Ngân sách thinking
+                  Ngân sách suy luận
                 </label>
               </div>
 
@@ -3484,16 +3483,16 @@
 
             <div class="field reasoning-field" id="thinking-level-field">
               <div class="field-header">
-                <label for="thinking-level">Thinking level</label>
+                <label for="thinking-level">Mức độ suy luận</label>
               </div>
 
               <div class="select-wrapper">
                 <select id="thinking-level">
                   <option value="">Mặc định</option>
-                  <option value="minimal">Minimal</option>
-                  <option value="low">Low</option>
-                  <option value="medium">Medium</option>
-                  <option value="high">High</option>
+                  <option value="minimal">Tối thiểu</option>
+                  <option value="low">Thấp</option>
+                  <option value="medium">Trung bình</option>
+                  <option value="high">Cao</option>
                 </select>
               </div>
             </div>
@@ -3957,8 +3956,8 @@
         storagePrefix + '.conversations',
       endpoints:
         storagePrefix + '.endpoints',
-      systemPromptCandidates:
-        storagePrefix + '.systemPromptCandidates',
+      systemPrompts:
+        storagePrefix + '.systemPrompts',
       ui:
         storagePrefix + '.ui',
       workspaceConfiguration:
@@ -4001,23 +4000,23 @@
         value: ''
       },
       {
-        label: 'Off',
+        label: 'Tắt',
         value: 'off'
       },
       {
-        label: 'Block none',
+        label: 'Không chặn',
         value: 'block-none'
       },
       {
-        label: 'Block few',
+        label: 'Chặn mức cao',
         value: 'block-only-high'
       },
       {
-        label: 'Block some',
+        label: 'Chặn mức trung bình trở lên',
         value: 'block-medium-and-above'
       },
       {
-        label: 'Block most',
+        label: 'Chặn mức thấp trở lên',
         value: 'block-low-and-above'
       }
     ]
@@ -4027,31 +4026,31 @@
         category: 'HARM_CATEGORY_HARASSMENT',
         id: 'harassment',
         key: 'harassment',
-        label: 'Harassment'
+        label: 'Quấy rối'
       },
       {
         category: 'HARM_CATEGORY_HATE_SPEECH',
         id: 'hate-speech',
         key: 'hateSpeech',
-        label: 'Hate'
+        label: 'Nội dung thù ghét'
       },
       {
         category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT',
         id: 'sexually-explicit',
         key: 'sexuallyExplicit',
-        label: 'Sexually Explicit'
+        label: 'Nội dung tình dục'
       },
       {
         category: 'HARM_CATEGORY_DANGEROUS_CONTENT',
         id: 'dangerous-content',
         key: 'dangerousContent',
-        label: 'Dangerous Content'
+        label: 'Nội dung nguy hiểm'
       },
       {
         category: 'HARM_CATEGORY_JAILBREAK',
         id: 'jailbreak',
         key: 'jailbreak',
-        label: 'Jailbreak'
+        label: 'Vượt rào'
       }
     ]
 
@@ -4128,7 +4127,11 @@
       retry: 'Thử lại',
       save: 'Lưu',
       stopped: 'Đã dừng tạo phản hồi.',
-      stoppedNote: 'Đã dừng theo yêu cầu'
+      stoppedNote: 'Đã dừng theo yêu cầu',
+      systemPromptDraftHint:
+        'Prompt hiện tại chưa được lưu.',
+      unsupportedByApiFormat:
+        'Không được hỗ trợ bởi định dạng API hiện tại.'
     }
 
     const iconPaths = {
@@ -4632,24 +4635,24 @@
       return tools
     }
 
-    function createSystemPromptCandidateKey (candidates) {
-      let key = ''
+    function createSystemPromptId (prompts) {
+      let id = ''
 
       do {
-        key =
+        id =
           'p-' +
           Date.now().toString(36) +
           Math.random().toString(36).slice(2, 7)
       } while (
-        candidates.some(candidate => {
-          return candidate.key === key
+        prompts.some(prompt => {
+          return prompt.id === id
         })
       )
 
-      return key
+      return id
     }
 
-    function createSystemPromptCandidateName (content) {
+    function createSystemPromptName (content) {
       const name = String(content || '')
         .replace(/\s+/g, ' ')
         .trim()
@@ -4661,163 +4664,218 @@
         : name
     }
 
-    function sanitizeSystemPromptCandidate (candidate) {
+    function sanitizeSystemPrompt (prompt) {
       if (
-        !candidate ||
-        typeof candidate !== 'object' ||
-        typeof candidate.key !== 'string' ||
-        !candidate.key
+        !prompt ||
+        typeof prompt !== 'object' ||
+        typeof prompt.id !== 'string' ||
+        !prompt.id
       ) {
         return null
       }
 
       const content =
-        typeof candidate.content === 'string'
-          ? candidate.content
+        typeof prompt.content === 'string'
+          ? prompt.content
           : ''
 
       return {
         content,
         createdAt:
-          Number.isFinite(candidate.createdAt)
-            ? candidate.createdAt
+          Number.isFinite(prompt.createdAt)
+            ? prompt.createdAt
             : Date.now(),
-        key: candidate.key,
+        id: prompt.id,
         name:
-          typeof candidate.name === 'string' &&
-          candidate.name.trim()
-            ? candidate.name.trim()
-            : createSystemPromptCandidateName(content),
+          typeof prompt.name === 'string' &&
+          prompt.name.trim()
+            ? prompt.name.trim()
+            : createSystemPromptName(content),
         updatedAt:
-          Number.isFinite(candidate.updatedAt)
-            ? candidate.updatedAt
+          Number.isFinite(prompt.updatedAt)
+            ? prompt.updatedAt
             : Date.now()
       }
     }
 
-    function sanitizeSystemPromptCandidates (candidates) {
-      if (!Array.isArray(candidates)) return []
+    function sanitizeSystemPrompts (prompts) {
+      if (!Array.isArray(prompts)) return []
 
-      const keys = new Set()
+      const ids = new Set()
 
-      return candidates
-        .map(sanitizeSystemPromptCandidate)
-        .filter(candidate => {
+      return prompts
+        .map(sanitizeSystemPrompt)
+        .filter(prompt => {
           if (
-            !candidate ||
-            keys.has(candidate.key)
+            !prompt ||
+            ids.has(prompt.id)
           ) {
             return false
           }
 
-          keys.add(candidate.key)
+          ids.add(prompt.id)
           return true
         })
     }
 
-    function findSystemPromptCandidate (
-      candidates,
-      candidateKey
-    ) {
-      if (!candidateKey) return null
+    function findSystemPrompt (prompts, id) {
+      if (!id) return null
 
       return (
-        candidates.find(candidate => {
-          return candidate.key === candidateKey
+        prompts.find(prompt => {
+          return prompt.id === id
         }) || null
       )
     }
 
-    function migrateStoredSnapshot (snapshot) {
-      const migrated =
-        snapshot && typeof snapshot === 'object'
-          ? cloneValue(snapshot)
-          : {}
-
-      const candidates =
-        sanitizeSystemPromptCandidates(
-          migrated.systemPromptCandidates
+    const storageMigrator = {
+      cleanup () {
+        window.localStorage.removeItem(
+          storagePrefix +
+          '.systemPrompt' +
+          'Candidates'
         )
+      },
 
-      const registerPrompt = content => {
-        const existing =
-          candidates.find(candidate => {
-            return candidate.content === content
-          })
-
-        if (existing) return existing.key
-
-        const candidate = {
-          content,
-          createdAt: Date.now(),
-          key:
-            createSystemPromptCandidateKey(
-              candidates
-            ),
-          name:
-            createSystemPromptCandidateName(
-              content
-            ),
-          updatedAt: Date.now()
+      loadLegacy () {
+        return {
+          systemPrompts:
+            readStorageJson(
+              storagePrefix +
+              '.systemPrompt' +
+              'Candidates'
+            )
         }
+      },
 
-        candidates.push(candidate)
-        return candidate.key
-      }
+      migrate (snapshot) {
+        const migrated =
+          snapshot && typeof snapshot === 'object'
+            ? cloneValue(snapshot)
+            : {}
 
-      const migrateConfiguration = configuration => {
-        if (
-          !configuration ||
-          typeof configuration !== 'object' ||
-          !configuration.settings ||
-          typeof configuration.settings !== 'object'
-        ) {
-          return
-        }
+        const legacySelectionField =
+          'systemPrompt' +
+          'Candidate' +
+          'Key'
 
-        const settings = configuration.settings
+        const source =
+          Array.isArray(migrated.systemPrompts)
+            ? migrated.systemPrompts
+            : migrated.legacy &&
+              Array.isArray(
+                migrated.legacy.systemPrompts
+              )
+              ? migrated.legacy.systemPrompts
+              : []
 
-        const candidate =
-          findSystemPromptCandidate(
-            candidates,
-            settings.systemPromptCandidateKey
+        const prompts =
+          sanitizeSystemPrompts(
+            source.map(prompt => {
+              if (
+                !prompt ||
+                typeof prompt !== 'object'
+              ) {
+                return prompt
+              }
+
+              return {
+                ...prompt,
+                id:
+                  typeof prompt.id === 'string' &&
+                  prompt.id
+                    ? prompt.id
+                    : typeof prompt.key === 'string'
+                      ? prompt.key
+                      : ''
+              }
+            })
           )
 
-        if (candidate) {
-          delete settings.systemPrompt
-          return
-        }
+        const registerPrompt = content => {
+          const existing =
+            prompts.find(prompt => {
+              return prompt.content === content
+            })
 
-        settings.systemPromptCandidateKey = null
+          if (existing) return existing.id
 
-        if (
-          typeof settings.systemPrompt === 'string' &&
-          settings.systemPrompt.trim()
-        ) {
-          settings.systemPromptCandidateKey =
-            registerPrompt(settings.systemPrompt)
-
-          delete settings.systemPrompt
-        }
-      }
-
-      migrateConfiguration(
-        migrated.workspaceConfiguration
-      )
-
-      if (Array.isArray(migrated.conversations)) {
-        migrated.conversations.forEach(
-          conversation => {
-            migrateConfiguration(
-              conversation &&
-              conversation.configuration
-            )
+          const prompt = {
+            content,
+            createdAt: Date.now(),
+            id: createSystemPromptId(prompts),
+            name: createSystemPromptName(content),
+            updatedAt: Date.now()
           }
-        )
-      }
 
-      migrated.systemPromptCandidates = candidates
-      return migrated
+          prompts.push(prompt)
+          return prompt.id
+        }
+
+        const migrateConfiguration = configuration => {
+          if (
+            !configuration ||
+            typeof configuration !== 'object' ||
+            !configuration.settings ||
+            typeof configuration.settings !== 'object'
+          ) {
+            return
+          }
+
+          const settings = configuration.settings
+
+          const storedId =
+            typeof settings.systemPromptId === 'string'
+              ? settings.systemPromptId
+              : typeof settings[
+                  legacySelectionField
+                ] === 'string'
+                ? settings[legacySelectionField]
+                : null
+
+          const prompt =
+            findSystemPrompt(prompts, storedId)
+
+          settings.systemPromptId =
+            prompt ? prompt.id : null
+
+          delete settings[legacySelectionField]
+
+          if (prompt) {
+            delete settings.systemPrompt
+            return
+          }
+
+          if (
+            typeof settings.systemPrompt === 'string' &&
+            settings.systemPrompt.trim()
+          ) {
+            settings.systemPromptId =
+              registerPrompt(settings.systemPrompt)
+
+            delete settings.systemPrompt
+          }
+        }
+
+        migrateConfiguration(
+          migrated.workspaceConfiguration
+        )
+
+        if (Array.isArray(migrated.conversations)) {
+          migrated.conversations.forEach(
+            conversation => {
+              migrateConfiguration(
+                conversation &&
+                conversation.configuration
+              )
+            }
+          )
+        }
+
+        migrated.systemPrompts = prompts
+        delete migrated.legacy
+        return migrated
+      }
     }
 
     function createDefaultSafetySettings () {
@@ -4844,7 +4902,7 @@
         showReasoning: true,
         streaming: true,
         systemPrompt: '',
-        systemPromptCandidateKey: null,
+        systemPromptId: null,
         temperature: 1,
         temperatureAuto: false,
         toolsJson: '',
@@ -4905,7 +4963,7 @@
 
     function sanitizeSettings (
       rawSettings,
-      systemPromptCandidates
+      systemPrompts
     ) {
       const settings = createDefaultSettings()
       const raw =
@@ -4969,18 +5027,18 @@
       settings.zeroDataRetention =
         raw.zeroDataRetention !== false
 
-      const candidate =
-        findSystemPromptCandidate(
-          systemPromptCandidates || [],
-          raw.systemPromptCandidateKey
+      const prompt =
+        findSystemPrompt(
+          systemPrompts || [],
+          raw.systemPromptId
         )
 
-      settings.systemPromptCandidateKey =
-        candidate ? candidate.key : null
+      settings.systemPromptId =
+        prompt ? prompt.id : null
 
       settings.systemPrompt =
-        candidate
-          ? candidate.content
+        prompt
+          ? prompt.content
           : typeof raw.systemPrompt === 'string'
             ? raw.systemPrompt
             : ''
@@ -5072,7 +5130,7 @@
     function sanitizeConfiguration (
       configuration,
       fallbackConfiguration,
-      systemPromptCandidates
+      systemPrompts
     ) {
       const source =
         configuration &&
@@ -5102,7 +5160,7 @@
         settings: sanitizeSettings(
           source.settings ||
           fallback.settings,
-          systemPromptCandidates || []
+          systemPrompts || []
         )
       }
     }
@@ -5111,7 +5169,7 @@
       return sanitizeConfiguration(
         cloneValue(configuration),
         null,
-        state.systemPromptCandidates
+        state.systemPrompts
       )
     }
 
@@ -5928,7 +5986,7 @@
     function sanitizeConversation (
       conversation,
       fallbackConfiguration,
-      systemPromptCandidates
+      systemPrompts
     ) {
       if (
         !conversation ||
@@ -5953,7 +6011,7 @@
           sanitizeConfiguration(
             conversation.configuration,
             fallbackConfiguration,
-            systemPromptCandidates
+            systemPrompts
           ),
         createdAt:
           Number.isFinite(conversation.createdAt)
@@ -6083,9 +6141,11 @@
             readStorageJson(
               storageKeys.endpoints
             ),
-          systemPromptCandidates:
+          legacy:
+            storageMigrator.loadLegacy(),
+          systemPrompts:
             readStorageJson(
-              storageKeys.systemPromptCandidates
+              storageKeys.systemPrompts
             ),
           ui:
             readStorageJson(storageKeys.ui),
@@ -6115,9 +6175,9 @@
         )
 
         window.localStorage.setItem(
-          storageKeys.systemPromptCandidates,
+          storageKeys.systemPrompts,
           JSON.stringify(
-            snapshot.systemPromptCandidates
+            snapshot.systemPrompts
           )
         )
 
@@ -6136,20 +6196,20 @@
     }
 
     const loadedSnapshot =
-      migrateStoredSnapshot(
+      storageMigrator.migrate(
         storageRepository.load() || {}
       )
 
-    const systemPromptCandidates =
-      sanitizeSystemPromptCandidates(
-        loadedSnapshot.systemPromptCandidates
+    const systemPrompts =
+      sanitizeSystemPrompts(
+        loadedSnapshot.systemPrompts
       )
 
     const workspaceConfiguration =
       sanitizeConfiguration(
         loadedSnapshot.workspaceConfiguration,
         null,
-        systemPromptCandidates
+        systemPrompts
       )
 
     const state = {
@@ -6163,7 +6223,7 @@
                 return sanitizeConversation(
                   conversation,
                   workspaceConfiguration,
-                  systemPromptCandidates
+                  systemPrompts
                 )
               })
               .filter(Boolean)
@@ -6179,7 +6239,7 @@
       newMessageId: null,
       openDrawerSelector: null,
       pendingAttachmentReads: 0,
-      systemPromptCandidates,
+      systemPrompts,
       ui: {
         accent:
           normalizeHexColor(
@@ -6258,12 +6318,10 @@
       )
     }
 
-    function getSystemPromptCandidateByKey (
-      candidateKey
-    ) {
-      return findSystemPromptCandidate(
-        state.systemPromptCandidates,
-        candidateKey
+    function getSystemPromptById (id) {
+      return findSystemPrompt(
+        state.systemPrompts,
+        id
       )
     }
 
@@ -6276,24 +6334,23 @@
       ]
     }
 
-    function syncSystemPromptCandidateContent (
-      candidateKey,
+    function syncSystemPromptContent (
+      id,
       content
     ) {
-      const candidate =
-        getSystemPromptCandidateByKey(candidateKey)
+      const prompt =
+        getSystemPromptById(id)
 
-      if (!candidate) return
+      if (!prompt) return
 
-      candidate.content = content
-      candidate.updatedAt = Date.now()
+      prompt.content = content
+      prompt.updatedAt = Date.now()
 
       getAllConfigurations().forEach(
         configuration => {
           if (
             configuration.settings
-              .systemPromptCandidateKey ===
-            candidateKey
+              .systemPromptId === id
           ) {
             configuration.settings.systemPrompt =
               content
@@ -7648,8 +7705,7 @@
           if (context.settings.tools.length) {
             body.include = [
               'web_search_call.action.sources',
-              'code_interpreter_call.outputs',
-              'file_search_call.results'
+              'code_interpreter_call.outputs'
             ]
           }
 
@@ -10196,9 +10252,9 @@
       const storedSettings = cloneValue(settings)
 
       if (
-        storedSettings.systemPromptCandidateKey &&
-        getSystemPromptCandidateByKey(
-          storedSettings.systemPromptCandidateKey
+        storedSettings.systemPromptId &&
+        getSystemPromptById(
+          storedSettings.systemPromptId
         )
       ) {
         delete storedSettings.systemPrompt
@@ -10259,8 +10315,8 @@
             })
           ),
         endpoints: state.endpoints,
-        systemPromptCandidates:
-          state.systemPromptCandidates,
+        systemPrompts:
+          state.systemPrompts,
         ui: state.ui,
         workspaceConfiguration:
           createStoredConfiguration(
@@ -10274,6 +10330,7 @@
         storageRepository.save(
           createStoredState()
         )
+        storageMigrator.cleanup()
       } catch {}
     }
 
@@ -11543,62 +11600,62 @@
       const settings =
         activeConfiguration.settings
 
-      const candidate =
-        getSystemPromptCandidateByKey(
-          settings.systemPromptCandidateKey
+      const prompt =
+        getSystemPromptById(
+          settings.systemPromptId
         )
 
       selectElement(
-        '#save-system-prompt-candidate-button'
+        '#save-system-prompt-button'
       ).disabled =
         !settings.systemPrompt.trim()
 
       selectElement(
-        '#rename-system-prompt-candidate-button'
-      ).disabled = !candidate
+        '#rename-system-prompt-button'
+      ).disabled = !prompt
 
       selectElement(
-        '#delete-system-prompt-candidate-button'
-      ).disabled = !candidate
+        '#delete-system-prompt-button'
+      ).disabled = !prompt
 
       selectElement(
-        '#system-prompt-candidate-hint'
+        '#system-prompt-hint'
       ).textContent =
-        candidate
-          ? `Đang dùng “${candidate.name}”. Thay đổi nội dung được lưu cho mọi cuộc trò chuyện sử dụng candidate key này.`
-          : 'Prompt hiện tại là bản nháp. Lưu thành mới để dùng lại bằng candidate key.'
+        prompt
+          ? `Đang dùng “${prompt.name}”. Thay đổi sẽ được đồng bộ với các cấu hình sử dụng prompt này.`
+          : TEXT.systemPromptDraftHint
     }
 
     function renderSystemPromptControls () {
       const settings =
         activeConfiguration.settings
 
-      const candidate =
-        getSystemPromptCandidateByKey(
-          settings.systemPromptCandidateKey
+      const prompt =
+        getSystemPromptById(
+          settings.systemPromptId
         )
 
-      if (!candidate) {
-        settings.systemPromptCandidateKey = null
+      if (!prompt) {
+        settings.systemPromptId = null
       } else {
-        settings.systemPrompt = candidate.content
+        settings.systemPrompt = prompt.content
       }
 
       const select =
         selectElement(
-          '#system-prompt-candidate-select'
+          '#system-prompt-select'
         )
 
       select.innerHTML =
         '<option value="">Bản nháp hiện tại</option>' +
-        state.systemPromptCandidates
+        state.systemPrompts
           .map(item => {
-            return `<option value="${escapeHtml(item.key)}">${escapeHtml(item.name)}</option>`
+            return `<option value="${escapeHtml(item.id)}">${escapeHtml(item.name)}</option>`
           })
           .join('')
 
       select.value =
-        settings.systemPromptCandidateKey || ''
+        settings.systemPromptId || ''
 
       const textarea =
         selectElement('#system-prompt')
@@ -11608,27 +11665,25 @@
       updateSystemPromptActionState()
     }
 
-    function selectSystemPromptCandidate (
-      candidateKey
-    ) {
+    function selectSystemPrompt (id) {
       const settings =
         activeConfiguration.settings
 
-      const candidate =
-        getSystemPromptCandidateByKey(candidateKey)
+      const prompt =
+        getSystemPromptById(id)
 
-      settings.systemPromptCandidateKey =
-        candidate ? candidate.key : null
+      settings.systemPromptId =
+        prompt ? prompt.id : null
 
-      if (candidate) {
-        settings.systemPrompt = candidate.content
+      if (prompt) {
+        settings.systemPrompt = prompt.content
       }
 
       renderSystemPromptControls()
       scheduleConfigurationChange()
     }
 
-    async function saveSystemPromptAsCandidate () {
+    async function saveSystemPrompt () {
       const settings =
         activeConfiguration.settings
 
@@ -11641,7 +11696,7 @@
       }
 
       const suggestedName =
-        createSystemPromptCandidateName(
+        createSystemPromptName(
           settings.systemPrompt
         )
 
@@ -11663,20 +11718,19 @@
         return
       }
 
-      const candidate = {
+      const prompt = {
         content: settings.systemPrompt,
         createdAt: Date.now(),
-        key:
-          createSystemPromptCandidateKey(
-            state.systemPromptCandidates
+        id:
+          createSystemPromptId(
+            state.systemPrompts
           ),
         name,
         updatedAt: Date.now()
       }
 
-      state.systemPromptCandidates.push(candidate)
-      settings.systemPromptCandidateKey =
-        candidate.key
+      state.systemPrompts.push(prompt)
+      settings.systemPromptId = prompt.id
 
       renderSystemPromptControls()
       scheduleConfigurationChange()
@@ -11687,20 +11741,20 @@
       )
     }
 
-    async function renameSystemPromptCandidate () {
+    async function renameSystemPrompt () {
       const settings =
         activeConfiguration.settings
 
-      const candidate =
-        getSystemPromptCandidateByKey(
-          settings.systemPromptCandidateKey
+      const prompt =
+        getSystemPromptById(
+          settings.systemPromptId
         )
 
-      if (!candidate) return
+      if (!prompt) return
 
       const value = await openModal({
         confirmText: TEXT.save,
-        input: candidate.name,
+        input: prompt.name,
         title: 'Đổi tên system prompt'
       })
 
@@ -11716,8 +11770,8 @@
         return
       }
 
-      candidate.name = name
-      candidate.updatedAt = Date.now()
+      prompt.name = name
+      prompt.updatedAt = Date.now()
 
       renderSystemPromptControls()
       scheduleStorageSave()
@@ -11728,31 +11782,30 @@
       )
     }
 
-    async function deleteSystemPromptCandidate () {
+    async function deleteSystemPrompt () {
       const settings =
         activeConfiguration.settings
 
-      const candidate =
-        getSystemPromptCandidateByKey(
-          settings.systemPromptCandidateKey
+      const prompt =
+        getSystemPromptById(
+          settings.systemPromptId
         )
 
-      if (!candidate) return
+      if (!prompt) return
 
       const configurations =
         getAllConfigurations().filter(
           configuration => {
             return (
               configuration.settings
-                .systemPromptCandidateKey ===
-              candidate.key
+                .systemPromptId === prompt.id
             )
           }
         )
 
       const confirmed = await openModal({
         body:
-          `Prompt “${candidate.name}” sẽ bị xoá khỏi danh sách đã lưu. Nội dung được giữ lại dưới dạng bản nháp trong ${configurations.length} cấu hình đang sử dụng.`,
+          `Prompt “${prompt.name}” sẽ bị xoá khỏi danh sách đã lưu. Nội dung được giữ lại dưới dạng bản nháp trong ${configurations.length} cấu hình đang sử dụng.`,
         confirmText: TEXT.delete,
         danger: true,
         title: 'Xoá system prompt?'
@@ -11761,23 +11814,23 @@
       if (confirmed !== true) return
 
       configurations.forEach(configuration => {
-        configuration.settings
-          .systemPromptCandidateKey = null
+        configuration.settings.systemPromptId =
+          null
 
         configuration.settings.systemPrompt =
-          candidate.content
+          prompt.content
       })
 
-      state.systemPromptCandidates =
-        state.systemPromptCandidates.filter(
-          item => item.key !== candidate.key
-        )
+      state.systemPrompts =
+        state.systemPrompts.filter(item => {
+          return item.id !== prompt.id
+        })
 
       renderSystemPromptControls()
       scheduleConfigurationChange()
 
       showToast(
-        `Đã xoá system prompt “${candidate.name}”.`,
+        `Đã xoá system prompt “${prompt.name}”.`,
         'success'
       )
     }
@@ -11798,7 +11851,7 @@
 
       if (endpoint.format === 'interactions') {
         capabilities.reason =
-          'Định dạng API hiện tại không hỗ trợ tham số này.'
+          TEXT.unsupportedByApiFormat
         capabilities.temperature = false
         capabilities.topP = false
       }
@@ -11938,7 +11991,7 @@
       ).textContent =
         !endpoint || capabilities.topK
           ? ''
-          : 'Chỉ Messages và Generate Content hỗ trợ top-k ở cấp tạo sinh.'
+          : TEXT.unsupportedByApiFormat
     }
 
     function setCapabilityFieldState (
@@ -12088,7 +12141,7 @@
       ).textContent =
         !endpoint || supported
           ? ''
-          : 'Định dạng API hiện tại không hỗ trợ tuỳ chọn này.'
+          : TEXT.unsupportedByApiFormat
     }
 
     function renderVerbosityControl () {
@@ -12112,7 +12165,7 @@
       ).textContent =
         !endpoint || supported
           ? ''
-          : 'Định dạng API hiện tại không hỗ trợ tuỳ chọn này.'
+          : TEXT.unsupportedByApiFormat
     }
 
     function renderToggle (id, checked) {
@@ -15170,32 +15223,32 @@
       )
 
       selectElement(
-        '#system-prompt-candidate-select'
+        '#system-prompt-select'
       ).addEventListener('change', event => {
-        selectSystemPromptCandidate(
+        selectSystemPrompt(
           event.target.value
         )
       })
 
       selectElement(
-        '#save-system-prompt-candidate-button'
+        '#save-system-prompt-button'
       ).addEventListener(
         'click',
-        saveSystemPromptAsCandidate
+        saveSystemPrompt
       )
 
       selectElement(
-        '#rename-system-prompt-candidate-button'
+        '#rename-system-prompt-button'
       ).addEventListener(
         'click',
-        renameSystemPromptCandidate
+        renameSystemPrompt
       )
 
       selectElement(
-        '#delete-system-prompt-candidate-button'
+        '#delete-system-prompt-button'
       ).addEventListener(
         'click',
-        deleteSystemPromptCandidate
+        deleteSystemPrompt
       )
 
       selectElement('#system-prompt')
@@ -15206,9 +15259,9 @@
           settings.systemPrompt =
             event.target.value
 
-          if (settings.systemPromptCandidateKey) {
-            syncSystemPromptCandidateContent(
-              settings.systemPromptCandidateKey,
+          if (settings.systemPromptId) {
+            syncSystemPromptContent(
+              settings.systemPromptId,
               event.target.value
             )
           }
