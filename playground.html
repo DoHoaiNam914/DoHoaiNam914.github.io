@@ -846,6 +846,10 @@
       z-index: 5;
     }
 
+    .scroll-bottom-button[hidden] {
+      display: none;
+    }
+
     .message {
       contain: layout style;
       display: flex;
@@ -953,7 +957,8 @@
 
     .assistant-answer + .assistant-answer,
     .assistant-answer + .reasoning-panel,
-    .reasoning-panel + .assistant-answer {
+    .reasoning-panel + .assistant-answer,
+    .reasoning-panel + .reasoning-panel {
       margin-top: 12px;
     }
 
@@ -1001,6 +1006,10 @@
       transform: rotate(45deg);
       transition: transform 0.15s ease;
       width: 6px;
+    }
+
+    .tool-panel summary::after {
+      margin-left: 2px;
     }
 
     .reasoning-panel[open] summary::after {
@@ -1082,6 +1091,25 @@
       color: var(--error);
     }
 
+    .tool-activity-meta {
+      color: var(--faint);
+      font: 10px/1.5 var(--font-mono);
+      overflow-wrap: anywhere;
+    }
+
+    .tool-activity-sections {
+      display: grid;
+      gap: 9px;
+      margin-top: 8px;
+    }
+
+    .tool-activity-section-label {
+      color: var(--accent);
+      display: block;
+      font: 500 10px var(--font-mono);
+      text-transform: uppercase;
+    }
+
     .tool-activity-payload {
       background:
         linear-gradient(
@@ -1095,7 +1123,7 @@
       border-radius: var(--radius-small);
       color: var(--muted);
       font: 11px/1.55 var(--font-mono);
-      margin: 8px 0 0;
+      margin: 4px 0 0;
       max-height: 180px;
       overflow: auto;
       padding: 8px 10px;
@@ -1103,15 +1131,28 @@
       word-break: break-word;
     }
 
+    .tool-activity-payload-error {
+      background:
+        linear-gradient(
+          135deg,
+          var(--error-soft),
+          transparent 60%
+        ),
+        var(--code-background);
+      border-color: rgba(var(--error-rgb), 0.55);
+      border-left-color: var(--error);
+      color: #ff9caf;
+    }
+
     .message-attachments {
+      align-items: flex-start;
       display: flex;
+      flex-direction: column;
       flex-wrap: nowrap;
       gap: 8px;
       margin-top: 8px;
-      overflow-x: auto;
-      overscroll-behavior-x: contain;
-      padding-bottom: 4px;
-      scrollbar-width: thin;
+      overflow: visible;
+      padding-bottom: 0;
     }
 
     .attachment {
@@ -1763,7 +1804,9 @@
       padding: 0;
       transition:
         background 0.15s ease,
+        border-color 0.15s ease,
         box-shadow 0.15s ease,
+        color 0.15s ease,
         transform 0.15s ease;
       width: 40px;
     }
@@ -1781,6 +1824,16 @@
       border: 1px solid var(--error);
       box-shadow: 0 0 10px rgba(var(--error-rgb), 0.18);
       color: var(--error);
+    }
+
+    .stop-generation-button:hover:not(:disabled) {
+      background: var(--error);
+      border-color: var(--error);
+      box-shadow:
+        0 0 10px rgba(var(--error-rgb), 0.62),
+        0 0 24px rgba(var(--error-rgb), 0.28);
+      color: #fff;
+      transform: none;
     }
 
     .message-editor textarea {
@@ -4791,6 +4844,75 @@
       }
     }
 
+    function getToolLogPayload (value) {
+      if (
+        !value ||
+        typeof value !== 'object'
+      ) {
+        return ''
+      }
+
+      const log = {}
+
+      ;[
+        'log',
+        'logs',
+        'stdout',
+        'stderr',
+        'return_code',
+        'exit_code'
+      ].forEach(property => {
+        if (
+          Object.prototype.hasOwnProperty.call(
+            value,
+            property
+          ) &&
+          value[property] != null &&
+          value[property] !== ''
+        ) {
+          log[property] = value[property]
+        }
+      })
+
+      return Object.keys(log).length
+        ? log
+        : ''
+    }
+
+    function getToolErrorPayload (value) {
+      if (
+        !value ||
+        typeof value !== 'object'
+      ) {
+        return ''
+      }
+
+      if (value.error != null) {
+        return value.error
+      }
+
+      if (value.is_error === true) {
+        return (
+          value.result ||
+          value.content ||
+          value
+        )
+      }
+
+      const content = value.content
+
+      if (
+        content &&
+        typeof content === 'object' &&
+        typeof content.type === 'string' &&
+        /_error$/.test(content.type)
+      ) {
+        return content
+      }
+
+      return ''
+    }
+
     function createTextBlock (id, content) {
       return {
         content: content || '',
@@ -4815,26 +4937,224 @@
     }
 
     function createToolBlock (options) {
+      const inferredLog =
+        options.log != null
+          ? options.log
+          : getToolLogPayload(options.result) ||
+            getToolLogPayload(options.output)
+
+      const inferredError =
+        options.error != null
+          ? options.error
+          : getToolErrorPayload(options.result) ||
+            getToolErrorPayload(options.output)
+
       return {
+        callId:
+          typeof options.callId === 'string'
+            ? options.callId
+            : typeof options.id === 'string'
+              ? options.id
+              : '',
+        details: stringifyToolPayload(options.details),
+        error: stringifyToolPayload(inferredError),
         id: options.id || createUniqueId(),
         input: stringifyToolPayload(options.input),
+        log: stringifyToolPayload(inferredLog),
         name:
           options.name ||
           humanizeToolType(options.toolType),
         output: stringifyToolPayload(options.output),
+        result: stringifyToolPayload(options.result),
         serverSide: options.serverSide === true,
         status: normalizeToolStatus(
-          options.status ||
-          (
-            options.serverSide
-              ? 'running'
-              : 'waiting'
-          )
+          inferredError
+            ? 'failed'
+            : options.status ||
+              (
+                options.serverSide
+                  ? 'running'
+                  : 'waiting'
+              )
         ),
         toolType:
           options.toolType || 'tool_call',
         type: 'tool'
       }
+    }
+
+    function findToolBlockByReference (
+      blocks,
+      callId,
+      name
+    ) {
+      const reference = String(callId || '')
+
+      if (reference) {
+        const matched = blocks.find(block => {
+          return (
+            block.type === 'tool' &&
+            (
+              block.callId === reference ||
+              block.id === reference
+            )
+          )
+        })
+
+        if (matched) return matched
+      }
+
+      if (name) {
+        for (
+          let index = blocks.length - 1;
+          index >= 0;
+          index -= 1
+        ) {
+          const block = blocks[index]
+
+          if (
+            block.type === 'tool' &&
+            block.name === name
+          ) {
+            return block
+          }
+        }
+      }
+
+      return null
+    }
+
+    function applyToolResultToBlocks (
+      blocks,
+      options
+    ) {
+      const callId = String(options.callId || '')
+
+      let block =
+        findToolBlockByReference(
+          blocks,
+          callId,
+          options.name
+        )
+
+      if (!block) {
+        block = createToolBlock({
+          callId,
+          id:
+            options.id ||
+            'tool:result:' +
+            (
+              callId ||
+              createUniqueId()
+            ),
+          name:
+            options.name ||
+            humanizeToolType(
+              options.toolType ||
+              'tool_call'
+            ),
+          serverSide:
+            options.serverSide !== false,
+          status:
+            options.status || 'completed',
+          toolType:
+            options.toolType || 'tool_call'
+        })
+
+        blocks.push(block)
+      }
+
+      if (callId) block.callId = callId
+      if (options.name) block.name = options.name
+
+      if (options.toolType) {
+        block.toolType = options.toolType
+      }
+
+      if (options.serverSide != null) {
+        block.serverSide =
+          options.serverSide === true
+      }
+
+      if (options.input != null) {
+        block.input =
+          stringifyToolPayload(options.input)
+      }
+
+      if (options.output != null) {
+        block.output =
+          stringifyToolPayload(options.output)
+      }
+
+      if (options.result != null) {
+        block.result =
+          stringifyToolPayload(options.result)
+      }
+
+      if (options.details != null) {
+        block.details =
+          stringifyToolPayload(options.details)
+      }
+
+      const log =
+        options.log != null
+          ? options.log
+          : getToolLogPayload(options.result) ||
+            getToolLogPayload(options.output)
+
+      if (log) {
+        block.log = stringifyToolPayload(log)
+      }
+
+      const error =
+        options.error != null
+          ? options.error
+          : getToolErrorPayload(options.result) ||
+            getToolErrorPayload(options.output)
+
+      if (error) {
+        block.error =
+          stringifyToolPayload(error)
+
+        block.status = 'failed'
+      } else if (options.status) {
+        block.status =
+          normalizeToolStatus(options.status)
+      }
+
+      return block
+    }
+
+    function finalizeToolBlocks (blocks, format) {
+      blocks.forEach(block => {
+        if (
+          block.type !== 'tool' ||
+          !ACTIVE_TOOL_STATUSES.includes(
+            block.status
+          )
+        ) {
+          return
+        }
+
+        const hasResult = Boolean(
+          block.result ||
+          block.output ||
+          block.error
+        )
+
+        if (
+          format === 'messages' &&
+          block.serverSide &&
+          !hasResult
+        ) {
+          block.status = 'waiting'
+          return
+        }
+
+        block.status = block.serverSide
+          ? 'completed'
+          : 'waiting'
+      })
     }
 
     function sanitizeOutputBlock (block) {
@@ -4870,13 +5190,21 @@
 
       if (block.type === 'tool') {
         return createToolBlock({
+          callId:
+            typeof block.callId === 'string'
+              ? block.callId
+              : '',
+          details: block.details,
+          error: block.error,
           id,
           input: block.input,
+          log: block.log,
           name:
             typeof block.name === 'string'
               ? block.name
               : '',
           output: block.output,
+          result: block.result,
           serverSide:
             block.serverSide === true,
           status: block.status,
@@ -5276,165 +5604,9 @@
       }
     }
 
-    const legacyMigrator = (() => {
-      const LEGACY_PREFIXES = [
-        'ai-workbench.v3',
-        'ai-workbench.v2',
-        'ai-workbench.v1'
-      ]
-
-      const LEGACY_ACCENT_KEY =
-        'ai-workbench-accent'
-
-      const SNAPSHOT_SUFFIXES = [
-        'activeConversationId',
-        'conversations',
-        'endpoints',
-        'ui',
-        'workspaceConfiguration'
-      ]
-
-      function migrateSettings (rawSettings) {
-        const settings =
-          rawSettings &&
-          typeof rawSettings === 'object'
-            ? cloneValue(rawSettings)
-            : {}
-
-        if (
-          !settings.safetySettings &&
-          sanitizeSafetyThreshold(
-            settings.safetyThreshold
-          )
-        ) {
-          settings.safetySettings = {}
-
-          SAFETY_SETTING_DEFINITIONS.forEach(
-            definition => {
-              settings.safetySettings[
-                definition.key
-              ] = settings.safetyThreshold
-            }
-          )
-        }
-
-        delete settings.safetyThreshold
-        delete settings.safetyMethod
-        return settings
-      }
-
-      function migrateConfiguration (configuration) {
-        if (
-          !configuration ||
-          typeof configuration !== 'object'
-        ) {
-          return configuration
-        }
-
-        const migrated = cloneValue(configuration)
-
-        migrated.settings =
-          migrateSettings(migrated.settings)
-
-        return migrated
-      }
-
-      function migrateConversation (conversation) {
-        if (
-          !conversation ||
-          typeof conversation !== 'object'
-        ) {
-          return conversation
-        }
-
-        const migrated = cloneValue(conversation)
-
-        if (migrated.configuration) {
-          migrated.configuration =
-            migrateConfiguration(
-              migrated.configuration
-            )
-        }
-
-        return migrated
-      }
-
-      function migrateSnapshot (snapshot) {
-        const migrated = cloneValue(snapshot)
-
-        migrated.workspaceConfiguration =
-          migrateConfiguration(
-            migrated.workspaceConfiguration
-          )
-
-        if (Array.isArray(migrated.conversations)) {
-          migrated.conversations =
-            migrated.conversations.map(
-              migrateConversation
-            )
-        }
-
-        if (
-          !migrated.ui ||
-          typeof migrated.ui !== 'object'
-        ) {
-          migrated.ui = {}
-        }
-
-        if (!migrated.ui.accent) {
-          migrated.ui.accent =
-            window.localStorage.getItem(
-              LEGACY_ACCENT_KEY
-            )
-        }
-
-        return migrated
-      }
-
-      function importLegacySnapshot () {
-        for (const prefix of LEGACY_PREFIXES) {
-          const snapshot = {}
-          let found = false
-
-          SNAPSHOT_SUFFIXES.forEach(suffix => {
-            const key = prefix + '.' + suffix
-            const value = readStorageJson(key)
-
-            if (value != null) {
-              snapshot[suffix] = value
-              found = true
-            }
-          })
-
-          if (found) {
-            return migrateSnapshot(snapshot)
-          }
-        }
-
-        const legacyAccent =
-          window.localStorage.getItem(
-            LEGACY_ACCENT_KEY
-          )
-
-        if (legacyAccent) {
-          return {
-            ui: {
-              accent: legacyAccent
-            }
-          }
-        }
-
-        return null
-      }
-
-      return {
-        importLegacySnapshot
-      }
-    })()
-
     const storageRepository = {
       load () {
-        const currentSnapshot = {
+        return {
           activeConversationId:
             readStorageJson(
               STORAGE_KEYS.activeConversationId
@@ -5453,25 +5625,6 @@
             readStorageJson(
               STORAGE_KEYS.workspaceConfiguration
             )
-        }
-
-        const hasCurrentData =
-          Object.values(STORAGE_KEYS).some(key => {
-            return window.localStorage.getItem(key) != null
-          })
-
-        if (hasCurrentData) {
-          return {
-            migrated: false,
-            snapshot: currentSnapshot
-          }
-        }
-
-        return {
-          migrated: true,
-          snapshot:
-            legacyMigrator.importLegacySnapshot() ||
-            {}
         }
       },
 
@@ -5507,8 +5660,7 @@
       }
     }
 
-    const loadedState = storageRepository.load()
-    const loadedSnapshot = loadedState.snapshot || {}
+    const loadedSnapshot = storageRepository.load() || {}
 
     const workspaceConfiguration =
       sanitizeConfiguration(
@@ -6596,6 +6748,11 @@
             false
           )
 
+          if (context.settings.verbosity) {
+            body.verbosity =
+              context.settings.verbosity
+          }
+
           return {
             body,
             headers: this.headers(context.apiKey),
@@ -6957,6 +7114,15 @@
               context.settings.systemPrompt
           }
 
+          if (context.settings.tools.length) {
+            body.include = [
+              'web_search_call.action.sources',
+              'web_search_call.results',
+              'code_interpreter_call.outputs',
+              'file_search_call.results'
+            ]
+          }
+
           return {
             body,
             headers: this.headers(context.apiKey),
@@ -7192,16 +7358,23 @@
         const functionData =
           toolCall.function || {}
 
+        const customData =
+          toolCall.custom || {}
+
+        const callId =
+          toolCall.id || String(index)
+
         blocks.push(
           createToolBlock({
-            id:
-              'chat:tool:' +
-              (toolCall.id || index),
+            callId,
+            id: 'chat:tool:' + callId,
             input:
               functionData.arguments ||
+              customData.input ||
               toolCall.arguments,
             name:
               functionData.name ||
+              customData.name ||
               toolCall.name,
             serverSide: false,
             status: 'waiting',
@@ -7214,6 +7387,25 @@
       })
 
       return blocks
+    }
+
+    function isAnthropicToolResultBlock (block) {
+      return Boolean(
+        block &&
+        typeof block.type === 'string' &&
+        (
+          block.type === 'tool_result' ||
+          /_tool_result$/.test(block.type)
+        )
+      )
+    }
+
+    function getAnthropicToolResultStatus (block) {
+      const error =
+        block.is_error === true ||
+        Boolean(getToolErrorPayload(block))
+
+      return error ? 'failed' : 'completed'
     }
 
     function createAnthropicResponseBlocks (json) {
@@ -7251,31 +7443,68 @@
           block.type === 'tool_use' ||
           block.type === 'server_tool_use'
         ) {
+          const callId =
+            block.id || String(index)
+
           blocks.push(
             createToolBlock({
-              id:
-                'anthropic:tool:' +
-                (block.id || index),
+              callId,
+              details: block.caller,
+              id: 'anthropic:tool:' + callId,
               input: block.input,
               name: block.name,
               serverSide:
                 block.type === 'server_tool_use',
               status:
                 block.type === 'server_tool_use'
-                  ? 'completed'
+                  ? 'running'
                   : 'waiting',
               toolType: block.type
             })
           )
+        } else if (
+          isAnthropicToolResultBlock(block)
+        ) {
+          const callId =
+            block.tool_use_id || String(index)
+
+          applyToolResultToBlocks(
+            blocks,
+            {
+              callId,
+              details: block.caller,
+              error:
+                getToolErrorPayload(block),
+              id: 'anthropic:tool:' + callId,
+              log:
+                getToolLogPayload(
+                  block.content
+                ),
+              name:
+                humanizeToolType(
+                  block.type.replace(
+                    /_tool_result$/,
+                    ''
+                  )
+                ),
+              result: block.content,
+              serverSide: true,
+              status:
+                getAnthropicToolResultStatus(
+                  block
+                ),
+              toolType: block.type
+            }
+          )
         }
       })
 
+      finalizeToolBlocks(blocks, 'messages')
       return blocks
     }
 
     function createGeminiResponseBlocks (json) {
       const blocks = []
-      let lastCodeToolId = null
 
       getGeminiCandidateParts(json)
         .forEach((part, index) => {
@@ -7296,15 +7525,20 @@
           }
 
           if (part.functionCall) {
+            const callId =
+              part.functionCall.id ||
+              'function:' +
+              (
+                part.functionCall.name ||
+                index
+              ) +
+              ':' +
+              index
+
             blocks.push(
               createToolBlock({
-                id:
-                  'gemini:tool:' +
-                  (
-                    part.functionCall.id ||
-                    part.functionCall.name ||
-                    index
-                  ),
+                callId,
+                id: 'gemini:tool:' + callId,
                 input: part.functionCall.args,
                 name: part.functionCall.name,
                 serverSide: false,
@@ -7314,13 +7548,53 @@
             )
           }
 
+          if (part.functionResponse) {
+            const response =
+              part.functionResponse
+
+            const callId = response.id || ''
+
+            applyToolResultToBlocks(
+              blocks,
+              {
+                callId,
+                error:
+                  response.response &&
+                  response.response.error,
+                id:
+                  'gemini:tool:' +
+                  (
+                    callId ||
+                    'function-result:' + index
+                  ),
+                name: response.name,
+                result: response.response,
+                serverSide: false,
+                status:
+                  response.response &&
+                  response.response.error
+                    ? 'failed'
+                    : response.willContinue
+                      ? 'running'
+                      : 'completed',
+                toolType: 'function_call'
+              }
+            )
+          }
+
           if (part.executableCode) {
-            lastCodeToolId =
-              'gemini:code:' + index
+            const callId =
+              part.executableCode.id ||
+              'code:' + index
 
             blocks.push(
               createToolBlock({
-                id: lastCodeToolId,
+                callId,
+                details: {
+                  language:
+                    part.executableCode.language
+                },
+                id: 'gemini:code:' + callId,
                 input: part.executableCode.code,
                 name: 'Thực thi mã',
                 serverSide: true,
@@ -7331,25 +7605,106 @@
           }
 
           if (part.codeExecutionResult) {
-            const tool =
-              blocks.find(block => {
-                return block.id === lastCodeToolId
+            const result =
+              part.codeExecutionResult
+
+            const callId =
+              result.id || 'code:' + index
+
+            applyToolResultToBlocks(
+              blocks,
+              {
+                callId,
+                error:
+                  result.outcome ===
+                    'OUTCOME_FAILED' ||
+                  result.outcome ===
+                    'OUTCOME_DEADLINE_EXCEEDED'
+                    ? result.output ||
+                      result.outcome
+                    : '',
+                id: 'gemini:code:' + callId,
+                log: result.output,
+                name: 'Thực thi mã',
+                result: {
+                  outcome: result.outcome
+                },
+                serverSide: true,
+                status:
+                  result.outcome ===
+                    'OUTCOME_FAILED' ||
+                  result.outcome ===
+                    'OUTCOME_DEADLINE_EXCEEDED'
+                    ? 'failed'
+                    : 'completed',
+                toolType: 'code_execution_call'
+              }
+            )
+          }
+
+          if (part.toolCall) {
+            const call = part.toolCall
+
+            const callId =
+              call.id || 'tool:' + index
+
+            blocks.push(
+              createToolBlock({
+                callId,
+                details: {
+                  toolType: call.toolType
+                },
+                id: 'gemini:tool:' + callId,
+                input: call.args,
+                name:
+                  call.toolName ||
+                  humanizeToolType(call.toolType),
+                serverSide: true,
+                status: 'running',
+                toolType: 'tool_call'
               })
+            )
+          }
 
-            if (tool) {
-              tool.output = stringifyToolPayload(
-                part.codeExecutionResult.output ||
-                part.codeExecutionResult.outcome
-              )
+          if (part.toolResponse) {
+            const response = part.toolResponse
 
-              tool.status =
-                part.codeExecutionResult.outcome ===
-                'OUTCOME_FAILED'
-                  ? 'failed'
-                  : 'completed'
-            }
+            const callId =
+              response.id || 'tool:' + index
+
+            applyToolResultToBlocks(
+              blocks,
+              {
+                callId,
+                details: {
+                  toolType: response.toolType
+                },
+                error:
+                  response.response &&
+                  response.response.error,
+                id: 'gemini:tool:' + callId,
+                name:
+                  humanizeToolType(
+                    response.toolType ||
+                    'tool_call'
+                  ),
+                result: response.response,
+                serverSide: true,
+                status:
+                  response.response &&
+                  response.response.error
+                    ? 'failed'
+                    : 'completed',
+                toolType: 'tool_call'
+              }
+            )
           }
         })
+
+      finalizeToolBlocks(
+        blocks,
+        'generate-content'
+      )
 
       return blocks
     }
@@ -7364,6 +7719,68 @@
           /_call$/.test(item.type)
         )
       )
+    }
+
+    function getResponseToolOptions (
+      item,
+      outputIndex
+    ) {
+      const callId =
+        item.id ||
+        item.call_id ||
+        String(outputIndex)
+
+      const clientSide =
+        item.type === 'function_call' ||
+        item.type === 'custom_tool_call'
+
+      const failed =
+        item.status === 'failed' ||
+        Boolean(item.error)
+
+      let status
+
+      if (failed) {
+        status = 'failed'
+      } else if (item.status === 'completed') {
+        status = 'completed'
+      } else if (clientSide) {
+        status = 'waiting'
+      } else {
+        status = 'running'
+      }
+
+      return {
+        callId,
+        details:
+          item.metadata ||
+          item.sources,
+        error: item.error,
+        id: 'responses:tool:' + callId,
+        input:
+          item.arguments ||
+          item.input ||
+          item.action ||
+          item.code ||
+          item.commands,
+        log:
+          item.log ||
+          item.logs ||
+          getToolLogPayload(item.output) ||
+          getToolLogPayload(item.outputs),
+        name:
+          item.name ||
+          humanizeToolType(item.type),
+        output:
+          item.output ||
+          item.outputs,
+        result:
+          item.result ||
+          item.results,
+        serverSide: !clientSide,
+        status,
+        toolType: item.type
+      }
     }
 
     function createResponsesResponseBlocks (json) {
@@ -7402,40 +7819,12 @@
 
         if (isResponseToolItem(item)) {
           blocks.push(
-            createToolBlock({
-              id:
-                'responses:tool:' +
-                (
-                  item.id ||
-                  item.call_id ||
-                  outputIndex
-                ),
-              input:
-                item.arguments ||
-                item.input ||
-                item.action ||
-                item.code ||
-                item.commands,
-              name:
-                item.name ||
-                humanizeToolType(item.type),
-              output:
-                item.output ||
-                item.outputs ||
-                item.results,
-              serverSide:
-                item.type !== 'function_call' &&
-                item.type !== 'custom_tool_call',
-              status:
-                item.status === 'failed'
-                  ? 'failed'
-                  : item.status === 'completed'
-                    ? 'completed'
-                    : item.type === 'function_call'
-                      ? 'waiting'
-                      : 'running',
-              toolType: item.type
-            })
+            createToolBlock(
+              getResponseToolOptions(
+                item,
+                outputIndex
+              )
+            )
           )
 
           return
@@ -7449,7 +7838,10 @@
             (content, contentIndex) => {
               if (
                 content &&
-                content.type === 'output_text' &&
+                (
+                  content.type === 'output_text' ||
+                  content.type === 'refusal'
+                ) &&
                 typeof content.text === 'string'
               ) {
                 blocks.push(
@@ -7482,11 +7874,44 @@
         )
       }
 
+      finalizeToolBlocks(blocks, 'responses')
       return blocks
+    }
+
+    function isInteractionToolCallStep (step) {
+      return Boolean(
+        step &&
+        typeof step.type === 'string' &&
+        (
+          step.type === 'function_call' ||
+          /_call$/.test(step.type)
+        )
+      )
+    }
+
+    function isInteractionToolResultStep (step) {
+      return Boolean(
+        step &&
+        typeof step.type === 'string' &&
+        (
+          step.type === 'function_result' ||
+          /_result$/.test(step.type)
+        )
+      )
+    }
+
+    function getInteractionCallType (resultType) {
+      if (resultType === 'function_result') {
+        return 'function_call'
+      }
+
+      return String(resultType || 'tool_result')
+        .replace(/_result$/, '_call')
     }
 
     function createInteractionResponseBlocks (json) {
       const blocks = []
+
       const steps =
         json &&
         (
@@ -7539,42 +7964,85 @@
             )
           }
         } else if (
-          typeof step.type === 'string' &&
-          (
-            step.type === 'function_call' ||
-            /_call$/.test(step.type)
-          )
+          isInteractionToolCallStep(step)
         ) {
+          const callId =
+            step.id || String(index)
+
+          const serverSide =
+            step.type !== 'function_call'
+
           blocks.push(
             createToolBlock({
+              callId,
+              details: step.metadata,
               id:
                 'interactions:tool:' +
-                (step.id || index),
+                callId,
               input:
                 step.arguments ||
                 step.input,
               name:
                 step.name ||
                 humanizeToolType(step.type),
-              output:
-                step.output ||
-                step.result,
-              serverSide:
-                step.type !== 'function_call',
+              serverSide,
               status:
-                step.status === 'failed'
-                  ? 'failed'
-                  : step.status === 'completed' ||
-                    step.status === 'done'
-                    ? 'completed'
-                    : step.type === 'function_call'
-                      ? 'waiting'
-                      : 'running',
+                serverSide
+                  ? 'running'
+                  : 'waiting',
               toolType: step.type
             })
           )
+        } else if (
+          isInteractionToolResultStep(step)
+        ) {
+          const callId =
+            step.call_id || String(index)
+
+          const callType =
+            getInteractionCallType(step.type)
+
+          applyToolResultToBlocks(
+            blocks,
+            {
+              callId,
+              details: step.metadata,
+              error:
+                step.is_error
+                  ? step.result ||
+                    step.error ||
+                    step
+                  : step.error,
+              id:
+                'interactions:tool:' +
+                callId,
+              log:
+                getToolLogPayload(
+                  step.result
+                ),
+              name:
+                step.name ||
+                humanizeToolType(callType),
+              result:
+                step.result ||
+                step.output ||
+                step.content,
+              serverSide:
+                callType !== 'function_call',
+              status:
+                step.is_error
+                  ? 'failed'
+                  : 'completed',
+              toolType: callType
+            }
+          )
         }
       })
+
+      finalizeToolBlocks(
+        blocks,
+        'interactions'
+      )
 
       return blocks
     }
@@ -7705,16 +8173,29 @@
     ) {
       const blocks = getMessageBlocks(message)
 
-      let block = blocks.find(item => {
-        return (
-          item.type === 'tool' &&
-          item.id === options.id
+      let block =
+        findToolBlockByReference(
+          blocks,
+          options.callId,
+          ''
         )
-      })
+
+      if (!block && options.id) {
+        block = blocks.find(item => {
+          return (
+            item.type === 'tool' &&
+            item.id === options.id
+          )
+        })
+      }
 
       if (!block) {
         block = createToolBlock(options)
         blocks.push(block)
+      }
+
+      if (options.callId) {
+        block.callId = options.callId
       }
 
       if (options.name) block.name = options.name
@@ -7750,24 +8231,75 @@
           stringifyToolPayload(options.output)
       }
 
+      if (options.outputDelta) {
+        block.output = limitText(
+          (block.output || '') +
+          options.outputDelta
+        )
+      }
+
+      if (options.result != null) {
+        block.result =
+          stringifyToolPayload(options.result)
+      }
+
+      if (options.resultDelta) {
+        block.result = limitText(
+          (block.result || '') +
+          options.resultDelta
+        )
+      }
+
+      if (options.details != null) {
+        block.details =
+          stringifyToolPayload(options.details)
+      }
+
+      if (options.log != null) {
+        block.log =
+          stringifyToolPayload(options.log)
+      }
+
+      if (options.logDelta) {
+        block.log = limitText(
+          (block.log || '') +
+          options.logDelta
+        )
+      }
+
+      const inferredLog =
+        getToolLogPayload(options.result) ||
+        getToolLogPayload(options.output)
+
+      if (inferredLog && !block.log) {
+        block.log =
+          stringifyToolPayload(inferredLog)
+      }
+
+      const error =
+        options.error != null
+          ? options.error
+          : getToolErrorPayload(options.result) ||
+            getToolErrorPayload(options.output)
+
+      if (error) {
+        block.error =
+          stringifyToolPayload(error)
+
+        block.status = 'failed'
+      }
+
       return block
     }
 
-    function finalizeMessageTools (message) {
-      getMessageBlocks(message).forEach(block => {
-        if (
-          block.type !== 'tool' ||
-          !ACTIVE_TOOL_STATUSES.includes(
-            block.status
-          )
-        ) {
-          return
-        }
-
-        block.status = block.serverSide
-          ? 'completed'
-          : 'waiting'
-      })
+    function finalizeMessageTools (
+      message,
+      format
+    ) {
+      finalizeToolBlocks(
+        getMessageBlocks(message),
+        format
+      )
     }
 
     function replaceMessageBlocks (
@@ -7907,21 +8439,28 @@
         const functionData =
           toolCall.function || {}
 
-        const id =
+        const customData =
+          toolCall.custom || {}
+
+        const callId =
           toolCall.id ||
           streamState.chatToolIds[callIndex] ||
-          'chat:tool:' + callIndex
+          String(callIndex)
 
-        streamState.chatToolIds[callIndex] = id
+        streamState.chatToolIds[callIndex] =
+          callId
 
         upsertMessageTool(message, {
-          id,
+          callId,
+          id: 'chat:tool:' + callId,
           inputDelta:
             functionData.arguments ||
+            customData.input ||
             toolCall.arguments ||
             '',
           name:
             functionData.name ||
+            customData.name ||
             toolCall.name,
           serverSide: false,
           status:
@@ -8003,11 +8542,14 @@
           block.type === 'tool_use' ||
           block.type === 'server_tool_use'
         ) {
+          const callId =
+            block.id || String(index)
+
           const id =
-            'anthropic:tool:' +
-            (block.id || index)
+            'anthropic:tool:' + callId
 
           streamState.anthropicBlocks[index] = {
+            callId,
             id,
             serverSide:
               block.type === 'server_tool_use',
@@ -8015,6 +8557,8 @@
           }
 
           upsertMessageTool(message, {
+            callId,
+            details: block.caller,
             id,
             input: block.input,
             name: block.name,
@@ -8026,6 +8570,50 @@
                 : 'preparing',
             toolType: block.type
           })
+        } else if (
+          isAnthropicToolResultBlock(block)
+        ) {
+          const callId =
+            block.tool_use_id || String(index)
+
+          const tool =
+            applyToolResultToBlocks(
+              getMessageBlocks(message),
+              {
+                callId,
+                details: block.caller,
+                error:
+                  getToolErrorPayload(block),
+                id:
+                  'anthropic:tool:' +
+                  callId,
+                log:
+                  getToolLogPayload(
+                    block.content
+                  ),
+                name:
+                  humanizeToolType(
+                    block.type.replace(
+                      /_tool_result$/,
+                      ''
+                    )
+                  ),
+                result: block.content,
+                serverSide: true,
+                status:
+                  getAnthropicToolResultStatus(
+                    block
+                  ),
+                toolType: block.type
+              }
+            )
+
+          streamState.anthropicBlocks[index] = {
+            callId,
+            id: tool.id,
+            serverSide: true,
+            type: 'tool-result'
+          }
         }
       }
 
@@ -8061,6 +8649,7 @@
           blockState.type === 'tool'
         ) {
           upsertMessageTool(message, {
+            callId: blockState.callId,
             id: blockState.id,
             inputDelta:
               data.delta.partial_json || '',
@@ -8083,6 +8672,7 @@
           blockState.type === 'tool'
         ) {
           upsertMessageTool(message, {
+            callId: blockState.callId,
             id: blockState.id,
             serverSide:
               blockState.serverSide,
@@ -8130,14 +8720,25 @@
           }
 
           if (part.functionCall) {
+            const callId =
+              part.functionCall.id ||
+              streamState
+                .geminiFunctionToolIds[index] ||
+              'function:' +
+              (
+                part.functionCall.name ||
+                index
+              ) +
+              ':' +
+              index
+
+            streamState
+              .geminiFunctionToolIds[index] =
+                callId
+
             upsertMessageTool(message, {
-              id:
-                'gemini:tool:' +
-                (
-                  part.functionCall.id ||
-                  part.functionCall.name ||
-                  index
-                ),
+              callId,
+              id: 'gemini:tool:' + callId,
               input: part.functionCall.args,
               name: part.functionCall.name,
               serverSide: false,
@@ -8146,14 +8747,61 @@
             })
           }
 
-          if (part.executableCode) {
-            const id =
-              'gemini:code:' + index
+          if (part.functionResponse) {
+            const response =
+              part.functionResponse
 
-            streamState.lastGeminiCodeToolId = id
+            const callId =
+              response.id ||
+              streamState
+                .geminiFunctionToolIds[index] ||
+              ''
+
+            applyToolResultToBlocks(
+              getMessageBlocks(message),
+              {
+                callId,
+                error:
+                  response.response &&
+                  response.response.error,
+                id:
+                  'gemini:tool:' +
+                  (
+                    callId ||
+                    'function-result:' + index
+                  ),
+                name: response.name,
+                result: response.response,
+                serverSide: false,
+                status:
+                  response.response &&
+                  response.response.error
+                    ? 'failed'
+                    : response.willContinue
+                      ? 'running'
+                      : 'completed',
+                toolType: 'function_call'
+              }
+            )
+          }
+
+          if (part.executableCode) {
+            const callId =
+              part.executableCode.id ||
+              streamState
+                .geminiCodeToolIds[index] ||
+              'code:' + index
+
+            streamState.geminiCodeToolIds[index] =
+              callId
 
             upsertMessageTool(message, {
-              id,
+              callId,
+              details: {
+                language:
+                  part.executableCode.language
+              },
+              id: 'gemini:code:' + callId,
               input: part.executableCode.code,
               name: 'Thực thi mã',
               serverSide: true,
@@ -8163,22 +8811,111 @@
           }
 
           if (part.codeExecutionResult) {
+            const result =
+              part.codeExecutionResult
+
+            const callId =
+              result.id ||
+              streamState
+                .geminiCodeToolIds[index] ||
+              'code:' + index
+
+            applyToolResultToBlocks(
+              getMessageBlocks(message),
+              {
+                callId,
+                error:
+                  result.outcome ===
+                    'OUTCOME_FAILED' ||
+                  result.outcome ===
+                    'OUTCOME_DEADLINE_EXCEEDED'
+                    ? result.output ||
+                      result.outcome
+                    : '',
+                id: 'gemini:code:' + callId,
+                log: result.output,
+                name: 'Thực thi mã',
+                result: {
+                  outcome: result.outcome
+                },
+                serverSide: true,
+                status:
+                  result.outcome ===
+                    'OUTCOME_FAILED' ||
+                  result.outcome ===
+                    'OUTCOME_DEADLINE_EXCEEDED'
+                    ? 'failed'
+                    : 'completed',
+                toolType: 'code_execution_call'
+              }
+            )
+          }
+
+          if (part.toolCall) {
+            const call = part.toolCall
+
+            const callId =
+              call.id ||
+              streamState
+                .geminiServerToolIds[index] ||
+              'tool:' + index
+
+            streamState
+              .geminiServerToolIds[index] =
+                callId
+
             upsertMessageTool(message, {
-              id:
-                streamState.lastGeminiCodeToolId ||
-                'gemini:code:' + index,
-              name: 'Thực thi mã',
-              output:
-                part.codeExecutionResult.output ||
-                part.codeExecutionResult.outcome,
+              callId,
+              details: {
+                toolType: call.toolType
+              },
+              id: 'gemini:tool:' + callId,
+              input: call.args,
+              name:
+                call.toolName ||
+                humanizeToolType(call.toolType),
               serverSide: true,
-              status:
-                part.codeExecutionResult.outcome ===
-                'OUTCOME_FAILED'
-                  ? 'failed'
-                  : 'completed',
-              toolType: 'code_execution_call'
+              status: 'running',
+              toolType: 'tool_call'
             })
+          }
+
+          if (part.toolResponse) {
+            const response =
+              part.toolResponse
+
+            const callId =
+              response.id ||
+              streamState
+                .geminiServerToolIds[index] ||
+              'tool:' + index
+
+            applyToolResultToBlocks(
+              getMessageBlocks(message),
+              {
+                callId,
+                details: {
+                  toolType: response.toolType
+                },
+                error:
+                  response.response &&
+                  response.response.error,
+                id: 'gemini:tool:' + callId,
+                name:
+                  humanizeToolType(
+                    response.toolType ||
+                    'tool_call'
+                  ),
+                result: response.response,
+                serverSide: true,
+                status:
+                  response.response &&
+                  response.response.error
+                    ? 'failed'
+                    : 'completed',
+                toolType: 'tool_call'
+              }
+            )
           }
         })
     }
@@ -8263,49 +9000,32 @@
       }
 
       if (
-        type === 'response.output_item.added' &&
+        (
+          type === 'response.output_item.added' ||
+          type === 'response.output_item.done'
+        ) &&
         isResponseToolItem(data.item)
       ) {
-        const item = data.item
-
-        upsertMessageTool(message, {
-          id:
-            'responses:tool:' +
-            (
-              item.id ||
-              item.call_id ||
-              data.output_index ||
-              0
-            ),
-          input:
-            item.arguments ||
-            item.input,
-          name:
-            item.name ||
-            humanizeToolType(item.type),
-          serverSide:
-            item.type !== 'function_call' &&
-            item.type !== 'custom_tool_call',
-          status:
-            item.type === 'function_call'
-              ? 'preparing'
-              : 'running',
-          toolType: item.type
-        })
+        upsertMessageTool(
+          message,
+          getResponseToolOptions(
+            data.item,
+            data.output_index || 0
+          )
+        )
       }
 
       if (
         type ===
         'response.function_call_arguments.delta'
       ) {
+        const callId =
+          data.item_id ||
+          String(data.output_index || 0)
+
         upsertMessageTool(message, {
-          id:
-            'responses:tool:' +
-            (
-              data.item_id ||
-              data.output_index ||
-              0
-            ),
+          callId,
+          id: 'responses:tool:' + callId,
           inputDelta:
             typeof data.delta === 'string'
               ? data.delta
@@ -8320,19 +9040,76 @@
         type ===
         'response.function_call_arguments.done'
       ) {
+        const callId =
+          data.item_id ||
+          String(data.output_index || 0)
+
         upsertMessageTool(message, {
-          id:
-            'responses:tool:' +
-            (
-              data.item_id ||
-              data.output_index ||
-              0
-            ),
+          callId,
+          id: 'responses:tool:' + callId,
           input: data.arguments,
           name: data.name,
           serverSide: false,
           status: 'waiting',
           toolType: 'function_call'
+        })
+      }
+
+      const statusMatch = type.match(
+        /^response\.(.+_call)\.(in_progress|searching|generating|completed|failed)$/
+      )
+
+      if (statusMatch) {
+        const callId =
+          data.item_id ||
+          String(data.output_index || 0)
+
+        const statusMap = {
+          completed: 'completed',
+          failed: 'failed',
+          generating: 'generating',
+          in_progress: 'running',
+          searching: 'searching'
+        }
+
+        upsertMessageTool(message, {
+          callId,
+          error:
+            statusMatch[2] === 'failed'
+              ? data.error || data
+              : '',
+          id: 'responses:tool:' + callId,
+          serverSide: true,
+          status: statusMap[statusMatch[2]],
+          toolType: statusMatch[1]
+        })
+      }
+
+      const genericDelta =
+        typeof data.delta === 'string' &&
+        (
+          /_input\.delta$/.test(type) ||
+          /_code\.delta$/.test(type) ||
+          (
+            /_arguments\.delta$/.test(type) &&
+            type !==
+              'response.function_call_arguments.delta'
+          )
+        )
+
+      if (genericDelta) {
+        const callId =
+          data.item_id ||
+          String(data.output_index || 0)
+
+        upsertMessageTool(message, {
+          callId,
+          id: 'responses:tool:' + callId,
+          inputDelta: data.delta,
+          name: data.name,
+          serverSide:
+            !type.includes('custom_tool_call'),
+          status: 'preparing'
         })
       }
 
@@ -8375,7 +9152,8 @@
         const step = data.step
         const index = data.index
 
-        streamState.interactionSteps[index] = step
+        streamState.interactionSteps[index] =
+          step
 
         if (step.type === 'thought') {
           streamState.interactionSteps[index] = {
@@ -8392,26 +9170,27 @@
               'interactions:text:' + index
           }
         } else if (
-          typeof step.type === 'string' &&
-          (
-            step.type === 'function_call' ||
-            /_call$/.test(step.type)
-          )
+          isInteractionToolCallStep(step)
         ) {
           const serverSide =
             step.type !== 'function_call'
 
+          const callId =
+            step.id || String(index)
+
           const id =
-            'interactions:tool:' +
-            (step.id || index)
+            'interactions:tool:' + callId
 
           streamState.interactionSteps[index] = {
             ...step,
             blockId: id,
+            callId,
             serverSide
           }
 
           upsertMessageTool(message, {
+            callId,
+            details: step.metadata,
             id,
             input:
               step.arguments ||
@@ -8426,6 +9205,57 @@
                 : 'preparing',
             toolType: step.type
           })
+        } else if (
+          isInteractionToolResultStep(step)
+        ) {
+          const callId =
+            step.call_id || String(index)
+
+          const callType =
+            getInteractionCallType(step.type)
+
+          const tool =
+            applyToolResultToBlocks(
+              getMessageBlocks(message),
+              {
+                callId,
+                details: step.metadata,
+                error:
+                  step.is_error
+                    ? step.result ||
+                      step.error ||
+                      step
+                    : step.error,
+                id:
+                  'interactions:tool:' +
+                  callId,
+                log:
+                  getToolLogPayload(
+                    step.result
+                  ),
+                name:
+                  step.name ||
+                  humanizeToolType(callType),
+                result:
+                  step.result ||
+                  step.output ||
+                  step.content,
+                serverSide:
+                  callType !== 'function_call',
+                status:
+                  step.is_error
+                    ? 'failed'
+                    : 'completed',
+                toolType: callType
+              }
+            )
+
+          streamState.interactionSteps[index] = {
+            ...step,
+            blockId: tool.id,
+            callId,
+            resultStep: true
+          }
         }
       }
 
@@ -8465,6 +9295,9 @@
           data.delta.type === 'arguments_delta'
         ) {
           upsertMessageTool(message, {
+            callId:
+              step.callId ||
+              String(data.index),
             id:
               step.blockId ||
               'interactions:tool:' +
@@ -8480,6 +9313,94 @@
                 : 'preparing',
             toolType:
               step.type || 'function_call'
+          })
+        } else if (
+          isInteractionToolResultStep(
+            data.delta
+          ) ||
+          isInteractionToolResultStep(step)
+        ) {
+          const callId =
+            data.delta.call_id ||
+            step.call_id ||
+            step.callId ||
+            String(data.index)
+
+          const callType =
+            getInteractionCallType(
+              data.delta.type ||
+              step.type
+            )
+
+          applyToolResultToBlocks(
+            getMessageBlocks(message),
+            {
+              callId,
+              error:
+                data.delta.is_error
+                  ? data.delta.result ||
+                    data.delta.error ||
+                    data.delta
+                  : data.delta.error,
+              id:
+                'interactions:tool:' +
+                callId,
+              log:
+                getToolLogPayload(
+                  data.delta.result
+                ),
+              name:
+                data.delta.name ||
+                step.name ||
+                humanizeToolType(callType),
+              result:
+                data.delta.result ||
+                data.delta.output ||
+                data.delta.content,
+              serverSide:
+                callType !== 'function_call',
+              status:
+                data.delta.is_error
+                  ? 'failed'
+                  : 'completed',
+              toolType: callType
+            }
+          )
+        }
+      }
+
+      if (type === 'step.stop') {
+        const step =
+          streamState.interactionSteps[
+            data.index
+          ]
+
+        if (
+          step &&
+          step.resultStep
+        ) {
+          upsertMessageTool(message, {
+            callId: step.callId,
+            id: step.blockId,
+            status:
+              step.is_error
+                ? 'failed'
+                : 'completed'
+          })
+        } else if (
+          step &&
+          isInteractionToolCallStep(step)
+        ) {
+          upsertMessageTool(message, {
+            callId: step.callId,
+            id: step.blockId,
+            serverSide:
+              step.serverSide === true,
+            status:
+              step.serverSide
+                ? 'running'
+                : 'waiting',
+            toolType: step.type
           })
         }
       }
@@ -9085,7 +10006,78 @@
       return ''
     }
 
+    function createToolPayloadSectionHtml (
+      label,
+      value,
+      error
+    ) {
+      if (!value) return ''
+
+      return `
+        <div class="tool-activity-section">
+          <span class="tool-activity-section-label">${escapeHtml(label)}</span>
+          <pre class="tool-activity-payload${error ? ' tool-activity-payload-error' : ''}">${escapeHtml(value)}</pre>
+        </div>`
+    }
+
     function createToolActivityHtml (tool) {
+      const metadata = [
+        tool.toolType || '',
+        tool.callId
+          ? 'id: ' + tool.callId
+          : ''
+      ].filter(Boolean).join(' · ')
+
+      const output =
+        tool.output &&
+        tool.output !== tool.result
+          ? tool.output
+          : ''
+
+      const sections = [
+        createToolPayloadSectionHtml(
+          'Đầu vào',
+          tool.input,
+          false
+        ),
+        createToolPayloadSectionHtml(
+          'Log',
+          tool.log,
+          false
+        ),
+        createToolPayloadSectionHtml(
+          'Đầu ra',
+          output,
+          false
+        ),
+        createToolPayloadSectionHtml(
+          'Kết quả',
+          tool.result,
+          false
+        ),
+        createToolPayloadSectionHtml(
+          'Chi tiết',
+          tool.details,
+          false
+        ),
+        createToolPayloadSectionHtml(
+          'Lỗi',
+          tool.error,
+          true
+        )
+      ].join('')
+
+      return `
+        <div class="trace-item tool-activity">
+          ${metadata ? `<div class="tool-activity-meta">${escapeHtml(metadata)}</div>` : ''}
+          ${sections ? `<div class="tool-activity-sections">${sections}</div>` : ''}
+        </div>`
+    }
+
+    function createToolGroupHtml (
+      tool,
+      message
+    ) {
       const stateClass =
         getToolStatusClass(tool.status)
 
@@ -9093,37 +10085,30 @@
         TOOL_STATUS_LABELS[tool.status] ||
         TOOL_STATUS_LABELS.running
 
-      const input = tool.input
-        ? `<pre class="tool-activity-payload">${escapeHtml(tool.input)}</pre>`
-        : ''
-
-      const output = tool.output
-        ? `<pre class="tool-activity-payload">${escapeHtml(tool.output)}</pre>`
-        : ''
+      const open =
+        message.status === 'streaming' ||
+        tool.status === 'failed'
 
       return `
-        <div class="trace-item tool-activity">
-          <div class="tool-activity-header">
+        <details class="reasoning-panel tool-panel"${open ? ' open' : ''}>
+          <summary>
             ${createIconSvg('terminal', 'icon-small')}
             <span class="tool-activity-name" title="${escapeHtml(tool.name)}">${escapeHtml(tool.name)}</span>
             <span class="tool-activity-state ${stateClass}">
               <span class="tool-activity-dot" aria-hidden="true"></span>
               ${escapeHtml(stateLabel)}
             </span>
+          </summary>
+          <div class="reasoning-trace">
+            ${createToolActivityHtml(tool)}
           </div>
-          ${input}
-          ${output}
-        </div>`
+        </details>`
     }
 
     function createReasoningGroupHtml (
       blocks,
       message
     ) {
-      const hasTool = blocks.some(
-        block => block.type === 'tool'
-      )
-
       const items = blocks.map(block => {
         if (block.type === 'reasoning') {
           return `<div class="trace-item markdown">${renderMarkdown(block.content)}</div>`
@@ -9137,22 +10122,14 @@
             </div>`
         }
 
-        if (block.type === 'tool') {
-          return createToolActivityHtml(block)
-        }
-
         return ''
       }).join('')
-
-      const label = hasTool
-        ? 'Suy luận và sử dụng công cụ'
-        : 'Suy luận'
 
       return `
         <details class="reasoning-panel"${message.status === 'streaming' ? ' open' : ''}>
           <summary>
             ${createIconSvg('spark', 'icon-small')}
-            <span>${label}</span>
+            <span>Suy luận</span>
           </summary>
           <div class="reasoning-trace">${items}</div>
         </details>`
@@ -9190,30 +10167,38 @@
         visibleBlocks[visibleBlocks.length - 1]
 
       let html = ''
-      let traceBlocks = []
+      let reasoningBlocks = []
 
-      const flushTraceBlocks = () => {
-        if (!traceBlocks.length) return
+      const flushReasoningBlocks = () => {
+        if (!reasoningBlocks.length) return
 
         html += createReasoningGroupHtml(
-          traceBlocks,
+          reasoningBlocks,
           message
         )
 
-        traceBlocks = []
+        reasoningBlocks = []
       }
 
       visibleBlocks.forEach(block => {
         if (
           block.type === 'reasoning' ||
-          block.type === 'redacted' ||
-          block.type === 'tool'
+          block.type === 'redacted'
         ) {
-          traceBlocks.push(block)
+          reasoningBlocks.push(block)
           return
         }
 
-        flushTraceBlocks()
+        flushReasoningBlocks()
+
+        if (block.type === 'tool') {
+          html += createToolGroupHtml(
+            block,
+            message
+          )
+
+          return
+        }
 
         const cursor =
           message.status === 'streaming' &&
@@ -9225,7 +10210,7 @@
           `<div class="assistant-answer markdown">${renderMarkdown(block.content)}${cursor}</div>`
       })
 
-      flushTraceBlocks()
+      flushReasoningBlocks()
       return html
     }
 
@@ -9471,6 +10456,11 @@
         list.innerHTML = createWelcomeHtml()
         list.setAttribute('aria-busy', 'false')
         updateComposerButtons()
+
+        window.requestAnimationFrame(
+          updateFollowDownButton
+        )
+
         return
       }
 
@@ -9519,6 +10509,10 @@
       }
 
       updateComposerButtons()
+
+      window.requestAnimationFrame(
+        updateFollowDownButton
+      )
     }
 
     function createConversationItemHtml (
@@ -9802,7 +10796,7 @@
 
       if (endpoint.format === 'interactions') {
         capabilities.reason =
-          'Interactions API tự xác định tham số lấy mẫu.'
+          'Định dạng API hiện tại không hỗ trợ tham số này.'
         capabilities.temperature = false
         capabilities.topK = false
         capabilities.topP = false
@@ -10011,7 +11005,10 @@
     function supportsVerbosity (endpoint) {
       return Boolean(
         endpoint &&
-        endpoint.format === 'responses'
+        (
+          endpoint.format === 'responses' ||
+          endpoint.format === 'chat-completions'
+        )
       )
     }
 
@@ -10083,7 +11080,7 @@
       ).textContent =
         !endpoint || supported
           ? ''
-          : 'Định dạng API hiện tại không hỗ trợ safety settings.'
+          : 'Định dạng API hiện tại không hỗ trợ tuỳ chọn này.'
     }
 
     function renderVerbosityControl () {
@@ -10107,7 +11104,7 @@
       ).textContent =
         !endpoint || supported
           ? ''
-          : 'Verbosity chỉ được gửi tới Responses API.'
+          : 'Định dạng API hiện tại không hỗ trợ tuỳ chọn này.'
     }
 
     function renderToggle (id, checked) {
@@ -10415,6 +11412,7 @@
       state.activeConversationId = conversationId
       state.editingMessageId = null
       state.newMessageId = null
+      shouldStickToBottom = true
 
       activateConfiguration(
         conversation.configuration
@@ -10496,6 +11494,7 @@
 
       state.conversations.unshift(duplicate)
       state.activeConversationId = duplicate.id
+      shouldStickToBottom = true
       getConversationRuntime(duplicate.id)
 
       activateConfiguration(
@@ -10612,6 +11611,7 @@
               ? state.conversations[0].id
               : null
 
+          shouldStickToBottom = true
           activateSelectedConfiguration()
         }
 
@@ -10691,13 +11691,57 @@
       )
     }
 
+    function updateFollowDownButton () {
+      const area =
+        selectElement('#chat-scroll-area')
+
+      const button =
+        selectElement('#scroll-bottom-button')
+
+      const conversation =
+        getCurrentConversation()
+
+      if (!area || !button) return
+
+      const hasMessages = Boolean(
+        conversation &&
+        conversation.messages.length
+      )
+
+      const hasOverflow =
+        area.scrollHeight >
+        area.clientHeight + 1
+
+      const distanceFromBottom =
+        Math.max(
+          0,
+          area.scrollHeight -
+          area.scrollTop -
+          area.clientHeight
+        )
+
+      shouldStickToBottom =
+        !hasOverflow ||
+        distanceFromBottom < 90
+
+      button.hidden =
+        !hasMessages ||
+        !hasOverflow ||
+        shouldStickToBottom
+    }
+
     function scrollToBottom (force) {
       const area =
         selectElement('#chat-scroll-area')
 
       if (force || shouldStickToBottom) {
+        shouldStickToBottom = true
         area.scrollTop = area.scrollHeight
       }
+
+      window.requestAnimationFrame(
+        updateFollowDownButton
+      )
     }
 
     function updateComposerButtons () {
@@ -11530,8 +12574,10 @@
         const streamState = {
           anthropicBlocks: {},
           chatToolIds: {},
-          interactionSteps: {},
-          lastGeminiCodeToolId: null
+          geminiCodeToolIds: {},
+          geminiFunctionToolIds: {},
+          geminiServerToolIds: {},
+          interactionSteps: {}
         }
 
         const result =
@@ -11582,7 +12628,11 @@
         }
 
         if (result.streamed) {
-          finalizeMessageTools(message)
+          finalizeMessageTools(
+            message,
+            endpoint.format
+          )
+
           syncAssistantMessage(message)
         } else {
           const json =
@@ -11994,10 +13044,10 @@
 
       if (endpointFormApiKeyCleared) {
         hint.textContent =
-          'Endpoint sẽ được lưu mà không có key API.'
+          'Sẽ lưu mà không có key API.'
       } else if (hasStored && !hasDraft) {
         hint.textContent =
-          'Đang giữ key API đã lưu.'
+          'Đang giữ key đã lưu.'
       } else {
         hint.textContent = ''
       }
@@ -12531,6 +13581,7 @@
       selectElement('#new-conversation-button')
         .addEventListener('click', () => {
           createConversation()
+          shouldStickToBottom = true
           renderSettingsPanel()
           renderMessages()
           renderTopBar()
@@ -12747,23 +13798,7 @@
 
       chatArea.addEventListener(
         'scroll',
-        () => {
-          shouldStickToBottom =
-            chatArea.scrollHeight -
-            chatArea.scrollTop -
-            chatArea.clientHeight <
-            90
-
-          const conversation =
-            getCurrentConversation()
-
-          selectElement(
-            '#scroll-bottom-button'
-          ).hidden =
-            shouldStickToBottom ||
-            !conversation ||
-            !conversation.messages.length
-        },
+        updateFollowDownButton,
         {
           passive: true
         }
@@ -12773,10 +13808,6 @@
         .addEventListener('click', () => {
           shouldStickToBottom = true
           scrollToBottom(true)
-
-          selectElement(
-            '#scroll-bottom-button'
-          ).hidden = true
         })
 
       selectElement('#add-message-button')
@@ -13559,6 +14590,11 @@
         showToast('Đã mất kết nối mạng.', 'error')
       })
 
+      window.addEventListener(
+        'resize',
+        updateFollowDownButton
+      )
+
       const handleLayoutChange = () => {
         closeDrawers()
 
@@ -13618,10 +14654,6 @@
       observeComposerRegion()
       refreshRequestBodyPreview()
       scrollToBottom(true)
-
-      if (loadedState.migrated) {
-        saveStateNow()
-      }
 
       if (!window.JSON5) {
         showToast(
