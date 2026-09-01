@@ -1140,7 +1140,7 @@
       color: var(--muted);
       display: flex;
       gap: 7px;
-      max-width: 270px;
+      max-width: 320px;
       padding: 7px 38px 7px 10px;
     }
 
@@ -1607,7 +1607,7 @@
       border-radius: var(--radius);
       display: inline-flex;
       gap: 7px;
-      max-width: 250px;
+      max-width: 280px;
     }
 
     .attachment-chip {
@@ -1630,7 +1630,7 @@
     }
 
     .attachment-chip-name {
-      max-width: 120px;
+      max-width: 130px;
     }
 
     .attachment-chip-size {
@@ -1682,7 +1682,7 @@
     .composer-toolbar {
       align-items: center;
       display: flex;
-      gap: 8px;
+      gap: 4px;
       padding: 6px 8px 8px;
     }
 
@@ -1920,7 +1920,8 @@
     }
 
     .settings select,
-    .endpoint-dialog-panel select {
+    .endpoint-dialog-panel select,
+    .attachment-url-dialog select {
       max-width: none;
     }
 
@@ -2065,7 +2066,8 @@
     }
 
     .sampling-field.disabled > .field-header > label:first-child,
-    .reasoning-field.disabled label {
+    .reasoning-field.disabled label,
+    .safety-field.disabled label {
       color: var(--faint);
     }
 
@@ -2243,7 +2245,7 @@
       position: fixed;
       right: 18px;
       top: calc(18px + env(safe-area-inset-top));
-      z-index: 120;
+      z-index: 170;
     }
 
     .toast {
@@ -2348,6 +2350,16 @@
     .modal {
       padding: 18px;
       width: min(440px, calc(100vw - 32px));
+    }
+
+    .attachment-url-dialog {
+      max-height: calc(100dvh - 32px);
+      overflow-y: auto;
+      width: min(500px, calc(100vw - 32px));
+    }
+
+    .attachment-url-dialog .field {
+      margin-bottom: 12px;
     }
 
     .modal h3 {
@@ -2883,7 +2895,19 @@
                   class="attachment-button"
                   id="attach-files-button"
                   data-icon="paperclip"
-                  aria-label="Đính kèm tệp"
+                  aria-label="Đính kèm tệp từ thiết bị"
+                  title="Đính kèm tệp từ thiết bị"
+                ></button>
+
+                <button
+                  type="button"
+                  class="attachment-button"
+                  id="attach-url-button"
+                  data-icon="link"
+                  aria-haspopup="dialog"
+                  aria-controls="attachment-url-dialog-root"
+                  aria-label="Đính kèm tệp hoặc ảnh bằng URL"
+                  title="Đính kèm bằng URL"
                 ></button>
 
                 <div class="composer-submit">
@@ -3208,7 +3232,10 @@
               </div>
             </div>
 
-            <div class="field reasoning-field">
+            <div
+              class="field reasoning-field"
+              id="show-reasoning-field"
+            >
               <div class="toggle-row">
                 <label for="show-reasoning-toggle">
                   Hiển thị suy luận
@@ -3229,7 +3256,10 @@
               </div>
             </div>
 
-            <div class="field reasoning-field">
+            <div
+              class="field reasoning-field"
+              id="reasoning-effort-field"
+            >
               <div class="field-header">
                 <label for="reasoning-effort">
                   Effort suy luận
@@ -3249,7 +3279,10 @@
               </div>
             </div>
 
-            <div class="field reasoning-field">
+            <div
+              class="field reasoning-field"
+              id="reasoning-mode-field"
+            >
               <div class="field-header">
                 <label for="reasoning-mode">
                   Mode suy luận
@@ -3265,7 +3298,10 @@
               </div>
             </div>
 
-            <div class="field reasoning-field">
+            <div
+              class="field reasoning-field"
+              id="thinking-budget-field"
+            >
               <div class="field-header">
                 <label for="thinking-budget">
                   Ngân sách thinking
@@ -3282,7 +3318,10 @@
               >
             </div>
 
-            <div class="field reasoning-field">
+            <div
+              class="field reasoning-field"
+              id="thinking-level-field"
+            >
               <div class="field-header">
                 <label for="thinking-level">
                   Thinking level
@@ -3338,6 +3377,47 @@
                   ></span>
                 </button>
               </div>
+            </div>
+          </section>
+
+          <section class="settings-section">
+            <h3 class="section-title">An toàn</h3>
+
+            <div
+              class="field safety-field"
+              id="safety-threshold-field"
+            >
+              <div class="field-header">
+                <label for="safety-threshold">
+                  Ngưỡng chặn
+                </label>
+              </div>
+
+              <div class="select-wrapper">
+                <select id="safety-threshold">
+                  <option value="">Mặc định API</option>
+                  <option value="block-low-and-above">
+                    Chặn từ mức thấp
+                  </option>
+                  <option value="block-medium-and-above">
+                    Chặn từ mức trung bình
+                  </option>
+                  <option value="block-only-high">
+                    Chỉ chặn mức cao
+                  </option>
+                  <option value="block-none">
+                    Không chặn theo ngưỡng
+                  </option>
+                  <option value="off">
+                    Tắt bộ lọc an toàn
+                  </option>
+                </select>
+              </div>
+
+              <p
+                class="field-hint"
+                id="safety-threshold-hint"
+              ></p>
             </div>
           </section>
 
@@ -3417,6 +3497,110 @@
     class="modal-root"
     id="modal-root"
   ></div>
+
+  <div
+    class="modal-root"
+    id="attachment-url-dialog-root"
+  >
+    <div
+      class="modal-backdrop"
+      data-close-attachment-url-dialog
+    ></div>
+
+    <div
+      class="modal attachment-url-dialog"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="attachment-url-dialog-title"
+    >
+      <h3 id="attachment-url-dialog-title">
+        Đính kèm bằng URL
+      </h3>
+
+      <div class="field">
+        <div class="field-header">
+          <label for="attachment-url">URL</label>
+        </div>
+
+        <input
+          type="url"
+          class="text-field monospace"
+          id="attachment-url"
+          placeholder="https://example.com/file.pdf"
+          autocomplete="off"
+          spellcheck="false"
+        >
+      </div>
+
+      <div class="field">
+        <div class="field-header">
+          <label for="attachment-url-kind">
+            Loại nội dung
+          </label>
+        </div>
+
+        <div class="select-wrapper">
+          <select id="attachment-url-kind">
+            <option value="auto">Tự nhận diện</option>
+            <option value="image">Ảnh</option>
+            <option value="file">Tệp</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="field-header">
+          <label for="attachment-url-mime">
+            MIME type
+          </label>
+        </div>
+
+        <input
+          type="text"
+          class="text-field monospace"
+          id="attachment-url-mime"
+          placeholder="Tự nhận diện"
+          autocomplete="off"
+          spellcheck="false"
+        >
+      </div>
+
+      <div class="field">
+        <div class="field-header">
+          <label for="attachment-url-name">
+            Tên hiển thị
+          </label>
+        </div>
+
+        <input
+          type="text"
+          class="text-field"
+          id="attachment-url-name"
+          placeholder="Tự lấy từ URL"
+          autocomplete="off"
+        >
+      </div>
+
+      <div class="modal-actions">
+        <button
+          type="button"
+          class="button"
+          id="cancel-attachment-url-button"
+        >
+          Huỷ
+        </button>
+
+        <button
+          type="button"
+          class="button button-accent"
+          id="add-attachment-url-button"
+        >
+          <span data-icon="link"></span>
+          Thêm
+        </button>
+      </div>
+    </div>
+  </div>
 
   <div
     class="endpoint-dialog-root"
@@ -3652,8 +3836,11 @@
     const selectElements = selector =>
       Array.from(document.querySelectorAll(selector))
 
-    const STORAGE_PREFIX = 'ai-workbench.v2'
-    const LEGACY_STORAGE_PREFIX = 'ai-workbench.v1'
+    const STORAGE_PREFIX = 'ai-workbench.v3'
+    const LEGACY_STORAGE_PREFIXES = [
+      'ai-workbench.v2',
+      'ai-workbench.v1'
+    ]
     const LEGACY_ACCENT_STORAGE_KEY = 'ai-workbench-accent'
     const DEFAULT_ACCENT = '#00f6ff'
 
@@ -3668,19 +3855,6 @@
         STORAGE_PREFIX + '.ui',
       workspaceConfiguration:
         STORAGE_PREFIX + '.workspaceConfiguration'
-    }
-
-    const LEGACY_STORAGE_KEYS = {
-      activeConversationId:
-        LEGACY_STORAGE_PREFIX + '.activeConversationId',
-      conversations:
-        LEGACY_STORAGE_PREFIX + '.conversations',
-      endpoints:
-        LEGACY_STORAGE_PREFIX + '.endpoints',
-      ui:
-        LEGACY_STORAGE_PREFIX + '.ui',
-      workspaceConfiguration:
-        LEGACY_STORAGE_PREFIX + '.workspaceConfiguration'
     }
 
     const MAXIMUM_FILES = 4
@@ -3714,12 +3888,33 @@
       'image/webp'
     ]
 
-    const REASONING_CONTROL_IDS = [
-      'show-reasoning-toggle',
-      'reasoning-effort',
-      'reasoning-mode',
-      'thinking-budget',
-      'thinking-level'
+    const SAFETY_THRESHOLDS = [
+      'block-low-and-above',
+      'block-medium-and-above',
+      'block-only-high',
+      'block-none',
+      'off'
+    ]
+
+    const GENERATE_CONTENT_SAFETY_CATEGORIES = [
+      'HARM_CATEGORY_HATE_SPEECH',
+      'HARM_CATEGORY_SEXUALLY_EXPLICIT',
+      'HARM_CATEGORY_DANGEROUS_CONTENT',
+      'HARM_CATEGORY_HARASSMENT',
+      'HARM_CATEGORY_CIVIC_INTEGRITY',
+      'HARM_CATEGORY_JAILBREAK'
+    ]
+
+    const INTERACTION_SAFETY_CATEGORIES = [
+      'hate_speech',
+      'dangerous_content',
+      'harassment',
+      'sexually_explicit',
+      'image_hate',
+      'image_dangerous_content',
+      'image_harassment',
+      'image_sexually_explicit',
+      'jailbreak'
     ]
 
     const NUMERIC_SETTING_BINDINGS = [
@@ -3732,7 +3927,8 @@
       ['response-verbosity', 'verbosity'],
       ['reasoning-effort', 'effort'],
       ['reasoning-mode', 'mode'],
-      ['thinking-level', 'level']
+      ['thinking-level', 'level'],
+      ['safety-threshold', 'safetyThreshold']
     ]
 
     const ACTIVE_TOOL_STATUSES = [
@@ -3816,6 +4012,8 @@
         '<path d="m15 2h-9a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-13z"/><path d="m14 2v4a2 2 0 0 0 2 2h4"/><path d="m16 13h-8"/><path d="m16 17h-8"/>',
       info:
         '<circle cx="12" cy="12" r="10"/><path d="m12 16v-4"/><path d="m12 8h.01"/>',
+      link:
+        '<path d="m10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="m14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>',
       message:
         '<path d="m21 15a2 2 0 0 1-2 2h-12l-4 4v-16a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
       'panel-left':
@@ -4101,6 +4299,13 @@
       return String(baseUrl || '')
         .trim()
         .replace(/\/+$/, '')
+    }
+
+    function normalizeMimeType (value) {
+      return String(value || '')
+        .trim()
+        .toLowerCase()
+        .split(';')[0]
     }
 
     function formatRelativeTime (timestamp) {
@@ -4636,9 +4841,31 @@
     function getFileExtension (name) {
       const match = String(name || '')
         .toLowerCase()
-        .match(/(\.[^.]+)$/)
+        .match(/(\.[^.?#/]+)(?:[?#].*)?$/)
 
       return match ? match[1] : ''
+    }
+
+    function inferMimeTypeFromName (name) {
+      return FILE_TYPE_BY_EXTENSION[
+        getFileExtension(name)
+      ] || ''
+    }
+
+    function getUrlFileName (url) {
+      try {
+        const parsed = new window.URL(url)
+        const segments = parsed.pathname
+          .split('/')
+          .filter(Boolean)
+
+        const value =
+          segments[segments.length - 1] || ''
+
+        return decodeURIComponent(value)
+      } catch {
+        return ''
+      }
     }
 
     function normalizeFileType (file) {
@@ -4648,10 +4875,7 @@
         return FILE_TYPE_BY_EXTENSION[extension]
       }
 
-      const type = String(file.type || '')
-        .toLowerCase()
-        .split(';')[0]
-        .trim()
+      const type = normalizeMimeType(file.type)
 
       if (type === 'image/jpg') return 'image/jpeg'
 
@@ -4673,9 +4897,34 @@
       return type
     }
 
+    function isUrlAttachment (attachment) {
+      return (
+        attachment &&
+        attachment.sourceType === 'url'
+      )
+    }
+
     function isImageAttachment (attachment) {
-      return IMAGE_MIME_TYPES.includes(
-        attachment.type || ''
+      return Boolean(
+        attachment &&
+        (
+          attachment.kind === 'image' ||
+          IMAGE_MIME_TYPES.includes(
+            attachment.type || ''
+          ) ||
+          /^image\//.test(attachment.type || '')
+        )
+      )
+    }
+
+    function isPdfAttachment (attachment) {
+      return Boolean(
+        attachment &&
+        (
+          attachment.type === 'application/pdf' ||
+          getFileExtension(attachment.name) === '.pdf' ||
+          getFileExtension(attachment.url) === '.pdf'
+        )
       )
     }
 
@@ -4697,7 +4946,22 @@
       )
     }
 
+    function getAttachmentMetaText (attachment) {
+      if (isUrlAttachment(attachment)) {
+        return attachment.type || 'URL'
+      }
+
+      return formatBytes(attachment.size)
+    }
+
     function createAttachmentDataUrl (attachment) {
+      if (
+        !attachment ||
+        isUrlAttachment(attachment)
+      ) {
+        return ''
+      }
+
       if (attachment.dataUrl) {
         return attachment.dataUrl
       }
@@ -4715,6 +4979,14 @@
         ';base64,' +
         attachment.base64
       )
+    }
+
+    function getAttachmentReference (attachment) {
+      if (isUrlAttachment(attachment)) {
+        return attachment.url || ''
+      }
+
+      return createAttachmentDataUrl(attachment)
     }
 
     function createApiError (kind, message, status) {
@@ -4985,6 +5257,34 @@
     function createAnthropicAttachmentPart (
       attachment
     ) {
+      if (isUrlAttachment(attachment)) {
+        if (isImageAttachment(attachment)) {
+          return {
+            type: 'image',
+            source: {
+              type: 'url',
+              url: attachment.url
+            }
+          }
+        }
+
+        if (!isPdfAttachment(attachment)) {
+          throw createApiError(
+            'attachment',
+            'Messages API chỉ hỗ trợ tài liệu PDF khi đính kèm trực tiếp bằng URL.'
+          )
+        }
+
+        return {
+          type: 'document',
+          source: {
+            type: 'url',
+            url: attachment.url
+          },
+          title: attachment.name
+        }
+      }
+
       if (
         isImageAttachment(attachment) &&
         typeof attachment.base64 === 'string'
@@ -5035,6 +5335,20 @@
     function createGeminiAttachmentPart (
       attachment
     ) {
+      if (isUrlAttachment(attachment)) {
+        const fileData = {
+          fileUri: attachment.url
+        }
+
+        if (attachment.type) {
+          fileData.mimeType = attachment.type
+        }
+
+        return {
+          fileData
+        }
+      }
+
       if (typeof attachment.base64 !== 'string') {
         return null
       }
@@ -5052,19 +5366,27 @@
     function createInteractionAttachmentPart (
       attachment
     ) {
+      const part = {
+        type: isImageAttachment(attachment)
+          ? 'image'
+          : 'document'
+      }
+
+      if (attachment.type) {
+        part.mime_type = attachment.type
+      }
+
+      if (isUrlAttachment(attachment)) {
+        part.uri = attachment.url
+        return part
+      }
+
       if (typeof attachment.base64 !== 'string') {
         return null
       }
 
-      return {
-        type: isImageAttachment(attachment)
-          ? 'image'
-          : 'document',
-        data: attachment.base64,
-        mime_type:
-          attachment.type ||
-          'application/octet-stream'
-      }
+      part.data = attachment.base64
+      return part
     }
 
     function getGeminiThinkingLevel (settings) {
@@ -5072,14 +5394,7 @@
         return 'minimal'
       }
 
-      const level =
-        settings.level || settings.effort
-
-      if (!level) return null
-      if (level === 'minimal') return 'minimal'
-      if (level === 'low') return 'low'
-      if (level === 'medium') return 'medium'
-      return 'high'
+      return settings.level || null
     }
 
     function getGeminiThinkingBudget (
@@ -5087,25 +5402,22 @@
       model
     ) {
       if (!settings.reasoningEnabled) return 0
+      if (settings.budget == null) return null
+
+      if (settings.budget <= 0) {
+        return settings.budget
+      }
 
       const maximumBudget =
         /gemini-2[._-]?5-pro/i.test(model || '')
           ? 32768
           : 24576
 
-      if (settings.budget != null) {
-        return clampValue(
-          settings.budget,
-          1,
-          maximumBudget
-        )
-      }
-
-      if (!settings.effort) return null
-      if (settings.effort === 'minimal') return 512
-      if (settings.effort === 'low') return 1024
-      if (settings.effort === 'medium') return 8192
-      return maximumBudget
+      return clampValue(
+        settings.budget,
+        1,
+        maximumBudget
+      )
     }
 
     function usesGeminiThinkingLevel (model) {
@@ -5117,11 +5429,17 @@
     function usesClaudeManualThinking (model) {
       const modelId = String(model || '').toLowerCase()
 
-      return (
-        /claude-3(?:[-.]|$)/.test(modelId) ||
-        /claude-(?:opus|sonnet|haiku)-4-(?![6-9](?:-|$))/.test(
-          modelId
-        )
+      if (/claude-3(?:[-.]|$)/.test(modelId)) {
+        return true
+      }
+
+      const versionMatch = modelId.match(
+        /claude-(?:opus|sonnet|haiku)-4[-.]([0-9]+)/
+      )
+
+      return Boolean(
+        versionMatch &&
+        Number(versionMatch[1]) <= 6
       )
     }
 
@@ -5199,6 +5517,91 @@
       }
 
       return capabilities
+    }
+
+    function getReasoningCapabilities (
+      endpoint,
+      model
+    ) {
+      const capabilities = {
+        budget: false,
+        effort: false,
+        level: false,
+        mode: false,
+        showReasoning: false
+      }
+
+      if (!endpoint) return capabilities
+
+      if (endpoint.format === 'chat-completions') {
+        capabilities.effort = true
+        capabilities.showReasoning = true
+      } else if (endpoint.format === 'messages') {
+        capabilities.budget =
+          usesClaudeManualThinking(model)
+
+        capabilities.effort = true
+        capabilities.showReasoning = true
+      } else if (endpoint.format === 'generate-content') {
+        capabilities.budget =
+          !usesGeminiThinkingLevel(model)
+
+        capabilities.level =
+          usesGeminiThinkingLevel(model)
+
+        capabilities.showReasoning = true
+      } else if (endpoint.format === 'responses') {
+        capabilities.effort = true
+        capabilities.mode = true
+        capabilities.showReasoning = true
+      } else if (endpoint.format === 'interactions') {
+        capabilities.level = true
+        capabilities.showReasoning = true
+      }
+
+      return capabilities
+    }
+
+    function supportsSafetySettings (endpoint) {
+      return Boolean(
+        endpoint &&
+        (
+          endpoint.format === 'generate-content' ||
+          endpoint.format === 'interactions'
+        )
+      )
+    }
+
+    function getGenerateContentSafetySettings (
+      threshold
+    ) {
+      if (!threshold) return []
+
+      const apiThreshold =
+        threshold.replace(/-/g, '_').toUpperCase()
+
+      return GENERATE_CONTENT_SAFETY_CATEGORIES.map(
+        category => ({
+          category,
+          threshold: apiThreshold
+        })
+      )
+    }
+
+    function getInteractionSafetySettings (
+      threshold
+    ) {
+      if (!threshold) return []
+
+      const apiThreshold =
+        threshold.replace(/-/g, '_')
+
+      return INTERACTION_SAFETY_CATEGORIES.map(
+        type => ({
+          threshold: apiThreshold,
+          type
+        })
+      )
     }
 
     function createChatToolBlock (
@@ -5862,33 +6265,45 @@
               message.role === 'user' &&
               attachments.length
             ) {
-              const content = [{
-                type: 'text',
-                text: message.content || ''
-              }]
+              const content = []
+
+              if (message.content) {
+                content.push({
+                  type: 'text',
+                  text: message.content
+                })
+              }
 
               attachments.forEach(attachment => {
-                const dataUrl =
-                  createAttachmentDataUrl(attachment)
+                const reference =
+                  getAttachmentReference(attachment)
 
-                if (!dataUrl) return
+                if (!reference) return
 
                 if (isImageAttachment(attachment)) {
                   content.push({
                     type: 'image_url',
                     image_url: {
-                      url: dataUrl
+                      url: reference
                     }
                   })
-                } else {
-                  content.push({
-                    type: 'file',
-                    file: {
-                      filename: attachment.name,
-                      file_data: dataUrl
-                    }
-                  })
+                  return
                 }
+
+                if (isUrlAttachment(attachment)) {
+                  throw createApiError(
+                    'attachment',
+                    'Chat Completions chỉ hỗ trợ URL trực tiếp cho ảnh. Hãy dùng Responses, Messages, Generate Content hoặc Interactions để gửi tài liệu bằng URL.'
+                  )
+                }
+
+                content.push({
+                  type: 'file',
+                  file: {
+                    filename: attachment.name,
+                    file_data: reference
+                  }
+                })
               })
 
               messages.push({
@@ -5922,7 +6337,6 @@
           }
 
           if (context.settings.maxTokens != null) {
-            // body.max_completion_tokens =
             body.max_tokens =
               context.settings.maxTokens
           }
@@ -6135,10 +6549,7 @@
               return
             }
 
-            const content = [{
-              type: 'text',
-              text: message.content || ''
-            }]
+            const content = []
 
             attachments.forEach(attachment => {
               const part =
@@ -6148,6 +6559,13 @@
 
               if (part) content.push(part)
             })
+
+            if (message.content) {
+              content.push({
+                type: 'text',
+                text: message.content
+              })
+            }
 
             messages.push({
               role,
@@ -6199,10 +6617,20 @@
           } else if (
             usesClaudeManualThinking(context.model)
           ) {
-            const budget = Math.max(
-              1024,
-              context.settings.budget || 4096
-            )
+            if (
+              context.settings.budget != null &&
+              context.settings.budget < 1024
+            ) {
+              throw createApiError(
+                'config',
+                'Messages API yêu cầu thinking budget từ 1024 token trở lên đối với suy luận thủ công.'
+              )
+            }
+
+            const budget =
+              context.settings.budget == null
+                ? 4096
+                : context.settings.budget
 
             if (maxTokens <= budget) {
               maxTokens = budget + 1
@@ -6223,13 +6651,17 @@
 
           if (
             context.settings.reasoningEnabled &&
-            context.settings.effort
+            context.settings.effort &&
+            [
+              'low',
+              'medium',
+              'high',
+              'xhigh',
+              'max'
+            ].includes(context.settings.effort)
           ) {
             body.output_config = {
-              effort:
-                context.settings.effort === 'minimal'
-                  ? 'low'
-                  : context.settings.effort
+              effort: context.settings.effort
             }
           }
 
@@ -6517,9 +6949,13 @@
           const contents = []
 
           context.messages.forEach(message => {
-            const parts = [{
-              text: message.content || ''
-            }]
+            const parts = []
+
+            if (message.content) {
+              parts.push({
+                text: message.content
+              })
+            }
 
             if (
               !isAssistantRole(message.role) &&
@@ -6535,6 +6971,10 @@
                   if (part) parts.push(part)
                 }
               )
+            }
+
+            if (!parts.length) {
+              parts.push({ text: '' })
             }
 
             contents.push({
@@ -6619,6 +7059,13 @@
 
           if (context.settings.tools.length) {
             body.tools = context.settings.tools
+          }
+
+          if (context.settings.safetyThreshold) {
+            body.safetySettings =
+              getGenerateContentSafetySettings(
+                context.settings.safetyThreshold
+              )
           }
 
           return {
@@ -6841,13 +7288,17 @@
                 ? 'assistant'
                 : message.role
 
-            const content = [{
-              type:
-                role === 'assistant'
-                  ? 'output_text'
-                  : 'input_text',
-              text: message.content || ''
-            }]
+            const content = []
+
+            if (message.content) {
+              content.push({
+                type:
+                  role === 'assistant'
+                    ? 'output_text'
+                    : 'input_text',
+                text: message.content
+              })
+            }
 
             if (
               !isAssistantRole(message.role) &&
@@ -6855,22 +7306,30 @@
             ) {
               message.attachments.forEach(
                 attachment => {
-                  const dataUrl =
-                    createAttachmentDataUrl(
+                  const reference =
+                    getAttachmentReference(
                       attachment
                     )
 
-                  if (!dataUrl) return
+                  if (!reference) return
 
                   if (isImageAttachment(attachment)) {
                     content.push({
                       type: 'input_image',
-                      image_url: dataUrl
+                      image_url: reference
+                    })
+                  } else if (
+                    isUrlAttachment(attachment)
+                  ) {
+                    content.push({
+                      type: 'input_file',
+                      file_url: reference,
+                      filename: attachment.name
                     })
                   } else {
                     content.push({
                       type: 'input_file',
-                      file_data: dataUrl,
+                      file_data: reference,
                       filename: attachment.name
                     })
                   }
@@ -7219,10 +7678,14 @@
           const input = []
 
           context.messages.forEach(message => {
-            const content = [{
-              type: 'text',
-              text: message.content || ''
-            }]
+            const content = []
+
+            if (message.content) {
+              content.push({
+                type: 'text',
+                text: message.content
+              })
+            }
 
             if (
               !isAssistantRole(message.role) &&
@@ -7238,6 +7701,13 @@
                   if (part) content.push(part)
                 }
               )
+            }
+
+            if (!content.length) {
+              content.push({
+                type: 'text',
+                text: ''
+              })
             }
 
             input.push(
@@ -7280,6 +7750,14 @@
               'auto'
           }
 
+          if (
+            context.settings.reasoningEnabled &&
+            !context.settings.showReasoning
+          ) {
+            generationConfig.thinking_summaries =
+              'none'
+          }
+
           if (context.settings.maxTokens != null) {
             generationConfig.max_output_tokens =
               context.settings.maxTokens
@@ -7299,6 +7777,13 @@
 
           if (context.settings.tools.length) {
             body.tools = context.settings.tools
+          }
+
+          if (context.settings.safetyThreshold) {
+            body.safety_settings =
+              getInteractionSafetySettings(
+                context.settings.safetyThreshold
+              )
           }
 
           if (context.settings.zeroDataRetention) {
@@ -7608,6 +8093,7 @@
         maxTokens: null,
         mode: null,
         reasoningEnabled: false,
+        safetyThreshold: null,
         showReasoning: true,
         streaming: true,
         systemPrompt: '',
@@ -7669,10 +8155,14 @@
             )
 
       settings.budget =
-        Number.isFinite(Number(raw.budget)) &&
-        Number(raw.budget) >= 1
-          ? Math.floor(Number(raw.budget))
-          : null
+        raw.budget == null ||
+        raw.budget === '' ||
+        !Number.isFinite(Number(raw.budget))
+          ? null
+          : Math.max(
+              -1,
+              Math.floor(Number(raw.budget))
+            )
 
       settings.streaming =
         raw.streaming !== false
@@ -7757,6 +8247,13 @@
         ? raw.mode
         : null
 
+      settings.safetyThreshold =
+        SAFETY_THRESHOLDS.includes(
+          raw.safetyThreshold
+        )
+          ? raw.safetyThreshold
+          : null
+
       return settings
     }
 
@@ -7811,33 +8308,54 @@
         return null
       }
 
+      const dataUrl =
+        typeof attachment.dataUrl === 'string'
+          ? attachment.dataUrl
+          : null
+
+      const base64 =
+        typeof attachment.base64 === 'string'
+          ? attachment.base64
+          : null
+
+      const url =
+        typeof attachment.url === 'string'
+          ? attachment.url
+          : dataUrl
+
+      const sourceType =
+        attachment.sourceType === 'url'
+          ? 'url'
+          : 'upload'
+
+      const type =
+        typeof attachment.type === 'string'
+          ? normalizeMimeType(attachment.type)
+          : ''
+
+      const kind =
+        attachment.kind === 'image' ||
+        /^image\//.test(type)
+          ? 'image'
+          : 'file'
+
       return {
-        base64:
-          typeof attachment.base64 === 'string'
-            ? attachment.base64
-            : null,
-        dataUrl:
-          typeof attachment.dataUrl === 'string'
-            ? attachment.dataUrl
-            : null,
+        base64,
+        dataUrl,
         id:
           typeof attachment.id === 'string'
             ? attachment.id
             : createUniqueId(),
+        kind,
         name: attachment.name,
         size: Number(attachment.size) || 0,
+        sourceType,
         text:
           typeof attachment.text === 'string'
             ? attachment.text
             : null,
-        type:
-          typeof attachment.type === 'string'
-            ? attachment.type
-            : '',
-        url:
-          typeof attachment.url === 'string'
-            ? attachment.url
-            : attachment.dataUrl || null
+        type,
+        url
       }
     }
 
@@ -8097,15 +8615,20 @@
       }
     }
 
-    function readStorageWithFallback (
-      currentKey,
-      legacyKey
-    ) {
-      const current = readStorageValue(currentKey)
+    function readStorageWithFallback (suffix) {
+      const current =
+        readStorageValue(STORAGE_PREFIX + '.' + suffix)
 
-      return current == null
-        ? readStorageValue(legacyKey)
-        : current
+      if (current != null) return current
+
+      for (const prefix of LEGACY_STORAGE_PREFIXES) {
+        const legacy =
+          readStorageValue(prefix + '.' + suffix)
+
+        if (legacy != null) return legacy
+      }
+
+      return null
     }
 
     function loadSavedState () {
@@ -8113,32 +8636,25 @@
         return {
           activeId:
             readStorageWithFallback(
-              STORAGE_KEYS.activeConversationId,
-              LEGACY_STORAGE_KEYS.activeConversationId
+              'activeConversationId'
             ),
           conversations:
             readStorageWithFallback(
-              STORAGE_KEYS.conversations,
-              LEGACY_STORAGE_KEYS.conversations
+              'conversations'
             ),
           endpoints:
             readStorageWithFallback(
-              STORAGE_KEYS.endpoints,
-              LEGACY_STORAGE_KEYS.endpoints
+              'endpoints'
             ),
           legacyAccent:
             window.localStorage.getItem(
               LEGACY_ACCENT_STORAGE_KEY
             ),
           ui:
-            readStorageWithFallback(
-              STORAGE_KEYS.ui,
-              LEGACY_STORAGE_KEYS.ui
-            ),
+            readStorageWithFallback('ui'),
           workspaceConfiguration:
             readStorageWithFallback(
-              STORAGE_KEYS.workspaceConfiguration,
-              LEGACY_STORAGE_KEYS.workspaceConfiguration
+              'workspaceConfiguration'
             )
         }
       } catch {
@@ -8217,6 +8733,8 @@
     let modalState = null
     let endpointDialogOpen = false
     let endpointDialogPreviousFocus = null
+    let attachmentUrlDialogOpen = false
+    let attachmentUrlDialogPreviousFocus = null
     let editingEndpointId = null
     let endpointFormModels = []
     let endpointFormHeaders = []
@@ -8480,6 +8998,29 @@
       }
     }
 
+    function createStoredAttachment (attachment) {
+      if (isUrlAttachment(attachment)) {
+        return {
+          id: attachment.id,
+          kind: attachment.kind,
+          name: attachment.name,
+          size: attachment.size,
+          sourceType: 'url',
+          type: attachment.type,
+          url: attachment.url
+        }
+      }
+
+      return {
+        id: attachment.id,
+        kind: attachment.kind,
+        name: attachment.name,
+        size: attachment.size,
+        sourceType: 'upload',
+        type: attachment.type
+      }
+    }
+
     function createStoredState () {
       syncActiveConfiguration()
 
@@ -8505,12 +9046,7 @@
                     if (storedMessage.attachments) {
                       storedMessage.attachments =
                         storedMessage.attachments
-                          .map(attachment => ({
-                            id: attachment.id,
-                            name: attachment.name,
-                            size: attachment.size,
-                            type: attachment.type
-                          }))
+                          .map(createStoredAttachment)
                     }
 
                     return storedMessage
@@ -8918,6 +9454,161 @@
       }
 
       currentState.resolve(value)
+    }
+
+    function openAttachmentUrlDialog () {
+      if (
+        state.attachments.length +
+        state.pendingAttachmentReads >=
+        MAXIMUM_FILES
+      ) {
+        showToast(
+          'Chỉ được đính kèm tối đa 4 tệp.',
+          'error'
+        )
+        return
+      }
+
+      attachmentUrlDialogOpen = true
+      attachmentUrlDialogPreviousFocus =
+        document.activeElement
+
+      selectElement('#attachment-url').value = ''
+      selectElement('#attachment-url-kind').value =
+        'auto'
+      selectElement('#attachment-url-mime').value = ''
+      selectElement('#attachment-url-name').value = ''
+
+      selectElement('#attachment-url-dialog-root')
+        .classList.add('open')
+
+      selectElement('#attachment-url').focus()
+    }
+
+    function closeAttachmentUrlDialog () {
+      if (!attachmentUrlDialogOpen) return
+
+      attachmentUrlDialogOpen = false
+
+      selectElement('#attachment-url-dialog-root')
+        .classList.remove('open')
+
+      if (
+        attachmentUrlDialogPreviousFocus &&
+        attachmentUrlDialogPreviousFocus.focus
+      ) {
+        attachmentUrlDialogPreviousFocus.focus()
+      }
+    }
+
+    function createUrlAttachment () {
+      if (
+        state.attachments.length +
+        state.pendingAttachmentReads >=
+        MAXIMUM_FILES
+      ) {
+        showToast(
+          'Chỉ được đính kèm tối đa 4 tệp.',
+          'error'
+        )
+        return
+      }
+
+      const source =
+        selectElement('#attachment-url')
+          .value
+          .trim()
+
+      let parsedUrl
+
+      try {
+        parsedUrl = new window.URL(source)
+      } catch {
+        showToast('URL không hợp lệ.', 'error')
+        return
+      }
+
+      if (parsedUrl.protocol !== 'https:') {
+        showToast(
+          'URL đính kèm phải sử dụng HTTPS.',
+          'error'
+        )
+        return
+      }
+
+      const selectedKind =
+        selectElement('#attachment-url-kind').value
+
+      const inferredName =
+        getUrlFileName(parsedUrl.href)
+
+      const inferredType =
+        inferMimeTypeFromName(inferredName)
+
+      const type =
+        normalizeMimeType(
+          selectElement('#attachment-url-mime')
+            .value
+        ) ||
+        inferredType
+
+      const kind =
+        selectedKind === 'auto'
+          ? /^image\//.test(type)
+            ? 'image'
+            : 'file'
+          : selectedKind
+
+      if (
+        kind === 'image' &&
+        type &&
+        !/^image\//.test(type)
+      ) {
+        showToast(
+          'MIME type của ảnh phải bắt đầu bằng image/.',
+          'error'
+        )
+        return
+      }
+
+      if (
+        kind === 'file' &&
+        /^image\//.test(type)
+      ) {
+        showToast(
+          'MIME type ảnh không phù hợp với loại tệp.',
+          'error'
+        )
+        return
+      }
+
+      const customName =
+        selectElement('#attachment-url-name')
+          .value
+          .trim()
+
+      state.attachments.push({
+        base64: null,
+        dataUrl: null,
+        id: createUniqueId(),
+        kind,
+        name:
+          customName ||
+          inferredName ||
+          (
+            kind === 'image'
+              ? 'Ảnh từ URL'
+              : 'Tệp từ URL'
+          ),
+        size: 0,
+        sourceType: 'url',
+        text: null,
+        type,
+        url: parsedUrl.href
+      })
+
+      closeAttachmentUrlDialog()
+      renderAttachmentList()
     }
 
     function createConversation (activate = true) {
@@ -9464,10 +10155,10 @@
             attachment.url &&
             isImageAttachment(attachment)
           ) {
-            return `<figure class="attachment image-attachment">${removeButton}<img src="${attachment.url}" alt="${escapeHtml(attachment.name)}"><figcaption>${escapeHtml(attachment.name)}</figcaption></figure>`
+            return `<figure class="attachment image-attachment">${removeButton}<img src="${escapeHtml(attachment.url)}" alt="${escapeHtml(attachment.name)}"><figcaption>${escapeHtml(attachment.name)}</figcaption></figure>`
           }
 
-          return `<div class="attachment file-attachment">${createIconSvg('file-text', 'icon-small')}<span class="attachment-name">${escapeHtml(attachment.name)}</span><span class="attachment-size">${formatBytes(attachment.size)}</span>${removeButton}</div>`
+          return `<div class="attachment file-attachment">${isUrlAttachment(attachment) ? createIconSvg('link', 'icon-small') : createIconSvg('file-text', 'icon-small')}<span class="attachment-name">${escapeHtml(attachment.name)}</span><span class="attachment-size">${escapeHtml(getAttachmentMetaText(attachment))}</span>${removeButton}</div>`
         }).join('')
       }</div>`
     }
@@ -9935,18 +10626,24 @@
       list.innerHTML =
         state.attachments.map(attachment => {
           const preview =
-            attachment.url
-              ? `<img src="${attachment.url}" alt="">`
-              : createIconSvg(
-                  'file-text',
-                  'icon-small'
-                )
+            attachment.url &&
+            isImageAttachment(attachment)
+              ? `<img src="${escapeHtml(attachment.url)}" alt="">`
+              : isUrlAttachment(attachment)
+                ? createIconSvg(
+                    'link',
+                    'icon-small'
+                  )
+                : createIconSvg(
+                    'file-text',
+                    'icon-small'
+                  )
 
           return `
             <span class="attachment-chip">
               ${preview}
               <span class="attachment-chip-name">${escapeHtml(attachment.name)}</span>
-              <span class="attachment-chip-size">${formatBytes(attachment.size)}</span>
+              <span class="attachment-chip-size">${escapeHtml(getAttachmentMetaText(attachment))}</span>
               <button type="button" class="chip-remove-button" data-remove-attachment-id="${attachment.id}" aria-label="Gỡ tệp ${escapeHtml(attachment.name)}">${createIconSvg('x', 'icon-small')}</button>
             </span>`
         }).join('') +
@@ -9997,8 +10694,13 @@
         const buffer = await file.arrayBuffer()
         const base64 = arrayBufferToBase64(buffer)
 
+        const kind =
+          /^image\//.test(type)
+            ? 'image'
+            : 'file'
+
         const dataUrl =
-          isImageAttachment({ type })
+          kind === 'image'
             ? `data:${type};base64,${base64}`
             : null
 
@@ -10006,8 +10708,10 @@
           base64,
           dataUrl,
           id: createUniqueId(),
+          kind,
           name: file.name,
           size: file.size,
+          sourceType: 'upload',
           text:
             isTextMimeType(type)
               ? UTF8_DECODER.decode(buffer)
@@ -10123,6 +10827,12 @@
       select.value = state.modelId
     }
 
+    function renderEndpointCapabilities () {
+      renderSamplingControls()
+      renderReasoningControls()
+      renderSafetyControls()
+    }
+
     function setActiveEndpoint (endpointId) {
       state.endpointId = endpointId
 
@@ -10136,7 +10846,7 @@
       syncActiveConfiguration()
       renderEndpointSelect()
       renderModelSelect()
-      renderSamplingControls()
+      renderEndpointCapabilities()
       renderTopBar()
       renderEndpointList()
       scheduleStateSave()
@@ -10500,7 +11210,7 @@
       renderEndpointList()
       renderEndpointSelect()
       renderModelSelect()
-      renderSamplingControls()
+      renderEndpointCapabilities()
       renderMessages()
       renderTopBar()
       scheduleStateSave()
@@ -10551,7 +11261,7 @@
       renderEndpointList()
       renderEndpointSelect()
       renderModelSelect()
-      renderSamplingControls()
+      renderEndpointCapabilities()
       renderMessages()
       renderTopBar()
       scheduleStateSave()
@@ -10762,6 +11472,90 @@
           : ''
     }
 
+    function setCapabilityFieldState (
+      controlId,
+      fieldId,
+      enabled
+    ) {
+      selectElement('#' + controlId).disabled = !enabled
+
+      selectElement('#' + fieldId)
+        .classList.toggle(
+          'disabled',
+          !enabled
+        )
+    }
+
+    function renderReasoningControls () {
+      const enabled =
+        state.settings.reasoningEnabled
+
+      const capabilities =
+        getReasoningCapabilities(
+          getCurrentEndpoint(),
+          state.modelId
+        )
+
+      setCapabilityFieldState(
+        'show-reasoning-toggle',
+        'show-reasoning-field',
+        enabled && capabilities.showReasoning
+      )
+
+      setCapabilityFieldState(
+        'reasoning-effort',
+        'reasoning-effort-field',
+        enabled && capabilities.effort
+      )
+
+      setCapabilityFieldState(
+        'reasoning-mode',
+        'reasoning-mode-field',
+        enabled && capabilities.mode
+      )
+
+      setCapabilityFieldState(
+        'thinking-budget',
+        'thinking-budget-field',
+        enabled && capabilities.budget
+      )
+
+      setCapabilityFieldState(
+        'thinking-level',
+        'thinking-level-field',
+        enabled && capabilities.level
+      )
+    }
+
+    function renderSafetyControls () {
+      const endpoint = getCurrentEndpoint()
+      const supported =
+        supportsSafetySettings(endpoint)
+
+      const select =
+        selectElement('#safety-threshold')
+
+      const field =
+        selectElement('#safety-threshold-field')
+
+      const hint =
+        selectElement('#safety-threshold-hint')
+
+      select.disabled = !supported
+
+      field.classList.toggle(
+        'disabled',
+        !supported
+      )
+
+      hint.textContent =
+        !endpoint
+          ? ''
+          : supported
+            ? ''
+            : 'Định dạng API hiện tại không có safety settings tương ứng.'
+    }
+
     function renderSettingsPanel () {
       const settings = state.settings
 
@@ -10806,6 +11600,9 @@
       selectElement('#thinking-level').value =
         settings.level || ''
 
+      selectElement('#safety-threshold').value =
+        settings.safetyThreshold || ''
+
       selectElement('#system-prompt').value =
         settings.systemPrompt
 
@@ -10832,20 +11629,9 @@
         settings.zeroDataRetention
       )
 
-      REASONING_CONTROL_IDS.forEach(id => {
-        selectElement('#' + id).disabled =
-          !settings.reasoningEnabled
-      })
-
-      selectElements('.reasoning-field')
-        .forEach(field => {
-          field.classList.toggle(
-            'disabled',
-            !settings.reasoningEnabled
-          )
-        })
-
       renderSamplingControls()
+      renderReasoningControls()
+      renderSafetyControls()
       renderVariableList()
 
       resizeTextarea(
@@ -10922,6 +11708,17 @@
           message.attachments || []
 
         attachments.forEach(attachment => {
+          if (isUrlAttachment(attachment)) {
+            if (!attachment.url) {
+              throw createApiError(
+                'attachment',
+                `URL của tệp “${attachment.name}” không còn khả dụng.`
+              )
+            }
+
+            return
+          }
+
           if (
             typeof attachment.base64 !== 'string'
           ) {
@@ -11177,10 +11974,10 @@
           { type: 'text/javascript' }
         )
 
-        const url = URL.createObjectURL(blob)
+        const url = window.URL.createObjectURL(blob)
         const worker = new Worker(url)
 
-        URL.revokeObjectURL(url)
+        window.URL.revokeObjectURL(url)
         return worker
       } catch {
         return null
@@ -13275,6 +14072,12 @@
           selectElement('#file-input').click()
         })
 
+      selectElement('#attach-url-button')
+        .addEventListener(
+          'click',
+          openAttachmentUrlDialog
+        )
+
       selectElement('#file-input')
         .addEventListener('change', event => {
           Array.from(event.target.files)
@@ -13299,6 +14102,52 @@
           }
         })
 
+      selectElement('#attachment-url-dialog-root')
+        .addEventListener('click', event => {
+          if (
+            event.target.closest(
+              '[data-close-attachment-url-dialog]'
+            )
+          ) {
+            closeAttachmentUrlDialog()
+          }
+        })
+
+      selectElement('.attachment-url-dialog')
+        .addEventListener('keydown', event => {
+          if (
+            attachmentUrlDialogOpen &&
+            event.key === 'Tab'
+          ) {
+            trapTabKey(
+              event,
+              selectElement(
+                '.attachment-url-dialog'
+              )
+            )
+          }
+
+          if (
+            event.key === 'Enter' &&
+            event.target.id === 'attachment-url'
+          ) {
+            event.preventDefault()
+            createUrlAttachment()
+          }
+        })
+
+      selectElement('#cancel-attachment-url-button')
+        .addEventListener(
+          'click',
+          closeAttachmentUrlDialog
+        )
+
+      selectElement('#add-attachment-url-button')
+        .addEventListener(
+          'click',
+          createUrlAttachment
+        )
+
       selectElement('#endpoint-select')
         .addEventListener('change', event => {
           setActiveEndpoint(event.target.value)
@@ -13308,7 +14157,7 @@
         .addEventListener('change', event => {
           state.modelId = event.target.value
           syncActiveConfiguration()
-          renderSamplingControls()
+          renderEndpointCapabilities()
           renderTopBar()
           scheduleStateSave()
         })
@@ -13356,15 +14205,30 @@
           input.addEventListener('input', event => {
             const raw = event.target.value.trim()
 
+            if (raw === '') {
+              state.settings[property] = null
+              scheduleStateSave()
+              return
+            }
+
+            const numericValue = Number(raw)
+
+            if (!Number.isFinite(numericValue)) {
+              state.settings[property] = null
+              scheduleStateSave()
+              return
+            }
+
+            const minimum =
+              Number.isFinite(Number(input.min))
+                ? Number(input.min)
+                : 1
+
             state.settings[property] =
-              raw === ''
-                ? null
-                : Math.max(
-                    1,
-                    Math.floor(
-                      Number(raw) || 1
-                    )
-                  )
+              Math.max(
+                minimum,
+                Math.floor(numericValue)
+              )
 
             scheduleStateSave()
           })
@@ -13780,6 +14644,8 @@
 
         if (modalState) {
           closeModal(null)
+        } else if (attachmentUrlDialogOpen) {
+          closeAttachmentUrlDialog()
         } else if (endpointDialogOpen) {
           closeEndpointDialog()
         } else {
