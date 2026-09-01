@@ -51,67 +51,69 @@
     :root {
       --font-mono: 'jetbrains mono', ui-monospace, monospace;
       --font-ui: 'be vietnam pro', sans-serif;
-      --radius: 8px;
-      --radius-small: 6px;
+      --radius: 4px;
+      --radius-small: 2px;
     }
 
     html[data-theme='light'] {
-      --accent: #c2491d;
-      --accent-ink: #fff6f0;
-      --accent-soft: rgba(194, 73, 29, 0.1);
-      --accent-strong: #a83d16;
-      --background: #f3f0e8;
-      --border: #ded6c3;
-      --border-soft: #e7e0d0;
-      --border-strong: #c4b998;
-      --code-background: #f6f2e7;
-      --dot: rgba(93, 104, 116, 0.14);
-      --error: #c23a35;
-      --error-soft: rgba(194, 58, 53, 0.1);
-      --faint: #8b93a0;
-      --gold: #96700f;
-      --gold-soft: rgba(150, 112, 15, 0.12);
-      --hover: #efe9db;
-      --muted: #5d6874;
-      --panel: #fffdf8;
-      --panel-secondary: #f7f3ea;
-      --reasoning-background: #f2f5f6;
-      --scrim: rgba(38, 32, 20, 0.4);
-      --shadow: 0 12px 30px rgba(60, 48, 30, 0.16);
-      --success: #1f7d52;
-      --system-background: rgba(150, 112, 15, 0.07);
-      --text: #232830;
-      --user-background: #f8f4ea;
+      --accent: #0080ff;
+      --accent-glow: rgba(0, 128, 255, 0.3);
+      --accent-ink: #ffffff;
+      --accent-soft: rgba(0, 128, 255, 0.12);
+      --accent-strong: #0066dd;
+      --background: #e9f0f7;
+      --border: #d5e1ec;
+      --border-soft: #e2ebf4;
+      --border-strong: #b4cbdd;
+      --code-background: #eef4fa;
+      --error: #d1342c;
+      --error-soft: rgba(209, 52, 44, 0.1);
+      --faint: #7f96ad;
+      --gold: #9a6d0a;
+      --gold-soft: rgba(154, 109, 10, 0.12);
+      --grid: rgba(60, 120, 180, 0.11);
+      --hover: #e2edf7;
+      --muted: #52687e;
+      --panel: #fbfdff;
+      --panel-secondary: #eef4fa;
+      --reasoning-background: #f1f6f2;
+      --scrim: rgba(10, 22, 36, 0.46);
+      --shadow: 0 12px 30px rgba(18, 62, 112, 0.16);
+      --success: #0e8a4f;
+      --system-background: rgba(154, 109, 10, 0.07);
+      --text: #101b27;
+      --user-background: #f0f7fe;
       color-scheme: light;
     }
 
     html[data-theme='dark'] {
-      --accent: #e0663a;
-      --accent-ink: #200d05;
-      --accent-soft: rgba(224, 102, 58, 0.14);
-      --accent-strong: #ef7d50;
-      --background: #0c0f13;
-      --border: #242c38;
-      --border-soft: #1c232e;
-      --border-strong: #334052;
-      --code-background: #0a0d11;
-      --dot: rgba(148, 161, 179, 0.13);
-      --error: #e25b52;
-      --error-soft: rgba(226, 91, 82, 0.12);
-      --faint: #64718a;
-      --gold: #d2a24c;
-      --gold-soft: rgba(210, 162, 76, 0.14);
-      --hover: #1d2430;
-      --muted: #94a1b3;
-      --panel: #12161d;
-      --panel-secondary: #181d26;
-      --reasoning-background: #111922;
-      --scrim: rgba(4, 6, 9, 0.58);
-      --shadow: 0 12px 32px rgba(0, 0, 0, 0.36);
-      --success: #43b280;
-      --system-background: rgba(210, 162, 76, 0.08);
-      --text: #e8ecf3;
-      --user-background: #161c26;
+      --accent: #00f070;
+      --accent-glow: rgba(0, 240, 112, 0.28);
+      --accent-ink: #02130a;
+      --accent-soft: rgba(0, 240, 112, 0.13);
+      --accent-strong: #4aff9e;
+      --background: #050b08;
+      --border: #1b2c21;
+      --border-soft: #14211a;
+      --border-strong: #2c4534;
+      --code-background: #071009;
+      --error: #ff5f56;
+      --error-soft: rgba(255, 95, 86, 0.12);
+      --faint: #5f8a70;
+      --gold: #f2b23e;
+      --gold-soft: rgba(242, 178, 62, 0.13);
+      --grid: rgba(110, 210, 155, 0.08);
+      --hover: #132418;
+      --muted: #8fb8a2;
+      --panel: #0a140e;
+      --panel-secondary: #0f1b13;
+      --reasoning-background: #0c1811;
+      --scrim: rgba(1, 8, 4, 0.62);
+      --shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+      --success: #2fd07a;
+      --system-background: rgba(242, 178, 62, 0.08);
+      --text: #def7e8;
+      --user-background: #0d1a12;
       color-scheme: dark;
     }
 
@@ -149,7 +151,7 @@
     }
 
     :focus-visible {
-      border-radius: 4px;
+      border-radius: 2px;
       outline: 2px solid var(--accent);
       outline-offset: 2px;
     }
@@ -321,12 +323,16 @@
       font-weight: 600;
       gap: 8px;
       min-height: 40px;
-      transition: background 0.15s ease, color 0.15s ease;
+      transition:
+        background 0.15s ease,
+        box-shadow 0.15s ease,
+        color 0.15s ease;
       width: 100%;
     }
 
     .new-conversation-button:hover {
       background: var(--accent);
+      box-shadow: 0 0 16px var(--accent-glow);
       color: var(--accent-ink);
     }
 
@@ -427,12 +433,14 @@
     .conversation-item.active {
       background: var(--accent-soft);
       border-color: var(--accent);
+      box-shadow: inset 0 0 14px var(--accent-soft);
     }
 
     .conversation-item.active::before {
       background: var(--accent);
-      border-radius: 2px;
+      border-radius: 1px;
       bottom: 8px;
+      box-shadow: 0 0 8px var(--accent-glow);
       content: '';
       left: 0;
       position: absolute;
@@ -533,6 +541,7 @@
 
     .status-dot-ready {
       background: var(--success);
+      box-shadow: 0 0 8px var(--success);
     }
 
     .status-dot-idle {
@@ -541,6 +550,7 @@
 
     .status-dot-offline {
       background: var(--error);
+      box-shadow: 0 0 8px var(--error-soft);
     }
 
     .main-panel {
@@ -552,10 +562,28 @@
 
     .top-bar {
       background: var(--panel);
-      border-bottom: 1px solid var(--border);
+      border-bottom: 1px solid var(--border-strong);
       flex-wrap: wrap;
       gap: 8px 10px;
       padding: 9px 14px;
+      position: relative;
+    }
+
+    .top-bar::after {
+      background: linear-gradient(
+        90deg,
+        transparent,
+        var(--accent),
+        transparent
+      );
+      bottom: -1px;
+      content: '';
+      height: 1px;
+      left: 20%;
+      opacity: 0.55;
+      pointer-events: none;
+      position: absolute;
+      right: 20%;
     }
 
     .top-bar-actions {
@@ -577,12 +605,15 @@
       transition:
         background 0.15s ease,
         border-color 0.15s ease,
+        box-shadow 0.15s ease,
         color 0.15s ease;
       width: 34px;
     }
 
     .icon-button[aria-expanded='true'] {
       background: var(--accent-soft);
+      border-color: var(--accent);
+      box-shadow: inset 0 0 12px var(--accent-soft);
       color: var(--accent-strong);
     }
 
@@ -635,17 +666,22 @@
     }
 
     .button {
+      align-items: center;
       background: var(--panel-secondary);
       border: 1px solid var(--border-strong);
       border-radius: var(--radius);
       color: var(--text);
       cursor: pointer;
+      display: inline-flex;
       font-size: 13px;
       font-weight: 600;
       gap: 7px;
+      justify-content: center;
       min-height: 36px;
       padding: 7px 14px;
-      transition: background 0.15s ease;
+      transition:
+        background 0.15s ease,
+        box-shadow 0.15s ease;
     }
 
     .button:hover {
@@ -667,6 +703,7 @@
 
     .button-accent:hover {
       background: var(--accent-strong);
+      box-shadow: 0 0 14px var(--accent-glow);
     }
 
     .button-danger {
@@ -711,6 +748,7 @@
 
     .status-badge-ready {
       border-color: var(--success);
+      box-shadow: inset 0 0 10px color-mix(in srgb, var(--success) 10%, transparent);
       color: var(--success);
     }
 
@@ -740,7 +778,10 @@
     }
 
     .chat-scroll-area {
-      background-image: radial-gradient(circle, var(--dot) 1px, transparent 1px);
+      background-color: var(--background);
+      background-image:
+        linear-gradient(var(--grid) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid) 1px, transparent 1px);
       background-size: 26px 26px;
       flex: 1;
       min-height: 0;
@@ -764,11 +805,11 @@
 
     .scroll-bottom-button {
       background: var(--panel);
-      border: 1px solid var(--border-strong);
+      border: 1px solid var(--accent);
       border-radius: 50%;
       bottom: 132px;
-      box-shadow: var(--shadow);
-      color: var(--muted);
+      box-shadow: var(--shadow), 0 0 12px var(--accent-glow);
+      color: var(--accent-strong);
       cursor: pointer;
       height: 36px;
       left: 50%;
@@ -806,13 +847,14 @@
 
     .avatar-assistant {
       background: var(--accent-soft);
-      border-color: transparent;
+      border-color: var(--accent);
+      box-shadow: inset 0 0 10px var(--accent-soft);
       color: var(--accent-strong);
     }
 
     .avatar-instruction {
       background: var(--gold-soft);
-      border-color: transparent;
+      border-color: var(--gold);
       color: var(--gold);
     }
 
@@ -1187,6 +1229,7 @@
       animation: pulse 1.2s infinite ease-in-out;
       background: var(--accent);
       border-radius: 50%;
+      box-shadow: 0 0 8px var(--accent-glow);
       height: 7px;
       width: 7px;
     }
@@ -1202,6 +1245,7 @@
     .stream-cursor {
       animation: blink 1s steps(2) infinite;
       background: var(--accent);
+      box-shadow: 0 0 8px var(--accent-glow);
       display: inline-block;
       height: 15px;
       margin-left: 3px;
@@ -1308,7 +1352,7 @@
     .markdown code {
       background: var(--panel-secondary);
       border: 1px solid var(--border-soft);
-      border-radius: 4px;
+      border-radius: 2px;
       font: 0.88em var(--font-mono);
       padding: 1px 5px;
     }
@@ -1400,8 +1444,11 @@
     }
 
     .welcome-mark {
-      border: 1px solid var(--border);
+      border: 1px solid var(--accent);
       border-radius: var(--radius);
+      box-shadow:
+        inset 0 0 16px var(--accent-soft),
+        0 0 16px var(--accent-glow);
       height: 52px;
       margin-bottom: 16px;
       overflow: hidden;
@@ -1438,11 +1485,15 @@
       cursor: pointer;
       padding: 12px 14px;
       text-align: left;
-      transition: border-color 0.15s ease, transform 0.15s ease;
+      transition:
+        border-color 0.15s ease,
+        box-shadow 0.15s ease,
+        transform 0.15s ease;
     }
 
     .suggestion-card:hover {
       border-color: var(--accent);
+      box-shadow: 0 0 16px var(--accent-soft);
       transform: translateY(-1px);
     }
 
@@ -1511,9 +1562,9 @@
     }
 
     .add-role-button:hover {
-      background: var(--hover);
-      border-color: var(--border-strong);
-      color: var(--text);
+      background: var(--accent-soft);
+      border-color: var(--accent);
+      color: var(--accent-strong);
     }
 
     .attachment-list {
@@ -1540,7 +1591,7 @@
     }
 
     .attachment-chip img {
-      border-radius: 4px;
+      border-radius: 2px;
       height: 26px;
       object-fit: cover;
       width: 26px;
@@ -1577,12 +1628,16 @@
       background: var(--panel);
       border: 1px solid var(--border-strong);
       border-radius: var(--radius);
-      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+      transition:
+        border-color 0.15s ease,
+        box-shadow 0.15s ease;
     }
 
     .composer-box:focus-within {
       border-color: var(--accent);
-      box-shadow: 0 0 0 3px var(--accent-soft);
+      box-shadow:
+        0 0 0 3px var(--accent-soft),
+        0 0 20px var(--accent-glow);
     }
 
     .composer-box textarea {
@@ -1644,26 +1699,33 @@
       background: var(--accent);
       border: 0;
       border-radius: var(--radius);
+      box-shadow: 0 0 10px var(--accent-soft);
       color: var(--accent-ink);
       cursor: pointer;
       flex: none;
       height: 40px;
-      transition: background 0.15s ease, color 0.15s ease;
+      transition:
+        background 0.15s ease,
+        box-shadow 0.15s ease,
+        color 0.15s ease;
       width: 40px;
     }
 
     .send-button:hover:not(:disabled) {
       background: var(--accent-strong);
+      box-shadow: 0 0 18px var(--accent-glow);
     }
 
     .stop-generation-button {
       background: var(--error-soft);
       border: 1px solid var(--error);
+      box-shadow: none;
       color: var(--error);
     }
 
     .stop-generation-button:hover:not(:disabled) {
       background: var(--error);
+      box-shadow: 0 0 14px var(--error-soft);
       color: #fff;
     }
 
@@ -1875,13 +1937,16 @@
       left: 2px;
       position: absolute;
       top: 2px;
-      transition: background 0.15s ease, transform 0.15s ease;
+      transition:
+        background 0.15s ease,
+        transform 0.15s ease;
       width: 16px;
     }
 
     .toggle[aria-checked='true'] {
       background: var(--accent);
       border-color: var(--accent);
+      box-shadow: 0 0 10px var(--accent-glow);
     }
 
     .toggle[aria-checked='true'] .toggle-knob {
@@ -2008,7 +2073,9 @@
     .toast.leaving {
       opacity: 0;
       transform: translateY(-6px);
-      transition: opacity 0.2s ease, transform 0.2s ease;
+      transition:
+        opacity 0.2s ease,
+        transform 0.2s ease;
     }
 
     @keyframes toast-in {
@@ -2124,6 +2191,7 @@
     .endpoint-card.active {
       background: var(--accent-soft);
       border-color: var(--accent);
+      box-shadow: inset 0 0 16px var(--accent-soft);
     }
 
     .endpoint-select-button {
@@ -5378,7 +5446,7 @@
           }
 
           if (context.settings.maxTokens != null) {
-            body.max_tokens =
+            body.max_completion_tokens =
               context.settings.maxTokens
           }
 
