@@ -2789,7 +2789,7 @@
   <div class="app-shell">
     <aside
       class="sidebar"
-      id="sidebar"
+      id="sidebar-panel"
       aria-label="Lịch sử trò chuyện"
     >
       <div class="sidebar-inner">
@@ -2876,7 +2876,7 @@
           class="icon-button"
           id="sidebar-toggle-button"
           data-icon="panel-left"
-          aria-controls="sidebar"
+          aria-controls="sidebar-panel"
           aria-expanded="true"
           aria-label="Thu gọn lịch sử trò chuyện"
         ></button>
@@ -2906,7 +2906,7 @@
             class="icon-button"
             id="settings-toggle-button"
             data-icon="sliders"
-            aria-controls="settings"
+            aria-controls="settings-panel"
             aria-expanded="true"
             aria-label="Thu gọn bảng cấu hình"
           ></button>
@@ -3039,7 +3039,7 @@
 
     <aside
       class="settings"
-      id="settings"
+      id="settings-panel"
       aria-label="Cấu hình yêu cầu API"
     >
       <div class="settings-inner">
@@ -3823,7 +3823,7 @@
     multiple
     hidden
     aria-label="Chọn tệp đính kèm"
-    accept="image/png,image/jpeg,image/webp,image/gif,application/pdf,application/json,application/x-ndjson,application/yaml,application/x-yaml,application/rtf,text/*,.png,.jpg,.jpeg,.webp,.gif,.pdf,.txt,.md,.csv,.json,.jsonl,.html,.css,.js,.mjs,.jsx,.ts,.tsx,.py,.xml,.yaml,.yml,.toml,.ini,.sql,.sh,.c,.cpp,.h,.go,.java,.rs,.php,.rb,.swift,.vue,.svelte"
+    accept="image/png,image/jpeg,image/webp,image/gif,application/pdf,application/json,application/x-ndjson,application/yaml,application/x-yaml,application/rtf,text/*,.png,.jpg,.jpeg,.webp,.gif,.pdf,.txt,.md,.csv,.json,.jsonl,.html,.css,.js,.cjs,.mjs,.jsx,.ts,.tsx,.py,.xml,.yaml,.yml,.toml,.ini,.sql,.sh,.c,.cpp,.h,.go,.java,.rs,.php,.rb,.swift,.vue,.svelte"
   >
 
   <noscript>
@@ -3840,41 +3840,41 @@
     const selectElements = selector =>
       Array.from(document.querySelectorAll(selector))
 
-    const STORAGE_PREFIX = 'ai-workbench'
-    const DEFAULT_ACCENT = '#00f6ff'
-    const MAXIMUM_FILES = 4
-    const MAXIMUM_FILE_SIZE = 5 * 1024 * 1024
-    const TOOL_PAYLOAD_LIMIT = 12000
-    const MESSAGE_BLOCK_SEPARATOR = '\n\n'
-    const UTF8_DECODER = new TextDecoder()
-    const UTF8_ENCODER = new TextEncoder()
-    const VI_DATE_FORMATTER =
+    const storagePrefix = 'ai-workbench'
+    const defaultAccent = '#00f6ff'
+    const maximumFiles = 4
+    const maximumFileSize = 5 * 1024 * 1024
+    const toolPayloadLimit = 12000
+    const messageBlockSeparator = '\n\n'
+    const utf8Decoder = new TextDecoder()
+    const utf8Encoder = new TextEncoder()
+    const viDateFormatter =
       new Intl.DateTimeFormat('vi-VN')
 
-    const APP_ICON_DATA_URI =
+    const appIconDataUri =
       "data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3e%3cg fill='none' stroke='%23000' stroke-width='7' stroke-linecap='round' stroke-linejoin='round'%3e%3cpath d='M8 32 21 17l11 15-11 15L8 32Z'/%3e%3cpath d='m32 32 11-15 13 15-13 15-11-15Z'/%3e%3c/g%3e%3cg fill='%23000'%3e%3ccircle cx='8' cy='32' r='6'/%3e%3ccircle cx='21' cy='17' r='6'/%3e%3ccircle cx='32' cy='32' r='6'/%3e%3ccircle cx='21' cy='47' r='6'/%3e%3ccircle cx='43' cy='17' r='6'/%3e%3ccircle cx='56' cy='32' r='6'/%3e%3ccircle cx='43' cy='47' r='6'/%3e%3c/g%3e%3c/svg%3e"
 
-    const STORAGE_KEYS = {
+    const storageKeys = {
       activeConversationId:
-        STORAGE_PREFIX + '.activeConversationId',
+        storagePrefix + '.activeConversationId',
       conversations:
-        STORAGE_PREFIX + '.conversations',
+        storagePrefix + '.conversations',
       endpoints:
-        STORAGE_PREFIX + '.endpoints',
+        storagePrefix + '.endpoints',
       ui:
-        STORAGE_PREFIX + '.ui',
+        storagePrefix + '.ui',
       workspaceConfiguration:
-        STORAGE_PREFIX + '.workspaceConfiguration'
+        storagePrefix + '.workspaceConfiguration'
     }
 
-    const MESSAGE_ROLES = [
+    const messageRoles = [
       'system',
       'developer',
       'user',
       'assistant'
     ]
 
-    const FORMAT_ORDER = [
+    const formatOrder = [
       'chat-completions',
       'messages',
       'generate-content',
@@ -3882,14 +3882,14 @@
       'interactions'
     ]
 
-    const IMAGE_MIME_TYPES = [
+    const imageMimeTypes = [
       'image/gif',
       'image/jpeg',
       'image/png',
       'image/webp'
     ]
 
-    const SAFETY_THRESHOLDS = [
+    const safetyThresholds = [
       'off',
       'block-none',
       'block-only-high',
@@ -3897,7 +3897,7 @@
       'block-low-and-above'
     ]
 
-    const SAFETY_THRESHOLD_OPTIONS = [
+    const safetyThresholdOptions = [
       {
         label: 'Mặc định',
         value: ''
@@ -3924,7 +3924,7 @@
       }
     ]
 
-    const SAFETY_SETTING_DEFINITIONS = [
+    const safetySettingDefinitions = [
       {
         category: 'HARM_CATEGORY_HARASSMENT',
         id: 'harassment',
@@ -3957,7 +3957,7 @@
       }
     ]
 
-    const ACTIVE_TOOL_STATUSES = [
+    const activeToolStatuses = [
       'preparing',
       'queued',
       'running',
@@ -3966,7 +3966,7 @@
       'generating'
     ]
 
-    const TOOL_STATUS_LABELS = {
+    const toolStatusLabels = {
       completed: 'Hoàn tất',
       failed: 'Thất bại',
       generating: 'Đang tạo',
@@ -3978,7 +3978,7 @@
       waiting: 'Chờ xử lí'
     }
 
-    const TOOL_TYPE_LABELS = {
+    const toolTypeLabels = {
       apply_patch_call: 'Áp dụng bản vá',
       code_execution_call: 'Thực thi mã',
       code_interpreter_call: 'Thông dịch mã',
@@ -4023,7 +4023,7 @@
       stoppedNote: 'Đã dừng theo yêu cầu'
     }
 
-    const ICON_PATHS = {
+    const iconPaths = {
       alert:
         '<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14a2 2 0 0 0 1.74 3h16a2 2 0 0 0 1.73-3z"/><path d="m12 9v4"/><path d="m12 17h.01"/>',
       'arrow-down':
@@ -4076,7 +4076,7 @@
         '<path d="m18 6-12 12"/><path d="m6 6 12 12"/>'
     }
 
-    const FILE_TYPE_BY_EXTENSION = {
+    const fileTypeByExtension = {
       '.c': 'text/x-c',
       '.cjs': 'text/javascript',
       '.cpp': 'text/x-c++',
@@ -4086,6 +4086,7 @@
       '.go': 'text/x-go',
       '.h': 'text/x-c',
       '.html': 'text/html',
+      '.ini': 'text/plain',
       '.java': 'text/x-java',
       '.jpeg': 'image/jpeg',
       '.jpg': 'image/jpeg',
@@ -4101,9 +4102,11 @@
       '.py': 'text/x-python',
       '.rb': 'text/x-ruby',
       '.rs': 'text/x-rust',
+      '.rtf': 'application/rtf',
       '.sh': 'text/x-shellscript',
       '.sql': 'text/x-sql',
       '.svelte': 'text/plain',
+      '.swift': 'text/x-swift',
       '.toml': 'text/plain',
       '.ts': 'text/x-typescript',
       '.tsx': 'text/tsx',
@@ -4119,13 +4122,13 @@
       const className =
         'icon' + (extraClass ? ' ' + extraClass : '')
 
-      return `<svg class="${className}" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" preserveAspectRatio="xMidYMid meet" aria-hidden="true">${ICON_PATHS[name] || ''}</svg>`
+      return `<svg class="${className}" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" preserveAspectRatio="xMidYMid meet" aria-hidden="true">${iconPaths[name] || ''}</svg>`
     }
 
     function createAppIconHtml () {
       return (
         '<img class="app-icon-image" src="' +
-        APP_ICON_DATA_URI +
+        appIconDataUri +
         '" alt="">'
       )
     }
@@ -4238,9 +4241,9 @@
         )
       }
 
-      if (source === 'blue') return DEFAULT_ACCENT
+      if (source === 'blue') return defaultAccent
       if (source === 'green') return '#39ff88'
-      return DEFAULT_ACCENT
+      return defaultAccent
     }
 
     function hexToRgb (color) {
@@ -4355,7 +4358,7 @@
       const hours = Math.floor(minutes / 60)
 
       if (hours < 24) return hours + ' giờ trước'
-      return VI_DATE_FORMATTER.format(timestamp)
+      return viDateFormatter.format(timestamp)
     }
 
     function formatBytes (bytes) {
@@ -4395,7 +4398,7 @@
 
     function encodeTextBase64 (value) {
       return bytesToBase64(
-        UTF8_ENCODER.encode(String(value))
+        utf8Encoder.encode(String(value))
       )
     }
 
@@ -4407,7 +4410,7 @@
           character => character.charCodeAt(0)
         )
 
-        return UTF8_DECODER.decode(bytes)
+        return utf8Decoder.decode(bytes)
       } catch {
         return ''
       }
@@ -4439,7 +4442,7 @@
 
     function joinTextBlocks (blocks) {
       return blocks.filter(Boolean).join(
-        MESSAGE_BLOCK_SEPARATOR
+        messageBlockSeparator
       )
     }
 
@@ -4524,7 +4527,7 @@
     function createDefaultSafetySettings () {
       const output = {}
 
-      SAFETY_SETTING_DEFINITIONS.forEach(
+      safetySettingDefinitions.forEach(
         definition => {
           output[definition.key] = null
         }
@@ -4559,7 +4562,7 @@
     }
 
     function sanitizeSafetyThreshold (value) {
-      return SAFETY_THRESHOLDS.includes(value)
+      return safetyThresholds.includes(value)
         ? value
         : null
     }
@@ -4743,7 +4746,7 @@
           ? raw.safetySettings
           : {}
 
-      SAFETY_SETTING_DEFINITIONS.forEach(
+      safetySettingDefinitions.forEach(
         definition => {
           settings.safetySettings[definition.key] =
             sanitizeSafetyThreshold(
@@ -4799,7 +4802,7 @@
 
     function normalizeToolStatus (status) {
       return Object.prototype.hasOwnProperty.call(
-        TOOL_STATUS_LABELS,
+        toolStatusLabels,
         status
       )
         ? status
@@ -4807,8 +4810,8 @@
     }
 
     function humanizeToolType (type) {
-      if (TOOL_TYPE_LABELS[type]) {
-        return TOOL_TYPE_LABELS[type]
+      if (toolTypeLabels[type]) {
+        return toolTypeLabels[type]
       }
 
       return String(type || 'Công cụ')
@@ -4821,7 +4824,7 @@
     function limitText (value, maximumLength) {
       const text = String(value || '')
       const maximum =
-        maximumLength || TOOL_PAYLOAD_LIMIT
+        maximumLength || toolPayloadLimit
 
       if (text.length <= maximum) return text
 
@@ -5129,7 +5132,7 @@
       blocks.forEach(block => {
         if (
           block.type !== 'tool' ||
-          !ACTIVE_TOOL_STATUSES.includes(
+          !activeToolStatuses.includes(
             block.status
           )
         ) {
@@ -5296,7 +5299,7 @@
       if (
         !message ||
         typeof message !== 'object' ||
-        !MESSAGE_ROLES.includes(message.role)
+        !messageRoles.includes(message.role)
       ) {
         return null
       }
@@ -5322,7 +5325,7 @@
           message.attachments
             .map(sanitizeAttachment)
             .filter(Boolean)
-            .slice(0, MAXIMUM_FILES)
+            .slice(0, maximumFiles)
       }
 
       if (message.role !== 'assistant') {
@@ -5531,7 +5534,7 @@
       if (
         !endpoint ||
         typeof endpoint !== 'object' ||
-        !FORMAT_ORDER.includes(endpoint.format)
+        !formatOrder.includes(endpoint.format)
       ) {
         return null
       }
@@ -5593,7 +5596,13 @@
     }
 
     function readStorageJson (key) {
-      const source = window.localStorage.getItem(key)
+      let source
+
+      try {
+        source = window.localStorage.getItem(key)
+      } catch {
+        return null
+      }
 
       if (source == null) return null
 
@@ -5609,50 +5618,50 @@
         return {
           activeConversationId:
             readStorageJson(
-              STORAGE_KEYS.activeConversationId
+              storageKeys.activeConversationId
             ),
           conversations:
             readStorageJson(
-              STORAGE_KEYS.conversations
+              storageKeys.conversations
             ),
           endpoints:
             readStorageJson(
-              STORAGE_KEYS.endpoints
+              storageKeys.endpoints
             ),
           ui:
-            readStorageJson(STORAGE_KEYS.ui),
+            readStorageJson(storageKeys.ui),
           workspaceConfiguration:
             readStorageJson(
-              STORAGE_KEYS.workspaceConfiguration
+              storageKeys.workspaceConfiguration
             )
         }
       },
 
       save (snapshot) {
         window.localStorage.setItem(
-          STORAGE_KEYS.activeConversationId,
+          storageKeys.activeConversationId,
           JSON.stringify(
             snapshot.activeConversationId
           )
         )
 
         window.localStorage.setItem(
-          STORAGE_KEYS.conversations,
+          storageKeys.conversations,
           JSON.stringify(snapshot.conversations)
         )
 
         window.localStorage.setItem(
-          STORAGE_KEYS.endpoints,
+          storageKeys.endpoints,
           JSON.stringify(snapshot.endpoints)
         )
 
         window.localStorage.setItem(
-          STORAGE_KEYS.ui,
+          storageKeys.ui,
           JSON.stringify(snapshot.ui)
         )
 
         window.localStorage.setItem(
-          STORAGE_KEYS.workspaceConfiguration,
+          storageKeys.workspaceConfiguration,
           JSON.stringify(
             snapshot.workspaceConfiguration
           )
@@ -5699,7 +5708,7 @@
             loadedSnapshot.ui &&
             loadedSnapshot.ui.accent
               ? loadedSnapshot.ui.accent
-              : DEFAULT_ACCENT
+              : defaultAccent
           ),
         settingsOpen:
           !loadedSnapshot.ui ||
@@ -6090,7 +6099,7 @@
     }
 
     function inferMimeTypeFromName (name) {
-      return FILE_TYPE_BY_EXTENSION[
+      return fileTypeByExtension[
         getFileExtension(name)
       ] || ''
     }
@@ -6114,8 +6123,8 @@
     function normalizeFileType (file) {
       const extension = getFileExtension(file.name)
 
-      if (FILE_TYPE_BY_EXTENSION[extension]) {
-        return FILE_TYPE_BY_EXTENSION[extension]
+      if (fileTypeByExtension[extension]) {
+        return fileTypeByExtension[extension]
       }
 
       const type = normalizeMimeType(file.type)
@@ -6152,7 +6161,7 @@
         attachment &&
         (
           attachment.kind === 'image' ||
-          IMAGE_MIME_TYPES.includes(
+          imageMimeTypes.includes(
             attachment.type || ''
           ) ||
           /^image\//.test(attachment.type || '')
@@ -6183,7 +6192,7 @@
 
     function isSupportedAttachmentType (type) {
       return (
-        IMAGE_MIME_TYPES.includes(type) ||
+        imageMimeTypes.includes(type) ||
         type === 'application/pdf' ||
         isTextMimeType(type)
       )
@@ -6398,7 +6407,7 @@
     function getGenerateContentSafetySettings (
       safetySettings
     ) {
-      return SAFETY_SETTING_DEFINITIONS
+      return safetySettingDefinitions
         .map(definition => {
           const threshold =
             safetySettings &&
@@ -6570,7 +6579,7 @@
       return {
         messages,
         system: systemParts.join(
-          MESSAGE_BLOCK_SEPARATOR
+          messageBlockSeparator
         )
       }
     }
@@ -6642,7 +6651,7 @@
       return {
         contents,
         system: systemParts.join(
-          MESSAGE_BLOCK_SEPARATOR
+          messageBlockSeparator
         )
       }
     }
@@ -6708,7 +6717,7 @@
       }
     }
 
-    const API_FORMATS = {
+    const apiFormats = {
       'chat-completions': {
         label: 'Chat Completions',
         presetBase:
@@ -7256,7 +7265,7 @@
           if (systemParts.length) {
             body.system_instruction =
               systemParts.join(
-                MESSAGE_BLOCK_SEPARATOR
+                messageBlockSeparator
               )
           }
 
@@ -9999,7 +10008,7 @@
       if (status === 'completed') return 'completed'
       if (status === 'failed') return 'failed'
 
-      if (ACTIVE_TOOL_STATUSES.includes(status)) {
+      if (activeToolStatuses.includes(status)) {
         return 'active'
       }
 
@@ -10082,8 +10091,8 @@
         getToolStatusClass(tool.status)
 
       const stateLabel =
-        TOOL_STATUS_LABELS[tool.status] ||
-        TOOL_STATUS_LABELS.running
+        toolStatusLabels[tool.status] ||
+        toolStatusLabels.running
 
       const open =
         message.status === 'streaming' ||
@@ -10320,7 +10329,7 @@
 
     function createMessageEditorHtml (message) {
       const roleOptions =
-        MESSAGE_ROLES.map(role => {
+        messageRoles.map(role => {
           return `<option value="${role}"${message.role === role ? ' selected' : ''}>${role}</option>`
         }).join('')
 
@@ -10694,7 +10703,7 @@
       status.title =
         endpoint.name +
         ' · ' +
-        API_FORMATS[endpoint.format].label +
+        apiFormats[endpoint.format].label +
         (
           activeConfiguration.modelId
             ? ' · ' +
@@ -11017,10 +11026,10 @@
         selectElement('#safety-settings-list')
 
       list.innerHTML =
-        SAFETY_SETTING_DEFINITIONS
+        safetySettingDefinitions
           .map(definition => {
             const options =
-              SAFETY_THRESHOLD_OPTIONS
+              safetyThresholdOptions
                 .map(option => {
                   return `<option value="${option.value}">${option.label}</option>`
                 })
@@ -11052,7 +11061,7 @@
       const supported =
         supportsSafetySettings(endpoint)
 
-      SAFETY_SETTING_DEFINITIONS.forEach(
+      safetySettingDefinitions.forEach(
         definition => {
           const select =
             selectElement(
@@ -11261,7 +11270,7 @@
       selectElement('#tools-json').value =
         settings.toolsJson
 
-      SAFETY_SETTING_DEFINITIONS.forEach(
+      safetySettingDefinitions.forEach(
         definition => {
           selectElement(
             '#safety-' + definition.id
@@ -11343,7 +11352,7 @@
           : []
 
         const request =
-          API_FORMATS[endpoint.format].build({
+          apiFormats[endpoint.format].build({
             apiKey: endpoint.apiKey,
             base: endpoint.baseUrl,
             messages,
@@ -11756,11 +11765,6 @@
           )
         )
 
-      const hasMessages = Boolean(
-        conversation &&
-        conversation.messages.length
-      )
-
       const hasInput = Boolean(
         state.messageDraft.trim() ||
         state.attachments.length
@@ -11789,7 +11793,7 @@
         !generating &&
         (
           state.pendingAttachmentReads > 0 ||
-          (!hasMessages && !hasInput)
+          !hasInput
         )
 
       selectElement(
@@ -11869,7 +11873,7 @@
       if (
         state.attachments.length +
         state.pendingAttachmentReads >=
-        MAXIMUM_FILES
+        maximumFiles
       ) {
         showToast(
           'Chỉ được đính kèm tối đa 4 tệp.',
@@ -11888,7 +11892,7 @@
         return
       }
 
-      if (file.size > MAXIMUM_FILE_SIZE) {
+      if (file.size > maximumFileSize) {
         showToast(
           `“${file.name}” vượt quá 5 MB.`,
           'error'
@@ -11923,7 +11927,7 @@
           sourceType: 'upload',
           text:
             isTextMimeType(type)
-              ? UTF8_DECODER.decode(buffer)
+              ? utf8Decoder.decode(buffer)
               : null,
           type,
           url: dataUrl
@@ -11963,7 +11967,7 @@
       if (
         state.attachments.length +
         state.pendingAttachmentReads >=
-        MAXIMUM_FILES
+        maximumFiles
       ) {
         showToast(
           'Chỉ được đính kèm tối đa 4 tệp.',
@@ -12011,7 +12015,7 @@
       if (
         state.attachments.length +
         state.pendingAttachmentReads >=
-        MAXIMUM_FILES
+        maximumFiles
       ) {
         showToast(
           'Chỉ được đính kèm tối đa 4 tệp.',
@@ -12197,7 +12201,7 @@
         createdAt: Date.now(),
         id: createUniqueId(),
         role:
-          MESSAGE_ROLES.includes(role)
+          messageRoles.includes(role)
             ? role
             : 'user'
       }
@@ -12254,7 +12258,7 @@
       }
 
       const nextRole =
-        MESSAGE_ROLES.includes(roleSelect.value)
+        messageRoles.includes(roleSelect.value)
           ? roleSelect.value
           : message.role
 
@@ -12269,13 +12273,26 @@
           message.outputBlocks = []
         }
 
-        const nonTextBlocks =
-          getMessageBlocks(message).filter(block => {
-            return block.type !== 'text'
-          })
+        const outputBlocks = []
+        let textBlockAdded = false
 
-        if (content) {
-          nonTextBlocks.push(
+        getMessageBlocks(message).forEach(block => {
+          if (block.type !== 'text') {
+            outputBlocks.push(block)
+            return
+          }
+
+          if (!textBlockAdded && content) {
+            outputBlocks.push(
+              createTextBlock(block.id, content)
+            )
+
+            textBlockAdded = true
+          }
+        })
+
+        if (!textBlockAdded && content) {
+          outputBlocks.push(
             createTextBlock(
               message.id + ':edited-text',
               content
@@ -12283,7 +12300,7 @@
           )
         }
 
-        message.outputBlocks = nonTextBlocks
+        message.outputBlocks = outputBlocks
         message.showReasoning =
           message.showReasoning !== false
         message.status = 'complete'
@@ -12549,7 +12566,7 @@
         validateAttachmentData(messages)
 
         const format =
-          API_FORMATS[endpoint.format]
+          apiFormats[endpoint.format]
 
         const request = format.build({
           apiKey: endpoint.apiKey,
@@ -12927,7 +12944,7 @@
               <button type="button" class="endpoint-select-button" data-select-endpoint="${endpoint.id}"${active ? ' aria-current="true"' : ''}>
                 <span class="endpoint-card-header">
                   <strong>${escapeHtml(endpoint.name)}</strong>
-                  <span class="status-badge format-badge">${escapeHtml(API_FORMATS[endpoint.format].label)}</span>
+                  <span class="status-badge format-badge">${escapeHtml(apiFormats[endpoint.format].label)}</span>
                 </span>
                 <span class="endpoint-url monospace">${escapeHtml(endpoint.baseUrl)}</span>
                 <span class="endpoint-meta">${metadata.join(' · ')}</span>
@@ -13093,8 +13110,8 @@
         selectElement('#endpoint-format')
 
       formatSelect.innerHTML =
-        FORMAT_ORDER.map(format => {
-          return `<option value="${format}">${escapeHtml(API_FORMATS[format].label)}</option>`
+        formatOrder.map(format => {
+          return `<option value="${format}">${escapeHtml(apiFormats[format].label)}</option>`
         }).join('')
 
       formatSelect.value = endpoint
@@ -13105,7 +13122,7 @@
         '#endpoint-base-url'
       ).value = endpoint
         ? endpoint.baseUrl
-        : API_FORMATS['chat-completions']
+        : apiFormats['chat-completions']
             .presetBase
 
       const apiKeyInput =
@@ -13141,7 +13158,7 @@
 
     function updateEndpointUrlPreview () {
       const format =
-        API_FORMATS[
+        apiFormats[
           selectElement('#endpoint-format').value
         ]
 
@@ -13363,11 +13380,11 @@
         mobileLayoutMediaQuery.matches
 
       const sidebarExpanded = mobile
-        ? state.openDrawerSelector === '#sidebar'
+        ? state.openDrawerSelector === '#sidebar-panel'
         : state.ui.sidebarOpen
 
       const settingsExpanded = mobile
-        ? state.openDrawerSelector === '#settings'
+        ? state.openDrawerSelector === '#settings-panel'
         : state.ui.settingsOpen
 
       const sidebarButton =
@@ -13402,13 +13419,13 @@
     }
 
     function applyDesktopPanels () {
-      selectElement('#sidebar')
+      selectElement('#sidebar-panel')
         .classList.toggle(
           'closed',
           !state.ui.sidebarOpen
         )
 
-      selectElement('#settings')
+      selectElement('#settings-panel')
         .classList.toggle(
           'closed',
           !state.ui.settingsOpen
@@ -13449,12 +13466,12 @@
     function toggleSidebar () {
       if (mobileLayoutMediaQuery.matches) {
         if (
-          state.openDrawerSelector === '#sidebar'
+          state.openDrawerSelector === '#sidebar-panel'
         ) {
           closeDrawers()
         } else {
           closeDrawers()
-          openDrawer('#sidebar')
+          openDrawer('#sidebar-panel')
         }
 
         return
@@ -13470,12 +13487,12 @@
     function toggleSettings () {
       if (mobileLayoutMediaQuery.matches) {
         if (
-          state.openDrawerSelector === '#settings'
+          state.openDrawerSelector === '#settings-panel'
         ) {
           closeDrawers()
         } else {
           closeDrawers()
-          openDrawer('#settings')
+          openDrawer('#settings-panel')
         }
 
         return
@@ -14477,7 +14494,7 @@
       selectElement('#endpoint-format')
         .addEventListener('change', () => {
           const format =
-            API_FORMATS[
+            apiFormats[
               selectElement(
                 '#endpoint-format'
               ).value
