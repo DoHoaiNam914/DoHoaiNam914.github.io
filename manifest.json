@@ -5,7 +5,6 @@
   "dir": "ltr",
   "start_url": "./ai-workbench.html",
   "scope": "./",
-  "display": "standalone",
   "orientation": "any",
   "background_color": "#020508",
   "theme_color": "#05080d",
