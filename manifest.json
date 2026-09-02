@@ -1,9 +1,9 @@
 {
-  "id": "./ai-benchmark.html",
+  "id": "./ai-workbench.html",
   "name": "AI Workbench",
   "lang": "vi",
   "dir": "ltr",
-  "start_url": "./ai-benchmark.html",
+  "start_url": "./ai-workbench.html",
   "scope": "./",
   "display": "standalone",
   "orientation": "any",
