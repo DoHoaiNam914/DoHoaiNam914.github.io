@@ -4,10 +4,11 @@
   <meta charset="utf-8">
   <meta
     name="viewport"
-    content="width=device-width, initial-scale=1, viewport-fit=cover"
+    content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
   >
   <meta name="theme-color" content="#05080d">
   <title>AI Workbench</title>
+  <link rel="manifest" href="manifest.json">
 
   <link
     rel="icon"
@@ -3480,8 +3481,6 @@
 
     const STORAGE_PREFIX = 'ai-workbench'
     const DEFAULT_ACCENT_COLOR = '#00f6ff'
-    const MAXIMUM_ATTACHMENT_COUNT = 4
-    const MAXIMUM_ATTACHMENT_SIZE = 5 * 1024 * 1024
     const BLOCK_SEPARATOR = '\n\n'
     const utf8TextDecoder = new window.TextDecoder()
     const utf8TextEncoder = new window.TextEncoder()
@@ -3557,14 +3556,6 @@
         label: 'Jailbreak'
       }
     ]
-
-    const LEGACY_SAFETY_KEYS = {
-      HARM_CATEGORY_DANGEROUS_CONTENT: 'dangerousContent',
-      HARM_CATEGORY_HARASSMENT: 'harassment',
-      HARM_CATEGORY_HATE_SPEECH: 'hateSpeech',
-      HARM_CATEGORY_JAILBREAK: 'jailbreak',
-      HARM_CATEGORY_SEXUALLY_EXPLICIT: 'sexuallyExplicit'
-    }
 
     const ACTIVE_TOOL_STATUSES = [
       'preparing',
@@ -4067,46 +4058,6 @@
         .replace(/_/g, '-')
     }
 
-    function migrateSnapshot (snapshot) {
-      const configurations = []
-
-      if (snapshot.workspaceConfiguration) {
-        configurations.push(snapshot.workspaceConfiguration)
-      }
-
-      if (Array.isArray(snapshot.conversations)) {
-        snapshot.conversations.forEach(conversation => {
-          if (conversation && conversation.configuration) {
-            configurations.push(conversation.configuration)
-          }
-        })
-      }
-
-      configurations.forEach(configuration => {
-        const settings = configuration && configuration.settings
-        const storedSettings = settings && settings.safetySettings
-
-        if (!storedSettings || typeof storedSettings !== 'object') return
-
-        const migratedSettings = {}
-
-        SAFETY_DEFINITIONS.forEach(definition => {
-          const legacyKey = LEGACY_SAFETY_KEYS[definition.category]
-
-          migratedSettings[definition.category] =
-            storedSettings[definition.category] != null
-              ? storedSettings[definition.category]
-              : storedSettings[legacyKey] != null
-                ? storedSettings[legacyKey]
-                : null
-        })
-
-        settings.safetySettings = migratedSettings
-      })
-
-      return snapshot
-    }
-
     function readJson (key) {
       try {
         const source = window.localStorage.getItem(key)
@@ -4119,7 +4070,7 @@
 
     const storage = {
       load () {
-        return migrateSnapshot({
+        return {
           activeConversationId: readJson(STORAGE_KEYS.activeConversationId),
           conversations: readJson(STORAGE_KEYS.conversations),
           endpoints: readJson(STORAGE_KEYS.endpoints),
@@ -4127,7 +4078,7 @@
           ui: readJson(STORAGE_KEYS.ui),
           workspaceConfiguration:
             readJson(STORAGE_KEYS.workspaceConfiguration)
-        })
+        }
       },
 
       save (snapshot) {
@@ -4819,7 +4770,6 @@
         output.attachments = message.attachments
           .map(sanitizeAttachment)
           .filter(Boolean)
-          .slice(0, MAXIMUM_ATTACHMENT_COUNT)
       }
 
       if (message.role !== 'assistant') return output
@@ -5412,12 +5362,7 @@
     }
 
     function buildSystemInstruction (context) {
-      return joinBlocks([
-        context.settings.systemPrompt,
-        ...context.messages
-          .filter(message => isInstructionRole(message.role))
-          .map(message => message.content)
-      ])
+      return context.settings.systemPrompt
     }
 
     function urlFileName (url) {
@@ -5767,30 +5712,16 @@
 
     function buildAnthropicRequestInput (context) {
       const messages = []
-      const topLevelInstructions = []
-
-      if (context.settings.systemPrompt) {
-        topLevelInstructions.push(context.settings.systemPrompt)
-      }
 
       context.messages.forEach((message, index) => {
-        if (isInstructionRole(message.role)) {
-          if (canUseAnthropicSystemRole(context.messages, index)) {
-            messages.push({
-              content: [{
-                text: message.content || '',
-                type: 'text'
-              }],
-              role: 'system'
-            })
-          } else if (message.content) {
-            topLevelInstructions.push(message.content)
-          }
+        let role = 'user'
 
-          return
+        if (isAssistantRole(message.role)) {
+          role = 'assistant'
+        } else if (isInstructionRole(message.role)) {
+          role = 'system'
         }
 
-        const role = isAssistantRole(message.role) ? 'assistant' : 'user'
         const content = []
 
         if (!isAssistantRole(message.role)) {
@@ -5832,45 +5763,43 @@
 
       return {
         messages,
-        system: joinBlocks(topLevelInstructions)
+        system: context.settings.systemPrompt
       }
     }
 
     function buildGeminiContents (context) {
       const contents = []
 
-      context.messages
-        .filter(message => !isInstructionRole(message.role))
-        .forEach(message => {
-          const parts = []
+      context.messages.forEach(message => {
+        const parts = []
 
-          if (message.content) {
-            parts.push({
-              text: message.content
-            })
-          }
-
-          if (!isAssistantRole(message.role)) {
-            const attachments = message.attachments || []
-
-            attachments.forEach(attachment => {
-              const part = buildGeminiAttachment(attachment)
-
-              if (part) parts.push(part)
-            })
-          }
-
-          if (!parts.length) {
-            parts.push({
-              text: ''
-            })
-          }
-
-          contents.push({
-            parts,
-            role: isAssistantRole(message.role) ? 'model' : 'user'
+        if (message.content) {
+          parts.push({
+            text: message.content
           })
-        })
+        }
+
+        if (!isAssistantRole(message.role)) {
+          const attachments = message.attachments || []
+
+          attachments.forEach(attachment => {
+            const part = buildGeminiAttachment(attachment)
+
+            if (part) parts.push(part)
+          })
+        }
+
+        if (!parts.length) {
+          parts.push({
+            text: ''
+          })
+        }
+
+        contents.push({
+          parts,
+          role: isAssistantRole(message.role) ? 'model' : 'user'
+         })
+      })
 
       if (!contents.length) {
         contents.push({
@@ -6060,6 +5989,15 @@
             'content-type': 'application/json'
           }
 
+          if (
+            requestInput.messages.some(message => {
+              return message.role === 'system'
+            })
+          ) {
+            headers['anthropic-beta'] =
+              'mid-conversation-output-config-2026-07-01'
+          }
+
           if (context.apiKey) headers['x-api-key'] = context.apiKey
 
           return {
@@ -6173,58 +6111,56 @@
         build (context) {
           const input = []
 
-          context.messages
-            .filter(message => !isInstructionRole(message.role))
-            .forEach(message => {
-              const role = isAssistantRole(message.role)
-                ? 'assistant'
-                : message.role
+          context.messages.forEach(message => {
+            const role = isAssistantRole(message.role)
+              ? 'assistant'
+              : message.role
 
-              const content = []
+            const content = []
 
-              if (message.content) {
-                content.push({
-                  text: message.content,
-                  type:
-                    role === 'assistant'
-                      ? 'output_text'
-                      : 'input_text'
-                })
-              }
-
-              if (!isAssistantRole(message.role)) {
-                const attachments = message.attachments || []
-
-                attachments.forEach(attachment => {
-                  const reference = attachmentReference(attachment)
-
-                  if (!reference) return
-
-                  if (isImageAttachment(attachment)) {
-                    content.push({
-                      image_url: reference,
-                      type: 'input_image'
-                    })
-                  } else if (isUrlAttachment(attachment)) {
-                    content.push({
-                      file_url: reference,
-                      type: 'input_file'
-                    })
-                  } else {
-                    content.push({
-                      file_data: reference,
-                      filename: attachment.name,
-                      type: 'input_file'
-                    })
-                  }
-                })
-              }
-
-              input.push({
-                content,
-                role
+            if (message.content) {
+              content.push({
+                text: message.content,
+                type:
+                  role === 'assistant'
+                    ? 'output_text'
+                    : 'input_text'
               })
+            }
+
+            if (!isAssistantRole(message.role)) {
+              const attachments = message.attachments || []
+
+              attachments.forEach(attachment => {
+                const reference = attachmentReference(attachment)
+
+                if (!reference) return
+
+                if (isImageAttachment(attachment)) {
+                  content.push({
+                    image_url: reference,
+                    type: 'input_image'
+                  })
+                } else if (isUrlAttachment(attachment)) {
+                  content.push({
+                    file_url: reference,
+                    type: 'input_file'
+                  })
+                } else {
+                  content.push({
+                    file_data: reference,
+                    filename: attachment.name,
+                    type: 'input_file'
+                  })
+                }
+              })
+            }
+
+            input.push({
+              content,
+              role
             })
+          })
 
           const body = {
             input,
@@ -6271,47 +6207,45 @@
         build (context) {
           const input = []
 
-          context.messages
-            .filter(message => !isInstructionRole(message.role))
-            .forEach(message => {
-              const content = []
+          context.messages.forEach(message => {
+            const content = []
 
-              if (message.content) {
-                content.push({
-                  text: message.content,
-                  type: 'text'
-                })
-              }
+            if (message.content) {
+              content.push({
+                text: message.content,
+                type: 'text'
+              })
+            }
 
-              if (!isAssistantRole(message.role)) {
-                const attachments = message.attachments || []
+            if (!isAssistantRole(message.role)) {
+              const attachments = message.attachments || []
 
-                attachments.forEach(attachment => {
-                  const part = buildInteractionAttachment(attachment)
+              attachments.forEach(attachment => {
+                const part = buildInteractionAttachment(attachment)
 
-                  if (part) content.push(part)
-                })
-              }
+                if (part) content.push(part)
+              })
+            }
 
-              if (!content.length) {
-                content.push({
-                  text: '',
-                  type: 'text'
-                })
-              }
+            if (!content.length) {
+              content.push({
+                text: '',
+                type: 'text'
+              })
+            }
 
-              input.push(
-                isAssistantRole(message.role)
-                  ? {
-                      content,
-                      type: 'model_output'
-                    }
-                  : {
-                      content,
-                      type: 'user_input'
-                    }
-              )
-            })
+            input.push(
+              isAssistantRole(message.role)
+                ? {
+                    content,
+                    type: 'model_output'
+                  }
+                : {
+                    content,
+                    type: 'user_input'
+                  }
+            )
+          })
 
           if (!input.length) {
             input.push({
@@ -9871,32 +9805,11 @@
     }
 
     async function addAttachment (file) {
-      if (
-        state.attachments.length + state.pendingAttachmentReads >=
-        MAXIMUM_ATTACHMENT_COUNT
-      ) {
-        toast(
-          `Chỉ được đính kèm tối đa ${MAXIMUM_ATTACHMENT_COUNT} tệp.`,
-          'error'
-        )
-
-        return
-      }
-
       const type = normalizeFileType(file)
 
       if (!isSupportedAttachmentType(type)) {
         toast(
           `“${file.name}” có định dạng không được hỗ trợ.`,
-          'error'
-        )
-
-        return
-      }
-
-      if (file.size > MAXIMUM_ATTACHMENT_SIZE) {
-        toast(
-          `“${file.name}” vượt quá ${formatBytes(MAXIMUM_ATTACHMENT_SIZE)}.`,
           'error'
         )
 
@@ -9950,18 +9863,6 @@
     }
 
     function openAttachmentUrlDialog () {
-      if (
-        state.attachments.length + state.pendingAttachmentReads >=
-        MAXIMUM_ATTACHMENT_COUNT
-      ) {
-        toast(
-          `Chỉ được đính kèm tối đa ${MAXIMUM_ATTACHMENT_COUNT} tệp.`,
-          'error'
-        )
-
-        return
-      }
-
       setAttachmentMenu(false)
 
       getElementById('attachment-url').value = ''
@@ -9976,18 +9877,6 @@
     }
 
     function createUrlAttachment () {
-      if (
-        state.attachments.length + state.pendingAttachmentReads >=
-        MAXIMUM_ATTACHMENT_COUNT
-      ) {
-        toast(
-          `Chỉ được đính kèm tối đa ${MAXIMUM_ATTACHMENT_COUNT} tệp.`,
-          'error'
-        )
-
-        return
-      }
-
       const source = getElementById('attachment-url').value.trim()
 
       let parsedUrl
@@ -12077,16 +11966,10 @@
       })
 
       document.addEventListener('visibilitychange', () => {
-        if (document.hidden) {
-          captureEditDraft()
-          scheduleSave.flush()
+        if (!document.hidden) return
 
-          return
-        }
-
-        renderMessages()
-        renderTopBar()
-        scrollToBottom(false)
+        captureEditDraft()
+        scheduleSave.flush()
       })
 
       window.addEventListener('online', () => {
@@ -12156,227 +12039,6 @@
       messageObserver.observe(getElementById('message-list'))
     }
 
-    function selfCheck () {
-      const sample = {
-        workspaceConfiguration: {
-          settings: {
-            safetySettings: {
-              harassment: 'block-none'
-            }
-          }
-        }
-      }
-
-      migrateSnapshot(sample)
-
-      window.console.assert(
-        sample.workspaceConfiguration.settings.safetySettings[
-          'HARM_CATEGORY_HARASSMENT'
-        ] === 'block-none',
-        'Safety settings migration failed'
-      )
-
-      window.console.assert(
-        new Set(
-          SAFETY_DEFINITIONS.map(definition => {
-            return safetySlug(definition.category)
-          })
-        ).size === SAFETY_DEFINITIONS.length,
-        'Safety setting DOM identifiers must be unique'
-      )
-
-      window.console.assert(
-        window.getComputedStyle(
-          getElementById('attachment-menu')
-        ).display === 'none',
-        'Hidden attachment menu must not be displayed'
-      )
-
-      const requestContext = {
-        apiKey: '',
-        base: 'https://example.com',
-        messages: [
-          {
-            attachments: [],
-            content: 'Initial system message',
-            role: 'system'
-          },
-          {
-            attachments: [],
-            content: 'Initial developer message',
-            role: 'developer'
-          },
-          {
-            attachments: [],
-            content: 'First user message',
-            role: 'user'
-          },
-          {
-            attachments: [],
-            content: 'First assistant message',
-            role: 'assistant'
-          },
-          {
-            attachments: [],
-            content: 'Second user message',
-            role: 'user'
-          },
-          {
-            attachments: [],
-            content: 'Mid-conversation system message',
-            role: 'system'
-          }
-        ],
-        model: 'model',
-        settings: {
-          ...defaultSettings(),
-          systemPrompt: 'Global instruction',
-          tools: []
-        },
-        stream: false
-      }
-
-      const messagesBody =
-        API_FORMATS.messages.build(requestContext).body
-
-      const generateContentBody =
-        API_FORMATS['generate-content'].build(requestContext).body
-
-      const responsesBody =
-        API_FORMATS.responses.build(requestContext).body
-
-      const interactionsBody =
-        API_FORMATS.interactions.build(requestContext).body
-
-      const expectedTopLevelInstruction = [
-        'Global instruction',
-        'Initial system message',
-        'Initial developer message'
-      ].join(BLOCK_SEPARATOR)
-
-      const expectedCombinedInstruction = [
-        'Global instruction',
-        'Initial system message',
-        'Initial developer message',
-        'Mid-conversation system message'
-      ].join(BLOCK_SEPARATOR)
-
-      window.console.assert(
-        messagesBody.system === expectedTopLevelInstruction,
-        'Messages must keep initial instructions in the top-level system field'
-      )
-
-      window.console.assert(
-        messagesBody.messages.some(message => {
-          return (
-            message.role === 'system' &&
-            textValue(message.content) ===
-              'Mid-conversation system message'
-          )
-        }),
-        'Messages must preserve supported mid-conversation system roles'
-      )
-
-      window.console.assert(
-        messagesBody.messages.every(message => {
-          return (
-            message.role === 'user' ||
-            message.role === 'assistant' ||
-            message.role === 'system'
-          )
-        }),
-        'Messages roles must translate to user, assistant, or system'
-      )
-
-      window.console.assert(
-        generateContentBody.systemInstruction.parts[0].text ===
-          expectedCombinedInstruction,
-        'Generate Content must use systemInstruction'
-      )
-
-      window.console.assert(
-        generateContentBody.contents.every(content => {
-          return content.role === 'user' || content.role === 'model'
-        }),
-        'Generate Content roles must translate to user or model'
-      )
-
-      window.console.assert(
-        responsesBody.instructions === expectedCombinedInstruction &&
-        responsesBody.input[0].role === 'user',
-        'Responses must use the top-level instructions field'
-      )
-
-      window.console.assert(
-        interactionsBody.system_instruction === expectedCombinedInstruction &&
-        interactionsBody.input[0].type === 'user_input',
-        'Interactions must use the top-level system_instruction field'
-      )
-
-      const toolMessage = {
-        outputBlocks: []
-      }
-
-      upsertTool(toolMessage, {
-        callId: 'first-call',
-        id: 'tool:first-call',
-        name: 'Repeated tool',
-        status: 'running',
-        toolType: 'tool_call'
-      })
-
-      upsertTool(toolMessage, {
-        callId: 'second-call',
-        id: 'tool:second-call',
-        name: 'Repeated tool',
-        status: 'running',
-        toolType: 'tool_call'
-      })
-
-      window.console.assert(
-        toolMessage.outputBlocks.length === 2,
-        'Each tool call must keep a separate output block'
-      )
-
-      const toolMarkup = reasoningHtml([
-        toolBlock({
-          callId: 'self-check-call',
-          input: {
-            value: 'input'
-          },
-          name: 'Self check',
-          result: {
-            value: 'output'
-          },
-          status: 'completed'
-        })
-      ], {
-        status: 'complete'
-      })
-
-      window.console.assert(
-        toolMarkup.includes('reasoning-tool') &&
-        toolMarkup.includes('input') &&
-        toolMarkup.includes('output') &&
-        !toolMarkup.includes('tool-panel'),
-        'Tool activity must render completely inside reasoning'
-      )
-
-      window.console.assert(
-        window.getComputedStyle(
-          queryElement('.prompt-actions')
-        ).marginBottom === '14px',
-        'System prompt actions must not overlap the prompt field'
-      )
-
-      window.console.assert(
-        window.getComputedStyle(
-          queryElement('.variable-row__remove')
-        ).position !== 'absolute',
-        'Variable controls must not overlap the value field'
-      )
-    }
-
     function initialize () {
       renderSafetyMarkup()
       hydrateIcons()
@@ -12394,7 +12056,6 @@
       observeLayout()
       refreshPreview()
       scrollToBottom(true)
-      selfCheck()
       scheduleSave()
 
       if (!window.JSON5) {
