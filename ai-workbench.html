@@ -7,10 +7,6 @@
     content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
   >
   <meta name="theme-color" content="#05080d">
-  <meta
-    name="description"
-    content="Bàn làm việc đa mô hình để cấu hình endpoint, tạo yêu cầu API và quản lý hội thoại AI."
-  >
   <title>AI Workbench</title>
 
   <link
@@ -1639,7 +1635,15 @@
     .send-button_state_stop {
       background: var(--error-soft);
       border: 1px solid var(--error);
+      box-shadow:
+        0 0 8px rgba(var(--error-rgb), 0.65),
+        0 0 20px rgba(var(--error-rgb), 0.2);
       color: var(--error);
+    }
+
+    .send-button_state_stop:hover:not(:disabled) {
+      background: var(--error);
+      color: #fff;
     }
 
     .settings__header {
@@ -1831,7 +1835,7 @@
       resize: none;
     }
 
-    .request-preview {
+    .code-field {
       font-size: 11px;
       line-height: 1.5;
       min-height: 200px;
@@ -3026,7 +3030,7 @@
             <h3 class="settings__section-title">Công cụ</h3>
 
             <textarea
-              class="text-field text-field_auto_resize monospace"
+              class="code-field text-field text-field_auto_resize monospace"
               id="tools-json"
               rows="7"
               placeholder="Nhập mảng công cụ JSON5 theo định dạng API"
@@ -3040,7 +3044,7 @@
             </h3>
 
             <textarea
-              class="text-field request-preview monospace"
+              class="code-field text-field monospace"
               id="request-body-preview"
               rows="12"
               readonly
@@ -3390,8 +3394,8 @@
     const maximumFileSize = 5 * 1024 * 1024
     const toolPayloadLimit = 12000
     const blockSeparator = '\n\n'
-    const textDecoder = new TextDecoder()
-    const textEncoder = new TextEncoder()
+    const textDecoder = new window.TextDecoder()
+    const textEncoder = new window.TextEncoder()
     const dateFormatter = new Intl.DateTimeFormat('vi-VN')
 
     const storageKeys = {
@@ -5123,15 +5127,6 @@
       return role === 'assistant'
     }
 
-    function assertRoleSupported (format, message) {
-      if (!instructionRole(message.role)) return
-
-      throw apiError(
-        'config',
-        `${format} không hỗ trợ trực tiếp tin nhắn role=${message.role}.`
-      )
-    }
-
     function configurations () {
       return [
         state.workspace,
@@ -5287,6 +5282,20 @@
       }
 
       return output
+    }
+
+    function messagesWithSystemPrompt (context, role) {
+      const messages = context.messages.slice()
+
+      if (context.settings.systemPrompt) {
+        messages.unshift({
+          attachments: [],
+          content: context.settings.systemPrompt,
+          role
+        })
+      }
+
+      return messages
     }
 
     function urlFileName (url) {
@@ -5605,9 +5614,7 @@
     function anthropicMessages (context) {
       const messages = []
 
-      context.messages.forEach(message => {
-        assertRoleSupported('Messages API', message)
-
+      messagesWithSystemPrompt(context, 'user').forEach(message => {
         const role = assistantRole(message.role) ? 'assistant' : 'user'
         const content = []
 
@@ -5651,9 +5658,7 @@
     function geminiContents (context) {
       const contents = []
 
-      context.messages.forEach(message => {
-        assertRoleSupported('Generate Content API', message)
-
+      messagesWithSystemPrompt(context, 'user').forEach(message => {
         const parts = []
 
         if (message.content) {
@@ -5794,10 +5799,6 @@
             stream: context.stream
           }
 
-          if (context.settings.systemPrompt) {
-            body.system = context.settings.systemPrompt
-          }
-
           if (context.settings.tools.length) {
             body.tools = context.settings.tools
           }
@@ -5934,14 +5935,6 @@
             generationConfig
           }
 
-          if (context.settings.systemPrompt) {
-            body.systemInstruction = {
-              parts: [{
-                text: context.settings.systemPrompt
-              }]
-            }
-          }
-
           if (context.settings.tools.length) body.tools = context.settings.tools
 
           const safetySettings = geminiSafetySettings(
@@ -5969,7 +5962,7 @@
         build (context) {
           const input = []
 
-          context.messages.forEach(message => {
+          messagesWithSystemPrompt(context, 'system').forEach(message => {
             const role = assistantRole(message.role)
               ? 'assistant'
               : message.role
@@ -6032,10 +6025,6 @@
             }
           }
 
-          if (context.settings.systemPrompt) {
-            body.instructions = context.settings.systemPrompt
-          }
-
           if (context.settings.tools.length) {
             body.include = [
               'web_search_call.action.sources',
@@ -6063,9 +6052,7 @@
         build (context) {
           const input = []
 
-          context.messages.forEach(message => {
-            assertRoleSupported('Interactions API', message)
-
+          messagesWithSystemPrompt(context, 'user').forEach(message => {
             const content = []
 
             if (message.content) {
@@ -6134,10 +6121,6 @@
             input,
             model: context.model,
             stream: context.stream
-          }
-
-          if (context.settings.systemPrompt) {
-            body['system_instruction'] = context.settings.systemPrompt
           }
 
           if (context.settings.tools.length) body.tools = context.settings.tools
@@ -7576,7 +7559,7 @@
 
     async function readEvents (response, handleEvent) {
       const reader = response.body.getReader()
-      const decoder = new TextDecoder()
+      const decoder = new window.TextDecoder()
       let buffer = ''
       let eventName = ''
       let dataLines = []
@@ -9315,10 +9298,12 @@
         Boolean(conversation && conversation.messages.length)
 
       const button = getElementById('send-message-button')
+      const buttonIcon = generating ? 'stop' : 'send'
       const editDraft = currentEditDraft()
 
       button.classList.toggle('send-button_state_stop', Boolean(generating))
-      button.innerHTML = icon(generating ? 'stop' : 'send')
+      button.dataset.icon = buttonIcon
+      button.innerHTML = icon(buttonIcon)
       button.setAttribute(
         'aria-label',
         generating ? 'Dừng tạo phản hồi' : 'Gửi yêu cầu'
@@ -9866,7 +9851,7 @@
       if (value.generating) return
 
       value.generating = true
-      value.abortController = new AbortController()
+      value.abortController = new window.AbortController()
 
       renderSidebar()
       renderTopBar()
@@ -11435,24 +11420,102 @@
 
       migrateSnapshot(sample)
 
-      console.assert(
+      window.console.assert(
         sample.workspaceConfiguration.settings.safetySettings[
           'HARM_CATEGORY_HARASSMENT'
         ] === 'block-none',
         'Safety settings migration failed'
       )
 
-      console.assert(
+      window.console.assert(
         new Set(
           safetyDefinitions.map(definition => safetySlug(definition.category))
         ).size === safetyDefinitions.length,
         'Safety setting DOM identifiers must be unique'
       )
 
-      console.assert(
+      window.console.assert(
         window.getComputedStyle(getElementById('attachment-menu')).display ===
           'none',
         'Hidden attachment menu must not be displayed'
+      )
+
+      const requestContext = {
+        apiKey: '',
+        base: 'https://example.com',
+        messages: [
+          {
+            attachments: [],
+            content: 'System message',
+            role: 'system'
+          },
+          {
+            attachments: [],
+            content: 'Developer message',
+            role: 'developer'
+          },
+          {
+            attachments: [],
+            content: 'User message',
+            role: 'user'
+          }
+        ],
+        model: 'model',
+        settings: {
+          ...defaultSettings(),
+          systemPrompt: 'Global instruction',
+          tools: []
+        },
+        stream: false
+      }
+
+      const messagesBody = apiFormats.messages.build(requestContext).body
+      const generateContentBody =
+        apiFormats['generate-content'].build(requestContext).body
+      const responsesBody = apiFormats.responses.build(requestContext).body
+      const interactionsBody =
+        apiFormats.interactions.build(requestContext).body
+
+      window.console.assert(
+        !Object.prototype.hasOwnProperty.call(messagesBody, 'system'),
+        'Messages must place system prompts in messages'
+      )
+
+      window.console.assert(
+        messagesBody.messages.every(message => {
+          return message.role === 'user' || message.role === 'assistant'
+        }),
+        'Messages roles must translate to user or assistant'
+      )
+
+      window.console.assert(
+        !Object.prototype.hasOwnProperty.call(
+          generateContentBody,
+          'systemInstruction'
+        ),
+        'Generate Content must place system prompts in contents'
+      )
+
+      window.console.assert(
+        generateContentBody.contents.every(content => {
+          return content.role === 'user' || content.role === 'model'
+        }),
+        'Generate Content roles must translate to user or model'
+      )
+
+      window.console.assert(
+        !Object.prototype.hasOwnProperty.call(responsesBody, 'instructions') &&
+        responsesBody.input[0].role === 'system',
+        'Responses must place instructions in input'
+      )
+
+      window.console.assert(
+        !Object.prototype.hasOwnProperty.call(
+          interactionsBody,
+          'system_instruction'
+        ) &&
+        interactionsBody.input[0].type === 'user_input',
+        'Interactions must place system prompts in input'
       )
     }
 
