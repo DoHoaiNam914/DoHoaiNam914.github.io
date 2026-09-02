@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta
     name="viewport"
-    content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
   >
   <meta name="theme-color" content="#05080d">
   <title>AI Workbench</title>
@@ -359,6 +359,7 @@
     .message__action,
     .attachment__remove,
     .chip__remove,
+    .remove-button,
     .composer__attachment-button,
     .send-button,
     .code-block__copy,
@@ -397,7 +398,7 @@
       position: relative;
     }
 
-    .conversation-search > [data-icon='search'] {
+    .conversation-search__icon {
       color: var(--faint);
       left: 10px;
       pointer-events: none;
@@ -458,6 +459,7 @@
     .conversation__action:hover,
     .message__action:hover,
     .chip__remove:hover,
+    .remove-button:hover,
     .composer__attachment-button:hover,
     .code-block__copy:hover {
       background: var(--hover);
@@ -560,7 +562,8 @@
 
     .conversation__action,
     .message__action,
-    .chip__remove {
+    .chip__remove,
+    .remove-button {
       background: none;
       border: 0;
       border-radius: var(--radius-small);
@@ -934,18 +937,12 @@
 
     .assistant-answer + .assistant-answer,
     .assistant-answer + .reasoning-panel,
-    .assistant-answer + .tool-panel,
     .reasoning-panel + .assistant-answer,
-    .reasoning-panel + .reasoning-panel,
-    .reasoning-panel + .tool-panel,
-    .tool-panel + .assistant-answer,
-    .tool-panel + .reasoning-panel,
-    .tool-panel + .tool-panel {
+    .reasoning-panel + .reasoning-panel {
       margin-top: 12px;
     }
 
-    .reasoning-panel,
-    .tool-panel {
+    .reasoning-panel {
       background:
         linear-gradient(
           135deg,
@@ -959,36 +956,35 @@
       overflow: hidden;
     }
 
-    .reasoning-panel__summary,
-    .tool-panel__header {
+    .reasoning-panel__summary {
       align-items: center;
       color: var(--accent);
+      cursor: pointer;
       display: flex;
       font: 600 11px var(--font-mono);
       gap: 7px;
-      padding: 8px 10px;
-    }
-
-    .reasoning-panel__summary {
-      cursor: pointer;
       list-style: none;
+      padding: 8px 10px;
     }
 
     .reasoning-panel__summary::-webkit-details-marker {
       display: none;
     }
 
-    .reasoning-panel__body,
-    .tool-panel__body {
+    .reasoning-panel__body {
       border-top: 1px solid rgba(var(--accent-rgb), 0.2);
+      display: grid;
+      gap: 6px;
+      min-width: 0;
+      padding: 7px;
     }
 
-    .reasoning-panel__item,
-    .tool-panel__item {
+    .reasoning-panel__item {
       color: var(--muted);
       font-size: 12.5px;
       line-height: 1.65;
-      padding: 9px 12px 11px;
+      min-width: 0;
+      padding: 2px 4px;
     }
 
     .reasoning-panel__redacted {
@@ -997,11 +993,27 @@
       gap: 6px;
     }
 
-    .tool-panel__header {
+    .reasoning-tool {
+      background: var(--code-background);
+      border: 1px solid rgba(var(--accent-rgb), 0.28);
+      border-left: 2px solid var(--accent);
+      border-radius: var(--radius-small);
       min-width: 0;
+      overflow: hidden;
     }
 
-    .tool-panel__name {
+    .reasoning-tool__header {
+      align-items: center;
+      background: rgba(var(--accent-rgb), 0.055);
+      color: var(--accent);
+      display: flex;
+      font: 500 10px var(--font-mono);
+      gap: 5px;
+      min-width: 0;
+      padding: 5px 7px;
+    }
+
+    .reasoning-tool__name {
       flex: 1;
       min-width: 0;
       overflow: hidden;
@@ -1009,71 +1021,94 @@
       white-space: nowrap;
     }
 
-    .tool-panel__state {
+    .reasoning-tool__state {
       align-items: center;
       color: var(--faint);
       display: inline-flex;
       flex: none;
-      font: 10.5px var(--font-mono);
-      gap: 6px;
+      font: 9.5px var(--font-mono);
+      gap: 5px;
     }
 
-    .tool-panel__state::before {
+    .reasoning-tool__state::before {
       background: currentcolor;
       border-radius: 50%;
       box-shadow: 0 0 7px currentcolor;
       content: '';
-      height: 6px;
-      width: 6px;
+      height: 5px;
+      width: 5px;
     }
 
-    .tool-panel__state_status_active {
+    .reasoning-tool__state_status_active {
       color: var(--accent);
     }
 
-    .tool-panel__state_status_completed {
+    .reasoning-tool__state_status_completed {
       color: var(--success);
     }
 
-    .tool-panel__state_status_failed {
+    .reasoning-tool__state_status_failed {
       color: var(--error);
     }
 
-    .tool-panel__meta {
+    .reasoning-tool__body {
+      border-top: 1px solid rgba(var(--accent-rgb), 0.16);
+      min-width: 0;
+      padding: 6px 7px 7px;
+    }
+
+    .reasoning-tool__meta {
       color: var(--faint);
-      font: 10px/1.5 var(--font-mono);
+      font: 9px/1.4 var(--font-mono);
       overflow-wrap: anywhere;
     }
 
-    .tool-panel__section {
-      margin-top: 9px;
+    .reasoning-tool__sections {
+      display: grid;
+      gap: 5px;
+      grid-template-columns:
+        minmax(0, 0.85fr)
+        minmax(0, 1.15fr);
+      margin-top: 5px;
+      min-width: 0;
     }
 
-    .tool-panel__label {
+    .reasoning-tool__sections:empty {
+      display: none;
+    }
+
+    .reasoning-tool__section {
+      min-width: 0;
+    }
+
+    .reasoning-tool__section_wide {
+      grid-column: 1 / -1;
+    }
+
+    .reasoning-tool__label {
       color: var(--accent);
       display: block;
-      font: 500 10px var(--font-mono);
+      font: 500 9px var(--font-mono);
       text-transform: uppercase;
     }
 
-    .tool-panel__payload {
-      background: var(--code-background);
-      border: 1px solid rgba(var(--accent-rgb), 0.3);
-      border-left: 2px solid var(--accent);
+    .reasoning-tool__payload {
+      background: rgba(255, 255, 255, 0.018);
+      border: 1px solid rgba(var(--accent-rgb), 0.2);
       border-radius: var(--radius-small);
       color: var(--muted);
-      font: 11px/1.55 var(--font-mono);
-      margin: 4px 0 0;
-      max-height: 180px;
+      font: 10px/1.45 var(--font-mono);
+      margin: 3px 0 0;
+      max-height: 160px;
+      min-width: 0;
       overflow: auto;
-      padding: 8px 10px;
+      padding: 5px 6px;
       white-space: pre-wrap;
       word-break: break-word;
     }
 
-    .tool-panel__payload_error {
+    .reasoning-tool__section_error .reasoning-tool__payload {
       border-color: rgba(var(--error-rgb), 0.55);
-      border-left-color: var(--error);
       color: #ff9caf;
     }
 
@@ -1504,14 +1539,16 @@
       font: 10px var(--font-mono);
     }
 
-    .chip__remove {
+    .chip__remove,
+    .remove-button {
       flex: 0 0 24px;
       height: 24px;
       padding: 0;
       width: 24px;
     }
 
-    .chip__remove:hover {
+    .chip__remove:hover,
+    .remove-button:hover {
       background: var(--error-soft);
       color: var(--error);
     }
@@ -1741,6 +1778,19 @@
       width: 100%;
     }
 
+    .prompt-actions {
+      margin-bottom: 14px;
+      padding-bottom: 1px;
+    }
+
+    .variable-list {
+      margin-bottom: 12px;
+    }
+
+    .editor-actions {
+      margin-top: 10px;
+    }
+
     .field {
       margin-bottom: 16px;
       position: relative;
@@ -1829,7 +1879,7 @@
       resize: vertical;
     }
 
-    .text-field_auto_resize {
+    .text-field_auto-resize {
       max-height: 320px;
       overflow-y: hidden;
       resize: none;
@@ -1919,17 +1969,23 @@
     .variable-row {
       align-items: center;
       display: grid;
-      gap: 8px;
+      gap: 10px;
       grid-template-columns:
         minmax(0, 0.8fr)
         minmax(0, 1.2fr)
-        auto;
+        28px;
+      padding: 1px 0;
     }
 
     .variable-row__input {
       font: 12px var(--font-mono);
       min-width: 0;
       padding: 7px 9px;
+    }
+
+    .variable-row__remove {
+      align-self: center;
+      justify-self: end;
     }
 
     .variable-row__error {
@@ -2143,6 +2199,10 @@
       flex: 0 0 38%;
     }
 
+    .endpoint-header-row__remove {
+      flex: 0 0 24px;
+    }
+
     @keyframes pulse {
       0%,
       100% {
@@ -2256,12 +2316,20 @@
         gap: 9px;
       }
 
+      .reasoning-tool__sections {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .reasoning-tool__section_wide {
+        grid-column: auto;
+      }
+
       .chat__add-message {
         right: 10px;
       }
 
       .variable-row {
-        grid-template-columns: minmax(0, 1fr) auto;
+        grid-template-columns: minmax(0, 1fr) 28px;
       }
 
       .variable-row__value {
@@ -2275,6 +2343,10 @@
 
       .endpoint-header-row .text-field {
         flex: 1 1 100%;
+      }
+
+      .endpoint-header-row__remove {
+        margin-left: auto;
       }
     }
 
@@ -2318,6 +2390,7 @@
         <div class="sidebar__header">
           <div class="brand">
             <span class="brand__mark app-icon" aria-hidden="true"></span>
+
             <div>
               <span class="brand__name">AI Workbench</span>
               <span class="brand__subtitle">Multi-model console</span>
@@ -2332,6 +2405,7 @@
             aria-controls="sidebar-panel"
             aria-expanded="true"
             aria-label="Thu gọn lịch sử trò chuyện"
+            title="Thu gọn lịch sử trò chuyện"
           ></button>
         </div>
 
@@ -2346,7 +2420,11 @@
           </button>
 
           <div class="conversation-search">
-            <span data-icon="search"></span>
+            <span
+              class="conversation-search__icon"
+              data-icon="search"
+              aria-hidden="true"
+            ></span>
 
             <label class="visually-hidden" for="conversation-search">
               Tìm trong lịch sử trò chuyện
@@ -2367,6 +2445,7 @@
               data-action="clear-conversation-search"
               data-icon="x"
               aria-label="Xoá nội dung tìm kiếm"
+              title="Xoá nội dung tìm kiếm"
               hidden
             ></button>
           </div>
@@ -2399,6 +2478,7 @@
           aria-controls="sidebar-panel"
           aria-expanded="true"
           aria-label="Thu gọn lịch sử trò chuyện"
+          title="Lịch sử trò chuyện"
         ></button>
 
         <div class="brand brand_compact">
@@ -2427,6 +2507,7 @@
             aria-controls="settings-panel"
             aria-expanded="true"
             aria-label="Thu gọn bảng cấu hình"
+            title="Cấu hình"
           ></button>
         </div>
       </header>
@@ -2450,6 +2531,7 @@
           data-action="scroll-bottom"
           data-icon="arrow-down"
           aria-label="Cuộn đến cuối cuộc trò chuyện"
+          title="Cuộn đến cuối"
           hidden
         ></button>
 
@@ -2542,6 +2624,7 @@
                     data-action="submit-message"
                     data-icon="send"
                     aria-label="Gửi tin nhắn"
+                    title="Gửi tin nhắn"
                   ></button>
                 </div>
               </div>
@@ -2576,6 +2659,7 @@
               data-action="close-drawers"
               data-icon="x"
               aria-label="Đóng bảng cấu hình"
+              title="Đóng"
             ></button>
           </div>
         </div>
@@ -2691,7 +2775,7 @@
             </div>
 
             <textarea
-              class="text-field text-field_auto_resize"
+              class="text-field text-field_auto-resize"
               id="system-prompt"
               rows="3"
               placeholder="Nhập hướng dẫn áp dụng cho mọi lượt"
@@ -3030,7 +3114,7 @@
             <h3 class="settings__section-title">Công cụ</h3>
 
             <textarea
-              class="code-field text-field text-field_auto_resize monospace"
+              class="code-field text-field text-field_auto-resize monospace"
               id="tools-json"
               rows="7"
               placeholder="Nhập mảng công cụ JSON5 theo định dạng API"
@@ -3099,6 +3183,7 @@
         data-action="close-attachment-url"
         data-icon="x"
         aria-label="Đóng"
+        title="Đóng"
       ></button>
     </div>
 
@@ -3196,6 +3281,7 @@
         data-action="close-endpoint-dialog"
         data-icon="x"
         aria-label="Đóng trình quản lí endpoint API"
+        title="Đóng"
       ></button>
     </div>
 
@@ -3384,37 +3470,40 @@
   <script src="https://unpkg.com/commonmark@0.31.2/dist/commonmark.js"></script>
 
   <script>
-    const select = selector => document.querySelector(selector)
-    const selectAll = selector => Array.from(document.querySelectorAll(selector))
-    const getElementById = id => document.getElementById(id)
+    const queryElement = selector => document.querySelector(selector)
 
-    const storagePrefix = 'ai-workbench'
-    const defaultAccent = '#00f6ff'
-    const maximumFiles = 10
-    const maximumFileSize = 5 * 1024 * 1024
-    const toolPayloadLimit = 12000
-    const blockSeparator = '\n\n'
-    const textDecoder = new window.TextDecoder()
-    const textEncoder = new window.TextEncoder()
-    const dateFormatter = new Intl.DateTimeFormat('vi-VN')
-
-    const storageKeys = {
-      activeConversationId: storagePrefix + '.activeConversationId',
-      conversations: storagePrefix + '.conversations',
-      endpoints: storagePrefix + '.endpoints',
-      systemPrompts: storagePrefix + '.systemPrompts',
-      ui: storagePrefix + '.ui',
-      workspaceConfiguration: storagePrefix + '.workspaceConfiguration'
+    const queryElements = selector => {
+      return Array.from(document.querySelectorAll(selector))
     }
 
-    const messageRoles = [
+    const getElementById = id => document.getElementById(id)
+
+    const STORAGE_PREFIX = 'ai-workbench'
+    const DEFAULT_ACCENT_COLOR = '#00f6ff'
+    const MAXIMUM_ATTACHMENT_COUNT = 4
+    const MAXIMUM_ATTACHMENT_SIZE = 5 * 1024 * 1024
+    const BLOCK_SEPARATOR = '\n\n'
+    const utf8TextDecoder = new window.TextDecoder()
+    const utf8TextEncoder = new window.TextEncoder()
+    const conversationDateFormatter = new Intl.DateTimeFormat('vi-VN')
+
+    const STORAGE_KEYS = {
+      activeConversationId: STORAGE_PREFIX + '.activeConversationId',
+      conversations: STORAGE_PREFIX + '.conversations',
+      endpoints: STORAGE_PREFIX + '.endpoints',
+      systemPrompts: STORAGE_PREFIX + '.systemPrompts',
+      ui: STORAGE_PREFIX + '.ui',
+      workspaceConfiguration: STORAGE_PREFIX + '.workspaceConfiguration'
+    }
+
+    const MESSAGE_ROLES = [
       'system',
       'developer',
       'user',
       'assistant'
     ]
 
-    const formatOrder = [
+    const API_FORMAT_ORDER = [
       'chat-completions',
       'messages',
       'generate-content',
@@ -3422,14 +3511,14 @@
       'interactions'
     ]
 
-    const imageMimeTypes = [
+    const IMAGE_MIME_TYPES = [
       'image/gif',
       'image/jpeg',
       'image/png',
       'image/webp'
     ]
 
-    const safetyThresholds = [
+    const SAFETY_THRESHOLDS = [
       'off',
       'block-none',
       'block-only-high',
@@ -3437,7 +3526,7 @@
       'block-low-and-above'
     ]
 
-    const safetyOptions = [
+    const SAFETY_OPTIONS = [
       ['', 'Mặc định'],
       ['off', 'Off'],
       ['block-none', 'Block none'],
@@ -3446,7 +3535,7 @@
       ['block-low-and-above', 'Block most']
     ]
 
-    const safetyDefinitions = [
+    const SAFETY_DEFINITIONS = [
       {
         category: 'HARM_CATEGORY_HARASSMENT',
         label: 'Harassment'
@@ -3469,7 +3558,7 @@
       }
     ]
 
-    const legacySafetyKeys = {
+    const LEGACY_SAFETY_KEYS = {
       HARM_CATEGORY_DANGEROUS_CONTENT: 'dangerousContent',
       HARM_CATEGORY_HARASSMENT: 'harassment',
       HARM_CATEGORY_HATE_SPEECH: 'hateSpeech',
@@ -3477,7 +3566,7 @@
       HARM_CATEGORY_SEXUALLY_EXPLICIT: 'sexuallyExplicit'
     }
 
-    const activeToolStatuses = [
+    const ACTIVE_TOOL_STATUSES = [
       'preparing',
       'queued',
       'running',
@@ -3486,7 +3575,7 @@
       'generating'
     ]
 
-    const toolStatusLabels = {
+    const TOOL_STATUS_LABELS = {
       cancelled: 'Đã huỷ',
       completed: 'Hoàn tất',
       failed: 'Thất bại',
@@ -3500,14 +3589,14 @@
       waiting: 'Chờ xử lí'
     }
 
-    const toolStatusAliases = {
+    const TOOL_STATUS_ALIASES = {
       error: 'failed',
       in_progress: 'running',
       pending: 'queued',
       success: 'completed'
     }
 
-    const toolTypeLabels = {
+    const TOOL_TYPE_LABELS = {
       apply_patch_call: 'Áp dụng bản vá',
       code_execution_call: 'Thực thi mã',
       code_interpreter_call: 'Trình thông dịch mã',
@@ -3529,7 +3618,7 @@
       web_search_call: 'Tìm kiếm web'
     }
 
-    const text = {
+    const UI_TEXT = {
       cancel: 'Huỷ',
       copied: 'Đã sao chép',
       copyFailed: 'Không thể sao chép',
@@ -3554,7 +3643,7 @@
         'Không được hỗ trợ bởi định dạng API hiện tại.'
     }
 
-    const iconPaths = {
+    const ICON_PATHS = {
       alert:
         '<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14a2 2 0 0 0 1.74 3h16a2 2 0 0 0 1.73-3z"/><path d="m12 9v4"/><path d="m12 17h.01"/>',
       'arrow-down':
@@ -3607,10 +3696,10 @@
         '<path d="m18 6-12 12"/><path d="m6 6 12 12"/>'
     }
 
-    const appIcon =
+    const APP_ICON_DATA_URL =
       "data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3e%3cg fill='none' stroke='%23000' stroke-width='7' stroke-linecap='round' stroke-linejoin='round'%3e%3cpath d='M8 32 21 17l11 15-11 15L8 32Z'/%3e%3cpath d='m32 32 11-15 13 15-13 15-11-15Z'/%3e%3c/g%3e%3cg fill='%23000'%3e%3ccircle cx='8' cy='32' r='6'/%3e%3ccircle cx='21' cy='17' r='6'/%3e%3ccircle cx='32' cy='32' r='6'/%3e%3ccircle cx='21' cy='47' r='6'/%3e%3ccircle cx='43' cy='17' r='6'/%3e%3ccircle cx='56' cy='32' r='6'/%3e%3ccircle cx='43' cy='47' r='6'/%3e%3c/g%3e%3c/svg%3e"
 
-    const fileTypes = {
+    const FILE_MIME_TYPES = {
       '.c': 'text/x-c',
       '.cjs': 'text/javascript',
       '.cpp': 'text/x-c++',
@@ -3652,14 +3741,14 @@
       '.yml': 'text/yaml'
     }
 
-    function icon (name, modifier) {
+    function renderIcon (name, modifier) {
       const className = 'icon' + (modifier ? ' ' + modifier : '')
 
-      return `<svg class="${className}" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${iconPaths[name] || ''}</svg>`
+      return `<svg class="${className}" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICON_PATHS[name] || ''}</svg>`
     }
 
-    function appIconHtml () {
-      return `<img class="brand__image" src="${appIcon}" alt="">`
+    function renderAppIcon () {
+      return `<img class="brand__image" src="${APP_ICON_DATA_URL}" alt="">`
     }
 
     function uniqueId () {
@@ -3669,7 +3758,7 @@
             Math.random().toString(36).slice(2, 10)
     }
 
-    function clone (value) {
+    function cloneValue (value) {
       return typeof window.structuredClone === 'function'
         ? window.structuredClone(value)
         : JSON.parse(JSON.stringify(value))
@@ -3679,7 +3768,7 @@
       return Math.min(maximum, Math.max(minimum, value))
     }
 
-    function firstDefined (...values) {
+    function firstDefinedValue (...values) {
       return values.find(value => value !== undefined && value !== null)
     }
 
@@ -3690,6 +3779,7 @@
       const debounced = (...nextArgs) => {
         args = nextArgs
         window.clearTimeout(timeout)
+
         timeout = window.setTimeout(() => {
           timeout = null
           callback(...args)
@@ -3705,6 +3795,7 @@
 
       debounced.flush = () => {
         if (timeout == null) return
+
         window.clearTimeout(timeout)
         timeout = null
         callback(...args)
@@ -3749,7 +3840,8 @@
       }
 
       if (color === 'green') return '#39ff88'
-      return defaultAccent
+
+      return DEFAULT_ACCENT_COLOR
     }
 
     function hexToRgb (color) {
@@ -3784,8 +3876,9 @@
       )
     }
 
-    function luminance (color) {
+    function relativeLuminance (color) {
       const rgb = hexToRgb(color)
+
       const channels = [rgb.red, rgb.green, rgb.blue].map(value => {
         const channel = value / 255
 
@@ -3825,7 +3918,7 @@
       )
       root.style.setProperty(
         '--accent-ink',
-        luminance(color) > 0.42 ? '#020b10' : '#e8fbff'
+        relativeLuminance(color) > 0.42 ? '#020b10' : '#e8fbff'
       )
 
       return color
@@ -3841,13 +3934,14 @@
 
       return hours < 24
         ? hours + ' giờ trước'
-        : dateFormatter.format(timestamp)
+        : conversationDateFormatter.format(timestamp)
     }
 
     function formatBytes (bytes) {
       if (!Number.isFinite(bytes)) return ''
       if (bytes < 1024) return bytes + ' B'
       if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB'
+
       return (bytes / 1024 / 1024).toFixed(1) + ' MB'
     }
 
@@ -3864,7 +3958,7 @@
     }
 
     function encodeBase64 (value) {
-      return bytesToBase64(textEncoder.encode(String(value)))
+      return bytesToBase64(utf8TextEncoder.encode(String(value)))
     }
 
     function decodeBase64 (value) {
@@ -3874,7 +3968,7 @@
           character => character.charCodeAt(0)
         )
 
-        return textDecoder.decode(bytes)
+        return utf8TextDecoder.decode(bytes)
       } catch {
         return ''
       }
@@ -3905,7 +3999,7 @@
     }
 
     function joinBlocks (values) {
-      return values.filter(Boolean).join(blockSeparator)
+      return values.filter(Boolean).join(BLOCK_SEPARATOR)
     }
 
     function textValue (value) {
@@ -3923,17 +4017,18 @@
       return ''
     }
 
-    function apiError (kind, message, status) {
+    function createApiError (kind, message, status) {
       const error = new Error(message)
 
       error.kind = kind
       error.status = status
+
       return error
     }
 
     function parseJson5 (source) {
       if (!window.JSON5 || typeof window.JSON5.parse !== 'function') {
-        throw apiError('config', 'Không tải được thư viện JSON5.')
+        throw createApiError('config', 'Không tải được thư viện JSON5.')
       }
 
       return window.JSON5.parse(source)
@@ -3949,14 +4044,14 @@
       try {
         tools = parseJson5(value)
       } catch (error) {
-        throw apiError(
+        throw createApiError(
           'config',
           'Cấu hình công cụ không phải JSON5 hợp lệ: ' + error.message
         )
       }
 
       if (!Array.isArray(tools)) {
-        throw apiError(
+        throw createApiError(
           'config',
           'Cấu hình công cụ phải là một mảng JSON5.'
         )
@@ -3989,24 +4084,24 @@
 
       configurations.forEach(configuration => {
         const settings = configuration && configuration.settings
-        const stored = settings && settings.safetySettings
+        const storedSettings = settings && settings.safetySettings
 
-        if (!stored || typeof stored !== 'object') return
+        if (!storedSettings || typeof storedSettings !== 'object') return
 
-        const migrated = {}
+        const migratedSettings = {}
 
-        safetyDefinitions.forEach(definition => {
-          const legacyKey = legacySafetyKeys[definition.category]
+        SAFETY_DEFINITIONS.forEach(definition => {
+          const legacyKey = LEGACY_SAFETY_KEYS[definition.category]
 
-          migrated[definition.category] =
-            stored[definition.category] != null
-              ? stored[definition.category]
-              : stored[legacyKey] != null
-                ? stored[legacyKey]
+          migratedSettings[definition.category] =
+            storedSettings[definition.category] != null
+              ? storedSettings[definition.category]
+              : storedSettings[legacyKey] != null
+                ? storedSettings[legacyKey]
                 : null
         })
 
-        settings.safetySettings = migrated
+        settings.safetySettings = migratedSettings
       })
 
       return snapshot
@@ -4015,6 +4110,7 @@
     function readJson (key) {
       try {
         const source = window.localStorage.getItem(key)
+
         return source == null ? null : JSON.parse(source)
       } catch {
         return null
@@ -4024,21 +4120,21 @@
     const storage = {
       load () {
         return migrateSnapshot({
-          activeConversationId: readJson(storageKeys.activeConversationId),
-          conversations: readJson(storageKeys.conversations),
-          endpoints: readJson(storageKeys.endpoints),
-          systemPrompts: readJson(storageKeys.systemPrompts),
-          ui: readJson(storageKeys.ui),
+          activeConversationId: readJson(STORAGE_KEYS.activeConversationId),
+          conversations: readJson(STORAGE_KEYS.conversations),
+          endpoints: readJson(STORAGE_KEYS.endpoints),
+          systemPrompts: readJson(STORAGE_KEYS.systemPrompts),
+          ui: readJson(STORAGE_KEYS.ui),
           workspaceConfiguration:
-            readJson(storageKeys.workspaceConfiguration)
+            readJson(STORAGE_KEYS.workspaceConfiguration)
         })
       },
 
       save (snapshot) {
-        Object.keys(storageKeys).forEach(name => {
+        Object.keys(STORAGE_KEYS).forEach(property => {
           window.localStorage.setItem(
-            storageKeys[name],
-            JSON.stringify(snapshot[name])
+            STORAGE_KEYS[property],
+            JSON.stringify(snapshot[property])
           )
         })
       }
@@ -4047,7 +4143,7 @@
     function defaultSafetySettings () {
       const settings = {}
 
-      safetyDefinitions.forEach(definition => {
+      SAFETY_DEFINITIONS.forEach(definition => {
         settings[definition.category] = null
       })
 
@@ -4081,10 +4177,10 @@
     }
 
     function sanitizeSafetyThreshold (value) {
-      return safetyThresholds.includes(value) ? value : null
+      return SAFETY_THRESHOLDS.includes(value) ? value : null
     }
 
-    function variableEntries (variables) {
+    function createVariableEntries (variables) {
       return Object.entries(variables || {}).map(([name, value]) => ({
         id: uniqueId(),
         name,
@@ -4108,6 +4204,7 @@
       const value = String(content || '').replace(/\s+/g, ' ').trim()
 
       if (!value) return 'System prompt'
+
       return value.length > 48 ? value.slice(0, 48) + '…' : value
     }
 
@@ -4144,11 +4241,13 @@
     function sanitizePrompts (prompts) {
       if (!Array.isArray(prompts)) return []
 
-      const ids = new Set()
+      const identifiers = new Set()
 
       return prompts.map(sanitizePrompt).filter(prompt => {
-        if (!prompt || ids.has(prompt.id)) return false
-        ids.add(prompt.id)
+        if (!prompt || identifiers.has(prompt.id)) return false
+
+        identifiers.add(prompt.id)
+
         return true
       })
     }
@@ -4159,6 +4258,7 @@
 
     function sanitizeSettings (rawSettings, prompts) {
       const settings = defaultSettings()
+
       const raw = rawSettings && typeof rawSettings === 'object'
         ? rawSettings
         : {}
@@ -4217,7 +4317,7 @@
 
       settings.variableEntries = Array.isArray(raw.variableEntries)
         ? sanitizeVariableEntries(raw.variableEntries)
-        : variableEntries(settings.variables)
+        : createVariableEntries(settings.variables)
 
       settings.temperatureAuto =
         typeof raw.temperatureAuto === 'boolean'
@@ -4252,14 +4352,16 @@
         ? raw.mode
         : null
 
-      const rawSafety =
+      const rawSafetySettings =
         raw.safetySettings && typeof raw.safetySettings === 'object'
           ? raw.safetySettings
           : {}
 
-      safetyDefinitions.forEach(definition => {
+      SAFETY_DEFINITIONS.forEach(definition => {
         settings.safetySettings[definition.category] =
-          sanitizeSafetyThreshold(rawSafety[definition.category])
+          sanitizeSafetyThreshold(
+            rawSafetySettings[definition.category]
+          )
       })
 
       return settings
@@ -4290,75 +4392,52 @@
     }
 
     function normalizeToolStatus (status) {
-      const value = toolStatusAliases[status] || status
+      const value = TOOL_STATUS_ALIASES[status] || status
 
-      return Object.prototype.hasOwnProperty.call(toolStatusLabels, value)
+      return Object.prototype.hasOwnProperty.call(TOOL_STATUS_LABELS, value)
         ? value
         : 'running'
     }
 
     function humanizeToolType (type) {
-      if (toolTypeLabels[type]) return toolTypeLabels[type]
+      if (TOOL_TYPE_LABELS[type]) return TOOL_TYPE_LABELS[type]
 
       return String(type || 'Công cụ')
         .replace(/_/g, ' ')
         .replace(/\b\w/g, character => character.toUpperCase())
     }
 
-    function limitText (value, limit = toolPayloadLimit) {
-      const source = String(value || '')
-
-      return source.length <= limit
-        ? source
-        : source.slice(0, limit) + '\n\n… Nội dung đã được rút gọn.'
-    }
-
-    function normalizeToolValue (value, depth = 0) {
+    function normalizeToolValue (value) {
       if (value == null) return null
-      if (typeof value === 'string') return limitText(value)
+      if (typeof value === 'string') return value
 
       if (typeof value === 'number' || typeof value === 'boolean') {
         return value
       }
 
-      if (depth >= 6) return limitText(String(value))
-
       if (Array.isArray(value)) {
-        const output = value.slice(0, 100)
-          .map(item => normalizeToolValue(item, depth + 1))
-
-        if (value.length > 100) {
-          output.push('… Các mục còn lại đã được rút gọn.')
-        }
-
-        return output
+        return value.map(normalizeToolValue)
       }
 
       if (typeof value === 'object') {
-        const output = {}
-
-        Object.entries(value).slice(0, 100).forEach(([name, item]) => {
-          output[name] = normalizeToolValue(item, depth + 1)
-        })
-
-        if (Object.keys(value).length > 100) {
-          output['…'] = 'Các thuộc tính còn lại đã được rút gọn.'
-        }
-
-        return output
+        return Object.fromEntries(
+          Object.entries(value).map(([name, item]) => {
+            return [name, normalizeToolValue(item)]
+          })
+        )
       }
 
-      return limitText(String(value))
+      return String(value)
     }
 
     function stringifyToolValue (value) {
       if (value == null) return ''
-      if (typeof value === 'string') return limitText(value)
+      if (typeof value === 'string') return value
 
       try {
-        return limitText(JSON.stringify(value, null, 2))
+        return JSON.stringify(value, null, 2)
       } catch {
-        return limitText(String(value))
+        return String(value)
       }
     }
 
@@ -4366,10 +4445,11 @@
       if (value == null || value === '') return false
       if (Array.isArray(value)) return value.length > 0
       if (typeof value === 'object') return Object.keys(value).length > 0
+
       return true
     }
 
-    function webSearchTool (toolType, name) {
+    function isWebSearchTool (toolType, name) {
       const reference = (
         String(toolType || '') +
         ' ' +
@@ -4390,6 +4470,7 @@
       if (Array.isArray(value)) {
         for (const item of value) {
           const error = toolErrorValue(item)
+
           if (error) return error
         }
 
@@ -4417,7 +4498,8 @@
       if (!value || typeof value !== 'object') return ''
 
       const log = {}
-      const names = [
+
+      const propertyNames = [
         'log',
         'logs',
         'stdout',
@@ -4426,13 +4508,13 @@
         'exit_code'
       ]
 
-      names.forEach(name => {
+      propertyNames.forEach(propertyName => {
         if (
-          Object.prototype.hasOwnProperty.call(value, name) &&
-          value[name] != null &&
-          value[name] !== ''
+          Object.prototype.hasOwnProperty.call(value, propertyName) &&
+          value[propertyName] != null &&
+          value[propertyName] !== ''
         ) {
-          log[name] = value[name]
+          log[propertyName] = value[propertyName]
         }
       })
 
@@ -4483,7 +4565,7 @@
         log: stringifyToolValue(log),
         name,
         output: stringifyToolValue(options.output),
-        result: webSearchTool(toolType, name)
+        result: isWebSearchTool(toolType, name)
           ? null
           : normalizeToolValue(options.result),
         serverSide: options.serverSide === true,
@@ -4497,25 +4579,31 @@
       }
     }
 
-    function findToolBlock (blocks, callId, name) {
+    function findToolBlock (blocks, callId) {
       const reference = String(callId || '')
 
-      if (reference) {
-        const matched = blocks.find(block => {
-          return (
-            block.type === 'tool' &&
-            (block.callId === reference || block.id === reference)
-          )
-        })
+      if (!reference) return null
 
-        if (matched) return matched
-      }
+      return blocks.find(block => {
+        return (
+          block.type === 'tool' &&
+          (block.callId === reference || block.id === reference)
+        )
+      }) || null
+    }
 
-      if (name) {
-        for (let index = blocks.length - 1; index >= 0; index -= 1) {
-          const block = blocks[index]
+    function findPendingToolBlock (blocks, name) {
+      if (!name) return null
 
-          if (block.type === 'tool' && block.name === name) return block
+      for (let index = blocks.length - 1; index >= 0; index -= 1) {
+        const block = blocks[index]
+
+        if (
+          block.type === 'tool' &&
+          block.name === name &&
+          !['completed', 'failed', 'cancelled'].includes(block.status)
+        ) {
+          return block
         }
       }
 
@@ -4523,7 +4611,11 @@
     }
 
     function applyToolResult (blocks, options) {
-      let block = findToolBlock(blocks, options.callId, options.name)
+      let block = findToolBlock(blocks, options.callId)
+
+      if (!block && !options.callId) {
+        block = findPendingToolBlock(blocks, options.name)
+      }
 
       if (!block) {
         block = toolBlock(options)
@@ -4547,7 +4639,7 @@
       }
 
       if (options.result != null) {
-        block.result = webSearchTool(block.toolType, block.name)
+        block.result = isWebSearchTool(block.toolType, block.name)
           ? null
           : normalizeToolValue(options.result)
       }
@@ -4580,7 +4672,7 @@
       blocks.forEach(block => {
         if (
           block.type !== 'tool' ||
-          !activeToolStatuses.includes(block.status)
+          !ACTIVE_TOOL_STATUSES.includes(block.status)
         ) {
           return
         }
@@ -4628,7 +4720,7 @@
     }
 
     function inferMimeType (name) {
-      return fileTypes[fileExtension(name)] || ''
+      return FILE_MIME_TYPES[fileExtension(name)] || ''
     }
 
     function sanitizeAttachment (attachment) {
@@ -4683,12 +4775,14 @@
         : []
 
       message.content = joinBlocks(
-        blocks.filter(block => block.type === 'text')
+        blocks
+          .filter(block => block.type === 'text')
           .map(block => block.content)
       )
 
       message.reasoning = joinBlocks(
-        blocks.filter(block => block.type === 'reasoning')
+        blocks
+          .filter(block => block.type === 'reasoning')
           .map(block => block.content)
       )
 
@@ -4700,7 +4794,7 @@
       if (
         !message ||
         typeof message !== 'object' ||
-        !messageRoles.includes(message.role)
+        !MESSAGE_ROLES.includes(message.role)
       ) {
         return null
       }
@@ -4725,7 +4819,7 @@
         output.attachments = message.attachments
           .map(sanitizeAttachment)
           .filter(Boolean)
-          .slice(0, maximumFiles)
+          .slice(0, MAXIMUM_ATTACHMENT_COUNT)
       }
 
       if (message.role !== 'assistant') return output
@@ -4749,8 +4843,10 @@
         'modelLabel'
       ]
 
-      stringProperties.forEach(name => {
-        if (typeof message[name] === 'string') output[name] = message[name]
+      stringProperties.forEach(property => {
+        if (typeof message[property] === 'string') {
+          output[property] = message[property]
+        }
       })
 
       if (
@@ -4785,13 +4881,15 @@
       }
 
       syncAssistantMessage(output)
+
       return output
     }
 
     function conversationTitle (value) {
       const title = String(value || '').replace(/\s+/g, ' ').trim()
 
-      if (!title) return text.newConversationTitle
+      if (!title) return UI_TEXT.newConversationTitle
+
       return title.length > 60 ? title.slice(0, 60) + '…' : title
     }
 
@@ -4800,11 +4898,13 @@
         ? conversation.messages
         : []
 
-      const preferred = messages.find(message => {
+      const preferredMessage = messages.find(message => {
         return message.role === 'user' && message.content.trim()
       }) || messages.find(message => message.content.trim())
 
-      if (preferred) return conversationTitle(preferred.content)
+      if (preferredMessage) {
+        return conversationTitle(preferredMessage.content)
+      }
 
       const attachmentMessage = messages.find(message => {
         return message.attachments && message.attachments.length
@@ -4812,7 +4912,7 @@
 
       return attachmentMessage
         ? conversationTitle(attachmentMessage.attachments[0].name)
-        : text.newConversationTitle
+        : UI_TEXT.newConversationTitle
     }
 
     function sanitizeConversation (conversation, fallback, prompts) {
@@ -4843,7 +4943,7 @@
           conversation.messages.map(sanitizeMessage).filter(Boolean),
         pinned: conversation.pinned === true,
         renamed: conversation.renamed === true && Boolean(title),
-        title: title || text.newConversationTitle,
+        title: title || UI_TEXT.newConversationTitle,
         updatedAt:
           Number.isFinite(conversation.updatedAt)
             ? conversation.updatedAt
@@ -4851,6 +4951,7 @@
       }
 
       if (!title) output.title = automaticConversationTitle(output)
+
       return output
     }
 
@@ -4858,7 +4959,7 @@
       if (
         !endpoint ||
         typeof endpoint !== 'object' ||
-        !formatOrder.includes(endpoint.format)
+        !API_FORMAT_ORDER.includes(endpoint.format)
       ) {
         return null
       }
@@ -4880,9 +4981,10 @@
                 .slice(0, 20)
                 .map(header => ({
                   name: String(header.name).trim(),
-                  value: typeof header.value === 'string'
-                    ? header.value
-                    : ''
+                  value:
+                    typeof header.value === 'string'
+                      ? header.value
+                      : ''
                 }))
             : [],
         id:
@@ -4906,49 +5008,57 @@
       }
     }
 
-    const loaded = storage.load()
-    const prompts = sanitizePrompts(loaded.systemPrompts)
-    const workspace = sanitizeConfiguration(
-      loaded.workspaceConfiguration,
+    const storedSnapshot = storage.load()
+    const storedPrompts = sanitizePrompts(storedSnapshot.systemPrompts)
+
+    const storedWorkspaceConfiguration = sanitizeConfiguration(
+      storedSnapshot.workspaceConfiguration,
       null,
-      prompts
+      storedPrompts
     )
 
-    const conversations = Array.isArray(loaded.conversations)
-      ? loaded.conversations
+    const storedConversations = Array.isArray(storedSnapshot.conversations)
+      ? storedSnapshot.conversations
           .map(conversation => {
-            return sanitizeConversation(conversation, workspace, prompts)
+            return sanitizeConversation(
+              conversation,
+              storedWorkspaceConfiguration,
+              storedPrompts
+            )
           })
           .filter(Boolean)
       : []
 
-    const loadedUi = loaded.ui && typeof loaded.ui === 'object'
-      ? loaded.ui
-      : {}
+    const storedUi =
+      storedSnapshot.ui && typeof storedSnapshot.ui === 'object'
+        ? storedSnapshot.ui
+        : {}
 
     const state = {
       activeConversationId: null,
       attachments: [],
       conversationSearch: '',
-      conversations,
+      conversations: storedConversations,
       editDraft: null,
       endpoints:
-        Array.isArray(loaded.endpoints)
-          ? loaded.endpoints.map(sanitizeEndpoint).filter(Boolean)
+        Array.isArray(storedSnapshot.endpoints)
+          ? storedSnapshot.endpoints.map(sanitizeEndpoint).filter(Boolean)
           : [],
       messageDraft:
-        typeof loadedUi.messageDraft === 'string'
-          ? loadedUi.messageDraft
+        typeof storedUi.messageDraft === 'string'
+          ? storedUi.messageDraft
           : '',
       openDrawer: null,
       pendingAttachmentReads: 0,
-      prompts,
+      prompts: storedPrompts,
       ui: {
-        accent: normalizeHexColor(loadedUi.accent || defaultAccent),
-        settingsOpen: loadedUi.settingsOpen !== false,
-        sidebarOpen: loadedUi.sidebarOpen !== false
+        accent: normalizeHexColor(
+          storedUi.accent || DEFAULT_ACCENT_COLOR
+        ),
+        settingsOpen: storedUi.settingsOpen !== false,
+        sidebarOpen: storedUi.sidebarOpen !== false
       },
-      workspace
+      workspace: storedWorkspaceConfiguration
     }
 
     function mostRecentConversation () {
@@ -4962,9 +5072,9 @@
     const fallbackConversation = mostRecentConversation()
 
     state.activeConversationId = state.conversations.some(conversation => {
-      return conversation.id === loaded.activeConversationId
+      return conversation.id === storedSnapshot.activeConversationId
     })
-      ? loaded.activeConversationId
+      ? storedSnapshot.activeConversationId
       : fallbackConversation
         ? fallbackConversation.id
         : null
@@ -4990,7 +5100,7 @@
         conversationId: conversation.id,
         isNew: draft.isNew === true,
         messageId: message.id,
-        role: messageRoles.includes(draft.role)
+        role: MESSAGE_ROLES.includes(draft.role)
           ? draft.role
           : message.role,
         selectionEnd:
@@ -5004,7 +5114,7 @@
       }
     }
 
-    state.editDraft = sanitizeEditDraft(loadedUi.editDraft)
+    state.editDraft = sanitizeEditDraft(storedUi.editDraft)
 
     let activeConfiguration = state.workspace
     let markdownReader
@@ -5017,8 +5127,10 @@
     let shouldStickToBottom = true
     let chatTouchY = null
 
-    const runtimes = new Map()
-    const mobileLayout = window.matchMedia('(max-width: 1279px)')
+    const conversationRuntimes = new Map()
+
+    const mobileLayoutMediaQuery =
+      window.matchMedia('(max-width: 1279px)')
 
     function currentConversation () {
       return state.conversations.find(conversation => {
@@ -5047,31 +5159,32 @@
       return findPrompt(state.prompts, id)
     }
 
-    function runtime (conversationId, create = true) {
+    function getConversationRuntime (conversationId, create = true) {
       if (!conversationId) return null
 
-      let value = runtimes.get(conversationId)
+      let runtime = conversationRuntimes.get(conversationId)
 
-      if (!value && create) {
-        value = {
+      if (!runtime && create) {
+        runtime = {
           abortController: null,
           generating: false,
           paintScheduled: false
         }
 
-        runtimes.set(conversationId, value)
+        conversationRuntimes.set(conversationId, runtime)
       }
 
-      return value || null
+      return runtime || null
     }
 
-    function conversationGenerating (conversationId) {
-      const value = runtime(conversationId, false)
-      return Boolean(value && value.generating)
+    function isConversationGenerating (conversationId) {
+      const runtime = getConversationRuntime(conversationId, false)
+
+      return Boolean(runtime && runtime.generating)
     }
 
-    function currentConversationGenerating () {
-      return conversationGenerating(state.activeConversationId)
+    function isCurrentConversationGenerating () {
+      return isConversationGenerating(state.activeConversationId)
     }
 
     function normalizeConfiguration (configuration) {
@@ -5113,24 +5226,26 @@
 
     function cloneConfiguration (configuration) {
       return sanitizeConfiguration(
-        clone(configuration),
+        cloneValue(configuration),
         null,
         state.prompts
       )
     }
 
-    function instructionRole (role) {
+    function isInstructionRole (role) {
       return role === 'system' || role === 'developer'
     }
 
-    function assistantRole (role) {
+    function isAssistantRole (role) {
       return role === 'assistant'
     }
 
-    function configurations () {
+    function allConfigurations () {
       return [
         state.workspace,
-        ...state.conversations.map(conversation => conversation.configuration)
+        ...state.conversations.map(conversation => {
+          return conversation.configuration
+        })
       ]
     }
 
@@ -5142,7 +5257,7 @@
       prompt.content = content
       prompt.updatedAt = Date.now()
 
-      configurations().forEach(configuration => {
+      allConfigurations().forEach(configuration => {
         if (configuration.settings.systemPromptId === id) {
           configuration.settings.systemPrompt = content
         }
@@ -5160,16 +5275,26 @@
         if (!name && !source) return
 
         if (!name) {
-          const error = apiError('config', 'Tên biến không được để trống.')
+          const error = createApiError(
+            'config',
+            'Tên biến không được để trống.'
+          )
+
           error.entryId = entry.id
           error.field = 'name'
+
           throw error
         }
 
         if (names.has(name)) {
-          const error = apiError('config', `Tên biến “${name}” bị trùng.`)
+          const error = createApiError(
+            'config',
+            `Tên biến “${name}” bị trùng.`
+          )
+
           error.entryId = entry.id
           error.field = 'name'
+
           throw error
         }
 
@@ -5179,13 +5304,14 @@
           try {
             value = parseJson5(source)
           } catch (parseError) {
-            const error = apiError(
+            const error = createApiError(
               'config',
               `Giá trị của biến “${name}” không hợp lệ: ${parseError.message}`
             )
 
             error.entryId = entry.id
             error.field = 'value'
+
             throw error
           }
         }
@@ -5236,6 +5362,7 @@
           if (!result.found) return token
           if (result.value == null) return ''
           if (typeof result.value === 'string') return result.value
+
           if (typeof result.value === 'object') {
             return JSON.stringify(result.value)
           }
@@ -5260,18 +5387,18 @@
     }
 
     function canonicalMessages (conversation, stopBefore, variables) {
-      const output = []
+      const messages = []
 
       for (const message of conversation.messages) {
         if (stopBefore && message.id === stopBefore.id) break
 
-        const content = assistantRole(message.role)
+        const content = isAssistantRole(message.role)
           ? message.content || ''
           : interpolate(message.content || '', variables)
 
         if (!content && !(message.attachments || []).length) continue
 
-        output.push({
+        messages.push({
           attachments:
             (message.attachments || [])
               .map(sanitizeAttachment)
@@ -5281,27 +5408,22 @@
         })
       }
 
-      return output
+      return messages
     }
 
-    function messagesWithSystemPrompt (context, role) {
-      const messages = context.messages.slice()
-
-      if (context.settings.systemPrompt) {
-        messages.unshift({
-          attachments: [],
-          content: context.settings.systemPrompt,
-          role
-        })
-      }
-
-      return messages
+    function buildSystemInstruction (context) {
+      return joinBlocks([
+        context.settings.systemPrompt,
+        ...context.messages
+          .filter(message => isInstructionRole(message.role))
+          .map(message => message.content)
+      ])
     }
 
     function urlFileName (url) {
       try {
-        const parsed = new window.URL(url)
-        const segments = parsed.pathname.split('/').filter(Boolean)
+        const parsedUrl = new window.URL(url)
+        const segments = parsedUrl.pathname.split('/').filter(Boolean)
 
         return decodeURIComponent(segments[segments.length - 1] || '')
       } catch {
@@ -5310,9 +5432,9 @@
     }
 
     function normalizeFileType (file) {
-      const inferred = inferMimeType(file.name)
+      const inferredType = inferMimeType(file.name)
 
-      if (inferred) return inferred
+      if (inferredType) return inferredType
 
       const type = normalizeMimeType(file.type)
 
@@ -5327,25 +5449,26 @@
 
       if (type === 'application/markdown') return 'text/markdown'
       if (type === 'application/javascript') return 'text/javascript'
+
       return type
     }
 
-    function urlAttachment (attachment) {
+    function isUrlAttachment (attachment) {
       return Boolean(attachment && attachment.sourceType === 'url')
     }
 
-    function imageAttachment (attachment) {
+    function isImageAttachment (attachment) {
       return Boolean(
         attachment &&
         (
           attachment.kind === 'image' ||
-          imageMimeTypes.includes(attachment.type || '') ||
+          IMAGE_MIME_TYPES.includes(attachment.type || '') ||
           /^image\//.test(attachment.type || '')
         )
       )
     }
 
-    function pdfAttachment (attachment) {
+    function isPdfAttachment (attachment) {
       return Boolean(
         attachment &&
         (
@@ -5356,7 +5479,7 @@
       )
     }
 
-    function textMimeType (type) {
+    function isTextMimeType (type) {
       return (
         /^text\//.test(type) ||
         /^application\/(?:[\w.+-]+\+)?json$/.test(type) ||
@@ -5366,16 +5489,16 @@
       )
     }
 
-    function supportedAttachmentType (type) {
+    function isSupportedAttachmentType (type) {
       return (
-        imageMimeTypes.includes(type) ||
+        IMAGE_MIME_TYPES.includes(type) ||
         type === 'application/pdf' ||
-        textMimeType(type)
+        isTextMimeType(type)
       )
     }
 
     function attachmentReference (attachment) {
-      if (urlAttachment(attachment)) return attachment.url || ''
+      if (isUrlAttachment(attachment)) return attachment.url || ''
       if (attachment.dataUrl) return attachment.dataUrl
       if (typeof attachment.base64 !== 'string') return ''
 
@@ -5388,17 +5511,19 @@
     }
 
     function attachmentMeta (attachment) {
-      return urlAttachment(attachment)
+      return isUrlAttachment(attachment)
         ? attachment.type || 'URL'
         : formatBytes(attachment.size)
     }
 
     function validateAttachments (messages) {
       messages.forEach(message => {
-        ;(message.attachments || []).forEach(attachment => {
-          if (urlAttachment(attachment)) {
+        const attachments = message.attachments || []
+
+        attachments.forEach(attachment => {
+          if (isUrlAttachment(attachment)) {
             if (!attachment.url) {
-              throw apiError(
+              throw createApiError(
                 'attachment',
                 `URL của tệp “${attachment.name}” không còn khả dụng.`
               )
@@ -5408,7 +5533,7 @@
           }
 
           if (typeof attachment.base64 !== 'string') {
-            throw apiError(
+            throw createApiError(
               'attachment',
               `Không thể gửi lại tệp “${attachment.name}” vì dữ liệu không còn khả dụng.`
             )
@@ -5417,9 +5542,9 @@
       })
     }
 
-    function anthropicAttachment (attachment) {
-      if (urlAttachment(attachment)) {
-        if (imageAttachment(attachment)) {
+    function buildAnthropicAttachment (attachment) {
+      if (isUrlAttachment(attachment)) {
+        if (isImageAttachment(attachment)) {
           return {
             source: {
               type: 'url',
@@ -5429,8 +5554,8 @@
           }
         }
 
-        if (!pdfAttachment(attachment)) {
-          throw apiError(
+        if (!isPdfAttachment(attachment)) {
+          throw createApiError(
             'attachment',
             'Messages API chỉ hỗ trợ tài liệu PDF khi dùng URL.'
           )
@@ -5446,7 +5571,7 @@
         }
       }
 
-      if (imageAttachment(attachment)) {
+      if (isImageAttachment(attachment)) {
         return {
           source: {
             data: attachment.base64,
@@ -5457,7 +5582,7 @@
         }
       }
 
-      if (pdfAttachment(attachment)) {
+      if (isPdfAttachment(attachment)) {
         return {
           source: {
             data: attachment.base64,
@@ -5469,7 +5594,7 @@
         }
       }
 
-      if (textMimeType(attachment.type) && attachment.text != null) {
+      if (isTextMimeType(attachment.type) && attachment.text != null) {
         return {
           source: {
             data: attachment.text,
@@ -5484,8 +5609,8 @@
       return null
     }
 
-    function geminiAttachment (attachment) {
-      if (urlAttachment(attachment)) {
+    function buildGeminiAttachment (attachment) {
+      if (isUrlAttachment(attachment)) {
         const fileData = {
           fileUri: attachment.url
         }
@@ -5507,14 +5632,14 @@
         : null
     }
 
-    function interactionAttachment (attachment) {
+    function buildInteractionAttachment (attachment) {
       const part = {
-        type: imageAttachment(attachment) ? 'image' : 'document'
+        type: isImageAttachment(attachment) ? 'image' : 'document'
       }
 
-      if (attachment.type) part['mime_type'] = attachment.type
+      if (attachment.type) part.mime_type = attachment.type
 
-      if (urlAttachment(attachment)) {
+      if (isUrlAttachment(attachment)) {
         part.uri = attachment.url
       } else if (typeof attachment.base64 === 'string') {
         part.data = attachment.base64
@@ -5525,8 +5650,8 @@
       return part
     }
 
-    function geminiSafetySettings (settings) {
-      return safetyDefinitions.map(definition => {
+    function buildGeminiSafetySettings (settings) {
+      return SAFETY_DEFINITIONS.map(definition => {
         const threshold = settings[definition.category]
 
         return threshold
@@ -5538,7 +5663,7 @@
       }).filter(Boolean)
     }
 
-    function openAiMessages (context) {
+    function buildOpenAiMessages (context) {
       const messages = []
 
       if (context.settings.systemPrompt) {
@@ -5575,7 +5700,7 @@
 
           if (!reference) return
 
-          if (imageAttachment(attachment)) {
+          if (isImageAttachment(attachment)) {
             content.push({
               image_url: {
                 url: reference
@@ -5586,8 +5711,8 @@
             return
           }
 
-          if (urlAttachment(attachment)) {
-            throw apiError(
+          if (isUrlAttachment(attachment)) {
+            throw createApiError(
               'attachment',
               'Chat Completions chỉ hỗ trợ URL trực tiếp cho ảnh.'
             )
@@ -5611,16 +5736,69 @@
       return messages
     }
 
-    function anthropicMessages (context) {
-      const messages = []
+    function adjacentConversationRole (messages, index, direction) {
+      for (
+        let messageIndex = index + direction;
+        messageIndex >= 0 && messageIndex < messages.length;
+        messageIndex += direction
+      ) {
+        const role = messages[messageIndex].role
 
-      messagesWithSystemPrompt(context, 'user').forEach(message => {
-        const role = assistantRole(message.role) ? 'assistant' : 'user'
+        if (isInstructionRole(role)) continue
+
+        return isAssistantRole(role) ? 'assistant' : 'user'
+      }
+
+      return null
+    }
+
+    function canUseAnthropicSystemRole (messages, index) {
+      const previousRole =
+        adjacentConversationRole(messages, index, -1)
+
+      const nextRole =
+        adjacentConversationRole(messages, index, 1)
+
+      return (
+        previousRole === 'user' &&
+        (nextRole === null || nextRole === 'assistant')
+      )
+    }
+
+    function buildAnthropicRequestInput (context) {
+      const messages = []
+      const topLevelInstructions = []
+
+      if (context.settings.systemPrompt) {
+        topLevelInstructions.push(context.settings.systemPrompt)
+      }
+
+      context.messages.forEach((message, index) => {
+        if (isInstructionRole(message.role)) {
+          if (canUseAnthropicSystemRole(context.messages, index)) {
+            messages.push({
+              content: [{
+                text: message.content || '',
+                type: 'text'
+              }],
+              role: 'system'
+            })
+          } else if (message.content) {
+            topLevelInstructions.push(message.content)
+          }
+
+          return
+        }
+
+        const role = isAssistantRole(message.role) ? 'assistant' : 'user'
         const content = []
 
-        if (!assistantRole(message.role)) {
-          ;(message.attachments || []).forEach(attachment => {
-            const part = anthropicAttachment(attachment)
+        if (!isAssistantRole(message.role)) {
+          const attachments = message.attachments || []
+
+          attachments.forEach(attachment => {
+            const part = buildAnthropicAttachment(attachment)
+
             if (part) content.push(part)
           })
         }
@@ -5630,10 +5808,10 @@
           type: 'text'
         })
 
-        const previous = messages[messages.length - 1]
+        const previousMessage = messages[messages.length - 1]
 
-        if (previous && previous.role === role) {
-          previous.content.push(...content)
+        if (previousMessage && previousMessage.role === role) {
+          previousMessage.content.push(...content)
         } else {
           messages.push({
             content,
@@ -5652,39 +5830,47 @@
         })
       }
 
-      return messages
+      return {
+        messages,
+        system: joinBlocks(topLevelInstructions)
+      }
     }
 
-    function geminiContents (context) {
+    function buildGeminiContents (context) {
       const contents = []
 
-      messagesWithSystemPrompt(context, 'user').forEach(message => {
-        const parts = []
+      context.messages
+        .filter(message => !isInstructionRole(message.role))
+        .forEach(message => {
+          const parts = []
 
-        if (message.content) {
-          parts.push({
-            text: message.content
+          if (message.content) {
+            parts.push({
+              text: message.content
+            })
+          }
+
+          if (!isAssistantRole(message.role)) {
+            const attachments = message.attachments || []
+
+            attachments.forEach(attachment => {
+              const part = buildGeminiAttachment(attachment)
+
+              if (part) parts.push(part)
+            })
+          }
+
+          if (!parts.length) {
+            parts.push({
+              text: ''
+            })
+          }
+
+          contents.push({
+            parts,
+            role: isAssistantRole(message.role) ? 'model' : 'user'
           })
-        }
-
-        if (!assistantRole(message.role)) {
-          ;(message.attachments || []).forEach(attachment => {
-            const part = geminiAttachment(attachment)
-            if (part) parts.push(part)
-          })
-        }
-
-        if (!parts.length) {
-          parts.push({
-            text: ''
-          })
-        }
-
-        contents.push({
-          parts,
-          role: assistantRole(message.role) ? 'model' : 'user'
         })
-      })
 
       if (!contents.length) {
         contents.push({
@@ -5700,10 +5886,10 @@
 
     function applyOpenAiSettings (body, settings, responses) {
       if (!settings.temperatureAuto) body.temperature = settings.temperature
-      if (!settings.topPAuto) body['top_p'] = settings.topP
+      if (!settings.topPAuto) body.top_p = settings.topP
 
       if (settings.maxTokens != null) {
-        body[responses ? 'max_output_tokens' : 'max_tokens'] =
+        body[responses ? 'max_output_tokens' : 'max_completion_tokens'] =
           settings.maxTokens
       }
 
@@ -5718,36 +5904,38 @@
           if (settings.mode) body.reasoning.mode = settings.mode
           if (settings.showReasoning) body.reasoning.summary = 'auto'
         } else if (settings.effort) {
-          body['reasoning_effort'] = settings.effort
+          body.reasoning_effort = settings.effort
         }
       } else if (responses) {
         body.reasoning = {
           effort: 'none'
         }
       } else {
-        body['reasoning_effort'] = 'none'
+        body.reasoning_effort = 'none'
       }
     }
 
-    function bearerHeaders (apiKey) {
+    function createBearerHeaders (apiKey) {
       const headers = {
         'content-type': 'application/json'
       }
 
       if (apiKey) headers.authorization = 'Bearer ' + apiKey
+
       return headers
     }
 
-    function googleHeaders (apiKey) {
+    function createGoogleHeaders (apiKey) {
       const headers = {
         'content-type': 'application/json'
       }
 
       if (apiKey) headers['x-goog-api-key'] = apiKey
+
       return headers
     }
 
-    const apiFormats = {
+    const API_FORMATS = {
       'chat-completions': {
         label: 'Chat Completions',
         presetBase: 'https://api.openai.com/v1',
@@ -5758,7 +5946,7 @@
 
         build (context) {
           const body = {
-            messages: openAiMessages(context),
+            messages: buildOpenAiMessages(context),
             model: context.model,
             stream: context.stream
           }
@@ -5771,7 +5959,7 @@
 
           return {
             body,
-            headers: bearerHeaders(context.apiKey),
+            headers: createBearerHeaders(context.apiKey),
             url: this.url(context.base)
           }
         }
@@ -5792,11 +5980,17 @@
         build (context) {
           let maxTokens = context.settings.maxTokens || 8192
 
+          const requestInput = buildAnthropicRequestInput(context)
+
           const body = {
             max_tokens: maxTokens,
-            messages: anthropicMessages(context),
+            messages: requestInput.messages,
             model: context.model,
             stream: context.stream
+          }
+
+          if (requestInput.system) {
+            body.system = requestInput.system
           }
 
           if (context.settings.tools.length) {
@@ -5813,7 +6007,7 @@
             }
           } else if (context.settings.budget != null) {
             if (context.settings.budget < 1024) {
-              throw apiError(
+              throw createApiError(
                 'config',
                 'Messages API yêu cầu thinking budget từ 1024 token.'
               )
@@ -5821,7 +6015,7 @@
 
             if (maxTokens <= context.settings.budget) {
               maxTokens = context.settings.budget + 1
-              body['max_tokens'] = maxTokens
+              body.max_tokens = maxTokens
             }
 
             body.thinking = {
@@ -5840,21 +6034,24 @@
             context.settings.reasoningEnabled &&
             context.settings.effort
           ) {
-            body['output_config'] = {
+            body.output_config = {
               effort: context.settings.effort
             }
           }
 
-          if (!context.settings.temperatureAuto) {
+          if (
+            !context.settings.reasoningEnabled &&
+            !context.settings.temperatureAuto
+          ) {
             body.temperature = clamp(context.settings.temperature, 0, 1)
           }
 
           if (!context.settings.topPAuto) {
-            body['top_p'] = context.settings.topP
+            body.top_p = context.settings.topP
           }
 
           if (context.settings.topK != null) {
-            body['top_k'] = context.settings.topK
+            body.top_k = context.settings.topK
           }
 
           const headers = {
@@ -5931,21 +6128,35 @@
           generationConfig.thinkingConfig = thinkingConfig
 
           const body = {
-            contents: geminiContents(context),
+            contents: buildGeminiContents(context),
             generationConfig
           }
 
-          if (context.settings.tools.length) body.tools = context.settings.tools
+          const instruction = buildSystemInstruction(context)
 
-          const safetySettings = geminiSafetySettings(
+          if (instruction) {
+            body.systemInstruction = {
+              parts: [{
+                text: instruction
+              }]
+            }
+          }
+
+          if (context.settings.tools.length) {
+            body.tools = context.settings.tools
+          }
+
+          const safetySettings = buildGeminiSafetySettings(
             context.settings.safetySettings
           )
 
-          if (safetySettings.length) body.safetySettings = safetySettings
+          if (safetySettings.length) {
+            body.safetySettings = safetySettings
+          }
 
           return {
             body,
-            headers: googleHeaders(context.apiKey),
+            headers: createGoogleHeaders(context.apiKey),
             url: this.url(context.base, context.model, context.stream)
           }
         }
@@ -5962,60 +6173,68 @@
         build (context) {
           const input = []
 
-          messagesWithSystemPrompt(context, 'system').forEach(message => {
-            const role = assistantRole(message.role)
-              ? 'assistant'
-              : message.role
+          context.messages
+            .filter(message => !isInstructionRole(message.role))
+            .forEach(message => {
+              const role = isAssistantRole(message.role)
+                ? 'assistant'
+                : message.role
 
-            const content = []
+              const content = []
 
-            if (message.content) {
-              content.push({
-                text: message.content,
-                type:
-                  role === 'assistant'
-                    ? 'output_text'
-                    : 'input_text'
+              if (message.content) {
+                content.push({
+                  text: message.content,
+                  type:
+                    role === 'assistant'
+                      ? 'output_text'
+                      : 'input_text'
+                })
+              }
+
+              if (!isAssistantRole(message.role)) {
+                const attachments = message.attachments || []
+
+                attachments.forEach(attachment => {
+                  const reference = attachmentReference(attachment)
+
+                  if (!reference) return
+
+                  if (isImageAttachment(attachment)) {
+                    content.push({
+                      image_url: reference,
+                      type: 'input_image'
+                    })
+                  } else if (isUrlAttachment(attachment)) {
+                    content.push({
+                      file_url: reference,
+                      type: 'input_file'
+                    })
+                  } else {
+                    content.push({
+                      file_data: reference,
+                      filename: attachment.name,
+                      type: 'input_file'
+                    })
+                  }
+                })
+              }
+
+              input.push({
+                content,
+                role
               })
-            }
-
-            if (!assistantRole(message.role)) {
-              ;(message.attachments || []).forEach(attachment => {
-                const reference = attachmentReference(attachment)
-
-                if (!reference) return
-
-                if (imageAttachment(attachment)) {
-                  content.push({
-                    image_url: reference,
-                    type: 'input_image'
-                  })
-                } else if (urlAttachment(attachment)) {
-                  content.push({
-                    file_url: reference,
-                    type: 'input_file'
-                  })
-                } else {
-                  content.push({
-                    file_data: reference,
-                    filename: attachment.name,
-                    type: 'input_file'
-                  })
-                }
-              })
-            }
-
-            input.push({
-              content,
-              role
             })
-          })
 
           const body = {
             input,
             model: context.model,
             stream: context.stream
           }
+
+          const instruction = buildSystemInstruction(context)
+
+          if (instruction) body.instructions = instruction
 
           applyOpenAiSettings(body, context.settings, true)
 
@@ -6034,7 +6253,7 @@
 
           return {
             body,
-            headers: bearerHeaders(context.apiKey),
+            headers: createBearerHeaders(context.apiKey),
             url: this.url(context.base)
           }
         }
@@ -6052,42 +6271,47 @@
         build (context) {
           const input = []
 
-          messagesWithSystemPrompt(context, 'user').forEach(message => {
-            const content = []
+          context.messages
+            .filter(message => !isInstructionRole(message.role))
+            .forEach(message => {
+              const content = []
 
-            if (message.content) {
-              content.push({
-                text: message.content,
-                type: 'text'
-              })
-            }
+              if (message.content) {
+                content.push({
+                  text: message.content,
+                  type: 'text'
+                })
+              }
 
-            if (!assistantRole(message.role)) {
-              ;(message.attachments || []).forEach(attachment => {
-                const part = interactionAttachment(attachment)
-                if (part) content.push(part)
-              })
-            }
+              if (!isAssistantRole(message.role)) {
+                const attachments = message.attachments || []
 
-            if (!content.length) {
-              content.push({
-                text: '',
-                type: 'text'
-              })
-            }
+                attachments.forEach(attachment => {
+                  const part = buildInteractionAttachment(attachment)
 
-            input.push(
-              assistantRole(message.role)
-                ? {
-                    content,
-                    type: 'model_output'
-                  }
-                : {
-                    content,
-                    type: 'user_input'
-                  }
-            )
-          })
+                  if (part) content.push(part)
+                })
+              }
+
+              if (!content.length) {
+                content.push({
+                  text: '',
+                  type: 'text'
+                })
+              }
+
+              input.push(
+                isAssistantRole(message.role)
+                  ? {
+                      content,
+                      type: 'model_output'
+                    }
+                  : {
+                      content,
+                      type: 'user_input'
+                    }
+              )
+            })
 
           if (!input.length) {
             input.push({
@@ -6107,12 +6331,12 @@
           }
 
           if (context.settings.reasoningEnabled) {
-            generationConfig['thinking_summaries'] =
+            generationConfig.thinking_summaries =
               context.settings.showReasoning ? 'auto' : 'none'
           }
 
           if (context.settings.maxTokens != null) {
-            generationConfig['max_output_tokens'] =
+            generationConfig.max_output_tokens =
               context.settings.maxTokens
           }
 
@@ -6123,12 +6347,19 @@
             stream: context.stream
           }
 
-          if (context.settings.tools.length) body.tools = context.settings.tools
+          const instruction = buildSystemInstruction(context)
+
+          if (instruction) body.system_instruction = instruction
+
+          if (context.settings.tools.length) {
+            body.tools = context.settings.tools
+          }
+
           if (context.settings.zeroDataRetention) body.store = false
 
           return {
             body,
-            headers: googleHeaders(context.apiKey),
+            headers: createGoogleHeaders(context.apiKey),
             url: this.url(context.base)
           }
         }
@@ -6149,6 +6380,7 @@
 
     function chatBlocks (json) {
       const blocks = []
+
       const message =
         json.choices &&
         json.choices[0] &&
@@ -6157,7 +6389,7 @@
       if (!message) return blocks
 
       const reasoning = textValue(
-        message['reasoning_content'] ||
+        message.reasoning_content ||
         message.reasoning ||
         message.thinking
       )
@@ -6170,8 +6402,8 @@
 
       if (content) blocks.push(textBlock('chat:text:0', content))
 
-      const calls = Array.isArray(message['tool_calls'])
-        ? message['tool_calls']
+      const calls = Array.isArray(message.tool_calls)
+        ? message.tool_calls
         : []
 
       calls.forEach((call, index) => {
@@ -6245,9 +6477,10 @@
           block.type === 'tool_result' ||
           /_tool_result$/.test(block.type || '')
         ) {
-          const callId = block['tool_use_id'] || String(index)
+          const callId = block.tool_use_id || String(index)
+
           const failed =
-            block['is_error'] === true ||
+            block.is_error === true ||
             Boolean(toolErrorValue(block))
 
           applyToolResult(blocks, {
@@ -6268,6 +6501,7 @@
       })
 
       finalizeTools(blocks)
+
       return blocks
     }
 
@@ -6346,6 +6580,7 @@
         if (part.codeExecutionResult) {
           const result = part.codeExecutionResult
           const callId = result.id || 'code:' + index
+
           const failed =
             result.outcome === 'OUTCOME_FAILED' ||
             result.outcome === 'OUTCOME_DEADLINE_EXCEEDED'
@@ -6407,10 +6642,11 @@
       })
 
       finalizeTools(blocks)
+
       return blocks
     }
 
-    function responseToolItem (item) {
+    function isResponseToolItem (item) {
       return Boolean(
         item &&
         typeof item.type === 'string' &&
@@ -6423,7 +6659,8 @@
     }
 
     function responseToolOptions (item, index) {
-      const callId = item.id || item['call_id'] || String(index)
+      const callId = item.id || item.call_id || String(index)
+
       const clientSide =
         item.type === 'function_call' ||
         item.type === 'custom_tool_call'
@@ -6472,17 +6709,19 @@
             const value = textValue(part)
 
             if (value) {
-              blocks.push(reasoningBlock(
-                `responses:reasoning:${outputIndex}:${partIndex}`,
-                value
-              ))
+              blocks.push(
+                reasoningBlock(
+                  `responses:reasoning:${outputIndex}:${partIndex}`,
+                  value
+                )
+              )
             }
           })
 
           return
         }
 
-        if (responseToolItem(item)) {
+        if (isResponseToolItem(item)) {
           blocks.push(toolBlock(responseToolOptions(item, outputIndex)))
           return
         }
@@ -6497,10 +6736,12 @@
               ) &&
               typeof content.text === 'string'
             ) {
-              blocks.push(textBlock(
-                `responses:text:${outputIndex}:${contentIndex}`,
-                content.text
-              ))
+              blocks.push(
+                textBlock(
+                  `responses:text:${outputIndex}:${contentIndex}`,
+                  content.text
+                )
+              )
             }
           })
         }
@@ -6508,19 +6749,20 @@
 
       if (
         !blocks.some(block => block.type === 'text') &&
-        typeof json['output_text'] === 'string' &&
-        json['output_text']
+        typeof json.output_text === 'string' &&
+        json.output_text
       ) {
         blocks.push(
-          textBlock('responses:text:fallback', json['output_text'])
+          textBlock('responses:text:fallback', json.output_text)
         )
       }
 
       finalizeTools(blocks)
+
       return blocks
     }
 
-    function interactionCall (step) {
+    function isInteractionCall (step) {
       return Boolean(
         step &&
         typeof step.type === 'string' &&
@@ -6531,7 +6773,7 @@
       )
     }
 
-    function interactionResult (step) {
+    function isInteractionResult (step) {
       return Boolean(
         step &&
         typeof step.type === 'string' &&
@@ -6545,7 +6787,10 @@
     function interactionCallType (resultType) {
       return resultType === 'function_result'
         ? 'function_call'
-        : String(resultType || 'tool_result').replace(/_result$/, '_call')
+        : String(resultType || 'tool_result').replace(
+            /_result$/,
+            '_call'
+          )
     }
 
     function interactionsBlocks (json) {
@@ -6553,9 +6798,9 @@
       const steps = json && (json.steps || json.output)
 
       if (!Array.isArray(steps)) {
-        if (typeof json['output_text'] === 'string') {
+        if (typeof json.output_text === 'string') {
           blocks.push(
-            textBlock('interactions:text:fallback', json['output_text'])
+            textBlock('interactions:text:fallback', json.output_text)
           )
         }
 
@@ -6579,7 +6824,7 @@
           if (value) {
             blocks.push(textBlock('interactions:text:' + index, value))
           }
-        } else if (interactionCall(step)) {
+        } else if (isInteractionCall(step)) {
           const callId = step.id || String(index)
           const serverSide = step.type !== 'function_call'
 
@@ -6593,28 +6838,35 @@
             status: serverSide ? 'running' : 'waiting',
             toolType: step.type
           }))
-        } else if (interactionResult(step)) {
-          const callId = step['call_id'] || String(index)
+        } else if (isInteractionResult(step)) {
+          const callId = step.call_id || String(index)
           const callType = interactionCallType(step.type)
 
           applyToolResult(blocks, {
             callId,
             details: step.metadata,
-            error: step['is_error']
-              ? firstDefined(step.result, step.error, step)
-              : step.error,
+            error:
+              step.is_error
+                ? firstDefinedValue(step.result, step.error, step)
+                : step.error,
             id: 'interactions:tool:' + callId,
             log: toolLogValue(step.result),
             name: step.name || humanizeToolType(callType),
-            result: firstDefined(step.result, step.output, step.content),
+            result:
+              firstDefinedValue(
+                step.result,
+                step.output,
+                step.content
+              ),
             serverSide: callType !== 'function_call',
-            status: step['is_error'] ? 'failed' : 'completed',
+            status: step.is_error ? 'failed' : 'completed',
             toolType: callType
           })
         }
       })
 
       finalizeTools(blocks)
+
       return blocks
     }
 
@@ -6624,15 +6876,19 @@
 
       if (format === 'generate-content') {
         const reason =
-          json['promptFeedback'] &&
-          json['promptFeedback']['blockReason']
+          json.promptFeedback &&
+          json.promptFeedback.blockReason
 
-        if (reason) throw apiError('api', 'Yêu cầu bị chặn: ' + reason)
+        if (reason) {
+          throw createApiError('api', 'Yêu cầu bị chặn: ' + reason)
+        }
+
         return geminiBlocks(json)
       }
 
       if (format === 'responses') return responsesBlocks(json)
       if (format === 'interactions') return interactionsBlocks(json)
+
       return []
     }
 
@@ -6645,7 +6901,10 @@
         try {
           return parseJson5(source)
         } catch {
-          throw apiError('api', 'Phản hồi API không phải JSON hợp lệ.')
+          throw createApiError(
+            'api',
+            'Phản hồi API không phải JSON hợp lệ.'
+          )
         }
       }
     }
@@ -6663,7 +6922,10 @@
     }
 
     function messageBlocks (message) {
-      if (!Array.isArray(message.outputBlocks)) message.outputBlocks = []
+      if (!Array.isArray(message.outputBlocks)) {
+        message.outputBlocks = []
+      }
+
       return message.outputBlocks
     }
 
@@ -6687,9 +6949,12 @@
 
     function upsertTool (message, options) {
       const blocks = messageBlocks(message)
+
       let block =
-        findToolBlock(blocks, options.callId, options.name) ||
-        blocks.find(item => item.type === 'tool' && item.id === options.id)
+        findToolBlock(blocks, options.callId) ||
+        blocks.find(item => {
+          return item.type === 'tool' && item.id === options.id
+        })
 
       if (!block) {
         block = toolBlock(options)
@@ -6710,7 +6975,7 @@
       }
 
       if (options.inputDelta) {
-        block.input = limitText((block.input || '') + options.inputDelta)
+        block.input = (block.input || '') + options.inputDelta
       }
 
       if (options.output != null) {
@@ -6718,10 +6983,10 @@
       }
 
       if (options.outputDelta) {
-        block.output = limitText((block.output || '') + options.outputDelta)
+        block.output = (block.output || '') + options.outputDelta
       }
 
-      const omitResult = webSearchTool(block.toolType, block.name)
+      const omitResult = isWebSearchTool(block.toolType, block.name)
 
       if (options.result != null) {
         block.result = omitResult
@@ -6730,19 +6995,20 @@
       }
 
       if (options.resultDelta && !omitResult) {
-        block.result = limitText(
+        block.result =
           String(block.result || '') + options.resultDelta
-        )
       }
 
       if (options.details != null) {
         block.details = stringifyToolValue(options.details)
       }
 
-      if (options.log != null) block.log = stringifyToolValue(options.log)
+      if (options.log != null) {
+        block.log = stringifyToolValue(options.log)
+      }
 
       if (options.logDelta) {
-        block.log = limitText((block.log || '') + options.logDelta)
+        block.log = (block.log || '') + options.logDelta
       }
 
       const inferredLog =
@@ -6787,14 +7053,14 @@
     }
 
     function scheduleMessagePaint (message, conversationId) {
-      const value = runtime(conversationId)
+      const runtime = getConversationRuntime(conversationId)
 
-      if (value.paintScheduled) return
+      if (runtime.paintScheduled) return
 
-      value.paintScheduled = true
+      runtime.paintScheduled = true
 
       window.requestAnimationFrame(() => {
-        value.paintScheduled = false
+        runtime.paintScheduled = false
 
         if (
           document.hidden ||
@@ -6803,7 +7069,8 @@
           return
         }
 
-        const element = select(`[data-message-id="${message.id}"]`)
+        const element =
+          queryElement(`[data-message-id="${message.id}"]`)
 
         if (!element) return
 
@@ -6813,13 +7080,17 @@
         const output = element.querySelector('.message__output')
 
         if (output) output.innerHTML = assistantBodyHtml(message)
+
         scrollToBottom(false)
       })
     }
 
     function handleChatStream (data, message, streamState) {
       if (data.error) {
-        throw apiError('api', data.error.message || 'API trả về lỗi.')
+        throw createApiError(
+          'api',
+          data.error.message || 'API trả về lỗi.'
+        )
       }
 
       const choice = data.choices && data.choices[0]
@@ -6832,7 +7103,7 @@
         'chat:reasoning:0',
         'reasoning',
         textValue(
-          delta['reasoning_content'] ||
+          delta.reasoning_content ||
           delta.reasoning ||
           delta.thinking
         )
@@ -6845,14 +7116,18 @@
         textValue(delta.content)
       )
 
-      const calls = Array.isArray(delta['tool_calls'])
-        ? delta['tool_calls']
+      const calls = Array.isArray(delta.tool_calls)
+        ? delta.tool_calls
         : []
 
       calls.forEach((call, index) => {
-        const callIndex = Number.isFinite(call.index) ? call.index : index
+        const callIndex = Number.isFinite(call.index)
+          ? call.index
+          : index
+
         const functionData = call.function || {}
         const customData = call.custom || {}
+
         const callId =
           call.id ||
           streamState.chatToolIds[callIndex] ||
@@ -6874,7 +7149,7 @@
             call.name,
           serverSide: false,
           status:
-            choice['finish_reason'] === 'tool_calls'
+            choice.finish_reason === 'tool_calls'
               ? 'waiting'
               : 'preparing',
           toolType:
@@ -6887,7 +7162,7 @@
 
     function handleAnthropicStream (data, message, streamState) {
       if (data.type === 'error') {
-        throw apiError(
+        throw createApiError(
           'api',
           data.error && data.error.message
             ? data.error.message
@@ -6895,8 +7170,11 @@
         )
       }
 
-      if (data.type === 'content_block_start' && data['content_block']) {
-        const block = data['content_block']
+      if (
+        data.type === 'content_block_start' &&
+        data.content_block
+      ) {
+        const block = data.content_block
         const index = data.index
 
         if (block.type === 'thinking') {
@@ -6952,17 +7230,18 @@
           block.type === 'tool_result' ||
           /_tool_result$/.test(block.type || '')
         ) {
-          const callId = block['tool_use_id'] || String(index)
+          const callId = block.tool_use_id || String(index)
 
           applyToolResult(messageBlocks(message), {
             callId,
-            error: block['is_error']
-              ? toolErrorValue(block) || block.content
-              : '',
+            error:
+              block.is_error
+                ? toolErrorValue(block) || block.content
+                : '',
             id: 'anthropic:tool:' + callId,
             result: block.content,
             serverSide: true,
-            status: block['is_error'] ? 'failed' : 'completed',
+            status: block.is_error ? 'failed' : 'completed',
             toolType: block.type
           })
         }
@@ -6989,7 +7268,7 @@
           upsertTool(message, {
             callId: block.callId,
             id: block.id,
-            inputDelta: data.delta['partial_json'] || '',
+            inputDelta: data.delta.partial_json || '',
             serverSide: block.serverSide,
             status: block.serverSide ? 'running' : 'preparing'
           })
@@ -7012,10 +7291,12 @@
 
     function handleGeminiStream (data, message, streamState) {
       const reason =
-        data['promptFeedback'] &&
-        data['promptFeedback']['blockReason']
+        data.promptFeedback &&
+        data.promptFeedback.blockReason
 
-      if (reason) throw apiError('api', 'Yêu cầu bị chặn: ' + reason)
+      if (reason) {
+        throw createApiError('api', 'Yêu cầu bị chặn: ' + reason)
+      }
 
       candidateParts(data).forEach((part, index) => {
         if (!part) return
@@ -7035,7 +7316,10 @@
           const callId =
             part.functionCall.id ||
             streamState.geminiFunctionIds[index] ||
-            'function:' + (part.functionCall.name || index) + ':' + index
+            'function:' +
+              (part.functionCall.name || index) +
+              ':' +
+              index
 
           streamState.geminiFunctionIds[index] = callId
 
@@ -7052,6 +7336,7 @@
 
         if (part.functionResponse) {
           const response = part.functionResponse
+
           const callId =
             response.id ||
             streamState.geminiFunctionIds[index] ||
@@ -7102,6 +7387,7 @@
 
         if (part.codeExecutionResult) {
           const result = part.codeExecutionResult
+
           const callId =
             result.id ||
             streamState.geminiCodeIds[index] ||
@@ -7126,6 +7412,7 @@
 
         if (part.toolCall) {
           const call = part.toolCall
+
           const callId =
             call.id ||
             streamState.geminiToolIds[index] ||
@@ -7149,6 +7436,7 @@
 
         if (part.toolResponse) {
           const response = part.toolResponse
+
           const callId =
             response.id ||
             streamState.geminiToolIds[index] ||
@@ -7160,7 +7448,9 @@
               response.response &&
               response.response.error,
             id: 'gemini:tool:' + callId,
-            name: humanizeToolType(response.toolType || 'tool_call'),
+            name: humanizeToolType(
+              response.toolType || 'tool_call'
+            ),
             result: response.response,
             serverSide: true,
             status:
@@ -7177,7 +7467,7 @@
       const type = data.type || eventName
 
       if (type === 'error' || type === 'response.failed') {
-        throw apiError(
+        throw createApiError(
           'api',
           (
             data.error &&
@@ -7200,9 +7490,9 @@
         appendBlock(
           message,
           'responses:reasoning:' +
-            (data['item_id'] || data['output_index'] || 0) +
+            (data.item_id || data.output_index || 0) +
             ':' +
-            (data['summary_index'] || data['content_index'] || 0),
+            (data.summary_index || data.content_index || 0),
           'reasoning',
           typeof data.delta === 'string' ? data.delta : ''
         )
@@ -7215,9 +7505,9 @@
         appendBlock(
           message,
           'responses:text:' +
-            (data['item_id'] || data['output_index'] || 0) +
+            (data.item_id || data.output_index || 0) +
             ':' +
-            (data['content_index'] || 0),
+            (data.content_index || 0),
           'text',
           typeof data.delta === 'string' ? data.delta : ''
         )
@@ -7228,23 +7518,27 @@
           type === 'response.output_item.added' ||
           type === 'response.output_item.done'
         ) &&
-        responseToolItem(data.item)
+        isResponseToolItem(data.item)
       ) {
         upsertTool(
           message,
-          responseToolOptions(data.item, data['output_index'] || 0)
+          responseToolOptions(
+            data.item,
+            data.output_index || 0
+          )
         )
       }
 
       if (type === 'response.function_call_arguments.delta') {
         const callId =
-          data['item_id'] ||
-          String(data['output_index'] || 0)
+          data.item_id ||
+          String(data.output_index || 0)
 
         upsertTool(message, {
           callId,
           id: 'responses:tool:' + callId,
-          inputDelta: typeof data.delta === 'string' ? data.delta : '',
+          inputDelta:
+            typeof data.delta === 'string' ? data.delta : '',
           serverSide: false,
           status: 'preparing',
           toolType: 'function_call'
@@ -7253,8 +7547,8 @@
 
       if (type === 'response.function_call_arguments.done') {
         const callId =
-          data['item_id'] ||
-          String(data['output_index'] || 0)
+          data.item_id ||
+          String(data.output_index || 0)
 
         upsertTool(message, {
           callId,
@@ -7273,12 +7567,15 @@
 
       if (statusMatch) {
         const callId =
-          data['item_id'] ||
-          String(data['output_index'] || 0)
+          data.item_id ||
+          String(data.output_index || 0)
 
         upsertTool(message, {
           callId,
-          error: statusMatch[2] === 'failed' ? data.error || data : '',
+          error:
+            statusMatch[2] === 'failed'
+              ? data.error || data
+              : '',
           id: 'responses:tool:' + callId,
           serverSide: true,
           status: normalizeToolStatus(statusMatch[2]),
@@ -7299,8 +7596,8 @@
 
       if (genericInputDelta) {
         const callId =
-          data['item_id'] ||
-          String(data['output_index'] || 0)
+          data.item_id ||
+          String(data.output_index || 0)
 
         upsertTool(message, {
           callId,
@@ -7314,15 +7611,21 @@
 
       if (type === 'response.completed') {
         const blocks = responsesBlocks(data.response || {})
+
         if (blocks.length) replaceBlocks(message, blocks)
       }
     }
 
-    function handleInteractionsStream (data, eventName, message, streamState) {
-      const type = data['event_type'] || data.type || eventName
+    function handleInteractionsStream (
+      data,
+      eventName,
+      message,
+      streamState
+    ) {
+      const type = data.event_type || data.type || eventName
 
       if (type === 'error') {
-        throw apiError(
+        throw createApiError(
           'api',
           (
             data.error &&
@@ -7349,7 +7652,7 @@
             ...step,
             blockId: 'interactions:text:' + index
           }
-        } else if (interactionCall(step)) {
+        } else if (isInteractionCall(step)) {
           const serverSide = step.type !== 'function_call'
           const callId = step.id || String(index)
           const blockId = 'interactions:tool:' + callId
@@ -7371,22 +7674,28 @@
             status: serverSide ? 'running' : 'preparing',
             toolType: step.type
           })
-        } else if (interactionResult(step)) {
-          const callId = step['call_id'] || String(index)
+        } else if (isInteractionResult(step)) {
+          const callId = step.call_id || String(index)
           const callType = interactionCallType(step.type)
 
           const block = applyToolResult(messageBlocks(message), {
             callId,
             details: step.metadata,
-            error: step['is_error']
-              ? firstDefined(step.result, step.error, step)
-              : step.error,
+            error:
+              step.is_error
+                ? firstDefinedValue(step.result, step.error, step)
+                : step.error,
             id: 'interactions:tool:' + callId,
             log: toolLogValue(step.result),
             name: step.name || humanizeToolType(callType),
-            result: firstDefined(step.result, step.output, step.content),
+            result:
+              firstDefinedValue(
+                step.result,
+                step.output,
+                step.content
+              ),
             serverSide: callType !== 'function_call',
-            status: step['is_error'] ? 'failed' : 'completed',
+            status: step.is_error ? 'failed' : 'completed',
             toolType: callType
           })
 
@@ -7400,9 +7709,11 @@
       }
 
       if (type === 'step.delta' && data.delta) {
-        const previous = streamState.interactionSteps[data.index] || {}
+        const previousStep =
+          streamState.interactionSteps[data.index] || {}
+
         const step = {
-          ...previous,
+          ...previousStep,
           ...data.delta
         }
 
@@ -7436,12 +7747,12 @@
             toolType: step.type || 'function_call'
           })
         } else if (
-          interactionResult(data.delta) ||
-          interactionResult(step)
+          isInteractionResult(data.delta) ||
+          isInteractionResult(step)
         ) {
           const callId =
-            data.delta['call_id'] ||
-            step['call_id'] ||
+            data.delta.call_id ||
+            step.call_id ||
             step.callId ||
             String(data.index)
 
@@ -7450,31 +7761,33 @@
           )
 
           const failed =
-            data.delta['is_error'] === true ||
-            step['is_error'] === true
+            data.delta.is_error === true ||
+            step.is_error === true
 
           applyToolResult(messageBlocks(message), {
             callId,
-            error: failed
-              ? firstDefined(
-                  data.delta.result,
-                  data.delta.error,
-                  step.result,
-                  step.error,
-                  data.delta
-                )
-              : data.delta.error,
+            error:
+              failed
+                ? firstDefinedValue(
+                    data.delta.result,
+                    data.delta.error,
+                    step.result,
+                    step.error,
+                    data.delta
+                  )
+                : data.delta.error,
             id: 'interactions:tool:' + callId,
             log: toolLogValue(data.delta.result),
             name:
               data.delta.name ||
               step.name ||
               humanizeToolType(callType),
-            result: firstDefined(
-              data.delta.result,
-              data.delta.output,
-              data.delta.content
-            ),
+            result:
+              firstDefinedValue(
+                data.delta.result,
+                data.delta.output,
+                data.delta.content
+              ),
             serverSide: callType !== 'function_call',
             status: failed ? 'failed' : 'completed',
             toolType: callType
@@ -7488,8 +7801,7 @@
         if (step && step.resultStep) {
           const block = findToolBlock(
             messageBlocks(message),
-            step.callId,
-            ''
+            step.callId
           )
 
           upsertTool(message, {
@@ -7500,7 +7812,7 @@
                 ? 'failed'
                 : 'completed'
           })
-        } else if (step && interactionCall(step)) {
+        } else if (step && isInteractionCall(step)) {
           upsertTool(message, {
             callId: step.callId,
             id: step.blockId,
@@ -7515,7 +7827,7 @@
         const interaction = data.interaction || {}
 
         if (interaction.status === 'failed') {
-          throw apiError(
+          throw createApiError(
             'api',
             (
               interaction.error &&
@@ -7526,6 +7838,7 @@
         }
 
         const blocks = interactionsBlocks(interaction)
+
         if (blocks.length) replaceBlocks(message, blocks)
       }
     }
@@ -7550,7 +7863,12 @@
       } else if (format === 'responses') {
         handleResponsesStream(data, event.event, message)
       } else if (format === 'interactions') {
-        handleInteractionsStream(data, event.event, message, streamState)
+        handleInteractionsStream(
+          data,
+          event.event,
+          message,
+          streamState
+        )
       }
 
       syncAssistantMessage(message)
@@ -7560,6 +7878,7 @@
     async function readEvents (response, handleEvent) {
       const reader = response.body.getReader()
       const decoder = new window.TextDecoder()
+
       let buffer = ''
       let eventName = ''
       let dataLines = []
@@ -7602,16 +7921,24 @@
         })
 
         const lines = buffer.split('\n')
+
         buffer = lines.pop() || ''
         lines.forEach(consume)
       }
 
       buffer += decoder.decode()
+
       if (buffer) consume(buffer)
+
       dispatch()
     }
 
-    async function executeRequest (url, options, stream, handleEvent) {
+    async function executeRequest (
+      url,
+      options,
+      stream,
+      handleEvent
+    ) {
       let response
 
       try {
@@ -7619,7 +7946,7 @@
       } catch (error) {
         if (error && error.name === 'AbortError') throw error
 
-        throw apiError(
+        throw createApiError(
           'network',
           'Không thể gọi API. Hãy kiểm tra mạng, URL API hoặc CORS.'
         )
@@ -7652,7 +7979,7 @@
     }
 
     function storedAttachment (attachment) {
-      return urlAttachment(attachment)
+      return isUrlAttachment(attachment)
         ? {
             id: attachment.id,
             kind: attachment.kind,
@@ -7673,7 +8000,7 @@
     }
 
     function storedSettings (settings) {
-      const output = clone(settings)
+      const output = cloneValue(settings)
 
       if (output.systemPromptId && promptById(output.systemPromptId)) {
         delete output.systemPrompt
@@ -7695,16 +8022,20 @@
         activeConversationId: state.activeConversationId,
         conversations: state.conversations.map(conversation => ({
           ...conversation,
-          configuration: storedConfiguration(conversation.configuration),
+          configuration:
+            storedConfiguration(conversation.configuration),
           messages: conversation.messages.map(message => {
             const output = {
               ...message
             }
 
-            if (output.status === 'streaming') output.status = 'stopped'
+            if (output.status === 'streaming') {
+              output.status = 'stopped'
+            }
 
             if (output.attachments) {
-              output.attachments = output.attachments.map(storedAttachment)
+              output.attachments =
+                output.attachments.map(storedAttachment)
             }
 
             return output
@@ -7717,7 +8048,8 @@
           editDraft: state.editDraft,
           messageDraft: state.messageDraft
         },
-        workspaceConfiguration: storedConfiguration(state.workspace)
+        workspaceConfiguration:
+          storedConfiguration(state.workspace)
       }
     }
 
@@ -7756,7 +8088,7 @@
 
       element.className = 'toast toast_type_' + type
       element.innerHTML =
-        icon(
+        renderIcon(
           type === 'success'
             ? 'check'
             : type === 'error'
@@ -7780,6 +8112,7 @@
 
       if (!markdownReader) {
         markdownReader = new window.commonmark.Parser()
+
         markdownWriter = new window.commonmark.HtmlRenderer({
           safe: true,
           softbreak: '<br>\n'
@@ -7804,9 +8137,11 @@
 
       template.content.querySelectorAll('pre > code').forEach(code => {
         const preformatted = code.parentElement
-        const languageClass = Array.from(code.classList).find(className => {
-          return className.startsWith('language-')
-        })
+
+        const languageClass =
+          Array.from(code.classList).find(className => {
+            return className.startsWith('language-')
+          })
 
         const wrapper = document.createElement('div')
         const header = document.createElement('div')
@@ -7816,7 +8151,9 @@
         wrapper.className = 'code-block'
         header.className = 'code-block__header'
         label.className = 'code-block__language'
-        label.textContent = languageClass ? languageClass.slice(9) : 'code'
+
+        label.textContent =
+          languageClass ? languageClass.slice(9) : 'code'
 
         preformatted.className = 'code-block__content'
         button.type = 'button'
@@ -7824,8 +8161,10 @@
         button.dataset.action = 'copy-code'
         button.dataset.copyText = encodeBase64(code.textContent || '')
         button.setAttribute('aria-label', 'Sao chép mã')
+        button.setAttribute('title', 'Sao chép mã')
+
         button.innerHTML =
-          icon('copy', 'icon_size_small') +
+          renderIcon('copy', 'icon_size_small') +
           '<span>Sao chép</span>'
 
         preformatted.replaceWith(wrapper)
@@ -7869,26 +8208,42 @@
     }
 
     function toolStatusClass (status) {
-      if (status === 'completed') return 'tool-panel__state_status_completed'
-      if (status === 'failed') return 'tool-panel__state_status_failed'
+      if (status === 'completed') {
+        return 'reasoning-tool__state_status_completed'
+      }
 
-      return activeToolStatuses.includes(status)
-        ? 'tool-panel__state_status_active'
+      if (status === 'failed') {
+        return 'reasoning-tool__state_status_failed'
+      }
+
+      return ACTIVE_TOOL_STATUSES.includes(status)
+        ? 'reasoning-tool__state_status_active'
         : ''
     }
 
-    function toolSectionHtml (label, value, error = false) {
+    function toolSectionHtml (label, value, options = {}) {
       if (!hasToolValue(value)) return ''
 
+      const classNames = ['reasoning-tool__section']
+
+      if (options.wide) {
+        classNames.push('reasoning-tool__section_wide')
+      }
+
+      if (options.error) {
+        classNames.push('reasoning-tool__section_error')
+      }
+
       return `
-        <div class="tool-panel__section">
-          <span class="tool-panel__label">${escapeHtml(label)}</span>
-          <pre class="tool-panel__payload${error ? ' tool-panel__payload_error' : ''}">${escapeHtml(stringifyToolValue(value))}</pre>
+        <div class="${classNames.join(' ')}">
+          <span class="reasoning-tool__label">${escapeHtml(label)}</span>
+          <pre class="reasoning-tool__payload">${escapeHtml(stringifyToolValue(value))}</pre>
         </div>`
     }
 
     function toolHtml (tool) {
       const statusClass = toolStatusClass(tool.status)
+
       const metadata = [
         tool.toolType,
         tool.callId ? 'id: ' + tool.callId : ''
@@ -7896,52 +8251,77 @@
 
       const output =
         tool.output &&
-        stringifyToolValue(tool.output) !== stringifyToolValue(tool.result)
+        stringifyToolValue(tool.output) !==
+          stringifyToolValue(tool.result)
           ? tool.output
           : ''
 
+      const codeTool =
+        tool.toolType === 'code_execution_call' ||
+        tool.toolType === 'code_interpreter_call'
+
       const sections = [
-        toolSectionHtml('Đầu vào', tool.input),
-        toolSectionHtml('Log', tool.log),
-        toolSectionHtml('Đầu ra', output),
-        toolSectionHtml('Kết quả', tool.result),
-        toolSectionHtml('Chi tiết', tool.details),
-        toolSectionHtml('Lỗi', tool.error, true)
+        toolSectionHtml('Đầu vào', tool.input, {
+          wide: codeTool
+        }),
+        toolSectionHtml('Đầu ra', output || tool.result, {
+          wide: codeTool
+        }),
+        output
+          ? toolSectionHtml('Kết quả', tool.result, {
+              wide: codeTool
+            })
+          : '',
+        toolSectionHtml('Log', tool.log, {
+          wide: true
+        }),
+        toolSectionHtml('Chi tiết', tool.details, {
+          wide: true
+        }),
+        toolSectionHtml('Lỗi', tool.error, {
+          error: true,
+          wide: true
+        })
       ].join('')
 
       return `
-        <section class="tool-panel">
-          <div class="tool-panel__header">
-            ${icon('terminal', 'icon_size_small')}
-            <span class="tool-panel__name">${escapeHtml(tool.name)}</span>
-            <span class="tool-panel__state${statusClass ? ' ' + statusClass : ''}">
-              ${escapeHtml(toolStatusLabels[tool.status] || 'Đang chạy')}
+        <section class="reasoning-tool">
+          <div class="reasoning-tool__header">
+            ${renderIcon('terminal', 'icon_size_small')}
+            <span class="reasoning-tool__name">${escapeHtml(tool.name)}</span>
+            <span class="reasoning-tool__state${statusClass ? ' ' + statusClass : ''}">
+              ${escapeHtml(TOOL_STATUS_LABELS[tool.status] || 'Đang chạy')}
             </span>
           </div>
-          <div class="tool-panel__body">
-            <div class="tool-panel__item">
-              ${metadata ? `<div class="tool-panel__meta">${escapeHtml(metadata)}</div>` : ''}
-              ${sections}
-            </div>
+          <div class="reasoning-tool__body">
+            ${metadata ? `<div class="reasoning-tool__meta">${escapeHtml(metadata)}</div>` : ''}
+            <div class="reasoning-tool__sections">${sections}</div>
           </div>
         </section>`
     }
 
     function reasoningHtml (blocks, message) {
       const items = blocks.map(block => {
-        return block.type === 'reasoning'
-          ? `<div class="reasoning-panel__item markdown">${renderMarkdown(block.content)}</div>`
-          : `
-              <div class="reasoning-panel__item reasoning-panel__redacted">
-                ${icon('info', 'icon_size_small')}
-                <span>Một phần suy luận đã được API ẩn.</span>
-              </div>`
+        if (block.type === 'tool') return toolHtml(block)
+
+        if (block.type === 'reasoning') {
+          return `
+            <div class="reasoning-panel__item markdown">
+              ${renderMarkdown(block.content)}
+            </div>`
+        }
+
+        return `
+          <div class="reasoning-panel__item reasoning-panel__redacted">
+            ${renderIcon('info', 'icon_size_small')}
+            <span>Một phần suy luận đã được API ẩn.</span>
+          </div>`
       }).join('')
 
       return `
         <details class="reasoning-panel"${message.status === 'streaming' ? ' open' : ''}>
           <summary class="reasoning-panel__summary">
-            ${icon('spark', 'icon_size_small')}
+            ${renderIcon('spark', 'icon_size_small')}
             <span>Suy luận</span>
           </summary>
           <div class="reasoning-panel__body">${items}</div>
@@ -7951,6 +8331,7 @@
     function assistantOutputHtml (message, allowEmpty) {
       const blocks = messageBlocks(message).filter(block => {
         return (
+          block.type === 'tool' ||
           !['reasoning', 'redacted'].includes(block.type) ||
           message.showReasoning !== false
         )
@@ -7966,37 +8347,39 @@
 
       let output = ''
       let reasoning = []
+
       const lastBlock = blocks[blocks.length - 1]
 
       function flushReasoning () {
         if (!reasoning.length) return
+
         output += reasoningHtml(reasoning, message)
         reasoning = []
       }
 
       blocks.forEach(block => {
-        if (block.type === 'tool') {
-          flushReasoning()
-          output += toolHtml(block)
-        } else if (
+        if (
+          block.type === 'tool' ||
           block.type === 'reasoning' ||
           block.type === 'redacted'
         ) {
           reasoning.push(block)
-        } else {
-          flushReasoning()
-
-          const cursor =
-            message.status === 'streaming' && block === lastBlock
-              ? '<span class="stream-cursor" aria-hidden="true"></span>'
-              : ''
-
-          output +=
-            `<div class="assistant-answer markdown">${renderMarkdown(block.content)}${cursor}</div>`
+          return
         }
+
+        flushReasoning()
+
+        const cursor =
+          message.status === 'streaming' && block === lastBlock
+            ? '<span class="stream-cursor" aria-hidden="true"></span>'
+            : ''
+
+        output +=
+          `<div class="assistant-answer markdown">${renderMarkdown(block.content)}${cursor}</div>`
       })
 
       flushReasoning()
+
       return output
     }
 
@@ -8014,7 +8397,7 @@
 
         return output + `
           <div class="error-card">
-            ${icon('alert')}
+            ${renderIcon('alert')}
             <p class="error-card__message">${escapeHtml(error.message)}</p>
             <span class="error-card__type">${escapeHtml(error.kind)}</span>
             <button
@@ -8023,8 +8406,8 @@
               data-action="regenerate-response"
               data-message-id="${message.id}"
             >
-              ${icon('rotate', 'icon_size_small')}
-              ${text.retry}
+              ${renderIcon('rotate', 'icon_size_small')}
+              ${UI_TEXT.retry}
             </button>
           </div>`
       }
@@ -8032,8 +8415,8 @@
       return message.status === 'stopped'
         ? output + `
             <div class="stopped-note">
-              ${icon('stop', 'icon_size_small')}
-              ${text.stoppedNote}
+              ${renderIcon('stop', 'icon_size_small')}
+              ${UI_TEXT.stoppedNote}
             </div>`
         : output
     }
@@ -8042,7 +8425,7 @@
       if (!attachments || !attachments.length) return ''
 
       const items = attachments.map(attachment => {
-        const remove = `
+        const removeButton = `
           <button
             class="attachment__remove"
             type="button"
@@ -8050,27 +8433,31 @@
             data-message-id="${escapeHtml(messageId)}"
             data-attachment-id="${escapeHtml(attachment.id)}"
             aria-label="Gỡ tệp ${escapeHtml(attachment.name)}"
+            title="Gỡ tệp"
           >
-            ${icon('x', 'icon_size_small')}
+            ${renderIcon('x', 'icon_size_small')}
           </button>`
 
-        if (attachment.url && imageAttachment(attachment)) {
+        if (attachment.url && isImageAttachment(attachment)) {
           return `
             <figure class="attachment attachment_type_image">
-              ${remove}
-              <img src="${escapeHtml(attachment.url)}" alt="${escapeHtml(attachment.name)}">
+              ${removeButton}
+              <img
+                src="${escapeHtml(attachment.url)}"
+                alt="${escapeHtml(attachment.name)}"
+              >
               <figcaption>${escapeHtml(attachment.name)}</figcaption>
             </figure>`
         }
 
         return `
           <div class="attachment attachment_type_file">
-            ${urlAttachment(attachment)
-              ? icon('link', 'icon_size_small')
-              : icon('file-text', 'icon_size_small')}
+            ${isUrlAttachment(attachment)
+              ? renderIcon('link', 'icon_size_small')
+              : renderIcon('file-text', 'icon_size_small')}
             <span class="attachment__name">${escapeHtml(attachment.name)}</span>
             <span class="attachment__size">${escapeHtml(attachmentMeta(attachment))}</span>
-            ${remove}
+            ${removeButton}
           </div>`
       }).join('')
 
@@ -8081,7 +8468,7 @@
       if (
         message.status === 'streaming' ||
         currentEditDraft() ||
-        currentConversationGenerating()
+        isCurrentConversationGenerating()
       ) {
         return ''
       }
@@ -8093,9 +8480,10 @@
           data-action="move-message-up"
           data-message-id="${message.id}"
           aria-label="Di chuyển tin nhắn lên"
+          title="Di chuyển lên"
           ${index === 0 ? 'disabled' : ''}
         >
-          ${icon('arrow-up', 'icon_size_small')}
+          ${renderIcon('arrow-up', 'icon_size_small')}
         </button>
         <button
           class="message__action message__action_icon"
@@ -8103,9 +8491,10 @@
           data-action="move-message-down"
           data-message-id="${message.id}"
           aria-label="Di chuyển tin nhắn xuống"
+          title="Di chuyển xuống"
           ${index === total - 1 ? 'disabled' : ''}
         >
-          ${icon('arrow-down', 'icon_size_small')}
+          ${renderIcon('arrow-down', 'icon_size_small')}
         </button>
         <button
           class="message__action"
@@ -8113,7 +8502,7 @@
           data-action="copy-message"
           data-message-id="${message.id}"
         >
-          ${icon('copy', 'icon_size_small')}
+          ${renderIcon('copy', 'icon_size_small')}
           <span>Sao chép</span>
         </button>
         <button
@@ -8122,11 +8511,11 @@
           data-action="edit-message"
           data-message-id="${message.id}"
         >
-          ${icon('pencil', 'icon_size_small')}
+          ${renderIcon('pencil', 'icon_size_small')}
           <span>Sửa</span>
         </button>`
 
-      if (assistantRole(message.role) && message.status !== 'error') {
+      if (isAssistantRole(message.role) && message.status !== 'error') {
         actions += `
           <button
             class="message__action"
@@ -8134,7 +8523,7 @@
             data-action="regenerate-response"
             data-message-id="${message.id}"
           >
-            ${icon('rotate', 'icon_size_small')}
+            ${renderIcon('rotate', 'icon_size_small')}
             <span>Tạo lại</span>
           </button>`
       }
@@ -8146,7 +8535,7 @@
           data-action="delete-message"
           data-message-id="${message.id}"
         >
-          ${icon('trash', 'icon_size_small')}
+          ${renderIcon('trash', 'icon_size_small')}
           <span>Xoá</span>
         </button>`
 
@@ -8171,7 +8560,8 @@
 
     function messageEditorHtml () {
       const draft = currentEditDraft()
-      const options = messageRoles.map(role => {
+
+      const options = MESSAGE_ROLES.map(role => {
         return `<option value="${role}"${draft.role === role ? ' selected' : ''}>${role}</option>`
       }).join('')
 
@@ -8199,7 +8589,7 @@
               data-action="save-message-edit"
               data-message-id="${draft.messageId}"
             >
-              ${icon('check', 'icon_size_small')}
+              ${renderIcon('check', 'icon_size_small')}
               Lưu
             </button>
 
@@ -8216,8 +8606,8 @@
 
     function messageElement (message, index, total) {
       const element = document.createElement('article')
-      const assistant = assistantRole(message.role)
-      const instruction = instructionRole(message.role)
+      const assistant = isAssistantRole(message.role)
+      const instruction = isInstructionRole(message.role)
       const editDraft = currentEditDraft()
       const editing = editDraft && editDraft.messageId === message.id
 
@@ -8256,7 +8646,7 @@
 
       element.innerHTML = `
         <div class="message__avatar message__avatar_role_${message.role}">
-          ${icon(avatarName)}
+          ${renderIcon(avatarName)}
         </div>
 
         <div class="message__main">
@@ -8284,14 +8674,14 @@
               type="button"
               data-action="open-endpoint-dialog"
             >
-              ${icon('plug')}
+              ${renderIcon('plug')}
               Thêm endpoint API
             </button>`
 
       return `
         <div class="welcome">
           <div class="welcome__mark" aria-hidden="true">
-            ${appIconHtml()}
+            ${renderAppIcon()}
           </div>
           <h1 class="welcome__title">AI Workbench</h1>
           <div class="welcome__actions">${action}</div>
@@ -8299,7 +8689,7 @@
             ? ''
             : `
                 <p class="welcome__note">
-                  ${icon('info', 'icon_size_small')}
+                  ${renderIcon('info', 'icon_size_small')}
                   <span>Chưa có endpoint API.</span>
                 </p>`}
         </div>`
@@ -8337,6 +8727,7 @@
         list.setAttribute('aria-busy', 'false')
         updateComposer()
         restoreMessageScroll(previousScrollTop, stickToBottom)
+
         return
       }
 
@@ -8350,9 +8741,10 @@
       })
 
       list.appendChild(fragment)
+
       list.setAttribute(
         'aria-busy',
-        String(conversationGenerating(conversation.id))
+        String(isConversationGenerating(conversation.id))
       )
 
       const editDraft = currentEditDraft()
@@ -8365,6 +8757,7 @@
           input.focus()
 
           const maximum = input.value.length
+
           input.setSelectionRange(
             clamp(editDraft.selectionStart, 0, maximum),
             clamp(editDraft.selectionEnd, 0, maximum)
@@ -8378,7 +8771,7 @@
 
     function conversationHtml (conversation) {
       const active = conversation.id === state.activeConversationId
-      const generating = conversationGenerating(conversation.id)
+      const generating = isConversationGenerating(conversation.id)
 
       return `
         <div
@@ -8409,8 +8802,9 @@
               data-action="pin-conversation"
               data-conversation-id="${conversation.id}"
               aria-label="${conversation.pinned ? 'Bỏ ghim' : 'Ghim'} cuộc trò chuyện"
+              title="${conversation.pinned ? 'Bỏ ghim' : 'Ghim'}"
             >
-              ${icon('pin', 'icon_size_small')}
+              ${renderIcon('pin', 'icon_size_small')}
             </button>
 
             <button
@@ -8419,8 +8813,9 @@
               data-action="duplicate-conversation"
               data-conversation-id="${conversation.id}"
               aria-label="Nhân bản cuộc trò chuyện"
+              title="Nhân bản"
             >
-              ${icon('copy', 'icon_size_small')}
+              ${renderIcon('copy', 'icon_size_small')}
             </button>
 
             <button
@@ -8429,8 +8824,9 @@
               data-action="rename-conversation"
               data-conversation-id="${conversation.id}"
               aria-label="Đổi tên cuộc trò chuyện"
+              title="Đổi tên"
             >
-              ${icon('pencil', 'icon_size_small')}
+              ${renderIcon('pencil', 'icon_size_small')}
             </button>
 
             <button
@@ -8439,8 +8835,9 @@
               data-action="delete-conversation"
               data-conversation-id="${conversation.id}"
               aria-label="Xoá cuộc trò chuyện"
+              title="Xoá"
             >
-              ${icon('trash', 'icon_size_small')}
+              ${renderIcon('trash', 'icon_size_small')}
             </button>
           </div>
         </div>`
@@ -8474,7 +8871,7 @@
       if (!state.conversations.length) {
         list.innerHTML = `
           <div class="empty-state sidebar__empty">
-            ${icon('message')}
+            ${renderIcon('message')}
             <span>Chưa có cuộc trò chuyện nào.</span>
           </div>`
 
@@ -8484,27 +8881,32 @@
       if (!conversations.length) {
         list.innerHTML = `
           <div class="empty-state sidebar__empty">
-            ${icon('search')}
+            ${renderIcon('search')}
             <span>Không tìm thấy cuộc trò chuyện phù hợp.</span>
           </div>`
 
         return
       }
 
-      const pinned = conversations.filter(conversation => conversation.pinned)
-      const recent = conversations.filter(conversation => !conversation.pinned)
+      const pinnedConversations = conversations.filter(conversation => {
+        return conversation.pinned
+      })
+
+      const recentConversations = conversations.filter(conversation => {
+        return !conversation.pinned
+      })
 
       list.innerHTML =
         (
-          pinned.length
+          pinnedConversations.length
             ? '<div class="conversation-list__label">Đã ghim</div>' +
-              pinned.map(conversationHtml).join('')
+              pinnedConversations.map(conversationHtml).join('')
             : ''
         ) +
         (
-          recent.length
+          recentConversations.length
             ? '<div class="conversation-list__label">Gần đây</div>' +
-              recent.map(conversationHtml).join('')
+              recentConversations.map(conversationHtml).join('')
             : ''
         )
     }
@@ -8525,6 +8927,7 @@
           <span class="status-badge__text">Mất kết nối mạng</span>`
 
         status.title = ''
+
         return
       }
 
@@ -8539,12 +8942,14 @@
           <span class="status-badge__text">Chưa cấu hình</span>`
 
         status.title = ''
+
         return
       }
 
       const label =
-        conversation && conversationGenerating(conversation.id)
-          ? 'Đang tạo · ' + (activeConfiguration.modelId || endpoint.name)
+        conversation && isConversationGenerating(conversation.id)
+          ? 'Đang tạo · ' +
+            (activeConfiguration.modelId || endpoint.name)
           : activeConfiguration.modelId || endpoint.name
 
       status.className =
@@ -8556,7 +8961,7 @@
 
       status.title = [
         endpoint.name,
-        apiFormats[endpoint.format].label,
+        API_FORMATS[endpoint.format].label,
         activeConfiguration.modelId,
         endpoint.baseUrl
       ].filter(Boolean).join(' · ')
@@ -8564,6 +8969,7 @@
 
     function renderAccent () {
       state.ui.accent = applyAccent(state.ui.accent)
+
       getElementById('accent-color-input').value = state.ui.accent
       getElementById('accent-color-value').textContent = state.ui.accent
     }
@@ -8576,12 +8982,17 @@
       if (!state.endpoints.length) {
         element.disabled = true
         element.innerHTML = '<option value="">Chưa có endpoint</option>'
+
         return
       }
 
       element.disabled = false
+
       element.innerHTML = state.endpoints.map(endpoint => {
-        return `<option value="${endpoint.id}">${escapeHtml(endpoint.name)}</option>`
+        return `
+          <option value="${endpoint.id}">
+            ${escapeHtml(endpoint.name)}
+          </option>`
       }).join('')
 
       element.value = activeConfiguration.endpointId || ''
@@ -8595,6 +9006,7 @@
         activeConfiguration.modelId = ''
         element.disabled = true
         element.innerHTML = '<option value="">Chưa có mô hình</option>'
+
         return
       }
 
@@ -8603,8 +9015,12 @@
       }
 
       element.disabled = false
+
       element.innerHTML = endpoint.models.map(model => {
-        return `<option value="${escapeHtml(model)}">${escapeHtml(model)}</option>`
+        return `
+          <option value="${escapeHtml(model)}">
+            ${escapeHtml(model)}
+          </option>`
       }).join('')
 
       element.value = activeConfiguration.modelId
@@ -8622,7 +9038,7 @@
 
       getElementById('system-prompt-hint').textContent = prompt
         ? `Đang dùng “${prompt.name}”. Thay đổi sẽ được đồng bộ.`
-        : text.systemPromptDraftHint
+        : UI_TEXT.systemPromptDraftHint
     }
 
     function renderPromptControls () {
@@ -8640,7 +9056,10 @@
       promptSelect.innerHTML =
         '<option value="">Bản nháp hiện tại</option>' +
         state.prompts.map(item => {
-          return `<option value="${item.id}">${escapeHtml(item.name)}</option>`
+          return `
+            <option value="${item.id}">
+              ${escapeHtml(item.name)}
+            </option>`
         }).join('')
 
       promptSelect.value = settings.systemPromptId || ''
@@ -8648,6 +9067,7 @@
       const textarea = getElementById('system-prompt')
 
       textarea.value = settings.systemPrompt
+
       resizeTextarea(textarea, 320)
       updatePromptActions()
     }
@@ -8667,7 +9087,7 @@
         endpoint.format === 'generate-content'
 
       if (endpoint.format === 'interactions') {
-        capabilities.reason = text.unsupportedByFormat
+        capabilities.reason = UI_TEXT.unsupportedByFormat
         capabilities.temperature = false
         capabilities.topP = false
       }
@@ -8711,15 +9131,23 @@
 
     function fieldEnabled (controlId, fieldId, enabled) {
       getElementById(controlId).disabled = !enabled
-      getElementById(fieldId).classList.toggle('field_disabled', !enabled)
+
+      getElementById(fieldId).classList.toggle(
+        'field_disabled',
+        !enabled
+      )
     }
 
     function renderSampling () {
       const settings = activeConfiguration.settings
       const capabilities = samplingCapabilities(currentEndpoint())
 
-      getElementById('temperature-auto').checked = !settings.temperatureAuto
-      getElementById('temperature-auto').disabled = !capabilities.temperature
+      getElementById('temperature-auto').checked =
+        !settings.temperatureAuto
+
+      getElementById('temperature-auto').disabled =
+        !capabilities.temperature
+
       getElementById('top-p-auto').checked = !settings.topPAuto
       getElementById('top-p-auto').disabled = !capabilities.topP
 
@@ -8735,11 +9163,7 @@
       getElementById('top-p-number').disabled =
         settings.topPAuto || !capabilities.topP
 
-      fieldEnabled(
-        'top-k',
-        'top-k-field',
-        capabilities.topK
-      )
+      fieldEnabled('top-k', 'top-k-field', capabilities.topK)
 
       getElementById('temperature-field').classList.toggle(
         'field_disabled',
@@ -8760,7 +9184,7 @@
       getElementById('top-k-hint').textContent =
         !currentEndpoint() || capabilities.topK
           ? ''
-          : text.unsupportedByFormat
+          : UI_TEXT.unsupportedByFormat
     }
 
     function renderReasoning () {
@@ -8801,9 +9225,10 @@
 
     function renderSafetyMarkup () {
       getElementById('safety-settings-list').innerHTML =
-        safetyDefinitions.map(definition => {
+        SAFETY_DEFINITIONS.map(definition => {
           const slug = safetySlug(definition.category)
-          const options = safetyOptions.map(([value, label]) => {
+
+          const options = SAFETY_OPTIONS.map(([value, label]) => {
             return `<option value="${value}">${label}</option>`
           }).join('')
 
@@ -8826,11 +9251,13 @@
     }
 
     function renderSafety () {
-      const supported =
-        currentEndpoint() &&
-        currentEndpoint().format === 'generate-content'
+      const endpoint = currentEndpoint()
 
-      safetyDefinitions.forEach(definition => {
+      const supported =
+        endpoint &&
+        endpoint.format === 'generate-content'
+
+      SAFETY_DEFINITIONS.forEach(definition => {
         const slug = safetySlug(definition.category)
 
         fieldEnabled(
@@ -8841,13 +9268,14 @@
       })
 
       getElementById('safety-settings-hint').textContent =
-        !currentEndpoint() || supported
+        !endpoint || supported
           ? ''
-          : text.unsupportedByFormat
+          : UI_TEXT.unsupportedByFormat
     }
 
     function renderVerbosity () {
       const endpoint = currentEndpoint()
+
       const supported =
         endpoint &&
         (
@@ -8862,19 +9290,26 @@
       )
 
       getElementById('response-verbosity-hint').textContent =
-        !endpoint || supported ? '' : text.unsupportedByFormat
+        !endpoint || supported
+          ? ''
+          : UI_TEXT.unsupportedByFormat
     }
 
     function renderToggle (id, value) {
-      getElementById(id).setAttribute('aria-checked', String(Boolean(value)))
+      getElementById(id).setAttribute(
+        'aria-checked',
+        String(Boolean(value))
+      )
     }
 
     function clearVariableErrors () {
-      selectAll('#variable-list [aria-invalid="true"]').forEach(input => {
+      queryElements(
+        '#variable-list [aria-invalid="true"]'
+      ).forEach(input => {
         input.removeAttribute('aria-invalid')
       })
 
-      selectAll('.variable-row__error').forEach(error => {
+      queryElements('.variable-row__error').forEach(error => {
         error.hidden = true
         error.textContent = ''
       })
@@ -8889,7 +9324,8 @@
         )
       } catch (error) {
         if (displayErrors) {
-          const row = select(`[data-variable-id="${error.entryId}"]`)
+          const row =
+            queryElement(`[data-variable-id="${error.entryId}"]`)
 
           if (row) {
             const input = row.querySelector(
@@ -8898,7 +9334,8 @@
                 : '[data-variable-value]'
             )
 
-            const message = row.querySelector('.variable-row__error')
+            const message =
+              row.querySelector('.variable-row__error')
 
             if (input) input.setAttribute('aria-invalid', 'true')
 
@@ -8939,13 +9376,14 @@
           >
 
           <button
-            class="chip__remove"
+            class="remove-button variable-row__remove"
             type="button"
             data-action="remove-variable"
             data-variable-id="${entry.id}"
             aria-label="Xoá biến"
+            title="Xoá biến"
           >
-            ${icon('x', 'icon_size_small')}
+            ${renderIcon('x', 'icon_size_small')}
           </button>
 
           <span class="variable-row__error" hidden></span>
@@ -8976,26 +9414,40 @@
       getElementById('temperature-number').value = settings.temperature
       getElementById('top-p-range').value = settings.topP
       getElementById('top-p-number').value = settings.topP
+
       getElementById('top-k').value =
         settings.topK == null ? '' : settings.topK
+
       getElementById('max-tokens').value =
         settings.maxTokens == null ? '' : settings.maxTokens
+
       getElementById('thinking-budget').value =
         settings.budget == null ? '' : settings.budget
-      getElementById('response-verbosity').value = settings.verbosity || ''
-      getElementById('reasoning-effort').value = settings.effort || ''
-      getElementById('reasoning-mode').value = settings.mode || ''
-      getElementById('thinking-level').value = settings.level || ''
+
+      getElementById('response-verbosity').value =
+        settings.verbosity || ''
+
+      getElementById('reasoning-effort').value =
+        settings.effort || ''
+
+      getElementById('reasoning-mode').value =
+        settings.mode || ''
+
+      getElementById('thinking-level').value =
+        settings.level || ''
+
       getElementById('tools-json').value = settings.toolsJson
 
-      safetyDefinitions.forEach(definition => {
-        getElementById('safety-' + safetySlug(definition.category)).value =
-          settings.safetySettings[definition.category] || ''
+      SAFETY_DEFINITIONS.forEach(definition => {
+        getElementById(
+          'safety-' + safetySlug(definition.category)
+        ).value = settings.safetySettings[definition.category] || ''
       })
 
       renderToggle('reasoning-toggle', settings.reasoningEnabled)
       renderToggle('show-reasoning-toggle', settings.showReasoning)
       renderToggle('streaming-toggle', settings.streaming)
+
       renderToggle(
         'zero-data-retention-toggle',
         settings.zeroDataRetention
@@ -9006,6 +9458,7 @@
       renderSafety()
       renderVerbosity()
       renderVariables()
+
       resizeTextarea(getElementById('tools-json'), 320)
       refreshPreview()
     }
@@ -9016,17 +9469,23 @@
 
       if (!endpoint || !activeConfiguration.modelId) {
         preview.value = ''
+
         return
       }
 
       try {
         const settings = requestSettings(activeConfiguration)
         const conversation = currentConversation()
+
         const messages = conversation
-          ? canonicalMessages(conversation, null, settings.variables)
+          ? canonicalMessages(
+              conversation,
+              null,
+              settings.variables
+            )
           : []
 
-        const request = apiFormats[endpoint.format].build({
+        const request = API_FORMATS[endpoint.format].build({
           apiKey: endpoint.apiKey,
           base: endpoint.baseUrl,
           messages,
@@ -9051,12 +9510,12 @@
         messages: [],
         pinned: false,
         renamed: false,
-        title: text.newConversationTitle,
+        title: UI_TEXT.newConversationTitle,
         updatedAt: Date.now()
       }
 
       state.conversations.unshift(conversation)
-      runtime(conversation.id)
+      getConversationRuntime(conversation.id)
 
       if (activate) {
         state.activeConversationId = conversation.id
@@ -9065,6 +9524,7 @@
 
       renderSidebar()
       scheduleSave()
+
       return conversation
     }
 
@@ -9076,6 +9536,7 @@
       if (!conversation) return
 
       captureEditDraft()
+
       state.activeConversationId = conversation.id
       shouldStickToBottom = true
 
@@ -9090,7 +9551,7 @@
     }
 
     function duplicateMessage (message) {
-      const output = clone(message)
+      const output = cloneValue(message)
       const id = uniqueId()
 
       output.id = id
@@ -9106,10 +9567,11 @@
       }
 
       if (output.outputBlocks) {
-        output.outputBlocks = output.outputBlocks.map((block, index) => ({
-          ...block,
-          id: id + ':block:' + index
-        }))
+        output.outputBlocks =
+          output.outputBlocks.map((block, index) => ({
+            ...block,
+            id: id + ':block:' + index
+          }))
       }
 
       return sanitizeMessage(output)
@@ -9122,14 +9584,16 @@
 
       if (!conversation) return
 
-      if (conversationGenerating(conversation.id)) {
-        toast(text.generationBusy, 'error')
+      if (isConversationGenerating(conversation.id)) {
+        toast(UI_TEXT.generationBusy, 'error')
+
         return
       }
 
       captureEditDraft()
 
       const timestamp = Date.now()
+
       const duplicate = {
         configuration: cloneConfiguration(conversation.configuration),
         createdAt: timestamp,
@@ -9147,7 +9611,7 @@
       shouldStickToBottom = true
 
       activateConfiguration(duplicate.configuration)
-      runtime(duplicate.id)
+      getConversationRuntime(duplicate.id)
 
       renderSettings()
       renderSidebar()
@@ -9156,7 +9620,8 @@
       closeDrawers()
       scrollToBottom(true)
       scheduleSave()
-      toast(text.duplicatedConversation, 'success')
+
+      toast(UI_TEXT.duplicatedConversation, 'success')
     }
 
     function renameConversation (conversationId) {
@@ -9192,17 +9657,19 @@
 
       if (!conversation) return
 
-      const warning = conversationGenerating(conversationId)
+      const warning = isConversationGenerating(conversationId)
         ? 'Yêu cầu đang chạy sẽ bị dừng và cuộc trò chuyện sẽ bị xoá.'
         : 'Cuộc trò chuyện sẽ bị xoá vĩnh viễn khỏi thiết bị.'
 
       if (!window.confirm(warning)) return
 
-      const value = runtime(conversationId, false)
+      const runtime = getConversationRuntime(conversationId, false)
 
-      if (value && value.abortController) value.abortController.abort()
+      if (runtime && runtime.abortController) {
+        runtime.abortController.abort()
+      }
 
-      runtimes.delete(conversationId)
+      conversationRuntimes.delete(conversationId)
 
       state.conversations = state.conversations.filter(item => {
         return item.id !== conversationId
@@ -9234,16 +9701,19 @@
       if (!textarea) return
 
       textarea.style.height = 'auto'
+
       textarea.style.height =
         Math.min(textarea.scrollHeight, maximumHeight) + 'px'
 
       textarea.style.overflowY =
-        textarea.scrollHeight > maximumHeight ? 'auto' : 'hidden'
+        textarea.scrollHeight > maximumHeight
+          ? 'auto'
+          : 'hidden'
     }
 
     function updateComposerHeight () {
       const region = getElementById('composer-region')
-      const chat = select('.chat')
+      const chat = queryElement('.chat')
 
       if (!region || !chat) return
 
@@ -9262,7 +9732,9 @@
       const area = getElementById('chat-scroll-area')
       const button = getElementById('scroll-bottom-button')
       const conversation = currentConversation()
+
       const overflow = area.scrollHeight > area.clientHeight + 1
+
       const distance = Math.max(
         0,
         area.scrollHeight - area.scrollTop - area.clientHeight
@@ -9288,8 +9760,10 @@
 
     function updateComposer () {
       const conversation = currentConversation()
+
       const generating =
-        conversation && conversationGenerating(conversation.id)
+        conversation &&
+        isConversationGenerating(conversation.id)
 
       const hasInput =
         Boolean(state.messageDraft.trim() || state.attachments.length)
@@ -9301,11 +9775,21 @@
       const buttonIcon = generating ? 'stop' : 'send'
       const editDraft = currentEditDraft()
 
-      button.classList.toggle('send-button_state_stop', Boolean(generating))
+      button.classList.toggle(
+        'send-button_state_stop',
+        Boolean(generating)
+      )
+
       button.dataset.icon = buttonIcon
-      button.innerHTML = icon(buttonIcon)
+      button.innerHTML = renderIcon(buttonIcon)
+
       button.setAttribute(
         'aria-label',
+        generating ? 'Dừng tạo phản hồi' : 'Gửi yêu cầu'
+      )
+
+      button.setAttribute(
+        'title',
         generating ? 'Dừng tạo phản hồi' : 'Gửi yêu cầu'
       )
 
@@ -9321,7 +9805,9 @@
         Boolean(generating || editDraft)
 
       getElementById('character-count').textContent =
-        state.messageDraft.length ? String(state.messageDraft.length) : ''
+        state.messageDraft.length
+          ? String(state.messageDraft.length)
+          : ''
     }
 
     function renderAttachments () {
@@ -9330,20 +9816,28 @@
       if (!state.attachments.length && !state.pendingAttachmentReads) {
         list.hidden = true
         list.innerHTML = ''
+
         updateComposer()
         window.requestAnimationFrame(updateComposerHeight)
+
         return
       }
 
       list.hidden = false
+
       list.innerHTML =
         state.attachments.map(attachment => {
           const preview =
-            attachment.url && imageAttachment(attachment)
-              ? `<img class="chip__image" src="${escapeHtml(attachment.url)}" alt="">`
-              : urlAttachment(attachment)
-                ? icon('link', 'icon_size_small')
-                : icon('file-text', 'icon_size_small')
+            attachment.url && isImageAttachment(attachment)
+              ? `
+                  <img
+                    class="chip__image"
+                    src="${escapeHtml(attachment.url)}"
+                    alt=""
+                  >`
+              : isUrlAttachment(attachment)
+                ? renderIcon('link', 'icon_size_small')
+                : renderIcon('file-text', 'icon_size_small')
 
           return `
             <span class="chip">
@@ -9356,8 +9850,9 @@
                 data-action="remove-attachment"
                 data-attachment-id="${attachment.id}"
                 aria-label="Gỡ tệp ${escapeHtml(attachment.name)}"
+                title="Gỡ tệp"
               >
-                ${icon('x', 'icon_size_small')}
+                ${renderIcon('x', 'icon_size_small')}
               </button>
             </span>`
         }).join('') +
@@ -9365,7 +9860,7 @@
           state.pendingAttachmentReads
             ? `
                 <span class="chip">
-                  ${icon('file-text', 'icon_size_small')}
+                  ${renderIcon('file-text', 'icon_size_small')}
                   <span>Đang đọc tệp…</span>
                 </span>`
             : ''
@@ -9378,21 +9873,33 @@
     async function addAttachment (file) {
       if (
         state.attachments.length + state.pendingAttachmentReads >=
-        maximumFiles
+        MAXIMUM_ATTACHMENT_COUNT
       ) {
-        toast('Chỉ được đính kèm tối đa 4 tệp.', 'error')
+        toast(
+          `Chỉ được đính kèm tối đa ${MAXIMUM_ATTACHMENT_COUNT} tệp.`,
+          'error'
+        )
+
         return
       }
 
       const type = normalizeFileType(file)
 
-      if (!supportedAttachmentType(type)) {
-        toast(`“${file.name}” có định dạng không được hỗ trợ.`, 'error')
+      if (!isSupportedAttachmentType(type)) {
+        toast(
+          `“${file.name}” có định dạng không được hỗ trợ.`,
+          'error'
+        )
+
         return
       }
 
-      if (file.size > maximumFileSize) {
-        toast(`“${file.name}” vượt quá 5 MB.`, 'error')
+      if (file.size > MAXIMUM_ATTACHMENT_SIZE) {
+        toast(
+          `“${file.name}” vượt quá ${formatBytes(MAXIMUM_ATTACHMENT_SIZE)}.`,
+          'error'
+        )
+
         return
       }
 
@@ -9403,6 +9910,7 @@
         const buffer = await file.arrayBuffer()
         const base64 = bytesToBase64(new Uint8Array(buffer))
         const kind = /^image\//.test(type) ? 'image' : 'file'
+
         const dataUrl =
           kind === 'image'
             ? `data:${type};base64,${base64}`
@@ -9416,7 +9924,10 @@
           name: file.name,
           size: file.size,
           sourceType: 'upload',
-          text: textMimeType(type) ? textDecoder.decode(buffer) : null,
+          text:
+            isTextMimeType(type)
+              ? utf8TextDecoder.decode(buffer)
+              : null,
           type,
           url: dataUrl
         })
@@ -9441,49 +9952,69 @@
     function openAttachmentUrlDialog () {
       if (
         state.attachments.length + state.pendingAttachmentReads >=
-        maximumFiles
+        MAXIMUM_ATTACHMENT_COUNT
       ) {
-        toast('Chỉ được đính kèm tối đa 4 tệp.', 'error')
+        toast(
+          `Chỉ được đính kèm tối đa ${MAXIMUM_ATTACHMENT_COUNT} tệp.`,
+          'error'
+        )
+
         return
       }
 
       setAttachmentMenu(false)
+
       getElementById('attachment-url').value = ''
       getElementById('attachment-url-kind').value = 'auto'
       getElementById('attachment-url-mime').value = ''
       getElementById('attachment-url-name').value = ''
-      getElementById('attachment-url-dialog').showModal()
+
+      const dialog = getElementById('attachment-url-dialog')
+
+      dialog.showModal()
       getElementById('attachment-url').focus()
     }
 
     function createUrlAttachment () {
       if (
         state.attachments.length + state.pendingAttachmentReads >=
-        maximumFiles
+        MAXIMUM_ATTACHMENT_COUNT
       ) {
-        toast('Chỉ được đính kèm tối đa 4 tệp.', 'error')
+        toast(
+          `Chỉ được đính kèm tối đa ${MAXIMUM_ATTACHMENT_COUNT} tệp.`,
+          'error'
+        )
+
         return
       }
 
       const source = getElementById('attachment-url').value.trim()
-      let parsed
+
+      let parsedUrl
 
       try {
-        parsed = new window.URL(source)
+        parsedUrl = new window.URL(source)
       } catch {
         toast('URL không hợp lệ.', 'error')
+
         return
       }
 
-      if (parsed.protocol !== 'https:') {
+      if (parsedUrl.protocol !== 'https:') {
         toast('URL đính kèm phải sử dụng HTTPS.', 'error')
+
         return
       }
 
-      const selectedKind = getElementById('attachment-url-kind').value
-      const inferredName = urlFileName(parsed.href)
+      const selectedKind =
+        getElementById('attachment-url-kind').value
+
+      const inferredName = urlFileName(parsedUrl.href)
+
       const type =
-        normalizeMimeType(getElementById('attachment-url-mime').value) ||
+        normalizeMimeType(
+          getElementById('attachment-url-mime').value
+        ) ||
         inferMimeType(inferredName)
 
       const kind =
@@ -9494,7 +10025,11 @@
           : selectedKind
 
       if (kind === 'image' && type && !/^image\//.test(type)) {
-        toast('MIME type của ảnh phải bắt đầu bằng image/.', 'error')
+        toast(
+          'MIME type của ảnh phải bắt đầu bằng image/.',
+          'error'
+        )
+
         return
       }
 
@@ -9511,7 +10046,7 @@
         sourceType: 'url',
         text: null,
         type,
-        url: parsed.href
+        url: parsedUrl.href
       })
 
       getElementById('attachment-url-dialog').close()
@@ -9528,7 +10063,9 @@
       button.setAttribute('aria-expanded', String(open))
 
       if (open && focusFirst) {
-        const firstItem = menu.querySelector('.attachment-menu__item')
+        const firstItem =
+          menu.querySelector('.attachment-menu__item')
+
         if (firstItem) firstItem.focus()
       }
     }
@@ -9536,14 +10073,18 @@
     function removeMessageAttachment (messageId, attachmentId) {
       const conversation = currentConversation()
 
-      if (conversation && conversationGenerating(conversation.id)) {
-        toast(text.generationBusy, 'error')
+      if (
+        conversation &&
+        isConversationGenerating(conversation.id)
+      ) {
+        toast(UI_TEXT.generationBusy, 'error')
+
         return
       }
 
-      const message = conversation && conversation.messages.find(item => {
-        return item.id === messageId
-      })
+      const message =
+        conversation &&
+        conversation.messages.find(item => item.id === messageId)
 
       if (!message || !message.attachments) return
 
@@ -9552,6 +10093,7 @@
       })
 
       conversation.updatedAt = Date.now()
+
       renderMessages()
       scheduleSave()
     }
@@ -9559,8 +10101,12 @@
     function addMessage (role = 'user') {
       let conversation = currentConversation()
 
-      if (conversation && conversationGenerating(conversation.id)) {
-        toast(text.generationBusy, 'error')
+      if (
+        conversation &&
+        isConversationGenerating(conversation.id)
+      ) {
+        toast(UI_TEXT.generationBusy, 'error')
+
         return
       }
 
@@ -9571,7 +10117,8 @@
         state.editDraft &&
         state.editDraft.conversationId !== conversation.id
       ) {
-        toast(text.editingOtherConversation, 'info')
+        toast(UI_TEXT.editingOtherConversation, 'info')
+
         return
       }
 
@@ -9579,10 +10126,10 @@
         content: '',
         createdAt: Date.now(),
         id: uniqueId(),
-        role: messageRoles.includes(role) ? role : 'user'
+        role: MESSAGE_ROLES.includes(role) ? role : 'user'
       }
 
-      if (assistantRole(message.role)) {
+      if (isAssistantRole(message.role)) {
         message.outputBlocks = []
         message.showReasoning = true
         message.status = 'complete'
@@ -9610,8 +10157,12 @@
     function beginMessageEdit (messageId) {
       const conversation = currentConversation()
 
-      if (!conversation || conversationGenerating(conversation.id)) {
-        toast(text.generationBusy, 'error')
+      if (
+        !conversation ||
+        isConversationGenerating(conversation.id)
+      ) {
+        toast(UI_TEXT.generationBusy, 'error')
+
         return
       }
 
@@ -9619,11 +10170,14 @@
         state.editDraft &&
         state.editDraft.conversationId !== conversation.id
       ) {
-        toast(text.editingOtherConversation, 'info')
+        toast(UI_TEXT.editingOtherConversation, 'info')
+
         return
       }
 
-      const message = conversation.messages.find(item => item.id === messageId)
+      const message = conversation.messages.find(item => {
+        return item.id === messageId
+      })
 
       if (!message) return
 
@@ -9645,13 +10199,18 @@
       captureEditDraft()
 
       const draft = currentEditDraft()
-      const conversation = draft && state.conversations.find(item => {
-        return item.id === draft.conversationId
-      })
 
-      const message = conversation && conversation.messages.find(item => {
-        return item.id === draft.messageId
-      })
+      const conversation =
+        draft &&
+        state.conversations.find(item => {
+          return item.id === draft.conversationId
+        })
+
+      const message =
+        conversation &&
+        conversation.messages.find(item => {
+          return item.id === draft.messageId
+        })
 
       if (!message) return
 
@@ -9659,21 +10218,25 @@
 
       if (!content && !(message.attachments || []).length) {
         toast('Nội dung không được để trống.', 'error')
+
         return
       }
 
       const previousRole = message.role
 
-      message.role = messageRoles.includes(draft.role)
+      message.role = MESSAGE_ROLES.includes(draft.role)
         ? draft.role
         : message.role
 
       message.content = content
+
       delete message.error
 
-      if (assistantRole(message.role)) {
-        const blocks = assistantRole(previousRole)
-          ? messageBlocks(message).filter(block => block.type !== 'text')
+      if (isAssistantRole(message.role)) {
+        const blocks = isAssistantRole(previousRole)
+          ? messageBlocks(message).filter(block => {
+              return block.type !== 'text'
+            })
           : []
 
         if (content) {
@@ -9683,6 +10246,7 @@
         message.outputBlocks = blocks
         message.showReasoning = message.showReasoning !== false
         message.status = 'complete'
+
         syncAssistantMessage(message)
       } else {
         const assistantProperties = [
@@ -9697,7 +10261,7 @@
           'modelLabel'
         ]
 
-        assistantProperties.forEach(name => delete message[name])
+        assistantProperties.forEach(property => delete message[property])
       }
 
       if (!conversation.renamed) {
@@ -9716,9 +10280,12 @@
 
     function cancelMessageEdit () {
       const draft = currentEditDraft()
-      const conversation = draft && state.conversations.find(item => {
-        return item.id === draft.conversationId
-      })
+
+      const conversation =
+        draft &&
+        state.conversations.find(item => {
+          return item.id === draft.conversationId
+        })
 
       if (conversation && draft.isNew) {
         const message = conversation.messages.find(item => {
@@ -9726,13 +10293,15 @@
         })
 
         if (message && !message.content) {
-          conversation.messages = conversation.messages.filter(item => {
-            return item.id !== message.id
-          })
+          conversation.messages =
+            conversation.messages.filter(item => {
+              return item.id !== message.id
+            })
         }
       }
 
       state.editDraft = null
+
       renderMessages()
       renderSidebar()
       scheduleSave()
@@ -9741,8 +10310,12 @@
     function deleteMessage (messageId) {
       const conversation = currentConversation()
 
-      if (!conversation || conversationGenerating(conversation.id)) {
-        toast(text.generationBusy, 'error')
+      if (
+        !conversation ||
+        isConversationGenerating(conversation.id)
+      ) {
+        toast(UI_TEXT.generationBusy, 'error')
+
         return
       }
 
@@ -9774,8 +10347,12 @@
     function moveMessage (messageId, direction) {
       const conversation = currentConversation()
 
-      if (!conversation || conversationGenerating(conversation.id)) {
-        toast(text.generationBusy, 'error')
+      if (
+        !conversation ||
+        isConversationGenerating(conversation.id)
+      ) {
+        toast(UI_TEXT.generationBusy, 'error')
+
         return
       }
 
@@ -9808,7 +10385,8 @@
       scheduleSave()
       schedulePreview()
 
-      const element = select(`[data-message-id="${messageId}"]`)
+      const element =
+        queryElement(`[data-message-id="${messageId}"]`)
 
       if (element) {
         element.scrollIntoView({
@@ -9820,8 +10398,12 @@
     function regenerateResponse (messageId) {
       const conversation = currentConversation()
 
-      if (!conversation || conversationGenerating(conversation.id)) {
-        toast(text.generationBusy, 'error')
+      if (
+        !conversation ||
+        isConversationGenerating(conversation.id)
+      ) {
+        toast(UI_TEXT.generationBusy, 'error')
+
         return
       }
 
@@ -9832,6 +10414,7 @@
       if (index < 0) return
 
       conversation.messages = conversation.messages.slice(0, index)
+
       createAssistantAndGenerate(conversation)
     }
 
@@ -9846,12 +10429,12 @@
     }
 
     async function generateResponse (conversation, message) {
-      const value = runtime(conversation.id)
+      const runtime = getConversationRuntime(conversation.id)
 
-      if (value.generating) return
+      if (runtime.generating) return
 
-      value.generating = true
-      value.abortController = new window.AbortController()
+      runtime.generating = true
+      runtime.abortController = new window.AbortController()
 
       renderSidebar()
       renderTopBar()
@@ -9866,14 +10449,15 @@
 
       try {
         if (!endpoint) {
-          throw apiError('config', text.endpointRequired)
+          throw createApiError('config', UI_TEXT.endpointRequired)
         }
 
         if (!message.model) {
-          throw apiError('config', text.modelRequired)
+          throw createApiError('config', UI_TEXT.modelRequired)
         }
 
         const settings = requestSettings(conversation.configuration)
+
         const messages = canonicalMessages(
           conversation,
           message,
@@ -9881,12 +10465,12 @@
         )
 
         if (!messages.length) {
-          throw apiError('config', text.emptyMessage)
+          throw createApiError('config', UI_TEXT.emptyMessage)
         }
 
         validateAttachments(messages)
 
-        const request = apiFormats[endpoint.format].build({
+        const request = API_FORMATS[endpoint.format].build({
           apiKey: endpoint.apiKey,
           base: endpoint.baseUrl,
           messages,
@@ -9920,7 +10504,7 @@
             body: JSON.stringify(request.body),
             headers,
             method: 'POST',
-            signal: value.abortController.signal
+            signal: runtime.abortController.signal
           },
           settings.streaming,
           event => {
@@ -9946,7 +10530,7 @@
             } catch {}
           }
 
-          throw apiError(
+          throw createApiError(
             result.status === 429 ? 'rate' : 'http',
             messageText,
             result.status
@@ -9960,7 +10544,7 @@
           const json = parseResponseText(result.text)
 
           if (json && json.error) {
-            throw apiError(
+            throw createApiError(
               'api',
               errorMessage(json, result.status)
             )
@@ -9982,8 +10566,8 @@
         }
       }
 
-      value.generating = false
-      value.abortController = null
+      runtime.generating = false
+      runtime.abortController = null
       conversation.updatedAt = Date.now()
 
       if (
@@ -10008,8 +10592,8 @@
       if (message.status === 'complete' && active) {
         announce('Phản hồi đã hoàn tất')
       } else if (message.status === 'stopped' && active) {
-        announce(text.stopped)
-        toast(text.stopped, 'info')
+        announce(UI_TEXT.stopped)
+        toast(UI_TEXT.stopped, 'info')
       } else if (message.status === 'error') {
         toast(
           active
@@ -10022,7 +10606,8 @@
     }
 
     function createAssistantAndGenerate (conversation) {
-      const endpoint = endpointById(conversation.configuration.endpointId)
+      const endpoint =
+        endpointById(conversation.configuration.endpointId)
 
       const message = {
         content: '',
@@ -10044,27 +10629,36 @@
 
       if (state.activeConversationId === conversation.id) {
         shouldStickToBottom = true
+
         renderMessages()
         scrollToBottom(true)
       }
 
       renderSidebar()
       scheduleSave()
+
       generateResponse(conversation, message)
     }
 
     function sendMessage () {
       if (currentEditDraft()) {
-        toast(text.editingMessage, 'info')
+        toast(UI_TEXT.editingMessage, 'info')
+
         return
       }
 
       let conversation = currentConversation()
 
-      if (conversation && conversationGenerating(conversation.id)) return
+      if (
+        conversation &&
+        isConversationGenerating(conversation.id)
+      ) {
+        return
+      }
 
       if (state.pendingAttachmentReads) {
         toast('Tệp đính kèm vẫn đang được đọc.', 'info')
+
         return
       }
 
@@ -10075,24 +10669,28 @@
         Boolean(conversation && conversation.messages.length)
 
       if (!hasDraft && !hasMessages) {
-        toast(text.emptyMessage, 'error')
+        toast(UI_TEXT.emptyMessage, 'error')
+
         return
       }
 
       if (!navigator.onLine) {
         toast('Mất kết nối mạng.', 'error')
+
         return
       }
 
       if (!currentEndpoint()) {
-        toast(text.endpointRequired, 'error')
+        toast(UI_TEXT.endpointRequired, 'error')
         openEndpointDialog()
+
         return
       }
 
       if (!activeConfiguration.modelId) {
-        toast(text.modelRequired, 'error')
+        toast(UI_TEXT.modelRequired, 'error')
         openEndpointDialog()
+
         return
       }
 
@@ -10101,6 +10699,7 @@
         validateVariables(true)
       } catch (error) {
         toast(error.message, 'error', 5200)
+
         return
       }
 
@@ -10136,20 +10735,28 @@
       renderSidebar()
       renderTopBar()
       scheduleSave()
+
       createAssistantAndGenerate(conversation)
     }
 
     function stopGeneration () {
-      const value = runtime(state.activeConversationId, false)
+      const runtime = getConversationRuntime(
+        state.activeConversationId,
+        false
+      )
 
-      if (value && value.abortController) value.abortController.abort()
+      if (runtime && runtime.abortController) {
+        runtime.abortController.abort()
+      }
     }
 
     function renderEndpointList () {
       const list = getElementById('endpoint-list')
 
       if (!state.endpoints.length) {
-        list.innerHTML = '<div class="empty-state">Chưa có endpoint nào.</div>'
+        list.innerHTML =
+          '<div class="empty-state">Chưa có endpoint nào.</div>'
+
         return
       }
 
@@ -10176,7 +10783,7 @@
               <span class="endpoint-card__header">
                 <strong>${escapeHtml(endpoint.name)}</strong>
                 <span class="status-badge status-badge_type_format">
-                  ${escapeHtml(apiFormats[endpoint.format].label)}
+                  ${escapeHtml(API_FORMATS[endpoint.format].label)}
                 </span>
               </span>
 
@@ -10239,13 +10846,14 @@
             <span class="value-chip">
               <span>${escapeHtml(model)}</span>
               <button
-                class="chip__remove"
+                class="remove-button value-chip__remove"
                 type="button"
                 data-action="remove-endpoint-model"
                 data-index="${index}"
                 aria-label="Xoá mô hình ${escapeHtml(model)}"
+                title="Xoá mô hình"
               >
-                ${icon('x', 'icon_size_small')}
+                ${renderIcon('x', 'icon_size_small')}
               </button>
             </span>`
         }).join('')
@@ -10273,13 +10881,14 @@
               >
 
               <button
-                class="chip__remove"
+                class="remove-button endpoint-header-row__remove"
                 type="button"
                 data-action="remove-endpoint-header"
                 data-index="${index}"
                 aria-label="Xoá header"
+                title="Xoá header"
               >
-                ${icon('x', 'icon_size_small')}
+                ${renderIcon('x', 'icon_size_small')}
               </button>
             </div>`
         }).join('')
@@ -10287,29 +10896,39 @@
 
     function updateApiKeyControls () {
       const input = getElementById('endpoint-api-key')
-      const existing = editingEndpointId
+
+      const existingEndpoint = editingEndpointId
         ? endpointById(editingEndpointId)
         : null
 
       const hasDraft = Boolean(input.value.trim())
-      const hasStored =
-        Boolean(existing && existing.apiKey && !endpointApiKeyCleared)
+
+      const hasStoredKey =
+        Boolean(
+          existingEndpoint &&
+          existingEndpoint.apiKey &&
+          !endpointApiKeyCleared
+        )
 
       getElementById('delete-endpoint-api-key-button').disabled =
-        !hasDraft && !hasStored
+        !hasDraft && !hasStoredKey
 
       getElementById('endpoint-api-key-hint').textContent =
         endpointApiKeyCleared
           ? 'Sẽ lưu mà không có key API.'
-          : hasStored && !hasDraft
+          : hasStoredKey && !hasDraft
             ? 'Đang giữ key đã lưu.'
             : ''
     }
 
     function updateEndpointUrlPreview () {
-      const format = apiFormats[getElementById('endpoint-format').value]
+      const format = API_FORMATS[
+        getElementById('endpoint-format').value
+      ]
+
       const baseUrl =
-        getElementById('endpoint-base-url').value || format.presetBase
+        getElementById('endpoint-base-url').value ||
+        format.presetBase
 
       getElementById('endpoint-url-preview').textContent =
         format.url(baseUrl, '{model}', true)
@@ -10318,6 +10937,7 @@
     function showEndpointForm (endpoint) {
       editingEndpointId = endpoint ? endpoint.id : null
       endpointModels = endpoint ? endpoint.models.slice() : []
+
       endpointHeaders = endpoint
         ? endpoint.headers.map(header => ({
             ...header
@@ -10329,11 +10949,15 @@
       getElementById('endpoint-form-title').textContent =
         endpoint ? 'Sửa endpoint' : 'Thêm endpoint'
 
-      getElementById('endpoint-name').value = endpoint ? endpoint.name : ''
+      getElementById('endpoint-name').value =
+        endpoint ? endpoint.name : ''
 
       getElementById('endpoint-format').innerHTML =
-        formatOrder.map(format => {
-          return `<option value="${format}">${escapeHtml(apiFormats[format].label)}</option>`
+        API_FORMAT_ORDER.map(format => {
+          return `
+            <option value="${format}">
+              ${escapeHtml(API_FORMATS[format].label)}
+            </option>`
         }).join('')
 
       getElementById('endpoint-format').value =
@@ -10342,9 +10966,10 @@
       getElementById('endpoint-base-url').value =
         endpoint
           ? endpoint.baseUrl
-          : apiFormats['chat-completions'].presetBase
+          : API_FORMATS['chat-completions'].presetBase
 
       getElementById('endpoint-api-key').value = ''
+
       getElementById('endpoint-api-key').placeholder =
         endpoint && endpoint.apiKey
           ? 'Để trống để giữ key hiện tại'
@@ -10363,6 +10988,7 @@
 
     function hideEndpointForm () {
       getElementById('endpoint-form').hidden = true
+
       editingEndpointId = null
       endpointModels = []
       endpointHeaders = []
@@ -10377,11 +11003,14 @@
 
       if (endpointModels.includes(model)) {
         toast('Mô hình đã có trong danh sách.', 'error')
+
         return
       }
 
       endpointModels.push(model)
+
       input.value = ''
+
       renderEndpointModels()
       input.focus()
     }
@@ -10389,44 +11018,49 @@
     function saveEndpoint () {
       const name = getElementById('endpoint-name').value.trim()
       const format = getElementById('endpoint-format').value
+
       const baseUrl = normalizeBaseUrl(
         getElementById('endpoint-base-url').value
       )
 
-      const apiKey = getElementById('endpoint-api-key').value.trim()
+      const apiKey =
+        getElementById('endpoint-api-key').value.trim()
 
       if (!name) {
         toast('Tên endpoint không được để trống.', 'error')
+
         return
       }
 
       if (!/^https:\/\//i.test(baseUrl)) {
         toast('URL API phải bắt đầu bằng https://.', 'error')
+
         return
       }
 
       const endpointId = editingEndpointId || uniqueId()
-      const existing = endpointById(endpointId)
+      const existingEndpoint = endpointById(endpointId)
 
       const endpoint = sanitizeEndpoint({
         apiKey:
           endpointApiKeyCleared
             ? ''
-            : apiKey || (existing ? existing.apiKey : ''),
+            : apiKey || (existingEndpoint ? existingEndpoint.apiKey : ''),
         baseUrl,
         format,
-        headers: endpointHeaders
-          .filter(header => header.name.trim())
-          .map(header => ({
-            name: header.name.trim(),
-            value: header.value
-          })),
+        headers:
+          endpointHeaders
+            .filter(header => header.name.trim())
+            .map(header => ({
+              name: header.name.trim(),
+              value: header.value
+            })),
         id: endpointId,
         models: endpointModels.slice(),
         name
       })
 
-      if (existing) {
+      if (existingEndpoint) {
         state.endpoints = state.endpoints.map(item => {
           return item.id === endpointId ? endpoint : item
         })
@@ -10450,6 +11084,7 @@
       renderTopBar()
       hideEndpointForm()
       scheduleSave()
+
       toast(`Đã lưu endpoint “${name}”.`, 'success')
     }
 
@@ -10504,7 +11139,7 @@
     }
 
     function updatePanelControls () {
-      const mobile = mobileLayout.matches
+      const mobile = mobileLayoutMediaQuery.matches
 
       const sidebarExpanded = mobile
         ? state.openDrawer === 'sidebar-panel'
@@ -10514,27 +11149,33 @@
         ? state.openDrawer === 'settings-panel'
         : state.ui.settingsOpen
 
-      selectAll('[data-action="toggle-sidebar"]').forEach(button => {
-        button.setAttribute('aria-expanded', String(sidebarExpanded))
+      queryElements('[data-action="toggle-sidebar"]').forEach(button => {
+        const label = sidebarExpanded
+          ? 'Thu gọn lịch sử trò chuyện'
+          : 'Mở lịch sử trò chuyện'
+
         button.setAttribute(
-          'aria-label',
-          sidebarExpanded
-            ? 'Thu gọn lịch sử trò chuyện'
-            : 'Mở lịch sử trò chuyện'
+          'aria-expanded',
+          String(sidebarExpanded)
         )
+
+        button.setAttribute('aria-label', label)
+        button.setAttribute('title', label)
       })
 
-      getElementById('settings-toggle-button').setAttribute(
+      const settingsButton = getElementById('settings-toggle-button')
+
+      const settingsLabel = settingsExpanded
+        ? 'Thu gọn bảng cấu hình'
+        : 'Mở bảng cấu hình'
+
+      settingsButton.setAttribute(
         'aria-expanded',
         String(settingsExpanded)
       )
 
-      getElementById('settings-toggle-button').setAttribute(
-        'aria-label',
-        settingsExpanded
-          ? 'Thu gọn bảng cấu hình'
-          : 'Mở bảng cấu hình'
-      )
+      settingsButton.setAttribute('aria-label', settingsLabel)
+      settingsButton.setAttribute('title', settingsLabel)
     }
 
     function applyDesktopPanels () {
@@ -10561,22 +11202,25 @@
     }
 
     function closeDrawers () {
-      selectAll('.drawer_open').forEach(drawer => {
+      queryElements('.drawer_open').forEach(drawer => {
         drawer.classList.remove('drawer_open')
       })
 
       state.openDrawer = null
+
       updateBackdrop()
     }
 
     function toggleDrawer (id) {
-      if (!mobileLayout.matches) return false
+      if (!mobileLayoutMediaQuery.matches) return false
 
       if (state.openDrawer === id) {
         closeDrawers()
       } else {
         closeDrawers()
+
         state.openDrawer = id
+
         getElementById(id).classList.add('drawer_open')
         updateBackdrop()
       }
@@ -10588,6 +11232,7 @@
       if (toggleDrawer('sidebar-panel')) return
 
       state.ui.sidebarOpen = !state.ui.sidebarOpen
+
       applyDesktopPanels()
       scheduleSave()
     }
@@ -10596,14 +11241,17 @@
       if (toggleDrawer('settings-panel')) return
 
       state.ui.settingsOpen = !state.ui.settingsOpen
+
       applyDesktopPanels()
       scheduleSave()
     }
 
     function resetSettings () {
       activeConfiguration.settings = defaultSettings()
+
       renderSettings()
       scheduleSave()
+
       toast('Đã khôi phục cấu hình mặc định.', 'success')
     }
 
@@ -10612,6 +11260,7 @@
 
       if (!settings.systemPrompt.trim()) {
         toast('System prompt không được để trống.', 'error')
+
         return
       }
 
@@ -10624,6 +11273,7 @@
 
       if (!name.trim()) {
         toast('Tên system prompt không được để trống.', 'error')
+
         return
       }
 
@@ -10640,6 +11290,7 @@
 
       renderPromptControls()
       configurationChanged()
+
       toast(`Đã lưu system prompt “${prompt.name}”.`, 'success')
     }
 
@@ -10649,12 +11300,16 @@
 
       if (!prompt) return
 
-      const name = window.prompt('Đổi tên system prompt', prompt.name)
+      const name = window.prompt(
+        'Đổi tên system prompt',
+        prompt.name
+      )
 
       if (name == null) return
 
       if (!name.trim()) {
         toast('Tên system prompt không được để trống.', 'error')
+
         return
       }
 
@@ -10663,6 +11318,7 @@
 
       renderPromptControls()
       scheduleSave()
+
       toast(`Đã đổi tên thành “${prompt.name}”.`, 'success')
     }
 
@@ -10672,31 +11328,34 @@
 
       if (!prompt) return
 
-      const usedBy = configurations().filter(configuration => {
+      const usedConfigurations = allConfigurations().filter(configuration => {
         return configuration.settings.systemPromptId === prompt.id
       })
 
       if (
         !window.confirm(
-          `Xoá “${prompt.name}”? Nội dung sẽ được giữ làm bản nháp trong ${usedBy.length} cấu hình đang sử dụng.`
+          `Xoá “${prompt.name}”? Nội dung sẽ được giữ làm bản nháp trong ${usedConfigurations.length} cấu hình đang sử dụng.`
         )
       ) {
         return
       }
 
-      usedBy.forEach(configuration => {
+      usedConfigurations.forEach(configuration => {
         configuration.settings.systemPromptId = null
         configuration.settings.systemPrompt = prompt.content
       })
 
-      state.prompts = state.prompts.filter(item => item.id !== prompt.id)
+      state.prompts = state.prompts.filter(item => {
+        return item.id !== prompt.id
+      })
 
       renderPromptControls()
       configurationChanged()
+
       toast(`Đã xoá system prompt “${prompt.name}”.`, 'success')
     }
 
-    const actions = {
+    const ACTION_HANDLERS = {
       'add-attachment-url': createUrlAttachment,
 
       'add-endpoint' () {
@@ -10726,10 +11385,11 @@
         }
 
         activeConfiguration.settings.variableEntries.push(entry)
+
         renderVariables()
         configurationChanged()
 
-        const input = select(
+        const input = queryElement(
           `[data-variable-id="${entry.id}"] [data-variable-name]`
         )
 
@@ -10741,13 +11401,17 @@
 
       'clear-conversation-search' () {
         state.conversationSearch = ''
+
         getElementById('conversation-search').value = ''
+
         renderSidebar()
       },
 
       'clear-endpoint-api-key' () {
         getElementById('endpoint-api-key').value = ''
+
         endpointApiKeyCleared = true
+
         updateApiKeyControls()
         getElementById('endpoint-api-key').focus()
       },
@@ -10763,15 +11427,18 @@
       },
 
       async 'copy-code' (element) {
-        const copied = await copyText(decodeBase64(element.dataset.copyText))
+        const copied = await copyText(
+          decodeBase64(element.dataset.copyText)
+        )
 
         toast(
-          copied ? text.copied : text.copyFailed,
+          copied ? UI_TEXT.copied : UI_TEXT.copyFailed,
           copied ? 'success' : 'error'
         )
 
         if (copied) {
           element.classList.add('code-block__copy_copied')
+
           window.setTimeout(() => {
             element.classList.remove('code-block__copy_copied')
           }, 1200)
@@ -10780,16 +11447,19 @@
 
       async 'copy-message' (element) {
         const conversation = currentConversation()
-        const message = conversation && conversation.messages.find(item => {
-          return item.id === element.dataset.messageId
-        })
+
+        const message =
+          conversation &&
+          conversation.messages.find(item => {
+            return item.id === element.dataset.messageId
+          })
 
         if (!message) return
 
         const copied = await copyText(message.content || '')
 
         toast(
-          copied ? text.copied : text.copyFailed,
+          copied ? UI_TEXT.copied : UI_TEXT.copyFailed,
           copied ? 'success' : 'error'
         )
       },
@@ -10802,7 +11472,7 @@
         )
 
         toast(
-          copied ? text.copied : text.copyFailed,
+          copied ? UI_TEXT.copied : UI_TEXT.copyFailed,
           copied ? 'success' : 'error'
         )
       },
@@ -10844,11 +11514,14 @@
       'new-conversation' () {
         captureEditDraft()
         createConversation()
+
         shouldStickToBottom = true
+
         renderSettings()
         renderMessages()
         renderTopBar()
         closeDrawers()
+
         getElementById('message-input').focus()
       },
 
@@ -10867,6 +11540,7 @@
         if (!conversation) return
 
         conversation.pinned = !conversation.pinned
+
         renderSidebar()
         scheduleSave()
       },
@@ -10916,13 +11590,13 @@
 
       'rename-system-prompt': renamePrompt,
       'reset-settings': resetSettings,
-
       'save-endpoint': saveEndpoint,
       'save-message-edit': saveMessageEdit,
       'save-system-prompt': savePrompt,
 
       'scroll-bottom' () {
         shouldStickToBottom = true
+
         scrollToBottom(true)
       },
 
@@ -10940,7 +11614,7 @@
       },
 
       'submit-message' () {
-        if (currentConversationGenerating()) {
+        if (isCurrentConversationGenerating()) {
           stopGeneration()
         } else {
           sendMessage()
@@ -10948,7 +11622,9 @@
       },
 
       'toggle-attachment-menu' (element, event) {
-        const open = !attachmentMenuOpen
+        const open =
+          element.getAttribute('aria-expanded') !== 'true'
+
         setAttachmentMenu(open, open && event.detail === 0)
       },
 
@@ -10959,9 +11635,11 @@
         const settings = activeConfiguration.settings
 
         settings[property] = !settings[property]
+
         renderToggle(element.id, settings[property])
 
         if (property === 'reasoningEnabled') renderReasoning()
+
         configurationChanged()
       },
 
@@ -10981,7 +11659,7 @@
 
       if (!element) return
 
-      const action = actions[element.dataset.action]
+      const action = ACTION_HANDLERS[element.dataset.action]
 
       if (action) action(element, event)
     }
@@ -10991,20 +11669,27 @@
 
       if (element.id === 'message-input') {
         state.messageDraft = element.value
+
         resizeMessageInput()
         updateComposer()
         scheduleSave()
+
         return
       }
 
-      if (element.id === 'message-editor-input' && currentEditDraft()) {
+      if (
+        element.id === 'message-editor-input' &&
+        currentEditDraft()
+      ) {
         const draft = currentEditDraft()
 
         draft.content = element.value
         draft.selectionStart = element.selectionStart
         draft.selectionEnd = element.selectionEnd
+
         resizeTextarea(element, 360)
         scheduleSave()
+
         return
       }
 
@@ -11020,20 +11705,25 @@
         resizeTextarea(element, 320)
         updatePromptActions()
         configurationChanged()
+
         return
       }
 
       if (element.id === 'tools-json') {
         activeConfiguration.settings.toolsJson = element.value
+
         resizeTextarea(element, 320)
         configurationChanged()
+
         return
       }
 
       if (element.id === 'accent-color-input') {
         state.ui.accent = normalizeHexColor(element.value)
+
         renderAccent()
         configurationChanged()
+
         return
       }
 
@@ -11049,11 +11739,14 @@
 
         activeConfiguration.settings[property] = normalized
 
-        selectAll(`[data-number-setting="${property}"]`).forEach(input => {
+        queryElements(
+          `[data-number-setting="${property}"]`
+        ).forEach(input => {
           if (input !== element) input.value = normalized
         })
 
         configurationChanged()
+
         return
       }
 
@@ -11075,15 +11768,17 @@
         }
 
         configurationChanged()
+
         return
       }
 
       const variableRow = element.closest('[data-variable-id]')
 
       if (variableRow) {
-        const entry = activeConfiguration.settings.variableEntries.find(item => {
-          return item.id === variableRow.dataset.variableId
-        })
+        const entry =
+          activeConfiguration.settings.variableEntries.find(item => {
+            return item.id === variableRow.dataset.variableId
+          })
 
         if (!entry) return
 
@@ -11096,20 +11791,26 @@
         }
 
         try {
-          activeConfiguration.settings.variables = validateVariables(true)
+          activeConfiguration.settings.variables =
+            validateVariables(true)
         } catch {}
 
         configurationChanged()
+
         return
       }
 
       if (element.dataset.headerName != null) {
-        endpointHeaders[Number(element.dataset.headerName)].name = element.value
+        endpointHeaders[
+          Number(element.dataset.headerName)
+        ].name = element.value
       } else if (element.dataset.headerValue != null) {
-        endpointHeaders[Number(element.dataset.headerValue)].value =
-          element.value
+        endpointHeaders[
+          Number(element.dataset.headerValue)
+        ].value = element.value
       } else if (element.id === 'endpoint-api-key') {
         if (element.value.trim()) endpointApiKeyCleared = false
+
         updateApiKeyControls()
       } else if (element.id === 'endpoint-base-url') {
         updateEndpointUrlPreview()
@@ -11125,6 +11826,7 @@
         setActiveEndpoint(element.value)
       } else if (element.id === 'model-select') {
         activeConfiguration.modelId = element.value
+
         renderSampling()
         renderReasoning()
         renderTopBar()
@@ -11134,21 +11836,26 @@
         const settings = activeConfiguration.settings
 
         settings.systemPromptId = prompt ? prompt.id : null
+
         if (prompt) settings.systemPrompt = prompt.content
 
         renderPromptControls()
         configurationChanged()
       } else if (element.id === 'temperature-auto') {
-        activeConfiguration.settings.temperatureAuto = !element.checked
+        activeConfiguration.settings.temperatureAuto =
+          !element.checked
+
         renderSampling()
         configurationChanged()
       } else if (element.id === 'top-p-auto') {
         activeConfiguration.settings.topPAuto = !element.checked
+
         renderSampling()
         configurationChanged()
       } else if (element.dataset.selectSetting) {
-        activeConfiguration.settings[element.dataset.selectSetting] =
-          element.value || null
+        activeConfiguration.settings[
+          element.dataset.selectSetting
+        ] = element.value || null
 
         configurationChanged()
       } else if (element.dataset.safetyCategory) {
@@ -11162,11 +11869,14 @@
         currentEditDraft()
       ) {
         currentEditDraft().role = element.value
+
         scheduleSave()
       } else if (element.id === 'endpoint-format') {
-        const format = apiFormats[element.value]
+        const format = API_FORMATS[element.value]
 
-        getElementById('endpoint-base-url').value = format.presetBase
+        getElementById('endpoint-base-url').value =
+          format.presetBase
+
         updateEndpointUrlPreview()
       }
     }
@@ -11179,32 +11889,39 @@
         return false
       }
 
-      const items = selectAll('#attachment-menu .attachment-menu__item')
+      const items =
+        queryElements('#attachment-menu .attachment-menu__item')
+
       const currentIndex = items.indexOf(document.activeElement)
 
       if (event.key === 'ArrowDown') {
         event.preventDefault()
         items[(currentIndex + 1) % items.length].focus()
+
         return true
       }
 
       if (event.key === 'ArrowUp') {
         event.preventDefault()
+
         items[
           (currentIndex - 1 + items.length) % items.length
         ].focus()
+
         return true
       }
 
       if (event.key === 'Home') {
         event.preventDefault()
         items[0].focus()
+
         return true
       }
 
       if (event.key === 'End') {
         event.preventDefault()
         items[items.length - 1].focus()
+
         return true
       }
 
@@ -11222,7 +11939,8 @@
       ) {
         event.preventDefault()
 
-        if (!currentConversationGenerating()) sendMessage()
+        if (!isCurrentConversationGenerating()) sendMessage()
+
         return
       }
 
@@ -11232,6 +11950,7 @@
       ) {
         event.preventDefault()
         addEndpointModel()
+
         return
       }
 
@@ -11241,11 +11960,13 @@
       ) {
         event.preventDefault()
         createUrlAttachment()
+
         return
       }
 
       if (event.key === 'Escape' && attachmentMenuOpen) {
         event.preventDefault()
+
         setAttachmentMenu(false)
         getElementById('attachment-menu-button').focus()
       }
@@ -11261,6 +11982,7 @@
         'input',
         event => {
           state.conversationSearch = event.target.value
+
           renderSidebar()
         }
       )
@@ -11271,58 +11993,76 @@
           const files = Array.from(event.target.files)
 
           event.target.value = ''
+
           await addFiles(files)
         }
       )
 
       const chatArea = getElementById('chat-scroll-area')
 
-      chatArea.addEventListener('scroll', () => {
-        const distance = Math.max(
-          0,
-          chatArea.scrollHeight -
-          chatArea.scrollTop -
-          chatArea.clientHeight
-        )
+      chatArea.addEventListener(
+        'scroll',
+        () => {
+          const distance = Math.max(
+            0,
+            chatArea.scrollHeight -
+              chatArea.scrollTop -
+              chatArea.clientHeight
+          )
 
-        shouldStickToBottom =
-          chatArea.scrollHeight <= chatArea.clientHeight + 1 ||
-          distance < 90
+          shouldStickToBottom =
+            chatArea.scrollHeight <= chatArea.clientHeight + 1 ||
+            distance < 90
 
-        updateFollowButton()
-      }, {
-        passive: true
-      })
-
-      chatArea.addEventListener('wheel', event => {
-        if (event.deltaY < 0) shouldStickToBottom = false
-      }, {
-        passive: true
-      })
-
-      chatArea.addEventListener('touchstart', event => {
-        const touch = event.touches[0]
-        chatTouchY = touch ? touch.clientY : null
-      }, {
-        passive: true
-      })
-
-      chatArea.addEventListener('touchmove', event => {
-        const touch = event.touches[0]
-
-        if (!touch) return
-
-        if (
-          chatTouchY != null &&
-          touch.clientY > chatTouchY
-        ) {
-          shouldStickToBottom = false
+          updateFollowButton()
+        },
+        {
+          passive: true
         }
+      )
 
-        chatTouchY = touch.clientY
-      }, {
-        passive: true
-      })
+      chatArea.addEventListener(
+        'wheel',
+        event => {
+          if (event.deltaY < 0) shouldStickToBottom = false
+        },
+        {
+          passive: true
+        }
+      )
+
+      chatArea.addEventListener(
+        'touchstart',
+        event => {
+          const touch = event.touches[0]
+
+          chatTouchY = touch ? touch.clientY : null
+        },
+        {
+          passive: true
+        }
+      )
+
+      chatArea.addEventListener(
+        'touchmove',
+        event => {
+          const touch = event.touches[0]
+
+          if (!touch) return
+
+          if (
+            chatTouchY != null &&
+            touch.clientY > chatTouchY
+          ) {
+            shouldStickToBottom = false
+          }
+
+          chatTouchY = touch.clientY
+        },
+        {
+          passive: true
+        }
+      )
 
       const clearChatTouch = () => {
         chatTouchY = null
@@ -11340,6 +12080,7 @@
         if (document.hidden) {
           captureEditDraft()
           scheduleSave.flush()
+
           return
         }
 
@@ -11362,13 +12103,19 @@
 
       const layoutChanged = () => {
         closeDrawers()
-        if (!mobileLayout.matches) applyDesktopPanels()
+
+        if (!mobileLayoutMediaQuery.matches) {
+          applyDesktopPanels()
+        }
       }
 
-      if (mobileLayout.addEventListener) {
-        mobileLayout.addEventListener('change', layoutChanged)
+      if (mobileLayoutMediaQuery.addEventListener) {
+        mobileLayoutMediaQuery.addEventListener(
+          'change',
+          layoutChanged
+        )
       } else {
-        mobileLayout.addListener(layoutChanged)
+        mobileLayoutMediaQuery.addListener(layoutChanged)
       }
 
       window.addEventListener('pagehide', () => {
@@ -11380,12 +12127,12 @@
     }
 
     function hydrateIcons () {
-      selectAll('[data-icon]').forEach(element => {
-        element.innerHTML = icon(element.dataset.icon)
+      queryElements('[data-icon]').forEach(element => {
+        element.innerHTML = renderIcon(element.dataset.icon)
       })
 
-      selectAll('.app-icon').forEach(element => {
-        element.innerHTML = appIconHtml()
+      queryElements('.app-icon').forEach(element => {
+        element.innerHTML = renderAppIcon()
       })
     }
 
@@ -11394,7 +12141,9 @@
 
       if (typeof window.ResizeObserver !== 'function') return
 
-      const composerObserver = new window.ResizeObserver(updateComposerHeight)
+      const composerObserver =
+        new window.ResizeObserver(updateComposerHeight)
+
       const messageObserver = new window.ResizeObserver(() => {
         if (shouldStickToBottom) {
           scrollToBottom(false)
@@ -11429,14 +12178,17 @@
 
       window.console.assert(
         new Set(
-          safetyDefinitions.map(definition => safetySlug(definition.category))
-        ).size === safetyDefinitions.length,
+          SAFETY_DEFINITIONS.map(definition => {
+            return safetySlug(definition.category)
+          })
+        ).size === SAFETY_DEFINITIONS.length,
         'Safety setting DOM identifiers must be unique'
       )
 
       window.console.assert(
-        window.getComputedStyle(getElementById('attachment-menu')).display ===
-          'none',
+        window.getComputedStyle(
+          getElementById('attachment-menu')
+        ).display === 'none',
         'Hidden attachment menu must not be displayed'
       )
 
@@ -11446,18 +12198,33 @@
         messages: [
           {
             attachments: [],
-            content: 'System message',
+            content: 'Initial system message',
             role: 'system'
           },
           {
             attachments: [],
-            content: 'Developer message',
+            content: 'Initial developer message',
             role: 'developer'
           },
           {
             attachments: [],
-            content: 'User message',
+            content: 'First user message',
             role: 'user'
+          },
+          {
+            attachments: [],
+            content: 'First assistant message',
+            role: 'assistant'
+          },
+          {
+            attachments: [],
+            content: 'Second user message',
+            role: 'user'
+          },
+          {
+            attachments: [],
+            content: 'Mid-conversation system message',
+            role: 'system'
           }
         ],
         model: 'model',
@@ -11469,31 +12236,62 @@
         stream: false
       }
 
-      const messagesBody = apiFormats.messages.build(requestContext).body
+      const messagesBody =
+        API_FORMATS.messages.build(requestContext).body
+
       const generateContentBody =
-        apiFormats['generate-content'].build(requestContext).body
-      const responsesBody = apiFormats.responses.build(requestContext).body
+        API_FORMATS['generate-content'].build(requestContext).body
+
+      const responsesBody =
+        API_FORMATS.responses.build(requestContext).body
+
       const interactionsBody =
-        apiFormats.interactions.build(requestContext).body
+        API_FORMATS.interactions.build(requestContext).body
+
+      const expectedTopLevelInstruction = [
+        'Global instruction',
+        'Initial system message',
+        'Initial developer message'
+      ].join(BLOCK_SEPARATOR)
+
+      const expectedCombinedInstruction = [
+        'Global instruction',
+        'Initial system message',
+        'Initial developer message',
+        'Mid-conversation system message'
+      ].join(BLOCK_SEPARATOR)
 
       window.console.assert(
-        !Object.prototype.hasOwnProperty.call(messagesBody, 'system'),
-        'Messages must place system prompts in messages'
+        messagesBody.system === expectedTopLevelInstruction,
+        'Messages must keep initial instructions in the top-level system field'
+      )
+
+      window.console.assert(
+        messagesBody.messages.some(message => {
+          return (
+            message.role === 'system' &&
+            textValue(message.content) ===
+              'Mid-conversation system message'
+          )
+        }),
+        'Messages must preserve supported mid-conversation system roles'
       )
 
       window.console.assert(
         messagesBody.messages.every(message => {
-          return message.role === 'user' || message.role === 'assistant'
+          return (
+            message.role === 'user' ||
+            message.role === 'assistant' ||
+            message.role === 'system'
+          )
         }),
-        'Messages roles must translate to user or assistant'
+        'Messages roles must translate to user, assistant, or system'
       )
 
       window.console.assert(
-        !Object.prototype.hasOwnProperty.call(
-          generateContentBody,
-          'systemInstruction'
-        ),
-        'Generate Content must place system prompts in contents'
+        generateContentBody.systemInstruction.parts[0].text ===
+          expectedCombinedInstruction,
+        'Generate Content must use systemInstruction'
       )
 
       window.console.assert(
@@ -11504,23 +12302,82 @@
       )
 
       window.console.assert(
-        !Object.prototype.hasOwnProperty.call(responsesBody, 'instructions') &&
-        responsesBody.input[0].role === 'system',
-        'Responses must place instructions in input'
+        responsesBody.instructions === expectedCombinedInstruction &&
+        responsesBody.input[0].role === 'user',
+        'Responses must use the top-level instructions field'
       )
 
       window.console.assert(
-        !Object.prototype.hasOwnProperty.call(
-          interactionsBody,
-          'system_instruction'
-        ) &&
+        interactionsBody.system_instruction === expectedCombinedInstruction &&
         interactionsBody.input[0].type === 'user_input',
-        'Interactions must place system prompts in input'
+        'Interactions must use the top-level system_instruction field'
+      )
+
+      const toolMessage = {
+        outputBlocks: []
+      }
+
+      upsertTool(toolMessage, {
+        callId: 'first-call',
+        id: 'tool:first-call',
+        name: 'Repeated tool',
+        status: 'running',
+        toolType: 'tool_call'
+      })
+
+      upsertTool(toolMessage, {
+        callId: 'second-call',
+        id: 'tool:second-call',
+        name: 'Repeated tool',
+        status: 'running',
+        toolType: 'tool_call'
+      })
+
+      window.console.assert(
+        toolMessage.outputBlocks.length === 2,
+        'Each tool call must keep a separate output block'
+      )
+
+      const toolMarkup = reasoningHtml([
+        toolBlock({
+          callId: 'self-check-call',
+          input: {
+            value: 'input'
+          },
+          name: 'Self check',
+          result: {
+            value: 'output'
+          },
+          status: 'completed'
+        })
+      ], {
+        status: 'complete'
+      })
+
+      window.console.assert(
+        toolMarkup.includes('reasoning-tool') &&
+        toolMarkup.includes('input') &&
+        toolMarkup.includes('output') &&
+        !toolMarkup.includes('tool-panel'),
+        'Tool activity must render completely inside reasoning'
+      )
+
+      window.console.assert(
+        window.getComputedStyle(
+          queryElement('.prompt-actions')
+        ).marginBottom === '14px',
+        'System prompt actions must not overlap the prompt field'
+      )
+
+      window.console.assert(
+        window.getComputedStyle(
+          queryElement('.variable-row__remove')
+        ).position !== 'absolute',
+        'Variable controls must not overlap the value field'
       )
     }
 
     function initialize () {
-      selfCheck()
       renderSafetyMarkup()
       hydrateIcons()
 
@@ -11537,6 +12394,7 @@
       observeLayout()
       refreshPreview()
       scrollToBottom(true)
+      selfCheck()
       scheduleSave()
 
       if (!window.JSON5) {
