@@ -1,0 +1,24 @@
+{
+  "id": "./",
+  "name": "AI Workbench",
+  "lang": "vi",
+  "dir": "ltr",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#020508",
+  "theme_color": "#05080d",
+  "categories": [
+    "productivity",
+    "utilities"
+  ],
+  "icons": [
+    {
+      "src": "data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3e%3crect width='64' height='64' rx='8' fill='%2305080d'/%3e%3cg fill='none' stroke='%23e8fbff' stroke-width='7' stroke-linecap='round' stroke-linejoin='round'%3e%3cpath d='M8 32 21 17l11 15-11 15L8 32Z'/%3e%3cpath d='m32 32 11-15 13 15-13 15-11-15Z'/%3e%3c/g%3e%3cg fill='%23e8fbff'%3e%3ccircle cx='8' cy='32' r='6'/%3e%3ccircle cx='21' cy='17' r='6'/%3e%3ccircle cx='32' cy='32' r='6'/%3e%3ccircle cx='21' cy='47' r='6'/%3e%3ccircle cx='43' cy='17' r='6'/%3e%3ccircle cx='56' cy='32' r='6'/%3e%3ccircle cx='43' cy='47' r='6'/%3e%3c/g%3e%3c/svg%3e",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
