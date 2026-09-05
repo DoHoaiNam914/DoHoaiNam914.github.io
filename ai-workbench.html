@@ -2612,8 +2612,8 @@
             type="button"
             data-action="open-file-library"
             data-icon="file-text"
-            aria-label="Thư viện tệp"
-            title="Thư viện tệp"
+            aria-label="Thư viện tập tin"
+            title="Thư viện tập tin"
           ></button>
           <button
             class="icon-button"
@@ -2675,7 +2675,7 @@
             <div
               class="attachment-list"
               id="attachment-list"
-              aria-label="Tệp chờ gửi"
+              aria-label="Attachment chờ gửi"
               hidden
             ></div>
             <div class="composer__box">
@@ -2706,7 +2706,7 @@
                     class="attachment-menu"
                     id="attachment-menu"
                     role="menu"
-                    aria-label="Chọn nguồn tệp đính kèm"
+                    aria-label="Chọn nguồn attachment"
                     hidden
                   >
                     <button
@@ -2725,7 +2725,7 @@
                       role="menuitem"
                     >
                       <span data-icon="file-text"></span>
-                      <span>Thư viện tệp</span>
+                      <span>Thư viện tập tin</span>
                     </button>
                     <button
                       class="attachment-menu__item"
@@ -3294,7 +3294,7 @@
         <select class="select-field" id="attachment-url-kind">
           <option value="auto">Tự nhận diện</option>
           <option value="image">Ảnh</option>
-          <option value="file">Tệp</option>
+          <option value="file">Tập tin</option>
         </select>
       </div>
       <div class="field">
@@ -3515,7 +3515,7 @@
     type="file"
     multiple
     hidden
-    aria-label="Chọn tệp đính kèm"
+    aria-label="Chọn attachment"
     accept="image/*,application/pdf,application/json,application/x-ndjson,application/yaml,application/x-yaml,application/rtf,text/*,.pdf,.txt,.md,.csv,.json,.jsonl,.html,.css,.js,.cjs,.mjs,.jsx,.ts,.tsx,.py,.xml,.yaml,.yml,.toml,.ini,.sql,.sh,.c,.cpp,.h,.go,.java,.rs,.php,.rb,.swift,.vue,.svelte"
   >
   <dialog
@@ -3524,49 +3524,49 @@
     aria-labelledby="file-library-title"
   >
     <div class="dialog__header">
-      <h2 class="dialog__title" id="file-library-title">Thư viện tệp</h2>
+      <h2 class="dialog__title" id="file-library-title">Thư viện tập tin</h2>
       <button
         class="icon-button file-library__cleanup"
         type="button"
         data-action="cleanup-unused-files"
         data-icon="trash"
-        aria-label="Xoá tệp không dùng"
-        title="Xoá tệp không dùng"
+        aria-label="Dọn dẹp tập tin không được sử dụng"
+        title="Dọn dẹp tập tin không được sử dụng"
       ></button>
       <button
         class="icon-button"
         type="button"
         data-action="close-file-library"
         data-icon="x"
-        aria-label="Đóng thư viện tệp"
+        aria-label="Đóng thư viện tập tin"
         title="Đóng"
       ></button>
     </div>
     <div class="dialog__body">
       <div class="file-library__toolbar">
         <label class="visually-hidden" for="file-library-search">
-          Tìm tệp theo tên
+          Tìm tập tin
         </label>
         <input
           class="text-field"
           id="file-library-search"
           type="search"
-          placeholder="Tìm tên tệp"
+          placeholder="Tìm tập tin"
           autocomplete="off"
         >
         <label class="visually-hidden" for="file-library-filter">
-          Lọc theo nguồn tệp
+          Lọc theo nguồn tập tin
         </label>
         <select class="select-field" id="file-library-filter">
-          <option value="">Tất cả tệp</option>
-          <option value="attachment">Tệp đính kèm</option>
-          <option value="generated">Tệp được tạo</option>
+          <option value="">Tất cả tập tin</option>
+          <option value="attachment">Attachment</option>
+          <option value="generated">Generated file</option>
         </select>
       </div>
       <ul
         class="file-library__list"
         id="file-library-list"
-        aria-label="Danh sách tệp"
+        aria-label="Danh sách tập tin"
       ></ul>
     </div>
   </dialog>
@@ -3580,14 +3580,14 @@
         class="dialog__title file-preview__title"
         id="file-preview-title"
       >
-        Xem trước tệp
+        Xem trước tập tin
       </h2>
       <button
         class="icon-button"
         type="button"
         data-action="close-file-preview"
         data-icon="x"
-        aria-label="Đóng bản xem trước tệp"
+        aria-label="Đóng bản xem trước tập tin"
         title="Đóng"
       ></button>
     </div>
@@ -7357,7 +7357,7 @@
             <label class="field__label" for="${id}">${item.label}</label>
           </div>
           <select class="select-field" id="${id}" data-safety-category="${item.category}">
-            <option value=""${value == null ? ' selected' : ''}>Mặc định của API</option>
+            <option value=""${value == null ? ' selected' : ''}>Mặc định</option>
             ${safetyThresholds.map(threshold => `<option value="${threshold}"${value === threshold ? ' selected' : ''}>${threshold}</option>`).join('')}
           </select>
         </div>`
