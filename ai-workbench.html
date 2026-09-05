@@ -138,10 +138,6 @@
       background: var(--color-border-strong);
     }
 
-    ::-webkit-scrollbar-thumb:hover {
-      background: var(--color-accent);
-    }
-
     input::placeholder,
     textarea::placeholder {
       color: var(--color-faint);
@@ -454,11 +450,6 @@
       width: 100%;
     }
 
-    .new-conversation-button:hover {
-      background: var(--color-accent);
-      color: var(--color-accent-ink);
-    }
-
     .conversation-search {
       align-items: center;
       display: flex;
@@ -513,16 +504,6 @@
       width: 27px;
     }
 
-    .icon-button:hover,
-    .conversation-search__clear:hover,
-    .conversation__action:hover,
-    .message__action:hover,
-    .composer__attachment-button:hover,
-    .code-block__copy:hover {
-      background: var(--color-hover);
-      color: var(--color-accent-strong);
-    }
-
     .conversation-list {
       flex: 1;
       min-height: 0;
@@ -550,7 +531,6 @@
       position: relative;
     }
 
-    .conversation:hover,
     .conversation:focus-within {
       background: var(--color-hover);
     }
@@ -612,9 +592,7 @@
       opacity: 0;
     }
 
-    .conversation:hover .conversation__actions,
     .conversation:focus-within .conversation__actions,
-    .message:hover .message__actions,
     .message:focus-within .message__actions {
       opacity: 1;
     }
@@ -753,7 +731,7 @@
       align-items: center;
       border: 1px solid;
       display: inline-flex;
-      flex: 0 1 220px;
+      flex: 0 1 auto;
       font-size: 10px;
       gap: 6px;
       max-width: 220px;
@@ -857,11 +835,6 @@
 
     .chat__add-message {
       right: max(12px, calc(50% - 484px));
-    }
-
-    .chat__add-message:hover:not(:disabled) {
-      background: var(--color-accent);
-      color: var(--color-accent-ink);
     }
 
     .message {
@@ -1410,6 +1383,7 @@
       max-width: min(320px, 100%);
       min-width: 0;
       padding: 7px 38px 7px 10px;
+      position: relative;
     }
 
     .attachment__name {
@@ -1432,17 +1406,8 @@
       z-index: 2;
     }
 
-    .attachment:hover .attachment__remove,
     .attachment:focus-within .attachment__remove {
       opacity: 1;
-    }
-
-    .attachment__remove:hover,
-    .chip__remove:hover,
-    .remove-button:hover {
-      background: var(--color-error-soft);
-      border-color: var(--color-error);
-      color: var(--color-error);
     }
 
     .welcome {
@@ -1615,7 +1580,6 @@
       width: 100%;
     }
 
-    .attachment-menu__item:hover,
     .attachment-menu__item:focus-visible {
       background: var(--color-hover);
       color: var(--color-accent-strong);
@@ -1632,20 +1596,11 @@
       width: 40px;
     }
 
-    .send-button:hover:not(:disabled) {
-      background: var(--color-accent-strong);
-    }
-
     .send-button_state_stop {
       background: var(--color-error-soft);
       border: 1px solid var(--color-error);
       box-shadow: inset 0 0 12px rgba(var(--error-rgb), 0.35);
       color: var(--color-error);
-    }
-
-    .send-button_state_stop:hover:not(:disabled) {
-      background: var(--color-error);
-      color: #fff;
     }
 
     .settings__header {
@@ -1730,12 +1685,6 @@
       min-height: 36px;
       padding: 7px 14px;
       text-transform: uppercase;
-    }
-
-    .button:hover:not(:disabled) {
-      background: var(--color-hover);
-      border-color: var(--color-accent);
-      color: var(--color-accent-strong);
     }
 
     .button_view_ghost {
@@ -2351,6 +2300,74 @@
       }
     }
 
+    @media (hover: hover) {
+
+      ::-webkit-scrollbar-thumb:hover {
+        background: var(--color-accent);
+      }
+
+      .new-conversation-button:hover {
+        background: var(--color-accent);
+        color: var(--color-accent-ink);
+      }
+
+      .icon-button:hover,
+      .conversation-search__clear:hover,
+      .conversation__action:hover,
+      .message__action:hover,
+      .composer__attachment-button:hover,
+      .code-block__copy:hover {
+        background: var(--color-hover);
+        color: var(--color-accent-strong);
+      }
+
+      .conversation:hover {
+        background: var(--color-hover);
+      }
+
+      .conversation:hover .conversation__actions,
+      .message:hover .message__actions {
+        opacity: 1;
+      }
+
+      .chat__add-message:hover:not(:disabled) {
+        background: var(--color-accent);
+        color: var(--color-accent-ink);
+      }
+
+      .attachment:hover .attachment__remove {
+        opacity: 1;
+      }
+
+      .attachment__remove:hover,
+      .chip__remove:hover,
+      .remove-button:hover {
+        background: var(--color-error-soft);
+        border-color: var(--color-error);
+        color: var(--color-error);
+      }
+
+      .attachment-menu__item:hover {
+        background: var(--color-hover);
+        color: var(--color-accent-strong);
+      }
+
+      .send-button:hover:not(:disabled) {
+        background: var(--color-accent-strong);
+      }
+
+      .send-button_state_stop:hover:not(:disabled) {
+        background: var(--color-error);
+        color: #fff;
+      }
+
+      .button:hover:not(:disabled) {
+        background: var(--color-hover);
+        border-color: var(--color-accent);
+        color: var(--color-accent-strong);
+      }
+    }
+
     @media (hover: none) {
 
       .conversation__actions,
@@ -2433,11 +2450,6 @@
 
       .top-bar .brand__name {
         display: none;
-      }
-
-      .top-bar .status-badge {
-        flex: 1 1 0;
-        max-width: none;
       }
 
       .message-list {
@@ -3214,13 +3226,13 @@
           <section class="settings__section">
             <h3 class="settings__section-title">Dữ liệu trên thiết bị</h3>
             <div class="configuration-actions">
+              <button class="button" type="button" data-action="import-storage">
+                <span data-icon="arrow-up" aria-hidden="true"></span>
+                Nhập lịch sử và cấu hình
+              </button>
               <button class="button" type="button" data-action="export-storage">
                 <span data-icon="arrow-down" aria-hidden="true"></span>
                 Xuất lịch sử và cấu hình
-              </button>
-              <button class="button" type="button" data-action="cleanup-storage">
-                <span data-icon="trash" aria-hidden="true"></span>
-                Dọn dữ liệu phiên bản cũ
               </button>
             </div>
           </section>
@@ -3491,6 +3503,13 @@
       </div>
     </div>
   </dialog>
+  <input
+    id="storage-import-input"
+    type="file"
+    accept=".json,application/json"
+    aria-label="Chọn bản sao lịch sử và cấu hình"
+    hidden
+  >
   <input
     id="file-input"
     type="file"
@@ -4268,18 +4287,11 @@
       return normalized
     }
 
-    function sanitizeSettings (raw = {}) {
+    function sanitizeSettings (raw = {}, prompts = state.prompts) {
       if (!raw || typeof raw !== 'object' || Array.isArray(raw)) {
         throw new Error('Cấu hình tạo sinh không hợp lệ.')
       }
       const settings = defaultSettings()
-      // Read the old setting once; subsequent saves contain only store.
-      if (!hasProperty(raw, 'store') && hasProperty(raw, 'zeroDataRetention')) {
-        if (typeof raw.zeroDataRetention !== 'boolean') {
-          throw new Error('Giá trị lưu trữ cũ không hợp lệ.')
-        }
-        settings.store = !raw.zeroDataRetention
-      }
       Object.keys(settings).forEach(name => {
         if (hasProperty(raw, name)) settings[name] = cloneValue(raw[name])
       })
@@ -4293,20 +4305,24 @@
       }
       settings.systemPrompt = typeof raw.systemPrompt === 'string' ? raw.systemPrompt : ''
       settings.toolsJson = typeof raw.toolsJson === 'string' ? raw.toolsJson : ''
-      const prompt = promptById(settings.systemPromptId)
+      const prompt = prompts.find(item => item.id === settings.systemPromptId)
       if (prompt) settings.systemPrompt = prompt.content
       else settings.systemPromptId = null
+      if (raw.variableEntries != null && !Array.isArray(raw.variableEntries)) {
+        throw new Error('Danh sách biến không hợp lệ.')
+      }
       settings.variableEntries = Array.isArray(raw.variableEntries)
-        ? raw.variableEntries.map(entry => ({
-            id: getTextProperty(entry, 'id') || uniqueId(),
-            name: String(entry.name || ''),
-            source: String(entry.source ?? '')
-          }))
-        : Object.entries(raw.variables || {}).map(([name, value]) => ({
-            id: uniqueId(),
-            name,
-            source: JSON.stringify(value)
-          }))
+        ? raw.variableEntries.map(entry => {
+            if (!entry || typeof entry !== 'object' || Array.isArray(entry)) {
+              throw new Error('Biến không hợp lệ.')
+            }
+            return {
+              id: getTextProperty(entry, 'id') || uniqueId(),
+              name: String(entry.name || ''),
+              source: String(entry.source ?? '')
+            }
+          })
+        : []
       settings.safetySettings = Object.fromEntries(safetyDefinitions.map(item => [
         item.category,
         sanitizeSafetyThreshold(raw.safetySettings?.[item.category])
@@ -4314,11 +4330,11 @@
       return settings
     }
 
-    function sanitizeConfiguration (raw = {}) {
+    function sanitizeConfiguration (raw = {}, prompts = state.prompts) {
       return {
         endpointId: raw.endpointId || null,
         modelId: String(raw.modelId || ''),
-        settings: sanitizeSettings(raw.settings || {}),
+        settings: sanitizeSettings(raw.settings || {}, prompts),
         updatedAt: validTimestamp(raw.updatedAt, 0)
       }
     }
@@ -4778,7 +4794,7 @@
         /quota|dung lượng/i.test(storageError?.message || '')
       let message = ''
       if (storageCleanupBusy) {
-        message = 'Đang dọn dữ liệu. Nếu database bị chặn, hãy đóng các tab phiên bản cũ.'
+        message = 'Đang dọn tệp không dùng.'
       } else if (storageError) {
         message = quota
           ? 'Chưa lưu được: bộ nhớ đã đầy. Dữ liệu đang mở vẫn được giữ; xuất bản sao trước khi giải phóng dung lượng rồi thử lưu lại.'
@@ -4810,10 +4826,9 @@
       return changes.length
     }
 
-    function storedConfiguration (configuration) {
+    function storedConfiguration (configuration, prompts = state.prompts) {
       const settings = cloneValue(configuration.settings)
-      if (settings.systemPromptId && promptById(settings.systemPromptId)) delete settings.systemPrompt
-      delete settings.variables
+      if (settings.systemPromptId && prompts.some(item => item.id === settings.systemPromptId)) delete settings.systemPrompt
       return {
         endpointId: configuration.endpointId,
         modelId: configuration.modelId,
@@ -4827,7 +4842,7 @@
       const record = key && mediaRecord(key)
       const durable = key && !/^(?:unsaved|preview):/.test(key) && record?.persisted !== false
       if (!durable && (typeof attachment.base64 === 'string' || typeof attachment.dataUrl === 'string')) {
-        throw new Error('Tệp cũ chưa được chuyển xong; không bỏ nội dung khi lưu lịch sử.')
+        throw new Error('Tệp phải được lưu vào kho tệp trước; không bỏ nội dung khi lưu lịch sử.')
       }
       const output = {
         id: attachment.id,
@@ -4844,21 +4859,6 @@
     }
 
     function storedOutputBlock (block) {
-      if (block.type === 'image') {
-        if (typeof block.data === 'string') throw new Error('Ảnh cũ chưa được chuyển xong; không bỏ nội dung.')
-        return {
-          id: block.id,
-          type: 'file',
-          mediaKey: block.mediaKey,
-          name: block.metadata?.filename || generatedFilename(block.mimeType),
-          mimeType: block.mimeType,
-          metadata: block.metadata,
-          fileId: block.fileId,
-          sourceApi: block.sourceApi,
-          ...(isHttpsUrl(block.url) ? { url: block.url } : {}),
-          thought: block.thought === true
-        }
-      }
       if (block.type !== 'file') return { ...block }
       const attachment = storedAttachment(block)
       return {
@@ -4871,12 +4871,12 @@
       }
     }
 
-    function storedState () {
+    function storedState (snapshot = state) {
       return {
-        activeConversationId: state.activeConversationId,
-        conversations: state.conversations.map(conversation => ({
+        activeConversationId: snapshot.activeConversationId,
+        conversations: snapshot.conversations.map(conversation => ({
           ...conversation,
-          configuration: storedConfiguration(conversation.configuration),
+          configuration: storedConfiguration(conversation.configuration, snapshot.prompts),
           messages: conversation.messages.map(message => {
             const output = { ...message }
             if (output.status === 'streaming') output.status = 'stopped'
@@ -4887,21 +4887,19 @@
               if (output.role === 'assistant' && output.outputBlocks.some(block => block.type === 'text')) {
                 delete output.content
               }
-              if (output.outputBlocks.some(block => block.type === 'reasoning')) delete output.reasoning
-              if (output.outputBlocks.some(block => block.type === 'redacted')) delete output.reasoningRedacted
             }
             return output
           })
         })),
-        endpoints: state.endpoints,
-        systemPrompts: state.prompts,
+        endpoints: snapshot.endpoints,
+        systemPrompts: snapshot.prompts,
         ui: {
-          ...state.ui,
-          attachments: state.attachments.map(storedAttachment),
-          editDraft: state.editDraft,
-          messageDraft: state.messageDraft
+          ...snapshot.ui,
+          attachments: snapshot.attachments.map(storedAttachment),
+          editDraft: snapshot.editDraft,
+          messageDraft: snapshot.messageDraft
         },
-        workspaceConfiguration: storedConfiguration(state.workspace)
+        workspaceConfiguration: storedConfiguration(snapshot.workspace, snapshot.prompts)
       }
     }
 
@@ -4961,7 +4959,7 @@
       })
       const configuration = raw => {
         const value = object(raw, 'Cấu hình')
-        const result = sanitizeConfiguration(value)
+        const result = sanitizeConfiguration(value, prompts)
         const prompt = prompts.find(item => item.id === value.settings?.systemPromptId)
         if (prompt) {
           result.settings.systemPromptId = prompt.id
@@ -4976,16 +4974,14 @@
           const message = {
             ...original,
             content: typeof original.content === 'string' ? original.content : '',
-            attachments: array(original.attachments, 'Attachment').map(item => ({ ...item })),
-            outputBlocks: array(original.outputBlocks, 'Output').map(item => ({ ...item })),
+            attachments: unique(array(original.attachments, 'Attachment'), 'Attachment').map(item => ({ ...item })),
+            outputBlocks: unique(array(original.outputBlocks, 'Output'), 'Output').map(item => ({ ...item })),
             createdAt: validTimestamp(original.createdAt, 0),
             updatedAt: validTimestamp(original.updatedAt, validTimestamp(original.createdAt, 0))
           }
           if (message.status === 'streaming') message.status = 'stopped'
           if (message.role === 'assistant') {
             if (!message.outputBlocks.length) {
-              if (original.reasoning) message.outputBlocks.push({ id: message.id + ':reasoning', type: 'reasoning', content: original.reasoning })
-              if (original.reasoningRedacted) message.outputBlocks.push({ id: message.id + ':redacted', type: 'redacted' })
               if (message.content) message.outputBlocks.push({ id: message.id + ':text', type: 'text', content: message.content })
             }
             if (message.outputBlocks.some(block => block.type === 'text')) syncAssistantMessage(message)
@@ -5003,7 +4999,7 @@
         return conversation
       })
       const ui = object(saved.ui, 'Giao diện')
-      const attachments = array(ui.attachments, 'Tệp chờ gửi').map(item => ({ ...item }))
+      const attachments = unique(array(ui.attachments, 'Tệp chờ gửi'), 'Tệp chờ gửi').map(item => ({ ...item }))
       const draft = ui.editDraft
       const editDraft = draft && conversations.some(item =>
         item.id === draft.conversationId && item.messages.some(message => message.id === draft.messageId)
@@ -5063,28 +5059,193 @@
         activeConfiguration = state.workspace
         showStorageError(error)
       }
-      try {
-        checkStorageCompatibility(snapshot)
-      } catch (error) {
-        unreadStorageKeys.set(obsoleteStorage.checkpointKey, error)
-        showStorageError(error)
-      }
       return snapshot
     }
 
     function exportStorageCopy () {
-      const local = {}
-      for (let index = 0; index < window.localStorage.length; index += 1) {
-        const key = window.localStorage.key(index)
-        if (key.startsWith(storagePrefix + '.')) local[key] = window.localStorage.getItem(key)
-      }
+      captureEditDraft()
+      const local = Object.fromEntries(Object.values(storageKeys).map(key => [
+        key, window.localStorage.getItem(key)
+      ]))
       const blob = new window.Blob([JSON.stringify({
         exportedAt: new Date().toISOString(),
         localStorage: local,
-        currentState: cloneValue(state)
+        currentState: cloneValue(state),
+        ...(storageError?.recoveryEntries ? { recoveryEntries: storageError.recoveryEntries } : {})
       })], { type: 'application/json' })
       downloadBlob(blob, 'ai-workbench-backup.json')
       // Binary files are downloaded separately in the existing file library.
+    }
+
+    function parseStorageCopy (source) {
+      const backup = JSON.parse(source)
+      const saved = backup?.currentState
+      const isRecord = value => value && typeof value === 'object' && !Array.isArray(value)
+      if (!isRecord(saved) || !isRecord(saved.workspace) || !isRecord(saved.ui) ||
+        ['conversations', 'endpoints', 'prompts', 'attachments'].some(name => !Array.isArray(saved[name])) ||
+        typeof saved.messageDraft !== 'string' ||
+        (saved.activeConversationId !== null && typeof saved.activeConversationId !== 'string')) {
+        throw new Error('Chọn tệp JSON được xuất từ AI Workbench, có đầy đủ lịch sử và cấu hình.')
+      }
+      for (const name of ['sidebarOpen', 'settingsOpen']) {
+        if (typeof saved.ui[name] !== 'boolean') throw new Error('Cấu hình giao diện không hợp lệ.')
+      }
+      for (const prompt of saved.prompts) {
+        if (!isRecord(prompt) || typeof prompt.name !== 'string' || typeof prompt.content !== 'string') {
+          throw new Error('System prompt không hợp lệ.')
+        }
+      }
+      for (const endpoint of saved.endpoints) {
+        if (!isRecord(endpoint) || typeof endpoint.name !== 'string' ||
+          typeof endpoint.apiKey !== 'string' || !isHttpsUrl(endpoint.baseUrl) ||
+          !Array.isArray(endpoint.models) || endpoint.models.some(model => typeof model !== 'string') ||
+          !Array.isArray(endpoint.headers) || endpoint.headers.some(header =>
+            !isRecord(header) || typeof header.name !== 'string' || typeof header.value !== 'string'
+          )) {
+          throw new Error('Endpoint trong bản sao không hợp lệ.')
+        }
+        requestHeaders(endpoint)
+      }
+      const validateAttachment = attachment => {
+        if (!isRecord(attachment) || typeof attachment.name !== 'string' ||
+          (attachment.mediaKey != null && typeof attachment.mediaKey !== 'string')) {
+          throw new Error('Tham chiếu tệp không hợp lệ.')
+        }
+      }
+      saved.attachments.forEach(validateAttachment)
+      for (const conversation of saved.conversations) {
+        if (!isRecord(conversation) || typeof conversation.title !== 'string' ||
+          !Array.isArray(conversation.messages) || !isRecord(conversation.configuration)) {
+          throw new Error('Cuộc trò chuyện không hợp lệ.')
+        }
+        for (const message of conversation.messages) {
+          if (!isRecord(message) || (message.content != null && typeof message.content !== 'string') ||
+            (message.status != null && !['complete', 'streaming', 'stopped', 'error', 'incomplete'].includes(message.status)) ||
+            (message.error != null && (!isRecord(message.error) || typeof message.error.message !== 'string'))) {
+            throw new Error('Tin nhắn không hợp lệ.')
+          }
+          if (!Array.isArray(message.attachments || []) || !Array.isArray(message.outputBlocks || [])) {
+            throw new Error('Danh sách tệp hoặc output không hợp lệ.')
+          }
+          for (const attachment of message.attachments || []) validateAttachment(attachment)
+          for (const block of message.outputBlocks || []) {
+            if (!isRecord(block) || !['text', 'reasoning', 'redacted', 'tool', 'file'].includes(block.type) ||
+              (['text', 'reasoning'].includes(block.type) && typeof block.content !== 'string') ||
+              (block.mediaKey != null && typeof block.mediaKey !== 'string')) {
+              throw new Error('Output trong tin nhắn không hợp lệ.')
+            }
+          }
+        }
+      }
+      for (const configuration of [saved.workspace, ...saved.conversations.map(item => item.configuration)]) {
+        if (!isRecord(configuration.settings) || typeof configuration.modelId !== 'string' ||
+          (configuration.endpointId !== null && typeof configuration.endpointId !== 'string')) {
+          throw new Error('Cấu hình yêu cầu không hợp lệ.')
+        }
+        const entries = configuration.settings.variableEntries
+        if (!Array.isArray(entries) || entries.some(entry =>
+          !isRecord(entry) || !getTextProperty(entry, 'id') ||
+          typeof entry.name !== 'string' || typeof entry.source !== 'string'
+        ) || new Set(entries.map(entry => entry.id)).size !== entries.length) {
+          throw new Error('Danh sách biến có dữ liệu hoặc ID không hợp lệ.')
+        }
+      }
+      if (saved.editDraft != null && (!isRecord(saved.editDraft) ||
+        typeof saved.editDraft.content !== 'string' || !messageRoles.includes(saved.editDraft.role))) {
+        throw new Error('Bản chỉnh sửa tin nhắn không hợp lệ.')
+      }
+      return normalizeStoredState({
+        activeConversationId: saved.activeConversationId,
+        conversations: saved.conversations,
+        endpoints: saved.endpoints,
+        systemPrompts: saved.prompts,
+        workspaceConfiguration: saved.workspace,
+        ui: {
+          ...saved.ui,
+          attachments: saved.attachments,
+          editDraft: saved.editDraft,
+          messageDraft: saved.messageDraft
+        }
+      })
+    }
+
+    function commitStorageImport (loaded, storage = window.localStorage) {
+      const snapshot = storedState(loaded)
+      const entries = Object.entries(storageKeys).map(([name, key]) => [key, JSON.stringify(snapshot[name])])
+      const previous = entries.map(([key]) => [key, storage.getItem(key)])
+      try {
+        writeLocalEntries(entries, storage)
+      } catch (error) {
+        try {
+          // Restore missing keys first, then shrink before growing existing keys.
+          for (const [key, value] of previous) {
+            if (value === null) storage.removeItem(key)
+          }
+          writeLocalEntries(previous.filter(([, value]) => value !== null), storage)
+        } catch (restoreError) {
+          const failure = new Error('Nhập thất bại và chưa khôi phục đầy đủ dữ liệu trên đĩa: ' +
+            restoreError.message + '. Dữ liệu đang mở được giữ; hãy xuất bản sao trước khi đóng trang.')
+          failure.kind = 'storage'
+          failure.recoveryEntries = previous
+          throw failure
+        }
+        throw error
+      }
+    }
+
+    async function importStorageCopy (file) {
+      requireWriter()
+      if (!file) return
+      // ponytail: 32 MiB JSON limit; use a streaming archive if backups outgrow it.
+      if (file.size > 32 * 1024 * 1024) throw new Error('Bản sao JSON không được vượt quá 32 MB.')
+      const loaded = parseStorageCopy(await file.text())
+      requireWriter()
+      if (storageCleanupBusy || conversationRuntimes.size || state.pendingAttachmentReads ||
+        pendingFileRequests.size || mediaWrites.size || dirtyMedia.size) {
+        throw new Error('Dừng tạo phản hồi và hoàn tất lưu tệp trước khi nhập dữ liệu.')
+      }
+      if (!confirmChange(
+        'Thay thế lịch sử, cấu hình và bản nháp hiện tại bằng ' + loaded.conversations.length +
+        ' cuộc trò chuyện và ' + loaded.endpoints.length + ' endpoint trong bản sao? ' +
+        'Hãy xuất dữ liệu cần giữ trước. Bản sao có thể chứa API key; chỉ nhập tệp bạn tin cậy. ' +
+        'JSON không chứa nội dung tệp đính kèm; kho tệp hiện có được giữ nguyên.'
+      )) return
+
+      debouncedSave.cancel()
+      try {
+        commitStorageImport(loaded)
+      } catch (error) {
+        if (saveDirty) debouncedSave()
+        showStorageError(error)
+        throw error
+      }
+      // Publish only after every storage replacement succeeds.
+      Object.assign(state, loaded)
+      state.conversationSearch = ''
+      endpointDraft = null
+      endpointBaseline = ''
+      endpointsLoaded = true
+      saveDirty = false
+      storageError = null
+      messagePaints.clear()
+      if (paintFrame !== null) window.cancelAnimationFrame(paintFrame)
+      paintFrame = null
+      activateSelectedConfiguration()
+      setAttachmentMenu(false)
+      closeDrawers()
+      for (const dialog of queryElements('dialog[open]')) dialog.close()
+      getElementById('endpoint-form').hidden = true
+      getElementById('conversation-search').value = ''
+      getElementById('message-input').value = state.messageDraft
+      for (const id of ['conversation-list', 'message-list', 'attachment-list', 'variable-list', 'endpoint-list']) {
+        renderList(getElementById(id), '')
+      }
+      shouldStickToBottom = true
+      renderConversationView()
+      applyDesktopPanels()
+      resizeMessageInput()
+      updateStorageStatus()
+      toast('Đã nhập lịch sử và cấu hình. Nội dung tệp không nằm trong bản sao JSON.', 'success', 6500)
     }
 
     function configurationChanged (configurations = [activeConfiguration]) {
@@ -5122,46 +5283,7 @@
       })
     }
 
-    // Storage maintenance: exact legacy names, explicit disk deletion, automatic RAM cleanup.
-    // Keep legacy names and safety checks together; extend only this explicit allowlist.
-    const obsoleteStorage = {
-      snapshotKey: storagePrefix + '.snapshot',
-      checkpointKey: storagePrefix + '.storageMigration',
-      databaseName: storagePrefix + '-media'
-    }
-
-    function checkStorageCompatibility (snapshot) {
-      const checkpoint = readJson(obsoleteStorage.checkpointKey)
-      const hasOldSnapshot = window.localStorage.getItem(obsoleteStorage.snapshotKey) !== null
-      if ((checkpoint && checkpoint.status !== 'complete') ||
-        (hasOldSnapshot && (!snapshot.conversations || !snapshot.workspaceConfiguration))) {
-        throw new Error('Dữ liệu phiên bản cũ chưa chuyển xong. Bản nguồn được giữ nguyên; hãy hoàn tất bằng phiên bản cũ trước khi chỉnh sửa hoặc dọn dữ liệu.')
-      }
-    }
-
-    async function checkLegacyDatabase () {
-      if (!window.indexedDB?.databases ||
-        Object.values(storageKeys).some(key => window.localStorage.getItem(key) !== null)) return
-      const databases = await window.indexedDB.databases()
-      if (databases.some(item => item.name === obsoleteStorage.databaseName)) {
-        const error = new Error('Chỉ tìm thấy database phiên bản cũ. Bản nguồn được giữ nguyên; hoàn tất chuyển dữ liệu bằng phiên bản cũ trước khi tiếp tục.')
-        unreadStorageKeys.set(obsoleteStorage.databaseName, error)
-        showStorageError(error)
-      }
-    }
-
-    function protectedMediaKeys () {
-      const keys = collectMediaKeys()
-      // A recovery archive is data, not an orphaned attachment.
-      for (const storage of [window.localStorage, window.sessionStorage]) {
-        const raw = storage.getItem(obsoleteStorage.snapshotKey)
-        if (raw === null) continue
-        const snapshot = JSON.parse(raw)
-        if (snapshot?.sourceArchive) keys.add(resolveMediaKey(snapshot.sourceArchive))
-      }
-      return keys
-    }
-
+    // File maintenance and object URL lifecycle.
     function canonicalizeMediaReferences () {
       const update = item => {
         if (item.mediaKey) item.mediaKey = resolveMediaKey(item.mediaKey)
@@ -5202,9 +5324,9 @@
       await Promise.all(mediaReads.values())
       await enqueueMedia(() => new Promise((resolve, reject) => {
         requireWriter()
-        const protectedKeys = protectedMediaKeys()
+        const protectedKeys = collectMediaKeys()
         if (keys.some(key => protectedKeys.has(key))) {
-          reject(new Error('Tệp còn được tin nhắn, bản nháp hoặc bản khôi phục sử dụng.'))
+          reject(new Error('Tệp còn được tin nhắn hoặc bản nháp sử dụng.'))
           return
         }
         if (!database || !storageHealthy) {
@@ -5234,8 +5356,8 @@
         key = resolveMediaKey(key)
         const record = await loadMediaRecord(key)
         if (!record) return
-        if (protectedMediaKeys().has(key)) {
-          throw new Error('Tệp còn được tin nhắn, bản nháp hoặc bản khôi phục sử dụng. Hãy gỡ liên kết trước.')
+        if (collectMediaKeys().has(key)) {
+          throw new Error('Tệp còn được tin nhắn hoặc bản nháp sử dụng. Hãy gỡ liên kết trước.')
         }
         if (!confirmChange('Xoá vĩnh viễn tệp “' + record.name + '” khỏi thiết bị?')) return
         await deleteMediaEntries([key])
@@ -5246,7 +5368,7 @@
       return runStorageCleanup(async () => {
         fileLibraryLoaded = false
         await loadFileLibrary()
-        const protectedKeys = protectedMediaKeys()
+        const protectedKeys = collectMediaKeys()
         const entries = Array.from(mediaRecords).filter(([key, record]) =>
           record.persisted && !record.partial && !protectedKeys.has(key) &&
           !record.origins?.includes('backup')
@@ -5263,78 +5385,6 @@
         )) return
         const count = await deleteMediaEntries(entries.map(([key]) => key))
         toast('Đã xoá ' + count + ' tệp không dùng.', 'success')
-      })
-    }
-
-    async function cleanupObsoleteStorage () {
-      return runStorageCleanup(async () => {
-        if (!window.indexedDB?.databases) {
-          throw new Error('Trình duyệt không hỗ trợ liệt kê IndexedDB; không tự đoán database cần xoá.')
-        }
-        const databases = await window.indexedDB.databases()
-        const hasDatabase = databases.some(item => item.name === obsoleteStorage.databaseName)
-        const names = [obsoleteStorage.snapshotKey, obsoleteStorage.checkpointKey]
-        // Session entries first, the Local Storage completion marker last.
-        const entries = [window.sessionStorage, window.localStorage].flatMap(storage =>
-          names.map(key => ({ storage, key, value: storage.getItem(key) }))
-            .filter(entry => entry.value !== null)
-        )
-        if (!entries.length && !hasDatabase) {
-          toast('Không có dữ liệu phiên bản cũ cần dọn.')
-          return
-        }
-        const checkpoint = readJson(obsoleteStorage.checkpointKey)
-        if (checkpoint?.status !== 'complete') {
-          throw new Error('Chưa có bằng chứng chuyển dữ liệu hoàn tất; giữ nguyên snapshot và database cũ.')
-        }
-        const currentEntries = Object.entries(storageKeys).map(([name, key]) =>
-          ({ name, key, value: window.localStorage.getItem(key) })
-        )
-        if (currentEntries.some(entry => entry.value === null)) {
-          throw new Error('Dữ liệu hiện tại chưa đầy đủ; không xoá bản nguồn.')
-        }
-        const snapshot = Object.fromEntries(currentEntries.map(entry => [entry.name, JSON.parse(entry.value)]))
-        normalizeStoredState(snapshot)
-        const diskKeys = new Set()
-        const visit = value => {
-          if (!value || typeof value !== 'object') return
-          if (typeof value.mediaKey === 'string') diskKeys.add(value.mediaKey)
-          for (const child of Object.values(value)) visit(child)
-        }
-        visit(snapshot)
-        for (const key of new Set([...diskKeys, ...collectMediaKeys()])) {
-          const record = await accessMediaStore('get', key)
-          if (!record) throw new Error('Thiếu tệp hiện tại; không xoá nguồn cũ: ' + key)
-        }
-        if (!confirmChange(
-          'Xoá ' + entries.length + ' mục snapshot/checkpoint cũ trong Storage' +
-          (hasDatabase ? ' và IndexedDB “' + obsoleteStorage.databaseName + '”' : '') +
-          '? Không thể hoàn tác. Lịch sử, cấu hình và kho “' + mediaDatabaseName +
-          '” hiện tại được giữ. Chỉ tiếp tục sau khi đã kiểm tra hoặc xuất bản sao cần giữ.'
-        )) return
-        const unchanged = [...entries, ...currentEntries.map(entry => ({ ...entry, storage: window.localStorage }))]
-          .every(entry => entry.storage.getItem(entry.key) === entry.value)
-        if (!unchanged) throw new Error('Dữ liệu vừa thay đổi; chưa xoá bản nào.')
-        if (hasDatabase) {
-          // A blocked delete cannot be cancelled: wait for success instead of reporting a false failure.
-          // https://developer.mozilla.org/en-US/docs/Web/API/IDBFactory/deleteDatabase
-          await new Promise((resolve, reject) => {
-            const request = window.indexedDB.deleteDatabase(obsoleteStorage.databaseName)
-            request.onsuccess = resolve
-            request.onerror = () => reject(request.error)
-            request.onblocked = () => {
-              toast('Đang chờ xoá database cũ. Đóng các tab phiên bản cũ để tiếp tục.', 'info', 10000)
-            }
-          })
-        }
-        for (const entry of entries) {
-          if (entry.storage.getItem(entry.key) !== entry.value) {
-            throw new Error('Snapshot vừa thay đổi; giữ lại các mục Storage còn lại.')
-          }
-          entry.storage.removeItem(entry.key)
-        }
-        toast('Đã dọn dữ liệu phiên bản cũ.', 'success')
-        saveState()
       })
     }
 
@@ -5408,8 +5458,6 @@
       await hydrateVisibleMedia()
       renderFileLibrary()
     }
-
-    // End storage maintenance.
 
     // Files and attachments.
     function generatedFilename (mimeType) {
@@ -5697,7 +5745,7 @@
         const stateLabel = record.persisted && available
           ? 'Đã lưu'
           : available ? 'Chưa lưu' : 'Thiếu nội dung'
-        return `<li class="file-library__item">
+        return `<li class="file-library__item" data-row-key="${escapeHtml(key)}">
           <div class="file-library__info">
             <strong class="file-library__name">${escapeHtml(record.name)}</strong>
             <span class="file-library__meta">${escapeHtml(record.mimeType)} · ${formatBytes(record.size)} · ${stateLabel}${used ? ' · Đang sử dụng' : ''}</span>
@@ -6683,20 +6731,22 @@
       if (element.nodeType !== 1) return ''
       if (element.dataset.rowKey) return 'row:' + element.dataset.rowKey
       if (element.id) return 'id:' + element.id
+      // Buttons share their owner's ID, but each action needs its own identity.
+      if (element.dataset.action) {
+        return 'action:' + JSON.stringify([
+          element.dataset.action,
+          element.dataset.conversationId,
+          element.dataset.messageId,
+          element.dataset.variableId,
+          element.dataset.attachmentId,
+          element.dataset.blockId,
+          element.dataset.fileKey,
+          element.dataset.endpointId
+        ])
+      }
       for (const name of ['conversationId', 'messageId', 'variableId', 'attachment', 'outputBlock']) {
         if (element.dataset[name]) return name + ':' + element.dataset[name]
       }
-      if (element.classList.contains('file-library__item')) {
-        return 'file:' + element.querySelector('[data-file-key]')?.dataset.fileKey
-      }
-      if (element.classList.contains('endpoint-card')) {
-        return 'endpoint:' + element.querySelector('[data-endpoint-id]')?.dataset.endpointId
-      }
-      if (element.classList.contains('chip')) {
-        const id = element.querySelector('[data-attachment-id]')?.dataset.attachmentId
-        if (id) return 'attachment:' + id
-      }
-      if (element.dataset.action) return 'action:' + element.dataset.action
       if (element.classList.contains('conversation-list__label')) return 'label:' + element.textContent
       return ''
     }
@@ -6709,15 +6759,17 @@
     }
 
     function patchElement (existing, desired) {
-      if (existing.nodeType !== desired.nodeType || existing.nodeName !== desired.nodeName) {
-        existing.replaceWith(desired)
-        return
+      if (existing.nodeType !== desired.nodeType || existing.nodeName !== desired.nodeName ||
+        elementKey(existing) !== elementKey(desired)) {
+        existing.before(desired)
+        removeElement(existing)
+        return desired
       }
       if (existing.nodeType !== 1) {
         if (existing.nodeValue !== desired.nodeValue) existing.nodeValue = desired.nodeValue
-        return
+        return existing
       }
-      if (existing.isEqualNode(desired)) return
+      if (existing.isEqualNode(desired)) return existing
       for (const attribute of Array.from(existing.attributes)) {
         if (attribute.name === 'open' && existing.tagName === 'DETAILS') continue
         if (!desired.hasAttribute(attribute.name)) existing.removeAttribute(attribute.name)
@@ -6727,6 +6779,7 @@
         if (existing.getAttribute(attribute.name) !== attribute.value) existing.setAttribute(attribute.name, attribute.value)
       }
       patchChildren(existing, desired)
+      return existing
     }
 
     function patchChildren (parent, desired) {
@@ -6742,19 +6795,14 @@
       for (const node of wanted) {
         const key = elementKey(node)
         let existing = key ? keyed.get(key) : cursor && !elementKey(cursor) ? cursor : null
-        if (existing && (!existing.isConnected && parent.isConnected)) existing = null
+        if (key) keyed.delete(key)
+        if (existing && existing.parentNode !== parent) existing = null
         if (!existing) {
           parent.insertBefore(node, cursor)
           continue
         }
         if (existing !== cursor) parent.insertBefore(existing, cursor)
-        if (existing.nodeType !== node.nodeType || existing.nodeName !== node.nodeName) {
-          parent.insertBefore(node, existing)
-          removeElement(existing)
-          existing = node
-        } else {
-          patchElement(existing, node)
-        }
+        existing = patchElement(existing, node)
         cursor = existing.nextSibling
       }
       while (cursor) {
@@ -6887,10 +6935,11 @@
     function renderAssistantBodyHtml (message) {
       let output = ''
       let reasoning = ''
+      let reasoningId = ''
 
       function flushReasoning () {
         if (!reasoning) return
-        output += `<details class="reasoning-panel"${message.status === 'streaming' ? ' open' : ''}>
+        output += `<details class="reasoning-panel" data-row-key="reasoning:${escapeHtml(reasoningId)}"${message.status === 'streaming' ? ' open' : ''}>
           <summary class="reasoning-panel__summary">${renderIcon('spark')}Suy luận</summary>
           <div class="reasoning-panel__body">${reasoning}</div>
         </details>`
@@ -6909,10 +6958,12 @@
         if (block.type === 'redacted') {
           html = '<p class="field__hint">API không cung cấp nội dung suy luận này.</p>'
         }
-        if (thought && block.type !== 'file') reasoning += html
-        else {
+        if (thought && block.type !== 'file') {
+          if (!reasoning) reasoningId = block.id
+          reasoning += '<div data-row-key="' + escapeHtml(block.id) + '">' + html + '</div>'
+        } else {
           flushReasoning()
-          output += '<div class="assistant-answer">' + html + '</div>'
+          output += '<div class="assistant-answer" data-row-key="' + escapeHtml(block.id) + '">' + html + '</div>'
         }
       }
 
@@ -6935,7 +6986,7 @@
 
     function renderMessageAttachmentsHtml (attachments = [], messageId) {
       if (!attachments.length) return ''
-      return '<div class="message__attachments">' + attachments.map(attachment => {
+      return '<div class="message__attachments" data-row-key="message-attachments">' + attachments.map(attachment => {
         const record = mediaRecord(attachment.mediaKey)
         const source = record && displayImageMimeTypes.has(record.mimeType)
           ? mediaSource(attachment.mediaKey)
@@ -6953,7 +7004,7 @@
     function renderMessageActionsHtml (message, index, total) {
       if (message.status === 'streaming' || currentEditDraft() || isCurrentConversationGenerating()) return ''
       const attributes = `data-message-id="${escapeHtml(message.id)}"`
-      return '<div class="message__actions">' +
+      return '<div class="message__actions" data-row-key="message-actions">' +
         actionButton('move-message-up', 'arrow-up', 'Di chuyển lên', attributes + (index === 0 ? ' disabled' : ''), 'message__action message__action_icon') +
         actionButton('move-message-down', 'arrow-down', 'Di chuyển xuống', attributes + (index === total - 1 ? ' disabled' : ''), 'message__action message__action_icon') +
         actionButton('copy-message', 'copy', 'Sao chép tin nhắn', attributes) +
@@ -6966,7 +7017,7 @@
       const options = messageRoles.map(role =>
         `<option value="${role}"${draft.role === role ? ' selected' : ''}>${role}</option>`
       ).join('')
-      return `<div class="message-editor" data-editor-message-id="${escapeHtml(draft.messageId)}">
+      return `<div class="message-editor" data-row-key="message-editor" data-editor-message-id="${escapeHtml(draft.messageId)}">
         <label class="visually-hidden" for="message-editor-role">Vai trò tin nhắn</label>
         <select class="message__role-select" id="message-editor-role">${options}</select>
         <label class="visually-hidden" for="message-editor-input">Nội dung tin nhắn</label>
@@ -6993,12 +7044,12 @@
       const body = editing
         ? renderMessageEditorHtml(draft) + attachments
         : assistant
-            ? '<div class="message__output">' + renderAssistantBodyHtml(message) + '</div>' + attachments
+            ? '<div class="message__output" data-row-key="message-output">' + renderAssistantBodyHtml(message) + '</div>' + attachments
             : (message.content.trim()
-                ? `<div class="message__content message__content_role_${instruction ? 'instruction' : 'user'} markdown">${renderMarkdown(message.content)}</div>`
+                ? `<div class="message__content message__content_role_${instruction ? 'instruction' : 'user'} markdown" data-row-key="message-content">${renderMarkdown(message.content)}</div>`
                 : '') + attachments
 
-      element.className = `message message_role_${message.role} message_status_${message.status || 'complete'}`
+      element.className = `message message_role_${message.role} message_status_${escapeHtml(message.status || 'complete')}`
       element.dataset.messageId = message.id
       element.innerHTML = `
         <div class="message__avatar message__avatar_role_${message.role}">${renderIcon(avatar)}</div>
@@ -7161,13 +7212,13 @@
     function renderAttachments () {
       const list = getElementById('attachment-list')
       list.hidden = !state.attachments.length && !state.pendingAttachmentReads
-      renderList(list, state.attachments.map(attachment => `<span class="chip">
+      renderList(list, state.attachments.map(attachment => `<span class="chip" data-row-key="${escapeHtml(attachment.id)}">
         ${renderIcon('file-text')}
         <span class="chip__name">${escapeHtml(attachment.name)}</span>
         <span class="chip__meta">${formatBytes(attachment.size)}</span>
         ${actionButton('remove-attachment', 'x', 'Gỡ tệp', `data-attachment-id="${escapeHtml(attachment.id)}"`, 'chip__remove')}
       </span>`).join('') +
-        (state.pendingAttachmentReads ? '<span class="chip">Đang lưu tệp…</span>' : ''))
+        (state.pendingAttachmentReads ? '<span class="chip" data-row-key="pending-attachments">Đang lưu tệp…</span>' : ''))
       updateComposer()
       window.requestAnimationFrame(updateComposerHeight)
       if (getElementById('file-library-dialog')?.open) renderFileLibrary()
@@ -7741,7 +7792,7 @@
     function renderEndpointList () {
       renderList(getElementById('endpoint-list'), state.endpoints.map(endpoint => {
         const attributes = `data-endpoint-id="${escapeHtml(endpoint.id)}"`
-        return `<div class="endpoint-card${endpoint.id === activeConfiguration.endpointId ? ' endpoint-card_active' : ''}">
+        return `<div class="endpoint-card${endpoint.id === activeConfiguration.endpointId ? ' endpoint-card_active' : ''}" data-row-key="${escapeHtml(endpoint.id)}">
           <button class="endpoint-card__select" type="button" data-action="select-endpoint" ${attributes}>
             <strong>${escapeHtml(endpoint.name)}</strong>
             <span class="endpoint-card__url">${escapeHtml(endpoint.baseUrl)}</span>
@@ -7891,7 +7942,7 @@
     // User actions and event delegation.
     const actionHandlers = {
       'export-storage': exportStorageCopy,
-      'cleanup-storage': cleanupObsoleteStorage,
+      'import-storage': () => getElementById('storage-import-input').click(),
       'cleanup-unused-files': cleanupUnusedFiles,
       'retry-storage': retryStorageWrites,
       'toggle-sidebar': () => togglePanel('sidebar-panel', 'sidebarOpen'),
@@ -8332,7 +8383,11 @@
       const settings = activeConfiguration.settings
       if ((!writerOwned || storageCleanupBusy || unreadStorageKeys.size) && element.id !== 'file-library-filter') return
 
-      if (element.id === 'file-input') {
+      if (element.id === 'storage-import-input') {
+        const file = element.files?.[0]
+        element.value = ''
+        if (file) importStorageCopy(file).catch(reportError)
+      } else if (element.id === 'file-input') {
         const files = Array.from(element.files || [])
         element.value = ''
         addFiles(files).catch(reportError)
@@ -8592,7 +8647,6 @@
       bindEvents()
 
       await acquireWriter()
-      await checkLegacyDatabase()
       updateComposer()
       if (window.indexedDB && window.crypto?.subtle) {
         try {
@@ -8670,6 +8724,109 @@
       const button = remaining.firstElementChild
       renderList(host, '<div data-row-key="b"><button>B</button></div>')
       assert(remaining.firstElementChild === button, 'unchanged button is not replaced')
+      const actions = ['move-message-up', 'move-message-down', 'copy-message', 'edit-message', 'delete-message']
+      const actionMarkup = disabled => actions.map(action =>
+        actionButton(action, 'copy', action, 'data-message-id="check-message"' +
+          (disabled && action === 'move-message-down' ? ' disabled' : ''))
+      ).join('')
+      renderList(host, actionMarkup(false))
+      const originalActions = Array.from(host.children)
+      renderList(host, actionMarkup(true))
+      assert(host.children.length === actions.length, 'newest remaining message retains every action')
+      assert(originalActions.every((element, index) => host.children[index] === element), 'each action retains only its own node')
+      assert(host.children[1].disabled, 'newest message cannot move down')
+      assert(new Set(Array.from(host.children, elementKey)).size === actions.length, 'shared message ID does not collide across actions')
+      renderList(host, actionMarkup(false))
+      assert(!host.children[1].disabled && host.children.length === actions.length, 'repeated action updates preserve ordering and disabled state')
+
+      const beforeFiles = { id: 'check-output', outputBlocks: [
+        { id: 'file-a', type: 'file', name: 'a.txt' },
+        { id: 'file-b', type: 'file', name: 'b.txt' }
+      ] }
+      renderList(host, renderAssistantBodyHtml(beforeFiles))
+      const removedFile = host.firstElementChild
+      const retainedFile = host.lastElementChild
+      const retainedFigure = retainedFile.firstElementChild
+      renderList(host, renderAssistantBodyHtml({ ...beforeFiles, outputBlocks: beforeFiles.outputBlocks.slice(1) }))
+      assert(removedFile.parentNode === null && host.firstElementChild === retainedFile, 'output deletion removes the entire deleted wrapper')
+      assert(retainedFile.firstElementChild === retainedFigure, 'remaining output never inherits a deleted file element')
+
+      const focusHost = document.createElement('div')
+      focusHost.className = 'visually-hidden'
+      const previousFocus = document.activeElement
+      document.body.appendChild(focusHost)
+      try {
+        renderList(focusHost, '<div data-row-key="a"><button>A</button></div><div data-row-key="b"><button>B</button></div>')
+        const deletedButton = focusHost.firstElementChild.firstElementChild
+        const retainedButton = focusHost.lastElementChild.firstElementChild
+        deletedButton.focus()
+        renderList(focusHost, '<div data-row-key="b"><button>B</button></div>')
+        assert(!deletedButton.isConnected && !retainedButton.matches(':focus'), 'deleting a focused item does not focus its successor')
+        assert(focusHost.firstElementChild.firstElementChild === retainedButton, 'surviving controls keep their own descendants')
+      } finally {
+        focusHost.remove()
+        if (previousFocus?.isConnected) previousFocus.focus({ preventScroll: true })
+      }
+
+      const backupFixture = {
+        activeConversationId: null,
+        conversations: [],
+        endpoints: [],
+        prompts: [{ id: 'check-prompt', name: 'Prompt', content: 'Nội dung được nhập' }],
+        workspace: {
+          endpointId: null,
+          modelId: '',
+          settings: { ...defaultSettings(), systemPromptId: 'check-prompt' }
+        },
+        ui: { accent: '#00f6ff', sidebarOpen: true, settingsOpen: true },
+        attachments: [],
+        messageDraft: 'Bản nháp kiểm thử',
+        editDraft: null
+      }
+      const loadedBackup = parseStorageCopy(JSON.stringify({ currentState: backupFixture }))
+      assert(loadedBackup.workspace.settings.systemPrompt === 'Nội dung được nhập', 'import resolves prompts from the backup, not live state')
+      assert(loadedBackup.messageDraft === backupFixture.messageDraft, 'import preserves the composer draft')
+      assert(storedState(loadedBackup).systemPrompts[0].content === 'Nội dung được nhập', 'import serializes its own normalized state')
+      for (const invalid of [
+        {},
+        { currentState: { ...backupFixture, endpoints: null } },
+        { currentState: { ...backupFixture, prompts: [backupFixture.prompts[0], backupFixture.prompts[0]] } },
+        { currentState: { ...backupFixture, workspace: { ...backupFixture.workspace, settings: { ...defaultSettings(), store: 'false' } } } },
+        { currentState: { ...backupFixture, attachments: [
+          { id: 'same', name: 'a.txt' }, { id: 'same', name: 'b.txt' }
+        ] } }
+      ]) {
+        let invalidRejected = false
+        try {
+          parseStorageCopy(JSON.stringify(invalid))
+        } catch {
+          invalidRejected = true
+        }
+        assert(invalidRejected, 'invalid backup is rejected before any storage write')
+      }
+
+      const importValues = new Map([[storageKeys.conversations, '[]'], [storageKeys.ui, '{"sidebarOpen":false}']])
+      const beforeImport = JSON.stringify(Array.from(importValues))
+      let importWrites = 0
+      const importStorage = {
+        getItem: key => importValues.get(key) ?? null,
+        removeItem: key => importValues.delete(key),
+        setItem (key, value) {
+          importWrites += 1
+          if (importWrites === 3) throw new window.DOMException('Import quota test', 'QuotaExceededError')
+          importValues.set(key, value)
+        }
+      }
+      let importRejected = false
+      try {
+        commitStorageImport(loadedBackup, importStorage)
+      } catch (error) {
+        importRejected = error.name === 'QuotaExceededError'
+      }
+      assert(importRejected && JSON.stringify(Array.from(importValues)) === beforeImport, 'partial import restores all previous storage keys after quota failure')
+      commitStorageImport(loadedBackup, importStorage)
+      assert(JSON.parse(importValues.get(storageKeys.ui)).messageDraft === backupFixture.messageDraft, 'valid import commits all known storage keys')
+
       const config = { endpointId: 'pending', modelId: 'pending-model' }
       const wasLoaded = endpointsLoaded
       endpointsLoaded = false
@@ -8680,10 +8837,6 @@
         endpointsLoaded = wasLoaded
       }
       assert(defaultSettings().store === false, 'store defaults to false')
-      assert(sanitizeSettings({ zeroDataRetention: true }).store === false, 'legacy true becomes store false')
-      assert(sanitizeSettings({ zeroDataRetention: false }).store === true, 'legacy false becomes store true')
-      assert(sanitizeSettings({ store: false, zeroDataRetention: false }).store === false, 'explicit store wins over legacy')
-      assert(!hasProperty(sanitizeSettings({ zeroDataRetention: true }), 'zeroDataRetention'), 'legacy setting is not retained')
       let invalidStoreRejected = false
       try {
         sanitizeSettings({ store: 'false' })
