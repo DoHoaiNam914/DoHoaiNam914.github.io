@@ -7822,10 +7822,10 @@
         captureEditDraft()
         if (document.hidden) {
           if (saveDirty) writeStateSnapshot().catch(reportError)
-        } else {
-          renderMessages()
-          renderTopBar()
+          return
         }
+        refreshRelativeTimes()
+        updateFollowButton()
       })
 
       window.addEventListener('beforeunload', event => {
@@ -7852,11 +7852,8 @@
 
       window.addEventListener('pageshow', event => {
         if (!event.persisted) return
-        renderSidebar()
-        renderTopBar()
-        renderMessages()
-        renderAttachments()
         refreshRelativeTimes()
+        updateFollowButton()
       })
 
       window.setInterval(refreshRelativeTimes, 30000)
