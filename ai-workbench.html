@@ -8,7 +8,6 @@
   >
   <meta name="theme-color" content="#03060b">
   <title>AI Workbench</title>
-  <link rel="manifest" href="manifest.json">
   <link
     rel="icon"
     href="data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3e%3crect width='64' height='64' rx='8' fill='%2303060b'/%3e%3cg fill='none' stroke='%23e8fbff' stroke-width='7' stroke-linecap='round' stroke-linejoin='round'%3e%3cpath d='M8 32 21 17l11 15-11 15L8 32Z'/%3e%3cpath d='m32 32 11-15 13 15-13 15-11-15Z'/%3e%3c/g%3e%3cg fill='%23e8fbff'%3e%3ccircle cx='8' cy='32' r='6'/%3e%3ccircle cx='21' cy='17' r='6'/%3e%3ccircle cx='32' cy='32' r='6'/%3e%3ccircle cx='21' cy='47' r='6'/%3e%3ccircle cx='43' cy='17' r='6'/%3e%3ccircle cx='56' cy='32' r='6'/%3e%3ccircle cx='43' cy='47' r='6'/%3e%3c/g%3e%3c/svg%3e"
@@ -20,43 +19,49 @@
     rel="stylesheet"
     href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;700&family=IBM+Plex+Sans:wght@400;600&family=JetBrains+Mono:wght@400;500&display=swap"
   >
+  <!-- Theme variables compiled with Tailwind CSS 4.1.10; no runtime CSS build. -->
   <style>
-    :root {
-      --accent: #00f6ff;
+    /*! tailwindcss v4.1.10 | MIT License | https://tailwindcss.com */
+
+    :root,
+    :host {
+      --color-accent: #00f6ff;
       --accent-rgb: 0, 246, 255;
-      --accent-glow: rgba(var(--accent-rgb), 0.45);
-      --accent-ink: #020b10;
-      --accent-soft: rgba(var(--accent-rgb), 0.12);
-      --accent-strong: #9dffff;
-      --background: #03060b;
-      --background-deep: #010305;
-      --border: #143242;
-      --border-soft: rgba(20, 50, 66, 0.6);
-      --border-strong: #2b4d5e;
-      --code-background: #02070b;
+      --color-accent-glow: rgba(var(--accent-rgb), 0.45);
+      --color-accent-ink: #020b10;
+      --color-accent-soft: rgba(var(--accent-rgb), 0.12);
+      --color-accent-strong: #9dffff;
+      --color-background: #03060b;
+      --color-background-deep: #010305;
+      --color-border: #143242;
+      --color-border-soft: rgba(20, 50, 66, 0.6);
+      --color-border-strong: #2b4d5e;
+      --color-code-background: #02070b;
       --cut: 8px;
-      --error: #ff2e55;
+      --color-error: #ff2e55;
       --error-rgb: 255, 46, 85;
-      --error-soft: rgba(var(--error-rgb), 0.11);
-      --faint: #55707d;
+      --color-error-soft: rgba(var(--error-rgb), 0.11);
+      --color-faint: #55707d;
       --font-display: 'chakra petch', sans-serif;
       --font-mono: 'jetbrains mono', ui-monospace, monospace;
       --font-ui: 'ibm plex sans', system-ui, sans-serif;
-      --grid: rgba(20, 50, 66, 0.35);
-      --hover: rgba(var(--accent-rgb), 0.08);
-      --muted: #7d9aa8;
-      --panel: #070f18;
-      --panel-secondary: #0a1a26;
-      --panel-tertiary: #0e2432;
-      --radius: 2px;
-      --radius-small: 1px;
-      --scrim: rgba(0, 3, 8, 0.8);
-      --shadow: 0 18px 46px rgba(0, 0, 0, 0.55);
-      --success: #39ff88;
+      --color-grid: rgba(20, 50, 66, 0.35);
+      --color-hover: rgba(var(--accent-rgb), 0.08);
+      --color-muted: #7d9aa8;
+      --color-panel: #070f18;
+      --color-panel-secondary: #0a1a26;
+      --color-panel-tertiary: #0e2432;
+      --radius-control: 2px;
+      --color-scrim: rgba(0, 3, 8, 0.8);
+      --shadow-panel: 0 18px 46px rgba(0, 0, 0, 0.55);
+      --color-success: #39ff88;
       --success-rgb: 57, 255, 136;
-      --success-soft: rgba(var(--success-rgb), 0.11);
-      --text: #e6fbff;
-      --user-background: #0a1a26;
+      --color-success-soft: rgba(var(--success-rgb), 0.11);
+      --color-text: #e6fbff;
+      --color-user-background: #0a1a26;
+    }
+
+    :root {
       color-scheme: dark;
     }
 
@@ -72,12 +77,12 @@
     }
 
     html {
-      background: var(--background-deep);
+      background: var(--color-background-deep);
     }
 
     body {
-      background: var(--background);
-      color: var(--text);
+      background: var(--color-background);
+      color: var(--color-text);
       font: 14px/1.55 var(--font-ui);
       margin: 0;
     }
@@ -99,9 +104,9 @@
     input,
     select,
     textarea {
+      -webkit-tap-highlight-color: transparent;
       color: inherit;
       font: inherit;
-      -webkit-tap-highlight-color: transparent;
     }
 
     :disabled {
@@ -110,14 +115,14 @@
     }
 
     :focus-visible {
-      box-shadow: 0 0 12px var(--accent-glow);
-      outline: 1px solid var(--accent);
+      box-shadow: 0 0 12px var(--color-accent-glow);
+      outline: 1px solid var(--color-accent);
       outline-offset: 2px;
     }
 
     ::selection {
-      background: var(--accent);
-      color: var(--accent-ink);
+      background: var(--color-accent);
+      color: var(--color-accent-ink);
     }
 
     ::-webkit-scrollbar {
@@ -130,16 +135,16 @@
     }
 
     ::-webkit-scrollbar-thumb {
-      background: var(--border-strong);
+      background: var(--color-border-strong);
     }
 
     ::-webkit-scrollbar-thumb:hover {
-      background: var(--accent);
+      background: var(--color-accent);
     }
 
     input::placeholder,
     textarea::placeholder {
-      color: var(--faint);
+      color: var(--color-faint);
     }
 
     [hidden] {
@@ -219,7 +224,7 @@
     .composer__box::after,
     .endpoint-card_active::before,
     .endpoint-card_active::after {
-      border: solid var(--accent);
+      border: solid var(--color-accent);
       content: '';
       height: 10px;
       pointer-events: none;
@@ -266,10 +271,9 @@
     .message__model,
     .code-block__language,
     .reasoning-tool__label,
-    .error-card__type,
     .tool-list__item {
       font-family: var(--font-mono);
-      letter-spacing: 0.06em;
+      letter-spacing: 0;
       text-transform: uppercase;
     }
 
@@ -313,18 +317,16 @@
     .sidebar,
     .settings {
       animation: fade 0.6s 0.12s both;
-      background:
-        linear-gradient(180deg, rgba(var(--accent-rgb), 0.05), transparent 160px),
-        var(--panel);
+      background: linear-gradient(180deg, rgba(var(--accent-rgb), 0.05), transparent 160px),
+        var(--color-panel);
       min-width: 0;
       overflow: hidden;
-      transition:
-        border-color 0.22s ease,
+      transition: border-color 0.22s ease,
         width 0.22s ease;
     }
 
     .sidebar {
-      border-right: 1px solid var(--border);
+      border-right: 1px solid var(--color-border);
       width: 290px;
     }
 
@@ -334,7 +336,7 @@
     }
 
     .settings {
-      border-left: 1px solid var(--border);
+      border-left: 1px solid var(--color-border);
       width: 330px;
     }
 
@@ -387,8 +389,8 @@
       --cut: 7px;
       align-items: center;
       background: rgba(var(--accent-rgb), 0.06);
-      border: 1px solid var(--accent);
-      box-shadow: inset 0 0 18px var(--accent-soft);
+      border: 1px solid var(--color-accent);
+      box-shadow: inset 0 0 18px var(--color-accent-soft);
       display: inline-flex;
       flex: none;
       justify-content: center;
@@ -407,7 +409,7 @@
 
     .brand__image {
       display: block;
-      filter: drop-shadow(0 0 7px var(--accent-glow));
+      filter: drop-shadow(0 0 7px var(--color-accent-glow));
       height: 72%;
       object-fit: contain;
       width: 72%;
@@ -417,13 +419,13 @@
       display: block;
       font-size: 15px;
       font-weight: 700;
-      letter-spacing: 0.12em;
+      letter-spacing: 0;
       line-height: 1.1;
       text-transform: uppercase;
     }
 
     .brand__subtitle {
-      color: var(--accent);
+      color: var(--color-accent);
       display: block;
       font-size: 9px;
       margin-top: 3px;
@@ -440,21 +442,21 @@
 
     .new-conversation-button {
       --cut: 10px;
-      background: linear-gradient(135deg, rgba(var(--accent-rgb), 0.24), var(--accent-soft));
-      border: 1px solid var(--accent);
-      color: var(--accent-strong);
+      background: linear-gradient(135deg, rgba(var(--accent-rgb), 0.24), var(--color-accent-soft));
+      border: 1px solid var(--color-accent);
+      color: var(--color-accent-strong);
       font-size: 12px;
       font-weight: 600;
       gap: 8px;
-      letter-spacing: 0.12em;
+      letter-spacing: 0;
       min-height: 42px;
       text-transform: uppercase;
       width: 100%;
     }
 
     .new-conversation-button:hover {
-      background: var(--accent);
-      color: var(--accent-ink);
+      background: var(--color-accent);
+      color: var(--color-accent-ink);
     }
 
     .conversation-search {
@@ -464,7 +466,7 @@
     }
 
     .conversation-search__icon {
-      color: var(--faint);
+      color: var(--color-faint);
       left: 10px;
       pointer-events: none;
       position: absolute;
@@ -476,11 +478,10 @@
     .text-field,
     .number-field,
     .select-field {
-      background: var(--panel-secondary);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      transition:
-        background 0.15s ease,
+      background: var(--color-panel-secondary);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-control);
+      transition: background 0.15s ease,
         border-color 0.15s ease,
         box-shadow 0.15s ease;
     }
@@ -494,16 +495,16 @@
     .text-field:focus,
     .number-field:focus,
     .select-field:focus {
-      background: var(--panel-tertiary);
-      border-color: var(--accent);
-      box-shadow: 0 0 0 2px var(--accent-soft);
+      background: var(--color-panel-tertiary);
+      border-color: var(--color-accent);
+      box-shadow: 0 0 0 2px var(--color-accent-soft);
       outline: none;
     }
 
     .conversation-search__clear {
       background: none;
       border: 0;
-      color: var(--muted);
+      color: var(--color-muted);
       height: 27px;
       position: absolute;
       right: 4px;
@@ -518,8 +519,8 @@
     .message__action:hover,
     .composer__attachment-button:hover,
     .code-block__copy:hover {
-      background: var(--hover);
-      color: var(--accent-strong);
+      background: var(--color-hover);
+      color: var(--color-accent-strong);
     }
 
     .conversation-list {
@@ -531,7 +532,7 @@
     }
 
     .conversation-list__label {
-      color: var(--faint);
+      color: var(--color-faint);
       font-size: 9.5px;
       margin: 12px 6px 4px;
     }
@@ -551,18 +552,18 @@
 
     .conversation:hover,
     .conversation:focus-within {
-      background: var(--hover);
+      background: var(--color-hover);
     }
 
     .conversation_active {
-      background: var(--accent-soft);
+      background: var(--color-accent-soft);
       border-color: rgba(var(--accent-rgb), 0.5);
     }
 
     .conversation_active::before {
-      background: var(--accent);
+      background: var(--color-accent);
       bottom: 6px;
-      box-shadow: 0 0 8px var(--accent);
+      box-shadow: 0 0 8px var(--color-accent);
       content: '';
       left: -1px;
       position: absolute;
@@ -595,13 +596,13 @@
     }
 
     .conversation__meta {
-      color: var(--faint);
+      color: var(--color-faint);
       font: 10.5px var(--font-mono);
       margin-top: 2px;
     }
 
     .conversation__runtime {
-      color: var(--accent);
+      color: var(--color-accent);
     }
 
     .conversation__actions,
@@ -624,7 +625,7 @@
     .remove-button {
       background: none;
       border: 0;
-      color: var(--muted);
+      color: var(--color-muted);
     }
 
     .conversation__action {
@@ -633,8 +634,8 @@
     }
 
     .empty-state {
-      border: 1px dashed var(--border-strong);
-      color: var(--faint);
+      border: 1px dashed var(--color-border-strong);
+      color: var(--color-faint);
       font-size: 12px;
       margin: 12px 0;
       padding: 12px;
@@ -651,8 +652,8 @@
 
     .sidebar__footer {
       align-items: center;
-      border-top: 1px solid var(--border-soft);
-      color: var(--faint);
+      border-top: 1px solid var(--color-border-soft);
+      color: var(--color-faint);
       display: flex;
       font: 10.5px var(--font-mono);
       gap: 7px;
@@ -669,33 +670,34 @@
 
     .status-dot_state_ready {
       animation: ping 2s ease-out infinite;
-      background: var(--success);
+      background: var(--color-success);
       box-shadow: 0 0 0 0 rgba(var(--success-rgb), 0.6);
     }
 
     .status-dot_state_idle {
-      background: var(--faint);
+      background: var(--color-faint);
     }
 
     .status-dot_state_offline {
-      background: var(--error);
+      background: var(--color-error);
       box-shadow: 0 0 9px rgba(var(--error-rgb), 0.7);
     }
 
     .top-bar {
-      background:
-        linear-gradient(90deg, rgba(var(--accent-rgb), 0.07), transparent 40%),
+      background: linear-gradient(90deg, rgba(var(--accent-rgb), 0.07), transparent 40%),
         rgba(7, 15, 24, 0.96);
-      border-bottom: 1px solid var(--border-strong);
-      flex-wrap: wrap;
-      gap: 8px 10px;
+      border-bottom: 1px solid var(--color-border-strong);
+      flex: 0 0 auto;
+      flex-wrap: nowrap;
+      gap: 8px;
+      min-width: 0;
       padding: 9px 14px;
       position: relative;
     }
 
     .top-bar::after {
       animation: sweep 5s linear infinite;
-      background: linear-gradient(90deg, transparent, var(--accent) 50%, transparent) 0 0/50% 100% no-repeat;
+      background: linear-gradient(90deg, transparent, var(--color-accent) 50%, transparent) 0 0/50% 100% no-repeat;
       bottom: -1px;
       content: '';
       height: 1px;
@@ -705,11 +707,11 @@
     }
 
     .top-bar__title {
-      color: var(--muted);
+      color: var(--color-muted);
       flex: 1;
       font-size: 11px;
       font-weight: 500;
-      letter-spacing: 0.14em;
+      letter-spacing: 0;
       min-width: 0;
       overflow: hidden;
       text-align: center;
@@ -721,24 +723,29 @@
     .top-bar__actions {
       align-items: center;
       display: flex;
+      flex: 0 0 auto;
+      flex-wrap: nowrap;
       gap: 8px;
       margin-left: auto;
     }
 
     .icon-button {
+      align-items: center;
       background: none;
       border: 1px solid transparent;
-      color: var(--muted);
+      color: var(--color-muted);
+      display: inline-flex;
       flex: 0 0 34px;
       height: 34px;
+      justify-content: center;
       padding: 0;
       width: 34px;
     }
 
     .icon-button[aria-expanded='true'] {
-      background: var(--accent-soft);
-      border-color: var(--accent);
-      color: var(--accent-strong);
+      background: var(--color-accent-soft);
+      border-color: var(--color-accent);
+      color: var(--color-accent-strong);
     }
 
     .status-badge {
@@ -746,39 +753,51 @@
       align-items: center;
       border: 1px solid;
       display: inline-flex;
+      flex: 0 1 220px;
       font-size: 10px;
       gap: 6px;
       max-width: 220px;
+      min-width: 0;
+      overflow: hidden;
       padding: 4px 9px;
       white-space: nowrap;
     }
 
     .status-badge__text {
+      display: block;
+      min-width: 0;
       overflow: hidden;
       text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .top-bar .brand_compact {
+      flex: 0 1 auto;
+      overflow: hidden;
+    }
+
+    .top-bar .brand__name {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .status-badge_state_ready {
-      background: var(--success-soft);
-      border-color: var(--success);
-      color: var(--success);
+      background: var(--color-success-soft);
+      border-color: var(--color-success);
+      color: var(--color-success);
     }
 
     .status-badge_state_idle {
-      border-color: var(--border-strong);
-      color: var(--muted);
+      border-color: var(--color-border-strong);
+      color: var(--color-muted);
     }
 
     .status-badge_state_offline {
-      background: var(--error-soft);
-      border-color: var(--error);
-      color: var(--error);
-    }
-
-    .status-badge_type_format {
-      background: var(--accent-soft);
-      border-color: var(--accent);
-      color: var(--accent);
+      background: var(--color-error-soft);
+      border-color: var(--color-error);
+      color: var(--color-error);
     }
 
     .chat {
@@ -792,11 +811,10 @@
     }
 
     .chat__scroll {
-      background:
-        radial-gradient(60% 40% at 20% 0, rgba(var(--accent-rgb), 0.09), transparent),
-        linear-gradient(var(--grid) 1px, transparent 1px) 0 0/32px 32px,
-        linear-gradient(90deg, var(--grid) 1px, transparent 1px) 0 0/32px 32px,
-        var(--background);
+      background: radial-gradient(60% 40% at 20% 0, rgba(var(--accent-rgb), 0.09), transparent),
+        linear-gradient(var(--color-grid) 1px, transparent 1px) 0 0/32px 32px,
+        linear-gradient(90deg, var(--color-grid) 1px, transparent 1px) 0 0/32px 32px,
+        var(--color-background);
       flex: 1;
       min-height: 0;
       overflow: auto;
@@ -819,12 +837,12 @@
 
     .chat__follow,
     .chat__add-message {
-      background: var(--panel);
-      border: 1px solid var(--accent);
+      background: var(--color-panel);
+      border: 1px solid var(--color-accent);
       border-radius: 50%;
       bottom: calc(var(--composer-height) + 10px);
-      box-shadow: 0 0 14px var(--accent-glow);
-      color: var(--accent);
+      box-shadow: 0 0 14px var(--color-accent-glow);
+      color: var(--color-accent);
       height: 36px;
       padding: 0;
       position: absolute;
@@ -842,8 +860,8 @@
     }
 
     .chat__add-message:hover:not(:disabled) {
-      background: var(--accent);
-      color: var(--accent-ink);
+      background: var(--color-accent);
+      color: var(--color-accent-ink);
     }
 
     .message {
@@ -854,15 +872,15 @@
     }
 
     .message + .message {
-      border-top: 1px dashed var(--border-soft);
+      border-top: 1px dashed var(--color-border-soft);
     }
 
     .message__avatar {
       align-items: center;
-      background: var(--panel-secondary);
-      border: 1px solid var(--border);
+      background: var(--color-panel-secondary);
+      border: 1px solid var(--color-border);
       clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
-      color: var(--muted);
+      color: var(--color-muted);
       display: inline-flex;
       flex: 0 0 32px;
       height: 32px;
@@ -874,8 +892,8 @@
     .message__avatar_role_system,
     .message__avatar_role_developer {
       background: rgba(var(--accent-rgb), 0.2);
-      border-color: var(--accent);
-      color: var(--accent-strong);
+      border-color: var(--color-accent);
+      color: var(--color-accent-strong);
     }
 
     .message__main,
@@ -898,9 +916,9 @@
 
     .message__role,
     .message__model {
-      background: var(--panel-secondary);
-      border: 1px solid var(--border-soft);
-      color: var(--muted);
+      background: var(--color-panel-secondary);
+      border: 1px solid var(--color-border-soft);
+      color: var(--color-muted);
       font-size: 10px;
       max-width: 100%;
       overflow: hidden;
@@ -910,32 +928,32 @@
     }
 
     .message__role-select {
-      background: var(--panel-secondary);
+      background: var(--color-panel-secondary);
       border: 1px solid rgba(var(--accent-rgb), 0.5);
-      color: var(--accent-strong);
+      color: var(--color-accent-strong);
       font: 500 11px var(--font-mono);
       padding: 3px 22px 3px 9px;
     }
 
     .message__time {
-      color: var(--faint);
+      color: var(--color-faint);
       font: 10.5px var(--font-mono);
     }
 
     .message__content {
-      border: 1px solid var(--border);
+      border: 1px solid var(--color-border);
       overflow-wrap: anywhere;
       padding: 10px 14px;
     }
 
     .message__content_role_user {
-      background: var(--user-background);
+      background: var(--color-user-background);
     }
 
     .message__content_role_instruction {
-      background: var(--accent-soft);
+      background: var(--color-accent-soft);
       border-color: rgba(var(--accent-rgb), 0.48);
-      box-shadow: inset 3px 0 0 var(--accent);
+      box-shadow: inset 3px 0 0 var(--color-accent);
     }
 
     .message__actions {
@@ -959,8 +977,8 @@
     }
 
     .message-editor__input {
-      background: var(--panel);
-      border: 1px solid var(--accent);
+      background: var(--color-panel);
+      border: 1px solid var(--color-accent);
       line-height: 1.55;
       max-height: 360px;
       min-height: 72px;
@@ -984,22 +1002,21 @@
     }
 
     .reasoning-panel {
-      background:
-        linear-gradient(135deg, var(--accent-soft), transparent 55%),
-        var(--panel);
+      background: linear-gradient(135deg, var(--color-accent-soft), transparent 55%),
+        var(--color-panel);
       border: 1px solid rgba(var(--accent-rgb), 0.42);
-      border-left: 3px solid var(--accent);
+      border-left: 3px solid var(--color-accent);
       overflow: hidden;
     }
 
     .reasoning-panel__summary {
       align-items: center;
-      color: var(--accent);
+      color: var(--color-accent);
       cursor: pointer;
       display: flex;
       font: 500 10.5px var(--font-mono);
       gap: 7px;
-      letter-spacing: 0.06em;
+      letter-spacing: 0;
       list-style: none;
       padding: 8px 10px;
       text-transform: uppercase;
@@ -1017,24 +1034,10 @@
       padding: 7px;
     }
 
-    .reasoning-panel__item {
-      color: var(--muted);
-      font-size: 12.5px;
-      line-height: 1.65;
-      min-width: 0;
-      padding: 2px 4px;
-    }
-
-    .reasoning-panel__redacted {
-      align-items: center;
-      display: flex;
-      gap: 6px;
-    }
-
     .reasoning-tool {
-      background: var(--code-background);
+      background: var(--color-code-background);
       border: 1px solid rgba(var(--accent-rgb), 0.28);
-      border-left: 2px solid var(--accent);
+      border-left: 2px solid var(--color-accent);
       min-width: 0;
       overflow: hidden;
     }
@@ -1042,7 +1045,7 @@
     .reasoning-tool__header {
       align-items: center;
       background: rgba(var(--accent-rgb), 0.055);
-      color: var(--accent);
+      color: var(--color-accent);
       display: flex;
       font: 500 10px var(--font-mono);
       gap: 5px;
@@ -1060,7 +1063,7 @@
 
     .reasoning-tool__state {
       align-items: center;
-      color: var(--faint);
+      color: var(--color-faint);
       display: inline-flex;
       flex: none;
       font: 9.5px var(--font-mono);
@@ -1076,28 +1079,10 @@
       width: 5px;
     }
 
-    .reasoning-tool__state_status_active {
-      color: var(--accent);
-    }
-
-    .reasoning-tool__state_status_completed {
-      color: var(--success);
-    }
-
-    .reasoning-tool__state_status_failed {
-      color: var(--error);
-    }
-
     .reasoning-tool__body {
       border-top: 1px solid rgba(var(--accent-rgb), 0.16);
       min-width: 0;
       padding: 6px 7px 7px;
-    }
-
-    .reasoning-tool__meta {
-      color: var(--faint);
-      font: 9px/1.4 var(--font-mono);
-      overflow-wrap: anywhere;
     }
 
     .reasoning-tool__sections {
@@ -1116,12 +1101,8 @@
       min-width: 0;
     }
 
-    .reasoning-tool__section_wide {
-      grid-column: 1 / -1;
-    }
-
     .reasoning-tool__label {
-      color: var(--accent);
+      color: var(--color-accent);
       display: block;
       font-size: 9px;
       font-weight: 500;
@@ -1130,7 +1111,7 @@
     .reasoning-tool__payload {
       background: rgba(255, 255, 255, 0.018);
       border: 1px solid rgba(var(--accent-rgb), 0.2);
-      color: var(--muted);
+      color: var(--color-muted);
       font: 10px/1.45 var(--font-mono);
       margin: 3px 0 0;
       max-height: 160px;
@@ -1141,15 +1122,10 @@
       word-break: break-word;
     }
 
-    .reasoning-tool__section_error .reasoning-tool__payload {
-      border-color: rgba(var(--error-rgb), 0.55);
-      color: #ff9caf;
-    }
-
     .error-card {
       align-items: center;
-      background: var(--error-soft);
-      border: 1px solid var(--error);
+      background: var(--color-error-soft);
+      border: 1px solid var(--color-error);
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
@@ -1165,49 +1141,19 @@
       overflow-wrap: anywhere;
     }
 
-    .error-card__type {
-      border: 1px solid var(--error);
-      color: var(--error);
-      font-size: 10px;
-      padding: 2px 7px;
-    }
-
     .stopped-note {
       align-items: center;
-      color: var(--faint);
+      color: var(--color-faint);
       display: inline-flex;
       font: 11px var(--font-mono);
       gap: 6px;
       margin-top: 10px;
     }
 
-    .generation-dots {
-      align-items: center;
-      display: inline-flex;
-      gap: 5px;
-      padding: 8px 2px;
-    }
-
-    .generation-dots__dot {
-      animation: pulse 1.2s infinite ease-in-out;
-      background: var(--accent);
-      box-shadow: 0 0 7px var(--accent);
-      height: 7px;
-      width: 7px;
-    }
-
-    .generation-dots__dot:nth-child(2) {
-      animation-delay: 0.15s;
-    }
-
-    .generation-dots__dot:nth-child(3) {
-      animation-delay: 0.3s;
-    }
-
     .stream-cursor {
       animation: blink 1s steps(2) infinite;
-      background: var(--accent);
-      box-shadow: 0 0 8px var(--accent);
+      background: var(--color-accent);
+      box-shadow: 0 0 8px var(--color-accent);
       display: inline-block;
       height: 15px;
       margin-left: 3px;
@@ -1240,7 +1186,7 @@
     .markdown h6 {
       font-family: var(--font-display);
       font-weight: 700;
-      letter-spacing: 0.02em;
+      letter-spacing: 0;
       line-height: 1.35;
       margin: 16px 0 6px;
     }
@@ -1279,28 +1225,28 @@
 
     .markdown hr {
       border: 0;
-      border-top: 1px dashed var(--border-strong);
+      border-top: 1px dashed var(--color-border-strong);
       margin: 14px 0;
     }
 
     .markdown blockquote {
-      background: var(--accent-soft);
-      border-left: 3px solid var(--accent);
-      color: var(--muted);
+      background: var(--color-accent-soft);
+      border-left: 3px solid var(--color-accent);
+      color: var(--color-muted);
       margin: 10px 0;
       padding: 6px 14px;
     }
 
     .markdown a {
-      color: var(--accent-strong);
+      color: var(--color-accent-strong);
       text-decoration: underline dotted;
     }
 
     .markdown img,
     .message__output img,
     .message__attachments img {
-      background: var(--code-background);
-      border: 1px solid var(--border);
+      background: var(--color-code-background);
+      border: 1px solid var(--color-border);
       display: block;
       height: auto;
       margin: 10px 0;
@@ -1328,22 +1274,22 @@
     }
 
     .markdown figcaption {
-      color: var(--faint);
+      color: var(--color-faint);
       font: 10.5px var(--font-mono);
       margin-top: 4px;
     }
 
     .markdown code {
-      background: var(--panel-secondary);
+      background: var(--color-panel-secondary);
       border: 1px solid rgba(var(--accent-rgb), 0.2);
-      color: var(--accent-strong);
+      color: var(--color-accent-strong);
       font: 0.88em var(--font-mono);
       padding: 1px 5px;
     }
 
     .code-block {
       --cut: 10px;
-      background: var(--code-background);
+      background: var(--color-code-background);
       border: 1px solid rgba(var(--accent-rgb), 0.28);
       margin: 12px 0;
       overflow: hidden;
@@ -1351,7 +1297,7 @@
 
     .code-block__header {
       align-items: center;
-      background: var(--accent-soft);
+      background: var(--color-accent-soft);
       border-bottom: 1px solid rgba(var(--accent-rgb), 0.22);
       display: flex;
       justify-content: space-between;
@@ -1359,22 +1305,18 @@
     }
 
     .code-block__language {
-      color: var(--accent);
+      color: var(--color-accent);
       font-size: 10px;
     }
 
     .code-block__copy {
       background: none;
       border: 0;
-      color: var(--muted);
+      color: var(--color-muted);
       font: 11px var(--font-mono);
       gap: 5px;
       min-height: 26px;
       padding: 4px 8px;
-    }
-
-    .code-block__copy_copied {
-      color: var(--success);
     }
 
     .code-block__content {
@@ -1391,13 +1333,13 @@
     .code-block__content code {
       background: none;
       border: 0;
-      color: var(--text);
+      color: var(--color-text);
       font: 12.5px/1.6 var(--font-mono);
       padding: 0;
     }
 
     .table-scroll {
-      border: 1px solid var(--border);
+      border: 1px solid var(--color-border);
       margin: 10px 0;
       overflow-x: auto;
     }
@@ -1411,17 +1353,17 @@
 
     .markdown th,
     .markdown td {
-      border-bottom: 1px solid var(--border-soft);
+      border-bottom: 1px solid var(--color-border-soft);
       padding: 8px 12px;
       text-align: left;
       vertical-align: top;
     }
 
     .markdown th {
-      background: var(--panel-secondary);
-      color: var(--accent-strong);
+      background: var(--color-panel-secondary);
+      color: var(--color-accent-strong);
       font: 500 10.5px var(--font-mono);
-      letter-spacing: 0.06em;
+      letter-spacing: 0;
       text-transform: uppercase;
     }
 
@@ -1447,43 +1389,27 @@
 
     .attachment,
     .chip,
+    .value-chip > span {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
     .value-chip {
-      background: var(--panel);
-      border: 1px solid var(--border);
+      background: var(--color-panel);
+      border: 1px solid var(--color-border);
       position: relative;
     }
 
     .attachment_type_file {
       align-items: center;
-      color: var(--muted);
+      color: var(--color-muted);
       display: flex;
       gap: 7px;
-      max-width: 320px;
+      max-width: min(320px, 100%);
+      min-width: 0;
       padding: 7px 38px 7px 10px;
-    }
-
-    .attachment_type_image {
-      margin: 0;
-      max-width: 220px;
-      overflow: hidden;
-    }
-
-    .attachment_type_image img {
-      border: 0;
-      display: block;
-      margin: 0;
-      max-height: 150px;
-      object-fit: cover;
-      width: 100%;
-    }
-
-    .attachment_type_image figcaption {
-      color: var(--muted);
-      font-size: 11px;
-      overflow: hidden;
-      padding: 5px 36px 5px 8px;
-      text-overflow: ellipsis;
-      white-space: nowrap;
     }
 
     .attachment__name {
@@ -1492,15 +1418,10 @@
       white-space: nowrap;
     }
 
-    .attachment__size {
-      color: var(--faint);
-      font: 10.5px var(--font-mono);
-    }
-
     .attachment__remove {
-      background: var(--panel);
-      border: 1px solid var(--border-strong);
-      color: var(--muted);
+      background: var(--color-panel);
+      border: 1px solid var(--color-border-strong);
+      color: var(--color-muted);
       height: 26px;
       opacity: 0;
       padding: 0;
@@ -1519,9 +1440,9 @@
     .attachment__remove:hover,
     .chip__remove:hover,
     .remove-button:hover {
-      background: var(--error-soft);
-      border-color: var(--error);
-      color: var(--error);
+      background: var(--color-error-soft);
+      border-color: var(--color-error);
+      color: var(--color-error);
     }
 
     .welcome {
@@ -1541,10 +1462,10 @@
     .welcome__title {
       font-size: 26px;
       font-weight: 700;
-      letter-spacing: 0.1em;
+      letter-spacing: 0;
       line-height: 1.2;
       margin: 0;
-      text-shadow: 0 0 22px var(--accent-glow);
+      text-shadow: 0 0 22px var(--color-accent-glow);
       text-transform: uppercase;
     }
 
@@ -1554,18 +1475,8 @@
       margin-top: 18px;
     }
 
-    .welcome__note {
-      align-items: center;
-      color: var(--faint);
-      display: flex;
-      font: 11px var(--font-mono);
-      gap: 7px;
-      justify-content: center;
-      margin-top: 14px;
-    }
-
     .chat__composer {
-      background: linear-gradient(to top, var(--background) 70%, transparent);
+      background: linear-gradient(to top, var(--color-background) 70%, transparent);
       padding: 8px 14px calc(12px + env(safe-area-inset-bottom));
     }
 
@@ -1608,7 +1519,7 @@
     }
 
     .chip__meta {
-      color: var(--faint);
+      color: var(--color-faint);
       font: 10px var(--font-mono);
     }
 
@@ -1621,13 +1532,13 @@
     }
 
     .composer__box {
-      background: var(--panel);
-      border: 1px solid var(--border-strong);
+      background: var(--color-panel);
+      border: 1px solid var(--color-border-strong);
     }
 
     .composer__box:focus-within {
-      border-color: var(--accent);
-      box-shadow: inset 0 0 30px var(--accent-soft);
+      border-color: var(--color-accent);
+      box-shadow: inset 0 0 30px var(--color-accent-soft);
     }
 
     .composer__input {
@@ -1656,15 +1567,15 @@
     .composer__attachment-button {
       background: none;
       border: 0;
-      color: var(--muted);
+      color: var(--color-muted);
       height: 38px;
       padding: 0;
       width: 38px;
     }
 
     .composer__attachment-button[aria-expanded='true'] {
-      background: var(--accent-soft);
-      color: var(--accent-strong);
+      background: var(--color-accent-soft);
+      color: var(--color-accent-strong);
     }
 
     .composer__submit {
@@ -1675,13 +1586,13 @@
     }
 
     .composer__count {
-      color: var(--faint);
+      color: var(--color-faint);
       font: 10.5px var(--font-mono);
     }
 
     .attachment-menu {
-      background: var(--panel);
-      border: 1px solid var(--border-strong);
+      background: var(--color-panel);
+      border: 1px solid var(--color-border-strong);
       bottom: calc(100% + 8px);
       display: grid;
       gap: 2px;
@@ -1695,7 +1606,7 @@
     .attachment-menu__item {
       background: none;
       border: 0;
-      color: var(--muted);
+      color: var(--color-muted);
       font-size: 12.5px;
       gap: 9px;
       justify-content: flex-start;
@@ -1706,39 +1617,39 @@
 
     .attachment-menu__item:hover,
     .attachment-menu__item:focus-visible {
-      background: var(--hover);
-      color: var(--accent-strong);
+      background: var(--color-hover);
+      color: var(--color-accent-strong);
     }
 
     .send-button {
       --cut: 10px;
-      background: var(--accent);
+      background: var(--color-accent);
       border: 0;
       box-shadow: inset 0 0 12px rgba(255, 255, 255, 0.35);
-      color: var(--accent-ink);
+      color: var(--color-accent-ink);
       height: 40px;
       padding: 0;
       width: 40px;
     }
 
     .send-button:hover:not(:disabled) {
-      background: var(--accent-strong);
+      background: var(--color-accent-strong);
     }
 
     .send-button_state_stop {
-      background: var(--error-soft);
-      border: 1px solid var(--error);
+      background: var(--color-error-soft);
+      border: 1px solid var(--color-error);
       box-shadow: inset 0 0 12px rgba(var(--error-rgb), 0.35);
-      color: var(--error);
+      color: var(--color-error);
     }
 
     .send-button_state_stop:hover:not(:disabled) {
-      background: var(--error);
+      background: var(--color-error);
       color: #fff;
     }
 
     .settings__header {
-      border-bottom: 1px solid var(--border-soft);
+      border-bottom: 1px solid var(--color-border-soft);
       gap: 8px;
       justify-content: space-between;
       padding: 13px 14px;
@@ -1749,7 +1660,7 @@
     .endpoint-form__title {
       font-size: 14px;
       font-weight: 700;
-      letter-spacing: 0.1em;
+      letter-spacing: 0;
       margin: 0;
       text-transform: uppercase;
     }
@@ -1767,7 +1678,7 @@
     }
 
     .settings__section {
-      border-bottom: 1px solid var(--border-soft);
+      border-bottom: 1px solid var(--color-border-soft);
       margin-bottom: 20px;
       padding-bottom: 20px;
     }
@@ -1777,14 +1688,14 @@
     }
 
     .settings__section-title {
-      color: var(--accent);
+      color: var(--color-accent);
       font-size: 10px;
       font-weight: 500;
       margin: 0 0 10px;
     }
 
     .settings__section-title::before {
-      color: var(--faint);
+      color: var(--color-faint);
       content: '// ';
     }
 
@@ -1799,9 +1710,9 @@
 
     .tool-list__item {
       --cut: 5px;
-      background: var(--accent-soft);
+      background: var(--color-accent-soft);
       border: 1px solid rgba(var(--accent-rgb), 0.4);
-      color: var(--accent-strong);
+      color: var(--color-accent-strong);
       font-size: 10px;
       padding: 5px 8px;
       text-transform: none;
@@ -1809,39 +1720,33 @@
 
     .button {
       --cut: 6px;
-      background: var(--panel-secondary);
-      border: 1px solid var(--border-strong);
-      color: var(--text);
+      background: var(--color-panel-secondary);
+      border: 1px solid var(--color-border-strong);
+      color: var(--color-text);
       font-size: 12px;
       font-weight: 600;
       gap: 7px;
-      letter-spacing: 0.08em;
+      letter-spacing: 0;
       min-height: 36px;
       padding: 7px 14px;
       text-transform: uppercase;
     }
 
     .button:hover:not(:disabled) {
-      background: var(--hover);
-      border-color: var(--accent);
-      color: var(--accent-strong);
+      background: var(--color-hover);
+      border-color: var(--color-accent);
+      color: var(--color-accent-strong);
     }
 
     .button_view_ghost {
       background: none;
-      color: var(--muted);
+      color: var(--color-muted);
     }
 
     .button_view_accent {
-      background: var(--accent);
-      border-color: var(--accent);
-      color: var(--accent-ink);
-    }
-
-    .button_view_danger {
-      background: var(--error);
-      border-color: var(--error);
-      color: #fff;
+      background: var(--color-accent);
+      border-color: var(--color-accent);
+      color: var(--color-accent-ink);
     }
 
     .button_size_small {
@@ -1898,18 +1803,22 @@
     .accent-setting__label {
       font-size: 12px;
       font-weight: 600;
-      letter-spacing: 0.06em;
+      letter-spacing: 0;
       text-transform: uppercase;
+    }
+
+    .toggle-row__label_literal {
+      text-transform: none;
     }
 
     .field_disabled .field__label,
     .field_disabled .toggle-row__label {
-      color: var(--faint);
+      color: var(--color-faint);
     }
 
     .field__auto {
       align-items: center;
-      color: var(--muted);
+      color: var(--color-muted);
       cursor: pointer;
       display: inline-flex;
       font: 10.5px var(--font-mono);
@@ -1935,7 +1844,7 @@
     }
 
     .field__hint {
-      color: var(--faint);
+      color: var(--color-faint);
       font-size: 11px;
       margin: 6px 0 0;
       overflow-wrap: anywhere;
@@ -1954,12 +1863,15 @@
 
     .select-field {
       appearance: none;
-      background-image: linear-gradient(45deg, transparent 50%, var(--accent) 50%), linear-gradient(135deg, var(--accent) 50%, transparent 50%);
+      background-image: linear-gradient(45deg, transparent 50%, var(--color-accent) 50%), linear-gradient(135deg, var(--color-accent) 50%, transparent 50%);
       background-position: right 14px center, right 9px center;
       background-repeat: no-repeat;
       background-size: 5px 5px;
       cursor: pointer;
+      min-width: 0;
+      overflow: hidden;
       padding-right: 28px;
+      text-overflow: ellipsis;
     }
 
     textarea.text-field {
@@ -1983,12 +1895,12 @@
 
     input[type='range'],
     input[type='checkbox'] {
-      accent-color: var(--accent);
+      accent-color: var(--color-accent);
     }
 
     .toggle {
-      background: var(--panel-secondary);
-      border: 1px solid var(--border-strong);
+      background: var(--color-panel-secondary);
+      border: 1px solid var(--color-border-strong);
       cursor: pointer;
       height: 22px;
       padding: 0;
@@ -1997,26 +1909,25 @@
     }
 
     .toggle__knob {
-      background: var(--muted);
+      background: var(--color-muted);
       height: 14px;
       left: 3px;
       position: absolute;
       top: 3px;
-      transition:
-        background 0.15s ease,
+      transition: background 0.15s ease,
         transform 0.15s ease;
       width: 14px;
     }
 
     .toggle[aria-checked='true'] {
-      background: var(--accent-soft);
-      border-color: var(--accent);
-      box-shadow: inset 0 0 10px var(--accent-soft);
+      background: var(--color-accent-soft);
+      border-color: var(--color-accent);
+      box-shadow: inset 0 0 10px var(--color-accent-soft);
     }
 
     .toggle[aria-checked='true'] .toggle__knob {
-      background: var(--accent);
-      box-shadow: 0 0 8px var(--accent);
+      background: var(--color-accent);
+      box-shadow: 0 0 8px var(--color-accent);
       transform: translateX(18px);
     }
 
@@ -2029,8 +1940,8 @@
 
     .accent-setting__picker {
       align-items: center;
-      background: var(--panel-secondary);
-      border: 1px solid var(--border);
+      background: var(--color-panel-secondary);
+      border: 1px solid var(--color-border);
       display: flex;
       gap: 8px;
       padding: 5px 7px;
@@ -2053,7 +1964,7 @@
     }
 
     .accent-setting__value {
-      color: var(--muted);
+      color: var(--color-muted);
       font: 10.5px var(--font-mono);
       min-width: 7ch;
     }
@@ -2079,24 +1990,13 @@
       padding: 7px 9px;
     }
 
-    .variable-row__remove {
-      align-self: center;
-      justify-self: end;
-    }
-
-    .variable-row__error {
-      color: var(--error);
-      font-size: 11px;
-      grid-column: 1 / -1;
-    }
-
     .variable-row [aria-invalid='true'] {
-      background: var(--error-soft);
-      border-color: var(--error);
+      background: var(--color-error-soft);
+      border-color: var(--color-error);
     }
 
     .drawer-backdrop {
-      background: var(--scrim);
+      background: var(--color-scrim);
       inset: 0;
       opacity: 0;
       pointer-events: none;
@@ -2125,8 +2025,8 @@
     .toast {
       align-items: center;
       animation: toast-in 0.2s ease;
-      background: var(--panel);
-      border: 1px solid var(--border-strong);
+      background: var(--color-panel);
+      border: 1px solid var(--color-border-strong);
       display: flex;
       font-size: 13px;
       gap: 9px;
@@ -2135,30 +2035,29 @@
     }
 
     .toast_type_success {
-      border-left: 3px solid var(--success);
+      border-left: 3px solid var(--color-success);
     }
 
     .toast_type_error {
-      border-left: 3px solid var(--error);
+      border-left: 3px solid var(--color-error);
     }
 
     .toast_type_info {
-      border-left: 3px solid var(--accent);
+      border-left: 3px solid var(--color-accent);
     }
 
     .toast_leaving {
       opacity: 0;
       transform: translateY(-6px);
-      transition:
-        opacity 0.2s ease,
+      transition: opacity 0.2s ease,
         transform 0.2s ease;
     }
 
     .dialog {
       --cut: 14px;
-      background: var(--panel);
-      border: 1px solid var(--border-strong);
-      color: var(--text);
+      background: var(--color-panel);
+      border: 1px solid var(--color-border-strong);
+      color: var(--color-text);
       max-height: min(860px, calc(100dvh - 32px));
       padding: 0;
       width: min(500px, calc(100vw - 32px));
@@ -2169,13 +2068,13 @@
     }
 
     .dialog::backdrop {
-      background: var(--scrim);
+      background: var(--color-scrim);
     }
 
     .dialog__header {
       align-items: center;
-      background: linear-gradient(90deg, var(--accent-soft), transparent 60%);
-      border-bottom: 1px solid var(--border-soft);
+      background: linear-gradient(90deg, var(--color-accent-soft), transparent 60%);
+      border-bottom: 1px solid var(--color-border-soft);
       display: flex;
       justify-content: space-between;
       padding: 14px 16px;
@@ -2195,13 +2094,13 @@
     }
 
     .endpoint-card {
-      border: 1px solid var(--border);
+      border: 1px solid var(--color-border);
       margin-bottom: 10px;
       padding: 4px;
     }
 
     .endpoint-card_active {
-      background: var(--accent-soft);
+      background: var(--color-accent-soft);
       border-color: rgba(var(--accent-rgb), 0.5);
     }
 
@@ -2216,17 +2115,16 @@
       width: 100%;
     }
 
-    .endpoint-card__header {
-      align-items: center;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      justify-content: space-between;
+    .endpoint-card__select > strong {
+      display: block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .endpoint-card__url,
     .endpoint-card__meta {
-      color: var(--faint);
+      color: var(--color-faint);
       display: block;
       font: 10.5px var(--font-mono);
       margin-top: 6px;
@@ -2235,7 +2133,6 @@
       white-space: nowrap;
     }
 
-    .endpoint-card__models,
     .model-list {
       display: flex;
       flex-wrap: wrap;
@@ -2250,13 +2147,8 @@
       padding: 2px 10px 8px;
     }
 
-    .endpoint-card__active {
-      color: var(--success);
-      font: 10.5px var(--font-mono);
-    }
-
     .endpoint-form {
-      border-top: 1px dashed var(--border-strong);
+      border-top: 1px dashed var(--color-border-strong);
       margin-top: 12px;
       padding-top: 14px;
     }
@@ -2281,10 +2173,6 @@
       flex: 0 0 38%;
     }
 
-    .endpoint-header-row__remove {
-      flex: 0 0 24px;
-    }
-
     .generated-image {
       margin: 12px 0;
       max-width: 100%;
@@ -2292,8 +2180,8 @@
     }
 
     .generated-image__image {
-      background: var(--code-background);
-      border: 1px solid var(--border);
+      background: var(--color-code-background);
+      border: 1px solid var(--color-border);
       display: block;
       height: auto;
       max-height: 70vh;
@@ -2303,7 +2191,7 @@
 
     .generated-image__caption {
       align-items: center;
-      color: var(--faint);
+      color: var(--color-faint);
       display: flex;
       flex-wrap: wrap;
       font: 10.5px var(--font-mono);
@@ -2315,37 +2203,13 @@
       display: none;
     }
 
-    .generated-image__actions {
-      display: inline-flex;
-      gap: 6px;
-    }
-
-    .generated-image__button {
-      background: var(--panel-secondary);
-      border: 1px solid var(--border);
-      color: var(--accent-strong);
-      padding: 2px 6px;
-      text-decoration: none;
-    }
-
-    .generated-image__button:hover {
-      background: var(--hover);
-      border-color: var(--accent);
-    }
-
-    .generated-image_state_file {
-      border: 1px dashed var(--border-strong);
-      color: var(--muted);
-      padding: 10px;
-    }
-
-    .generated-image_state_partial {
-      opacity: 0.92;
-    }
-
     .conversation__action_active {
-      background: var(--accent-soft);
-      color: var(--accent);
+      background: var(--color-accent-soft);
+      color: var(--color-accent);
+    }
+
+    .file-library__cleanup {
+      margin-left: auto;
     }
 
     .file-library__list {
@@ -2362,7 +2226,7 @@
 
     .file-library__item {
       align-items: center;
-      border-bottom: 1px solid var(--border);
+      border-bottom: 1px solid var(--color-border);
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
@@ -2381,14 +2245,16 @@
     }
 
     .file-library__meta {
-      color: var(--muted);
+      color: var(--color-muted);
       font-size: 11px;
     }
 
     .file-library__actions {
       display: flex;
       flex: 0 0 auto;
+      flex-wrap: wrap;
       gap: 4px;
+      max-width: 100%;
     }
 
     .file-preview__title {
@@ -2411,12 +2277,6 @@
       white-space: pre-wrap;
     }
 
-    .select-field {
-      min-width: 0;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
     .message__attachments .chip__image {
       height: 26px;
       margin: 0;
@@ -2424,11 +2284,10 @@
       width: 26px;
     }
 
-
     .storage-status {
-      background: var(--error-soft);
-      border-bottom: 1px solid var(--error);
-      color: var(--text);
+      background: var(--color-error-soft);
+      border-bottom: 1px solid var(--color-error);
+      color: var(--color-text);
       flex: 0 0 auto;
       font-size: 12px;
       max-height: 30dvh;
@@ -2444,17 +2303,8 @@
       margin-top: 6px;
     }
 
-    .attachment_type_file {
-      max-width: min(320px, 100%);
-      min-width: 0;
-    }
-
-    .file-library__actions {
-      flex-wrap: wrap;
-      max-width: 100%;
-    }
-
     @keyframes boot {
+
       from {
         opacity: 0;
         transform: translateY(10px);
@@ -2462,12 +2312,14 @@
     }
 
     @keyframes fade {
+
       from {
         opacity: 0;
       }
     }
 
     @keyframes sweep {
+
       from {
         background-position: -100% 0;
       }
@@ -2478,31 +2330,21 @@
     }
 
     @keyframes ping {
+
       to {
         box-shadow: 0 0 0 6px transparent;
       }
     }
 
-    @keyframes pulse {
-      0%,
-      100% {
-        opacity: 0.25;
-        transform: scale(0.85);
-      }
-
-      50% {
-        opacity: 1;
-        transform: scale(1);
-      }
-    }
-
     @keyframes blink {
+
       50% {
         opacity: 0;
       }
     }
 
     @keyframes toast-in {
+
       from {
         opacity: 0;
         transform: translateY(-8px);
@@ -2510,6 +2352,7 @@
     }
 
     @media (hover: none) {
+
       .conversation__actions,
       .message__actions,
       .attachment__remove {
@@ -2518,6 +2361,7 @@
     }
 
     @media (max-width: 1279px) {
+
       .app {
         grid-template-columns: 1fr;
       }
@@ -2526,7 +2370,7 @@
       .settings {
         animation: none;
         bottom: 0;
-        box-shadow: var(--shadow);
+        box-shadow: var(--shadow-panel);
         position: fixed;
         top: 0;
         transition: transform 0.22s ease;
@@ -2567,18 +2411,33 @@
     }
 
     @media (min-width: 1280px) {
+
       .settings__close {
         display: none;
       }
     }
 
     @media (max-width: 767px) {
+
       .top-bar {
         padding: 8px 10px;
       }
 
       .top-bar__title {
         display: none;
+      }
+
+      .top-bar .brand_compact {
+        flex: 0 0 28px;
+      }
+
+      .top-bar .brand__name {
+        display: none;
+      }
+
+      .top-bar .status-badge {
+        flex: 1 1 0;
+        max-width: none;
       }
 
       .message-list {
@@ -2591,10 +2450,6 @@
 
       .reasoning-tool__sections {
         grid-template-columns: minmax(0, 1fr);
-      }
-
-      .reasoning-tool__section_wide {
-        grid-column: auto;
       }
 
       .chat__add-message {
@@ -2617,25 +2472,10 @@
       .endpoint-header-row .text-field {
         flex: 1 1 100%;
       }
-
-      .endpoint-header-row__remove {
-        margin-left: auto;
-      }
-    }
-
-    @media (max-width: 419px) {
-      .brand_compact .brand__name {
-        display: none;
-      }
-    }
-
-    @media (max-width: 359px) {
-      .status-badge {
-        display: none;
-      }
     }
 
     @media (prefers-reduced-motion: reduce) {
+
       *,
       *::before,
       *::after {
@@ -2782,9 +2622,6 @@
         <div class="storage-status__actions">
           <button class="button button_size_small" id="retry-storage-button" type="button" data-action="retry-storage">
             <span data-icon="rotate"></span>Thử lưu lại
-          </button>
-          <button class="button button_size_small" id="recover-storage-button" type="button" data-action="recover-storage-space" hidden>
-            <span data-icon="file-text"></span>Giải phóng bản snapshot
           </button>
           <button class="button button_size_small" type="button" data-action="export-storage">
             <span data-icon="arrow-down"></span>Xuất lịch sử và cấu hình
@@ -2941,8 +2778,8 @@
         <div class="settings__body">
           <section class="settings__section">
             <h3 class="settings__section-title">Giao diện</h3>
-            <label class="accent-setting" for="accent-color-input">
-              <span class="accent-setting__label">Màu accent</span>
+            <div class="accent-setting">
+              <label class="accent-setting__label" for="accent-color-input">Màu accent</label>
               <span class="accent-setting__controls">
                 <span class="accent-setting__picker">
                   <input
@@ -2970,7 +2807,7 @@
                   title="Đặt lại màu accent"
                 ></button>
               </span>
-            </label>
+            </div>
           </section>
           <section class="settings__section">
             <h3 class="settings__section-title">Endpoint và mô hình</h3>
@@ -3314,19 +3151,19 @@
             <div class="field">
               <div class="toggle-row">
                 <label
-                  class="toggle-row__label"
-                  for="zero-data-retention-toggle"
+                  class="toggle-row__label toggle-row__label_literal"
+                  for="store-toggle"
                 >
-                  Zero Data Retention
+                  Store
                 </label>
                 <button
                   class="toggle"
-                  id="zero-data-retention-toggle"
+                  id="store-toggle"
                   type="button"
                   role="switch"
                   data-action="toggle-setting"
-                  data-toggle-setting="zeroDataRetention"
-                  aria-checked="true"
+                  data-toggle-setting="store"
+                  aria-checked="false"
                 >
                   <span class="toggle__knob" aria-hidden="true"></span>
                 </button>
@@ -3374,6 +3211,19 @@
               </button>
             </div>
           </section>
+          <section class="settings__section">
+            <h3 class="settings__section-title">Dữ liệu trên thiết bị</h3>
+            <div class="configuration-actions">
+              <button class="button" type="button" data-action="export-storage">
+                <span data-icon="arrow-down" aria-hidden="true"></span>
+                Xuất lịch sử và cấu hình
+              </button>
+              <button class="button" type="button" data-action="cleanup-storage">
+                <span data-icon="trash" aria-hidden="true"></span>
+                Dọn dữ liệu phiên bản cũ
+              </button>
+            </div>
+          </section>
         </div>
       </div>
     </aside>
@@ -3397,9 +3247,9 @@
     aria-live="polite"
     aria-atomic="true"
   ></div>
-  <dialog class="dialog" id="attachment-url-dialog">
+  <dialog class="dialog" id="attachment-url-dialog" aria-labelledby="attachment-url-title">
     <div class="dialog__header">
-      <h2 class="dialog__title">Đính kèm bằng URL</h2>
+      <h2 class="dialog__title" id="attachment-url-title">Đính kèm bằng URL</h2>
       <button
         class="icon-button"
         type="button"
@@ -3483,9 +3333,9 @@
       </div>
     </div>
   </dialog>
-  <dialog class="dialog dialog_size_wide" id="endpoint-dialog">
+  <dialog class="dialog dialog_size_wide" id="endpoint-dialog" aria-labelledby="endpoint-dialog-title">
     <div class="dialog__header">
-      <h2 class="dialog__title">Quản lí endpoint API</h2>
+      <h2 class="dialog__title" id="endpoint-dialog-title">Quản lí endpoint API</h2>
       <button
         class="icon-button"
         type="button"
@@ -3657,6 +3507,14 @@
     <div class="dialog__header">
       <h2 class="dialog__title" id="file-library-title">Thư viện tệp</h2>
       <button
+        class="icon-button file-library__cleanup"
+        type="button"
+        data-action="cleanup-unused-files"
+        data-icon="trash"
+        aria-label="Xoá tệp không dùng"
+        title="Xoá tệp không dùng"
+      ></button>
+      <button
         class="icon-button"
         type="button"
         data-action="close-file-library"
@@ -3722,9 +3580,7 @@
   <script>
     'use strict'
 
-    // Validation: node --check; runWorkbenchChecks(); Chromium DOM + storage fixtures.
-    // Native reload/IndexedDB tests are blocked by this test environment's URL policy.
-
+    // Constants and API contracts.
     const storagePrefix = 'ai-workbench'
     const mediaDatabaseName = storagePrefix
     const storageKeys = {
@@ -3912,6 +3768,7 @@
     })
     const mobileLayoutMediaQuery = window.matchMedia('(max-width: 1279px)')
 
+    // Runtime state.
     const state = {
       activeConversationId: null,
       attachments: [],
@@ -3945,25 +3802,19 @@
     let storageHealthy = true
     let writerOwned = false
     let endpointsLoaded = false
-    let saveInProgress = false
-    let saveRequested = false
     let storageError = null
-    let migrationBusy = false
-    let sourceSelectionPending = false
+    let storageCleanupBusy = false
     let fileLibraryLoaded = false
     let fileLibraryPromise = null
     let paintFrame = null
     let pageClosing = false
-    let retryStorage = null
-    let recoverStorageSpace = null
-    let storageCommitHook = null
     const unreadStorageKeys = new Map()
     const mediaReads = new Map()
     const retiredMediaUrls = new Set()
     const messagePaints = new Set()
     const rowIdentities = new WeakMap()
     const debouncedSave = debounce(() => {
-      if (!writerOwned || pageClosing || sourceSelectionPending) return
+      if (!writerOwned || pageClosing) return
       try {
         saveState()
       } catch (error) {
@@ -3980,6 +3831,7 @@
     let previewSequence = 0
     let releaseWriterLock = null
 
+    // Shared utilities.
     function debounce (callback, delay) {
       let timeout = null
       let argumentsList = []
@@ -4001,12 +3853,6 @@
         window.clearTimeout(timeout)
         timeout = null
         argumentsList = []
-      }
-
-      debounced.flush = () => {
-        if (timeout == null) return
-        window.clearTimeout(timeout)
-        invoke()
       }
 
       return debounced
@@ -4389,6 +4235,7 @@
       return isConversationGenerating(state.activeConversationId)
     }
 
+    // Configuration normalization.
     function defaultSettings () {
       return {
         budget: null,
@@ -4410,7 +4257,7 @@
         topPAuto: true,
         variableEntries: [],
         verbosity: null,
-        zeroDataRetention: true
+        store: false
       }
     }
 
@@ -4422,11 +4269,21 @@
     }
 
     function sanitizeSettings (raw = {}) {
+      if (!raw || typeof raw !== 'object' || Array.isArray(raw)) {
+        throw new Error('Cấu hình tạo sinh không hợp lệ.')
+      }
       const settings = defaultSettings()
+      // Read the old setting once; subsequent saves contain only store.
+      if (!hasProperty(raw, 'store') && hasProperty(raw, 'zeroDataRetention')) {
+        if (typeof raw.zeroDataRetention !== 'boolean') {
+          throw new Error('Giá trị lưu trữ cũ không hợp lệ.')
+        }
+        settings.store = !raw.zeroDataRetention
+      }
       Object.keys(settings).forEach(name => {
         if (hasProperty(raw, name)) settings[name] = cloneValue(raw[name])
       })
-      for (const name of ['reasoningEnabled', 'showReasoning', 'streaming', 'temperatureAuto', 'topPAuto', 'zeroDataRetention']) {
+      for (const name of ['reasoningEnabled', 'showReasoning', 'streaming', 'temperatureAuto', 'topPAuto', 'store']) {
         if (typeof settings[name] !== 'boolean') throw new Error('Cấu hình boolean không hợp lệ: ' + name)
       }
       settings.temperature = finiteNumber(settings.temperature, 1, 0, 2)
@@ -4589,6 +4446,7 @@
       }
     }
 
+    // IndexedDB: blobs and file metadata.
     function openMediaDatabase () {
       // Open the existing version; never downgrade, delete, or rebuild a database.
       // https://developer.mozilla.org/en-US/docs/Web/API/IDBFactory/open
@@ -4736,6 +4594,7 @@
         await loadMediaRecord(key)
         updateMediaElements(key)
       }))
+      releaseUnusedMediaUrls()
     }
 
     function updateMediaElements (key) {
@@ -4798,19 +4657,6 @@
       return fileLibraryPromise
     }
 
-    function retireMediaUrl (url) {
-      if (url) retiredMediaUrls.add(url)
-    }
-
-    function releaseUnusedMediaUrls () {
-      const used = new Set(queryElements('[src]').map(element => element.getAttribute('src')))
-      for (const url of retiredMediaUrls) {
-        if (used.has(url)) continue
-        window.URL.revokeObjectURL(url)
-        retiredMediaUrls.delete(url)
-      }
-    }
-
     function mediaSource (key) {
       const record = mediaRecord(key)
       if (!record?.blob) return ''
@@ -4847,7 +4693,7 @@
       }
     }
 
-    async function persistBlob (blob, name, origin, remote = null, preferredKey = '') {
+    async function persistBlob (blob, name, origin, remote = null) {
       requireWriter()
       if (!(blob instanceof window.Blob)) throw new Error('Nội dung tệp không phải Blob.')
       if (typeof name !== 'string' || !name) throw new Error('Tên tệp không được để trống.')
@@ -4860,11 +4706,7 @@
         if (existing && !(await sameBytes(existing.blob, blob))) {
           throw new Error('Xung đột dấu vân tay tệp; không ghi đè dữ liệu.')
         }
-        let key = match?.key || preferredKey || 'file:' + uniqueId()
-        if (!match && preferredKey) {
-          const occupied = await accessMediaStore('get', preferredKey)
-          if (occupied) key = 'file:' + uniqueId()
-        }
+        const key = match?.key || 'file:' + uniqueId()
         const origins = Array.from(new Set([...(existing?.origins || []), origin]))
         const record = existing
           ? { ...existing, origins, remote: existing.remote || remote }
@@ -4900,21 +4742,16 @@
           const attachments = message.attachments || []
           const blocks = message.outputBlocks || []
           attachments.forEach(add)
-          blocks.filter(block => block.type === 'file').forEach(add)
+          blocks.forEach(add)
         })
       })
       return keys
     }
 
-
-
-
-
-
     // Local Storage: đọc đồng bộ, không phụ thuộc việc lưu Blob.
     // https://developer.mozilla.org/en-US/docs/Web/API/Storage/setItem
     function scheduleSave () {
-      if (!writerOwned || pageClosing || sourceSelectionPending) return
+      if (!writerOwned || pageClosing) return
       saveDirty = true
       debouncedSave()
     }
@@ -4926,7 +4763,7 @@
 
     function requireWriter () {
       if (!writerOwned || pageClosing) throw new Error('Tab này chỉ đọc; mở tab đang có quyền chỉnh sửa.')
-      if (sourceSelectionPending) throw new Error('Chọn nguồn dữ liệu trước khi lưu thay đổi.')
+      if (unreadStorageKeys.size) throw new Error('Dữ liệu chưa đọc được đầy đủ; không ghi đè bản nguồn.')
     }
 
     function showStorageError (error) {
@@ -4940,22 +4777,22 @@
       const quota = storageError?.name === 'QuotaExceededError' ||
         /quota|dung lượng/i.test(storageError?.message || '')
       let message = ''
-      if (storageError) {
+      if (storageCleanupBusy) {
+        message = 'Đang dọn dữ liệu. Nếu database bị chặn, hãy đóng các tab phiên bản cũ.'
+      } else if (storageError) {
         message = quota
           ? 'Chưa lưu được: bộ nhớ đã đầy. Dữ liệu đang mở vẫn được giữ; xuất bản sao trước khi giải phóng dung lượng rồi thử lưu lại.'
           : 'Chưa lưu được: ' + storageError.message
-      } else if (sourceSelectionPending) {
-        message = 'Có nhiều bản dữ liệu khác nhau. Các bản nguồn được giữ nguyên.'
       } else if (initialized && !writerOwned) {
         message = 'Tab chỉ đọc. Đóng tab đang chỉnh sửa rồi tải lại để nhận quyền ghi.'
+      } else if (!storageHealthy) {
+        message = 'Kho tệp chưa sẵn sàng. Lịch sử văn bản vẫn được lưu riêng; thử kết nối lại kho tệp.'
       } else if (dirtyMedia.size) {
         message = 'Có tệp chưa lưu; lịch sử được lưu riêng. Tải tệp xuống hoặc thử lưu lại trong thư viện.'
       }
       region.hidden = !message
       getElementById('storage-status-text').textContent = message
       getElementById('retry-storage-button').hidden = !writerOwned
-      const recoveryButton = getElementById('recover-storage-button')
-      if (recoveryButton) recoveryButton.hidden = !writerOwned || !quota || !recoverStorageSpace
     }
 
     function writeLocalEntries (entries, storage = window.localStorage) {
@@ -4996,7 +4833,7 @@
         id: attachment.id,
         name: attachment.name || record?.name || 'Tệp',
         kind: attachment.kind || (record?.mimeType?.startsWith('image/') ? 'image' : 'file'),
-        type: attachment.type || record?.mimeType || '',
+        type: attachment.mimeType || record?.mimeType || attachment.type || '',
         size: attachment.size ?? record?.size ?? 0
       }
       if (durable) output.mediaKey = key
@@ -5078,7 +4915,6 @@
         // Serialize everything before the first write. Each replacement is atomic.
         const entries = Object.entries(storageKeys).map(([name, key]) => [key, JSON.stringify(snapshot[name])])
         writeLocalEntries(entries)
-        if (storageCommitHook) storageCommitHook()
         saveDirty = false
         storageError = null
         updateStorageStatus()
@@ -5090,20 +4926,8 @@
     }
 
     function saveState () {
-      requireWriter()
       debouncedSave.cancel()
-      saveRequested = true
-      if (saveInProgress) return false
-      saveInProgress = true
-      try {
-        while (saveRequested) {
-          saveRequested = false
-          writeStateSnapshot()
-        }
-        return true
-      } finally {
-        saveInProgress = false
-      }
+      return writeStateSnapshot()
     }
 
     function normalizeStoredState (saved) {
@@ -5239,6 +5063,12 @@
         activeConfiguration = state.workspace
         showStorageError(error)
       }
+      try {
+        checkStorageCompatibility(snapshot)
+      } catch (error) {
+        unreadStorageKeys.set(obsoleteStorage.checkpointKey, error)
+        showStorageError(error)
+      }
       return snapshot
     }
 
@@ -5246,19 +5076,14 @@
       const local = {}
       for (let index = 0; index < window.localStorage.length; index += 1) {
         const key = window.localStorage.key(index)
-        if (key.startsWith(storagePrefix)) local[key] = window.localStorage.getItem(key)
+        if (key.startsWith(storagePrefix + '.')) local[key] = window.localStorage.getItem(key)
       }
       const blob = new window.Blob([JSON.stringify({
         exportedAt: new Date().toISOString(),
         localStorage: local,
         currentState: cloneValue(state)
       })], { type: 'application/json' })
-      const url = window.URL.createObjectURL(blob)
-      const anchor = document.createElement('a')
-      anchor.href = url
-      anchor.download = 'ai-workbench-backup.json'
-      anchor.click()
-      window.setTimeout(() => window.URL.revokeObjectURL(url), 60000)
+      downloadBlob(blob, 'ai-workbench-backup.json')
       // Binary files are downloaded separately in the existing file library.
     }
 
@@ -5297,433 +5122,296 @@
       })
     }
 
-
-
-    // BEGIN storageMigrator — remove this region and its single bootstrap call.
-    async function storageMigrator (initialSnapshot) {
-      const checkpointKey = storagePrefix + '.storageMigration'
-      const oldSnapshotKey = storagePrefix + '.snapshot'
-      const oldDatabaseName = storagePrefix + '-media'
-      let checkpoint = readJson(checkpointKey)
-      let legacyDatabase = null
-      let selected = null
-      let applied = false
-
-      async function readLegacySnapshot () {
-        const value = readJson(oldSnapshotKey)
-        if (!value?.sourceArchive) return value
-        if (!database) {
-          database = await openMediaDatabase()
-          storageHealthy = true
-        }
-        const record = await accessMediaStore('get', value.sourceArchive)
-        if (!record?.blob) throw new Error('Không đọc được bản lưu trữ của snapshot nguồn.')
-        const archive = JSON.parse(await record.blob.text())
-        if (archive.storageKey !== oldSnapshotKey || typeof archive.rawValue !== 'string') {
-          throw new Error('Bản lưu trữ nguồn không hợp lệ.')
-        }
-        return JSON.parse(archive.rawValue)
-      }
-
-      async function recoverSpace () {
-        requireWriter()
-        if (migrationBusy) throw new Error('Chờ thao tác chuyển đổi hiện tại hoàn tất.')
-        const rawValue = window.localStorage.getItem(oldSnapshotKey)
-        if (!rawValue || readJson(oldSnapshotKey)?.sourceArchive) {
-          throw new Error('Không có snapshot Local Storage lớn để lưu trữ lại. Xuất bản sao rồi gỡ lịch sử không cần giữ, hoặc giải phóng dung lượng của trình duyệt.')
-        }
-        if (!database) {
-          database = await openMediaDatabase()
-          storageHealthy = true
-        }
-        const content = JSON.stringify({ storageKey: oldSnapshotKey, rawValue })
-        const blob = new window.Blob([content], { type: 'application/json' })
-        const signature = await fingerprint(content)
-        const key = await persistBlob(blob, 'storage-recovery-' + signature + '.json', 'backup')
-        const verified = await accessMediaStore('get', key)
-        if (!verified?.blob || await verified.blob.text() !== content) {
-          throw new Error('Chưa kiểm chứng được bản nguồn; không giải phóng Local Storage.')
-        }
-        if (!confirmChange('Snapshot cũ đã được lưu và kiểm chứng thành tệp khôi phục trong thư viện. Thay bản snapshot trong Local Storage bằng liên kết tới tệp đó để giải phóng dung lượng?')) return
-        if (window.localStorage.getItem(oldSnapshotKey) !== rawValue) {
-          throw new Error('Snapshot nguồn vừa thay đổi; không ghi đè.')
-        }
-        // Atomic shrinking replacement; a crash never leaves the source unaddressable.
-        window.localStorage.setItem(oldSnapshotKey, JSON.stringify({ sourceArchive: key }))
-        fileLibraryLoaded = false
-        if (retryStorage) await retryStorage()
-        else saveState()
-      }
-
-      function readStore (connection, storeName, method, key) {
-        return new Promise((resolve, reject) => {
-          if (!connection?.objectStoreNames.contains(storeName)) {
-            resolve(undefined)
-            return
-          }
-          const transaction = connection.transaction(storeName, 'readonly')
-          const request = transaction.objectStore(storeName)[method](key)
-          let result
-          request.onsuccess = () => { result = request.result }
-          transaction.oncomplete = () => resolve(result)
-          transaction.onabort = () => reject(transaction.error || new Error('Không đọc được nguồn chuyển đổi.'))
-        })
-      }
-
-      async function openSource () {
-        if (!window.indexedDB) return null
-        if (window.indexedDB.databases) {
-          const databases = await window.indexedDB.databases()
-          if (!databases.some(item => item.name === oldDatabaseName)) return null
-        }
-        return new Promise((resolve, reject) => {
-          const request = window.indexedDB.open(oldDatabaseName)
-          let absent = false
-          request.onupgradeneeded = event => {
-            if (event.oldVersion === 0) {
-              absent = true
-              request.transaction.abort()
-            }
-          }
-          request.onerror = () => absent ? resolve(null) : reject(request.error)
-          request.onblocked = () => reject(new Error('Không mở được database nguồn; đóng tab phiên bản cũ rồi thử lại.'))
-          request.onsuccess = () => resolve(request.result)
-        })
-      }
-
-      function convertEnvelope (envelope) {
-        if (!envelope || typeof envelope !== 'object') throw new Error('Snapshot nguồn không hợp lệ.')
-        const saved = envelope.data || envelope
-        if (!Array.isArray(saved.conversations) || !Array.isArray(saved.endpoints)) {
-          throw new Error('Snapshot nguồn thiếu lịch sử hoặc endpoint; không coi là dữ liệu rỗng.')
-        }
-        return {
-          activeConversationId: saved.activeConversationId,
-          conversations: saved.conversations,
-          endpoints: saved.endpoints,
-          systemPrompts: saved.prompts || saved.systemPrompts || [],
-          workspaceConfiguration: saved.workspace || saved.workspaceConfiguration || {},
-          ui: {
-            ...saved.ui,
-            attachments: saved.attachments || saved.ui?.attachments || [],
-            editDraft: saved.editDraft || saved.ui?.editDraft || null,
-            messageDraft: saved.messageDraft ?? saved.ui?.messageDraft ?? ''
-          }
-        }
-      }
-
-      function canonical (value) {
-        if (Array.isArray(value)) return value.map(canonical)
-        if (!value || typeof value !== 'object') return value
-        return Object.fromEntries(Object.keys(value).sort().filter(key => value[key] !== undefined)
-          .map(key => [key, canonical(value[key])]))
-      }
-
-      async function fingerprint (value) {
-        const bytes = utf8Encoder.encode(JSON.stringify(canonical(value)))
-        const digest = await window.crypto.subtle.digest('SHA-256', bytes)
-        return Array.from(new Uint8Array(digest), byte => byte.toString(16).padStart(2, '0')).join('')
-      }
-
-      function selectSource (sources) {
-        return new Promise(resolve => {
-          sourceSelectionPending = true
-          updateStorageStatus()
-          const dialog = document.createElement('dialog')
-          dialog.className = 'dialog'
-          const body = document.createElement('div')
-          body.className = 'dialog__body'
-          const title = document.createElement('h2')
-          title.className = 'dialog__title'
-          title.textContent = 'Chọn bản dữ liệu cần tiếp tục'
-          const note = document.createElement('p')
-          note.textContent = 'Các nguồn khác nhau và không đủ dữ liệu để xác định bản mới nhất. Không xoá bản nào.'
-          body.append(title, note)
-          for (const source of sources) {
-            const button = document.createElement('button')
-            button.type = 'button'
-            button.className = 'button'
-            button.textContent = source.label + ' · ' + source.snapshot.conversations.length + ' cuộc trò chuyện'
-            button.addEventListener('click', () => {
-              sourceSelectionPending = false
-              dialog.close()
-              dialog.remove()
-              updateStorageStatus()
-              resolve(source)
-            })
-            body.appendChild(button)
-          }
-          dialog.addEventListener('cancel', event => event.preventDefault())
-          dialog.appendChild(body)
-          document.body.appendChild(dialog)
-          dialog.showModal()
-        })
-      }
-
-      function writeCheckpoint (status, progress = {}) {
-        const next = { source: selected.id, fingerprint: selected.fingerprint, status, ...progress }
-        window.localStorage.setItem(checkpointKey, JSON.stringify(next))
-        checkpoint = next
-      }
-
-      function remapReferences (from, to, record) {
-        const update = item => {
-          if (item.mediaKey !== from) return
-          item.mediaKey = to
-          if (!item.name) item.name = record.name
-          if (item.type === 'image') item.type = 'file'
-          if (item.type === 'file' && !item.kind) item.mimeType = record.mimeType
-        }
-        state.attachments.forEach(update)
-        for (const conversation of state.conversations) {
-          for (const message of conversation.messages) {
-            const attachments = message.attachments || []
-            const blocks = message.outputBlocks || []
-            attachments.forEach(update)
-            blocks.forEach(update)
-          }
-        }
-      }
-
-      async function convertReference (item, origin, message = null) {
-        if (origin === 'generated' && !['image', 'file'].includes(item.type)) return
-        const name = item.name || item.metadata?.filename || generatedFilename(item.mimeType || item.type)
-        const mimeType = normalizeMimeType(origin === 'generated' ? item.mimeType || item.mime_type : item.type) ||
-          inferMimeType(name) || 'application/octet-stream'
-        let key = resolveMediaKey(item.mediaKey)
-        const remote = isHttpsUrl(item.url) ? { url: item.url } : item.remote || (item.fileId
-          ? { fileId: item.fileId, endpointId: message?.endpointId, format: 'messages' }
-          : null)
-        const inline = typeof item.base64 === 'string' ? item.base64 : typeof item.data === 'string' ? item.data : null
-        const dataUrl = String(item.dataUrl || '').match(/^data:([^;,]+);base64,([\s\S]*)$/)
-        if (inline !== null || dataUrl) {
-          key = await persistBlob(
-            blobFromBase64(inline ?? dataUrl[2], dataUrl?.[1] || mimeType),
-            name,
-            origin,
-            remote
-          )
-        } else if (!key) {
-          key = await registerUnavailableFile(name, mimeType, origin, remote, item.id || uniqueId())
-        }
-        if (origin === 'generated') {
-          item.type = 'file'
-          item.mimeType = mimeType
-        }
-        item.name = name
-        item.mediaKey = key
-        delete item.base64
-        delete item.data
-        delete item.dataUrl
-        delete item.text
-        if (typeof item.url === 'string' && !isHttpsUrl(item.url)) delete item.url
-      }
-
-      async function transferMedia () {
-        const keys = await readStore(legacyDatabase, 'media', 'getAllKeys') || []
-        for (const key of keys) {
-          const raw = await readStore(legacyDatabase, 'media', 'get', key)
-          if (!raw) throw new Error('Tệp nguồn biến mất trong khi đọc: ' + key)
-          const name = raw.name || raw.metadata?.filename || generatedFilename(raw.mimeType || raw.blob?.type)
-          let canonicalKey
-          if (raw.blob) {
-            canonicalKey = await persistBlob(raw.blob, name, raw.origins?.[0] || 'generated', raw.remote || null, key)
-          } else {
-            // Preserve IDs and metadata; never manufacture an empty Blob.
-            const existing = await accessMediaStore('get', key)
-            canonicalKey = key
-            if (!existing) {
-              const record = {
-                ...raw,
-                name,
-                mimeType: raw.mimeType || 'application/octet-stream',
-                origins: raw.origins || ['generated'],
-                size: raw.size || 0,
-                blob: null,
-                createdAt: raw.createdAt || 0
-              }
-              delete record.identity
-              await accessMediaStore('put', key, diskMediaRecord(record))
-              mediaRecords.set(key, { ...record, persisted: true })
-            }
-          }
-          const written = await accessMediaStore('get', canonicalKey)
-          if (!written || (raw.blob && !(await sameBytes(raw.blob, written.blob)))) {
-            throw new Error('Kiểm chứng tệp không thành công: ' + name)
-          }
-          if (raw.metadata && !written.metadata) {
-            written.metadata = raw.metadata
-            await accessMediaStore('put', canonicalKey, diskMediaRecord(written))
-          }
-          if (key !== canonicalKey) mediaAliases.set(key, canonicalKey)
-          remapReferences(key, canonicalKey, written)
-          if (Array.isArray(raw.origins) && raw.origins.length > 1 && raw.blob) {
-            for (const origin of raw.origins.slice(1)) {
-              await persistBlob(raw.blob, name, origin, raw.remote || null)
-            }
-          }
-        }
-        for (const attachment of state.attachments) await convertReference(attachment, 'attachment')
-        for (const conversation of state.conversations) {
-          for (const message of conversation.messages) {
-            for (const attachment of message.attachments || []) await convertReference(attachment, 'attachment', message)
-            for (const block of message.outputBlocks || []) await convertReference(block, 'generated', message)
-          }
-        }
-        // Unknown references remain explicit missing-content records.
-        for (const key of collectMediaKeys()) {
-          if (await accessMediaStore('get', key)) continue
-          const record = {
-            blob: null,
-            name: 'Tệp thiếu nội dung',
-            mimeType: 'application/octet-stream',
-            size: 0,
-            origins: ['generated'],
-            createdAt: 0
-          }
-          await accessMediaStore('put', key, diskMediaRecord(record))
-        }
-      }
-
-      async function resume () {
-        if (!writerOwned || migrationBusy) return
-        if (conversationRuntimes.size || state.pendingAttachmentReads) {
-          throw new Error('Chờ các yêu cầu và thao tác tệp đang chạy hoàn tất rồi thử chuyển dữ liệu lại.')
-        }
-        const app = queryElement('.app')
-        const wasInert = app.inert
-        app.inert = true
-        migrationBusy = true
-        try {
-          if (!selected) {
-            const sources = []
-            if (Object.values(initialSnapshot).some(value => value != null) && !unreadStorageKeys.size) {
-              sources.push({ id: 'local', label: 'Các key Local Storage', snapshot: initialSnapshot })
-            }
-            const envelope = checkpoint?.status === 'state' ? null : await readLegacySnapshot()
-            if (envelope !== null) {
-              sources.push({ id: 'snapshot', label: 'Snapshot Local Storage', snapshot: convertEnvelope(envelope) })
-            }
-            legacyDatabase = await openSource()
-            const diskEnvelope = await readStore(legacyDatabase, 'state', 'get', oldSnapshotKey)
-            if (diskEnvelope !== undefined && checkpoint?.status !== 'state') {
-              sources.push({ id: 'database', label: 'Snapshot IndexedDB', snapshot: convertEnvelope(diskEnvelope) })
-            }
-            for (const source of sources) {
-              source.fingerprint = await fingerprint(normalizeStoredState(source.snapshot))
-            }
-            if (checkpoint?.status === 'state') {
-              selected = { id: checkpoint.source, fingerprint: checkpoint.fingerprint, snapshot: initialSnapshot }
-              applied = true
-            } else if (checkpoint?.status === 'committing' && checkpoint.source === 'local') {
-              for (const key of Object.values(storageKeys)) {
-                const current = await fingerprint(window.localStorage.getItem(key))
-                if (current !== checkpoint.before?.[key] && current !== checkpoint.after?.[key]) {
-                  throw new Error('Một key nguồn đã thay đổi ngoài lần chuyển đổi; không tự ghi đè.')
-                }
-              }
-              selected = { id: 'local', fingerprint: checkpoint.fingerprint, snapshot: initialSnapshot }
-            } else if (['copying', 'committing'].includes(checkpoint?.status)) {
-              selected = sources.find(source => source.id === checkpoint.source &&
-                source.fingerprint === checkpoint.fingerprint)
-              if (!selected) throw new Error('Nguồn chuyển đổi đã thay đổi; không tự chọn bản khác.')
-            } else if (sources.length) {
-              const distinct = sources.filter((source, index) =>
-                sources.findIndex(item => item.fingerprint === source.fingerprint) === index)
-              selected = distinct.length === 1 ? distinct[0] : await selectSource(distinct)
-            } else {
-              if (unreadStorageKeys.size) throw new Error('Không có nguồn thay thế đọc được.')
-              selected = { id: 'local', fingerprint: await fingerprint(initialSnapshot), snapshot: initialSnapshot }
-            }
-          }
-          if (!applied) {
-            applyStoredState(selected.snapshot)
-            unreadStorageKeys.clear()
-            getElementById('message-input').value = state.messageDraft
-            renderConversationView()
-            applied = true
-          }
-          // A later successful user save promotes Local Storage, even if file
-          // migration previously ran out of quota. Never re-import deleted messages.
-          storageCommitHook = () => writeCheckpoint('state')
-          // Compact only redundant text before reserving the tiny checkpoint.
-          // There is no full localStorage backup or temporary second snapshot.
-          if (!checkpoint && selected.id === 'local' &&
-            !/"(?:base64|dataUrl|data)"\s*:/.test(JSON.stringify(selected.snapshot))) {
-            const snapshot = storedState()
-            const shrinking = Object.entries(storageKeys).flatMap(([name, key]) => {
-              const previous = window.localStorage.getItem(key)
-              const value = JSON.stringify(snapshot[name])
-              return previous !== null && value.length < previous.length &&
-                !/"(?:base64|dataUrl|data)"\s*:/.test(previous)
-                ? [[key, value]] : []
-            })
-            writeLocalEntries(shrinking)
-          }
-          if (!checkpoint) {
-            if (selected.id === 'local') {
-              const current = Object.fromEntries(Object.entries(storageKeys).map(([name, key]) => [name, readJson(key)]))
-              selected.fingerprint = await fingerprint(normalizeStoredState(current))
-            }
-            writeCheckpoint('copying')
-          }
-          const sourceKeys = await readStore(legacyDatabase, 'media', 'getAllKeys') || []
-          const hasReferences = state.attachments.length || state.conversations.some(conversation =>
-            conversation.messages.some(message => message.attachments?.length ||
-              message.outputBlocks?.some(block => ['image', 'file'].includes(block.type))))
-          if (sourceKeys.length || hasReferences) {
-            if (!database) {
-              database = await openMediaDatabase()
-              storageHealthy = true
-            }
-            await transferMedia()
-          }
-          const planned = storedState()
-          const before = {}
-          const after = {}
-          for (const [name, key] of Object.entries(storageKeys)) {
-            before[key] = await fingerprint(window.localStorage.getItem(key))
-            after[key] = await fingerprint(JSON.stringify(planned[name]))
-          }
-          writeCheckpoint('committing', { before, after })
-          storageCommitHook = () => writeCheckpoint('state')
-          saveState()
-          const snapshot = storedState()
-          for (const [name, key] of Object.entries(storageKeys)) {
-            if (window.localStorage.getItem(key) !== JSON.stringify(snapshot[name])) {
-              throw new Error('Kiểm chứng trạng thái không thành công: ' + name)
-            }
-          }
-          for (const key of collectMediaKeys()) {
-            if (!(await accessMediaStore('get', key))) throw new Error('Thiếu tham chiếu tệp sau chuyển đổi: ' + key)
-          }
-          writeCheckpoint('complete')
-          storageCommitHook = null
-          retryStorage = null
-          legacyDatabase?.close()
-          legacyDatabase = null
-          fileLibraryLoaded = false
-          storageError = null
-          await hydrateVisibleMedia()
-          renderMessages()
-          updateStorageStatus()
-        } catch (error) {
-          saveDirty = true
-          showStorageError(error)
-          throw error
-        } finally {
-          migrationBusy = false
-          app.inert = wasInert
-        }
-      }
-
-      recoverStorageSpace = recoverSpace
-      if (checkpoint?.status === 'complete') return
-      retryStorage = resume
-      await resume()
+    // Storage maintenance: exact legacy names, explicit disk deletion, automatic RAM cleanup.
+    // Keep legacy names and safety checks together; extend only this explicit allowlist.
+    const obsoleteStorage = {
+      snapshotKey: storagePrefix + '.snapshot',
+      checkpointKey: storagePrefix + '.storageMigration',
+      databaseName: storagePrefix + '-media'
     }
-    // END storageMigrator
 
+    function checkStorageCompatibility (snapshot) {
+      const checkpoint = readJson(obsoleteStorage.checkpointKey)
+      const hasOldSnapshot = window.localStorage.getItem(obsoleteStorage.snapshotKey) !== null
+      if ((checkpoint && checkpoint.status !== 'complete') ||
+        (hasOldSnapshot && (!snapshot.conversations || !snapshot.workspaceConfiguration))) {
+        throw new Error('Dữ liệu phiên bản cũ chưa chuyển xong. Bản nguồn được giữ nguyên; hãy hoàn tất bằng phiên bản cũ trước khi chỉnh sửa hoặc dọn dữ liệu.')
+      }
+    }
+
+    async function checkLegacyDatabase () {
+      if (!window.indexedDB?.databases ||
+        Object.values(storageKeys).some(key => window.localStorage.getItem(key) !== null)) return
+      const databases = await window.indexedDB.databases()
+      if (databases.some(item => item.name === obsoleteStorage.databaseName)) {
+        const error = new Error('Chỉ tìm thấy database phiên bản cũ. Bản nguồn được giữ nguyên; hoàn tất chuyển dữ liệu bằng phiên bản cũ trước khi tiếp tục.')
+        unreadStorageKeys.set(obsoleteStorage.databaseName, error)
+        showStorageError(error)
+      }
+    }
+
+    function protectedMediaKeys () {
+      const keys = collectMediaKeys()
+      // A recovery archive is data, not an orphaned attachment.
+      for (const storage of [window.localStorage, window.sessionStorage]) {
+        const raw = storage.getItem(obsoleteStorage.snapshotKey)
+        if (raw === null) continue
+        const snapshot = JSON.parse(raw)
+        if (snapshot?.sourceArchive) keys.add(resolveMediaKey(snapshot.sourceArchive))
+      }
+      return keys
+    }
+
+    function canonicalizeMediaReferences () {
+      const update = item => {
+        if (item.mediaKey) item.mediaKey = resolveMediaKey(item.mediaKey)
+      }
+      state.attachments.forEach(update)
+      for (const conversation of state.conversations) {
+        for (const message of conversation.messages) {
+          const attachments = message.attachments || []
+          const blocks = message.outputBlocks || []
+          attachments.forEach(update)
+          blocks.forEach(update)
+        }
+      }
+    }
+
+    async function runStorageCleanup (operation) {
+      requireWriter()
+      if (storageCleanupBusy || conversationRuntimes.size || state.pendingAttachmentReads ||
+        pendingFileRequests.size || mediaWrites.size) {
+        throw new Error('Chờ các thao tác đang chạy hoàn tất và lưu hoặc tải xuống tệp chưa lưu trước khi dọn.')
+      }
+      storageCleanupBusy = true
+      updateStorageStatus()
+      try {
+        return await operation()
+      } finally {
+        storageCleanupBusy = false
+        releaseUnusedMediaUrls()
+        renderFileLibrary()
+        updateStorageStatus()
+      }
+    }
+
+    async function deleteMediaEntries (keys) {
+      requireWriter()
+      canonicalizeMediaReferences()
+      saveState()
+      await Promise.all(mediaReads.values())
+      await enqueueMedia(() => new Promise((resolve, reject) => {
+        requireWriter()
+        const protectedKeys = protectedMediaKeys()
+        if (keys.some(key => protectedKeys.has(key))) {
+          reject(new Error('Tệp còn được tin nhắn, bản nháp hoặc bản khôi phục sử dụng.'))
+          return
+        }
+        if (!database || !storageHealthy) {
+          reject(new Error('Kho tệp chưa sẵn sàng; chưa xoá dữ liệu.'))
+          return
+        }
+        const transaction = database.transaction('media', 'readwrite')
+        const store = transaction.objectStore('media')
+        for (const key of keys) store.delete(key)
+        transaction.onabort = () => reject(transaction.error || new Error('Chưa xoá tệp: giao dịch bị huỷ.'))
+        transaction.oncomplete = resolve
+      }))
+      const deleted = new Set(keys)
+      for (const key of deleted) {
+        retireMediaUrl(mediaRecords.get(key)?.objectUrl)
+        mediaRecords.delete(key)
+        dirtyMedia.delete(key)
+      }
+      for (const key of mediaAliases.keys()) {
+        if (deleted.has(key) || deleted.has(resolveMediaKey(key))) mediaAliases.delete(key)
+      }
+      return deleted.size
+    }
+
+    async function deleteStoredFile (key) {
+      return runStorageCleanup(async () => {
+        key = resolveMediaKey(key)
+        const record = await loadMediaRecord(key)
+        if (!record) return
+        if (protectedMediaKeys().has(key)) {
+          throw new Error('Tệp còn được tin nhắn, bản nháp hoặc bản khôi phục sử dụng. Hãy gỡ liên kết trước.')
+        }
+        if (!confirmChange('Xoá vĩnh viễn tệp “' + record.name + '” khỏi thiết bị?')) return
+        await deleteMediaEntries([key])
+      })
+    }
+
+    async function cleanupUnusedFiles () {
+      return runStorageCleanup(async () => {
+        fileLibraryLoaded = false
+        await loadFileLibrary()
+        const protectedKeys = protectedMediaKeys()
+        const entries = Array.from(mediaRecords).filter(([key, record]) =>
+          record.persisted && !record.partial && !protectedKeys.has(key) &&
+          !record.origins?.includes('backup')
+        )
+        if (!entries.length) {
+          toast('Không có tệp đã lưu nào không dùng.')
+          return
+        }
+        const bytes = entries.reduce((total, [, record]) => total + (record.size || 0), 0)
+        if (!confirmChange(
+          'Xoá vĩnh viễn ' + entries.length + ' tệp không dùng (' + formatBytes(bytes) + ')? ' +
+          'Thao tác áp dụng cho toàn bộ thư viện, không chỉ kết quả đang lọc. ' +
+          'Tệp đang dùng, bản khôi phục và tệp chưa lưu được giữ nguyên. Hãy tải xuống tệp cần giữ trước.'
+        )) return
+        const count = await deleteMediaEntries(entries.map(([key]) => key))
+        toast('Đã xoá ' + count + ' tệp không dùng.', 'success')
+      })
+    }
+
+    async function cleanupObsoleteStorage () {
+      return runStorageCleanup(async () => {
+        if (!window.indexedDB?.databases) {
+          throw new Error('Trình duyệt không hỗ trợ liệt kê IndexedDB; không tự đoán database cần xoá.')
+        }
+        const databases = await window.indexedDB.databases()
+        const hasDatabase = databases.some(item => item.name === obsoleteStorage.databaseName)
+        const names = [obsoleteStorage.snapshotKey, obsoleteStorage.checkpointKey]
+        // Session entries first, the Local Storage completion marker last.
+        const entries = [window.sessionStorage, window.localStorage].flatMap(storage =>
+          names.map(key => ({ storage, key, value: storage.getItem(key) }))
+            .filter(entry => entry.value !== null)
+        )
+        if (!entries.length && !hasDatabase) {
+          toast('Không có dữ liệu phiên bản cũ cần dọn.')
+          return
+        }
+        const checkpoint = readJson(obsoleteStorage.checkpointKey)
+        if (checkpoint?.status !== 'complete') {
+          throw new Error('Chưa có bằng chứng chuyển dữ liệu hoàn tất; giữ nguyên snapshot và database cũ.')
+        }
+        const currentEntries = Object.entries(storageKeys).map(([name, key]) =>
+          ({ name, key, value: window.localStorage.getItem(key) })
+        )
+        if (currentEntries.some(entry => entry.value === null)) {
+          throw new Error('Dữ liệu hiện tại chưa đầy đủ; không xoá bản nguồn.')
+        }
+        const snapshot = Object.fromEntries(currentEntries.map(entry => [entry.name, JSON.parse(entry.value)]))
+        normalizeStoredState(snapshot)
+        const diskKeys = new Set()
+        const visit = value => {
+          if (!value || typeof value !== 'object') return
+          if (typeof value.mediaKey === 'string') diskKeys.add(value.mediaKey)
+          for (const child of Object.values(value)) visit(child)
+        }
+        visit(snapshot)
+        for (const key of new Set([...diskKeys, ...collectMediaKeys()])) {
+          const record = await accessMediaStore('get', key)
+          if (!record) throw new Error('Thiếu tệp hiện tại; không xoá nguồn cũ: ' + key)
+        }
+        if (!confirmChange(
+          'Xoá ' + entries.length + ' mục snapshot/checkpoint cũ trong Storage' +
+          (hasDatabase ? ' và IndexedDB “' + obsoleteStorage.databaseName + '”' : '') +
+          '? Không thể hoàn tác. Lịch sử, cấu hình và kho “' + mediaDatabaseName +
+          '” hiện tại được giữ. Chỉ tiếp tục sau khi đã kiểm tra hoặc xuất bản sao cần giữ.'
+        )) return
+        const unchanged = [...entries, ...currentEntries.map(entry => ({ ...entry, storage: window.localStorage }))]
+          .every(entry => entry.storage.getItem(entry.key) === entry.value)
+        if (!unchanged) throw new Error('Dữ liệu vừa thay đổi; chưa xoá bản nào.')
+        if (hasDatabase) {
+          // A blocked delete cannot be cancelled: wait for success instead of reporting a false failure.
+          // https://developer.mozilla.org/en-US/docs/Web/API/IDBFactory/deleteDatabase
+          await new Promise((resolve, reject) => {
+            const request = window.indexedDB.deleteDatabase(obsoleteStorage.databaseName)
+            request.onsuccess = resolve
+            request.onerror = () => reject(request.error)
+            request.onblocked = () => {
+              toast('Đang chờ xoá database cũ. Đóng các tab phiên bản cũ để tiếp tục.', 'info', 10000)
+            }
+          })
+        }
+        for (const entry of entries) {
+          if (entry.storage.getItem(entry.key) !== entry.value) {
+            throw new Error('Snapshot vừa thay đổi; giữ lại các mục Storage còn lại.')
+          }
+          entry.storage.removeItem(entry.key)
+        }
+        toast('Đã dọn dữ liệu phiên bản cũ.', 'success')
+        saveState()
+      })
+    }
+
+    function retireMediaUrl (url) {
+      if (url) retiredMediaUrls.add(url)
+    }
+
+    function releaseUnusedMediaUrls () {
+      const usedUrls = new Set(queryElements('[src], [href]').flatMap(element =>
+        [element.getAttribute('src'), element.getAttribute('href')]
+      ))
+      const usedKeys = new Set([
+        ...queryElements('[data-media-key]').map(element => resolveMediaKey(element.dataset.mediaKey)),
+        ...state.attachments.map(item => resolveMediaKey(item.mediaKey))
+      ])
+      const canEvict = !conversationRuntimes.size && !state.pendingAttachmentReads &&
+        !pendingFileRequests.size && !mediaWrites.size
+      const previewKeys = collectPreviewKeys()
+      for (const [key, record] of mediaRecords) {
+        if (record.objectUrl && !usedUrls.has(record.objectUrl)) {
+          retireMediaUrl(record.objectUrl)
+          delete record.objectUrl
+        }
+        if (canEvict && record.persisted && record.blob && !usedKeys.has(key) && !mediaReads.has(key)) {
+          record.hasContent = true
+          record.blob = null
+        }
+        if (record.partial && !previewKeys.has(key)) {
+          retireMediaUrl(record.objectUrl)
+          mediaRecords.delete(key)
+        }
+      }
+      for (const url of retiredMediaUrls) {
+        if (usedUrls.has(url)) continue
+        window.URL.revokeObjectURL(url)
+        retiredMediaUrls.delete(url)
+      }
+    }
+
+    function collectPreviewKeys () {
+      const keys = new Set()
+      for (const runtime of conversationRuntimes.values()) {
+        for (const block of runtime.message?.outputBlocks || []) {
+          if (block.partial) keys.add(block.mediaKey)
+        }
+      }
+      return keys
+    }
+
+    function downloadBlob (blob, filename) {
+      const url = window.URL.createObjectURL(blob.slice(0, blob.size, 'application/octet-stream'))
+      const anchor = document.createElement('a')
+      anchor.href = url
+      anchor.download = filename.replace(/[/\\]/g, '_')
+      document.body.appendChild(anchor)
+      anchor.click()
+      anchor.remove()
+      // Leave time for browsers to start reading a large download.
+      window.setTimeout(() => window.URL.revokeObjectURL(url), 60000)
+    }
+
+    async function retryStorageWrites () {
+      requireWriter()
+      if (storageCleanupBusy) throw new Error('Chờ thao tác dọn dữ liệu hoàn tất.')
+      if (!database || !storageHealthy) {
+        database = await openMediaDatabase()
+        storageHealthy = true
+      }
+      for (const key of Array.from(dirtyMedia.keys())) await materializeFile(key)
+      saveState()
+      await hydrateVisibleMedia()
+      renderFileLibrary()
+    }
+
+    // End storage maintenance.
+
+    // Files and attachments.
     function generatedFilename (mimeType) {
       const type = normalizeImageMimeType(mimeType || 'application/octet-stream')
       const suffixes = {
@@ -5905,12 +5593,14 @@
           record.remote
         )
         mediaAliases.set(key, canonicalKey)
+        canonicalizeMediaReferences()
         dirtyMedia.delete(key)
-        await saveState()
-        if (key !== canonicalKey) {
-          // Keep the source record until the user explicitly deletes it.
-          updateMediaElements(canonicalKey)
+        if (!record.persisted && key !== canonicalKey) {
+          retireMediaUrl(record.objectUrl)
+          mediaRecords.delete(key)
+          mediaAliases.delete(key)
         }
+        saveState()
         renderAttachments()
         updateMediaElements(canonicalKey)
         renderFileLibrary()
@@ -5945,52 +5635,11 @@
       }
     }
 
-    async function deleteStoredFile (key) {
-      requireWriter()
-      if (migrationBusy || retryStorage) throw new Error('Hoàn tất chuyển tệp trước khi xoá vĩnh viễn để tránh nhập lại tệp từ nguồn cũ.')
-      key = resolveMediaKey(key)
-      const record = await loadMediaRecord(key)
-      if (!record) return
-      if (conversationRuntimes.size || state.pendingAttachmentReads ||
-        pendingFileRequests.size || mediaWrites.size) {
-        throw new Error('Chờ các thao tác gửi, tạo hoặc tải tệp hoàn tất trước khi xoá tệp.')
-      }
-      if (collectMediaKeys().has(key)) {
-        throw new Error('Tệp còn được tin nhắn hoặc bản nháp sử dụng. Hãy gỡ các liên kết trước.')
-      }
-      if (!confirmChange('Xoá vĩnh viễn tệp “' + record.name + '” khỏi thiết bị?')) return
-      const wasDirty = dirtyMedia.delete(key)
-      try {
-        await saveState()
-      } catch (error) {
-        if (wasDirty) dirtyMedia.set(key, true)
-        throw error
-      }
-      await enqueueMedia(async () => {
-        if (collectMediaKeys().has(key)) throw new Error('Tệp vừa được sử dụng; không xoá.')
-        await accessMediaStore('delete', key)
-        if (record.objectUrl) retireMediaUrl(record.objectUrl)
-        mediaRecords.delete(key)
-        dirtyMedia.delete(key)
-      })
-      renderFileLibrary()
-    }
-
     async function downloadStoredFile (key) {
       const record = await loadMediaRecord(key)
-      if (!record?.blob) {
-        throw new Error('Hãy tải nội dung tệp về cơ sở dữ liệu trước.')
-      }
-      const url = window.URL.createObjectURL(
-        record.blob.slice(0, record.blob.size, 'application/octet-stream')
-      )
-      const anchor = document.createElement('a')
-      anchor.href = url
-      anchor.download = record.name.replace(/[/\\]/g, '_')
-      document.body.appendChild(anchor)
-      anchor.click()
-      anchor.remove()
-      window.setTimeout(() => window.URL.revokeObjectURL(url), 60000)
+      if (!record?.blob) throw new Error('Hãy tải nội dung tệp về cơ sở dữ liệu trước.')
+      downloadBlob(record.blob, record.name)
+      releaseUnusedMediaUrls()
     }
 
     async function previewStoredFile (key) {
@@ -5999,6 +5648,7 @@
       const body = getElementById('file-preview-content')
       getElementById('file-preview-title').textContent = record.name
       body.replaceChildren()
+      body.dataset.mediaKey = resolveMediaKey(key)
       if (displayImageMimeTypes.has(record.mimeType)) {
         const image = document.createElement('img')
         image.className = 'file-preview__image'
@@ -6023,6 +5673,12 @@
       getElementById('file-preview-dialog').showModal()
     }
 
+    function compareMediaEntries ([firstKey, first], [secondKey, second]) {
+      const firstTime = validTimestamp(first.createdAt, validTimestamp(first.updatedAt, 0))
+      const secondTime = validTimestamp(second.createdAt, validTimestamp(second.updatedAt, 0))
+      return secondTime - firstTime || String(firstKey).localeCompare(String(secondKey))
+    }
+
     function renderFileLibrary () {
       const list = getElementById('file-library-list')
       if (!list || !getElementById('file-library-dialog').open) return
@@ -6033,7 +5689,7 @@
         return !mediaAliases.has(key) && !record.partial &&
           (!filter || record.origins.includes(filter)) &&
           record.name.toLowerCase().includes(search)
-      }).sort((first, second) => second[1].createdAt - first[1].createdAt)
+      }).sort(compareMediaEntries)
       renderList(list, records.map(([key, record]) => {
         const attributes = `data-file-key="${escapeHtml(key)}"`
         const available = Boolean(record.blob || record.hasContent)
@@ -6045,6 +5701,7 @@
           <div class="file-library__info">
             <strong class="file-library__name">${escapeHtml(record.name)}</strong>
             <span class="file-library__meta">${escapeHtml(record.mimeType)} · ${formatBytes(record.size)} · ${stateLabel}${used ? ' · Đang sử dụng' : ''}</span>
+            <time class="file-library__meta" datetime="${new Date(validTimestamp(record.createdAt, validTimestamp(record.updatedAt, 0))).toISOString()}">${dateTimeFormatter.format(validTimestamp(record.createdAt, validTimestamp(record.updatedAt, 0)))}</time>
           </div>
           <div class="file-library__actions">
             ${available ? actionButton('preview-file', 'search', 'Xem trước', attributes, 'icon-button') : ''}
@@ -6057,6 +5714,7 @@
       }).join('') || '<li class="empty-state">Không có tệp phù hợp.</li>')
     }
 
+    // API requests.
     function requestUrl (endpoint, model, stream) {
       let base = normalizeBaseUrl(endpoint.baseUrl)
       if (endpoint.format === 'generate-content') {
@@ -6124,6 +5782,19 @@
         headers.authorization = 'Bearer ' + endpoint.apiKey
       }
       return mergeHeaders(headers, endpoint.headers || [])
+    }
+
+    function supportsStore (endpoint) {
+      if (!endpoint) return false
+      if (['responses', 'interactions'].includes(endpoint.format)) return true
+      if (endpoint.format !== 'chat-completions') return false
+      // xAI documents store on Responses, not Chat Completions.
+      // https://docs.x.ai/developers/model-capabilities/text/comparison
+      try {
+        return new window.URL(endpoint.baseUrl).hostname !== 'api.x.ai'
+      } catch {
+        return false
+      }
     }
 
     function textPart (text, format, assistant) {
@@ -6247,6 +5918,11 @@
       }
 
       const body = { model: configuration.modelId }
+      // Store controls API-side storage, independently of local history or ZDR.
+      // https://developers.openai.com/api/reference/resources/chat/subresources/completions/methods/create
+      // https://ai.google.dev/gemini-api/docs/interactions-overview
+      if (typeof settings.store !== 'boolean') throw new Error('Store phải là boolean.')
+      if (supportsStore(endpoint)) body.store = settings.store
       if (format !== 'generate-content') body.stream = settings.streaming
       if (settings.tools.length) body.tools = settings.tools
       const system = joinBlocks(instructions)
@@ -6310,7 +5986,6 @@
           generationConfig.thinking_summaries = settings.showReasoning ? 'auto' : 'none'
         }
         if (Object.keys(generationConfig).length) body.generation_config = generationConfig
-        if (settings.zeroDataRetention) body.store = false
       } else {
         const responses = format === 'responses'
         body[responses ? 'input' : 'messages'] = input
@@ -6323,8 +5998,6 @@
         if (settings.maxTokens != null) {
           body[responses ? 'max_output_tokens' : 'max_completion_tokens'] = settings.maxTokens
         }
-
-        if (settings.zeroDataRetention) body.store = false
 
         if (settings.verbosity) {
           if (responses) body.text = { verbosity: settings.verbosity }
@@ -6417,6 +6090,7 @@
       return response
     }
 
+    // Responses and streaming.
     function syncAssistantMessage (message) {
       message.content = joinBlocks(
         message.outputBlocks.filter(block => block.type === 'text').map(block => block.content)
@@ -6946,6 +6620,7 @@
       }
     }
 
+    // Rendering: sidebar, top bar, messages, composer, settings and dialogs.
     function renderMarkdown (source) {
       const value = String(source || '')
       if (!window.commonmark) {
@@ -7146,7 +6821,9 @@
       const conversation = currentConversation()
       const endpoint = currentEndpoint()
       const status = getElementById('connection-status')
-      getElementById('current-conversation-title').textContent = conversation ? conversation.title : ''
+      const title = getElementById('current-conversation-title')
+      title.textContent = conversation?.title || ''
+      title.title = title.textContent
 
       const statusType = !navigator.onLine ? 'offline' : endpoint ? 'ready' : 'idle'
       const label = !navigator.onLine
@@ -7158,9 +6835,10 @@
 
       status.className = 'status-badge status-badge_state_' + statusType
       status.innerHTML = `<span class="status-dot status-dot_state_${statusType}"></span><span class="status-badge__text">${escapeHtml(label)}</span>`
+      status.setAttribute('aria-label', label)
       status.title = endpoint
-        ? [endpoint.name, apiFormats[endpoint.format].label, activeConfiguration.modelId, endpoint.baseUrl].filter(Boolean).join(' · ')
-        : ''
+        ? [label, endpoint.name, apiFormats[endpoint.format].label, endpoint.baseUrl].filter(Boolean).join(' · ')
+        : label
     }
 
     function renderFileBlock (block, messageId) {
@@ -7493,18 +7171,19 @@
       updateComposer()
       window.requestAnimationFrame(updateComposerHeight)
       if (getElementById('file-library-dialog')?.open) renderFileLibrary()
+      releaseUnusedMediaUrls()
     }
 
     function renderAccent () {
       const color = normalizeHexColor(state.ui.accent)
       const rgb = hexToRgb(color).join(', ')
       const style = document.documentElement.style
-      style.setProperty('--accent', color)
+      style.setProperty('--color-accent', color)
       style.setProperty('--accent-rgb', rgb)
-      style.setProperty('--accent-soft', 'rgba(' + rgb + ', 0.13)')
-      style.setProperty('--accent-glow', 'rgba(' + rgb + ', 0.48)')
-      style.setProperty('--accent-strong', mixColors(color, '#ffffff', 0.45))
-      style.setProperty('--accent-ink', relativeLuminance(color) > 0.42 ? '#020b10' : '#e8fbff')
+      style.setProperty('--color-accent-soft', 'rgba(' + rgb + ', 0.13)')
+      style.setProperty('--color-accent-glow', 'rgba(' + rgb + ', 0.48)')
+      style.setProperty('--color-accent-strong', mixColors(color, '#ffffff', 0.45))
+      style.setProperty('--color-accent-ink', relativeLuminance(color) > 0.42 ? '#020b10' : '#e8fbff')
       getElementById('accent-color-input').value = color
       getElementById('accent-color-value').textContent = color
       const resetAccentButton = getElementById('reset-accent-button')
@@ -7572,7 +7251,7 @@
       setControlEnabled('reasoning-mode', thinking && format === 'responses')
       setControlEnabled('thinking-budget', thinking && ['messages', 'generate-content'].includes(format))
       setControlEnabled('thinking-level', thinking && ['generate-content', 'interactions'].includes(format))
-      setControlEnabled('zero-data-retention-toggle', ['chat-completions', 'responses', 'interactions'].includes(format))
+      setControlEnabled('store-toggle', supportsStore(currentEndpoint()))
 
       for (const item of safetyDefinitions) {
         setControlEnabled('safety-' + safetySlug(item.category), format === 'generate-content')
@@ -7704,6 +7383,7 @@
       renderSettings()
     }
 
+    // Conversation commands.
     function createConversation () {
       requireWriter()
       const timestamp = Date.now()
@@ -8005,13 +7685,6 @@
           markUpdated(message)
         }
 
-        for (const [key, record] of mediaRecords) {
-          if (record.partial && key.startsWith('preview:' + (message?.id || '!') + ':')) {
-            if (record.objectUrl) retireMediaUrl(record.objectUrl)
-            mediaRecords.delete(key)
-          }
-        }
-
         conversationRuntimes.delete(conversation.id)
         renderSidebar()
         renderTopBar()
@@ -8215,15 +7888,12 @@
       renderPromptControls()
     }
 
+    // User actions and event delegation.
     const actionHandlers = {
       'export-storage': exportStorageCopy,
-      async 'recover-storage-space' () {
-        if (recoverStorageSpace) await recoverStorageSpace()
-      },
-      async 'retry-storage' () {
-        if (retryStorage) await retryStorage()
-        else saveState()
-      },
+      'cleanup-storage': cleanupObsoleteStorage,
+      'cleanup-unused-files': cleanupUnusedFiles,
+      'retry-storage': retryStorageWrites,
       'toggle-sidebar': () => togglePanel('sidebar-panel', 'sidebarOpen'),
       'toggle-settings': () => togglePanel('settings-panel', 'settingsOpen'),
       'close-drawers': closeDrawers,
@@ -8518,7 +8188,7 @@
     ])
 
     function applyReadOnlyControls () {
-      if (writerOwned) return
+      if (writerOwned && !unreadStorageKeys.size) return
       queryElements('input, textarea, select').forEach(element => {
         if (!['conversation-search', 'file-library-search', 'file-library-filter'].includes(element.id)) {
           element.disabled = true
@@ -8535,7 +8205,7 @@
       if (!handler || element.disabled) return
       if (!readOnlyActions.has(element.dataset.action)) {
         try {
-          if (migrationBusy) throw new Error('Chờ lần chuyển dữ liệu hiện tại hoàn tất.')
+          if (storageCleanupBusy) throw new Error('Chờ thao tác dọn dữ liệu hoàn tất.')
           requireWriter()
         } catch (error) {
           showStorageError(error)
@@ -8561,7 +8231,7 @@
       const element = event.target
       if (!(element instanceof window.Element) || !activeConfiguration) return
       const settings = activeConfiguration.settings
-      if ((!writerOwned || sourceSelectionPending) &&
+      if ((!writerOwned || storageCleanupBusy || unreadStorageKeys.size) &&
         !['conversation-search', 'file-library-search'].includes(element.id)) return
 
       if (element.id === 'conversation-search') {
@@ -8660,7 +8330,7 @@
       const element = event.target
       if (!(element instanceof window.Element)) return
       const settings = activeConfiguration.settings
-      if ((!writerOwned || sourceSelectionPending) && element.id !== 'file-library-filter') return
+      if ((!writerOwned || storageCleanupBusy || unreadStorageKeys.size) && element.id !== 'file-library-filter') return
 
       if (element.id === 'file-input') {
         const files = Array.from(element.files || [])
@@ -8787,6 +8457,13 @@
         getElementById('endpoint-form').hidden = true
       })
 
+      getElementById('file-preview-dialog').addEventListener('close', () => {
+        const body = getElementById('file-preview-content')
+        body.replaceChildren()
+        delete body.dataset.mediaKey
+        releaseUnusedMediaUrls()
+      })
+
       const area = getElementById('chat-scroll-area')
       area.addEventListener('scroll', () => {
         shouldStickToBottom = area.scrollHeight - area.scrollTop - area.clientHeight < 90
@@ -8811,7 +8488,7 @@
       window.addEventListener('resize', updateFollowButton)
 
       const flushLocalState = () => {
-        if (!writerOwned || sourceSelectionPending || pageClosing) return
+        if (!writerOwned || pageClosing) return
         captureEditDraft()
         debouncedSave.cancel()
         if (!saveDirty) return
@@ -8836,8 +8513,8 @@
 
       window.addEventListener('beforeunload', event => {
         flushLocalState()
-        if (saveDirty || mediaWrites.size || dirtyMedia.size ||
-          state.pendingAttachmentReads || conversationRuntimes.size ||
+        if (storageCleanupBusy || saveDirty || mediaWrites.size || dirtyMedia.size ||
+          pendingFileRequests.size || state.pendingAttachmentReads || conversationRuntimes.size ||
           endpointFormChanged()) {
           event.preventDefault()
           event.returnValue = ''
@@ -8863,7 +8540,7 @@
       })
 
       const refreshReadOnlyState = debounce(() => {
-        if (writerOwned || sourceSelectionPending) return
+        if (writerOwned) return
         const selectedId = state.activeConversationId
         loadState()
         if (state.conversations.some(item => item.id === selectedId)) {
@@ -8881,6 +8558,7 @@
       window.setInterval(refreshRelativeTimes, 30000)
     }
 
+    // Initialization and lifecycle.
     function acquireWriter () {
       if (!navigator.locks) return Promise.resolve(false)
       return new Promise((resolve, reject) => {
@@ -8899,7 +8577,7 @@
     async function initialize () {
       // Always draw readable history before opening IndexedDB or allocating storage.
       queryElement('.app').inert = true
-      const snapshot = loadState()
+      loadState()
       queryElements('[data-icon]').forEach(element => {
         element.innerHTML = renderIcon(element.dataset.icon)
       })
@@ -8914,6 +8592,7 @@
       bindEvents()
 
       await acquireWriter()
+      await checkLegacyDatabase()
       updateComposer()
       if (window.indexedDB && window.crypto?.subtle) {
         try {
@@ -8924,13 +8603,6 @@
           storageHealthy = false
           showStorageError(error)
         }
-        if (writerOwned) {
-          try {
-            await storageMigrator(snapshot)
-          } catch (error) {
-            showStorageError(error)
-          }
-        }
         if (database) {
           try {
             await hydrateVisibleMedia()
@@ -8939,6 +8611,7 @@
           }
         }
       } else {
+        storageHealthy = false
         showStorageError(new Error('Kho tệp cần IndexedDB và Web Crypto trong ngữ cảnh an toàn.'))
       }
       if (!navigator.locks) {
@@ -8954,6 +8627,7 @@
       announce(writerOwned ? 'Ứng dụng sẵn sàng.' : 'Tab chỉ đọc.')
     }
 
+    // Runnable, non-destructive checks: await window.runWorkbenchChecks().
     async function runWorkbenchChecks () {
       const results = []
       const assert = (condition, message) => {
@@ -9005,6 +8679,84 @@
       } finally {
         endpointsLoaded = wasLoaded
       }
+      assert(defaultSettings().store === false, 'store defaults to false')
+      assert(sanitizeSettings({ zeroDataRetention: true }).store === false, 'legacy true becomes store false')
+      assert(sanitizeSettings({ zeroDataRetention: false }).store === true, 'legacy false becomes store true')
+      assert(sanitizeSettings({ store: false, zeroDataRetention: false }).store === false, 'explicit store wins over legacy')
+      assert(!hasProperty(sanitizeSettings({ zeroDataRetention: true }), 'zeroDataRetention'), 'legacy setting is not retained')
+      let invalidStoreRejected = false
+      try {
+        sanitizeSettings({ store: 'false' })
+      } catch {
+        invalidStoreRejected = true
+      }
+      assert(invalidStoreRejected, 'store rejects non-boolean data')
+      const files = [
+        ['old', { createdAt: 10 }],
+        ['missing', {}],
+        ['new', { createdAt: 30 }],
+        ['fallback', { createdAt: NaN, updatedAt: 20 }]
+      ].sort(compareMediaEntries)
+      assert(files.map(([key]) => key).join(',') === 'new,fallback,old,missing', 'file order is newest first with safe timestamps')
+      assert(compareMediaEntries(['a', { createdAt: 1 }], ['b', { createdAt: 1 }]) < 0, 'equal timestamps use stable key order')
+
+      const originalEndpoints = state.endpoints
+      try {
+        for (const format of apiFormatOrder) {
+          const endpoint = {
+            id: 'workbench-contract-check',
+            name: 'Contract fixture',
+            format,
+            baseUrl: apiFormats[format].presetBase,
+            apiKey: '',
+            headers: [],
+            models: ['contract-fixture']
+          }
+          state.endpoints = [...originalEndpoints, endpoint]
+          const configuration = {
+            endpointId: endpoint.id,
+            modelId: endpoint.models[0],
+            settings: defaultSettings()
+          }
+          for (const store of [false, true]) {
+            configuration.settings.store = store
+            const request = await buildRequest(configuration, [{ role: 'user', content: 'Contract fixture' }])
+            assert(
+              supportsStore(endpoint) ? request.body.store === store : !hasProperty(request.body, 'store'),
+              format + ' store=' + store + ' matches its request contract'
+            )
+          }
+        }
+        const endpoint = {
+          id: 'workbench-xai-check',
+          name: 'xAI fixture',
+          format: 'chat-completions',
+          baseUrl: 'https://api.x.ai/v1',
+          apiKey: '',
+          headers: [],
+          models: ['contract-fixture']
+        }
+        state.endpoints = [...originalEndpoints, endpoint]
+        const request = await buildRequest({
+          endpointId: endpoint.id,
+          modelId: endpoint.models[0],
+          settings: { ...defaultSettings(), store: true }
+        }, [{ role: 'user', content: 'Contract fixture' }])
+        assert(!hasProperty(request.body, 'store'), 'xAI Chat Completions omits unsupported store')
+        assert(supportsStore({ ...endpoint, format: 'responses' }), 'xAI Responses supports store')
+      } finally {
+        state.endpoints = originalEndpoints
+      }
+      const stream = new window.ReadableStream({
+        start (controller) {
+          const chunks = ['event: fixture\r', '\ndata: first\r\ndata: second\r', '\n\r', '\n']
+          for (const chunk of chunks) controller.enqueue(utf8Encoder.encode(chunk))
+          controller.close()
+        }
+      })
+      const events = []
+      await readEvents({ body: stream }, (data, type) => events.push({ data, type }))
+      assert(events.length === 1 && events[0].data === 'first\nsecond' && events[0].type === 'fixture', 'SSE accepts split CRLF and multiline data')
       return results
     }
 
@@ -9016,6 +8768,8 @@
         updateComposer()
       })
     }
+
+    window.runWorkbenchChecks = runWorkbenchChecks
 
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', startApplication, { once: true })
