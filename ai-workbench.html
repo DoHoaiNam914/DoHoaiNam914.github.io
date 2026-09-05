@@ -1458,8 +1458,7 @@
       color: var(--muted);
       display: flex;
       gap: 7px;
-      max-width: min(320px, 100%);
-      min-width: 0;
+      max-width: 320px;
       padding: 7px 38px 7px 10px;
     }
 
@@ -2389,9 +2388,7 @@
     .file-library__actions {
       display: flex;
       flex: 0 0 auto;
-      flex-wrap: wrap;
       gap: 4px;
-      max-width: 100%;
     }
 
     .file-preview__title {
@@ -3681,15 +3678,8 @@
     'use strict'
 
     const storagePrefix = 'ai-workbench'
-    const mediaDatabaseName = storagePrefix
-    const storageKeys = {
-      activeConversationId: storagePrefix + '.activeConversationId',
-      conversations: storagePrefix + '.conversations',
-      endpoints: storagePrefix + '.endpoints',
-      systemPrompts: storagePrefix + '.systemPrompts',
-      ui: storagePrefix + '.ui',
-      workspaceConfiguration: storagePrefix + '.workspaceConfiguration'
-    }
+    const snapshotKey = storagePrefix + '.snapshot'
+    const mediaDatabaseName = storagePrefix + '-media'
     const defaultAccentColor = '#00f6ff'
     const blockSeparator = '\n\n'
 
@@ -3896,35 +3886,9 @@
     let activeConfiguration = null
     let database = null
     let mediaQueue = Promise.resolve()
-    const pendingMediaReads = new Map()
-    const missingMediaKeys = new Set()
-    const mediaCatalog = new Map()
-    const messageSignatures = new WeakMap()
-    const pendingPaints = new Map()
-    const busyActions = new WeakSet()
-    let databasePromise = null
+    let saveTimer = null
     let saveDirty = false
-    let saveRequested = false
-    let saveInProgress = false
-    let writerOwned = false
-    let writesEnabled = false
-    let endpointsLoaded = false
-    let pageClosed = false
-    let paintFrame = null
-    let viewDirty = false
-    let libraryLoaded = false
-    let libraryLoading = null
-    let storageWarningShown = false
-
-    const scheduleSave = debounce(() => {
-      if (!canWriteState()) return
-      try {
-        saveState()
-      } catch (error) {
-        if (!storageWarningShown) reportError(error)
-        storageWarningShown = true
-      }
-    }, 350)
+    let saveRevision = 0
     let storageHealthy = true
     let initialized = false
     let shouldStickToBottom = true
@@ -3935,38 +3899,6 @@
     let markdownWriter = null
     let previewSequence = 0
     let releaseWriterLock = null
-
-    function debounce (callback, delay) {
-      let timeout = null
-      let argumentsList = []
-
-      function invoke () {
-        const pendingArguments = argumentsList
-        timeout = null
-        argumentsList = []
-        callback(...pendingArguments)
-      }
-
-      function debounced (...nextArguments) {
-        argumentsList = nextArguments
-        window.clearTimeout(timeout)
-        timeout = window.setTimeout(invoke, delay)
-      }
-
-      debounced.cancel = () => {
-        window.clearTimeout(timeout)
-        timeout = null
-        argumentsList = []
-      }
-
-      debounced.flush = () => {
-        if (timeout == null) return
-        window.clearTimeout(timeout)
-        invoke()
-      }
-
-      return debounced
-    }
 
     function getElementById (id) {
       return document.getElementById(id)
@@ -4253,7 +4185,7 @@
     }
 
     function actionButton (action, icon, label, attributes = '', className = 'message__action') {
-      return `<button class="${className}" type="button" data-node-key="action:${action}" data-action="${action}" aria-label="${escapeHtml(label)}" title="${escapeHtml(label)}" ${attributes}>${renderIcon(icon, 'icon_size_small')}</button>`
+      return `<button class="${className}" type="button" data-action="${action}" aria-label="${escapeHtml(label)}" title="${escapeHtml(label)}" ${attributes}>${renderIcon(icon, 'icon_size_small')}</button>`
     }
 
     function toast (message, type = 'info', duration = 3400) {
@@ -4324,24 +4256,7 @@
       return [state.workspace, ...state.conversations.map(item => item.configuration)].filter(Boolean)
     }
 
-    function canWriteState () {
-      return initialized && writerOwned && writesEnabled && storageHealthy && !pageClosed
-    }
-
-    function assertWriter () {
-      if (!writerOwned || !storageHealthy || pageClosed) {
-        throw new Error('Tab này không có quyền ghi dữ liệu.')
-      }
-    }
-
-    function assertWritable () {
-      if (!canWriteState()) {
-        throw new Error('Dữ liệu đang ở chế độ chỉ đọc; chưa ghi thay đổi.')
-      }
-    }
-
     function normalizeConfiguration (configuration) {
-      if (!endpointsLoaded) return configuration
       const endpoint = endpointById(configuration.endpointId) || state.endpoints[0]
       configuration.endpointId = endpoint?.id || null
       if (!endpoint?.models.includes(configuration.modelId)) configuration.modelId = endpoint?.models[0] || ''
@@ -4560,177 +4475,47 @@
     }
 
     function openMediaDatabase () {
-      if (databasePromise) return databasePromise
-      databasePromise = new Promise((resolve, reject) => {
-        if (!window.indexedDB) {
-          reject(new Error('IndexedDB không khả dụng; lịch sử vẫn dùng Local Storage.'))
-          return
-        }
-        const request = window.indexedDB.open(mediaDatabaseName)
-        let rejected = false
+      return new Promise((resolve, reject) => {
+        const request = window.indexedDB.open(mediaDatabaseName, 3)
         request.onupgradeneeded = () => {
-          if (!writerOwned || pageClosed) {
-            request.transaction.abort()
-            return
+          if (!request.result.objectStoreNames.contains('state')) {
+            request.result.createObjectStore('state')
           }
-          const store = request.result.createObjectStore('media')
-          store.createIndex('identity', 'identity', { unique: true })
+          const store = request.result.objectStoreNames.contains('media')
+            ? request.transaction.objectStore('media')
+            : request.result.createObjectStore('media')
+          if (!store.indexNames.contains('identity')) store.createIndex('identity', 'identity', { unique: true })
         }
         request.onerror = () => reject(request.error)
-        request.onblocked = () => {
-          rejected = true
-          reject(new Error('Cơ sở dữ liệu bị chặn; chưa ghi hay xoá dữ liệu.'))
-        }
+        request.onblocked = () => reject(new Error('Đóng tab phiên bản cũ để nâng cấp cơ sở dữ liệu.'))
         request.onsuccess = () => {
           const connection = request.result
-          if (rejected || pageClosed) {
-            connection.close()
-            if (pageClosed) reject(new Error('Trang đã đóng.'))
-            return
-          }
-          try {
-            if (connection.objectStoreNames.length !== 1 ||
-              !connection.objectStoreNames.contains('media')) {
-              throw new Error('Schema database ai-workbench không đúng; dừng ghi, không tự xoá.')
-            }
-            const store = connection.transaction('media').objectStore('media')
-            if (store.keyPath !== null || store.autoIncrement ||
-              !store.indexNames.contains('identity')) {
-              throw new Error('Schema media không đúng; dừng ghi, không tự xoá.')
-            }
-            const index = store.index('identity')
-            if (!index.unique || index.keyPath !== 'identity' || index.multiEntry) {
-              throw new Error('Index identity không đúng; dừng ghi, không tự xoá.')
-            }
-          } catch (error) {
-            connection.close()
-            reject(error)
-            return
-          }
           connection.onversionchange = () => {
             connection.close()
-            database = null
-            databasePromise = null
-            reportError(new Error('Database đã thay đổi; hãy tải lại trang trước khi lưu tệp.'))
+            storageHealthy = false
+            reportError(new Error('Cơ sở dữ liệu đã thay đổi. Hãy tải lại trang.'))
           }
-          connection.onclose = () => {
-            database = null
-            databasePromise = null
-          }
-          database = connection
           resolve(connection)
         }
       })
-      // Giữ lỗi thật cho người gọi; lần thử kế tiếp có thể mở lại kết nối.
-      databasePromise.catch(() => { databasePromise = null })
-      return databasePromise
     }
 
-    async function accessMediaStore (method, key, value) {
-      const readOnly = ['get', 'identity', 'catalog'].includes(method)
-      if (!readOnly) assertWriter()
-      const connection = await openMediaDatabase()
-      if (!readOnly) assertWriter()
+    function accessMediaStore (method, key, value, storeName = 'media') {
       return new Promise((resolve, reject) => {
         let result
-        let failure
         try {
-          const transaction = connection.transaction('media', readOnly ? 'readonly' : 'readwrite')
-          const store = transaction.objectStore('media')
-          let request
-          if (method === 'catalog') {
-            result = []
-            request = store.openCursor()
-            request.onsuccess = () => {
-              const cursor = request.result
-              if (!cursor) return
-              const record = cursor.value
-              result.push([cursor.primaryKey, mediaSummary(record)])
-              cursor.continue()
-            }
-          } else if (method === 'identity') {
-            request = store.index('identity').openCursor(window.IDBKeyRange.only(key))
-            request.onsuccess = () => {
-              const cursor = request.result
-              result = cursor ? { key: cursor.primaryKey, record: cursor.value } : null
-            }
-          } else {
-            request = method === 'put' ? store.put(value, key) : store[method](key)
-            request.onsuccess = () => { result = request.result }
-          }
-          request.onerror = () => { failure = request.error }
+          const readOnly = ['get', 'getAll', 'getAllKeys'].includes(method)
+          const transaction = database.transaction(storeName, readOnly ? 'readonly' : 'readwrite')
+          const store = transaction.objectStore(storeName)
+          const request = method === 'put' ? store.put(value, key) : store[method](key)
+          request.onsuccess = () => { result = request.result }
           transaction.oncomplete = () => resolve(result)
-          transaction.onabort = () => reject(failure || transaction.error || new Error('Giao dịch media bị huỷ.'))
-          transaction.onerror = () => { failure = failure || transaction.error }
+          transaction.onabort = () => reject(transaction.error || new Error('Giao dịch lưu tệp bị huỷ.'))
+          transaction.onerror = () => reject(transaction.error || new Error('Không thể truy cập tệp.'))
         } catch (error) {
           reject(error)
         }
       })
-    }
-
-    function mediaSummary (record) {
-      const { blob, objectUrl, ...metadata } = record
-      return { ...metadata, hasContent: Boolean(blob), persisted: true }
-    }
-
-    function cacheMediaRecord (key, record) {
-      missingMediaKeys.delete(key)
-      const previous = mediaRecords.get(key)
-      const cached = { ...record, persisted: true }
-      if (previous?.blob && previous.hash === record.hash && previous.name === record.name) {
-        cached.blob = previous.blob
-        cached.objectUrl = previous.objectUrl
-      }
-      mediaRecords.set(key, cached)
-      mediaCatalog.set(key, mediaSummary(cached))
-      return cached
-    }
-
-    async function loadMediaRecord (key, visited = new Set()) {
-      key = resolveMediaKey(key)
-      if (!key || missingMediaKeys.has(key)) return null
-      if (visited.has(key)) throw new Error('Tham chiếu tệp tạo thành vòng lặp.')
-      visited.add(key)
-      const cached = mediaRecords.get(key)
-      if (cached && (cached.blob || cached.persisted)) return cached
-      if (!pendingMediaReads.has(key)) {
-        const pending = accessMediaStore('get', key).then(async record => {
-          if (!record) {
-            missingMediaKeys.add(key)
-            return null
-          }
-          if (typeof record !== 'object' || (record.blob != null && !(record.blob instanceof window.Blob))) {
-            throw new Error('Bản lưu tệp không hợp lệ; chưa ghi đè.')
-          }
-          if (record.redirectKey) {
-            const canonical = await loadMediaRecord(record.redirectKey, visited)
-            if (!canonical) throw new Error('Thiếu tệp đích của tham chiếu.')
-            mediaAliases.set(key, resolveMediaKey(record.redirectKey))
-            return canonical
-          }
-          return cacheMediaRecord(key, record)
-        })
-        pendingMediaReads.set(key, pending)
-        pending.then(
-          () => pendingMediaReads.delete(key),
-          () => pendingMediaReads.delete(key)
-        )
-      }
-      return pendingMediaReads.get(key)
-    }
-
-    async function loadFileCatalog () {
-      if (libraryLoaded) return
-      if (!libraryLoading) {
-        libraryLoading = accessMediaStore('catalog').then(entries => {
-          for (const [key, metadata] of entries) {
-            mediaCatalog.set(key, metadata)
-            if (metadata.redirectKey) mediaAliases.set(key, metadata.redirectKey)
-          }
-          libraryLoaded = true
-        }).finally(() => { libraryLoading = null })
-      }
-      await libraryLoading
     }
 
     function enqueueMedia (operation) {
@@ -4776,53 +4561,53 @@
     }
 
     function diskMediaRecord (record) {
-      const { objectUrl, persisted, partial, hasContent, ...stored } = record
-      return stored
+      return {
+        blob: record.blob,
+        name: record.name,
+        mimeType: record.mimeType,
+        size: record.size,
+        hash: record.hash,
+        identity: record.identity,
+        origins: record.origins,
+        remote: record.remote || null,
+        createdAt: record.createdAt
+      }
     }
 
-    async function persistBlob (blob, name, origin, remote = null, preferredKey = '', metadata = {}) {
-      assertWriter()
+    async function persistBlob (blob, name, origin, remote = null) {
       if (!(blob instanceof window.Blob)) throw new Error('Nội dung tệp không phải Blob.')
       if (typeof name !== 'string' || !name) throw new Error('Tên tệp không được để trống.')
       const { hash, identity } = await fileIdentity(blob, name)
       return enqueueMedia(async () => {
-        assertWriter()
-        const match = await accessMediaStore('identity', identity)
-        let key = match?.key || preferredKey || 'file:' + uniqueId()
-        let existing = match?.record
+        let key = ''
+        let existing
+        for (const [candidateKey, record] of mediaRecords) {
+          if (record.hash === hash && record.name === name && record.persisted) {
+            key = candidateKey
+            existing = record
+            break
+          }
+        }
         if (existing && !(await sameBytes(existing.blob, blob))) {
-          throw new Error('Xung đột hash tệp; không ghi đè dữ liệu.')
+          throw new Error('Xung đột dấu vân tay tệp; không ghi đè dữ liệu.')
         }
-        if (!existing && preferredKey) {
-          const previous = await accessMediaStore('get', preferredKey)
-          if (previous && previous.name !== name) {
-            throw new Error('ID tệp đích đã thuộc tên khác; không ghi đè.')
-          }
-          if (previous?.blob) {
-            if (previous.name !== name || !(await sameBytes(previous.blob, blob))) {
-              throw new Error('ID tệp trùng với nội dung khác; không ghi đè.')
+        const record = existing
+          ? { ...existing, origins: Array.from(new Set([...existing.origins, origin])) }
+          : {
+              blob,
+              name,
+              hash,
+              identity,
+              remote,
+              mimeType: normalizeMimeType(blob.type) || inferMimeType(name) || 'application/octet-stream',
+              size: blob.size,
+              createdAt: Date.now(),
+              origins: [origin]
             }
-            existing = previous
-          } else if (previous?.redirectKey) {
-            key = 'file:' + uniqueId()
-          }
-        }
-        const record = {
-          ...metadata,
-          ...(existing || {}),
-          blob: existing?.blob || blob,
-          name,
-          hash,
-          identity,
-          remote: existing?.remote || remote,
-          mimeType: existing?.mimeType || normalizeMimeType(blob.type) || inferMimeType(name) || 'application/octet-stream',
-          size: blob.size,
-          createdAt: existing?.createdAt ?? metadata.createdAt ?? Date.now(),
-          origins: Array.from(new Set([...(existing?.origins || metadata.origins || []), origin]))
-        }
-        delete record.redirectKey
+        if (!key) key = 'file:' + uniqueId()
         await accessMediaStore('put', key, diskMediaRecord(record))
-        cacheMediaRecord(key, record)
+        record.persisted = true
+        mediaRecords.set(key, record)
         return key
       })
     }
@@ -4845,117 +4630,67 @@
     }
 
     function storedAttachment (attachment) {
-      const key = resolveMediaKey(attachment.mediaKey)
-      const record = key && mediaRecord(key)
-      const output = {
+      return {
         id: attachment.id,
-        name: attachment.name || record?.name || 'Tệp',
+        mediaKey: resolveMediaKey(attachment.mediaKey),
+        name: attachment.name,
         kind: attachment.kind,
-        type: attachment.type || record?.mimeType || '',
-        size: attachment.size ?? record?.size ?? 0
-      }
-      if (key && !key.startsWith('unsaved:') && !key.startsWith('preview:') &&
-        (!record || record.persisted)) {
-        output.mediaKey = key
-      } else {
-        output.storageState = record?.blob ? 'unsaved' : 'missing'
-      }
-      return output
-    }
-
-    function storedConfiguration (configuration) {
-      const settings = cloneValue(configuration.settings)
-      if (settings.systemPromptId && promptById(settings.systemPromptId)) delete settings.systemPrompt
-      delete settings.variables
-      return {
-        endpointId: configuration.endpointId,
-        modelId: configuration.modelId,
-        settings,
-        updatedAt: configuration.updatedAt
-      }
-    }
-
-    function storedOutputBlock (block) {
-      if (block.type !== 'file') return cloneValue(block)
-      const reference = storedAttachment({
-        ...block,
-        type: block.mimeType || mediaRecord(block.mediaKey)?.mimeType || ''
-      })
-      return {
-        ...reference,
-        type: 'file',
-        mimeType: reference.type,
-        thought: Boolean(block.thought),
-        partial: Boolean(block.partial)
+        type: attachment.type,
+        size: attachment.size
       }
     }
 
     function storedState () {
-      return {
-        activeConversationId: state.activeConversationId,
-        conversations: state.conversations.map(conversation => ({
-          ...conversation,
-          configuration: storedConfiguration(conversation.configuration),
-          messages: conversation.messages.map(message => ({
-            ...message,
-            status: message.status === 'streaming' ? 'stopped' : message.status,
-            attachments: (message.attachments || []).map(storedAttachment),
-            outputBlocks: (message.outputBlocks || []).map(storedOutputBlock)
-          }))
-        })),
-        endpoints: state.endpoints,
-        systemPrompts: state.prompts,
-        ui: {
-          ...state.ui,
-          editDraft: state.editDraft,
-          messageDraft: state.messageDraft,
-          attachments: state.attachments.map(storedAttachment)
-        },
-        workspaceConfiguration: storedConfiguration(state.workspace)
+      const snapshot = cloneValue(state)
+      delete snapshot.pendingAttachmentReads
+      delete snapshot.openDrawer
+      delete snapshot.conversationSearch
+      snapshot.attachments = state.attachments.map(storedAttachment)
+      snapshot.conversations.forEach(conversation => {
+        conversation.messages.forEach(message => {
+          message.attachments = (message.attachments || []).map(storedAttachment)
+          if (message.status === 'streaming') message.status = 'stopped'
+          message.outputBlocks = (message.outputBlocks || []).filter(block => !block.partial)
+          message.outputBlocks.forEach(block => {
+            if (block.mediaKey) block.mediaKey = resolveMediaKey(block.mediaKey)
+          })
+        })
+      })
+      return { version: 2, data: snapshot }
+    }
+
+    async function writeStateSnapshot () {
+      if (!initialized || !storageHealthy) {
+        throw new Error('Bộ lưu trữ chưa sẵn sàng; chưa ghi đè dữ liệu.')
       }
-    }
-
-    function readJson (key) {
-      const source = window.localStorage.getItem(key)
-      return source == null ? null : JSON.parse(source)
-    }
-
-    function writeStateSnapshot () {
-      assertWritable()
-      if (!state.workspace) throw new Error('Chưa đọc được workspace; không ghi đè.')
+      const revision = ++saveRevision
       saveDirty = true
       try {
-        const snapshot = storedState()
-        const serialized = Object.entries(storageKeys).map(([name, key]) => [
-          key,
-          JSON.stringify(snapshot[name])
-        ])
-        serialized.forEach(([key, value]) => {
-          if (window.localStorage.getItem(key) !== value) window.localStorage.setItem(key, value)
-        })
-        saveDirty = false
-        storageWarningShown = false
+        await Promise.all(Array.from(mediaWrites))
+        if (dirtyMedia.size) throw new Error('Có tệp chưa được lưu. Hãy thử lưu lại trong trình quản lí tệp.')
+        if (!storageHealthy) throw new Error('Kết nối lưu trữ đã thay đổi. Hãy tải lại trang.')
+        await accessMediaStore('put', snapshotKey, storedState(), 'state')
+        if (revision === saveRevision) saveDirty = false
         return true
       } catch (error) {
         throw new Error('Không lưu được lịch sử: ' + error.name + ': ' + error.message)
       }
     }
 
-    function saveState () {
-      assertWritable()
-      scheduleSave.cancel()
-      saveRequested = true
-      if (saveInProgress) return false
-      saveInProgress = true
-      try {
-        while (saveRequested) {
-          saveRequested = false
-          writeStateSnapshot()
-        }
-        return true
-      } finally {
-        saveInProgress = false
-      }
+    function scheduleSave () {
+      saveRevision += 1
+      saveDirty = true
+      window.clearTimeout(saveTimer)
+      saveTimer = window.setTimeout(() => {
+        saveTimer = null
+        writeStateSnapshot().catch(reportError)
+      }, 200)
+    }
+
+    async function saveState () {
+      window.clearTimeout(saveTimer)
+      saveTimer = null
+      await writeStateSnapshot()
     }
 
     function configurationChanged (configurations = [activeConfiguration]) {
@@ -4969,613 +4704,197 @@
       renderSidebar()
     }
 
-    async function registerUnavailableFile (name, type, origin, remote = null, id = uniqueId(), preferredKey = '', metadata = {}) {
-      assertWriter()
-      const key = preferredKey || 'missing:' + id
-      return enqueueMedia(async () => {
-        const existing = await accessMediaStore('get', key)
-        if (existing) {
-          if (existing.name !== name) throw new Error('ID tệp trùng với một tên khác; không ghi đè.')
-          cacheMediaRecord(key, existing)
-          return key
-        }
-        const record = {
-          ...metadata,
-          blob: null,
-          name,
-          mimeType: type || 'application/octet-stream',
-          size: metadata.size || 0,
-          origins: metadata.origins || [origin],
-          remote,
-          createdAt: metadata.createdAt ?? Date.now()
-        }
-        await accessMediaStore('put', key, diskMediaRecord(record))
-        cacheMediaRecord(key, record)
-        return key
-      })
+    async function registerUnavailableFile (name, type, origin, remote = null, id = uniqueId()) {
+      const key = 'missing:' + id
+      if (mediaRecords.has(key)) return key
+      const record = {
+        blob: null,
+        name,
+        mimeType: type || 'application/octet-stream',
+        size: 0,
+        origins: [origin],
+        remote,
+        createdAt: Date.now(),
+        persisted: true
+      }
+      await accessMediaStore('put', key, diskMediaRecord(record))
+      mediaRecords.set(key, record)
+      return key
     }
 
-    function loadState () {
-      const started = window.performance.now()
-      const snapshot = {}
-      try {
-        for (const [name, key] of Object.entries(storageKeys)) {
-        snapshot[name] = readJson(key)
-        if (snapshot[name] === null && window.localStorage.getItem(key) !== null &&
-          ['conversations', 'endpoints', 'systemPrompts', 'ui'].includes(name)) {
-          throw new Error('Key không chứa dữ liệu hợp lệ: ' + key)
-        }
+    async function migrateAttachment (attachment) {
+      if (attachment.mediaKey && mediaRecord(attachment.mediaKey)) return storedAttachment(attachment)
+      let key
+      const type = normalizeMimeType(attachment.type) || inferMimeType(attachment.name)
+      if (typeof attachment.base64 === 'string') {
+        key = await persistBlob(blobFromBase64(attachment.base64, type), attachment.name, 'attachment')
+      } else {
+        const remote = isHttpsUrl(attachment.url) ? { url: attachment.url } : null
+        key = await registerUnavailableFile(attachment.name, type, 'attachment', remote, attachment.id || uniqueId())
       }
-        applyStoredState(snapshot)
-      } catch (error) {
-        storageHealthy = false
-        endpointsLoaded = false
-        throw new Error('Không đọc được Local Storage; dữ liệu gốc được giữ nguyên. ' + error.message)
-      }
-      window.performance.measure('workbench:load-state', { start: started })
-    }
-
-    function validateUniqueIds (items, label) {
-      if (!Array.isArray(items)) throw new Error(label + ' không phải danh sách.')
-      const ids = new Set()
-      for (const item of items) {
-        if (!item || typeof item !== 'object' || typeof item.id !== 'string' ||
-          !item.id || ids.has(item.id)) {
-          throw new Error(label + ' có ID thiếu hoặc trùng.')
-        }
-        ids.add(item.id)
+      return {
+        id: attachment.id || uniqueId(),
+        mediaKey: key,
+        name: attachment.name,
+        type,
+        kind: type.startsWith('image/') ? 'image' : 'file',
+        size: mediaRecord(key).size
       }
     }
 
-    function applyStoredState (snapshot) {
-      const prompts = snapshot.systemPrompts ?? []
-      const endpoints = snapshot.endpoints ?? []
-      const conversations = snapshot.conversations ?? []
-      const ui = snapshot.ui ?? {}
-      validateUniqueIds(prompts, 'System prompt')
-      validateUniqueIds(endpoints, 'Endpoint')
-      validateUniqueIds(conversations, 'Cuộc trò chuyện')
-      if (typeof ui !== 'object' || Array.isArray(ui)) throw new Error('UI không hợp lệ.')
-      if (snapshot.workspaceConfiguration != null &&
-        (typeof snapshot.workspaceConfiguration !== 'object' || Array.isArray(snapshot.workspaceConfiguration))) {
-        throw new Error('Workspace không hợp lệ.')
+    async function loadState () {
+      let envelope = await accessMediaStore('get', snapshotKey, undefined, 'state')
+      if (envelope === undefined) {
+        const current = window.localStorage.getItem(snapshotKey)
+        if (current) envelope = JSON.parse(current)
       }
-      if (ui.messageDraft != null && typeof ui.messageDraft !== 'string') throw new Error('Bản nháp không hợp lệ.')
-      for (const prompt of prompts) {
-        if (typeof prompt.name !== 'string' || typeof prompt.content !== 'string') {
-          throw new Error('System prompt không hợp lệ.')
+      let saved
+      if (envelope !== undefined) {
+        if (!envelope || envelope.version !== 2 || !envelope.data) throw new Error('Phiên bản dữ liệu chưa được hỗ trợ.')
+        saved = envelope.data
+      } else {
+        const read = name => JSON.parse(window.localStorage.getItem(storagePrefix + '.' + name) || 'null')
+        const ui = read('ui') || {}
+        saved = {
+          activeConversationId: read('activeConversationId'),
+          conversations: read('conversations') || [],
+          endpoints: read('endpoints') || [],
+          prompts: read('systemPrompts') || [],
+          workspace: read('workspaceConfiguration') || {},
+          messageDraft: ui.messageDraft || '',
+          attachments: ui.attachments || [],
+          editDraft: ui.editDraft || null,
+          ui
         }
       }
-      for (const endpoint of endpoints) {
-        if (!apiFormatOrder.includes(endpoint.format) || !Array.isArray(endpoint.models) ||
-          !Array.isArray(endpoint.headers)) throw new Error('Endpoint không hợp lệ.')
+      if (!Array.isArray(saved.conversations) || !Array.isArray(saved.endpoints)) {
+        throw new Error('Dữ liệu lưu không hợp lệ; chưa ghi đè.')
       }
-      for (const conversation of conversations) {
-        validateUniqueIds(conversation.messages, 'Tin nhắn')
-        for (const message of conversation.messages) {
-          if (!messageRoles.includes(message.role)) throw new Error('Vai trò tin nhắn không hợp lệ.')
-          if (message.content != null && typeof message.content !== 'string') {
-            throw new Error('Nội dung tin nhắn không phải văn bản.')
+      state.prompts = Array.isArray(saved.prompts) ? saved.prompts : []
+      state.endpoints = saved.endpoints.map(sanitizeEndpoint).filter(Boolean)
+      state.workspace = sanitizeConfiguration(saved.workspace || {})
+      state.ui = { ...state.ui, ...saved.ui, accent: normalizeHexColor(saved.ui?.accent) }
+      delete state.ui.attachments
+      delete state.ui.editDraft
+      delete state.ui.messageDraft
+      state.messageDraft = typeof saved.messageDraft === 'string' ? saved.messageDraft : ''
+
+      const keys = await accessMediaStore('getAllKeys')
+      const records = await accessMediaStore('getAll')
+      const oldKeys = []
+      for (let index = 0; index < records.length; index += 1) {
+        const raw = records[index]
+        if (raw.identity || !raw.blob) {
+          mediaRecords.set(keys[index], {
+            ...raw,
+            origins: raw.origins || ['generated'],
+            persisted: true
+          })
+        }
+      }
+      for (let index = 0; index < records.length; index += 1) {
+        const raw = records[index]
+        if (!raw.blob || raw.identity) continue
+        const name = raw.metadata?.filename || generatedFilename(raw.mimeType || raw.blob.type)
+        const key = await persistBlob(raw.blob, name, 'generated')
+        mediaAliases.set(keys[index], key)
+        oldKeys.push(keys[index])
+      }
+
+      state.conversations = []
+      for (const raw of saved.conversations) {
+        if (!Array.isArray(raw.messages)) throw new Error('Lịch sử tin nhắn không hợp lệ.')
+        const conversation = {
+          ...raw,
+          id: raw.id || uniqueId(),
+          configuration: sanitizeConfiguration(raw.configuration || saved.workspace || {}),
+          createdAt: validTimestamp(raw.createdAt, Date.now()),
+          updatedAt: validTimestamp(raw.updatedAt, Date.now()),
+          messages: []
+        }
+        for (const original of raw.messages) {
+          if (!messageRoles.includes(original.role)) throw new Error('Vai trò tin nhắn không hợp lệ.')
+          const message = {
+            ...original,
+            id: original.id || uniqueId(),
+            content: typeof original.content === 'string' ? original.content : '',
+            attachments: [],
+            outputBlocks: [],
+            createdAt: validTimestamp(original.createdAt, Date.now()),
+            updatedAt: validTimestamp(original.updatedAt, Date.now())
           }
-          validateUniqueIds(message.attachments || [], 'Attachment')
-          validateUniqueIds(message.outputBlocks || [], 'Output')
-        }
-      }
-      validateUniqueIds(ui.attachments || [], 'Attachment bản nháp')
-      state.prompts = prompts
-      state.workspace = sanitizeConfiguration(snapshot.workspaceConfiguration || {})
-      state.endpoints = endpoints.map(endpoint => ({ ...endpoint, ...sanitizeEndpoint(endpoint) }))
-      endpointsLoaded = true
-      state.conversations = conversations.map(raw => ({
-        ...raw,
-        configuration: sanitizeConfiguration(raw.configuration || snapshot.workspaceConfiguration || {}),
-        createdAt: validTimestamp(raw.createdAt, 0),
-        updatedAt: validTimestamp(raw.updatedAt, validTimestamp(raw.createdAt, 0)),
-        title: raw.title || automaticConversationTitle(raw),
-        messages: raw.messages.map(original => ({
-          ...original,
-          content: typeof original.content === 'string' ? original.content : '',
-          status: original.status === 'streaming' ? 'stopped' : original.status,
-          createdAt: validTimestamp(original.createdAt, 0),
-          updatedAt: validTimestamp(original.updatedAt, validTimestamp(original.createdAt, 0)),
-          attachments: original.attachments || [],
-          outputBlocks: original.outputBlocks || []
-        }))
-      }))
-      state.ui = {
-        accent: normalizeHexColor(ui.accent),
-        settingsOpen: ui.settingsOpen !== false,
-        sidebarOpen: ui.sidebarOpen !== false
-      }
-      state.messageDraft = typeof ui.messageDraft === 'string' ? ui.messageDraft : ''
-      state.attachments = ui.attachments || []
-      state.editDraft = ui.editDraft || null
-      if (state.editDraft && !state.conversations.some(conversation =>
-        conversation.id === state.editDraft.conversationId &&
-        conversation.messages.some(message => message.id === state.editDraft.messageId)
-      )) state.editDraft = null
-      const selected = state.conversations.find(item => item.id === snapshot.activeConversationId) ||
-        state.conversations.reduce((recent, item) => !recent || item.updatedAt > recent.updatedAt ? item : recent, null)
-      state.activeConversationId = selected?.id || null
-      activateSelectedConfiguration()
-    }
-
-    // BEGIN storageMigrator — xoá vùng này và một điểm gọi trong initialize.
-    const storageMigrator = (() => {
-      const markerKey = 'ai-workbench.migration'
-      const checkpointKey = 'ai-workbench.migrationCheckpoint'
-      const legacySnapshotKey = 'ai-workbench.snapshot'
-      const legacyDatabaseName = 'ai-workbench-media'
-
-      function canonical (value) {
-        if (Array.isArray(value)) return '[' + value.map(canonical).join(',') + ']'
-        if (value && typeof value === 'object') {
-          return '{' + Object.keys(value).sort().map(key =>
-            JSON.stringify(key) + ':' + canonical(value[key])
-          ).join(',') + '}'
-        }
-        return JSON.stringify(value)
-      }
-
-      function readLegacyDatabase () {
-        return new Promise((resolve, reject) => {
-          const request = window.indexedDB.open(legacyDatabaseName)
-          let absent = false
-          let blocked = false
-          request.onupgradeneeded = () => {
-            absent = true
-            request.transaction.abort()
+          if (message.status === 'streaming') message.status = 'stopped'
+          for (const attachment of original.attachments || []) {
+            message.attachments.push(await migrateAttachment(attachment))
           }
-          request.onerror = () => absent ? resolve(null) : reject(request.error)
-          request.onblocked = () => {
-            blocked = true
-            reject(new Error('Không đọc được database nguồn đang bị chặn.'))
-          }
-          request.onsuccess = () => {
-            if (blocked) request.result.close()
-            else resolve(request.result)
-          }
-        })
-      }
-
-      function readSource (connection, storeName, method, key) {
-        return new Promise((resolve, reject) => {
-          let value
-          let failure
-          const transaction = connection.transaction(storeName, 'readonly')
-          const request = transaction.objectStore(storeName)[method](key)
-          request.onsuccess = () => { value = request.result }
-          request.onerror = () => { failure = request.error }
-          transaction.oncomplete = () => resolve(value)
-          transaction.onabort = () => reject(failure || transaction.error || new Error('Không đọc được nguồn migration.'))
-          transaction.onerror = () => { failure = failure || transaction.error }
-        })
-      }
-
-      function unwrap (envelope) {
-        if (!envelope || envelope.version !== 2 || !envelope.data ||
-          typeof envelope.data !== 'object') {
-          throw new Error('Snapshot nguồn không đúng định dạng đã biết; giữ nguyên nguồn.')
-        }
-        const data = envelope.data
-        if (!Array.isArray(data.conversations) || !Array.isArray(data.endpoints)) {
-          throw new Error('Snapshot nguồn thiếu lịch sử hoặc endpoint hợp lệ.')
-        }
-        return {
-          activeConversationId: data.activeConversationId ?? null,
-          conversations: data.conversations,
-          endpoints: data.endpoints,
-          systemPrompts: data.prompts ?? [],
-          workspaceConfiguration: data.workspace ?? {},
-          ui: {
-            ...data.ui,
-            attachments: data.attachments ?? [],
-            editDraft: data.editDraft ?? null,
-            messageDraft: data.messageDraft ?? ''
-          }
-        }
-      }
-
-      function completeGroups (source) {
-        return {
-          activeConversationId: source.activeConversationId ?? null,
-          conversations: source.conversations ?? [],
-          endpoints: source.endpoints ?? [],
-          systemPrompts: source.systemPrompts ?? [],
-          ui: source.ui ?? {},
-          workspaceConfiguration: source.workspaceConfiguration ?? {}
-        }
-      }
-
-      function validateSource (snapshot) {
-        for (const name of ['conversations', 'endpoints', 'systemPrompts']) {
-          if (!Array.isArray(snapshot[name])) throw new Error('Nguồn không có danh sách hợp lệ: ' + name)
-        }
-        if (!snapshot.ui || typeof snapshot.ui !== 'object' || Array.isArray(snapshot.ui) ||
-          !snapshot.workspaceConfiguration || typeof snapshot.workspaceConfiguration !== 'object') {
-          throw new Error('UI hoặc workspace nguồn không hợp lệ.')
-        }
-      }
-
-      async function chooseSource (sources) {
-        if (sources.length < 2 || sources.every(source =>
-          canonical(source.snapshot) === canonical(sources[0].snapshot)
-        )) return sources[0] || null
-
-        // Không đoán độ mới từ thứ tự, số tin nhắn hoặc timestamp của một mục.
-        return new Promise((resolve, reject) => {
-          const dialog = document.createElement('dialog')
-          dialog.className = 'dialog'
-          const body = document.createElement('div')
-          body.className = 'dialog__body'
-          const title = document.createElement('h2')
-          title.className = 'dialog__title'
-          title.textContent = 'Chọn nguồn chuyển đổi'
-          const note = document.createElement('p')
-          note.textContent = 'Các nguồn khác nhau, không xác định được bản mới hơn. Chỉ nguồn được chọn sẽ trở thành trạng thái ứng dụng; mọi bản gốc được giữ lại.'
-          body.append(title, note)
-          for (const source of sources) {
-            const button = document.createElement('button')
-            button.type = 'button'
-            button.className = 'button'
-            button.textContent = source.label + ' · ' + source.snapshot.conversations.length + ' cuộc trò chuyện'
-            button.addEventListener('click', () => {
-              dialog.close()
-              dialog.remove()
-              resolve(source)
-            }, { once: true })
-            body.appendChild(button)
-          }
-          const cancel = document.createElement('button')
-          cancel.type = 'button'
-          cancel.className = 'button'
-          cancel.textContent = 'Giữ chế độ chỉ đọc'
-          const stop = () => {
-            dialog.close()
-            dialog.remove()
-            reject(new Error('Chưa chọn nguồn migration; không ghi đè dữ liệu.'))
-          }
-          cancel.addEventListener('click', stop, { once: true })
-          dialog.addEventListener('cancel', event => {
-            event.preventDefault()
-            stop()
-          }, { once: true })
-          body.appendChild(cancel)
-          dialog.appendChild(body)
-          document.body.appendChild(dialog)
-          dialog.showModal()
-        })
-      }
-
-      function saveCheckpoint (checkpoint) {
-        assertWriter()
-        window.localStorage.setItem(checkpointKey, JSON.stringify(checkpoint))
-      }
-
-      function findReferences (snapshot) {
-        const references = [...(snapshot.ui?.attachments || [])]
-        for (const conversation of snapshot.conversations) {
-          for (const message of conversation.messages) {
-            references.push(...(message.attachments || []))
-            references.push(...(message.outputBlocks || []).filter(block => block.type === 'file'))
-          }
-        }
-        return references
-      }
-
-      async function verifyReferences (snapshot) {
-        const verifiedKeys = new Set()
-        for (const reference of findReferences(snapshot)) {
-          if (!reference.mediaKey) {
-            if (!['missing', 'unsaved'].includes(reference.storageState)) {
-              throw new Error('Tham chiếu không có mediaKey hoặc trạng thái thiếu nội dung.')
-            }
-            continue
-          }
-          if (verifiedKeys.has(reference.mediaKey)) continue
-          const record = await accessMediaStore('get', reference.mediaKey)
-          if (!record || record.redirectKey) throw new Error('Không xác minh được tham chiếu: ' + reference.mediaKey)
-          if (record.blob) {
-            const identity = await fileIdentity(record.blob, record.name)
-            if (identity.hash !== record.hash || canonical(identity.identity) !== canonical(record.identity)) {
-              throw new Error('Nội dung tệp đích không khớp hash.')
-            }
-          }
-          verifiedKeys.add(reference.mediaKey)
-        }
-      }
-
-      function offerCleanup () {
-        const checkpoint = readJson(checkpointKey)
-        if (!checkpoint || getElementById('migration-cleanup-button')) return
-        const host = queryElement('#endpoint-dialog > .dialog__body')
-        if (!host) return
-        const button = document.createElement('button')
-        button.id = 'migration-cleanup-button'
-        button.type = 'button'
-        button.className = 'button button_size_small'
-        button.textContent = 'Dọn bản sao chuyển đổi'
-        button.addEventListener('click', async () => {
-          button.disabled = true
-          try {
-            assertWritable()
-            if (readJson(markerKey)?.status !== 'complete') throw new Error('Chưa kiểm chứng migration.')
-            await verifyReferences(storedState())
-            if (!confirmChange('Xoá checkpoint và snapshot Local Storage cũ đã chuyển đổi? Database nguồn vẫn được giữ.')) return
-            const current = readJson(checkpointKey)
-            const oldSnapshot = current?.localBackup?.[legacySnapshotKey]
-            if (oldSnapshot != null && window.localStorage.getItem(legacySnapshotKey) === oldSnapshot) {
-              window.localStorage.removeItem(legacySnapshotKey)
-            }
-            window.localStorage.removeItem(checkpointKey)
-            button.remove()
-          } catch (error) {
-            reportError(error)
-          } finally {
-            if (button.isConnected) button.disabled = false
-          }
-        })
-        host.appendChild(button)
-      }
-
-      return async function storageMigrator () {
-        const marker = readJson(markerKey)
-        if (marker?.status === 'complete') {
-          try {
-            offerCleanup()
-          } catch (error) {
-            // Backup lỗi chỉ chặn dọn backup, không nhập lại dữ liệu đã chuyển đổi.
-            reportError(error)
-          }
-          return
-        }
-        assertWriter()
-        if (marker && marker.status !== 'complete') throw new Error('Trạng thái migration không nhận diện được.')
-        if (!window.indexedDB || !window.crypto?.subtle) {
-          throw new Error('Cần IndexedDB và Web Crypto để kiểm chứng chuyển đổi.')
-        }
-
-        let sourceDatabase = null
-        try {
-          sourceDatabase = await readLegacyDatabase()
-          let checkpoint = readJson(checkpointKey)
-          if (!checkpoint) {
-            const localBackup = {}
-            const local = {}
-            let localPresent = false
-            for (const [name, key] of Object.entries(storageKeys)) {
-              const raw = window.localStorage.getItem(key)
-              localBackup[key] = raw
-              if (raw !== null) {
-                localPresent = true
-                local[name] = JSON.parse(raw)
-                if (local[name] === null && ['conversations', 'endpoints', 'systemPrompts', 'ui'].includes(name)) {
-                  throw new Error('Nguồn Local Storage là null thay vì dữ liệu hợp lệ: ' + name)
-                }
+          for (const block of original.outputBlocks || []) {
+            if (block.type === 'image' || block.type === 'file') {
+              let key = resolveMediaKey(block.mediaKey)
+              if (!mediaRecords.has(key) && typeof block.data === 'string') {
+                key = await persistBlob(
+                  blobFromBase64(block.data, block.mimeType || block.mime_type),
+                  block.metadata?.filename || generatedFilename(block.mimeType || block.mime_type),
+                  'generated'
+                )
               }
-            }
-            localBackup[legacySnapshotKey] = window.localStorage.getItem(legacySnapshotKey)
-            const sources = []
-            if (localPresent) sources.push({ id: 'local', label: 'Các key Local Storage', snapshot: completeGroups(local) })
-            if (localBackup[legacySnapshotKey] !== null) {
-              sources.push({
-                id: 'snapshot',
-                label: 'Snapshot Local Storage',
-                snapshot: unwrap(JSON.parse(localBackup[legacySnapshotKey]))
-              })
-            }
-            let databaseSnapshot = null
-            if (sourceDatabase?.objectStoreNames.contains('state')) {
-              databaseSnapshot = await readSource(sourceDatabase, 'state', 'get', legacySnapshotKey)
-              if (databaseSnapshot !== undefined) {
-                sources.push({ id: 'database', label: 'Snapshot IndexedDB', snapshot: unwrap(databaseSnapshot) })
-              } else if (await readSource(sourceDatabase, 'state', 'count')) {
-                throw new Error('Store state chứa dữ liệu không nhận diện được; không bỏ qua nguồn.')
-              }
-            }
-            for (const source of sources) validateSource(source.snapshot)
-            const selected = await chooseSource(sources)
-            const mediaKeys = sourceDatabase?.objectStoreNames.contains('media')
-              ? await readSource(sourceDatabase, 'media', 'getAllKeys')
-              : []
-            if (mediaKeys.some(key => typeof key !== 'string')) throw new Error('Kho nguồn có mediaKey không hợp lệ.')
-            checkpoint = {
-              status: 'copying',
-              sourceId: selected?.id || 'empty',
-              selected: selected?.snapshot || completeGroups({}),
-              localBackup,
-              databaseSnapshot: databaseSnapshot ?? null,
-              mediaKeys,
-              mediaMap: {},
-              copied: {}
-            }
-            saveCheckpoint(checkpoint)
-          }
-          if (!checkpoint.selected || !checkpoint.localBackup ||
-            !Array.isArray(checkpoint.mediaKeys) ||
-            !['copying', 'publishing', 'verified'].includes(checkpoint.status)) {
-            throw new Error('Checkpoint không hợp lệ; không ghi đè.')
-          }
-
-          const unchangedSources = async () => {
-            for (const [key, original] of Object.entries(checkpoint.localBackup)) {
-              const current = window.localStorage.getItem(key)
-              const expected = checkpoint.expected?.find(entry => entry[0] === key)?.[1]
-              if (current !== original && current !== expected) {
-                throw new Error('Nguồn đã đổi trong khi migration bị gián đoạn: ' + key)
-              }
-            }
-            if (sourceDatabase?.objectStoreNames.contains('state')) {
-              const current = await readSource(sourceDatabase, 'state', 'get', legacySnapshotKey)
-              if (canonical(current ?? null) !== canonical(checkpoint.databaseSnapshot)) {
-                throw new Error('Snapshot IndexedDB nguồn đã thay đổi; giữ checkpoint và nguồn.')
-              }
-            } else if (checkpoint.databaseSnapshot) {
-              throw new Error('Database snapshot nguồn không còn khả dụng.')
-            }
-            if (checkpoint.mediaKeys.length && !sourceDatabase?.objectStoreNames.contains('media')) {
-              throw new Error('Kho tệp nguồn không còn khả dụng.')
-            }
-            const keys = sourceDatabase?.objectStoreNames.contains('media')
-              ? await readSource(sourceDatabase, 'media', 'getAllKeys')
-              : []
-            if (canonical(keys) !== canonical(checkpoint.mediaKeys)) {
-              throw new Error('Danh sách tệp nguồn đã thay đổi; không tự chọn nguồn mới.')
-            }
-          }
-          await unchangedSources()
-          checkpoint.mediaMap = Object.assign(Object.create(null), checkpoint.mediaMap)
-          checkpoint.copied = Object.assign(Object.create(null), checkpoint.copied)
-
-          for (const key of checkpoint.mediaKeys) {
-            const raw = await readSource(sourceDatabase, 'media', 'get', key)
-            if (!raw || typeof raw !== 'object') throw new Error('Không đọc được tệp nguồn: ' + key)
-            const name = raw.name || raw.metadata?.filename || generatedFilename(raw.mimeType || raw.blob?.type)
-            const type = raw.mimeType || raw.blob?.type || 'application/octet-stream'
-            const hash = raw.blob ? (await fileIdentity(raw.blob, name)).hash : null
-            const sourceSignature = canonical({ ...raw, blob: null, hash })
-            const copied = checkpoint.copied[key]
-            if (copied) {
-              if (copied.sourceSignature !== sourceSignature) throw new Error('Tệp nguồn đã thay đổi: ' + key)
-              const destination = await accessMediaStore('get', copied.key)
-              if (!destination || destination.name !== name ||
-                (raw.blob && (!destination.blob || !(await sameBytes(raw.blob, destination.blob))))) {
-                throw new Error('Tệp đích đã thay đổi hoặc bị thiếu trong checkpoint: ' + key)
-              }
-              continue
-            }
-            const targetKey = raw.blob
-              ? await persistBlob(raw.blob, name, raw.origins?.[0] || 'generated', raw.remote || null, key, raw)
-              : await registerUnavailableFile(name, type, raw.origins?.[0] || 'generated', raw.remote || null, key, key, raw)
-            checkpoint.mediaMap[key] = targetKey
-            checkpoint.copied[key] = { key: targetKey, sourceSignature }
-            saveCheckpoint(checkpoint)
-            // Migration là lần duy nhất duyệt cả kho; không giữ toàn bộ Blob trong RAM.
-            mediaRecords.delete(targetKey)
-          }
-
-          if (!checkpoint.expected) {
-            const snapshot = cloneValue(checkpoint.selected)
-            const convertFile = async (original, origin, fallbackId, endpointId) => {
-              const id = original.id || fallbackId
-              const type = normalizeMimeType(original.mimeType || original.mime_type || original.media_type ||
-                (['image', 'file'].includes(original.type) ? '' : original.type)) ||
-                inferMimeType(original.name || original.metadata?.filename)
-              const name = original.name || original.metadata?.filename || generatedFilename(type)
-              let key = checkpoint.mediaMap[original.mediaKey] || original.mediaKey
-              let record = key ? await accessMediaStore('get', key) : null
-              if (!record) {
-                const embedded = original.base64 ?? original.data
-                const dataUrl = original.dataUrl || original.url
-                const match = typeof dataUrl === 'string' && dataUrl.match(/^data:([^;,]+);base64,([a-z0-9+/=\\s]*)$/i)
-                const remote = isHttpsUrl(original.url)
-                  ? { url: original.url }
-                  : original.fileId
-                      ? { fileId: original.fileId, endpointId, format: 'messages' }
+              if (!mediaRecords.has(key)) {
+                const remote = isHttpsUrl(block.url)
+                  ? { url: block.url }
+                  : block.fileId
+                      ? { fileId: block.fileId, endpointId: message.endpointId, format: 'messages' }
                       : null
-                key = key || 'missing:' + id
-                if (typeof embedded === 'string' || match) {
-                  const blob = blobFromBase64(match ? match[2] : embedded, match ? match[1] : type)
-                  key = await persistBlob(blob, name, origin, remote, key)
-                } else {
-                  key = await registerUnavailableFile(name, type, origin, remote, id, key, { size: original.size || 0 })
-                }
-                record = await accessMediaStore('get', key)
+                key = await registerUnavailableFile(
+                  block.metadata?.filename || generatedFilename(block.mimeType),
+                  block.mimeType,
+                  'generated',
+                  remote,
+                  block.id || uniqueId()
+                )
               }
-              if (original.mediaKey) checkpoint.mediaMap[original.mediaKey] = key
-              return {
-                id,
+              message.outputBlocks.push({
+                id: block.id || uniqueId(),
+                type: 'file',
                 mediaKey: key,
-                name: record.name,
-                type: record.mimeType,
-                kind: record.mimeType.startsWith('image/') ? 'image' : 'file',
-                size: record.size
-              }
-            }
-
-            for (let conversationIndex = 0; conversationIndex < snapshot.conversations.length; conversationIndex += 1) {
-              const conversation = snapshot.conversations[conversationIndex]
-              conversation.id = conversation.id || 'legacy-conversation:' + conversationIndex
-              if (!Array.isArray(conversation.messages)) throw new Error('Lịch sử nguồn không hợp lệ.')
-              for (let messageIndex = 0; messageIndex < conversation.messages.length; messageIndex += 1) {
-                const message = conversation.messages[messageIndex]
-                message.id = message.id || conversation.id + ':message:' + messageIndex
-                message.content = typeof message.content === 'string' ? message.content : ''
-                if (message.status === 'streaming') message.status = 'stopped'
-                const attachments = []
-                for (const [index, attachment] of (message.attachments || []).entries()) {
-                  attachments.push(await convertFile(attachment, 'attachment', message.id + ':attachment:' + index, message.endpointId))
-                }
-                message.attachments = attachments
-                const blocks = []
-                for (const [index, block] of (message.outputBlocks || []).entries()) {
-                  if (['image', 'file'].includes(block.type)) {
-                    const reference = await convertFile(block, 'generated', message.id + ':file:' + index, message.endpointId)
-                    blocks.push({
-                      ...reference,
-                      type: 'file',
-                      mimeType: reference.type,
-                      thought: Boolean(block.thought),
-                      partial: Boolean(block.partial)
-                    })
-                  } else {
-                    blocks.push({ ...block, id: block.id || message.id + ':block:' + index })
-                  }
-                }
-                if (message.role === 'assistant' && !blocks.length) {
-                  if (message.reasoning) blocks.push({ id: message.id + ':reasoning', type: 'reasoning', content: message.reasoning })
-                  if (message.reasoningRedacted) blocks.push({ id: message.id + ':redacted', type: 'redacted' })
-                  if (message.content) blocks.push({ id: message.id + ':text', type: 'text', content: message.content })
-                }
-                message.outputBlocks = blocks
-              }
-            }
-            const drafts = []
-            for (const [index, attachment] of (snapshot.ui.attachments || []).entries()) {
-              drafts.push(await convertFile(attachment, 'attachment', 'legacy-draft:' + index))
-            }
-            snapshot.ui.attachments = drafts
-            applyStoredState(snapshot)
-            const normalized = storedState()
-            await verifyReferences(normalized)
-            checkpoint.expected = Object.entries(storageKeys).map(([name, key]) => [key, JSON.stringify(normalized[name])])
-            checkpoint.status = 'publishing'
-            saveCheckpoint(checkpoint)
-          }
-
-          await unchangedSources()
-          for (const [sourceKey, copied] of Object.entries(checkpoint.copied)) {
-            const raw = await readSource(sourceDatabase, 'media', 'get', sourceKey)
-            const destination = await accessMediaStore('get', copied.key)
-            const sourceName = raw?.name || raw?.metadata?.filename || generatedFilename(raw?.mimeType || raw?.blob?.type)
-            const hash = raw?.blob ? (await fileIdentity(raw.blob, sourceName)).hash : null
-            if (!raw || !destination ||
-              canonical({ ...raw, blob: null, hash }) !== copied.sourceSignature ||
-              (raw.blob && (!destination.blob || !(await sameBytes(raw.blob, destination.blob))))) {
-              throw new Error('Không kiểm chứng được nội dung đã sao chép: ' + sourceKey)
+                thought: Boolean(block.thought)
+              })
+            } else {
+              message.outputBlocks.push(block)
             }
           }
-          assertWriter()
-          for (const [key, value] of checkpoint.expected) window.localStorage.setItem(key, value)
-          for (const [key, value] of checkpoint.expected) {
-            if (window.localStorage.getItem(key) !== value) throw new Error('Không kiểm chứng được key đích: ' + key)
+          if (message.role === 'assistant' && !message.outputBlocks.length) {
+            if (original.reasoning) message.outputBlocks.push({ id: uniqueId(), type: 'reasoning', content: original.reasoning })
+            if (original.reasoningRedacted) message.outputBlocks.push({ id: uniqueId(), type: 'redacted' })
+            if (message.content) message.outputBlocks.push({ id: uniqueId(), type: 'text', content: message.content })
           }
-          const verified = Object.fromEntries(Object.entries(storageKeys).map(([name, key]) => [name, readJson(key)]))
-          await verifyReferences(verified)
-          checkpoint.status = 'verified'
-          saveCheckpoint(checkpoint)
-          window.localStorage.setItem(markerKey, JSON.stringify({
-            status: 'complete',
-            completedAt: Date.now(),
-            sourceId: checkpoint.sourceId
-          }))
-          offerCleanup()
-        } finally {
-          sourceDatabase?.close()
+          conversation.messages.push(message)
         }
+        conversation.title = raw.title || automaticConversationTitle(conversation)
+        state.conversations.push(conversation)
       }
-    })()
-    // END storageMigrator
+      state.attachments = []
+      for (const attachment of saved.attachments || []) {
+        state.attachments.push(await migrateAttachment(attachment))
+      }
+      state.activeConversationId = state.conversations.some(item => item.id === saved.activeConversationId)
+        ? saved.activeConversationId
+        : state.conversations[0]?.id || null
+      state.editDraft = saved.editDraft || null
+      if (state.editDraft && !state.conversations.some(item =>
+        item.id === state.editDraft.conversationId &&
+        item.messages.some(message => message.id === state.editDraft.messageId)
+      )) {
+        state.editDraft = null
+      }
+      activateSelectedConfiguration()
+      initialized = true
+      try {
+        await writeStateSnapshot()
+      } catch (error) {
+        initialized = false
+        throw new Error('Không hoàn tất chuyển đổi dữ liệu; bản cũ vẫn được giữ. ' + error.message)
+      }
+      for (const key of oldKeys) await accessMediaStore('delete', key).catch(reportError)
+    }
 
     function generatedFilename (mimeType) {
       const type = normalizeImageMimeType(mimeType || 'application/octet-stream')
@@ -5628,10 +4947,7 @@
       }
     }
 
-    async function attachStoredFile (key) {
-      assertWritable()
-      await loadMediaRecord(key)
-      assertWritable()
+    function attachStoredFile (key) {
       const attachment = attachmentFromKey(key)
       if (state.attachments.some(item => resolveMediaKey(item.mediaKey) === attachment.mediaKey)) {
         toast('Tệp đã có trong danh sách chờ gửi.')
@@ -5644,7 +4960,6 @@
     }
 
     async function addFiles (files) {
-      assertWritable()
       state.pendingAttachmentReads += files.length
       renderAttachments()
       for (const file of files) {
@@ -5655,7 +4970,7 @@
           }
           const blob = file.slice(0, file.size, type)
           const key = await persistBlob(blob, file.name, 'attachment')
-          await attachStoredFile(key)
+          attachStoredFile(key)
         } catch (error) {
           reportError(error)
         } finally {
@@ -5713,7 +5028,6 @@
     }
 
     async function createUrlAttachment () {
-      assertWritable()
       const url = getElementById('attachment-url').value.trim()
       if (!isHttpsUrl(url)) {
         throw new Error('URL phải là HTTPS hợp lệ, không chứa thông tin đăng nhập.')
@@ -5732,7 +5046,7 @@
           throw new Error('Định dạng tệp URL không được hỗ trợ.')
         }
         const key = await persistBlob(result.blob, result.name, 'attachment', { url })
-        await attachStoredFile(key)
+        attachStoredFile(key)
         getElementById('attachment-url-dialog').close()
       } finally {
         state.pendingAttachmentReads -= 1
@@ -5742,9 +5056,8 @@
     }
 
     async function materializeFile (key) {
-      assertWritable()
       key = resolveMediaKey(key)
-      const record = await loadMediaRecord(key) || mediaRecord(key)
+      const record = mediaRecord(key)
       if (!record) throw new Error('Không tìm thấy tệp.')
       if (record.blob && record.persisted) return key
       if (pendingFileRequests.has(key)) return pendingFileRequests.get(key)
@@ -5752,26 +5065,22 @@
         const result = record.blob
           ? { blob: record.blob, name: record.name }
           : await fetchRemoteFile(record.remote || {}, record.name, record.mimeType)
-        assertWritable()
         const canonicalKey = await persistBlob(
           result.blob,
           result.name,
           record.origins[0],
-          record.remote,
-          key.startsWith('unsaved:') ? '' : key
+          record.remote
         )
-        if (key !== canonicalKey) {
-          if (record.persisted) {
-            // Giữ redirect bền vững; không tự xoá bản nguồn của một tham chiếu.
-            await accessMediaStore('put', key, { ...diskMediaRecord(record), redirectKey: canonicalKey })
-            mediaCatalog.delete(key)
-          }
-          mediaAliases.set(key, canonicalKey)
-        }
+        mediaAliases.set(key, canonicalKey)
         dirtyMedia.delete(key)
-        saveState()
-        refreshFileElements(key)
+        await saveState()
+        if (key !== canonicalKey) {
+          await accessMediaStore('delete', key)
+          if (record.objectUrl) window.URL.revokeObjectURL(record.objectUrl)
+          mediaRecords.delete(key)
+        }
         renderAttachments()
+        renderMessages()
         renderFileLibrary()
         return canonicalKey
       })()
@@ -5805,10 +5114,8 @@
     }
 
     async function deleteStoredFile (key) {
-      assertWritable()
-      await loadFileCatalog()
       key = resolveMediaKey(key)
-      const record = await loadMediaRecord(key) || mediaRecord(key)
+      const record = mediaRecord(key)
       if (!record) return
       if (conversationRuntimes.size || state.pendingAttachmentReads ||
         pendingFileRequests.size || mediaWrites.size) {
@@ -5818,21 +5125,25 @@
         throw new Error('Tệp còn được tin nhắn hoặc bản nháp sử dụng. Hãy gỡ các liên kết trước.')
       }
       if (!confirmChange('Xoá vĩnh viễn tệp “' + record.name + '” khỏi thiết bị?')) return
-      saveState()
+      const wasDirty = dirtyMedia.delete(key)
+      try {
+        await saveState()
+      } catch (error) {
+        if (wasDirty) dirtyMedia.set(key, true)
+        throw error
+      }
       await enqueueMedia(async () => {
-        assertWritable()
         if (collectMediaKeys().has(key)) throw new Error('Tệp vừa được sử dụng; không xoá.')
         await accessMediaStore('delete', key)
         if (record.objectUrl) window.URL.revokeObjectURL(record.objectUrl)
         mediaRecords.delete(key)
-        mediaCatalog.delete(key)
         dirtyMedia.delete(key)
       })
       renderFileLibrary()
     }
 
-    async function downloadStoredFile (key) {
-      const record = await loadMediaRecord(key)
+    function downloadStoredFile (key) {
+      const record = mediaRecord(key)
       if (!record?.blob) {
         throw new Error('Hãy tải nội dung tệp về cơ sở dữ liệu trước.')
       }
@@ -5849,7 +5160,7 @@
     }
 
     async function previewStoredFile (key) {
-      const record = await loadMediaRecord(key)
+      const record = mediaRecord(key)
       if (!record?.blob) throw new Error('Tệp chưa có nội dung để xem trước.')
       const body = getElementById('file-preview-content')
       getElementById('file-preview-title').textContent = record.name
@@ -5880,23 +5191,23 @@
 
     function renderFileLibrary () {
       const list = getElementById('file-library-list')
-      if (!list || !getElementById('file-library-dialog').open || document.hidden) return
+      if (!list) return
       const search = getElementById('file-library-search').value.toLowerCase()
       const filter = getElementById('file-library-filter').value
       const references = collectMediaKeys()
-      const records = Array.from(new Map([...mediaCatalog, ...mediaRecords])).filter(([key, record]) => {
-        return !mediaAliases.has(key) && !record.redirectKey && !record.partial &&
+      const records = Array.from(mediaRecords).filter(([key, record]) => {
+        return !mediaAliases.has(key) && !record.partial &&
           (!filter || record.origins.includes(filter)) &&
           record.name.toLowerCase().includes(search)
       }).sort((first, second) => second[1].createdAt - first[1].createdAt)
-      syncHtml(list, records.map(([key, record]) => {
+      list.innerHTML = records.map(([key, record]) => {
         const attributes = `data-file-key="${escapeHtml(key)}"`
-        const available = Boolean(record.blob || record.hasContent)
+        const available = Boolean(record.blob)
         const used = references.has(key)
         const stateLabel = record.persisted && available
           ? 'Đã lưu'
           : available ? 'Chưa lưu' : 'Thiếu nội dung'
-        return `<li class="file-library__item" data-node-key="file:${escapeHtml(key)}">
+        return `<li class="file-library__item">
           <div class="file-library__info">
             <strong class="file-library__name">${escapeHtml(record.name)}</strong>
             <span class="file-library__meta">${escapeHtml(record.mimeType)} · ${formatBytes(record.size)} · ${stateLabel}${used ? ' · Đang sử dụng' : ''}</span>
@@ -5909,8 +5220,7 @@
             ${actionButton('delete-file', 'trash', used ? 'Gỡ liên kết trước khi xoá' : 'Xoá tệp', attributes + (used ? ' disabled' : ''), 'icon-button')}
           </div>
         </li>`
-      }).join('') || '<li class="empty-state" data-node-key="empty">Không có tệp phù hợp.</li>')
-      applyWriteAccess()
+      }).join('') || '<li class="empty-state">Không có tệp phù hợp.</li>'
     }
 
     function requestUrl (endpoint, model, stream) {
@@ -5994,7 +5304,7 @@
     }
 
     async function attachmentPart (attachment, format, preview = false) {
-      const record = await loadMediaRecord(attachment.mediaKey)
+      const record = mediaRecord(attachment.mediaKey)
       if (!record?.blob || !record.persisted) {
         throw new Error('Thiếu dữ liệu tệp “' + attachment.name + '”. Hãy tải lại trong trình quản lí tệp.')
       }
@@ -6854,186 +6164,6 @@
       return template.innerHTML
     }
 
-    function removeDomNode (node) {
-      if (node.nodeType === 1 && node.contains(document.activeElement)) {
-        document.activeElement.blur()
-      }
-      node.remove()
-    }
-
-    function domNodeKey (node) {
-      if (node.nodeType !== 1) return null
-      if (node.hasAttribute('data-node-key')) return node.getAttribute('data-node-key')
-      if (node.tagName === 'OPTION') return 'option:' + node.value
-      if (node.id) return 'element:' + node.id
-      return null
-    }
-
-    function patchDomNode (current, next) {
-      if (current === next) return
-      if (current.nodeType !== 1) {
-        if (current.nodeValue !== next.nodeValue) current.nodeValue = next.nodeValue
-        return
-      }
-      const preserveOpen = current.tagName === 'DETAILS'
-      for (const attribute of Array.from(current.attributes)) {
-        if (preserveOpen && attribute.name === 'open') continue
-        if (!next.hasAttribute(attribute.name)) current.removeAttribute(attribute.name)
-      }
-      for (const attribute of Array.from(next.attributes)) {
-        if (preserveOpen && attribute.name === 'open') continue
-        if (current.getAttribute(attribute.name) !== attribute.value) {
-          current.setAttribute(attribute.name, attribute.value)
-        }
-      }
-      if (['INPUT', 'TEXTAREA'].includes(current.tagName)) {
-        if (current !== document.activeElement && current.value !== next.value) current.value = next.value
-        return
-      }
-      reconcileChildren(current, Array.from(next.childNodes))
-    }
-
-    function reconcileChildren (parent, incoming) {
-      const previous = Array.from(parent.childNodes)
-      const keyed = new Map()
-      for (const node of previous) {
-        const key = domNodeKey(node)
-        if (key !== null) {
-          if (keyed.has(key)) throw new Error('DOM có khoá trùng: ' + key)
-          keyed.set(key, node)
-        }
-      }
-      const desired = []
-      const used = new Set()
-      const nextKeys = new Set()
-      let unkeyedIndex = 0
-      const unkeyed = previous.filter(node => domNodeKey(node) === null)
-
-      for (const next of incoming) {
-        const key = domNodeKey(next)
-        if (key !== null && nextKeys.has(key)) throw new Error('List có khoá trùng: ' + key)
-        if (key !== null) nextKeys.add(key)
-        let current = key !== null ? keyed.get(key) : unkeyed[unkeyedIndex++]
-        if (current && (current.nodeType !== next.nodeType || current.nodeName !== next.nodeName)) current = null
-        if (current) {
-          used.add(current)
-          patchDomNode(current, next)
-          desired.push(current)
-        } else {
-          desired.push(next)
-        }
-      }
-
-      // Gỡ node bị xoá trước; không đổi node của mục cũ thành mục kế tiếp.
-      for (const node of previous) {
-        if (!used.has(node)) removeDomNode(node)
-      }
-      let position = parent.firstChild
-      for (const node of desired) {
-        if (node !== position) parent.insertBefore(node, position)
-        position = node.nextSibling
-      }
-    }
-
-    function syncHtml (parent, html) {
-      const template = document.createElement('template')
-      template.innerHTML = html
-      reconcileChildren(parent, Array.from(template.content.childNodes))
-    }
-
-    function refreshFileElements (key) {
-      const canonicalKey = resolveMediaKey(key)
-      for (const element of queryElements('[data-media-reference]')) {
-        if (resolveMediaKey(element.dataset.mediaReference) !== canonicalKey) continue
-        const conversation = currentConversation()
-        const message = conversation?.messages.find(item => item.id === element.dataset.ownerId)
-        if (!message) continue
-        const block = message.outputBlocks?.find(item => item.id === element.dataset.outputId)
-        if (block) {
-          const template = document.createElement('template')
-          template.innerHTML = renderFileBlock(block, message.id)
-          patchDomNode(element, template.content.firstElementChild)
-        } else {
-          const attachment = message.attachments?.find(item => item.id === element.dataset.attachmentId)
-          if (!attachment) continue
-          const template = document.createElement('template')
-          template.innerHTML = renderMessageAttachmentsHtml([attachment], message.id)
-          patchDomNode(element, template.content.firstElementChild.firstElementChild)
-        }
-      }
-      updateFollowButton()
-    }
-
-    async function hydrateVisibleMedia () {
-      const conversation = currentConversation()
-      const references = [
-        ...state.attachments,
-        ...(conversation?.messages || []).flatMap(message => [
-          ...(message.attachments || []),
-          ...(message.outputBlocks || []).filter(block => block.type === 'file')
-        ])
-      ]
-      const keys = new Set(references.map(item => item.mediaKey).filter(Boolean))
-      const results = await Promise.allSettled(Array.from(keys, async key => {
-        await loadMediaRecord(key)
-        if (!document.hidden) refreshFileElements(key)
-      }))
-      const failed = results.find(result => result.status === 'rejected')
-      if (failed) throw failed.reason
-    }
-
-    const readOnlyActions = new Set([
-      'toggle-sidebar', 'toggle-settings', 'close-drawers', 'clear-conversation-search',
-      'select-conversation', 'scroll-bottom', 'copy-message', 'copy-code', 'copy-request-body',
-      'open-file-library', 'close-file-library', 'preview-file', 'download-file',
-      'close-file-preview', 'open-endpoint-dialog', 'close-endpoint-dialog',
-      'close-attachment-url', 'cancel-endpoint-form', 'toggle-attachment-menu'
-    ])
-
-    function applyWriteAccess () {
-      const writable = canWriteState()
-      for (const control of queryElements('[data-action], input, textarea, select')) {
-        const action = control.dataset.action
-        const readable = action
-          ? readOnlyActions.has(action)
-          : ['conversation-search', 'file-library-search', 'file-library-filter', 'request-body-preview'].includes(control.id)
-        if (readable) continue
-        if (!writable && !control.disabled) {
-          control.disabled = true
-          control.dataset.readOnlyDisabled = 'true'
-        } else if (writable && control.dataset.readOnlyDisabled) {
-          control.disabled = false
-          delete control.dataset.readOnlyDisabled
-        }
-      }
-      const footer = queryElement('.sidebar__footer')
-      if (footer) {
-        const label = writable ? 'Lịch sử được lưu trên thiết bị' : 'Chỉ đọc · chưa có quyền ghi'
-        syncHtml(footer, '<span class="status-dot status-dot_state_idle" aria-hidden="true"></span>' + label)
-      }
-    }
-
-    function flushPendingSave () {
-      captureEditDraft()
-      if (!canWriteState()) return
-      try {
-        // Chỉ Local Storage đồng bộ; không khởi động giao dịch IndexedDB ở lifecycle.
-        saveState()
-      } catch (error) {
-        reportError(error)
-      }
-    }
-
-    function flushMessagePaints () {
-      if (document.hidden || pageClosed) return
-      paintFrame = null
-      if (viewDirty || pendingPaints.size) renderMessages()
-      pendingPaints.clear()
-      viewDirty = false
-      refreshRelativeTimes()
-      updateFollowButton()
-    }
-
     function renderConversationHtml (conversation) {
       const active = conversation.id === state.activeConversationId
       const generating = isConversationGenerating(conversation.id)
@@ -7041,7 +6171,7 @@
       const pinLabel = conversation.pinned ? 'Bỏ ghim cuộc trò chuyện' : 'Ghim cuộc trò chuyện'
       const timestamp = latestTimestamp(conversation)
 
-      return `<div class="conversation${active ? ' conversation_active' : ''}" data-node-key="conversation:${escapeHtml(conversation.id)}" ${attributes}>
+      return `<div class="conversation${active ? ' conversation_active' : ''}" ${attributes}>
         <button class="conversation__select" type="button" data-action="select-conversation" ${attributes} ${active ? 'aria-current="page"' : ''}>
           <span class="conversation__title">${escapeHtml(conversation.title)}</span>
           <span class="conversation__meta">
@@ -7059,25 +6189,30 @@
     }
 
     function renderSidebar () {
-      if (document.hidden) return
       const list = getElementById('conversation-list')
       const query = state.conversationSearch.trim().toLowerCase()
       const conversations = state.conversations.filter(conversation => {
-        return !query || conversation.title.toLowerCase().includes(query) ||
+        return !query ||
+          conversation.title.toLowerCase().includes(query) ||
           conversation.messages.some(message => message.content.toLowerCase().includes(query))
-      }).sort((first, second) => Number(second.pinned) - Number(first.pinned) || second.updatedAt - first.updatedAt)
+      }).sort((first, second) =>
+        Number(second.pinned) - Number(first.pinned) || second.updatedAt - first.updatedAt
+      )
+
       getElementById('clear-conversation-search-button').hidden = !state.conversationSearch
+      if (!conversations.length) {
+        list.innerHTML = `<div class="empty-state sidebar__empty">${renderIcon(query ? 'search' : 'message')}<span>${query ? 'Không tìm thấy cuộc trò chuyện phù hợp.' : 'Chưa có cuộc trò chuyện nào.'}</span></div>`
+        return
+      }
+
       const pinned = conversations.filter(conversation => conversation.pinned)
       const recent = conversations.filter(conversation => !conversation.pinned)
-      const html =
-        (pinned.length ? '<div class="conversation-list__label" data-node-key="pinned">Đã ghim</div>' + pinned.map(renderConversationHtml).join('') : '') +
-        (recent.length ? '<div class="conversation-list__label" data-node-key="recent">Gần đây</div>' + recent.map(renderConversationHtml).join('') : '')
-      syncHtml(list, html || `<div class="empty-state sidebar__empty" data-node-key="empty">${renderIcon(query ? 'search' : 'message')}<span>${query ? 'Không tìm thấy cuộc trò chuyện phù hợp.' : 'Chưa có cuộc trò chuyện nào.'}</span></div>`)
-      applyWriteAccess()
+      list.innerHTML =
+        (pinned.length ? '<div class="conversation-list__label">Đã ghim</div>' + pinned.map(renderConversationHtml).join('') : '') +
+        (recent.length ? '<div class="conversation-list__label">Gần đây</div>' + recent.map(renderConversationHtml).join('') : '')
     }
 
     function renderTopBar () {
-      if (document.hidden) return
       const conversation = currentConversation()
       const endpoint = currentEndpoint()
       const status = getElementById('connection-status')
@@ -7099,19 +6234,17 @@
     }
 
     function renderFileBlock (block, messageId) {
-      const record = mediaRecord(block.mediaKey) || mediaCatalog.get(block.mediaKey)
-      const name = record?.name || block.name || 'Tệp'
-      const key = resolveMediaKey(block.mediaKey) || ''
-      const attributes = `data-file-key="${escapeHtml(key)}"`
-      const source = mediaSource(key)
-      const pending = !record && Boolean(key) && !missingMediaKeys.has(key)
-      return `<figure class="generated-image" data-node-key="file:${escapeHtml(block.id)}" data-media-reference="${escapeHtml(key)}" data-owner-id="${escapeHtml(messageId)}" data-output-id="${escapeHtml(block.id)}">
-        ${source && displayImageMimeTypes.has(record.mimeType) ? `<img class="generated-image__image" data-node-key="preview" src="${escapeHtml(source)}" alt="${escapeHtml(name)}" loading="lazy" decoding="async">` : ''}
-        <figcaption class="generated-image__caption" data-node-key="caption">
-          <span data-node-key="name">${escapeHtml(name)}${block.partial ? ' · Đang tạo' : pending ? ' · Chưa nạp nội dung' : !source ? ' · Thiếu nội dung' : ''}</span>
+      const record = mediaRecord(block.mediaKey)
+      if (!record) return '<p class="field__hint">Thiếu dữ liệu tệp.</p>'
+      const attributes = `data-file-key="${escapeHtml(resolveMediaKey(block.mediaKey))}"`
+      const source = mediaSource(block.mediaKey)
+      return `<figure class="generated-image">
+        ${source && displayImageMimeTypes.has(record.mimeType) ? `<img class="generated-image__image" src="${escapeHtml(source)}" alt="${escapeHtml(record.name)}" loading="lazy" decoding="async">` : ''}
+        <figcaption class="generated-image__caption">
+          <span>${escapeHtml(record.name)}${block.partial ? ' · Đang tạo' : ''}</span>
           ${source ? actionButton('download-file', 'arrow-down', 'Tải xuống', attributes, 'icon-button') : ''}
-          ${!source && record?.remote ? actionButton('load-file', 'rotate', 'Tải nội dung', attributes, 'icon-button') : ''}
-          ${actionButton('remove-output-file', 'x', 'Gỡ tệp khỏi phản hồi', `data-message-id="${escapeHtml(messageId)}" data-block-id="${escapeHtml(block.id)}"` + (isCurrentConversationGenerating() || !canWriteState() ? ' disabled' : ''), 'icon-button')}
+          ${!source && record.remote ? actionButton('load-file', 'rotate', 'Tải nội dung', attributes, 'icon-button') : ''}
+          ${actionButton('remove-output-file', 'x', 'Gỡ tệp khỏi phản hồi', `data-message-id="${escapeHtml(messageId)}" data-block-id="${escapeHtml(block.id)}"` + (isCurrentConversationGenerating() ? ' disabled' : ''), 'icon-button')}
         </figcaption>
       </figure>`
     }
@@ -7144,11 +6277,10 @@
     function renderAssistantBodyHtml (message) {
       let output = ''
       let reasoning = ''
-      let reasoningKey = ''
 
       function flushReasoning () {
         if (!reasoning) return
-        output += `<details class="reasoning-panel" data-node-key="reasoning:${escapeHtml(reasoningKey)}"${message.status === 'streaming' ? ' open' : ''}>
+        output += `<details class="reasoning-panel"${message.status === 'streaming' ? ' open' : ''}>
           <summary class="reasoning-panel__summary">${renderIcon('spark')}Suy luận</summary>
           <div class="reasoning-panel__body">${reasoning}</div>
         </details>`
@@ -7167,13 +6299,10 @@
         if (block.type === 'redacted') {
           html = '<p class="field__hint">API không cung cấp nội dung suy luận này.</p>'
         }
-        if (thought && block.type !== 'file') {
-          if (!reasoning) reasoningKey = block.id
-          reasoning += '<div data-node-key="block:' + escapeHtml(block.id) + '">' + html + '</div>'
-        }
+        if (thought && block.type !== 'file') reasoning += html
         else {
           flushReasoning()
-          output += '<div class="assistant-answer" data-node-key="block:' + escapeHtml(block.id) + '">' + html + '</div>'
+          output += '<div class="assistant-answer">' + html + '</div>'
         }
       }
 
@@ -7196,16 +6325,17 @@
 
     function renderMessageAttachmentsHtml (attachments = [], messageId) {
       if (!attachments.length) return ''
-      return '<div class="message__attachments" data-node-key="attachments">' + attachments.map(attachment => {
+      return '<div class="message__attachments">' + attachments.map(attachment => {
         const record = mediaRecord(attachment.mediaKey)
-        const source = record && displayImageMimeTypes.has(record.mimeType) ? mediaSource(attachment.mediaKey) : ''
-        const key = resolveMediaKey(attachment.mediaKey) || ''
+        const source = record && displayImageMimeTypes.has(record.mimeType)
+          ? mediaSource(attachment.mediaKey)
+          : ''
         const attributes = `data-message-id="${escapeHtml(messageId)}" data-attachment-id="${escapeHtml(attachment.id)}"`
-        return `<div class="attachment attachment_type_file" data-node-key="attachment:${escapeHtml(attachment.id)}" data-media-reference="${escapeHtml(key)}" data-owner-id="${escapeHtml(messageId)}" data-attachment-id="${escapeHtml(attachment.id)}">
-          <span class="attachment__name" data-node-key="name">${escapeHtml(attachment.name)}</span>
-          ${source ? `<img class="chip__image" data-node-key="preview" src="${escapeHtml(source)}" alt="">` : ''}
-          ${record?.blob ? actionButton('download-file', 'arrow-down', 'Tải xuống', `data-file-key="${escapeHtml(key)}"`, 'icon-button') : ''}
-          ${actionButton('remove-message-attachment', 'x', 'Gỡ tệp', attributes + (isCurrentConversationGenerating() || !canWriteState() ? ' disabled' : ''), 'attachment__remove')}
+        return `<div class="attachment attachment_type_file">
+          <span class="attachment__name">${escapeHtml(attachment.name)}</span>
+          ${source ? `<img class="chip__image" src="${escapeHtml(source)}" alt="">` : ''}
+          ${record?.blob ? actionButton('download-file', 'arrow-down', 'Tải xuống', `data-file-key="${escapeHtml(resolveMediaKey(attachment.mediaKey))}"`, 'icon-button') : ''}
+          ${actionButton('remove-message-attachment', 'x', 'Gỡ tệp', attributes + (isCurrentConversationGenerating() ? ' disabled' : ''), 'attachment__remove')}
         </div>`
       }).join('') + '</div>'
     }
@@ -7213,7 +6343,7 @@
     function renderMessageActionsHtml (message, index, total) {
       if (message.status === 'streaming' || currentEditDraft() || isCurrentConversationGenerating()) return ''
       const attributes = `data-message-id="${escapeHtml(message.id)}"`
-      return '<div class="message__actions" data-node-key="actions">' +
+      return '<div class="message__actions">' +
         actionButton('move-message-up', 'arrow-up', 'Di chuyển lên', attributes + (index === 0 ? ' disabled' : ''), 'message__action message__action_icon') +
         actionButton('move-message-down', 'arrow-down', 'Di chuyển xuống', attributes + (index === total - 1 ? ' disabled' : ''), 'message__action message__action_icon') +
         actionButton('copy-message', 'copy', 'Sao chép tin nhắn', attributes) +
@@ -7260,16 +6390,15 @@
 
       element.className = `message message_role_${message.role} message_status_${message.status || 'complete'}`
       element.dataset.messageId = message.id
-      element.dataset.nodeKey = 'message:' + message.id
       element.innerHTML = `
         <div class="message__avatar message__avatar_role_${message.role}">${renderIcon(avatar)}</div>
-        <div class="message__main" data-node-key="main">
-          <div class="message__header" data-node-key="header">
+        <div class="message__main">
+          <div class="message__header">
             ${editing ? '' : '<span class="message__role">' + escapeHtml(message.role) + '</span>'}
             ${assistant && message.modelLabel ? '<span class="message__model">' + escapeHtml(message.modelLabel) + '</span>' : ''}
             <time class="message__time" datetime="${new Date(timestamp).toISOString()}" data-relative-time="${timestamp}" title="${escapeHtml(timeTitle)}">${formatRelativeTime(timestamp)}</time>
           </div>
-          <div class="message__body" data-node-key="body">${body}</div>
+          <div class="message__body">${body}</div>
           ${renderMessageActionsHtml(message, index, total)}
         </div>`
       return element
@@ -7296,70 +6425,69 @@
     }
 
     function renderMessages () {
-      if (document.hidden) {
-        viewDirty = true
-        return
-      }
       captureEditDraft()
       const area = getElementById('chat-scroll-area')
       const previousScrollTop = area.scrollTop
       const stickToBottom = shouldStickToBottom
       const list = getElementById('message-list')
       const conversation = currentConversation()
-      const draft = currentEditDraft()
-      const existing = new Map(Array.from(list.children).map(element => [element.dataset.messageId, element]))
-      const messages = conversation?.messages || []
-      list.classList.toggle('message-list_empty', !messages.length)
+      const previouslyEditing = document.activeElement?.id === 'message-editor-input'
+
+      list.replaceChildren()
+      list.className = 'message-list'
       list.setAttribute('aria-busy', String(isCurrentConversationGenerating()))
-      if (!messages.length) {
-        syncHtml(list, renderWelcomeHtml())
+      if (!conversation || !conversation.messages.length) {
+        list.classList.add('message-list_empty')
+        list.innerHTML = renderWelcomeHtml()
       } else {
-        const nodes = messages.map((message, index) => {
-          // ponytail: so sánh JSON trong cuộc trò chuyện đang mở; dùng revision nếu đo thấy chậm.
-          const signature = JSON.stringify([
-            message, draft?.messageId === message.id ? draft : null,
-            Boolean(draft), isCurrentConversationGenerating(), canWriteState(),
-            index === 0, index === messages.length - 1
-          ])
-          const current = existing.get(message.id)
-          if (current && messageSignatures.get(current) === signature) return current
-          const next = createMessageElement(message, index, messages.length)
-          if (current) {
-            patchDomNode(current, next)
-            messageSignatures.set(current, signature)
-            return current
-          }
-          messageSignatures.set(next, signature)
-          return next
+        const fragment = document.createDocumentFragment()
+        conversation.messages.forEach((message, index) => {
+          fragment.appendChild(createMessageElement(message, index, conversation.messages.length))
         })
-        reconcileChildren(list, nodes)
+        list.appendChild(fragment)
       }
+
+      const draft = currentEditDraft()
       const input = getElementById('message-editor-input')
-      if (draft && input && document.activeElement !== input) {
+      if (draft && input) {
         resizeTextarea(input, 360)
+        if (previouslyEditing) input.focus({ preventScroll: true })
         input.setSelectionRange(
           clamp(draft.selectionStart, 0, input.value.length),
           clamp(draft.selectionEnd, 0, input.value.length)
         )
       }
+
       updateComposer()
-      applyWriteAccess()
-      if (stickToBottom) scrollToBottom(true)
-      else {
-        shouldStickToBottom = false
-        area.scrollTop = previousScrollTop
-        updateFollowButton()
-      }
-      if (database || databasePromise) hydrateVisibleMedia().catch(reportError)
+      window.requestAnimationFrame(() => {
+        if (stickToBottom) scrollToBottom(true)
+        else {
+          shouldStickToBottom = false
+          area.scrollTop = previousScrollTop
+          updateFollowButton()
+        }
+      })
     }
 
     function paintMessage (message) {
-      // Lưu không phụ thuộc requestAnimationFrame, document.hidden hoặc runtime còn tồn tại.
-      saveDirty = true
+      const runtime = Array.from(conversationRuntimes.values()).find(item => item.message === message)
+      if (!runtime || runtime.paintScheduled) return
+      runtime.paintScheduled = true
+      window.requestAnimationFrame(() => {
+        runtime.paintScheduled = false
+        const article = queryElements('#message-list > [data-message-id]')
+          .find(element => element.dataset.messageId === message.id)
+        const output = article && queryElement('.message__output', article)
+        if (output) {
+          const opened = queryElements('.reasoning-panel', output).map(element => element.open)
+          output.innerHTML = renderAssistantBodyHtml(message)
+          queryElements('.reasoning-panel', output).forEach((element, index) => {
+            if (index < opened.length) element.open = opened[index]
+          })
+          scrollToBottom(false)
+        }
+      })
       scheduleSave()
-      pendingPaints.set(message.id, message)
-      if (document.hidden || paintFrame !== null) return
-      paintFrame = window.requestAnimationFrame(flushMessagePaints)
     }
 
     function updateFollowButton () {
@@ -7404,31 +6532,29 @@
       button.classList.toggle('send-button_state_stop', generating)
       button.title = generating ? 'Dừng tạo phản hồi' : 'Gửi yêu cầu'
       button.setAttribute('aria-label', button.title)
-      button.disabled = !canWriteState() || (!generating && Boolean(
+      button.disabled = !generating && Boolean(
         currentEditDraft() ||
         state.pendingAttachmentReads ||
         (!state.messageDraft.trim() && !state.attachments.length && !currentConversation()?.messages.length)
-      ))
-      getElementById('add-message-button').disabled = !canWriteState() || generating || Boolean(currentEditDraft())
+      )
+      getElementById('add-message-button').disabled = generating || Boolean(currentEditDraft())
       getElementById('character-count').textContent =
         state.messageDraft.length ? String(state.messageDraft.length) : ''
       getElementById('message-input').disabled =
-        !canWriteState() || Boolean(conversationRuntimes.get(state.activeConversationId)?.preparing)
+        Boolean(conversationRuntimes.get(state.activeConversationId)?.preparing)
     }
 
     function renderAttachments () {
-      if (document.hidden) return
       const list = getElementById('attachment-list')
       list.hidden = !state.attachments.length && !state.pendingAttachmentReads
-      syncHtml(list, state.attachments.map(attachment => `<span class="chip" data-node-key="attachment:${escapeHtml(attachment.id)}">
+      list.innerHTML = state.attachments.map(attachment => `<span class="chip">
         ${renderIcon('file-text')}
         <span class="chip__name">${escapeHtml(attachment.name)}</span>
         <span class="chip__meta">${formatBytes(attachment.size)}</span>
         ${actionButton('remove-attachment', 'x', 'Gỡ tệp', `data-attachment-id="${escapeHtml(attachment.id)}"`, 'chip__remove')}
       </span>`).join('') +
-        (state.pendingAttachmentReads ? '<span class="chip" data-node-key="pending">Đang lưu tệp…</span>' : ''))
+        (state.pendingAttachmentReads ? '<span class="chip">Đang lưu tệp…</span>' : '')
       updateComposer()
-      applyWriteAccess()
       window.requestAnimationFrame(updateComposerHeight)
       if (getElementById('file-library-dialog')?.open) renderFileLibrary()
     }
@@ -7453,9 +6579,9 @@
 
     function setOptions (id, entries, selected, emptyLabel = 'Mặc định') {
       const select = getElementById(id)
-      syncHtml(select, entries.map(([value, label]) =>
+      select.innerHTML = entries.map(([value, label]) =>
         `<option value="${escapeHtml(value)}">${escapeHtml(label)}</option>`
-      ).join('') || '<option value="">' + escapeHtml(emptyLabel) + '</option>')
+      ).join('') || '<option value="">' + escapeHtml(emptyLabel) + '</option>'
       select.value = selected ?? ''
     }
 
@@ -7475,13 +6601,12 @@
     }
 
     function renderVariables () {
-      syncHtml(getElementById('variable-list'), activeConfiguration.settings.variableEntries
-        .map((entry, index) => `<div class="variable-row" data-node-key="variable:${escapeHtml(entry.id)}" data-variable-id="${escapeHtml(entry.id)}" role="listitem">
+      getElementById('variable-list').innerHTML = activeConfiguration.settings.variableEntries
+        .map((entry, index) => `<div class="variable-row" data-variable-id="${escapeHtml(entry.id)}" role="listitem">
           <input class="text-field variable-row__input" data-variable-name value="${escapeHtml(entry.name)}" aria-label="Tên biến ${index + 1}">
           <input class="text-field variable-row__input variable-row__value" data-variable-value value="${escapeHtml(entry.source)}" aria-label="Giá trị JSON5 ${index + 1}">
           ${actionButton('remove-variable', 'x', 'Xoá biến', `data-variable-id="${escapeHtml(entry.id)}"`, 'remove-button')}
-        </div>`).join(''))
-      applyWriteAccess()
+        </div>`).join('')
     }
 
     function setControlEnabled (id, enabled) {
@@ -7518,9 +6643,9 @@
       }
 
       const tools = toolNamesByFormat[format] || []
-      syncHtml(queryElement('.tool-list'), tools.map(name =>
-        '<li class="tool-list__item" data-node-key="tool:' + escapeHtml(name) + '">' + escapeHtml(name) + '</li>'
-      ).join(''))
+      queryElement('.tool-list').innerHTML = tools.map(name =>
+        '<li class="tool-list__item">' + escapeHtml(name) + '</li>'
+      ).join('')
       getElementById('tools-json').disabled = !tools.length && !settings.toolsJson.trim()
     }
 
@@ -7558,10 +6683,10 @@
       })
 
       getElementById('tools-json').value = settings.toolsJson
-      syncHtml(getElementById('safety-settings-list'), safetyDefinitions.map(item => {
+      getElementById('safety-settings-list').innerHTML = safetyDefinitions.map(item => {
         const id = 'safety-' + safetySlug(item.category)
         const value = settings.safetySettings[item.category]
-        return `<div class="field" data-node-key="${item.category}">
+        return `<div class="field">
           <div class="field__header">
             <label class="field__label" for="${id}">${item.label}</label>
           </div>
@@ -7570,10 +6695,9 @@
             ${safetyThresholds.map(threshold => `<option value="${threshold}"${value === threshold ? ' selected' : ''}>${threshold}</option>`).join('')}
           </select>
         </div>`
-      }).join(''))
+      }).join('')
 
       renderSettingAvailability()
-      applyWriteAccess()
       schedulePreview()
     }
 
@@ -7645,7 +6769,6 @@
     }
 
     function createConversation () {
-      assertWritable()
       const timestamp = Date.now()
       const conversation = {
         id: uniqueId(),
@@ -7674,11 +6797,9 @@
       renderConversationView()
       closeDrawers()
       scheduleSave()
-      hydrateVisibleMedia().catch(reportError)
     }
 
     function canModifyConversation (conversation) {
-      assertWritable()
       if (!conversation) return false
       if (isConversationGenerating(conversation.id)) {
         throw new Error('Cuộc trò chuyện đang xử lí yêu cầu.')
@@ -7815,7 +6936,6 @@
     }
 
     async function runGeneration (regenerateId = null) {
-      assertWritable()
       if (queryElement('.settings [aria-invalid="true"]:not(:disabled)')) {
         throw new Error('Sửa giá trị tham số không hợp lệ trước khi gửi.')
       }
@@ -7883,28 +7003,15 @@
         }
 
         runtime.message = message
-        const previousMessages = conversation.messages
-        const previousDraft = state.messageDraft
-        const previousAttachments = state.attachments
-        const previousTitle = conversation.title
         conversation.messages = [...messages, message]
         markUpdated(conversation)
         if (!conversation.renamed) conversation.title = automaticConversationTitle(conversation)
+        await saveState()
+
         if (!regenerateId) {
           if (state.messageDraft === content) state.messageDraft = ''
           const sent = new Set(attachments.map(item => item.id))
           state.attachments = state.attachments.filter(item => !sent.has(item.id))
-        }
-        try {
-          saveState()
-        } catch (error) {
-          conversation.messages = previousMessages
-          conversation.title = previousTitle
-          state.messageDraft = previousDraft
-          state.attachments = previousAttachments
-          throw error
-        }
-        if (!regenerateId) {
           getElementById('message-input').value = state.messageDraft
           resizeMessageInput()
         }
@@ -7946,7 +7053,7 @@
       } finally {
         if (message) {
           for (const block of message.outputBlocks) {
-            if (block.partial && !pageClosed) {
+            if (block.partial) {
               const record = mediaRecord(block.mediaKey)
               if (record?.blob) {
                 block.mediaKey = await saveGeneratedBlob(record.blob, record.name)
@@ -7957,7 +7064,6 @@
           }
           syncAssistantMessage(message)
           markUpdated(message)
-          markUpdated(conversation)
         }
 
         for (const [key, record] of mediaRecords) {
@@ -7968,17 +7074,13 @@
         }
 
         conversationRuntimes.delete(conversation.id)
-        if (!pageClosed) {
-          if (message) pendingPaints.set(message.id, message)
-          viewDirty = true
-          renderSidebar()
-          renderTopBar()
-          renderAttachments()
-          if (currentConversation() === conversation) renderMessages()
-          renderFileLibrary()
-          scheduleSave()
-          schedulePreview()
-        }
+        renderSidebar()
+        renderTopBar()
+        renderAttachments()
+        if (currentConversation() === conversation) renderMessages()
+        renderFileLibrary()
+        scheduleSave()
+        schedulePreview()
       }
     }
 
@@ -8008,26 +7110,26 @@
     }
 
     function renderEndpointModels () {
-      syncHtml(getElementById('endpoint-model-list'), (endpointDraft?.models || [])
-        .map(model => `<span class="value-chip" data-node-key="model:${escapeHtml(model)}">
+      getElementById('endpoint-model-list').innerHTML = (endpointDraft?.models || [])
+        .map((model, index) => `<span class="value-chip">
           <span>${escapeHtml(model)}</span>
-          ${actionButton('remove-endpoint-model', 'x', 'Xoá mô hình', `data-model="${escapeHtml(model)}"`, 'remove-button')}
-        </span>`).join(''))
+          ${actionButton('remove-endpoint-model', 'x', 'Xoá mô hình', `data-index="${index}"`, 'remove-button')}
+        </span>`).join('')
     }
 
     function renderEndpointHeaders () {
-      syncHtml(getElementById('endpoint-header-list'), (endpointDraft?.headers || [])
-        .map((header, index) => `<div class="endpoint-header-row" data-node-key="header:${escapeHtml(header.id)}">
-          <input class="text-field monospace endpoint-header-row__name" data-header-name="${escapeHtml(header.id)}" value="${escapeHtml(header.name)}" aria-label="Tên header ${index + 1}">
-          <input class="text-field monospace" data-header-value="${escapeHtml(header.id)}" value="${escapeHtml(header.value)}" aria-label="Giá trị header ${index + 1}">
-          ${actionButton('remove-endpoint-header', 'x', 'Xoá header', `data-header-id="${escapeHtml(header.id)}"`, 'remove-button')}
-        </div>`).join(''))
+      getElementById('endpoint-header-list').innerHTML = (endpointDraft?.headers || [])
+        .map((header, index) => `<div class="endpoint-header-row">
+          <input class="text-field monospace endpoint-header-row__name" data-header-name="${index}" value="${escapeHtml(header.name)}" aria-label="Tên header ${index + 1}">
+          <input class="text-field monospace" data-header-value="${index}" value="${escapeHtml(header.value)}" aria-label="Giá trị header ${index + 1}">
+          ${actionButton('remove-endpoint-header', 'x', 'Xoá header', `data-index="${index}"`, 'remove-button')}
+        </div>`).join('')
     }
 
     function renderEndpointList () {
-      syncHtml(getElementById('endpoint-list'), state.endpoints.map(endpoint => {
+      getElementById('endpoint-list').innerHTML = state.endpoints.map(endpoint => {
         const attributes = `data-endpoint-id="${escapeHtml(endpoint.id)}"`
-        return `<div data-node-key="endpoint:${escapeHtml(endpoint.id)}" class="endpoint-card${endpoint.id === activeConfiguration.endpointId ? ' endpoint-card_active' : ''}">
+        return `<div class="endpoint-card${endpoint.id === activeConfiguration.endpointId ? ' endpoint-card_active' : ''}">
           <button class="endpoint-card__select" type="button" data-action="select-endpoint" ${attributes}>
             <strong>${escapeHtml(endpoint.name)}</strong>
             <span class="endpoint-card__url">${escapeHtml(endpoint.baseUrl)}</span>
@@ -8038,7 +7140,7 @@
             ${actionButton('delete-endpoint', 'trash', 'Xoá endpoint', attributes, 'icon-button')}
           </div>
         </div>`
-      }).join('') || '<div class="empty-state" data-node-key="empty">Chưa có endpoint.</div>')
+      }).join('') || '<div class="empty-state">Chưa có endpoint.</div>'
     }
 
     function showEndpointForm (id = null) {
@@ -8057,7 +7159,6 @@
             updatedAt: 0
           }
 
-      endpointDraft.headers = endpointDraft.headers.map(header => ({ ...header, id: header.id || uniqueId() }))
       endpointBaseline = JSON.stringify(endpointDraft)
       getElementById('endpoint-form-title').textContent = existing ? 'Sửa endpoint' : 'Thêm endpoint'
       setOptions(
@@ -8113,15 +7214,7 @@
       renderEndpointList()
     }
 
-    function commitEndpoints (endpoints) {
-      assertWritable()
-      const serialized = JSON.stringify(endpoints)
-      window.localStorage.setItem(storageKeys.endpoints, serialized)
-      state.endpoints = endpoints
-    }
-
     function saveEndpoint () {
-      assertWritable()
       readEndpointDraft()
       if (!endpointDraft?.name || !isHttpsUrl(endpointDraft.baseUrl)) {
         throw new Error('Nhập tên và URL HTTPS hợp lệ.')
@@ -8132,11 +7225,10 @@
       }
       requestHeaders(endpointDraft)
       markUpdated(endpointDraft)
-      const endpoint = { ...endpointDraft, ...sanitizeEndpoint(endpointDraft) }
-      const endpoints = state.endpoints.filter(item => item.id !== endpoint.id)
+      const endpoint = sanitizeEndpoint(endpointDraft)
       const index = state.endpoints.findIndex(item => item.id === endpoint.id)
-      endpoints.splice(index < 0 ? endpoints.length : index, 0, endpoint)
-      commitEndpoints(endpoints)
+      if (index < 0) state.endpoints.push(endpoint)
+      else state.endpoints[index] = endpoint
 
       allConfigurations().forEach(normalizeConfiguration)
       configurationChanged(allConfigurations())
@@ -8404,7 +7496,7 @@
       'delete-endpoint' (element) {
         const id = element.dataset.endpointId
         if (!endpointById(id) || !confirmChange('Xoá endpoint này? Tệp chưa tải nội dung từ endpoint có thể không tải được nữa.')) return
-        commitEndpoints(state.endpoints.filter(item => item.id !== id))
+        state.endpoints = state.endpoints.filter(item => item.id !== id)
         if (endpointDraft?.id === id) {
           endpointDraft = null
           endpointBaseline = ''
@@ -8426,13 +7518,14 @@
 
       'add-endpoint-header' () {
         if (!endpointDraft) return
-        endpointDraft.headers.push({ id: uniqueId(), name: '', value: '' })
+        endpointDraft.headers.push({ name: '', value: '' })
         renderEndpointHeaders()
       },
 
       'remove-endpoint-header' (element) {
         if (!endpointDraft || !confirmChange('Xoá header này?')) return
-        endpointDraft.headers = endpointDraft.headers.filter(header => header.id !== element.dataset.headerId)
+        const index = Number(element.dataset.index)
+        if (Number.isInteger(index) && index >= 0) endpointDraft.headers.splice(index, 1)
         renderEndpointHeaders()
       },
 
@@ -8440,19 +7533,15 @@
 
       'remove-endpoint-model' (element) {
         if (!endpointDraft || !confirmChange('Xoá mô hình khỏi endpoint?')) return
-        endpointDraft.models = endpointDraft.models.filter(model => model !== element.dataset.model)
+        const index = Number(element.dataset.index)
+        if (Number.isInteger(index) && index >= 0) endpointDraft.models.splice(index, 1)
         renderEndpointModels()
       },
 
-      async 'open-file-library' () {
+      'open-file-library' () {
         setAttachmentMenu(false)
-        const dialog = getElementById('file-library-dialog')
-        if (!dialog.open) dialog.showModal()
-        if (!libraryLoaded) {
-          syncHtml(getElementById('file-library-list'), '<li data-node-key="loading">Đang đọc danh sách tệp…</li>')
-        }
-        await loadFileCatalog()
         renderFileLibrary()
+        getElementById('file-library-dialog').showModal()
       },
 
       'close-file-library': () => getElementById('file-library-dialog').close(),
@@ -8465,27 +7554,17 @@
     }
 
     async function dispatchAction (element, event = { detail: 0 }) {
-      const action = element.dataset.action
-      const handler = actionHandlers[action]
+      const handler = actionHandlers[element.dataset.action]
       if (!handler || element.disabled) return
-      if (action === 'submit-message' && isCurrentConversationGenerating()) {
-        conversationRuntimes.get(state.activeConversationId).controller.abort()
-        return
-      }
-      if (busyActions.has(element)) return
       const previous = element.disabled
       try {
-        if (!readOnlyActions.has(action)) assertWritable()
-        busyActions.add(element)
         element.disabled = true
         await handler(element, event)
       } catch (error) {
         reportError(error)
       } finally {
-        busyActions.delete(element)
         if (element.isConnected) element.disabled = previous
         if (initialized) updateComposer()
-        applyWriteAccess()
       }
     }
 
@@ -8493,7 +7572,6 @@
       const element = event.target
       if (!(element instanceof window.Element) || !activeConfiguration) return
       const settings = activeConfiguration.settings
-      if (!canWriteState() && !['conversation-search', 'file-library-search'].includes(element.id)) return
 
       if (element.id === 'conversation-search') {
         state.conversationSearch = element.value
@@ -8578,11 +7656,9 @@
         return
       }
       if (element.dataset.headerName != null && endpointDraft) {
-        const header = endpointDraft.headers.find(item => item.id === element.dataset.headerName)
-        if (header) header.name = element.value
+        endpointDraft.headers[Number(element.dataset.headerName)].name = element.value
       } else if (element.dataset.headerValue != null && endpointDraft) {
-        const header = endpointDraft.headers.find(item => item.id === element.dataset.headerValue)
-        if (header) header.value = element.value
+        endpointDraft.headers[Number(element.dataset.headerValue)].value = element.value
       } else if (['endpoint-name', 'endpoint-api-key', 'endpoint-base-url'].includes(element.id)) {
         readEndpointDraft()
         updateEndpointUrlPreview()
@@ -8592,7 +7668,6 @@
     function handleChange (event) {
       const element = event.target
       if (!(element instanceof window.Element)) return
-      if (!canWriteState() && element.id !== 'file-library-filter') return
       const settings = activeConfiguration.settings
 
       if (element.id === 'file-input') {
@@ -8744,191 +7819,88 @@
       window.addEventListener('resize', updateFollowButton)
 
       document.addEventListener('visibilitychange', () => {
+        captureEditDraft()
         if (document.hidden) {
-          if (paintFrame !== null) window.cancelAnimationFrame(paintFrame)
-          paintFrame = null
-          flushPendingSave()
+          if (saveDirty) writeStateSnapshot().catch(reportError)
           return
         }
-        flushMessagePaints()
-        renderSidebar()
-        renderTopBar()
-        renderAttachments()
-        hydrateVisibleMedia().catch(reportError)
+        refreshRelativeTimes()
+        updateFollowButton()
       })
 
       window.addEventListener('beforeunload', event => {
-        flushPendingSave()
-        if (canWriteState() && (saveDirty || mediaWrites.size || dirtyMedia.size ||
-          state.pendingAttachmentReads || conversationRuntimes.size || endpointFormChanged())) {
+        captureEditDraft()
+        if (saveDirty) writeStateSnapshot().catch(reportError)
+        if (saveDirty || mediaWrites.size || dirtyMedia.size ||
+          state.pendingAttachmentReads || conversationRuntimes.size ||
+          endpointFormChanged()) {
           event.preventDefault()
           event.returnValue = ''
         }
       })
 
       window.addEventListener('pagehide', event => {
-        flushPendingSave()
-        scheduleSave.cancel()
+        const pending = saveDirty ? writeStateSnapshot().catch(reportError) : Promise.resolve()
         if (event.persisted) return
-        pageClosed = true
-        writesEnabled = false
         conversationRuntimes.forEach(runtime => runtime.controller.abort())
-        database?.close()
-        releaseWriterLock?.()
-        writerOwned = false
+        mediaRecords.forEach(record => {
+          if (record.objectUrl) window.URL.revokeObjectURL(record.objectUrl)
+          delete record.objectUrl
+        })
+        pending.then(() => releaseWriterLock?.())
       })
 
       window.addEventListener('pageshow', event => {
         if (!event.persisted) return
-        flushMessagePaints()
-        renderSidebar()
-        renderTopBar()
-        renderAttachments()
-        hydrateVisibleMedia().catch(reportError)
-      })
-
-      window.addEventListener('storage', event => {
-        if (writerOwned || !Object.values(storageKeys).includes(event.key)) return
-        try {
-          const selectedId = state.activeConversationId
-          loadState()
-          if (state.conversations.some(conversation => conversation.id === selectedId)) {
-            state.activeConversationId = selectedId
-            activateSelectedConfiguration()
-          }
-          getElementById('message-input').value = state.messageDraft
-          renderConversationView()
-          applyWriteAccess()
-        } catch (error) {
-          reportError(error)
-        }
+        refreshRelativeTimes()
+        updateFollowButton()
       })
 
       window.setInterval(refreshRelativeTimes, 30000)
     }
 
-    async function runWorkbenchChecks () {
-      const results = []
-      function check (condition, label) {
-        if (!condition) throw new Error('FAIL: ' + label)
-        results.push(label)
-      }
-
-      const host = document.createElement('div')
-      host.hidden = true
-      document.body.appendChild(host)
-      try {
-        const markup = ids => ids.map(id =>
-          '<div data-node-key="' + id + '"><button type="button">Xoá ' + id + '</button></div>'
-        ).join('')
-        syncHtml(host, markup(['first', 'second', 'third']))
-        const removed = host.children[0]
-        const survivor = host.children[1]
-        const survivorButton = survivor.firstElementChild
-        syncHtml(host, markup(['second', 'third']))
-        check(!removed.isConnected, 'Xoá đúng node khỏi DOM')
-        check(host.firstElementChild === survivor, 'Mục kế tiếp giữ nguyên node')
-        check(host.firstElementChild.firstElementChild === survivorButton, 'Không tái sử dụng nút xoá của mục cũ')
-        syncHtml(host, markup(['third', 'second']))
-        check(host.lastElementChild === survivor, 'Đổi thứ tự vẫn giữ ID và node')
-
-        syncHtml(host, '<details data-node-key="reasoning"><summary>Suy luận</summary><p>A</p></details>')
-        host.firstElementChild.open = true
-        const details = host.firstElementChild
-        syncHtml(host, '<details data-node-key="reasoning"><summary>Suy luận</summary><p>B</p></details>')
-        check(host.firstElementChild === details && details.open, 'Giữ trạng thái reasoning')
-
-        const snapshot = storedState()
-        check(Array.isArray(snapshot.endpoints), 'Endpoint nằm trong snapshot Local Storage')
-        check(!hasProperty(snapshot, 'version') && !hasProperty(snapshot, 'schemaVersion'), 'Không thêm phiên bản snapshot')
-        const references = [
-          ...snapshot.ui.attachments,
-          ...snapshot.conversations.flatMap(conversation => conversation.messages.flatMap(message => [
-            ...message.attachments,
-            ...message.outputBlocks.filter(block => block.type === 'file')
-          ]))
-        ]
-        check(references.every(reference =>
-          !['blob', 'base64', 'dataUrl', 'objectUrl'].some(key => hasProperty(reference, key)) &&
-          !String(reference.mediaKey || '').startsWith('unsaved:')
-        ), 'Tham chiếu lưu không chứa nhị phân hoặc khoá tệp chưa commit')
-        check(!hasProperty(snapshot.workspaceConfiguration, 'apiKey'), 'Workspace không chứa bản sao endpoint')
-        const blob = new window.Blob(['workbench-check'], { type: 'text/plain' })
-        const first = await fileIdentity(blob, 'same.txt')
-        const same = await fileIdentity(blob, 'same.txt')
-        const other = await fileIdentity(blob, 'other.txt')
-        check(first.hash === same.hash && JSON.stringify(first.identity) === JSON.stringify(same.identity), 'Cùng byte, cùng tên có cùng identity')
-        check(JSON.stringify(first.identity) !== JSON.stringify(other.identity), 'Khác tên có identity khác')
-      } finally {
-        host.remove()
-      }
-      console.table(results.map(test => ({ test, status: 'PASS' })))
-      return results
-    }
-
     async function initialize () {
-      const started = window.performance.now()
-      try {
-        loadState()
-      } catch (error) {
-        reportError(error)
-        state.workspace = state.workspace || sanitizeConfiguration({})
-        activeConfiguration = state.workspace
-      }
-      initialized = true
-      queryElements('[data-icon]').forEach(element => {
-        element.innerHTML = renderIcon(element.dataset.icon)
-      })
-      queryElements('.app-icon').forEach(element => {
-        element.innerHTML = renderAppIcon()
-      })
-      getElementById('message-input').value = state.messageDraft
-      renderConversationView()
-      applyDesktopPanels()
-      resizeMessageInput()
-      bindEvents()
-      window.performance.measure('workbench:first-history-dom', { start: started })
-
-      if (!window.JSON5) reportError(new Error('Không tải được JSON5.'))
-      if (!window.commonmark) reportError(new Error('Không tải được CommonMark; hiển thị văn bản thuần.'))
-      if (!navigator.locks || !storageHealthy) {
-        reportError(new Error('Chỉ đọc: cần đọc được dữ liệu và Web Locks trong ngữ cảnh an toàn để ghi.'))
-        applyWriteAccess()
-        return
+      if (!window.indexedDB || !window.crypto?.subtle || !navigator.locks) {
+        throw new Error('Cần trình duyệt hỗ trợ IndexedDB, Web Crypto và Web Locks trong ngữ cảnh an toàn.')
       }
 
       await navigator.locks.request(storagePrefix + ':writer', { ifAvailable: true }, async lock => {
         if (!lock) {
-          announce('Tab chỉ đọc. Đóng tab ghi rồi tải lại để chỉnh sửa.')
-          applyWriteAccess()
-          await hydrateVisibleMedia().catch(reportError)
-          return
+          throw new Error('Ứng dụng đang mở để chỉnh sửa ở tab khác. Đóng tab đó rồi tải lại.')
         }
-        writerOwned = true
-        try {
-          await storageMigrator()
-          loadState()
-          writesEnabled = true
-          applyWriteAccess()
-          getElementById('message-input').value = state.messageDraft
-          renderConversationView()
-          announce('Ứng dụng sẵn sàng.')
-          hydrateVisibleMedia().catch(reportError)
-          await new Promise(resolve => { releaseWriterLock = resolve })
-        } finally {
-          writesEnabled = false
-          writerOwned = false
-          applyWriteAccess()
+
+        database = await openMediaDatabase()
+        await loadState()
+
+        queryElements('[data-icon]').forEach(element => {
+          element.innerHTML = renderIcon(element.dataset.icon)
+        })
+        queryElements('.app-icon').forEach(element => {
+          element.innerHTML = renderAppIcon()
+        })
+
+        getElementById('message-input').value = state.messageDraft
+        renderConversationView()
+        applyDesktopPanels()
+        resizeMessageInput()
+        bindEvents()
+
+        if (!window.JSON5) reportError(new Error('Không tải được JSON5.'))
+        if (!window.commonmark) {
+          reportError(new Error('Không tải được CommonMark; hiển thị văn bản thuần.'))
         }
+
+        announce('Ứng dụng sẵn sàng.')
+        await new Promise(resolve => { releaseWriterLock = resolve })
       })
     }
 
     function startApplication () {
       initialize().catch(error => {
-        writesEnabled = false
+        storageHealthy = false
         reportError(error)
-        applyWriteAccess()
-        // Không thay lịch sử vừa dựng bằng thông báo lỗi của một kho khác.
+        getElementById('message-list').textContent = error.message
+        getElementById('send-message-button').disabled = true
       })
     }
 
