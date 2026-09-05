@@ -7913,46 +7913,6 @@
       window.setInterval(refreshRelativeTimes, 30000)
     }
 
-    async function initialize () {
-      getElementById('send-message-button').disabled = true
-      getElementById('message-input').disabled = true
-      queryElements('[data-icon]').forEach(element => {
-        element.innerHTML = renderIcon(element.dataset.icon)
-      })
-      queryElements('.app-icon').forEach(element => {
-        element.innerHTML = renderAppIcon()
-      })
-
-      if (!navigator.locks?.request) {
-        throw new Error('Cần mở ứng dụng bằng HTTPS hoặc localhost trên trình duyệt hỗ trợ Web Locks.')
-      }
-
-      await new Promise((resolve, reject) => {
-        navigator.locks.request(
-          storagePrefix + '.writer',
-          { mode: 'exclusive', ifAvailable: true },
-          lock => {
-            if (!lock) {
-              reject(new Error('Ứng dụng đang mở ở tab khác. Hãy đóng tab đó rồi tải lại.'))
-              return
-            }
-            return new Promise(release => {
-              releaseWriterLock = release
-              resolve()
-            })
-          }
-        ).catch(reject)
-      })
-
-      database = await openMediaDatabase()
-      await loadState()
-      getElementById('message-input').value = state.messageDraft
-      applyDesktopPanels()
-      renderConversationView()
-      resizeMessageInput()
-      bindEvents()
-    }
-
     function startApplication () {
       initialize().catch(error => {
         storageHealthy = false
