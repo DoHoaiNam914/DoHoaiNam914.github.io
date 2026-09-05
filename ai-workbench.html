@@ -3888,6 +3888,7 @@
     let mediaQueue = Promise.resolve()
     let saveTimer = null
     let saveDirty = false
+    let saveRevision = 0
     let storageHealthy = true
     let initialized = false
     let shouldStickToBottom = true
@@ -4475,8 +4476,11 @@
 
     function openMediaDatabase () {
       return new Promise((resolve, reject) => {
-        const request = window.indexedDB.open(mediaDatabaseName, 2)
+        const request = window.indexedDB.open(mediaDatabaseName, 3)
         request.onupgradeneeded = () => {
+          if (!request.result.objectStoreNames.contains('state')) {
+            request.result.createObjectStore('state')
+          }
           const store = request.result.objectStoreNames.contains('media')
             ? request.transaction.objectStore('media')
             : request.result.createObjectStore('media')
@@ -4496,13 +4500,13 @@
       })
     }
 
-    function accessMediaStore (method, key, value) {
+    function accessMediaStore (method, key, value, storeName = 'media') {
       return new Promise((resolve, reject) => {
         let result
         try {
           const readOnly = ['get', 'getAll', 'getAllKeys'].includes(method)
-          const transaction = database.transaction('media', readOnly ? 'readonly' : 'readwrite')
-          const store = transaction.objectStore('media')
+          const transaction = database.transaction(storeName, readOnly ? 'readonly' : 'readwrite')
+          const store = transaction.objectStore(storeName)
           const request = method === 'put' ? store.put(value, key) : store[method](key)
           request.onsuccess = () => { result = request.result }
           transaction.oncomplete = () => resolve(result)
@@ -4655,34 +4659,38 @@
       return { version: 2, data: snapshot }
     }
 
-    function writeStateSnapshot () {
-      if (!initialized || !storageHealthy || mediaWrites.size || dirtyMedia.size) return false
+    async function writeStateSnapshot () {
+      if (!initialized || !storageHealthy) {
+        throw new Error('Bộ lưu trữ chưa sẵn sàng; chưa ghi đè dữ liệu.')
+      }
+      const revision = ++saveRevision
+      saveDirty = true
       try {
-        window.localStorage.setItem(snapshotKey, JSON.stringify(storedState()))
-        saveDirty = false
+        await Promise.all(Array.from(mediaWrites))
+        if (dirtyMedia.size) throw new Error('Có tệp chưa được lưu. Hãy thử lưu lại trong trình quản lí tệp.')
+        if (!storageHealthy) throw new Error('Kết nối lưu trữ đã thay đổi. Hãy tải lại trang.')
+        await accessMediaStore('put', snapshotKey, storedState(), 'state')
+        if (revision === saveRevision) saveDirty = false
         return true
       } catch (error) {
-        saveDirty = true
-        reportError(new Error('Không lưu được lịch sử: ' + error.message))
-        return false
+        throw new Error('Không lưu được lịch sử: ' + error.name + ': ' + error.message)
       }
     }
 
     function scheduleSave () {
+      saveRevision += 1
       saveDirty = true
       window.clearTimeout(saveTimer)
       saveTimer = window.setTimeout(() => {
         saveTimer = null
-        writeStateSnapshot()
+        writeStateSnapshot().catch(reportError)
       }, 200)
     }
 
     async function saveState () {
       window.clearTimeout(saveTimer)
       saveTimer = null
-      await Promise.all(Array.from(mediaWrites))
-      if (dirtyMedia.size) throw new Error('Có tệp chưa được lưu. Hãy thử lưu lại trong trình quản lí tệp.')
-      if (!writeStateSnapshot()) throw new Error('Chưa lưu được trạng thái ứng dụng.')
+      await writeStateSnapshot()
     }
 
     function configurationChanged (configurations = [activeConfiguration]) {
@@ -4735,11 +4743,14 @@
     }
 
     async function loadState () {
-      const current = window.localStorage.getItem(snapshotKey)
+      let envelope = await accessMediaStore('get', snapshotKey, undefined, 'state')
+      if (envelope === undefined) {
+        const current = window.localStorage.getItem(snapshotKey)
+        if (current) envelope = JSON.parse(current)
+      }
       let saved
-      if (current) {
-        const envelope = JSON.parse(current)
-        if (envelope.version !== 2 || !envelope.data) throw new Error('Phiên bản dữ liệu chưa được hỗ trợ.')
+      if (envelope !== undefined) {
+        if (!envelope || envelope.version !== 2 || !envelope.data) throw new Error('Phiên bản dữ liệu chưa được hỗ trợ.')
         saved = envelope.data
       } else {
         const read = name => JSON.parse(window.localStorage.getItem(storagePrefix + '.' + name) || 'null')
@@ -4876,10 +4887,13 @@
       }
       activateSelectedConfiguration()
       initialized = true
-      if (!writeStateSnapshot()) {
-        throw new Error('Không hoàn tất chuyển đổi dữ liệu; bản cũ vẫn được giữ.')
+      try {
+        await writeStateSnapshot()
+      } catch (error) {
+        initialized = false
+        throw new Error('Không hoàn tất chuyển đổi dữ liệu; bản cũ vẫn được giữ. ' + error.message)
       }
-      for (const key of oldKeys) await accessMediaStore('delete', key)
+      for (const key of oldKeys) await accessMediaStore('delete', key).catch(reportError)
     }
 
     function generatedFilename (mimeType) {
@@ -7806,8 +7820,9 @@
 
       document.addEventListener('visibilitychange', () => {
         captureEditDraft()
-        if (document.hidden) writeStateSnapshot()
-        else {
+        if (document.hidden) {
+          if (saveDirty) writeStateSnapshot().catch(reportError)
+        } else {
           renderMessages()
           renderTopBar()
         }
@@ -7815,7 +7830,7 @@
 
       window.addEventListener('beforeunload', event => {
         captureEditDraft()
-        writeStateSnapshot()
+        if (saveDirty) writeStateSnapshot().catch(reportError)
         if (saveDirty || mediaWrites.size || dirtyMedia.size ||
           state.pendingAttachmentReads || conversationRuntimes.size ||
           endpointFormChanged()) {
@@ -7824,15 +7839,15 @@
         }
       })
 
-      window.addEventListener('pagehide', () => {
-        writeStateSnapshot()
+      window.addEventListener('pagehide', event => {
+        const pending = saveDirty ? writeStateSnapshot().catch(reportError) : Promise.resolve()
         if (event.persisted) return
         conversationRuntimes.forEach(runtime => runtime.controller.abort())
         mediaRecords.forEach(record => {
           if (record.objectUrl) window.URL.revokeObjectURL(record.objectUrl)
           delete record.objectUrl
         })
-        releaseWriterLock?.()
+        pending.then(() => releaseWriterLock?.())
       })
 
       window.addEventListener('pageshow', event => {
