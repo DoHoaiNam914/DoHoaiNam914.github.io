@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta
     name="viewport"
-    content="width=device-width, initial-scale=1, viewport-fit=cover"
+    content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
   >
   <meta name="theme-color" content="#03060b">
   <title>AI Workbench</title>
@@ -87,6 +87,10 @@
       -webkit-tap-highlight-color: transparent;
       color: inherit;
       font: inherit;
+    }
+
+    textarea {
+      resize: none;
     }
 
     :disabled {
@@ -714,12 +718,14 @@
       border: 1px solid;
       display: inline-flex;
       flex: 0 1 auto;
-      font-size: 10px;
+      font-size: 11px;
       gap: 6px;
-      max-width: 220px;
+      height: 34px;
+      line-height: 1.2;
+      max-width: 280px;
       min-width: 0;
       overflow: hidden;
-      padding: 4px 9px;
+      padding: 0 10px;
       white-space: nowrap;
     }
 
@@ -1811,7 +1817,7 @@
 
     textarea.text-field {
       line-height: 1.5;
-      resize: vertical;
+      resize: none;
     }
 
     .text-field_auto-resize {
@@ -1969,15 +1975,44 @@
     }
 
     .toast-region {
+      background: transparent;
+      border: 0;
+      color: var(--color-text);
       display: flex;
       flex-direction: column;
       gap: 8px;
-      max-width: min(380px, calc(100vw - 24px));
+      inset: auto;
+      margin: 0;
+      max-height: calc(100dvh - 36px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+      max-width: min(380px, calc(100vw - 36px - env(safe-area-inset-right)));
+      overflow: auto;
+      padding: 0;
       pointer-events: none;
       position: fixed;
-      right: 18px;
+      right: calc(18px + env(safe-area-inset-right));
       top: calc(18px + env(safe-area-inset-top));
       z-index: 170;
+    }
+
+    .toast-region[popover]:not(:popover-open) {
+      display: none;
+    }
+
+    .toast-region::backdrop {
+      background: transparent;
+      pointer-events: none;
+    }
+
+    .toast > span {
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
+
+    @supports not selector(:popover-open) {
+      .dialog {
+        clip-path: none;
+        overflow: visible;
+      }
     }
 
     .toast {
@@ -1986,6 +2021,7 @@
       background: var(--color-panel);
       border: 1px solid var(--color-border-strong);
       display: flex;
+      flex-shrink: 0;
       font-size: 13px;
       gap: 9px;
       padding: 10px 14px;
@@ -2447,7 +2483,9 @@
 
     @media (max-width: 767px) {
 
-      .status-badge { flex: 1 1 0; max-width: none; }
+      .status-badge {
+        max-width: 240px;
+      }
       .top-bar__actions { gap: 2px; }
       .text-field, .number-field, .select-field, .composer__input, .variable-row__input { font-size: 16px; }
       .file-library__toolbar { grid-template-columns: minmax(0, 1fr); }
@@ -2512,8 +2550,8 @@
         scroll-behavior: auto;
         transition-duration: 0.01ms;
       }
-
-    </style>
+    }
+  </style>
 </head>
 <body>
   <div class="app">
@@ -3254,6 +3292,7 @@
   <div
     class="toast-region"
     id="toast-region"
+    popover="manual"
     role="status"
     aria-live="polite"
     aria-atomic="true"
@@ -3565,8 +3604,8 @@
         </label>
         <select class="select-field" id="file-library-filter">
           <option value="">All files</option>
-          <option value="attachment">Attachment</option>
-          <option value="generated">Generated file</option>
+          <option value="attachment">Attachments</option>
+          <option value="generated">Generated files</option>
         </select>
       </div>
       <ul
@@ -6795,7 +6834,7 @@ THE SOFTWARE.
       'chat-completions': [],
       messages: ['code_execution', 'web_fetch', 'web_search'],
       'generate-content': ['urlContext', 'codeExecution', 'googleSearch'],
-      responses: ['web_search', 'code_interpreter', 'image_generation'],
+      responses: ['web_search', 'x_search', 'code_interpreter', 'image_generation'],
       interactions: ['url_context', 'google_search', 'code_execution']
     }
 
@@ -6935,6 +6974,7 @@ THE SOFTWARE.
     const dirtyMedia = new Map()
     const pendingFileRequests = new Map()
     const conversationRuntimes = new Map()
+    const dialogStack = []
 
     let activeConfiguration = null
     let database = null
@@ -7281,6 +7321,32 @@ THE SOFTWARE.
       return `<button class="${className}" type="button" data-action="${action}" aria-label="${escapeHtml(label)}" title="${escapeHtml(label)}" ${attributes}>${renderIcon(icon, 'icon_size_small')}</button>`
     }
 
+    function syncToastRegion () {
+      const region = getElementById('toast-region')
+      if (!region) return
+      const parent = dialogStack.filter(dialog => dialog.open).at(-1) || document.body
+      if (region.parentElement !== parent) {
+        region.hidePopover?.()
+        parent.appendChild(region)
+      }
+      // Native modals outrank every z-index. Keep the live region inside the
+      // active modal for accessibility, then promote it above the modal.
+      // https://developer.mozilla.org/en-US/docs/Web/API/Popover_API/Using
+      if (region.children.length) {
+        if (region.showPopover && !region.matches(':popover-open')) region.showPopover()
+      } else region.hidePopover?.()
+    }
+
+    function showDialog (id) {
+      const dialog = getElementById(id)
+      if (dialog.open) return
+      dialog.showModal()
+      const index = dialogStack.indexOf(dialog)
+      if (index >= 0) dialogStack.splice(index, 1)
+      dialogStack.push(dialog)
+      syncToastRegion()
+    }
+
     function toast (message, type = 'info', duration = 3400) {
       const region = getElementById('toast-region')
       if (!region) return
@@ -7289,10 +7355,15 @@ THE SOFTWARE.
       element.className = 'toast toast_type_' + type
       element.innerHTML = renderIcon(type === 'success' ? 'check' : type === 'error' ? 'alert' : 'info') +
         '<span>' + escapeHtml(message) + '</span>'
+      syncToastRegion()
       region.appendChild(element)
+      syncToastRegion()
       window.setTimeout(() => {
         element.classList.add('toast_leaving')
-        window.setTimeout(() => element.remove(), 220)
+        window.setTimeout(() => {
+          element.remove()
+          syncToastRegion()
+        }, 220)
       }, duration)
     }
 
@@ -7599,10 +7670,15 @@ THE SOFTWARE.
     }
 
     function toolNames (endpoint) {
-      if (endpoint?.format === 'responses' && isXaiEndpoint(endpoint)) {
-        return ['web_search', 'x_search', 'code_interpreter', 'image_generation']
-      }
-      return toolNamesByFormat[endpoint?.format] || []
+      const names = toolNamesByFormat[endpoint?.format] || []
+      // x_search is an xAI Responses tool; compatible custom endpoints may expose it.
+      // https://docs.x.ai/developers/tools/x-search
+      try {
+        if (endpoint?.format === 'responses' && new window.URL(endpoint.baseUrl).hostname === 'api.openai.com') {
+          return names.filter(name => name !== 'x_search')
+        }
+      } catch {}
+      return names
     }
 
     function parseTools (source, format, endpoint = null) {
@@ -7783,6 +7859,7 @@ THE SOFTWARE.
         if (!record) return null
         const loaded = { ...withoutTimestamps(record), order: mediaRecords.get(key)?.order ?? record.order ?? record.createdAt ?? 0, hasContent: Boolean(record.blob), persisted: true }
         mediaRecords.set(key, loaded)
+        mediaOrder = Math.max(mediaOrder, Number(loaded.order) || 0)
         return loaded
       })
       mediaReads.set(key, pending)
@@ -7877,6 +7954,14 @@ THE SOFTWARE.
             delete record.updatedAt
             if (!mediaRecords.has(key)) mediaRecords.set(key, record)
           }
+          // Files created before library metadata was available still belong
+          // after those historical files, including in-memory saves after a failure.
+          const pending = Array.from(mediaRecords.values()).filter(record => record.orderPending)
+            .sort((first, second) => first.order - second.order)
+          for (const record of pending) {
+            record.order = ++mediaOrder
+            delete record.orderPending
+          }
           fileLibraryLoaded = true
           resolve()
         }
@@ -7937,8 +8022,9 @@ THE SOFTWARE.
         const key = match?.key || 'file:' + uniqueId()
         const origins = Array.from(new Set([...(existing?.origins || []), origin]))
         if (!fileLibraryLoaded) await loadFileLibrary()
+        const order = ++mediaOrder
         const record = existing
-          ? { ...withoutTimestamps(existing), order: mediaRecords.get(key)?.order || existing.order || 0, origins, remote: existing.remote || remote }
+          ? { ...withoutTimestamps(existing), order, origins, remote: existing.remote || remote }
           : {
               blob,
               name,
@@ -7947,15 +8033,15 @@ THE SOFTWARE.
               remote,
               mimeType: normalizeMimeType(blob.type) || inferMimeType(name) || 'application/octet-stream',
               size: blob.size,
-              order: ++mediaOrder,
+              order,
               origins
             }
-        if (!existing || JSON.stringify(origins) !== JSON.stringify(existing.origins) ||
-          JSON.stringify(record.remote) !== JSON.stringify(existing.remote)) {
-          await accessMediaStore('put', key, diskMediaRecord(record))
-        }
+        // Saving the same bytes/name reuses its key and moves it to the top.
+        // Reading, previewing, downloading, or attaching an existing file does not.
+        await accessMediaStore('put', key, diskMediaRecord(record))
         const cached = mediaRecords.get(key)
         mediaRecords.set(key, { ...cached, ...record, hasContent: true, persisted: true })
+        renderFileLibrary()
         return key
       })
     }
@@ -8945,6 +9031,7 @@ THE SOFTWARE.
           origins: ['generated'],
           remote,
           order: ++mediaOrder,
+          orderPending: !fileLibraryLoaded,
           persisted: false
         })
         dirtyMedia.set(key, true)
@@ -8988,7 +9075,7 @@ THE SOFTWARE.
         note.textContent = 'No preview is available for this format.'
         body.appendChild(note)
       }
-      getElementById('file-preview-dialog').showModal()
+      showDialog('file-preview-dialog')
     }
 
     function compareMediaEntries ([firstKey, first], [secondKey, second]) {
@@ -9123,6 +9210,54 @@ THE SOFTWARE.
       }]
     }
 
+    function requestAttachments (message) {
+      const seen = new Set()
+      return [
+        ...(message.attachments || []),
+        ...(message.role === 'assistant'
+          ? (message.outputBlocks || []).filter(block => block.type === 'file' && !block.partial)
+          : [])
+      ].filter(attachment => {
+        const key = resolveMediaKey(attachment.mediaKey) || attachment.id
+        if (key && seen.has(key)) return false
+        if (key) seen.add(key)
+        return true
+      })
+    }
+
+    function requestMessageItems (role, text, files, format) {
+      if (!messageRoles.includes(role)) throw new Error('Invalid message role.')
+      if (files.length && isInstructionRole(role)) {
+        throw new Error('Files require the user or assistant role.')
+      }
+      const assistant = role === 'assistant'
+      const content = textPart(text, format, assistant)
+      if (format === 'generate-content') {
+        return [{ role: assistant ? 'model' : 'user', parts: [...content, ...files] }]
+      }
+      if (format === 'interactions') {
+        return [{ type: assistant ? 'model_output' : 'user_input', content: [...content, ...files] }]
+      }
+      if (assistant && files.length) {
+        // Keep assistant text in its original role. Replay file bytes as explicitly
+        // attributed reference input, not invalid assistant image/document blocks.
+        // https://developers.openai.com/api/reference/typescript/resources/chat/subresources/completions/methods/create
+        // https://developers.openai.com/api/reference/typescript/resources/responses/methods/create
+        // https://platform.claude.com/docs/en/agents-and-tools/tool-use/handle-tool-calls
+        return [
+          ...(content.length ? [{ role, content: format === 'chat-completions' ? text : content }] : []),
+          { role: 'user', content: [
+            ...textPart('Files from an assistant message (reference content):', format, false),
+            ...files
+          ] }
+        ]
+      }
+      return [{
+        role,
+        content: format === 'chat-completions' && !files.length ? text : [...content, ...files]
+      }]
+    }
+
     async function attachmentPart (attachment, format, preview = false) {
       const record = await loadMediaRecord(attachment.mediaKey)
       if (!record?.blob || !record.persisted) {
@@ -9136,7 +9271,11 @@ THE SOFTWARE.
       const dataUrl = 'data:' + type + ';base64,' + base64
 
       if (format === 'generate-content') {
-        return { inlineData: { data: base64, mimeType: type } }
+        return {
+          inlineData: { data: base64, mimeType: type },
+          ...(attachment.metadata?.thoughtSignature
+            ? { thoughtSignature: attachment.metadata.thoughtSignature } : {})
+        }
       }
       if (format === 'interactions') {
         return { type: image ? 'image' : 'document', mime_type: type, data: base64 }
@@ -9197,34 +9336,25 @@ THE SOFTWARE.
         const text = assistant
           ? message.content || ''
           : interpolate(message.content || '', settings.variables)
-        const attachments = message.attachments || []
+        const attachments = requestAttachments(message)
+        if (!messageRoles.includes(message.role)) throw new Error('Invalid message role.')
         if (!text.trim() && !attachments.length) continue
-        if (attachments.length && message.role !== 'user') {
-          throw new Error('Input attachments require the user role.')
+        if (attachments.length && isInstructionRole(message.role)) {
+          throw new Error('Files require the user or assistant role.')
         }
         if (isInstructionRole(message.role) && !openAiFormat) {
           instructions.push(text)
           continue
         }
 
-        const content = textPart(text, format, assistant)
+        const files = []
         for (const attachment of attachments) {
-          content.push(await attachmentPart(attachment, format, preview))
+          files.push(await attachmentPart(attachment, format, preview))
         }
-
-        if (format === 'generate-content') {
-          input.push({ role: assistant ? 'model' : 'user', parts: content })
-        } else if (format === 'interactions') {
-          input.push({ type: assistant ? 'model_output' : 'user_input', content })
-        } else if (format === 'messages') {
+        for (const item of requestMessageItems(message.role, text, files, format)) {
           const previous = input[input.length - 1]
-          if (previous?.role === message.role) previous.content.push(...content)
-          else input.push({ role: message.role, content })
-        } else {
-          input.push({
-            role: message.role,
-            content: format === 'chat-completions' && !attachments.length ? text : content
-          })
+          if (format === 'messages' && previous?.role === item.role) previous.content.push(...item.content)
+          else input.push(item)
         }
       }
 
@@ -9579,7 +9709,7 @@ THE SOFTWARE.
           } catch (storageFailure) {
             key = 'unsaved:' + uniqueId()
             mediaRecords.set(key, { name, mimeType: type, blob: null, remote, size: 0,
-              origins: ['generated'], order: ++mediaOrder, persisted: false })
+              origins: ['generated'], order: ++mediaOrder, orderPending: !fileLibraryLoaded, persisted: false })
             dirtyMedia.set(key, true)
             showStorageError(storageFailure)
           }
@@ -9596,6 +9726,7 @@ THE SOFTWARE.
         mimeType: type || blob?.type || '',
         thought,
         partial: false,
+        ...(payload.thoughtSignature ? { metadata: { thoughtSignature: payload.thoughtSignature } } : {}),
         ...(remote ? { remote } : {})
       })
     }
@@ -10960,8 +11091,8 @@ THE SOFTWARE.
       if (!draft || !canModifyConversation(conversation)) return
       const message = conversation.messages.find(item => item.id === draft.messageId)
       if (!message || !messageRoles.includes(draft.role)) return
-      if (draft.role !== 'user' && message.attachments?.length) {
-        throw new Error('Remove input attachments before changing the user role.')
+      if (isInstructionRole(draft.role) && message.attachments?.length) {
+        throw new Error('Remove attachments before changing to the system or developer role.')
       }
       if (!draft.isNew && draft.role === message.role && draft.content === message.content) {
         state.editDraft = null
@@ -10976,6 +11107,9 @@ THE SOFTWARE.
       }
       if (message.role !== draft.role &&
         (message.outputBlocks || []).some(block => block.type !== 'text')) {
+        if (!draft.content.trim() && !message.attachments?.length) {
+          throw new Error('Enter text before changing the role of a file-only response. Files remain in the library.')
+        }
         if (!confirmChange('Changing the role removes non-text output from this message. Files remain in the library. Continue?')) return
         message.outputBlocks = []
       }
@@ -11363,7 +11497,7 @@ THE SOFTWARE.
 
     function openEndpointDialog () {
       renderEndpointList()
-      if (!getElementById('endpoint-dialog').open) getElementById('endpoint-dialog').showModal()
+      showDialog('endpoint-dialog')
     }
 
     function setSetting (name, value) {
@@ -11517,7 +11651,7 @@ THE SOFTWARE.
 
       'open-attachment-url' () {
         setAttachmentMenu(false)
-        getElementById('attachment-url-dialog').showModal()
+        showDialog('attachment-url-dialog')
       },
 
       'close-attachment-url' () {
@@ -11679,9 +11813,12 @@ THE SOFTWARE.
 
       async 'open-file-library' () {
         setAttachmentMenu(false)
-        getElementById('file-library-dialog').showModal()
-        await loadFileLibrary()
-        renderFileLibrary()
+        showDialog('file-library-dialog')
+        try {
+          await loadFileLibrary()
+        } finally {
+          renderFileLibrary()
+        }
       },
 
       'close-file-library': () => getElementById('file-library-dialog').close(),
@@ -11981,6 +12118,15 @@ THE SOFTWARE.
         }
       })
 
+      for (const dialog of queryElements('dialog')) {
+        dialog.addEventListener('close', () => {
+          if (dialog.open) return
+          const index = dialogStack.indexOf(dialog)
+          if (index >= 0) dialogStack.splice(index, 1)
+          syncToastRegion()
+        })
+      }
+
       getElementById('endpoint-dialog').addEventListener('cancel', event => {
         if (!discardEndpointDraft()) event.preventDefault()
       })
@@ -12135,6 +12281,60 @@ THE SOFTWARE.
         {format:'responses',baseUrl:'https://api.x.ai/v1'})[0].container === undefined, 'xAI container contract unchanged')
       assert(!renderMarkdown('<b>literal HTML</b>').includes('<b>'), 'raw HTML is not executable markup')
       assert(compareMediaEntries(['new', {order:2}], ['old', {order:1}]) < 0, 'new files first')
+
+      const xai = { format: 'responses', baseUrl: 'https://api.x.ai/v1' }
+      const proxy = { format: 'responses', baseUrl: 'https://example.com/v1' }
+      const openai = { format: 'responses', baseUrl: 'https://api.openai.com/v1' }
+      const searchSource = '[{type:"x_search",allowed_x_handles:["example"],enable_image_understanding:true}]'
+      assert(parseTools(searchSource, 'responses', xai)[0].allowed_x_handles[0] === 'example',
+        'x_search parameters preserved')
+      assert(parseTools(searchSource, 'responses', proxy)[0].type === 'x_search',
+        'x_search available to compatible custom endpoints')
+      assert(!toolNames(openai).includes('x_search'), 'x_search not advertised as an OpenAI tool')
+      let rejected = false
+      try { parseTools(searchSource, 'responses', openai) } catch { rejected = true }
+      assert(rejected, 'unsupported native OpenAI x_search rejected before sending')
+
+      const attachment = { id: 'self-check-attachment', mediaKey: 'self-check:file', name: 'file.txt' }
+      const generated = { ...attachment, id: 'self-check-output', type: 'file' }
+      const fileMessage = {
+        role: 'assistant',
+        attachments: [attachment],
+        outputBlocks: [generated, { id: 'partial', type: 'file', mediaKey: 'self-check:partial', partial: true }]
+      }
+      assert(requestAttachments(fileMessage).length === 1, 'assistant files deduplicated; partial output excluded')
+      assert(requestAttachments({ role: 'assistant', outputBlocks: [generated] })[0] === generated,
+        'generated file-only assistant message retained')
+      assert(requestAttachments({ role: 'user', outputBlocks: [generated] }).length === 0,
+        'only assistant output files are replayed')
+
+      for (const format of ['chat-completions', 'responses', 'messages']) {
+        const file = { type: format === 'responses' ? 'input_file' : format === 'messages' ? 'document' : 'file' }
+        const items = requestMessageItems('assistant', 'Original answer', [file], format)
+        assert(items.length === 2 && items[0].role === 'assistant' && items[1].role === 'user',
+          format + ': assistant role preserved with attributed reference input')
+        assert(items[1].content.at(-1) === file, format + ': file content included')
+        const onlyFile = requestMessageItems('assistant', '', [file], format)
+        assert(onlyFile.length === 1 && onlyFile[0].content.at(-1) === file,
+          format + ': file-only output included without empty assistant turn')
+      }
+      const image = { inlineData: { mimeType: 'image/png', data: 'AA==' } }
+      assert(requestMessageItems('assistant', 'Image', [image], 'generate-content')[0].role === 'model',
+        'Generate Content native model role')
+      assert(requestMessageItems('assistant', '', [image], 'generate-content')[0].parts[0] === image,
+        'Generate Content native file-only message')
+      const documentPart = { type: 'document', mime_type: 'application/pdf', data: 'AA==' }
+      assert(requestMessageItems('assistant', '', [documentPart], 'interactions')[0].type === 'model_output',
+        'Interactions native model_output')
+      for (const role of ['system', 'developer', 'invalid']) {
+        let rejected = false
+        try { requestMessageItems(role, 'Instructions', [documentPart], 'responses') } catch { rejected = true }
+        assert(rejected, 'file role boundary: ' + role)
+      }
+      assert(queryElements('textarea').every(element => getComputedStyle(element).resize === 'none'),
+        'textarea manual resize disabled by default')
+      assert(queryElement('meta[name="viewport"]').content.includes('user-scalable=no'),
+        'requested viewport scaling setting')
       return { passed: checks }
     }
 
