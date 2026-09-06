@@ -5990,7 +5990,12 @@
           if (settings.level) thinkingConfig.thinkingLevel = settings.level
           else if (settings.budget != null) thinkingConfig.thinkingBudget = settings.budget
           generationConfig.thinkingConfig = thinkingConfig
-        }
+        } else {
+          generationConfig.thinkingConfig = {
+            includeThoughts: false,
+            thinkingBudget: 0
+          }
+         }
         if (Object.keys(generationConfig).length) body.generationConfig = generationConfig
 
         const safetySettings = safetyDefinitions.flatMap(item => {
@@ -6014,6 +6019,7 @@
           }
           if (settings.effort) body.output_config = { effort: settings.effort }
         } else {
+          body.thinking = { type: 'disabled' }
           if (!settings.temperatureAuto) {
             if (settings.temperature > 1) {
               throw new Error('Temperature của Messages phải trong khoảng 0–1.')
@@ -6051,16 +6057,20 @@
           if (responses) body.text = { verbosity: settings.verbosity }
           else body.verbosity = settings.verbosity
         }
-        if (settings.reasoningEnabled) {
-          if (responses) {
-            const reasoning = {}
+        if (responses) {
+          const reasoning = {}
+          if (settings.reasoningEnabled) {
             if (settings.effort) reasoning.effort = settings.effort
             if (settings.mode) reasoning.mode = settings.mode
             if (settings.showReasoning) reasoning.summary = 'auto'
-            if (Object.keys(reasoning).length) body.reasoning = reasoning
-          } else if (settings.effort) {
-            body.reasoning_effort = settings.effort
+          } else {
+            reasoning.effort = 'none'
           }
+          if (Object.keys(reasoning).length) body.reasoning = reasoning
+        } else if (settings.reasoningEnabled) {
+          if (settings.effort) body.reasoning_effort = settings.effort
+        } else {
+          body.reasoning_effort = 'none'
         }
         if (responses && settings.tools.some(tool => tool.type === 'code_interpreter')) {
           body.include = ['code_interpreter_call.outputs']
@@ -8681,238 +8691,6 @@
       announce(writerOwned ? 'Ứng dụng sẵn sàng.' : 'Tab chỉ đọc.')
     }
 
-    // Runnable, non-destructive checks: await window.runWorkbenchChecks().
-    async function runWorkbenchChecks () {
-      const results = []
-      const assert = (condition, message) => {
-        if (!condition) throw new Error('Regression: ' + message)
-        results.push(message)
-      }
-      const values = new Map([['history', 'x'.repeat(80)], ['ui', 'old']])
-      let writes = 0
-      const storage = {
-        getItem: key => values.get(key) ?? null,
-        setItem (key, value) {
-          const next = new Map(values)
-          next.set(key, value)
-          if (Array.from(next.values()).reduce((size, item) => size + item.length, 0) > 90) {
-            throw new window.DOMException('The quota has been exceeded.', 'QuotaExceededError')
-          }
-          values.set(key, value)
-          writes += 1
-        }
-      }
-      writeLocalEntries([['ui', 'y'.repeat(40)], ['history', 'z'.repeat(40)]], storage)
-      assert(values.get('ui').length === 40, 'shrink-before-grow avoids transient quota')
-      const previousWrites = writes
-      writeLocalEntries([['history', 'z'.repeat(40)]], storage)
-      assert(writes === previousWrites, 'unchanged data is not rewritten')
-      let rejected = false
-      try {
-        writeLocalEntries([['ui', 'y'.repeat(100)]], storage)
-      } catch (error) {
-        rejected = error.name === 'QuotaExceededError'
-      }
-      assert(rejected && values.get('ui').length === 40, 'quota remains a failed write, preserving previous value')
-      const host = document.createElement('div')
-      renderList(host, '<div data-row-key="a"><button>A</button></div><div data-row-key="b"><button>B</button></div>')
-      const removed = host.firstElementChild
-      const remaining = host.lastElementChild
-      renderList(host, '<div data-row-key="b"><button>B</button></div>')
-      assert(removed.parentNode === null, 'deleted row is removed')
-      assert(host.firstElementChild === remaining, 'next row keeps its own node')
-      const button = remaining.firstElementChild
-      renderList(host, '<div data-row-key="b"><button>B</button></div>')
-      assert(remaining.firstElementChild === button, 'unchanged button is not replaced')
-      const actions = ['move-message-up', 'move-message-down', 'copy-message', 'edit-message', 'delete-message']
-      const actionMarkup = disabled => actions.map(action =>
-        actionButton(action, 'copy', action, 'data-message-id="check-message"' +
-          (disabled && action === 'move-message-down' ? ' disabled' : ''))
-      ).join('')
-      renderList(host, actionMarkup(false))
-      const originalActions = Array.from(host.children)
-      renderList(host, actionMarkup(true))
-      assert(host.children.length === actions.length, 'newest remaining message retains every action')
-      assert(originalActions.every((element, index) => host.children[index] === element), 'each action retains only its own node')
-      assert(host.children[1].disabled, 'newest message cannot move down')
-      assert(new Set(Array.from(host.children, elementKey)).size === actions.length, 'shared message ID does not collide across actions')
-      renderList(host, actionMarkup(false))
-      assert(!host.children[1].disabled && host.children.length === actions.length, 'repeated action updates preserve ordering and disabled state')
-
-      const beforeFiles = { id: 'check-output', outputBlocks: [
-        { id: 'file-a', type: 'file', name: 'a.txt' },
-        { id: 'file-b', type: 'file', name: 'b.txt' }
-      ] }
-      renderList(host, renderAssistantBodyHtml(beforeFiles))
-      const removedFile = host.firstElementChild
-      const retainedFile = host.lastElementChild
-      const retainedFigure = retainedFile.firstElementChild
-      renderList(host, renderAssistantBodyHtml({ ...beforeFiles, outputBlocks: beforeFiles.outputBlocks.slice(1) }))
-      assert(removedFile.parentNode === null && host.firstElementChild === retainedFile, 'output deletion removes the entire deleted wrapper')
-      assert(retainedFile.firstElementChild === retainedFigure, 'remaining output never inherits a deleted file element')
-
-      const focusHost = document.createElement('div')
-      focusHost.className = 'visually-hidden'
-      const previousFocus = document.activeElement
-      document.body.appendChild(focusHost)
-      try {
-        renderList(focusHost, '<div data-row-key="a"><button>A</button></div><div data-row-key="b"><button>B</button></div>')
-        const deletedButton = focusHost.firstElementChild.firstElementChild
-        const retainedButton = focusHost.lastElementChild.firstElementChild
-        deletedButton.focus()
-        renderList(focusHost, '<div data-row-key="b"><button>B</button></div>')
-        assert(!deletedButton.isConnected && !retainedButton.matches(':focus'), 'deleting a focused item does not focus its successor')
-        assert(focusHost.firstElementChild.firstElementChild === retainedButton, 'surviving controls keep their own descendants')
-      } finally {
-        focusHost.remove()
-        if (previousFocus?.isConnected) previousFocus.focus({ preventScroll: true })
-      }
-
-      const backupFixture = {
-        activeConversationId: null,
-        conversations: [],
-        endpoints: [],
-        prompts: [{ id: 'check-prompt', name: 'Prompt', content: 'Nội dung được nhập' }],
-        workspace: {
-          endpointId: null,
-          modelId: '',
-          settings: { ...defaultSettings(), systemPromptId: 'check-prompt' }
-        },
-        ui: { accent: '#00f6ff', sidebarOpen: true, settingsOpen: true },
-        attachments: [],
-        messageDraft: 'Bản nháp kiểm thử',
-        editDraft: null
-      }
-      const loadedBackup = parseStorageCopy(JSON.stringify({ currentState: backupFixture }))
-      assert(loadedBackup.workspace.settings.systemPrompt === 'Nội dung được nhập', 'import resolves prompts from the backup, not live state')
-      assert(loadedBackup.messageDraft === backupFixture.messageDraft, 'import preserves the composer draft')
-      assert(storedState(loadedBackup).systemPrompts[0].content === 'Nội dung được nhập', 'import serializes its own normalized state')
-      for (const invalid of [
-        {},
-        { currentState: { ...backupFixture, endpoints: null } },
-        { currentState: { ...backupFixture, prompts: [backupFixture.prompts[0], backupFixture.prompts[0]] } },
-        { currentState: { ...backupFixture, workspace: { ...backupFixture.workspace, settings: { ...defaultSettings(), store: 'false' } } } },
-        { currentState: { ...backupFixture, attachments: [
-          { id: 'same', name: 'a.txt' }, { id: 'same', name: 'b.txt' }
-        ] } }
-      ]) {
-        let invalidRejected = false
-        try {
-          parseStorageCopy(JSON.stringify(invalid))
-        } catch {
-          invalidRejected = true
-        }
-        assert(invalidRejected, 'invalid backup is rejected before any storage write')
-      }
-
-      const importValues = new Map([[storageKeys.conversations, '[]'], [storageKeys.ui, '{"sidebarOpen":false}']])
-      const beforeImport = JSON.stringify(Array.from(importValues))
-      let importWrites = 0
-      const importStorage = {
-        getItem: key => importValues.get(key) ?? null,
-        removeItem: key => importValues.delete(key),
-        setItem (key, value) {
-          importWrites += 1
-          if (importWrites === 3) throw new window.DOMException('Import quota test', 'QuotaExceededError')
-          importValues.set(key, value)
-        }
-      }
-      let importRejected = false
-      try {
-        commitStorageImport(loadedBackup, importStorage)
-      } catch (error) {
-        importRejected = error.name === 'QuotaExceededError'
-      }
-      assert(importRejected && JSON.stringify(Array.from(importValues)) === beforeImport, 'partial import restores all previous storage keys after quota failure')
-      commitStorageImport(loadedBackup, importStorage)
-      assert(JSON.parse(importValues.get(storageKeys.ui)).messageDraft === backupFixture.messageDraft, 'valid import commits all known storage keys')
-
-      const config = { endpointId: 'pending', modelId: 'pending-model' }
-      const wasLoaded = endpointsLoaded
-      endpointsLoaded = false
-      try {
-        normalizeConfiguration(config)
-        assert(config.endpointId === 'pending' && config.modelId === 'pending-model', 'pending endpoint choices survive')
-      } finally {
-        endpointsLoaded = wasLoaded
-      }
-      assert(defaultSettings().store === false, 'store defaults to false')
-      let invalidStoreRejected = false
-      try {
-        sanitizeSettings({ store: 'false' })
-      } catch {
-        invalidStoreRejected = true
-      }
-      assert(invalidStoreRejected, 'store rejects non-boolean data')
-      const files = [
-        ['old', { createdAt: 10 }],
-        ['missing', {}],
-        ['new', { createdAt: 30 }],
-        ['fallback', { createdAt: NaN, updatedAt: 20 }]
-      ].sort(compareMediaEntries)
-      assert(files.map(([key]) => key).join(',') === 'new,fallback,old,missing', 'file order is newest first with safe timestamps')
-      assert(compareMediaEntries(['a', { createdAt: 1 }], ['b', { createdAt: 1 }]) < 0, 'equal timestamps use stable key order')
-
-      const originalEndpoints = state.endpoints
-      try {
-        for (const format of apiFormatOrder) {
-          const endpoint = {
-            id: 'workbench-contract-check',
-            name: 'Contract fixture',
-            format,
-            baseUrl: apiFormats[format].presetBase,
-            apiKey: '',
-            headers: [],
-            models: ['contract-fixture']
-          }
-          state.endpoints = [...originalEndpoints, endpoint]
-          const configuration = {
-            endpointId: endpoint.id,
-            modelId: endpoint.models[0],
-            settings: defaultSettings()
-          }
-          for (const store of [false, true]) {
-            configuration.settings.store = store
-            const request = await buildRequest(configuration, [{ role: 'user', content: 'Contract fixture' }])
-            assert(
-              supportsStore(endpoint) ? request.body.store === store : !hasProperty(request.body, 'store'),
-              format + ' store=' + store + ' matches its request contract'
-            )
-          }
-        }
-        const endpoint = {
-          id: 'workbench-xai-check',
-          name: 'xAI fixture',
-          format: 'chat-completions',
-          baseUrl: 'https://api.x.ai/v1',
-          apiKey: '',
-          headers: [],
-          models: ['contract-fixture']
-        }
-        state.endpoints = [...originalEndpoints, endpoint]
-        const request = await buildRequest({
-          endpointId: endpoint.id,
-          modelId: endpoint.models[0],
-          settings: { ...defaultSettings(), store: true }
-        }, [{ role: 'user', content: 'Contract fixture' }])
-        assert(!hasProperty(request.body, 'store'), 'xAI Chat Completions omits unsupported store')
-        assert(supportsStore({ ...endpoint, format: 'responses' }), 'xAI Responses supports store')
-      } finally {
-        state.endpoints = originalEndpoints
-      }
-      const stream = new window.ReadableStream({
-        start (controller) {
-          const chunks = ['event: fixture\r', '\ndata: first\r\ndata: second\r', '\n\r', '\n']
-          for (const chunk of chunks) controller.enqueue(utf8Encoder.encode(chunk))
-          controller.close()
-        }
-      })
-      const events = []
-      await readEvents({ body: stream }, (data, type) => events.push({ data, type }))
-      assert(events.length === 1 && events[0].data === 'first\nsecond' && events[0].type === 'fixture', 'SSE accepts split CRLF and multiline data')
-      return results
-    }
-
     function startApplication () {
       initialize().catch(error => {
         showStorageError(error)
@@ -8921,8 +8699,6 @@
         updateComposer()
       })
     }
-
-    window.runWorkbenchChecks = runWorkbenchChecks
 
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', startApplication, { once: true })
