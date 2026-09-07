@@ -7302,6 +7302,19 @@ THE SOFTWARE.
       return role === 'assistant'
     }
 
+    function mapMessageRole (role, format) {
+      if (format === 'messages') {
+        // Messages: map developer to system; keep other roles as-is.
+        if (role === 'developer') return 'system'
+        return role
+      }
+      if (format === 'generate-content') {
+        // Generate Content: system/developer/user => user, assistant => model.
+        return role === 'assistant' ? 'model' : 'user'
+      }
+      return role
+    }
+
     function safetySlug (category) {
       return category.replace(/^HARM_CATEGORY_/, '').toLowerCase().replace(/_/g, '-')
     }
@@ -9233,7 +9246,7 @@ THE SOFTWARE.
       const assistant = role === 'assistant'
       const content = textPart(text, format, assistant)
       if (format === 'generate-content') {
-        return [{ role: assistant ? 'model' : 'user', parts: [...content, ...files] }]
+        return [{ role: mapMessageRole(role, format), parts: [...content, ...files] }]
       }
       if (format === 'interactions') {
         return [{ type: assistant ? 'model_output' : 'user_input', content: [...content, ...files] }]
@@ -9253,7 +9266,7 @@ THE SOFTWARE.
         ]
       }
       return [{
-        role,
+        role: mapMessageRole(role, format),
         content: format === 'chat-completions' && !files.length ? text : [...content, ...files]
       }]
     }
@@ -9327,7 +9340,6 @@ THE SOFTWARE.
       }
 
       const format = endpoint.format
-      const openAiFormat = ['chat-completions', 'responses'].includes(format)
       const instructions = settings.systemPrompt ? [settings.systemPrompt] : []
       const input = []
 
@@ -9341,10 +9353,6 @@ THE SOFTWARE.
         if (!text.trim() && !attachments.length) continue
         if (attachments.length && isInstructionRole(message.role)) {
           throw new Error('Files require the user or assistant role.')
-        }
-        if (isInstructionRole(message.role) && !openAiFormat) {
-          instructions.push(text)
-          continue
         }
 
         const files = []
