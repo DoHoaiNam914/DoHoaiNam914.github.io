@@ -6834,19 +6834,19 @@ THE SOFTWARE.
       'chat-completions': [],
       messages: ['code_execution', 'web_fetch', 'web_search'],
       'generate-content': ['urlContext', 'codeExecution', 'googleSearch'],
-      responses: ['web_search', 'x_search', 'code_interpreter', 'image_generation'],
+      responses: ['web_search', 'x_search', 'code_interpreter', 'image_generation', 'programmatic_tool_calling'],
       interactions: ['url_context', 'google_search', 'code_execution']
     }
 
     const toolTypeLabels = {
-      code_execution_call: 'code_execution',
-      code_interpreter_call: 'code_interpreter',
-      google_search_call: 'google_search',
-      image_generation_call: 'image_generation',
-      url_context_call: 'url_context',
-      web_fetch_call: 'web_fetch',
-      web_search_call: 'web_search',
-      x_search_call: 'x_search'
+      code_execution_call: 'Code execution',
+      code_interpreter_call: 'Code Interpreter',
+      google_search_call: 'Grounding with Google Search',
+      image_generation_call: 'Image generation',
+      url_context_call: 'URL context',
+      web_fetch_call: 'Web fetch',
+      web_search_call: 'Web search',
+      x_search_call: 'X search'
     }
 
     const toolStatusLabels = {
