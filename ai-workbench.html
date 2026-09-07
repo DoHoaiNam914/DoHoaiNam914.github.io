@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="vi">
 <head>
   <meta charset="utf-8">
   <meta
@@ -2881,7 +2881,7 @@
             <div class="field">
               <div class="field__header">
                 <label class="field__label" for="model-select">
-                  model
+                  Model
                 </label>
               </div>
               <select class="select-field" id="model-select"></select>
@@ -2967,7 +2967,7 @@
             <div class="field" id="temperature-field">
               <div class="field__header">
                 <label class="field__label" for="temperature-range">
-                  temperature
+                  Temperature
                 </label>
                 <label class="field__auto">
                   <input id="temperature-auto" type="checkbox" checked>
@@ -3046,7 +3046,7 @@
             <div class="field">
               <div class="field__header">
                 <label class="field__label" for="max-tokens">
-                  max_completion_tokens
+                  Max tokens
                 </label>
               </div>
               <input
@@ -3062,7 +3062,7 @@
             <div class="field" id="response-verbosity-field">
               <div class="field__header">
                 <label class="field__label" for="response-verbosity">
-                  verbosity
+                  Verbosity
                 </label>
               </div>
               <select
@@ -3080,7 +3080,7 @@
             <div class="field">
               <div class="toggle-row">
                 <label class="toggle-row__label" for="reasoning-toggle">
-                  reasoning
+                  Reasoning
                 </label>
                 <button
                   class="toggle"
@@ -3119,7 +3119,7 @@
             <div class="field" id="reasoning-effort-field">
               <div class="field__header">
                 <label class="field__label" for="reasoning-effort">
-                  effort
+                  Reasoning effort
                 </label>
               </div>
               <select
@@ -3139,7 +3139,7 @@
             <div class="field" id="reasoning-mode-field">
               <div class="field__header">
                 <label class="field__label" for="reasoning-mode">
-                  mode
+                  Reasoning mode
                 </label>
               </div>
               <select
@@ -3155,7 +3155,7 @@
             <div class="field" id="thinking-budget-field">
               <div class="field__header">
                 <label class="field__label" for="thinking-budget">
-                  thinkingBudget
+                  Thinking budget
                 </label>
               </div>
               <input
@@ -3495,7 +3495,7 @@
         </div>
         <div class="field">
           <div class="field__header">
-            <span class="field__label">model</span>
+            <span class="field__label">Model</span>
           </div>
           <div class="model-list" id="endpoint-model-list"></div>
           <div class="endpoint-form__row">
@@ -10792,47 +10792,9 @@ THE SOFTWARE.
       control.closest('.field')?.classList.toggle('field_disabled', !enabled)
     }
 
-
-    function renderParameterLabels (format) {
-      const gemini = format === 'generate-content'
-      const messages = format === 'messages'
-      const interactions = format === 'interactions'
-      const responses = format === 'responses'
-      const names = {
-        'model-select': 'model',
-        'temperature-range': 'temperature',
-        'top-p-range': gemini ? 'topP' : 'top_p',
-        'top-k': gemini ? 'topK' : 'top_k',
-        'max-tokens': gemini ? 'maxOutputTokens' : messages ? 'max_tokens' :
-          responses || interactions ? 'max_output_tokens' : 'max_completion_tokens',
-        'response-verbosity': 'verbosity',
-        'reasoning-toggle': gemini ? 'thinkingConfig' : messages ? 'thinking' : 'reasoning',
-        'show-reasoning-toggle': gemini ? 'includeThoughts' : interactions ? 'thinking_summaries' :
-          responses ? 'summary' : 'Show reasoning',
-        'reasoning-effort': format === 'chat-completions' ? 'reasoning_effort' : 'effort',
-        'reasoning-mode': 'mode',
-        'thinking-budget': gemini ? 'thinkingBudget' : 'budget_tokens',
-        'thinking-level': gemini ? 'thinkingLevel' : 'thinking_level',
-        'streaming-toggle': 'stream',
-        'store-toggle': 'store'
-      }
-      for (const [id, name] of Object.entries(names)) {
-        const label = queryElement('label[for="' + id + '"]')
-        if (label) label.textContent = name
-      }
-      const systemName = gemini ? 'systemInstruction' : messages ? 'system' :
-        interactions ? 'system_instruction' : responses ? 'instructions' : 'system'
-      const heading = getElementById('system-prompt').closest('section').querySelector('h3')
-      heading.textContent = systemName
-      getElementById('system-prompt').setAttribute('aria-label', systemName)
-      const safetyHeading = getElementById('safety-settings-list').closest('section').querySelector('h3')
-      safetyHeading.textContent = gemini ? 'safetySettings' : 'Safety settings'
-    }
-
     function renderSettingAvailability () {
       const settings = activeConfiguration.settings
       const format = currentEndpoint()?.format
-      renderParameterLabels(format)
       const sampling = Boolean(format && format !== 'interactions')
       const thinking = Boolean(format && settings.reasoningEnabled)
 
