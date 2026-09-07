@@ -9477,8 +9477,11 @@ THE SOFTWARE.
         } else {
           body.reasoning_effort = 'none'
         }
-        if (responses && settings.tools.some(tool => tool.type === 'code_interpreter')) {
-          body.include = ['code_interpreter_call.outputs']
+        if (responses) {
+          body.include = [
+            'code_interpreter_call.outputs',
+            'web_search_call.action.sources'
+          ]
         }
       }
 
@@ -9824,9 +9827,6 @@ THE SOFTWARE.
           )
         }
         await extractGeneratedFiles(part, message, 'gemini:file:' + sequence, runtime)
-      }
-      for (const block of message.outputBlocks.filter(item => item.type === 'tool')) {
-        if (block.toolType === 'code_execution_call') block.name = 'codeExecution'
       }
       if (candidate?.finishReason) {
         runtime.terminal = true
