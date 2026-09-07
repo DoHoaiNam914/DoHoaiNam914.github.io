@@ -10690,6 +10690,13 @@ THE SOFTWARE.
 
 
 
+    function collapseReasoningPanels (messageId) {
+      const row = queryElements('#message-list > [data-message-id]')
+        .find(element => element.dataset.messageId === messageId)
+      if (!row) return
+      queryElements('.reasoning-panel[open]', row).forEach(panel => panel.removeAttribute('open'))
+    }
+
     function updateComposerHeight () {
       const region = getElementById('composer-region')
       const chat = queryElement('.chat')
@@ -11299,7 +11306,10 @@ THE SOFTWARE.
         renderSidebar()
         renderTopBar()
         renderAttachments()
-        if (currentConversation() === conversation) renderMessages()
+        if (currentConversation() === conversation) {
+          renderMessages()
+          if (message) collapseReasoningPanels(message.id)
+        }
         renderFileLibrary()
         scheduleSave()
         schedulePreview()
