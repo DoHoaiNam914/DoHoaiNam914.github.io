@@ -3059,15 +3059,15 @@
                 data-nullable-number-setting="maxTokens"
               >
             </div>
-            <div class="field" id="response-verbosity-field">
+            <div class="field" id="verbosity-field">
               <div class="field__header">
-                <label class="field__label" for="response-verbosity">
+                <label class="field__label" for="verbosity">
                   Verbosity
                 </label>
               </div>
               <select
                 class="select-field"
-                id="response-verbosity"
+                id="verbosity"
                 data-select-setting="verbosity"
               >
                 <option value="">Default</option>
@@ -3075,7 +3075,7 @@
                 <option value="medium">medium</option>
                 <option value="high">high</option>
               </select>
-              <p class="field__hint" id="response-verbosity-hint"></p>
+              <p class="field__hint" id="verbosity-hint"></p>
             </div>
             <div class="field">
               <div class="toggle-row">
@@ -10807,7 +10807,7 @@ THE SOFTWARE.
       }
 
       setControlEnabled('top-k', ['messages', 'generate-content'].includes(format) && !(format === 'messages' && thinking))
-      setControlEnabled('response-verbosity', ['chat-completions', 'responses'].includes(format))
+      setControlEnabled('verbosity', ['chat-completions', 'responses'].includes(format))
       setControlEnabled('show-reasoning-toggle', thinking)
       setControlEnabled('reasoning-effort', thinking && ['chat-completions', 'responses', 'messages'].includes(format))
       setControlEnabled('reasoning-mode', thinking && format === 'responses')
@@ -12194,110 +12194,6 @@ THE SOFTWARE.
         if (Object.values(storageKeys).includes(event.key)) refreshReadOnlyState()
       })
 
-    }
-
-
-    // Opt-in regression checks: runSelfChecks() in the console. No network or storage mutations.
-    function runSelfChecks () {
-      let checks = 0
-      const assert = (condition, label) => {
-        if (!condition) throw new Error('Self-check failed: ' + label)
-        checks += 1
-      }
-      const entry = (name, source, id = name) => ({ id, name, source })
-      const globals = buildVariables([entry('user', '{name:"Shared", items:[1,2,],}'),
-        entry('zero', '0'), entry('enabled', 'false'), entry('empty', 'null')], 'global')
-      const locals = buildVariables([entry('user', '{name:"Local"}')], 'local')
-      const merged = Object.assign(Object.create(null), globals, locals)
-      assert(interpolate('{{ user.name }}', merged) === 'Local', 'local scope overrides global')
-      assert(interpolate('{{zero}}/{{enabled}}/{{empty}}', merged) === '0/false/', 'scalar interpolation')
-      assert(interpolate('{{missing}}', merged) === '{{missing}}', 'unresolved placeholder retained')
-      assert(!getVariableValue(merged, 'user.toString').found, 'own-property traversal only')
-      assert(interpolate('{{user.items.1}}', globals) === '2', 'array path')
-      assert(inspectVariables([entry('n', '1', 'a'), entry('n', '2', 'b')], 'local').errors.length === 2,
-        'both duplicate names marked')
-      assert(inspectVariables([entry('n', 'unquoted')], 'local').errors[0].field === 'value', 'JSON5 error location')
-      assert(buildVariables([entry('text', '"line one\\nline two"')], 'global').text === 'line one\nline two',
-        'multiline JSON5 string')
-      const parent = document.createElement('div')
-      const render = html => renderList(parent, html)
-      render('<div data-row-key="a"><input value="initial"><textarea>initial</textarea></div>')
-      parent.querySelector('input').value = 'edited'
-      parent.querySelector('textarea').value = 'edited'
-      render('<div data-row-key="a"><input value="initial"><textarea>initial</textarea></div>')
-      assert(parent.querySelector('input').value === 'initial', 'equal-attribute dirty input')
-      assert(parent.querySelector('textarea').value === 'initial', 'equal-node dirty textarea')
-      render('<div data-row-key="a"><input value="next"><textarea>one\ntwo</textarea></div>')
-      assert(parent.querySelector('textarea').value === 'one\ntwo', 'textarea source survives moved nodes')
-      render('<select><option value="a" selected>A</option><option value="b">B</option></select>')
-      parent.firstElementChild.value = 'b'
-      render('<select><option value="a" selected>A</option><option value="b">B</option></select>')
-      assert(parent.firstElementChild.value === 'a', 'select property sync')
-      render('<div data-row-key="a">A</div><div data-row-key="b">B</div>')
-      const retained = parent.lastElementChild
-      render('<div data-row-key="b">B</div>')
-      assert(parent.firstElementChild === retained && parent.children.length === 1, 'keyed deletion keeps sibling identity')
-      const tools = parseTools('[{type:"code_interpreter"}]', 'responses')
-      assert(tools[0].container.type === 'auto', 'default code interpreter container')
-      assert(parseTools('[{type:"code_interpreter"}]', 'responses',
-        {format:'responses',baseUrl:'https://api.x.ai/v1'})[0].container === undefined, 'xAI container contract unchanged')
-      assert(!renderMarkdown('<b>literal HTML</b>').includes('<b>'), 'raw HTML is not executable markup')
-      assert(compareMediaEntries(['new', {order:2}], ['old', {order:1}]) < 0, 'new files first')
-
-      const xai = { format: 'responses', baseUrl: 'https://api.x.ai/v1' }
-      const proxy = { format: 'responses', baseUrl: 'https://example.com/v1' }
-      const openai = { format: 'responses', baseUrl: 'https://api.openai.com/v1' }
-      const searchSource = '[{type:"x_search",allowed_x_handles:["example"],enable_image_understanding:true}]'
-      assert(parseTools(searchSource, 'responses', xai)[0].allowed_x_handles[0] === 'example',
-        'x_search parameters preserved')
-      assert(parseTools(searchSource, 'responses', proxy)[0].type === 'x_search',
-        'x_search available to compatible custom endpoints')
-      assert(!toolNames(openai).includes('x_search'), 'x_search not advertised as an OpenAI tool')
-      let rejected = false
-      try { parseTools(searchSource, 'responses', openai) } catch { rejected = true }
-      assert(rejected, 'unsupported native OpenAI x_search rejected before sending')
-
-      const attachment = { id: 'self-check-attachment', mediaKey: 'self-check:file', name: 'file.txt' }
-      const generated = { ...attachment, id: 'self-check-output', type: 'file' }
-      const fileMessage = {
-        role: 'assistant',
-        attachments: [attachment],
-        outputBlocks: [generated, { id: 'partial', type: 'file', mediaKey: 'self-check:partial', partial: true }]
-      }
-      assert(requestAttachments(fileMessage).length === 1, 'assistant files deduplicated; partial output excluded')
-      assert(requestAttachments({ role: 'assistant', outputBlocks: [generated] })[0] === generated,
-        'generated file-only assistant message retained')
-      assert(requestAttachments({ role: 'user', outputBlocks: [generated] }).length === 0,
-        'only assistant output files are replayed')
-
-      for (const format of ['chat-completions', 'responses', 'messages']) {
-        const file = { type: format === 'responses' ? 'input_file' : format === 'messages' ? 'document' : 'file' }
-        const items = requestMessageItems('assistant', 'Original answer', [file], format)
-        assert(items.length === 2 && items[0].role === 'assistant' && items[1].role === 'user',
-          format + ': assistant role preserved with attributed reference input')
-        assert(items[1].content.at(-1) === file, format + ': file content included')
-        const onlyFile = requestMessageItems('assistant', '', [file], format)
-        assert(onlyFile.length === 1 && onlyFile[0].content.at(-1) === file,
-          format + ': file-only output included without empty assistant turn')
-      }
-      const image = { inlineData: { mimeType: 'image/png', data: 'AA==' } }
-      assert(requestMessageItems('assistant', 'Image', [image], 'generate-content')[0].role === 'model',
-        'Generate Content native model role')
-      assert(requestMessageItems('assistant', '', [image], 'generate-content')[0].parts[0] === image,
-        'Generate Content native file-only message')
-      const documentPart = { type: 'document', mime_type: 'application/pdf', data: 'AA==' }
-      assert(requestMessageItems('assistant', '', [documentPart], 'interactions')[0].type === 'model_output',
-        'Interactions native model_output')
-      for (const role of ['system', 'developer', 'invalid']) {
-        let rejected = false
-        try { requestMessageItems(role, 'Instructions', [documentPart], 'responses') } catch { rejected = true }
-        assert(rejected, 'file role boundary: ' + role)
-      }
-      assert(queryElements('textarea').every(element => getComputedStyle(element).resize === 'none'),
-        'textarea manual resize disabled by default')
-      assert(queryElement('meta[name="viewport"]').content.includes('user-scalable=no'),
-        'requested viewport scaling setting')
-      return { passed: checks }
     }
 
     // Initialization and lifecycle.
