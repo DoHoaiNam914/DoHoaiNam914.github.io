@@ -9259,10 +9259,7 @@ THE SOFTWARE.
         // https://platform.claude.com/docs/en/agents-and-tools/tool-use/handle-tool-calls
         return [
           ...(content.length ? [{ role, content: format === 'chat-completions' ? text : content }] : []),
-          { role: 'user', content: [
-            ...textPart('Files from an assistant message (reference content):', format, false),
-            ...files
-          ] }
+          { role: 'user', content: files }
         ]
       }
       return [{
