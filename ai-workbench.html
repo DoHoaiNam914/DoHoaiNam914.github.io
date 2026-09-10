@@ -9251,17 +9251,6 @@ THE SOFTWARE.
       if (format === 'interactions') {
         return [{ type: assistant ? 'model_output' : 'user_input', content: [...content, ...files] }]
       }
-      if (assistant && files.length) {
-        // Keep assistant text in its original role. Replay file bytes as explicitly
-        // attributed reference input, not invalid assistant image/document blocks.
-        // https://developers.openai.com/api/reference/typescript/resources/chat/subresources/completions/methods/create
-        // https://developers.openai.com/api/reference/typescript/resources/responses/methods/create
-        // https://platform.claude.com/docs/en/agents-and-tools/tool-use/handle-tool-calls
-        return [
-          ...(content.length ? [{ role, content: format === 'chat-completions' ? text : content }] : []),
-          { role: 'user', content: files }
-        ]
-      }
       return [{
         role: mapMessageRole(role, format),
         content: format === 'chat-completions' && !files.length ? text : [...content, ...files]
