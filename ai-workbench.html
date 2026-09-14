@@ -13245,18 +13245,7 @@ THE SOFTWARE.
         }
 
         const mimeType = normalizeMimeType(record.mimeType) || genericMimeType
-        if (mimeType.startsWith('text/')) {
-          preparedSequence.push({
-            type: 'text',
-            content: preview
-              ? '[text content: ' + record.name + ']'
-              : await record.blob.text(),
-            attachment: entry.attachment,
-            textAttachment: true
-          })
-        } else {
-          preparedSequence.push({ ...entry, record, mimeType })
-        }
+        preparedSequence.push({ ...entry, record, mimeType })
       }
 
       const instructionRole = isInstructionRole(message.role)
