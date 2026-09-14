@@ -10202,7 +10202,7 @@
               type: 'file',
               secondaryText: true,
               content,
-              filename: 'Text',
+              filename: 'Text.txt',
               mimeType: 'text/plain'
             })
           }
@@ -10356,7 +10356,7 @@
         const attachment = attachmentForBlock(target, block)
         return mediaRecord(attachment?.mediaKey)?.name || attachment?.name || 'File'
       }
-      return 'Text'
+      return 'Text.txt'
     }
 
     function contentTabHtml (target, block, index) {
@@ -10538,7 +10538,7 @@
 
     function messageSecondaryHtml (message, block, index) {
       if (block.type === 'text') {
-        const label = 'Text'
+        const label = 'Text.txt'
         const preview = block.content.replace(/\s+/g, ' ').trim() || 'Empty'
         return `<button class="message-secondary" type="button" data-action="preview-text-block" data-message-id="${escapeHtml(message.id)}" data-block-id="${escapeHtml(block.id)}">
           ${renderIcon('message')}
@@ -10873,7 +10873,7 @@
       const message = currentConversation()?.messages.find(item => item.id === messageId)
       const block = message?.contentBlocks?.find(item => item.id === blockId && item.type === 'text')
       if (!block) return
-      getElementById('secondary-text-title').textContent = 'Text'
+      getElementById('secondary-text-title').textContent = 'Text.txt'
       getElementById('secondary-text-content').innerHTML = renderMarkdown(block.content || '')
       showDialog('secondary-text-dialog')
     }
