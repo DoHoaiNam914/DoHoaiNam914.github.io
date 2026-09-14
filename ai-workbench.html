@@ -2552,6 +2552,277 @@
       }
     }
   </style>
+
+  <style id="ai-workbench-content-parts-style">
+    .content-tabs {
+      align-items: stretch;
+      display: flex;
+      gap: 5px;
+      min-width: 0;
+      overflow-x: auto;
+      overscroll-behavior-x: contain;
+      padding: 1px 1px 5px;
+      scroll-snap-type: x proximity;
+      width: 100%;
+    }
+
+    .content-tab {
+      align-items: center;
+      background: var(--color-panel-secondary);
+      border: 1px solid var(--color-border);
+      display: inline-flex;
+      flex: 0 0 auto;
+      min-height: 34px;
+      max-width: min(260px, 62vw);
+      scroll-snap-align: nearest;
+    }
+
+    .content-tab_active {
+      background: var(--color-accent-soft);
+      border-color: var(--color-accent);
+      box-shadow: inset 0 -2px 0 var(--color-accent);
+    }
+
+    .content-tab_dragging {
+      opacity: 0.55;
+    }
+
+    .content-tab_drop-before {
+      box-shadow: -3px 0 0 var(--color-accent);
+    }
+
+    .content-tab__select {
+      align-items: center;
+      background: none;
+      border: 0;
+      color: var(--color-muted);
+      cursor: pointer;
+      display: inline-flex;
+      gap: 6px;
+      min-height: 32px;
+      min-width: 0;
+      padding: 5px 9px;
+    }
+
+    .content-tab_active .content-tab__select {
+      color: var(--color-accent-strong);
+    }
+
+    .content-tab__label {
+      display: block;
+      max-width: 150px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .content-tab__controls {
+      align-items: center;
+      border-left: 1px solid var(--color-border-soft);
+      display: inline-flex;
+      flex: none;
+    }
+
+    .content-tab__control {
+      align-items: center;
+      background: none;
+      border: 0;
+      color: var(--color-faint);
+      cursor: pointer;
+      display: inline-flex;
+      height: 30px;
+      justify-content: center;
+      padding: 0;
+      width: 28px;
+    }
+
+    .content-tab__control:hover,
+    .content-tab__control:focus-visible {
+      background: var(--color-hover);
+      color: var(--color-accent-strong);
+    }
+
+    .content-tab__control_remove:hover,
+    .content-tab__control_remove:focus-visible {
+      background: var(--color-error-soft);
+      color: var(--color-error);
+    }
+
+    .attachment-list {
+      display: block;
+      margin-bottom: 7px;
+      overflow: visible;
+      padding: 0;
+    }
+
+    .composer__selected-file,
+    .message-editor__selected-file {
+      min-height: 86px;
+      padding: 10px 12px;
+    }
+
+    .selected-file {
+      align-items: center;
+      display: grid;
+      gap: 10px;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      min-width: 0;
+    }
+
+    .selected-file__preview {
+      align-items: center;
+      background: var(--color-code-background);
+      border: 1px solid var(--color-border);
+      display: flex;
+      height: 62px;
+      justify-content: center;
+      overflow: hidden;
+      width: 62px;
+    }
+
+    .selected-file__preview img {
+      display: block;
+      height: 100%;
+      margin: 0;
+      max-height: none;
+      object-fit: cover;
+      width: 100%;
+    }
+
+    .selected-file__info {
+      min-width: 0;
+    }
+
+    .selected-file__name,
+    .selected-file__meta {
+      display: block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .selected-file__meta {
+      color: var(--color-faint);
+      font: 10.5px var(--font-mono);
+      margin-top: 3px;
+    }
+
+    .selected-file__actions,
+    .message-editor__attachment-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+    }
+
+    .message-editor__attachment-actions {
+      border-top: 1px solid var(--color-border-soft);
+      margin-top: 9px;
+      padding-top: 9px;
+    }
+
+    .message-editor__tabs {
+      margin: 8px 0;
+    }
+
+    .message-secondary {
+      align-items: center;
+      background: var(--color-panel-secondary);
+      border: 1px solid var(--color-border);
+      cursor: pointer;
+      display: grid;
+      gap: 8px;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      max-width: min(520px, 100%);
+      min-width: 0;
+      padding: 7px 9px;
+      text-align: left;
+      width: 100%;
+    }
+
+    .message-secondary__body {
+      min-width: 0;
+    }
+
+    .message-secondary__name,
+    .message-secondary__preview,
+    .message-secondary__meta {
+      display: block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .message-secondary__preview,
+    .message-secondary__meta {
+      color: var(--color-faint);
+      font-size: 11px;
+      margin-top: 2px;
+    }
+
+    .message__attachments {
+      gap: 6px;
+      width: 100%;
+    }
+
+    .metadata-source {
+      background: var(--color-code-background);
+      border: 1px solid var(--color-border);
+      color: var(--color-faint);
+      font: 10.5px/1.5 var(--font-mono);
+      margin-top: 8px;
+      overflow-wrap: anywhere;
+      padding: 7px 9px;
+    }
+
+    .field__inline-actions {
+      display: flex;
+      gap: 5px;
+      margin-top: 6px;
+    }
+
+    .content-drag-announcement {
+      color: var(--color-faint);
+      font: 10px var(--font-mono);
+      margin-top: 4px;
+    }
+
+    @media (max-width: 767px) {
+      .content-tab {
+        max-width: 78vw;
+      }
+
+      .content-tab__controls {
+        display: none;
+      }
+
+      .content-tab_active .content-tab__controls {
+        display: inline-flex;
+      }
+
+      .selected-file {
+        grid-template-columns: 48px minmax(0, 1fr);
+      }
+
+      .selected-file__preview {
+        height: 48px;
+        width: 48px;
+      }
+
+      .selected-file__actions {
+        grid-column: 1 / -1;
+      }
+
+      .message-secondary {
+        grid-template-columns: auto minmax(0, 1fr);
+      }
+
+      .message-secondary > .icon-button {
+        grid-column: 1 / -1;
+        justify-self: end;
+      }
+    }
+  </style>
+
 </head>
 <body>
   <div class="app">
@@ -9251,6 +9522,17 @@ THE SOFTWARE.
       if (format === 'interactions') {
         return [{ type: assistant ? 'model_output' : 'user_input', content: [...content, ...files] }]
       }
+      if (assistant && files.length) {
+        // Keep assistant text in its original role. Replay file bytes as explicitly
+        // attributed reference input, not invalid assistant image/document blocks.
+        // https://developers.openai.com/api/reference/typescript/resources/chat/subresources/completions/methods/create
+        // https://developers.openai.com/api/reference/typescript/resources/responses/methods/create
+        // https://platform.claude.com/docs/en/agents-and-tools/tool-use/handle-tool-calls
+        return [
+          ...(content.length ? [{ role, content: format === 'chat-completions' ? text : content }] : []),
+          { role: 'user', content: files }
+        ]
+      }
       return [{
         role: mapMessageRole(role, format),
         content: format === 'chat-completions' && !files.length ? text : [...content, ...files]
@@ -10231,7 +10513,10 @@ THE SOFTWARE.
           element.dataset.attachmentId,
           element.dataset.blockId,
           element.dataset.fileKey,
-          element.dataset.endpointId
+          element.dataset.endpointId,
+          element.dataset.contentScope,
+          element.dataset.contentBlockId,
+          element.dataset.direction
         ])
       }
       for (const name of ['conversationId', 'messageId', 'variableId', 'attachment', 'outputBlock']) {
@@ -10611,11 +10896,21 @@ THE SOFTWARE.
       const draft = currentEditDraft()
       const input = getElementById('message-editor-input')
       if (draft && input) {
+        const activeBlockId = draft.activeBlockId || 'main'
+        const activeText = activeBlockId === 'main'
+          ? draft.content
+          : draft.contentBlocks?.find(block =>
+              block.id === activeBlockId && block.type === 'text'
+            )?.content || ''
+        const activeSelection = draft.selections?.[activeBlockId] || {
+          start: draft.selectionStart || 0,
+          end: draft.selectionEnd || 0
+        }
         resizeTextarea(input, 360)
-        if (input.value !== draft.content) input.value = draft.content
+        if (input.value !== activeText) input.value = activeText
         input.setSelectionRange(
-          clamp(draft.selectionStart, 0, input.value.length),
-          clamp(draft.selectionEnd, 0, input.value.length)
+          clamp(activeSelection.start, 0, input.value.length),
+          clamp(activeSelection.end, 0, input.value.length)
         )
       }
       updateComposer()
@@ -11459,6 +11754,7 @@ THE SOFTWARE.
       renderEndpointList()
       renderSettings()
       renderTopBar()
+      renderMessages()
     }
 
     function openEndpointDialog () {
@@ -11746,6 +12042,7 @@ THE SOFTWARE.
         renderEndpointList()
         renderSettings()
         renderTopBar()
+        renderMessages()
       },
 
       'clear-endpoint-api-key' () {
@@ -12285,5 +12582,1933 @@ THE SOFTWARE.
     }
   
   </script>
+
+  <script id="ai-workbench-content-parts-script">
+  'use strict'
+
+  ;(() => {
+    const mainBlockId = 'main'
+    const genericMimeType = 'application/octet-stream'
+    iconPaths['arrow-left'] = '<path d="M19 12H5m7-7-7 7 7 7"/>'
+    iconPaths['arrow-right'] = '<path d="M5 12h14m-7-7 7 7-7 7"/>'
+    const originalNormalizeStoredState = normalizeStoredState
+    const originalStoredState = storedState
+    const originalDiskMediaRecord = diskMediaRecord
+    const originalUpdateComposer = updateComposer
+    const originalHandleInput = handleInput
+    const originalRenderFileBlock = renderFileBlock
+    const originalSelectConversation = selectConversation
+    const originalBindEvents = bindEvents
+
+    let pendingAttachmentIntent = null
+    let fileLibraryAttachmentIntent = null
+    let metadataDraft = null
+    let draggedContent = null
+    let touchDragTimer = null
+    let touchDrag = null
+
+    state.draftContentBlocks ||= []
+    state.activeDraftBlockId ||= mainBlockId
+    state.draftSelections ||= {}
+
+    function installExtendedMarkup () {
+      const input = getElementById('file-input')
+      if (input) input.accept = '*/*'
+
+      for (const id of ['attachment-url-kind', 'attachment-url-mime', 'attachment-url-name']) {
+        getElementById(id)?.closest('.field')?.remove()
+      }
+
+      const urlInput = getElementById('attachment-url')
+      if (urlInput) urlInput.placeholder = 'https://example.com/file'
+
+      const attachmentMenu = getElementById('attachment-menu')
+      if (attachmentMenu && !queryElement('[data-action="add-text-block"]', attachmentMenu)) {
+        attachmentMenu.insertAdjacentHTML('afterbegin', `
+          <button class="attachment-menu__item" type="button" data-action="add-text-block" role="menuitem">
+            ${renderIcon('message')}<span>Add text attachment</span>
+          </button>
+        `)
+      }
+
+      const messageInput = getElementById('message-input')
+      if (messageInput && !getElementById('composer-selected-file')) {
+        messageInput.insertAdjacentHTML('afterend',
+          '<div class="composer__selected-file" id="composer-selected-file" hidden></div>')
+      }
+
+      if (!getElementById('secondary-text-dialog')) {
+        document.body.insertAdjacentHTML('beforeend', `
+          <dialog class="dialog dialog_size_wide" id="secondary-text-dialog" aria-labelledby="secondary-text-title">
+            <div class="dialog__header">
+              <h2 class="dialog__title" id="secondary-text-title">Text attachment</h2>
+              <button class="icon-button" type="button" data-action="close-secondary-text" data-icon="x" aria-label="Close" title="Close"></button>
+            </div>
+            <div class="dialog__body">
+              <div class="markdown" id="secondary-text-content"></div>
+            </div>
+          </dialog>
+        `)
+      }
+
+      if (!getElementById('file-metadata-dialog')) {
+        document.body.insertAdjacentHTML('beforeend', `
+          <dialog class="dialog" id="file-metadata-dialog" aria-labelledby="file-metadata-title">
+            <div class="dialog__header">
+              <h2 class="dialog__title" id="file-metadata-title">Edit file metadata</h2>
+              <button class="icon-button" type="button" data-action="close-file-metadata" data-icon="x" aria-label="Close" title="Close"></button>
+            </div>
+            <div class="dialog__body">
+              <div class="field">
+                <div class="field__header"><label class="field__label" for="file-metadata-name">File name</label></div>
+                <input class="text-field" id="file-metadata-name" type="text" autocomplete="off">
+                <div class="field__inline-actions">
+                  <button class="button button_size_small" type="button" data-action="reset-file-name">${renderIcon('rotate', 'icon_size_small')}Reset name</button>
+                </div>
+              </div>
+              <div class="field">
+                <div class="field__header"><label class="field__label" for="file-metadata-mime">MIME type</label></div>
+                <input class="text-field monospace" id="file-metadata-mime" type="text" autocomplete="off" spellcheck="false">
+                <div class="field__inline-actions">
+                  <button class="button button_size_small" type="button" data-action="reset-file-mime">${renderIcon('rotate', 'icon_size_small')}Detect again</button>
+                </div>
+                <div class="metadata-source" id="file-metadata-source"></div>
+              </div>
+              <div class="dialog__actions">
+                <button class="button" type="button" data-action="close-file-metadata">Cancel</button>
+                <button class="button button_view_accent" type="button" data-action="save-file-metadata">${renderIcon('check', 'icon_size_small')}Save</button>
+              </div>
+            </div>
+          </dialog>
+        `)
+      }
+    }
+
+    installExtendedMarkup()
+
+    function normalizeContentBlocks (attachments, blocks) {
+      const available = new Set((attachments || []).map(item => item.id))
+      const normalized = []
+      for (const block of Array.isArray(blocks) ? blocks : []) {
+        if (!block || typeof block !== 'object') continue
+        if (block.type === 'text' && typeof block.content === 'string') {
+          normalized.push({
+            id: getTextProperty(block, 'id') || uniqueId(),
+            type: 'text',
+            content: block.content
+          })
+        } else if (block.type === 'file' && available.has(block.attachmentId)) {
+          normalized.push({
+            id: getTextProperty(block, 'id') || uniqueId(),
+            type: 'file',
+            attachmentId: block.attachmentId
+          })
+        }
+      }
+      const referenced = new Set(normalized.filter(block => block.type === 'file').map(block => block.attachmentId))
+      for (const attachment of attachments || []) {
+        if (!referenced.has(attachment.id)) {
+          normalized.push({ id: uniqueId(), type: 'file', attachmentId: attachment.id })
+        }
+      }
+      return normalized
+    }
+
+    function ensureMessageContentBlocks (message) {
+      message.attachments ||= []
+      message.contentBlocks = normalizeContentBlocks(message.attachments, message.contentBlocks)
+      return message.contentBlocks
+    }
+
+    function normalizeDraftContent (loaded, saved) {
+      loaded.draftContentBlocks = normalizeContentBlocks(
+        loaded.attachments,
+        saved?.ui?.contentBlocks || saved?.ui?.draftContentBlocks || loaded.draftContentBlocks
+      )
+      loaded.activeDraftBlockId = loaded.draftContentBlocks.some(block =>
+        block.id === saved?.ui?.activeContentBlockId
+      ) ? saved.ui.activeContentBlockId : mainBlockId
+      loaded.draftSelections = saved?.ui?.contentSelections &&
+        typeof saved.ui.contentSelections === 'object'
+        ? cloneValue(saved.ui.contentSelections)
+        : {}
+
+      for (const conversation of loaded.conversations) {
+        for (const message of conversation.messages) ensureMessageContentBlocks(message)
+      }
+
+      if (loaded.editDraft) {
+        const conversation = loaded.conversations.find(item => item.id === loaded.editDraft.conversationId)
+        const message = conversation?.messages.find(item => item.id === loaded.editDraft.messageId)
+        loaded.editDraft.attachments = cloneValue(loaded.editDraft.attachments || message?.attachments || [])
+        loaded.editDraft.contentBlocks = normalizeContentBlocks(
+          loaded.editDraft.attachments,
+          loaded.editDraft.contentBlocks || message?.contentBlocks
+        )
+        loaded.editDraft.activeBlockId = loaded.editDraft.contentBlocks.some(block =>
+          block.id === loaded.editDraft.activeBlockId
+        ) ? loaded.editDraft.activeBlockId : mainBlockId
+        loaded.editDraft.selections ||= {}
+        loaded.editDraft.sessionId ||= uniqueId()
+      }
+      delete loaded.ui.contentBlocks
+      delete loaded.ui.draftContentBlocks
+      delete loaded.ui.activeContentBlockId
+      delete loaded.ui.contentSelections
+      return loaded
+    }
+
+    normalizeStoredState = function (saved) {
+      return normalizeDraftContent(originalNormalizeStoredState(saved), saved)
+    }
+
+    storedState = function (snapshot = state) {
+      for (const conversation of snapshot.conversations || []) {
+        for (const message of conversation.messages || []) ensureMessageContentBlocks(message)
+      }
+      const output = originalStoredState(snapshot)
+      output.ui.contentBlocks = cloneValue(snapshot.draftContentBlocks || [])
+      output.ui.activeContentBlockId = snapshot.activeDraftBlockId || mainBlockId
+      output.ui.contentSelections = cloneValue(snapshot.draftSelections || {})
+      return output
+    }
+
+    storedAttachment = function (attachment) {
+      const key = resolveMediaKey(attachment.mediaKey)
+      const record = key && mediaRecord(key)
+      const durable = key && !/^(?:unsaved|preview):/.test(key) && record?.persisted !== false
+      if (!durable && (typeof attachment.base64 === 'string' || typeof attachment.dataUrl === 'string')) {
+        throw new Error('Save the file to the file database first. Its content will not be discarded when saving history.')
+      }
+      const output = {
+        id: attachment.id,
+        name: record?.name || attachment.name || 'File',
+        kind: (record?.mimeType || attachment.mimeType || attachment.type || '').startsWith('image/') ? 'image' : 'file',
+        type: record?.mimeType || attachment.mimeType || attachment.type || genericMimeType,
+        size: record?.size ?? attachment.size ?? 0
+      }
+      if (durable) output.mediaKey = key
+      if (attachment.sourceType) output.sourceType = attachment.sourceType
+      if (attachment.sourceType === 'url' && isHttpsUrl(attachment.url)) output.url = attachment.url
+      if (!durable) output.missing = true
+      return output
+    }
+
+    function validMimeType (value) {
+      return /^[a-z0-9!#$&^_.+-]+\/[a-z0-9!#$&^_.+-]+$/i.test(String(value || '').trim())
+    }
+
+    function usefulMimeType (value) {
+      const type = normalizeMimeType(value)
+      return validMimeType(type) && type !== genericMimeType ? type : ''
+    }
+
+    function bytesStartWith (bytes, signature, offset = 0) {
+      if (bytes.length < offset + signature.length) return false
+      return signature.every((value, index) => bytes[offset + index] === value)
+    }
+
+    async function detectorMimeType (blob, name) {
+      const bytes = new Uint8Array(await blob.slice(0, 8192).arrayBuffer())
+      const ascii = new TextDecoder('utf-8', { fatal: false }).decode(bytes)
+      const trimmed = ascii.replace(/^\uFEFF/, '').trimStart()
+
+      if (bytesStartWith(bytes, [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a])) return 'image/png'
+      if (bytesStartWith(bytes, [0xff, 0xd8, 0xff])) return 'image/jpeg'
+      if (ascii.startsWith('GIF87a') || ascii.startsWith('GIF89a')) return 'image/gif'
+      if (ascii.startsWith('RIFF') && ascii.slice(8, 12) === 'WEBP') return 'image/webp'
+      if (ascii.startsWith('BM')) return 'image/bmp'
+      if (bytesStartWith(bytes, [0x49, 0x49, 0x2a, 0x00]) || bytesStartWith(bytes, [0x4d, 0x4d, 0x00, 0x2a])) return 'image/tiff'
+      if (bytesStartWith(bytes, [0x00, 0x00, 0x01, 0x00])) return 'image/x-icon'
+      if (ascii.startsWith('%PDF-')) return 'application/pdf'
+      if (bytesStartWith(bytes, [0x50, 0x4b, 0x03, 0x04]) || bytesStartWith(bytes, [0x50, 0x4b, 0x05, 0x06])) return 'application/zip'
+      if (bytesStartWith(bytes, [0x1f, 0x8b])) return 'application/gzip'
+      if (ascii.startsWith('Rar!\x1a\x07')) return 'application/vnd.rar'
+      if (bytesStartWith(bytes, [0x37, 0x7a, 0xbc, 0xaf, 0x27, 0x1c])) return 'application/x-7z-compressed'
+      if (ascii.startsWith('OggS')) return 'audio/ogg'
+      if (ascii.startsWith('RIFF') && ascii.slice(8, 12) === 'WAVE') return 'audio/wav'
+      if (ascii.startsWith('ID3') || bytesStartWith(bytes, [0xff, 0xfb])) return 'audio/mpeg'
+      if (bytesStartWith(bytes, [0x1a, 0x45, 0xdf, 0xa3])) return 'video/webm'
+      if (ascii.slice(4, 8) === 'ftyp') {
+        const brand = ascii.slice(8, 12)
+        return /avif|avis/i.test(brand) ? 'image/avif' : 'video/mp4'
+      }
+      if (ascii.startsWith('\x00asm')) return 'application/wasm'
+      if (ascii.startsWith('SQLite format 3\x00')) return 'application/vnd.sqlite3'
+      if (/^<svg[\s>]/i.test(trimmed) || /^<\?xml[\s\S]*?<svg[\s>]/i.test(trimmed)) return 'image/svg+xml'
+      if (/^<!doctype html[\s>]|^<html[\s>]/i.test(trimmed)) return 'text/html'
+      if (/^<\?xml[\s>]/i.test(trimmed)) return 'application/xml'
+      if (/^[\[{]/.test(trimmed)) {
+        try {
+          JSON.parse(trimmed)
+          return 'application/json'
+        } catch {}
+      }
+
+      const byName = inferMimeType(name)
+      if (byName) return byName
+
+      if (bytes.length) {
+        let controls = 0
+        for (const byte of bytes) {
+          if (byte === 0) return ''
+          if (byte < 9 || (byte > 13 && byte < 32)) controls += 1
+        }
+        if (controls / bytes.length < 0.01) return 'text/plain'
+      }
+      return ''
+    }
+
+    async function detectEffectiveMimeType (blob, name, sources = {}) {
+      const responseMime = usefulMimeType(sources.responseMime)
+      if (responseMime) return { mimeType: responseMime, source: 'response' }
+      const metadataMime = usefulMimeType(sources.metadataMime)
+      if (metadataMime) return { mimeType: metadataMime, source: 'metadata' }
+      const detected = await detectorMimeType(blob, name)
+      if (detected) return { mimeType: detected, source: 'detector' }
+      return { mimeType: genericMimeType, source: 'octet' }
+    }
+
+    diskMediaRecord = function (record) {
+      return {
+        ...originalDiskMediaRecord(record),
+        originalName: record.originalName || record.name,
+        automaticMime: record.automaticMime || record.mimeType || genericMimeType,
+        mimeSource: record.mimeSource || 'legacy',
+        mimeSources: record.mimeSources || {}
+      }
+    }
+
+    persistBlob = async function (blob, name, origin, remote = null, sources = {}) {
+      requireWriter()
+      if (!(blob instanceof window.Blob)) throw new Error('File content must be a Blob.')
+      if (typeof name !== 'string' || !name.trim()) name = generatedFilename(blob.type || genericMimeType)
+      name = name.trim()
+      const effectiveSources = {
+        responseMime: sources.responseMime || (origin === 'generated' ? blob.type : ''),
+        metadataMime: sources.metadataMime || (origin === 'attachment' ? blob.type : '')
+      }
+      const automatic = await detectEffectiveMimeType(blob, name, effectiveSources)
+      const typedBlob = blob.slice(0, blob.size, automatic.mimeType)
+      const { hash, identity } = await fileIdentity(typedBlob, name)
+      return enqueueMedia(async () => {
+        requireWriter()
+        const match = await accessMediaStore('identity', identity)
+        const existing = match?.record
+        if (existing && !(await sameBytes(existing.blob, typedBlob))) {
+          throw new Error('File fingerprint conflict. Existing content will not be overwritten.')
+        }
+        const key = match?.key || 'file:' + uniqueId()
+        const origins = Array.from(new Set([...(existing?.origins || []), origin]))
+        if (!fileLibraryLoaded) await loadFileLibrary()
+        const order = ++mediaOrder
+        const mergedSources = {
+          ...(existing?.mimeSources || {}),
+          ...(effectiveSources.responseMime ? { responseMime: normalizeMimeType(effectiveSources.responseMime) } : {}),
+          ...(effectiveSources.metadataMime ? { metadataMime: normalizeMimeType(effectiveSources.metadataMime) } : {})
+        }
+        const record = existing
+          ? {
+              ...withoutTimestamps(existing),
+              blob: existing.blob || typedBlob,
+              order,
+              origins,
+              remote: existing.remote || remote,
+              originalName: existing.originalName || existing.name || name,
+              mimeSources: mergedSources,
+              automaticMime: automatic.mimeType,
+              mimeSource: existing.mimeSource || automatic.source
+            }
+          : {
+              blob: typedBlob,
+              name,
+              originalName: name,
+              hash,
+              identity,
+              remote,
+              mimeType: automatic.mimeType,
+              automaticMime: automatic.mimeType,
+              mimeSource: automatic.source,
+              mimeSources: mergedSources,
+              size: typedBlob.size,
+              order,
+              origins
+            }
+        await accessMediaStore('put', key, diskMediaRecord(record))
+        const cached = mediaRecords.get(key)
+        mediaRecords.set(key, { ...cached, ...record, hasContent: true, persisted: true })
+        renderFileLibrary()
+        return key
+      })
+    }
+
+    function contentDispositionName (response) {
+      const header = response.headers.get('content-disposition') || ''
+      const utf = header.match(/filename\*=UTF-8''([^;]+)/i)
+      const basic = header.match(/filename="?([^";]+)"?/i)
+      try {
+        return decodeURIComponent((utf?.[1] || basic?.[1] || '').trim())
+      } catch {
+        return (basic?.[1] || '').trim()
+      }
+    }
+
+    fetchRemoteFile = async function (remote, fallbackName, fallbackType, signal) {
+      let url = remote.url
+      let headers = new window.Headers()
+      let name = fallbackName || ''
+      let metadataMime = fallbackType || ''
+      if (!url) {
+        const endpoint = endpointById(remote.endpointId)
+        if (!endpoint || endpoint.format !== remote.format ||
+          (remote.baseUrl && endpoint.baseUrl !== remote.baseUrl)) {
+          throw new Error('The file endpoint is unavailable or has changed.')
+        }
+        const base = normalizeBaseUrl(endpoint.baseUrl)
+        if (!isHttpsUrl(base)) throw new Error('The file endpoint must use HTTPS.')
+        headers = requestHeaders(endpoint)
+        headers.delete('content-type')
+        if (remote.format === 'messages') {
+          const root = base.endsWith('/v1') ? base : base + '/v1'
+          const path = root + '/files/' + encodeURIComponent(remote.fileId)
+          const metadata = await fetchChecked(path, { headers, signal })
+          const json = await metadata.json()
+          name = json.filename || name
+          metadataMime = normalizeMimeType(json.mime_type) || metadataMime
+          url = path + '/content'
+        } else if (remote.format === 'responses' && remote.containerId) {
+          url = base + '/containers/' + encodeURIComponent(remote.containerId) +
+            '/files/' + encodeURIComponent(remote.fileId) + '/content'
+        } else {
+          throw new Error('No supported download route is available for this file.')
+        }
+      }
+      if (!isHttpsUrl(url)) throw new Error('File URLs must use HTTPS and must not contain credentials.')
+      const response = await fetchChecked(url, { headers, signal })
+      const rawBlob = await response.blob()
+      const responseMime = normalizeMimeType(response.headers.get('content-type'))
+      name = contentDispositionName(response) || name || urlFileName(url) || generatedFilename(responseMime || metadataMime)
+      const automatic = await detectEffectiveMimeType(rawBlob, name, { responseMime, metadataMime })
+      return {
+        blob: rawBlob.slice(0, rawBlob.size, automatic.mimeType),
+        name,
+        responseMime,
+        metadataMime,
+        mimeSource: automatic.source
+      }
+    }
+
+    attachmentFromKey = function (key) {
+      key = resolveMediaKey(key)
+      const record = mediaRecord(key)
+      if (!record?.blob || !record.persisted) throw new Error('File content is not available in the database.')
+      return {
+        id: uniqueId(),
+        mediaKey: key,
+        name: record.name,
+        type: record.mimeType || genericMimeType,
+        kind: (record.mimeType || '').startsWith('image/') ? 'image' : 'file',
+        size: record.size
+      }
+    }
+
+    function currentAttachmentIntent (mode = 'composer') {
+      if (mode === 'edit') {
+        const draft = currentEditDraft()
+        return draft
+          ? { mode, conversationId: draft.conversationId, messageId: draft.messageId, sessionId: draft.sessionId }
+          : { mode: 'composer', conversationId: state.activeConversationId }
+      }
+      return { mode: 'composer', conversationId: state.activeConversationId }
+    }
+
+    function draftForIntent (intent) {
+      const draft = currentEditDraft()
+      return intent?.mode === 'edit' && draft &&
+        draft.conversationId === intent.conversationId &&
+        draft.messageId === intent.messageId &&
+        draft.sessionId === intent.sessionId
+        ? draft
+        : null
+    }
+
+    function addAttachmentReference (key, intent) {
+      const attachment = attachmentFromKey(key)
+      if (intent?.mode === 'edit') {
+        const draft = draftForIntent(intent)
+        if (!draft) {
+          toast('The file was saved to the library, but the edit session is no longer open.', 'info', 5200)
+          return false
+        }
+        draft.attachments.push(attachment)
+        const block = { id: uniqueId(), type: 'file', attachmentId: attachment.id }
+        draft.contentBlocks.push(block)
+        draft.activeBlockId = block.id
+        renderMessages()
+        scheduleSave()
+        schedulePreview()
+        return true
+      }
+      if (intent?.conversationId !== state.activeConversationId) {
+        toast('The file was saved to the library, but was not attached to another conversation.', 'info', 5200)
+        return false
+      }
+      state.attachments.push(attachment)
+      const block = { id: uniqueId(), type: 'file', attachmentId: attachment.id }
+      state.draftContentBlocks.push(block)
+      state.activeDraftBlockId = block.id
+      renderAttachments()
+      scheduleSave()
+      schedulePreview()
+      return true
+    }
+
+    attachStoredFile = async function (key, intent = fileLibraryAttachmentIntent || currentAttachmentIntent()) {
+      requireWriter()
+      await loadMediaRecord(key)
+      addAttachmentReference(resolveMediaKey(key), intent)
+    }
+
+    addFiles = async function (files, intent = pendingAttachmentIntent || currentAttachmentIntent()) {
+      requireWriter()
+      pendingAttachmentIntent = null
+      state.pendingAttachmentReads += files.length
+      renderAttachments()
+      for (const file of files) {
+        try {
+          const metadataMime = normalizeFileType(file)
+          const blob = file.slice(0, file.size, metadataMime || genericMimeType)
+          const key = await persistBlob(blob, file.name, 'attachment', null, { metadataMime })
+          addAttachmentReference(key, intent)
+        } catch (error) {
+          reportError(error)
+        } finally {
+          state.pendingAttachmentReads -= 1
+          renderAttachments()
+        }
+      }
+      await saveState()
+      renderFileLibrary()
+    }
+
+    createUrlAttachment = async function () {
+      requireWriter()
+      const url = getElementById('attachment-url').value.trim()
+      if (!isHttpsUrl(url)) throw new Error('Enter a valid HTTPS URL without embedded credentials.')
+      const intent = pendingAttachmentIntent || currentAttachmentIntent()
+      state.pendingAttachmentReads += 1
+      renderAttachments()
+      try {
+        const result = await fetchRemoteFile({ url }, '', '')
+        const key = await persistBlob(result.blob, result.name, 'attachment', { url }, {
+          responseMime: result.responseMime,
+          metadataMime: result.metadataMime
+        })
+        addAttachmentReference(key, intent)
+        getElementById('attachment-url-dialog').close()
+      } finally {
+        pendingAttachmentIntent = null
+        state.pendingAttachmentReads -= 1
+        renderAttachments()
+        scheduleSave()
+      }
+    }
+
+    attachmentPart = async function (attachment, format, preview = false) {
+      const record = await loadMediaRecord(attachment.mediaKey)
+      if (!record?.blob || !record.persisted) {
+        throw new Error('Missing content for “' + (record?.name || attachment.name) + '”. Load it again in the file library.')
+      }
+      const type = record.mimeType || genericMimeType
+      const image = type.startsWith('image/')
+      const base64 = preview ? '[base64]' : bytesToBase64(new Uint8Array(await record.blob.arrayBuffer()))
+      const dataUrl = 'data:' + type + ';base64,' + base64
+
+      if (format === 'generate-content') {
+        return {
+          inlineData: { data: base64, mimeType: type },
+          ...(attachment.metadata?.thoughtSignature ? { thoughtSignature: attachment.metadata.thoughtSignature } : {})
+        }
+      }
+      if (format === 'interactions') {
+        return { type: image ? 'image' : 'document', mime_type: type, data: base64 }
+      }
+      if (format === 'messages') {
+        if (image || type === 'application/pdf') {
+          const part = {
+            type: image ? 'image' : 'document',
+            source: { type: 'base64', media_type: type, data: base64 }
+          }
+          if (!image) part.title = record.name
+          return part
+        }
+        if (!isTextMimeType(type)) {
+          throw new Error('Messages does not support “' + record.name + '” with MIME ' + type + '.')
+        }
+        return {
+          type: 'document',
+          title: record.name,
+          source: {
+            type: 'text',
+            media_type: 'text/plain',
+            data: preview ? '[file content]' : await record.blob.text()
+          }
+        }
+      }
+      if (format === 'responses') {
+        return image
+          ? { type: 'input_image', image_url: dataUrl }
+          : { type: 'input_file', file_data: dataUrl, filename: record.name }
+      }
+      return image
+        ? { type: 'image_url', image_url: { url: dataUrl } }
+        : { type: 'file', file: { file_data: dataUrl, filename: record.name } }
+    }
+
+    function messageContentSequence (message) {
+      ensureMessageContentBlocks(message)
+      const attachments = new Map((message.attachments || []).map(item => [item.id, item]))
+      const sequence = [{ type: 'text', content: message.content || '', main: true }]
+      for (const block of message.contentBlocks) {
+        if (block.type === 'text') sequence.push({ ...block })
+        else {
+          const attachment = attachments.get(block.attachmentId)
+          if (attachment) sequence.push({ type: 'file', attachment, blockId: block.id })
+        }
+      }
+      if (message.role === 'assistant') {
+        const seen = new Set(sequence.filter(item => item.type === 'file').map(item =>
+          resolveMediaKey(item.attachment.mediaKey) || item.attachment.id
+        ))
+        for (const block of message.outputBlocks || []) {
+          if (block.type !== 'file' || block.partial) continue
+          const identity = resolveMediaKey(block.mediaKey) || block.id
+          if (seen.has(identity)) continue
+          seen.add(identity)
+          sequence.push({ type: 'file', attachment: block, blockId: block.id, generated: true })
+        }
+      }
+      return sequence
+    }
+
+    function sourceRoleAcceptsFiles (format, role) {
+      if (role === 'user') return true
+      return format === 'generate-content' && role === 'assistant'
+    }
+
+    function providerTextPart (content, format, assistant) {
+      if (format === 'generate-content') return { text: content }
+      if (format === 'interactions') return { type: 'text', text: content }
+      return {
+        type: format === 'responses'
+          ? assistant ? 'output_text' : 'input_text'
+          : 'text',
+        text: content
+      }
+    }
+
+    function providerMessageItem (role, parts, format) {
+      if (!parts.length) return null
+      const assistant = role === 'assistant'
+      if (format === 'generate-content') {
+        return { role: mapMessageRole(role, format), parts }
+      }
+      if (format === 'interactions') {
+        return { type: assistant ? 'model_output' : 'user_input', content: parts }
+      }
+      if (format === 'chat-completions') {
+        const onlyText = parts.length === 1 && parts[0].type === 'text'
+        return { role, content: onlyText ? parts[0].text : parts }
+      }
+      return { role: mapMessageRole(role, format), content: parts }
+    }
+
+    async function workbenchRequestEntries (message, settings, format, preview) {
+      const sequence = messageContentSequence(message)
+      const assistant = message.role === 'assistant'
+      const preparedSequence = []
+
+      for (const entry of sequence) {
+        if (entry.type === 'text') {
+          const content = assistant
+            ? entry.content
+            : interpolate(entry.content, settings.variables)
+          preparedSequence.push({ type: 'text', content })
+          continue
+        }
+
+        const record = await loadMediaRecord(entry.attachment.mediaKey)
+        if (!record?.blob || !record.persisted) {
+          throw new Error('Missing content for “' +
+            (record?.name || entry.attachment.name || 'File') +
+            '”. Load it again in the file library.')
+        }
+
+        const mimeType = normalizeMimeType(record.mimeType) || genericMimeType
+        if (mimeType.startsWith('text/')) {
+          preparedSequence.push({
+            type: 'text',
+            content: preview
+              ? '[text attachment content: ' + record.name + ']'
+              : await record.blob.text(),
+            attachment: entry.attachment,
+            textAttachment: true
+          })
+        } else {
+          preparedSequence.push({ ...entry, record, mimeType })
+        }
+      }
+
+      const instructionRole = isInstructionRole(message.role)
+      const globalInstructionFormat = ['messages', 'generate-content', 'interactions'].includes(format)
+      const instructions = instructionRole && globalInstructionFormat
+        ? [joinBlocks(preparedSequence
+            .filter(entry => entry.type === 'text')
+            .map(entry => entry.content))]
+        : []
+
+      const sourceParts = []
+      if (!(instructionRole && globalInstructionFormat)) {
+        for (const entry of preparedSequence) {
+          if (entry.type === 'text') {
+            if (entry.content.trim()) {
+              sourceParts.push(providerTextPart(entry.content, format, assistant))
+            }
+          } else if (sourceRoleAcceptsFiles(format, message.role)) {
+            sourceParts.push(await attachmentPart(entry.attachment, format, preview))
+          }
+        }
+      }
+
+      const items = []
+      const sourceItem = providerMessageItem(message.role, sourceParts, format)
+      if (sourceItem) items.push(sourceItem)
+
+      const virtualFileEntries = preparedSequence.filter(entry =>
+        entry.type === 'file' && !sourceRoleAcceptsFiles(format, message.role)
+      )
+      if (virtualFileEntries.length) {
+        const virtualParts = []
+        for (const entry of virtualFileEntries) {
+          virtualParts.push(await attachmentPart(entry.attachment, format, preview))
+        }
+        const virtualUser = providerMessageItem('user', virtualParts, format)
+        if (!virtualUser) {
+          throw new Error('Unable to represent files from the ' + message.role + ' role.')
+        }
+        items.push(virtualUser)
+      }
+
+      return { instructions: instructions.filter(Boolean), items }
+    }
+
+    function contentTarget (scope) {
+      if (scope === 'edit') {
+        const draft = currentEditDraft()
+        if (!draft) return null
+        draft.attachments ||= []
+        draft.contentBlocks = normalizeContentBlocks(draft.attachments, draft.contentBlocks)
+        draft.activeBlockId ||= mainBlockId
+        draft.selections ||= {}
+        return {
+          scope,
+          attachments: draft.attachments,
+          blocks: draft.contentBlocks,
+          get activeId () { return draft.activeBlockId },
+          set activeId (value) { draft.activeBlockId = value },
+          selections: draft.selections,
+          draft
+        }
+      }
+      state.attachments ||= []
+      state.draftContentBlocks = normalizeContentBlocks(state.attachments, state.draftContentBlocks)
+      state.activeDraftBlockId ||= mainBlockId
+      state.draftSelections ||= {}
+      return {
+        scope: 'composer',
+        attachments: state.attachments,
+        blocks: state.draftContentBlocks,
+        get activeId () { return state.activeDraftBlockId },
+        set activeId (value) { state.activeDraftBlockId = value },
+        selections: state.draftSelections
+      }
+    }
+
+    function targetText (target, id) {
+      if (id === mainBlockId) {
+        return target.scope === 'edit' ? target.draft.content : state.messageDraft
+      }
+      return target.blocks.find(block => block.id === id && block.type === 'text')?.content || ''
+    }
+
+    function setTargetText (target, id, value) {
+      if (id === mainBlockId) {
+        if (target.scope === 'edit') target.draft.content = value
+        else state.messageDraft = value
+        return
+      }
+      const block = target.blocks.find(item => item.id === id && item.type === 'text')
+      if (block) block.content = value
+    }
+
+    function attachmentForBlock (target, block) {
+      return target.attachments.find(item => item.id === block?.attachmentId) || null
+    }
+
+    function attachmentMimeType (attachment) {
+      const record = attachment && mediaRecord(attachment.mediaKey)
+      return normalizeMimeType(record?.mimeType || attachment?.type || attachment?.mimeType)
+    }
+
+    function isTextFileAttachment (attachment) {
+      return attachmentMimeType(attachment).startsWith('text/')
+    }
+
+    function contentBlockLabel (target, block) {
+      if (!block || block.id === mainBlockId) return 'Message'
+      if (block.type === 'file') {
+        const attachment = attachmentForBlock(target, block)
+        return mediaRecord(attachment?.mediaKey)?.name || attachment?.name || 'File'
+      }
+      const textBlocks = target.blocks.filter(item => item.type === 'text')
+      return 'Text attachment ' + (textBlocks.indexOf(block) + 1)
+    }
+
+    function contentTabHtml (target, block, index) {
+      const main = block.id === mainBlockId
+      const active = target.activeId === block.id
+      const label = contentBlockLabel(target, block)
+      const attachment = block.type === 'file' ? attachmentForBlock(target, block) : null
+      const icon = main || block.type === 'text' || isTextFileAttachment(attachment)
+        ? 'message'
+        : 'file-text'
+      const attributes = `data-content-scope="${target.scope}" data-content-block-id="${escapeHtml(block.id)}"`
+      return `<div class="content-tab${active ? ' content-tab_active' : ''}" data-row-key="${target.scope}:${escapeHtml(block.id)}" ${main ? '' : `draggable="true" data-content-index="${index}"`} ${attributes}>
+        <button class="content-tab__select" type="button" data-action="select-content-block" ${attributes} aria-pressed="${active}">
+          ${renderIcon(icon, 'icon_size_small')}<span class="content-tab__label">${escapeHtml(label)}</span>
+        </button>
+        ${main ? '' : `<span class="content-tab__controls">
+          <button class="content-tab__control" type="button" data-action="move-content-block" data-direction="-1" ${attributes} ${index === 0 ? 'disabled' : ''} aria-label="Move left" title="Move left">${renderIcon('arrow-left', 'icon_size_small')}</button>
+          <button class="content-tab__control" type="button" data-action="move-content-block" data-direction="1" ${attributes} ${index === target.blocks.length - 1 ? 'disabled' : ''} aria-label="Move right" title="Move right">${renderIcon('arrow-right', 'icon_size_small')}</button>
+          <button class="content-tab__control content-tab__control_remove" type="button" data-action="remove-content-block" ${attributes} aria-label="Remove" title="Remove">${renderIcon('x', 'icon_size_small')}</button>
+        </span>`}
+      </div>`
+    }
+
+    function contentTabsHtml (target) {
+      const main = { id: mainBlockId, type: 'text' }
+      return `<div class="content-tabs" data-content-tabs="${target.scope}" role="tablist" aria-label="Ordered content">
+        ${contentTabHtml(target, main, -1)}
+        ${target.blocks.map((block, index) => contentTabHtml(target, block, index)).join('')}
+      </div>`
+    }
+
+    function selectedFileHtml (target, block) {
+      const attachment = attachmentForBlock(target, block)
+      const record = attachment && mediaRecord(attachment.mediaKey)
+      if (!attachment) return '<p class="field__hint">File reference not found.</p>'
+      const key = resolveMediaKey(attachment.mediaKey)
+      const mimeType = attachmentMimeType(attachment) || genericMimeType
+      const textAttachment = mimeType.startsWith('text/')
+      const source = mimeType.startsWith('image/') ? mediaSource(key) : ''
+      const attributes = `data-file-key="${escapeHtml(key || '')}"`
+      return `<div class="selected-file">
+        <span class="selected-file__preview">${source
+          ? `<img src="${escapeHtml(source)}" alt="">`
+          : renderIcon(textAttachment ? 'message' : mimeType.startsWith('image/') ? 'spark' : 'file-text')}</span>
+        <span class="selected-file__info">
+          <strong class="selected-file__name">${escapeHtml(record?.name || attachment.name || 'File')}</strong>
+          <span class="selected-file__meta">${textAttachment ? 'Text attachment · ' : ''}${escapeHtml(mimeType)} · ${formatBytes(record?.size ?? attachment.size ?? 0)}</span>
+        </span>
+        <span class="selected-file__actions">
+          ${record?.blob || record?.hasContent ? actionButton('preview-file', 'search', 'Preview', attributes, 'icon-button') : ''}
+          ${actionButton('open-file-metadata', 'pencil', 'Edit name and MIME type', attributes, 'icon-button')}
+        </span>
+      </div>`
+    }
+
+    function captureComposerActive () {
+      const target = contentTarget('composer')
+      const input = getElementById('message-input')
+      if (!target || !input || input.hidden) return
+      setTargetText(target, target.activeId, input.value)
+      target.selections[target.activeId] = {
+        start: input.selectionStart || 0,
+        end: input.selectionEnd || 0
+      }
+    }
+
+    function renderComposerActive () {
+      const target = contentTarget('composer')
+      const input = getElementById('message-input')
+      const preview = getElementById('composer-selected-file')
+      if (!target || !input || !preview) return
+      const active = target.activeId === mainBlockId
+        ? { id: mainBlockId, type: 'text' }
+        : target.blocks.find(block => block.id === target.activeId)
+
+      if (!active) {
+        target.activeId = mainBlockId
+        return renderComposerActive()
+      }
+
+      if (active.type === 'file') {
+        input.hidden = true
+        preview.hidden = false
+        preview.innerHTML = selectedFileHtml(target, active)
+      } else {
+        preview.hidden = true
+        preview.replaceChildren()
+        input.hidden = false
+        const value = targetText(target, active.id)
+        if (input.value !== value) input.value = value
+        input.placeholder = active.id === mainBlockId ? 'Enter a message' : 'Enter a text attachment'
+        resizeMessageInput()
+        const selection = target.selections[active.id]
+        if (selection && document.activeElement === input) {
+          input.setSelectionRange(
+            Math.min(selection.start, input.value.length),
+            Math.min(selection.end, input.value.length)
+          )
+        }
+      }
+    }
+
+    renderAttachments = function () {
+      const target = contentTarget('composer')
+      const list = getElementById('attachment-list')
+      list.hidden = false
+      renderList(list,
+        contentTabsHtml(target) +
+        (state.pendingAttachmentReads
+          ? '<span class="chip" data-row-key="pending-attachments">Saving files...</span>'
+          : '')
+      )
+      renderComposerActive()
+      updateComposer()
+      window.requestAnimationFrame(updateComposerHeight)
+      if (getElementById('file-library-dialog')?.open) renderFileLibrary()
+      releaseUnusedMediaUrls()
+    }
+
+    function composerHasContent () {
+      return Boolean(
+        state.messageDraft.trim() ||
+        state.attachments.length ||
+        (state.draftContentBlocks || []).some(block => block.type === 'text' && block.content.trim()) ||
+        currentConversation()?.messages.length
+      )
+    }
+
+    updateComposer = function () {
+      originalUpdateComposer()
+      const generating = isCurrentConversationGenerating()
+      const button = getElementById('send-message-button')
+      if (!generating && writerOwned && !state.configurationMigration && !unreadStorageKeys.size &&
+        !currentEditDraft() && !state.pendingAttachmentReads) {
+        button.disabled = !composerHasContent()
+      }
+    }
+
+    draftMessages = function () {
+      captureComposerActive()
+      const messages = [...(currentConversation()?.messages || [])]
+      if (state.messageDraft.trim() || state.attachments.length ||
+        (state.draftContentBlocks || []).some(block => block.type === 'text' && block.content.trim())) {
+        messages.push({
+          role: 'user',
+          content: state.messageDraft,
+          attachments: state.attachments,
+          contentBlocks: cloneValue(state.draftContentBlocks || [])
+        })
+      }
+      return messages
+    }
+
+    automaticConversationTitle = function (conversation) {
+      const messages = conversation.messages || []
+      for (const message of messages) {
+        const text = [message.content, ...(message.contentBlocks || [])
+          .filter(block => block.type === 'text').map(block => block.content)]
+          .find(value => typeof value === 'string' && value.trim())
+        if (message.role === 'user' && text) return conversationTitle(text)
+      }
+      for (const message of messages) {
+        const text = [message.content, ...(message.contentBlocks || [])
+          .filter(block => block.type === 'text').map(block => block.content)]
+          .find(value => typeof value === 'string' && value.trim())
+        if (text) return conversationTitle(text)
+      }
+      const attached = messages.flatMap(message => message.attachments || [])[0]
+      const record = attached && mediaRecord(attached.mediaKey)
+      return record ? conversationTitle(record.name) : 'New conversation'
+    }
+
+    function messageSecondaryHtml (message, block, index) {
+      if (block.type === 'text') {
+        const label = 'Text attachment ' + ((message.contentBlocks || []).filter(item => item.type === 'text').indexOf(block) + 1)
+        const preview = block.content.replace(/\s+/g, ' ').trim() || 'Empty'
+        return `<button class="message-secondary" type="button" data-action="preview-text-block" data-message-id="${escapeHtml(message.id)}" data-block-id="${escapeHtml(block.id)}">
+          ${renderIcon('message')}
+          <span class="message-secondary__body"><strong class="message-secondary__name">${escapeHtml(label)}</strong><span class="message-secondary__preview">${escapeHtml(preview)}</span></span>
+          ${renderIcon('search', 'icon_size_small')}
+        </button>`
+      }
+      const attachment = (message.attachments || []).find(item => item.id === block.attachmentId)
+      if (!attachment) return ''
+      const record = mediaRecord(attachment.mediaKey)
+      const key = resolveMediaKey(attachment.mediaKey)
+      const mimeType = attachmentMimeType(attachment) || genericMimeType
+      const textAttachment = mimeType.startsWith('text/')
+      return `<button class="message-secondary" type="button" data-action="preview-file" data-file-key="${escapeHtml(key || '')}">
+        ${renderIcon(textAttachment ? 'message' : mimeType.startsWith('image/') ? 'spark' : 'file-text')}
+        <span class="message-secondary__body"><strong class="message-secondary__name">${escapeHtml(record?.name || attachment.name || 'File')}</strong><span class="message-secondary__meta">${textAttachment ? 'Text attachment · ' : ''}${escapeHtml(mimeType)} · ${formatBytes(record?.size ?? attachment.size ?? 0)}</span></span>
+        ${renderIcon('search', 'icon_size_small')}
+      </button>`
+    }
+
+    renderMessageAttachmentsHtml = function (attachments = [], messageId) {
+      const message = currentConversation()?.messages.find(item => item.id === messageId)
+      if (!message || currentEditDraft()?.messageId === messageId) return ''
+      ensureMessageContentBlocks(message)
+      const html = message.contentBlocks.map((block, index) => messageSecondaryHtml(message, block, index)).join('')
+      return html
+        ? '<div class="message__attachments" data-row-key="message-attachments">' + html + '</div>'
+        : ''
+    }
+
+    renderMessageEditorHtml = function (draft) {
+      draft.attachments ||= []
+      draft.contentBlocks = normalizeContentBlocks(draft.attachments, draft.contentBlocks)
+      draft.activeBlockId ||= mainBlockId
+      const target = contentTarget('edit')
+      const active = draft.activeBlockId === mainBlockId
+        ? { id: mainBlockId, type: 'text' }
+        : draft.contentBlocks.find(block => block.id === draft.activeBlockId)
+      if (!active) draft.activeBlockId = mainBlockId
+      const selected = active || { id: mainBlockId, type: 'text' }
+      const options = messageRoles.map(role =>
+        `<option value="${role}"${draft.role === role ? ' selected' : ''}>${role}</option>`
+      ).join('')
+      const editor = selected.type === 'file'
+        ? `<div class="message-editor__selected-file">${selectedFileHtml(target, selected)}</div>`
+        : `<label class="visually-hidden" for="message-editor-input">${selected.id === mainBlockId ? 'Message' : 'Text attachment'}</label>
+          <textarea class="message-editor__input" id="message-editor-input">${escapeHtml(targetText(target, selected.id))}</textarea>`
+
+      return `<div class="message-editor" data-row-key="message-editor" data-editor-message-id="${escapeHtml(draft.messageId)}" data-editor-content-block-id="${escapeHtml(selected.id)}">
+        <label class="visually-hidden" for="message-editor-role">Message role</label>
+        <select class="message__role-select" id="message-editor-role">${options}</select>
+        <div class="message-editor__tabs">${contentTabsHtml(target)}</div>
+        ${editor}
+        <div class="message-editor__attachment-actions">
+          <button class="button button_size_small" type="button" data-action="edit-add-text-block">${renderIcon('message', 'icon_size_small')}Add text attachment</button>
+          <button class="button button_size_small" type="button" data-action="edit-select-device-attachment">${renderIcon('paperclip', 'icon_size_small')}From device</button>
+          <button class="button button_size_small" type="button" data-action="edit-open-file-library">${renderIcon('file-text', 'icon_size_small')}File library</button>
+          <button class="button button_size_small" type="button" data-action="edit-open-attachment-url">${renderIcon('link', 'icon_size_small')}URL</button>
+        </div>
+        <div class="message-editor__actions">
+          <button class="button button_size_small button_view_accent" type="button" data-action="save-message-edit">${renderIcon('check', 'icon_size_small')}Save</button>
+          <button class="button button_size_small" type="button" data-action="cancel-message-edit">Cancel</button>
+        </div>
+      </div>`
+    }
+
+    captureEditDraft = function () {
+      const draft = currentEditDraft()
+      const input = getElementById('message-editor-input')
+      const role = getElementById('message-editor-role')
+      const editor = (input || role)?.closest('[data-editor-message-id]')
+      if (!draft || !role || !editor || editor.dataset.editorMessageId !== draft.messageId) return
+      draft.role = role.value
+      if (input) {
+        const target = contentTarget('edit')
+        const renderedBlockId = editor.dataset.editorContentBlockId ||
+          draft.activeBlockId || mainBlockId
+        setTargetText(target, renderedBlockId, input.value)
+        draft.selections[renderedBlockId] = {
+          start: input.selectionStart || 0,
+          end: input.selectionEnd || 0
+        }
+        if (renderedBlockId === draft.activeBlockId) {
+          draft.selectionStart = input.selectionStart || 0
+          draft.selectionEnd = input.selectionEnd || 0
+        }
+      }
+    }
+
+    beginMessageEdit = function (id, isNew = false) {
+      if (state.editDraft) throw new Error('Save or cancel the open message edit first.')
+      const conversation = currentConversation() || createConversation()
+      if (!canModifyConversation(conversation)) return
+      let message = conversation.messages.find(item => item.id === id)
+      if (isNew) {
+        message = {
+          id: uniqueId(),
+          role: 'user',
+          content: '',
+          attachments: [],
+          contentBlocks: []
+        }
+        conversation.messages.push(message)
+      }
+      if (!message) return
+      ensureMessageContentBlocks(message)
+      state.editDraft = {
+        conversationId: conversation.id,
+        messageId: message.id,
+        sessionId: uniqueId(),
+        isNew,
+        content: message.content,
+        role: message.role,
+        attachments: cloneValue(message.attachments || []),
+        contentBlocks: cloneValue(message.contentBlocks || []),
+        activeBlockId: mainBlockId,
+        selections: {},
+        selectionStart: message.content.length,
+        selectionEnd: message.content.length
+      }
+      if (isNew) {
+        markUpdated(conversation)
+        renderSidebar()
+      }
+      renderMessages()
+      getElementById('message-editor-input')?.focus()
+      scheduleSave()
+    }
+
+    saveMessageEdit = function () {
+      captureEditDraft()
+      const draft = currentEditDraft()
+      const conversation = currentConversation()
+      if (!draft || !canModifyConversation(conversation)) return
+      const message = conversation.messages.find(item => item.id === draft.messageId)
+      if (!message || !messageRoles.includes(draft.role)) return
+
+      const hasSecondaryText = draft.contentBlocks.some(block => block.type === 'text' && block.content.trim())
+      const files = (message.outputBlocks || []).filter(block => block.type === 'file')
+      if (!draft.content.trim() && !hasSecondaryText && !draft.attachments.length && !files.length) {
+        throw new Error('A message needs text or a file.')
+      }
+
+      if (message.role !== draft.role && (message.outputBlocks || []).some(block => block.type !== 'text')) {
+        if (!confirmChange('Changing the role removes non-text output from this message. Files remain in the library. Continue?')) return
+        message.outputBlocks = []
+      }
+
+      if (draft.role === 'assistant') {
+        const previous = message.outputBlocks || []
+        message.outputBlocks = previous.filter(block => block.type !== 'text')
+        if (draft.content.trim()) {
+          message.outputBlocks.unshift({ id: uniqueId(), type: 'text', content: draft.content })
+        }
+        message.status = 'complete'
+      } else {
+        message.outputBlocks = []
+        delete message.status
+      }
+
+      message.role = draft.role
+      message.content = draft.content
+      message.attachments = cloneValue(draft.attachments)
+      message.contentBlocks = normalizeContentBlocks(message.attachments, cloneValue(draft.contentBlocks))
+      delete message.error
+      state.editDraft = null
+      finishMessageChange(conversation, message)
+    }
+
+    function discardEditForNavigation (targetConversationId) {
+      const draft = currentEditDraft()
+      if (!draft || targetConversationId === draft.conversationId) return true
+      captureEditDraft()
+      if (!confirmChange('Discard the unsaved edit and switch conversations?')) return false
+      if (draft.isNew) {
+        const conversation = state.conversations.find(item => item.id === draft.conversationId)
+        if (conversation) conversation.messages = conversation.messages.filter(item => item.id !== draft.messageId)
+      }
+      state.editDraft = null
+      scheduleSave()
+      return true
+    }
+
+    selectConversation = function (id) {
+      if (!discardEditForNavigation(id)) return
+      originalSelectConversation(id)
+    }
+
+    function addTextContentBlock (scope) {
+      if (scope === 'composer') captureComposerActive()
+      else captureEditDraft()
+      const target = contentTarget(scope)
+      if (!target) return
+      const block = { id: uniqueId(), type: 'text', content: '' }
+      target.blocks.push(block)
+      target.activeId = block.id
+      if (scope === 'edit') {
+        renderMessages()
+        getElementById('message-editor-input')?.focus()
+      } else {
+        renderAttachments()
+        getElementById('message-input')?.focus()
+      }
+      scheduleSave()
+      schedulePreview()
+    }
+
+    function selectContentBlock (scope, id) {
+      if (scope === 'composer') captureComposerActive()
+      else captureEditDraft()
+      const target = contentTarget(scope)
+      if (!target || (id !== mainBlockId && !target.blocks.some(block => block.id === id))) return
+      target.activeId = id
+      const selection = target.selections[id] || { start: targetText(target, id).length, end: targetText(target, id).length }
+      if (scope === 'edit') {
+        target.draft.selectionStart = selection.start
+        target.draft.selectionEnd = selection.end
+        renderMessages()
+        getElementById('message-editor-input')?.focus()
+      } else {
+        renderAttachments()
+        getElementById('message-input')?.focus()
+      }
+    }
+
+    function moveContentBlock (scope, id, direction) {
+      if (scope === 'composer') captureComposerActive()
+      else captureEditDraft()
+      const target = contentTarget(scope)
+      if (!target) return
+      const index = target.blocks.findIndex(block => block.id === id)
+      const next = index + direction
+      if (index < 0 || next < 0 || next >= target.blocks.length) return
+      const block = target.blocks.splice(index, 1)[0]
+      target.blocks.splice(next, 0, block)
+      if (scope === 'edit') renderMessages()
+      else renderAttachments()
+      scheduleSave()
+      schedulePreview()
+    }
+
+    function removeContentBlock (scope, id) {
+      if (scope === 'composer') captureComposerActive()
+      else captureEditDraft()
+      const target = contentTarget(scope)
+      if (!target) return
+      const block = target.blocks.find(item => item.id === id)
+      if (!block) return
+      if (block.type === 'text' && block.content.trim() &&
+        !confirmChange('Remove this text attachment?')) return
+      if (block.type === 'file' && !confirmChange('Remove this file from the message? It will remain in the file library.')) return
+      target.blocks = target.blocks.filter(item => item.id !== id)
+      if (scope === 'edit') target.draft.contentBlocks = target.blocks
+      else state.draftContentBlocks = target.blocks
+      if (block.type === 'file') {
+        target.attachments = target.attachments.filter(item => item.id !== block.attachmentId)
+        if (scope === 'edit') target.draft.attachments = target.attachments
+        else state.attachments = target.attachments
+      }
+      if (target.activeId === id) target.activeId = mainBlockId
+      if (scope === 'edit') renderMessages()
+      else renderAttachments()
+      scheduleSave()
+      schedulePreview()
+    }
+
+    function previewSecondaryText (messageId, blockId) {
+      const message = currentConversation()?.messages.find(item => item.id === messageId)
+      const block = message?.contentBlocks?.find(item => item.id === blockId && item.type === 'text')
+      if (!block) return
+      const textBlocks = message.contentBlocks.filter(item => item.type === 'text')
+      getElementById('secondary-text-title').textContent = 'Text attachment ' + (textBlocks.indexOf(block) + 1)
+      getElementById('secondary-text-content').innerHTML = renderMarkdown(block.content || '')
+      showDialog('secondary-text-dialog')
+    }
+
+    renderFileLibrary = function () {
+      const list = getElementById('file-library-list')
+      if (!list || !getElementById('file-library-dialog').open) return
+      const search = getElementById('file-library-search').value.toLowerCase()
+      const filter = getElementById('file-library-filter').value
+      const references = collectMediaKeys()
+      const records = Array.from(mediaRecords).filter(([key, record]) => {
+        return !mediaAliases.has(key) && !record.partial &&
+          (!filter || record.origins.includes(filter)) &&
+          record.name.toLowerCase().includes(search)
+      }).sort(compareMediaEntries)
+      renderList(list, records.map(([key, record]) => {
+        const attributes = `data-file-key="${escapeHtml(key)}"`
+        const available = Boolean(record.blob || record.hasContent)
+        const used = references.has(key)
+        const stateLabel = record.persisted && available
+          ? 'Saved'
+          : available ? 'Unsaved' : 'Content unavailable'
+        return `<li class="file-library__item" data-row-key="${escapeHtml(key)}">
+          <div class="file-library__info">
+            <strong class="file-library__name">${escapeHtml(record.name)}</strong>
+            <span class="file-library__meta">${escapeHtml(record.mimeType || genericMimeType)} · ${formatBytes(record.size)} · ${stateLabel}${used ? ' · In use' : ''}</span>
+          </div>
+          <div class="file-library__actions">
+            ${available ? actionButton('preview-file', 'search', 'Preview', attributes, 'icon-button') : ''}
+            ${available ? actionButton('download-file', 'arrow-down', 'Download', attributes, 'icon-button') : ''}
+            ${actionButton('open-file-metadata', 'pencil', 'Edit name and MIME type', attributes, 'icon-button')}
+            ${record.persisted && available ? actionButton('attach-file', 'paperclip', 'Attach again', attributes, 'icon-button') : ''}
+            ${(!available && record.remote) || !record.persisted ? actionButton('load-file', 'rotate', 'Retry saving content', attributes, 'icon-button') : ''}
+            ${actionButton('delete-file', 'trash', used ? 'Remove references before deleting' : 'Delete file', attributes + (used ? ' disabled' : ''), 'icon-button')}
+          </div>
+        </li>`
+      }).join('') || '<li class="empty-state">No matching files.</li>')
+    }
+
+    async function openFileMetadata (key) {
+      key = resolveMediaKey(key)
+      const record = await loadMediaRecord(key)
+      if (!record) throw new Error('File not found.')
+      metadataDraft = {
+        key,
+        name: record.name,
+        originalName: record.originalName || record.name,
+        mimeType: record.mimeType || genericMimeType,
+        mimeSources: cloneValue(record.mimeSources || {}),
+        automaticMime: record.automaticMime || record.mimeType || genericMimeType,
+        mimeSource: record.mimeSource || 'legacy'
+      }
+      getElementById('file-metadata-name').value = metadataDraft.name
+      getElementById('file-metadata-mime').value = metadataDraft.mimeType
+      getElementById('file-metadata-title').textContent = metadataDraft.name
+      updateMetadataSource()
+      showDialog('file-metadata-dialog')
+    }
+
+    function updateMetadataSource () {
+      if (!metadataDraft) return
+      getElementById('file-metadata-source').textContent =
+        'Automatic: ' + metadataDraft.automaticMime + ' · Source: ' + metadataDraft.mimeSource +
+        ' · Order: response → metadata → detector (bytes + name) → application/octet-stream'
+    }
+
+    async function resetMetadataMime () {
+      if (!metadataDraft) return
+      const record = await loadMediaRecord(metadataDraft.key)
+      if (!record?.blob) throw new Error('File content is unavailable for MIME detection.')
+      const name = getElementById('file-metadata-name').value.trim() || record.name
+      const automatic = await detectEffectiveMimeType(record.blob, name, metadataDraft.mimeSources)
+      metadataDraft.automaticMime = automatic.mimeType
+      metadataDraft.mimeSource = automatic.source
+      getElementById('file-metadata-mime').value = automatic.mimeType
+      updateMetadataSource()
+    }
+
+    async function saveFileMetadata () {
+      requireWriter()
+      if (!metadataDraft) return
+      const key = resolveMediaKey(metadataDraft.key)
+      const record = await loadMediaRecord(key)
+      if (!record) throw new Error('File not found.')
+      const name = getElementById('file-metadata-name').value.trim()
+      const mimeType = normalizeMimeType(getElementById('file-metadata-mime').value)
+      if (!name) throw new Error('File name cannot be empty.')
+      if (!validMimeType(mimeType)) throw new Error('Invalid MIME type.')
+
+      const hash = record.hash || (record.blob ? (await fileIdentity(record.blob, name)).hash : '')
+      if (hash) {
+        const match = await accessMediaStore('identity', [hash, name])
+        if (match && match.key !== key) {
+          throw new Error('A file with the same name and content already exists. It will not be merged or overwritten automatically.')
+        }
+      }
+
+      const updatedBlob = record.blob
+        ? record.blob.slice(0, record.blob.size, mimeType)
+        : record.blob
+      const updated = {
+        ...record,
+        blob: updatedBlob,
+        name,
+        originalName: record.originalName || record.name,
+        mimeType,
+        size: updatedBlob?.size ?? record.size,
+        hash,
+        identity: hash ? [hash, name] : record.identity,
+        automaticMime: metadataDraft.automaticMime,
+        mimeSource: mimeType === metadataDraft.automaticMime ? metadataDraft.mimeSource : 'user',
+        mimeSources: metadataDraft.mimeSources
+      }
+
+      if (record.persisted) {
+        await enqueueMedia(() => accessMediaStore('put', key, diskMediaRecord(updated)))
+      }
+      mediaRecords.set(key, updated)
+      metadataDraft = null
+      getElementById('file-metadata-dialog').close()
+      renderFileLibrary()
+      renderMessages()
+      renderAttachments()
+      scheduleSave()
+      schedulePreview()
+      toast('File name and MIME type updated.', 'success')
+    }
+
+    renderFileBlock = function (block, messageId) {
+      const html = originalRenderFileBlock(block, messageId)
+      if (!block.mediaKey) return html
+      return html.replace(
+        '</figcaption>',
+        actionButton('open-file-metadata', 'pencil', 'Edit name and MIME type', `data-file-key="${escapeHtml(resolveMediaKey(block.mediaKey))}"`, 'icon-button') + '</figcaption>'
+      )
+    }
+
+    handleInput = function (event) {
+      const element = event.target
+      if (element?.id === 'message-input') {
+        const target = contentTarget('composer')
+        setTargetText(target, target.activeId, element.value)
+        target.selections[target.activeId] = {
+          start: element.selectionStart || 0,
+          end: element.selectionEnd || 0
+        }
+        resizeMessageInput()
+        updateComposer()
+        scheduleSave()
+        schedulePreview()
+        return
+      }
+      originalHandleInput(event)
+    }
+
+    actionHandlers['add-text-block'] = () => {
+      setAttachmentMenu(false)
+      addTextContentBlock('composer')
+    }
+    actionHandlers['edit-add-text-block'] = () => addTextContentBlock('edit')
+    actionHandlers['select-content-block'] = element =>
+      selectContentBlock(element.dataset.contentScope, element.dataset.contentBlockId)
+    actionHandlers['move-content-block'] = element =>
+      moveContentBlock(element.dataset.contentScope, element.dataset.contentBlockId, Number(element.dataset.direction))
+    actionHandlers['remove-content-block'] = element =>
+      removeContentBlock(element.dataset.contentScope, element.dataset.contentBlockId)
+    actionHandlers['preview-text-block'] = element =>
+      previewSecondaryText(element.dataset.messageId, element.dataset.blockId)
+    actionHandlers['close-secondary-text'] = () => getElementById('secondary-text-dialog').close()
+
+    actionHandlers['select-device-attachment'] = () => {
+      setAttachmentMenu(false)
+      pendingAttachmentIntent = currentAttachmentIntent('composer')
+      getElementById('file-input').click()
+    }
+    actionHandlers['edit-select-device-attachment'] = () => {
+      pendingAttachmentIntent = currentAttachmentIntent('edit')
+      getElementById('file-input').click()
+    }
+    actionHandlers['open-attachment-url'] = () => {
+      setAttachmentMenu(false)
+      pendingAttachmentIntent = currentAttachmentIntent('composer')
+      getElementById('attachment-url').value = ''
+      showDialog('attachment-url-dialog')
+    }
+    actionHandlers['edit-open-attachment-url'] = () => {
+      pendingAttachmentIntent = currentAttachmentIntent('edit')
+      getElementById('attachment-url').value = ''
+      showDialog('attachment-url-dialog')
+    }
+    actionHandlers['add-attachment-url'] = createUrlAttachment
+
+    actionHandlers['open-file-library'] = async element => {
+      setAttachmentMenu(false)
+      fileLibraryAttachmentIntent = currentAttachmentIntent(
+        element?.dataset?.attachmentTarget === 'edit' ? 'edit' : 'composer'
+      )
+      showDialog('file-library-dialog')
+      try {
+        await loadFileLibrary()
+      } finally {
+        renderFileLibrary()
+      }
+    }
+    actionHandlers['edit-open-file-library'] = async () => {
+      fileLibraryAttachmentIntent = currentAttachmentIntent('edit')
+      showDialog('file-library-dialog')
+      try {
+        await loadFileLibrary()
+      } finally {
+        renderFileLibrary()
+      }
+    }
+    actionHandlers['attach-file'] = element =>
+      attachStoredFile(element.dataset.fileKey, fileLibraryAttachmentIntent || currentAttachmentIntent())
+    actionHandlers['open-file-metadata'] = element => openFileMetadata(element.dataset.fileKey)
+    actionHandlers['close-file-metadata'] = () => {
+      metadataDraft = null
+      getElementById('file-metadata-dialog').close()
+    }
+    actionHandlers['reset-file-name'] = () => {
+      if (!metadataDraft) return
+      getElementById('file-metadata-name').value = metadataDraft.originalName
+    }
+    actionHandlers['reset-file-mime'] = resetMetadataMime
+    actionHandlers['save-file-metadata'] = saveFileMetadata
+
+    actionHandlers['remove-attachment'] = element => {
+      const block = (state.draftContentBlocks || []).find(item =>
+        item.type === 'file' && item.attachmentId === element.dataset.attachmentId
+      )
+      if (block) removeContentBlock('composer', block.id)
+    }
+
+    actionHandlers['new-conversation'] = () => {
+      captureEditDraft()
+      if (!discardEditForNavigation(null)) return
+      createConversation()
+      renderConversationView()
+      closeDrawers()
+    }
+
+    actionHandlers['duplicate-conversation'] = element => {
+      const original = state.conversations.find(item => item.id === element.dataset.conversationId)
+      if (!canModifyConversation(original) || !discardEditForNavigation(null)) return
+      const duplicate = cloneValue(original)
+      duplicate.id = uniqueId()
+      duplicate.title += ' (copy)'
+      duplicate.renamed = true
+      duplicate.pinned = false
+      duplicate.messages.forEach(message => {
+        const attachmentIds = new Map()
+        message.id = uniqueId()
+        message.attachments?.forEach(attachment => {
+          const old = attachment.id
+          attachment.id = uniqueId()
+          attachmentIds.set(old, attachment.id)
+        })
+        message.contentBlocks?.forEach(block => {
+          block.id = uniqueId()
+          if (block.type === 'file') block.attachmentId = attachmentIds.get(block.attachmentId) || block.attachmentId
+        })
+      })
+      state.conversations.unshift(duplicate)
+      selectConversation(duplicate.id)
+    }
+
+    function contentDragStart (element) {
+      if (!element || element.dataset.contentBlockId === mainBlockId) return
+      draggedContent = {
+        scope: element.dataset.contentScope,
+        id: element.dataset.contentBlockId
+      }
+      element.classList.add('content-tab_dragging')
+    }
+
+    function contentDragOver (element) {
+      if (!draggedContent || !element ||
+        element.dataset.contentScope !== draggedContent.scope ||
+        element.dataset.contentBlockId === mainBlockId) return
+      queryElements('.content-tab_drop-before').forEach(item => item.classList.remove('content-tab_drop-before'))
+      element.classList.add('content-tab_drop-before')
+    }
+
+    function contentDrop (element) {
+      if (!draggedContent || !element || element.dataset.contentScope !== draggedContent.scope) return
+      const target = contentTarget(draggedContent.scope)
+      const from = target.blocks.findIndex(block => block.id === draggedContent.id)
+      const to = target.blocks.findIndex(block => block.id === element.dataset.contentBlockId)
+      if (from >= 0 && to >= 0 && from !== to) {
+        const block = target.blocks.splice(from, 1)[0]
+        target.blocks.splice(to, 0, block)
+        if (target.scope === 'edit') renderMessages()
+        else renderAttachments()
+        scheduleSave()
+        schedulePreview()
+      }
+    }
+
+    function finishContentDrag () {
+      queryElements('.content-tab_dragging, .content-tab_drop-before').forEach(item => {
+        item.classList.remove('content-tab_dragging', 'content-tab_drop-before')
+      })
+      draggedContent = null
+      if (touchDragTimer) window.clearTimeout(touchDragTimer)
+      touchDragTimer = null
+      touchDrag = null
+    }
+
+    bindEvents = function () {
+      originalBindEvents()
+
+      document.addEventListener('dragstart', event => {
+        const tab = event.target.closest?.('.content-tab[draggable="true"]')
+        if (!tab) return
+        contentDragStart(tab)
+        event.dataTransfer.effectAllowed = 'move'
+        event.dataTransfer.setData('text/plain', tab.dataset.contentBlockId)
+      })
+
+      document.addEventListener('dragover', event => {
+        const tab = event.target.closest?.('.content-tab[data-content-block-id]')
+        if (!tab || !draggedContent) return
+        event.preventDefault()
+        contentDragOver(tab)
+      })
+
+      document.addEventListener('drop', event => {
+        const tab = event.target.closest?.('.content-tab[data-content-block-id]')
+        if (!tab || !draggedContent) return
+        event.preventDefault()
+        contentDrop(tab)
+        finishContentDrag()
+      })
+
+      document.addEventListener('dragend', finishContentDrag)
+
+      document.addEventListener('pointerdown', event => {
+        if (event.pointerType === 'mouse') return
+        const tab = event.target.closest?.('.content-tab[draggable="true"]')
+        if (!tab || event.target.closest('button:not(.content-tab__select)')) return
+        touchDrag = { pointerId: event.pointerId, tab }
+        touchDragTimer = window.setTimeout(() => {
+          if (!touchDrag) return
+          contentDragStart(tab)
+          tab.setPointerCapture?.(event.pointerId)
+          navigator.vibrate?.(20)
+        }, 360)
+      }, { passive: true })
+
+      document.addEventListener('pointermove', event => {
+        if (!draggedContent || touchDrag?.pointerId !== event.pointerId) return
+        event.preventDefault()
+        const hit = document.elementFromPoint(event.clientX, event.clientY)
+        const tab = hit?.closest?.('.content-tab[data-content-block-id]')
+        if (tab) contentDragOver(tab)
+      }, { passive: false })
+
+      document.addEventListener('pointerup', event => {
+        if (touchDrag?.pointerId !== event.pointerId) return
+        if (draggedContent) {
+          const hit = document.elementFromPoint(event.clientX, event.clientY)
+          const tab = hit?.closest?.('.content-tab[data-content-block-id]')
+          if (tab) contentDrop(tab)
+        }
+        finishContentDrag()
+      })
+
+      document.addEventListener('pointercancel', finishContentDrag)
+    }
+
+buildRequest = async function (configuration, messages, preview = false) {
+      const endpoint = endpointById(configuration.endpointId)
+      if (!endpoint) throw new Error('Add an endpoint before sending.')
+      if (!configuration.modelId) throw new Error('Select a model.')
+      if (!isHttpsUrl(endpoint.baseUrl)) throw new Error('The endpoint must use HTTPS.')
+
+      const settings = requestSettings(configuration)
+      if (!settings.temperatureAuto &&
+        (!Number.isFinite(settings.temperature) || settings.temperature < 0 || settings.temperature > 2)) {
+        throw new Error('temperature must be between 0 and 2.')
+      }
+      if (!settings.topPAuto &&
+        (!Number.isFinite(settings.topP) || settings.topP < 0 || settings.topP > 1)) {
+        throw new Error('top_p must be between 0 and 1.')
+      }
+
+      const format = endpoint.format
+      const instructions = settings.systemPrompt ? [settings.systemPrompt] : []
+      const input = []
+
+      for (const message of messages) {
+        if (!messageRoles.includes(message.role)) throw new Error('Invalid message role.')
+        const prepared = await workbenchRequestEntries(message, settings, format, preview)
+        instructions.push(...prepared.instructions)
+        input.push(...prepared.items)
+      }
+
+      if (!input.length && !preview) {
+        throw new Error('At least one message with text or an attachment is required.')
+      }
+
+      const body = { model: configuration.modelId }
+      // Store controls API-side storage, independently of local history or ZDR.
+      // https://developers.openai.com/api/reference/resources/chat/subresources/completions/methods/create
+      // https://ai.google.dev/gemini-api/docs/interactions-overview
+      if (typeof settings.store !== 'boolean') throw new Error('store must be a boolean.')
+      if (supportsStore(endpoint)) body.store = settings.store
+      if (format !== 'generate-content') body.stream = settings.streaming
+      if (settings.tools.length) body.tools = settings.tools
+      const system = joinBlocks(instructions)
+
+      if (format === 'generate-content') {
+        delete body.model
+        body.contents = input
+        if (system) body.systemInstruction = { parts: [{ text: system }] }
+
+        const generationConfig = {}
+        if (!settings.temperatureAuto) generationConfig.temperature = settings.temperature
+        if (!settings.topPAuto) generationConfig.topP = settings.topP
+        if (settings.topK != null) generationConfig.topK = settings.topK
+        if (settings.maxTokens != null) generationConfig.maxOutputTokens = settings.maxTokens
+        if (settings.reasoningEnabled) {
+          const thinkingConfig = { includeThoughts: settings.showReasoning }
+          if (settings.level) thinkingConfig.thinkingLevel = settings.level
+          else if (settings.budget != null) thinkingConfig.thinkingBudget = settings.budget
+          generationConfig.thinkingConfig = thinkingConfig
+        } else {
+          generationConfig.thinkingConfig = {
+            includeThoughts: false,
+            thinkingBudget: 0
+          }
+         }
+        if (Object.keys(generationConfig).length) body.generationConfig = generationConfig
+
+        const safetySettings = safetyDefinitions.flatMap(item => {
+          const threshold = sanitizeSafetyThreshold(settings.safetySettings[item.category])
+          return threshold ? [{ category: item.category, threshold }] : []
+        })
+        if (safetySettings.length) body.safetySettings = safetySettings
+      } else if (format === 'messages') {
+        body.messages = input
+        body.max_tokens = settings.maxTokens ?? 8192
+        if (system) body.system = system
+
+        if (settings.reasoningEnabled) {
+          if (settings.budget != null) {
+            if (settings.budget < 1024 || settings.budget >= body.max_tokens) {
+              throw new Error('budget_tokens must be at least 1024 and less than max_tokens. The token limit will not be increased automatically.')
+            }
+            body.thinking = { type: 'enabled', budget_tokens: settings.budget }
+          } else {
+            body.thinking = { type: 'adaptive' }
+          }
+          if (settings.effort) body.output_config = { effort: settings.effort }
+        } else {
+          body.thinking = { type: 'disabled' }
+          if (!settings.temperatureAuto) {
+            if (settings.temperature > 1) {
+              throw new Error('Messages temperature must be between 0 and 1.')
+            }
+            body.temperature = settings.temperature
+          }
+          if (!settings.topPAuto) body.top_p = settings.topP
+          if (settings.topK != null) body.top_k = settings.topK
+        }
+      } else if (format === 'interactions') {
+        body.input = input
+        if (system) body.system_instruction = system
+
+        const generationConfig = {}
+        if (settings.maxTokens != null) generationConfig.max_output_tokens = settings.maxTokens
+        if (settings.reasoningEnabled) {
+          if (settings.level) generationConfig.thinking_level = settings.level
+          generationConfig.thinking_summaries = settings.showReasoning ? 'auto' : 'none'
+        }
+        if (Object.keys(generationConfig).length) body.generation_config = generationConfig
+      } else {
+        const responses = format === 'responses'
+        body[responses ? 'input' : 'messages'] = input
+        if (system) {
+          if (responses) body.instructions = system
+          else input.unshift({ role: 'system', content: system })
+        }
+        if (!settings.temperatureAuto) body.temperature = settings.temperature
+        if (!settings.topPAuto) body.top_p = settings.topP
+        if (settings.maxTokens != null) {
+          body[responses ? 'max_output_tokens' : 'max_completion_tokens'] = settings.maxTokens
+        }
+
+        if (settings.verbosity) {
+          if (responses) body.text = { verbosity: settings.verbosity }
+          else body.verbosity = settings.verbosity
+        }
+        if (responses) {
+          const reasoning = {}
+          if (settings.reasoningEnabled) {
+            if (settings.effort) reasoning.effort = settings.effort
+            if (settings.mode) reasoning.mode = settings.mode
+            if (settings.showReasoning) reasoning.summary = 'auto'
+          } else {
+            reasoning.effort = 'none'
+          }
+          if (Object.keys(reasoning).length) body.reasoning = reasoning
+        } else if (settings.reasoningEnabled) {
+          if (settings.effort) body.reasoning_effort = settings.effort
+        } else {
+          body.reasoning_effort = 'none'
+        }
+        if (responses) {
+          body.include = [
+            'code_interpreter_call.outputs',
+            'web_search_call.action.sources'
+          ]
+        }
+      }
+
+      return {
+        body,
+        settings,
+        modelId: configuration.modelId,
+        endpoint: cloneValue(endpoint),
+        url: requestUrl(endpoint, configuration.modelId, settings.streaming),
+        headers: requestHeaders(endpoint),
+        stream: settings.streaming
+      }
+    };
+
+runGeneration = async function (regenerateId = null) {
+      requireWriter()
+      validateVariables()
+      if (queryElement('.settings [aria-invalid="true"]:not(:disabled)')) {
+        throw new Error('Correct the highlighted settings or variables before sending.')
+      }
+      if (state.pendingAttachmentReads) throw new Error('Wait for files to finish saving.')
+      if (currentEditDraft()) throw new Error('Save or cancel the message edit first.')
+
+      const conversation = currentConversation() || createConversation()
+      if (isConversationGenerating(conversation.id)) return
+      captureComposerActive()
+      const content = state.messageDraft
+      const contentBlocks = cloneValue(state.draftContentBlocks || [])
+      const attachments = state.attachments.map(storedAttachment)
+      let messages = [...conversation.messages]
+
+      if (regenerateId) {
+        const index = messages.findIndex(item => item.id === regenerateId && item.role === 'assistant')
+        if (index < 0) return
+        if (!confirmChange('Regenerating replaces this response and removes later messages. Files remain in the library. Continue?')) return
+        messages = messages.slice(0, index)
+      } else if (content.trim() || attachments.length ||
+        contentBlocks.some(block => block.type === 'text' && block.content.trim())) {
+        messages.push({
+          id: uniqueId(),
+          role: 'user',
+          content,
+          attachments,
+          contentBlocks
+        })
+      }
+
+      const runtime = {
+        controller: new window.AbortController(),
+        preparing: true,
+        message: null,
+        endpoint: null,
+        sequence: 0,
+        tools: {},
+        anthropic: {},
+        steps: {},
+        terminal: false,
+        incomplete: ''
+      }
+
+      conversationRuntimes.set(conversation.id, runtime)
+      updateComposer()
+      let message
+      const previousMessages = conversation.messages
+      const previousTitle = conversation.title
+
+      try {
+        const request = await buildRequest(requestConfiguration(conversation), messages)
+        runtime.endpoint = request.endpoint
+        await prepareContainers(request, runtime.controller.signal)
+        if (runtime.controller.signal.aborted || !state.conversations.includes(conversation)) return
+
+        message = {
+          id: uniqueId(),
+          role: 'assistant',
+          content: '',
+          attachments: [],
+          outputBlocks: [],
+          status: 'streaming',
+          endpointId: request.endpoint.id,
+          endpointName: request.endpoint.name,
+          model: request.modelId,
+          modelLabel: request.modelId,
+          showReasoning: request.settings.showReasoning
+        }
+
+        runtime.message = message
+        conversation.messages = [...messages, message]
+        markUpdated(conversation)
+        if (!conversation.renamed) conversation.title = automaticConversationTitle(conversation)
+        try {
+          saveState()
+        } catch (error) {
+          conversation.messages = previousMessages
+          conversation.title = previousTitle
+          message = null
+          throw error
+        }
+
+        if (!regenerateId) {
+          if (state.messageDraft === content) state.messageDraft = ''
+          const sent = new Set(attachments.map(item => item.id))
+          state.attachments = state.attachments.filter(item => !sent.has(item.id))
+          state.draftContentBlocks = []
+          state.activeDraftBlockId = 'main'
+          state.draftSelections = {}
+          getElementById('message-input').value = state.messageDraft
+          renderAttachments()
+          resizeMessageInput()
+        }
+
+        runtime.preparing = false
+        if (currentConversation() === conversation) {
+          shouldStickToBottom = true
+          renderMessages()
+          renderAttachments()
+          renderTopBar()
+        }
+
+        renderSidebar()
+        scheduleSave()
+        announce('Calling the API')
+
+        const response = await fetchChecked(request.url, {
+          method: 'POST',
+          headers: request.headers,
+          body: JSON.stringify(request.body),
+          signal: runtime.controller.signal
+        })
+
+        if (request.stream && response.body &&
+          (response.headers.get('content-type') || '').toLowerCase().includes('text/event-stream')) {
+          await readEvents(response, (raw, event) => handleStreamEvent(raw, event, message, runtime))
+          if (!runtime.terminal) throw new Error('The stream ended without an API completion signal.')
+        } else {
+          await parseCompleteResponse(await response.json(), message, runtime)
+        }
+
+        message.status = runtime.incomplete ? 'incomplete' : 'complete'
+      } catch (error) {
+        if (message) {
+          message.status = runtime.controller.signal.aborted ? 'stopped' : 'error'
+          if (!runtime.controller.signal.aborted) message.error = normalizeError(error)
+        }
+        if (!runtime.controller.signal.aborted) reportError(error)
+      } finally {
+        if (message) {
+          for (const block of message.outputBlocks) {
+            if (block.partial) {
+              const record = mediaRecord(block.mediaKey)
+              if (record?.blob) {
+                block.mediaKey = await saveGeneratedBlob(record.blob, record.name)
+                block.partial = false
+              }
+            }
+            if (block.type === 'tool' && block.status === 'running') block.status = 'stopped'
+          }
+          syncAssistantMessage(message)
+          markUpdated(conversation)
+        }
+
+        conversationRuntimes.delete(conversation.id)
+        renderSidebar()
+        renderTopBar()
+        renderAttachments()
+        if (currentConversation() === conversation) {
+          renderMessages()
+          if (message) collapseReasoningPanels(message.id)
+        }
+        renderFileLibrary()
+        scheduleSave()
+        schedulePreview()
+      }
+    };
+  })()
+  </script>
+
 </body>
 </html>
