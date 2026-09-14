@@ -10202,7 +10202,7 @@
               type: 'file',
               secondaryText: true,
               content,
-              filename: 'text-' + (++secondaryTextIndex) + '.txt',
+              filename: content.trim().split('\n')[0],
               mimeType: 'text/plain'
             })
           }
