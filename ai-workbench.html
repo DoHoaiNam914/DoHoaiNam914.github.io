@@ -10150,17 +10150,62 @@
       return { role: mapMessageRole(role, format), content: parts }
     }
 
+    function secondaryTextFilePart (content, filename, format, preview) {
+      const mimeType = 'text/plain'
+      const base64 = preview ? '[base64]' : encodeBase64(content)
+      const dataUrl = 'data:' + mimeType + ';base64,' + base64
+
+      if (format === 'generate-content') {
+        return { inlineData: { data: base64, mimeType } }
+      }
+      if (format === 'interactions') {
+        return { type: 'document', mime_type: mimeType, data: base64 }
+      }
+      if (format === 'messages') {
+        return {
+          type: 'document',
+          title: filename,
+          source: {
+            type: 'text',
+            media_type: mimeType,
+            data: preview ? '[file content]' : content
+          }
+        }
+      }
+      if (format === 'responses') {
+        return { type: 'input_file', file_data: dataUrl, filename }
+      }
+      return { type: 'file', file: { file_data: dataUrl, filename } }
+    }
+
+    function preparedFilePart (entry, format, preview) {
+      return entry.secondaryText
+        ? secondaryTextFilePart(entry.content, entry.filename, format, preview)
+        : attachmentPart(entry.attachment, format, preview)
+    }
+
     async function workbenchRequestEntries (message, settings, format, preview) {
       const sequence = messageContentSequence(message)
       const assistant = message.role === 'assistant'
       const preparedSequence = []
+      let secondaryTextIndex = 0
 
       for (const entry of sequence) {
         if (entry.type === 'text') {
           const content = assistant
             ? entry.content
             : interpolate(entry.content, settings.variables)
-          preparedSequence.push({ type: 'text', content })
+          if (entry.main) {
+            preparedSequence.push({ type: 'text', content })
+          } else if (content.trim()) {
+            preparedSequence.push({
+              type: 'file',
+              secondaryText: true,
+              content,
+              filename: 'text-' + (++secondaryTextIndex) + '.txt',
+              mimeType: 'text/plain'
+            })
+          }
           continue
         }
 
@@ -10171,8 +10216,11 @@
             '”. Load it again in the file library.')
         }
 
-        const mimeType = normalizeMimeType(record.mimeType) || genericMimeType
-        preparedSequence.push({ ...entry, record, mimeType })
+        preparedSequence.push({
+          ...entry,
+          record,
+          mimeType: normalizeMimeType(record.mimeType) || genericMimeType
+        })
       }
 
       const instructionRole = isInstructionRole(message.role)
@@ -10191,7 +10239,7 @@
               sourceParts.push(providerTextPart(entry.content, format, assistant))
             }
           } else if (sourceRoleAcceptsFiles(format, message.role)) {
-            sourceParts.push(await attachmentPart(entry.attachment, format, preview))
+            sourceParts.push(await preparedFilePart(entry, format, preview))
           }
         }
       }
@@ -10206,7 +10254,7 @@
       if (virtualFileEntries.length) {
         const virtualParts = []
         for (const entry of virtualFileEntries) {
-          virtualParts.push(await attachmentPart(entry.attachment, format, preview))
+          virtualParts.push(await preparedFilePart(entry, format, preview))
         }
         const virtualUser = providerMessageItem('user', virtualParts, format)
         if (!virtualUser) {
