@@ -5490,10 +5490,7 @@
           }
           if (message.status === 'streaming') message.status = 'stopped'
           if (message.role === 'assistant') {
-            if (!message.outputBlocks.length) {
-              if (message.content) message.outputBlocks.push({ id: message.id + ':text', type: 'text', content: message.content })
-            }
-            if (message.outputBlocks.some(block => block.type === 'text')) syncAssistantMessage(message)
+            syncAssistantMessage(message)
           }
           return message
         })
@@ -6777,9 +6774,39 @@
 
     // Responses and streaming.
     function syncAssistantMessage (message) {
-      message.content = joinBlocks(
-        message.outputBlocks.filter(block => block.type === 'text').map(block => block.content)
+      message.outputBlocks ||= []
+
+      // Only useful text blocks are answer content. Reasoning, tools, and files
+      // must never be promoted to the assistant answer.
+      const textBlocks = message.outputBlocks.filter(block =>
+        block?.type === 'text' &&
+        typeof block.content === 'string' &&
+        block.content.trim()
       )
+
+      if (textBlocks.length) {
+        message.content = joinBlocks(textBlocks.map(block => block.content))
+        return
+      }
+
+      // Recover legacy assistant messages whose answer was stored only in
+      // content. Reuse an empty text block when possible to preserve structure.
+      const content = typeof message.content === 'string' ? message.content : ''
+      if (!content.trim()) {
+        message.content = ''
+        return
+      }
+
+      const emptyTextBlock = message.outputBlocks.find(block => block?.type === 'text')
+      if (emptyTextBlock) {
+        emptyTextBlock.content = content
+      } else {
+        message.outputBlocks.push({
+          id: message.id + ':text',
+          type: 'text',
+          content
+        })
+      }
     }
 
     function upsertBlock (message, block, append = false) {
@@ -10356,7 +10383,7 @@
         const attachment = attachmentForBlock(target, block)
         return mediaRecord(attachment?.mediaKey)?.name || attachment?.name || 'File'
       }
-      return 'Text.txt'
+      return 'Text'
     }
 
     function contentTabHtml (target, block, index) {
@@ -10538,7 +10565,7 @@
 
     function messageSecondaryHtml (message, block, index) {
       if (block.type === 'text') {
-        const label = 'Text.txt'
+        const label = 'Text'
         const preview = block.content.replace(/\s+/g, ' ').trim() || 'Empty'
         return `<button class="message-secondary" type="button" data-action="preview-text-block" data-message-id="${escapeHtml(message.id)}" data-block-id="${escapeHtml(block.id)}">
           ${renderIcon('message')}
@@ -10744,7 +10771,17 @@
       }
 
       if (draft.role === 'assistant') {
-        message.outputBlocks = draft.content === message.content
+        const hasUsefulTextBlock = draft.outputBlocks.some(block =>
+          block?.type === 'text' &&
+          typeof block.content === 'string' &&
+          block.content.trim()
+        )
+        const keepOutputBlocks =
+          !roleChanged &&
+          draft.content === message.content &&
+          hasUsefulTextBlock
+
+        message.outputBlocks = keepOutputBlocks
           ? cloneValue(draft.outputBlocks)
           : updateAssistantText(draft.outputBlocks, draft.content)
         message.status = 'complete'
@@ -10758,6 +10795,11 @@
       message.attachments = cloneValue(draft.attachments)
       message.contentBlocks = normalizeContentBlocks(message.attachments, cloneValue(draft.contentBlocks))
       delete message.error
+
+      // Run after applying the draft so fallback recovery cannot restore the
+      // previous assistant text.
+      if (message.role === 'assistant') syncAssistantMessage(message)
+
       state.editDraft = null
       finishMessageChange(conversation, message)
     }
@@ -10873,7 +10915,7 @@
       const message = currentConversation()?.messages.find(item => item.id === messageId)
       const block = message?.contentBlocks?.find(item => item.id === blockId && item.type === 'text')
       if (!block) return
-      getElementById('secondary-text-title').textContent = 'Text.txt'
+      getElementById('secondary-text-title').textContent = 'Text.'
       getElementById('secondary-text-content').innerHTML = renderMarkdown(block.content || '')
       showDialog('secondary-text-dialog')
     }
