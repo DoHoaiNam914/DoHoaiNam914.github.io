@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta
     name="viewport"
-    content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
+    content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover"
   >
   <meta name="theme-color" content="#03060b">
   <title>AI Workbench</title>
@@ -3994,7 +3994,7 @@
 
     const safetyDefinitions = [
       { category: 'HARM_CATEGORY_HARASSMENT', label: 'Harassment' },
-      { category: 'HARM_CATEGORY_HATE_SPEECH', label: 'Hate speech' },
+      { category: 'HARM_CATEGORY_HATE_SPEECH', label: 'Hate' },
       { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', label: 'Sexually explicit' },
       { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', label: 'Dangerous content' },
       { category: 'HARM_CATEGORY_JAILBREAK', label: 'Jailbreak' }
@@ -4004,7 +4004,7 @@
       'chat-completions': [],
       messages: ['code_execution', 'web_fetch', 'web_search'],
       'generate-content': ['urlContext', 'codeExecution', 'googleSearch'],
-      responses: ['web_search', 'x_search', 'code_interpreter', 'image_generation', 'programmatic_tool_calling'],
+      responses: ['programmatic_tool_calling', 'web_search', 'x_search', 'code_interpreter', 'image_generation'],
       interactions: ['url_context', 'google_search', 'code_execution']
     }
 
@@ -8106,7 +8106,7 @@
         const value = settings.safetySettings[item.category]
         return `<div class="field">
           <div class="field__header">
-            <label class="field__label" for="${id}">${item.category}</label>
+            <label class="field__label" for="${id}">${item.label}</label>
           </div>
           <select class="select-field" id="${id}" data-safety-category="${item.category}">
             ${safetyThresholds.map(threshold => `<option value="${threshold}"${(value == null && threshold === 'HARM_BLOCK_THRESHOLD_UNSPECIFIED') || value === threshold ? ' selected' : ''}>${safetyThresholdLabels[threshold]}</option>`).join('')}
