@@ -10250,24 +10250,16 @@
         })
       }
 
-      const instructionRole = isInstructionRole(message.role)
-      const globalInstructionFormat = ['messages', 'generate-content', 'interactions'].includes(format)
-      const instructions = instructionRole && globalInstructionFormat
-        ? [joinBlocks(preparedSequence
-            .filter(entry => entry.type === 'text')
-            .map(entry => entry.content))]
-        : []
+      const instructions = []
 
       const sourceParts = []
-      if (!(instructionRole && globalInstructionFormat)) {
-        for (const entry of preparedSequence) {
-          if (entry.type === 'text') {
-            if (entry.content.trim()) {
-              sourceParts.push(providerTextPart(entry.content, format, assistant))
-            }
-          } else if (sourceRoleAcceptsFiles(format, message.role)) {
-            sourceParts.push(await preparedFilePart(entry, format, preview))
+      for (const entry of preparedSequence) {
+        if (entry.type === 'text') {
+          if (entry.content.trim()) {
+            sourceParts.push(providerTextPart(entry.content, format, assistant))
           }
+        } else if (sourceRoleAcceptsFiles(format, message.role)) {
+          sourceParts.push(await preparedFilePart(entry, format, preview))
         }
       }
 
@@ -10383,7 +10375,7 @@
         const attachment = attachmentForBlock(target, block)
         return mediaRecord(attachment?.mediaKey)?.name || attachment?.name || 'File'
       }
-      return 'Text'
+      return 'Text.txt'
     }
 
     function contentTabHtml (target, block, index) {
@@ -10437,7 +10429,7 @@
           : renderIcon(textAttachment ? 'message' : mimeType.startsWith('image/') ? 'spark' : 'file-text')}</span>
         <span class="selected-file__info">
           <strong class="selected-file__name">${escapeHtml(record?.name || attachment.name || 'File')}</strong>
-          <span class="selected-file__meta">${textAttachment ? 'Text · ' : ''}${escapeHtml(mimeType)} · ${formatBytes(record?.size ?? attachment.size ?? 0)}</span>
+          <span class="selected-file__meta">${textAttachment ? 'Text.txt · ' : ''}${escapeHtml(mimeType)} · ${formatBytes(record?.size ?? attachment.size ?? 0)}</span>
         </span>
         <span class="selected-file__actions">
           ${record?.blob || record?.hasContent ? actionButton('preview-file', 'search', 'Preview', attributes, 'icon-button') : ''}
@@ -10565,7 +10557,7 @@
 
     function messageSecondaryHtml (message, block, index) {
       if (block.type === 'text') {
-        const label = 'Text'
+        const label = 'Text.txt'
         const preview = block.content.replace(/\s+/g, ' ').trim() || 'Empty'
         return `<button class="message-secondary" type="button" data-action="preview-text-block" data-message-id="${escapeHtml(message.id)}" data-block-id="${escapeHtml(block.id)}">
           ${renderIcon('message')}
@@ -10581,7 +10573,7 @@
       const textAttachment = mimeType.startsWith('text/')
       return `<button class="message-secondary" type="button" data-action="preview-file" data-file-key="${escapeHtml(key || '')}">
         ${renderIcon(textAttachment ? 'message' : mimeType.startsWith('image/') ? 'spark' : 'file-text')}
-        <span class="message-secondary__body"><strong class="message-secondary__name">${escapeHtml(record?.name || attachment.name || 'File')}</strong><span class="message-secondary__meta">${textAttachment ? 'Text · ' : ''}${escapeHtml(mimeType)} · ${formatBytes(record?.size ?? attachment.size ?? 0)}</span></span>
+        <span class="message-secondary__body"><strong class="message-secondary__name">${escapeHtml(record?.name || attachment.name || 'File')}</strong><span class="message-secondary__meta">${textAttachment ? 'Text.txt · ' : ''}${escapeHtml(mimeType)} · ${formatBytes(record?.size ?? attachment.size ?? 0)}</span></span>
         ${renderIcon('search', 'icon_size_small')}
       </button>`
     }
@@ -10609,7 +10601,7 @@
       ).join('')
       const editor = selected.type === 'file'
         ? `<div class="message-editor__selected-file">${selectedFileHtml(target, selected)}</div>`
-        : `<label class="visually-hidden" for="message-editor-input">${selected.id === mainBlockId ? 'Message' : 'Text'}</label>
+        : `<label class="visually-hidden" for="message-editor-input">${selected.id === mainBlockId ? 'Message' : 'Text.txt'}</label>
           <textarea class="message-editor__input" id="message-editor-input">${escapeHtml(targetText(target, selected.id))}</textarea>`
 
       return `<div class="message-editor" data-row-key="message-editor" data-editor-message-id="${escapeHtml(draft.messageId)}" data-editor-content-block-id="${escapeHtml(selected.id)}">
@@ -10915,7 +10907,7 @@
       const message = currentConversation()?.messages.find(item => item.id === messageId)
       const block = message?.contentBlocks?.find(item => item.id === blockId && item.type === 'text')
       if (!block) return
-      getElementById('secondary-text-title').textContent = 'Text.'
+      getElementById('secondary-text-title').textContent = 'Text.txt'
       getElementById('secondary-text-content').innerHTML = renderMarkdown(block.content || '')
       showDialog('secondary-text-dialog')
     }
