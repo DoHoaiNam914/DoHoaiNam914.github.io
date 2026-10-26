@@ -5364,6 +5364,42 @@
       }
     }
 
+    function persistentSnapshot (snapshot) {
+      const draft = snapshot.editDraft
+      const ui = { ...snapshot.ui }
+
+      for (const name of [
+        'attachments',
+        'editDraft',
+        'messageDraft',
+        'contentBlocks',
+        'draftContentBlocks',
+        'activeContentBlockId',
+        'contentSelections'
+      ]) {
+        delete ui[name]
+      }
+
+      return {
+        ...snapshot,
+        ui,
+        attachments: [],
+        editDraft: null,
+        messageDraft: '',
+        draftContentBlocks: [],
+        activeDraftBlockId: 'main',
+        draftSelections: {},
+        conversations: snapshot.conversations.map(conversation => ({
+          ...conversation,
+          messages: conversation.messages.filter(message =>
+            !draft?.isNew ||
+            draft.conversationId !== conversation.id ||
+            draft.messageId !== message.id
+          )
+        }))
+      }
+    }
+
     function storedState (snapshot = state) {
       return {
         activeConversationId: snapshot.activeConversationId,
@@ -5606,17 +5642,21 @@
     }
 
     function exportStorageCopy () {
-      captureEditDraft()
-      const local = Object.fromEntries(Object.values(storageKeys).map(key => [
-        key, window.localStorage.getItem(key)
-      ]))
+      const snapshot = persistentSnapshot(state)
+      const stored = storedState(snapshot)
+      const local = Object.fromEntries(
+        Object.entries(storageKeys).map(([name, key]) => [
+          key,
+          JSON.stringify(stored[name])
+        ])
+      )
+
       const blob = new window.Blob([JSON.stringify({
         localStorage: local,
-        currentState: cloneValue(state),
-        ...(storageError?.recoveryEntries ? { recoveryEntries: storageError.recoveryEntries } : {})
+        currentState: snapshot
       })], { type: 'application/json' })
+
       downloadBlob(blob, 'ai-workbench-backup.json')
-      // Binary files are downloaded separately in the existing file library.
     }
 
     function parseStorageCopy (source) {
@@ -9525,7 +9565,7 @@
     } else {
       startApplication()
     }
-  
+
   </script>
 
   <script id="ai-workbench-content-parts-script">
@@ -9701,17 +9741,30 @@
     }
 
     normalizeStoredState = function (saved) {
-      return normalizeDraftContent(originalNormalizeStoredState(saved), saved)
+      const loaded = originalNormalizeStoredState(saved)
+      const clean = persistentSnapshot(loaded)
+
+      return normalizeDraftContent(clean, {
+        ...saved,
+        ui: clean.ui
+      })
     }
 
     storedState = function (snapshot = state) {
-      for (const conversation of snapshot.conversations || []) {
-        for (const message of conversation.messages || []) ensureMessageContentBlocks(message)
+      const output = originalStoredState(persistentSnapshot(snapshot))
+
+      for (const name of [
+        'attachments',
+        'editDraft',
+        'messageDraft',
+        'contentBlocks',
+        'draftContentBlocks',
+        'activeContentBlockId',
+        'contentSelections'
+      ]) {
+        delete output.ui[name]
       }
-      const output = originalStoredState(snapshot)
-      output.ui.contentBlocks = cloneValue(snapshot.draftContentBlocks || [])
-      output.ui.activeContentBlockId = snapshot.activeDraftBlockId || mainBlockId
-      output.ui.contentSelections = cloneValue(snapshot.draftSelections || {})
+
       return output
     }
 
