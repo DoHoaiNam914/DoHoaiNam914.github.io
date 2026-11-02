@@ -6662,10 +6662,7 @@
       } else {
         const responses = format === 'responses'
         body[responses ? 'input' : 'messages'] = input
-        if (system) {
-          if (responses) body.instructions = system
-          else input.unshift({ role: 'system', content: system })
-        }
+        if (system) input.unshift({ role: 'system', content: system })
         if (!settings.temperatureAuto) body.temperature = settings.temperature
         if (!settings.topPAuto) body.top_p = settings.topP
         if (settings.maxTokens != null) {
@@ -11445,14 +11442,11 @@ buildRequest = async function (configuration, messages, preview = false) {
       } else {
         const responses = format === 'responses'
         body[responses ? 'input' : 'messages'] = input
-        if (system) {
-          if (responses) body.instructions = system
-          else input.unshift({ role: 'system', content: system })
-        }
+        if (system) input.unshift({ role: 'system', content: system })
         if (!settings.temperatureAuto) body.temperature = settings.temperature
         if (!settings.topPAuto) body.top_p = settings.topP
         if (settings.maxTokens != null) {
-          body[responses ? 'max_output_tokens' : 'max_completion_tokens'] = settings.maxTokens
+          body[responses ? 'max_output_tokens' : 'max_tokens'] = settings.maxTokens
         }
 
         if (settings.verbosity) {
